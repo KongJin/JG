@@ -1,0 +1,194 @@
+using Features.Combat;
+using Features.Player.Presentation;
+using Features.Projectile;
+using Features.Skill;
+using Features.Zone;
+using Photon.Pun;
+using Shared.ErrorHandling;
+using Shared.EventBus;
+using Shared.Ui;
+using UnityEngine;
+
+namespace Features.Player
+{
+    public sealed class GameSceneBootstrap : MonoBehaviourPunCallbacks
+    {
+        [Header("Player")]
+        [SerializeField]
+        private string _playerPrefabName = "PlayerCharacter";
+
+        [SerializeField]
+        private float _spawnRadius = 3f;
+
+        [SerializeField]
+        private Transform _cam;
+
+        [SerializeField]
+        private GameObject _healthHudPrefab;
+
+        [SerializeField]
+        private Canvas _hudCanvas;
+
+        [SerializeField]
+        private SkillSetup _skillSetup;
+
+        [SerializeField]
+        private ProjectileSpawner _projectileSpawner;
+
+        [SerializeField]
+        private CombatBootstrap _combatBootstrap;
+
+        [SerializeField]
+        private ZoneSetup _zoneSetup;
+
+        [SerializeField]
+        private SceneErrorPresenter _sceneErrorPresenter;
+
+        private EventBus _eventBus;
+        private PlayerSetup _localPlayerSetup;
+
+        private void Start()
+        {
+            _eventBus = new EventBus();
+
+            if (_sceneErrorPresenter == null)
+            {
+                Debug.LogError("[GameScene] SceneErrorPresenter reference is missing.", this);
+                return;
+            }
+
+            _sceneErrorPresenter.Initialize(_eventBus);
+
+            if (!PhotonNetwork.InRoom)
+            {
+                _eventBus.Publish(
+                    new UiErrorRequestedEvent(
+                        UiErrorMessage.Modal(
+                            "You are not connected to a room. Please return to the lobby and join again.",
+                            "GameScene"
+                        )
+                    )
+                );
+                return;
+            }
+
+            if (_combatBootstrap == null)
+            {
+                Debug.LogError("[GameScene] CombatBootstrap reference is missing.");
+                return;
+            }
+
+            var offset = Random.insideUnitCircle * _spawnRadius;
+            var spawnPosition = new Vector3(offset.x, 0f, offset.y);
+            var player = PhotonNetwork.Instantiate(
+                _playerPrefabName,
+                spawnPosition,
+                Quaternion.identity
+            );
+            var follower = _cam.GetComponent<CameraFollower>();
+            if (follower == null)
+                follower = _cam.gameObject.AddComponent<CameraFollower>();
+            follower.Initialize(player.transform, _cam.position - player.transform.position);
+
+            var localPlayerSetup = ConnectPlayer(player);
+            var combatNetworkPort = localPlayerSetup != null && localPlayerSetup.NetworkAdapter != null
+                ? new Infrastructure.PlayerCombatNetworkPortAdapter(localPlayerSetup.NetworkAdapter)
+                : null;
+            var localAuthorityId = localPlayerSetup != null ? localPlayerSetup.PlayerId : default;
+            _combatBootstrap.Initialize(_eventBus, combatNetworkPort, localAuthorityId);
+            RegisterCombatTarget(localPlayerSetup);
+
+            if (_localPlayerSetup != null)
+            {
+                var camera = _cam.GetComponent<Camera>();
+                _skillSetup.Initialize(
+                    _eventBus,
+                    player.transform,
+                    camera,
+                    _localPlayerSetup.PlayerId
+                );
+            }
+            _projectileSpawner.Initialize(_eventBus, _eventBus);
+
+            if (_zoneSetup == null)
+            {
+                Debug.LogError("[GameScene] ZoneSetup reference is missing.");
+                return;
+            }
+
+            _zoneSetup.Initialize(_eventBus);
+
+            foreach (var other in PhotonNetwork.PlayerListOthers)
+                StartCoroutine(ConnectRemotePlayerDelayed(other));
+        }
+
+        private PlayerSetup ConnectPlayer(GameObject player)
+        {
+            var playerSetup = player.GetComponent<PlayerSetup>();
+            if (playerSetup == null)
+                return null;
+
+            playerSetup.Initialize(_eventBus);
+
+            if (_healthHudPrefab != null && _hudCanvas != null)
+            {
+                var hudGo = Instantiate(_healthHudPrefab, _hudCanvas.transform, false);
+                var hudView = hudGo.GetComponent<PlayerHealthHudView>();
+                if (hudView != null)
+                {
+                    var camera = _cam.GetComponent<Camera>();
+                    hudView.Initialize(
+                        _eventBus,
+                        playerSetup.PlayerId,
+                        playerSetup.MaxHp,
+                        player.transform,
+                        camera,
+                        _hudCanvas
+                    );
+                }
+            }
+            else if (_healthHudPrefab != null)
+            {
+                Debug.LogError("[GameScene] Hud canvas reference is missing.", this);
+            }
+
+            if (playerSetup.UseCases != null)
+            {
+                _localPlayerSetup = playerSetup;
+            }
+
+            return playerSetup;
+        }
+
+        private void RegisterCombatTarget(PlayerSetup playerSetup)
+        {
+            if (playerSetup?.CombatTargetProvider == null)
+                return;
+
+            _combatBootstrap.RegisterTarget(
+                playerSetup.PlayerId,
+                playerSetup.CombatTargetProvider
+            );
+        }
+
+        public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
+        {
+            StartCoroutine(ConnectRemotePlayerDelayed(newPlayer));
+        }
+
+        private System.Collections.IEnumerator ConnectRemotePlayerDelayed(
+            Photon.Realtime.Player target
+        )
+        {
+            yield return null;
+            foreach (var pv in FindObjectsByType<PhotonView>(FindObjectsSortMode.None))
+            {
+                if (pv.Owner == target && pv.GetComponent<PlayerSetup>() != null)
+                {
+                    RegisterCombatTarget(ConnectPlayer(pv.gameObject));
+                    break;
+                }
+            }
+        }
+    }
+}
