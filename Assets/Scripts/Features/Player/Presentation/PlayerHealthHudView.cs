@@ -140,7 +140,7 @@ namespace Features.Player.Presentation
             _healthSlider.maxValue = e.MaxHp;
             _healthSlider.value = e.CurrentHp;
 
-            var healthPercent = e.CurrentHp / e.MaxHp;
+            var healthPercent = e.MaxHp > 0f ? e.CurrentHp / e.MaxHp : 0f;
             UpdateFillColor(healthPercent);
         }
 

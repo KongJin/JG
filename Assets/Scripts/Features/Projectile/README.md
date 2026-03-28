@@ -66,9 +66,14 @@ Skill Feature의 RPC로 원격 `ProjectileRequestedEvent`가 발행되면
 ## Bootstrap
 
 - **ProjectileSpawner** (MonoBehaviour): `ProjectileRequestedEvent` 구독 → 투사체 스폰
-  - 프리팹 없이 `CreatePrimitive(Sphere)`로 런타임 생성
+  - `[SerializeField] ProjectilePhysicsAdapter _projectilePrefab`과 `GameObjectPool`로 프리팹 기반 풀링
   - `Initialize()`에서 `SpawnProjectileUseCase`를 한 번 생성
-  - 이벤트마다 `AddComponent<ProjectilePhysicsAdapter>()`로 물리 부착 → `Execute()`에 전달
+  - 이벤트마다 pool에서 Rent → `ProjectilePhysicsAdapter.Initialize/Spawn` 호출
+
+## 프리팹 설정 주의
+
+- **SphereCollider**: `IsTrigger = true` 필수. `OnTriggerEnter`가 동작하려면 최소 하나의 콜라이더가 Trigger여야 한다.
+- **Rigidbody**: `IsKinematic = true`, `UseGravity = false` 필수. 궤적이 코드(`ITrajectory`)로 매 프레임 제어되므로 물리 시뮬레이션이 개입하면 안 된다.
 
 ## 피처 간 의존
 

@@ -219,15 +219,20 @@ namespace Features.Player
             Photon.Realtime.Player target
         )
         {
-            yield return null;
-            foreach (var pv in FindObjectsByType<PhotonView>(FindObjectsSortMode.None))
+            for (var attempt = 0; attempt < 30; attempt++)
             {
-                if (pv.Owner == target && pv.GetComponent<PlayerSetup>() != null)
+                yield return null;
+                foreach (var pv in FindObjectsByType<PhotonView>(FindObjectsSortMode.None))
                 {
-                    RegisterCombatTarget(ConnectPlayer(pv.gameObject));
-                    break;
+                    if (pv.Owner == target && pv.GetComponent<PlayerSetup>() != null)
+                    {
+                        RegisterCombatTarget(ConnectPlayer(pv.gameObject));
+                        yield break;
+                    }
                 }
             }
+
+            Debug.LogWarning($"[GameScene] Could not find PlayerSetup for player {target.NickName} after 30 frames.");
         }
     }
 }

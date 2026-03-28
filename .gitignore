@@ -76,6 +76,9 @@ mono_crash.*
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Firebase
+.firebase/
+
 # TestRunner generated files
 InitTestScene*.unity*
 

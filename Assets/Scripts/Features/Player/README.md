@@ -65,6 +65,7 @@ PlayerNetworkAdapter.RPC_PlayerRespawn (리스폰 수신)
 
 - **GameSceneBootstrap** (`GameSceneBootstrap.cs`, 씬 오브젝트): `PhotonNetwork.Instantiate`로 PlayerCharacter 프리팹 생성, 카메라를 플레이어에 부착하고 씬 공통 `SceneErrorPresenter`를 초기화한다.
 - `GameSceneBootstrap`은 로컬 플레이어 생성 후 `PlayerCombatNetworkPortAdapter`를 만들어 Combat에 주입한다.
+- `ConnectRemotePlayerDelayed`는 최대 30프레임 재시도로 원격 플레이어의 PhotonView를 탐색한다. Photon이 기존 플레이어의 네트워크 오브젝트를 인스턴스화하는 데 수 프레임이 소요될 수 있기 때문이다.
 - **PlayerSetup** (`PlayerSetup.cs`, PlayerCharacter 프리팹): 스폰 후 `IsMine` 분기:
   - 로컬: PlayerNetworkEventHandler + PlayerUseCases + PlayerDamageEventHandler + InputHandler + View 초기화
   - 원격: PlayerNetworkEventHandler(remotePlayer) + PlayerDamageEventHandler + View 초기화, Input/Motor 비활성화
