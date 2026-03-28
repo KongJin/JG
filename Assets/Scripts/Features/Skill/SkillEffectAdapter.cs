@@ -18,11 +18,5 @@ namespace Features.Skill
             var data = _catalog.GetData(skillId);
             return data != null ? data.CastEffectPrefab : null;
         }
-
-        public AudioClip GetCastSound(string skillId)
-        {
-            var data = _catalog.GetData(skillId);
-            return data != null ? data.CastSound : null;
-        }
     }
 }

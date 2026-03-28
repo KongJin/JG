@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 951fa1043d99c6941b8bfacb167dbd83, type: 3}
+  m_Name: SoundCatalog
+  m_EditorClassIdentifier:
+  entries:
+  - key: skill_Fireball_cast
+    clip: {fileID: 8300000, guid: 04d01bad6fbd6be4eb558ec1ec4cd455, type: 3}
+    volume: 1
+    spatialBlend: 1
+    cooldown: 0.05

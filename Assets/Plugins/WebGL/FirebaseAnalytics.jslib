@@ -13,8 +13,16 @@ var FirebaseAnalyticsPlugin = {
             measurementId: "G-5QHE4HB7BL"
         };
 
+        var isQa = window.location.hostname.indexOf("--") !== -1;
+        if (isQa) {
+            window.dataLayer = window.dataLayer || [];
+            window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+            window.gtag('set', { debug_mode: true });
+        }
+
         firebase.initializeApp(config);
         window._firebaseAnalytics = firebase.analytics();
+        window._firebaseIsQa = isQa;
         window._firebaseInitialized = true;
     },
 
@@ -25,6 +33,9 @@ var FirebaseAnalyticsPlugin = {
         var jsonStr = UTF8ToString(jsonParamsPtr);
         var params = jsonStr ? JSON.parse(jsonStr) : {};
 
+        if (window._firebaseIsQa) {
+            console.log('[Analytics]', eventName, params);
+        }
         window._firebaseAnalytics.logEvent(eventName, params);
     }
 };

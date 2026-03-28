@@ -32,7 +32,15 @@ namespace Features.Player.Application
 
         public Result<Domain.Player> Spawn(PlayerSpec spec)
         {
-            var player = new Domain.Player(_clock.NewId(), spec);
+            return Spawn(spec, default);
+        }
+
+        public Result<Domain.Player> Spawn(PlayerSpec spec, DomainEntityId playerId)
+        {
+            var resolvedPlayerId = string.IsNullOrWhiteSpace(playerId.Value)
+                ? _clock.NewId()
+                : playerId;
+            var player = new Domain.Player(resolvedPlayerId, spec);
             _localPlayer = player;
             return Result<Domain.Player>.Success(player);
         }

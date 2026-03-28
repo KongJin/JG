@@ -755,6 +755,18 @@ namespace ProjectSD.EditorTools.UnityMcp
                     return;
                 }
 
+                if (method == "POST" && path == "/asset/refresh")
+                {
+                    await HandleAssetRefreshAsync(response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/build/webgl")
+                {
+                    await HandleBuildWebGLAsync(request, response);
+                    return;
+                }
+
                 await WriteJsonAsync(
                     response,
                     404,
@@ -1757,6 +1769,72 @@ namespace ProjectSD.EditorTools.UnityMcp
             });
 
             await WriteJsonAsync(response, 200, result);
+        }
+
+        private static async Task HandleAssetRefreshAsync(HttpListenerResponse response)
+        {
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                AssetDatabase.Refresh();
+                return new GenericResponse { success = true, message = "AssetDatabase refreshed." };
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        private static async Task HandleBuildWebGLAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            string outputPath = "Build/WebGL";
+
+            // Allow custom output path via request body
+            if (request.HasEntityBody)
+            {
+                using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
+                {
+                    var body = await reader.ReadToEndAsync();
+                    if (!string.IsNullOrWhiteSpace(body))
+                    {
+                        var parsed = JsonUtility.FromJson<BuildWebGLRequest>(body);
+                        if (!string.IsNullOrWhiteSpace(parsed?.outputPath))
+                            outputPath = parsed.outputPath;
+                    }
+                }
+            }
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                var scenes = EditorBuildSettings.scenes
+                    .Where(s => s.enabled)
+                    .Select(s => s.path)
+                    .ToArray();
+
+                if (scenes.Length == 0)
+                    return new GenericResponse { success = false, message = "No scenes enabled in Build Settings." };
+
+                var buildOptions = BuildPipeline.BuildPlayer(
+                    scenes,
+                    outputPath,
+                    BuildTarget.WebGL,
+                    BuildOptions.None
+                );
+
+                var succeeded = buildOptions.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded;
+                return new GenericResponse
+                {
+                    success = succeeded,
+                    message = succeeded
+                        ? "WebGL build completed: " + outputPath
+                        : "Build failed: " + buildOptions.summary.result
+                };
+            });
+
+            await WriteJsonAsync(response, result.success ? 200 : 500, result);
+        }
+
+        [Serializable]
+        private sealed class BuildWebGLRequest
+        {
+            public string outputPath;
         }
 
         // =====================================================================

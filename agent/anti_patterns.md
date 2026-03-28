@@ -21,6 +21,7 @@ Never do these:
 * GetComponent for dependency acquisition — use `[SerializeField]` and wire explicitly in Inspector. Dependencies must be visible in both code and Inspector.
 
 * Dual state — the same concept (health, position, etc.) must not be managed by two domain entities independently. Only one Source of Truth may exist. Example: Player.CurrentHp and CombatTarget.CurrentHealth existing simultaneously will inevitably diverge.
+* Network-shared entity with local ID — 네트워크로 공유되는 엔티티(플레이어 등)의 ID를 `DomainEntityId.New()`로 로컬 생성하면 안 된다. 반드시 네트워크 안정 소스(Photon ActorNumber, ViewID 등)에서 파생해야 한다. `DomainEntityId.New()`는 한 클라이언트 안에서만 존재하는 엔티티(투사체, 스킬 인스턴스 등)에만 사용한다.
 * Dual-path damage — do not apply damage twice for a single event (e.g. projectile hit). One UseCase calculates damage; other features react via result events.
 * Port on provider instead of consumer — when feature A calls feature B, define the port interface in A's Application. Implementation goes in B's Infrastructure. (Dependency Inversion Principle)
 * Bootstrap containing selection/cycling logic — Bootstrap only wires. Skill rotation, next-target selection, etc. must be extracted to a dedicated Application-layer class.

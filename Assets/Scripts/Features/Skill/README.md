@@ -8,7 +8,8 @@
 - 슬롯 입력 수신 (`RMB`, `Q`, `E`, `R`)
 - 시전 시 쿨다운 검증 후 `SkillCastNetworkData` 전송
 - RPC 수신 후 `ProjectileRequestedEvent`, `ZoneRequestedEvent`, `TargetedRequestedEvent`, `SelfRequestedEvent`, `SkillCastedEvent` 발행
-- 스킬별 이펙트/사운드 매핑 (ScriptableObject 기반)
+- 스킬별 이펙트 매핑 (ScriptableObject 기반)
+- 시전 사운드는 `SoundRequestEvent`를 발행하여 `Shared/Runtime/Sound/SoundPlayer`에 위임
 
 ## 핵심 흐름
 
@@ -60,7 +61,7 @@ SlotInputHandler
   - `HandleSlotClicked`: `SkillRotator`를 통한 슬롯 클릭 시 순환 교체
 
 - `SkillIconAdapter` — `ISkillIconPort` 구현, `SkillCatalog`에서 아이콘 조회
-- `SkillEffectAdapter` — `ISkillEffectPort` 구현, `SkillCatalog`에서 이펙트/사운드 조회
+- `SkillEffectAdapter` — `ISkillEffectPort` 구현, `SkillCatalog`에서 이펙트 프리팹 조회
 
 ### Application
 
@@ -100,7 +101,7 @@ SlotInputHandler
 ### Presentation
 
 - `ISkillIconPort` — 스킬 아이콘(Sprite) 조회 포트 (Unity 타입이므로 Presentation에 배치)
-- `ISkillEffectPort` — 스킬 이펙트(GameObject)/사운드(AudioClip) 조회 포트
+- `ISkillEffectPort` — 스킬 이펙트(GameObject) 조회 포트
 
 - `SlotInputHandler`
   - 입력 액션을 바인딩하고 시전 요청을 보낸다
@@ -111,7 +112,7 @@ SlotInputHandler
 - `BarView` — `SkillEquippedEvent`, `SkillCastedEvent` 구독, 슬롯 쿨다운/아이콘 표시
   - 쿨타임 UI는 본인만 표시 (`CasterId` 필터링)
 - `SlotView` — 개별 슬롯 UI 렌더링
-- `SkillCastEffectSpawner` — 이벤트의 SkillId로 이펙트 프리팹/사운드 재생
+- `SkillCastEffectSpawner` — 이벤트의 SkillId로 이펙트 프리팹 스폰 + `SoundRequestEvent` 발행
 - `SelfCastEffect`, `TargetedCastEffect` — 캐스트 이펙트 연출
 
 ## 네트워크 데이터
@@ -165,7 +166,7 @@ RPC 전송 시 Infrastructure에서 개별 float로 분해하고, 수신 시 다
 
 - `Projectile`: `ProjectileRequestedEvent`, `ProjectileSpec`
 - `Zone`: `ZoneRequestedEvent` (Skill이 발행, Zone이 구독)
-- `Shared`: `EventBus`, `DomainEntityId`, `Result`, `Float3`, `UiErrorRequestedEvent`
+- `Shared`: `EventBus`, `DomainEntityId`, `Result`, `Float3`, `UiErrorRequestedEvent`, `SoundRequestEvent`
 
 ## 현재 문서 범위
 

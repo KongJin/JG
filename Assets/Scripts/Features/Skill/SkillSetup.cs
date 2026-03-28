@@ -57,7 +57,7 @@ namespace Features.Skill
             _skillRotator = new SkillRotator(CollectCatalogSkillIds());
 
             _barView.Initialize(eventBus, new SkillIconAdapter(_catalog), casterId);
-            _skillCastEffectSpawner.Initialize(eventBus, new SkillEffectAdapter(_catalog));
+            _skillCastEffectSpawner.Initialize(eventBus, eventBus, new SkillEffectAdapter(_catalog));
 
             new SkillNetworkEventHandler(_eventBus, _networkAdapter);
 

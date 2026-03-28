@@ -1,4 +1,6 @@
 using Features.Player.Application;
+using Features.Player.Application.Events;
+using Shared.EventBus;
 using Shared.Math;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,14 +13,20 @@ namespace Features.Player.Presentation
 
         private PlayerUseCases _useCases;
         private Domain.Player _player;
+        private IEventSubscriber _eventBus;
 
         private InputAction _moveAction;
         private InputAction _jumpAction;
 
-        public void Initialize(Domain.Player player, PlayerUseCases useCases)
+        public void Initialize(
+            Domain.Player player,
+            PlayerUseCases useCases,
+            IEventSubscriber eventBus
+        )
         {
             _player = player;
             _useCases = useCases;
+            _eventBus = eventBus;
 
             _moveAction = _inputActions.FindAction("Move");
             _jumpAction = _inputActions.FindAction("Jump");
@@ -27,18 +35,13 @@ namespace Features.Player.Presentation
             _jumpAction.Enable();
 
             _jumpAction.performed += OnJump;
+            _eventBus?.Subscribe(this, new System.Action<PlayerDiedEvent>(OnPlayerDied));
         }
 
         private void OnDestroy()
         {
-            if (_jumpAction != null)
-            {
-                _jumpAction.performed -= OnJump;
-                _jumpAction.Disable();
-            }
-
-            if (_moveAction != null)
-                _moveAction.Disable();
+            DisableInput();
+            _eventBus?.UnsubscribeAll(this);
         }
 
         private void Update()
@@ -56,6 +59,27 @@ namespace Features.Player.Presentation
             if (_player == null)
                 return;
             _useCases.Jump(_player);
+        }
+
+        private void OnPlayerDied(PlayerDiedEvent e)
+        {
+            if (_player == null || e.PlayerId != _player.Id)
+                return;
+
+            DisableInput();
+            enabled = false;
+        }
+
+        private void DisableInput()
+        {
+            if (_jumpAction != null)
+            {
+                _jumpAction.performed -= OnJump;
+                _jumpAction.Disable();
+            }
+
+            if (_moveAction != null)
+                _moveAction.Disable();
         }
     }
 }

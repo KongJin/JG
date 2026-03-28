@@ -1,9 +1,9 @@
 using Features.Skill.Application.Events;
-using Features.Skill.Application.Ports;
 using Shared.EventBus;
 using Shared.Lifecycle;
 using Shared.Math;
 using Shared.Runtime.Pooling;
+using Shared.Sound;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,13 +18,18 @@ namespace Features.Skill.Presentation
         private GameObject selfEffectPrefab;
 
         private IEventSubscriber _eventBus;
+        private IEventPublisher _publisher;
         private ISkillEffectPort _effectPort;
         private DisposableScope _disposables = new DisposableScope();
         private readonly Dictionary<GameObject, GameObjectPool> _pools = new Dictionary<GameObject, GameObjectPool>();
 
-        public void Initialize(IEventSubscriber eventBus, ISkillEffectPort effectPort = null)
+        public void Initialize(
+            IEventSubscriber eventBus,
+            IEventPublisher publisher,
+            ISkillEffectPort effectPort = null)
         {
             _eventBus = eventBus;
+            _publisher = publisher;
             _effectPort = effectPort;
             _disposables.Dispose();
             _disposables = new DisposableScope();
@@ -44,10 +49,8 @@ namespace Features.Skill.Presentation
 
         private void OnZoneRequested(ZoneRequestedEvent e)
         {
-            var pos = e.Position.ToVector3();
-            var dir = e.Direction.ToVector3();
-            var spawnPos = pos + dir * (e.Spec.Range * 0.5f);
-            PlayCastSound(e.SkillId.Value, spawnPos);
+            var spawnPos = e.Position + e.Direction * (e.Spec.Range * 0.5f);
+            PublishCastSound(e.SkillId.Value, spawnPos, e.CasterId.Value);
         }
 
         private void OnTargetedRequested(TargetedRequestedEvent e)
@@ -63,7 +66,7 @@ namespace Features.Skill.Presentation
             if (effect != null)
                 effect.Play();
 
-            PlayCastSound(e.SkillId.Value, spawnPos);
+            PublishCastSound(e.SkillId.Value, e.TargetPosition, e.CasterId.Value);
         }
 
         private void OnSelfRequested(SelfRequestedEvent e)
@@ -79,7 +82,7 @@ namespace Features.Skill.Presentation
             if (effect != null)
                 effect.Play();
 
-            PlayCastSound(e.SkillId.Value, pos);
+            PublishCastSound(e.SkillId.Value, e.Position, e.CasterId.Value);
         }
 
         private GameObject ResolveEffectPrefab(string skillId, GameObject fallback)
@@ -91,16 +94,13 @@ namespace Features.Skill.Presentation
             return prefab != null ? prefab : fallback;
         }
 
-        private void PlayCastSound(string skillId, Vector3 position)
+        private void PublishCastSound(string skillId, Float3 position, string ownerId)
         {
-            if (_effectPort == null)
-                return;
-
-            var clip = _effectPort.GetCastSound(skillId);
-            if (clip == null)
-                return;
-
-            AudioSource.PlayClipAtPoint(clip, position);
+            _publisher.Publish(new SoundRequestEvent(new SoundRequest(
+                $"skill_{skillId}_cast",
+                position,
+                PlaybackPolicy.All,
+                ownerId)));
         }
 
         private GameObjectPool GetPool(GameObject prefab)

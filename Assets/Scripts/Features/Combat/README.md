@@ -41,6 +41,7 @@ PlayerNetworkAdapter.RPC_ApplyDamage
 - 사망은 별도 RPC 없이 데미지 replication 경로로 전달된다 (`SendDeath` 미사용).
 - `PlayerDamageEventHandler`가 `_deathPublished` 플래그로 `PlayerDiedEvent` 중복 발행을 방지한다.
 - 리스폰 시 `PlayerRespawnedEvent`로 플래그가 리셋된다.
+- 게임 종료 UI는 Player 피처의 `GameEndEventHandler`가 `PlayerDiedEvent`를 받아 처리한다.
 
 **NOTE:** `CombatTestTargetLoop` (테스트용)은 삭제됨. 리스폰 기능이 필요하면 Application 레이어에 별도 핸들러를 만들어야 함.
 
@@ -55,6 +56,7 @@ PlayerNetworkAdapter.RPC_ApplyDamage
 ## 현재 구현 기준 결정
 
 - 타깃 식별은 `EntityIdHolder`를 사용해 런타임 `DomainEntityId`를 공유한다.
+- Player는 `StablePlayerId`를 사용해 모든 클라이언트에서 동일한 타깃 ID를 유지한다.
 - `ICombatTargetProvider`: Combat이 소유하는 인터페이스. 외부 피처가 구현하면 데미지 파이프라인에 참여 가능.
   - `CombatBootstrap.RegisterTarget(id, provider)`로 등록
   - 기존 Inspector CombatTarget은 내부 `CombatTargetWrapper`로 래핑

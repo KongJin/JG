@@ -80,7 +80,8 @@ namespace Features.Player
                     maxHp: 100f,
                     defense: 5f,
                     rotationSpeed: 720f
-                )
+                ),
+                _networkAdapter.StablePlayerId
             );
 
             if (spawnResult.IsFailure)
@@ -108,7 +109,7 @@ namespace Features.Player
                 return;
             }
 
-            _inputHandler.Initialize(player, _useCases);
+            _inputHandler.Initialize(player, _useCases, eventBus);
 
             if (_view == null)
             {
@@ -123,7 +124,7 @@ namespace Features.Player
         private void InitializeRemote(EventBus eventBus)
         {
             // 리모트 플레이어를 위한 경량 도메인 엔터티 생성 (CombatTarget용)
-            _playerId = DomainEntityId.New();
+            _playerId = _networkAdapter.StablePlayerId;
             var remoteSpec = new PlayerSpec(
                 walkSpeed: 0f,
                 sprintMultiplier: 1f,

@@ -8,6 +8,7 @@ using Photon.Pun;
 using Shared.Analytics;
 using Shared.ErrorHandling;
 using Shared.EventBus;
+using Shared.Runtime.Sound;
 using Shared.Ui;
 using UnityEngine;
 
@@ -46,9 +47,13 @@ namespace Features.Player
         [SerializeField]
         private SceneErrorPresenter _sceneErrorPresenter;
 
+        [SerializeField]
+        private SoundPlayer _soundPlayer;
+
         private EventBus _eventBus;
         private IAnalyticsPort _analytics;
         private GameAnalyticsEventHandler _analyticsHandler;
+        private GameEndEventHandler _gameEndHandler;
         private string _matchId;
         private float _sceneStartTime;
         private bool _dropOffLogged;
@@ -111,7 +116,14 @@ namespace Features.Player
                     )
                     : null;
             var localAuthorityId = localPlayerSetup != null ? localPlayerSetup.PlayerId : default;
+            if (localPlayerSetup != null)
+                _gameEndHandler = new GameEndEventHandler(_eventBus, _eventBus, localPlayerSetup.PlayerId);
             _combatBootstrap.Initialize(_eventBus, combatNetworkPort, localAuthorityId);
+
+            if (_soundPlayer != null)
+                _soundPlayer.Initialize(_eventBus, localAuthorityId.Value);
+            else
+                Debug.LogError("[GameScene] SoundPlayer reference is missing.", this);
             RegisterCombatTarget(localPlayerSetup);
 
             if (_localPlayerSetup != null)
@@ -190,6 +202,8 @@ namespace Features.Player
             _analytics?.LogGameEnd(_matchId, playTime, RoundCounter.Current);
             if (_analyticsHandler != null)
                 _eventBus?.UnsubscribeAll(_analyticsHandler);
+            if (_gameEndHandler != null)
+                _eventBus?.UnsubscribeAll(_gameEndHandler);
         }
 
         public override void OnDisconnected(Photon.Realtime.DisconnectCause cause)

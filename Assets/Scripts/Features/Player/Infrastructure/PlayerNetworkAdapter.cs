@@ -20,6 +20,7 @@ namespace Features.Player.Infrastructure
         private const string MaxHealthKey = "maxHp";
 
         public bool IsMine => photonView.IsMine;
+        public DomainEntityId StablePlayerId => new DomainEntityId(GetStablePlayerIdValue());
 
         // IPlayerNetworkCallbackPort
         public System.Action<DomainEntityId> OnRemoteJumped { get; set; }
@@ -113,6 +114,23 @@ namespace Features.Player.Infrastructure
         {
             var targetId = new DomainEntityId(targetIdValue);
             OnRemoteRespawned?.Invoke(targetId);
+        }
+
+        private string GetStablePlayerIdValue()
+        {
+            if (photonView != null)
+            {
+                if (photonView.Owner != null)
+                    return "player-" + photonView.Owner.ActorNumber;
+
+                if (photonView.OwnerActorNr > 0)
+                    return "player-" + photonView.OwnerActorNr;
+
+                if (photonView.ViewID > 0)
+                    return "player-view-" + photonView.ViewID;
+            }
+
+            return "player-local-" + GetInstanceID();
         }
     }
 }

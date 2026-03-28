@@ -92,6 +92,56 @@ analytics.LogAction("skill_used",
         .Build());
 ```
 
+## Sound
+
+이벤트 기반 사운드 재생 시스템. 피처가 `SoundRequestEvent`를 발행하면 `SoundPlayer`가 재생한다.
+
+### Application-safe 타입 (`Shared/Sound/`)
+
+Unity 타입 없음. 어떤 피처의 Application 레이어에서도 사용 가능.
+
+- `PlaybackPolicy` — 재생 정책 enum (`All`, `LocalOnly`, `OwnerExcluded`)
+- `SoundRequest` — 재생 요청 데이터 (soundKey, position, policy, ownerId, cooldownHint)
+- `SoundRequestEvent` — EventBus 발행용 래퍼 struct
+
+### Runtime 컴포넌트 (`Shared/Runtime/Sound/`)
+
+- `SoundEntry` — `[Serializable]` 사운드 데이터 (AudioClip, volume, spatialBlend, cooldown)
+- `SoundCatalog` — ScriptableObject, string key → SoundEntry 매핑
+- `PooledAudioSource` — 오디오 프리팹 컴포넌트, `[SerializeField]`로 AudioSource/LifetimeRelease 참조
+- `SoundPlayer` — MonoBehaviour, EventBus 구독 → 정책 필터 → 쿨다운 중복 방지 → 풀링 재생
+
+### 사용법
+
+```csharp
+// 피처의 Presentation/Application에서
+publisher.Publish(new SoundRequestEvent(new SoundRequest(
+    "skill_fireball_cast",
+    position,
+    PlaybackPolicy.All,
+    casterId.Value)));
+```
+
+### Sound Key 규약
+
+| 패턴 | 용도 |
+|---|---|
+| `skill_{skillId}_cast` | 스킬 시전 |
+| `combat_hit_{damageType}` | 피격 |
+| `combat_death` | 사망 |
+| `projectile_{skillId}_hit` | 투사체 적중 |
+| `zone_{skillId}_spawn` | 존 생성 |
+
+### 씬 조립
+
+```csharp
+// GameSceneBootstrap에서
+_soundPlayer.Initialize(eventBus, localPlayerId.Value);
+```
+
+SoundPlayer GameObject에 `SoundCatalog`와 오디오 프리팹을 Inspector에서 연결한다.
+오디오 프리팹에는 `AudioSource` + `PooledObject` + `LifetimeRelease` + `PooledAudioSource`를 붙인다.
+
 ## Lifecycle 유틸
 
 - `DisposableScope`
