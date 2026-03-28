@@ -55,12 +55,14 @@
 
 ## Analytics
 
-플레이 데이터 수집 포트와 스텁 구현.
+Firebase Analytics 연동. WebGL 빌드에서 JavaScript interop으로 전송한다.
 
 ### 주요 타입
 
 - `IAnalyticsPort` — 세션, 플레이 루프, 이탈 지점, 핵심 행동 로깅 계약
-- `DebugAnalyticsAdapter` — `Debug.Log` 스텁. Firebase SDK 연동 전까지 사용
+- `FirebaseAnalyticsAdapter` — Firebase JS SDK 연동 구현체 (에디터에서는 Debug.Log 스텁)
+- `AnalyticsParams` — 타입 안전 파라미터 빌더 (`int`, `float`, `string`만 허용)
+- `RoundCounter` — 판 수 카운터 (로비 복귀 시 Reset, 게임 진입 시 Increment)
 
 ### 수집 항목
 
@@ -69,15 +71,25 @@
 | 세션 | `LogSessionStart/End` | 접속~종료 시간 |
 | 플레이 루프 | `LogGameStart/End` | 게임 시작~종료, 플레이 시간, 라운드 번호 |
 | 이탈 지점 | `LogDropOff` | 어디서 나갔는지 (context + 경과 시간) |
-| 핵심 행동 | `LogAction` | 게임별 커스텀 행동 (공격 횟수, 스킬 사용 등) |
+| 핵심 행동 | `LogAction` | 게임별 커스텀 행동 (스킬 사용, 사망 등) |
 
 ### 사용법
 
-각 피처 Bootstrap에서 `IAnalyticsPort`를 주입:
+각 피처 Bootstrap에서 `FirebaseAnalyticsAdapter`를 생성:
 
 ```csharp
-var analytics = new DebugAnalyticsAdapter(); // 나중에 FirebaseAnalyticsAdapter로 교체
-var useCases = new SomeUseCases(analytics);
+var analytics = new FirebaseAnalyticsAdapter();
+analytics.LogSessionStart();
+```
+
+핵심 행동 로깅 시 `AnalyticsParams`를 사용:
+
+```csharp
+analytics.LogAction("skill_used",
+    new AnalyticsParams()
+        .Add("slot_index", 2)
+        .Add("skill_id", "fireball")
+        .Build());
 ```
 
 ## Lifecycle 유틸

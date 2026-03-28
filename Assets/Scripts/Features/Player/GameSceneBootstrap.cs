@@ -1,9 +1,11 @@
 using Features.Combat;
+using Features.Player.Application;
 using Features.Player.Presentation;
 using Features.Projectile;
 using Features.Skill;
 using Features.Zone;
 using Photon.Pun;
+using Shared.Analytics;
 using Shared.ErrorHandling;
 using Shared.EventBus;
 using Shared.Ui;
@@ -45,11 +47,22 @@ namespace Features.Player
         private SceneErrorPresenter _sceneErrorPresenter;
 
         private EventBus _eventBus;
+        private IAnalyticsPort _analytics;
+        private GameAnalyticsEventHandler _analyticsHandler;
+        private string _matchId;
+        private float _sceneStartTime;
+        private bool _dropOffLogged;
         private PlayerSetup _localPlayerSetup;
 
         private void Start()
         {
             _eventBus = new EventBus();
+            _analytics = new FirebaseAnalyticsAdapter();
+            _matchId = PhotonNetwork.CurrentRoom?.Name ?? "unknown";
+            _sceneStartTime = Time.realtimeSinceStartup;
+            _analytics.LogGameStart(_matchId);
+            RoundCounter.Increment();
+            _analyticsHandler = new GameAnalyticsEventHandler(_analytics, _eventBus);
 
             if (_sceneErrorPresenter == null)
             {
@@ -91,9 +104,12 @@ namespace Features.Player
             follower.Initialize(player.transform, _cam.position - player.transform.position);
 
             var localPlayerSetup = ConnectPlayer(player);
-            var combatNetworkPort = localPlayerSetup != null && localPlayerSetup.NetworkAdapter != null
-                ? new Infrastructure.PlayerCombatNetworkPortAdapter(localPlayerSetup.NetworkAdapter)
-                : null;
+            var combatNetworkPort =
+                localPlayerSetup != null && localPlayerSetup.NetworkAdapter != null
+                    ? new Infrastructure.PlayerCombatNetworkPortAdapter(
+                        localPlayerSetup.NetworkAdapter
+                    )
+                    : null;
             var localAuthorityId = localPlayerSetup != null ? localPlayerSetup.PlayerId : default;
             _combatBootstrap.Initialize(_eventBus, combatNetworkPort, localAuthorityId);
             RegisterCombatTarget(localPlayerSetup);
@@ -165,10 +181,33 @@ namespace Features.Player
             if (playerSetup?.CombatTargetProvider == null)
                 return;
 
-            _combatBootstrap.RegisterTarget(
-                playerSetup.PlayerId,
-                playerSetup.CombatTargetProvider
-            );
+            _combatBootstrap.RegisterTarget(playerSetup.PlayerId, playerSetup.CombatTargetProvider);
+        }
+
+        private void OnDestroy()
+        {
+            var playTime = Time.realtimeSinceStartup - _sceneStartTime;
+            _analytics?.LogGameEnd(_matchId, playTime, RoundCounter.Current);
+            if (_analyticsHandler != null)
+                _eventBus?.UnsubscribeAll(_analyticsHandler);
+        }
+
+        public override void OnDisconnected(Photon.Realtime.DisconnectCause cause)
+        {
+            if (_dropOffLogged)
+                return;
+            _dropOffLogged = true;
+            var elapsed = Time.realtimeSinceStartup - _sceneStartTime;
+            _analytics?.LogDropOff("game_disconnect", elapsed);
+        }
+
+        public override void OnLeftRoom()
+        {
+            if (_dropOffLogged)
+                return;
+            _dropOffLogged = true;
+            var elapsed = Time.realtimeSinceStartup - _sceneStartTime;
+            _analytics?.LogDropOff("game_leave", elapsed);
         }
 
         public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)

@@ -19,7 +19,8 @@ Shared/
 ```
 
 - Each feature is self-contained and grows independently.
-- **MANDATORY**: Before modifying ANY file under `Features/<Name>/`, you MUST read `Assets/Scripts_/Features/<Name>/README.md` first. Do NOT skip this step.
+- **MANDATORY**: Before modifying ANY file under `Features/<Name>/` or `Shared/`, you MUST read the corresponding `README.md` first. Do NOT skip this step.
+- **MANDATORY**: When modifying code under `Features/<Name>/` or `Shared/`, you MUST update the corresponding `README.md` to reflect the change. Do NOT skip this step.
 - **MANDATORY**: When making design decisions — (1) colocate code that changes for the same reason, (2) minimize ripple effect by exposing interface, not implementation. Do not jump to conclusions — check current code first, then answer based on evidence. If unsure whether a change violates project rules, ask before proceeding.
 - **MANDATORY**: When writing or modifying code, you MUST follow `/agent/anti_patterns.md`. Do NOT skip this step.
 - `Shared` contains only reusable cross-feature utilities — never feature-specific code.
@@ -116,6 +117,19 @@ Shared -> (no feature dependency)
 - **EventBus**: `IEventBus`, `EventBus` (in `Shared/EventBus/`)
 - **Adapter**: `LobbyPhotonAdapter`, `ClockAdapter`
 - **View**: `LobbyView`, `RoomListView`, `RoomDetailView`
+
+---
+
+## Unity MCP Bridge
+
+Unity 에디터 작업이 필요할 때 로컬 HTTP 브리지를 사용한다.
+
+- 코드: `Assets/Editor/UnityMcp/UnityMcpBridge.cs`
+- 주소: `http://127.0.0.1:{port}/` (포트는 `ProjectSettings/UnityMcpPort.txt`에서 읽거나 `/health`로 확인)
+- 호출: `powershell -Command "Invoke-RestMethod ..."`
+- 필요한 엔드포인트가 없으면 `UnityMcpBridge.cs`에 직접 추가/수정 가능
+
+용도: 씬 조회, 인스펙터 확인, 게임오브젝트 생성/삭제, 컴포넌트 수정, 플레이 시작/정지 등 에디터 작업 전반.
 
 ---
 

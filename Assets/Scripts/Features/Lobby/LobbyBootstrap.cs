@@ -4,6 +4,7 @@ using Features.Lobby.Infrastructure;
 using Features.Lobby.Infrastructure.Persistence;
 using Features.Lobby.Infrastructure.Photon;
 using Features.Lobby.Presentation;
+using Shared.Analytics;
 using Shared.EventBus;
 using Shared.Time;
 using Shared.Ui;
@@ -26,6 +27,8 @@ public sealed class LobbyBootstrap : MonoBehaviour
 
     private LobbyNetworkEventHandler _syncHandler;
     private readonly EventBus _eventBus = new EventBus();
+    private IAnalyticsPort _analytics;
+    private float _sessionStartTime;
 
     private void Awake()
     {
@@ -59,6 +62,11 @@ public sealed class LobbyBootstrap : MonoBehaviour
         _sceneErrorPresenter.Initialize(_eventBus);
         _eventBus.Subscribe(this, new System.Action<SceneLoadRequestedEvent>(OnSceneLoadRequested));
 
+        _analytics = new FirebaseAnalyticsAdapter();
+        _sessionStartTime = Time.realtimeSinceStartup;
+        _analytics.LogSessionStart();
+        RoundCounter.Reset();
+
         var repository = new LobbyRepository();
         var network = _photonAdapter;
         var clock = new ClockAdapter();
@@ -69,6 +77,13 @@ public sealed class LobbyBootstrap : MonoBehaviour
 
         _view.Initialize(_eventBus, _eventBus, useCases);
         _eventBus.Publish(new LobbyUpdatedEvent(repository.LoadLobby() ?? new DomainLobby()));
+    }
+
+    private void OnApplicationQuit()
+    {
+        var elapsed = Time.realtimeSinceStartup - _sessionStartTime;
+        _analytics?.LogSessionEnd(elapsed);
+        _analytics?.LogDropOff("lobby", elapsed);
     }
 
     private void OnSceneLoadRequested(SceneLoadRequestedEvent e)

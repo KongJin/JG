@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{{ PRODUCT_NAME }}}</title>
+    <style>
+        * { margin: 0; padding: 0; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+        #unity-canvas { width: 100%; height: 100%; }
+    </style>
+
+    <!-- Firebase SDK (compat 버전 — .jslib의 firebase.xxx() 호출과 호환) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+</head>
+<body>
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+    <script src="Build/{{{ LOADER_FILENAME }}}"></script>
+    <script>
+        createUnityInstance(document.querySelector("#unity-canvas"), {
+            dataUrl:      "Build/{{{ DATA_FILENAME }}}",
+            frameworkUrl:  "Build/{{{ FRAMEWORK_FILENAME }}}",
+            codeUrl:       "Build/{{{ CODE_FILENAME }}}",
+            streamingAssetsUrl: "StreamingAssets",
+            companyName:   "{{{ COMPANY_NAME }}}",
+            productName:   "{{{ PRODUCT_NAME }}}",
+            productVersion: "{{{ PRODUCT_VERSION }}}"
+        });
+    </script>
+</body>
+</html>
