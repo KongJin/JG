@@ -23,12 +23,9 @@ namespace Features.Enemy.Presentation
             _eventBus = eventBus;
             _enemyId = enemyId;
 
-            if (meshRenderer != null)
-            {
-                _propBlock = new MaterialPropertyBlock();
-                meshRenderer.GetPropertyBlock(_propBlock);
-                _originalColor = meshRenderer.material.color;
-            }
+            _propBlock = new MaterialPropertyBlock();
+            meshRenderer.GetPropertyBlock(_propBlock);
+            _originalColor = meshRenderer.material.color;
 
             _eventBus.Subscribe(this, new Action<EnemyHealthChangedEvent>(OnHealthChanged));
             _eventBus.Subscribe(this, new Action<EnemyDiedEvent>(OnDied));
@@ -39,7 +36,7 @@ namespace Features.Enemy.Presentation
             if (_flashTimer <= 0f) return;
 
             _flashTimer -= Time.deltaTime;
-            if (_flashTimer <= 0f && meshRenderer != null)
+            if (_flashTimer <= 0f)
             {
                 _propBlock.SetColor("_Color", _originalColor);
                 meshRenderer.SetPropertyBlock(_propBlock);
@@ -50,23 +47,17 @@ namespace Features.Enemy.Presentation
         {
             if (!_enemyId.Equals(e.EnemyId)) return;
 
-            if (meshRenderer != null)
-            {
-                _propBlock.SetColor("_Color", Color.red);
-                meshRenderer.SetPropertyBlock(_propBlock);
-                _flashTimer = flashDuration;
-            }
+            _propBlock.SetColor("_Color", Color.red);
+            meshRenderer.SetPropertyBlock(_propBlock);
+            _flashTimer = flashDuration;
         }
 
         private void OnDied(EnemyDiedEvent e)
         {
             if (!_enemyId.Equals(e.EnemyId)) return;
 
-            if (meshRenderer != null)
-            {
-                _propBlock.SetColor("_Color", Color.black);
-                meshRenderer.SetPropertyBlock(_propBlock);
-            }
+            _propBlock.SetColor("_Color", Color.black);
+            meshRenderer.SetPropertyBlock(_propBlock);
         }
 
         private void OnDestroy()
