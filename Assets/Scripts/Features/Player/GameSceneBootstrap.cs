@@ -4,6 +4,8 @@ using Features.Player.Application;
 using Features.Player.Presentation;
 using Features.Projectile;
 using Features.Skill;
+using Features.Status;
+using Features.Status.Infrastructure;
 using Features.Wave;
 using Features.Zone;
 using Photon.Pun;
@@ -34,6 +36,9 @@ namespace Features.Player
         [Required, SerializeField] private SceneErrorPresenter _sceneErrorPresenter;
         [Required, SerializeField] private SoundPlayer _soundPlayer;
         [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
+
+        [Header("Status (Buff/Debuff)")]
+        [Required, SerializeField] private StatusSetup _statusSetup;
 
         [Header("Wave (PvE)")]
         [Required, SerializeField] private WaveBootstrap _waveBootstrap;
@@ -93,7 +98,12 @@ namespace Features.Player
             _cameraFollower.Initialize(player.transform, _camera.transform.position - player.transform.position);
 
             var localSetup = player.GetComponent<PlayerSetup>();
-            localSetup.Initialize(_eventBus);
+
+            // Status (must initialize before PlayerSetup so SpeedModifier is ready)
+            var statusNetworkAdapter = player.GetComponent<StatusNetworkAdapter>();
+            _statusSetup.Initialize(_eventBus, statusNetworkAdapter, statusNetworkAdapter, PhotonNetwork.IsMasterClient);
+
+            localSetup.Initialize(_eventBus, speedModifier: _statusSetup.SpeedModifier);
 
             // Combat
             _combatBootstrap.Initialize(_eventBus, localSetup.CombatNetworkPort, localSetup.PlayerId);
@@ -103,7 +113,7 @@ namespace Features.Player
             ConnectPlayer(localSetup);
 
             _soundPlayer.Initialize(_eventBus, localSetup.PlayerId.Value);
-            _skillSetup.Initialize(_eventBus, player.transform, _camera, localSetup.PlayerId);
+            _skillSetup.Initialize(_eventBus, player.transform, _camera, localSetup.PlayerId, _statusSetup.StatusQuery);
             _projectileSpawner.Initialize(_eventBus, _eventBus);
             _zoneSetup.Initialize(_eventBus);
 

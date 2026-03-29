@@ -1,6 +1,6 @@
 using Features.Wave.Application;
+using Features.Wave.Application.Ports;
 using Features.Wave.Domain;
-using Features.Wave.Infrastructure;
 using UnityEngine;
 
 namespace Features.Wave.Presentation
@@ -8,17 +8,17 @@ namespace Features.Wave.Presentation
     public sealed class WaveFlowController : MonoBehaviour
     {
         private WaveLoopUseCase _waveLoop;
-        private WaveTableData _waveTable;
-        private EnemySpawnAdapter _spawnAdapter;
+        private IWaveTablePort _waveTable;
+        private IWaveSpawnPort _spawnPort;
 
         public void Initialize(
             WaveLoopUseCase waveLoop,
-            WaveTableData waveTable,
-            EnemySpawnAdapter spawnAdapter)
+            IWaveTablePort waveTable,
+            IWaveSpawnPort spawnPort)
         {
             _waveLoop = waveLoop;
             _waveTable = waveTable;
-            _spawnAdapter = spawnAdapter;
+            _spawnPort = spawnPort;
 
             StartCountdownForCurrentWave();
         }
@@ -42,20 +42,18 @@ namespace Features.Wave.Presentation
         private void StartCountdownForCurrentWave()
         {
             var waveIndex = _waveLoop.CurrentWaveIndex;
-            if (waveIndex >= _waveTable.Waves.Length) return;
+            if (waveIndex >= _waveTable.WaveCount) return;
 
-            var entry = _waveTable.Waves[waveIndex];
-            _waveLoop.BeginCountdown(entry.CountdownDuration);
+            _waveLoop.BeginCountdown(_waveTable.GetCountdownDuration(waveIndex));
         }
 
         private void BeginCurrentWave()
         {
             var waveIndex = _waveLoop.CurrentWaveIndex;
-            if (waveIndex >= _waveTable.Waves.Length) return;
+            if (waveIndex >= _waveTable.WaveCount) return;
 
-            var entry = _waveTable.Waves[waveIndex];
-            _waveLoop.BeginWave(entry.Count);
-            _spawnAdapter.SpawnWaveEnemies(entry);
+            _waveLoop.BeginWave(_waveTable.GetEnemyCount(waveIndex));
+            _spawnPort.SpawnWave(waveIndex);
         }
     }
 }

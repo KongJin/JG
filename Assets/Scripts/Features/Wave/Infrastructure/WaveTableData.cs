@@ -1,16 +1,23 @@
 using Shared.Attributes;
 using System;
 using Features.Enemy.Infrastructure;
+using Features.Wave.Application.Ports;
 using UnityEngine;
 
 namespace Features.Wave.Infrastructure
 {
     [CreateAssetMenu(fileName = "WaveTableData", menuName = "Wave/WaveTableData")]
-    public sealed class WaveTableData : ScriptableObject
+    public sealed class WaveTableData : ScriptableObject, IWaveTablePort
     {
         [Required, SerializeField] private WaveEntry[] waves;
 
         public WaveEntry[] Waves => waves;
+
+        int IWaveTablePort.WaveCount => waves != null ? waves.Length : 0;
+
+        float IWaveTablePort.GetCountdownDuration(int waveIndex) => waves[waveIndex].CountdownDuration;
+
+        int IWaveTablePort.GetEnemyCount(int waveIndex) => waves[waveIndex].Count;
 
         [Serializable]
         public sealed class WaveEntry

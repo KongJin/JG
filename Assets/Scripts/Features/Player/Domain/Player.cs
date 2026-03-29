@@ -54,9 +54,12 @@ namespace Features.Player.Domain
             IsInvulnerable = value;
         }
 
-        public Float3 CalculateMovement(Float2 input, float deltaTime)
+        public Float3 CalculateMovement(Float2 input, float deltaTime, float speedOverride = -1f)
         {
-            var speed = MovementRule.SelectSpeed(Spec.WalkSpeed, IsSprinting, Spec.SprintMultiplier);
+            var baseSpeed = speedOverride >= 0f
+                ? speedOverride
+                : Spec.WalkSpeed;
+            var speed = MovementRule.SelectSpeed(baseSpeed, IsSprinting, Spec.SprintMultiplier);
             var horizontal = MovementRule.CalculateDelta(input, speed, deltaTime);
 
             VerticalVelocity = MovementRule.ApplyGravity(VerticalVelocity, Spec.Gravity, deltaTime, IsGrounded);

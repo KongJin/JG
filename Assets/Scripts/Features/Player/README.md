@@ -86,7 +86,7 @@ PlayerNetworkAdapter.RPC_PlayerRespawn (리스폰 수신)
 ## 레이어 메모
 
 - **Domain**: `Player`, `PlayerSpec` (Defense 필드 포함), `MovementRule`
-- **Application**: `PlayerUseCases`, `PlayerNetworkEventHandler`, `PlayerDamageEventHandler`, `GameEndEventHandler`, 이벤트(`PlayerMovedEvent`, `PlayerJumpedEvent`, `PlayerHealthChangedEvent`, `PlayerDiedEvent`, `PlayerRespawnedEvent`, `PlayerSpawnedEvent`, `GameEndEvent`), 포트(`IPlayerMotorPort`, `IPlayerNetworkCommandPort`, `IPlayerNetworkCallbackPort`)
+- **Application**: `PlayerUseCases`, `PlayerNetworkEventHandler`, `PlayerDamageEventHandler`, `GameEndEventHandler`, 이벤트(`PlayerMovedEvent`, `PlayerJumpedEvent`, `PlayerHealthChangedEvent`, `PlayerDiedEvent`, `PlayerRespawnedEvent`, `PlayerSpawnedEvent`, `GameEndEvent`), 포트(`IPlayerMotorPort`, `IPlayerNetworkCommandPort`, `IPlayerNetworkCallbackPort`, `ISpeedModifierPort`)
 - **Infrastructure**: `PlayerMotorAdapter`, `PlayerNetworkAdapter`, `PlayerCombatTargetProvider` (Combat의 `ICombatTargetProvider` 구현)
 - **Presentation**: `PlayerInputHandler`, `PlayerView` (리모트 컴포넌트 비활성화는 PlayerSetup이 담당, View는 이벤트 구독 분기만 수행), `PlayerHealthHudView`, `CameraFollower`
 - **Bootstrap**: `GameSceneBootstrap` (씬 레벨, Photon Instantiate + 씬 wiring), `PlayerSetup` (프리팹 레벨, 로컬/원격 분기 초기화), `PlayerSceneRegistry` (씬 등록 보조)
@@ -111,4 +111,5 @@ PlayerNetworkAdapter.RPC_PlayerRespawn (리스폰 수신)
 
 - **Skill**: `SkillSetup`과 `SkillNetworkAdapter`가 같은 PlayerCharacter 프리팹에 부착됨
 - **Combat**: `ICombatTargetProvider` (구현), `DamageAppliedEvent` (구독)
+- **Status**: `ISpeedModifierPort`를 통해 Haste/Slow 이동속도 수정 (선택적 의존, null이면 기본 속도 사용)
 - **Shared**: EventBus, Float3, DomainEntityId, IClockPort, `UiErrorRequestedEvent`

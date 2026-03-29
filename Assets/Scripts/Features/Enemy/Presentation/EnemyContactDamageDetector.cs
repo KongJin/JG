@@ -1,6 +1,5 @@
 using Features.Combat;
 using Features.Combat.Domain;
-using Photon.Pun;
 using Shared.Kernel;
 using UnityEngine;
 
@@ -27,7 +26,6 @@ namespace Features.Enemy.Presentation
         private void OnTriggerStay(Collider other)
         {
             if (!_initialized) return;
-            if (!PhotonNetwork.IsMasterClient) return;
             if (Time.time - _lastDamageTime < _cooldown) return;
 
             var holder = other.GetComponentInParent<EntityIdHolder>();

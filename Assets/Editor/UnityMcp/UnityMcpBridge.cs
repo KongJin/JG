@@ -1785,6 +1785,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         private static async Task HandleBuildWebGLAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             string outputPath = "Build/WebGL";
+            bool fastBuild = false;
 
             // Allow custom output path via request body
             if (request.HasEntityBody)
@@ -1797,6 +1798,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                         var parsed = JsonUtility.FromJson<BuildWebGLRequest>(body);
                         if (!string.IsNullOrWhiteSpace(parsed?.outputPath))
                             outputPath = parsed.outputPath;
+                        fastBuild = parsed != null && parsed.fastBuild;
                     }
                 }
             }
@@ -1811,21 +1813,40 @@ namespace ProjectSD.EditorTools.UnityMcp
                 if (scenes.Length == 0)
                     return new GenericResponse { success = false, message = "No scenes enabled in Build Settings." };
 
-                var buildOptions = BuildPipeline.BuildPlayer(
-                    scenes,
-                    outputPath,
-                    BuildTarget.WebGL,
-                    BuildOptions.None
-                );
+                var originalCompressionFormat = PlayerSettings.WebGL.compressionFormat;
 
-                var succeeded = buildOptions.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded;
-                return new GenericResponse
+                try
                 {
-                    success = succeeded,
-                    message = succeeded
-                        ? "WebGL build completed: " + outputPath
-                        : "Build failed: " + buildOptions.summary.result
-                };
+                    var buildOptions = BuildOptions.None;
+                    var buildLabel = "release";
+
+                    if (fastBuild)
+                    {
+                        buildOptions |= BuildOptions.Development;
+                        PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
+                        buildLabel = "fast";
+                    }
+
+                    var report = BuildPipeline.BuildPlayer(
+                        scenes,
+                        outputPath,
+                        BuildTarget.WebGL,
+                        buildOptions
+                    );
+
+                    var succeeded = report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded;
+                    return new GenericResponse
+                    {
+                        success = succeeded,
+                        message = succeeded
+                            ? $"WebGL {buildLabel} build completed: {outputPath}"
+                            : $"WebGL {buildLabel} build failed: {report.summary.result}"
+                    };
+                }
+                finally
+                {
+                    PlayerSettings.WebGL.compressionFormat = originalCompressionFormat;
+                }
             });
 
             await WriteJsonAsync(response, result.success ? 200 : 500, result);
@@ -1835,6 +1856,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         private sealed class BuildWebGLRequest
         {
             public string outputPath;
+            public bool fastBuild;
         }
 
         // =====================================================================

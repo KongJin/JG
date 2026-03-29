@@ -1,6 +1,7 @@
 using Features.Skill.Application.Ports;
 using Features.Skill.Domain;
 using Features.Skill.Domain.Delivery;
+using Features.Status.Domain;
 using Shared.Kernel;
 using Shared.Math;
 
@@ -12,14 +13,17 @@ namespace Features.Skill.Application
     {
         private readonly CooldownTracker _cooldownTracker;
         private readonly ISkillNetworkCommandPort _network;
+        private readonly IStatusQueryPort _statusQuery;
 
         public CastSkillUseCase(
             CooldownTracker cooldownTracker,
-            ISkillNetworkCommandPort network
+            ISkillNetworkCommandPort network,
+            IStatusQueryPort statusQuery = null
         )
         {
             _cooldownTracker = cooldownTracker;
             _network = network;
+            _statusQuery = statusQuery;
         }
 
         public Result Execute(
@@ -45,6 +49,18 @@ namespace Features.Skill.Application
 
             _cooldownTracker.RecordCast(skill.Id, currentTime);
 
+            var range = skill.Spec.Range;
+            var radius = pr?.ProjectileSpec.Radius ?? 0f;
+            if (_statusQuery != null)
+            {
+                var expandMag = _statusQuery.GetMagnitude(casterId, StatusType.Expand);
+                if (expandMag > 0f)
+                {
+                    range *= (1f + expandMag);
+                    radius *= (1f + expandMag);
+                }
+            }
+
             _network.SendSkillCasted(
                 new SkillCastNetworkData(
                     skill.Id,
@@ -52,12 +68,12 @@ namespace Features.Skill.Application
                     slotIndex,
                     skill.Spec.Damage,
                     skill.Spec.Cooldown,
-                    skill.Spec.Range,
+                    range,
                     result.DeliveryType,
                     pr != null ? (int)pr.ProjectileSpec.TrajectoryType : 0,
                     pr != null ? (int)pr.ProjectileSpec.HitType : 0,
                     pr?.ProjectileSpec.Speed ?? 0f,
-                    pr?.ProjectileSpec.Radius ?? 0f,
+                    radius,
                     position,
                     direction,
                     targetPosition

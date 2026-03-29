@@ -32,9 +32,17 @@ PowerShell 스크립트:
 ```powershell
 .\tools\build-and-deploy-webgl.ps1 -Channel qa
 .\tools\build-and-deploy-webgl.ps1 -Live
+.\tools\build-and-deploy-webgl.ps1 -Fast
 .\tools\build-and-deploy-webgl.ps1 -SkipBuild
 .\tools\build-and-deploy-webgl.ps1 -BaseUrl http://127.0.0.1:52675
 ```
+
+`-Fast`는 로컬 반복 작업용 WebGL 빌드 모드다.
+- Development Build로 빌드한다
+- WebGL 압축 포맷을 빌드 동안만 `gzip`으로 낮춘다
+- 빌드 후 프로젝트 압축 설정은 원래 값으로 복원한다
+
+최종 배포 전에는 `-Fast` 없이 일반 릴리스 빌드를 권장한다.
 
 ## 참고
 

@@ -1,5 +1,6 @@
 using Shared.Attributes;
 using Features.Skill.Application;
+using Features.Skill.Application.Ports;
 using Features.Skill.Domain;
 using Features.Skill.Infrastructure;
 using Features.Skill.Presentation;
@@ -38,7 +39,7 @@ namespace Features.Skill
 
         public SkillCatalog Catalog => _catalog;
 
-        public void Initialize(EventBus eventBus, Transform playerTransform, Camera camera, DomainEntityId casterId)
+        public void Initialize(EventBus eventBus, Transform playerTransform, Camera camera, DomainEntityId casterId, IStatusQueryPort statusQuery = null)
         {
             _eventBus = eventBus;
 
@@ -62,7 +63,7 @@ namespace Features.Skill
                 _skillRotator.HandleSlotSwap(_skillBar, slotIndex, id => _catalog.Get(id), _equipSkillUseCase)
             );
 
-            var castSkillUseCase = new CastSkillUseCase(cooldownTracker, _networkAdapter);
+            var castSkillUseCase = new CastSkillUseCase(cooldownTracker, _networkAdapter, statusQuery);
 
             _slotInputHandler.Initialize(
                 castSkillUseCase,

@@ -168,6 +168,7 @@ RPC 전송 시 Infrastructure에서 개별 float로 분해하고, 수신 시 다
 
 - `Projectile`: `ProjectileRequestedEvent`, `ProjectileSpec`
 - `Zone`: `ZoneRequestedEvent` (Skill이 발행, Zone이 구독)
+- `Status`: `IStatusQueryPort`를 통해 Expand/Extend/Multiply 상태 조회 → 스킬 발동 시 범위/지속/개수 수정 (선택적 의존, null이면 기본값 사용)
 - `Shared`: `EventBus`, `DomainEntityId`, `Result`, `Float3`, `UiErrorRequestedEvent`, `SoundRequestEvent`
 
 ## 현재 문서 범위

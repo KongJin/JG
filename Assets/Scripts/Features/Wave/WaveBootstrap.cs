@@ -39,7 +39,7 @@ namespace Features.Wave
             var aliveQuery = new AlivePlayerQueryAdapter(eventBus, playerCount);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, aliveQuery));
 
-            _spawnAdapter.Initialize(eventBus, combatBootstrap, _playerPositionQuery);
+            _spawnAdapter.Initialize(eventBus, combatBootstrap, _playerPositionQuery, _waveTable);
 
             var waveLoop = new WaveLoopUseCase(eventBus, _waveTable.Waves.Length);
             var waveHandler = new WaveEventHandler(eventBus, waveLoop, aliveQuery);
@@ -51,7 +51,7 @@ namespace Features.Wave
             _endView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _endView));
 
-            _flowController.Initialize(waveLoop, _waveTable, _spawnAdapter);
+            _flowController.Initialize(waveLoop, (IWaveTablePort)_waveTable, (IWaveSpawnPort)_spawnAdapter);
 
             EnemySetup.EnemyArrived += OnEnemyArrived;
         }

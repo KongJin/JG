@@ -14,6 +14,7 @@ namespace Features.Player.Application
         private readonly IPlayerNetworkCommandPort _network;
         private readonly IEventPublisher _eventBus;
         private readonly IClockPort _clock;
+        private readonly ISpeedModifierPort _speedModifier;
 
         private Domain.Player _localPlayer;
 
@@ -21,13 +22,15 @@ namespace Features.Player.Application
             IPlayerMotorPort motor,
             IPlayerNetworkCommandPort network,
             IEventPublisher eventBus,
-            IClockPort clock
+            IClockPort clock,
+            ISpeedModifierPort speedModifier = null
         )
         {
             _motor = motor;
             _network = network;
             _eventBus = eventBus;
             _clock = clock;
+            _speedModifier = speedModifier;
         }
 
         public Result<Domain.Player> Spawn(PlayerSpec spec)
@@ -47,7 +50,10 @@ namespace Features.Player.Application
 
         public Result Move(Domain.Player player, Float2 moveInput, float deltaTime)
         {
-            var delta = player.CalculateMovement(moveInput, deltaTime);
+            var modifiedSpeed = _speedModifier != null
+                ? _speedModifier.GetModifiedSpeed(player.Id, player.Spec.WalkSpeed)
+                : -1f;
+            var delta = player.CalculateMovement(moveInput, deltaTime, modifiedSpeed);
             var result = _motor.Move(delta);
 
             _motor.Rotate(new Float3(moveInput.X, 0f, moveInput.Y), player.Spec.RotationSpeed, deltaTime);

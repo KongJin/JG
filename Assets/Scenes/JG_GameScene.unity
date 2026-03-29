@@ -405,37 +405,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Wave.Presentation.WaveEndView
   panel: {fileID: 75000751}
   resultText: {fileID: 1841117942}
---- !u!1 &122384984
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 122384985}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &122384985
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 122384984}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.50005, y: 0, z: 3.89257}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &219190340
 GameObject:
   m_ObjectHideFlags: 0
@@ -540,6 +509,8 @@ GameObject:
   - component: {fileID: 258126769}
   - component: {fileID: 258126768}
   - component: {fileID: 258126770}
+  - component: {fileID: 258126772}
+  - component: {fileID: 258126771}
   m_Layer: 0
   m_Name: GameSceneBootstrap
   m_TagString: Untagged
@@ -576,7 +547,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Player.GameSceneBootstrap
   _playerPrefabName: PlayerCharacter
   _spawnRadius: 3
-  _camera: {fileID: 0}
+  _camera: {fileID: 260248362}
   _cameraFollower: {fileID: 260248365}
   _healthHudPrefab: {fileID: 344910089319044117, guid: 7534d9d27e022f3458fb2fb4abf6ccee, type: 3}
   _hudCanvas: {fileID: 1944029313}
@@ -587,6 +558,7 @@ MonoBehaviour:
   _sceneErrorPresenter: {fileID: 1944029315}
   _soundPlayer: {fileID: 72651454}
   _playerSceneRegistry: {fileID: 258126767}
+  _statusSetup: {fileID: 258126772}
   _waveBootstrap: {fileID: 258126766}
 --- !u!114 &258126766
 MonoBehaviour:
@@ -654,6 +626,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfa2ffb3e6fec2e48a7424fa09365158, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Features.Wave.Presentation.WaveFlowController
+--- !u!114 &258126771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258126762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05fb0f31316b7e64bac05e16d8782de1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Status.Presentation.StatusTickController
+--- !u!114 &258126772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258126762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e09238052a847df4889ff98024d7fd1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Status.StatusSetup
+  _tickController: {fileID: 258126771}
 --- !u!1 &260248360
 GameObject:
   m_ObjectHideFlags: 0
@@ -2855,6 +2852,5 @@ SceneRoots:
   - {fileID: 1588875749}
   - {fileID: 1839300770}
   - {fileID: 72651455}
-  - {fileID: 122384985}
   - {fileID: 419748949}
   - {fileID: 1811844700}

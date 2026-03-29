@@ -9,20 +9,23 @@ using UnityEngine;
 
 namespace Features.Wave.Infrastructure
 {
-    public sealed class EnemySpawnAdapter : MonoBehaviour
+    public sealed class EnemySpawnAdapter : MonoBehaviour, IWaveSpawnPort
     {
         private EventBus _eventBus;
         private CombatBootstrap _combatBootstrap;
         private IPlayerPositionQuery _playerQuery;
+        private WaveTableData _waveTable;
 
         public void Initialize(
             EventBus eventBus,
             CombatBootstrap combatBootstrap,
-            IPlayerPositionQuery playerQuery)
+            IPlayerPositionQuery playerQuery,
+            WaveTableData waveTable = null)
         {
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
             _playerQuery = playerQuery;
+            _waveTable = waveTable;
         }
 
         public void SpawnEnemy(EnemyData data, float x, float y, float z)
@@ -39,10 +42,11 @@ namespace Features.Wave.Infrastructure
                 Debug.LogError("[EnemySpawnAdapter] EnemySetup is missing on spawned enemy.");
         }
 
-        public void SpawnWaveEnemies(WaveTableData.WaveEntry entry)
+        void IWaveSpawnPort.SpawnWave(int waveIndex)
         {
             if (!PhotonNetwork.IsMasterClient) return;
-            StartCoroutine(SpawnWaveEnemiesCoroutine(entry));
+            if (_waveTable == null || waveIndex >= _waveTable.Waves.Length) return;
+            StartCoroutine(SpawnWaveEnemiesCoroutine(_waveTable.Waves[waveIndex]));
         }
 
         private IEnumerator SpawnWaveEnemiesCoroutine(WaveTableData.WaveEntry entry)

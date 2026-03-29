@@ -66,9 +66,9 @@ PlayerDiedEvent
 ## 레이어 메모
 
 - **Domain**: `WaveState`, `WaveProgress`
-- **Application**: `WaveLoopUseCase`, `WaveEventHandler`, 웨이브 이벤트 5종, 포트 2종 (`IPlayerPositionQuery`, `IAlivePlayerQuery`)
-- **Infrastructure**: `WaveTableData`, `EnemySpawnAdapter` (일괄 스폰 코루틴 포함), `AlivePlayerQueryAdapter`, `PlayerPositionQueryAdapter`
-- **Presentation**: `WaveFlowController` (Update 루프에서 카운트다운 tick / 상태 전이 orchestration), `WaveHudView` (카운트다운 자체 표시), `WaveEndView`
+- **Application**: `WaveLoopUseCase`, `WaveEventHandler`, 웨이브 이벤트 5종, 포트 4종 (`IPlayerPositionQuery`, `IAlivePlayerQuery`, `IWaveTablePort`, `IWaveSpawnPort`)
+- **Infrastructure**: `WaveTableData` (`IWaveTablePort` 구현), `EnemySpawnAdapter` (`IWaveSpawnPort` 구현, 일괄 스폰 코루틴 포함), `AlivePlayerQueryAdapter`, `PlayerPositionQueryAdapter`
+- **Presentation**: `WaveFlowController` (포트 인터페이스로 Infrastructure 참조 없이 카운트다운 tick / 상태 전이 orchestration), `WaveHudView` (카운트다운 자체 표시), `WaveEndView`
 - **Bootstrap**: `WaveBootstrap` (순수 조립 — 비즈니스 로직 없음)
 
 ## 피처 의존성

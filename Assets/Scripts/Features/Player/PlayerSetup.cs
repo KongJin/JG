@@ -1,5 +1,6 @@
 using Features.Combat.Application.Ports;
 using Features.Player.Application;
+using Features.Player.Application.Ports;
 using Features.Player.Domain;
 using Features.Player.Infrastructure;
 using Features.Player.Presentation;
@@ -52,23 +53,23 @@ namespace Features.Player
             RemoteArrived?.Invoke(this);
         }
 
-        public void Initialize(EventBus eventBus, PlayerUseCases existingUseCases = null)
+        public void Initialize(EventBus eventBus, PlayerUseCases existingUseCases = null, ISpeedModifierPort speedModifier = null)
         {
             if (IsInitialized)
                 return;
 
             if (_networkAdapter.IsMine)
-                InitializeLocal(eventBus, existingUseCases);
+                InitializeLocal(eventBus, existingUseCases, speedModifier);
             else
                 InitializeRemote(eventBus);
         }
 
-        private void InitializeLocal(EventBus eventBus, PlayerUseCases existingUseCases)
+        private void InitializeLocal(EventBus eventBus, PlayerUseCases existingUseCases, ISpeedModifierPort speedModifier)
         {
             var clock = new ClockAdapter();
             _useCases = existingUseCases != null
                 ? existingUseCases
-                : new PlayerUseCases(_motorAdapter, _networkAdapter, eventBus, clock);
+                : new PlayerUseCases(_motorAdapter, _networkAdapter, eventBus, clock, speedModifier);
 
             var spawnResult = _useCases.Spawn(
                 new PlayerSpec(

@@ -4,6 +4,7 @@ param(
     [string]$OutputPath = "Build/WebGL",
     [string]$BaseUrl,
     [switch]$Live,
+    [switch]$Fast,
     [switch]$SkipBuild
 )
 
@@ -32,14 +33,19 @@ function Get-UnityMcpBaseUrl {
 function Invoke-UnityWebGlBuild {
     param(
         [string]$ResolvedBaseUrl,
-        [string]$ResolvedOutputPath
+        [string]$ResolvedOutputPath,
+        [switch]$FastBuild
     )
 
     Write-Host "[1/2] Building WebGL via Unity MCP..." -ForegroundColor Cyan
     Write-Host "      Endpoint: $ResolvedBaseUrl/build/webgl"
     Write-Host "      Output:   $ResolvedOutputPath"
+    Write-Host "      Mode:     $(if ($FastBuild) { 'fast (development + gzip)' } else { 'release' })"
 
-    $payload = @{ outputPath = $ResolvedOutputPath } | ConvertTo-Json -Compress
+    $payload = @{
+        outputPath = $ResolvedOutputPath
+        fastBuild = [bool]$FastBuild
+    } | ConvertTo-Json -Compress
     $response = Invoke-RestMethod `
         -Method Post `
         -Uri "$ResolvedBaseUrl/build/webgl" `
@@ -96,7 +102,7 @@ try {
     $firebaseCommand = Get-FirebaseCommand
 
     if (-not $SkipBuild) {
-        Invoke-UnityWebGlBuild -ResolvedBaseUrl $resolvedBaseUrl -ResolvedOutputPath $OutputPath
+        Invoke-UnityWebGlBuild -ResolvedBaseUrl $resolvedBaseUrl -ResolvedOutputPath $OutputPath -FastBuild:$Fast
     }
     else {
         Write-Host "[1/2] Skipping WebGL build." -ForegroundColor Yellow
