@@ -3,6 +3,7 @@ using Features.Player.Application;
 using Features.Player.Presentation;
 using Features.Projectile;
 using Features.Skill;
+using Features.Wave;
 using Features.Zone;
 using Photon.Pun;
 using Shared.Analytics;
@@ -50,6 +51,10 @@ namespace Features.Player
         [SerializeField]
         private SoundPlayer _soundPlayer;
 
+        [Header("Wave (PvE)")]
+        [SerializeField]
+        private WaveBootstrap _waveBootstrap;
+
         private EventBus _eventBus;
         private IAnalyticsPort _analytics;
         private GameAnalyticsEventHandler _analyticsHandler;
@@ -96,6 +101,9 @@ namespace Features.Player
                 return;
             }
 
+            if (_waveBootstrap == null)
+                _waveBootstrap = GetComponent<WaveBootstrap>();
+
             var offset = Random.insideUnitCircle * _spawnRadius;
             var spawnPosition = new Vector3(offset.x, 0f, offset.y);
             var player = PhotonNetwork.Instantiate(
@@ -116,7 +124,7 @@ namespace Features.Player
                     )
                     : null;
             var localAuthorityId = localPlayerSetup != null ? localPlayerSetup.PlayerId : default;
-            if (localPlayerSetup != null)
+            if (_waveBootstrap == null && localPlayerSetup != null)
                 _gameEndHandler = new GameEndEventHandler(_eventBus, _eventBus, localPlayerSetup.PlayerId);
             _combatBootstrap.Initialize(_eventBus, combatNetworkPort, localAuthorityId);
 
@@ -145,6 +153,12 @@ namespace Features.Player
             }
 
             _zoneSetup.Initialize(_eventBus);
+
+            if (_waveBootstrap != null)
+            {
+                _waveBootstrap.Initialize(_eventBus, _combatBootstrap);
+                _waveBootstrap.RegisterPlayer(player.transform);
+            }
 
             foreach (var other in PhotonNetwork.PlayerListOthers)
                 StartCoroutine(ConnectRemotePlayerDelayed(other));
@@ -241,6 +255,8 @@ namespace Features.Player
                     if (pv.Owner == target && pv.GetComponent<PlayerSetup>() != null)
                     {
                         RegisterCombatTarget(ConnectPlayer(pv.gameObject));
+                        if (_waveBootstrap != null)
+                            _waveBootstrap.RegisterPlayer(pv.transform);
                         yield break;
                     }
                 }

@@ -288,6 +288,7 @@ GameObject:
   m_Component:
   - component: {fileID: 258126764}
   - component: {fileID: 258126765}
+  - component: {fileID: 258126766}
   m_Layer: 0
   m_Name: GameSceneBootstrap
   m_TagString: Untagged
@@ -333,6 +334,24 @@ MonoBehaviour:
   _zoneSetup: {fileID: 430989465}
   _sceneErrorPresenter: {fileID: 1944029315}
   _soundPlayer: {fileID: 72651454}
+  _waveBootstrap: {fileID: 258126766}
+--- !u!114 &258126766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258126762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fced920046be5c14380837a162c62e17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Wave.WaveBootstrap
+  _waveTable: {fileID: 0}
+  _spawnAdapter: {fileID: 0}
+  _playerPositionQuery: {fileID: 0}
+  _hudView: {fileID: 0}
+  _endView: {fileID: 0}
 --- !u!1 &260248360
 GameObject:
   m_ObjectHideFlags: 0
