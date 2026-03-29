@@ -126,6 +126,7 @@ Shared -> (no feature dependency)
 
 Unity 에디터 작업이 필요할 때 로컬 HTTP 브리지를 사용한다.
 
+- **MANDATORY**: 브리지를 사용하기 전에 `Assets/Editor/UnityMcp/README.md`를 먼저 읽어라. 엔드포인트 목록, 요청/응답 형식, 주의사항이 기록되어 있다.
 - 코드: `Assets/Editor/UnityMcp/UnityMcpBridge.cs`
 - 주소: `http://127.0.0.1:{port}/` (포트는 `ProjectSettings/UnityMcpPort.txt`에서 읽거나 `/health`로 확인)
 - 호출: `powershell -Command "Invoke-RestMethod ..."`

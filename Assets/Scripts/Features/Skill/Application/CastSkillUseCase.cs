@@ -49,6 +49,8 @@ namespace Features.Skill.Application
 
             _cooldownTracker.RecordCast(skill.Id, currentTime);
 
+            var damage = skill.Spec.Damage;
+            var cooldown = skill.Spec.Cooldown;
             var range = skill.Spec.Range;
             var radius = pr?.ProjectileSpec.Radius ?? 0f;
             if (_statusQuery != null)
@@ -59,6 +61,14 @@ namespace Features.Skill.Application
                     range *= (1f + expandMag);
                     radius *= (1f + expandMag);
                 }
+
+                var extendMag = _statusQuery.GetMagnitude(casterId, StatusType.Extend);
+                if (extendMag > 0f)
+                    cooldown *= 1f / (1f + extendMag);
+
+                var multiplyMag = _statusQuery.GetMagnitude(casterId, StatusType.Multiply);
+                if (multiplyMag > 0f)
+                    damage *= (1f + multiplyMag);
             }
 
             _network.SendSkillCasted(
@@ -66,8 +76,8 @@ namespace Features.Skill.Application
                     skill.Id,
                     casterId,
                     slotIndex,
-                    skill.Spec.Damage,
-                    skill.Spec.Cooldown,
+                    damage,
+                    cooldown,
                     range,
                     result.DeliveryType,
                     pr != null ? (int)pr.ProjectileSpec.TrajectoryType : 0,
@@ -76,7 +86,8 @@ namespace Features.Skill.Application
                     radius,
                     position,
                     direction,
-                    targetPosition
+                    targetPosition,
+                    skill.Spec.StatusPayload
                 )
             );
 

@@ -1,4 +1,5 @@
 using Features.Combat.Domain;
+using Features.Status.Domain;
 using Shared.Kernel;
 
 namespace Features.Projectile.Application.Events
@@ -10,7 +11,8 @@ namespace Features.Projectile.Application.Events
             DomainEntityId ownerId,
             DomainEntityId targetId,
             float baseDamage,
-            DamageType damageType
+            DamageType damageType,
+            StatusPayload statusPayload = default
         )
         {
             ProjectileId = projectileId;
@@ -18,6 +20,7 @@ namespace Features.Projectile.Application.Events
             TargetId = targetId;
             BaseDamage = baseDamage;
             DamageType = damageType;
+            StatusPayload = statusPayload;
         }
 
         public DomainEntityId ProjectileId { get; }
@@ -25,5 +28,6 @@ namespace Features.Projectile.Application.Events
         public DomainEntityId TargetId { get; }
         public float BaseDamage { get; }
         public DamageType DamageType { get; }
+        public StatusPayload StatusPayload { get; }
     }
 }

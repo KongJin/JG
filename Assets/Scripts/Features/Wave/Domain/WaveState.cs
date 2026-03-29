@@ -6,6 +6,7 @@ namespace Features.Wave.Domain
         Countdown,
         Active,
         Cleared,
+        UpgradeSelection,
         Victory,
         Defeat
     }

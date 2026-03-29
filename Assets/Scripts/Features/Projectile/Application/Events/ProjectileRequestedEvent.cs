@@ -1,5 +1,6 @@
 using Features.Combat.Domain;
 using Features.Projectile.Domain;
+using Features.Status.Domain;
 using Shared.Kernel;
 using Shared.Math;
 
@@ -13,7 +14,8 @@ namespace Features.Projectile.Application.Events
             float baseDamage,
             DamageType damageType,
             Float3 position,
-            Float3 direction
+            Float3 direction,
+            StatusPayload statusPayload = default
         )
         {
             OwnerId = ownerId;
@@ -22,6 +24,7 @@ namespace Features.Projectile.Application.Events
             DamageType = damageType;
             Position = position;
             Direction = direction;
+            StatusPayload = statusPayload;
         }
 
         public DomainEntityId OwnerId { get; }
@@ -30,5 +33,6 @@ namespace Features.Projectile.Application.Events
         public DamageType DamageType { get; }
         public Float3 Position { get; }
         public Float3 Direction { get; }
+        public StatusPayload StatusPayload { get; }
     }
 }

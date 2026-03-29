@@ -82,7 +82,8 @@ namespace Features.Projectile.Infrastructure
                     _projectile.OwnerId,
                     holder.Id,
                     _projectile.BaseDamage,
-                    _projectile.DamageType
+                    _projectile.DamageType,
+                    _projectile.StatusPayload
                 )
             );
 

@@ -1,6 +1,9 @@
+using System;
 using Features.Wave.Application;
+using Features.Wave.Application.Events;
 using Features.Wave.Application.Ports;
 using Features.Wave.Domain;
+using Shared.EventBus;
 using UnityEngine;
 
 namespace Features.Wave.Presentation
@@ -10,15 +13,20 @@ namespace Features.Wave.Presentation
         private WaveLoopUseCase _waveLoop;
         private IWaveTablePort _waveTable;
         private IWaveSpawnPort _spawnPort;
+        private IEventSubscriber _subscriber;
 
         public void Initialize(
             WaveLoopUseCase waveLoop,
             IWaveTablePort waveTable,
-            IWaveSpawnPort spawnPort)
+            IWaveSpawnPort spawnPort,
+            IEventSubscriber subscriber)
         {
             _waveLoop = waveLoop;
             _waveTable = waveTable;
             _spawnPort = spawnPort;
+            _subscriber = subscriber;
+
+            _subscriber.Subscribe(this, new Action<UpgradeSelectedEvent>(OnUpgradeSelected));
 
             StartCountdownForCurrentWave();
         }
@@ -35,8 +43,16 @@ namespace Features.Wave.Presentation
             }
             else if (_waveLoop.CurrentState == WaveState.Cleared)
             {
-                StartCountdownForCurrentWave();
+                _waveLoop.EnterUpgradeSelection();
             }
+        }
+
+        private void OnUpgradeSelected(UpgradeSelectedEvent e)
+        {
+            if (_waveLoop.CurrentState != WaveState.UpgradeSelection) return;
+
+            _waveLoop.ExitUpgradeSelection();
+            StartCountdownForCurrentWave();
         }
 
         private void StartCountdownForCurrentWave()
@@ -54,6 +70,11 @@ namespace Features.Wave.Presentation
 
             _waveLoop.BeginWave(_waveTable.GetEnemyCount(waveIndex));
             _spawnPort.SpawnWave(waveIndex);
+        }
+
+        private void OnDestroy()
+        {
+            _subscriber?.UnsubscribeAll(this);
         }
     }
 }

@@ -4,6 +4,7 @@ using Features.Projectile.Domain.Hit;
 using Features.Projectile.Domain.Trajectory;
 using Features.Skill.Domain;
 using Features.Skill.Domain.Delivery;
+using Features.Status.Domain;
 using Shared.Kernel;
 using UnityEngine;
 
@@ -34,6 +35,13 @@ namespace Features.Skill.Infrastructure
         [SerializeField] private float speed;
         [SerializeField] private float radius;
 
+        [Header("Status Effect")]
+        [SerializeField] private bool hasStatusEffect;
+        [SerializeField] private StatusType statusType;
+        [SerializeField] private float statusMagnitude;
+        [SerializeField] private float statusDuration;
+        [SerializeField] private float statusTickInterval;
+
         [Header("Effects")]
         [Required, SerializeField] private GameObject castEffectPrefab;
         [Required, SerializeField] private AudioClip castSound;
@@ -48,7 +56,10 @@ namespace Features.Skill.Infrastructure
         public Domain.Skill ToDomain()
         {
             var id = new DomainEntityId(skillId);
-            var spec = new SkillSpec(damage, cooldown, range);
+            var payload = hasStatusEffect
+                ? StatusPayload.Create(statusType, statusMagnitude, statusDuration, statusTickInterval)
+                : StatusPayload.None;
+            var spec = new SkillSpec(damage, cooldown, range, payload);
             var delivery = CreateDelivery();
             return new Domain.Skill(id, spec, delivery);
         }

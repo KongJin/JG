@@ -7,6 +7,7 @@ using Features.Wave.Infrastructure;
 using Features.Wave.Presentation;
 using Photon.Pun;
 using Shared.EventBus;
+using Shared.Kernel;
 using Shared.Lifecycle;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ namespace Features.Wave
         [Required, SerializeField] private WaveHudView _hudView;
         [Required, SerializeField] private WaveEndView _endView;
         [Required, SerializeField] private WaveFlowController _flowController;
+        [Required, SerializeField] private UpgradeSelectionView _upgradeView;
 
         private EventBus _eventBus;
         private CombatBootstrap _combatBootstrap;
@@ -27,7 +29,7 @@ namespace Features.Wave
 
         public IPlayerPositionQuery PlayerPositionQuery => _playerPositionQuery;
 
-        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap)
+        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap, DomainEntityId localPlayerId)
         {
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
@@ -45,13 +47,20 @@ namespace Features.Wave
             var waveHandler = new WaveEventHandler(eventBus, waveLoop, aliveQuery);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, waveHandler));
 
+            var upgradeHandler = new UpgradeEventHandler(eventBus, eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, upgradeHandler));
+
             _hudView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _hudView));
 
             _endView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _endView));
 
-            _flowController.Initialize(waveLoop, (IWaveTablePort)_waveTable, (IWaveSpawnPort)_spawnAdapter);
+            _upgradeView.Initialize(eventBus, eventBus, localPlayerId);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, _upgradeView));
+
+            _flowController.Initialize(waveLoop, (IWaveTablePort)_waveTable, (IWaveSpawnPort)_spawnAdapter, eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, _flowController));
 
             EnemySetup.EnemyArrived += OnEnemyArrived;
         }

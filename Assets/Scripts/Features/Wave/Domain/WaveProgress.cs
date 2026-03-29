@@ -58,6 +58,16 @@ namespace Features.Wave.Domain
             return false;
         }
 
+        public void EnterUpgradeSelection()
+        {
+            State = WaveState.UpgradeSelection;
+        }
+
+        public void ExitUpgradeSelection()
+        {
+            State = WaveState.Idle;
+        }
+
         public void AdvanceWave()
         {
             CurrentWaveIndex++;

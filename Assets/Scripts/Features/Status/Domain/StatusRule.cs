@@ -3,15 +3,32 @@ namespace Features.Status.Domain
     public static class StatusRule
     {
         private const int BurnMaxStacks = 3;
+        private const int UpgradeMaxStacks = 10;
 
         public static StackPolicy GetPolicy(StatusType type)
         {
-            return type == StatusType.Burn ? StackPolicy.Independent : StackPolicy.Refresh;
+            switch (type)
+            {
+                case StatusType.Burn:
+                case StatusType.Expand:
+                case StatusType.Extend:
+                case StatusType.Multiply:
+                    return StackPolicy.Independent;
+                default:
+                    return StackPolicy.Refresh;
+            }
         }
 
         public static int GetMaxStacks(StatusType type)
         {
-            return type == StatusType.Burn ? BurnMaxStacks : 1;
+            switch (type)
+            {
+                case StatusType.Burn: return BurnMaxStacks;
+                case StatusType.Expand:
+                case StatusType.Extend:
+                case StatusType.Multiply: return UpgradeMaxStacks;
+                default: return 1;
+            }
         }
 
         public static float ApplySpeedModifier(float baseSpeed, float hasteMagnitude, float slowMagnitude)

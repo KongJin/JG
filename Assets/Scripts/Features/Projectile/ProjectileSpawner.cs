@@ -81,7 +81,8 @@ namespace Features.Projectile
                 e.Spec,
                 e.BaseDamage,
                 e.DamageType,
-                trajectoryTargetPosition
+                trajectoryTargetPosition,
+                e.StatusPayload
             );
         }
     }

@@ -1,4 +1,5 @@
 using Features.Skill.Domain.Delivery;
+using Features.Status.Domain;
 using Shared.Kernel;
 using Shared.Math;
 
@@ -21,13 +22,15 @@ namespace Features.Skill.Application.Ports
         public Float3 Position { get; }
         public Float3 Direction { get; }
         public Float3 TargetPosition { get; }
+        public StatusPayload StatusPayload { get; }
 
         public SkillCastNetworkData(
             DomainEntityId skillId, DomainEntityId casterId, int slotIndex,
             float damage, float cooldown, float range,
             DeliveryType deliveryType,
             int trajectoryType, int hitType, float speed, float radius,
-            Float3 position, Float3 direction, Float3 targetPosition)
+            Float3 position, Float3 direction, Float3 targetPosition,
+            StatusPayload statusPayload = default)
         {
             SkillId = skillId;
             CasterId = casterId;
@@ -43,6 +46,7 @@ namespace Features.Skill.Application.Ports
             Position = position;
             Direction = direction;
             TargetPosition = targetPosition;
+            StatusPayload = statusPayload;
         }
     }
 

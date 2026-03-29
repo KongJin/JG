@@ -59,6 +59,8 @@ MonoBehaviour:
   - RPC_ApplyDamage
   - RPC_PlayerDied
   - RPC_PlayerRespawn
+  - RPC_ApplyStatus
+  - RPC_TickDamage
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

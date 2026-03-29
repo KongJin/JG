@@ -34,8 +34,9 @@ SlotInputHandler
   - Identity: `skillId` (고정 문자열, 모든 클라이언트에서 동일)
   - Spec: `damage`, `cooldown`, `range`
   - Delivery: `deliveryType` enum + Projectile 전용 필드 (`trajectoryType`, `hitType`, `speed`, `radius`)
+  - Status Effect: `hasStatusEffect`, `statusType`, `statusMagnitude`, `statusDuration`, `statusTickInterval`
   - Effects: `castEffectPrefab`, `castSound`
-  - `ToDomain()` 메서드로 Domain `Skill` 엔티티 생성
+  - `ToDomain()` 메서드로 Domain `Skill` 엔티티 생성 (StatusPayload 포함)
 
 - `SkillCatalogData` (SO) — `SkillData[]` 목록
   - Inspector에서 스킬 목록을 관리한다
@@ -128,6 +129,7 @@ SlotInputHandler
 - `Speed`, `Radius`
 - `Position` (Float3), `Direction` (Float3)
 - `TargetPosition` (Float3, targeted 연출/판정용)
+- `StatusPayload` (HasEffect, Type, Magnitude, Duration, TickInterval)
 
 Position/Direction/TargetPosition에 `Float3`를 사용해 XYZ를 묶었다.
 RPC 전송 시 Infrastructure에서 개별 float로 분해하고, 수신 시 다시 `Float3`로 조립한다.

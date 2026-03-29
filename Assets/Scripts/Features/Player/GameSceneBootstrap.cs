@@ -120,7 +120,7 @@ namespace Features.Player
             // Wave (PvE)
             if (_waveBootstrap != null)
             {
-                _waveBootstrap.Initialize(_eventBus, _combatBootstrap);
+                _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId);
                 _waveBootstrap.RegisterPlayer(player.transform);
             }
 

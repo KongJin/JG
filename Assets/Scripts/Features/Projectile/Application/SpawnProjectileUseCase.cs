@@ -4,6 +4,7 @@ using Features.Projectile.Application.Ports;
 using Features.Projectile.Domain;
 using Features.Projectile.Domain.Hit;
 using Features.Projectile.Domain.Trajectory;
+using Features.Status.Domain;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Math;
@@ -33,7 +34,8 @@ namespace Features.Projectile.Application
             ProjectileSpec spec,
             float baseDamage,
             DamageType damageType,
-            Float3 targetPosition
+            Float3 targetPosition,
+            StatusPayload statusPayload = default
         )
         {
             var projectile = new Domain.Projectile(
@@ -41,7 +43,8 @@ namespace Features.Projectile.Application
                 ownerId,
                 spec,
                 baseDamage,
-                damageType
+                damageType,
+                statusPayload
             );
             var trajectory = TrajectoryFactory.Create(spec.TrajectoryType);
             var hitResolver = HitResolverFactory.Create(spec.HitType);

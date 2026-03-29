@@ -61,6 +61,17 @@ namespace Features.Wave.Application
             }
         }
 
+        public void EnterUpgradeSelection()
+        {
+            _progress.EnterUpgradeSelection();
+            _eventBus.Publish(new UpgradeSelectionRequestedEvent(_progress.CurrentWaveIndex));
+        }
+
+        public void ExitUpgradeSelection()
+        {
+            _progress.ExitUpgradeSelection();
+        }
+
         public void HandleAllPlayersDead()
         {
             if (_progress.State == WaveState.Victory || _progress.State == WaveState.Defeat)

@@ -37,6 +37,9 @@ namespace Features.Status
             var statusHandler = new StatusEventHandler(eventBus, _useCases);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, statusHandler));
 
+            var triggerHandler = new StatusTriggerHandler(eventBus, eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, triggerHandler));
+
             new StatusNetworkEventHandler(_useCases, callbackPort);
 
             var tickUseCase = new StatusTickUseCase(_registry, eventBus, commandPort, isMaster);

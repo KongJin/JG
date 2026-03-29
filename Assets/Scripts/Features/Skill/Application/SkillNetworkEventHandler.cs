@@ -26,7 +26,7 @@ namespace Features.Skill.Application
 
         private void HandleSkillCasted(SkillCastNetworkData data)
         {
-            var spec = new SkillSpec(data.Damage, data.Cooldown, data.Range);
+            var spec = new SkillSpec(data.Damage, data.Cooldown, data.Range, data.StatusPayload);
 
             switch (data.DeliveryType)
             {
@@ -42,7 +42,8 @@ namespace Features.Skill.Application
                             data.Damage,
                             DamageType.Magical,
                             data.Position,
-                            data.Direction
+                            data.Direction,
+                            data.StatusPayload
                         )
                     );
                     break;

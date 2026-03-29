@@ -34,6 +34,24 @@ StatusApplyRequestedEvent (다른 피처에서 발행)
       → StatusAppliedEvent 발행
 ```
 
+### 트리거 경로 (StatusTriggerHandler)
+
+```text
+ProjectileHitEvent (StatusPayload 포함)
+  → StatusTriggerHandler.OnProjectileHit()
+    → StatusApplyRequestedEvent 발행
+
+SelfRequestedEvent (SkillSpec.StatusPayload 포함)
+  → StatusTriggerHandler.OnSelfRequested()
+    → StatusApplyRequestedEvent 발행 (CasterId = TargetId)
+
+ZoneTickEvent (StatusPayload 포함)
+  → StatusTriggerHandler.OnZoneTick()
+    → StatusApplyRequestedEvent 발행
+```
+
+StatusPayload는 SkillData에서 설정되어 SkillSpec → 네트워크 데이터 → 이벤트를 거쳐 전달된다.
+
 ### 틱 처리 (매 프레임)
 
 ```text
@@ -80,8 +98,8 @@ CastSkillUseCase.Execute()
 
 ## 레이어 메모
 
-- **Domain**: `StatusType`, `StackPolicy`, `StatusEffect`, `StatusContainer`, `StatusRule`
-- **Application**: `StatusUseCases`, `StatusTickUseCase`, `StatusEventHandler`, `StatusNetworkEventHandler`, `StatusContainerRegistry`, `SpeedModifierAdapter`, `StatusQueryAdapter`, 이벤트 4종, 포트 2종 (`IStatusNetworkCommandPort`, `IStatusNetworkCallbackPort`)
+- **Domain**: `StatusType`, `StackPolicy`, `StatusEffect`, `StatusContainer`, `StatusRule`, `StatusPayload`
+- **Application**: `StatusUseCases`, `StatusTickUseCase`, `StatusEventHandler`, `StatusTriggerHandler`, `StatusNetworkEventHandler`, `StatusContainerRegistry`, `SpeedModifierAdapter`, `StatusQueryAdapter`, 이벤트 4종, 포트 2종 (`IStatusNetworkCommandPort`, `IStatusNetworkCallbackPort`)
 - **Infrastructure**: `StatusNetworkAdapter` (CommandPort + CallbackPort 구현, 플레이어 프리팹에 부착)
 - **Presentation**: `StatusTickController` (Update 루프에서 틱 orchestration)
 - **Bootstrap**: `StatusSetup` (순수 조립 — 비즈니스 로직 없음)
