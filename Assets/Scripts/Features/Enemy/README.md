@@ -24,8 +24,9 @@ WaveBootstrap.SpawnWaveEnemies()
         → EnemyDamageEventHandler 생성 (DamageAppliedEvent 구독)
         → Master: EnemyAiAdapter + EnemyContactDamageDetector 초기화
 
-원격 클라이언트에서는 `WaveBootstrap.InitializePendingEnemies()`가 아직 초기화되지 않은 `EnemySetup`을 찾아
-프리팹의 `_defaultData` 기준으로 같은 적 엔티티를 로컬에 조립한다.
+원격 클라이언트에서는 `EnemySetup`이 `IPunInstantiateMagicCallback`을 구현하여
+Photon Instantiate 시점에 `EnemySetup.EnemyArrived` static event를 발행한다.
+`WaveBootstrap`이 이 이벤트를 구독해 `Resources/Enemy/BasicEnemy.asset` 기준으로 같은 적 엔티티를 로컬에 조립한다.
 ```
 
 ### 피격 (기존 Combat 경로 재사용)
@@ -70,9 +71,11 @@ EnemyContactDamageDetector.OnTriggerStay()
 ## 초기화 메모
 
 - `EnemySetup`은 한 번만 초기화된다 (`IsInitialized`)
-- Master는 `EnemySpawnAdapter`가 명시적으로 초기화
-- 비Master는 `WaveBootstrap`이 지연 초기화
-- 프리팹에는 `_defaultData`가 반드시 연결돼 있어야 한다
+- `EnemySetup`은 `IPunInstantiateMagicCallback`을 구현해 Photon Instantiate 시점에 `EnemyArrived` static event를 발행한다
+- Master는 `EnemySpawnAdapter`가 올바른 EnemyData로 명시적 초기화 (`EnemyArrived` 콜백에서는 `IsMasterClient` 가드로 스킵)
+- 비-Master는 `WaveBootstrap`이 `EnemyArrived` 구독으로 `LoadDefaultData()` 기반 초기화 (폴링/FindObjectsByType 사용하지 않음)
+- 기본 적 데이터는 `Resources/Enemy/BasicEnemy.asset`에서 로드한다
+- Inspector 연결 필드는 `[Required, SerializeField]`로 선언해 저장 시점에 누락을 검증한다
 
 ## 프리팹 요구사항
 

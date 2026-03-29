@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Features.Skill.Domain;
 using Shared.Kernel;
@@ -31,6 +32,26 @@ namespace Features.Skill.Application
                 return _skillIds[0];
 
             return _skillIds[(index + 1) % _skillIds.Count];
+        }
+
+        public Result HandleSlotSwap(
+            SkillBar bar,
+            int slotIndex,
+            Func<string, Domain.Skill> skillLookup,
+            EquipSkillUseCase equipUseCase)
+        {
+            if (_skillIds.Count == 0)
+                return Result.Failure("No skills available for runtime swap.");
+
+            var nextSkillId = GetNext(bar, slotIndex);
+            if (string.IsNullOrEmpty(nextSkillId))
+                return Result.Success();
+
+            var skill = skillLookup(nextSkillId);
+            if (skill == null)
+                return Result.Failure($"Skill not found: {nextSkillId}");
+
+            return equipUseCase.Execute(bar, slotIndex, skill);
         }
     }
 }

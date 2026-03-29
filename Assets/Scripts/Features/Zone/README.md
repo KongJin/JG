@@ -12,7 +12,7 @@
 
 ```text
 Skill ZoneRequestedEvent
-  -> ZoneSetup
+  -> ZoneEventHandler (EventBus 직접 구독)
     -> SpawnZoneUseCase
       -> IZoneEffectPort
         -> ZoneEffectAdapter
@@ -22,8 +22,8 @@ Skill ZoneRequestedEvent
 ## 레이어 메모
 
 - **Domain**: `Zone`, `ZoneSpec`, `ZoneAnchorType`, `ZoneHitType`
-- **Application**: `SpawnZoneUseCase`, `IZoneEffectPort` (Application/Ports), `ZoneSpawnedEvent`, `ZoneTickEvent`
-- **Bootstrap**: `ZoneSetup`, `ZoneEffectAdapter` (피처 루트에 위치)
+- **Application**: `SpawnZoneUseCase`, `ZoneEventHandler`, `IZoneEffectPort` (Application/Ports), `ZoneSpawnedEvent`, `ZoneTickEvent`
+- **Bootstrap**: `ZoneSetup`, `ZoneEffectAdapter` (피처 루트에 위치). 이벤트 핸들링은 `ZoneEventHandler`가 EventBus를 직접 구독한다.
 - **Presentation**: `ZoneView` (이펙트 표현과 수명 관리)
 
 ## 현재 구현 기준 결정
@@ -32,6 +32,7 @@ Skill ZoneRequestedEvent
 - Skill 피처가 이미 RPC 이후 `ZoneRequestedEvent`를 각 클라이언트에서 발행하므로,
   Zone은 그 이벤트를 받아 로컬 시각 연출을 만든다.
 - 위치 계산(`position + direction * (range * 0.5)`)과 `ZoneSpec` 생성은 `SpawnZoneUseCase` 내부에서 수행한다.
+- Inspector 연결 필드는 `[Required, SerializeField]`로 선언해 씬/프리팹 저장 시 누락을 검증한다.
 
 ## 피처 간 의존
 

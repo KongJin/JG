@@ -1,20 +1,14 @@
-using UnityEngine;
+using Shared.Attributes;
 using Shared.Runtime.Pooling;
+using UnityEngine;
 
 namespace Features.Projectile.Presentation
 {
     public sealed class ProjectileView : MonoBehaviour, IPoolResetHandler
     {
-        [SerializeField] private TrailRenderer _trail;
+        [Required, SerializeField] private TrailRenderer _trail;
+        [Required, SerializeField] private LifetimeRelease _lifetimeRelease;
         [SerializeField] private float _lifetime = 6f;
-        private LifetimeRelease _lifetimeRelease;
-
-        private void Awake()
-        {
-            _lifetimeRelease = GetComponent<LifetimeRelease>();
-            if (_lifetimeRelease == null)
-                _lifetimeRelease = gameObject.AddComponent<LifetimeRelease>();
-        }
 
         public void SetColor(Color color)
         {
@@ -31,7 +25,6 @@ namespace Features.Projectile.Presentation
 
         public void OnRentFromPool()
         {
-            _lifetimeRelease ??= GetComponent<LifetimeRelease>();
             _lifetimeRelease.Arm(_lifetime);
 
             if (_trail != null)

@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,8 +7,8 @@ namespace Shared.Ui
 {
     public sealed class UiShellView : MonoBehaviour
     {
-        [SerializeField] private GameObject _modalBlocker;
-        [SerializeField] private List<PanelBinding> _panels = new List<PanelBinding>();
+        [Required, SerializeField] private GameObject _modalBlocker;
+        [Required, SerializeField] private List<PanelBinding> _panels = new List<PanelBinding>();
 
         private readonly UiStack _stack = new UiStack();
 
@@ -71,7 +72,7 @@ namespace Shared.Ui
         public sealed class PanelBinding
         {
             [SerializeField] private string _panelId;
-            [SerializeField] private GameObject _root;
+            [Required, SerializeField] private GameObject _root;
 
             public string PanelId => (_panelId ?? string.Empty).Trim();
             public GameObject Root => _root;

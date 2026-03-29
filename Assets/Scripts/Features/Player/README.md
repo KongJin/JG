@@ -63,14 +63,19 @@ PlayerNetworkAdapter.RPC_PlayerRespawn (리스폰 수신)
 
 두 클래스가 협력한다 (피처 루트에 위치):
 
-- **GameSceneBootstrap** (`GameSceneBootstrap.cs`, 씬 오브젝트): `PhotonNetwork.Instantiate`로 PlayerCharacter 프리팹 생성, 카메라를 플레이어에 부착하고 씬 공통 `SceneErrorPresenter`를 초기화한다.
-- `GameSceneBootstrap`은 로컬 플레이어 생성 후 `PlayerCombatNetworkPortAdapter`를 만들어 Combat에 주입한다.
-- `WaveBootstrap` 필드가 비어 있어도 같은 GameObject에 컴포넌트가 붙어 있으면 자동으로 찾아 PvE 웨이브 모드를 연결한다.
+- **GameSceneBootstrap** (`GameSceneBootstrap.cs`, 씬 오브젝트): `PhotonNetwork.Instantiate`로 PlayerCharacter 프리팹 생성, `[Required, SerializeField]`로 연결된 `CameraFollower`를 플레이어에 부착하고 씬 공통 `SceneErrorPresenter`를 초기화한다.
+- `GameSceneBootstrap`은 로컬/리모트 분기 없이 하나의 `ConnectPlayer()` 경로로 모든 플레이어를 연결한다 (Registry + HUD + CombatTarget + Wave 등록).
+- 로컬 전용 씬 시스템(SkillSetup, SoundPlayer)은 `Start()`에서 로컬 플레이어 스폰 직후 1회 호출한다. 이는 조건 분기가 아니라 실행 순서에 의한 것이다.
+- Inspector 연결 필드는 `[Required, SerializeField]`로 선언해 씬/프리팹 저장 시 누락을 검증한다.
+- `WaveBootstrap`은 현재 코드 경로상 null이면 Wave 관련 로직을 스킵하지만, 직렬화 규칙은 `[Required, SerializeField]` 연결을 기본으로 둔다.
 - 플레이어 식별자는 `PlayerNetworkAdapter.StablePlayerId`를 기준으로 로컬/원격 모두 동일하게 생성한다.
-- `ConnectRemotePlayerDelayed`는 최대 30프레임 재시도로 원격 플레이어의 PhotonView를 탐색한다. Photon이 기존 플레이어의 네트워크 오브젝트를 인스턴스화하는 데 수 프레임이 소요될 수 있기 때문이다.
+- `GameSceneBootstrap`은 `Awake()`에서 `PlayerSetup.RemoteArrived`를 구독하고, `Start()`에서 Combat/Skill/Zone/Wave 초기화가 끝난 뒤 대기 중인 원격 플레이어 연결을 drain한다.
+- `PlayerSceneRegistry` (`PlayerSceneRegistry.cs`, Player feature 루트의 bootstrap 보조 MonoBehaviour)는 씬에 연결된 `PlayerSetup`을 추적해 HUD/Combat/Wave 중복 등록을 막는다.
+- 원격 플레이어 연결은 `IPunInstantiateMagicCallback.OnPhotonInstantiate()` 기반이다. Photon이 원격 오브젝트를 실제로 생성한 시점에 `PlayerSetup.RemoteArrived`가 발행되며, 폴링/코루틴/씬 스캔은 사용하지 않는다.
+- `PlayerSetup.RemoteArrived`는 static event이므로 `GameSceneBootstrap.OnDestroy()`에서 반드시 구독을 해제한다.
 - **PlayerSetup** (`PlayerSetup.cs`, PlayerCharacter 프리팹): 스폰 후 `IsMine` 분기:
-  - 로컬: PlayerNetworkEventHandler + PlayerUseCases + PlayerDamageEventHandler + InputHandler + View 초기화
-  - 원격: PlayerNetworkEventHandler(remotePlayer) + PlayerDamageEventHandler + View 초기화, Input/Motor 비활성화
+  - 로컬: PlayerNetworkEventHandler + PlayerUseCases + PlayerDamageEventHandler + CombatNetworkPort + InputHandler + View 초기화
+  - 원격: PlayerNetworkEventHandler(remotePlayer) + PlayerDamageEventHandler + View 초기화, Input/Motor 비활성화. `PlayerView`는 리모트일 때 이벤트 구독만 스킵하고 컴포넌트 비활성화는 `PlayerSetup`이 담당한다.
 
 ## 씬 공통 에러 UI
 
@@ -83,8 +88,8 @@ PlayerNetworkAdapter.RPC_PlayerRespawn (리스폰 수신)
 - **Domain**: `Player`, `PlayerSpec` (Defense 필드 포함), `MovementRule`
 - **Application**: `PlayerUseCases`, `PlayerNetworkEventHandler`, `PlayerDamageEventHandler`, `GameEndEventHandler`, 이벤트(`PlayerMovedEvent`, `PlayerJumpedEvent`, `PlayerHealthChangedEvent`, `PlayerDiedEvent`, `PlayerRespawnedEvent`, `PlayerSpawnedEvent`, `GameEndEvent`), 포트(`IPlayerMotorPort`, `IPlayerNetworkCommandPort`, `IPlayerNetworkCallbackPort`)
 - **Infrastructure**: `PlayerMotorAdapter`, `PlayerNetworkAdapter`, `PlayerCombatTargetProvider` (Combat의 `ICombatTargetProvider` 구현)
-- **Presentation**: `PlayerInputHandler`, `PlayerView`, `PlayerHealthHudView`
-- **Bootstrap**: `GameSceneBootstrap` (씬 레벨, Photon Instantiate), `PlayerSetup` (프리팹 레벨, 로컬/원격 분기 초기화)
+- **Presentation**: `PlayerInputHandler`, `PlayerView` (리모트 컴포넌트 비활성화는 PlayerSetup이 담당, View는 이벤트 구독 분기만 수행), `PlayerHealthHudView`, `CameraFollower`
+- **Bootstrap**: `GameSceneBootstrap` (씬 레벨, Photon Instantiate + 씬 wiring), `PlayerSetup` (프리팹 레벨, 로컬/원격 분기 초기화), `PlayerSceneRegistry` (씬 등록 보조)
 
 ## 도메인 물리
 
@@ -99,7 +104,7 @@ PlayerNetworkAdapter.RPC_PlayerRespawn (리스폰 수신)
 - `PlayerCombatNetworkPortAdapter` (Infrastructure): Player 네트워크 송신을 Combat의 `ICombatNetworkCommandPort`에 연결
 - `PlayerDamageEventHandler` (Application): `DamageAppliedEvent` 구독 → `PlayerHealthChangedEvent`/`PlayerDiedEvent` 발행
 - `GameEndEventHandler` (Application): `PlayerDiedEvent` 구독 → 승패 모달(`Victory!` / `Defeat!`) 발행
-- `PlayerSetup`에서 `CombatTargetProvider`를 생성하고, `GameSceneBootstrap`에서 `CombatBootstrap.RegisterTarget()`으로 등록
+- `PlayerSetup`에서 `CombatTargetProvider`와 `CombatNetworkPort`를 생성하고, `GameSceneBootstrap`에서 `CombatBootstrap.RegisterTarget()`/`Initialize()`에 전달
 - 로컬 플레이어가 죽으면 `PlayerInputHandler`가 입력을 비활성화한다
 
 ## 피처 간 의존

@@ -24,6 +24,7 @@ Shared/
 - **MANDATORY**: When modifying code under `Features/<Name>/` or `Shared/`, you MUST update the corresponding `README.md` to reflect the change. Do NOT skip this step.
 - **MANDATORY**: When making design decisions — (1) colocate code that changes for the same reason, (2) minimize ripple effect by exposing interface, not implementation. Do not jump to conclusions — check current code first, then answer based on evidence. If unsure whether a change violates project rules, ask before proceeding.
 - **MANDATORY**: When writing or modifying code, you MUST follow `/agent/anti_patterns.md`. Do NOT skip this step.
+- **MANDATORY**: Scene-owned features must keep their README scene contract current: required references, runtime-created objects, allowed lookup exceptions, initialization order, and late-join/reconnect behavior.
 - `Shared` contains only reusable cross-feature utilities — never feature-specific code.
 - Cross-feature dependency is encouraged — layer direction만 지키면 피처 간 적극적으로 의존한다.
 - Only split a feature into two when a concept gains an independent lifecycle.
@@ -50,7 +51,7 @@ Shared -> (no feature dependency)
 | Layer | Contains | Must NOT contain |
 |---|---|---|
 | Domain | Entities, ValueObjects, business rules | Unity/Photon API, IO, UI |
-| Application | UseCases, port interfaces, events | Business rules, Unity API |
+| Application | UseCases, port interfaces, events, EventHandlers | Domain invariants (계산·검증은 Domain에 위임), Unity API |
 | Presentation | View, InputHandler | Business logic |
 | Infrastructure | Photon/DB adapters, external SDKs | Business logic |
 | Bootstrap | Composition and wiring (Setup/Bootstrap classes at feature root) | Business logic, rendering |
@@ -101,8 +102,8 @@ Shared -> (no feature dependency)
 
 ### Bootstrap 조립 순서
 
-1. `NetworkAdapter` 참조 획득 (프리팹에서 GetComponent)
-2. `NetworkEventHandler` 생성 (콜백 포트 연결)
+1. `NetworkAdapter` 참조 획득 (Photon 런타임 Instantiate 프리팹은 Inspector 연결 불가 → GetComponent 허용)
+2. `NetworkEventHandler` 생성 (콜백 포트 + EventBus 주입; EventHandler가 생성자에서 EventBus를 직접 구독한다)
 3. `UseCases` 생성 (커맨드 포트 + 기타 의존성 주입)
 4. Presentation 초기화
 
@@ -131,6 +132,18 @@ Unity 에디터 작업이 필요할 때 로컬 HTTP 브리지를 사용한다.
 - 필요한 엔드포인트가 없으면 `UnityMcpBridge.cs`에 직접 추가/수정 가능
 
 용도: 씬 조회, 인스펙터 확인, 게임오브젝트 생성/삭제, 컴포넌트 수정, 플레이 시작/정지 등 에디터 작업 전반.
+
+---
+
+## Bulk Codemod Checklist
+
+Before applying a bulk replacement or mechanical edit across many files:
+
+1. Define the exact target pattern.
+2. Define explicit exclusions.
+3. Confirm validator/editor semantics actually match the codemod.
+4. Run compile or editor validation immediately after the change.
+5. Update README/rule docs if the meaning of the codebase changed.
 
 ---
 

@@ -3,6 +3,8 @@ using Features.Player.Application;
 using Features.Player.Domain;
 using Features.Player.Infrastructure;
 using Features.Player.Presentation;
+using Photon.Pun;
+using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Time;
@@ -10,21 +12,23 @@ using UnityEngine;
 
 namespace Features.Player
 {
-    public sealed class PlayerSetup : MonoBehaviour
+    public sealed class PlayerSetup : MonoBehaviour, IPunInstantiateMagicCallback
     {
-        [SerializeField]
+        public static event System.Action<PlayerSetup> RemoteArrived;
+
+        [Required, SerializeField]
         private PlayerNetworkAdapter _networkAdapter;
 
-        [SerializeField]
+        [Required, SerializeField]
         private PlayerMotorAdapter _motorAdapter;
 
-        [SerializeField]
+        [Required, SerializeField]
         private PlayerInputHandler _inputHandler;
 
-        [SerializeField]
+        [Required, SerializeField]
         private PlayerView _view;
 
-        [SerializeField]
+        [Required, SerializeField]
         private EntityIdHolder _entityIdHolder;
 
         private PlayerUseCases _useCases;
@@ -32,19 +36,26 @@ namespace Features.Player
         private DomainEntityId _playerId;
 
         public ICombatTargetProvider CombatTargetProvider => _combatTargetProvider;
+        public ICombatNetworkCommandPort CombatNetworkPort { get; private set; }
         public DomainEntityId PlayerId => _playerId;
         public PlayerNetworkAdapter NetworkAdapter => _networkAdapter;
         public PlayerUseCases UseCases => _useCases;
 
         public float MaxHp { get; private set; }
+        public bool IsInitialized { get; private set; }
+
+        void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
+        {
+            if (info.photonView.IsMine)
+                return;
+
+            RemoteArrived?.Invoke(this);
+        }
 
         public void Initialize(EventBus eventBus, PlayerUseCases existingUseCases = null)
         {
-            if (_networkAdapter == null)
-            {
-                Debug.LogError("[PlayerSetup] PlayerNetworkAdapter is missing.");
+            if (IsInitialized)
                 return;
-            }
 
             if (_networkAdapter.IsMine)
                 InitializeLocal(eventBus, existingUseCases);
@@ -54,22 +65,10 @@ namespace Features.Player
 
         private void InitializeLocal(EventBus eventBus, PlayerUseCases existingUseCases)
         {
-            if (_motorAdapter == null)
-            {
-                Debug.LogError("[PlayerSetup] PlayerMotorAdapter is missing.");
-                return;
-            }
-
             var clock = new ClockAdapter();
-
-            if (existingUseCases != null)
-            {
-                _useCases = existingUseCases;
-            }
-            else
-            {
-                _useCases = new PlayerUseCases(_motorAdapter, _networkAdapter, eventBus, clock);
-            }
+            _useCases = existingUseCases != null
+                ? existingUseCases
+                : new PlayerUseCases(_motorAdapter, _networkAdapter, eventBus, clock);
 
             var spawnResult = _useCases.Spawn(
                 new PlayerSpec(
@@ -98,32 +97,17 @@ namespace Features.Player
 
             new PlayerNetworkEventHandler(eventBus, _networkAdapter);
             _combatTargetProvider = new PlayerCombatTargetProvider(player);
+            CombatNetworkPort = new PlayerCombatNetworkPortAdapter(_networkAdapter);
             new PlayerDamageEventHandler(player, eventBus, eventBus);
 
-            if (_inputHandler == null)
-            {
-                Debug.LogError(
-                    "[PlayerSetup] PlayerInputHandler is not assigned in Inspector.",
-                    this
-                );
-                return;
-            }
-
             _inputHandler.Initialize(player, _useCases, eventBus);
-
-            if (_view == null)
-            {
-                Debug.LogError("[PlayerSetup] PlayerView is not assigned in Inspector.", this);
-                return;
-            }
-
             _view.Initialize(true, eventBus);
             MaxHp = player.MaxHp;
+            IsInitialized = true;
         }
 
         private void InitializeRemote(EventBus eventBus)
         {
-            // 리모트 플레이어를 위한 경량 도메인 엔터티 생성 (CombatTarget용)
             _playerId = _networkAdapter.StablePlayerId;
             var remoteSpec = new PlayerSpec(
                 walkSpeed: 0f,
@@ -143,29 +127,10 @@ namespace Features.Player
             if (_entityIdHolder != null)
                 _entityIdHolder.Set(_playerId);
 
-            if (_inputHandler == null)
-                Debug.LogError(
-                    "[PlayerSetup] PlayerInputHandler is not assigned in Inspector.",
-                    this
-                );
-            else
-                _inputHandler.enabled = false;
-
-            if (_motorAdapter == null)
-                Debug.LogError(
-                    "[PlayerSetup] PlayerMotorAdapter is not assigned in Inspector.",
-                    this
-                );
-            else
-                _motorAdapter.enabled = false;
-
-            if (_view == null)
-            {
-                Debug.LogError("[PlayerSetup] PlayerView is not assigned in Inspector.", this);
-                return;
-            }
-
+            _inputHandler.enabled = false;
+            _motorAdapter.enabled = false;
             _view.Initialize(false, eventBus);
+            IsInitialized = true;
         }
     }
 }

@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using UnityEngine;
 using UnityEngine.Sprites;
 using UnityEngine.UI;
@@ -15,14 +16,14 @@ namespace Shared.Ui
         private static readonly int OuterUvId = Shader.PropertyToID("_OuterUV");
         private static readonly int BorderThicknessId = Shader.PropertyToID("_BorderThickness");
 
-        [SerializeField]
+        [Required, SerializeField]
         private Material _templateMaterial;
 
-        [SerializeField]
+        [Required, SerializeField]
         [Min(0f)]
         private float _cornerRadius = 24f;
 
-        [SerializeField]
+        [Required, SerializeField]
         [Min(0f)]
         private float _borderThickness;
 

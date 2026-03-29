@@ -15,13 +15,12 @@
 
 ```text
 ProjectileHitEvent
-  → CombatBootstrap.OnProjectileHit()
-    → CombatNetworkEventHandler.HandleProjectileHit()
-      → (owner == local authority 인 경우만) ApplyDamageUseCase.Execute()
-        → ICombatTargetPort.GetDefense / ApplyDamage
-        → ICombatNetworkCommandPort.SendDamage (RPC 전파)
-        → DamageAppliedEvent 발행
-          → PlayerDamageEventHandler → PlayerHealthChangedEvent / PlayerDiedEvent
+  → CombatNetworkEventHandler (EventBus 직접 구독)
+    → (owner == local authority 인 경우만) ApplyDamageUseCase.Execute()
+      → ICombatTargetPort.GetDefense / ApplyDamage
+      → ICombatNetworkCommandPort.SendDamage (RPC 전파)
+      → DamageAppliedEvent 발행
+        → PlayerDamageEventHandler → PlayerHealthChangedEvent / PlayerDiedEvent
 ```
 
 ### 원격 (피격자/관전자 클라이언트)
@@ -51,12 +50,13 @@ PlayerNetworkAdapter.RPC_ApplyDamage
 - **Application**: `ApplyDamageUseCase`, `CombatNetworkEventHandler`, `CombatReplicationEventHandler`, `ICombatTargetPort`, `ICombatTargetProvider`, `ICombatNetworkCommandPort`, `DamageAppliedEvent`, `DamageReplicatedEvent`
 - **Infrastructure**: `CombatTargetAdapter` (ICombatTargetPort 구현, ICombatTargetProvider 기반 딕셔너리)
 - **Presentation**: `CombatTargetView` (데미지 반응/피격 피드백)
-- **Bootstrap**: `CombatBootstrap` (조립, 이벤트 구독, `RegisterTarget` API) - 피처 루트에 위치
+- **Bootstrap**: `CombatBootstrap` (조립, `RegisterTarget` API) - 피처 루트에 위치. 이벤트 핸들링은 `CombatNetworkEventHandler`/`CombatReplicationEventHandler`가 EventBus를 직접 구독한다.
 
 ## 현재 구현 기준 결정
 
 - 타깃 식별은 `EntityIdHolder`를 사용해 런타임 `DomainEntityId`를 공유한다.
 - Player는 `StablePlayerId`를 사용해 모든 클라이언트에서 동일한 타깃 ID를 유지한다.
+- Inspector에서 연결하는 직렬화 필드는 `[Required, SerializeField]`로 선언해 씬/프리팹 저장 시 누락을 검증한다.
 - `ICombatTargetProvider`: Combat이 소유하는 인터페이스. 외부 피처가 구현하면 데미지 파이프라인에 참여 가능.
   - `CombatBootstrap.RegisterTarget(id, provider)`로 등록
   - 기존 Inspector CombatTarget은 내부 `CombatTargetWrapper`로 래핑

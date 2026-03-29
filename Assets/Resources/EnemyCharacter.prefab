@@ -182,7 +182,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2850f0af103188048a438ac4e7f2cc12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Features.Enemy.EnemySetup
-  _defaultData: {fileID: 11400000, guid: d6af5b3ab9d84447930dd30c9b725f11, type: 2}
   _networkAdapter: {fileID: 400000000000000009}
   _aiAdapter: {fileID: 400000000000000010}
   _view: {fileID: 400000000000000011}

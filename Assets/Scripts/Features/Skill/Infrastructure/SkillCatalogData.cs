@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using UnityEngine;
 
 namespace Features.Skill.Infrastructure
@@ -6,7 +7,7 @@ namespace Features.Skill.Infrastructure
     [CreateAssetMenu(fileName = "SkillCatalog", menuName = "Skill/SkillCatalogData")]
     public sealed class SkillCatalogData : ScriptableObject
     {
-        [SerializeField] private SkillData[] skills;
+        [Required, SerializeField] private SkillData[] skills;
 
         public SkillData[] Skills => skills;
     }

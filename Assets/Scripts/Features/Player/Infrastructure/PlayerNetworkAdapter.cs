@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Combat.Domain;
 using Features.Player.Application.Ports;
 using Photon.Pun;
@@ -10,7 +11,7 @@ namespace Features.Player.Infrastructure
     public sealed class PlayerNetworkAdapter : MonoBehaviourPun, IPunObservable,
         IPlayerNetworkCommandPort, IPlayerNetworkCallbackPort
     {
-        [SerializeField]
+        [Required, SerializeField]
         private float _lerpSpeed = 15f;
 
         private Vector3 _networkPosition;
@@ -24,7 +25,7 @@ namespace Features.Player.Infrastructure
 
         // IPlayerNetworkCallbackPort
         public System.Action<DomainEntityId> OnRemoteJumped { get; set; }
-        public System.Action<DomainEntityId, float, DamageType, DomainEntityId> OnRemoteDamaged { get; set; }
+        public System.Action<DomainEntityId, float, DamageType, DomainEntityId> OnRemoteDamaged { set; private get; }
         public System.Action<DomainEntityId, DomainEntityId> OnRemoteDied { get; set; }
         public System.Action<DomainEntityId> OnRemoteRespawned { get; set; }
         public System.Action<DomainEntityId, float, float> OnHealthSynced { get; set; }

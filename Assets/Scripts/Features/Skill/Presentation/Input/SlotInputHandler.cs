@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Skill.Application;
 using Features.Skill.Domain;
 using Features.Skill.Domain.Delivery;
@@ -13,7 +14,7 @@ namespace Features.Skill.Presentation
 {
     public sealed class SlotInputHandler : MonoBehaviour
     {
-        [SerializeField] private InputActionAsset _inputActions;
+        [Required, SerializeField] private InputActionAsset _inputActions;
 
         private CastSkillUseCase _castSkillUseCase;
         private SkillBar _skillBar;

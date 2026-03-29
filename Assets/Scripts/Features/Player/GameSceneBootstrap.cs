@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Features.Combat;
 using Features.Player.Application;
 using Features.Player.Presentation;
@@ -7,8 +8,10 @@ using Features.Wave;
 using Features.Zone;
 using Photon.Pun;
 using Shared.Analytics;
+using Shared.Attributes;
 using Shared.ErrorHandling;
 using Shared.EventBus;
+using Shared.Kernel;
 using Shared.Runtime.Sound;
 using Shared.Ui;
 using UnityEngine;
@@ -18,42 +21,22 @@ namespace Features.Player
     public sealed class GameSceneBootstrap : MonoBehaviourPunCallbacks
     {
         [Header("Player")]
-        [SerializeField]
-        private string _playerPrefabName = "PlayerCharacter";
-
-        [SerializeField]
-        private float _spawnRadius = 3f;
-
-        [SerializeField]
-        private Transform _cam;
-
-        [SerializeField]
-        private GameObject _healthHudPrefab;
-
-        [SerializeField]
-        private Canvas _hudCanvas;
-
-        [SerializeField]
-        private SkillSetup _skillSetup;
-
-        [SerializeField]
-        private ProjectileSpawner _projectileSpawner;
-
-        [SerializeField]
-        private CombatBootstrap _combatBootstrap;
-
-        [SerializeField]
-        private ZoneSetup _zoneSetup;
-
-        [SerializeField]
-        private SceneErrorPresenter _sceneErrorPresenter;
-
-        [SerializeField]
-        private SoundPlayer _soundPlayer;
+        [SerializeField] private string _playerPrefabName = "PlayerCharacter";
+        [SerializeField] private float _spawnRadius = 3f;
+        [Required, SerializeField] private Camera _camera;
+        [Required, SerializeField] private CameraFollower _cameraFollower;
+        [Required, SerializeField] private GameObject _healthHudPrefab;
+        [Required, SerializeField] private Canvas _hudCanvas;
+        [Required, SerializeField] private SkillSetup _skillSetup;
+        [Required, SerializeField] private ProjectileSpawner _projectileSpawner;
+        [Required, SerializeField] private CombatBootstrap _combatBootstrap;
+        [Required, SerializeField] private ZoneSetup _zoneSetup;
+        [Required, SerializeField] private SceneErrorPresenter _sceneErrorPresenter;
+        [Required, SerializeField] private SoundPlayer _soundPlayer;
+        [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
 
         [Header("Wave (PvE)")]
-        [SerializeField]
-        private WaveBootstrap _waveBootstrap;
+        [Required, SerializeField] private WaveBootstrap _waveBootstrap;
 
         private EventBus _eventBus;
         private IAnalyticsPort _analytics;
@@ -62,23 +45,26 @@ namespace Features.Player
         private string _matchId;
         private float _sceneStartTime;
         private bool _dropOffLogged;
-        private PlayerSetup _localPlayerSetup;
+        private readonly Queue<PlayerSetup> _pendingRemotePlayers = new();
+        private bool _remotePlayerWiringReady;
+
+        private void Awake()
+        {
+            PlayerSetup.RemoteArrived += OnRemotePlayerArrived;
+        }
 
         private void Start()
         {
+            _remotePlayerWiringReady = false;
             _eventBus = new EventBus();
+
+            // Analytics
             _analytics = new FirebaseAnalyticsAdapter();
-            _matchId = PhotonNetwork.CurrentRoom?.Name ?? "unknown";
+            _matchId = PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.Name : "unknown";
             _sceneStartTime = Time.realtimeSinceStartup;
             _analytics.LogGameStart(_matchId);
             RoundCounter.Increment();
             _analyticsHandler = new GameAnalyticsEventHandler(_analytics, _eventBus);
-
-            if (_sceneErrorPresenter == null)
-            {
-                Debug.LogError("[GameScene] SceneErrorPresenter reference is missing.", this);
-                return;
-            }
 
             _sceneErrorPresenter.Initialize(_eventBus);
 
@@ -95,15 +81,7 @@ namespace Features.Player
                 return;
             }
 
-            if (_combatBootstrap == null)
-            {
-                Debug.LogError("[GameScene] CombatBootstrap reference is missing.");
-                return;
-            }
-
-            if (_waveBootstrap == null)
-                _waveBootstrap = GetComponent<WaveBootstrap>();
-
+            // Spawn local player
             var offset = Random.insideUnitCircle * _spawnRadius;
             var spawnPosition = new Vector3(offset.x, 0f, offset.y);
             var player = PhotonNetwork.Instantiate(
@@ -111,113 +89,79 @@ namespace Features.Player
                 spawnPosition,
                 Quaternion.identity
             );
-            var follower = _cam.GetComponent<CameraFollower>();
-            if (follower == null)
-                follower = _cam.gameObject.AddComponent<CameraFollower>();
-            follower.Initialize(player.transform, _cam.position - player.transform.position);
 
-            var localPlayerSetup = ConnectPlayer(player);
-            var combatNetworkPort =
-                localPlayerSetup != null && localPlayerSetup.NetworkAdapter != null
-                    ? new Infrastructure.PlayerCombatNetworkPortAdapter(
-                        localPlayerSetup.NetworkAdapter
-                    )
-                    : null;
-            var localAuthorityId = localPlayerSetup != null ? localPlayerSetup.PlayerId : default;
-            if (_waveBootstrap == null && localPlayerSetup != null)
-                _gameEndHandler = new GameEndEventHandler(_eventBus, _eventBus, localPlayerSetup.PlayerId);
-            _combatBootstrap.Initialize(_eventBus, combatNetworkPort, localAuthorityId);
+            _cameraFollower.Initialize(player.transform, _camera.transform.position - player.transform.position);
 
-            if (_soundPlayer != null)
-                _soundPlayer.Initialize(_eventBus, localAuthorityId.Value);
-            else
-                Debug.LogError("[GameScene] SoundPlayer reference is missing.", this);
-            RegisterCombatTarget(localPlayerSetup);
+            var localSetup = player.GetComponent<PlayerSetup>();
+            localSetup.Initialize(_eventBus);
 
-            if (_localPlayerSetup != null)
-            {
-                var camera = _cam.GetComponent<Camera>();
-                _skillSetup.Initialize(
-                    _eventBus,
-                    player.transform,
-                    camera,
-                    _localPlayerSetup.PlayerId
-                );
-            }
+            // Combat
+            _combatBootstrap.Initialize(_eventBus, localSetup.CombatNetworkPort, localSetup.PlayerId);
+            if (_waveBootstrap == null)
+                _gameEndHandler = new GameEndEventHandler(_eventBus, _eventBus, localSetup.PlayerId);
+
+            ConnectPlayer(localSetup);
+
+            _soundPlayer.Initialize(_eventBus, localSetup.PlayerId.Value);
+            _skillSetup.Initialize(_eventBus, player.transform, _camera, localSetup.PlayerId);
             _projectileSpawner.Initialize(_eventBus, _eventBus);
-
-            if (_zoneSetup == null)
-            {
-                Debug.LogError("[GameScene] ZoneSetup reference is missing.");
-                return;
-            }
-
             _zoneSetup.Initialize(_eventBus);
 
+            // Wave (PvE)
             if (_waveBootstrap != null)
             {
                 _waveBootstrap.Initialize(_eventBus, _combatBootstrap);
                 _waveBootstrap.RegisterPlayer(player.transform);
             }
 
-            foreach (var other in PhotonNetwork.PlayerListOthers)
-                StartCoroutine(ConnectRemotePlayerDelayed(other));
+            _remotePlayerWiringReady = true;
+
+            while (_pendingRemotePlayers.Count > 0)
+                ConnectPlayer(_pendingRemotePlayers.Dequeue());
         }
 
-        private PlayerSetup ConnectPlayer(GameObject player)
+        private void ConnectPlayer(PlayerSetup setup)
         {
-            var playerSetup = player.GetComponent<PlayerSetup>();
-            if (playerSetup == null)
-                return null;
+            if (!setup.IsInitialized)
+                setup.Initialize(_eventBus);
 
-            playerSetup.Initialize(_eventBus);
-
-            if (_healthHudPrefab != null && _hudCanvas != null)
-            {
-                var hudGo = Instantiate(_healthHudPrefab, _hudCanvas.transform, false);
-                var hudView = hudGo.GetComponent<PlayerHealthHudView>();
-                if (hudView != null)
-                {
-                    var camera = _cam.GetComponent<Camera>();
-                    hudView.Initialize(
-                        _eventBus,
-                        playerSetup.PlayerId,
-                        playerSetup.MaxHp,
-                        player.transform,
-                        camera,
-                        _hudCanvas
-                    );
-                }
-            }
-            else if (_healthHudPrefab != null)
-            {
-                Debug.LogError("[GameScene] Hud canvas reference is missing.", this);
-            }
-
-            if (playerSetup.UseCases != null)
-            {
-                _localPlayerSetup = playerSetup;
-            }
-
-            return playerSetup;
-        }
-
-        private void RegisterCombatTarget(PlayerSetup playerSetup)
-        {
-            if (playerSetup?.CombatTargetProvider == null)
+            if (!_playerSceneRegistry.TryRegister(setup))
                 return;
 
-            _combatBootstrap.RegisterTarget(playerSetup.PlayerId, playerSetup.CombatTargetProvider);
+            var hudGo = Instantiate(_healthHudPrefab, _hudCanvas.transform, false);
+            var hudView = hudGo.GetComponent<PlayerHealthHudView>();
+            if (hudView != null)
+                hudView.Initialize(_eventBus, setup.PlayerId, setup.MaxHp, setup.transform, _camera, _hudCanvas);
+
+            if (setup.CombatTargetProvider != null)
+                _combatBootstrap.RegisterTarget(setup.PlayerId, setup.CombatTargetProvider);
+
+            if (_waveBootstrap != null)
+                _waveBootstrap.RegisterPlayer(setup.transform);
+        }
+
+        private void OnRemotePlayerArrived(PlayerSetup setup)
+        {
+            if (!_remotePlayerWiringReady)
+            {
+                _pendingRemotePlayers.Enqueue(setup);
+                return;
+            }
+
+            ConnectPlayer(setup);
         }
 
         private void OnDestroy()
         {
+            PlayerSetup.RemoteArrived -= OnRemotePlayerArrived;
+
             var playTime = Time.realtimeSinceStartup - _sceneStartTime;
-            _analytics?.LogGameEnd(_matchId, playTime, RoundCounter.Current);
-            if (_analyticsHandler != null)
-                _eventBus?.UnsubscribeAll(_analyticsHandler);
-            if (_gameEndHandler != null)
-                _eventBus?.UnsubscribeAll(_gameEndHandler);
+            if (_analytics != null)
+                _analytics.LogGameEnd(_matchId, playTime, RoundCounter.Current);
+            if (_analyticsHandler != null && _eventBus != null)
+                _eventBus.UnsubscribeAll(_analyticsHandler);
+            if (_gameEndHandler != null && _eventBus != null)
+                _eventBus.UnsubscribeAll(_gameEndHandler);
         }
 
         public override void OnDisconnected(Photon.Realtime.DisconnectCause cause)
@@ -225,8 +169,8 @@ namespace Features.Player
             if (_dropOffLogged)
                 return;
             _dropOffLogged = true;
-            var elapsed = Time.realtimeSinceStartup - _sceneStartTime;
-            _analytics?.LogDropOff("game_disconnect", elapsed);
+            if (_analytics != null)
+                _analytics.LogDropOff("game_disconnect", Time.realtimeSinceStartup - _sceneStartTime);
         }
 
         public override void OnLeftRoom()
@@ -234,35 +178,8 @@ namespace Features.Player
             if (_dropOffLogged)
                 return;
             _dropOffLogged = true;
-            var elapsed = Time.realtimeSinceStartup - _sceneStartTime;
-            _analytics?.LogDropOff("game_leave", elapsed);
-        }
-
-        public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
-        {
-            StartCoroutine(ConnectRemotePlayerDelayed(newPlayer));
-        }
-
-        private System.Collections.IEnumerator ConnectRemotePlayerDelayed(
-            Photon.Realtime.Player target
-        )
-        {
-            for (var attempt = 0; attempt < 30; attempt++)
-            {
-                yield return null;
-                foreach (var pv in FindObjectsByType<PhotonView>(FindObjectsSortMode.None))
-                {
-                    if (pv.Owner == target && pv.GetComponent<PlayerSetup>() != null)
-                    {
-                        RegisterCombatTarget(ConnectPlayer(pv.gameObject));
-                        if (_waveBootstrap != null)
-                            _waveBootstrap.RegisterPlayer(pv.transform);
-                        yield break;
-                    }
-                }
-            }
-
-            Debug.LogWarning($"[GameScene] Could not find PlayerSetup for player {target.NickName} after 30 frames.");
+            if (_analytics != null)
+                _analytics.LogDropOff("game_leave", Time.realtimeSinceStartup - _sceneStartTime);
         }
     }
 }

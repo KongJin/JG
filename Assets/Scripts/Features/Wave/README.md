@@ -4,11 +4,11 @@
 
 ## 현재 책임
 
-- 웨이브 카운트다운, 시작, 클리어, 승리/패배 상태 관리
+- 웨이브 카운트��운, 시작, 클리어, 승리/패배 상태 관리
 - 적 사망 / 플레이어 전멸 이벤트를 받아 웨이브 진행 전이
 - Master에서만 적 스폰 수행
 - 각 클라이언트에서 동일한 웨이브 상태를 로컬 이벤트로 재현해 HUD/결과 UI 갱신
-- 기본 HUD / 결과 UI가 씬에 없으면 런타임에 자동 생성
+- 비-Master 클라이언트에서 `EnemySetup.EnemyArrived` 콜백으로 원격 적 초기화 (Master는 `EnemySpawnAdapter`가 올바른 EnemyData로 명시적 초기화)
 
 ## 데이터 흐름
 
@@ -19,17 +19,19 @@ GameSceneBootstrap
   → WaveBootstrap.Initialize(eventBus, combatBootstrap)
     → WaveLoopUseCase 생성
     → WaveEventHandler 생성
-    → 모든 클라이언트에서 StartCountdown()
-      → WaveCountdownStartedEvent
+    → WaveFlowController.Initialize(waveLoop, waveTable, spawnAdapter)
+      → StartCountdownForCurrentWave()
+        → WaveCountdownStartedEvent
 ```
 
 ### 웨이브 진행
 
 ```text
-WaveBootstrap.Update()
-  → Countdown tick
+WaveFlowController.Update()
+  → Countdown 상태: WaveLoopUseCase.TickCountdown(deltaTime)
   → 카운트다운 종료 시 WaveLoopUseCase.BeginWave(enemyCount)
-  → Master만 EnemySpawnAdapter.SpawnEnemy() 반복 호출
+    → EnemySpawnAdapter.SpawnWaveEnemies(entry) — Master만 실제 스폰
+  → Cleared 상태: 다음 웨이브 카운트다운 자동 시작
 ```
 
 ### 웨이브 종료
@@ -57,22 +59,21 @@ PlayerDiedEvent
 
 ## 씬 의존성
 
-- `WaveBootstrap`은 `GameSceneBootstrap`과 같은 오브젝트에 붙어도 된다.
-- `_waveTable`이 비어 있으면 `Resources/Wave/DefaultWaveTable.asset`을 자동 로드한다.
-- `_spawnAdapter`, `_playerPositionQuery`가 비어 있으면 같은 오브젝트에 자동 추가한다.
-- `_hudView`, `_endView`가 비어 있으면 기본 UI를 런타임 생성한다.
+- `WaveBootstrap`과 `WaveFlowController`는 `GameSceneBootstrap`과 같은 오브젝트에 붙어 있다.
+- 모든 Inspector 연결 필드(`_waveTable`, `_spawnAdapter`, `_playerPositionQuery`, `_hudView`, `_endView`, `_flowController`)는 `[Required, SerializeField]`로 선언해 저장 시점에 누락을 검증한다.
+- 런타임 fallback(Resources.Load, GetComponent, AddComponent, CreateDefault)은 사용하지 않는다.
 
 ## 레이어 메모
 
 - **Domain**: `WaveState`, `WaveProgress`
-- **Application**: `WaveLoopUseCase`, `WaveEventHandler`, 웨이브 이벤트 5종, 포트 3종
-- **Infrastructure**: `WaveTableData`, `EnemySpawnAdapter`, `AlivePlayerQueryAdapter`, `PlayerPositionQueryAdapter`
-- **Presentation**: `WaveHudView`, `WaveEndView`
-- **Bootstrap**: `WaveBootstrap`
+- **Application**: `WaveLoopUseCase`, `WaveEventHandler`, 웨이브 이벤트 5종, 포트 2종 (`IPlayerPositionQuery`, `IAlivePlayerQuery`)
+- **Infrastructure**: `WaveTableData`, `EnemySpawnAdapter` (일괄 스폰 코루틴 포함), `AlivePlayerQueryAdapter`, `PlayerPositionQueryAdapter`
+- **Presentation**: `WaveFlowController` (Update 루프에서 카운트다운 tick / 상태 전이 orchestration), `WaveHudView` (카운트다운 자체 표시), `WaveEndView`
+- **Bootstrap**: `WaveBootstrap` (순수 조립 — 비즈니스 로직 없음)
 
 ## 피처 의존성
 
-- **Enemy**: `EnemyDiedEvent`, `EnemySetup`
+- **Enemy**: `EnemyDiedEvent`, `EnemySetup`, `EnemyData` (스폰 시 `SpawnEnemy(data, ...)` 파라미터로 전달)
 - **Player**: `PlayerDiedEvent`, 플레이어 Transform 등록
 - **Combat**: `CombatBootstrap`
 - **Shared**: `EventBus`, `DisposableScope`

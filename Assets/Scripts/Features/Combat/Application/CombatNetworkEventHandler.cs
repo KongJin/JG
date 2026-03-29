@@ -1,4 +1,5 @@
 using Features.Projectile.Application.Events;
+using Shared.EventBus;
 using Shared.Kernel;
 
 namespace Features.Combat.Application
@@ -11,20 +12,22 @@ namespace Features.Combat.Application
 
         public CombatNetworkEventHandler(
             ApplyDamageUseCase applyDamage,
+            IEventSubscriber eventBus,
             DomainEntityId localAuthorityId = default
         )
         {
             _applyDamage = applyDamage;
             _localAuthorityId = localAuthorityId;
             _hasAuthorityFilter = !string.IsNullOrWhiteSpace(localAuthorityId.Value);
+            eventBus.Subscribe(this, new System.Action<ProjectileHitEvent>(OnProjectileHit));
         }
 
-        public Result HandleProjectileHit(ProjectileHitEvent e)
+        private void OnProjectileHit(ProjectileHitEvent e)
         {
             if (_hasAuthorityFilter && !e.OwnerId.Equals(_localAuthorityId))
-                return Result.Success();
+                return;
 
-            return _applyDamage.Execute(e.TargetId, e.BaseDamage, e.DamageType, e.OwnerId);
+            _applyDamage.Execute(e.TargetId, e.BaseDamage, e.DamageType, e.OwnerId);
         }
     }
 }

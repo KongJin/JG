@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using System;
 using Features.Lobby.Application.Events;
 using Features.Lobby.Application.Ports;
@@ -10,13 +11,13 @@ namespace Features.Lobby.Presentation
 {
     public sealed class RoomItemView : MonoBehaviour
     {
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _roomNameText;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _memberCountText;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Button _joinButton;
 
         private DomainEntityId _roomId;

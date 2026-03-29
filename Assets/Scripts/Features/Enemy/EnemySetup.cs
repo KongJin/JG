@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Combat;
 using Features.Enemy.Application;
 using Features.Enemy.Infrastructure;
@@ -10,14 +11,15 @@ using UnityEngine;
 
 namespace Features.Enemy
 {
-    public sealed class EnemySetup : MonoBehaviour
+    public sealed class EnemySetup : MonoBehaviour, IPunInstantiateMagicCallback
     {
-        [SerializeField] private EnemyData _defaultData;
-        [SerializeField] private EnemyNetworkAdapter _networkAdapter;
-        [SerializeField] private EnemyAiAdapter _aiAdapter;
-        [SerializeField] private EnemyView _view;
-        [SerializeField] private EnemyContactDamageDetector _contactDetector;
-        [SerializeField] private EntityIdHolder _entityIdHolder;
+        public static event System.Action<EnemySetup> EnemyArrived;
+
+        [Required, SerializeField] private EnemyNetworkAdapter _networkAdapter;
+        [Required, SerializeField] private EnemyAiAdapter _aiAdapter;
+        [Required, SerializeField] private EnemyView _view;
+        [Required, SerializeField] private EnemyContactDamageDetector _contactDetector;
+        [Required, SerializeField] private EntityIdHolder _entityIdHolder;
 
         private EventBus _eventBus;
         private EnemyDamageEventHandler _damageHandler;
@@ -25,12 +27,17 @@ namespace Features.Enemy
         public DomainEntityId EnemyId { get; private set; }
         public bool IsInitialized { get; private set; }
 
+        void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
+        {
+            EnemyArrived?.Invoke(this);
+        }
+
         public void Initialize(
             EventBus eventBus,
             CombatBootstrap combatBootstrap,
             IPlayerPositionQuery playerQuery)
         {
-            Initialize(eventBus, combatBootstrap, _defaultData, playerQuery);
+            Initialize(eventBus, combatBootstrap, LoadDefaultData(), playerQuery);
         }
 
         public void Initialize(
@@ -54,12 +61,6 @@ namespace Features.Enemy
                 return;
             }
 
-            if (_networkAdapter == null)
-            {
-                Debug.LogError("[EnemySetup] EnemyNetworkAdapter is missing.", this);
-                return;
-            }
-
             if (data == null)
             {
                 Debug.LogError("[EnemySetup] EnemyData is missing.", this);
@@ -74,31 +75,20 @@ namespace Features.Enemy
             combatBootstrap.RegisterTarget(EnemyId, new EnemyCombatTargetProvider(enemy));
             _damageHandler = new EnemyDamageEventHandler(enemy, EnemyId, eventBus, eventBus);
 
-            if (_entityIdHolder != null)
-                _entityIdHolder.Set(EnemyId);
+            _entityIdHolder.Set(EnemyId);
 
             if (PhotonNetwork.IsMasterClient)
             {
-                if (_aiAdapter != null)
-                    _aiAdapter.Initialize(spec.MoveSpeed, playerQuery);
-                else
-                    Debug.LogError("[EnemySetup] EnemyAiAdapter is missing.", this);
-
-                if (_contactDetector != null)
-                    _contactDetector.Initialize(combatBootstrap, EnemyId, spec.ContactDamage, spec.ContactCooldown);
-                else
-                    Debug.LogError("[EnemySetup] EnemyContactDamageDetector is missing.", this);
+                _aiAdapter.Initialize(spec.MoveSpeed, playerQuery);
+                _contactDetector.Initialize(combatBootstrap, EnemyId, spec.ContactDamage, spec.ContactCooldown);
             }
             else
             {
-                if (_aiAdapter != null) _aiAdapter.enabled = false;
-                if (_contactDetector != null) _contactDetector.enabled = false;
+                _aiAdapter.enabled = false;
+                _contactDetector.enabled = false;
             }
 
-            if (_view != null)
-                _view.Initialize(eventBus, EnemyId);
-            else
-                Debug.LogError("[EnemySetup] EnemyView is missing.", this);
+            _view.Initialize(eventBus, EnemyId);
 
             IsInitialized = true;
         }
@@ -107,6 +97,11 @@ namespace Features.Enemy
         {
             if (_damageHandler != null)
                 _eventBus?.UnsubscribeAll(_damageHandler);
+        }
+
+        private static EnemyData LoadDefaultData()
+        {
+            return Resources.Load<EnemyData>("Enemy/BasicEnemy");
         }
     }
 }

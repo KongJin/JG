@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using System;
 using Features.Enemy.Infrastructure;
 using UnityEngine;
@@ -7,14 +8,14 @@ namespace Features.Wave.Infrastructure
     [CreateAssetMenu(fileName = "WaveTableData", menuName = "Wave/WaveTableData")]
     public sealed class WaveTableData : ScriptableObject
     {
-        [SerializeField] private WaveEntry[] waves;
+        [Required, SerializeField] private WaveEntry[] waves;
 
         public WaveEntry[] Waves => waves;
 
         [Serializable]
         public sealed class WaveEntry
         {
-            [SerializeField] private EnemyData enemyData;
+            [Required, SerializeField] private EnemyData enemyData;
             [SerializeField] private int count = 3;
             [SerializeField] private float spawnDelay = 0.5f;
             [SerializeField] private float countdownDuration = 3f;

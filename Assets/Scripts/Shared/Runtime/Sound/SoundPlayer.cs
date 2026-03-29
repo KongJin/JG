@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using System;
 using System.Collections.Generic;
 using Shared.EventBus;
@@ -11,8 +12,8 @@ namespace Shared.Runtime.Sound
 {
     public sealed class SoundPlayer : MonoBehaviour
     {
-        [SerializeField] private GameObject audioSourcePrefab;
-        [SerializeField] private SoundCatalog catalog;
+        [Required, SerializeField] private GameObject audioSourcePrefab;
+        [Required, SerializeField] private SoundCatalog catalog;
         [SerializeField] private int initialPoolSize = 8;
 
         private IEventSubscriber _eventBus;

@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Photon.Pun;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace Shared.Network
     /// </summary>
     public sealed class PhotonConnectionAdapter : MonoBehaviourPunCallbacks
     {
-        [SerializeField]
+        [Required, SerializeField]
         private readonly bool connectOnStart = true;
 
         private void Start()

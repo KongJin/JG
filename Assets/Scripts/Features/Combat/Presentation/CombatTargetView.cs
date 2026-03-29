@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Combat.Application.Events;
 using Shared.EventBus;
 using Shared.Kernel;
@@ -7,19 +8,19 @@ namespace Features.Combat.Presentation
 {
     public sealed class CombatTargetView : MonoBehaviour
     {
-        [SerializeField]
+        [Required, SerializeField]
         private EntityIdHolder _entityIdHolder;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Renderer _renderer;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Color _damageFlashColor = new Color(1f, 0.3f, 0.3f, 1f);
 
-        [SerializeField]
+        [Required, SerializeField]
         private Color _deadColor = new Color(0.2f, 0.2f, 0.2f, 1f);
 
-        [SerializeField]
+        [Required, SerializeField]
         private float _flashDuration = 0.15f;
 
         private IEventSubscriber _eventBus;

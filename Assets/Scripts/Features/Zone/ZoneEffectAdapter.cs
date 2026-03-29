@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Zone.Application.Ports;
 using Features.Zone.Presentation;
 using Shared.Math;
@@ -8,13 +9,13 @@ namespace Features.Zone
 {
     public sealed class ZoneEffectAdapter : MonoBehaviour, IZoneEffectPort
     {
-        [SerializeField]
+        [Required, SerializeField]
         private ZoneView _zonePrefab;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Transform _spawnRoot;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Color _zoneColor = new Color(0.5f, 0.8f, 1f, 0.6f);
         private GameObjectPool _zonePool;
 

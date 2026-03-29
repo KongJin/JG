@@ -1,4 +1,5 @@
 using System;
+using Shared.Attributes;
 using System.Collections.Generic;
 using ExitGames.Client.Photon;
 using Features.Lobby.Application.Ports;
@@ -20,7 +21,7 @@ namespace Features.Lobby.Infrastructure.Photon
             IOnEventCallback,
             ILobbyNetworkCallbackPort
     {
-        [SerializeField]
+        [Required, SerializeField]
         private string DefaultGameSceneName = "JG_GameScene";
 
         private readonly PhotonPlayerPropertyManager _propertyManager = new();
@@ -32,15 +33,15 @@ namespace Features.Lobby.Infrastructure.Photon
         private DomainEntityId _pendingLeaveMemberId;
 
         // ILobbyNetworkCallbackPort callbacks
-        public Action<DomainRoom> OnCreateRoomSucceeded { get; set; }
-        public Action<string> OnErrorOccurred { get; set; }
-        public Action<JoinRoomData> OnJoinRoomSucceeded { get; set; }
-        public Action<DomainEntityId, DomainEntityId> OnLeaveRoomSucceeded { get; set; }
-        public Action<DomainEntityId, RoomMember> OnRemotePlayerEntered { get; set; }
-        public Action<DomainEntityId, DomainEntityId> OnRemotePlayerLeft { get; set; }
-        public Action<PlayerPropertiesData> OnPlayerPropertiesChanged { get; set; }
-        public Action<DomainEntityId> OnGameStarted { get; set; }
-        public Action<List<RoomListItem>> OnRoomListUpdated { get; set; }
+        public System.Action<DomainRoom> OnCreateRoomSucceeded { get; set; }
+        public System.Action<string> OnErrorOccurred { get; set; }
+        public System.Action<JoinRoomData> OnJoinRoomSucceeded { get; set; }
+        public System.Action<DomainEntityId, DomainEntityId> OnLeaveRoomSucceeded { get; set; }
+        public System.Action<DomainEntityId, RoomMember> OnRemotePlayerEntered { get; set; }
+        public System.Action<DomainEntityId, DomainEntityId> OnRemotePlayerLeft { get; set; }
+        public System.Action<PlayerPropertiesData> OnPlayerPropertiesChanged { get; set; }
+        public System.Action<DomainEntityId> OnGameStarted { get; set; }
+        public System.Action<List<RoomListItem>> OnRoomListUpdated { get; set; }
 
         // ===== ILobbyNetworkCommandPort =====
 

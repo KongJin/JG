@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Player.Application.Events;
 using Shared.EventBus;
 using Shared.Kernel;
@@ -8,22 +9,22 @@ namespace Features.Player.Presentation
 {
     public sealed class PlayerHealthHudView : MonoBehaviour
     {
-        [SerializeField]
+        [Required, SerializeField]
         private Slider _healthSlider;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Image _healthFillImage;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Color _normalColor = Color.green;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Color _lowColor = Color.red;
 
-        [SerializeField]
+        [Required, SerializeField]
         private float _lowHealthThreshold = 0.3f;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Vector3 _headOffset = new Vector3(0f, 2.2f, 0f);
 
         private IEventSubscriber _eventBus;

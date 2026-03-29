@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -6,9 +7,9 @@ namespace Features.Skill.Presentation
 {
     public sealed class SlotView : MonoBehaviour, IPointerClickHandler
     {
-        [SerializeField] private Image icon;
-        [SerializeField] private Image cooldownOverlay;
-        [SerializeField] private Text keyLabel;
+        [Required, SerializeField] private Image icon;
+        [Required, SerializeField] private Image cooldownOverlay;
+        [Required, SerializeField] private Text keyLabel;
 
         private float _cooldownDuration;
         private float _cooldownEndTime;

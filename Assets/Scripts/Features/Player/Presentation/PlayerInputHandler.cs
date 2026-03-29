@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Player.Application;
 using Features.Player.Application.Events;
 using Shared.EventBus;
@@ -9,7 +10,7 @@ namespace Features.Player.Presentation
 {
     public sealed class PlayerInputHandler : MonoBehaviour
     {
-        [SerializeField] private InputActionAsset _inputActions;
+        [Required, SerializeField] private InputActionAsset _inputActions;
 
         private PlayerUseCases _useCases;
         private Domain.Player _player;

@@ -84,7 +84,9 @@ Photon 콜백 해석과 도메인 상태 업데이트는 `LobbyNetworkEventHandl
 ## Bootstrap
 
 - **LobbyBootstrap** (씬 오브젝트, 피처 루트에 위치): `SceneErrorPresenter` → LobbyPhotonAdapter → LobbyNetworkEventHandler → LobbyUseCases → LobbyView 순서로 조립
+- `SceneLoaderAdapter`는 plain C# class이므로 Inspector에서 연결하지 않고 `Awake()`에서 직접 생성한다
 - `LobbyView`는 에러 텍스트를 직접 관리하지 않고, 씬 공통 `SceneErrorPresenter`가 배너를 렌더링한다
+- Inspector 연결 필드는 `[Required, SerializeField]`로 선언해 씬 저장 시 누락을 검증한다
 
 ## 피처 간 의존
 

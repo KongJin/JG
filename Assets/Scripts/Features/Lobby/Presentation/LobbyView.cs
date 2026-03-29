@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
 using Shared.EventBus;
@@ -9,21 +10,21 @@ namespace Features.Lobby.Presentation
     public sealed class LobbyView : MonoBehaviour
     {
         [Header("Panels")]
-        [SerializeField]
+        [Required, SerializeField]
         private GameObject _roomListPanel;
 
-        [SerializeField]
+        [Required, SerializeField]
         private GameObject _roomDetailPanel;
 
         [Header("Views")]
-        [SerializeField]
+        [Required, SerializeField]
         private RoomListView _roomListView;
 
-        [SerializeField]
+        [Required, SerializeField]
         private RoomDetailView _roomDetailView;
 
         [Header("Game Start")]
-        [SerializeField]
+        [Required, SerializeField]
         private string _gameSceneName = "GameScene";
 
         private IEventSubscriber _eventBus;

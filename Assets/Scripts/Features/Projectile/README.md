@@ -60,15 +60,16 @@ Skill Feature의 RPC로 원격 `ProjectileRequestedEvent`가 발행되면
 - **Domain**: `Projectile`, `ProjectileSpec`, `TrajectoryInput`, `TrajectoryType`/`HitType` enum, `ITrajectory`/`IHitResolver`/`IHitResult` 인터페이스, `TrajectoryFactory`, `HitResolverFactory`, 각 전략 구현체
 - **Application**: `SpawnProjectileUseCase`, `IProjectilePhysicsPort` (Application/Ports), `ProjectileRequestedEvent`, `ProjectileHitEvent`, `ProjectileSpawnedEvent`
 - **Infrastructure**: `ProjectilePhysicsAdapter` (MonoBehaviour, 물리 이동/충돌 처리)
-- **Presentation**: `ProjectileView` (색상, 수명 관리)
+- **Presentation**: `ProjectileView` (색상, 수명 관리) — `[Required, SerializeField]`로 `LifetimeRelease`를 프리팹에서 참조
 - **Bootstrap**: `ProjectileSpawner` (이벤트 구독 → 프리팹 스폰 → UseCase 실행) - 피처 루트에 위치
 
 ## Bootstrap
 
 - **ProjectileSpawner** (MonoBehaviour): `ProjectileRequestedEvent` 구독 → 투사체 스폰
-  - `[SerializeField] ProjectilePhysicsAdapter _projectilePrefab`과 `GameObjectPool`로 프리팹 기반 풀링
+  - `[Required, SerializeField] ProjectilePhysicsAdapter _projectilePrefab`과 `GameObjectPool`로 프리팹 기반 풀링
   - `Initialize()`에서 `SpawnProjectileUseCase`를 한 번 생성
   - 이벤트마다 pool에서 Rent → `ProjectilePhysicsAdapter.Initialize/Spawn` 호출
+- Inspector 연결 필드는 `[Required, SerializeField]`로 선언해 씬/프리팹 저장 시 누락을 검증한다.
 
 ## 프리팹 설정 주의
 

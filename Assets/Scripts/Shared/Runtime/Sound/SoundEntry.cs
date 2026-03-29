@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using System;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace Shared.Runtime.Sound
     public sealed class SoundEntry
     {
         [SerializeField] private string key;
-        [SerializeField] private AudioClip clip;
+        [Required, SerializeField] private AudioClip clip;
         [SerializeField] [Range(0f, 1f)] private float volume = 1f;
         [SerializeField] [Range(0f, 1f)] private float spatialBlend = 1f;
         [SerializeField] private float cooldown = 0.05f;

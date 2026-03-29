@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using System;
 using System.Collections.Generic;
 using Features.Combat.Application.Ports;
@@ -9,7 +10,7 @@ namespace Features.Combat.Infrastructure
 {
     public sealed class CombatTargetAdapter : MonoBehaviour, ICombatTargetPort
     {
-        [SerializeField]
+        [Required, SerializeField]
         private CombatTargetConfig[] _targets = new CombatTargetConfig[0];
 
         private readonly Dictionary<DomainEntityId, ICombatTargetProvider> _providers =
@@ -122,16 +123,16 @@ namespace Features.Combat.Infrastructure
         [Serializable]
         private sealed class CombatTargetConfig
         {
-            [SerializeField]
+            [Required, SerializeField]
             private EntityIdHolder _entityIdHolder;
 
-            [SerializeField]
+            [Required, SerializeField]
             private float _maxHealth = 100f;
 
-            [SerializeField]
+            [Required, SerializeField]
             private float _startingHealth = 100f;
 
-            [SerializeField]
+            [Required, SerializeField]
             private float _defense = 0f;
 
             public EntityIdHolder EntityIdHolder => _entityIdHolder;

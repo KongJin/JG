@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ namespace Shared.Runtime.Sound
     [CreateAssetMenu(fileName = "SoundCatalog", menuName = "Shared/SoundCatalog")]
     public sealed class SoundCatalog : ScriptableObject
     {
-        [SerializeField] private SoundEntry[] entries;
+        [Required, SerializeField] private SoundEntry[] entries;
 
         private Dictionary<string, SoundEntry> _lookup;
 

@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
 using Features.Lobby.Infrastructure;
@@ -13,52 +14,24 @@ using DomainLobby = Features.Lobby.Domain.Lobby;
 
 public sealed class LobbyBootstrap : MonoBehaviour
 {
-    [SerializeField]
+    [Required, SerializeField]
     private LobbyView _view;
 
-    [SerializeField]
+    [Required, SerializeField]
     private LobbyPhotonAdapter _photonAdapter;
 
-    [SerializeField]
-    private SceneLoaderAdapter _sceneLoader;
-
-    [SerializeField]
+    [Required, SerializeField]
     private SceneErrorPresenter _sceneErrorPresenter;
 
     private LobbyNetworkEventHandler _syncHandler;
     private readonly EventBus _eventBus = new EventBus();
+    private SceneLoaderAdapter _sceneLoader;
     private IAnalyticsPort _analytics;
     private float _sessionStartTime;
 
     private void Awake()
     {
-        if (_view == null)
-        {
-            Debug.LogError("[Lobby] LobbyView reference is missing.");
-            return;
-        }
-
-        if (_photonAdapter == null)
-        {
-            _photonAdapter = GetComponent<LobbyPhotonAdapter>();
-            if (_photonAdapter == null)
-            {
-                Debug.LogError("[Lobby] LobbyPhotonAdapter reference is missing.");
-                return;
-            }
-        }
-
-        if (_sceneLoader == null)
-        {
-            _sceneLoader = new SceneLoaderAdapter();
-        }
-
-        if (_sceneErrorPresenter == null)
-        {
-            Debug.LogError("[Lobby] SceneErrorPresenter reference is missing.");
-            return;
-        }
-
+        _sceneLoader = new SceneLoaderAdapter();
         _sceneErrorPresenter.Initialize(_eventBus);
         _eventBus.Subscribe(this, new System.Action<SceneLoadRequestedEvent>(OnSceneLoadRequested));
 

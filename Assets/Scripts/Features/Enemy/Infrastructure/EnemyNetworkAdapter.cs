@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Photon.Pun;
 using Shared.Kernel;
 using UnityEngine;

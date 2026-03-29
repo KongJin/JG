@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using System.Collections.Generic;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
@@ -14,23 +15,23 @@ namespace Features.Lobby.Presentation
     public sealed class RoomListView : MonoBehaviour
     {
         [Header("Create Room")]
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_InputField _roomNameInput;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_InputField _capacityInput;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_InputField _displayNameInput;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Button _createRoomButton;
 
         [Header("Room List")]
-        [SerializeField]
+        [Required, SerializeField]
         private Transform _roomListContent;
 
-        [SerializeField]
+        [Required, SerializeField]
         private RoomItemView _roomItemPrefab;
 
         private LobbyUseCases _useCases;

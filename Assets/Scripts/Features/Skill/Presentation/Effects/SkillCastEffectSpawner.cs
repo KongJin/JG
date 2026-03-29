@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Skill.Application.Events;
 using Shared.EventBus;
 using Shared.Lifecycle;
@@ -11,10 +12,10 @@ namespace Features.Skill.Presentation
 {
     public sealed class SkillCastEffectSpawner : MonoBehaviour
     {
-        [SerializeField]
+        [Required, SerializeField]
         private GameObject targetedEffectPrefab;
 
-        [SerializeField]
+        [Required, SerializeField]
         private GameObject selfEffectPrefab;
 
         private IEventSubscriber _eventBus;

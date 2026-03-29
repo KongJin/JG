@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Projectile.Application;
 using Features.Projectile.Application.Events;
 using Features.Projectile.Infrastructure;
@@ -12,10 +13,10 @@ namespace Features.Projectile
 {
     public sealed class ProjectileSpawner : MonoBehaviour
     {
-        [SerializeField]
+        [Required, SerializeField]
         private ProjectilePhysicsAdapter _projectilePrefab;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Transform _spawnRoot;
 
         private IEventSubscriber _eventBus;

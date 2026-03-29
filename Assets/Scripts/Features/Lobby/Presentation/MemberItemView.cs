@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Lobby.Application.Events;
 using Features.Lobby.Domain;
 using TMPro;
@@ -8,9 +9,9 @@ namespace Features.Lobby.Presentation
 {
     public sealed class MemberItemView : MonoBehaviour
     {
-        [SerializeField] private TMP_Text _nameText;
-        [SerializeField] private TMP_Text _teamText;
-        [SerializeField] private Image _readyIcon;
+        [Required, SerializeField] private TMP_Text _nameText;
+        [Required, SerializeField] private TMP_Text _teamText;
+        [Required, SerializeField] private Image _readyIcon;
         [SerializeField] private Color _readyColor = Color.green;
         [SerializeField] private Color _notReadyColor = Color.gray;
 

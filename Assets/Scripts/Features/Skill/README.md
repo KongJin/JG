@@ -54,11 +54,12 @@ SlotInputHandler
 
 - `SkillSetup` (피처 루트에 위치)
   - SkillBarCanvas 프리팹에 부착되는 조립용 컴포넌트
-  - `[SerializeField] SkillCatalogData`, `SkillLoadoutData`를 Inspector에서 연결
+  - Inspector 연결 필드는 `[Required, SerializeField]`로 선언한다
+  - `SkillCatalogData`, `SkillLoadoutData`도 `[Required, SerializeField]`로 Inspector에서 연결한다
   - `Initialize(EventBus, Transform, Camera, CasterId)`에서 `SkillCatalog` 생성 → `BarView`, `SkillCastEffectSpawner`, `SkillNetworkEventHandler` 초기화
   - `SkillLoadoutData` 기반 로드아웃으로 스킬바 슬롯에 장착
   - `SwapSkill(slotIndex, skillId)`: 런타임 스킬 교체 API
-  - `HandleSlotClicked`: `SkillRotator`를 통한 슬롯 클릭 시 순환 교체
+  - 슬롯 클릭 시 `SkillRotator.HandleSlotSwap()`에 위임하여 순환 교체 (Bootstrap은 selection 로직을 갖지 않음)
 
 - `SkillIconAdapter` — `ISkillIconPort` 구현, `SkillCatalog`에서 아이콘 조회
 - `SkillEffectAdapter` — `ISkillEffectPort` 구현, `SkillCatalog`에서 이펙트 프리팹 조회
@@ -78,7 +79,8 @@ SlotInputHandler
 
 - `SkillRotator`
   - 카탈로그 스킬 ID 목록을 순환하며 다음 스킬을 반환한다
-  - 현재 슬롯에 장착된 스킬을 건너뛴다
+  - `HandleSlotSwap()`: 다음 스킬 조회 → 카탈로그 lookup → `EquipSkillUseCase.Execute()` 까지 한 번에 처리
+  - Bootstrap에서 `Func<string, Skill>` 형태의 lookup을 주입받아 Application→Infrastructure 의존을 피한다
 
 - `SkillNetworkEventHandler`
   - `SkillCastNetworkData`를 받아 이벤트 버스로 변환한다
@@ -144,10 +146,10 @@ RPC 전송 시 Infrastructure에서 개별 float로 분해하고, 수신 시 다
 
 - `GameSceneBootstrap.Start()`
   - 플레이어를 `PhotonNetwork.Instantiate()`로 생성
-  - `ConnectPlayer()`: 생성된 플레이어에서 `PlayerSetup.Initialize(eventBus)` 호출
+  - `ConnectLocalPlayer()`: 생성된 플레이어에서 `PlayerSetup.Initialize(eventBus)` 후 씬 등록
   - `_skillSetup.Initialize(_eventBus, player.transform, camera, playerId)`: 스킬 시스템 초기화 및 플레이어 트랜스폼/카메라/시전자 ID 전달
   - `_projectileSpawner.Initialize(_eventBus, _eventBus)`: 투사체 스포너 초기화
-  - 기존 원격 플레이어에 대해 `ConnectRemotePlayerDelayed()` 호출
+  - 원격 플레이어는 `PlayerSetup.RemoteArrived` 콜백으로 도착 시점에 연결되며 폴링은 사용하지 않음
 
 ## 현재 코드 기준 주의점
 

@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Skill.Application.Events;
 using Features.Skill.Application.Ports;
 using Shared.EventBus;
@@ -10,7 +11,7 @@ namespace Features.Skill.Presentation
 {
     public sealed class BarView : MonoBehaviour
     {
-        [SerializeField]
+        [Required, SerializeField]
         private SlotView[] slotViews;
         private static readonly string[] SlotLabels = { "RMB", "Q", "E", "R" };
 

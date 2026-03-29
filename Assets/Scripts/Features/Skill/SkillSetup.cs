@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Skill.Application;
 using Features.Skill.Domain;
 using Features.Skill.Infrastructure;
@@ -11,22 +12,22 @@ namespace Features.Skill
 {
     public sealed class SkillSetup : MonoBehaviour
     {
-        [SerializeField]
+        [Required, SerializeField]
         private SlotInputHandler _slotInputHandler;
 
-        [SerializeField]
+        [Required, SerializeField]
         private SkillCastEffectSpawner _skillCastEffectSpawner;
 
-        [SerializeField]
+        [Required, SerializeField]
         private BarView _barView;
 
-        [SerializeField]
+        [Required, SerializeField]
         private SkillNetworkAdapter _networkAdapter;
 
-        [SerializeField]
+        [Required, SerializeField]
         private SkillCatalogData _catalogData;
 
-        [SerializeField]
+        [Required, SerializeField]
         private SkillLoadoutData _loadoutData;
 
         private EventBus _eventBus;
@@ -40,18 +41,6 @@ namespace Features.Skill
         public void Initialize(EventBus eventBus, Transform playerTransform, Camera camera, DomainEntityId casterId)
         {
             _eventBus = eventBus;
-
-            if (_catalogData == null)
-            {
-                Debug.LogError("[SkillSetup] _catalogData is not assigned in Inspector.", this);
-                return;
-            }
-
-            if (_loadoutData == null)
-            {
-                Debug.LogError("[SkillSetup] _loadoutData is not assigned in Inspector.", this);
-                return;
-            }
 
             _catalog = new SkillCatalog(_catalogData);
             _skillRotator = new SkillRotator(CollectCatalogSkillIds());
@@ -69,18 +58,11 @@ namespace Features.Skill
                 loadoutRepo.Load(),
                 skillId => _catalog.Get(skillId)
             );
-            _barView.SetSlotClickHandler(HandleSlotClicked);
+            _barView.SetSlotClickHandler(slotIndex =>
+                _skillRotator.HandleSlotSwap(_skillBar, slotIndex, id => _catalog.Get(id), _equipSkillUseCase)
+            );
 
             var castSkillUseCase = new CastSkillUseCase(cooldownTracker, _networkAdapter);
-
-            if (_slotInputHandler == null)
-            {
-                Debug.LogError(
-                    "[SkillSetup] _slotInputHandler is not assigned in Inspector.",
-                    this
-                );
-                return;
-            }
 
             _slotInputHandler.Initialize(
                 castSkillUseCase,
@@ -104,7 +86,7 @@ namespace Features.Skill
         private List<string> CollectCatalogSkillIds()
         {
             var ids = new List<string>();
-            if (_catalog?.AllSkills == null)
+            if (_catalog == null || _catalog.AllSkills == null)
                 return ids;
 
             foreach (var skillData in _catalog.AllSkills)
@@ -117,23 +99,6 @@ namespace Features.Skill
             }
 
             return ids;
-        }
-
-        private void HandleSlotClicked(int slotIndex)
-        {
-            if (_skillRotator.Count == 0)
-            {
-                Debug.LogWarning("[SkillSetup] No skills available for runtime swap.", this);
-                return;
-            }
-
-            var nextSkillId = _skillRotator.GetNext(_skillBar, slotIndex);
-            if (string.IsNullOrEmpty(nextSkillId))
-                return;
-
-            var result = SwapSkill(slotIndex, nextSkillId);
-            if (result.IsFailure)
-                Debug.LogWarning($"[SkillSetup] Runtime swap failed: {result.Error}", this);
         }
     }
 }

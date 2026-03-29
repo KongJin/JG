@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using System.Collections.Generic;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
@@ -14,36 +15,36 @@ namespace Features.Lobby.Presentation
     public sealed class RoomDetailView : MonoBehaviour
     {
         [Header("Room Info")]
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _roomNameText;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _memberCountText;
 
         [Header("Member List")]
-        [SerializeField]
+        [Required, SerializeField]
         private Transform _memberListContent;
 
-        [SerializeField]
+        [Required, SerializeField]
         private MemberItemView _memberItemPrefab;
 
         [Header("Actions")]
-        [SerializeField]
+        [Required, SerializeField]
         private Button _leaveButton;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Button _teamRedButton;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Button _teamBlueButton;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Button _readyButton;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _readyButtonText;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Button _startGameButton;
 
         private LobbyUseCases _useCases;

@@ -1,4 +1,5 @@
 using Features.Combat.Application.Events;
+using Shared.EventBus;
 using Shared.Kernel;
 
 namespace Features.Combat.Application
@@ -7,19 +8,15 @@ namespace Features.Combat.Application
     {
         private readonly ApplyDamageUseCase _applyDamage;
 
-        public CombatReplicationEventHandler(ApplyDamageUseCase applyDamage)
+        public CombatReplicationEventHandler(ApplyDamageUseCase applyDamage, IEventSubscriber eventBus)
         {
             _applyDamage = applyDamage;
+            eventBus.Subscribe(this, new System.Action<DamageReplicatedEvent>(OnDamageReplicated));
         }
 
-        public Result HandleDamageReplicated(DamageReplicatedEvent e)
+        private void OnDamageReplicated(DamageReplicatedEvent e)
         {
-            return _applyDamage.ExecuteReplicated(
-                e.TargetId,
-                e.Damage,
-                e.DamageType,
-                e.AttackerId
-            );
+            _applyDamage.ExecuteReplicated(e.TargetId, e.Damage, e.DamageType, e.AttackerId);
         }
     }
 }

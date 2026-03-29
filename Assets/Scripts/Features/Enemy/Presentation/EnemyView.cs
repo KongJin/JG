@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using System;
 using Features.Enemy.Application.Events;
 using Photon.Pun;
@@ -9,7 +10,7 @@ namespace Features.Enemy.Presentation
 {
     public sealed class EnemyView : MonoBehaviour
     {
-        [SerializeField] private Renderer meshRenderer;
+        [Required, SerializeField] private Renderer meshRenderer;
         [SerializeField] private float flashDuration = 0.1f;
 
         private IEventSubscriber _eventBus;

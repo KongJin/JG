@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using Features.Projectile.Domain;
 using Features.Projectile.Domain.Hit;
 using Features.Projectile.Domain.Trajectory;
@@ -17,7 +18,7 @@ namespace Features.Skill.Infrastructure
         [SerializeField] private string displayName;
         [TextArea(1, 3)]
         [SerializeField] private string description;
-        [SerializeField] private Sprite icon;
+        [Required, SerializeField] private Sprite icon;
 
         [Header("Spec")]
         [SerializeField] private float damage;
@@ -34,8 +35,8 @@ namespace Features.Skill.Infrastructure
         [SerializeField] private float radius;
 
         [Header("Effects")]
-        [SerializeField] private GameObject castEffectPrefab;
-        [SerializeField] private AudioClip castSound;
+        [Required, SerializeField] private GameObject castEffectPrefab;
+        [Required, SerializeField] private AudioClip castSound;
 
         public string SkillId => skillId;
         public string DisplayName => displayName;
