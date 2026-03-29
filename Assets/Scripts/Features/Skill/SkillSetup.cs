@@ -6,6 +6,7 @@ using Features.Skill.Infrastructure;
 using Features.Skill.Presentation;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Lifecycle;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,23 +29,22 @@ namespace Features.Skill
         [Required, SerializeField]
         private SkillCatalogData _catalogData;
 
-        [Required, SerializeField]
-        private SkillLoadoutData _loadoutData;
-
         private EventBus _eventBus;
         private SkillCatalog _catalog;
         private EquipSkillUseCase _equipSkillUseCase;
         private SkillBar _skillBar;
-        private SkillRotator _skillRotator;
+        private Deck _deck;
+        private DisposableScope _disposables;
 
         public SkillCatalog Catalog => _catalog;
 
         public void Initialize(EventBus eventBus, Transform playerTransform, Camera camera, DomainEntityId casterId, IStatusQueryPort statusQuery = null)
         {
             _eventBus = eventBus;
+            _disposables?.Dispose();
+            _disposables = new DisposableScope();
 
             _catalog = new SkillCatalog(_catalogData);
-            _skillRotator = new SkillRotator(CollectCatalogSkillIds());
 
             _barView.Initialize(eventBus, new SkillIconAdapter(_catalog), casterId);
             _skillCastEffectSpawner.Initialize(eventBus, eventBus, new SkillEffectAdapter(_catalog));
@@ -52,16 +52,31 @@ namespace Features.Skill
             new SkillNetworkEventHandler(_eventBus, _networkAdapter);
 
             var cooldownTracker = new CooldownTracker();
-
-            var loadoutRepo = new SkillLoadoutRepository(_loadoutData);
             _equipSkillUseCase = new EquipSkillUseCase(_eventBus, cooldownTracker);
-            _skillBar = _equipSkillUseCase.BuildFromLoadout(
-                loadoutRepo.Load(),
-                skillId => _catalog.Get(skillId)
-            );
-            _barView.SetSlotClickHandler(slotIndex =>
-                _skillRotator.HandleSlotSwap(_skillBar, slotIndex, id => _catalog.Get(id), _equipSkillUseCase)
-            );
+
+            // Build deck from all catalog skills
+            var allSkillIds = CollectCatalogSkillIds();
+            var domainIds = new List<DomainEntityId>();
+            foreach (var id in allSkillIds)
+                domainIds.Add(new DomainEntityId(id));
+            _deck = new Deck(domainIds);
+
+            // Draw initial hand from deck
+            _skillBar = new SkillBar();
+            for (var i = 0; i < SkillBar.SlotCount; i++)
+            {
+                var drawnId = _deck.Draw();
+                if (string.IsNullOrEmpty(drawnId.Value)) continue;
+                var skill = _catalog.Get(drawnId.Value);
+                if (skill != null)
+                    _equipSkillUseCase.Execute(_skillBar, i, skill);
+            }
+
+            // Deck cycling: cast -> discard -> draw next
+            var deckCycleHandler = new DeckCycleHandler(
+                _deck, _skillBar, _equipSkillUseCase,
+                id => _catalog.Get(id), casterId, eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, deckCycleHandler));
 
             var castSkillUseCase = new CastSkillUseCase(cooldownTracker, _networkAdapter, statusQuery);
 
@@ -82,6 +97,11 @@ namespace Features.Skill
                 return Result.Failure($"Skill not found: {skillId}");
 
             return _equipSkillUseCase.Execute(_skillBar, slotIndex, skill);
+        }
+
+        private void OnDestroy()
+        {
+            _disposables?.Dispose();
         }
 
         private List<string> CollectCatalogSkillIds()

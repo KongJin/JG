@@ -4,6 +4,7 @@ using Features.Player.Application.Ports;
 using Features.Player.Domain;
 using Features.Player.Infrastructure;
 using Features.Player.Presentation;
+using Features.Status.Infrastructure;
 using Photon.Pun;
 using Shared.Attributes;
 using Shared.EventBus;
@@ -32,6 +33,9 @@ namespace Features.Player
         [Required, SerializeField]
         private EntityIdHolder _entityIdHolder;
 
+        [Required, SerializeField]
+        private StatusNetworkAdapter _statusNetworkAdapter;
+
         private PlayerUseCases _useCases;
         private PlayerCombatTargetProvider _combatTargetProvider;
         private DomainEntityId _playerId;
@@ -40,6 +44,7 @@ namespace Features.Player
         public ICombatNetworkCommandPort CombatNetworkPort { get; private set; }
         public DomainEntityId PlayerId => _playerId;
         public PlayerNetworkAdapter NetworkAdapter => _networkAdapter;
+        public StatusNetworkAdapter StatusNetworkAdapter => _statusNetworkAdapter;
         public PlayerUseCases UseCases => _useCases;
 
         public float MaxHp { get; private set; }

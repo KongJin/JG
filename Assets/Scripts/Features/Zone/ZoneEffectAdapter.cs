@@ -1,6 +1,9 @@
 using Shared.Attributes;
+using Features.Status.Domain;
 using Features.Zone.Application.Ports;
 using Features.Zone.Presentation;
+using Shared.EventBus;
+using Shared.Kernel;
 using Shared.Math;
 using Shared.Runtime.Pooling;
 using UnityEngine;
@@ -18,6 +21,7 @@ namespace Features.Zone
         [Required, SerializeField]
         private Color _zoneColor = new Color(0.5f, 0.8f, 1f, 0.6f);
         private GameObjectPool _zonePool;
+        private IEventPublisher _eventPublisher;
 
         private void Awake()
         {
@@ -30,7 +34,19 @@ namespace Features.Zone
             _zonePool = new GameObjectPool(_zonePrefab.gameObject, _spawnRoot);
         }
 
-        public void SpawnZone(Float3 position, float radius, float duration)
+        public void Initialize(IEventPublisher eventPublisher)
+        {
+            _eventPublisher = eventPublisher;
+        }
+
+        public void SpawnZone(
+            Float3 position,
+            float radius,
+            float duration,
+            DomainEntityId zoneId,
+            DomainEntityId casterId,
+            float baseDamage,
+            StatusPayload statusPayload)
         {
             if (_zonePool == null)
                 return;
@@ -42,6 +58,11 @@ namespace Features.Zone
             view.Initialize(radius, duration);
             view.SetColor(_zoneColor);
             view.name = $"{_zonePrefab.name}_{Time.time}";
+
+            var detector = viewGo.GetComponent<ZoneCollisionDetector>();
+            if (detector == null)
+                detector = viewGo.AddComponent<ZoneCollisionDetector>();
+            detector.Initialize(zoneId, casterId, baseDamage, statusPayload, _eventPublisher);
         }
     }
 }

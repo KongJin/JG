@@ -76,6 +76,7 @@ PlayerNetworkAdapter.RPC_PlayerRespawn (리스폰 수신)
 - **PlayerSetup** (`PlayerSetup.cs`, PlayerCharacter 프리팹): 스폰 후 `IsMine` 분기:
   - 로컬: PlayerNetworkEventHandler + PlayerUseCases + PlayerDamageEventHandler + CombatNetworkPort + InputHandler + View 초기화
   - 원격: PlayerNetworkEventHandler(remotePlayer) + PlayerDamageEventHandler + View 초기화, Input/Motor 비활성화. `PlayerView`는 리모트일 때 이벤트 구독만 스킵하고 컴포넌트 비활성화는 `PlayerSetup`이 담당한다.
+  - `StatusNetworkAdapter` 프로퍼티를 노출하여 `GameSceneBootstrap`이 원격 플레이어의 Status RPC 콜백을 등록할 수 있다.
 
 ## 씬 공통 에러 UI
 

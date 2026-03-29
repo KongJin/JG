@@ -5,7 +5,7 @@
 ## 현재 책임
 
 - 상태 적용(Apply), 갱신(Refresh), 만료(Expire), 틱 피해(Burn) 처리
-- 중첩 규칙: Refresh(Haste, Slow, Expand, Extend, Multiply), Independent(Burn, 최대 3스택)
+- 중첩 규칙: Refresh(Haste, Slow), Independent(Burn 최대 3스택, Expand/Extend/Multiply 최대 10스택)
 - 이동속도 변경(Haste/Slow)을 Player에 제공 (`ISpeedModifierPort`)
 - 범위/지속/개수 변경(Expand/Extend/Multiply)을 Skill에 제공 (`IStatusQueryPort`)
 - 네트워크 동기화: 적용/틱 데미지를 RPC로 복제
@@ -17,9 +17,9 @@
 | Haste | 이동속도 증가 | Refresh | Player (자체 완결) |
 | Slow | 이동속도 감소 | Refresh | Player (자체 완결) |
 | Burn | 지속 피해 | Independent, 최대 3스택 | Status 자체 (틱 데미지 발행) |
-| Expand | 범위 증가 | Refresh | Skill (발동 시 조회) |
-| Extend | 지속시간 증가 | Refresh | Skill (발동 시 조회) |
-| Multiply | 개수 증가 | Refresh | Skill (발동 시 조회) |
+| Expand | 범위 증가 | Independent, 최대 10스택 | Skill (발동 시 조회) |
+| Extend | 쿨다운 감소 | Independent, 최대 10스택 | Skill (발동 시 조회) |
+| Multiply | 데미지 증폭 | Independent, 최대 10스택 | Skill (발동 시 조회) |
 
 ## 데이터 흐름
 
@@ -94,7 +94,9 @@ CastSkillUseCase.Execute()
 - `StatusSetup`은 GameSceneBootstrap과 같은 씬에 배치
 - `StatusTickController`는 `StatusSetup`이 Inspector에서 참조
 - `StatusNetworkAdapter`는 플레이어 프리팹에 컴포넌트로 부착 (PhotonView 공유)
-- GameSceneBootstrap이 `player.GetComponent<StatusNetworkAdapter>()`로 획득 후 `StatusSetup.Initialize()`에 전달
+- GameSceneBootstrap이 로컬 플레이어의 `StatusNetworkAdapter`를 `StatusSetup.Initialize()`에 전달
+- 원격 플레이어가 접속하면 `GameSceneBootstrap.ConnectPlayer()`에서 `StatusSetup.RegisterRemoteCallbackPort()`로 해당 adapter의 콜백도 연결
+- `StatusNetworkEventHandler.WireCallbackPort()`가 여러 adapter의 RPC 콜백을 동일한 `StatusUseCases`로 라우팅
 
 ## 레이어 메모
 

@@ -5,7 +5,6 @@ using Features.Player.Presentation;
 using Features.Projectile;
 using Features.Skill;
 using Features.Status;
-using Features.Status.Infrastructure;
 using Features.Wave;
 using Features.Zone;
 using Photon.Pun;
@@ -100,8 +99,7 @@ namespace Features.Player
             var localSetup = player.GetComponent<PlayerSetup>();
 
             // Status (must initialize before PlayerSetup so SpeedModifier is ready)
-            var statusNetworkAdapter = player.GetComponent<StatusNetworkAdapter>();
-            _statusSetup.Initialize(_eventBus, statusNetworkAdapter, statusNetworkAdapter, PhotonNetwork.IsMasterClient);
+            _statusSetup.Initialize(_eventBus, localSetup.StatusNetworkAdapter, localSetup.StatusNetworkAdapter, PhotonNetwork.IsMasterClient);
 
             localSetup.Initialize(_eventBus, speedModifier: _statusSetup.SpeedModifier);
 
@@ -148,6 +146,10 @@ namespace Features.Player
 
             if (_waveBootstrap != null)
                 _waveBootstrap.RegisterPlayer(setup.transform);
+
+            // Wire remote player's StatusNetworkAdapter so RPC callbacks reach the shared handler
+            if (!setup.NetworkAdapter.IsMine && setup.StatusNetworkAdapter != null)
+                _statusSetup.RegisterRemoteCallbackPort(setup.StatusNetworkAdapter);
         }
 
         private void OnRemotePlayerArrived(PlayerSetup setup)

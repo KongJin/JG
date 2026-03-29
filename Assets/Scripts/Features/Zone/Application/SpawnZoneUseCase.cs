@@ -1,3 +1,4 @@
+using Features.Status.Domain;
 using Features.Zone.Application.Events;
 using Features.Zone.Domain;
 using Features.Zone.Application.Ports;
@@ -21,13 +22,20 @@ namespace Features.Zone.Application
             _eventBus = eventBus;
         }
 
-        public Result Execute(DomainEntityId casterId, Float3 position, Float3 direction, float range, float cooldown)
+        public Result Execute(
+            DomainEntityId casterId,
+            Float3 position,
+            Float3 direction,
+            float range,
+            float cooldown,
+            float baseDamage = 0f,
+            StatusPayload statusPayload = default)
         {
             var spawnPos = position + direction.Normalized * (range * 0.5f);
-            var spec = new ZoneSpec(range, cooldown, ZoneAnchorType.World, ZoneHitType.Tick);
+            var spec = new ZoneSpec(range, cooldown, ZoneAnchorType.World, ZoneHitType.Tick, baseDamage, statusPayload);
             var id = _clock.NewId();
 
-            _zoneEffect.SpawnZone(spawnPos, spec.Radius, spec.Duration);
+            _zoneEffect.SpawnZone(spawnPos, spec.Radius, spec.Duration, id, casterId, baseDamage, statusPayload);
             _eventBus.Publish(new ZoneSpawnedEvent(id, casterId, spawnPos, spec));
             return Result.Success();
         }

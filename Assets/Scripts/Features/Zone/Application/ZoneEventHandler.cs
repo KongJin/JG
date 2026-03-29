@@ -15,7 +15,10 @@ namespace Features.Zone.Application
 
         private void OnZoneRequested(ZoneRequestedEvent e)
         {
-            _spawnZone.Execute(e.CasterId, e.Position, e.Direction, e.Spec.Range, e.Spec.Cooldown);
+            _spawnZone.Execute(
+                e.CasterId, e.Position, e.Direction,
+                e.Spec.Range, e.Spec.Cooldown,
+                e.Spec.Damage, e.Spec.StatusPayload);
         }
     }
 }

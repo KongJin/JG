@@ -13,7 +13,11 @@ namespace Features.Status.Application
             IStatusNetworkCallbackPort callbacks)
         {
             _useCases = useCases;
+            WireCallbackPort(callbacks);
+        }
 
+        public void WireCallbackPort(IStatusNetworkCallbackPort callbacks)
+        {
             callbacks.OnRemoteStatusApplied = HandleRemoteStatusApplied;
             callbacks.OnRemoteTickDamage = HandleRemoteTickDamage;
         }

@@ -4,8 +4,9 @@
 
 ## 현재 책임
 
-- 스킬바 4슬롯 UI 초기화와 쿨다운 표시
-- 슬롯 입력 수신 (`RMB`, `Q`, `E`, `R`)
+- 스킬바 3슬롯 UI 초기화와 쿨다운 표시
+- 슬롯 입력 수신 (`RMB`, `Q`, `E`)
+- 덱 순환: 카탈로그 전체 스킬로 덱 구성 → 초기 핸드 3장 드로우 → 시전 시 자동 버리기/드로우
 - 시전 시 쿨다운 검증 후 `SkillCastNetworkData` 전송
 - RPC 수신 후 `ProjectileRequestedEvent`, `ZoneRequestedEvent`, `TargetedRequestedEvent`, `SelfRequestedEvent`, `SkillCastedEvent` 발행
 - 스킬별 이펙트 매핑 (ScriptableObject 기반)
@@ -56,11 +57,11 @@ SlotInputHandler
 - `SkillSetup` (피처 루트에 위치)
   - SkillBarCanvas 프리팹에 부착되는 조립용 컴포넌트
   - Inspector 연결 필드는 `[Required, SerializeField]`로 선언한다
-  - `SkillCatalogData`, `SkillLoadoutData`도 `[Required, SerializeField]`로 Inspector에서 연결한다
+  - `SkillCatalogData`를 `[Required, SerializeField]`로 Inspector에서 연결한다
   - `Initialize(EventBus, Transform, Camera, CasterId)`에서 `SkillCatalog` 생성 → `BarView`, `SkillCastEffectSpawner`, `SkillNetworkEventHandler` 초기화
-  - `SkillLoadoutData` 기반 로드아웃으로 스킬바 슬롯에 장착
+  - 카탈로그 전체 스킬 ID로 `Deck`을 구성하고 초기 핸드를 드로우하여 3슬롯에 장착
+  - `DeckCycleHandler`를 생성하여 시전 시 자동 덱 순환 (버리기 → 드로우 → 재장착)
   - `SwapSkill(slotIndex, skillId)`: 런타임 스킬 교체 API
-  - 슬롯 클릭 시 `SkillRotator.HandleSlotSwap()`에 위임하여 순환 교체 (Bootstrap은 selection 로직을 갖지 않음)
 
 - `SkillIconAdapter` — `ISkillIconPort` 구현, `SkillCatalog`에서 아이콘 조회
 - `SkillEffectAdapter` — `ISkillEffectPort` 구현, `SkillCatalog`에서 이펙트 프리팹 조회
@@ -76,11 +77,10 @@ SlotInputHandler
   - 스킬바 슬롯에 스킬을 장착한다
   - 기존 스킬의 쿨다운을 `CooldownTracker`에서 제거한다
   - `SkillEquippedEvent`를 발행한다
-  - `BuildFromLoadout()`: 로드아웃 기반 초기 스킬바 조립
 
-- `SkillRotator`
-  - 카탈로그 스킬 ID 목록을 순환하며 다음 스킬을 반환한다
-  - `HandleSlotSwap()`: 다음 스킬 조회 → 카탈로그 lookup → `EquipSkillUseCase.Execute()` 까지 한 번에 처리
+- `DeckCycleHandler`
+  - `SkillCastedEvent` 구독 → 시전된 스킬을 덱에 버리기 → 다음 스킬 드로우 → 같은 슬롯에 재장착
+  - 로컬 시전자만 처리 (`CasterId` 필터링)
   - Bootstrap에서 `Func<string, Skill>` 형태의 lookup을 주입받아 Application→Infrastructure 의존을 피한다
 
 - `SkillNetworkEventHandler`
@@ -93,13 +93,14 @@ SlotInputHandler
   - 마지막에 `SkillCastedEvent`를 발행한다
 
 - `Ports/ISkillNetworkCommandPort`, `ISkillNetworkCallbackPort` — 네트워크 송수신 포트
-- `Ports/ISkillLoadoutRepository` — 로드아웃 저장/로드 포트
+### Domain
+
+- `Deck` — 뽑기/버리기 덱. 시전한 스킬은 버린 더미로, 뽑을 더미가 비면 셔플하여 재사용
+- `SkillBar` — 3슬롯 스킬바. `Equip(slotIndex, skill)`, `GetSkill(slotIndex)`
 
 ### Infrastructure
 
 - `SkillNetworkAdapter` (`MonoBehaviourPun`) — RPC 송수신
-- `SkillLoadoutRepository` — `SkillLoadoutData` SO 기반 로드아웃 로드
-- `SkillLoadoutData` (SO) — Inspector에서 슬롯별 스킬 ID 설정
 
 ### Presentation
 

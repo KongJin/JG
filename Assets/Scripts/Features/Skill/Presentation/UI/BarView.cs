@@ -13,11 +13,10 @@ namespace Features.Skill.Presentation
     {
         [Required, SerializeField]
         private SlotView[] slotViews;
-        private static readonly string[] SlotLabels = { "RMB", "Q", "E", "R" };
+        private static readonly string[] SlotLabels = { "RMB", "Q", "E" };
 
         private IEventSubscriber _eventBus;
         private ISkillIconPort _iconPort;
-        private Action<int> _onSlotClicked;
         private DomainEntityId _localCasterId;
         private DisposableScope _disposables = new DisposableScope();
 
@@ -40,21 +39,6 @@ namespace Features.Skill.Presentation
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, this));
             _eventBus.Subscribe(this, new System.Action<SkillEquippedEvent>(OnSkillEquipped));
             _eventBus.Subscribe(this, new System.Action<SkillCastedEvent>(OnSkillCasted));
-        }
-
-        public void SetSlotClickHandler(Action<int> onSlotClicked)
-        {
-            _onSlotClicked = onSlotClicked;
-
-            for (var i = 0; i < slotViews.Length; i++)
-            {
-                var slotIndex = i;
-                var slotView = slotViews[i];
-                if (slotView == null)
-                    continue;
-
-                slotView.SetClickHandler(() => _onSlotClicked?.Invoke(slotIndex));
-            }
         }
 
         private void OnDestroy()

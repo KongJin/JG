@@ -2,7 +2,7 @@ namespace Features.Skill.Domain
 {
     public sealed class SkillBar
     {
-        public const int SlotCount = 4;
+        public const int SlotCount = 3;
 
         private readonly Skill[] _slots = new Skill[SlotCount];
 

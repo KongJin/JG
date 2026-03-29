@@ -20,6 +20,8 @@ namespace Features.Zone
             _disposables.Dispose();
             _disposables = new DisposableScope();
 
+            _zoneEffectAdapter.Initialize(eventBus);
+
             var spawnZoneUseCase = new SpawnZoneUseCase(
                 _zoneEffectAdapter,
                 new ClockAdapter(),

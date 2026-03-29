@@ -16,6 +16,7 @@ namespace Features.Status
 
         private StatusContainerRegistry _registry;
         private StatusUseCases _useCases;
+        private StatusNetworkEventHandler _networkEventHandler;
         private DisposableScope _disposables;
 
         public ISpeedModifierPort SpeedModifier { get; private set; }
@@ -40,13 +41,18 @@ namespace Features.Status
             var triggerHandler = new StatusTriggerHandler(eventBus, eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, triggerHandler));
 
-            new StatusNetworkEventHandler(_useCases, callbackPort);
+            _networkEventHandler = new StatusNetworkEventHandler(_useCases, callbackPort);
 
             var tickUseCase = new StatusTickUseCase(_registry, eventBus, commandPort, isMaster);
             _tickController.Initialize(tickUseCase);
 
             SpeedModifier = new SpeedModifierAdapter(_registry);
             StatusQuery = new StatusQueryAdapter(_registry);
+        }
+
+        public void RegisterRemoteCallbackPort(IStatusNetworkCallbackPort callbackPort)
+        {
+            _networkEventHandler?.WireCallbackPort(callbackPort);
         }
 
         private void OnDestroy()

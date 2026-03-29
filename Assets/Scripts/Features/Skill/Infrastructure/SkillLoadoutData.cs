@@ -6,7 +6,7 @@ namespace Features.Skill.Infrastructure
     [CreateAssetMenu(fileName = "DefaultLoadout", menuName = "Skill/SkillLoadoutData")]
     public sealed class SkillLoadoutData : ScriptableObject
     {
-        [SerializeField] private string[] slotSkillIds = new string[4];
+        [SerializeField] private string[] slotSkillIds = new string[3];
 
         public string[] SlotSkillIds => slotSkillIds;
     }
