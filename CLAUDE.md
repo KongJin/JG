@@ -2,6 +2,7 @@
 
 This project follows **Feature-first Clean Architecture**.
 Refer to the `/agent` directory for detailed rules.
+Game design is documented in `/agent/game_design.md`.
 
 ---
 
