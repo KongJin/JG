@@ -1,7 +1,6 @@
 using Shared.Attributes;
 using System;
 using Features.Enemy.Application.Events;
-using Photon.Pun;
 using Shared.EventBus;
 using Shared.Kernel;
 using UnityEngine;
@@ -63,8 +62,11 @@ namespace Features.Enemy.Presentation
         {
             if (!_enemyId.Equals(e.EnemyId)) return;
 
-            if (PhotonNetwork.IsMasterClient)
-                PhotonNetwork.Destroy(gameObject);
+            if (meshRenderer != null)
+            {
+                _propBlock.SetColor("_Color", Color.black);
+                meshRenderer.SetPropertyBlock(_propBlock);
+            }
         }
 
         private void OnDestroy()

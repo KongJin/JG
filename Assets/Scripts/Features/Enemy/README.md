@@ -38,7 +38,7 @@ ProjectileHitEvent
       → Enemy.TakeDamage()
       → EnemyHealthChangedEvent 발행
       → (사망 시) EnemyDiedEvent 발행
-        → EnemyView: Master가 PhotonNetwork.Destroy 호출
+        → EnemySetup: Master가 PhotonNetwork.Destroy 호출
 ```
 
 ### 접촉 데미지 (Master만)
@@ -65,7 +65,7 @@ EnemyContactDamageDetector.OnTriggerStay()
 - **Domain**: `Enemy` (Entity), `EnemySpec` (readonly struct)
 - **Application**: `SpawnEnemyUseCase`, `EnemyDamageEventHandler`, 이벤트 3개
 - **Infrastructure**: `EnemyData` (ScriptableObject), `EnemyCombatTargetProvider`, `EnemyNetworkAdapter`, `EnemyAiAdapter`
-- **Presentation**: `EnemyView` (피격 플래시, 사망 처리), `EnemyContactDamageDetector`
+- **Presentation**: `EnemyView` (피격 플래시), `EnemyContactDamageDetector`
 - **Bootstrap**: `EnemySetup` (프리팹 컴포지션 루트)
 
 ## 초기화 메모

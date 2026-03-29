@@ -1,6 +1,8 @@
+using System;
 using Shared.Attributes;
 using Features.Combat;
 using Features.Enemy.Application;
+using Features.Enemy.Application.Events;
 using Features.Enemy.Infrastructure;
 using Features.Enemy.Presentation;
 using Features.Wave.Application.Ports;
@@ -90,13 +92,23 @@ namespace Features.Enemy
 
             _view.Initialize(eventBus, EnemyId);
 
+            if (PhotonNetwork.IsMasterClient)
+                _eventBus.Subscribe(this, new Action<EnemyDiedEvent>(OnEnemyDied));
+
             IsInitialized = true;
+        }
+
+        private void OnEnemyDied(EnemyDiedEvent e)
+        {
+            if (!EnemyId.Equals(e.EnemyId)) return;
+            PhotonNetwork.Destroy(gameObject);
         }
 
         private void OnDestroy()
         {
             if (_damageHandler != null)
                 _eventBus?.UnsubscribeAll(_damageHandler);
+            _eventBus?.UnsubscribeAll(this);
         }
 
         private static EnemyData LoadDefaultData()
