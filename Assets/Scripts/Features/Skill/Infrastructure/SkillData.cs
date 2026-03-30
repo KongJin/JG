@@ -23,8 +23,10 @@ namespace Features.Skill.Infrastructure
 
         [Header("Spec")]
         [SerializeField] private float damage;
-        [SerializeField] private float cooldown;
+        [SerializeField] private float manaCost;
         [SerializeField] private float range;
+        [SerializeField] private float duration;
+        [SerializeField] private int projectileCount = 1;
 
         [Header("Delivery")]
         [SerializeField] private DeliveryType deliveryType;
@@ -59,7 +61,7 @@ namespace Features.Skill.Infrastructure
             var payload = hasStatusEffect
                 ? StatusPayload.Create(statusType, statusMagnitude, statusDuration, statusTickInterval)
                 : StatusPayload.None;
-            var spec = new SkillSpec(damage, cooldown, range, payload);
+            var spec = new SkillSpec(damage, manaCost, range, duration, projectileCount, payload);
             var delivery = CreateDelivery();
             return new Domain.Skill(id, spec, delivery);
         }

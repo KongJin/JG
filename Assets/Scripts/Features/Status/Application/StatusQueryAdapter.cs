@@ -20,5 +20,13 @@ namespace Features.Status.Application
 
             return container.GetCombinedMagnitude(type);
         }
+
+        public int GetStacks(DomainEntityId targetId, StatusType type)
+        {
+            if (!_registry.TryGet(targetId, out var container))
+                return 0;
+
+            return container.GetStackCount(type);
+        }
     }
 }

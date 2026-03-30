@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Infrastructure.SkillData
   skillId: ParabolicChain
   damage: 54
-  cooldown: 11
+  manaCost: 33
   range: 14
+  duration: 0
+  projectileCount: 1
   deliveryType: 0
   trajectoryType: 1
   hitType: 3

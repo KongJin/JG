@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Features.Combat;
 using Features.Player.Application;
+using Features.Player.Infrastructure;
 using Features.Player.Presentation;
 using Features.Projectile;
 using Features.Skill;
@@ -35,6 +36,8 @@ namespace Features.Player
         [Required, SerializeField] private SceneErrorPresenter _sceneErrorPresenter;
         [Required, SerializeField] private SoundPlayer _soundPlayer;
         [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
+        [Required, SerializeField] private ManaRegenTicker _manaRegenTicker;
+        [Required, SerializeField] private ManaBarView _manaBarView;
 
         [Header("Status (Buff/Debuff)")]
         [Required, SerializeField] private StatusSetup _statusSetup;
@@ -104,21 +107,24 @@ namespace Features.Player
             localSetup.Initialize(_eventBus, speedModifier: _statusSetup.SpeedModifier);
 
             // Combat
-            _combatBootstrap.Initialize(_eventBus, localSetup.CombatNetworkPort, localSetup.PlayerId);
+            _combatBootstrap.Initialize(_eventBus, localSetup.CombatNetworkPort, localSetup.PlayerId, new EntityAffiliationAdapter());
             if (_waveBootstrap == null)
                 _gameEndHandler = new GameEndEventHandler(_eventBus, _eventBus, localSetup.PlayerId);
 
             ConnectPlayer(localSetup);
 
+            _manaRegenTicker.Initialize(localSetup.ManaAdapterInstance);
+            _manaBarView.Initialize(_eventBus, localSetup.PlayerId, localSetup.MaxMana);
+
             _soundPlayer.Initialize(_eventBus, localSetup.PlayerId.Value);
-            _skillSetup.Initialize(_eventBus, player.transform, _camera, localSetup.PlayerId, _statusSetup.StatusQuery);
+            _skillSetup.Initialize(_eventBus, player.transform, _camera, localSetup.PlayerId, localSetup.ManaPort, _statusSetup.StatusQuery);
             _projectileSpawner.Initialize(_eventBus, _eventBus);
             _zoneSetup.Initialize(_eventBus);
 
             // Wave (PvE)
             if (_waveBootstrap != null)
             {
-                _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId);
+                _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId, _statusSetup.StatusQuery);
                 _waveBootstrap.RegisterPlayer(player.transform);
             }
 

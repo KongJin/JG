@@ -25,6 +25,7 @@ namespace Features.Player.Application
             networkCallbacks.OnRemoteDied = HandleRemoteDied;
             networkCallbacks.OnRemoteRespawned = HandleRemoteRespawned;
             networkCallbacks.OnHealthSynced = HandleHealthSynced;
+            networkCallbacks.OnManaSynced = HandleManaSynced;
         }
 
         private void HandleRemoteJumped(DomainEntityId playerId)
@@ -60,7 +61,12 @@ namespace Features.Player.Application
 
         private void HandleHealthSynced(DomainEntityId targetId, float currentHp, float maxHp)
         {
-            // Reserved for late-join health sync via CustomProperties.
+            _publisher.Publish(new PlayerHealthChangedEvent(targetId, currentHp, maxHp, 0f, currentHp <= 0f));
+        }
+
+        private void HandleManaSynced(DomainEntityId targetId, float currentMana, float maxMana)
+        {
+            _publisher.Publish(new PlayerManaChangedEvent(targetId, currentMana, maxMana));
         }
     }
 }

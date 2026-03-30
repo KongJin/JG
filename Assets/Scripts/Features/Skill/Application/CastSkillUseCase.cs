@@ -11,17 +11,17 @@ namespace Features.Skill.Application
 {
     public sealed class CastSkillUseCase
     {
-        private readonly CooldownTracker _cooldownTracker;
+        private readonly IManaPort _manaPort;
         private readonly ISkillNetworkCommandPort _network;
         private readonly IStatusQueryPort _statusQuery;
 
         public CastSkillUseCase(
-            CooldownTracker cooldownTracker,
+            IManaPort manaPort,
             ISkillNetworkCommandPort network,
             IStatusQueryPort statusQuery = null
         )
         {
-            _cooldownTracker = cooldownTracker;
+            _manaPort = manaPort;
             _network = network;
             _statusQuery = statusQuery;
         }
@@ -37,18 +37,17 @@ namespace Features.Skill.Application
             Float3 targetPosition
         )
         {
-            // Compute effective cooldown first so Extend affects the actual cast check
-            var cooldown = skill.Spec.Cooldown;
+            var manaCost = skill.Spec.ManaCost;
             if (_statusQuery != null)
             {
                 var extendMag = _statusQuery.GetMagnitude(casterId, StatusType.Extend);
                 if (extendMag > 0f)
-                    cooldown *= 1f / (1f + extendMag);
+                    manaCost *= 1f / (1f + extendMag);
             }
 
-            var cooldownCheck = CooldownRule.CanCast(skill, currentTime, _cooldownTracker, cooldown);
-            if (cooldownCheck.IsFailure)
-                return cooldownCheck;
+            var manaCheck = ManaRule.CanCast(manaCost, _manaPort.GetCurrentMana(casterId));
+            if (manaCheck.IsFailure)
+                return manaCheck;
 
             if (skill.Delivery is TargetedDelivery && !hasTarget)
                 return Result.Failure("Targeted skills require a valid target.");
@@ -56,7 +55,7 @@ namespace Features.Skill.Application
             var result = skill.Delivery.Deliver(skill.Id, casterId, skill.Spec);
             var pr = result as ProjectileDeliveryResult;
 
-            _cooldownTracker.RecordCast(skill.Id, currentTime);
+            _manaPort.TrySpendMana(casterId, manaCost);
 
             var damage = skill.Spec.Damage;
             var range = skill.Spec.Range;
@@ -75,13 +74,21 @@ namespace Features.Skill.Application
                     damage *= (1f + multiplyMag);
             }
 
+            var projectileCount = skill.Spec.ProjectileCount;
+            if (_statusQuery != null)
+            {
+                var countMag = _statusQuery.GetMagnitude(casterId, StatusType.Count);
+                if (countMag > 0f)
+                    projectileCount = GrowthRule.CalculateCount(skill.Spec.ProjectileCount, countMag);
+            }
+
             _network.SendSkillCasted(
                 new SkillCastNetworkData(
                     skill.Id,
                     casterId,
                     slotIndex,
                     damage,
-                    cooldown,
+                    skill.Spec.Duration,
                     range,
                     result.DeliveryType,
                     pr != null ? (int)pr.ProjectileSpec.TrajectoryType : 0,
@@ -91,7 +98,8 @@ namespace Features.Skill.Application
                     position,
                     direction,
                     targetPosition,
-                    skill.Spec.StatusPayload
+                    skill.Spec.StatusPayload,
+                    projectileCount
                 )
             );
 

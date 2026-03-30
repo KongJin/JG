@@ -85,6 +85,12 @@ namespace Features.Player.Application
                 _localPlayer.CurrentHp,
                 _localPlayer.MaxHp
             ));
+            _eventBus.Publish(new PlayerManaChangedEvent(
+                _localPlayer.Id,
+                _localPlayer.CurrentMana,
+                _localPlayer.MaxMana
+            ));
+            _network.SyncMana(_localPlayer.Id, _localPlayer.CurrentMana, _localPlayer.MaxMana);
         }
     }
 }

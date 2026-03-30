@@ -17,8 +17,10 @@ MonoBehaviour:
   description: 
   icon: {fileID: 21300000, guid: aa8e4d78ad034d58860a8d6c7a0d861d, type: 3}
   damage: 55
-  cooldown: 7
+  manaCost: 21
   range: 8
+  duration: 0
+  projectileCount: 1
   deliveryType: 0
   trajectoryType: 0
   hitType: 0

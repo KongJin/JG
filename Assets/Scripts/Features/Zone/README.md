@@ -15,7 +15,7 @@
 ```text
 Skill ZoneRequestedEvent (SkillSpec with StatusPayload)
   -> ZoneEventHandler (EventBus 직접 구독)
-    -> SpawnZoneUseCase (range, cooldown, baseDamage, statusPayload)
+    -> SpawnZoneUseCase (range, duration, baseDamage, statusPayload)
       -> IZoneEffectPort.SpawnZone()
         -> ZoneEffectAdapter
           -> ZoneView (시각 연출 + 수명)

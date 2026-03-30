@@ -10,6 +10,8 @@ namespace Features.Player.Domain
             Spec = spec;
             MaxHp = spec.MaxHp;
             CurrentHp = spec.MaxHp;
+            MaxMana = spec.MaxMana;
+            CurrentMana = spec.MaxMana;
         }
 
         public PlayerSpec Spec { get; }
@@ -22,6 +24,9 @@ namespace Features.Player.Domain
         public float CurrentHp { get; private set; }
         public bool IsDead => CurrentHp <= 0f;
         public bool IsInvulnerable { get; private set; }
+
+        public float MaxMana { get; }
+        public float CurrentMana { get; private set; }
 
         public float TakeDamage(float damage)
         {
@@ -46,7 +51,25 @@ namespace Features.Player.Domain
         public void Respawn()
         {
             CurrentHp = MaxHp;
+            CurrentMana = MaxMana;
             IsInvulnerable = false;
+        }
+
+        public bool SpendMana(float cost)
+        {
+            if (cost <= 0f)
+                return true;
+            if (CurrentMana < cost)
+                return false;
+            CurrentMana -= cost;
+            return true;
+        }
+
+        public void RegenMana(float deltaTime)
+        {
+            if (CurrentMana >= MaxMana)
+                return;
+            CurrentMana = System.Math.Min(MaxMana, CurrentMana + Spec.ManaRegenPerSecond * deltaTime);
         }
 
         public void SetInvulnerable(bool value)

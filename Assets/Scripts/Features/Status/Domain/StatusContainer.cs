@@ -51,6 +51,17 @@ namespace Features.Status.Domain
             return total;
         }
 
+        public int GetStackCount(StatusType type)
+        {
+            var count = 0;
+            for (var i = 0; i < _effects.Count; i++)
+            {
+                if (_effects[i].Type == type && !_effects[i].IsExpired)
+                    count++;
+            }
+            return count;
+        }
+
         public bool Has(StatusType type)
         {
             for (var i = 0; i < _effects.Count; i++)

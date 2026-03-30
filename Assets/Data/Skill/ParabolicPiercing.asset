@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Infrastructure.SkillData
   skillId: ParabolicPiercing
   damage: 61
-  cooldown: 8
+  manaCost: 24
   range: 13
+  duration: 0
+  projectileCount: 1
   deliveryType: 0
   trajectoryType: 1
   hitType: 1

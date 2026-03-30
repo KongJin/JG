@@ -38,7 +38,7 @@ namespace Features.Skill
 
         public SkillCatalog Catalog => _catalog;
 
-        public void Initialize(EventBus eventBus, Transform playerTransform, Camera camera, DomainEntityId casterId, IStatusQueryPort statusQuery = null)
+        public void Initialize(EventBus eventBus, Transform playerTransform, Camera camera, DomainEntityId casterId, IManaPort manaPort, IStatusQueryPort statusQuery = null)
         {
             _eventBus = eventBus;
             _disposables?.Dispose();
@@ -51,8 +51,7 @@ namespace Features.Skill
 
             new SkillNetworkEventHandler(_eventBus, _networkAdapter);
 
-            var cooldownTracker = new CooldownTracker();
-            _equipSkillUseCase = new EquipSkillUseCase(_eventBus, cooldownTracker);
+            _equipSkillUseCase = new EquipSkillUseCase(_eventBus);
 
             // Build deck from all catalog skills
             var allSkillIds = CollectCatalogSkillIds();
@@ -78,7 +77,7 @@ namespace Features.Skill
                 id => _catalog.Get(id), casterId, eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, deckCycleHandler));
 
-            var castSkillUseCase = new CastSkillUseCase(cooldownTracker, _networkAdapter, statusQuery);
+            var castSkillUseCase = new CastSkillUseCase(manaPort, _networkAdapter, statusQuery);
 
             _slotInputHandler.Initialize(
                 castSkillUseCase,

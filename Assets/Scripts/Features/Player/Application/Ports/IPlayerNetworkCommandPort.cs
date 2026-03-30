@@ -10,5 +10,6 @@ namespace Features.Player.Application.Ports
         void SendDeath(DomainEntityId targetId, DomainEntityId killerId);
         void SendRespawn(DomainEntityId targetId);
         void SyncHealth(DomainEntityId targetId, float currentHp, float maxHp);
+        void SyncMana(DomainEntityId targetId, float currentMana, float maxMana);
     }
 }

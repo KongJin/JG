@@ -4,6 +4,7 @@ using Features.Player.Application.Ports;
 using Features.Player.Domain;
 using Features.Player.Infrastructure;
 using Features.Player.Presentation;
+using Features.Skill.Application.Ports;
 using Features.Status.Infrastructure;
 using Photon.Pun;
 using Shared.Attributes;
@@ -46,8 +47,11 @@ namespace Features.Player
         public PlayerNetworkAdapter NetworkAdapter => _networkAdapter;
         public StatusNetworkAdapter StatusNetworkAdapter => _statusNetworkAdapter;
         public PlayerUseCases UseCases => _useCases;
+        public IManaPort ManaPort { get; private set; }
+        public ManaAdapter ManaAdapterInstance { get; private set; }
 
         public float MaxHp { get; private set; }
+        public float MaxMana { get; private set; }
         public bool IsInitialized { get; private set; }
 
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
@@ -84,7 +88,9 @@ namespace Features.Player
                     gravity: 20f,
                     maxHp: 100f,
                     defense: 5f,
-                    rotationSpeed: 720f
+                    rotationSpeed: 720f,
+                    maxMana: 100f,
+                    manaRegenPerSecond: 5f
                 ),
                 _networkAdapter.StablePlayerId
             );
@@ -101,6 +107,9 @@ namespace Features.Player
             if (_entityIdHolder != null)
                 _entityIdHolder.Set(player.Id);
 
+            ManaAdapterInstance = new ManaAdapter(player, _networkAdapter, eventBus);
+            ManaPort = ManaAdapterInstance;
+
             new PlayerNetworkEventHandler(eventBus, _networkAdapter);
             _combatTargetProvider = new PlayerCombatTargetProvider(player);
             CombatNetworkPort = new PlayerCombatNetworkPortAdapter(_networkAdapter);
@@ -109,6 +118,7 @@ namespace Features.Player
             _inputHandler.Initialize(player, _useCases, eventBus);
             _view.Initialize(true, eventBus);
             MaxHp = player.MaxHp;
+            MaxMana = player.MaxMana;
             IsInitialized = true;
         }
 

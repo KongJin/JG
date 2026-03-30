@@ -2,16 +2,18 @@ using Shared.Attributes;
 using Features.Combat.Domain;
 using Features.Player.Application.Ports;
 using Photon.Pun;
+using Photon.Realtime;
 using Shared.Kernel;
 using UnityEngine;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 namespace Features.Player.Infrastructure
 {
     [RequireComponent(typeof(PhotonView))]
-    public sealed class PlayerNetworkAdapter : MonoBehaviourPun, IPunObservable,
+    public sealed class PlayerNetworkAdapter : MonoBehaviourPunCallbacks, IPunObservable,
         IPlayerNetworkCommandPort, IPlayerNetworkCallbackPort
     {
-        [Required, SerializeField]
+        [SerializeField]
         private float _lerpSpeed = 15f;
 
         private Vector3 _networkPosition;
@@ -19,6 +21,8 @@ namespace Features.Player.Infrastructure
 
         private const string HealthKey = "hp";
         private const string MaxHealthKey = "maxHp";
+        private const string ManaKey = "mana";
+        private const string MaxManaKey = "maxMana";
 
         public bool IsMine => photonView.IsMine;
         public DomainEntityId StablePlayerId => new DomainEntityId(GetStablePlayerIdValue());
@@ -29,6 +33,7 @@ namespace Features.Player.Infrastructure
         public System.Action<DomainEntityId, DomainEntityId> OnRemoteDied { get; set; }
         public System.Action<DomainEntityId> OnRemoteRespawned { get; set; }
         public System.Action<DomainEntityId, float, float> OnHealthSynced { get; set; }
+        public System.Action<DomainEntityId, float, float> OnManaSynced { get; set; }
 
         private void Update()
         {
@@ -78,12 +83,52 @@ namespace Features.Player.Infrastructure
         {
             if (photonView == null || !photonView.IsMine) return;
 
-            var props = new ExitGames.Client.Photon.Hashtable
+            var props = new Hashtable
             {
                 { HealthKey, currentHp },
                 { MaxHealthKey, maxHp }
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        }
+
+        public void SyncMana(DomainEntityId targetId, float currentMana, float maxMana)
+        {
+            if (photonView == null || !photonView.IsMine) return;
+
+            var props = new Hashtable
+            {
+                { ManaKey, currentMana },
+                { MaxManaKey, maxMana }
+            };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        }
+
+        public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, Hashtable changedProps)
+        {
+            if (targetPlayer == null || targetPlayer.IsLocal)
+                return;
+
+            var playerId = new DomainEntityId("player-" + targetPlayer.ActorNumber);
+
+            if (changedProps.TryGetValue(HealthKey, out var hpRaw) && hpRaw is float hp
+                && changedProps.TryGetValue(MaxHealthKey, out var maxHpRaw) && maxHpRaw is float maxHp)
+            {
+                OnHealthSynced?.Invoke(playerId, hp, maxHp);
+            }
+            else if (targetPlayer.CustomProperties.TryGetValue(HealthKey, out var hpFallback) && hpFallback is float hpF
+                     && changedProps.ContainsKey(HealthKey))
+            {
+                var mhp = targetPlayer.CustomProperties.TryGetValue(MaxHealthKey, out var mhpRaw) && mhpRaw is float mhpF ? mhpF : 100f;
+                OnHealthSynced?.Invoke(playerId, hpF, mhp);
+            }
+
+            if (changedProps.TryGetValue(ManaKey, out var manaRaw) && manaRaw is float mana)
+            {
+                var maxMana = changedProps.TryGetValue(MaxManaKey, out var maxManaRaw) && maxManaRaw is float mm
+                    ? mm
+                    : (targetPlayer.CustomProperties.TryGetValue(MaxManaKey, out var mmFallback) && mmFallback is float mmF ? mmF : 100f);
+                OnManaSynced?.Invoke(playerId, mana, maxMana);
+            }
         }
 
         [PunRPC]

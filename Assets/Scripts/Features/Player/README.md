@@ -10,6 +10,9 @@
 - 로컬/원격 플레이어 분기 초기화
 - Combat Feature의 데미지 파이프라인 참여 (ICombatTargetProvider 구현)
 - 플레이어 HP 이벤트 발행 (PlayerHealthChangedEvent, PlayerDiedEvent)
+- 마나 리소스 관리 (ManaAdapter → IManaPort 구현)
+- 마나 리젠 틱 (ManaRegenTicker, Presentation thin shell)
+- 마나 UI (ManaBarView, 로컬 플레이어 전용 스크린 HUD)
 
 ## 이벤트 흐름
 
@@ -54,10 +57,13 @@ PlayerNetworkAdapter.RPC_PlayerRespawn (리스폰 수신)
 | 위치, 회전 | `OnPhotonSerializeView` (연속 데이터) | 매 프레임 보간 |
 | 점프 | `RPC` (이산 이벤트) | 점프 모션 트리거 |
 | 데미지 | `RPC` (이산 이벤트) | 원격 데미지 적용 |
-| 리스폰 | `RPC` (이산 이벤트) | 원격 HP 리셋 |
+| 리스�� | `RPC` (이산 이벤트) | 원격 HP 리셋 |
+| HP | `CustomProperties` (상태 동기화) | 원격 HP 바 표시, late-join 대응 |
+| 마나 | `CustomProperties` (상태 동기화) | 프렌들리 파이어 판정용, late-join 대��� |
 
-`PlayerNetworkAdapter`는 `IPunObservable` + `MonoBehaviourPun`을 구현하며,
+`PlayerNetworkAdapter`는 `IPunObservable` + `MonoBehaviourPunCallbacks`를 구��하며,
 `IPlayerNetworkCommandPort`(송신)와 `IPlayerNetworkCallbackPort`(수신)을 모두 담당한다.
+`OnPlayerPropertiesUpdate`를 통해 원격 플레이어의 HP/마나 CustomProperties 변경을 수신한다.
 
 ## Bootstrap 구조
 
@@ -86,10 +92,10 @@ PlayerNetworkAdapter.RPC_PlayerRespawn (리스폰 수신)
 
 ## 레이어 메모
 
-- **Domain**: `Player`, `PlayerSpec` (Defense 필드 포함), `MovementRule`
-- **Application**: `PlayerUseCases`, `PlayerNetworkEventHandler`, `PlayerDamageEventHandler`, `GameEndEventHandler`, 이벤트(`PlayerMovedEvent`, `PlayerJumpedEvent`, `PlayerHealthChangedEvent`, `PlayerDiedEvent`, `PlayerRespawnedEvent`, `PlayerSpawnedEvent`, `GameEndEvent`), 포트(`IPlayerMotorPort`, `IPlayerNetworkCommandPort`, `IPlayerNetworkCallbackPort`, `ISpeedModifierPort`)
-- **Infrastructure**: `PlayerMotorAdapter`, `PlayerNetworkAdapter`, `PlayerCombatTargetProvider` (Combat의 `ICombatTargetProvider` 구현)
-- **Presentation**: `PlayerInputHandler`, `PlayerView` (리모트 컴포넌트 비활성화는 PlayerSetup이 담당, View는 이벤트 구독 분기만 수행), `PlayerHealthHudView`, `CameraFollower`
+- **Domain**: `Player` (마나 필드 포함: `MaxMana`, `CurrentMana`, `SpendMana()`, `RegenMana()`), `PlayerSpec` (Defense, MaxMana, ManaRegenPerSecond 필드 포함), `MovementRule`
+- **Application**: `PlayerUseCases`, `PlayerNetworkEventHandler` (Health/Mana CustomProperties 수신 처리), `PlayerDamageEventHandler`, `GameEndEventHandler`, `ManaAdapter` (`IManaPort` 구현, 마나 차감/리젠/네트워크 동기화), 이벤트(`PlayerMovedEvent`, `PlayerJumpedEvent`, `PlayerHealthChangedEvent`, `PlayerDiedEvent`, `PlayerRespawnedEvent`, `PlayerSpawnedEvent`, `PlayerManaChangedEvent`, `GameEndEvent`), 포��(`IPlayerMotorPort`, `IPlayerNetworkCommandPort`, `IPlayerNetworkCallbackPort`, `ISpeedModifierPort`)
+- **Infrastructure**: `PlayerMotorAdapter`, `PlayerNetworkAdapter` (`MonoBehaviourPunCallbacks`, HP/마나 CustomProperties 송수신), `PlayerCombatTargetProvider` (Combat의 `ICombatTargetProvider` 구현), `EntityAffiliationAdapter` (Combat의 `IEntityAffiliationPort` 구현, ID 프리픽스 기반 소속 판정)
+- **Presentation**: `PlayerInputHandler`, `PlayerView` (리모트 컴포넌트 비활성화는 PlayerSetup이 담당, View는 이벤트 구독 분기만 수행), `PlayerHealthHudView`, `ManaBarView` (로컬 전용 스크린 HUD), `ManaRegenTicker` (thin Update shell → ManaAdapter.TickRegen), `CameraFollower`
 - **Bootstrap**: `GameSceneBootstrap` (씬 레벨, Photon Instantiate + 씬 wiring), `PlayerSetup` (프리팹 레벨, 로컬/원격 분기 초기화), `PlayerSceneRegistry` (씬 등록 보조)
 
 ## 도메인 물리
@@ -110,7 +116,7 @@ PlayerNetworkAdapter.RPC_PlayerRespawn (리스폰 수신)
 
 ## 피처 간 의존
 
-- **Skill**: `SkillSetup`과 `SkillNetworkAdapter`가 같은 PlayerCharacter 프리팹에 부착됨
-- **Combat**: `ICombatTargetProvider` (구현), `DamageAppliedEvent` (구독)
+- **Skill**: `SkillSetup`과 `SkillNetworkAdapter`가 같은 PlayerCharacter 프리팹��� 부착됨. `IManaPort` 구현체(`ManaAdapter`)를 `PlayerSetup`에서 생성하여 `SkillSetup`에 주입. `ManaAdapter`는 외부 SDK 직접 사용 없이 순수 도메인 상태 조회/계산이므로 Application 레벨에 배치 (anti_patterns.md 예외 적용)
+- **Combat**: `ICombatTargetProvider` (구현), `IEntityAffiliationPort` (구현), `DamageAppliedEvent` (구독)
 - **Status**: `ISpeedModifierPort`를 통해 Haste/Slow 이동속도 수정 (선택적 의존, null이면 기본 속도 사용)
 - **Shared**: EventBus, Float3, DomainEntityId, IClockPort, `UiErrorRequestedEvent`

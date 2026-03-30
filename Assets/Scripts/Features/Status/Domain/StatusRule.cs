@@ -13,6 +13,7 @@ namespace Features.Status.Domain
                 case StatusType.Expand:
                 case StatusType.Extend:
                 case StatusType.Multiply:
+                case StatusType.Count:
                     return StackPolicy.Independent;
                 default:
                     return StackPolicy.Refresh;
@@ -26,7 +27,8 @@ namespace Features.Status.Domain
                 case StatusType.Burn: return BurnMaxStacks;
                 case StatusType.Expand:
                 case StatusType.Extend:
-                case StatusType.Multiply: return UpgradeMaxStacks;
+                case StatusType.Multiply:
+                case StatusType.Count: return UpgradeMaxStacks;
                 default: return 1;
             }
         }

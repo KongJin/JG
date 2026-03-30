@@ -5,7 +5,7 @@
 ## 현재 책임
 
 - 상태 적용(Apply), 갱신(Refresh), 만료(Expire), 틱 피해(Burn) 처리
-- 중첩 규칙: Refresh(Haste, Slow), Independent(Burn 최대 3스택, Expand/Extend/Multiply 최대 10스택)
+- 중첩 규칙: Refresh(Haste, Slow), Independent(Burn 최대 3스택, Expand/Extend/Multiply/Count 최대 10스택)
 - 이동속도 변경(Haste/Slow)을 Player에 제공 (`ISpeedModifierPort`)
 - 범위/지속/개수 변경(Expand/Extend/Multiply)을 Skill에 제공 (`IStatusQueryPort`)
 - 네트워크 동기화: 적용/틱 데미지를 RPC로 복제
@@ -20,6 +20,7 @@
 | Expand | 범위 증가 | Independent, 최대 10스택 | Skill (발동 시 조회) |
 | Extend | 쿨다운 감소 | Independent, 최대 10스택 | Skill (발동 시 조회) |
 | Multiply | 데미지 증폭 | Independent, 최대 10스택 | Skill (발동 시 조회) |
+| Count | 발사/스폰 수 증가 | Independent, 최대 10스택 | Skill (발동 시 조회) |
 
 ## 데이터 흐름
 
@@ -100,7 +101,7 @@ CastSkillUseCase.Execute()
 
 ## 레이어 메모
 
-- **Domain**: `StatusType`, `StackPolicy`, `StatusEffect`, `StatusContainer`, `StatusRule`, `StatusPayload`
+- **Domain**: `StatusType`, `StackPolicy`, `StatusEffect`, `StatusContainer`, `StatusRule`, `StatusPayload`, `GrowthRule`
 - **Application**: `StatusUseCases`, `StatusTickUseCase`, `StatusEventHandler`, `StatusTriggerHandler`, `StatusNetworkEventHandler`, `StatusContainerRegistry`, `SpeedModifierAdapter`, `StatusQueryAdapter`, 이벤트 4종, 포트 2종 (`IStatusNetworkCommandPort`, `IStatusNetworkCallbackPort`)
 - **Infrastructure**: `StatusNetworkAdapter` (CommandPort + CallbackPort 구현, 플레이어 프리팹에 부착)
 - **Presentation**: `StatusTickController` (Update 루프에서 틱 orchestration)

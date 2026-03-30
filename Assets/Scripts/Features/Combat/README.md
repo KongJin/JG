@@ -46,11 +46,64 @@ PlayerNetworkAdapter.RPC_ApplyDamage
 
 ## 레이어 메모
 
-- **Domain**: `DamageType`, `DamageRule`, `CombatTarget`
-- **Application**: `ApplyDamageUseCase`, `CombatNetworkEventHandler`, `CombatReplicationEventHandler`, `ICombatTargetPort`, `ICombatTargetProvider`, `ICombatNetworkCommandPort`, `DamageAppliedEvent`, `DamageReplicatedEvent`
+- **Domain**: `DamageType`, `DamageRule`, `CombatTarget`, `RelationshipType`, `RelationshipRule`
+- **Application**: `ApplyDamageUseCase`, `CombatNetworkEventHandler`, `CombatReplicationEventHandler`, `ICombatTargetPort`, `ICombatTargetProvider`, `ICombatNetworkCommandPort`, `IEntityAffiliationPort`, `DamageAppliedEvent`, `DamageReplicatedEvent`, `FriendlyFireAppliedEvent`
 - **Infrastructure**: `CombatTargetAdapter` (ICombatTargetPort 구현, ICombatTargetProvider 기반 딕셔너리)
-- **Presentation**: `CombatTargetView` (데미지 반응/피격 피드백)
+- **Presentation**: `CombatTargetView` (데미지 반응/피격 피드백), `FriendlyFireFeedbackView` (아군 피격 경고/피드백)
 - **Bootstrap**: `CombatBootstrap` (조립, `RegisterTarget` API) - 피처 루트에 위치. 이벤트 핸들링은 `CombatNetworkEventHandler`/`CombatReplicationEventHandler`가 EventBus를 직접 구독한다.
+
+## 프렌들리 파이어 (Friendly Fire)
+
+- `RelationshipType` (Self/Ally/Enemy) + `RelationshipRule`로 데미지 배율을 결정한다.
+  - Self = 0× (자기 피해 차단), Ally = 0.5×, Enemy = 1×
+- `IEntityAffiliationPort`가 공격자-피격자 관계를 조회한다. 구현체는 Player/Infrastructure의 `EntityAffiliationAdapter`.
+  - 같은 ID → Self, 둘 다 "player-" 프리픽스 → Ally, 그 외 → Enemy
+- `ApplyDamageUseCase.Execute()`에서 관계 배율을 적용한 후 데미지를 전파한다.
+  - Ally 관계일 때 `FriendlyFireAppliedEvent` 추가 발행
+- `ExecuteReplicated()`에서는 이미 계산된 데미지이므로 배율 재적용 안 함. 관계 조회하여 `FriendlyFireAppliedEvent`만 발행.
+- `FriendlyFireFeedbackView` (Presentation): 로컬 플레이어가 공격자/피격자일 때 피드백 표시.
+
+## 씬 계약
+
+### Required Serialized References (CombatBootstrap)
+
+| 필드 | 타입 | 용도 |
+|---|---|---|
+| `_targetAdapter` | `CombatTargetAdapter` | 데미지 타깃 관리 |
+| `_targetViews` | `CombatTargetView[]` | 피격 시각 피드백 |
+| `_friendlyFireFeedbackView` | `FriendlyFireFeedbackView` | 아군 피격 경고/피드백 (선택) |
+
+### Required Serialized References (FriendlyFireFeedbackView)
+
+| 필드 | 타입 | 용도 |
+|---|---|---|
+| `_bannerPanel` | `GameObject` | 배너 패널 (SetActive로 표시/숨김) |
+| `_bannerText` | `Text` | 배너 메시지 텍스트 |
+
+FriendlyFireFeedbackView는 별도 Canvas(`FFBannerCanvas`, ScreenSpace-Overlay, sortingOrder=100)에 배치. 내부에 Panel + Text 자식 구조.
+
+### Runtime-created objects
+없음 — 모든 UI는 scene-owned.
+
+### 초기화 순서
+
+1. `GameSceneBootstrap`이 `CombatBootstrap.Initialize(eventBus, networkPort, localAuthorityId, affiliation)` 호출
+2. `CombatBootstrap`이 내부에서:
+   - `CombatTargetAdapter.Initialize()`
+   - `ApplyDamageUseCase` 생성 (`IEntityAffiliationPort` 필수 주입)
+   - `CombatNetworkEventHandler` 생성 (EventBus 직접 구독)
+   - `CombatReplicationEventHandler` 생성 (EventBus 직접 구독)
+   - `CombatTargetView[]` 초기화
+   - `FriendlyFireFeedbackView.Initialize(subscriber, publisher, localPlayerId)` 호출
+3. 이후 `GameSceneBootstrap`이 `CombatBootstrap.RegisterTarget()`으로 플레이어/적 등록
+
+### Late-join / Reconnect 동작
+
+- **관계 판정**: `EntityAffiliationAdapter`는 ID 프리픽스 기반 순수 계산이므로 상태 의존 없음. late-join에 영향 없음.
+- **FF 배율**: `ApplyDamageUseCase.Execute()`에서 매 호출마다 관계를 조회하므로 동기화 이슈 없음.
+- **FF 이벤트 재생**: `FriendlyFireAppliedEvent`는 로컬 UI 피드백 전용. 네트워크로 전파되지 않으며, late-join 클라이언트에 과거 FF 이벤트를 재생하지 않음 (의도적 — 과거 피드백은 의미 없음).
+- **Replicated path**: `ExecuteReplicated()`는 이미 계산된 최종 데미지를 받으므로 FF 배율을 재적용하지 않음. `FriendlyFireAppliedEvent`만 로컬 피드백용으로 발행.
+- **Host/Client 비대칭**: 없음. 공격자 클라이언트가 `Execute()`로 배율 적용 + RPC 전파, 피격자 클라이언트가 `ExecuteReplicated()`로 수신. 양쪽 모두 로컬 `FriendlyFireAppliedEvent`를 독립적으로 발행.
 
 ## 현재 구현 기준 결정
 
@@ -66,4 +119,5 @@ PlayerNetworkAdapter.RPC_ApplyDamage
 - **Projectile**: `ProjectileHitEvent` (트리거)
 - **Player**: `PlayerCombatTargetProvider`가 `ICombatTargetProvider` 구현
 - **Player**: `PlayerCombatNetworkPortAdapter`가 `ICombatNetworkCommandPort` 구현
-- **Shared**: `EventBus`, `Result`, `EntityIdHolder`, `DomainEntityId`
+- **Player**: `EntityAffiliationAdapter`가 `IEntityAffiliationPort` 구현 (ID 프리픽스 기반 소속 판정)
+- **Shared**: `EventBus`, `Result`, `EntityIdHolder`, `DomainEntityId`, `SoundRequestEvent`

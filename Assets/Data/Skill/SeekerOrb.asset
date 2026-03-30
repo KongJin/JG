@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Infrastructure.SkillData
   skillId: SeekerOrb
   damage: 41
-  cooldown: 11
+  manaCost: 33
   range: 14
+  duration: 0
+  projectileCount: 1
   deliveryType: 0
   trajectoryType: 2
   hitType: 3

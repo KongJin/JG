@@ -7,6 +7,7 @@ namespace Features.Status.Domain
         Burn = 2,
         Expand = 3,
         Extend = 4,
-        Multiply = 5
+        Multiply = 5,
+        Count = 6
     }
 }

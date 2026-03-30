@@ -767,6 +767,12 @@ namespace ProjectSD.EditorTools.UnityMcp
                     return;
                 }
 
+                if (method == "POST" && path == "/menu/execute")
+                {
+                    await HandleMenuExecuteAsync(request, response);
+                    return;
+                }
+
                 await WriteJsonAsync(
                     response,
                     404,
@@ -1780,6 +1786,42 @@ namespace ProjectSD.EditorTools.UnityMcp
             });
 
             await WriteJsonAsync(response, 200, result);
+        }
+
+        private static async Task HandleMenuExecuteAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            string menuPath = null;
+            var body = await ReadRequestBodyAsync(request);
+            if (!string.IsNullOrEmpty(body))
+            {
+                var json = JsonUtility.FromJson<MenuExecuteRequest>(body);
+                menuPath = json?.menuPath;
+            }
+
+            if (string.IsNullOrWhiteSpace(menuPath))
+            {
+                await WriteJsonAsync(response, 400, new ErrorResponse { error = "menuPath is required" });
+                return;
+            }
+
+            var captured = menuPath;
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                var executed = EditorApplication.ExecuteMenuItem(captured);
+                return new GenericResponse
+                {
+                    success = executed,
+                    message = executed ? "Menu executed: " + captured : "Menu item not found: " + captured
+                };
+            });
+
+            await WriteJsonAsync(response, result.success ? 200 : 404, result);
+        }
+
+        [Serializable]
+        private sealed class MenuExecuteRequest
+        {
+            public string menuPath;
         }
 
         private static async Task HandleBuildWebGLAsync(HttpListenerRequest request, HttpListenerResponse response)

@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Infrastructure.SkillData
   skillId: OrbitSingle
   damage: 30
-  cooldown: 8
+  manaCost: 24
   range: 6
+  duration: 0
+  projectileCount: 1
   deliveryType: 0
   trajectoryType: 3
   hitType: 0

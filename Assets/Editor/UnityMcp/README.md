@@ -62,6 +62,12 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - 오브젝트 참조: `"/경로::컴포넌트타입"` (예: `"/GameSceneBootstrap::StatusSetup"`)
 - 에셋 참조: `assetPath` 필드 사용 (예: `"assetPath": "Assets/Resources/MyAsset.asset"`)
 
+### 메뉴
+
+| Method | Path | Body | 설명 |
+|---|---|---|---|
+| POST | `/menu/execute` | `{"menuPath":"Tools/Setup Friendly Fire UI"}` | 에디터 메뉴 아이템 실행 |
+
 ### 씬/에셋
 
 | Method | Path | Body | 설명 |

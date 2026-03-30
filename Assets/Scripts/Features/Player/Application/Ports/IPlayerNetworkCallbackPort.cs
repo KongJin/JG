@@ -10,5 +10,6 @@ namespace Features.Player.Application.Ports
         System.Action<DomainEntityId, DomainEntityId> OnRemoteDied { set; }
         System.Action<DomainEntityId> OnRemoteRespawned { set; }
         System.Action<DomainEntityId, float, float> OnHealthSynced { set; }
+        System.Action<DomainEntityId, float, float> OnManaSynced { set; }
     }
 }

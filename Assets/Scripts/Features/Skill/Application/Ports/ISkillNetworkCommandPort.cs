@@ -12,7 +12,7 @@ namespace Features.Skill.Application.Ports
         public DomainEntityId CasterId { get; }
         public int SlotIndex { get; }
         public float Damage { get; }
-        public float Cooldown { get; }
+        public float Duration { get; }
         public float Range { get; }
         public DeliveryType DeliveryType { get; }
         public int TrajectoryType { get; }
@@ -23,20 +23,22 @@ namespace Features.Skill.Application.Ports
         public Float3 Direction { get; }
         public Float3 TargetPosition { get; }
         public StatusPayload StatusPayload { get; }
+        public int ProjectileCount { get; }
 
         public SkillCastNetworkData(
             DomainEntityId skillId, DomainEntityId casterId, int slotIndex,
-            float damage, float cooldown, float range,
+            float damage, float duration, float range,
             DeliveryType deliveryType,
             int trajectoryType, int hitType, float speed, float radius,
             Float3 position, Float3 direction, Float3 targetPosition,
-            StatusPayload statusPayload = default)
+            StatusPayload statusPayload = default,
+            int projectileCount = 1)
         {
             SkillId = skillId;
             CasterId = casterId;
             SlotIndex = slotIndex;
             Damage = damage;
-            Cooldown = cooldown;
+            Duration = duration;
             Range = range;
             DeliveryType = deliveryType;
             TrajectoryType = trajectoryType;
@@ -47,6 +49,7 @@ namespace Features.Skill.Application.Ports
             Direction = direction;
             TargetPosition = targetPosition;
             StatusPayload = statusPayload;
+            ProjectileCount = projectileCount;
         }
     }
 

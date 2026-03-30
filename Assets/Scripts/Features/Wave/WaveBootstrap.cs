@@ -1,6 +1,7 @@
 using Shared.Attributes;
 using Features.Combat;
 using Features.Enemy;
+using Features.Skill.Application.Ports;
 using Features.Wave.Application;
 using Features.Wave.Application.Ports;
 using Features.Wave.Infrastructure;
@@ -22,6 +23,7 @@ namespace Features.Wave
         [Required, SerializeField] private WaveEndView _endView;
         [Required, SerializeField] private WaveFlowController _flowController;
         [Required, SerializeField] private UpgradeSelectionView _upgradeView;
+        [Required, SerializeField] private UpgradeResultView _upgradeResultView;
 
         private EventBus _eventBus;
         private CombatBootstrap _combatBootstrap;
@@ -29,7 +31,7 @@ namespace Features.Wave
 
         public IPlayerPositionQuery PlayerPositionQuery => _playerPositionQuery;
 
-        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap, DomainEntityId localPlayerId)
+        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap, DomainEntityId localPlayerId, IStatusQueryPort statusQuery = null)
         {
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
@@ -47,7 +49,7 @@ namespace Features.Wave
             var waveHandler = new WaveEventHandler(eventBus, waveLoop, aliveQuery);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, waveHandler));
 
-            var upgradeHandler = new UpgradeEventHandler(eventBus, eventBus);
+            var upgradeHandler = new UpgradeEventHandler(eventBus, eventBus, statusQuery);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, upgradeHandler));
 
             _hudView.Initialize(eventBus);
@@ -58,6 +60,9 @@ namespace Features.Wave
 
             _upgradeView.Initialize(eventBus, eventBus, localPlayerId);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _upgradeView));
+
+            _upgradeResultView.Initialize(eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, _upgradeResultView));
 
             _flowController.Initialize(waveLoop, (IWaveTablePort)_waveTable, (IWaveSpawnPort)_spawnAdapter, eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _flowController));

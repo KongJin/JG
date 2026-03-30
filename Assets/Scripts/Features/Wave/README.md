@@ -9,7 +9,8 @@
 - Master에서만 적 스폰 수행
 - 각 클라이언트에서 동일한 웨이브 상태를 로컬 이벤트로 재현해 HUD/결과 UI 갱신
 - 비-Master 클라이언트에서 `EnemySetup.EnemyArrived` 콜백으로 원격 적 초기화 (Master는 `EnemySpawnAdapter`가 올바른 EnemyData로 명시적 초기화)
-- **웨이브 클리어 시 강화 선택 (3지선다)**: Expand(범위), Extend(쿨다운감소), Multiply(데미지증폭) 중 택 1 → 영구 StatusEffect 적용
+- **웨이브 클리어 시 강화 선택 (3지선다)**: Count(개수), Expand(범위), Extend(지속) 중 택 1 → 영구 StatusEffect 적용
+- **업그레이드 결과 표시**: 선택 후 "개수 Lv.N" 형태로 2초간 요약 표시
 
 ## 데이터 흐름
 
@@ -45,9 +46,10 @@ WaveClearedEvent
       → UpgradeSelectionRequestedEvent
         → UpgradeSelectionView: 3버튼 패널 표시
 
-유저 선택 (Expand / Extend / Multiply)
+유저 선택 (Count / Expand / Extend)
   → UpgradeSelectedEvent
     → UpgradeEventHandler: StatusApplyRequestedEvent(Duration=MaxValue) 발행 → 영구 버프
+    → UpgradeEventHandler: UpgradeAppliedEvent(stacks) 발행 → UpgradeResultView 표시
     → WaveFlowController.OnUpgradeSelected(): 다음 카운트다운 시작
 ```
 
@@ -77,15 +79,15 @@ PlayerDiedEvent
 ## 씬 의존성
 
 - `WaveBootstrap`과 `WaveFlowController`는 `GameSceneBootstrap`과 같은 오브젝트에 붙어 있다.
-- 모든 Inspector 연결 필드(`_waveTable`, `_spawnAdapter`, `_playerPositionQuery`, `_hudView`, `_endView`, `_flowController`, `_upgradeView`)는 `[Required, SerializeField]`로 선언해 저장 시점에 누락을 검증한다.
+- 모든 Inspector 연결 필드(`_waveTable`, `_spawnAdapter`, `_playerPositionQuery`, `_hudView`, `_endView`, `_flowController`, `_upgradeView`, `_upgradeResultView`)는 `[Required, SerializeField]`로 선언해 저장 시점에 누락을 검증한다.
 - 런타임 fallback(Resources.Load, GetComponent, AddComponent, CreateDefault)은 사용하지 않는다.
 
 ## 레이어 메모
 
 - **Domain**: `WaveState` (UpgradeSelection 포함), `WaveProgress`
-- **Application**: `WaveLoopUseCase`, `WaveEventHandler`, `UpgradeEventHandler`, 웨이브 이벤트 5종 + 강화 이벤트 2종 (`UpgradeSelectionRequestedEvent`, `UpgradeSelectedEvent`), 포트 4종 (`IPlayerPositionQuery`, `IAlivePlayerQuery`, `IWaveTablePort`, `IWaveSpawnPort`)
+- **Application**: `WaveLoopUseCase`, `WaveEventHandler`, `UpgradeEventHandler`, 웨이브 이벤트 5종 + 강화 이벤트 3종 (`UpgradeSelectionRequestedEvent`, `UpgradeSelectedEvent`, `UpgradeAppliedEvent`), 포트 4종 (`IPlayerPositionQuery`, `IAlivePlayerQuery`, `IWaveTablePort`, `IWaveSpawnPort`)
 - **Infrastructure**: `WaveTableData` (`IWaveTablePort` 구현), `EnemySpawnAdapter` (`IWaveSpawnPort` 구현, 일괄 스폰 코루틴 포함), `AlivePlayerQueryAdapter`, `PlayerPositionQueryAdapter`
-- **Presentation**: `WaveFlowController` (UpgradeSelection 상태 처리 포함), `WaveHudView` (카운트다운 자체 표시), `WaveEndView`, `UpgradeSelectionView` (3지선다 강화 UI)
+- **Presentation**: `WaveFlowController` (UpgradeSelection 상태 처리 포함), `WaveHudView` (카운트다운 자체 표시), `WaveEndView`, `UpgradeSelectionView` (3지선다 강화 UI), `UpgradeResultView` (업그레이드 결과 2초 표시)
 - **Bootstrap**: `WaveBootstrap` (순수 조립 — 비즈니스 로직 없음)
 
 ## 피처 의존성

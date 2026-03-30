@@ -12,9 +12,9 @@ namespace Features.Wave.Presentation
     public sealed class UpgradeSelectionView : MonoBehaviour
     {
         [Required, SerializeField] private GameObject panel;
-        [Required, SerializeField] private Button expandButton;
-        [Required, SerializeField] private Button extendButton;
-        [Required, SerializeField] private Button multiplyButton;
+        [Required, SerializeField] private Button countButton;
+        [Required, SerializeField] private Button rangeButton;
+        [Required, SerializeField] private Button durationButton;
 
         private IEventPublisher _publisher;
         private IEventSubscriber _subscriber;
@@ -28,9 +28,9 @@ namespace Features.Wave.Presentation
 
             panel.SetActive(false);
 
-            expandButton.onClick.AddListener(() => Select(StatusType.Expand));
-            extendButton.onClick.AddListener(() => Select(StatusType.Extend));
-            multiplyButton.onClick.AddListener(() => Select(StatusType.Multiply));
+            countButton.onClick.AddListener(() => Select(StatusType.Count));
+            rangeButton.onClick.AddListener(() => Select(StatusType.Expand));
+            durationButton.onClick.AddListener(() => Select(StatusType.Extend));
 
             _subscriber.Subscribe(this, new Action<UpgradeSelectionRequestedEvent>(OnSelectionRequested));
         }
@@ -49,9 +49,9 @@ namespace Features.Wave.Presentation
         private void OnDestroy()
         {
             _subscriber?.UnsubscribeAll(this);
-            expandButton.onClick.RemoveAllListeners();
-            extendButton.onClick.RemoveAllListeners();
-            multiplyButton.onClick.RemoveAllListeners();
+            countButton.onClick.RemoveAllListeners();
+            rangeButton.onClick.RemoveAllListeners();
+            durationButton.onClick.RemoveAllListeners();
         }
     }
 }

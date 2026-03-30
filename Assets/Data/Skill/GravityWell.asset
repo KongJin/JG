@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Infrastructure.SkillData
   skillId: GravityWell
   damage: 24
-  cooldown: 13
+  manaCost: 39
   range: 7
+  duration: 5
+  projectileCount: 1
   deliveryType: 1
   trajectoryType: 0
   hitType: 0

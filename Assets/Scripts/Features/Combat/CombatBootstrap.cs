@@ -19,26 +19,20 @@ namespace Features.Combat
         [Required, SerializeField]
         private CombatTargetView[] _targetViews = new CombatTargetView[0];
 
+        [SerializeField]
+        private FriendlyFireFeedbackView _friendlyFireFeedbackView;
+
         private ApplyDamageUseCase _applyDamage;
         private CombatNetworkEventHandler _eventHandler;
         private CombatReplicationEventHandler _replicationEventHandler;
         private EventBus _eventBus;
         private DisposableScope _disposables = new DisposableScope();
 
-        public void Initialize(EventBus eventBus)
-        {
-            Initialize(eventBus, null, default);
-        }
-
-        public void Initialize(EventBus eventBus, ICombatNetworkCommandPort networkPort)
-        {
-            Initialize(eventBus, networkPort, default);
-        }
-
         public void Initialize(
             EventBus eventBus,
             ICombatNetworkCommandPort networkPort,
-            DomainEntityId localAuthorityId
+            DomainEntityId localAuthorityId,
+            IEntityAffiliationPort affiliation
         )
         {
             if (eventBus == null)
@@ -52,7 +46,11 @@ namespace Features.Combat
             _disposables = new DisposableScope();
 
             _targetAdapter.Initialize();
-            _applyDamage = new ApplyDamageUseCase(_targetAdapter, _eventBus, networkPort ?? NoOpCombatNetworkPort.Instance);
+            _applyDamage = new ApplyDamageUseCase(
+                _targetAdapter, _eventBus,
+                networkPort ?? NoOpCombatNetworkPort.Instance,
+                affiliation
+            );
             _eventHandler = new CombatNetworkEventHandler(_applyDamage, _eventBus, localAuthorityId);
             _replicationEventHandler = new CombatReplicationEventHandler(_applyDamage, _eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, _eventHandler));
@@ -69,6 +67,9 @@ namespace Features.Combat
 
                 view.Initialize(_eventBus);
             }
+
+            if (_friendlyFireFeedbackView != null)
+                _friendlyFireFeedbackView.Initialize(_eventBus, _eventBus, localAuthorityId);
         }
 
         private void OnDestroy()

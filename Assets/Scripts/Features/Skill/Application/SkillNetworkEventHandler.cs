@@ -8,6 +8,7 @@ using Features.Skill.Application.Ports;
 using Features.Skill.Domain;
 using Features.Skill.Domain.Delivery;
 using Shared.EventBus;
+using Shared.Math;
 
 namespace Features.Skill.Application
 {
@@ -26,7 +27,7 @@ namespace Features.Skill.Application
 
         private void HandleSkillCasted(SkillCastNetworkData data)
         {
-            var spec = new SkillSpec(data.Damage, data.Cooldown, data.Range, data.StatusPayload);
+            var spec = new SkillSpec(data.Damage, 0f, data.Range, data.Duration, data.ProjectileCount, data.StatusPayload);
 
             switch (data.DeliveryType)
             {
@@ -35,20 +36,10 @@ namespace Features.Skill.Application
                         (TrajectoryType)data.TrajectoryType,
                         (HitType)data.HitType,
                         data.Speed, data.Radius);
-                    _publisher.Publish(
-                        new ProjectileRequestedEvent(
-                            data.CasterId,
-                            projectileSpec,
-                            data.Damage,
-                            DamageType.Magical,
-                            data.Position,
-                            data.Direction,
-                            data.StatusPayload
-                        )
-                    );
+                    PublishProjectiles(data, projectileSpec);
                     break;
                 case DeliveryType.Zone:
-                    _publisher.Publish(new ZoneRequestedEvent(data.SkillId, data.CasterId, spec, data.Position, data.Direction));
+                    PublishZones(data, spec);
                     break;
                 case DeliveryType.Targeted:
                     _publisher.Publish(
@@ -68,6 +59,58 @@ namespace Features.Skill.Application
             }
 
             _publisher.Publish(new SkillCastedEvent(data.SkillId, data.CasterId, data.SlotIndex, spec));
+        }
+
+        private void PublishZones(SkillCastNetworkData data, SkillSpec spec)
+        {
+            var count = data.ProjectileCount;
+            if (count <= 1)
+            {
+                _publisher.Publish(new ZoneRequestedEvent(data.SkillId, data.CasterId, spec, data.Position, data.Direction));
+                return;
+            }
+
+            var ringRadius = data.Range * 0.3f;
+            var angleStep = 2.0 * System.Math.PI / count;
+            for (var i = 0; i < count; i++)
+            {
+                var angle = angleStep * i;
+                var offsetX = (float)(ringRadius * System.Math.Cos(angle));
+                var offsetZ = (float)(ringRadius * System.Math.Sin(angle));
+                var pos = new Float3(data.Position.X + offsetX, data.Position.Y, data.Position.Z + offsetZ);
+                _publisher.Publish(new ZoneRequestedEvent(data.SkillId, data.CasterId, spec, pos, data.Direction));
+            }
+        }
+
+        private void PublishProjectiles(SkillCastNetworkData data, ProjectileSpec projectileSpec)
+        {
+            var count = data.ProjectileCount;
+            if (count <= 1)
+            {
+                _publisher.Publish(new ProjectileRequestedEvent(
+                    data.CasterId, projectileSpec, data.Damage, DamageType.Magical,
+                    data.Position, data.Direction, data.StatusPayload));
+                return;
+            }
+
+            const float spreadAngleDeg = 10f;
+            var totalSpread = spreadAngleDeg * (count - 1);
+            var startAngle = -totalSpread * 0.5f;
+            var dx = data.Direction.X;
+            var dz = data.Direction.Z;
+
+            for (var i = 0; i < count; i++)
+            {
+                var angleDeg = startAngle + spreadAngleDeg * i;
+                var rad = angleDeg * (System.Math.PI / 180.0);
+                var cos = (float)System.Math.Cos(rad);
+                var sin = (float)System.Math.Sin(rad);
+                var rotatedDir = new Float3(dx * cos - dz * sin, data.Direction.Y, dx * sin + dz * cos);
+
+                _publisher.Publish(new ProjectileRequestedEvent(
+                    data.CasterId, projectileSpec, data.Damage, DamageType.Magical,
+                    data.Position, rotatedDir, data.StatusPayload));
+            }
         }
     }
 }

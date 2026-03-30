@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Infrastructure.SkillData
   skillId: AegisSurge
   damage: 18
-  cooldown: 14
+  manaCost: 42
   range: 0
+  duration: 5
+  projectileCount: 1
   deliveryType: 3
   trajectoryType: 0
   hitType: 0

@@ -17,7 +17,7 @@ namespace Features.Zone.Application
         {
             _spawnZone.Execute(
                 e.CasterId, e.Position, e.Direction,
-                e.Spec.Range, e.Spec.Cooldown,
+                e.Spec.Range, e.Spec.Duration,
                 e.Spec.Damage, e.Spec.StatusPayload);
         }
     }

@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Infrastructure.SkillData
   skillId: JudgmentMark
   damage: 82
-  cooldown: 16
+  manaCost: 48
   range: 9
+  duration: 0
+  projectileCount: 1
   deliveryType: 2
   trajectoryType: 0
   hitType: 0

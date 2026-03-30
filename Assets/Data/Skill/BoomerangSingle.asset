@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Infrastructure.SkillData
   skillId: BoomerangSingle
   damage: 48
-  cooldown: 7
+  manaCost: 21
   range: 10
+  duration: 0
+  projectileCount: 1
   deliveryType: 0
   trajectoryType: 4
   hitType: 0
