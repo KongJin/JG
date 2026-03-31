@@ -116,7 +116,7 @@ namespace Features.Combat.Infrastructure
             public CombatTargetDamageResult ApplyDamage(float damage)
             {
                 var remaining = _target.ApplyDamage(damage);
-                return new CombatTargetDamageResult(remaining, _target.IsDead);
+                return new CombatTargetDamageResult(remaining, _target.IsDead, false);
             }
         }
 

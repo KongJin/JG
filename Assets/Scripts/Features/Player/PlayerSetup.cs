@@ -10,8 +10,10 @@ using Photon.Pun;
 using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Lifecycle;
 using Shared.Time;
 using UnityEngine;
+
 
 namespace Features.Player
 {
@@ -40,6 +42,7 @@ namespace Features.Player
         private PlayerUseCases _useCases;
         private PlayerCombatTargetProvider _combatTargetProvider;
         private DomainEntityId _playerId;
+        private DisposableScope _disposables;
 
         public ICombatTargetProvider CombatTargetProvider => _combatTargetProvider;
         public ICombatNetworkCommandPort CombatNetworkPort { get; private set; }
@@ -49,6 +52,10 @@ namespace Features.Player
         public PlayerUseCases UseCases => _useCases;
         public IManaPort ManaPort { get; private set; }
         public ManaAdapter ManaAdapterInstance { get; private set; }
+        public Domain.Player DomainPlayer { get; private set; }
+        public BleedoutTracker BleedoutTrackerInstance { get; private set; }
+        public RescueChannelTracker RescueChannelTrackerInstance { get; private set; }
+        public InvulnerabilityTracker InvulnerabilityTrackerInstance { get; private set; }
 
         public float MaxHp { get; private set; }
         public float MaxMana { get; private set; }
@@ -62,23 +69,25 @@ namespace Features.Player
             RemoteArrived?.Invoke(this);
         }
 
-        public void Initialize(EventBus eventBus, PlayerUseCases existingUseCases = null, ISpeedModifierPort speedModifier = null)
+        public void Initialize(EventBus eventBus, PlayerUseCases existingUseCases = null, ISpeedModifierPort speedModifier = null, PlayerSceneRegistry sceneRegistry = null, IPlayerLookupPort playerLookup = null)
         {
             if (IsInitialized)
                 return;
 
             if (_networkAdapter.IsMine)
-                InitializeLocal(eventBus, existingUseCases, speedModifier);
+                InitializeLocal(eventBus, existingUseCases, speedModifier, sceneRegistry, playerLookup);
             else
-                InitializeRemote(eventBus);
+                InitializeRemote(eventBus, playerLookup);
         }
 
-        private void InitializeLocal(EventBus eventBus, PlayerUseCases existingUseCases, ISpeedModifierPort speedModifier)
+        private void InitializeLocal(EventBus eventBus, PlayerUseCases existingUseCases, ISpeedModifierPort speedModifier, PlayerSceneRegistry sceneRegistry, IPlayerLookupPort playerLookup)
         {
+            _disposables = new DisposableScope();
+
             var clock = new ClockAdapter();
             _useCases = existingUseCases != null
                 ? existingUseCases
-                : new PlayerUseCases(_motorAdapter, _networkAdapter, eventBus, clock, speedModifier);
+                : new PlayerUseCases(_motorAdapter, _networkAdapter, eventBus, clock, speedModifier, eventBus, playerLookup);
 
             var spawnResult = _useCases.Spawn(
                 new PlayerSpec(
@@ -102,28 +111,44 @@ namespace Features.Player
             }
 
             var player = spawnResult.Value;
+            DomainPlayer = player;
             _playerId = player.Id;
 
-            if (_entityIdHolder != null)
-                _entityIdHolder.Set(player.Id);
+            _entityIdHolder.Set(player.Id);
 
             ManaAdapterInstance = new ManaAdapter(player, _networkAdapter, eventBus);
             ManaPort = ManaAdapterInstance;
 
-            new PlayerNetworkEventHandler(eventBus, _networkAdapter);
+            new PlayerNetworkEventHandler(eventBus, _networkAdapter, playerLookup);
             _combatTargetProvider = new PlayerCombatTargetProvider(player);
             CombatNetworkPort = new PlayerCombatNetworkPortAdapter(_networkAdapter);
-            new PlayerDamageEventHandler(player, eventBus, eventBus);
+            var damageHandler = new PlayerDamageEventHandler(player, eventBus, eventBus);
 
-            _inputHandler.Initialize(player, _useCases, eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, _useCases));
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, damageHandler));
+
+            var bleedoutTracker = new BleedoutTracker(player, eventBus, eventBus, _networkAdapter);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, bleedoutTracker));
+            BleedoutTrackerInstance = bleedoutTracker;
+
+            RescueChannelTrackerInstance = new RescueChannelTracker(eventBus, eventBus, _networkAdapter);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, RescueChannelTrackerInstance));
+
+            var invulnerabilityTracker = new InvulnerabilityTracker(player, eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, invulnerabilityTracker));
+            InvulnerabilityTrackerInstance = invulnerabilityTracker;
+
+            _inputHandler.Initialize(player, _useCases, eventBus, RescueChannelTrackerInstance);
             _view.Initialize(true, eventBus);
             MaxHp = player.MaxHp;
             MaxMana = player.MaxMana;
             IsInitialized = true;
         }
 
-        private void InitializeRemote(EventBus eventBus)
+        private void InitializeRemote(EventBus eventBus, IPlayerLookupPort playerLookup)
         {
+            _disposables = new DisposableScope();
+
             _playerId = _networkAdapter.StablePlayerId;
             var remoteSpec = new PlayerSpec(
                 walkSpeed: 0f,
@@ -134,19 +159,25 @@ namespace Features.Player
                 defense: 5f,
                 rotationSpeed: 0f
             );
-            var remotePlayer = new Domain.Player(_playerId, remoteSpec);
-            new PlayerNetworkEventHandler(eventBus, _networkAdapter, remotePlayer);
+            var remotePlayer = PlayerUseCases.SpawnRemote(remoteSpec, _playerId).Value;
+            DomainPlayer = remotePlayer;
+            new PlayerNetworkEventHandler(eventBus, _networkAdapter, playerLookup);
             _combatTargetProvider = new PlayerCombatTargetProvider(remotePlayer);
-            new PlayerDamageEventHandler(remotePlayer, eventBus, eventBus);
+            var damageHandler = new PlayerDamageEventHandler(remotePlayer, eventBus, eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, damageHandler));
             MaxHp = remotePlayer.MaxHp;
 
-            if (_entityIdHolder != null)
-                _entityIdHolder.Set(_playerId);
+            _entityIdHolder.Set(_playerId);
 
             _inputHandler.enabled = false;
             _motorAdapter.enabled = false;
             _view.Initialize(false, eventBus);
             IsInitialized = true;
+        }
+
+        private void OnDestroy()
+        {
+            _disposables?.Dispose();
         }
     }
 }

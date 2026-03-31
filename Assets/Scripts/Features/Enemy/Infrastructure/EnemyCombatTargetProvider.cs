@@ -18,10 +18,10 @@ namespace Features.Enemy.Infrastructure
         public CombatTargetDamageResult ApplyDamage(float damage)
         {
             if (_enemy.IsDead)
-                return new CombatTargetDamageResult(_enemy.CurrentHp, true);
+                return new CombatTargetDamageResult(_enemy.CurrentHp, true, false);
 
             var remaining = _enemy.TakeDamage(damage);
-            return new CombatTargetDamageResult(remaining, _enemy.IsDead);
+            return new CombatTargetDamageResult(remaining, _enemy.IsDead, false);
         }
     }
 }

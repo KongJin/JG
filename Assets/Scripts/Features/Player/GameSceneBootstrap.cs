@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Features.Combat;
 using Features.Player.Application;
+using Features.Player.Application.Ports;
 using Features.Player.Infrastructure;
 using Features.Player.Presentation;
 using Features.Projectile;
@@ -13,7 +14,7 @@ using Shared.Analytics;
 using Shared.Attributes;
 using Shared.ErrorHandling;
 using Shared.EventBus;
-using Shared.Kernel;
+using Shared.Lifecycle;
 using Shared.Runtime.Sound;
 using Shared.Ui;
 using UnityEngine;
@@ -38,17 +39,21 @@ namespace Features.Player
         [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
         [Required, SerializeField] private ManaRegenTicker _manaRegenTicker;
         [Required, SerializeField] private ManaBarView _manaBarView;
+        [Required, SerializeField] private BleedoutTicker _bleedoutTicker;
+        [Required, SerializeField] private RescueChannelTicker _rescueChannelTicker;
+        [Required, SerializeField] private DownedOverlayView _downedOverlayView;
+        [Required, SerializeField] private InvulnerabilityTicker _invulnerabilityTicker;
 
         [Header("Status (Buff/Debuff)")]
         [Required, SerializeField] private StatusSetup _statusSetup;
 
         [Header("Wave (PvE)")]
-        [Required, SerializeField] private WaveBootstrap _waveBootstrap;
+        [SerializeField] private WaveBootstrap _waveBootstrap;
 
         private EventBus _eventBus;
+        private DisposableScope _disposables;
         private IAnalyticsPort _analytics;
-        private GameAnalyticsEventHandler _analyticsHandler;
-        private GameEndEventHandler _gameEndHandler;
+        private IPlayerLookupPort _playerLookup;
         private string _matchId;
         private float _sceneStartTime;
         private bool _dropOffLogged;
@@ -64,6 +69,7 @@ namespace Features.Player
         {
             _remotePlayerWiringReady = false;
             _eventBus = new EventBus();
+            _disposables = new DisposableScope();
 
             // Analytics
             _analytics = new FirebaseAnalyticsAdapter();
@@ -71,8 +77,10 @@ namespace Features.Player
             _sceneStartTime = Time.realtimeSinceStartup;
             _analytics.LogGameStart(_matchId);
             RoundCounter.Increment();
-            _analyticsHandler = new GameAnalyticsEventHandler(_analytics, _eventBus);
+            var analyticsHandler = new GameAnalyticsEventHandler(_analytics, _eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, analyticsHandler));
 
+            _playerLookup = new PlayerLookupAdapter(_playerSceneRegistry);
             _sceneErrorPresenter.Initialize(_eventBus);
 
             if (!PhotonNetwork.InRoom)
@@ -104,17 +112,24 @@ namespace Features.Player
             // Status (must initialize before PlayerSetup so SpeedModifier is ready)
             _statusSetup.Initialize(_eventBus, localSetup.StatusNetworkAdapter, localSetup.StatusNetworkAdapter, PhotonNetwork.IsMasterClient);
 
-            localSetup.Initialize(_eventBus, speedModifier: _statusSetup.SpeedModifier);
+            localSetup.Initialize(_eventBus, speedModifier: _statusSetup.SpeedModifier, sceneRegistry: _playerSceneRegistry, playerLookup: _playerLookup);
 
             // Combat
             _combatBootstrap.Initialize(_eventBus, localSetup.CombatNetworkPort, localSetup.PlayerId, new EntityAffiliationAdapter());
             if (_waveBootstrap == null)
-                _gameEndHandler = new GameEndEventHandler(_eventBus, _eventBus, localSetup.PlayerId);
+            {
+                var gameEndHandler = new GameEndEventHandler(_eventBus, _eventBus, localSetup.PlayerId);
+                _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndHandler));
+            }
 
             ConnectPlayer(localSetup);
 
             _manaRegenTicker.Initialize(localSetup.ManaAdapterInstance);
             _manaBarView.Initialize(_eventBus, localSetup.PlayerId, localSetup.MaxMana);
+            _bleedoutTicker.Initialize(localSetup.BleedoutTrackerInstance);
+            _rescueChannelTicker.Initialize(localSetup.RescueChannelTrackerInstance, localSetup.UseCases);
+            _downedOverlayView.Initialize(_eventBus, localSetup.PlayerId, localSetup.BleedoutTrackerInstance, localSetup.RescueChannelTrackerInstance);
+            _invulnerabilityTicker.Initialize(localSetup.InvulnerabilityTrackerInstance);
 
             _soundPlayer.Initialize(_eventBus, localSetup.PlayerId.Value);
             _skillSetup.Initialize(_eventBus, player.transform, _camera, localSetup.PlayerId, localSetup.ManaPort, _statusSetup.StatusQuery);
@@ -124,7 +139,7 @@ namespace Features.Player
             // Wave (PvE)
             if (_waveBootstrap != null)
             {
-                _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId, _statusSetup.StatusQuery);
+                _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId, _statusSetup.UpgradeQuery);
                 _waveBootstrap.RegisterPlayer(player.transform);
             }
 
@@ -137,25 +152,28 @@ namespace Features.Player
         private void ConnectPlayer(PlayerSetup setup)
         {
             if (!setup.IsInitialized)
-                setup.Initialize(_eventBus);
+                setup.Initialize(_eventBus, playerLookup: _playerLookup);
 
             if (!_playerSceneRegistry.TryRegister(setup))
                 return;
 
             var hudGo = Instantiate(_healthHudPrefab, _hudCanvas.transform, false);
             var hudView = hudGo.GetComponent<PlayerHealthHudView>();
-            if (hudView != null)
-                hudView.Initialize(_eventBus, setup.PlayerId, setup.MaxHp, setup.transform, _camera, _hudCanvas);
+            hudView.Initialize(_eventBus, setup.PlayerId, setup.MaxHp, setup.transform, _camera, _hudCanvas);
 
-            if (setup.CombatTargetProvider != null)
-                _combatBootstrap.RegisterTarget(setup.PlayerId, setup.CombatTargetProvider);
+            _combatBootstrap.RegisterTarget(setup.PlayerId, setup.CombatTargetProvider);
 
             if (_waveBootstrap != null)
                 _waveBootstrap.RegisterPlayer(setup.transform);
 
             // Wire remote player's StatusNetworkAdapter so RPC callbacks reach the shared handler
-            if (!setup.NetworkAdapter.IsMine && setup.StatusNetworkAdapter != null)
+            if (!setup.NetworkAdapter.IsMine)
                 _statusSetup.RegisterRemoteCallbackPort(setup.StatusNetworkAdapter);
+
+            // Hydrate remote players from CustomProperties AFTER registry registration
+            // so that IPlayerLookupPort.Resolve() can find the domain player
+            if (!setup.NetworkAdapter.IsMine)
+                setup.NetworkAdapter.HydrateFromProperties();
         }
 
         private void OnRemotePlayerArrived(PlayerSetup setup)
@@ -176,10 +194,8 @@ namespace Features.Player
             var playTime = Time.realtimeSinceStartup - _sceneStartTime;
             if (_analytics != null)
                 _analytics.LogGameEnd(_matchId, playTime, RoundCounter.Current);
-            if (_analyticsHandler != null && _eventBus != null)
-                _eventBus.UnsubscribeAll(_analyticsHandler);
-            if (_gameEndHandler != null && _eventBus != null)
-                _eventBus.UnsubscribeAll(_gameEndHandler);
+
+            _disposables?.Dispose();
         }
 
         public override void OnDisconnected(Photon.Realtime.DisconnectCause cause)

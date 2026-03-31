@@ -6,6 +6,7 @@ using Features.Lobby.Application.Ports;
 using Shared.ErrorHandling;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Runtime.Pooling;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,12 +37,14 @@ namespace Features.Lobby.Presentation
 
         private LobbyUseCases _useCases;
         private IEventPublisher _eventPublisher;
-        private readonly List<RoomItemView> _spawnedItems = new List<RoomItemView>();
+        private GameObjectPool _roomItemPool;
+        private readonly List<GameObject> _activeItems = new();
 
         public void Initialize(LobbyUseCases useCases, IEventPublisher eventPublisher)
         {
             _useCases = useCases;
             _eventPublisher = eventPublisher;
+            _roomItemPool = new GameObjectPool(_roomItemPrefab.gameObject, _roomListContent);
 
             if (_createRoomButton != null)
                 _createRoomButton.onClick.AddListener(HandleCreateRoom);
@@ -57,14 +60,11 @@ namespace Features.Lobby.Presentation
         {
             ClearList();
 
-            if (_roomItemPrefab == null || _roomListContent == null)
-                return;
-
             foreach (var room in rooms)
             {
-                var item = Instantiate(_roomItemPrefab, _roomListContent);
-                item.Bind(room, OnJoinRoomClicked);
-                _spawnedItems.Add(item);
+                var go = _roomItemPool.Rent(Vector3.zero, Quaternion.identity);
+                go.GetComponent<RoomItemView>().Bind(room, OnJoinRoomClicked);
+                _activeItems.Add(go);
             }
         }
 
@@ -72,14 +72,11 @@ namespace Features.Lobby.Presentation
         {
             ClearList();
 
-            if (_roomItemPrefab == null || _roomListContent == null)
-                return;
-
             foreach (var room in rooms)
             {
-                var item = Instantiate(_roomItemPrefab, _roomListContent);
-                item.Bind(room, OnJoinRoomClicked);
-                _spawnedItems.Add(item);
+                var go = _roomItemPool.Rent(Vector3.zero, Quaternion.identity);
+                go.GetComponent<RoomItemView>().Bind(room, OnJoinRoomClicked);
+                _activeItems.Add(go);
             }
         }
 
@@ -105,12 +102,9 @@ namespace Features.Lobby.Presentation
 
         private void ClearList()
         {
-            foreach (var item in _spawnedItems)
-            {
-                if (item != null)
-                    Destroy(item.gameObject);
-            }
-            _spawnedItems.Clear();
+            foreach (var go in _activeItems)
+                _roomItemPool.Return(go);
+            _activeItems.Clear();
         }
     }
 }

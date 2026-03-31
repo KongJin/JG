@@ -6,6 +6,7 @@ using Features.Lobby.Domain;
 using Shared.ErrorHandling;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Runtime.Pooling;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,15 +51,17 @@ namespace Features.Lobby.Presentation
         private LobbyUseCases _useCases;
         private IEventPublisher _eventPublisher;
 
+        private GameObjectPool _memberItemPool;
         private DomainEntityId _currentRoomId;
         private DomainEntityId _localMemberId;
         private bool _localIsReady;
-        private readonly List<MemberItemView> _spawnedItems = new List<MemberItemView>();
+        private readonly List<GameObject> _activeItems = new();
 
         public void Initialize(LobbyUseCases useCases, IEventPublisher eventPublisher)
         {
             _useCases = useCases;
             _eventPublisher = eventPublisher;
+            _memberItemPool = new GameObjectPool(_memberItemPrefab.gameObject, _memberListContent);
 
             if (_leaveButton != null)
                 _leaveButton.onClick.AddListener(HandleLeave);
@@ -108,14 +111,11 @@ namespace Features.Lobby.Presentation
         {
             ClearMemberList();
 
-            if (_memberItemPrefab == null || _memberListContent == null)
-                return;
-
             foreach (var member in members)
             {
-                var item = Instantiate(_memberItemPrefab, _memberListContent);
-                item.Bind(member);
-                _spawnedItems.Add(item);
+                var go = _memberItemPool.Rent(Vector3.zero, Quaternion.identity);
+                go.GetComponent<MemberItemView>().Bind(member);
+                _activeItems.Add(go);
             }
         }
 
@@ -159,12 +159,9 @@ namespace Features.Lobby.Presentation
 
         private void ClearMemberList()
         {
-            foreach (var item in _spawnedItems)
-            {
-                if (item != null)
-                    Destroy(item.gameObject);
-            }
-            _spawnedItems.Clear();
+            foreach (var go in _activeItems)
+                _memberItemPool.Return(go);
+            _activeItems.Clear();
         }
     }
 }

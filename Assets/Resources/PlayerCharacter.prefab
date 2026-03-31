@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 3331981052011678741}
   - component: {fileID: 6026010365453779391}
   - component: {fileID: 1234567890123456789}
+  - component: {fileID: 8800000000000000001}
   m_Layer: 0
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -267,6 +268,7 @@ MonoBehaviour:
   _inputHandler: {fileID: 1301895531840824734}
   _view: {fileID: 5394696662982802112}
   _entityIdHolder: {fileID: 1234567890123456789}
+  _statusNetworkAdapter: {fileID: 8800000000000000001}
 --- !u!114 &1234567890123456789
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -279,3 +281,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70d8976d6219f8b42b56e94472b3dd12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shared.Kernel.EntityIdHolder
+--- !u!114 &8800000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3596905951864095868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69c3d66e65e7da24bb50a3ac6a2ba83f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Status.Infrastructure.StatusNetworkAdapter

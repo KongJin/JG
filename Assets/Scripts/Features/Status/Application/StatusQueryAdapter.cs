@@ -1,10 +1,11 @@
 using Features.Skill.Application.Ports;
 using Features.Status.Domain;
+using Features.Wave.Application.Ports;
 using Shared.Kernel;
 
 namespace Features.Status.Application
 {
-    public sealed class StatusQueryAdapter : IStatusQueryPort
+    public sealed class StatusQueryAdapter : IStatusQueryPort, IUpgradeQueryPort
     {
         private readonly StatusContainerRegistry _registry;
 

@@ -6,8 +6,9 @@
 
 - `DamageRule`로 최종 데미지를 계산한다.
 - 타깃 포트를 통해 데미지를 적용한다.
-- `DamageAppliedEvent`를 발행한다 (AttackerId 포함).
+- `DamageAppliedEvent`를 발행한다 (AttackerId, IsDowned 포함).
 - `ICombatTargetProvider`를 통해 외부 피처(Player 등)가 데미지 파이프라인에 참여한다.
+- `CombatTargetDamageResult`에 `IsDowned` 필드를 포함하여 다운 상태를 전파한다.
 
 ## 데이터 흐름
 
@@ -20,7 +21,7 @@ ProjectileHitEvent
       → ICombatTargetPort.GetDefense / ApplyDamage
       → ICombatNetworkCommandPort.SendDamage (RPC 전파)
       → DamageAppliedEvent 발행
-        → PlayerDamageEventHandler → PlayerHealthChangedEvent / PlayerDiedEvent
+        → PlayerDamageEventHandler → PlayerHealthChangedEvent / PlayerDownedEvent / PlayerDiedEvent
 ```
 
 ### 원격 (피격자/관전자 클라이언트)
@@ -31,15 +32,16 @@ PlayerNetworkAdapter.RPC_ApplyDamage
     → DamageReplicatedEvent 발행
       → CombatReplicationEventHandler
         → ApplyDamageUseCase.ExecuteReplicated() (방어력 재계산 없이 적용)
-          → DamageAppliedEvent 발행
-            → PlayerDamageEventHandler → PlayerHealthChangedEvent / PlayerDiedEvent
+          → DamageAppliedEvent 발행 (IsDowned 포함)
+            → PlayerDamageEventHandler → PlayerHealthChangedEvent / PlayerDownedEvent / PlayerDiedEvent
 ```
 
 ### 단일 경로 원칙
 
 - 사망은 별도 RPC 없이 데미지 replication 경로로 전달된다 (`SendDeath` 미사용).
+- HP가 0이 되면 즉사가 아닌 **Downed** 상태로 전이한다 (`PlayerDownedEvent` 발행). Bleedout 만료 시 `PlayerDiedEvent` 발행.
 - `PlayerDamageEventHandler`가 `_deathPublished` 플래그로 `PlayerDiedEvent` 중복 발행을 방지한다.
-- 리스폰 시 `PlayerRespawnedEvent`로 플래그가 리셋된다.
+- 리스폰/구조 시 `PlayerRespawnedEvent`/`PlayerRescuedEvent`로 플래그가 리셋된다.
 - 게임 종료 UI는 Player 피처의 `GameEndEventHandler`가 `PlayerDiedEvent`를 받아 처리한다.
 
 **NOTE:** `CombatTestTargetLoop` (테스트용)은 삭제됨. 리스폰 기능이 필요하면 Application 레이어에 별도 핸들러를 만들어야 함.
@@ -47,7 +49,7 @@ PlayerNetworkAdapter.RPC_ApplyDamage
 ## 레이어 메모
 
 - **Domain**: `DamageType`, `DamageRule`, `CombatTarget`, `RelationshipType`, `RelationshipRule`
-- **Application**: `ApplyDamageUseCase`, `CombatNetworkEventHandler`, `CombatReplicationEventHandler`, `ICombatTargetPort`, `ICombatTargetProvider`, `ICombatNetworkCommandPort`, `IEntityAffiliationPort`, `DamageAppliedEvent`, `DamageReplicatedEvent`, `FriendlyFireAppliedEvent`
+- **Application**: `ApplyDamageUseCase`, `CombatNetworkEventHandler`, `CombatReplicationEventHandler`, `ICombatTargetPort`, `ICombatTargetProvider` (`CombatTargetDamageResult.IsDowned` 포함), `ICombatNetworkCommandPort`, `IEntityAffiliationPort`, `DamageAppliedEvent` (`IsDowned` 포함), `DamageReplicatedEvent`, `FriendlyFireAppliedEvent`
 - **Infrastructure**: `CombatTargetAdapter` (ICombatTargetPort 구현, ICombatTargetProvider 기반 딕셔너리)
 - **Presentation**: `CombatTargetView` (데미지 반응/피격 피드백), `FriendlyFireFeedbackView` (아군 피격 경고/피드백)
 - **Bootstrap**: `CombatBootstrap` (조립, `RegisterTarget` API) - 피처 루트에 위치. 이벤트 핸들링은 `CombatNetworkEventHandler`/`CombatReplicationEventHandler`가 EventBus를 직접 구독한다.

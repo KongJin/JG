@@ -11,7 +11,8 @@ namespace Features.Combat.Application.Events
             DamageType damageType,
             float remainingHealth,
             bool isDead,
-            DomainEntityId attackerId = default
+            DomainEntityId attackerId = default,
+            bool isDowned = false
         )
         {
             TargetId = targetId;
@@ -20,6 +21,7 @@ namespace Features.Combat.Application.Events
             RemainingHealth = remainingHealth;
             IsDead = isDead;
             AttackerId = attackerId;
+            IsDowned = isDowned;
         }
 
         public DomainEntityId TargetId { get; }
@@ -28,5 +30,6 @@ namespace Features.Combat.Application.Events
         public float RemainingHealth { get; }
         public bool IsDead { get; }
         public DomainEntityId AttackerId { get; }
+        public bool IsDowned { get; }
     }
 }

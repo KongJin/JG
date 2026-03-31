@@ -1,7 +1,7 @@
 using System;
-using Features.Skill.Application.Ports;
 using Features.Status.Application.Events;
 using Features.Wave.Application.Events;
+using Features.Wave.Application.Ports;
 using Shared.EventBus;
 
 namespace Features.Wave.Application
@@ -11,12 +11,12 @@ namespace Features.Wave.Application
         private const float UpgradeMagnitudePerLevel = 0.15f;
 
         private readonly IEventPublisher _publisher;
-        private readonly IStatusQueryPort _statusQuery;
+        private readonly IUpgradeQueryPort _upgradeQuery;
 
-        public UpgradeEventHandler(IEventPublisher publisher, IEventSubscriber subscriber, IStatusQueryPort statusQuery)
+        public UpgradeEventHandler(IEventPublisher publisher, IEventSubscriber subscriber, IUpgradeQueryPort upgradeQuery)
         {
             _publisher = publisher;
-            _statusQuery = statusQuery;
+            _upgradeQuery = upgradeQuery;
             subscriber.Subscribe(this, new Action<UpgradeSelectedEvent>(OnUpgradeSelected));
             subscriber.Subscribe(this, new Action<StatusAppliedEvent>(OnStatusApplied));
         }
@@ -36,7 +36,7 @@ namespace Features.Wave.Application
             if (e.Duration < float.MaxValue)
                 return;
 
-            var stacks = _statusQuery?.GetStacks(e.TargetId, e.Type) ?? 0;
+            var stacks = _upgradeQuery?.GetStacks(e.TargetId, e.Type) ?? 0;
             _publisher.Publish(new UpgradeAppliedEvent(e.TargetId, e.Type, stacks));
         }
     }

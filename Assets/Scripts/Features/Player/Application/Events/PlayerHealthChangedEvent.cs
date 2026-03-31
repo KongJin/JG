@@ -9,13 +9,15 @@ namespace Features.Player.Application.Events
         public float MaxHp { get; }
         public float DamageTaken { get; }
         public bool IsDead { get; }
+        public bool IsDowned { get; }
 
         public PlayerHealthChangedEvent(
             DomainEntityId playerId,
             float currentHp,
             float maxHp,
             float damageTaken,
-            bool isDead
+            bool isDead,
+            bool isDowned = false
         )
         {
             PlayerId = playerId;
@@ -23,6 +25,7 @@ namespace Features.Player.Application.Events
             MaxHp = maxHp;
             DamageTaken = damageTaken;
             IsDead = isDead;
+            IsDowned = isDowned;
         }
     }
 }

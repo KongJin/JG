@@ -3,6 +3,7 @@ using Features.Skill.Application.Ports;
 using Features.Status.Application;
 using Features.Status.Application.Ports;
 using Features.Status.Presentation;
+using Features.Wave.Application.Ports;
 using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Lifecycle;
@@ -21,6 +22,7 @@ namespace Features.Status
 
         public ISpeedModifierPort SpeedModifier { get; private set; }
         public IStatusQueryPort StatusQuery { get; private set; }
+        public IUpgradeQueryPort UpgradeQuery { get; private set; }
 
         public void Initialize(
             EventBus eventBus,
@@ -47,7 +49,9 @@ namespace Features.Status
             _tickController.Initialize(tickUseCase);
 
             SpeedModifier = new SpeedModifierAdapter(_registry);
-            StatusQuery = new StatusQueryAdapter(_registry);
+            var queryAdapter = new StatusQueryAdapter(_registry);
+            StatusQuery = queryAdapter;
+            UpgradeQuery = queryAdapter;
         }
 
         public void RegisterRemoteCallbackPort(IStatusNetworkCallbackPort callbackPort)

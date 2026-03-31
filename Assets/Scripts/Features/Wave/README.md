@@ -18,7 +18,7 @@
 
 ```text
 GameSceneBootstrap
-  → WaveBootstrap.Initialize(eventBus, combatBootstrap)
+  → WaveBootstrap.Initialize(eventBus, combatBootstrap, localPlayerId, upgradeQuery)
     → WaveLoopUseCase 생성
     → WaveEventHandler 생성
     → WaveFlowController.Initialize(waveLoop, waveTable, spawnAdapter)
@@ -49,7 +49,9 @@ WaveClearedEvent
 유저 선택 (Count / Expand / Extend)
   → UpgradeSelectedEvent
     → UpgradeEventHandler: StatusApplyRequestedEvent(Duration=MaxValue) 발행 → 영구 버프
-    → UpgradeEventHandler: UpgradeAppliedEvent(stacks) 발행 → UpgradeResultView 표시
+    → StatusAppliedEvent 수신 → UpgradeEventHandler.OnStatusApplied()
+      → IUpgradeQueryPort.GetStacks() 로 현재 스택 조회
+      → UpgradeAppliedEvent(stacks) 발행 → UpgradeResultView 표시
     → WaveFlowController.OnUpgradeSelected(): 다음 카운트다운 시작
 ```
 
@@ -61,10 +63,12 @@ EnemyDiedEvent
     → WaveLoopUseCase.HandleEnemyDied()
       → WaveClearedEvent 또는 WaveVictoryEvent
 
-PlayerDiedEvent
+PlayerDiedEvent (Downed가 아닌 Dead 전이 시에만 발행)
   → WaveEventHandler
     → AlivePlayerQueryAdapter.AnyPlayerAlive() == false
       → WaveDefeatEvent
+⚠️ Downed 상태는 Dead가 아니므로 패배 조건에 해당하지 않음.
+   전원 Downed 상태에서도 bleedout 시간 동안 구조 기회가 남는다.
 ```
 
 ## 네트워크 모델
@@ -85,7 +89,7 @@ PlayerDiedEvent
 ## 레이어 메모
 
 - **Domain**: `WaveState` (UpgradeSelection 포함), `WaveProgress`
-- **Application**: `WaveLoopUseCase`, `WaveEventHandler`, `UpgradeEventHandler`, 웨이브 이벤트 5종 + 강화 이벤트 3종 (`UpgradeSelectionRequestedEvent`, `UpgradeSelectedEvent`, `UpgradeAppliedEvent`), 포트 4종 (`IPlayerPositionQuery`, `IAlivePlayerQuery`, `IWaveTablePort`, `IWaveSpawnPort`)
+- **Application**: `WaveLoopUseCase`, `WaveEventHandler`, `UpgradeEventHandler`, 웨이브 이벤트 5종 + 강화 이벤트 3종 (`UpgradeSelectionRequestedEvent`, `UpgradeSelectedEvent`, `UpgradeAppliedEvent`), 포트 5종 (`IPlayerPositionQuery`, `IAlivePlayerQuery`, `IWaveTablePort`, `IWaveSpawnPort`, `IUpgradeQueryPort`)
 - **Infrastructure**: `WaveTableData` (`IWaveTablePort` 구현), `EnemySpawnAdapter` (`IWaveSpawnPort` 구현, 일괄 스폰 코루틴 포함), `AlivePlayerQueryAdapter`, `PlayerPositionQueryAdapter`
 - **Presentation**: `WaveFlowController` (UpgradeSelection 상태 처리 포함), `WaveHudView` (카운트다운 자체 표시), `WaveEndView`, `UpgradeSelectionView` (3지선다 강화 UI), `UpgradeResultView` (업그레이드 결과 2초 표시)
 - **Bootstrap**: `WaveBootstrap` (순수 조립 — 비즈니스 로직 없음)
@@ -95,5 +99,5 @@ PlayerDiedEvent
 - **Enemy**: `EnemyDiedEvent`, `EnemySetup`, `EnemyData` (스폰 시 `SpawnEnemy(data, ...)` 파라미터로 전달)
 - **Player**: `PlayerDiedEvent`, 플레이어 Transform 등록
 - **Combat**: `CombatBootstrap`
-- **Status**: `StatusType`, `StatusApplyRequestedEvent` (강화 선택 시 영구 버프 적용)
+- **Status**: `StatusType`, `StatusApplyRequestedEvent`, `StatusAppliedEvent` (강화 선택 시 영구 버프 적용 및 스택 조회)
 - **Shared**: `EventBus`, `DisposableScope`, `DomainEntityId`

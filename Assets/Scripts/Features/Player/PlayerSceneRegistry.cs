@@ -8,6 +8,8 @@ namespace Features.Player
     {
         private readonly Dictionary<string, PlayerSetup> _players = new();
 
+        public IReadOnlyCollection<PlayerSetup> All => _players.Values;
+
         public bool TryRegister(PlayerSetup setup)
         {
             if (setup == null)

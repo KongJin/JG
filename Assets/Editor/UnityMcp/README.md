@@ -94,6 +94,32 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - `outputPath`: 빌드 출력 경로 (기본값 `Build/WebGL`)
 - `fastBuild`: `true`이면 QA용 빠른 빌드 — Development 모드 + Gzip 압축 (Brotli 대신). 빌드 후 압축 설정은 자동 복원
 
+### 빌드 + 배포 통합 스크립트
+
+`tools/build-and-deploy-webgl.ps1` — MCP 빌드 호출 후 Firebase Hosting 배포까지 한 번에 실행한다.
+
+```powershell
+# 빠른 빌드 + QA 프리뷰 채널 배포 (기본)
+.\tools\build-and-deploy-webgl.ps1 -Fast
+
+# 빠른 빌드 + 라이브 배포
+.\tools\build-and-deploy-webgl.ps1 -Fast -Live
+
+# 릴리즈 빌드 + 라이브 배포
+.\tools\build-and-deploy-webgl.ps1 -Live
+
+# 빌드 스킵, 배포만
+.\tools\build-and-deploy-webgl.ps1 -SkipBuild
+```
+
+| 플래그 | 역할 |
+|---|---|
+| `-Fast` | `fastBuild:true` (Development + Gzip) |
+| `-Live` | `firebase deploy --only hosting` (프로덕션) |
+| (기본) | `firebase hosting:channel:deploy qa` (프리뷰 채널) |
+| `-SkipBuild` | 빌드 생략, 배포만 실행 |
+| `-Channel` | 프리뷰 채널 이름 (기본 `qa`) |
+
 ## 주의사항
 
 - 컴파일 중에는 서버가 내려간다 — `/asset/refresh` 후 `/health`로 `isCompiling: false` 확인 필요

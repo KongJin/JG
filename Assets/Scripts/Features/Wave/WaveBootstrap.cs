@@ -1,7 +1,6 @@
 using Shared.Attributes;
 using Features.Combat;
 using Features.Enemy;
-using Features.Skill.Application.Ports;
 using Features.Wave.Application;
 using Features.Wave.Application.Ports;
 using Features.Wave.Infrastructure;
@@ -31,7 +30,7 @@ namespace Features.Wave
 
         public IPlayerPositionQuery PlayerPositionQuery => _playerPositionQuery;
 
-        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap, DomainEntityId localPlayerId, IStatusQueryPort statusQuery = null)
+        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap, DomainEntityId localPlayerId, IUpgradeQueryPort upgradeQuery = null)
         {
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
@@ -49,7 +48,7 @@ namespace Features.Wave
             var waveHandler = new WaveEventHandler(eventBus, waveLoop, aliveQuery);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, waveHandler));
 
-            var upgradeHandler = new UpgradeEventHandler(eventBus, eventBus, statusQuery);
+            var upgradeHandler = new UpgradeEventHandler(eventBus, eventBus, upgradeQuery);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, upgradeHandler));
 
             _hudView.Initialize(eventBus);

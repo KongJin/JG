@@ -102,10 +102,10 @@ CastSkillUseCase.Execute()
 ## 레이어 메모
 
 - **Domain**: `StatusType`, `StackPolicy`, `StatusEffect`, `StatusContainer`, `StatusRule`, `StatusPayload`, `GrowthRule`
-- **Application**: `StatusUseCases`, `StatusTickUseCase`, `StatusEventHandler`, `StatusTriggerHandler`, `StatusNetworkEventHandler`, `StatusContainerRegistry`, `SpeedModifierAdapter`, `StatusQueryAdapter`, 이벤트 4종, 포트 2종 (`IStatusNetworkCommandPort`, `IStatusNetworkCallbackPort`)
+- **Application**: `StatusUseCases`, `StatusTickUseCase`, `StatusEventHandler`, `StatusTriggerHandler`, `StatusNetworkEventHandler`, `StatusContainerRegistry`, `SpeedModifierAdapter`, `StatusQueryAdapter` (`IStatusQueryPort` + `IUpgradeQueryPort` 구현), 이벤트 4종, 포트 2종 (`IStatusNetworkCommandPort`, `IStatusNetworkCallbackPort`)
 - **Infrastructure**: `StatusNetworkAdapter` (CommandPort + CallbackPort 구현, 플레이어 프리팹에 부착)
 - **Presentation**: `StatusTickController` (Update 루프에서 틱 orchestration)
-- **Bootstrap**: `StatusSetup` (순수 조립 — 비즈니스 로직 없음)
+- **Bootstrap**: `StatusSetup` (순수 조립 — `StatusQuery`, `UpgradeQuery` 프로퍼티 노출, 비즈니스 로직 없음)
 
 ## 피처 의존성
 
@@ -113,12 +113,14 @@ CastSkillUseCase.Execute()
 
 - **Player**: `ISpeedModifierPort` 구현을 위해 Player Application 포트 참조
 - **Skill**: `IStatusQueryPort` 구현을 위해 Skill Application 포트 참조
+- **Wave**: `IUpgradeQueryPort` 구현을 위해 Wave Application 포트 참조
 - **Shared**: `EventBus`, `DomainEntityId`, `DisposableScope`
 
 ### Status에 의존하는 피처
 
 - **Player**: `ISpeedModifierPort`를 통해 이동속도 수정 (선택적 의존)
 - **Skill**: `IStatusQueryPort`를 통해 스킬 파라미터 수정 (선택적 의존)
+- **Wave**: `IUpgradeQueryPort`를 통해 업그레이드 스택 조회 (선택적 의존)
 - **Projectile, Zone, Skill 등**: `StatusApplyRequestedEvent`를 발행하여 상태 적용 요청
 
 ## 소비자 포트 위치
@@ -127,3 +129,4 @@ CastSkillUseCase.Execute()
 |---|---|---|
 | `ISpeedModifierPort` | Player/Application/Ports | Status/Application (SpeedModifierAdapter) |
 | `IStatusQueryPort` | Skill/Application/Ports | Status/Application (StatusQueryAdapter) |
+| `IUpgradeQueryPort` | Wave/Application/Ports | Status/Application (StatusQueryAdapter) |

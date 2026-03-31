@@ -1,8 +1,7 @@
-using Shared.Attributes;
 using Features.Combat.Domain;
 using Features.Player.Application.Ports;
+using Features.Player.Domain;
 using Photon.Pun;
-using Photon.Realtime;
 using Shared.Kernel;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
@@ -23,6 +22,7 @@ namespace Features.Player.Infrastructure
         private const string MaxHealthKey = "maxHp";
         private const string ManaKey = "mana";
         private const string MaxManaKey = "maxMana";
+        private const string LifeStateKey = "lifeState";
 
         public bool IsMine => photonView.IsMine;
         public DomainEntityId StablePlayerId => new DomainEntityId(GetStablePlayerIdValue());
@@ -34,6 +34,10 @@ namespace Features.Player.Infrastructure
         public System.Action<DomainEntityId> OnRemoteRespawned { get; set; }
         public System.Action<DomainEntityId, float, float> OnHealthSynced { get; set; }
         public System.Action<DomainEntityId, float, float> OnManaSynced { get; set; }
+        public System.Action<DomainEntityId, LifeState> OnLifeStateSynced { get; set; }
+        public System.Action<DomainEntityId, DomainEntityId> OnRemoteRescued { get; set; }
+        public System.Action<DomainEntityId, DomainEntityId> OnRemoteRescueChannelStarted { get; set; }
+        public System.Action<DomainEntityId> OnRemoteRescueChannelCancelled { get; set; }
 
         private void Update()
         {
@@ -103,9 +107,38 @@ namespace Features.Player.Infrastructure
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
 
+        public void SyncLifeState(DomainEntityId playerId, LifeState state)
+        {
+            if (photonView == null || !photonView.IsMine) return;
+
+            var props = new Hashtable
+            {
+                { LifeStateKey, (int)state }
+            };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        }
+
+        public void SendRescue(DomainEntityId rescuerId, DomainEntityId targetId)
+        {
+            photonView.RPC(nameof(RPC_Rescue), RpcTarget.All, rescuerId.Value, targetId.Value);
+        }
+
+        public void SendRescueChannelStart(DomainEntityId rescuerId, DomainEntityId targetId)
+        {
+            photonView.RPC(nameof(RPC_RescueChannelStart), RpcTarget.Others, rescuerId.Value, targetId.Value);
+        }
+
+        public void SendRescueChannelCancel(DomainEntityId targetId)
+        {
+            photonView.RPC(nameof(RPC_RescueChannelCancel), RpcTarget.Others, targetId.Value);
+        }
+
         public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, Hashtable changedProps)
         {
             if (targetPlayer == null || targetPlayer.IsLocal)
+                return;
+
+            if (photonView.Owner != null && targetPlayer.ActorNumber != photonView.Owner.ActorNumber)
                 return;
 
             var playerId = new DomainEntityId("player-" + targetPlayer.ActorNumber);
@@ -128,6 +161,11 @@ namespace Features.Player.Infrastructure
                     ? mm
                     : (targetPlayer.CustomProperties.TryGetValue(MaxManaKey, out var mmFallback) && mmFallback is float mmF ? mmF : 100f);
                 OnManaSynced?.Invoke(playerId, mana, maxMana);
+            }
+
+            if (changedProps.TryGetValue(LifeStateKey, out var lsRaw) && lsRaw is int lsInt)
+            {
+                OnLifeStateSynced?.Invoke(playerId, (LifeState)lsInt);
             }
         }
 
@@ -160,6 +198,55 @@ namespace Features.Player.Infrastructure
         {
             var targetId = new DomainEntityId(targetIdValue);
             OnRemoteRespawned?.Invoke(targetId);
+        }
+
+        [PunRPC]
+        private void RPC_Rescue(string rescuerIdValue, string targetIdValue)
+        {
+            var rescuerId = new DomainEntityId(rescuerIdValue);
+            var targetId = new DomainEntityId(targetIdValue);
+            OnRemoteRescued?.Invoke(rescuerId, targetId);
+        }
+
+        [PunRPC]
+        private void RPC_RescueChannelStart(string rescuerIdValue, string targetIdValue)
+        {
+            var rescuerId = new DomainEntityId(rescuerIdValue);
+            var targetId = new DomainEntityId(targetIdValue);
+            OnRemoteRescueChannelStarted?.Invoke(rescuerId, targetId);
+        }
+
+        [PunRPC]
+        private void RPC_RescueChannelCancel(string targetIdValue)
+        {
+            var targetId = new DomainEntityId(targetIdValue);
+            OnRemoteRescueChannelCancelled?.Invoke(targetId);
+        }
+
+        public void HydrateFromProperties()
+        {
+            if (photonView == null || photonView.Owner == null)
+                return;
+
+            var props = photonView.Owner.CustomProperties;
+            var playerId = StablePlayerId;
+
+            if (props.TryGetValue(HealthKey, out var hpRaw) && hpRaw is float hp
+                && props.TryGetValue(MaxHealthKey, out var maxHpRaw) && maxHpRaw is float maxHp)
+            {
+                OnHealthSynced?.Invoke(playerId, hp, maxHp);
+            }
+
+            if (props.TryGetValue(ManaKey, out var manaRaw) && manaRaw is float mana)
+            {
+                var maxMana = props.TryGetValue(MaxManaKey, out var mmRaw) && mmRaw is float mm ? mm : 100f;
+                OnManaSynced?.Invoke(playerId, mana, maxMana);
+            }
+
+            if (props.TryGetValue(LifeStateKey, out var lsRaw) && lsRaw is int lsInt)
+            {
+                OnLifeStateSynced?.Invoke(playerId, (LifeState)lsInt);
+            }
         }
 
         private string GetStablePlayerIdValue()

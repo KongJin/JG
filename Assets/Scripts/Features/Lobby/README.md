@@ -88,7 +88,11 @@ Photon 콜백 해석과 도메인 상태 업데이트는 `LobbyNetworkEventHandl
 - `LobbyView`는 에러 텍스트를 직접 관리하지 않고, 씬 공통 `SceneErrorPresenter`가 배너를 렌더링한다
 - Inspector 연결 필드는 `[Required, SerializeField]`로 선언해 씬 저장 시 누락을 검증한다
 
+## 레이어 메모
+
+- **Presentation**: `RoomListView`와 `RoomDetailView`는 `GameObjectPool` (`Shared/Runtime/Pooling`)을 사용하여 리스트 아이템을 재활용한다. `Initialize()`에서 풀을 생성하고, `Render()` 시 `Rent()`, `Clear()` 시 `Return()`으로 GC 압박을 줄인다. 풀에서 꺼낸 아이템은 `GetComponent`로 View를 얻는다 (런타임 풀 인스턴스라 Inspector wiring 불가 — Runtime Lookup Policy 허용 예외).
+
 ## 피처 간 의존
 
 - **독립적**: 다른 피처에 의존하지 않음
-- **Shared**: EventBus, DomainEntityId, Result, IClockPort, `UiErrorRequestedEvent`
+- **Shared**: EventBus, DomainEntityId, Result, IClockPort, `UiErrorRequestedEvent`, `GameObjectPool`
