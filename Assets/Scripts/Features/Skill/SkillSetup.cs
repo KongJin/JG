@@ -4,6 +4,7 @@ using Features.Skill.Application.Ports;
 using Features.Skill.Domain;
 using Features.Skill.Infrastructure;
 using Features.Skill.Presentation;
+using Features.Wave.Application.Ports;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Lifecycle;
@@ -35,10 +36,11 @@ namespace Features.Skill
         private SkillBar _skillBar;
         private Deck _deck;
         private DisposableScope _disposables;
+        private SkillRewardAdapter _skillRewardAdapter;
+        private SkillIconAdapter _skillIconAdapter;
 
-        public SkillCatalog Catalog => _catalog;
-        public Deck Deck => _deck;
-        public SkillBar Bar => _skillBar;
+        public ISkillRewardPort SkillReward => _skillRewardAdapter;
+        public ISkillIconPort SkillIcon => _skillIconAdapter;
 
         public void Initialize(EventBus eventBus, Transform playerTransform, Camera camera, DomainEntityId casterId, IManaPort manaPort, IStatusQueryPort statusQuery = null)
         {
@@ -48,19 +50,27 @@ namespace Features.Skill
 
             _catalog = new SkillCatalog(_catalogData);
 
-            _barView.Initialize(eventBus, new SkillIconAdapter(_catalog), casterId);
+            _skillIconAdapter = new SkillIconAdapter(_catalog);
+            _barView.Initialize(eventBus, _skillIconAdapter, casterId);
             _skillCastEffectSpawner.Initialize(eventBus, eventBus, new SkillEffectAdapter(_catalog));
 
             new SkillNetworkEventHandler(_eventBus, _networkAdapter);
 
             _equipSkillUseCase = new EquipSkillUseCase(_eventBus);
 
-            // Build deck from all catalog skills
-            var allSkillIds = CollectCatalogSkillIds();
-            var domainIds = new List<DomainEntityId>();
-            foreach (var id in allSkillIds)
-                domainIds.Add(new DomainEntityId(id));
-            _deck = new Deck(domainIds);
+            // Build skill entries from catalog (Bootstrap: data projection only)
+            var uniqueSkills = _catalog.UniqueSkills;
+            var entries = new List<InitializeDeckUseCase.SkillEntry>(uniqueSkills.Length);
+            foreach (var data in uniqueSkills)
+            {
+                var name = data.Presentation != null ? data.Presentation.DisplayName : data.SkillId;
+                entries.Add(new InitializeDeckUseCase.SkillEntry(data.SkillId, name));
+            }
+
+            // Delegate shuffle + split to Application UseCase
+            var initDeckUseCase = new InitializeDeckUseCase();
+            var deckSetup = initDeckUseCase.Execute(entries, SkillBar.SlotCount);
+            _deck = deckSetup.Deck;
 
             // Draw initial hand from deck
             _skillBar = new SkillBar();
@@ -89,6 +99,8 @@ namespace Features.Skill
                 camera,
                 eventBus
             );
+
+            _skillRewardAdapter = new SkillRewardAdapter(_deck, _skillBar, deckSetup.RewardPool);
         }
 
         public Result SwapSkill(int slotIndex, string skillId)
@@ -103,24 +115,6 @@ namespace Features.Skill
         private void OnDestroy()
         {
             _disposables?.Dispose();
-        }
-
-        private List<string> CollectCatalogSkillIds()
-        {
-            var ids = new List<string>();
-            if (_catalog == null || _catalog.AllSkills == null)
-                return ids;
-
-            foreach (var skillData in _catalog.AllSkills)
-            {
-                if (skillData == null || string.IsNullOrWhiteSpace(skillData.SkillId))
-                    continue;
-                if (ids.Contains(skillData.SkillId))
-                    continue;
-                ids.Add(skillData.SkillId);
-            }
-
-            return ids;
         }
     }
 }

@@ -6,8 +6,8 @@
 
 - 스킬바 3슬롯 UI 초기화와 아이콘 표시
 - 슬롯 입력 수신 (`RMB`, `Q`, `E`)
-- 덱 순환: 카탈로그 전체 스킬로 덱 구성 → 초기 핸드 3장 드로우 → 시전 시 자동 버리기/드로우
-- 웨이브 보상 스킬 추가: `SkillRewardAdapter`가 `ISkillRewardPort`를 구현하여 덱에 없는 스킬 후보를 제공하고, 선택된 스킬을 덱 버린 더미에 추가
+- 덱 순환: 카탈로그에서 랜덤 3개를 뽑아 초기 덱 구성 → 초기 핸드 3장 드로우 → 시전 시 자동 버리기/드로우
+- 웨이브 보상 스킬 추가: `SkillRewardAdapter`가 `ISkillRewardPort`를 구현하여 보상 풀(초기 덱에 들어가지 않은 나머지 스킬)에서 후보를 제공하고, 선택된 스킬을 덱 버린 더미에 추가
 - 시전 시 마나 검증 후 `SkillCastNetworkData` 전송
 - RPC 수신 후 `ProjectileRequestedEvent`, `ZoneRequestedEvent`, `TargetedRequestedEvent`, `SelfRequestedEvent`, `SkillCastedEvent` 발행
 - 스킬별 이펙트 매핑 (`SkillPresentationData` SO 기반)
@@ -55,6 +55,7 @@ SlotInputHandler
   - `Get(skillId)` → Domain `Skill` 반환
   - `GetData(skillId)` → `SkillData` SO 반환
   - `GetPresentationData(skillId)` → `SkillPresentationData` SO 반환 (아이콘/이펙트/사운드 조회용)
+  - `UniqueSkills` → 중복 ID가 제거된 `SkillData[]` 반환 (딕셔너리 기반)
   - 중복 ID 경고 처리
 
 ## 주요 클래스
@@ -66,15 +67,22 @@ SlotInputHandler
   - Inspector 연결 필드는 `[Required, SerializeField]`로 선언한다
   - `SkillCatalogData`를 `[Required, SerializeField]`로 Inspector에서 연결한다
   - `Initialize(EventBus, Transform, Camera, CasterId, IManaPort)`에서 `SkillCatalog` 생성 → `BarView`, `SkillCastEffectSpawner`, `SkillNetworkEventHandler` 초기화
-  - 카탈로그 전체 스킬 ID로 `Deck`을 구성하고 초기 핸드를 드로우하여 3슬롯에 장착
+  - `InitializeDeckUseCase`를 호출하여 셔플 + 분리를 위임하고, 결과(Deck + 보상 풀)를 받아 조립만 수행
+  - 초기 핸드를 드로우하여 3슬롯에 장착
+  - `SkillRewardAdapter`를 내부 생성 (보상 풀 주입)
   - `DeckCycleHandler`를 생성하여 시전 시 자동 덱 순환 (버리기 → 드로우 → 재장착)
   - `SwapSkill(slotIndex, skillId)`: 런타임 스킬 교체 API
-  - `Deck`, `Bar`, `Catalog` 프로퍼티를 노출하여 외부(GameSceneBootstrap)에서 `SkillRewardAdapter` 생성에 사용
+  - `ISkillRewardPort SkillReward`, `ISkillIconPort SkillIcon` 프로퍼티를 노출하여 외부(GameSceneBootstrap → WaveBootstrap)에서 포트 인터페이스로 사용
 
 - `SkillIconAdapter` — `ISkillIconPort` 구현, `SkillCatalog.GetPresentationData()`에서 아이콘 조회
 - `SkillEffectAdapter` — `ISkillEffectPort` 구현, `SkillCatalog.GetPresentationData()`에서 이펙트 프리팹 조회
 
 ### Application
+
+- `InitializeDeckUseCase`
+  - 카탈로그의 고유 스킬 목록(SkillEntry: id + displayName)을 받아 셔플 → starter/reward 분리
+  - `DeckSetupResult`를 반환: `Deck` (starter IDs로 초기화) + `IReadOnlyList<SkillRewardCandidate>` (보상 풀)
+  - Bootstrap이 직접 DomainEntityId를 생성하거나 셔플 정책을 갖지 않도록 분리
 
 - `CastSkillUseCase`
   - `ManaRule`로 시전 가능 여부 검사 (마나 부족 시 실패)
@@ -107,12 +115,13 @@ SlotInputHandler
 
 - `SkillRewardAdapter`
   - `ISkillRewardPort` (Wave/Application/Ports에 정의) 구현
-  - `DrawCandidates(count)`: 카탈로그에서 현재 덱(DrawPile + DiscardPile + SkillBar)에 없는 스킬을 셔플하여 count개 반환
+  - 생성자에서 `IReadOnlyList<SkillRewardCandidate>` 보상 풀을 주입받는다 (Infrastructure 의존 없음)
+  - `DrawCandidates(count)`: 보상 풀에서 현재 덱(DrawPile + DiscardPile + SkillBar)에 없는 스킬을 셔플하여 count개 반환
   - `AddToDeck(skillId)`: `Deck.AddToDiscardPile()`로 스킬 추가
 
 ### Domain
 
-- `Deck` — 뽑기/버리기 덱. 시전한 스킬은 버린 더미로, 뽑을 더미가 비면 셔플하여 재사용. `AddToDiscardPile()`로 웨이브 보상 스킬을 런타임에 추가 가능. `DrawPileIds`/`DiscardPileIds`로 현재 덱 내용물 조회 가능
+- `Deck` — 뽑기/버리기 덱. 매 판 랜덤 스킬로 초기화되며, 시전한 스킬은 버린 더미로, 뽑을 더미가 비면 셔플하여 재사용. `AddToDiscardPile()`로 웨이브 보상 스킬을 런타임에 추가 가능. `DrawPileIds`/`DiscardPileIds`로 현재 덱 내용물 조회 가능
 - `SkillBar` — 3슬롯 스킬바. `Equip(slotIndex, skill)`, `GetSkill(slotIndex)`
 - `SkillSpec` — 스킬 스펙 VO: `Damage`, `ManaCost`, `Range`, `Duration`, `ProjectileCount`, `StatusPayload`
 - `ManaRule` — 시전 가능 여부 검사: 마나가 충분한지 확인

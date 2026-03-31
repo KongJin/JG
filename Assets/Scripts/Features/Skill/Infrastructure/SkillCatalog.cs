@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Shared.Kernel;
+using System.Linq;
 using UnityEngine;
 
 namespace Features.Skill.Infrastructure
@@ -7,12 +7,10 @@ namespace Features.Skill.Infrastructure
     public sealed class SkillCatalog
     {
         private readonly Dictionary<string, SkillData> _dataById = new Dictionary<string, SkillData>();
-        private readonly SkillData[] _allSkills;
 
         public SkillCatalog(SkillCatalogData catalogData)
         {
-            _allSkills = catalogData.Skills;
-            foreach (var data in _allSkills)
+            foreach (var data in catalogData.Skills)
             {
                 if (data == null) continue;
                 if (_dataById.ContainsKey(data.SkillId))
@@ -46,17 +44,6 @@ namespace Features.Skill.Infrastructure
             return null;
         }
 
-        public SkillData[] AllSkills => _allSkills;
-
-        public List<DomainEntityId> StarterSkillIds()
-        {
-            var ids = new List<DomainEntityId>();
-            foreach (var data in _allSkills)
-            {
-                if (data != null && data.IsStarter)
-                    ids.Add(new DomainEntityId(data.SkillId));
-            }
-            return ids;
-        }
+        public SkillData[] UniqueSkills => _dataById.Values.ToArray();
     }
 }
