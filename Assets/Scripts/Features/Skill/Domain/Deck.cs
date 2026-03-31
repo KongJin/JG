@@ -10,10 +10,11 @@ namespace Features.Skill.Domain
     {
         private readonly List<DomainEntityId> _drawPile;
         private readonly List<DomainEntityId> _discardPile = new();
-        private readonly System.Random _rng = new();
+        private readonly System.Random _rng;
 
-        public Deck(IReadOnlyList<DomainEntityId> allSkillIds)
+        public Deck(IReadOnlyList<DomainEntityId> allSkillIds, System.Random rng = null)
         {
+            _rng = rng ?? new System.Random();
             _drawPile = new List<DomainEntityId>(allSkillIds);
             Shuffle(_drawPile);
         }

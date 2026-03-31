@@ -67,18 +67,17 @@ namespace Features.Skill
                 entries.Add(new InitializeDeckUseCase.SkillEntry(data.SkillId, name));
             }
 
-            // Delegate shuffle + split to Application UseCase
+            // Delegate shuffle + split + initial draw to Application UseCase
             var initDeckUseCase = new InitializeDeckUseCase();
             var deckSetup = initDeckUseCase.Execute(entries, SkillBar.SlotCount);
             _deck = deckSetup.Deck;
+            _skillBar = deckSetup.SkillBar;
 
-            // Draw initial hand from deck
-            _skillBar = new SkillBar();
-            for (var i = 0; i < SkillBar.SlotCount; i++)
+            // Equip initial hand (resolve + wire only)
+            var initialHand = deckSetup.InitialHandIds;
+            for (var i = 0; i < initialHand.Count && i < SkillBar.SlotCount; i++)
             {
-                var drawnId = _deck.Draw();
-                if (string.IsNullOrEmpty(drawnId.Value)) continue;
-                var skill = _catalog.Get(drawnId.Value);
+                var skill = _catalog.Get(initialHand[i].Value);
                 if (skill != null)
                     _equipSkillUseCase.Execute(_skillBar, i, skill);
             }

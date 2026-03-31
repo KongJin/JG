@@ -10,13 +10,14 @@ namespace Features.Skill.Application
         private readonly Deck _deck;
         private readonly SkillBar _bar;
         private readonly IReadOnlyList<SkillRewardCandidate> _rewardPool;
-        private readonly System.Random _rng = new();
+        private readonly System.Random _rng;
 
-        public SkillRewardAdapter(Deck deck, SkillBar bar, IReadOnlyList<SkillRewardCandidate> rewardPool)
+        public SkillRewardAdapter(Deck deck, SkillBar bar, IReadOnlyList<SkillRewardCandidate> rewardPool, System.Random rng = null)
         {
             _deck = deck;
             _bar = bar;
             _rewardPool = rewardPool;
+            _rng = rng ?? new System.Random();
         }
 
         public SkillRewardCandidate[] DrawCandidates(int count)

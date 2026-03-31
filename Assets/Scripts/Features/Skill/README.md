@@ -67,8 +67,8 @@ SlotInputHandler
   - Inspector 연결 필드는 `[Required, SerializeField]`로 선언한다
   - `SkillCatalogData`를 `[Required, SerializeField]`로 Inspector에서 연결한다
   - `Initialize(EventBus, Transform, Camera, CasterId, IManaPort)`에서 `SkillCatalog` 생성 → `BarView`, `SkillCastEffectSpawner`, `SkillNetworkEventHandler` 초기화
-  - `InitializeDeckUseCase`를 호출하여 셔플 + 분리를 위임하고, 결과(Deck + 보상 풀)를 받아 조립만 수행
-  - 초기 핸드를 드로우하여 3슬롯에 장착
+  - `InitializeDeckUseCase`를 호출하여 셔플 + 분리 + 초기 핸드 드로우를 위임하고, 결과(Deck + SkillBar + 보상 풀 + InitialHandIds)를 받아 조립만 수행
+  - InitialHandIds를 순회하며 catalog resolve + EquipSkillUseCase 호출 (wiring only)
   - `SkillRewardAdapter`를 내부 생성 (보상 풀 주입)
   - `DeckCycleHandler`를 생성하여 시전 시 자동 덱 순환 (버리기 → 드로우 → 재장착)
   - `SwapSkill(slotIndex, skillId)`: 런타임 스킬 교체 API
@@ -80,9 +80,11 @@ SlotInputHandler
 ### Application
 
 - `InitializeDeckUseCase`
-  - 카탈로그의 고유 스킬 목록(SkillEntry: id + displayName)을 받아 셔플 → starter/reward 분리
-  - `DeckSetupResult`를 반환: `Deck` (starter IDs로 초기화) + `IReadOnlyList<SkillRewardCandidate>` (보상 풀)
-  - Bootstrap이 직접 DomainEntityId를 생성하거나 셔플 정책을 갖지 않도록 분리
+  - 카탈로그의 고유 스킬 목록(SkillEntry: id + displayName)을 받아 셔플 → starter/reward 분리 → 초기 핸드 드로우
+  - `DeckSetupResult`를 반환: `Deck` + `SkillBar` (빈 상태) + `IReadOnlyList<SkillRewardCandidate>` (보상 풀) + `IReadOnlyList<DomainEntityId>` (초기 핸드 ID)
+  - `System.Random`을 생성자 주입받아 테스트 시 시드 고정 가능 (기본값: `new System.Random()`)
+  - 주입된 rng를 `Deck`에 전파하여 셔플 + 드로우가 동일 시드를 사용
+  - Bootstrap이 직접 DomainEntityId를 생성하거나 셔플/드로우 정책을 갖지 않도록 분리
 
 - `CastSkillUseCase`
   - `ManaRule`로 시전 가능 여부 검사 (마나 부족 시 실패)
@@ -121,7 +123,7 @@ SlotInputHandler
 
 ### Domain
 
-- `Deck` — 뽑기/버리기 덱. 매 판 랜덤 스킬로 초기화되며, 시전한 스킬은 버린 더미로, 뽑을 더미가 비면 셔플하여 재사용. `AddToDiscardPile()`로 웨이브 보상 스킬을 런타임에 추가 가능. `DrawPileIds`/`DiscardPileIds`로 현재 덱 내용물 조회 가능
+- `Deck` — 뽑기/버리기 덱. 매 판 랜덤 스킬로 초기화되며, 시전한 스킬은 버린 더미로, 뽑을 더미가 비면 셔플하여 재사용. `System.Random`을 생성자 주입받아 테스트 시 시드 고정 가능. `AddToDiscardPile()`로 웨이브 보상 스킬을 런타임에 추가 가능. `DrawPileIds`/`DiscardPileIds`로 현재 덱 내용물 조회 가능
 - `SkillBar` — 3슬롯 스킬바. `Equip(slotIndex, skill)`, `GetSkill(slotIndex)`
 - `SkillSpec` — 스킬 스펙 VO: `Damage`, `ManaCost`, `Range`, `Duration`, `ProjectileCount`, `StatusPayload`
 - `ManaRule` — 시전 가능 여부 검사: 마나가 충분한지 확인
