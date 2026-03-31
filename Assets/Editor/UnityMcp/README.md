@@ -75,6 +75,30 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 | POST | `/scene/save` | (없음) | 현재 씬 저장 |
 | POST | `/asset/refresh` | (없음) | AssetDatabase 리프레시 (코드 변경 후 컴파일 트리거) |
 | POST | `/prefab/save` | `{"gameObjectPath":"/...", "savePath":"Assets/...", "destroySceneObject":true}` | 씬 오브젝트를 프리팹으로 저장 |
+| POST | `/prefab/get` | `{"assetPath":"Assets/...", "childPath":"..."}` | 프리팹 컴포넌트/속성 조회 |
+| POST | `/prefab/set` | 아래 참조 | 프리팹 속성 수정 |
+| POST | `/prefab/add-component` | `{"assetPath":"Assets/...", "childPath":"...", "componentType":"..."}` | 프리팹에 컴포넌트 추가 |
+
+#### `/prefab/set` Body
+
+```json
+{
+  "assetPath": "Assets/Resources/ProjectilePhysicsAdapter.prefab",
+  "childPath": "",
+  "componentType": "ProjectileView",
+  "propertyName": "_lifetimeRelease",
+  "value": "",
+  "assetReferencePath": "",
+  "autoWireType": "LifetimeRelease"
+}
+```
+
+**필드 설명:**
+- `assetPath`: 프리팹 에셋 경로 (필수)
+- `childPath`: 프리팹 내 자식 경로 (빈 문자열이면 루트). `Transform.Find` 형식 (예: `"Body/Head"`)
+- `autoWireType`: 설정 시 프리팹 하이어라키에서 해당 타입 컴포넌트를 찾아 자동 연결. `value`/`assetReferencePath`보다 우선
+- `assetReferencePath`: 외부 에셋 참조 (예: `"Assets/Materials/Red.mat"`)
+- `value`: 일반 값 또는 씬 오브젝트 참조 (`"/경로::컴포넌트타입"`)
 
 ### 빌드
 
@@ -123,6 +147,6 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 ## 주의사항
 
 - 컴파일 중에는 서버가 내려간다 — `/asset/refresh` 후 `/health`로 `isCompiling: false` 확인 필요
-- `GameObject.Find` 기반이므로 **씬 오브젝트만** 대상 — 프리팹 직접 수정 불가
-- 프리팹 수정이 필요하면 에디터 스크립트(`[InitializeOnLoad]` 또는 `[MenuItem]`)를 작성
+- 씬 엔드포인트(`/gameobject/*`, `/component/*`)는 `GameObject.Find` 기반 — **씬 오브젝트만** 대상
+- 프리팹 엔드포인트(`/prefab/get`, `/prefab/set`, `/prefab/add-component`)는 `AssetDatabase.LoadAssetAtPath` 기반 — **프리팹 에셋 직접 수정 가능**
 - POST 엔드포인트에 GET으로 호출하면 404 반환

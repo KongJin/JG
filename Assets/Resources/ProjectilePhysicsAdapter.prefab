@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5723059910684275819}
   - component: {fileID: 4559019383341287676}
   - component: {fileID: 2794815894596964419}
+  - component: {fileID: 6641071657777750609}
   m_Layer: 0
   m_Name: ProjectilePhysicsAdapter
   m_TagString: Untagged
@@ -141,6 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Features.Projectile.Presentation.ProjectileView
   _trail: {fileID: 2794815894596964419}
+  _lifetimeRelease: {fileID: 6641071657777750609}
   _lifetime: 3
 --- !u!54 &4559019383341287676
 Rigidbody:
@@ -279,3 +281,15 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!114 &6641071657777750609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5595082962873346488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc6d524a9e7943eb99ee0b6a0d6646cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Shared.Runtime.Pooling.LifetimeRelease

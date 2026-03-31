@@ -755,6 +755,24 @@ namespace ProjectSD.EditorTools.UnityMcp
                     return;
                 }
 
+                if (method == "POST" && path == "/prefab/get")
+                {
+                    await HandlePrefabGetAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/prefab/set")
+                {
+                    await HandlePrefabSetAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/prefab/add-component")
+                {
+                    await HandlePrefabAddComponentAsync(request, response);
+                    return;
+                }
+
                 if (method == "POST" && path == "/asset/refresh")
                 {
                     await HandleAssetRefreshAsync(response);
@@ -1761,6 +1779,132 @@ namespace ProjectSD.EditorTools.UnityMcp
             await WriteJsonAsync(response, 200, result);
         }
 
+        private static GameObject ResolvePrefabTarget(string assetPath, string childPath)
+        {
+            if (string.IsNullOrEmpty(assetPath))
+                throw new Exception("assetPath is required");
+
+            var prefabRoot = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+            if (prefabRoot == null)
+                throw new Exception("Prefab not found at: " + assetPath);
+
+            if (string.IsNullOrEmpty(childPath))
+                return prefabRoot;
+
+            var childTransform = prefabRoot.transform.Find(childPath);
+            if (childTransform == null)
+                throw new Exception("Child not found in prefab: " + childPath + " (prefab: " + assetPath + ")");
+
+            return childTransform.gameObject;
+        }
+
+        private static async Task HandlePrefabGetAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<PrefabGetRequest>(body);
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                var target = ResolvePrefabTarget(req.assetPath, req.childPath);
+                return BuildGameObjectResponse(target);
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        private static async Task HandlePrefabSetAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<PrefabSetRequest>(body);
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                var target = ResolvePrefabTarget(req.assetPath, req.childPath);
+
+                Component comp = null;
+                if (!string.IsNullOrEmpty(req.componentType))
+                {
+                    var components = target.GetComponents<Component>();
+                    comp = components.FirstOrDefault(c =>
+                        c != null && (c.GetType().Name.Equals(req.componentType, StringComparison.OrdinalIgnoreCase)
+                            || c.GetType().FullName.Equals(req.componentType, StringComparison.OrdinalIgnoreCase)));
+                }
+
+                if (comp == null)
+                    throw new Exception("Component not found: " + req.componentType + " on prefab " + req.assetPath);
+
+                var so = new SerializedObject(comp);
+                var sp = so.FindProperty(req.propertyName);
+                if (sp == null)
+                    throw new Exception("Property not found: " + req.propertyName + " on " + req.componentType);
+
+                if (!string.IsNullOrEmpty(req.autoWireType))
+                {
+                    if (sp.propertyType != SerializedPropertyType.ObjectReference)
+                        throw new Exception("autoWireType only works on ObjectReference properties, but "
+                            + req.propertyName + " is " + sp.propertyType);
+
+                    var prefabRoot = AssetDatabase.LoadAssetAtPath<GameObject>(req.assetPath);
+                    var wireType = FindTypeByName(req.autoWireType);
+                    if (wireType == null)
+                        throw new Exception("Type not found for auto-wire: " + req.autoWireType);
+
+                    var found = prefabRoot.GetComponentInChildren(wireType, true);
+                    if (found == null)
+                        throw new Exception("No " + req.autoWireType + " found in prefab hierarchy for auto-wire");
+
+                    sp.objectReferenceValue = found;
+                }
+                else
+                {
+                    SetSerializedPropertyValue(sp, req.value, req.assetReferencePath);
+                }
+
+                so.ApplyModifiedProperties();
+                EditorUtility.SetDirty(comp);
+                AssetDatabase.SaveAssets();
+
+                return new GenericResponse
+                {
+                    success = true,
+                    message = "Set " + req.componentType + "." + req.propertyName + " on prefab " + req.assetPath
+                };
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        private static async Task HandlePrefabAddComponentAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<PrefabAddComponentRequest>(body);
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                var target = ResolvePrefabTarget(req.assetPath, req.childPath);
+
+                var compType = FindTypeByName(req.componentType);
+                if (compType == null || !typeof(Component).IsAssignableFrom(compType))
+                    throw new Exception("Component type not found: " + req.componentType);
+
+                var added = target.AddComponent(compType);
+                if (added == null)
+                    throw new Exception("Failed to add " + req.componentType + " to prefab");
+
+                EditorUtility.SetDirty(target);
+                AssetDatabase.SaveAssets();
+
+                return new GenericResponse
+                {
+                    success = true,
+                    message = "Added " + added.GetType().Name + " to prefab " + req.assetPath
+                        + (string.IsNullOrEmpty(req.childPath) ? "" : " at " + req.childPath)
+                };
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
         private static async Task HandleSceneSaveAsync(HttpListenerResponse response)
         {
             var result = await RunOnMainThreadAsync(() =>
@@ -2194,6 +2338,33 @@ namespace ProjectSD.EditorTools.UnityMcp
             public string gameObjectPath;
             public string savePath;
             public bool destroySceneObject;
+        }
+
+        [Serializable]
+        private sealed class PrefabGetRequest
+        {
+            public string assetPath;
+            public string childPath;
+        }
+
+        [Serializable]
+        private sealed class PrefabSetRequest
+        {
+            public string assetPath;
+            public string childPath;
+            public string componentType;
+            public string propertyName;
+            public string value;
+            public string assetReferencePath;
+            public string autoWireType;
+        }
+
+        [Serializable]
+        private sealed class PrefabAddComponentRequest
+        {
+            public string assetPath;
+            public string childPath;
+            public string componentType;
         }
 
         [Serializable]
