@@ -1,6 +1,7 @@
 using System;
-using Features.Status.Domain;
+using Features.Skill.Presentation;
 using Features.Wave.Application.Events;
+using Features.Wave.Application.Ports;
 using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
@@ -18,32 +19,76 @@ namespace Features.Wave.Presentation
 
         private IEventPublisher _publisher;
         private IEventSubscriber _subscriber;
+        private ISkillIconPort _iconPort;
         private DomainEntityId _localPlayerId;
+        private SkillRewardCandidate[] _candidates;
 
-        public void Initialize(IEventPublisher publisher, IEventSubscriber subscriber, DomainEntityId localPlayerId)
+        private Text _countLabel;
+        private Text _rangeLabel;
+        private Text _durationLabel;
+        private Image _countIcon;
+        private Image _rangeIcon;
+        private Image _durationIcon;
+
+        public void Initialize(IEventPublisher publisher, IEventSubscriber subscriber, DomainEntityId localPlayerId, ISkillIconPort iconPort)
         {
             _publisher = publisher;
             _subscriber = subscriber;
             _localPlayerId = localPlayerId;
+            _iconPort = iconPort;
+
+            _countLabel = countButton.GetComponentInChildren<Text>();
+            _rangeLabel = rangeButton.GetComponentInChildren<Text>();
+            _durationLabel = durationButton.GetComponentInChildren<Text>();
+
+            _countIcon = countButton.transform.Find("Icon")?.GetComponent<Image>();
+            _rangeIcon = rangeButton.transform.Find("Icon")?.GetComponent<Image>();
+            _durationIcon = durationButton.transform.Find("Icon")?.GetComponent<Image>();
 
             panel.SetActive(false);
 
-            countButton.onClick.AddListener(() => Select(StatusType.Count));
-            rangeButton.onClick.AddListener(() => Select(StatusType.Expand));
-            durationButton.onClick.AddListener(() => Select(StatusType.Extend));
+            countButton.onClick.AddListener(() => SelectCandidate(0));
+            rangeButton.onClick.AddListener(() => SelectCandidate(1));
+            durationButton.onClick.AddListener(() => SelectCandidate(2));
 
-            _subscriber.Subscribe(this, new Action<UpgradeSelectionRequestedEvent>(OnSelectionRequested));
+            _subscriber.Subscribe(this, new Action<SkillSelectionRequestedEvent>(OnSelectionRequested));
         }
 
-        private void OnSelectionRequested(UpgradeSelectionRequestedEvent e)
+        private void OnSelectionRequested(SkillSelectionRequestedEvent e)
         {
+            _candidates = e.Candidates;
+
+            var buttons = new[] { countButton, rangeButton, durationButton };
+            var labels = new[] { _countLabel, _rangeLabel, _durationLabel };
+            var icons = new[] { _countIcon, _rangeIcon, _durationIcon };
+
+            for (var i = 0; i < buttons.Length; i++)
+            {
+                if (i < _candidates.Length)
+                {
+                    buttons[i].gameObject.SetActive(true);
+                    if (labels[i] != null)
+                        labels[i].text = _candidates[i].DisplayName;
+                    if (icons[i] != null && _iconPort != null)
+                        icons[i].sprite = _iconPort.GetIcon(_candidates[i].SkillId);
+                }
+                else
+                {
+                    buttons[i].gameObject.SetActive(false);
+                }
+            }
+
             panel.SetActive(true);
         }
 
-        private void Select(StatusType type)
+        private void SelectCandidate(int index)
         {
+            if (_candidates == null || index >= _candidates.Length)
+                return;
+
             panel.SetActive(false);
-            _publisher.Publish(new UpgradeSelectedEvent(_localPlayerId, type));
+            var candidate = _candidates[index];
+            _publisher.Publish(new SkillSelectedEvent(_localPlayerId, candidate.SkillId, candidate.DisplayName));
         }
 
         private void OnDestroy()

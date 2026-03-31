@@ -37,6 +37,8 @@ namespace Features.Skill
         private DisposableScope _disposables;
 
         public SkillCatalog Catalog => _catalog;
+        public Deck Deck => _deck;
+        public SkillBar Bar => _skillBar;
 
         public void Initialize(EventBus eventBus, Transform playerTransform, Camera camera, DomainEntityId casterId, IManaPort manaPort, IStatusQueryPort statusQuery = null)
         {

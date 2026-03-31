@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: JudgmentMark
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Infrastructure.SkillData
   skillId: JudgmentMark
+  presentation: {fileID: 11400000, guid: a50babd9094b4818a0ce7e72fe890c3d, type: 2}
   damage: 82
   manaCost: 48
   range: 9
@@ -23,5 +24,3 @@ MonoBehaviour:
   hitType: 0
   speed: 0
   radius: 0
-  castEffectPrefab: {fileID: 0}
-  castSound: {fileID: 0}

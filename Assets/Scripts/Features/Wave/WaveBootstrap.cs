@@ -1,6 +1,7 @@
 using Shared.Attributes;
 using Features.Combat;
 using Features.Enemy;
+using Features.Skill.Presentation;
 using Features.Wave.Application;
 using Features.Wave.Application.Ports;
 using Features.Wave.Infrastructure;
@@ -30,7 +31,7 @@ namespace Features.Wave
 
         public IPlayerPositionQuery PlayerPositionQuery => _playerPositionQuery;
 
-        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap, DomainEntityId localPlayerId, IUpgradeQueryPort upgradeQuery = null)
+        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap, DomainEntityId localPlayerId, ISkillRewardPort skillReward, ISkillIconPort iconPort)
         {
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
@@ -44,12 +45,12 @@ namespace Features.Wave
 
             _spawnAdapter.Initialize(eventBus, combatBootstrap, _playerPositionQuery, _waveTable);
 
-            var waveLoop = new WaveLoopUseCase(eventBus, _waveTable.Waves.Length);
+            var waveLoop = new WaveLoopUseCase(eventBus, _waveTable.Waves.Length, skillReward);
             var waveHandler = new WaveEventHandler(eventBus, waveLoop, aliveQuery);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, waveHandler));
 
-            var upgradeHandler = new UpgradeEventHandler(eventBus, eventBus, upgradeQuery);
-            _disposables.Add(EventBusSubscription.ForOwner(eventBus, upgradeHandler));
+            var rewardHandler = new SkillRewardHandler(eventBus, skillReward);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, rewardHandler));
 
             _hudView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _hudView));
@@ -57,7 +58,7 @@ namespace Features.Wave
             _endView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _endView));
 
-            _upgradeView.Initialize(eventBus, eventBus, localPlayerId);
+            _upgradeView.Initialize(eventBus, eventBus, localPlayerId, iconPort);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _upgradeView));
 
             _upgradeResultView.Initialize(eventBus);

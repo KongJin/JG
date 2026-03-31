@@ -26,7 +26,7 @@ namespace Features.Wave.Presentation
             _spawnPort = spawnPort;
             _subscriber = subscriber;
 
-            _subscriber.Subscribe(this, new Action<UpgradeSelectedEvent>(OnUpgradeSelected));
+            _subscriber.Subscribe(this, new Action<SkillSelectedEvent>(OnSkillSelected));
 
             StartCountdownForCurrentWave();
         }
@@ -47,7 +47,7 @@ namespace Features.Wave.Presentation
             }
         }
 
-        private void OnUpgradeSelected(UpgradeSelectedEvent e)
+        private void OnSkillSelected(SkillSelectedEvent e)
         {
             if (_waveLoop.CurrentState != WaveState.UpgradeSelection) return;
 

@@ -20,6 +20,8 @@ namespace Features.Skill.Domain
 
         public int DrawPileCount => _drawPile.Count;
         public int DiscardPileCount => _discardPile.Count;
+        public IReadOnlyList<DomainEntityId> DrawPileIds => _drawPile.AsReadOnly();
+        public IReadOnlyList<DomainEntityId> DiscardPileIds => _discardPile.AsReadOnly();
 
         public DomainEntityId Draw()
         {
@@ -40,6 +42,11 @@ namespace Features.Skill.Domain
         }
 
         public void Discard(DomainEntityId skillId)
+        {
+            _discardPile.Add(skillId);
+        }
+
+        public void AddToDiscardPile(DomainEntityId skillId)
         {
             _discardPile.Add(skillId);
         }

@@ -7,9 +7,10 @@
 - 스킬바 3슬롯 UI 초기화와 아이콘 표시
 - 슬롯 입력 수신 (`RMB`, `Q`, `E`)
 - 덱 순환: 카탈로그 전체 스킬로 덱 구성 → 초기 핸드 3장 드로우 → 시전 시 자동 버리기/드로우
+- 웨이브 보상 스킬 추가: `SkillRewardAdapter`가 `ISkillRewardPort`를 구현하여 덱에 없는 스킬 후보를 제공하고, 선택된 스킬을 덱 버린 더미에 추가
 - 시전 시 마나 검증 후 `SkillCastNetworkData` 전송
 - RPC 수신 후 `ProjectileRequestedEvent`, `ZoneRequestedEvent`, `TargetedRequestedEvent`, `SelfRequestedEvent`, `SkillCastedEvent` 발행
-- 스킬별 이펙트 매핑 (ScriptableObject 기반)
+- 스킬별 이펙트 매핑 (`SkillPresentationData` SO 기반)
 - 시전 사운드는 `SoundRequestEvent`를 발행하여 `Shared/Runtime/Sound/SoundPlayer`에 위임
 
 ## 핵심 흐름
@@ -31,13 +32,18 @@ SlotInputHandler
 
 ### ScriptableObject
 
-- `SkillData` (SO) — 스킬 하나의 전체 설정
+- `SkillData` (SO) — 스킬 하나의 게임플레이 설정
   - Identity: `skillId` (고정 문자열, 모든 클라이언트에서 동일)
+  - Presentation: `SkillPresentationData` SO 참조
   - Spec: `damage`, `manaCost`, `range`, `duration`, `projectileCount`
   - Delivery: `deliveryType` enum + Projectile 전용 필드 (`trajectoryType`, `hitType`, `speed`, `radius`)
   - Status Effect: `hasStatusEffect`, `statusType`, `statusMagnitude`, `statusDuration`, `statusTickInterval`
-  - Effects: `castEffectPrefab`, `castSound`
   - `ToDomain()` 메서드로 Domain `Skill` 엔티티 생성 (StatusPayload 포함)
+
+- `SkillPresentationData` (SO) — 스킬 하나의 연출/UI 리소스
+  - UI: `displayName`, `description`, `icon`
+  - Effects: `castEffectPrefab`, `castSound`
+  - 밸런스 조정과 연출 수정이 분리된다
 
 - `SkillCatalogData` (SO) — `SkillData[]` 목록
   - Inspector에서 스킬 목록을 관리한다
@@ -47,7 +53,8 @@ SlotInputHandler
 
 - `SkillCatalog` (클래스) — `SkillCatalogData`를 받아 런타임 딕셔너리 구성
   - `Get(skillId)` → Domain `Skill` 반환
-  - `GetData(skillId)` → `SkillData` SO 반환 (이펙트/사운드 조회용)
+  - `GetData(skillId)` → `SkillData` SO 반환
+  - `GetPresentationData(skillId)` → `SkillPresentationData` SO 반환 (아이콘/이펙트/사운드 조회용)
   - 중복 ID 경고 처리
 
 ## 주요 클래스
@@ -62,9 +69,10 @@ SlotInputHandler
   - 카탈로그 전체 스킬 ID로 `Deck`을 구성하고 초기 핸드를 드로우하여 3슬롯에 장착
   - `DeckCycleHandler`를 생성하여 시전 시 자동 덱 순환 (버리기 → 드로우 → 재장착)
   - `SwapSkill(slotIndex, skillId)`: 런타임 스킬 교체 API
+  - `Deck`, `Bar`, `Catalog` 프로퍼티를 노출하여 외부(GameSceneBootstrap)에서 `SkillRewardAdapter` 생성에 사용
 
-- `SkillIconAdapter` — `ISkillIconPort` 구현, `SkillCatalog`에서 아이콘 조회
-- `SkillEffectAdapter` — `ISkillEffectPort` 구현, `SkillCatalog`에서 이펙트 프리팹 조회
+- `SkillIconAdapter` — `ISkillIconPort` 구현, `SkillCatalog.GetPresentationData()`에서 아이콘 조회
+- `SkillEffectAdapter` — `ISkillEffectPort` 구현, `SkillCatalog.GetPresentationData()`에서 이펙트 프리팹 조회
 
 ### Application
 
@@ -96,9 +104,15 @@ SlotInputHandler
 
 - `Ports/ISkillNetworkCommandPort`, `ISkillNetworkCallbackPort` — 네트워크 송수신 포트
 - `Ports/IManaPort` — 마나 조회/차감 포트 (구현은 Player/Application/ManaAdapter)
+
+- `SkillRewardAdapter`
+  - `ISkillRewardPort` (Wave/Application/Ports에 정의) 구현
+  - `DrawCandidates(count)`: 카탈로그에서 현재 덱(DrawPile + DiscardPile + SkillBar)에 없는 스킬을 셔플하여 count개 반환
+  - `AddToDeck(skillId)`: `Deck.AddToDiscardPile()`로 스킬 추가
+
 ### Domain
 
-- `Deck` — 뽑기/버리기 덱. 시전한 스킬은 버린 더미로, 뽑을 더미가 비면 셔플하여 재사용
+- `Deck` — 뽑기/버리기 덱. 시전한 스킬은 버린 더미로, 뽑을 더미가 비면 셔플하여 재사용. `AddToDiscardPile()`로 웨이브 보상 스킬을 런타임에 추가 가능. `DrawPileIds`/`DiscardPileIds`로 현재 덱 내용물 조회 가능
 - `SkillBar` — 3슬롯 스킬바. `Equip(slotIndex, skill)`, `GetSkill(slotIndex)`
 - `SkillSpec` — 스킬 스펙 VO: `Damage`, `ManaCost`, `Range`, `Duration`, `ProjectileCount`, `StatusPayload`
 - `ManaRule` — 시전 가능 여부 검사: 마나가 충분한지 확인
@@ -166,10 +180,12 @@ RPC 전송 시 Infrastructure에서 개별 float로 분해하고, 수신 시 다
 
 ## 스킬 추가 방법
 
-1. Unity에서 `Create > Skill > SkillData`로 SO 생성
-2. Inspector에서 ID, 스펙, 딜리버리, 이펙트/사운드 설정
-3. `SkillCatalogData`의 `Skills` 배열에 추가
-4. 코드 변경 불필요
+1. Unity에서 `Create > Skill > SkillPresentationData`로 연출 SO 생성
+2. Inspector에서 displayName, icon, castEffectPrefab 등 연출 리소스 설정
+3. Unity에서 `Create > Skill > SkillData`로 게임플레이 SO 생성
+4. Inspector에서 ID, 스펙, 딜리버리, 상태이상 설정 + Presentation 필드에 위 SO 연결
+5. `SkillCatalogData`의 `Skills` 배열에 추가
+6. 코드 변경 불필요
 
 ## 피처 간 의존
 

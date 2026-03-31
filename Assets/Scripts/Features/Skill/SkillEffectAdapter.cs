@@ -15,8 +15,8 @@ namespace Features.Skill
 
         public GameObject GetEffectPrefab(string skillId)
         {
-            var data = _catalog.GetData(skillId);
-            return data != null ? data.CastEffectPrefab : null;
+            var pres = _catalog.GetPresentationData(skillId);
+            return pres != null ? pres.CastEffectPrefab : null;
         }
     }
 }

@@ -15,8 +15,8 @@ namespace Features.Skill
 
         public Sprite GetIcon(string skillId)
         {
-            var data = _catalog.GetData(skillId);
-            return data != null ? data.Icon : null;
+            var pres = _catalog.GetPresentationData(skillId);
+            return pres != null ? pres.Icon : null;
         }
     }
 }

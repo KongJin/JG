@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: BoomerangSingle
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Infrastructure.SkillData
   skillId: BoomerangSingle
+  presentation: {fileID: 11400000, guid: c9f227527c3a452184b401e689ee1c95, type: 2}
   damage: 48
   manaCost: 21
   range: 10
@@ -23,5 +24,3 @@ MonoBehaviour:
   hitType: 0
   speed: 11
   radius: 5
-  castEffectPrefab: {fileID: 0}
-  castSound: {fileID: 0}

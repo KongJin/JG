@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: FrostNeedle
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Infrastructure.SkillData
   skillId: FrostNeedle
+  presentation: {fileID: 11400000, guid: 8f8bf5757c6b4d68aff0293c45c856e2, type: 2}
   damage: 32
   manaCost: 12
   range: 10
@@ -23,5 +24,3 @@ MonoBehaviour:
   hitType: 1
   speed: 15
   radius: 3
-  castEffectPrefab: {fileID: 0}
-  castSound: {fileID: 0}

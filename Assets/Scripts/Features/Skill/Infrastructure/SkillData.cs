@@ -16,10 +16,10 @@ namespace Features.Skill.Infrastructure
     {
         [Header("Identity")]
         [SerializeField] private string skillId;
-        [SerializeField] private string displayName;
-        [TextArea(1, 3)]
-        [SerializeField] private string description;
-        [Required, SerializeField] private Sprite icon;
+        [SerializeField] private bool isStarter;
+
+        [Header("Presentation")]
+        [Required, SerializeField] private SkillPresentationData presentation;
 
         [Header("Spec")]
         [SerializeField] private float damage;
@@ -44,16 +44,9 @@ namespace Features.Skill.Infrastructure
         [SerializeField] private float statusDuration;
         [SerializeField] private float statusTickInterval;
 
-        [Header("Effects")]
-        [Required, SerializeField] private GameObject castEffectPrefab;
-        [Required, SerializeField] private AudioClip castSound;
-
         public string SkillId => skillId;
-        public string DisplayName => displayName;
-        public string Description => description;
-        public Sprite Icon => icon;
-        public GameObject CastEffectPrefab => castEffectPrefab;
-        public AudioClip CastSound => castSound;
+        public bool IsStarter => isStarter;
+        public SkillPresentationData Presentation => presentation;
 
         public Domain.Skill ToDomain()
         {

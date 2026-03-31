@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Shared.Kernel;
 using UnityEngine;
 
 namespace Features.Skill.Infrastructure
@@ -38,6 +39,24 @@ namespace Features.Skill.Infrastructure
             return data;
         }
 
+        public SkillPresentationData GetPresentationData(string skillId)
+        {
+            if (_dataById.TryGetValue(skillId, out var data))
+                return data.Presentation;
+            return null;
+        }
+
         public SkillData[] AllSkills => _allSkills;
+
+        public List<DomainEntityId> StarterSkillIds()
+        {
+            var ids = new List<DomainEntityId>();
+            foreach (var data in _allSkills)
+            {
+                if (data != null && data.IsStarter)
+                    ids.Add(new DomainEntityId(data.SkillId));
+            }
+            return ids;
+        }
     }
 }

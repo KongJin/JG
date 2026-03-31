@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Features.Status.Domain;
 using Features.Wave.Application.Events;
 using Shared.Attributes;
 using Shared.EventBus;
@@ -17,14 +16,13 @@ namespace Features.Wave.Presentation
 
         public void Initialize(IEventSubscriber subscriber)
         {
-            subscriber.Subscribe(this, new Action<UpgradeAppliedEvent>(OnUpgradeApplied));
+            subscriber.Subscribe(this, new Action<SkillSelectedEvent>(OnSkillSelected));
             panel.SetActive(false);
         }
 
-        private void OnUpgradeApplied(UpgradeAppliedEvent e)
+        private void OnSkillSelected(SkillSelectedEvent e)
         {
-            var label = GetLabel(e.ChosenType);
-            resultText.text = $"{label} Lv.{e.CurrentStacks}";
+            resultText.text = $"{e.DisplayName} 획득!";
             panel.SetActive(true);
             StopAllCoroutines();
             StartCoroutine(HideAfterDelay());
@@ -34,17 +32,6 @@ namespace Features.Wave.Presentation
         {
             yield return new WaitForSeconds(displayDuration);
             panel.SetActive(false);
-        }
-
-        private static string GetLabel(StatusType type)
-        {
-            switch (type)
-            {
-                case StatusType.Count: return "개수";
-                case StatusType.Expand: return "범위";
-                case StatusType.Extend: return "지속";
-                default: return type.ToString();
-            }
         }
     }
 }
