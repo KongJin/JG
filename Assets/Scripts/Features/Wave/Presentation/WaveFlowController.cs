@@ -43,7 +43,8 @@ namespace Features.Wave.Presentation
             }
             else if (_waveLoop.CurrentState == WaveState.Cleared)
             {
-                _waveLoop.EnterUpgradeSelection();
+                if (!_waveLoop.EnterUpgradeSelection())
+                    StartCountdownForCurrentWave();
             }
         }
 

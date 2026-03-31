@@ -23,6 +23,7 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 
 | Method | Path | 설명 |
 |---|---|---|
+| POST | `/scene/open` | 씬 열기 (`{"scenePath":"Assets/Scenes/..."}`) |
 | POST | `/play/start` | 플레이 모드 시작 |
 | POST | `/play/stop` | 플레이 모드 정지 |
 

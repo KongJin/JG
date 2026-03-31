@@ -64,11 +64,17 @@ namespace Features.Wave.Application
             }
         }
 
-        public void EnterUpgradeSelection()
+        public bool EnterUpgradeSelection()
         {
-            _progress.EnterUpgradeSelection();
             var candidates = _skillReward.DrawCandidates(3);
+            if (candidates.Length == 0)
+            {
+                _progress.ExitUpgradeSelection();
+                return false;
+            }
+            _progress.EnterUpgradeSelection();
             _eventBus.Publish(new SkillSelectionRequestedEvent(_progress.CurrentWaveIndex, candidates));
+            return true;
         }
 
         public void ExitUpgradeSelection()

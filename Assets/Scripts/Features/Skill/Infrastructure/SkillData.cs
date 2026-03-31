@@ -16,7 +16,6 @@ namespace Features.Skill.Infrastructure
     {
         [Header("Identity")]
         [SerializeField] private string skillId;
-        [SerializeField] private bool isStarter;
 
         [Header("Presentation")]
         [Required, SerializeField] private SkillPresentationData presentation;
@@ -45,7 +44,6 @@ namespace Features.Skill.Infrastructure
         [SerializeField] private float statusTickInterval;
 
         public string SkillId => skillId;
-        public bool IsStarter => isStarter;
         public SkillPresentationData Presentation => presentation;
 
         public Domain.Skill ToDomain()

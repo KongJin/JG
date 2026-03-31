@@ -16,6 +16,12 @@ namespace Features.Wave.Presentation
         [Required, SerializeField] private Button countButton;
         [Required, SerializeField] private Button rangeButton;
         [Required, SerializeField] private Button durationButton;
+        [Required, SerializeField] private Text countLabel;
+        [Required, SerializeField] private Text rangeLabel;
+        [Required, SerializeField] private Text durationLabel;
+        [Required, SerializeField] private Image countIcon;
+        [Required, SerializeField] private Image rangeIcon;
+        [Required, SerializeField] private Image durationIcon;
 
         private IEventPublisher _publisher;
         private IEventSubscriber _subscriber;
@@ -23,27 +29,12 @@ namespace Features.Wave.Presentation
         private DomainEntityId _localPlayerId;
         private SkillRewardCandidate[] _candidates;
 
-        private Text _countLabel;
-        private Text _rangeLabel;
-        private Text _durationLabel;
-        private Image _countIcon;
-        private Image _rangeIcon;
-        private Image _durationIcon;
-
         public void Initialize(IEventPublisher publisher, IEventSubscriber subscriber, DomainEntityId localPlayerId, ISkillIconPort iconPort)
         {
             _publisher = publisher;
             _subscriber = subscriber;
             _localPlayerId = localPlayerId;
             _iconPort = iconPort;
-
-            _countLabel = countButton.GetComponentInChildren<Text>();
-            _rangeLabel = rangeButton.GetComponentInChildren<Text>();
-            _durationLabel = durationButton.GetComponentInChildren<Text>();
-
-            _countIcon = countButton.transform.Find("Icon")?.GetComponent<Image>();
-            _rangeIcon = rangeButton.transform.Find("Icon")?.GetComponent<Image>();
-            _durationIcon = durationButton.transform.Find("Icon")?.GetComponent<Image>();
 
             panel.SetActive(false);
 
@@ -59,18 +50,16 @@ namespace Features.Wave.Presentation
             _candidates = e.Candidates;
 
             var buttons = new[] { countButton, rangeButton, durationButton };
-            var labels = new[] { _countLabel, _rangeLabel, _durationLabel };
-            var icons = new[] { _countIcon, _rangeIcon, _durationIcon };
+            var labels = new[] { countLabel, rangeLabel, durationLabel };
+            var icons = new[] { countIcon, rangeIcon, durationIcon };
 
             for (var i = 0; i < buttons.Length; i++)
             {
                 if (i < _candidates.Length)
                 {
                     buttons[i].gameObject.SetActive(true);
-                    if (labels[i] != null)
-                        labels[i].text = _candidates[i].DisplayName;
-                    if (icons[i] != null && _iconPort != null)
-                        icons[i].sprite = _iconPort.GetIcon(_candidates[i].SkillId);
+                    labels[i].text = _candidates[i].DisplayName;
+                    icons[i].sprite = _iconPort.GetIcon(_candidates[i].SkillId);
                 }
                 else
                 {

@@ -6,7 +6,6 @@ using Features.Player.Infrastructure;
 using Features.Player.Presentation;
 using Features.Projectile;
 using Features.Skill;
-using Features.Skill.Application;
 using Features.Status;
 using Features.Wave;
 using Features.Zone;
@@ -140,9 +139,7 @@ namespace Features.Player
             // Wave (PvE)
             if (_waveBootstrap != null)
             {
-                var skillReward = new SkillRewardAdapter(_skillSetup.Deck, _skillSetup.Bar, _skillSetup.Catalog);
-                var iconPort = new SkillIconAdapter(_skillSetup.Catalog);
-                _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId, skillReward, iconPort);
+                _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId, _skillSetup.SkillReward, _skillSetup.SkillIcon);
                 _waveBootstrap.RegisterPlayer(player.transform);
             }
 

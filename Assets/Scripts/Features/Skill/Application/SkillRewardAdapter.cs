@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Features.Skill.Domain;
-using Features.Skill.Infrastructure;
 using Features.Wave.Application.Ports;
 using Shared.Kernel;
 
@@ -10,14 +9,14 @@ namespace Features.Skill.Application
     {
         private readonly Deck _deck;
         private readonly SkillBar _bar;
-        private readonly SkillCatalog _catalog;
+        private readonly IReadOnlyList<SkillRewardCandidate> _rewardPool;
         private readonly System.Random _rng = new();
 
-        public SkillRewardAdapter(Deck deck, SkillBar bar, SkillCatalog catalog)
+        public SkillRewardAdapter(Deck deck, SkillBar bar, IReadOnlyList<SkillRewardCandidate> rewardPool)
         {
             _deck = deck;
             _bar = bar;
-            _catalog = catalog;
+            _rewardPool = rewardPool;
         }
 
         public SkillRewardCandidate[] DrawCandidates(int count)
@@ -34,14 +33,11 @@ namespace Features.Skill.Application
                     inDeck.Add(s.Id.Value);
             }
 
-            var available = new List<SkillData>();
-            foreach (var data in _catalog.AllSkills)
+            var available = new List<SkillRewardCandidate>();
+            foreach (var candidate in _rewardPool)
             {
-                if (data == null || string.IsNullOrWhiteSpace(data.SkillId))
-                    continue;
-                if (inDeck.Contains(data.SkillId))
-                    continue;
-                available.Add(data);
+                if (!inDeck.Contains(candidate.SkillId))
+                    available.Add(candidate);
             }
 
             for (var i = available.Count - 1; i > 0; i--)
@@ -54,10 +50,7 @@ namespace Features.Skill.Application
             var result = new SkillRewardCandidate[take];
             for (var i = 0; i < take; i++)
             {
-                var pres = available[i].Presentation;
-                result[i] = new SkillRewardCandidate(
-                    available[i].SkillId,
-                    pres != null ? pres.DisplayName : available[i].SkillId);
+                result[i] = available[i];
             }
             return result;
         }

@@ -743,6 +743,12 @@ namespace ProjectSD.EditorTools.UnityMcp
                     return;
                 }
 
+                if (method == "POST" && path == "/scene/open")
+                {
+                    await HandleSceneOpenAsync(request, response);
+                    return;
+                }
+
                 if (method == "POST" && path == "/scene/save")
                 {
                     await HandleSceneSaveAsync(response);
@@ -1904,6 +1910,43 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             await WriteJsonAsync(response, 200, result);
         }
+
+        private static async Task HandleSceneOpenAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            string scenePath = null;
+            try
+            {
+                var body = await ReadRequestBodyAsync(request);
+                var json = JsonUtility.FromJson<SceneOpenRequest>(body);
+                scenePath = json?.scenePath;
+            }
+            catch { /* fall through to validation */ }
+
+            if (string.IsNullOrWhiteSpace(scenePath))
+            {
+                await WriteJsonAsync(response, 400, new ErrorResponse { error = "Missing scenePath" });
+                return;
+            }
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                {
+                    var scene = EditorSceneManager.OpenScene(scenePath);
+                    return new GenericResponse
+                    {
+                        success = scene.IsValid(),
+                        message = scene.IsValid() ? "Opened scene: " + scenePath : "Failed to open scene: " + scenePath
+                    };
+                }
+                return new GenericResponse { success = false, message = "User cancelled scene save prompt" };
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        [Serializable]
+        private class SceneOpenRequest { public string scenePath; }
 
         private static async Task HandleSceneSaveAsync(HttpListenerResponse response)
         {

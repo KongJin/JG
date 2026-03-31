@@ -9,7 +9,7 @@
 - Master에서만 적 스폰 수행
 - 각 클라이언트에서 동일한 웨이브 상태를 로컬 이벤트로 재현해 HUD/결과 UI 갱신
 - 비-Master 클라이언트에서 `EnemySetup.EnemyArrived` 콜백으로 원격 적 초기화 (Master는 `EnemySpawnAdapter`가 올바른 EnemyData로 명시적 초기화)
-- **웨이브 클리어 시 스킬 3지선다**: 카탈로그에서 덱에 없는 스킬 3개를 후보로 제시하고, 선택한 스킬을 덱 버린 더미에 추가한다. 이후 덱 순환(DeckCycleHandler)에 의해 자연스럽게 핸드에 등장한다.
+- **웨이브 클리어 시 스킬 3지선다**: 보상 풀(초기 덱에 포함되지 않은 스킬)에서 아직 덱에 없는 스킬 3개를 후보로 제시하고, 선택한 스킬을 덱 버린 더미에 추가한다. 이후 덱 순환(DeckCycleHandler)에 의해 자연스럽게 핸드에 등장한다. 보상 풀이 소진되면(모든 스킬 획득) 선택을 건너뛰고 바로 다음 웨이브 카운트다운을 시작한다.
 - **스킬 획득 결과 표시**: 선택 후 "스킬명 획득!" 형태로 2초간 요약 표시
 
 ## 데이터 흐름
@@ -44,7 +44,7 @@ WaveFlowController.Update()
 WaveClearedEvent
   → WaveFlowController.Update() — Cleared 감지
     → WaveLoopUseCase.EnterUpgradeSelection()
-      → ISkillRewardPort.DrawCandidates(3) — 덱에 없는 스킬 3개 추출
+      → ISkillRewardPort.DrawCandidates(3) — 보상 풀에서 덱에 없는 스킬 3개 추출 (0개면 선택 스킵)
       → SkillSelectionRequestedEvent(waveIndex, candidates)
         → UpgradeSelectionView: 3버튼 패널 표시 (ISkillIconPort로 아이콘 조회)
 
@@ -93,9 +93,9 @@ PlayerDiedEvent (Downed가 아닌 Dead 전이 시에만 발행)
 ## 레이어 메모
 
 - **Domain**: `WaveState` (UpgradeSelection 포함), `WaveProgress`
-- **Application**: `WaveLoopUseCase`, `WaveEventHandler`, `SkillRewardHandler`, 웨이브 이벤트 5종 + 스킬 보상 이벤트 2종 (`SkillSelectionRequestedEvent`, `SkillSelectedEvent`), 포트 5종 (`IPlayerPositionQuery`, `IAlivePlayerQuery`, `IWaveTablePort`, `IWaveSpawnPort`, `ISkillRewardPort`)
+- **Application**: `WaveLoopUseCase` (`EnterUpgradeSelection()`은 `bool` 반환 — 보상 풀 소진 시 `false`), `WaveEventHandler`, `SkillRewardHandler`, 웨이브 이벤트 5종 + 스킬 보상 이벤트 2종 (`SkillSelectionRequestedEvent`, `SkillSelectedEvent`), 포트 5종 (`IPlayerPositionQuery`, `IAlivePlayerQuery`, `IWaveTablePort`, `IWaveSpawnPort`, `ISkillRewardPort`)
 - **Infrastructure**: `WaveTableData` (`IWaveTablePort` 구현), `EnemySpawnAdapter` (`IWaveSpawnPort` 구현, 일괄 스폰 코루틴 포함), `AlivePlayerQueryAdapter`, `PlayerPositionQueryAdapter`
-- **Presentation**: `WaveFlowController` (UpgradeSelection 상태 처리 포함), `WaveHudView` (카운트다운 자체 표시), `WaveEndView`, `UpgradeSelectionView` (스킬 3지선다 UI, ISkillIconPort로 아이콘 조회), `UpgradeResultView` (스킬 획득 결과 2초 표시)
+- **Presentation**: `WaveFlowController` (UpgradeSelection 상태 처리 포함, 보상 풀 소진 시 스킵), `WaveHudView` (카운트다운 자체 표시), `WaveEndView`, `UpgradeSelectionView` (스킬 3지선다 UI, `[Required, SerializeField]`로 Text/Image 참조, ISkillIconPort로 아이콘 조회), `UpgradeResultView` (스킬 획득 결과 2초 표시)
 - **Bootstrap**: `WaveBootstrap` (순수 조립 — 비즈니스 로직 없음)
 
 ## 피처 의존성
