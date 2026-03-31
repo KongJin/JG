@@ -36,21 +36,22 @@ If Room gains independent lifecycle, it may become its own feature later.
 
 ---
 
-## EventBus 전환 기준
+## EventBus 소유 모델
 
-현재 각 피처 Bootstrap이 로컬 `new EventBus()`를 생성한다.
+**씬 단일 EventBus.** 각 씬의 Bootstrap(예: `GameSceneBootstrap`, `LobbyBootstrap`)이 `new EventBus()`를 하나 생성하고, 해당 씬의 모든 피처에 주입한다.
 
-전환 트리거:
+```
+GameSceneBootstrap
+  └─ _eventBus = new EventBus()
+       ├─ PlayerSetup.Initialize(eventBus, ...)
+       ├─ CombatBootstrap.Initialize(eventBus, ...)
+       ├─ StatusSetup.Initialize(eventBus, ...)
+       ├─ SkillSetup.Initialize(eventBus, ...)
+       └─ WaveBootstrap.Initialize(eventBus, ...)
+```
 
-* **피처 간 이벤트가 처음 필요해지는 시점**
-* EventBus 구현 교체/격리 테스트 요구가 실제로 생기는 시점
+규칙:
 
-전환 시 적용할 구조:
-
-* SceneContext (MonoBehaviour) 도입 — 씬 레벨에서 단일 EventBus 소유
-* IEventPublisher / IEventSubscriber 인터페이스 분리 (ISP)
-  * UseCase는 IEventPublisher만 의존 (Publish)
-  * View는 IEventSubscriber만 의존 (Subscribe/Unsubscribe)
-  * EventBus는 두 인터페이스 모두 구현
-* 각 피처 Bootstrap은 SceneContext로부터 EventBus를 주입받음
-* 전환 전까지는 피처 로컬 EventBus 사용을 허용
+* 피처는 자체 EventBus를 생성하지 않는다. 씬 Bootstrap에서 주입받는다.
+* 씬이 다르면 EventBus도 다르다 (Lobby 씬과 Game 씬은 별개).
+* IEventPublisher / IEventSubscriber 분리(ISP)는 실제 필요가 생기면 도입한다. 현재는 `IEventBus` 단일 인터페이스로 충분하다.

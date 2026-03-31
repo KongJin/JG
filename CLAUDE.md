@@ -156,3 +156,6 @@ Before applying a bulk replacement or mechanical edit across many files:
 4. `feature_rules.md`
 5. `naming_rules.md`
 6. `anti_patterns.md` (contains established patterns discovered through refactoring)
+7. `event_rules.md` (이벤트 체인 방향, 깊이 제한, 이벤트 vs 직접 호출 판단)
+8. `initialization_order.md` (피처 간 초기화 순서, 의존 관계 맵)
+9. `state_ownership.md` (CustomProperties 키별 소유권, 동기화 채널 선택)
