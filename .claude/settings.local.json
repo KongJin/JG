@@ -1,5 +1,14 @@
 {
   "permissions": {
+    "defaultMode": "bypassPermissions",
+    "additionalDirectories": [
+      "C:\\Users\\SOL\\Desktop"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)"
+    ],
     "allow": [
       "Bash(powershell *)",
       "Bash(powershell -Command *)",
