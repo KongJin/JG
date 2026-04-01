@@ -73,17 +73,44 @@ PlayerDiedEvent (Downed가 아닌 Dead 전이 시에만 발행)
 
 ## 네트워크 모델
 
+### 동기화 채널: Room CustomProperties
+
+| 키 | 타입 | 용도 |
+|---|---|---|
+| `waveIndex` | int | 현재 웨이브 인덱스 |
+| `waveState` | int (WaveState enum) | 현재 웨이브 상태 |
+
+Master만 write, Non-Master는 read only. `state_ownership.md`에 소유권 등록됨.
+
+### 동기화 시점 — 4개의 안정 상태만
+
+Countdown, Active, Victory, Defeat만 동기화한다. Cleared/UpgradeSelection은 과도 상태이므로 동기화하지 않는다.
+- Cleared: AdvanceWave() 타이밍 이슈 회피. 다음 Countdown 동기화로 자연스럽게 보정.
+- UpgradeSelection: 스킬 덱이 개인별이므로 각 클라이언트 로컬 처리.
+
+### 역할별 동작
+
 | 행위 | 권한자 | 비고 |
 |---|---|---|
-| 카운트다운 / HUD | 모든 클라이언트 | 같은 WaveTableData와 EnemyDiedEvent를 기준으로 로컬 진행 |
-| 적 스폰 | Master | `PhotonNetwork.Instantiate` |
+| CustomProperties write | Master | `WaveNetworkAdapter.SyncWaveState()` |
+| 카운트다운 tick / HUD | 모든 클라이언트 | 로컬 진행, Master의 Countdown 동기화로 drift 보정 |
+| 적 스폰 | Master | `PhotonNetwork.Instantiate` (EnemySpawnAdapter가 IsMasterClient 체크) |
 | 적 AI / 이동 | Master | Enemy 피처에서 `IPunObservable` 동기화 |
 | 승리 / 패배 화면 | 모든 클라이언트 | 로컬 Wave 이벤트 구독 |
+| ForceState 수신 | Non-Master | `WaveNetworkAdapter.OnRoomPropertiesUpdate()` → `WaveLoopUseCase.ForceState()` |
+
+### Late-join
+
+`WaveBootstrap.Initialize()` 마지막에 `WaveNetworkAdapter.HydrateFromRoomProperties()`를 호출한다. Room CustomProperties에서 현재 `waveIndex`/`waveState`를 읽어 `ForceState()`로 fast-forward한다. 기본값(0, Idle)이면 콜백을 생략하여 첫 게임 시작과 구분한다.
+
+### Master 교체
+
+`WaveNetworkAdapter`가 `MonoBehaviourPunCallbacks`이므로 `OnMasterClientSwitched()`를 Photon이 자동 호출한다. 현재 Room CustomProperties에서 상태를 읽어 `OnWaveStateSynced`로 발행하며, 새 Master의 `WaveFlowController`가 현재 state에 맞게 이어서 진행한다.
 
 ## 씬 의존성
 
 - `WaveBootstrap`과 `WaveFlowController`는 `GameSceneBootstrap`과 같은 오브젝트에 붙어 있다.
-- 모든 Inspector 연결 필드(`_waveTable`, `_spawnAdapter`, `_playerPositionQuery`, `_hudView`, `_endView`, `_flowController`, `_upgradeView`, `_upgradeResultView`)는 `[Required, SerializeField]`로 선언해 저장 시점에 누락을 검증한다.
+- 모든 Inspector 연결 필드(`_waveTable`, `_spawnAdapter`, `_playerPositionQuery`, `_hudView`, `_endView`, `_flowController`, `_upgradeView`, `_upgradeResultView`, `_networkAdapter`)는 `[Required, SerializeField]`로 선언해 저장 시점에 누락을 검증한다.
 - `WaveHudCanvas`는 `Screen Space - Overlay` HUD 캔버스여야 하며, `CanvasScaler.ScaleWithScreenSize` 기준 해상도 `1920x1080`, `sortingOrder=50`을 유지한다.
 - `UpgradeSelectionCanvas`는 `Screen Space - Overlay` HUD 캔버스여야 한다. `UpgradeSelectionView`가 여는 3지선다 패널과 `UpgradeResultView` 요약 표시는 이 캔버스 아래에서 렌더되므로 world-space로 바꾸면 Scene 뷰에는 보여도 Game 뷰 HUD로 보장되지 않는다.
 - `UpgradeSelectionCanvas`는 `CanvasScaler.ScaleWithScreenSize` 기준 해상도 `1920x1080`, `sortingOrder=200`을 유지해 다른 HUD 위에서 안정적으로 표시한다.
@@ -93,8 +120,8 @@ PlayerDiedEvent (Downed가 아닌 Dead 전이 시에만 발행)
 ## 레이어 메모
 
 - **Domain**: `WaveState` (UpgradeSelection 포함), `WaveProgress`
-- **Application**: `WaveLoopUseCase` (`EnterUpgradeSelection()`은 `bool` 반환 — 보상 풀 소진 시 `false`), `WaveEventHandler`, `SkillRewardHandler`, 웨이브 이벤트 5종 + 스킬 보상 이벤트 2종 (`SkillSelectionRequestedEvent`, `SkillSelectedEvent`), 포트 5종 (`IPlayerPositionQuery`, `IAlivePlayerQuery`, `IWaveTablePort`, `IWaveSpawnPort`, `ISkillRewardPort`)
-- **Infrastructure**: `WaveTableData` (`IWaveTablePort` 구현), `EnemySpawnAdapter` (`IWaveSpawnPort` 구현, 일괄 스폰 코루틴 포함), `AlivePlayerQueryAdapter`, `PlayerPositionQueryAdapter`
+- **Application**: `WaveLoopUseCase` (`EnterUpgradeSelection()`은 `bool` 반환 — 보상 풀 소진 시 `false`, `ForceState()` — late-join/네트워크 동기화용), `WaveEventHandler`, `WaveNetworkEventHandler`, `SkillRewardHandler`, 웨이브 이벤트 5종 + 스킬 보상 이벤트 2종 (`SkillSelectionRequestedEvent`, `SkillSelectedEvent`), 포트 7종 (`IPlayerPositionQuery`, `IAlivePlayerQuery`, `IWaveTablePort`, `IWaveSpawnPort`, `ISkillRewardPort`, `IWaveNetworkCommandPort`, `IWaveNetworkCallbackPort`)
+- **Infrastructure**: `WaveTableData` (`IWaveTablePort` 구현), `EnemySpawnAdapter` (`IWaveSpawnPort` 구현, 일괄 스폰 코루틴 포함), `AlivePlayerQueryAdapter`, `PlayerPositionQueryAdapter`, `WaveNetworkAdapter` (`IWaveNetworkCommandPort` + `IWaveNetworkCallbackPort` 구현, Room CustomProperties 기반)
 - **Presentation**: `WaveFlowController` (UpgradeSelection 상태 처리 포함, 보상 풀 소진 시 스킵), `WaveHudView` (카운트다운 자체 표시), `WaveEndView`, `UpgradeSelectionView` (스킬 3지선다 UI, `[Required, SerializeField]`로 Text/Image 참조, ISkillIconPort로 아이콘 조회), `UpgradeResultView` (스킬 획득 결과 2초 표시)
 - **Bootstrap**: `WaveBootstrap` (순수 조립 — 비즈니스 로직 없음)
 

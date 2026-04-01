@@ -82,6 +82,11 @@ namespace Features.Wave.Application
             _progress.ExitUpgradeSelection();
         }
 
+        public void ForceState(int waveIndex, WaveState state)
+        {
+            _progress.ForceState(waveIndex, state);
+        }
+
         public void HandleAllPlayersDead()
         {
             if (_progress.State == WaveState.Victory || _progress.State == WaveState.Defeat)

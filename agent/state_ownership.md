@@ -31,6 +31,13 @@
 | `isReady` | Lobby | `PhotonPlayerPropertyManager` | 레디 상태 |
 | `roomDisplayName` | Lobby | `PhotonPlayerPropertyManager` | 방 이름 |
 
+#### Wave CustomProperties (Photon Room)
+
+| 키 | 소유 피처 | 쓰기 위치 | 용도 |
+|----|-----------|-----------|------|
+| `waveIndex` | Wave | `WaveNetworkAdapter.SyncWaveState()` | 현재 웨이브 인덱스 |
+| `waveState` | Wave | `WaveNetworkAdapter.SyncWaveState()` | 현재 웨이브 상태 (WaveState enum int) |
+
 ---
 
 ### 새 피처가 상태를 동기화해야 할 때

@@ -24,6 +24,7 @@ namespace Features.Wave
         [Required, SerializeField] private WaveFlowController _flowController;
         [Required, SerializeField] private UpgradeSelectionView _upgradeView;
         [Required, SerializeField] private UpgradeResultView _upgradeResultView;
+        [Required, SerializeField] private WaveNetworkAdapter _networkAdapter;
 
         private EventBus _eventBus;
         private CombatBootstrap _combatBootstrap;
@@ -49,6 +50,9 @@ namespace Features.Wave
             var waveHandler = new WaveEventHandler(eventBus, waveLoop, aliveQuery);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, waveHandler));
 
+            var networkHandler = new WaveNetworkEventHandler(eventBus, _networkAdapter, _networkAdapter, waveLoop);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, networkHandler));
+
             var rewardHandler = new SkillRewardHandler(eventBus, skillReward);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, rewardHandler));
 
@@ -68,6 +72,8 @@ namespace Features.Wave
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _flowController));
 
             EnemySetup.EnemyArrived += OnEnemyArrived;
+
+            _networkAdapter.HydrateFromRoomProperties();
         }
 
         public void RegisterPlayer(Transform playerTransform)

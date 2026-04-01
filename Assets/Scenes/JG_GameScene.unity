@@ -596,6 +596,7 @@ GameObject:
   - component: {fileID: 258126776}
   - component: {fileID: 258126775}
   - component: {fileID: 258126774}
+  - component: {fileID: 258126777}
   m_Layer: 0
   m_Name: GameSceneBootstrap
   m_TagString: Untagged
@@ -671,6 +672,7 @@ MonoBehaviour:
   _flowController: {fileID: 258126770}
   _upgradeView: {fileID: 547194454}
   _upgradeResultView: {fileID: 322509166}
+  _networkAdapter: {fileID: 258126777}
 --- !u!114 &258126767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -792,6 +794,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b61951e1a530d4f41b59a7e667fa4468, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Features.Player.Presentation.InvulnerabilityTicker
+--- !u!114 &258126777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258126762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 603d77ee0df62424ca977b9ac923ba19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Wave.Infrastructure.WaveNetworkAdapter
 --- !u!1 &260248360
 GameObject:
   m_ObjectHideFlags: 0

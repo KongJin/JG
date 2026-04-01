@@ -73,6 +73,12 @@ namespace Features.Wave.Domain
             CurrentWaveIndex++;
         }
 
+        public void ForceState(int waveIndex, WaveState state)
+        {
+            CurrentWaveIndex = waveIndex;
+            State = state;
+        }
+
         public void SetDefeat()
         {
             State = WaveState.Defeat;
