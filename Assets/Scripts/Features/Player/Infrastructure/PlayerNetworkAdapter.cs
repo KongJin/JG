@@ -165,6 +165,11 @@ namespace Features.Player.Infrastructure
 
             if (changedProps.TryGetValue(LifeStateKey, out var lsRaw) && lsRaw is int lsInt)
             {
+                if (!System.Enum.IsDefined(typeof(LifeState), lsInt))
+                {
+                    Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] OnPlayerPropertiesUpdate: invalid LifeState {lsInt}.");
+                    return;
+                }
                 OnLifeStateSynced?.Invoke(playerId, (LifeState)lsInt);
             }
         }
@@ -172,6 +177,12 @@ namespace Features.Player.Infrastructure
         [PunRPC]
         private void RPC_Jump(string playerIdValue)
         {
+            if (string.IsNullOrEmpty(playerIdValue))
+            {
+                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_Jump: playerIdValue is null or empty.");
+                return;
+            }
+
             var playerId = new DomainEntityId(playerIdValue);
             OnRemoteJumped?.Invoke(playerId);
         }
@@ -179,8 +190,24 @@ namespace Features.Player.Infrastructure
         [PunRPC]
         private void RPC_ApplyDamage(string targetIdValue, float damage, int damageTypeInt, string attackerIdValue)
         {
+            if (string.IsNullOrEmpty(targetIdValue))
+            {
+                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_ApplyDamage: targetIdValue is null or empty.");
+                return;
+            }
+            if (float.IsNaN(damage) || float.IsInfinity(damage) || damage < 0f)
+            {
+                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_ApplyDamage: invalid damage value {damage}.");
+                return;
+            }
+            if (!System.Enum.IsDefined(typeof(DamageType), damageTypeInt))
+            {
+                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_ApplyDamage: invalid damageType {damageTypeInt}.");
+                return;
+            }
+
             var targetId = new DomainEntityId(targetIdValue);
-            var attackerId = new DomainEntityId(attackerIdValue);
+            var attackerId = string.IsNullOrEmpty(attackerIdValue) ? default : new DomainEntityId(attackerIdValue);
             var damageType = (DamageType)damageTypeInt;
             OnRemoteDamaged?.Invoke(targetId, damage, damageType, attackerId);
         }
@@ -188,14 +215,26 @@ namespace Features.Player.Infrastructure
         [PunRPC]
         private void RPC_PlayerDied(string targetIdValue, string killerIdValue)
         {
+            if (string.IsNullOrEmpty(targetIdValue))
+            {
+                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_PlayerDied: targetIdValue is null or empty.");
+                return;
+            }
+
             var targetId = new DomainEntityId(targetIdValue);
-            var killerId = new DomainEntityId(killerIdValue);
+            var killerId = string.IsNullOrEmpty(killerIdValue) ? default : new DomainEntityId(killerIdValue);
             OnRemoteDied?.Invoke(targetId, killerId);
         }
 
         [PunRPC]
         private void RPC_PlayerRespawn(string targetIdValue)
         {
+            if (string.IsNullOrEmpty(targetIdValue))
+            {
+                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_PlayerRespawn: targetIdValue is null or empty.");
+                return;
+            }
+
             var targetId = new DomainEntityId(targetIdValue);
             OnRemoteRespawned?.Invoke(targetId);
         }
@@ -203,6 +242,12 @@ namespace Features.Player.Infrastructure
         [PunRPC]
         private void RPC_Rescue(string rescuerIdValue, string targetIdValue)
         {
+            if (string.IsNullOrEmpty(rescuerIdValue) || string.IsNullOrEmpty(targetIdValue))
+            {
+                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_Rescue: rescuerIdValue or targetIdValue is null or empty.");
+                return;
+            }
+
             var rescuerId = new DomainEntityId(rescuerIdValue);
             var targetId = new DomainEntityId(targetIdValue);
             OnRemoteRescued?.Invoke(rescuerId, targetId);
@@ -211,6 +256,12 @@ namespace Features.Player.Infrastructure
         [PunRPC]
         private void RPC_RescueChannelStart(string rescuerIdValue, string targetIdValue)
         {
+            if (string.IsNullOrEmpty(rescuerIdValue) || string.IsNullOrEmpty(targetIdValue))
+            {
+                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_RescueChannelStart: rescuerIdValue or targetIdValue is null or empty.");
+                return;
+            }
+
             var rescuerId = new DomainEntityId(rescuerIdValue);
             var targetId = new DomainEntityId(targetIdValue);
             OnRemoteRescueChannelStarted?.Invoke(rescuerId, targetId);
@@ -219,6 +270,12 @@ namespace Features.Player.Infrastructure
         [PunRPC]
         private void RPC_RescueChannelCancel(string targetIdValue)
         {
+            if (string.IsNullOrEmpty(targetIdValue))
+            {
+                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_RescueChannelCancel: targetIdValue is null or empty.");
+                return;
+            }
+
             var targetId = new DomainEntityId(targetIdValue);
             OnRemoteRescueChannelCancelled?.Invoke(targetId);
         }
@@ -245,6 +302,11 @@ namespace Features.Player.Infrastructure
 
             if (props.TryGetValue(LifeStateKey, out var lsRaw) && lsRaw is int lsInt)
             {
+                if (!System.Enum.IsDefined(typeof(LifeState), lsInt))
+                {
+                    Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] HydrateFromProperties: invalid LifeState {lsInt}.");
+                    return;
+                }
                 OnLifeStateSynced?.Invoke(playerId, (LifeState)lsInt);
             }
         }
