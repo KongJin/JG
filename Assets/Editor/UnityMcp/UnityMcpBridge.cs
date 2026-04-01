@@ -33,6 +33,9 @@ namespace ProjectSD.EditorTools.UnityMcp
         private const int MaxStoredLogs = 200;
         private const int MaxLogMessageLength = 2000;
         private const int MaxStackTraceLength = 6000;
+        private const string DefaultScreenshotDirectoryRelativePath = "Temp/UnityMcp/Screenshots";
+        private const int ScreenshotWriteTimeoutMs = 5000;
+        private const int ScreenshotPollDelayMs = 100;
 
         private static readonly ConcurrentQueue<Action> MainThreadActions = new ConcurrentQueue<Action>();
         private static readonly object LogLock = new object();
@@ -681,6 +684,18 @@ namespace ProjectSD.EditorTools.UnityMcp
                     return;
                 }
 
+                if (method == "POST" && path == "/screenshot/capture")
+                {
+                    await HandleScreenshotCaptureAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/input/click")
+                {
+                    await HandleInputClickAsync(request, response);
+                    return;
+                }
+
                 if (method == "GET" && path == "/console/errors")
                 {
                     await HandleConsoleErrorsAsync(request, response);
@@ -927,6 +942,133 @@ namespace ProjectSD.EditorTools.UnityMcp
             await WriteJsonAsync(response, 200, result);
         }
 
+        private static async Task HandleScreenshotCaptureAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            ScreenshotCaptureRequest req = null;
+            if (request.HasEntityBody)
+            {
+                var body = await ReadRequestBodyAsync(request);
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    req = JsonUtility.FromJson<ScreenshotCaptureRequest>(body);
+                }
+            }
+
+            ScreenshotCapturePlan capturePlan;
+            try
+            {
+                capturePlan = BuildScreenshotCapturePlan(req);
+            }
+            catch (ArgumentException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse
+                    {
+                        error = "Invalid screenshot request",
+                        detail = ex.Message
+                    });
+                return;
+            }
+
+            try
+            {
+                await RunOnMainThreadAsync(() =>
+                {
+                    if (!EditorApplication.isPlaying)
+                    {
+                        throw new InvalidOperationException(
+                            "Screenshot capture requires play mode so the Game view is rendering."
+                        );
+                    }
+
+                    ScreenCapture.CaptureScreenshot(capturePlan.absolutePath, capturePlan.superSize);
+                    return true;
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse
+                    {
+                        error = "Screenshot unavailable",
+                        detail = ex.Message
+                    });
+                return;
+            }
+
+            try
+            {
+                var fileSizeBytes = await WaitForScreenshotFileAsync(capturePlan.absolutePath);
+                await WriteJsonAsync(
+                    response,
+                    200,
+                    new ScreenshotCaptureResponse
+                    {
+                        success = true,
+                        message = "Screenshot captured.",
+                        relativePath = capturePlan.relativePath,
+                        absolutePath = capturePlan.absolutePath,
+                        fileSizeBytes = fileSizeBytes
+                    });
+            }
+            catch (TimeoutException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    504,
+                    new ErrorResponse
+                    {
+                        error = "Screenshot timeout",
+                        detail = ex.Message
+                    });
+            }
+        }
+
+        private static async Task HandleInputClickAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            InputClickRequest req = null;
+            if (request.HasEntityBody)
+            {
+                var body = await ReadRequestBodyAsync(request);
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    req = JsonUtility.FromJson<InputClickRequest>(body);
+                }
+            }
+
+            try
+            {
+                var result = await RunOnMainThreadAsync(() => ExecuteInputClick(req));
+                await WriteJsonAsync(response, 200, result);
+            }
+            catch (ArgumentException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse
+                    {
+                        error = "Invalid click request",
+                        detail = ex.Message
+                    });
+            }
+            catch (InvalidOperationException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse
+                    {
+                        error = "Click unavailable",
+                        detail = ex.Message
+                    });
+            }
+        }
+
         private static async Task HandleConsoleErrorsAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             var limit = 20;
@@ -965,6 +1107,206 @@ namespace ProjectSD.EditorTools.UnityMcp
             {
                 return await reader.ReadToEndAsync();
             }
+        }
+
+        private static ScreenshotCapturePlan BuildScreenshotCapturePlan(ScreenshotCaptureRequest req)
+        {
+            var requestedOutputPath = req != null ? req.outputPath : null;
+            var superSize = req != null ? Mathf.Clamp(req.superSize <= 0 ? 1 : req.superSize, 1, 4) : 1;
+            var overwrite = req != null && req.overwrite;
+
+            var relativePath = string.IsNullOrWhiteSpace(requestedOutputPath)
+                ? BuildDefaultScreenshotRelativePath()
+                : requestedOutputPath.Trim().Replace('\\', '/');
+
+            if (Path.IsPathRooted(relativePath))
+            {
+                throw new ArgumentException("outputPath must be project-relative.");
+            }
+
+            if (!relativePath.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+            {
+                relativePath += ".png";
+            }
+
+            var absolutePath = Path.GetFullPath(Path.Combine(ProjectRootPath, relativePath));
+            var normalizedProjectRoot = NormalizeProjectPath(ProjectRootPath);
+            var normalizedAbsolutePath = NormalizeProjectPath(absolutePath);
+            if (normalizedAbsolutePath != normalizedProjectRoot
+                && !normalizedAbsolutePath.StartsWith(normalizedProjectRoot + "/", StringComparison.Ordinal))
+            {
+                throw new ArgumentException("outputPath must stay inside the project folder.");
+            }
+
+            var directoryPath = Path.GetDirectoryName(absolutePath);
+            if (string.IsNullOrEmpty(directoryPath))
+            {
+                throw new ArgumentException("outputPath must include a valid directory.");
+            }
+
+            Directory.CreateDirectory(directoryPath);
+            if (File.Exists(absolutePath))
+            {
+                if (!overwrite)
+                {
+                    throw new ArgumentException("outputPath already exists. Set overwrite:true or choose a new path.");
+                }
+
+                File.Delete(absolutePath);
+            }
+
+            return new ScreenshotCapturePlan
+            {
+                relativePath = relativePath.Replace('\\', '/'),
+                absolutePath = absolutePath,
+                superSize = superSize
+            };
+        }
+
+        private static string BuildDefaultScreenshotRelativePath()
+        {
+            return DefaultScreenshotDirectoryRelativePath
+                + "/shot-"
+                + DateTime.Now.ToString("yyyyMMdd-HHmmss-fff")
+                + ".png";
+        }
+
+        private static async Task<long> WaitForScreenshotFileAsync(string absolutePath)
+        {
+            var startedAt = DateTime.UtcNow;
+            long previousLength = -1;
+            var stableReadCount = 0;
+
+            while ((DateTime.UtcNow - startedAt).TotalMilliseconds < ScreenshotWriteTimeoutMs)
+            {
+                if (File.Exists(absolutePath))
+                {
+                    try
+                    {
+                        var fileInfo = new FileInfo(absolutePath);
+                        var currentLength = fileInfo.Length;
+                        if (currentLength > 0)
+                        {
+                            if (currentLength == previousLength)
+                            {
+                                stableReadCount++;
+                                if (stableReadCount >= 2)
+                                {
+                                    return currentLength;
+                                }
+                            }
+                            else
+                            {
+                                previousLength = currentLength;
+                                stableReadCount = 0;
+                            }
+                        }
+                    }
+                    catch (IOException)
+                    {
+                    }
+                }
+
+                await Task.Delay(ScreenshotPollDelayMs);
+            }
+
+            throw new TimeoutException("Screenshot file was not written within the timeout: " + absolutePath);
+        }
+
+        private static InputClickResponse ExecuteInputClick(InputClickRequest req)
+        {
+            if (req == null)
+            {
+                throw new ArgumentException("Request body is required.");
+            }
+
+            if (!EditorApplication.isPlaying)
+            {
+                throw new InvalidOperationException("Game view click injection requires play mode.");
+            }
+
+            var button = Mathf.Clamp(req.button, 0, 2);
+            var clickCount = Mathf.Clamp(req.clickCount <= 0 ? 1 : req.clickCount, 1, 3);
+            var gameView = GetGameViewWindow();
+            if (gameView == null)
+            {
+                throw new InvalidOperationException("Game view window could not be opened.");
+            }
+
+            var gameViewSize = Handles.GetMainGameViewSize();
+            var width = Mathf.Max(1f, gameViewSize.x);
+            var height = Mathf.Max(1f, gameViewSize.y);
+
+            var x = req.normalized ? req.x * width : req.x;
+            var y = req.normalized ? req.y * height : req.y;
+            if (float.IsNaN(x) || float.IsInfinity(x) || float.IsNaN(y) || float.IsInfinity(y))
+            {
+                throw new ArgumentException("x and y must be finite numbers.");
+            }
+
+            if (req.normalized)
+            {
+                if (req.x < 0f || req.x > 1f || req.y < 0f || req.y > 1f)
+                {
+                    throw new ArgumentException("Normalized x and y must be between 0 and 1.");
+                }
+            }
+            else if (x < 0f || x > width || y < 0f || y > height)
+            {
+                throw new ArgumentException(
+                    "Pixel coordinates must stay inside the Game view bounds: "
+                    + width.ToString("0")
+                    + "x"
+                    + height.ToString("0")
+                    + "."
+                );
+            }
+
+            var mousePosition = new Vector2(x, y);
+            gameView.Focus();
+            gameView.SendEvent(CreateMouseEvent(EventType.MouseMove, mousePosition, button, 0));
+            gameView.SendEvent(CreateMouseEvent(EventType.MouseDown, mousePosition, button, clickCount));
+            gameView.SendEvent(CreateMouseEvent(EventType.MouseUp, mousePosition, button, clickCount));
+            gameView.Repaint();
+
+            return new InputClickResponse
+            {
+                success = true,
+                message = "Click dispatched to Game view.",
+                x = mousePosition.x,
+                y = mousePosition.y,
+                button = button,
+                clickCount = clickCount,
+                gameViewWidth = width,
+                gameViewHeight = height,
+                normalized = req.normalized
+            };
+        }
+
+        private static Event CreateMouseEvent(EventType eventType, Vector2 mousePosition, int button, int clickCount)
+        {
+            return new Event
+            {
+                type = eventType,
+                mousePosition = mousePosition,
+                button = button,
+                clickCount = clickCount,
+                delta = Vector2.zero,
+                modifiers = EventModifiers.None
+            };
+        }
+
+        private static EditorWindow GetGameViewWindow()
+        {
+            var gameViewType = Type.GetType("UnityEditor.GameView,UnityEditor");
+            if (gameViewType == null)
+            {
+                return null;
+            }
+
+            var gameView = EditorWindow.GetWindow(gameViewType);
+            gameView?.Show();
+            return gameView;
         }
 
         private static async Task HandleSceneHierarchyAsync(HttpListenerRequest request, HttpListenerResponse response)
@@ -2415,6 +2757,55 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             public bool success;
             public string message;
+        }
+
+        [Serializable]
+        private sealed class ScreenshotCaptureRequest
+        {
+            public string outputPath;
+            public int superSize;
+            public bool overwrite;
+        }
+
+        [Serializable]
+        private sealed class ScreenshotCaptureResponse
+        {
+            public bool success;
+            public string message;
+            public string relativePath;
+            public string absolutePath;
+            public long fileSizeBytes;
+        }
+
+        private sealed class ScreenshotCapturePlan
+        {
+            public string relativePath;
+            public string absolutePath;
+            public int superSize;
+        }
+
+        [Serializable]
+        private sealed class InputClickRequest
+        {
+            public float x;
+            public float y;
+            public bool normalized;
+            public int button;
+            public int clickCount;
+        }
+
+        [Serializable]
+        private sealed class InputClickResponse
+        {
+            public bool success;
+            public string message;
+            public float x;
+            public float y;
+            public int button;
+            public int clickCount;
+            public float gameViewWidth;
+            public float gameViewHeight;
+            public bool normalized;
         }
     }
 }

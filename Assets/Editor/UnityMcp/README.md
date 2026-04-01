@@ -26,6 +26,46 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 | POST | `/scene/open` | 씬 열기 (`{"scenePath":"Assets/Scenes/..."}`) |
 | POST | `/play/start` | 플레이 모드 시작 |
 | POST | `/play/stop` | 플레이 모드 정지 |
+| POST | `/screenshot/capture` | 플레이 중 Game View 스크린샷을 프로젝트 내부 PNG로 저장하고 경로 반환 |
+
+#### `/screenshot/capture` Body
+
+```json
+{
+  "outputPath": "Temp/UnityMcp/Screenshots/lobby-check.png",
+  "superSize": 1,
+  "overwrite": true
+}
+```
+
+- `outputPath`: 프로젝트 루트 기준 상대 경로. 비우면 `Temp/UnityMcp/Screenshots/shot-yyyymmdd-hhmmss-fff.png`
+- `superSize`: Unity `ScreenCapture.CaptureScreenshot` 배율. 기본 `1`, 권장 `1`
+- `overwrite`: 같은 파일이 있으면 덮어쓸지 여부. 기본 `false`
+- 응답은 이미지 바이트를 직접 반환하지 않고 저장된 파일 경로만 돌려준다. 그래서 캡처 자체는 토큰을 거의 쓰지 않고, 정말 필요할 때만 이미지를 열어 보면 된다.
+
+### 입력
+
+| Method | Path | 설명 |
+|---|---|---|
+| POST | `/input/click` | 플레이 중 Game View에 마우스 클릭 이벤트 전달 |
+
+#### `/input/click` Body
+
+```json
+{
+  "x": 0.5,
+  "y": 0.5,
+  "normalized": true,
+  "button": 0,
+  "clickCount": 1
+}
+```
+
+- `normalized: true`면 `x`, `y`는 `0~1` 비율 좌표다. 해상도와 무관하게 같은 위치를 누를 때 권장
+- `normalized: false`면 `x`, `y`는 Game View 내부 픽셀 좌표다
+- `button`: `0` 왼쪽, `1` 오른쪽, `2` 가운데
+- `clickCount`: 기본 `1`
+- 호출 시 Game View를 열고 포커스한 뒤 `MouseMove -> MouseDown -> MouseUp` 순서로 이벤트를 보낸다
 
 ### 게임오브젝트
 
@@ -150,4 +190,6 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - 컴파일 중에는 서버가 내려간다 — `/asset/refresh` 후 `/health`로 `isCompiling: false` 확인 필요
 - 씬 엔드포인트(`/gameobject/*`, `/component/*`)는 `GameObject.Find` 기반 — **씬 오브젝트만** 대상
 - 프리팹 엔드포인트(`/prefab/get`, `/prefab/set`, `/prefab/add-component`)는 `AssetDatabase.LoadAssetAtPath` 기반 — **프리팹 에셋 직접 수정 가능**
+- 스크린샷 엔드포인트는 플레이 모드가 켜져 있어야 한다. 기본 출력 경로는 `Temp/UnityMcp/Screenshots`
+- 입력 엔드포인트도 플레이 모드가 켜져 있어야 한다. 좌표는 Game View 기준이다
 - POST 엔드포인트에 GET으로 호출하면 404 반환
