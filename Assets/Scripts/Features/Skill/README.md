@@ -37,8 +37,8 @@ SlotInputHandler
   - Presentation: `SkillPresentationData` SO 참조
   - Spec: `damage`, `manaCost`, `range`, `duration`, `projectileCount`
   - Delivery: `deliveryType` enum + Projectile 전용 필드 (`trajectoryType`, `hitType`, `speed`, `radius`)
-  - Status Effect: `hasStatusEffect`, `statusType`, `statusMagnitude`, `statusDuration`, `statusTickInterval`
-  - `ToDomain()` 메서드로 Domain `Skill` 엔티티 생성 (StatusPayload 포함)
+  - Status Effect: `StatusEffectData` (`[Serializable]` 클래스 — `enabled`, `type`, `magnitude`, `duration`, `tickInterval`). `ToPayload()`로 `StatusPayload` 변환
+  - `ToDomain()` 메서드로 Domain `Skill` 엔티티 생성 (`statusEffect.ToPayload()` 사용)
 
 - `SkillPresentationData` (SO) — 스킬 하나의 연출/UI 리소스
   - UI: `displayName`, `description`, `icon`

@@ -37,11 +37,7 @@ namespace Features.Skill.Infrastructure
         [SerializeField] private float radius;
 
         [Header("Status Effect")]
-        [SerializeField] private bool hasStatusEffect;
-        [SerializeField] private StatusType statusType;
-        [SerializeField] private float statusMagnitude;
-        [SerializeField] private float statusDuration;
-        [SerializeField] private float statusTickInterval;
+        [SerializeField] private StatusEffectData statusEffect;
 
         public string SkillId => skillId;
         public SkillPresentationData Presentation => presentation;
@@ -49,9 +45,7 @@ namespace Features.Skill.Infrastructure
         public Domain.Skill ToDomain()
         {
             var id = new DomainEntityId(skillId);
-            var payload = hasStatusEffect
-                ? StatusPayload.Create(statusType, statusMagnitude, statusDuration, statusTickInterval)
-                : StatusPayload.None;
+            var payload = statusEffect != null ? statusEffect.ToPayload() : StatusPayload.None;
             var spec = new SkillSpec(damage, manaCost, range, duration, projectileCount, payload);
             var delivery = CreateDelivery();
             return new Domain.Skill(id, spec, delivery);
