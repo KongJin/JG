@@ -696,6 +696,24 @@ namespace ProjectSD.EditorTools.UnityMcp
                     return;
                 }
 
+                if (method == "POST" && path == "/input/drag")
+                {
+                    await HandleInputDragAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/input/key")
+                {
+                    await HandleInputKeyAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/input/text")
+                {
+                    await HandleInputTextAsync(request, response);
+                    return;
+                }
+
                 if (method == "GET" && path == "/console/errors")
                 {
                     await HandleConsoleErrorsAsync(request, response);
@@ -1069,6 +1087,129 @@ namespace ProjectSD.EditorTools.UnityMcp
             }
         }
 
+        private static async Task HandleInputDragAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            InputDragRequest req = null;
+            if (request.HasEntityBody)
+            {
+                var body = await ReadRequestBodyAsync(request);
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    req = JsonUtility.FromJson<InputDragRequest>(body);
+                }
+            }
+
+            try
+            {
+                var result = await RunOnMainThreadAsync(() => ExecuteInputDrag(req));
+                await WriteJsonAsync(response, 200, result);
+            }
+            catch (ArgumentException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse
+                    {
+                        error = "Invalid drag request",
+                        detail = ex.Message
+                    });
+            }
+            catch (InvalidOperationException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse
+                    {
+                        error = "Drag unavailable",
+                        detail = ex.Message
+                    });
+            }
+        }
+
+        private static async Task HandleInputKeyAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            InputKeyRequest req = null;
+            if (request.HasEntityBody)
+            {
+                var body = await ReadRequestBodyAsync(request);
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    req = JsonUtility.FromJson<InputKeyRequest>(body);
+                }
+            }
+
+            try
+            {
+                var result = await RunOnMainThreadAsync(() => ExecuteInputKey(req));
+                await WriteJsonAsync(response, 200, result);
+            }
+            catch (ArgumentException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse
+                    {
+                        error = "Invalid key request",
+                        detail = ex.Message
+                    });
+            }
+            catch (InvalidOperationException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse
+                    {
+                        error = "Key input unavailable",
+                        detail = ex.Message
+                    });
+            }
+        }
+
+        private static async Task HandleInputTextAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            InputTextRequest req = null;
+            if (request.HasEntityBody)
+            {
+                var body = await ReadRequestBodyAsync(request);
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    req = JsonUtility.FromJson<InputTextRequest>(body);
+                }
+            }
+
+            try
+            {
+                var result = await RunOnMainThreadAsync(() => ExecuteInputText(req));
+                await WriteJsonAsync(response, 200, result);
+            }
+            catch (ArgumentException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse
+                    {
+                        error = "Invalid text request",
+                        detail = ex.Message
+                    });
+            }
+            catch (InvalidOperationException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse
+                    {
+                        error = "Text input unavailable",
+                        detail = ex.Message
+                    });
+            }
+        }
+
         private static async Task HandleConsoleErrorsAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             var limit = 20;
@@ -1220,54 +1361,16 @@ namespace ProjectSD.EditorTools.UnityMcp
                 throw new ArgumentException("Request body is required.");
             }
 
-            if (!EditorApplication.isPlaying)
-            {
-                throw new InvalidOperationException("Game view click injection requires play mode.");
-            }
-
             var button = Mathf.Clamp(req.button, 0, 2);
             var clickCount = Mathf.Clamp(req.clickCount <= 0 ? 1 : req.clickCount, 1, 3);
-            var gameView = GetGameViewWindow();
-            if (gameView == null)
-            {
-                throw new InvalidOperationException("Game view window could not be opened.");
-            }
+            var inputContext = GetGameViewInputContext();
+            var mousePosition = ResolveMousePosition(inputContext, req.x, req.y, req.normalized);
 
-            var gameViewSize = Handles.GetMainGameViewSize();
-            var width = Mathf.Max(1f, gameViewSize.x);
-            var height = Mathf.Max(1f, gameViewSize.y);
-
-            var x = req.normalized ? req.x * width : req.x;
-            var y = req.normalized ? req.y * height : req.y;
-            if (float.IsNaN(x) || float.IsInfinity(x) || float.IsNaN(y) || float.IsInfinity(y))
-            {
-                throw new ArgumentException("x and y must be finite numbers.");
-            }
-
-            if (req.normalized)
-            {
-                if (req.x < 0f || req.x > 1f || req.y < 0f || req.y > 1f)
-                {
-                    throw new ArgumentException("Normalized x and y must be between 0 and 1.");
-                }
-            }
-            else if (x < 0f || x > width || y < 0f || y > height)
-            {
-                throw new ArgumentException(
-                    "Pixel coordinates must stay inside the Game view bounds: "
-                    + width.ToString("0")
-                    + "x"
-                    + height.ToString("0")
-                    + "."
-                );
-            }
-
-            var mousePosition = new Vector2(x, y);
-            gameView.Focus();
-            gameView.SendEvent(CreateMouseEvent(EventType.MouseMove, mousePosition, button, 0));
-            gameView.SendEvent(CreateMouseEvent(EventType.MouseDown, mousePosition, button, clickCount));
-            gameView.SendEvent(CreateMouseEvent(EventType.MouseUp, mousePosition, button, clickCount));
-            gameView.Repaint();
+            inputContext.gameView.Focus();
+            inputContext.gameView.SendEvent(CreateMouseEvent(EventType.MouseMove, mousePosition, button, 0));
+            inputContext.gameView.SendEvent(CreateMouseEvent(EventType.MouseDown, mousePosition, button, clickCount));
+            inputContext.gameView.SendEvent(CreateMouseEvent(EventType.MouseUp, mousePosition, button, clickCount));
+            inputContext.gameView.Repaint();
 
             return new InputClickResponse
             {
@@ -1277,13 +1380,315 @@ namespace ProjectSD.EditorTools.UnityMcp
                 y = mousePosition.y,
                 button = button,
                 clickCount = clickCount,
-                gameViewWidth = width,
-                gameViewHeight = height,
+                gameViewWidth = inputContext.width,
+                gameViewHeight = inputContext.height,
                 normalized = req.normalized
             };
         }
 
+        private static InputDragResponse ExecuteInputDrag(InputDragRequest req)
+        {
+            if (req == null)
+            {
+                throw new ArgumentException("Request body is required.");
+            }
+
+            var button = Mathf.Clamp(req.button, 0, 2);
+            var steps = Mathf.Clamp(req.steps <= 0 ? 12 : req.steps, 1, 120);
+            var inputContext = GetGameViewInputContext();
+            var start = ResolveMousePosition(inputContext, req.startX, req.startY, req.normalized);
+            var end = ResolveMousePosition(inputContext, req.endX, req.endY, req.normalized);
+
+            inputContext.gameView.Focus();
+            inputContext.gameView.SendEvent(CreateMouseEvent(EventType.MouseMove, start, button, 0));
+            inputContext.gameView.SendEvent(CreateMouseEvent(EventType.MouseDown, start, button, 1));
+
+            var previous = start;
+            for (var i = 1; i <= steps; i++)
+            {
+                var t = i / (float)steps;
+                var current = Vector2.Lerp(start, end, t);
+                inputContext.gameView.SendEvent(
+                    CreateMouseEvent(EventType.MouseDrag, current, button, 0, current - previous)
+                );
+                previous = current;
+            }
+
+            inputContext.gameView.SendEvent(CreateMouseEvent(EventType.MouseUp, end, button, 1));
+            inputContext.gameView.Repaint();
+
+            return new InputDragResponse
+            {
+                success = true,
+                message = "Drag dispatched to Game view.",
+                startX = start.x,
+                startY = start.y,
+                endX = end.x,
+                endY = end.y,
+                button = button,
+                steps = steps,
+                gameViewWidth = inputContext.width,
+                gameViewHeight = inputContext.height,
+                normalized = req.normalized
+            };
+        }
+
+        private static InputKeyResponse ExecuteInputKey(InputKeyRequest req)
+        {
+            if (req == null)
+            {
+                throw new ArgumentException("Request body is required.");
+            }
+
+            var inputContext = GetGameViewInputContext();
+            var phase = ParseKeyPhase(req.phase);
+            var keyCode = ParseKeyCode(req.keyCode);
+            var character = ParseOptionalCharacter(req.character);
+            var modifiers = BuildEventModifiers(req.shift, req.control, req.alt, req.command);
+
+            if (keyCode == KeyCode.None && character == '\0')
+            {
+                throw new ArgumentException("keyCode or character is required.");
+            }
+
+            inputContext.gameView.Focus();
+            if (phase == "down" || phase == "press")
+            {
+                inputContext.gameView.SendEvent(CreateKeyboardEvent(EventType.KeyDown, keyCode, character, modifiers));
+            }
+
+            if (phase == "up" || phase == "press")
+            {
+                inputContext.gameView.SendEvent(CreateKeyboardEvent(EventType.KeyUp, keyCode, character, modifiers));
+            }
+
+            inputContext.gameView.Repaint();
+
+            return new InputKeyResponse
+            {
+                success = true,
+                message = "Key input dispatched to Game view.",
+                phase = phase,
+                keyCode = keyCode.ToString(),
+                character = character == '\0' ? string.Empty : character.ToString(),
+                modifiers = modifiers.ToString()
+            };
+        }
+
+        private static InputTextResponse ExecuteInputText(InputTextRequest req)
+        {
+            if (req == null || req.text == null)
+            {
+                throw new ArgumentException("text is required.");
+            }
+
+            var inputContext = GetGameViewInputContext();
+            inputContext.gameView.Focus();
+
+            var charactersSubmitted = 0;
+            foreach (var character in req.text)
+            {
+                DispatchTextCharacter(inputContext.gameView, character);
+                charactersSubmitted++;
+            }
+
+            if (req.appendReturn)
+            {
+                inputContext.gameView.SendEvent(CreateKeyboardEvent(EventType.KeyDown, KeyCode.Return, '\n', EventModifiers.None));
+                inputContext.gameView.SendEvent(CreateKeyboardEvent(EventType.KeyUp, KeyCode.Return, '\n', EventModifiers.None));
+            }
+
+            inputContext.gameView.Repaint();
+
+            return new InputTextResponse
+            {
+                success = true,
+                message = "Text input dispatched to Game view.",
+                charactersSubmitted = charactersSubmitted,
+                appendReturn = req.appendReturn
+            };
+        }
+
+        private static void DispatchTextCharacter(EditorWindow gameView, char character)
+        {
+            var keyCode = KeyCode.None;
+            var eventCharacter = character;
+
+            switch (character)
+            {
+                case '\r':
+                case '\n':
+                    keyCode = KeyCode.Return;
+                    eventCharacter = '\n';
+                    break;
+                case '\b':
+                    keyCode = KeyCode.Backspace;
+                    break;
+                case '\t':
+                    keyCode = KeyCode.Tab;
+                    break;
+            }
+
+            gameView.SendEvent(CreateKeyboardEvent(EventType.KeyDown, keyCode, eventCharacter, EventModifiers.None));
+            gameView.SendEvent(CreateKeyboardEvent(EventType.KeyUp, keyCode, eventCharacter, EventModifiers.None));
+        }
+
+        private static GameViewInputContext GetGameViewInputContext()
+        {
+            if (!EditorApplication.isPlaying)
+            {
+                throw new InvalidOperationException("Game view input requires play mode.");
+            }
+
+            var gameView = GetGameViewWindow();
+            if (gameView == null)
+            {
+                throw new InvalidOperationException("Game view window could not be opened.");
+            }
+
+            var gameViewSize = Handles.GetMainGameViewSize();
+            return new GameViewInputContext
+            {
+                gameView = gameView,
+                width = Mathf.Max(1f, gameViewSize.x),
+                height = Mathf.Max(1f, gameViewSize.y)
+            };
+        }
+
+        private static Vector2 ResolveMousePosition(GameViewInputContext inputContext, float x, float y, bool normalized)
+        {
+            if (float.IsNaN(x) || float.IsInfinity(x) || float.IsNaN(y) || float.IsInfinity(y))
+            {
+                throw new ArgumentException("x and y must be finite numbers.");
+            }
+
+            if (normalized)
+            {
+                if (x < 0f || x > 1f || y < 0f || y > 1f)
+                {
+                    throw new ArgumentException("Normalized x and y must be between 0 and 1.");
+                }
+
+                return new Vector2(x * inputContext.width, y * inputContext.height);
+            }
+
+            if (x < 0f || x > inputContext.width || y < 0f || y > inputContext.height)
+            {
+                throw new ArgumentException(
+                    "Pixel coordinates must stay inside the Game view bounds: "
+                    + inputContext.width.ToString("0")
+                    + "x"
+                    + inputContext.height.ToString("0")
+                    + "."
+                );
+            }
+
+            return new Vector2(x, y);
+        }
+
+        private static string ParseKeyPhase(string phase)
+        {
+            if (string.IsNullOrWhiteSpace(phase))
+            {
+                return "press";
+            }
+
+            var normalized = phase.Trim().ToLowerInvariant();
+            if (normalized == "press" || normalized == "down" || normalized == "up")
+            {
+                return normalized;
+            }
+
+            throw new ArgumentException("phase must be one of: press, down, up.");
+        }
+
+        private static KeyCode ParseKeyCode(string keyCodeRaw)
+        {
+            if (string.IsNullOrWhiteSpace(keyCodeRaw))
+            {
+                return KeyCode.None;
+            }
+
+            if (Enum.TryParse(keyCodeRaw.Trim(), true, out KeyCode keyCode))
+            {
+                return keyCode;
+            }
+
+            throw new ArgumentException("Unknown Unity KeyCode: " + keyCodeRaw);
+        }
+
+        private static char ParseOptionalCharacter(string characterRaw)
+        {
+            if (string.IsNullOrEmpty(characterRaw))
+            {
+                return '\0';
+            }
+
+            if (characterRaw.Length == 1)
+            {
+                return characterRaw[0];
+            }
+
+            switch (characterRaw.Trim().ToLowerInvariant())
+            {
+                case "\\n":
+                case "newline":
+                case "return":
+                    return '\n';
+                case "\\t":
+                case "tab":
+                    return '\t';
+                case "\\b":
+                case "backspace":
+                    return '\b';
+                default:
+                    throw new ArgumentException("character must be a single character or one of: \\n, \\t, \\b.");
+            }
+        }
+
+        private static EventModifiers BuildEventModifiers(bool shift, bool control, bool alt, bool command)
+        {
+            var modifiers = EventModifiers.None;
+            if (shift)
+            {
+                modifiers |= EventModifiers.Shift;
+            }
+
+            if (control)
+            {
+                modifiers |= EventModifiers.Control;
+            }
+
+            if (alt)
+            {
+                modifiers |= EventModifiers.Alt;
+            }
+
+            if (command)
+            {
+                modifiers |= EventModifiers.Command;
+            }
+
+            return modifiers;
+        }
+
+        private static Event CreateKeyboardEvent(EventType eventType, KeyCode keyCode, char character, EventModifiers modifiers)
+        {
+            return new Event
+            {
+                type = eventType,
+                keyCode = keyCode,
+                character = character,
+                modifiers = modifiers
+            };
+        }
+
         private static Event CreateMouseEvent(EventType eventType, Vector2 mousePosition, int button, int clickCount)
+        {
+            return CreateMouseEvent(eventType, mousePosition, button, clickCount, Vector2.zero);
+        }
+
+        private static Event CreateMouseEvent(EventType eventType, Vector2 mousePosition, int button, int clickCount, Vector2 delta)
         {
             return new Event
             {
@@ -1291,7 +1696,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 mousePosition = mousePosition,
                 button = button,
                 clickCount = clickCount,
-                delta = Vector2.zero,
+                delta = delta,
                 modifiers = EventModifiers.None
             };
         }
@@ -1307,6 +1712,13 @@ namespace ProjectSD.EditorTools.UnityMcp
             var gameView = EditorWindow.GetWindow(gameViewType);
             gameView?.Show();
             return gameView;
+        }
+
+        private sealed class GameViewInputContext
+        {
+            public EditorWindow gameView;
+            public float width;
+            public float height;
         }
 
         private static async Task HandleSceneHierarchyAsync(HttpListenerRequest request, HttpListenerResponse response)
@@ -2806,6 +3218,73 @@ namespace ProjectSD.EditorTools.UnityMcp
             public float gameViewWidth;
             public float gameViewHeight;
             public bool normalized;
+        }
+
+        [Serializable]
+        private sealed class InputDragRequest
+        {
+            public float startX;
+            public float startY;
+            public float endX;
+            public float endY;
+            public bool normalized;
+            public int button;
+            public int steps;
+        }
+
+        [Serializable]
+        private sealed class InputDragResponse
+        {
+            public bool success;
+            public string message;
+            public float startX;
+            public float startY;
+            public float endX;
+            public float endY;
+            public int button;
+            public int steps;
+            public float gameViewWidth;
+            public float gameViewHeight;
+            public bool normalized;
+        }
+
+        [Serializable]
+        private sealed class InputKeyRequest
+        {
+            public string keyCode;
+            public string character;
+            public string phase;
+            public bool shift;
+            public bool control;
+            public bool alt;
+            public bool command;
+        }
+
+        [Serializable]
+        private sealed class InputKeyResponse
+        {
+            public bool success;
+            public string message;
+            public string phase;
+            public string keyCode;
+            public string character;
+            public string modifiers;
+        }
+
+        [Serializable]
+        private sealed class InputTextRequest
+        {
+            public string text;
+            public bool appendReturn;
+        }
+
+        [Serializable]
+        private sealed class InputTextResponse
+        {
+            public bool success;
+            public string message;
+            public int charactersSubmitted;
+            public bool appendReturn;
         }
     }
 }
