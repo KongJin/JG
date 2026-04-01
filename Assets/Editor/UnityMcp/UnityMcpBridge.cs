@@ -696,6 +696,12 @@ namespace ProjectSD.EditorTools.UnityMcp
                     return;
                 }
 
+                if (method == "POST" && path == "/input/move")
+                {
+                    await HandleInputMoveAsync(request, response);
+                    return;
+                }
+
                 if (method == "POST" && path == "/input/drag")
                 {
                     await HandleInputDragAsync(request, response);
@@ -711,6 +717,18 @@ namespace ProjectSD.EditorTools.UnityMcp
                 if (method == "POST" && path == "/input/text")
                 {
                     await HandleInputTextAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/input/scroll")
+                {
+                    await HandleInputScrollAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/input/key-combo")
+                {
+                    await HandleInputKeyComboAsync(request, response);
                     return;
                 }
 
@@ -1087,6 +1105,47 @@ namespace ProjectSD.EditorTools.UnityMcp
             }
         }
 
+        private static async Task HandleInputMoveAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            InputMoveRequest req = null;
+            if (request.HasEntityBody)
+            {
+                var body = await ReadRequestBodyAsync(request);
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    req = JsonUtility.FromJson<InputMoveRequest>(body);
+                }
+            }
+
+            try
+            {
+                var result = await RunOnMainThreadAsync(() => ExecuteInputMove(req));
+                await WriteJsonAsync(response, 200, result);
+            }
+            catch (ArgumentException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse
+                    {
+                        error = "Invalid move request",
+                        detail = ex.Message
+                    });
+            }
+            catch (InvalidOperationException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse
+                    {
+                        error = "Move unavailable",
+                        detail = ex.Message
+                    });
+            }
+        }
+
         private static async Task HandleInputDragAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             InputDragRequest req = null;
@@ -1205,6 +1264,88 @@ namespace ProjectSD.EditorTools.UnityMcp
                     new ErrorResponse
                     {
                         error = "Text input unavailable",
+                        detail = ex.Message
+                    });
+            }
+        }
+
+        private static async Task HandleInputScrollAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            InputScrollRequest req = null;
+            if (request.HasEntityBody)
+            {
+                var body = await ReadRequestBodyAsync(request);
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    req = JsonUtility.FromJson<InputScrollRequest>(body);
+                }
+            }
+
+            try
+            {
+                var result = await RunOnMainThreadAsync(() => ExecuteInputScroll(req));
+                await WriteJsonAsync(response, 200, result);
+            }
+            catch (ArgumentException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse
+                    {
+                        error = "Invalid scroll request",
+                        detail = ex.Message
+                    });
+            }
+            catch (InvalidOperationException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse
+                    {
+                        error = "Scroll unavailable",
+                        detail = ex.Message
+                    });
+            }
+        }
+
+        private static async Task HandleInputKeyComboAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            InputKeyComboRequest req = null;
+            if (request.HasEntityBody)
+            {
+                var body = await ReadRequestBodyAsync(request);
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    req = JsonUtility.FromJson<InputKeyComboRequest>(body);
+                }
+            }
+
+            try
+            {
+                var result = await RunOnMainThreadAsync(() => ExecuteInputKeyCombo(req));
+                await WriteJsonAsync(response, 200, result);
+            }
+            catch (ArgumentException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse
+                    {
+                        error = "Invalid key combo request",
+                        detail = ex.Message
+                    });
+            }
+            catch (InvalidOperationException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse
+                    {
+                        error = "Key combo unavailable",
                         detail = ex.Message
                     });
             }
@@ -1386,6 +1527,32 @@ namespace ProjectSD.EditorTools.UnityMcp
             };
         }
 
+        private static InputMoveResponse ExecuteInputMove(InputMoveRequest req)
+        {
+            if (req == null)
+            {
+                throw new ArgumentException("Request body is required.");
+            }
+
+            var inputContext = GetGameViewInputContext();
+            var mousePosition = ResolveMousePosition(inputContext, req.x, req.y, req.normalized);
+
+            inputContext.gameView.Focus();
+            inputContext.gameView.SendEvent(CreateMouseEvent(EventType.MouseMove, mousePosition, 0, 0));
+            inputContext.gameView.Repaint();
+
+            return new InputMoveResponse
+            {
+                success = true,
+                message = "Mouse move dispatched to Game view.",
+                x = mousePosition.x,
+                y = mousePosition.y,
+                gameViewWidth = inputContext.width,
+                gameViewHeight = inputContext.height,
+                normalized = req.normalized
+            };
+        }
+
         private static InputDragResponse ExecuteInputDrag(InputDragRequest req)
         {
             if (req == null)
@@ -1509,6 +1676,73 @@ namespace ProjectSD.EditorTools.UnityMcp
             };
         }
 
+        private static InputScrollResponse ExecuteInputScroll(InputScrollRequest req)
+        {
+            if (req == null)
+            {
+                throw new ArgumentException("Request body is required.");
+            }
+
+            var inputContext = GetGameViewInputContext();
+            var mousePosition = ResolveMousePosition(inputContext, req.x, req.y, req.normalized);
+            var deltaX = req.deltaX;
+            var deltaY = Mathf.Approximately(req.deltaY, 0f) ? req.delta : req.deltaY;
+            if (float.IsNaN(deltaX) || float.IsInfinity(deltaX) || float.IsNaN(deltaY) || float.IsInfinity(deltaY))
+            {
+                throw new ArgumentException("Scroll delta values must be finite numbers.");
+            }
+
+            var scrollDelta = new Vector2(deltaX, deltaY);
+            inputContext.gameView.Focus();
+            inputContext.gameView.SendEvent(CreateMouseEvent(EventType.MouseMove, mousePosition, 0, 0));
+            inputContext.gameView.SendEvent(CreateScrollEvent(mousePosition, scrollDelta));
+            inputContext.gameView.Repaint();
+
+            return new InputScrollResponse
+            {
+                success = true,
+                message = "Scroll dispatched to Game view.",
+                x = mousePosition.x,
+                y = mousePosition.y,
+                deltaX = scrollDelta.x,
+                deltaY = scrollDelta.y,
+                gameViewWidth = inputContext.width,
+                gameViewHeight = inputContext.height,
+                normalized = req.normalized
+            };
+        }
+
+        private static InputKeyComboResponse ExecuteInputKeyCombo(InputKeyComboRequest req)
+        {
+            if (req == null || string.IsNullOrWhiteSpace(req.preset))
+            {
+                throw new ArgumentException("preset is required.");
+            }
+
+            var inputContext = GetGameViewInputContext();
+            var preset = ResolveKeyComboPreset(req.preset);
+            var repeat = Mathf.Clamp(req.repeat <= 0 ? 1 : req.repeat, 1, 10);
+
+            inputContext.gameView.Focus();
+            for (var i = 0; i < repeat; i++)
+            {
+                SendKeyPress(inputContext.gameView, preset.keyCode, preset.character, preset.modifiers);
+            }
+
+            inputContext.gameView.Repaint();
+
+            return new InputKeyComboResponse
+            {
+                success = true,
+                message = "Key combo preset dispatched to Game view.",
+                preset = preset.name,
+                keyCode = preset.keyCode.ToString(),
+                character = preset.character == '\0' ? string.Empty : preset.character.ToString(),
+                modifiers = preset.modifiers.ToString(),
+                repeat = repeat
+            };
+        }
+
         private static void DispatchTextCharacter(EditorWindow gameView, char character)
         {
             var keyCode = KeyCode.None;
@@ -1529,8 +1763,13 @@ namespace ProjectSD.EditorTools.UnityMcp
                     break;
             }
 
-            gameView.SendEvent(CreateKeyboardEvent(EventType.KeyDown, keyCode, eventCharacter, EventModifiers.None));
-            gameView.SendEvent(CreateKeyboardEvent(EventType.KeyUp, keyCode, eventCharacter, EventModifiers.None));
+            SendKeyPress(gameView, keyCode, eventCharacter, EventModifiers.None);
+        }
+
+        private static void SendKeyPress(EditorWindow gameView, KeyCode keyCode, char character, EventModifiers modifiers)
+        {
+            gameView.SendEvent(CreateKeyboardEvent(EventType.KeyDown, keyCode, character, modifiers));
+            gameView.SendEvent(CreateKeyboardEvent(EventType.KeyUp, keyCode, character, modifiers));
         }
 
         private static GameViewInputContext GetGameViewInputContext()
@@ -1672,6 +1911,45 @@ namespace ProjectSD.EditorTools.UnityMcp
             return modifiers;
         }
 
+        private static KeyComboPreset ResolveKeyComboPreset(string presetRaw)
+        {
+            var normalized = presetRaw.Trim().ToLowerInvariant();
+            switch (normalized)
+            {
+                case "copy":
+                    return new KeyComboPreset("copy", KeyCode.C, '\0', EventModifiers.Control);
+                case "paste":
+                    return new KeyComboPreset("paste", KeyCode.V, '\0', EventModifiers.Control);
+                case "cut":
+                    return new KeyComboPreset("cut", KeyCode.X, '\0', EventModifiers.Control);
+                case "selectall":
+                case "select_all":
+                    return new KeyComboPreset("selectAll", KeyCode.A, '\0', EventModifiers.Control);
+                case "undo":
+                    return new KeyComboPreset("undo", KeyCode.Z, '\0', EventModifiers.Control);
+                case "redo":
+                    return new KeyComboPreset("redo", KeyCode.Y, '\0', EventModifiers.Control);
+                case "submit":
+                case "enter":
+                    return new KeyComboPreset("submit", KeyCode.Return, '\n', EventModifiers.None);
+                case "cancel":
+                case "escape":
+                    return new KeyComboPreset("cancel", KeyCode.Escape, '\0', EventModifiers.None);
+                case "tabforward":
+                case "tab_forward":
+                    return new KeyComboPreset("tabForward", KeyCode.Tab, '\t', EventModifiers.None);
+                case "tabbackward":
+                case "tab_backward":
+                    return new KeyComboPreset("tabBackward", KeyCode.Tab, '\t', EventModifiers.Shift);
+                case "delete":
+                    return new KeyComboPreset("delete", KeyCode.Delete, '\0', EventModifiers.None);
+                default:
+                    throw new ArgumentException(
+                        "Unknown preset. Supported presets: copy, paste, cut, selectAll, undo, redo, submit, cancel, tabForward, tabBackward, delete."
+                    );
+            }
+        }
+
         private static Event CreateKeyboardEvent(EventType eventType, KeyCode keyCode, char character, EventModifiers modifiers)
         {
             return new Event
@@ -1680,6 +1958,17 @@ namespace ProjectSD.EditorTools.UnityMcp
                 keyCode = keyCode,
                 character = character,
                 modifiers = modifiers
+            };
+        }
+
+        private static Event CreateScrollEvent(Vector2 mousePosition, Vector2 delta)
+        {
+            return new Event
+            {
+                type = EventType.ScrollWheel,
+                mousePosition = mousePosition,
+                delta = delta,
+                modifiers = EventModifiers.None
             };
         }
 
@@ -1719,6 +2008,22 @@ namespace ProjectSD.EditorTools.UnityMcp
             public EditorWindow gameView;
             public float width;
             public float height;
+        }
+
+        private sealed class KeyComboPreset
+        {
+            public readonly string name;
+            public readonly KeyCode keyCode;
+            public readonly char character;
+            public readonly EventModifiers modifiers;
+
+            public KeyComboPreset(string name, KeyCode keyCode, char character, EventModifiers modifiers)
+            {
+                this.name = name;
+                this.keyCode = keyCode;
+                this.character = character;
+                this.modifiers = modifiers;
+            }
         }
 
         private static async Task HandleSceneHierarchyAsync(HttpListenerRequest request, HttpListenerResponse response)
@@ -3221,6 +3526,26 @@ namespace ProjectSD.EditorTools.UnityMcp
         }
 
         [Serializable]
+        private sealed class InputMoveRequest
+        {
+            public float x;
+            public float y;
+            public bool normalized;
+        }
+
+        [Serializable]
+        private sealed class InputMoveResponse
+        {
+            public bool success;
+            public string message;
+            public float x;
+            public float y;
+            public float gameViewWidth;
+            public float gameViewHeight;
+            public bool normalized;
+        }
+
+        [Serializable]
         private sealed class InputDragRequest
         {
             public float startX;
@@ -3285,6 +3610,50 @@ namespace ProjectSD.EditorTools.UnityMcp
             public string message;
             public int charactersSubmitted;
             public bool appendReturn;
+        }
+
+        [Serializable]
+        private sealed class InputScrollRequest
+        {
+            public float x;
+            public float y;
+            public bool normalized;
+            public float delta;
+            public float deltaX;
+            public float deltaY;
+        }
+
+        [Serializable]
+        private sealed class InputScrollResponse
+        {
+            public bool success;
+            public string message;
+            public float x;
+            public float y;
+            public float deltaX;
+            public float deltaY;
+            public float gameViewWidth;
+            public float gameViewHeight;
+            public bool normalized;
+        }
+
+        [Serializable]
+        private sealed class InputKeyComboRequest
+        {
+            public string preset;
+            public int repeat;
+        }
+
+        [Serializable]
+        private sealed class InputKeyComboResponse
+        {
+            public bool success;
+            public string message;
+            public string preset;
+            public string keyCode;
+            public string character;
+            public string modifiers;
+            public int repeat;
         }
     }
 }

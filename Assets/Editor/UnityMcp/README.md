@@ -48,9 +48,12 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 | Method | Path | 설명 |
 |---|---|---|
 | POST | `/input/click` | 플레이 중 Game View에 마우스 클릭 이벤트 전달 |
+| POST | `/input/move` | 플레이 중 Game View에 마우스 이동 이벤트만 전달 |
 | POST | `/input/drag` | 플레이 중 Game View에 드래그 이벤트 전달 |
 | POST | `/input/key` | 플레이 중 Game View에 키 입력 이벤트 전달 |
 | POST | `/input/text` | 플레이 중 Game View에 문자열 입력 |
+| POST | `/input/scroll` | 플레이 중 Game View에 마우스 휠 이벤트 전달 |
+| POST | `/input/key-combo` | 자주 쓰는 키 조합 프리셋 실행 |
 
 #### `/input/click` Body
 
@@ -69,6 +72,19 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - `button`: `0` 왼쪽, `1` 오른쪽, `2` 가운데
 - `clickCount`: 기본 `1`
 - 호출 시 Game View를 열고 포커스한 뒤 `MouseMove -> MouseDown -> MouseUp` 순서로 이벤트를 보낸다
+
+#### `/input/move` Body
+
+```json
+{
+  "x": 0.5,
+  "y": 0.5,
+  "normalized": true
+}
+```
+
+- 클릭 없이 포인터 위치만 업데이트한다
+- 좌표 규칙은 `/input/click` 과 동일하다
 
 #### `/input/drag` Body
 
@@ -118,6 +134,34 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - `text`의 각 문자를 순서대로 Game View에 전달한다
 - `appendReturn: true`면 마지막에 Enter를 한 번 더 보낸다
 - 텍스트 입력은 UI 입력 필드나 문자 기반 처리에 적합하고, 게임플레이 키 바인딩 테스트는 `/input/key`가 더 적합하다
+
+#### `/input/scroll` Body
+
+```json
+{
+  "x": 0.5,
+  "y": 0.5,
+  "normalized": true,
+  "deltaY": 120
+}
+```
+
+- 먼저 해당 좌표로 `MouseMove`를 보낸 뒤 `ScrollWheel` 이벤트를 보낸다
+- `deltaY`가 주 입력값이고, `delta`는 하위 호환 단축값이다
+- 가로 스크롤이 필요하면 `deltaX`도 함께 줄 수 있다
+
+#### `/input/key-combo` Body
+
+```json
+{
+  "preset": "copy",
+  "repeat": 1
+}
+```
+
+- 지원 프리셋: `copy`, `paste`, `cut`, `selectAll`, `undo`, `redo`, `submit`, `cancel`, `tabForward`, `tabBackward`, `delete`
+- 현재 프리셋은 Windows 기준 `Control` 조합을 사용한다
+- `repeat`로 같은 조합을 여러 번 연속 전송할 수 있다
 
 ### 게임오브젝트
 
@@ -245,4 +289,5 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - 스크린샷 엔드포인트는 플레이 모드가 켜져 있어야 한다. 기본 출력 경로는 `Temp/UnityMcp/Screenshots`
 - 입력 엔드포인트도 플레이 모드가 켜져 있어야 한다. 좌표는 Game View 기준이다
 - 입력 엔드포인트는 Game View 이벤트 기반이라, 운영체제 레벨 마우스/키보드를 직접 움직이는 방식은 아니다
+- 스크롤/조합키 해석은 게임 코드와 포커스 상태에 따라 반응이 다를 수 있다
 - POST 엔드포인트에 GET으로 호출하면 404 반환
