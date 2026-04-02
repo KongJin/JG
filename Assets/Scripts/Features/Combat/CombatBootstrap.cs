@@ -33,7 +33,8 @@ namespace Features.Combat
             EventBus eventBus,
             ICombatNetworkCommandPort networkPort,
             DomainEntityId localAuthorityId,
-            IEntityAffiliationPort affiliation
+            IEntityAffiliationPort affiliation,
+            IFriendlyFireScalingPort ffScaling = null
         )
         {
             if (eventBus == null)
@@ -50,7 +51,8 @@ namespace Features.Combat
             _applyDamage = new ApplyDamageUseCase(
                 _targetAdapter, _eventBus,
                 networkPort ?? NoOpCombatNetworkPort.Instance,
-                affiliation
+                affiliation,
+                ffScaling
             );
             _eventHandler = new CombatNetworkEventHandler(_applyDamage, _eventBus, localAuthorityId);
             _replicationEventHandler = new CombatReplicationEventHandler(_applyDamage, _eventBus);

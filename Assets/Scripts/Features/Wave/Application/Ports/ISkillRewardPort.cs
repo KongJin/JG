@@ -15,6 +15,7 @@ namespace Features.Wave.Application.Ports
     public interface ISkillRewardPort
     {
         SkillRewardCandidate[] DrawCandidates(int count);
+        RewardCandidate[] DrawRewardCandidates(int newCount, int upgradeCount);
         void AddToDeck(string skillId);
     }
 }

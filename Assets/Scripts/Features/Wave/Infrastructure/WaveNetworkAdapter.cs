@@ -10,10 +10,13 @@ namespace Features.Wave.Infrastructure
     {
         private const string WaveIndexKey = "waveIndex";
         private const string WaveStateKey = "waveState";
+        private const string CountdownEndKey = "countdownEnd";
 
-        public Action<int, int> OnWaveStateSynced { get; set; }
+        public int ServerTimestampMs => PhotonNetwork.ServerTimestamp;
 
-        public void SyncWaveState(int waveIndex, int waveStateInt)
+        public Action<int, int, int> OnWaveStateSynced { get; set; }
+
+        public void SyncWaveState(int waveIndex, int waveStateInt, int countdownEndMs)
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
@@ -23,7 +26,8 @@ namespace Features.Wave.Infrastructure
             var props = new Hashtable
             {
                 { WaveIndexKey, waveIndex },
-                { WaveStateKey, waveStateInt }
+                { WaveStateKey, waveStateInt },
+                { CountdownEndKey, countdownEndMs }
             };
             room.SetCustomProperties(props);
         }
@@ -36,35 +40,36 @@ namespace Features.Wave.Infrastructure
                 !propertiesThatChanged.ContainsKey(WaveStateKey))
                 return;
 
-            var (waveIndex, waveState) = ReadRoomProperties();
-            OnWaveStateSynced?.Invoke(waveIndex, waveState);
+            var (waveIndex, waveState, countdownEndMs) = ReadRoomProperties();
+            OnWaveStateSynced?.Invoke(waveIndex, waveState, countdownEndMs);
         }
 
         public override void OnMasterClientSwitched(Photon.Realtime.Player newMasterClient)
         {
-            var (waveIndex, waveState) = ReadRoomProperties();
-            OnWaveStateSynced?.Invoke(waveIndex, waveState);
+            var (waveIndex, waveState, countdownEndMs) = ReadRoomProperties();
+            OnWaveStateSynced?.Invoke(waveIndex, waveState, countdownEndMs);
         }
 
         public void HydrateFromRoomProperties()
         {
-            var (waveIndex, waveState) = ReadRoomProperties();
+            var (waveIndex, waveState, countdownEndMs) = ReadRoomProperties();
 
             if (waveIndex == 0 && waveState == 0)
                 return;
 
-            OnWaveStateSynced?.Invoke(waveIndex, waveState);
+            OnWaveStateSynced?.Invoke(waveIndex, waveState, countdownEndMs);
         }
 
-        private (int waveIndex, int waveState) ReadRoomProperties()
+        private (int waveIndex, int waveState, int countdownEndMs) ReadRoomProperties()
         {
             var room = PhotonNetwork.CurrentRoom;
-            if (room == null) return (0, 0);
+            if (room == null) return (0, 0, 0);
 
             var props = room.CustomProperties;
             var waveIndex = props.ContainsKey(WaveIndexKey) ? (int)props[WaveIndexKey] : 0;
             var waveState = props.ContainsKey(WaveStateKey) ? (int)props[WaveStateKey] : 0;
-            return (waveIndex, waveState);
+            var countdownEndMs = props.ContainsKey(CountdownEndKey) ? (int)props[CountdownEndKey] : 0;
+            return (waveIndex, waveState, countdownEndMs);
         }
     }
 }

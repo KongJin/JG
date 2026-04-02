@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Features.Combat;
+using Features.Combat.Application;
 using Features.Player.Application;
 using Features.Player.Application.Ports;
 using Features.Player.Infrastructure;
@@ -115,7 +116,13 @@ namespace Features.Player
             localSetup.Initialize(_eventBus, speedModifier: _statusSetup.SpeedModifier, sceneRegistry: _playerSceneRegistry, playerLookup: _playerLookup);
 
             // Combat
-            _combatBootstrap.Initialize(_eventBus, localSetup.CombatNetworkPort, localSetup.PlayerId, new EntityAffiliationAdapter());
+            FriendlyFireScalingAdapter ffScaling = null;
+            if (_waveBootstrap != null)
+            {
+                ffScaling = new FriendlyFireScalingAdapter(_eventBus);
+                _disposables.Add(EventBusSubscription.ForOwner(_eventBus, ffScaling));
+            }
+            _combatBootstrap.Initialize(_eventBus, localSetup.CombatNetworkPort, localSetup.PlayerId, new EntityAffiliationAdapter(), ffScaling);
             if (_waveBootstrap == null)
             {
                 var gameEndHandler = new GameEndEventHandler(_eventBus, _eventBus, localSetup.PlayerId);
@@ -153,7 +160,7 @@ namespace Features.Player
                     if (_waveBootstrap != null)
                     {
                         _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId,
-                            _skillSetup.SkillReward, _skillSetup.SkillIcon);
+                            _skillSetup.SkillReward, _skillSetup.SkillIcon, _skillSetup.SkillUpgradeCommand);
                         _waveBootstrap.RegisterPlayer(player.transform);
                     }
                 });

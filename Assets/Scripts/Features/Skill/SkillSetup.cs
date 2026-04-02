@@ -139,7 +139,11 @@ namespace Features.Skill
                 _camera,
                 _eventBus);
 
-            _skillRewardAdapter = new SkillRewardAdapter(_deck, _skillBar, deckSetup.RewardPool);
+            _skillRewardAdapter = new SkillRewardAdapter(
+                _deck, _skillBar, deckSetup.RewardPool,
+                _skillUpgradeAdapter, _skillUpgradeAdapter,
+                id => _catalog.GetData(id)?.Presentation?.DisplayName ?? id,
+                id => _catalog.GetData(id)?.GrowthAxes.GetEnabledAxes());
 
             // SkillsReady CustomProperty 설정
             _networkAdapter.SyncSkillsReady();

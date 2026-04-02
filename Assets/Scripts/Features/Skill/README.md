@@ -158,8 +158,8 @@ SlotInputHandler
 
 - `Ports/ISkillNetworkCommandPort`, `ISkillNetworkCallbackPort` — 네트워크 송수신 포트
 - `Ports/IManaPort` — 마나 조회/차감 포트 (구현은 Player/Application/ManaAdapter)
-- `Ports/ISkillUpgradeQueryPort` — 영구 업그레이드 배수 조회 포트 (구현: `SkillUpgradeAdapter`)
-- `Ports/ISkillUpgradeCommandPort` — 영구 업그레이드 변경 포트 (`TryUpgrade`, `CanUpgrade`). 내부에서 `GrowthAxisConfig`를 확인하여 비활성 축 업그레이드를 차단한다. **TODO**: Wave 연결 시 `ISkillUpgradeCommandPort`를 Wave/Application/Ports로 이동 필요 (port-on-consumer 원칙)
+- `Ports/ISkillUpgradeQueryPort` — 영구 업그레이드 배수 조회 포트 (`GetAxisMultiplier`, `GetAllyDamageScale`, `GetLevel`). 구현: `SkillUpgradeAdapter`
+- `Ports/ISkillUpgradeCommandPort` — 영구 업그레이드 변경 포트 (`TryUpgrade`, `CanUpgrade`). 내부에서 `GrowthAxisConfig`를 확인하여 비활성 축 업그레이드를 차단한다. Wave 피처가 cross-feature 의존으로 직접 사용 (port-on-consumer 이동 대신 cross-feature 허용 규칙 적용)
 
 - `SkillUpgradeAdapter`
   - `ISkillUpgradeQueryPort`, `ISkillUpgradeCommandPort` 구현, `SkillUpgradeLevel`을 래핑
@@ -174,6 +174,7 @@ SlotInputHandler
   - `ISkillRewardPort` (Wave/Application/Ports에 정의) 구현
   - 생성자에서 `IReadOnlyList<SkillRewardCandidate>` 보상 풀을 주입받는다 (Infrastructure 의존 없음)
   - `DrawCandidates(count)`: 보상 풀에서 현재 덱(DrawPile + DiscardPile + SkillBar)에 없는 스킬을 셔플하여 count개 반환
+  - `DrawRewardCandidates(newCount, upgradeCount)`: 새 스킬 `newCount`개 + 덱 내 스킬 강화 후보 `upgradeCount`개를 `RewardCandidate[]`로 반환. 옵셔널 `ISkillUpgradeCommandPort`/`ISkillUpgradeQueryPort` 주입 필요
   - `AddToDeck(skillId)`: `Deck.AddToDiscardPile()`로 스킬 추가
 
 ### Domain
@@ -187,7 +188,7 @@ SlotInputHandler
 
 ### Infrastructure
 
-- `SkillNetworkAdapter` (`MonoBehaviourPun`) — RPC 송수신 (AllyDamageScale 직렬화/역직렬화 포함). `TryDeserialize` 패턴으로 payload 검증 수행 (문자열 null 체크, float NaN/Infinity, enum 범위, 최소 길이). `SyncSkillsReady()` — 스킬 선택 완료 시 `skillsReady` Player CustomProperty 설정. `IsPlayerSkillsReady(player)` — static 조회
+- `SkillNetworkAdapter` (`MonoBehaviourPun`) — RPC 송수신 (AllyDamageScale 직렬화/역직렬화 포함). `TryDeserialize` 패턴으로 payload 검증 수행 (문자열 null 체크, float NaN/Infinity, enum 범위, slotIndex 범위 `[0, SkillBar.SlotCount)`, 최소 길이). `SyncSkillsReady()` — 스킬 선택 완료 시 `skillsReady` Player CustomProperty 설정. `IsPlayerSkillsReady(player)` — static 조회
 - `GrowthAxisConfig` — `[Serializable]` 클래스. 스킬별 개방 축 불리언 4개 + `IsEnabled(axis)`, `GetEnabledAxes()`. 기존 SkillData SO는 모든 축이 비활성 상태이므로 Inspector에서 수동 활성화 필요
 
 ### Presentation

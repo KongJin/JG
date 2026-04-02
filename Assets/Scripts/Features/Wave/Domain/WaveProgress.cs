@@ -73,10 +73,12 @@ namespace Features.Wave.Domain
             CurrentWaveIndex++;
         }
 
-        public void ForceState(int waveIndex, WaveState state)
+        public void ForceState(int waveIndex, WaveState state, float countdownRemaining = 0f)
         {
             CurrentWaveIndex = waveIndex;
             State = state;
+            if (state == WaveState.Countdown)
+                CountdownRemaining = countdownRemaining;
         }
 
         public void SetDefeat()

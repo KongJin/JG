@@ -6,11 +6,13 @@ using Features.Skill.Presentation;
 using Features.Wave.Application;
 using Features.Wave.Application.Events;
 using Features.Wave.Application.Ports;
+using Features.Wave.Domain;
 using Features.Wave.Infrastructure;
 using Features.Wave.Presentation;
 using Photon.Pun;
 using Photon.Realtime;
 using Shared.EventBus;
+using Features.Skill.Application.Ports;
 using Shared.Kernel;
 using Shared.Lifecycle;
 using UnityEngine;
@@ -34,12 +36,13 @@ namespace Features.Wave
         private EventBus _eventBus;
         private CombatBootstrap _combatBootstrap;
         private DisposableScope _disposables;
+        private WaveLoopUseCase _waveLoop;
         private bool _initialized;
         private bool _gameStarted;
 
         public IPlayerPositionQuery PlayerPositionQuery => _playerPositionQuery;
 
-        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap, DomainEntityId localPlayerId, ISkillRewardPort skillReward, ISkillIconPort iconPort)
+        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap, DomainEntityId localPlayerId, ISkillRewardPort skillReward, ISkillIconPort iconPort, ISkillUpgradeCommandPort upgradeCommand = null)
         {
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
@@ -53,14 +56,15 @@ namespace Features.Wave
 
             _spawnAdapter.Initialize(eventBus, combatBootstrap, _playerPositionQuery, _waveTable);
 
-            var waveLoop = new WaveLoopUseCase(eventBus, _waveTable.Waves.Length, skillReward);
+            _waveLoop = new WaveLoopUseCase(eventBus, _waveTable.Waves.Length, skillReward);
+            var waveLoop = _waveLoop;
             var waveHandler = new WaveEventHandler(eventBus, waveLoop, aliveQuery);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, waveHandler));
 
             var networkHandler = new WaveNetworkEventHandler(eventBus, _networkAdapter, _networkAdapter, waveLoop);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, networkHandler));
 
-            var rewardHandler = new SkillRewardHandler(eventBus, skillReward);
+            var rewardHandler = new SkillRewardHandler(eventBus, skillReward, upgradeCommand);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, rewardHandler));
 
             _hudView.Initialize(eventBus);
@@ -75,7 +79,7 @@ namespace Features.Wave
             _upgradeResultView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _upgradeResultView));
 
-            _flowController.Initialize(waveLoop, (IWaveTablePort)_waveTable, (IWaveSpawnPort)_spawnAdapter, eventBus);
+            _flowController.Initialize(waveLoop, (IWaveTablePort)_waveTable, (IWaveSpawnPort)_spawnAdapter, eventBus, eventBus, localPlayerId);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _flowController));
 
             EnemySetup.EnemyArrived += OnEnemyArrived;
@@ -83,7 +87,8 @@ namespace Features.Wave
             _networkAdapter.HydrateFromRoomProperties();
 
             _initialized = true;
-            _gameStarted = false;
+            // hydrate 결과가 Idle이 아니면 이미 게임이 진행 중이므로 재시작 방지
+            _gameStarted = _waveLoop.CurrentState != WaveState.Idle;
 
             // Master: 전원 SkillsReady 확인 후 GameStartEvent 발행
             if (PhotonNetwork.IsMasterClient)
@@ -102,6 +107,15 @@ namespace Features.Wave
             if (!changedProps.ContainsKey("skillsReady")) return;
 
             TryStartGame();
+        }
+
+        public override void OnMasterClientSwitched(PhotonPlayer newMasterClient)
+        {
+            if (!_initialized) return;
+            if (!PhotonNetwork.IsMasterClient) return;
+
+            if (!_gameStarted)
+                TryStartGame();
         }
 
         private void TryStartGame()

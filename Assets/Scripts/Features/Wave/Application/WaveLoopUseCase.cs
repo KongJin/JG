@@ -66,7 +66,7 @@ namespace Features.Wave.Application
 
         public bool EnterUpgradeSelection()
         {
-            var candidates = _skillReward.DrawCandidates(3);
+            var candidates = _skillReward.DrawRewardCandidates(1, 2);
             if (candidates.Length == 0)
             {
                 _progress.ExitUpgradeSelection();
@@ -82,9 +82,15 @@ namespace Features.Wave.Application
             _progress.ExitUpgradeSelection();
         }
 
-        public void ForceState(int waveIndex, WaveState state)
+        public void ForceState(int waveIndex, WaveState state, float countdownRemaining = 0f)
         {
-            _progress.ForceState(waveIndex, state);
+            _progress.ForceState(waveIndex, state, countdownRemaining);
+            _eventBus.Publish(new WaveHydratedEvent(
+                _progress.CurrentWaveIndex,
+                _progress.TotalWaves,
+                _progress.State,
+                _progress.CountdownRemaining
+            ));
         }
 
         public void HandleAllPlayersDead()

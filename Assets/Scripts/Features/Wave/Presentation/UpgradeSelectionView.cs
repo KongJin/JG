@@ -1,4 +1,5 @@
 using System;
+using Features.Skill.Domain;
 using Features.Skill.Presentation;
 using Features.Wave.Application.Events;
 using Features.Wave.Application.Ports;
@@ -22,12 +23,15 @@ namespace Features.Wave.Presentation
         [Required, SerializeField] private Image countIcon;
         [Required, SerializeField] private Image rangeIcon;
         [Required, SerializeField] private Image durationIcon;
+        [SerializeField] private Text countdownText;
 
         private IEventPublisher _publisher;
         private IEventSubscriber _subscriber;
         private ISkillIconPort _iconPort;
         private DomainEntityId _localPlayerId;
-        private SkillRewardCandidate[] _candidates;
+        private RewardCandidate[] _candidates;
+        private float _countdown;
+        private bool _countdownActive;
 
         public void Initialize(IEventPublisher publisher, IEventSubscriber subscriber, DomainEntityId localPlayerId, ISkillIconPort iconPort)
         {
@@ -43,6 +47,7 @@ namespace Features.Wave.Presentation
             durationButton.onClick.AddListener(() => SelectCandidate(2));
 
             _subscriber.Subscribe(this, new Action<SkillSelectionRequestedEvent>(OnSelectionRequested));
+            _subscriber.Subscribe(this, new Action<SkillSelectedEvent>(OnSkillSelected));
         }
 
         private void OnSelectionRequested(SkillSelectionRequestedEvent e)
@@ -58,8 +63,16 @@ namespace Features.Wave.Presentation
                 if (i < _candidates.Length)
                 {
                     buttons[i].gameObject.SetActive(true);
-                    labels[i].text = _candidates[i].DisplayName;
-                    icons[i].sprite = _iconPort.GetIcon(_candidates[i].SkillId);
+                    var c = _candidates[i];
+                    if (c.Type == CandidateType.NewSkill)
+                    {
+                        labels[i].text = $"[NEW] {c.DisplayName}";
+                    }
+                    else
+                    {
+                        labels[i].text = $"[강화] {c.DisplayName}\n{c.EffectDescription} Lv.{c.CurrentLevel + 1}";
+                    }
+                    icons[i].sprite = _iconPort.GetIcon(c.SkillId);
                 }
                 else
                 {
@@ -67,7 +80,31 @@ namespace Features.Wave.Presentation
                 }
             }
 
+            _countdown = e.SelectionDuration;
+            _countdownActive = true;
+            if (countdownText != null)
+                countdownText.text = Mathf.CeilToInt(_countdown).ToString();
+
             panel.SetActive(true);
+        }
+
+        private void Update()
+        {
+            if (!_countdownActive) return;
+
+            _countdown -= Time.deltaTime;
+            if (countdownText != null)
+                countdownText.text = Mathf.CeilToInt(Mathf.Max(0f, _countdown)).ToString();
+
+            if (_countdown <= 0f)
+                _countdownActive = false;
+        }
+
+        private void OnSkillSelected(SkillSelectedEvent e)
+        {
+            _countdownActive = false;
+            _candidates = null;
+            panel.SetActive(false);
         }
 
         private void SelectCandidate(int index)
@@ -75,9 +112,10 @@ namespace Features.Wave.Presentation
             if (_candidates == null || index >= _candidates.Length)
                 return;
 
+            _countdownActive = false;
             panel.SetActive(false);
-            var candidate = _candidates[index];
-            _publisher.Publish(new SkillSelectedEvent(_localPlayerId, candidate.SkillId, candidate.DisplayName));
+            var c = _candidates[index];
+            _publisher.Publish(new SkillSelectedEvent(_localPlayerId, c.SkillId, c.DisplayName, c.Type, c.Axis));
         }
 
         private void OnDestroy()

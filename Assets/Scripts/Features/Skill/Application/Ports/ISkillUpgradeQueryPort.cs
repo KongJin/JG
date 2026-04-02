@@ -6,5 +6,6 @@ namespace Features.Skill.Application.Ports
     {
         float GetAxisMultiplier(string skillId, GrowthAxis axis);
         float GetAllyDamageScale(string skillId);
+        int GetLevel(string skillId, GrowthAxis axis);
     }
 }

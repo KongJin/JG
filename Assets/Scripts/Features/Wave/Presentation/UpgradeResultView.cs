@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using Features.Skill.Domain;
 using Features.Wave.Application.Events;
+using Features.Wave.Application.Ports;
 using Shared.Attributes;
 using Shared.EventBus;
 using UnityEngine;
@@ -22,7 +24,11 @@ namespace Features.Wave.Presentation
 
         private void OnSkillSelected(SkillSelectedEvent e)
         {
-            resultText.text = $"{e.DisplayName} 획득!";
+            if (e.CandidateType == CandidateType.NewSkill)
+                resultText.text = $"{e.DisplayName} 획득!";
+            else
+                resultText.text = $"{e.DisplayName} 강화: {GetAxisLabel(e.Axis)} +1";
+
             panel.SetActive(true);
             StopAllCoroutines();
             StartCoroutine(HideAfterDelay());
@@ -33,5 +39,14 @@ namespace Features.Wave.Presentation
             yield return new WaitForSeconds(displayDuration);
             panel.SetActive(false);
         }
+
+        private static string GetAxisLabel(GrowthAxis axis) => axis switch
+        {
+            GrowthAxis.Count => "발사 수",
+            GrowthAxis.Range => "범위",
+            GrowthAxis.Duration => "지속 시간",
+            GrowthAxis.Safety => "아군 안전",
+            _ => axis.ToString()
+        };
     }
 }

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Features.Skill.Application.Ports;
 using Features.Skill.Domain;
 using Features.Wave.Application.Ports;
 using Shared.Kernel;
@@ -11,35 +13,34 @@ namespace Features.Skill.Application
         private readonly SkillBar _bar;
         private readonly IReadOnlyList<SkillRewardCandidate> _rewardPool;
         private readonly System.Random _rng;
+        private readonly ISkillUpgradeCommandPort _upgradeCommand;
+        private readonly ISkillUpgradeQueryPort _upgradeQuery;
+        private readonly Func<string, string> _getDisplayName;
+        private readonly Func<string, IReadOnlyCollection<GrowthAxis>> _getEnabledAxes;
 
-        public SkillRewardAdapter(Deck deck, SkillBar bar, IReadOnlyList<SkillRewardCandidate> rewardPool, System.Random rng = null)
+        public SkillRewardAdapter(
+            Deck deck,
+            SkillBar bar,
+            IReadOnlyList<SkillRewardCandidate> rewardPool,
+            ISkillUpgradeCommandPort upgradeCommand = null,
+            ISkillUpgradeQueryPort upgradeQuery = null,
+            Func<string, string> getDisplayName = null,
+            Func<string, IReadOnlyCollection<GrowthAxis>> getEnabledAxes = null,
+            System.Random rng = null)
         {
             _deck = deck;
             _bar = bar;
             _rewardPool = rewardPool;
+            _upgradeCommand = upgradeCommand;
+            _upgradeQuery = upgradeQuery;
+            _getDisplayName = getDisplayName;
+            _getEnabledAxes = getEnabledAxes;
             _rng = rng ?? new System.Random();
         }
 
         public SkillRewardCandidate[] DrawCandidates(int count)
         {
-            var inDeck = new HashSet<string>();
-            foreach (var id in _deck.DrawPileIds)
-                inDeck.Add(id.Value);
-            foreach (var id in _deck.DiscardPileIds)
-                inDeck.Add(id.Value);
-            for (var i = 0; i < SkillBar.SlotCount; i++)
-            {
-                var s = _bar.GetSkill(i);
-                if (s != null)
-                    inDeck.Add(s.Id.Value);
-            }
-
-            var available = new List<SkillRewardCandidate>();
-            foreach (var candidate in _rewardPool)
-            {
-                if (!inDeck.Contains(candidate.SkillId))
-                    available.Add(candidate);
-            }
+            var available = GetAvailableNewSkills();
 
             for (var i = available.Count - 1; i > 0; i--)
             {
@@ -47,18 +48,101 @@ namespace Features.Skill.Application
                 (available[i], available[j]) = (available[j], available[i]);
             }
 
-            var take = System.Math.Min(count, available.Count);
+            var take = Math.Min(count, available.Count);
             var result = new SkillRewardCandidate[take];
             for (var i = 0; i < take; i++)
-            {
                 result[i] = available[i];
-            }
             return result;
+        }
+
+        public RewardCandidate[] DrawRewardCandidates(int newCount, int upgradeCount)
+        {
+            var results = new List<RewardCandidate>();
+
+            // 1. 새 스킬
+            var newSkills = DrawCandidates(newCount);
+            foreach (var s in newSkills)
+                results.Add(new RewardCandidate(s.SkillId, s.DisplayName));
+
+            // 2. 강화 후보
+            if (_upgradeCommand != null && _upgradeQuery != null && upgradeCount > 0)
+            {
+                var upgradeCandidates = new List<RewardCandidate>();
+                var deckSkillIds = CollectDeckSkillIds();
+
+                foreach (var skillId in deckSkillIds)
+                {
+                    var axes = _getEnabledAxes?.Invoke(skillId);
+                    if (axes == null) continue;
+
+                    var displayName = _getDisplayName?.Invoke(skillId) ?? skillId;
+
+                    foreach (var axis in axes)
+                    {
+                        if (!_upgradeCommand.CanUpgrade(skillId, axis)) continue;
+
+                        var level = _upgradeQuery.GetLevel(skillId, axis);
+                        upgradeCandidates.Add(new RewardCandidate(
+                            skillId, displayName, axis, level, GetAxisDescription(axis)));
+                    }
+                }
+
+                // Fisher-Yates shuffle
+                for (var i = upgradeCandidates.Count - 1; i > 0; i--)
+                {
+                    var j = _rng.Next(i + 1);
+                    (upgradeCandidates[i], upgradeCandidates[j]) = (upgradeCandidates[j], upgradeCandidates[i]);
+                }
+
+                var take = Math.Min(upgradeCount, upgradeCandidates.Count);
+                for (var i = 0; i < take; i++)
+                    results.Add(upgradeCandidates[i]);
+            }
+
+            return results.ToArray();
         }
 
         public void AddToDeck(string skillId)
         {
             _deck.AddToDiscardPile(new DomainEntityId(skillId));
         }
+
+        private List<SkillRewardCandidate> GetAvailableNewSkills()
+        {
+            var inDeck = CollectDeckSkillIds();
+
+            var available = new List<SkillRewardCandidate>();
+            foreach (var candidate in _rewardPool)
+            {
+                if (!inDeck.Contains(candidate.SkillId))
+                    available.Add(candidate);
+            }
+            return available;
+        }
+
+        private HashSet<string> CollectDeckSkillIds()
+        {
+            var ids = new HashSet<string>();
+            foreach (var id in _deck.DrawPileIds)
+                ids.Add(id.Value);
+            foreach (var id in _deck.DiscardPileIds)
+                ids.Add(id.Value);
+            for (var i = 0; i < SkillBar.SlotCount; i++)
+            {
+                var s = _bar.GetSkill(i);
+                if (s != null)
+                    ids.Add(s.Id.Value);
+            }
+            return ids;
+        }
+
+        private static string GetAxisDescription(GrowthAxis axis) => axis switch
+        {
+            GrowthAxis.Count => "발사 수 증가",
+            GrowthAxis.Range => "범위 증가",
+            GrowthAxis.Duration => "지속 시간 증가",
+            GrowthAxis.Safety => "아군 피해 감소",
+            _ => axis.ToString()
+        };
     }
 }

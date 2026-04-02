@@ -1,6 +1,7 @@
 using Shared.Attributes;
 using System;
 using Features.Wave.Application.Events;
+using Features.Wave.Domain;
 using Shared.EventBus;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +24,7 @@ namespace Features.Wave.Presentation
             subscriber.Subscribe(this, new Action<WaveCountdownStartedEvent>(OnCountdownStarted));
             subscriber.Subscribe(this, new Action<WaveStartedEvent>(OnWaveStarted));
             subscriber.Subscribe(this, new Action<WaveClearedEvent>(OnWaveCleared));
+            subscriber.Subscribe(this, new Action<WaveHydratedEvent>(OnWaveHydrated));
 
             if (countdownText != null) countdownText.gameObject.SetActive(false);
             if (statusText != null) statusText.gameObject.SetActive(false);
@@ -79,6 +81,29 @@ namespace Features.Wave.Presentation
         private void OnWaveCleared(WaveClearedEvent e)
         {
             ShowStatus("Wave Cleared!");
+        }
+
+        private void OnWaveHydrated(WaveHydratedEvent e)
+        {
+            if (waveText != null)
+                waveText.text = $"Wave {e.WaveIndex + 1}/{e.TotalWaves}";
+
+            if (e.State == WaveState.Countdown && e.CountdownRemaining > 0f)
+            {
+                _countdownRemaining = e.CountdownRemaining;
+                _isCountingDown = true;
+                if (countdownText != null)
+                {
+                    countdownText.gameObject.SetActive(true);
+                    countdownText.text = $"{Mathf.CeilToInt(e.CountdownRemaining)}";
+                }
+            }
+            else
+            {
+                _isCountingDown = false;
+                if (countdownText != null)
+                    countdownText.gameObject.SetActive(false);
+            }
         }
 
         private void ShowStatus(string message)

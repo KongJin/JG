@@ -113,7 +113,7 @@ namespace Features.Skill.Infrastructure
                     }
 
                     var slotIndex = r.ReadInt32();
-                    if (slotIndex < 0)
+                    if (slotIndex < 0 || slotIndex >= Domain.SkillBar.SlotCount)
                     {
                         Debug.LogWarning($"[{Tag}] Invalid slotIndex: {slotIndex}");
                         return false;

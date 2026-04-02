@@ -43,6 +43,7 @@
 |----|-----------|-----------|------|
 | `waveIndex` | Wave | `WaveNetworkAdapter.SyncWaveState()` | 현재 웨이브 인덱스 |
 | `waveState` | Wave | `WaveNetworkAdapter.SyncWaveState()` | 현재 웨이브 상태 (WaveState enum int) |
+| `countdownEnd` | Wave | `WaveNetworkAdapter.SyncWaveState()` | 카운트다운 종료 시각 (ServerTimestamp ms). Countdown 상태에서만 유의미 |
 
 ---
 

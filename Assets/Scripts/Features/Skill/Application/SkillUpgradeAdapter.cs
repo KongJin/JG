@@ -46,6 +46,11 @@ namespace Features.Skill.Application
             return _upgrades.Increment(skillId, axis, enabled);
         }
 
+        public int GetLevel(string skillId, GrowthAxis axis)
+        {
+            return _upgrades.GetLevel(skillId, axis);
+        }
+
         public bool CanUpgrade(string skillId, GrowthAxis axis)
         {
             var enabled = _getEnabledAxes(skillId);
