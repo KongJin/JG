@@ -39,8 +39,20 @@ namespace Features.Skill.Infrastructure
         [Header("Status Effect")]
         [SerializeField] private StatusEffectData statusEffect;
 
+        [Header("Growth")]
+        [SerializeField] private GrowthAxisConfig growthAxes;
+
         public string SkillId => skillId;
         public SkillPresentationData Presentation => presentation;
+        public GrowthAxisConfig GrowthAxes => growthAxes;
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (string.IsNullOrWhiteSpace(skillId))
+                Debug.LogError($"[{name}] skillId is empty.", this);
+        }
+#endif
 
         public Domain.Skill ToDomain()
         {
@@ -65,8 +77,7 @@ namespace Features.Skill.Infrastructure
                 case DeliveryType.Self:
                     return new SelfDelivery();
                 default:
-                    Debug.LogError($"[SkillData] Unknown delivery type: {deliveryType}");
-                    return new SelfDelivery();
+                    throw new System.ArgumentOutOfRangeException(nameof(deliveryType), deliveryType, null);
             }
         }
     }

@@ -11,13 +11,15 @@ namespace Features.Zone.Application.Events
             DomainEntityId casterId,
             DomainEntityId targetId,
             float baseDamage,
-            StatusPayload statusPayload = default)
+            StatusPayload statusPayload = default,
+            float allyDamageScale = 1f)
         {
             ZoneId = zoneId;
             CasterId = casterId;
             TargetId = targetId;
             BaseDamage = baseDamage;
             StatusPayload = statusPayload;
+            AllyDamageScale = allyDamageScale;
         }
 
         public DomainEntityId ZoneId { get; }
@@ -25,5 +27,6 @@ namespace Features.Zone.Application.Events
         public DomainEntityId TargetId { get; }
         public float BaseDamage { get; }
         public StatusPayload StatusPayload { get; }
+        public float AllyDamageScale { get; }
     }
 }

@@ -83,7 +83,8 @@ namespace Features.Projectile.Infrastructure
                     holder.Id,
                     _projectile.BaseDamage,
                     _projectile.DamageType,
-                    _projectile.StatusPayload
+                    _projectile.StatusPayload,
+                    _projectile.AllyDamageScale
                 )
             );
 

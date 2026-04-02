@@ -132,21 +132,31 @@ namespace Features.Player
             _invulnerabilityTicker.Initialize(localSetup.InvulnerabilityTrackerInstance);
 
             _soundPlayer.Initialize(_eventBus, localSetup.PlayerId.Value);
-            _skillSetup.Initialize(_eventBus, player.transform, _camera, localSetup.PlayerId, localSetup.ManaPort, _statusSetup.StatusQuery);
+
+            // ProjectileSpawner, ZoneSetup은 EventBus만 필요 → 선택 전에 초기화
+            // 선택 UI 중에도 원격 스킬 이벤트(ProjectileRequestedEvent, ZoneRequestedEvent) 수신 가능
             _projectileSpawner.Initialize(_eventBus, _eventBus);
             _zoneSetup.Initialize(_eventBus);
 
-            // Wave (PvE)
-            if (_waveBootstrap != null)
-            {
-                _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId, _skillSetup.SkillReward, _skillSetup.SkillIcon);
-                _waveBootstrap.RegisterPlayer(player.transform);
-            }
-
+            // 원격 플레이어 wiring도 선택 전에 완료 — Status RPC 유실 방지
             _remotePlayerWiringReady = true;
-
             while (_pendingRemotePlayers.Count > 0)
                 ConnectPlayer(_pendingRemotePlayers.Dequeue());
+
+            // 스킬 선택 시작 (WaveBootstrap은 SkillReward 필요 → 선택 완료 후 초기화)
+            _skillSetup.InitializePreSelection(
+                _eventBus, player.transform, _camera,
+                localSetup.PlayerId, localSetup.ManaPort,
+                _statusSetup.StatusQuery,
+                onComplete: () =>
+                {
+                    if (_waveBootstrap != null)
+                    {
+                        _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId,
+                            _skillSetup.SkillReward, _skillSetup.SkillIcon);
+                        _waveBootstrap.RegisterPlayer(player.transform);
+                    }
+                });
         }
 
         private void ConnectPlayer(PlayerSetup setup)

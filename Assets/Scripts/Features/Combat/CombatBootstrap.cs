@@ -25,6 +25,7 @@ namespace Features.Combat
         private ApplyDamageUseCase _applyDamage;
         private CombatNetworkEventHandler _eventHandler;
         private CombatReplicationEventHandler _replicationEventHandler;
+        private ZoneDamageHandler _zoneDamageHandler;
         private EventBus _eventBus;
         private DisposableScope _disposables = new DisposableScope();
 
@@ -53,8 +54,10 @@ namespace Features.Combat
             );
             _eventHandler = new CombatNetworkEventHandler(_applyDamage, _eventBus, localAuthorityId);
             _replicationEventHandler = new CombatReplicationEventHandler(_applyDamage, _eventBus);
+            _zoneDamageHandler = new ZoneDamageHandler(_applyDamage, _eventBus, localAuthorityId);
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, _eventHandler));
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, _replicationEventHandler));
+            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, _zoneDamageHandler));
 
             for (var i = 0; i < _targetViews.Length; i++)
             {
@@ -83,20 +86,12 @@ namespace Features.Combat
         }
 
         public Result ApplyDamage(DomainEntityId targetId, float baseDamage, DamageType damageType,
-            DomainEntityId attackerId = default)
+            DomainEntityId attackerId = default, float allyDamageScale = 1f)
         {
             if (_applyDamage == null)
                 return Result.Failure("Combat system is not initialized.");
 
-            return _applyDamage.Execute(targetId, baseDamage, damageType, attackerId);
-        }
-
-        public Result ApplyDamage(string targetIdValue, float baseDamage, DamageType damageType)
-        {
-            if (string.IsNullOrWhiteSpace(targetIdValue))
-                return Result.Failure("Target id is required.");
-
-            return ApplyDamage(new DomainEntityId(targetIdValue), baseDamage, damageType);
+            return _applyDamage.Execute(targetId, baseDamage, damageType, attackerId, allyDamageScale);
         }
 
         public Result ResetTarget(DomainEntityId targetId)

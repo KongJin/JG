@@ -43,6 +43,8 @@
 - `SceneErrorPresenter`
   - 같은 씬 `EventBus`를 구독해 Banner/Modal을 렌더링하는 `MonoBehaviour`
   - 모든 UI 참조는 `[Required, SerializeField]`로 프리팹/씬에서 연결 (런타임 생성 없음)
+  - fatal modal은 씬에서 전체 화면 오버레이(`ErrorModalRoot`)로 배치하고, gameplay HUD 위에 렌더되도록 상위 정렬을 유지한다
+  - dismiss 버튼 라벨은 씬 기본값으로 채워 둔다 (예: `OK`)
 - `UiErrorResultBridge`
   - `Result` 실패를 `UiErrorRequestedEvent`로 바꿔 발행하는 작은 헬퍼
 

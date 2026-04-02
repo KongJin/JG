@@ -32,18 +32,6 @@ namespace Shared.Runtime.Sound
 
             _disposables?.Dispose();
             _disposables = null;
-            _pool = null;
-
-            if (audioSourcePrefab == null)
-            {
-                Debug.LogError($"[{nameof(SoundPlayer)}] audioSourcePrefab is null.");
-                return;
-            }
-            if (catalog == null)
-            {
-                Debug.LogError($"[{nameof(SoundPlayer)}] catalog is null.");
-                return;
-            }
 
             _pool = new GameObjectPool(audioSourcePrefab, transform, initialPoolSize);
 

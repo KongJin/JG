@@ -12,7 +12,8 @@ namespace Features.Projectile.Application.Events
             DomainEntityId targetId,
             float baseDamage,
             DamageType damageType,
-            StatusPayload statusPayload = default
+            StatusPayload statusPayload = default,
+            float allyDamageScale = 1f
         )
         {
             ProjectileId = projectileId;
@@ -21,6 +22,7 @@ namespace Features.Projectile.Application.Events
             BaseDamage = baseDamage;
             DamageType = damageType;
             StatusPayload = statusPayload;
+            AllyDamageScale = allyDamageScale;
         }
 
         public DomainEntityId ProjectileId { get; }
@@ -29,5 +31,6 @@ namespace Features.Projectile.Application.Events
         public float BaseDamage { get; }
         public DamageType DamageType { get; }
         public StatusPayload StatusPayload { get; }
+        public float AllyDamageScale { get; }
     }
 }

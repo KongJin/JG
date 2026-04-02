@@ -36,10 +36,10 @@ namespace Features.Skill.Application
                         (TrajectoryType)data.TrajectoryType,
                         (HitType)data.HitType,
                         data.Speed, data.Radius);
-                    PublishProjectiles(data, projectileSpec);
+                    PublishProjectiles(data, projectileSpec, data.AllyDamageScale);
                     break;
                 case DeliveryType.Zone:
-                    PublishZones(data, spec);
+                    PublishZones(data, spec, data.AllyDamageScale);
                     break;
                 case DeliveryType.Targeted:
                     _publisher.Publish(
@@ -61,12 +61,12 @@ namespace Features.Skill.Application
             _publisher.Publish(new SkillCastedEvent(data.SkillId, data.CasterId, data.SlotIndex, spec));
         }
 
-        private void PublishZones(SkillCastNetworkData data, SkillSpec spec)
+        private void PublishZones(SkillCastNetworkData data, SkillSpec spec, float allyDamageScale)
         {
             var count = data.ProjectileCount;
             if (count <= 1)
             {
-                _publisher.Publish(new ZoneRequestedEvent(data.SkillId, data.CasterId, spec, data.Position, data.Direction));
+                _publisher.Publish(new ZoneRequestedEvent(data.SkillId, data.CasterId, spec, data.Position, data.Direction, allyDamageScale));
                 return;
             }
 
@@ -78,18 +78,18 @@ namespace Features.Skill.Application
                 var offsetX = (float)(ringRadius * System.Math.Cos(angle));
                 var offsetZ = (float)(ringRadius * System.Math.Sin(angle));
                 var pos = new Float3(data.Position.X + offsetX, data.Position.Y, data.Position.Z + offsetZ);
-                _publisher.Publish(new ZoneRequestedEvent(data.SkillId, data.CasterId, spec, pos, data.Direction));
+                _publisher.Publish(new ZoneRequestedEvent(data.SkillId, data.CasterId, spec, pos, data.Direction, allyDamageScale));
             }
         }
 
-        private void PublishProjectiles(SkillCastNetworkData data, ProjectileSpec projectileSpec)
+        private void PublishProjectiles(SkillCastNetworkData data, ProjectileSpec projectileSpec, float allyDamageScale)
         {
             var count = data.ProjectileCount;
             if (count <= 1)
             {
                 _publisher.Publish(new ProjectileRequestedEvent(
                     data.CasterId, projectileSpec, data.Damage, DamageType.Magical,
-                    data.Position, data.Direction, data.StatusPayload));
+                    data.Position, data.Direction, data.StatusPayload, allyDamageScale));
                 return;
             }
 
@@ -109,7 +109,7 @@ namespace Features.Skill.Application
 
                 _publisher.Publish(new ProjectileRequestedEvent(
                     data.CasterId, projectileSpec, data.Damage, DamageType.Magical,
-                    data.Position, rotatedDir, data.StatusPayload));
+                    data.Position, rotatedDir, data.StatusPayload, allyDamageScale));
             }
         }
     }

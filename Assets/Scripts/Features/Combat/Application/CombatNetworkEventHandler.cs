@@ -27,7 +27,7 @@ namespace Features.Combat.Application
             if (_hasAuthorityFilter && !e.OwnerId.Equals(_localAuthorityId))
                 return;
 
-            _applyDamage.Execute(e.TargetId, e.BaseDamage, e.DamageType, e.OwnerId);
+            _applyDamage.Execute(e.TargetId, e.BaseDamage, e.DamageType, e.OwnerId, e.AllyDamageScale);
         }
     }
 }

@@ -32,6 +32,7 @@ Never do these:
 * Type naming collision — one feature 안에서 같은 short type name의 `MonoBehaviour`를 두 개 만들지 않는다. Presentation 컴포넌트 이름도 feature 전체에서 유일해야 한다.
 * Static event discipline — static event는 엔진/네트워크 콜백을 Application or Bootstrap으로 bridge할 때만 예외적으로 허용한다. gameplay event bus 대체제로 사용하지 않는다. 사용 시 `OnDestroy` 해제와 README 명시는 필수다.
 * Runtime UI creation in production — 운영용 UI는 scene-owned 또는 prefab-owned이어야 한다. runtime UI 생성은 debug tooling 또는 일시적 migration에서만 허용한다.
+* Silent fallback in exhaustive switch — enum을 switch로 분기할 때, default에서 fallback 값을 반환하지 않는다. 새 enum 값 추가 시 컴파일러가 경고하지 않으므로, default는 `throw new ArgumentOutOfRangeException()`으로 즉시 실패시킨다. `Debug.LogError` + fallback 반환은 문제를 숨긴다. (실제 사례: SkillData.CreateDelivery에서 default가 SelfDelivery를 반환하여 새 DeliveryType 추가 시 silent corruption 가능성이 있었음)
 
 ---
 

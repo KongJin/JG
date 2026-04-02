@@ -27,7 +27,11 @@ namespace Features.Wave.Presentation
             _subscriber = subscriber;
 
             _subscriber.Subscribe(this, new Action<SkillSelectedEvent>(OnSkillSelected));
+            _subscriber.Subscribe(this, new Action<GameStartEvent>(OnGameStart));
+        }
 
+        public void StartFirstWave()
+        {
             StartCountdownForCurrentWave();
         }
 
@@ -46,6 +50,11 @@ namespace Features.Wave.Presentation
                 if (!_waveLoop.EnterUpgradeSelection())
                     StartCountdownForCurrentWave();
             }
+        }
+
+        private void OnGameStart(GameStartEvent e)
+        {
+            StartFirstWave();
         }
 
         private void OnSkillSelected(SkillSelectedEvent e)

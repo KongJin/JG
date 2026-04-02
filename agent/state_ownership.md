@@ -31,6 +31,12 @@
 | `isReady` | Lobby | `PhotonPlayerPropertyManager` | 레디 상태 |
 | `roomDisplayName` | Lobby | `PhotonPlayerPropertyManager` | 방 이름 |
 
+#### Skill CustomProperties (Photon Player)
+
+| 키 | 소유 피처 | 쓰기 위치 | 용도 |
+|----|-----------|-----------|------|
+| `skillsReady` | Skill | `SkillNetworkAdapter.SyncSkillsReady()` | 스킬 선택 완료 여부 |
+
 #### Wave CustomProperties (Photon Room)
 
 | 키 | 소유 피처 | 쓰기 위치 | 용도 |

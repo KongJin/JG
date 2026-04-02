@@ -24,6 +24,7 @@ namespace Features.Skill.Application.Ports
         public Float3 TargetPosition { get; }
         public StatusPayload StatusPayload { get; }
         public int ProjectileCount { get; }
+        public float AllyDamageScale { get; }
 
         public SkillCastNetworkData(
             DomainEntityId skillId, DomainEntityId casterId, int slotIndex,
@@ -32,7 +33,8 @@ namespace Features.Skill.Application.Ports
             int trajectoryType, int hitType, float speed, float radius,
             Float3 position, Float3 direction, Float3 targetPosition,
             StatusPayload statusPayload = default,
-            int projectileCount = 1)
+            int projectileCount = 1,
+            float allyDamageScale = 1f)
         {
             SkillId = skillId;
             CasterId = casterId;
@@ -50,6 +52,7 @@ namespace Features.Skill.Application.Ports
             TargetPosition = targetPosition;
             StatusPayload = statusPayload;
             ProjectileCount = projectileCount;
+            AllyDamageScale = allyDamageScale;
         }
     }
 

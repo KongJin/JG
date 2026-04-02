@@ -29,13 +29,14 @@ namespace Features.Zone.Application
             float range,
             float cooldown,
             float baseDamage = 0f,
-            StatusPayload statusPayload = default)
+            StatusPayload statusPayload = default,
+            float allyDamageScale = 1f)
         {
             var spawnPos = position + direction.Normalized * (range * 0.5f);
             var spec = new ZoneSpec(range, cooldown, ZoneAnchorType.World, ZoneHitType.Tick, baseDamage, statusPayload);
             var id = _clock.NewId();
 
-            _zoneEffect.SpawnZone(spawnPos, spec.Radius, spec.Duration, id, casterId, baseDamage, statusPayload);
+            _zoneEffect.SpawnZone(spawnPos, spec.Radius, spec.Duration, id, casterId, baseDamage, statusPayload, allyDamageScale);
             _eventBus.Publish(new ZoneSpawnedEvent(id, casterId, spawnPos, spec));
             return Result.Success();
         }

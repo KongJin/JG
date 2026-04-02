@@ -13,6 +13,7 @@ namespace Features.Zone.Application.Ports
             DomainEntityId zoneId,
             DomainEntityId casterId,
             float baseDamage,
-            StatusPayload statusPayload);
+            StatusPayload statusPayload,
+            float allyDamageScale = 1f);
     }
 }

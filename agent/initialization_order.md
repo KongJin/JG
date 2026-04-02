@@ -11,6 +11,10 @@
 
 ### 현재 GameScene 초기화 순서 (GameSceneBootstrap)
 
+초기화는 두 단계로 나뉜다:
+
+#### Phase A (동기 — 선택 전)
+
 ```
 1. Analytics         — FirebaseAnalyticsAdapter, GameAnalyticsEventHandler
 2. Player Lookup     — PlayerLookupAdapter, SceneErrorPresenter
@@ -19,11 +23,25 @@
 5. Player            — PlayerSetup.Initialize (Status.SpeedModifier 주입)
 6. Combat            — CombatBootstrap.Initialize (localPlayer 주입)
 7. UI & Subsystems   — ManaRegenTicker, BleedoutTicker, RescueChannelTicker,
-                       InvulnerabilityTicker, SoundPlayer, SkillSetup,
-                       ProjectileSpawner, ZoneSetup
-8. Wave (Optional)   — WaveBootstrap.Initialize (PvE 모드만)
-9. Remote Players    — _remotePlayerWiringReady = true, 큐 처리
+                       InvulnerabilityTicker, SoundPlayer
+8. ProjectileSpawner — EventBus만 필요, 선택 전 초기화 (원격 스킬 이벤트 수신)
+9. ZoneSetup         — EventBus만 필요, 선택 전 초기화 (원격 스킬 이벤트 수신)
+10. Remote Players   — _remotePlayerWiringReady = true, 큐 처리
+11. SkillSetup.InitializePreSelection — 카탈로그, UI, 네트워크 핸들러, 선택 UI 표시
 ```
+
+Phase A 완료 시점: 모든 동기 초기화 끝남. Remote player wiring 가능.
+
+#### Phase B (선택 후 콜백)
+
+```
+12. SkillSetup.InitializePostSelection — 덱 구성, 스킬 장착, SkillsReady 동기화
+13. Wave (Optional)  — WaveBootstrap.Initialize (PvE 모드만, SkillReward 필요)
+14. Master: 전원 SkillsReady 확인 → GameStartEvent → 카운트다운 시작
+```
+
+Phase B는 `SkillSetup.InitializePreSelection`의 `onComplete` 콜백에서 시작된다.
+플레이어가 시작 스킬 2개를 선택하면 `StartSkillSelectedEvent` → `StartSkillSelectionHandler` → `InitializePostSelection` → `onComplete` 순으로 호출된다.
 
 ---
 
@@ -34,8 +52,11 @@
 | Status | (없음) | SpeedModifier는 독립 생성 가능 |
 | Player | Status | SpeedModifier를 PlayerSetup에 주입 |
 | Combat | Player | localPlayer를 CombatBootstrap에 주입 |
-| Skill | Combat | 타겟팅 시스템 필요 |
-| Wave | Player, Combat | 플레이어 등록 + 전투 시스템 필요 |
+| Skill (PreSelection) | Combat | 네트워크 핸들러 초기화 필요 |
+| Skill (PostSelection) | Skill (PreSelection) | 스킬 선택 완료 후 덱 구성 |
+| Wave | Skill (PostSelection) | SkillReward, SkillIcon 포트 필요 |
+| ProjectileSpawner | EventBus | 선택 전 초기화 (원격 스킬 이벤트 수신) |
+| ZoneSetup | EventBus | 선택 전 초기화 (원격 스킬 이벤트 수신) |
 
 ---
 
@@ -50,7 +71,8 @@
 
 ### Remote Player 초기화
 
-리모트 플레이어는 로컬 초기화 완료 후(`_remotePlayerWiringReady = true`) 처리된다.
+리모트 플레이어는 Phase A 완료 후(`_remotePlayerWiringReady = true`) 처리된다.
+Phase B(스킬 선택) 이전에 wiring이 가능하므로, Status RPC 유실 없이 원격 플레이어가 연결된다.
 
 순서:
 1. `ConnectPlayer(setup)` 호출
@@ -66,4 +88,4 @@
 
 - Bootstrap 초기화 순서를 코드 순서만으로 보장하고 문서화하지 않는 것
 - 초기화 시점에 아직 생성되지 않은 피처의 인스턴스를 참조하는 것
-- Remote player 처리를 local 초기화 완료 전에 시작하는 것
+- Remote player 처리를 Phase A 완료 전에 시작하는 것

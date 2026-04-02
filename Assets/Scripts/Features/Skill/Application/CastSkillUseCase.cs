@@ -14,16 +14,19 @@ namespace Features.Skill.Application
         private readonly IManaPort _manaPort;
         private readonly ISkillNetworkCommandPort _network;
         private readonly IStatusQueryPort _statusQuery;
+        private readonly ISkillUpgradeQueryPort _upgradeQuery;
 
         public CastSkillUseCase(
             IManaPort manaPort,
             ISkillNetworkCommandPort network,
-            IStatusQueryPort statusQuery = null
+            IStatusQueryPort statusQuery = null,
+            ISkillUpgradeQueryPort upgradeQuery = null
         )
         {
             _manaPort = manaPort;
             _network = network;
             _statusQuery = statusQuery;
+            _upgradeQuery = upgradeQuery;
         }
 
         public Result Execute(
@@ -82,13 +85,29 @@ namespace Features.Skill.Application
                     projectileCount = GrowthRule.CalculateCount(skill.Spec.ProjectileCount, countMag);
             }
 
+            var duration = skill.Spec.Duration;
+            var allyDamageScale = 1f;
+            var skillIdValue = skill.Id.Value;
+            if (_upgradeQuery != null)
+            {
+                range *= _upgradeQuery.GetAxisMultiplier(skillIdValue, GrowthAxis.Range);
+                radius *= _upgradeQuery.GetAxisMultiplier(skillIdValue, GrowthAxis.Range);
+                duration *= _upgradeQuery.GetAxisMultiplier(skillIdValue, GrowthAxis.Duration);
+
+                var countUpgrade = _upgradeQuery.GetAxisMultiplier(skillIdValue, GrowthAxis.Count);
+                if (countUpgrade > 1f)
+                    projectileCount += (int)(countUpgrade - 1f);
+
+                allyDamageScale = _upgradeQuery.GetAllyDamageScale(skillIdValue);
+            }
+
             _network.SendSkillCasted(
                 new SkillCastNetworkData(
                     skill.Id,
                     casterId,
                     slotIndex,
                     damage,
-                    skill.Spec.Duration,
+                    duration,
                     range,
                     result.DeliveryType,
                     pr != null ? (int)pr.ProjectileSpec.TrajectoryType : 0,
@@ -99,7 +118,8 @@ namespace Features.Skill.Application
                     direction,
                     targetPosition,
                     skill.Spec.StatusPayload,
-                    projectileCount
+                    projectileCount,
+                    allyDamageScale
                 )
             );
 

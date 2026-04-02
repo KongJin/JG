@@ -12,16 +12,27 @@
 
 ## 데이터 흐름
 
-### 로컬 (공격자 클라이언트)
+### 로컬 (공격자 클라이언트) — Projectile 경로
 
 ```text
-ProjectileHitEvent
+ProjectileHitEvent (AllyDamageScale 포함)
   → CombatNetworkEventHandler (EventBus 직접 구독)
-    → (owner == local authority 인 경우만) ApplyDamageUseCase.Execute()
+    → (owner == local authority 인 경우만) ApplyDamageUseCase.Execute(allyDamageScale)
       → ICombatTargetPort.GetDefense / ApplyDamage
+      → Ally 관계 시 RelationshipRule 배율 × allyDamageScale 곱적용
       → ICombatNetworkCommandPort.SendDamage (RPC 전파)
       → DamageAppliedEvent 발행
         → PlayerDamageEventHandler → PlayerHealthChangedEvent / PlayerDownedEvent / PlayerDiedEvent
+```
+
+### 로컬 (공격자 클라이언트) — Zone 경로
+
+```text
+ZoneTickEvent (AllyDamageScale 포함)
+  → ZoneDamageHandler (EventBus 직접 구독, DamageType.Magical 하드코딩)
+    → (caster == local authority 인 경우만) ApplyDamageUseCase.Execute(allyDamageScale)
+      → 동일한 데미지 파이프라인 (DamageRule, RelationshipRule, allyDamageScale)
+      → DamageAppliedEvent 발행
 ```
 
 ### 원격 (피격자/관전자 클라이언트)
@@ -49,7 +60,7 @@ PlayerNetworkAdapter.RPC_ApplyDamage
 ## 레이어 메모
 
 - **Domain**: `DamageType`, `DamageRule`, `CombatTarget`, `RelationshipType`, `RelationshipRule`
-- **Application**: `ApplyDamageUseCase`, `CombatNetworkEventHandler`, `CombatReplicationEventHandler`, `ICombatTargetPort`, `ICombatTargetProvider` (`CombatTargetDamageResult.IsDowned` 포함), `ICombatNetworkCommandPort`, `IEntityAffiliationPort`, `DamageAppliedEvent` (`IsDowned` 포함), `DamageReplicatedEvent`, `FriendlyFireAppliedEvent`
+- **Application**: `ApplyDamageUseCase` (string→DomainEntityId 변환 오버로드 포함), `CombatNetworkEventHandler`, `CombatReplicationEventHandler`, `ZoneDamageHandler` (ZoneTickEvent 구독 → ApplyDamageUseCase 경유), `ICombatTargetPort`, `ICombatTargetProvider` (`CombatTargetDamageResult.IsDowned` 포함), `ICombatNetworkCommandPort`, `IEntityAffiliationPort`, `DamageAppliedEvent` (`IsDowned` 포함), `DamageReplicatedEvent`, `FriendlyFireAppliedEvent`
 - **Infrastructure**: `CombatTargetAdapter` (ICombatTargetPort 구현, ICombatTargetProvider 기반 딕셔너리)
 - **Presentation**: `CombatTargetView` (데미지 반응/피격 피드백), `FriendlyFireFeedbackView` (아군 피격 경고/피드백)
 - **Bootstrap**: `CombatBootstrap` (조립, `RegisterTarget` API) - 피처 루트에 위치. 이벤트 핸들링은 `CombatNetworkEventHandler`/`CombatReplicationEventHandler`가 EventBus를 직접 구독한다.
@@ -60,7 +71,7 @@ PlayerNetworkAdapter.RPC_ApplyDamage
   - Self = 0× (자기 피해 차단), Ally = 0.5×, Enemy = 1×
 - `IEntityAffiliationPort`가 공격자-피격자 관계를 조회한다. 구현체는 Player/Infrastructure의 `EntityAffiliationAdapter`.
   - 같은 ID → Self, 둘 다 "player-" 프리픽스 → Ally, 그 외 → Enemy
-- `ApplyDamageUseCase.Execute()`에서 관계 배율을 적용한 후 데미지를 전파한다.
+- `ApplyDamageUseCase.Execute(allyDamageScale)`에서 관계 배율을 적용한 후 데미지를 전파한다. Ally 관계일 때 `RelationshipRule.GetDamageMultiplier(rel) * allyDamageScale`을 곱적용한다.
   - Ally 관계일 때 `FriendlyFireAppliedEvent` 추가 발행
 - `ExecuteReplicated()`에서는 이미 계산된 데미지이므로 배율 재적용 안 함. 관계 조회하여 `FriendlyFireAppliedEvent`만 발행.
 - `FriendlyFireFeedbackView` (Presentation): 로컬 플레이어가 공격자/피격자일 때 피드백 표시.
@@ -95,6 +106,7 @@ FriendlyFireFeedbackView는 별도 Canvas(`FFBannerCanvas`, ScreenSpace-Overlay,
    - `ApplyDamageUseCase` 생성 (`IEntityAffiliationPort` 필수 주입)
    - `CombatNetworkEventHandler` 생성 (EventBus 직접 구독)
    - `CombatReplicationEventHandler` 생성 (EventBus 직접 구독)
+   - `ZoneDamageHandler` 생성 (EventBus 직접 구독, localAuthorityId로 권한 필터)
    - `CombatTargetView[]` 초기화
    - `FriendlyFireFeedbackView.Initialize(subscriber, publisher, localPlayerId)` 호출
 3. 이후 `GameSceneBootstrap`이 `CombatBootstrap.RegisterTarget()`으로 플레이어/적 등록
@@ -119,6 +131,7 @@ FriendlyFireFeedbackView는 별도 Canvas(`FFBannerCanvas`, ScreenSpace-Overlay,
 ## 피처 간 의존
 
 - **Projectile**: `ProjectileHitEvent` (트리거)
+- **Zone**: `ZoneTickEvent` (Zone 데미지 트리거, AllyDamageScale 포함. DamageType은 ZoneDamageHandler가 Magical 하드코딩)
 - **Player**: `PlayerCombatTargetProvider`가 `ICombatTargetProvider` 구현
 - **Player**: `PlayerCombatNetworkPortAdapter`가 `ICombatNetworkCommandPort` 구현
 - **Player**: `EntityAffiliationAdapter`가 `IEntityAffiliationPort` 구현 (ID 프리픽스 기반 소속 판정)

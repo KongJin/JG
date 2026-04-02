@@ -46,7 +46,8 @@ namespace Features.Zone
             DomainEntityId zoneId,
             DomainEntityId casterId,
             float baseDamage,
-            StatusPayload statusPayload)
+            StatusPayload statusPayload,
+            float allyDamageScale = 1f)
         {
             if (_zonePool == null)
                 return;
@@ -62,7 +63,7 @@ namespace Features.Zone
             var detector = viewGo.GetComponent<ZoneCollisionDetector>();
             if (detector == null)
                 detector = viewGo.AddComponent<ZoneCollisionDetector>();
-            detector.Initialize(zoneId, casterId, baseDamage, statusPayload, _eventPublisher);
+            detector.Initialize(zoneId, casterId, baseDamage, statusPayload, _eventPublisher, allyDamageScale);
         }
     }
 }

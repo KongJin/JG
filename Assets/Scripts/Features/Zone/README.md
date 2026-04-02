@@ -8,7 +8,7 @@
 - Zone 도메인 엔티티를 생성한다.
 - Zone 프리팹 스폰과 수명 관리를 Zone 피처 내부에서 수행한다.
 - 영역 내 엔티티를 감지하여 틱 간격으로 `ZoneTickEvent`를 발행한다.
-- `ZoneTickEvent`에 `StatusPayload`를 포함하여 Status 피처의 `StatusTriggerHandler`가 상태효과를 적용할 수 있게 한다.
+- `ZoneTickEvent`에 `StatusPayload`, `AllyDamageScale`을 포함하여 Status 피처의 `StatusTriggerHandler`가 상태효과를, Combat 피처의 `ZoneDamageHandler`가 데미지를 적용할 수 있게 한다. Zone 데미지는 항상 Magical이며, `ZoneDamageHandler`가 하드코딩한다.
 
 ## 핵심 흐름
 
@@ -20,8 +20,9 @@ Skill ZoneRequestedEvent (SkillSpec with StatusPayload)
         -> ZoneEffectAdapter
           -> ZoneView (시각 연출 + 수명)
           -> ZoneCollisionDetector (틱 충돌 감지)
-               -> ZoneTickEvent 발행 (baseDamage, statusPayload 포함)
+               -> ZoneTickEvent 발행 (baseDamage, statusPayload, allyDamageScale 포함)
                     -> StatusTriggerHandler가 StatusApplyRequestedEvent 발행
+                    -> ZoneDamageHandler(Combat)가 ApplyDamageUseCase 경유 데미지 적용
 ```
 
 ## 레이어 메모
@@ -49,5 +50,6 @@ Skill ZoneRequestedEvent (SkillSpec with StatusPayload)
 ## 피처 간 의존
 
 - **Skill**: `ZoneRequestedEvent` (SkillSpec에 StatusPayload 포함)
+- **Combat**: `ZoneDamageHandler`가 `ZoneTickEvent`를 구독하여 데미지 적용 (DamageType은 ZoneDamageHandler가 Magical로 하드코딩)
 - **Status**: `StatusPayload` (Domain VO), `StatusTriggerHandler`가 `ZoneTickEvent`를 구독
 - **Shared**: `EventBus`, `Result`, `Float3`, `IClockPort`, `DomainEntityId`

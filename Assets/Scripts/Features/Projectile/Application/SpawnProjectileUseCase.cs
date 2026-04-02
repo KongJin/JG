@@ -35,7 +35,8 @@ namespace Features.Projectile.Application
             float baseDamage,
             DamageType damageType,
             Float3 targetPosition,
-            StatusPayload statusPayload = default
+            StatusPayload statusPayload = default,
+            float allyDamageScale = 1f
         )
         {
             var projectile = new Domain.Projectile(
@@ -44,7 +45,8 @@ namespace Features.Projectile.Application
                 spec,
                 baseDamage,
                 damageType,
-                statusPayload
+                statusPayload,
+                allyDamageScale
             );
             var trajectory = TrajectoryFactory.Create(spec.TrajectoryType);
             var hitResolver = HitResolverFactory.Create(spec.HitType);

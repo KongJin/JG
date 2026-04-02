@@ -12,7 +12,7 @@
 ## 이벤트 흐름
 
 ```
-Skill Feature → ProjectileRequestedEvent(ownerId, spec, position, direction, statusPayload)
+Skill Feature → ProjectileRequestedEvent(ownerId, spec, position, direction, statusPayload, allyDamageScale)
   → ProjectileSpawner (Bootstrap)
     → 프리팹 선택 (TrajectoryType 기반)
     → Instantiate at event position/direction
@@ -22,7 +22,7 @@ Skill Feature → ProjectileRequestedEvent(ownerId, spec, position, direction, s
 Update Loop (ProjectilePhysicsAdapter):
   → trajectory.NextPosition(input) 매 프레임 호출
   → OnTriggerEnter → hitResolver.Resolve → IHitResult.Apply
-    → ProjectileHitEvent(statusPayload 포함) 발행
+    → ProjectileHitEvent(statusPayload, allyDamageScale 포함) 발행
     → StatusTriggerHandler가 구독 → StatusApplyRequestedEvent 발행
     → 조건 충족 시 GameObject 파괴
 ```
@@ -58,7 +58,7 @@ Skill Feature의 RPC로 원격 `ProjectileRequestedEvent`가 발행되면
 
 ## 레이어 메모
 
-- **Domain**: `Projectile` (StatusPayload 포함), `ProjectileSpec`, `TrajectoryInput`, `TrajectoryType`/`HitType` enum, `ITrajectory`/`IHitResolver`/`IHitResult` 인터페이스, `TrajectoryFactory`, `HitResolverFactory`, 각 전략 구현체
+- **Domain**: `Projectile` (StatusPayload, AllyDamageScale 포함), `ProjectileSpec`, `TrajectoryInput`, `TrajectoryType`/`HitType` enum, `ITrajectory`/`IHitResolver`/`IHitResult` 인터페이스, `TrajectoryFactory`, `HitResolverFactory`, 각 전략 구현체
 - **Application**: `SpawnProjectileUseCase`, `IProjectilePhysicsPort` (Application/Ports), `ProjectileRequestedEvent`, `ProjectileHitEvent`, `ProjectileSpawnedEvent`
 - **Infrastructure**: `ProjectilePhysicsAdapter` (MonoBehaviour, 물리 이동/충돌 처리)
 - **Presentation**: `ProjectileView` (색상, 수명 관리) — `[Required, SerializeField]`로 `LifetimeRelease`를 프리팹에서 참조

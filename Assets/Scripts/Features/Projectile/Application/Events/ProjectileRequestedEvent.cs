@@ -15,7 +15,8 @@ namespace Features.Projectile.Application.Events
             DamageType damageType,
             Float3 position,
             Float3 direction,
-            StatusPayload statusPayload = default
+            StatusPayload statusPayload = default,
+            float allyDamageScale = 1f
         )
         {
             OwnerId = ownerId;
@@ -25,6 +26,7 @@ namespace Features.Projectile.Application.Events
             Position = position;
             Direction = direction;
             StatusPayload = statusPayload;
+            AllyDamageScale = allyDamageScale;
         }
 
         public DomainEntityId OwnerId { get; }
@@ -34,5 +36,6 @@ namespace Features.Projectile.Application.Events
         public Float3 Position { get; }
         public Float3 Direction { get; }
         public StatusPayload StatusPayload { get; }
+        public float AllyDamageScale { get; }
     }
 }

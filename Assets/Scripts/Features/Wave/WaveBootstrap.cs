@@ -1,20 +1,25 @@
 using Shared.Attributes;
 using Features.Combat;
 using Features.Enemy;
+using Features.Skill.Infrastructure;
 using Features.Skill.Presentation;
 using Features.Wave.Application;
+using Features.Wave.Application.Events;
 using Features.Wave.Application.Ports;
 using Features.Wave.Infrastructure;
 using Features.Wave.Presentation;
 using Photon.Pun;
+using Photon.Realtime;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Lifecycle;
 using UnityEngine;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using PhotonPlayer = Photon.Realtime.Player;
 
 namespace Features.Wave
 {
-    public sealed class WaveBootstrap : MonoBehaviour
+    public sealed class WaveBootstrap : MonoBehaviourPunCallbacks
     {
         [Required, SerializeField] private WaveTableData _waveTable;
         [Required, SerializeField] private EnemySpawnAdapter _spawnAdapter;
@@ -29,6 +34,8 @@ namespace Features.Wave
         private EventBus _eventBus;
         private CombatBootstrap _combatBootstrap;
         private DisposableScope _disposables;
+        private bool _initialized;
+        private bool _gameStarted;
 
         public IPlayerPositionQuery PlayerPositionQuery => _playerPositionQuery;
 
@@ -74,11 +81,41 @@ namespace Features.Wave
             EnemySetup.EnemyArrived += OnEnemyArrived;
 
             _networkAdapter.HydrateFromRoomProperties();
+
+            _initialized = true;
+            _gameStarted = false;
+
+            // Master: 전원 SkillsReady 확인 후 GameStartEvent 발행
+            if (PhotonNetwork.IsMasterClient)
+                TryStartGame();
         }
 
         public void RegisterPlayer(Transform playerTransform)
         {
             _playerPositionQuery.RegisterPlayer(playerTransform);
+        }
+
+        public override void OnPlayerPropertiesUpdate(PhotonPlayer targetPlayer, Hashtable changedProps)
+        {
+            if (!_initialized || _gameStarted) return;
+            if (!PhotonNetwork.IsMasterClient) return;
+            if (!changedProps.ContainsKey("skillsReady")) return;
+
+            TryStartGame();
+        }
+
+        private void TryStartGame()
+        {
+            if (_gameStarted) return;
+
+            foreach (var player in PhotonNetwork.PlayerList)
+            {
+                if (!SkillNetworkAdapter.IsPlayerSkillsReady(player))
+                    return;
+            }
+
+            _gameStarted = true;
+            _eventBus.Publish(new GameStartEvent());
         }
 
         private void OnEnemyArrived(EnemySetup enemy)

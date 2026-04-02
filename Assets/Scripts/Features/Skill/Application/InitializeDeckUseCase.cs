@@ -43,6 +43,34 @@ namespace Features.Skill.Application
             _rng = rng ?? new System.Random();
         }
 
+        public DeckSetupResult Execute(IReadOnlyList<SkillEntry> allSkills, IReadOnlyList<string> chosenSkillIds)
+        {
+            var chosenSet = new HashSet<string>(chosenSkillIds);
+            var starterIds = new List<DomainEntityId>(chosenSkillIds.Count);
+            var rewardPool = new List<SkillRewardCandidate>();
+
+            foreach (var entry in allSkills)
+            {
+                if (chosenSet.Contains(entry.SkillId))
+                    starterIds.Add(new DomainEntityId(entry.SkillId));
+                else
+                    rewardPool.Add(new SkillRewardCandidate(entry.SkillId, entry.DisplayName));
+            }
+
+            var deck = new Deck(starterIds, _rng);
+            var skillBar = new SkillBar();
+
+            var initialHand = new List<DomainEntityId>(starterIds.Count);
+            for (var i = 0; i < starterIds.Count; i++)
+            {
+                var drawn = deck.Draw();
+                if (!string.IsNullOrEmpty(drawn.Value))
+                    initialHand.Add(drawn);
+            }
+
+            return new DeckSetupResult(deck, skillBar, rewardPool, initialHand);
+        }
+
         public DeckSetupResult Execute(IReadOnlyList<SkillEntry> uniqueSkills, int starterCount)
         {
             var shuffled = new List<SkillEntry>(uniqueSkills);

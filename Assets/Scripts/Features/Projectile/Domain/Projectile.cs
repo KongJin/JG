@@ -12,7 +12,8 @@ namespace Features.Projectile.Domain
             ProjectileSpec spec,
             float baseDamage,
             DamageType damageType,
-            StatusPayload statusPayload = default
+            StatusPayload statusPayload = default,
+            float allyDamageScale = 1f
         ) : base(id)
         {
             OwnerId = ownerId;
@@ -20,6 +21,7 @@ namespace Features.Projectile.Domain
             BaseDamage = baseDamage;
             DamageType = damageType;
             StatusPayload = statusPayload;
+            AllyDamageScale = allyDamageScale;
             IsAlive = true;
             HitCount = 0;
         }
@@ -29,6 +31,7 @@ namespace Features.Projectile.Domain
         public float BaseDamage { get; }
         public DamageType DamageType { get; }
         public StatusPayload StatusPayload { get; }
+        public float AllyDamageScale { get; }
         public bool IsAlive { get; private set; }
         public int HitCount { get; private set; }
 

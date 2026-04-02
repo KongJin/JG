@@ -12,7 +12,7 @@ namespace Features.Skill.Presentation
     {
         [Required, SerializeField]
         private SlotView[] slotViews;
-        private static readonly string[] SlotLabels = { "RMB", "Q", "E" };
+        private static readonly string[] SlotLabels = { "RMB", "Q" };
 
         private IEventSubscriber _eventBus;
         private ISkillIconPort _iconPort;

@@ -50,8 +50,7 @@ namespace Features.Skill.Presentation
             _slotActions = new[]
             {
                 _inputActions.FindAction("SkillSlot0"),
-                _inputActions.FindAction("SkillSlot1"),
-                _inputActions.FindAction("SkillSlot2")
+                _inputActions.FindAction("SkillSlot1")
             };
 
             for (var i = 0; i < SkillBar.SlotCount; i++)

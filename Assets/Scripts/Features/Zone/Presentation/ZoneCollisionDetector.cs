@@ -16,6 +16,7 @@ namespace Features.Zone.Presentation
         private DomainEntityId _casterId;
         private float _baseDamage;
         private StatusPayload _statusPayload;
+        private float _allyDamageScale;
         private float _tickInterval;
         private IEventPublisher _publisher;
         private bool _initialized;
@@ -27,12 +28,14 @@ namespace Features.Zone.Presentation
             DomainEntityId casterId,
             float baseDamage,
             StatusPayload statusPayload,
-            IEventPublisher publisher)
+            IEventPublisher publisher,
+            float allyDamageScale = 1f)
         {
             _zoneId = zoneId;
             _casterId = casterId;
             _baseDamage = baseDamage;
             _statusPayload = statusPayload;
+            _allyDamageScale = allyDamageScale;
             _tickInterval = statusPayload.TickInterval > 0f ? statusPayload.TickInterval : DefaultTickInterval;
             _publisher = publisher;
             _initialized = true;
@@ -56,7 +59,7 @@ namespace Features.Zone.Presentation
                 return;
 
             _lastTickTimes[key] = now;
-            _publisher.Publish(new ZoneTickEvent(_zoneId, _casterId, targetId, _baseDamage, _statusPayload));
+            _publisher.Publish(new ZoneTickEvent(_zoneId, _casterId, targetId, _baseDamage, _statusPayload, _allyDamageScale));
         }
 
         public void OnRentFromPool()

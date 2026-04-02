@@ -26,8 +26,16 @@ namespace Features.Combat.Application
             _affiliation = affiliation;
         }
 
+        public Result Execute(string targetIdValue, float baseDamage, DamageType damageType)
+        {
+            if (string.IsNullOrWhiteSpace(targetIdValue))
+                return Result.Failure("Target id is required.");
+
+            return Execute(new DomainEntityId(targetIdValue), baseDamage, damageType);
+        }
+
         public Result Execute(DomainEntityId targetId, float baseDamage, DamageType damageType,
-            DomainEntityId attackerId = default)
+            DomainEntityId attackerId = default, float allyDamageScale = 1f)
         {
             if (!_target.Exists(targetId))
                 return Result.Failure($"Combat target not found: {targetId.Value}");
@@ -44,6 +52,8 @@ namespace Features.Combat.Application
                 return Result.Success();
 
             finalDamage *= RelationshipRule.GetDamageMultiplier(rel);
+            if (rel == RelationshipType.Ally)
+                finalDamage *= allyDamageScale;
 
             var damageResult = _target.ApplyDamage(targetId, finalDamage);
 
