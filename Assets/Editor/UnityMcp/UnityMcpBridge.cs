@@ -43,6 +43,12 @@ namespace ProjectSD.EditorTools.UnityMcp
         private static readonly List<ConsoleLogEntry> ConsoleLogs = new List<ConsoleLogEntry>();
         private static readonly int[] BindRetryDelayMs = { 50, 100, 200 };
 
+        private static readonly ConcurrentDictionary<string, Type> McpTypeNameCache =
+            new ConcurrentDictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+        private static readonly ConcurrentDictionary<string, FieldInfo> McpFieldInfoCache =
+            new ConcurrentDictionary<string, FieldInfo>(StringComparer.Ordinal);
+        private static readonly PropertyInfo[] EmptyPropertyList = new PropertyInfo[0];
+
         private static HttpListener _listener;
         private static CancellationTokenSource _listenerCts;
         private static int _mainThreadId;
@@ -513,6 +519,8 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         private static void StopBridge(bool logWhenAlreadyStopped, bool logWhenStopped)
         {
+            ClearMcpReflectionCaches();
+
             var listener = _listener;
             var listenerCts = _listenerCts;
 
@@ -2239,6 +2247,10 @@ namespace ProjectSD.EditorTools.UnityMcp
                 maxDepth = Mathf.Clamp(d, 1, 50);
 
             var pathFilter = request.QueryString["path"];
+            var includeComponentsRaw = request.QueryString["includeComponents"];
+            var includeComponents = string.IsNullOrEmpty(includeComponentsRaw)
+                || (!string.Equals(includeComponentsRaw, "false", StringComparison.OrdinalIgnoreCase)
+                    && includeComponentsRaw != "0");
 
             var json = await RunOnMainThreadAsync(() =>
             {
@@ -2251,14 +2263,14 @@ namespace ProjectSD.EditorTools.UnityMcp
                 {
                     var target = GameObject.Find(pathFilter);
                     if (target != null)
-                        AppendHierarchyNodeJson(sb, target.transform, maxDepth, 0);
+                        AppendHierarchyNodeJson(sb, target.transform, maxDepth, 0, "", includeComponents);
                 }
                 else
                 {
                     for (var i = 0; i < roots.Length; i++)
                     {
                         if (i > 0) sb.Append(',');
-                        AppendHierarchyNodeJson(sb, roots[i].transform, maxDepth, 0);
+                        AppendHierarchyNodeJson(sb, roots[i].transform, maxDepth, 0, "", includeComponents);
                     }
                 }
 
@@ -2269,21 +2281,32 @@ namespace ProjectSD.EditorTools.UnityMcp
             await WriteRawJsonAsync(response, 200, json);
         }
 
-        private static void AppendHierarchyNodeJson(StringBuilder sb, Transform t, int maxDepth, int currentDepth)
+        private static void AppendHierarchyNodeJson(
+            StringBuilder sb,
+            Transform t,
+            int maxDepth,
+            int currentDepth,
+            string parentPath,
+            bool includeComponents)
         {
+            var nodePath = parentPath.Length == 0 ? "/" + t.name : parentPath + "/" + t.name;
+
             sb.Append("{\"name\":\"").Append(EscapeJsonString(t.name))
-              .Append("\",\"path\":\"").Append(EscapeJsonString(GetTransformPath(t)))
+              .Append("\",\"path\":\"").Append(EscapeJsonString(nodePath))
               .Append("\",\"activeSelf\":").Append(t.gameObject.activeSelf ? "true" : "false")
               .Append(",\"components\":[");
 
-            var comps = t.GetComponents<Component>();
-            var first = true;
-            foreach (var c in comps)
+            if (includeComponents)
             {
-                if (c == null) continue;
-                if (!first) sb.Append(',');
-                sb.Append('"').Append(EscapeJsonString(c.GetType().Name)).Append('"');
-                first = false;
+                var comps = t.GetComponents<Component>();
+                var first = true;
+                foreach (var c in comps)
+                {
+                    if (c == null) continue;
+                    if (!first) sb.Append(',');
+                    sb.Append('"').Append(EscapeJsonString(c.GetType().Name)).Append('"');
+                    first = false;
+                }
             }
 
             sb.Append("],\"childCount\":").Append(t.childCount).Append(",\"children\":[");
@@ -2293,7 +2316,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 for (var i = 0; i < t.childCount; i++)
                 {
                     if (i > 0) sb.Append(',');
-                    AppendHierarchyNodeJson(sb, t.GetChild(i), maxDepth, currentDepth + 1);
+                    AppendHierarchyNodeJson(sb, t.GetChild(i), maxDepth, currentDepth + 1, nodePath, includeComponents);
                 }
             }
 
@@ -2328,6 +2351,97 @@ namespace ProjectSD.EditorTools.UnityMcp
             return "/" + string.Join("/", parts);
         }
 
+        private static GameObject FindGameObjectByNameInActiveScene(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            var scene = SceneManager.GetActiveScene();
+            if (!scene.isLoaded)
+            {
+                return null;
+            }
+
+            var roots = scene.GetRootGameObjects();
+            var queue = new Queue<Transform>();
+            for (var i = 0; i < roots.Length; i++)
+            {
+                queue.Enqueue(roots[i].transform);
+            }
+
+            while (queue.Count > 0)
+            {
+                var t = queue.Dequeue();
+                if (t.name == name)
+                {
+                    var candidate = t.gameObject;
+                    if (!EditorUtility.IsPersistent(candidate))
+                    {
+                        return candidate;
+                    }
+                }
+
+                for (var c = 0; c < t.childCount; c++)
+                {
+                    queue.Enqueue(t.GetChild(c));
+                }
+            }
+
+            return null;
+        }
+
+        private static bool MatchesComponentTypeFilter(Type type, string[] filters)
+        {
+            if (filters == null || filters.Length == 0)
+            {
+                return false;
+            }
+
+            foreach (var f in filters)
+            {
+                if (string.IsNullOrEmpty(f))
+                {
+                    continue;
+                }
+
+                if (type.Name.Equals(f, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                if (!string.IsNullOrEmpty(type.FullName) && type.FullName.Equals(f, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static PropertyInfo[] CollectSerializedPropertiesForComponent(Component comp)
+        {
+            var so = new SerializedObject(comp);
+            var props = new List<PropertyInfo>();
+            var sp = so.GetIterator();
+            if (sp.NextVisible(true))
+            {
+                do
+                {
+                    if (sp.name == "m_Script") continue;
+                    props.Add(new PropertyInfo
+                    {
+                        name = sp.name,
+                        type = sp.propertyType.ToString(),
+                        value = GetSerializedPropertyValue(sp)
+                    });
+                } while (sp.NextVisible(false));
+            }
+
+            return props.ToArray();
+        }
+
         private static async Task HandleGameObjectFindAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             var body = await ReadRequestBodyAsync(request);
@@ -2340,18 +2454,12 @@ namespace ProjectSD.EditorTools.UnityMcp
                 if (!string.IsNullOrEmpty(req.path))
                     go = GameObject.Find(req.path);
                 else if (!string.IsNullOrEmpty(req.name))
-                {
-                    var all = Resources.FindObjectsOfTypeAll<GameObject>();
-                    go = all.FirstOrDefault(g =>
-                        g.name == req.name
-                        && g.scene.isLoaded
-                        && !EditorUtility.IsPersistent(g));
-                }
+                    go = FindGameObjectByNameInActiveScene(req.name);
 
                 if (go == null)
                     return new GameObjectResponse { found = false };
 
-                return BuildGameObjectResponse(go);
+                return BuildGameObjectResponse(go, req.lightweight, req.componentFilter);
             });
 
             await WriteJsonAsync(response, 200, result);
@@ -2359,35 +2467,41 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         private static GameObjectResponse BuildGameObjectResponse(GameObject go)
         {
+            return BuildGameObjectResponse(go, lightweight: false, componentFilter: null);
+        }
+
+        private static GameObjectResponse BuildGameObjectResponse(GameObject go, bool lightweight, string[] componentFilter)
+        {
+            var filterActive = componentFilter != null && componentFilter.Length > 0;
             var components = go.GetComponents<Component>();
             var compInfos = new List<ComponentInfo>();
             foreach (var comp in components)
             {
                 if (comp == null) continue;
+                var type = comp.GetType();
                 var info = new ComponentInfo
                 {
-                    typeName = comp.GetType().Name,
-                    fullTypeName = comp.GetType().FullName
+                    typeName = type.Name,
+                    fullTypeName = type.FullName
                 };
 
-                // Extract serialized properties
-                var so = new SerializedObject(comp);
-                var props = new List<PropertyInfo>();
-                var sp = so.GetIterator();
-                if (sp.NextVisible(true))
+                if (lightweight)
                 {
-                    do
-                    {
-                        if (sp.name == "m_Script") continue;
-                        props.Add(new PropertyInfo
-                        {
-                            name = sp.name,
-                            type = sp.propertyType.ToString(),
-                            value = GetSerializedPropertyValue(sp)
-                        });
-                    } while (sp.NextVisible(false));
+                    info.properties = EmptyPropertyList;
                 }
-                info.properties = props.ToArray();
+                else if (!filterActive)
+                {
+                    info.properties = CollectSerializedPropertiesForComponent(comp);
+                }
+                else if (MatchesComponentTypeFilter(type, componentFilter))
+                {
+                    info.properties = CollectSerializedPropertiesForComponent(comp);
+                }
+                else
+                {
+                    info.properties = EmptyPropertyList;
+                }
+
                 compInfos.Add(info);
             }
 
@@ -2594,7 +2708,34 @@ namespace ProjectSD.EditorTools.UnityMcp
             throw new Exception("Component type not found: " + typeName);
         }
 
+        private static void ClearMcpReflectionCaches()
+        {
+            McpTypeNameCache.Clear();
+            McpFieldInfoCache.Clear();
+        }
+
         private static Type FindTypeByName(string fullOrShortName)
+        {
+            if (string.IsNullOrEmpty(fullOrShortName))
+            {
+                return null;
+            }
+
+            if (McpTypeNameCache.TryGetValue(fullOrShortName, out var cached))
+            {
+                return cached;
+            }
+
+            var resolved = ResolveTypeByNameUncached(fullOrShortName);
+            if (resolved != null)
+            {
+                McpTypeNameCache[fullOrShortName] = resolved;
+            }
+
+            return resolved;
+        }
+
+        private static Type ResolveTypeByNameUncached(string fullOrShortName)
         {
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -2606,7 +2747,6 @@ namespace ProjectSD.EditorTools.UnityMcp
                 catch { /* skip problematic assemblies */ }
             }
 
-            // Try short name match
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
                 try
@@ -2930,15 +3070,28 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         private static FieldInfo FindFieldInTypeHierarchy(Type type, string fieldName)
         {
-            while (type != null)
+            if (type == null || string.IsNullOrEmpty(fieldName))
             {
-                var field = type.GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                return null;
+            }
+
+            var cacheKey = type.AssemblyQualifiedName + "\0" + fieldName;
+            if (McpFieldInfoCache.TryGetValue(cacheKey, out var cached))
+            {
+                return cached;
+            }
+
+            var current = type;
+            while (current != null)
+            {
+                var field = current.GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if (field != null)
                 {
+                    McpFieldInfoCache[cacheKey] = field;
                     return field;
                 }
 
-                type = type.BaseType;
+                current = current.BaseType;
             }
 
             return null;
@@ -2980,6 +3133,12 @@ namespace ProjectSD.EditorTools.UnityMcp
                 if (comp == null)
                     throw new Exception("Component not found: " + req.componentType + " on " + req.gameObjectPath);
 
+                HashSet<string> propertyNameFilter = null;
+                if (req.propertyNames != null && req.propertyNames.Length > 0)
+                {
+                    propertyNameFilter = new HashSet<string>(req.propertyNames, StringComparer.Ordinal);
+                }
+
                 var so = new SerializedObject(comp);
                 var props = new List<PropertyInfo>();
                 var sp = so.GetIterator();
@@ -2988,6 +3147,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                     do
                     {
                         if (sp.name == "m_Script") continue;
+                        if (propertyNameFilter != null && !propertyNameFilter.Contains(sp.name)) continue;
                         props.Add(new PropertyInfo
                         {
                             name = sp.name,
@@ -3076,7 +3236,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             var result = await RunOnMainThreadAsync(() =>
             {
                 var target = ResolvePrefabTarget(req.assetPath, req.childPath);
-                return BuildGameObjectResponse(target);
+                return BuildGameObjectResponse(target, req.lightweight, req.componentFilter);
             });
 
             await WriteJsonAsync(response, 200, result);
@@ -3743,6 +3903,8 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             public string name;
             public string path;
+            public bool lightweight;
+            public string[] componentFilter;
         }
 
         [Serializable]
@@ -3826,6 +3988,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             public string gameObjectPath;
             public string componentType;
+            public string[] propertyNames;
         }
 
         [Serializable]
@@ -3849,6 +4012,8 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             public string assetPath;
             public string childPath;
+            public bool lightweight;
+            public string[] componentFilter;
         }
 
         [Serializable]

@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1ef22091d0f06d40bb299656757cd21, type: 3}
-  m_Name: FastEnemy
+  m_Name: CoreSiegeEnemy
   m_EditorClassIdentifier: Assembly-CSharp::Features.Enemy.Infrastructure.EnemyData
-  enemyId: fast
-  maxHp: 35
-  defense: 0
-  moveSpeed: 4.5
-  contactDamage: 8
-  contactCooldown: 1
+  enemyId: core-siege
+  maxHp: 90
+  defense: 2
+  moveSpeed: 2.2
+  contactDamage: 12
+  contactCooldown: 1.5
   prefabName: EnemyCharacter
-  resourcesLoadPath: Enemy/FastEnemy
-  targetMode: 0
+  resourcesLoadPath: Enemy/CoreSiegeEnemy
+  targetMode: 1
   aggroRadius: 0

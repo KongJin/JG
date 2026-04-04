@@ -49,6 +49,8 @@ namespace Features.Player
 
         [Header("Wave (PvE)")]
         [SerializeField] private WaveBootstrap _waveBootstrap;
+        [Tooltip("PvE일 때 필수. Combat.Initialize 직후 RegisterTarget.")]
+        [SerializeField] private CoreObjectiveBootstrap _coreObjective;
 
         private EventBus _eventBus;
         private DisposableScope _disposables;
@@ -122,6 +124,16 @@ namespace Features.Player
                 _disposables.Add(EventBusSubscription.ForOwner(_eventBus, ffScaling));
             }
             _combatBootstrap.Initialize(_eventBus, localSetup.CombatNetworkPort, localSetup.PlayerId, new EntityAffiliationAdapter(), ffScaling);
+
+            if (_waveBootstrap != null && _coreObjective == null)
+            {
+                Debug.LogError(
+                    "[GameSceneBootstrap] WaveBootstrap is set but CoreObjective is missing. Assign CoreObjectiveBootstrap on the objective GameObject.");
+            }
+
+            if (_coreObjective != null)
+                _coreObjective.RegisterCombatTarget(_combatBootstrap);
+
             if (_waveBootstrap == null)
             {
                 var gameEndHandler = new GameEndEventHandler(_eventBus, _eventBus, localSetup.PlayerId);
@@ -166,8 +178,16 @@ namespace Features.Player
                 {
                     if (_waveBootstrap != null)
                     {
+                        if (_coreObjective == null)
+                        {
+                            Debug.LogError(
+                                "[GameSceneBootstrap] Cannot initialize Wave without CoreObjectiveBootstrap.");
+                            return;
+                        }
+
                         _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId,
-                            _skillSetup.SkillReward, _skillSetup.SkillIcon, _skillSetup.SkillUpgradeCommand);
+                            _skillSetup.SkillReward, _skillSetup.SkillIcon, _coreObjective,
+                            _skillSetup.SkillUpgradeCommand);
                         _waveBootstrap.RegisterPlayer(player.transform);
                     }
                 });
@@ -181,9 +201,19 @@ namespace Features.Player
             if (!_playerSceneRegistry.TryRegister(setup))
                 return;
 
-            var hudGo = Instantiate(_healthHudPrefab, _hudCanvas.transform, false);
-            var hudView = hudGo.GetComponent<PlayerHealthHudView>();
-            hudView.Initialize(_eventBus, setup.PlayerId, setup.MaxHp, setup.transform, _camera, _hudCanvas);
+            if (!setup.NetworkAdapter.IsMine)
+            {
+                var hudGo = Instantiate(_healthHudPrefab, _hudCanvas.transform, false);
+                var hudView = hudGo.GetComponent<PlayerHealthHudView>();
+                hudView.Initialize(
+                    _eventBus,
+                    setup.PlayerId,
+                    setup.MaxHp,
+                    false,
+                    setup.transform,
+                    _camera,
+                    _hudCanvas);
+            }
 
             _combatBootstrap.RegisterTarget(setup.PlayerId, setup.CombatTargetProvider);
 

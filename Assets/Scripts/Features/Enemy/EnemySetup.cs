@@ -37,16 +37,18 @@ namespace Features.Enemy
         public void Initialize(
             EventBus eventBus,
             CombatBootstrap combatBootstrap,
-            IPlayerPositionQuery playerQuery)
+            IPlayerPositionQuery playerQuery,
+            ICoreObjectiveQuery coreQuery)
         {
-            Initialize(eventBus, combatBootstrap, ResolveDataFromInstantiation(), playerQuery);
+            Initialize(eventBus, combatBootstrap, ResolveDataFromInstantiation(), playerQuery, coreQuery);
         }
 
         public void Initialize(
             EventBus eventBus,
             CombatBootstrap combatBootstrap,
             EnemyData data,
-            IPlayerPositionQuery playerQuery)
+            IPlayerPositionQuery playerQuery,
+            ICoreObjectiveQuery coreQuery)
         {
             if (IsInitialized)
                 return;
@@ -81,7 +83,7 @@ namespace Features.Enemy
 
             if (PhotonNetwork.IsMasterClient)
             {
-                _aiAdapter.Initialize(spec.MoveSpeed, playerQuery);
+                _aiAdapter.Initialize(spec, playerQuery, coreQuery);
                 _contactDetector.Initialize(combatBootstrap, EnemyId, spec.ContactDamage, spec.ContactCooldown);
             }
             else

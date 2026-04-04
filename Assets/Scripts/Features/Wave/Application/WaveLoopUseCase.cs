@@ -2,6 +2,7 @@ using Features.Wave.Application.Events;
 using Features.Wave.Application.Ports;
 using Features.Wave.Domain;
 using Shared.EventBus;
+using Shared.Kernel;
 
 namespace Features.Wave.Application
 {
@@ -95,11 +96,24 @@ namespace Features.Wave.Application
 
         public void HandleAllPlayersDead()
         {
+            EnterDefeatIfActive();
+        }
+
+        public void EnterDefeatIfActive()
+        {
             if (_progress.State == WaveState.Victory || _progress.State == WaveState.Defeat)
                 return;
 
             _progress.SetDefeat();
             _eventBus.Publish(new WaveDefeatEvent());
+        }
+    }
+
+    public sealed class SpawnObjectiveCoreUseCase
+    {
+        public ObjectiveCore Execute(DomainEntityId id, float maxHp, float defense)
+        {
+            return new ObjectiveCore(id, maxHp, defense);
         }
     }
 }

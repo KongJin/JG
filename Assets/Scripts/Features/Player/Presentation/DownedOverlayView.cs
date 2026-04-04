@@ -39,6 +39,7 @@ namespace Features.Player.Presentation
             _rescueChannelGroup.SetActive(false);
 
             eventBus.Subscribe(this, new Action<PlayerDownedEvent>(OnDowned));
+            eventBus.Subscribe(this, new Action<PlayerDiedEvent>(OnDied));
             eventBus.Subscribe(this, new Action<PlayerRescuedEvent>(OnRescued));
             eventBus.Subscribe(this, new Action<PlayerRespawnedEvent>(OnRespawned));
             eventBus.Subscribe(this, new Action<RescueChannelStartedEvent>(OnRescueChannelStarted));
@@ -70,6 +71,14 @@ namespace Features.Player.Presentation
         private void OnRescued(PlayerRescuedEvent e)
         {
             if (e.RescuedId != _localPlayerId)
+                return;
+
+            Hide();
+        }
+
+        private void OnDied(PlayerDiedEvent e)
+        {
+            if (e.PlayerId != _localPlayerId)
                 return;
 
             Hide();

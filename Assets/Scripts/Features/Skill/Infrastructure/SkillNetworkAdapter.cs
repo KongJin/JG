@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using ExitGames.Client.Photon;
 using Features.Skill.Application.Ports;
+using Features.Skill.Domain;
 using Features.Projectile.Domain.Hit;
 using Features.Projectile.Domain.Trajectory;
 using Features.Skill.Domain.Delivery;
@@ -79,6 +80,7 @@ namespace Features.Skill.Infrastructure
                 w.Write(data.StatusPayload.TickInterval);
                 w.Write(data.ProjectileCount);
                 w.Write(data.AllyDamageScale);
+                w.Write((uint)data.GameplayTags);
                 return ms.ToArray();
             }
         }
@@ -224,6 +226,17 @@ namespace Features.Skill.Infrastructure
                         return false;
                     }
 
+                    SkillGameplayTags gameplayTags;
+                    if (r.BaseStream.Position < r.BaseStream.Length)
+                    {
+                        var raw = r.ReadUInt32();
+                        gameplayTags = (SkillGameplayTags)raw;
+                    }
+                    else
+                    {
+                        gameplayTags = SkillGameplayTagResolver.Infer(deliveryType, damage, statusPayload);
+                    }
+
                     data = new SkillCastNetworkData(
                         new DomainEntityId(skillIdValue),
                         new DomainEntityId(casterIdValue),
@@ -231,7 +244,7 @@ namespace Features.Skill.Infrastructure
                         damage, duration, range, deliveryType,
                         trajectoryType, hitType, speed, radius,
                         position, direction, targetPosition,
-                        statusPayload, projectileCount, allyDamageScale);
+                        statusPayload, projectileCount, allyDamageScale, gameplayTags);
                     return true;
                 }
             }

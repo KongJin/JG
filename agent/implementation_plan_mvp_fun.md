@@ -10,6 +10,7 @@
 | 재미 워크숍·페르소나·토의 기록 | [discussion_game_fun_personas.md](discussion_game_fun_personas.md) |
 | 플레이 세션 노트 양식 | [playtest_mvp_template.md](playtest_mvp_template.md) |
 | Room/Player CustomProperties 키 소유권 | [state_ownership.md](state_ownership.md) — **새 키 추가 시 반드시 갱신** |
+| 스킬 분류 체계(다축 택소노미) | [skill_ontology.md](skill_ontology.md) — 수치·MVP 정의는 `game_design.md`만 SSOT |
 
 본 파일은 **무엇을 어느 순서로 손대는지**만 적는다. 결정이 바뀌면 위 SSOT를 먼저 고친 뒤 여기 체크리스트를 맞춘다.
 

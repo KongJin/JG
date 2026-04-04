@@ -41,15 +41,24 @@ namespace Features.Wave
         private CombatBootstrap _combatBootstrap;
         private DisposableScope _disposables;
         private WaveLoopUseCase _waveLoop;
+        private ICoreObjectiveQuery _coreObjectiveQuery;
         private bool _initialized;
         private bool _gameStarted;
 
         public IPlayerPositionQuery PlayerPositionQuery => _playerPositionQuery;
 
-        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap, DomainEntityId localPlayerId, ISkillRewardPort skillReward, ISkillIconPort iconPort, ISkillUpgradeCommandPort upgradeCommand = null)
+        public void Initialize(
+            EventBus eventBus,
+            CombatBootstrap combatBootstrap,
+            DomainEntityId localPlayerId,
+            ISkillRewardPort skillReward,
+            ISkillIconPort iconPort,
+            ICoreObjectiveQuery coreObjectiveQuery,
+            ISkillUpgradeCommandPort upgradeCommand = null)
         {
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
+            _coreObjectiveQuery = coreObjectiveQuery;
 
             _disposables?.Dispose();
             _disposables = new DisposableScope();
@@ -59,11 +68,12 @@ namespace Features.Wave
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, aliveQuery));
 
             var spawnMultiplier = ResolveSpawnCountMultiplier();
-            _spawnAdapter.Initialize(eventBus, combatBootstrap, _playerPositionQuery, _waveTable, spawnMultiplier);
+            _spawnAdapter.Initialize(
+                eventBus, combatBootstrap, _playerPositionQuery, _coreObjectiveQuery, _waveTable, spawnMultiplier);
 
             _waveLoop = new WaveLoopUseCase(eventBus, _waveTable.Waves.Length, skillReward);
             var waveLoop = _waveLoop;
-            var waveHandler = new WaveEventHandler(eventBus, waveLoop, aliveQuery);
+            var waveHandler = new WaveEventHandler(eventBus, waveLoop, aliveQuery, ObjectiveCoreIds.Default);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, waveHandler));
 
             var networkHandler = new WaveNetworkEventHandler(eventBus, _networkAdapter, _networkAdapter, waveLoop);
@@ -154,7 +164,7 @@ namespace Features.Wave
             if (PhotonNetwork.IsMasterClient)
                 return;
 
-            enemy.Initialize(_eventBus, _combatBootstrap, _playerPositionQuery);
+            enemy.Initialize(_eventBus, _combatBootstrap, _playerPositionQuery, _coreObjectiveQuery);
         }
 
         private void OnDestroy()

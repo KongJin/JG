@@ -1,3 +1,5 @@
+using Shared.Kernel;
+
 namespace Features.Wave.Domain
 {
     public sealed class WaveProgress
@@ -84,6 +86,45 @@ namespace Features.Wave.Domain
         public void SetDefeat()
         {
             State = WaveState.Defeat;
+        }
+    }
+
+    public static class ObjectiveCoreIds
+    {
+        public const string DefaultValue = "objective-core";
+
+        public static DomainEntityId Default => new DomainEntityId(DefaultValue);
+    }
+
+    public sealed class ObjectiveCore
+    {
+        public ObjectiveCore(DomainEntityId id, float maxHp, float defense)
+        {
+            Id = id;
+            MaxHp = maxHp;
+            Defense = defense;
+            CurrentHp = maxHp;
+        }
+
+        public DomainEntityId Id { get; }
+        public float MaxHp { get; }
+        public float Defense { get; }
+        public float CurrentHp { get; private set; }
+        public bool IsDestroyed => CurrentHp <= 0f;
+
+        public float TakeDamage(float damage)
+        {
+            if (IsDestroyed)
+                return CurrentHp;
+
+            if (damage < 0f)
+                damage = 0f;
+
+            CurrentHp -= damage;
+            if (CurrentHp < 0f)
+                CurrentHp = 0f;
+
+            return CurrentHp;
         }
     }
 }

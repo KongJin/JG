@@ -119,7 +119,8 @@ namespace Features.Skill.Application
                     targetPosition,
                     skill.Spec.StatusPayload,
                     projectileCount,
-                    allyDamageScale
+                    allyDamageScale,
+                    skill.Spec.GameplayTags
                 )
             );
 

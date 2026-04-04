@@ -5,7 +5,7 @@
 ## 현재 책임
 
 - 적 도메인 엔티티 생성 및 HP 관리
-- Master 클라이언트에서 가장 가까운 플레이어를 향해 이동 (AI)
+- Master 클라이언트에서 이동 목표 결정: `EnemySpec.TargetMode` + `AggroRadius`에 따라 플레이어/코어 우선순위 (`EnemyMoveTargetResolver` in `SpawnEnemyUseCase.cs`, `ICoreObjectiveQuery` + `IPlayerPositionQuery` 주입)
 - 기존 Combat 시스템에 `RegisterTarget()`으로 통합 — 플레이어 투사체로 처치 가능
 - 접촉 데미지: Master가 `OnTriggerStay`로 감지 → `CombatBootstrap.ApplyDamage()` 호출
 - 위치 동기화: `IPunObservable`로 Master→클라이언트 위치 전송
@@ -18,7 +18,7 @@
 WaveBootstrap.SpawnWaveEnemies()
   → EnemySpawnAdapter.SpawnEnemy()
     → PhotonNetwork.Instantiate("EnemyCharacter")
-      → EnemySetup.Initialize(eventBus, combatBootstrap, data, playerQuery)
+      → EnemySetup.Initialize(eventBus, combatBootstrap, data, playerQuery, coreObjectiveQuery)
         → SpawnEnemyUseCase.Execute() → Enemy 도메인 생성 → EnemySpawnedEvent
         → combatBootstrap.RegisterTarget(enemyId, provider)
         → EnemyDamageEventHandler 생성 (DamageAppliedEvent 구독)
@@ -26,7 +26,7 @@ WaveBootstrap.SpawnWaveEnemies()
 
 원격 클라이언트에서는 `EnemySetup`이 `IPunInstantiateMagicCallback`을 구현하여
 Photon Instantiate 시점에 `EnemySetup.EnemyArrived` static event를 발행한다.
-`WaveBootstrap`이 이 이벤트를 구독해 비-Master에서 `EnemySetup.Initialize(eventBus, combat, playerQuery)`를 호출한다. 이때 스펙은 **Photon `InstantiationData[0]`**에 실은 `EnemyData.ResourcesLoadPath`(Resources 경로 문자열)로 `Resources.Load` 하며, 없으면 `Enemy/BasicEnemy`로 폴백한다. Master는 `EnemySpawnAdapter`가 명시적 `EnemyData`로 초기화한다.
+`WaveBootstrap`이 이 이벤트를 구독해 비-Master에서 `EnemySetup.Initialize(eventBus, combat, playerQuery, coreObjectiveQuery)`를 호출한다. 이때 스펙은 **Photon `InstantiationData[0]`**에 실은 `EnemyData.ResourcesLoadPath`(Resources 경로 문자열)로 `Resources.Load` 하며, 없으면 `Enemy/BasicEnemy`로 폴백한다. Master는 `EnemySpawnAdapter`가 명시적 `EnemyData`로 초기화한다.
 
 - **GetComponent 예외:** `EnemySetup.ResolveDataFromInstantiation()`이 **같은 GameObject**의 `PhotonView.InstantiationData`만 읽는다. [anti_patterns.md](../../../../agent/anti_patterns.md)의 Runtime Lookup Policy 예외(한 번·로컬·문서화)에 해당한다.
 ```
@@ -64,8 +64,8 @@ EnemyContactDamageDetector.OnTriggerStay()
 
 ## 레이어 메모
 
-- **Domain**: `Enemy` (Entity), `EnemySpec` (readonly struct)
-- **Application**: `SpawnEnemyUseCase`, `EnemyDamageEventHandler`, 이벤트 3개
+- **Domain**: `Enemy` (Entity), `EnemySpec` (readonly struct; `EnemyTargetMode` enum 동일 파일)
+- **Application**: `SpawnEnemyUseCase`, `EnemyMoveTargetResolver` (같은 파일), `EnemyDamageEventHandler`, 이벤트 3개
 - **Infrastructure**: `EnemyData` (ScriptableObject), `EnemyCombatTargetProvider`, `EnemyNetworkAdapter`, `EnemyAiAdapter`
 - **Presentation**: `EnemyView` (피격 플래시), `EnemyContactDamageDetector`
 - **Bootstrap**: `EnemySetup` (프리팹 컴포지션 루트)
@@ -76,7 +76,7 @@ EnemyContactDamageDetector.OnTriggerStay()
 - `EnemySetup`은 `IPunInstantiateMagicCallback`을 구현해 Photon Instantiate 시점에 `EnemyArrived` static event를 발행한다
 - Master는 `EnemySpawnAdapter`가 올바른 EnemyData로 명시적 초기화 (`EnemyArrived` 콜백에서는 `IsMasterClient` 가드로 스킵)
 - 비-Master는 `WaveBootstrap`이 `EnemyArrived` 구독으로 `LoadDefaultData()` 기반 초기화 (폴링/FindObjectsByType 사용하지 않음)
-- 기본 적 데이터는 `Resources/Enemy/BasicEnemy.asset`에서 로드한다
+- 원격 클라이언트 기본 적 데이터 로드는 `Resources/Enemy/BasicEnemy.asset` 폴백을 유지하되, 실제 스폰 타입은 `InstantiationData[0]`의 Resources 경로(`Enemy/BasicEnemy`, `Enemy/FastEnemy`, `Enemy/CoreHunterEnemy`, `Enemy/CoreSiegeEnemy` 등)로 결정된다
 - Inspector 연결 필드는 `[Required, SerializeField]`로 선언해 저장 시점에 누락을 검증한다
 
 ## 프리팹 요구사항
@@ -87,8 +87,12 @@ EnemyContactDamageDetector.OnTriggerStay()
 - Collider (trigger) + Rigidbody (kinematic)
 - 임시 메시 (큐브/캡슐)
 
+`Assets/Resources/EnemyCharacterCore.prefab`:
+- 코어 공성 적 시각용 대형 프리팹(선택). 컴포지션 계약은 `EnemyCharacter.prefab`과 동일.
+- `CoreSiegeEnemy.asset`은 Photon `Resources` Instantiate 안정을 위해 **`prefabName: EnemyCharacter`** 를 사용한다(데이터 기본값). 시각만 바꿀 때는 에셋에서 `EnemyCharacterCore`로 전환 가능.
+
 ## 피처 의존성
 
 - **Combat**: `CombatBootstrap.RegisterTarget()`, `ApplyDamage()`, `ICombatTargetProvider`
-- **Wave**: `IPlayerPositionQuery` (AI 이동 대상 조회)
+- **Wave**: `IPlayerPositionQuery`, `ICoreObjectiveQuery` (AI 이동 목표; 두 포트는 `Application/Ports/IPlayerPositionQuery.cs`에 정의)
 - **Shared**: `Entity`, `DomainEntityId`, `EntityIdHolder`, `EventBus`

@@ -1,3 +1,4 @@
+using Features.Skill.Domain;
 using Features.Skill.Domain.Delivery;
 using Features.Status.Domain;
 using Shared.Kernel;
@@ -25,6 +26,7 @@ namespace Features.Skill.Application.Ports
         public StatusPayload StatusPayload { get; }
         public int ProjectileCount { get; }
         public float AllyDamageScale { get; }
+        public SkillGameplayTags GameplayTags { get; }
 
         public SkillCastNetworkData(
             DomainEntityId skillId, DomainEntityId casterId, int slotIndex,
@@ -34,7 +36,8 @@ namespace Features.Skill.Application.Ports
             Float3 position, Float3 direction, Float3 targetPosition,
             StatusPayload statusPayload = default,
             int projectileCount = 1,
-            float allyDamageScale = 1f)
+            float allyDamageScale = 1f,
+            SkillGameplayTags gameplayTags = SkillGameplayTags.None)
         {
             SkillId = skillId;
             CasterId = casterId;
@@ -53,6 +56,7 @@ namespace Features.Skill.Application.Ports
             StatusPayload = statusPayload;
             ProjectileCount = projectileCount;
             AllyDamageScale = allyDamageScale;
+            GameplayTags = gameplayTags;
         }
     }
 

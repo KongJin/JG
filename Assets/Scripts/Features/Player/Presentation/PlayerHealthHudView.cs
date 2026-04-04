@@ -29,6 +29,7 @@ namespace Features.Player.Presentation
 
         private IEventSubscriber _eventBus;
         private DomainEntityId _playerId;
+        private bool _isLocalPlayer;
         private Transform _target;
         private Camera _worldCamera;
         private Canvas _hudCanvas;
@@ -59,6 +60,7 @@ namespace Features.Player.Presentation
             IEventSubscriber eventBus,
             DomainEntityId playerId,
             float maxHealth,
+            bool isLocalPlayer,
             Transform target,
             Camera worldCamera,
             Canvas hudCanvas
@@ -90,6 +92,7 @@ namespace Features.Player.Presentation
 
             _eventBus = eventBus;
             _playerId = playerId;
+            _isLocalPlayer = isLocalPlayer;
             _target = target;
             _worldCamera = worldCamera;
             _hudCanvas = hudCanvas;
@@ -101,6 +104,8 @@ namespace Features.Player.Presentation
 
             _eventBus.Subscribe(this, new System.Action<PlayerHealthChangedEvent>(OnHealthChanged));
             _eventBus.Subscribe(this, new System.Action<PlayerRespawnedEvent>(OnRespawned));
+            _eventBus.Subscribe(this, new System.Action<PlayerDownedEvent>(OnDowned));
+            _eventBus.Subscribe(this, new System.Action<PlayerRescuedEvent>(OnRescued));
         }
 
         private void LateUpdate()
@@ -153,7 +158,24 @@ namespace Features.Player.Presentation
             _healthSlider.maxValue = e.MaxHp;
             _healthSlider.value = e.CurrentHp;
 
+            gameObject.SetActive(true);
             UpdateFillColor(1f);
+        }
+
+        private void OnDowned(PlayerDownedEvent e)
+        {
+            if (!_isLocalPlayer || !e.PlayerId.Equals(_playerId))
+                return;
+
+            gameObject.SetActive(false);
+        }
+
+        private void OnRescued(PlayerRescuedEvent e)
+        {
+            if (!_isLocalPlayer || !e.RescuedId.Equals(_playerId))
+                return;
+
+            gameObject.SetActive(true);
         }
 
         private void UpdateFillColor(float healthPercent)

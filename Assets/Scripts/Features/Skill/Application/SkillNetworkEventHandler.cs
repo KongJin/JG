@@ -27,7 +27,8 @@ namespace Features.Skill.Application
 
         private void HandleSkillCasted(SkillCastNetworkData data)
         {
-            var spec = new SkillSpec(data.Damage, 0f, data.Range, data.Duration, data.ProjectileCount, data.StatusPayload);
+            var spec = new SkillSpec(
+                data.Damage, 0f, data.Range, data.Duration, data.ProjectileCount, data.StatusPayload, data.GameplayTags);
 
             switch (data.DeliveryType)
             {

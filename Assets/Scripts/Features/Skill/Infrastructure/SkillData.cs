@@ -42,6 +42,10 @@ namespace Features.Skill.Infrastructure
         [Header("Growth")]
         [SerializeField] private GrowthAxisConfig growthAxes;
 
+        [Header("Classification")]
+        [Tooltip("비어 있으면 damage·상태이상·딜리버리로 보조 추론. 상세: agent/skill_ontology.md")]
+        [SerializeField] private SkillGameplayTags gameplayTags;
+
         public string SkillId => skillId;
         public SkillPresentationData Presentation => presentation;
         public GrowthAxisConfig GrowthAxes => growthAxes;
@@ -58,7 +62,8 @@ namespace Features.Skill.Infrastructure
         {
             var id = new DomainEntityId(skillId);
             var payload = statusEffect != null ? statusEffect.ToPayload() : StatusPayload.None;
-            var spec = new SkillSpec(damage, manaCost, range, duration, projectileCount, payload);
+            var tags = SkillGameplayTagResolver.Resolve(gameplayTags, deliveryType, damage, payload);
+            var spec = new SkillSpec(damage, manaCost, range, duration, projectileCount, payload, tags);
             var delivery = CreateDelivery();
             return new Domain.Skill(id, spec, delivery);
         }

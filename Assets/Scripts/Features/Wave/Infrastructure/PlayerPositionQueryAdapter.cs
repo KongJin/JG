@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Features.Combat.Application.Ports;
 using Features.Wave.Application.Ports;
+using Features.Wave.Domain;
 using UnityEngine;
 
 namespace Features.Wave.Infrastructure
@@ -38,6 +40,71 @@ namespace Features.Wave.Infrastructure
             }
 
             return (nearest.x, nearest.y, nearest.z);
+        }
+
+        public bool TryGetNearestPlayerWithinHorizontalRadius(
+            float fromX,
+            float fromY,
+            float fromZ,
+            float radius,
+            out float tx,
+            out float ty,
+            out float tz)
+        {
+            var r2 = radius * radius;
+            var minXZ = float.MaxValue;
+            tx = ty = tz = 0f;
+            var found = false;
+
+            for (var i = _playerTransforms.Count - 1; i >= 0; i--)
+            {
+                var t = _playerTransforms[i];
+                if (t == null)
+                {
+                    _playerTransforms.RemoveAt(i);
+                    continue;
+                }
+
+                var dx = t.position.x - fromX;
+                var dz = t.position.z - fromZ;
+                var xz2 = dx * dx + dz * dz;
+                if (xz2 > r2)
+                    continue;
+
+                if (xz2 < minXZ)
+                {
+                    minXZ = xz2;
+                    found = true;
+                    tx = t.position.x;
+                    ty = t.position.y;
+                    tz = t.position.z;
+                }
+            }
+
+            return found;
+        }
+    }
+
+    public sealed class ObjectiveCoreCombatTargetProvider : ICombatTargetProvider
+    {
+        private readonly ObjectiveCore _core;
+
+        public ObjectiveCoreCombatTargetProvider(ObjectiveCore core)
+        {
+            _core = core;
+        }
+
+        public float GetDefense() => _core.Defense;
+
+        public float GetCurrentHealth() => _core.CurrentHp;
+
+        public CombatTargetDamageResult ApplyDamage(float damage)
+        {
+            if (_core.IsDestroyed)
+                return new CombatTargetDamageResult(_core.CurrentHp, true, false);
+
+            var remaining = _core.TakeDamage(damage);
+            return new CombatTargetDamageResult(remaining, _core.IsDestroyed, false);
         }
     }
 }

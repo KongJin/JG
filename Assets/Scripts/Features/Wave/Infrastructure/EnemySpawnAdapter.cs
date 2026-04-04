@@ -15,6 +15,7 @@ namespace Features.Wave.Infrastructure
         private EventBus _eventBus;
         private CombatBootstrap _combatBootstrap;
         private IPlayerPositionQuery _playerQuery;
+        private ICoreObjectiveQuery _coreObjectiveQuery;
         private WaveTableData _waveTable;
         private float _spawnCountMultiplier = 1f;
 
@@ -22,12 +23,14 @@ namespace Features.Wave.Infrastructure
             EventBus eventBus,
             CombatBootstrap combatBootstrap,
             IPlayerPositionQuery playerQuery,
+            ICoreObjectiveQuery coreObjectiveQuery,
             WaveTableData waveTable = null,
             float spawnCountMultiplier = 1f)
         {
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
             _playerQuery = playerQuery;
+            _coreObjectiveQuery = coreObjectiveQuery;
             _waveTable = waveTable;
             _spawnCountMultiplier = spawnCountMultiplier > 0f ? spawnCountMultiplier : 1f;
         }
@@ -46,7 +49,7 @@ namespace Features.Wave.Infrastructure
 
             var setup = go.GetComponent<EnemySetup>();
             if (setup != null)
-                setup.Initialize(_eventBus, _combatBootstrap, data, _playerQuery);
+                setup.Initialize(_eventBus, _combatBootstrap, data, _playerQuery, _coreObjectiveQuery);
             else
                 Debug.LogError("[EnemySpawnAdapter] EnemySetup is missing on spawned enemy.");
         }

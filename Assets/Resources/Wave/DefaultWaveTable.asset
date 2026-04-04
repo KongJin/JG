@@ -14,27 +14,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Wave.Infrastructure.WaveTableData
   waves:
   - enemyData: {fileID: 11400000, guid: d6af5b3ab9d84447930dd30c9b725f11, type: 2}
-    count: 3
-    spawnDelay: 0.5
+    count: 5
+    spawnDelay: 5
     countdownDuration: 3
     spawnRadius: 8
   - enemyData: {fileID: 11400000, guid: e3c4d5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
-    count: 5
-    spawnDelay: 0.35
-    countdownDuration: 3
-    spawnRadius: 8.5
-  - enemyData: {fileID: 11400000, guid: d6af5b3ab9d84447930dd30c9b725f11, type: 2}
     count: 6
-    spawnDelay: 0.3
-    countdownDuration: 3
+    spawnDelay: 5
+    countdownDuration: 5
     spawnRadius: 9
-  - enemyData: {fileID: 11400000, guid: e3c4d5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
-    count: 8
-    spawnDelay: 0.25
-    countdownDuration: 3
-    spawnRadius: 9.5
-  - enemyData: {fileID: 11400000, guid: d6af5b3ab9d84447930dd30c9b725f11, type: 2}
-    count: 10
-    spawnDelay: 0.2
-    countdownDuration: 3
+  - enemyData: {fileID: 11400000, guid: 4a97d8e1b4c94d57a6cfa13be52d8f10, type: 2}
+    count: 5
+    spawnDelay: 7
+    countdownDuration: 5
     spawnRadius: 10
+  - enemyData: {fileID: 11400000, guid: 4a97d8e1b4c94d57a6cfa13be52d8f10, type: 2}
+    count: 7
+    spawnDelay: 6
+    countdownDuration: 5
+    spawnRadius: 10
+  - enemyData: {fileID: 11400000, guid: 8d2f0c71a94d47ceb3b514627d2111fa, type: 2}
+    count: 4
+    spawnDelay: 10
+    countdownDuration: 5
+    spawnRadius: 12

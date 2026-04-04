@@ -25,6 +25,7 @@ namespace Features.Wave.Presentation
         [Required, SerializeField] private Image rangeIcon;
         [Required, SerializeField] private Image durationIcon;
         [SerializeField] private Text countdownText;
+        [Required, SerializeField] private Button skipButton;
 
         private IEventPublisher _publisher;
         private IEventSubscriber _subscriber;
@@ -54,9 +55,11 @@ namespace Features.Wave.Presentation
             countButton.onClick.AddListener(() => SelectCandidate(0));
             rangeButton.onClick.AddListener(() => SelectCandidate(1));
             durationButton.onClick.AddListener(() => SelectCandidate(2));
+            skipButton.onClick.AddListener(OnSkipClicked);
 
             _subscriber.Subscribe(this, new Action<SkillSelectionRequestedEvent>(OnSelectionRequested));
             _subscriber.Subscribe(this, new Action<SkillSelectedEvent>(OnSkillSelected));
+            _subscriber.Subscribe(this, new Action<SkillSelectionSkippedEvent>(OnSelectionSkipped));
         }
 
         private void OnSelectionRequested(SkillSelectionRequestedEvent e)
@@ -94,6 +97,8 @@ namespace Features.Wave.Presentation
             if (countdownText != null)
                 countdownText.text = Mathf.CeilToInt(e.SelectionDuration).ToString();
 
+            skipButton.gameObject.SetActive(true);
+
             panel.SetActive(true);
         }
 
@@ -109,6 +114,30 @@ namespace Features.Wave.Presentation
         {
             _candidates = null;
             panel.SetActive(false);
+        }
+
+        private void OnSelectionSkipped(SkillSelectionSkippedEvent e)
+        {
+            if (!e.PlayerId.Equals(_localPlayerId))
+                return;
+            _candidates = null;
+            panel.SetActive(false);
+        }
+
+        private void OnSkipClicked()
+        {
+            if (_candidates == null)
+                return;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            var elapsed = _selectionTimer != null
+                ? _selectionDurationSeconds - _selectionTimer.Remaining
+                : 0f;
+            Debug.Log(
+                $"[MvpReward] manual_skip contextWaveIndex={_rewardContextWaveIndex} elapsedSec={elapsed:F2}");
+#endif
+            _candidates = null;
+            panel.SetActive(false);
+            _publisher.Publish(new SkillSelectionSkippedEvent(_localPlayerId, _rewardContextWaveIndex));
         }
 
         private void SelectCandidate(int index)
@@ -135,6 +164,7 @@ namespace Features.Wave.Presentation
             countButton.onClick.RemoveAllListeners();
             rangeButton.onClick.RemoveAllListeners();
             durationButton.onClick.RemoveAllListeners();
+            skipButton.onClick.RemoveAllListeners();
         }
     }
 }

@@ -139,7 +139,7 @@ namespace Features.Player
             InvulnerabilityTrackerInstance = invulnerabilityTracker;
 
             _inputHandler.Initialize(player, _useCases, eventBus, RescueChannelTrackerInstance);
-            _view.Initialize(true, eventBus);
+            _view.Initialize(true, eventBus, player.Id);
             MaxHp = player.MaxHp;
             MaxMana = player.MaxMana;
             IsInitialized = true;

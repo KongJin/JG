@@ -30,3 +30,9 @@ MonoBehaviour:
     magnitude: 0
     duration: 0
     tickInterval: 0
+
+  growthAxes:
+    countEnabled: 1
+    rangeEnabled: 1
+    durationEnabled: 1
+    safetyEnabled: 0

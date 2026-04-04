@@ -7,6 +7,7 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - 주소: `http://127.0.0.1:{port}/`
 - 포트 확인: `ProjectSettings/UnityMcpPort.txt` (없으면 기본 51234, 충돌 시 52000대 fallback)
 - 호출 방법: `powershell -Command "Invoke-RestMethod -Uri 'http://127.0.0.1:{port}/...' -Method ..."`
+- `tools/unity-mcp/server.js`(MCP stdio 서버)는 Unity로 나가는 HTTP에 **keep-alive**를 쓰고, 기본 타임아웃은 **10000ms**다. 환경 변수 `UNITY_MCP_HTTP_TIMEOUT_MS`로 덮어쓸 수 있다.
 
 ## 작업 순서 주의
 
@@ -38,9 +39,15 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 | GET | `/health` | 서버 상태 (포트, `isCompiling`, isPlaying, isPlayModeChanging 등) |
 | GET | `/compile/status` | `isCompiling` 만 빠르게 조회 (`/health`와 동일 플래그) |
 | GET | `/scene/current` | 현재 씬 정보 |
-| GET | `/scene/hierarchy` | 씬 하이어라키 전체 조회 |
+| GET | `/scene/hierarchy` | 씬 하이어라키 전체 조회 (쿼리: `depth`, `path`, `includeComponents` — 아래 참조) |
 | GET | `/console/logs` | 브리지가 수집한 최근 콘솔 로그 전체 (`Log`, `Warning`, `Error`, `Exception`, `Assert`). 쿼리 `limit` 기본 100, 최대 200. **에디터/도메인 리로드 이후**부터 쌓인 버퍼만 해당 (그 이전은 `Editor.log`) |
 | GET | `/console/errors` | 위 버퍼 중 **Error / Exception / Assert** 만 최근부터 최대 `limit`개 (기본 20, 최대 100) |
+
+#### `GET /scene/hierarchy` 쿼리
+
+- `depth`: 최대 깊이, 1–50, 기본 10
+- `path` (선택): `GameObject.Find` 경로. 지정 시 해당 오브젝트를 루트로 한 서브트리만 반환
+- `includeComponents` (선택): `false` 또는 `0`이면 각 노드의 `components` 배열을 채우지 않음(빈 배열). 하이어라키 구조만 필요할 때 부하 감소. 생략 시 기본은 목록 포함
 
 ### 플레이 제어
 
@@ -258,19 +265,37 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 
 | Method | Path | Body | 설명 |
 |---|---|---|---|
-| POST | `/gameobject/find` | `{"name":"..."}` 또는 `{"path":"..."}` | 오브젝트 조회 (컴포넌트/속성 포함) |
+| POST | `/gameobject/find` | `name` / `path` + 선택 `lightweight`, `componentFilter` | 오브젝트 조회 |
 | POST | `/gameobject/create` | `{"name":"...", "parent":"...", "components":["..."]}` | 빈 오브젝트 생성 |
 | POST | `/gameobject/create-primitive` | `{"name":"...", "primitiveType":"Sphere", "components":["..."]}` | 프리미티브 생성 |
 | POST | `/gameobject/destroy` | `{"path":"/..."}` | 오브젝트 삭제 |
 | POST | `/gameobject/set-active` | `{"path":"/...", "active":true}` | 활성/비활성 |
+
+#### `/gameobject/find` Body
+
+- `path` 또는 `name` 중 하나: `path`는 `GameObject.Find` 전체 경로, `name`은 **활성 씬**에서만 BFS로 첫 일치(비영속 씬 오브젝트)
+- `lightweight` (선택): `true`이면 `SerializedObject`를 쓰지 않고 컴포넌트 타입명만 반환(`properties`는 빈 배열). 생략 시 기본은 기존과 같이 **전체 속성 포함**(Unity `JsonUtility`는 bool 생략 시 `false`이므로 opt-in 플래그로 둠)
+- `componentFilter` (선택): 문자열 배열. 지정 시 **이 타입들(짧은 이름 또는 전체 이름, 대소문자 무시)만** 직렬화 속성을 채우고, 나머지 컴포넌트는 타입명만(`properties` 빈 배열). `lightweight: true`이면 `componentFilter`는 무시됨
+
+```json
+{
+  "path": "/Canvas/Panel",
+  "lightweight": false,
+  "componentFilter": ["RectTransform", "UnityEngine.UI.Image"]
+}
+```
 
 ### 컴포넌트
 
 | Method | Path | Body | 설명 |
 |---|---|---|---|
 | POST | `/component/add` | `{"gameObjectPath":"/...", "componentType":"Namespace.Class"}` | 컴포넌트 추가 |
-| POST | `/component/get` | `{"gameObjectPath":"/...", "componentType":"Class"}` | 컴포넌트 속성 조회 |
+| POST | `/component/get` | `gameObjectPath`, `componentType` + 선택 `propertyNames[]` | 컴포넌트 속성 조회 |
 | POST | `/component/set` | 아래 참조 | 컴포넌트 속성 수정 |
+
+#### `/component/get` Body
+
+- `propertyNames` (선택): 문자열 배열. 지정 시 해당 `SerializedProperty` 이름만 반환(대소문자 구분, `m_Script`는 항상 제외). 생략 시 기존과 같이 보이는 필드 전체
 
 #### `/component/set` Body
 
@@ -303,7 +328,7 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 | POST | `/scene/save` | (없음) | 현재 씬 저장 |
 | POST | `/asset/refresh` | (없음) | AssetDatabase 리프레시 (코드 변경 후 컴파일 트리거) |
 | POST | `/prefab/save` | `{"gameObjectPath":"/...", "savePath":"Assets/...", "destroySceneObject":true}` | 씬 오브젝트를 프리팹으로 저장 |
-| POST | `/prefab/get` | `{"assetPath":"Assets/...", "childPath":"..."}` | 프리팹 컴포넌트/속성 조회 |
+| POST | `/prefab/get` | `assetPath`, `childPath` + 선택 `lightweight`, `componentFilter` (`/gameobject/find`와 동일 의미) | 프리팹 컴포넌트/속성 조회 |
 | POST | `/prefab/set` | 아래 참조 | 프리팹 속성 수정 |
 | POST | `/prefab/add-component` | `{"assetPath":"Assets/...", "childPath":"...", "componentType":"..."}` | 프리팹에 컴포넌트 추가 |
 

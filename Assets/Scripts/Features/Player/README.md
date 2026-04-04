@@ -93,8 +93,9 @@ PlayerNetworkAdapter.RPC_RescueChannelStart / RPC_RescueChannelCancel
 - `GameSceneBootstrap`은 로컬/리모트 분기 없이 하나의 `ConnectPlayer()` 경로로 모든 플레이어를 연결한다 (Registry + HUD + CombatTarget + Wave 등록). HUD 프리팹에서 `GetComponent<PlayerHealthHudView>()`는 런타임 Instantiate 프리팹이라 Inspector wiring 불가 — Runtime Lookup Policy 허용 예외.
 - 로컬 전용 씬 시스템(SkillSetup, BleedoutTicker, RescueChannelTicker, InvulnerabilityTicker, DownedOverlayView)은 `Start()`에서 로컬 플레이어 스폰 직후 1회 호출한다. **SoundPlayer**는 `JG_LobbyScene`에서 DDOL 단일 인스턴스로 생성되며, 게임 씬에서는 `SoundPlayer.Instance.Initialize(gameEventBus, localPlayerId)`로만 재바인딩한다(게임 씬에 `SoundPlayer` 직렬화 필드 없음).
 - `DownedOverlayCanvas`는 **Screen Space - Overlay**, `Override Sorting=true`, `Sorting Order=600`으로 HUD 위에 렌더링한다. `OverlayRoot` / `RescueChannelGroup`는 `RectTransform` 기반 UI 컨테이너여야 하며, 기본 상태는 비활성이다(다운/구조 이벤트로만 표시).
+- 로컬 플레이어가 완전히 사망(`PlayerDiedEvent`)하면 `DownedOverlayView`는 오버레이를 즉시 숨긴다. 다운 상태 UI와 웨이브 패배 화면이 동시에 겹치지 않게 하기 위함이다.
 - Inspector 연결 필드는 `[Required, SerializeField]`로 선언해 씬/프리팹 저장 시 누락을 검증한다.
-- `WaveBootstrap`은 optional 의존성이므로 `[SerializeField]`만 사용하고 `[Required]`를 붙이지 않는다. null이면 Wave 관련 로직을 스킵한다.
+- `WaveBootstrap`은 optional 의존성이므로 `[SerializeField]`만 사용하고 `[Required]`를 붙이지 않는다. null이면 Wave 관련 로직을 스킵한다. **웨이브를 켠 경우** 씬에 `CoreObjectiveBootstrap`이 있어야 하며 `GameSceneBootstrap._coreObjective`에 연결한다. `CombatBootstrap.Initialize` 직후 `RegisterCombatTarget`(코어)을 호출한 뒤, 스킬 선택 완료 콜백에서 `WaveBootstrap.Initialize(..., coreObjectiveQuery)`를 호출한다.
 - 플레이어 식별자는 `PlayerNetworkAdapter.StablePlayerId`를 기준으로 로컬/원격 모두 동일하게 생성한다.
 - `GameSceneBootstrap`은 `Awake()`에서 `PlayerSetup.RemoteArrived`를 구독하고, `Start()`에서 Combat/Skill/Zone/Wave 초기화가 끝난 뒤 대기 중인 원격 플레이어 연결을 drain한다.
 - `PlayerSceneRegistry` (`PlayerSceneRegistry.cs`, Player feature 루트의 bootstrap 보조 MonoBehaviour)는 씬에 연결된 `PlayerSetup`을 추적해 HUD/Combat/Wave 중복 등록을 막는다.
@@ -103,6 +104,8 @@ PlayerNetworkAdapter.RPC_RescueChannelStart / RPC_RescueChannelCancel
 - **PlayerSetup** (`PlayerSetup.cs`, PlayerCharacter 프리팹): 스폰 후 `IsMine` 분기:
   - 로컬: PlayerNetworkEventHandler(IPlayerLookupPort) + PlayerUseCases(IPlayerLookupPort) (이벤트 구독으로 SyncLifeState 전송) + PlayerDamageEventHandler + BleedoutTracker + RescueChannelTracker + InvulnerabilityTracker + CombatNetworkPort + InputHandler (RescueChannelTracker 주입) + View 초기화
   - 원격: `PlayerUseCases.SpawnRemote()` (static factory)로 도메인 플레이어 생성 + PlayerNetworkEventHandler(IPlayerLookupPort) + PlayerDamageEventHandler + View 초기화, Input/Motor 비활성화. `HydrateFromProperties()`는 `GameSceneBootstrap.ConnectPlayer()`에서 레지스트리 등록 이후 호출한다 (IPlayerLookupPort.Resolve가 도메인 플레이어를 찾을 수 있도록). `PlayerView`는 리모트일 때 이벤트 구독만 스킵하고 컴포넌트 비활성화는 `PlayerSetup`이 담당한다.
+  - `PlayerView._visualRoot`는 `PlayerCharacter.prefab`의 `Cube` 자식에 연결되며, 로컬 플레이어가 Downed일 때만 비활성화되어 다운드 오버레이 중앙을 가리지 않는다. 구조/리스폰 시 다시 활성화된다.
+  - `PlayerHealthHudView`는 `ConnectPlayer()`에서 **원격 플레이어만** 생성한다. 로컬 플레이어는 월드 체력 HUD를 만들지 않아 다운드 오버레이 중앙과 겹치지 않는다.
   - `StatusNetworkAdapter` 프로퍼티를 노출하여 `GameSceneBootstrap`이 원격 플레이어의 Status RPC 콜백을 등록할 수 있다.
   - `DomainPlayer`, `BleedoutTrackerInstance`, `RescueChannelTrackerInstance`, `InvulnerabilityTrackerInstance` 프로퍼티를 노출하여 씬 레벨 틱커/UI 초기화에 전달한다.
   - `PlayerSetup`은 `DisposableScope`으로 `PlayerUseCases`, `PlayerDamageEventHandler`, `BleedoutTracker`, `RescueChannelTracker`, `InvulnerabilityTracker`의 EventBus 구독 수명을 관리한다. 원격 플레이어도 `DisposableScope`으로 `PlayerDamageEventHandler` 구독을 관리한다.

@@ -4,6 +4,7 @@ This project follows **Feature-first Clean Architecture**.
 
 - **Folders, layers, dependencies, feature/EventBus rules, naming, cross-feature ports:** `/agent/architecture.md` (single source of truth).
 - **Game design:** `/agent/game_design.md`
+- **Skill taxonomy (multi-axis classification):** `/agent/skill_ontology.md` — topic SSOT is listed in `work_principles.md`; MVP numbers and rules stay only in `game_design.md`.
 - **Author intent, distribution/validation, confidentiality:** `/agent/developer_context.md`
 - **Work-level cohesion, SSOT for docs/tools:** `/agent/work_principles.md`
 

@@ -13,10 +13,17 @@ const SERVER_INFO = {
 
 const DEFAULT_PROTOCOL_VERSION = "2024-11-05";
 const DEFAULT_BASE_URL = "http://127.0.0.1:51234/";
-const DEFAULT_TIMEOUT_MS = 5000;
+const DEFAULT_TIMEOUT_MS = 10000;
 
 const baseUrl = normalizeBaseUrl(process.env.UNITY_MCP_BASE_URL || loadBaseUrlFromProjectSettings());
 const requestTimeoutMs = parsePositiveInt(process.env.UNITY_MCP_HTTP_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
+
+const unityHttpAgent = new http.Agent({ keepAlive: true, keepAliveMsecs: 30000, maxSockets: 16 });
+const unityHttpsAgent = new https.Agent({ keepAlive: true, keepAliveMsecs: 30000, maxSockets: 16 });
+
+function unityAgentForUrl(url) {
+  return url.protocol === "https:" ? unityHttpsAgent : unityHttpAgent;
+}
 
 const tools = [
   {
@@ -158,6 +165,11 @@ const tools = [
         path: {
           type: "string",
           description: "Optional: only return hierarchy under this GameObject path (e.g. '/Canvas/Panel')."
+        },
+        includeComponents: {
+          type: "boolean",
+          description:
+            "If false, omit per-node component name lists (faster). Default true. Query param on bridge: includeComponents=false."
         }
       },
       additionalProperties: false
@@ -165,7 +177,8 @@ const tools = [
   },
   {
     name: "unity_gameobject_find",
-    description: "Find a GameObject by name or hierarchy path. Returns its components and serialized properties.",
+    description:
+      "Find a GameObject by name or hierarchy path. Returns components; use lightweight or componentFilter to reduce payload.",
     inputSchema: {
       type: "object",
       properties: {
@@ -176,6 +189,17 @@ const tools = [
         path: {
           type: "string",
           description: "Full hierarchy path (e.g. '/Canvas/Panel/Button'). More precise than name."
+        },
+        lightweight: {
+          type: "boolean",
+          description:
+            "If true, skip SerializedObject walks — only component type names and empty properties arrays. Default false."
+        },
+        componentFilter: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "Optional: only these component types (short or full name, case-insensitive) include serialized properties; others are type names only."
         }
       },
       additionalProperties: false
@@ -297,7 +321,8 @@ const tools = [
   },
   {
     name: "unity_component_get",
-    description: "Get all serialized properties of a component on a GameObject.",
+    description:
+      "Get serialized properties of a component on a GameObject. Optional propertyNames limits which fields are returned.",
     inputSchema: {
       type: "object",
       properties: {
@@ -308,6 +333,11 @@ const tools = [
         componentType: {
           type: "string",
           description: "Component type name (e.g. 'Image', 'Button', 'RectTransform')."
+        },
+        propertyNames: {
+          type: "array",
+          items: { type: "string" },
+          description: "Optional: only these SerializedProperty names (exact, case-sensitive). Omit for all visible fields."
         }
       },
       required: ["gameObjectPath", "componentType"],
@@ -534,7 +564,8 @@ async function callTool(name, args) {
     case "unity_scene_hierarchy": {
       const depth = args.depth || 10;
       const pathParam = args.path ? `&path=${encodeURIComponent(args.path)}` : "";
-      return requestUnityJson("GET", `/scene/hierarchy?depth=${depth}${pathParam}`);
+      const compParam = args.includeComponents === false ? "&includeComponents=false" : "";
+      return requestUnityJson("GET", `/scene/hierarchy?depth=${depth}${pathParam}${compParam}`);
     }
     case "unity_gameobject_find":
       return requestUnityJsonWithBody("POST", "/gameobject/find", args);
@@ -570,6 +601,7 @@ function requestUnityJsonWithBody(method, path, body, httpTimeoutMs) {
       hostname: url.hostname,
       port: url.port || (url.protocol === "https:" ? 443 : 80),
       path: `${url.pathname}${url.search}`,
+      agent: unityAgentForUrl(url),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json; charset=utf-8",
@@ -629,6 +661,7 @@ function requestUnityJson(method, path) {
       hostname: url.hostname,
       port: url.port || (url.protocol === "https:" ? 443 : 80),
       path: `${url.pathname}${url.search}`,
+      agent: unityAgentForUrl(url),
       headers: {
         Accept: "application/json"
       }

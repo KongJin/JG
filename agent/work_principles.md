@@ -26,6 +26,7 @@
 | 네트워크 키·소유권 | [state_ownership.md](state_ownership.md) |
 | 피처별 씬·초기화 | `Assets/Scripts/Features/<Name>/README.md` |
 | 에디터 MCP 등 자동화 계약 | 해당 도구 README (예: `Assets/Editor/UnityMcp/README.md`) |
+| 스킬 분류 체계(다축 택소노미) | [skill_ontology.md](skill_ontology.md) — 수치·MVP 정의는 `game_design.md`만 SSOT |
 | 제품·배포·기밀 맥락 | [developer_context.md](developer_context.md) |
 
 같은 사실(예: CustomProperty 의미)을 **두 문서에 풀어서 정의하지 않는다**. 보조 문서에는 한 줄 위임만 두고, **역참조로 순환이 생기지 않게** 한다.

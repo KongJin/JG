@@ -63,15 +63,18 @@ SlotInputHandler
 
 ## 데이터 드리븐 구조
 
+스킬 분류 체계(다축 택소노미)와 현재 코드 필드의 매핑은 [skill_ontology.md](../../../../agent/skill_ontology.md) 참조.
+
 ### ScriptableObject
 
 - `SkillData` (SO) — 스킬 하나의 게임플레이 설정
   - Identity: `skillId` (고정 문자열, 모든 클라이언트에서 동일)
   - Presentation: `SkillPresentationData` SO 참조
   - Spec: `damage`, `manaCost`, `range`, `duration`, `projectileCount`
+  - Classification: `gameplayTags` (`SkillGameplayTags` 플래그, EffectRole 계열). **None이면** `SkillGameplayTagResolver`가 `damage`·`StatusPayload`·`DeliveryType`으로 보조 추론한다. 힐/순수 유틸 등은 Inspector에서 명시 권장.
   - Delivery: `deliveryType` enum + Projectile 전용 필드 (`trajectoryType`, `hitType`, `speed`, `radius`)
   - Status Effect: `StatusEffectData` (`[Serializable]` 클래스 — `enabled`, `type`, `magnitude`, `duration`, `tickInterval`). `ToPayload()`로 `StatusPayload` 변환
-  - Growth: `GrowthAxisConfig` — 스킬별 개방 축 불리언 4개 (Count, Range, Duration, Safety). **기존 스킬은 GrowthAxisConfig가 전부 비활성(false)**이므로, Inspector에서 원하는 축을 켜야 업그레이드가 동작한다
+  - Growth: `GrowthAxisConfig` — 스킬별 개방 축 불리언 4개 (Count, Range, Duration, Safety). 웨이브 보상에서 강화 후보가 나오려면 최소 한 축 이상이 켜져 있어야 한다. `Assets/Data/Skill/**` 카탈로그 스킬 에셋은 기본으로 Count·Range·Duration을 켜 둔다(Safety는 스킬별로 필요 시 Inspector에서 추가).
   - `ToDomain()` 메서드로 Domain `Skill` 엔티티 생성 (`statusEffect.ToPayload()` 사용)
 
 - `SkillPresentationData` (SO) — 스킬 하나의 연출/UI 리소스
@@ -182,16 +185,18 @@ SlotInputHandler
 
 ### Domain
 
+- `SkillGameplayTags` — EffectRole 계열 `[Flags]` enum (Damage, Heal, Shield, CrowdControl, Move, Buff, Debuff, Summon, Vision, Utility). Phase 2 시너지·필터용.
+- `SkillGameplayTagResolver` — SO 필드가 `None`일 때 `damage`·`StatusPayload`·`DeliveryType`으로 보조 추론; 네트워크 구버전 페이로드 복원에도 사용.
 - `GrowthAxis` — 영구 업그레이드 축 enum: `Count`, `Range`, `Duration`, `Safety`
 - `SkillUpgradeLevel` — 스킬별·축별 레벨 추적. 배수표 내장 (Count: +1/+2/+3, Range/Duration/Safety: ×1.4/×1.8/×2.2). `Increment(skillId, axis, allowedAxes)`는 허용된 축만 업그레이드 가능. `GetAllyDamageScale(skillId)`: Safety 배수 역수로 아군 피해 감쇠
 - `Deck` — 뽑기/버리기 덱. 매 판 랜덤 스킬로 초기화되며, 시전한 스킬은 버린 더미로, 뽑을 더미가 비면 셔플하여 재사용. `Draw()`는 뽑기 더미 **맨 끝**에서 한 장 제거. `PeekNextDrawSkillId()`는 그 다음으로 뽑힐 id만 반환(뽑기 더미가 비면 null — 셔플 전에는 미정). `System.Random`을 생성자 주입받아 테스트 시 시드 고정 가능. `AddToDiscardPile()`로 웨이브 보상 스킬을 런타임에 추가 가능. `DrawPileIds`/`DiscardPileIds`로 현재 덱 내용물 조회 가능
 - `SkillBar` — 2슬롯 스킬바. `Equip(slotIndex, skill)`, `GetSkill(slotIndex)`
-- `SkillSpec` — 스킬 스펙 VO: `Damage`, `ManaCost`, `Range`, `Duration`, `ProjectileCount`, `StatusPayload`
+- `SkillSpec` — 스킬 스펙 VO: `Damage`, `ManaCost`, `Range`, `Duration`, `ProjectileCount`, `StatusPayload`, `GameplayTags`
 - `ManaRule` — 시전 가능 여부 검사: 마나가 충분한지 확인
 
 ### Infrastructure
 
-- `SkillNetworkAdapter` (`MonoBehaviourPun`) — RPC 송수신 (AllyDamageScale 직렬화/역직렬화 포함). `TryDeserialize` 패턴으로 payload 검증 수행 (문자열 null 체크, float NaN/Infinity, enum 범위, slotIndex 범위 `[0, SkillBar.SlotCount)`, 최소 길이). `SyncSkillsReady()` — 스킬 선택 완료 시 `skillsReady` Player CustomProperty 설정. `IsPlayerSkillsReady(player)` — static 조회
+- `SkillNetworkAdapter` (`MonoBehaviourPun`) — RPC 송수신. 페이로드 끝에 `GameplayTags`(uint) 포함; 짧은 구버전 페이로드는 `Infer`로 태그 복원. `TryDeserialize` 패턴으로 payload 검증 수행 (문자열 null 체크, float NaN/Infinity, enum 범위, slotIndex 범위 `[0, SkillBar.SlotCount)`, 최소 길이). `SyncSkillsReady()` — 스킬 선택 완료 시 `skillsReady` Player CustomProperty 설정. `IsPlayerSkillsReady(player)` — static 조회
 - `GrowthAxisConfig` — `[Serializable]` 클래스. 스킬별 개방 축 불리언 4개 + `IsEnabled(axis)`, `GetEnabledAxes()`. 기존 SkillData SO는 모든 축이 비활성 상태이므로 Inspector에서 수동 활성화 필요
 
 ### Presentation
@@ -224,6 +229,7 @@ SlotInputHandler
 
 - `SkillId`, `CasterId`, `SlotIndex`
 - `Damage`, `Duration`, `Range`, `ProjectileCount`, `AllyDamageScale`
+- `GameplayTags` (`SkillGameplayTags`) — 시전자 기준 분류; 페이로드 끝에 `uint`로 직렬화. **구버전(짧은) 페이로드**는 `SkillGameplayTagResolver.Infer`로 복원.
 - `DeliveryType` (enum)
 - `TrajectoryType`, `HitType`
 - `Speed`, `Radius`

@@ -20,3 +20,5 @@ MonoBehaviour:
   contactCooldown: 1
   prefabName: EnemyCharacter
   resourcesLoadPath: Enemy/BasicEnemy
+  targetMode: 0
+  aggroRadius: 0

@@ -15,6 +15,9 @@ namespace Features.Enemy.Infrastructure
         [SerializeField] private string prefabName = "EnemyCharacter";
         [Tooltip("Resources 폴더 기준 경로 (확장자 없음). Photon Instantiate 시 비-Master가 동일 스펙으로 로드한다.")]
         [SerializeField] private string resourcesLoadPath = "Enemy/BasicEnemy";
+        [SerializeField] private EnemyTargetMode targetMode = EnemyTargetMode.ChaseNearestPlayer;
+        [Tooltip("ChaseCoreAggroPlayerInRadius 전용. XZ 평면 반경.")]
+        [SerializeField] private float aggroRadius;
 
         public string EnemyId => enemyId;
         public string PrefabName => prefabName;
@@ -22,7 +25,7 @@ namespace Features.Enemy.Infrastructure
 
         public EnemySpec ToSpec()
         {
-            return new EnemySpec(maxHp, defense, moveSpeed, contactDamage, contactCooldown);
+            return new EnemySpec(maxHp, defense, moveSpeed, contactDamage, contactCooldown, targetMode, aggroRadius);
         }
     }
 }

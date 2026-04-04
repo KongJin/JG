@@ -40,6 +40,7 @@ namespace Features.Wave.Presentation
             _localPlayerId = localPlayerId;
 
             _subscriber.Subscribe(this, new Action<SkillSelectedEvent>(OnSkillSelected));
+            _subscriber.Subscribe(this, new Action<SkillSelectionSkippedEvent>(OnSelectionSkipped));
             _subscriber.Subscribe(this, new Action<GameStartEvent>(OnGameStart));
             _subscriber.Subscribe(this, new Action<SkillSelectionRequestedEvent>(OnSelectionRequested));
         }
@@ -67,7 +68,7 @@ namespace Features.Wave.Presentation
             else if (_waveLoop.CurrentState == WaveState.UpgradeSelection)
             {
                 if (_selectionTimer.Tick(Time.deltaTime))
-                    AutoSelectFirst();
+                    AutoSkipSelection();
             }
         }
 
@@ -96,18 +97,24 @@ namespace Features.Wave.Presentation
             StartCountdownForCurrentWave();
         }
 
-        private void AutoSelectFirst()
+        private void OnSelectionSkipped(SkillSelectionSkippedEvent e)
         {
-            if (_cachedCandidates == null || _cachedCandidates.Length == 0) return;
+            _selectionTimer.Stop();
+            _cachedCandidates = null;
 
-            var c = _cachedCandidates[0];
+            if (_waveLoop.CurrentState != WaveState.UpgradeSelection) return;
+
+            _waveLoop.ExitUpgradeSelection();
+            StartCountdownForCurrentWave();
+        }
+
+        private void AutoSkipSelection()
+        {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log(
-                $"[MvpReward] auto_select contextWaveIndex={_waveLoop.CurrentWaveIndex} " +
-                $"index=0 type={c.Type} skillId={c.SkillId} axis={c.Axis}");
+                $"[MvpReward] auto_skip contextWaveIndex={_waveLoop.CurrentWaveIndex}");
 #endif
-            _publisher.Publish(new SkillSelectedEvent(
-                _localPlayerId, c.SkillId, c.DisplayName, c.Type, c.Axis));
+            _publisher.Publish(new SkillSelectionSkippedEvent(_localPlayerId, _waveLoop.CurrentWaveIndex));
         }
 
         private void StartCountdownForCurrentWave()
