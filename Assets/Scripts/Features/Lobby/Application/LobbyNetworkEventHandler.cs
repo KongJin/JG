@@ -60,7 +60,12 @@ namespace Features.Lobby.Application
 
             var owner = data.Members.Find(m => m.Id.Equals(data.MasterMemberId)) ?? data.Members[0];
 
-            var roomResult = Room.Create(data.RoomId, data.RoomName, data.Capacity, owner);
+            var roomResult = Room.Create(
+                data.RoomId,
+                data.RoomName,
+                data.Capacity,
+                owner,
+                data.DifficultyPresetId);
             if (roomResult.IsFailure)
             {
                 PublishError(roomResult.Error);

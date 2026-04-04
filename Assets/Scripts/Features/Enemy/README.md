@@ -26,7 +26,9 @@ WaveBootstrap.SpawnWaveEnemies()
 
 원격 클라이언트에서는 `EnemySetup`이 `IPunInstantiateMagicCallback`을 구현하여
 Photon Instantiate 시점에 `EnemySetup.EnemyArrived` static event를 발행한다.
-`WaveBootstrap`이 이 이벤트를 구독해 `Resources/Enemy/BasicEnemy.asset` 기준으로 같은 적 엔티티를 로컬에 조립한다.
+`WaveBootstrap`이 이 이벤트를 구독해 비-Master에서 `EnemySetup.Initialize(eventBus, combat, playerQuery)`를 호출한다. 이때 스펙은 **Photon `InstantiationData[0]`**에 실은 `EnemyData.ResourcesLoadPath`(Resources 경로 문자열)로 `Resources.Load` 하며, 없으면 `Enemy/BasicEnemy`로 폴백한다. Master는 `EnemySpawnAdapter`가 명시적 `EnemyData`로 초기화한다.
+
+- **GetComponent 예외:** `EnemySetup.ResolveDataFromInstantiation()`이 **같은 GameObject**의 `PhotonView.InstantiationData`만 읽는다. [anti_patterns.md](../../../../agent/anti_patterns.md)의 Runtime Lookup Policy 예외(한 번·로컬·문서화)에 해당한다.
 ```
 
 ### 피격 (기존 Combat 경로 재사용)

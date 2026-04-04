@@ -35,6 +35,14 @@ namespace Features.Lobby.Domain
             return Result.Success();
         }
 
+        /// <summary>0 Normal, 1 Easy, 2 Hard — Wave DifficultySpawnScale와 동기화.</summary>
+        public static Result ValidateDifficultyPreset(int presetId)
+        {
+            if (presetId < 0 || presetId > 2)
+                return Result.Failure("Difficulty preset must be 0 (Normal), 1 (Easy), or 2 (Hard).");
+            return Result.Success();
+        }
+
         public static Result CanStartGame(Room room)
         {
             if (room == null)

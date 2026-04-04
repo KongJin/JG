@@ -28,6 +28,10 @@ namespace Features.Lobby.Presentation
         [Required, SerializeField]
         private Button _createRoomButton;
 
+        [Header("Create Room — optional")]
+        [SerializeField]
+        private TMP_Dropdown _difficultyDropdown;
+
         [Header("Room List")]
         [Required, SerializeField]
         private Transform _roomListContent;
@@ -50,8 +54,8 @@ namespace Features.Lobby.Presentation
                 _createRoomButton.onClick.AddListener(HandleCreateRoom);
         }
 
-        public Result CreateRoom(string roomName, int capacity, string ownerDisplayName) =>
-            _useCases.CreateRoom(roomName, capacity, ownerDisplayName);
+        public Result CreateRoom(string roomName, int capacity, string ownerDisplayName, int difficultyPresetId = 0) =>
+            _useCases.CreateRoom(roomName, capacity, ownerDisplayName, difficultyPresetId);
 
         public Result JoinRoom(DomainEntityId roomId, string memberDisplayName) =>
             _useCases.JoinRoom(roomId, memberDisplayName);
@@ -89,7 +93,9 @@ namespace Features.Lobby.Presentation
             if (!int.TryParse(capacityText, out var capacity))
                 capacity = 4;
 
-            var result = _useCases.CreateRoom(roomName, capacity, displayName);
+            var difficulty = _difficultyDropdown != null ? _difficultyDropdown.value : 0;
+
+            var result = _useCases.CreateRoom(roomName, capacity, displayName, difficulty);
             UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
         }
 

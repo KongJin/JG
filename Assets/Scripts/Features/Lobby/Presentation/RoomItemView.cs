@@ -17,6 +17,9 @@ namespace Features.Lobby.Presentation
         [Required, SerializeField]
         private TMP_Text _memberCountText;
 
+        [SerializeField]
+        private TMP_Text _difficultyText;
+
         [Required, SerializeField]
         private Button _joinButton;
 
@@ -25,12 +28,24 @@ namespace Features.Lobby.Presentation
 
         public void Bind(RoomSnapshot room, Action<DomainEntityId> onJoinClicked)
         {
-            Bind(room.Id, room.Name, room.Members.Count, room.Capacity, onJoinClicked);
+            Bind(
+                room.Id,
+                room.Name,
+                room.Members.Count,
+                room.Capacity,
+                room.DifficultyPresetId,
+                onJoinClicked);
         }
 
         public void Bind(RoomListItem room, Action<DomainEntityId> onJoinClicked)
         {
-            Bind(room.RoomId, room.RoomName, room.PlayerCount, room.MaxPlayers, onJoinClicked);
+            Bind(
+                room.RoomId,
+                room.RoomName,
+                room.PlayerCount,
+                room.MaxPlayers,
+                room.DifficultyPresetId,
+                onJoinClicked);
         }
 
         private void Bind(
@@ -38,6 +53,7 @@ namespace Features.Lobby.Presentation
             string name,
             int playerCount,
             int capacity,
+            int difficultyPresetId,
             Action<DomainEntityId> onJoinClicked
         )
         {
@@ -46,6 +62,8 @@ namespace Features.Lobby.Presentation
 
             _roomNameText.text = name;
             _memberCountText.text = $"{playerCount}/{capacity}";
+            if (_difficultyText != null)
+                _difficultyText.text = DifficultyPresetFormatter.ToShortLabel(difficultyPresetId);
 
             _joinButton.onClick.RemoveAllListeners();
             _joinButton.onClick.AddListener(HandleJoinClicked);

@@ -101,11 +101,3 @@ Before applying a bulk replacement or mechanical edit across many files:
 3. `event_rules.md` (이벤트 체인 방향, 깊이 제한, 이벤트 vs 직접 호출 판단)
 4. `initialization_order.md` (피처 간 초기화 순서, 의존 관계 맵)
 5. `state_ownership.md` (CustomProperties 키별 소유권, 동기화 채널 선택)
-
----
-
-## Agent Collaboration
-
-- 자동화된 교차 에이전트 리뷰/중계 체인은 사용하지 않는다.
-- 외부 에이전트 호출을 전제로 한 스크립트, 프롬프트 릴레이, 우회성 오케스트레이션은 프로젝트 규칙에서 제외한다.
-- 추가 검토가 필요하면 현재 작업 맥락에서 직접 검토하거나 사람이 명시적으로 범위를 정해 수동으로 진행한다.

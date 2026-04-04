@@ -77,8 +77,13 @@ namespace Features.Lobby.Infrastructure.Photon
                 CustomRoomProperties = new Hashtable
                 {
                     [LobbyPhotonConstants.RoomDisplayNameKey] = room.Name,
+                    [LobbyPhotonConstants.DifficultyPresetKey] = room.DifficultyPresetId,
                 },
-                CustomRoomPropertiesForLobby = new[] { LobbyPhotonConstants.RoomDisplayNameKey },
+                CustomRoomPropertiesForLobby = new[]
+                {
+                    LobbyPhotonConstants.RoomDisplayNameKey,
+                    LobbyPhotonConstants.DifficultyPresetKey,
+                },
             };
 
             _pendingCreateRoom = room;
@@ -269,6 +274,8 @@ namespace Features.Lobby.Infrastructure.Photon
             var localMember = BuildMemberFromPlayer(PhotonNetwork.LocalPlayer);
             var localMemberId = localMember != null ? localMember.Id : default;
 
+            var difficultyPreset = ReadDifficultyPresetFromProps(photonRoom.CustomProperties);
+
             OnJoinRoomSucceeded?.Invoke(
                 new JoinRoomData(
                     roomId,
@@ -276,7 +283,8 @@ namespace Features.Lobby.Infrastructure.Photon
                     photonRoom.MaxPlayers,
                     members,
                     masterMemberId,
-                    localMemberId
+                    localMemberId,
+                    difficultyPreset
                 )
             );
         }
@@ -423,13 +431,37 @@ namespace Features.Lobby.Infrastructure.Photon
                     displayName = nameStr;
                 }
 
-                items.Add(new RoomListItem(roomId, displayName, info.PlayerCount, info.MaxPlayers, info.IsOpen));
+                var difficulty = ReadDifficultyPresetFromProps(info.CustomProperties);
+                items.Add(new RoomListItem(
+                    roomId,
+                    displayName,
+                    info.PlayerCount,
+                    info.MaxPlayers,
+                    info.IsOpen,
+                    difficulty));
             }
 
             OnRoomListUpdated?.Invoke(items);
         }
 
         // ===== Helpers =====
+
+        private static int ReadDifficultyPresetFromProps(Hashtable props)
+        {
+            if (props == null ||
+                !props.TryGetValue(LobbyPhotonConstants.DifficultyPresetKey, out var raw) ||
+                raw == null)
+                return 0;
+
+            return raw switch
+            {
+                int i => i,
+                byte b => b,
+                short s => s,
+                long l => (int)l,
+                _ => 0,
+            };
+        }
 
         private void ClearPending()
         {

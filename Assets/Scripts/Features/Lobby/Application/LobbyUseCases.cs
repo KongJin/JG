@@ -22,7 +22,7 @@ namespace Features.Lobby.Application
             _clock = clock;
         }
 
-        public Result CreateRoom(string roomName, int capacity, string ownerDisplayName)
+        public Result CreateRoom(string roomName, int capacity, string ownerDisplayName, int difficultyPresetId = 0)
         {
             var lobby = _repository.LoadLobby();
 
@@ -34,12 +34,16 @@ namespace Features.Lobby.Application
             if (uniqueRoomValidation.IsFailure)
                 return Result.Failure(uniqueRoomValidation.Error);
 
+            var diffValidation = LobbyRule.ValidateDifficultyPreset(difficultyPresetId);
+            if (diffValidation.IsFailure)
+                return Result.Failure(diffValidation.Error);
+
             var ownerName = string.IsNullOrWhiteSpace(ownerDisplayName)
                 ? "Host"
                 : ownerDisplayName.Trim();
             var owner = new RoomMember(_clock.NewId(), ownerName, TeamType.None, false);
 
-            var roomResult = Room.Create(_clock.NewId(), roomName.Trim(), capacity, owner);
+            var roomResult = Room.Create(_clock.NewId(), roomName.Trim(), capacity, owner, difficultyPresetId);
             if (roomResult.IsFailure)
                 return Result.Failure(roomResult.Error);
 

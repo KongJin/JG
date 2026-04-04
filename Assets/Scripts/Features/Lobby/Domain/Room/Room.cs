@@ -8,17 +8,19 @@ namespace Features.Lobby.Domain
     {
         private readonly List<RoomMember> _members = new List<RoomMember>();
 
-        private Room(DomainEntityId id, string name, int capacity, RoomMember owner)
+        private Room(DomainEntityId id, string name, int capacity, RoomMember owner, int difficultyPresetId)
             : base(id)
         {
             Name = name;
             Capacity = capacity;
             OwnerId = owner.Id;
+            DifficultyPresetId = difficultyPresetId;
             _members.Add(owner);
         }
 
         public string Name { get; }
         public int Capacity { get; }
+        public int DifficultyPresetId { get; }
         public DomainEntityId OwnerId { get; private set; }
 
         public IReadOnlyList<RoomMember> Members
@@ -26,7 +28,12 @@ namespace Features.Lobby.Domain
             get { return _members; }
         }
 
-        public static Result<Room> Create(DomainEntityId id, string name, int capacity, RoomMember owner)
+        public static Result<Room> Create(
+            DomainEntityId id,
+            string name,
+            int capacity,
+            RoomMember owner,
+            int difficultyPresetId = 0)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -43,7 +50,11 @@ namespace Features.Lobby.Domain
                 return Result<Room>.Failure("Owner is required.");
             }
 
-            return Result<Room>.Success(new Room(id, name.Trim(), capacity, owner));
+            var diffResult = LobbyRule.ValidateDifficultyPreset(difficultyPresetId);
+            if (diffResult.IsFailure)
+                return Result<Room>.Failure(diffResult.Error);
+
+            return Result<Room>.Success(new Room(id, name.Trim(), capacity, owner, difficultyPresetId));
         }
 
         public Result AddMember(RoomMember member)

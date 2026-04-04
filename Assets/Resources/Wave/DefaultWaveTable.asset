@@ -18,13 +18,23 @@ MonoBehaviour:
     spawnDelay: 0.5
     countdownDuration: 3
     spawnRadius: 8
-  - enemyData: {fileID: 11400000, guid: d6af5b3ab9d84447930dd30c9b725f11, type: 2}
+  - enemyData: {fileID: 11400000, guid: e3c4d5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
     count: 5
     spawnDelay: 0.35
     countdownDuration: 3
     spawnRadius: 8.5
   - enemyData: {fileID: 11400000, guid: d6af5b3ab9d84447930dd30c9b725f11, type: 2}
+    count: 6
+    spawnDelay: 0.3
+    countdownDuration: 3
+    spawnRadius: 9
+  - enemyData: {fileID: 11400000, guid: e3c4d5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
     count: 8
     spawnDelay: 0.25
     countdownDuration: 3
-    spawnRadius: 9
+    spawnRadius: 9.5
+  - enemyData: {fileID: 11400000, guid: d6af5b3ab9d84447930dd30c9b725f11, type: 2}
+    count: 10
+    spawnDelay: 0.2
+    countdownDuration: 3
+    spawnRadius: 10

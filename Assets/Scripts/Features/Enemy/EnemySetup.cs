@@ -39,7 +39,7 @@ namespace Features.Enemy
             CombatBootstrap combatBootstrap,
             IPlayerPositionQuery playerQuery)
         {
-            Initialize(eventBus, combatBootstrap, LoadDefaultData(), playerQuery);
+            Initialize(eventBus, combatBootstrap, ResolveDataFromInstantiation(), playerQuery);
         }
 
         public void Initialize(
@@ -109,6 +109,23 @@ namespace Features.Enemy
             if (_damageHandler != null)
                 _eventBus?.UnsubscribeAll(_damageHandler);
             _eventBus?.UnsubscribeAll(this);
+        }
+
+        private EnemyData ResolveDataFromInstantiation()
+        {
+            var pv = GetComponent<PhotonView>();
+            if (pv != null &&
+                pv.InstantiationData != null &&
+                pv.InstantiationData.Length > 0 &&
+                pv.InstantiationData[0] is string path &&
+                !string.IsNullOrWhiteSpace(path))
+            {
+                var loaded = Resources.Load<EnemyData>(path);
+                if (loaded != null)
+                    return loaded;
+            }
+
+            return LoadDefaultData();
         }
 
         private static EnemyData LoadDefaultData()

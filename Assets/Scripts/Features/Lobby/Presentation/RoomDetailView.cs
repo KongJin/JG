@@ -22,6 +22,9 @@ namespace Features.Lobby.Presentation
         [Required, SerializeField]
         private TMP_Text _memberCountText;
 
+        [SerializeField]
+        private TMP_Text _difficultyText;
+
         [Header("Member List")]
         [Required, SerializeField]
         private Transform _memberListContent;
@@ -99,6 +102,8 @@ namespace Features.Lobby.Presentation
                 _roomNameText.text = room.Name;
             if (_memberCountText != null)
                 _memberCountText.text = $"{room.Members.Count}/{room.Capacity}";
+            if (_difficultyText != null)
+                _difficultyText.text = $"Difficulty: {DifficultyPresetFormatter.ToShortLabel(room.DifficultyPresetId)}";
 
             RenderMemberList(room.Members);
             UpdateLocalReadyState(room.Members);

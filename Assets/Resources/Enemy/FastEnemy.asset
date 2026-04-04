@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1ef22091d0f06d40bb299656757cd21, type: 3}
-  m_Name: BasicEnemy
+  m_Name: FastEnemy
   m_EditorClassIdentifier: Assembly-CSharp::Features.Enemy.Infrastructure.EnemyData
-  enemyId: basic
-  maxHp: 50
+  enemyId: fast
+  maxHp: 35
   defense: 0
-  moveSpeed: 3
-  contactDamage: 10
+  moveSpeed: 4.5
+  contactDamage: 8
   contactCooldown: 1
   prefabName: EnemyCharacter
-  resourcesLoadPath: Enemy/BasicEnemy
+  resourcesLoadPath: Enemy/FastEnemy

@@ -63,7 +63,6 @@ namespace Features.Skill.Presentation
                 return;
             var icon = _iconPort?.GetIcon(e.SkillId.Value);
             slotViews[e.SlotIndex].SetSkill(icon);
-            Debug.Log($"[BarView] Slot {e.SlotIndex} equipped: {e.SkillId}");
         }
 
         private void OnDeckNextDrawPreview(DeckNextDrawPreviewEvent e)

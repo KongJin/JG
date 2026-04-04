@@ -37,6 +37,12 @@
 |----|-----------|-----------|------|
 | `skillsReady` | Skill | `SkillNetworkAdapter.SyncSkillsReady()` | 스킬 선택 완료 여부 |
 
+#### Room CustomProperties (Photon Room — 로비 단계, Lobby 전용 쓰기)
+
+| 키 | 소유 피처 | 쓰기 위치 | 용도 |
+|----|-----------|-----------|------|
+| `difficultyPreset` | Lobby | `LobbyPhotonAdapter.CreateRoom` (`LobbyPhotonConstants.DifficultyPresetKey`) | 난이도 프리셋 `int`: 0 Normal, 1 Easy, 2 Hard. **읽기:** Wave 피처 `RoomDifficultyReader` / `WaveRoomPropertyKeys.DifficultyPreset` (문자열 동일). 게임 시작 후 변경하지 않음. |
+
 #### Wave CustomProperties (Photon Room)
 
 | 키 | 소유 피처 | 쓰기 위치 | 용도 |

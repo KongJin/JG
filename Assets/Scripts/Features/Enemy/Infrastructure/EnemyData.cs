@@ -13,9 +13,12 @@ namespace Features.Enemy.Infrastructure
         [SerializeField] private float contactDamage = 10f;
         [SerializeField] private float contactCooldown = 1f;
         [SerializeField] private string prefabName = "EnemyCharacter";
+        [Tooltip("Resources 폴더 기준 경로 (확장자 없음). Photon Instantiate 시 비-Master가 동일 스펙으로 로드한다.")]
+        [SerializeField] private string resourcesLoadPath = "Enemy/BasicEnemy";
 
         public string EnemyId => enemyId;
         public string PrefabName => prefabName;
+        public string ResourcesLoadPath => resourcesLoadPath;
 
         public EnemySpec ToSpec()
         {

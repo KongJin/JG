@@ -33,6 +33,10 @@ namespace Features.Wave
         [Required, SerializeField] private UpgradeResultView _upgradeResultView;
         [Required, SerializeField] private WaveNetworkAdapter _networkAdapter;
 
+        [Tooltip("선택. 연결 시 스폰 배율을 이 컴포넌트에서만 조회한다. 비우면 Initialize 시 Room에서 직접 읽는다.")]
+        [SerializeField]
+        private RoomDifficultySpawnScaleProvider _difficultySpawnScale;
+
         private EventBus _eventBus;
         private CombatBootstrap _combatBootstrap;
         private DisposableScope _disposables;
@@ -54,7 +58,8 @@ namespace Features.Wave
             var aliveQuery = new AlivePlayerQueryAdapter(eventBus, playerCount);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, aliveQuery));
 
-            _spawnAdapter.Initialize(eventBus, combatBootstrap, _playerPositionQuery, _waveTable);
+            var spawnMultiplier = ResolveSpawnCountMultiplier();
+            _spawnAdapter.Initialize(eventBus, combatBootstrap, _playerPositionQuery, _waveTable, spawnMultiplier);
 
             _waveLoop = new WaveLoopUseCase(eventBus, _waveTable.Waves.Length, skillReward);
             var waveLoop = _waveLoop;
@@ -116,6 +121,13 @@ namespace Features.Wave
 
             if (!_gameStarted)
                 TryStartGame();
+        }
+
+        private float ResolveSpawnCountMultiplier()
+        {
+            if (_difficultySpawnScale != null)
+                return _difficultySpawnScale.SpawnCountMultiplier;
+            return DifficultySpawnScale.MultiplierForPreset(RoomDifficultyReader.ReadPresetId());
         }
 
         private void TryStartGame()

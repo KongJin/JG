@@ -7,6 +7,7 @@
 - 웨이브 카운트다운, 시작, 클리어, 승리/패배 상태 관리
 - 적 사망 / 플레이어 전멸 이벤트를 받아 웨이브 진행 전이
 - Master에서만 적 스폰 수행
+- **난이도 스폰 배율**: `DifficultySpawnScale`(Application 정적 매핑) + `RoomDifficultyReader`(Room `difficultyPreset` 읽기). `WaveBootstrap`은 `ResolveSpawnCountMultiplier()`로 배율만 주입한다(anti_patterns: Bootstrap에 산식 장황 금지). 선택적으로 같은 씬에 `RoomDifficultySpawnScaleProvider`(`IDifficultySpawnScale`)를 두고 Inspector에 연결하면 배율 조회가 그 컴포넌트로만 모인다(미연결 시 Bootstrap이 Reader+Scale로 폴백). 키 문자열은 `WaveRoomPropertyKeys.DifficultyPreset`(Lobby 상수와 동일, [state_ownership.md](../../../../agent/state_ownership.md)).
 - 각 클라이언트에서 동일한 웨이브 상태를 로컬 이벤트로 재현해 HUD/결과 UI 갱신
 - 비-Master 클라이언트에서 `EnemySetup.EnemyArrived` 콜백으로 원격 적 초기화 (Master는 `EnemySpawnAdapter`가 올바른 EnemyData로 명시적 초기화)
 - **웨이브 클리어 시 보상 선택 (새 스킬 1 + 강화 2)**: `DrawRewardCandidates(1, 2)`로 새 스킬 1개 + 덱 내 기존 스킬 강화 후보 2개를 `RewardCandidate[]`로 제시. 새 스킬은 덱 버린 더미에 추가되고, 강화는 `ISkillUpgradeCommandPort.TryUpgrade()`로 영구 업그레이드 레벨을 올린다. 후보가 0개면 선택을 건너뛴다.

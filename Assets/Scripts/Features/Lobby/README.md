@@ -6,6 +6,7 @@
 
 - 방 목록 조회 및 표시
 - 방 생성/입장/퇴장
+- 방 **난이도 프리셋** (Room `CustomProperties`: `difficultyPreset` int 0 Normal / 1 Easy / 2 Hard) — 방 생성 시 `LobbyPhotonAdapter`가 설정, Wave 피처는 읽기만 ([state_ownership.md](../../../../agent/state_ownership.md))
 - 방 내 팀 변경, 레디 상태 토글
 - 게임 시작 조건 검증 및 시작 트리거
 
@@ -74,6 +75,7 @@ Photon 콜백 해석과 도메인 상태 업데이트는 `LobbyNetworkEventHandl
 |---|---|
 | `PhotonNetwork.CurrentRoom.Name` | `Room.Id.Value` |
 | `CustomProperties["roomDisplayName"]` | `Room.Name` |
+| `CustomProperties["difficultyPreset"]` | `Room.DifficultyPresetId` |
 | `Room.MaxPlayers` | `Room.Capacity` |
 | `MasterClientId` | `Room.OwnerId` |
 | `Player.CustomProperties["memberId"]` | `RoomMember.Id.Value` |
@@ -84,6 +86,7 @@ Photon 콜백 해석과 도메인 상태 업데이트는 `LobbyNetworkEventHandl
 ## JG_LobbyScene (씬 계약)
 
 - **MCP/로컬 반복 테스트**: `RoomNameInput`·`DisplayNameInput`·`CapacityInput`에 씬 저장 시 기본 문자열이 들어가 있어야 `CreateRoom` 검증(방 이름 2글자 이상 등)을 타이핑 없이 통과할 수 있다. 프로덕션 빌드에서 비우려면 별도 정책으로 조정한다.
+- **난이도 (선택)**: `RoomListView`에 `TMP_Dropdown _difficultyDropdown`을 연결하면 옵션 순서가 **0=Normal, 1=Easy, 2=Hard**여야 한다. 미연결이면 항상 Normal(0). 드롭다운 값은 **그대로** `LobbyUseCases.CreateRoom`에 넘기며, 0~2 밖이면 `LobbyRule.ValidateDifficultyPreset`에서 실패한다(뷰에서 중복 클램프하지 않음). `RoomItemView`·`RoomDetailView`의 난이도 텍스트 필드는 선택 사항(미연결 시 비워 둠).
 
 ## Bootstrap
 

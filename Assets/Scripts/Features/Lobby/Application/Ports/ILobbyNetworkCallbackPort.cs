@@ -16,9 +16,16 @@ namespace Features.Lobby.Application.Ports
         public List<RoomMember> Members { get; }
         public DomainEntityId MasterMemberId { get; }
         public DomainEntityId LocalMemberId { get; }
+        public int DifficultyPresetId { get; }
 
-        public JoinRoomData(DomainEntityId roomId, string roomName, int capacity,
-            List<RoomMember> members, DomainEntityId masterMemberId, DomainEntityId localMemberId)
+        public JoinRoomData(
+            DomainEntityId roomId,
+            string roomName,
+            int capacity,
+            List<RoomMember> members,
+            DomainEntityId masterMemberId,
+            DomainEntityId localMemberId,
+            int difficultyPresetId = 0)
         {
             RoomId = roomId;
             RoomName = roomName;
@@ -26,6 +33,7 @@ namespace Features.Lobby.Application.Ports
             Members = members;
             MasterMemberId = masterMemberId;
             LocalMemberId = localMemberId;
+            DifficultyPresetId = difficultyPresetId;
         }
     }
 
@@ -58,14 +66,22 @@ namespace Features.Lobby.Application.Ports
         public int PlayerCount { get; }
         public int MaxPlayers { get; }
         public bool IsOpen { get; }
+        public int DifficultyPresetId { get; }
 
-        public RoomListItem(DomainEntityId roomId, string roomName, int playerCount, int maxPlayers, bool isOpen)
+        public RoomListItem(
+            DomainEntityId roomId,
+            string roomName,
+            int playerCount,
+            int maxPlayers,
+            bool isOpen,
+            int difficultyPresetId = 0)
         {
             RoomId = roomId;
             RoomName = roomName;
             PlayerCount = playerCount;
             MaxPlayers = maxPlayers;
             IsOpen = isOpen;
+            DifficultyPresetId = difficultyPresetId;
         }
     }
 

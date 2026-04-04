@@ -26,6 +26,7 @@ namespace Features.Lobby.Application.Events
         public string Name { get; }
         public int Capacity { get; }
         public DomainEntityId OwnerId { get; }
+        public int DifficultyPresetId { get; }
         public IReadOnlyList<RoomMemberSnapshot> Members { get; }
 
         public RoomSnapshot(Room room)
@@ -34,6 +35,7 @@ namespace Features.Lobby.Application.Events
             Name = room.Name;
             Capacity = room.Capacity;
             OwnerId = room.OwnerId;
+            DifficultyPresetId = room.DifficultyPresetId;
             var members = new RoomMemberSnapshot[room.Members.Count];
             for (var i = 0; i < room.Members.Count; i++)
                 members[i] = new RoomMemberSnapshot(room.Members[i]);

@@ -2,6 +2,7 @@ using System.Collections;
 using Features.Combat;
 using Features.Enemy;
 using Features.Enemy.Infrastructure;
+using Features.Wave.Application;
 using Features.Wave.Application.Ports;
 using Photon.Pun;
 using Shared.EventBus;
@@ -15,17 +16,20 @@ namespace Features.Wave.Infrastructure
         private CombatBootstrap _combatBootstrap;
         private IPlayerPositionQuery _playerQuery;
         private WaveTableData _waveTable;
+        private float _spawnCountMultiplier = 1f;
 
         public void Initialize(
             EventBus eventBus,
             CombatBootstrap combatBootstrap,
             IPlayerPositionQuery playerQuery,
-            WaveTableData waveTable = null)
+            WaveTableData waveTable = null,
+            float spawnCountMultiplier = 1f)
         {
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
             _playerQuery = playerQuery;
             _waveTable = waveTable;
+            _spawnCountMultiplier = spawnCountMultiplier > 0f ? spawnCountMultiplier : 1f;
         }
 
         public void SpawnEnemy(EnemyData data, float x, float y, float z)
@@ -33,7 +37,12 @@ namespace Features.Wave.Infrastructure
             if (!PhotonNetwork.IsMasterClient) return;
 
             var position = new Vector3(x, y, z);
-            var go = PhotonNetwork.Instantiate(data.PrefabName, position, Quaternion.identity);
+            var go = PhotonNetwork.Instantiate(
+                data.PrefabName,
+                position,
+                Quaternion.identity,
+                0,
+                new object[] { data.ResourcesLoadPath });
 
             var setup = go.GetComponent<EnemySetup>();
             if (setup != null)
@@ -51,7 +60,8 @@ namespace Features.Wave.Infrastructure
 
         private IEnumerator SpawnWaveEnemiesCoroutine(WaveTableData.WaveEntry entry)
         {
-            for (var i = 0; i < entry.Count; i++)
+            var spawnCount = DifficultySpawnScale.ScaledSpawnCount(entry.Count, _spawnCountMultiplier);
+            for (var i = 0; i < spawnCount; i++)
             {
                 var angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
                 var x = Mathf.Cos(angle) * entry.SpawnRadius;
