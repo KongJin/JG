@@ -57,7 +57,7 @@ const tools = [
   },
   {
     name: "unity_console_errors",
-    description: "Read recent Unity console errors, exceptions, and asserts.",
+    description: "Read recent Unity console errors, exceptions, and asserts (filtered).",
     inputSchema: {
       type: "object",
       properties: {
@@ -66,6 +66,77 @@ const tools = [
           minimum: 1,
           maximum: 100,
           description: "Maximum number of entries to return. Default is 20."
+        }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_console_logs",
+    description:
+      "Read recent Unity console lines captured by the bridge: Log, Warning, Error, Exception, Assert (ring buffer).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        limit: {
+          type: "integer",
+          minimum: 1,
+          maximum: 200,
+          description: "Maximum number of entries to return (newest chunk). Default is 100."
+        }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_compile_status",
+    description: "Return whether Unity Editor is currently compiling scripts (isCompiling).",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_compile_request",
+    description: "Request a script recompilation (CompilationPipeline.RequestScriptCompilation).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        cleanBuildCache: {
+          type: "boolean",
+          description: "If true, use CleanBuildCache (force broader recompile). Default false."
+        }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_compile_wait",
+    description:
+      "Block until Unity finishes compiling, optionally after requesting compilation. Long HTTP request until idle or timeout.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        requestFirst: {
+          type: "boolean",
+          description: "If true, request recompilation before waiting. Default false."
+        },
+        cleanBuildCache: {
+          type: "boolean",
+          description: "Used when requestFirst is true. Default false."
+        },
+        timeoutMs: {
+          type: "integer",
+          minimum: 1000,
+          maximum: 600000,
+          description: "Max wait in ms. Default 300000 (5 minutes)."
+        },
+        pollIntervalMs: {
+          type: "integer",
+          minimum: 20,
+          maximum: 2000,
+          description: "Polling interval in ms. Default 100."
         }
       },
       additionalProperties: false
@@ -435,6 +506,30 @@ async function callTool(name, args) {
       const clamped = Math.max(1, Math.min(100, limit));
       return requestUnityJson("GET", `/console/errors?limit=${clamped}`);
     }
+    case "unity_console_logs": {
+      const limit = parsePositiveInt(args.limit, 100);
+      const clamped = Math.max(1, Math.min(200, limit));
+      return requestUnityJson("GET", `/console/logs?limit=${clamped}`);
+    }
+    case "unity_compile_status":
+      return requestUnityJson("GET", "/compile/status");
+    case "unity_compile_request": {
+      const body = {
+        cleanBuildCache: Boolean(args.cleanBuildCache)
+      };
+      return requestUnityJsonWithBody("POST", "/compile/request", body);
+    }
+    case "unity_compile_wait": {
+      const timeoutMs = parsePositiveInt(args.timeoutMs, 300000);
+      const body = {
+        requestFirst: Boolean(args.requestFirst),
+        cleanBuildCache: Boolean(args.cleanBuildCache),
+        timeoutMs,
+        pollIntervalMs: parsePositiveInt(args.pollIntervalMs, 100)
+      };
+      const httpTimeoutMs = Math.min(660000, Math.max(requestTimeoutMs, timeoutMs + 30000));
+      return requestUnityJsonWithBody("POST", "/compile/wait", body, httpTimeoutMs);
+    }
     // --- Scene manipulation ---
     case "unity_scene_hierarchy": {
       const depth = args.depth || 10;
@@ -464,7 +559,8 @@ async function callTool(name, args) {
   }
 }
 
-function requestUnityJsonWithBody(method, path, body) {
+function requestUnityJsonWithBody(method, path, body, httpTimeoutMs) {
+  const timeoutMs = httpTimeoutMs != null ? httpTimeoutMs : requestTimeoutMs;
   return new Promise((resolve, reject) => {
     const url = new URL(path, baseUrl);
     const transport = url.protocol === "https:" ? https : http;
@@ -511,8 +607,8 @@ function requestUnityJsonWithBody(method, path, body) {
       });
     });
 
-    request.setTimeout(requestTimeoutMs, () => {
-      request.destroy(new Error(`Unity bridge timeout after ${requestTimeoutMs}ms`));
+    request.setTimeout(timeoutMs, () => {
+      request.destroy(new Error(`Unity bridge timeout after ${timeoutMs}ms`));
     });
 
     request.on("error", (error) => {

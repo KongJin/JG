@@ -35,6 +35,12 @@ namespace Features.Wave.Presentation
         private int _rewardContextWaveIndex;
         private float _selectionDurationSeconds;
 
+        private void Awake()
+        {
+            // Canvas sortingOrder가 시작 스킬 선택보다 높을 때, Initialize 전 한 프레임이라도 Panel이 켜 있으면 전체를 가린다.
+            panel.SetActive(false);
+        }
+
         public void Initialize(IEventPublisher publisher, IEventSubscriber subscriber, DomainEntityId localPlayerId, ISkillIconPort iconPort, SelectionTimer selectionTimer)
         {
             _publisher = publisher;

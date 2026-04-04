@@ -81,6 +81,10 @@ Photon 콜백 해석과 도메인 상태 업데이트는 `LobbyNetworkEventHandl
 | `Player.CustomProperties["team"]` | `RoomMember.Team` |
 | `Player.CustomProperties["isReady"]` | `RoomMember.IsReady` |
 
+## JG_LobbyScene (씬 계약)
+
+- **MCP/로컬 반복 테스트**: `RoomNameInput`·`DisplayNameInput`·`CapacityInput`에 씬 저장 시 기본 문자열이 들어가 있어야 `CreateRoom` 검증(방 이름 2글자 이상 등)을 타이핑 없이 통과할 수 있다. 프로덕션 빌드에서 비우려면 별도 정책으로 조정한다.
+
 ## Bootstrap
 
 - **LobbyBootstrap** (씬 오브젝트, 피처 루트에 위치): `SceneErrorPresenter` → LobbyPhotonAdapter → LobbyNetworkEventHandler → LobbyUseCases → LobbyView 순서로 조립

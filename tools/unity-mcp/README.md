@@ -12,7 +12,11 @@ This folder provides a minimal bridge between Unity Editor and Codex MCP tools.
     - `GET /scene/current`
     - `POST /play/start`
     - `POST /play/stop`
-    - `GET /console/errors?limit=20`
+    - `GET /console/logs?limit=100` (전체 타입)
+    - `GET /console/errors?limit=20` (에러만)
+    - `GET /compile/status`
+    - `POST /compile/request`
+    - `POST /compile/wait`
 - MCP stdio server: `tools/unity-mcp/server.js`
 - Codex registration script: `tools/unity-mcp/register-codex-mcp.ps1`
 
@@ -42,6 +46,10 @@ This folder provides a minimal bridge between Unity Editor and Codex MCP tools.
 - `unity_play_start`
 - `unity_play_stop`
 - `unity_console_errors`
+- `unity_console_logs`
+- `unity_compile_status`
+- `unity_compile_request`
+- `unity_compile_wait`
 
 ## Notes
 

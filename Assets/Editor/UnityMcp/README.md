@@ -13,16 +13,34 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - Unity가 플레이 중일 때 C# 스크립트나 브리지 코드(`Assets/Editor/UnityMcp/**`)를 수정해도 새 코드가 즉시 컴파일/반영되지 않을 수 있다.
 - 새 엔드포인트 추가, 브리지 수정, 일반 스크립트 수정이 필요하면 반드시 `Play Stop -> 파일 수정 -> 컴파일 완료 확인 -> 브리지 상태 확인 -> 다시 Play` 순서로 진행한다.
 
+## 테스트 / 로그 확인 SOP
+
+- Unity MCP로 씬 열기, 플레이 시작/정지, 버튼 invoke, 입력 전달, 스크린샷 캡처 같은 테스트를 수행할 때는 **현재 콘솔 상태를 함께 확인**한다.
+- 확인 범위는 에러만이 아니다. 가능하면 액션 전후로 **에러/경고/일반 로그 흐름**까지 본다.
+- 기본 점검 순서:
+  1. `/health`로 브리지/플레이/컴파일 상태 확인
+  2. 주요 액션 직후 **`GET /console/logs`**로 브리지가 버퍼에 쌓아 둔 최근 콘솔 전체(Log/Warning/Error 등) 확인 (`limit`으로 개수 조절)
+  3. 에러만 빠르게 볼 때는 **`GET /console/errors`** (Error/Exception/Assert만, 최근부터 최대 `limit`개)
+  4. 버퍼 이전 로그·에디터 전체 로그는 `Editor.log` 최근 구간까지 읽어 보완
+- 테스트 결과를 공유할 때는 가능하면 **화면 상태 + 콘솔/로그 상태**를 함께 적는다.
+- 통합 스모크: `tools/mcp-test-lobby-scene.ps1` — 로비 플로우 + 스크린샷·콘솔. **게임 씬 시작 스킬 선택까지** 포함하려면 `-CompleteGameSceneStartSkills` (씬 경로는 `Features/Skill/README.md` MCP 절 참고).
+- **JSON 결과 (스모크 판정용)**: 아래 스크립트는 종료 시 `schemaVersion`, `ok`, `steps[]`, `finalHealth`, `screenshots[]`, (실패 시) `failure` 를 UTF-8 JSON 파일로 쓴다. 실패 시 **exit code 1**.
+  - `tools/mcp-test-lobby-scene.ps1` — 기본 `Temp/UnityMcp/last-lobby-scene-test.json`. `-ResultJsonPath`로 경로 지정, `-WriteJsonToStdout`면 파일 저장 후 동일 JSON을 stdout에도 출력.
+  - `tools/mcp-lobby-to-game.ps1` — 기본 `Temp/UnityMcp/last-lobby-to-game.json`. 동일 파라미터.
+  - CI 예: `powershell -File .\tools\mcp-test-lobby-scene.ps1; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }` 또는 (jq 설치 시) `... | Out-Null; jq -e .ok Temp/UnityMcp/last-lobby-scene-test.json`
+
 ## 엔드포인트
 
 ### 조회
 
 | Method | Path | 설명 |
 |---|---|---|
-| GET | `/health` | 서버 상태 (포트, isCompiling, isPlaying 등) |
+| GET | `/health` | 서버 상태 (포트, `isCompiling`, isPlaying, isPlayModeChanging 등) |
+| GET | `/compile/status` | `isCompiling` 만 빠르게 조회 (`/health`와 동일 플래그) |
 | GET | `/scene/current` | 현재 씬 정보 |
 | GET | `/scene/hierarchy` | 씬 하이어라키 전체 조회 |
-| GET | `/console/errors` | 콘솔 에러/경고 로그 |
+| GET | `/console/logs` | 브리지가 수집한 최근 콘솔 로그 전체 (`Log`, `Warning`, `Error`, `Exception`, `Assert`). 쿼리 `limit` 기본 100, 최대 200. **에디터/도메인 리로드 이후**부터 쌓인 버퍼만 해당 (그 이전은 `Editor.log`) |
+| GET | `/console/errors` | 위 버퍼 중 **Error / Exception / Assert** 만 최근부터 최대 `limit`개 (기본 20, 최대 100) |
 
 ### 플레이 제어
 
@@ -31,6 +49,8 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 | POST | `/scene/open` | 씬 열기 (`{"scenePath":"Assets/Scenes/..."}`) |
 | POST | `/play/start` | 플레이 모드 시작 |
 | POST | `/play/stop` | 플레이 모드 정지 |
+| POST | `/compile/request` | 스크립트 재컴파일 요청 (`CompilationPipeline.RequestScriptCompilation`). Body 선택: `{"cleanBuildCache":true}` |
+| POST | `/compile/wait` | `EditorApplication.isCompiling` 이 `false`가 될 때까지 대기(HTTP 장기 응답). Body 선택: 아래 참조 |
 | POST | `/screenshot/capture` | 플레이 중 Game View 스크린샷을 프로젝트 내부 PNG로 저장하고 경로 반환 |
 
 #### `/scene/open` Body
@@ -60,6 +80,27 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - `superSize`: Unity `ScreenCapture.CaptureScreenshot` 배율. 기본 `1`, 권장 `1`
 - `overwrite`: 같은 파일이 있으면 덮어쓸지 여부. 기본 `false`
 - 응답은 이미지 바이트를 직접 반환하지 않고 저장된 파일 경로만 돌려준다. 그래서 캡처 자체는 토큰을 거의 쓰지 않고, 정말 필요할 때만 이미지를 열어 보면 된다.
+
+#### `/compile/wait` Body
+
+```json
+{
+  "requestFirst": true,
+  "cleanBuildCache": false,
+  "timeoutMs": 300000,
+  "pollIntervalMs": 100
+}
+```
+
+- `requestFirst`: `true`이면 먼저 `/compile/request`와 동일하게 재컴파일을 요청한 뒤 대기한다. `false`이면 **이미 진행 중인 컴파일**이 끝날 때만 기다린다.
+- `cleanBuildCache`: `requestFirst`일 때만 의미 있음 — `RequestScriptCompilationOptions.CleanBuildCache` (전체 다시 컴파일에 가깝게)
+- `timeoutMs`: 대기 상한 (밀리초). 기본 300000(5분), 허용 범위 1000~600000
+- `pollIntervalMs`: 메인 스레드에서 `isCompiling`을 확인하는 간격. 기본 100, 20~2000
+- 응답: `ok`, `timedOut` (`true`면 타임아웃 시점에 아직 `isCompiling`), `waitedMs`, `isCompiling`(최종), `requestedCompilation`
+
+**수동 폴링:** `POST /compile/request` 후 `GET /compile/status` 또는 `GET /health`의 `isCompiling`을 반복 호출해도 된다.
+
+**HTTP 클라이언트 타임아웃:** `/compile/wait`는 응답이 수 분 걸릴 수 있다. PowerShell은 예를 들어 `-TimeoutSec 400`을 주고, `tools/unity-mcp/server.js`의 `unity_compile_wait`는 본문 `timeoutMs`보다 여유 있게 HTTP 타임아웃을 잡는다.
 
 ### 입력
 
@@ -195,6 +236,24 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - 플레이 모드에서만 호출 가능하다. 플레이 중이 아니면 `409 Button invoke unavailable`을 반환한다
 - 좌표 클릭/submit이 반응하지 않는 UI 흐름 검증용으로 사용한다
 
+#### 로비 → 게임 씬 (버튼 invoke 자동화)
+
+`RoomListView`의 방 생성은 `LobbyRule` 검증을 거친다. **방 이름 입력이 비어 있거나 2글자 미만이면 Create Room이 실패**하므로, MCP로 버튼만 누르기 전에 `JG_LobbyScene`의 `TMP_InputField` 기본 텍스트(방 이름·표시명·정원)가 채워져 있어야 한다.
+
+권장 순서:
+
+1. `POST /scene/open` — `Assets/Scenes/JG_LobbyScene.unity`
+2. `POST /play/start`
+3. 플레이 모드 전환·첫 프레임까지 대기: `/health`로 `isPlaying`이고 `isPlayModeChanging`·`isCompiling`이 꺼질 때까지 폴링 (`mcp-lobby-to-game.ps1` 기본 타임아웃 120s, `-PlayModeReadyTimeoutSec` / `-PlayModePollSec` 조정). 하위 호환용 `isPlayingOrWillChange`도 동일한 의미(전환 중 여부)로 유지되며, Unity 원본 값은 `rawIsPlayingOrWillChange`에서 확인할 수 있다.
+4. `/health`로 활성 씬이 `JG_LobbyScene`인지 확인한 뒤, 고정 대기 (`mcp-lobby-to-game.ps1` 기본 `3s`, `-PhotonWaitSec`으로 조절) 후 Create Room
+5. `POST /ui/button/invoke` — `path`: `/Canvas/lobby/RoomListView/Header/CreateRoomButton`
+6. 방 입장·UI 반영까지 잠시 대기
+7. `POST /ui/button/invoke` — `path`: `/Canvas/lobby/RoomDetailPanel/ReadyButton`
+8. `POST /ui/button/invoke` — `path`: `/Canvas/lobby/RoomDetailPanel/StartGameButton` (마스터만 유효)
+9. `PhotonNetwork.LoadLevel` 후 활성 씬이 `JG_GameScene`으로 바뀌는지 `/health`의 `activeScene` 등으로 확인
+
+프로젝트 루트에서 한 번에 돌리려면 `tools/mcp-lobby-to-game.ps1`을 사용한다. 포트는 `ProjectSettings/UnityMcpPort.txt` 또는 `-BaseUrl`로 지정한다. 이미 플레이 중이고 활성 씬이 `JG_LobbyScene`이면 `scene/open`·`play/start`는 건너뛴다(에디터는 플레이 모드에서 씬 열기를 허용하지 않음). 다른 씬에서 플레이 중이면 먼저 `play/stop` 후 로비를 연다. 로비 씬 이름이 `/health`에 늦게 잡히면 `-LobbySceneActiveTimeoutSec`으로 대기 상한을 늘린다.
+
 ### 게임오브젝트
 
 | Method | Path | Body | 설명 |
@@ -315,7 +374,7 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 
 ## 주의사항
 
-- 컴파일 중에는 서버가 내려간다 — `/asset/refresh` 후 `/health`로 `isCompiling: false` 확인 필요
+- 컴파일·도메인 리로드 구간에는 HTTP 응답이 잠깐 불안정할 수 있다 — 스크립트 수정 후에는 `POST /compile/wait`(`requestFirst:true`) 또는 `/compile/request` + `/compile/status`·`/health` 폴링으로 `isCompiling: false` 확인
 - 씬 엔드포인트(`/gameobject/*`, `/component/*`)는 `GameObject.Find` 기반 — **씬 오브젝트만** 대상
 - 프리팹 엔드포인트(`/prefab/get`, `/prefab/set`, `/prefab/add-component`)는 `AssetDatabase.LoadAssetAtPath` 기반 — **프리팹 에셋 직접 수정 가능**
 - 스크린샷 엔드포인트는 플레이 모드가 켜져 있어야 한다. 기본 출력 경로는 `Temp/UnityMcp/Screenshots`

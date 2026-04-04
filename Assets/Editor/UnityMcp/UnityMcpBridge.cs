@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -30,7 +31,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         private const double RetryStartDelaySeconds = 1.0d;
         private const int MaxStartRetryCount = 10;
         private const string PortConfigRelativePath = "ProjectSettings/UnityMcpPort.txt";
-        private const int MaxStoredLogs = 200;
+        private const int MaxStoredLogs = 500;
         private const int MaxLogMessageLength = 2000;
         private const int MaxStackTraceLength = 6000;
         private const string DefaultScreenshotDirectoryRelativePath = "Temp/UnityMcp/Screenshots";
@@ -39,7 +40,7 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         private static readonly ConcurrentQueue<Action> MainThreadActions = new ConcurrentQueue<Action>();
         private static readonly object LogLock = new object();
-        private static readonly List<ErrorLogEntry> ErrorLogs = new List<ErrorLogEntry>();
+        private static readonly List<ConsoleLogEntry> ConsoleLogs = new List<ConsoleLogEntry>();
         private static readonly int[] BindRetryDelayMs = { 50, 100, 200 };
 
         private static HttpListener _listener;
@@ -49,12 +50,14 @@ namespace ProjectSD.EditorTools.UnityMcp
         private static bool _startScheduled;
         private static double _scheduledStartTime;
         private static int _remainingStartRetries;
+        private static bool _isPlayModeChanging;
 
         static UnityMcpBridge()
         {
             _mainThreadId = Thread.CurrentThread.ManagedThreadId;
             EditorApplication.update += DrainMainThreadActions;
             EditorApplication.update += TryStartBridgeFromSchedule;
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             Application.logMessageReceivedThreaded += OnLogMessageReceived;
             AssemblyReloadEvents.beforeAssemblyReload += StopBridge;
             EditorApplication.quitting += StopBridge;
@@ -111,6 +114,26 @@ namespace ProjectSD.EditorTools.UnityMcp
         private static string ProjectKey
         {
             get { return ComputeProjectKey(ProjectRootPath); }
+        }
+
+        private static void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            switch (state)
+            {
+                case PlayModeStateChange.ExitingEditMode:
+                case PlayModeStateChange.ExitingPlayMode:
+                    _isPlayModeChanging = true;
+                    break;
+                case PlayModeStateChange.EnteredEditMode:
+                case PlayModeStateChange.EnteredPlayMode:
+                    _isPlayModeChanging = false;
+                    break;
+            }
+        }
+
+        private static bool IsPlayModeChanging()
+        {
+            return _isPlayModeChanging;
         }
 
         private static void StartBridge(bool resetRetryCount = false)
@@ -744,6 +767,12 @@ namespace ProjectSD.EditorTools.UnityMcp
                     return;
                 }
 
+                if (method == "GET" && path == "/console/logs")
+                {
+                    await HandleConsoleLogsAsync(request, response);
+                    return;
+                }
+
                 // --- Scene manipulation endpoints ---
 
                 if (method == "GET" && path == "/scene/hierarchy")
@@ -842,6 +871,24 @@ namespace ProjectSD.EditorTools.UnityMcp
                     return;
                 }
 
+                if (method == "GET" && path == "/compile/status")
+                {
+                    await HandleCompileStatusAsync(response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/compile/request")
+                {
+                    await HandleCompileRequestAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/compile/wait")
+                {
+                    await HandleCompileWaitAsync(request, response);
+                    return;
+                }
+
                 if (method == "POST" && path == "/build/webgl")
                 {
                     await HandleBuildWebGLAsync(request, response);
@@ -906,13 +953,16 @@ namespace ProjectSD.EditorTools.UnityMcp
             var sceneInfo = await RunOnMainThreadAsync(() =>
             {
                 var scene = SceneManager.GetActiveScene();
+                var isPlayModeChanging = IsPlayModeChanging();
                 return new HealthResponse
                 {
                     ok = true,
                     bridgeRunning = IsRunning,
                     port = _activePort > 0 ? _activePort : ResolvePort(),
                     isPlaying = EditorApplication.isPlaying,
-                    isPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode,
+                    isPlayingOrWillChange = isPlayModeChanging,
+                    isPlayModeChanging = isPlayModeChanging,
+                    rawIsPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode,
                     isCompiling = EditorApplication.isCompiling,
                     projectKey = ProjectKey,
                     projectRootPath = ProjectRootPath,
@@ -929,6 +979,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             var sceneInfo = await RunOnMainThreadAsync(() =>
             {
                 var scene = SceneManager.GetActiveScene();
+                var isPlayModeChanging = IsPlayModeChanging();
                 return new SceneResponse
                 {
                     name = scene.name,
@@ -937,7 +988,9 @@ namespace ProjectSD.EditorTools.UnityMcp
                     isLoaded = scene.isLoaded,
                     isDirty = scene.isDirty,
                     isPlaying = EditorApplication.isPlaying,
-                    isPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode
+                    isPlayingOrWillChange = isPlayModeChanging,
+                    isPlayModeChanging = isPlayModeChanging,
+                    rawIsPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode
                 };
             });
 
@@ -950,14 +1003,19 @@ namespace ProjectSD.EditorTools.UnityMcp
             {
                 if (!EditorApplication.isPlaying)
                 {
+                    _isPlayModeChanging = true;
                     EditorApplication.isPlaying = true;
                 }
+
+                var isPlayModeChanging = IsPlayModeChanging();
 
                 return new PlayResponse
                 {
                     action = "start",
                     isPlaying = EditorApplication.isPlaying,
-                    isPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode
+                    isPlayingOrWillChange = isPlayModeChanging,
+                    isPlayModeChanging = isPlayModeChanging,
+                    rawIsPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode
                 };
             });
 
@@ -970,14 +1028,19 @@ namespace ProjectSD.EditorTools.UnityMcp
             {
                 if (EditorApplication.isPlaying)
                 {
+                    _isPlayModeChanging = true;
                     EditorApplication.isPlaying = false;
                 }
+
+                var isPlayModeChanging = IsPlayModeChanging();
 
                 return new PlayResponse
                 {
                     action = "stop",
                     isPlaying = EditorApplication.isPlaying,
-                    isPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode
+                    isPlayingOrWillChange = isPlayModeChanging,
+                    isPlayModeChanging = isPlayModeChanging,
+                    rawIsPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode
                 };
             });
 
@@ -1420,14 +1483,24 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             var payload = await RunOnMainThreadAsync(() =>
             {
-                ErrorLogEntry[] latest;
+                ConsoleLogEntry[] latest;
                 lock (LogLock)
                 {
-                    var take = Math.Min(limit, ErrorLogs.Count);
-                    latest = ErrorLogs.GetRange(Math.Max(0, ErrorLogs.Count - take), take).ToArray();
+                    var picked = new List<ConsoleLogEntry>(limit);
+                    for (var i = ConsoleLogs.Count - 1; i >= 0 && picked.Count < limit; i--)
+                    {
+                        var e = ConsoleLogs[i];
+                        if (IsConsoleErrorSeverity(e.type))
+                        {
+                            picked.Add(e);
+                        }
+                    }
+
+                    picked.Reverse();
+                    latest = picked.ToArray();
                 }
 
-                return new ErrorLogsResponse
+                return new ConsoleLogsResponse
                 {
                     count = latest.Length,
                     items = latest
@@ -1435,6 +1508,41 @@ namespace ProjectSD.EditorTools.UnityMcp
             });
 
             await WriteJsonAsync(response, 200, payload);
+        }
+
+        private static async Task HandleConsoleLogsAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var limit = 100;
+            var limitRaw = request.QueryString["limit"];
+            if (!string.IsNullOrEmpty(limitRaw) && int.TryParse(limitRaw, out var parsed))
+            {
+                limit = Mathf.Clamp(parsed, 1, 200);
+            }
+
+            var payload = await RunOnMainThreadAsync(() =>
+            {
+                ConsoleLogEntry[] latest;
+                lock (LogLock)
+                {
+                    var take = Math.Min(limit, ConsoleLogs.Count);
+                    latest = ConsoleLogs.GetRange(Math.Max(0, ConsoleLogs.Count - take), take).ToArray();
+                }
+
+                return new ConsoleLogsResponse
+                {
+                    count = latest.Length,
+                    items = latest
+                };
+            });
+
+            await WriteJsonAsync(response, 200, payload);
+        }
+
+        private static bool IsConsoleErrorSeverity(string type)
+        {
+            return string.Equals(type, LogType.Error.ToString(), StringComparison.Ordinal)
+                || string.Equals(type, LogType.Exception.ToString(), StringComparison.Ordinal)
+                || string.Equals(type, LogType.Assert.ToString(), StringComparison.Ordinal);
         }
 
         // =====================================================================
@@ -3170,6 +3278,163 @@ namespace ProjectSD.EditorTools.UnityMcp
             await WriteJsonAsync(response, 200, result);
         }
 
+        private static async Task HandleCompileStatusAsync(HttpListenerResponse response)
+        {
+            var result = await RunOnMainThreadAsync(() => new CompileStatusResponse
+            {
+                isCompiling = EditorApplication.isCompiling
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        private static async Task HandleCompileRequestAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await ReadRequestBodyAsync(request);
+            var cleanBuildCache = false;
+            if (!string.IsNullOrEmpty(body))
+            {
+                var parsed = JsonUtility.FromJson<CompileRequestBody>(body);
+                if (parsed != null)
+                {
+                    cleanBuildCache = parsed.cleanBuildCache;
+                }
+            }
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                var options = cleanBuildCache
+                    ? RequestScriptCompilationOptions.CleanBuildCache
+                    : RequestScriptCompilationOptions.None;
+                CompilationPipeline.RequestScriptCompilation(options);
+                return new CompileRequestResponse
+                {
+                    ok = true,
+                    cleanBuildCacheRequested = cleanBuildCache,
+                    isCompiling = EditorApplication.isCompiling,
+                    message = "Script compilation requested."
+                };
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        private static async Task HandleCompileWaitAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await ReadRequestBodyAsync(request);
+            var timeoutMs = 300000;
+            var pollIntervalMs = 100;
+            var requestFirst = false;
+            var cleanBuildCache = false;
+            if (!string.IsNullOrEmpty(body))
+            {
+                var parsed = JsonUtility.FromJson<CompileWaitBody>(body);
+                if (parsed != null)
+                {
+                    if (parsed.timeoutMs > 0)
+                    {
+                        timeoutMs = Mathf.Clamp(parsed.timeoutMs, 1000, 600000);
+                    }
+
+                    if (parsed.pollIntervalMs > 0)
+                    {
+                        pollIntervalMs = Mathf.Clamp(parsed.pollIntervalMs, 20, 2000);
+                    }
+
+                    requestFirst = parsed.requestFirst;
+                    cleanBuildCache = parsed.cleanBuildCache;
+                }
+            }
+
+            if (requestFirst)
+            {
+                await RunOnMainThreadAsync(() =>
+                {
+                    var options = cleanBuildCache
+                        ? RequestScriptCompilationOptions.CleanBuildCache
+                        : RequestScriptCompilationOptions.None;
+                    CompilationPipeline.RequestScriptCompilation(options);
+                    return true;
+                });
+            }
+
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            while (sw.ElapsedMilliseconds < timeoutMs)
+            {
+                var compiling = await RunOnMainThreadAsync(() => EditorApplication.isCompiling);
+                if (!compiling)
+                {
+                    await WriteJsonAsync(
+                        response,
+                        200,
+                        new CompileWaitResponse
+                        {
+                            ok = true,
+                            timedOut = false,
+                            requestedCompilation = requestFirst,
+                            waitedMs = (int)sw.ElapsedMilliseconds,
+                            isCompiling = false
+                        });
+                    return;
+                }
+
+                await Task.Delay(pollIntervalMs);
+            }
+
+            var stillCompiling = await RunOnMainThreadAsync(() => EditorApplication.isCompiling);
+            await WriteJsonAsync(
+                response,
+                200,
+                new CompileWaitResponse
+                {
+                    ok = !stillCompiling,
+                    timedOut = stillCompiling,
+                    requestedCompilation = requestFirst,
+                    waitedMs = (int)sw.ElapsedMilliseconds,
+                    isCompiling = stillCompiling
+                });
+        }
+
+        [Serializable]
+        private sealed class CompileStatusResponse
+        {
+            public bool isCompiling;
+        }
+
+        [Serializable]
+        private sealed class CompileRequestBody
+        {
+            public bool cleanBuildCache;
+        }
+
+        [Serializable]
+        private sealed class CompileRequestResponse
+        {
+            public bool ok;
+            public bool cleanBuildCacheRequested;
+            public bool isCompiling;
+            public string message;
+        }
+
+        [Serializable]
+        private sealed class CompileWaitBody
+        {
+            public int timeoutMs;
+            public int pollIntervalMs;
+            public bool requestFirst;
+            public bool cleanBuildCache;
+        }
+
+        [Serializable]
+        private sealed class CompileWaitResponse
+        {
+            public bool ok;
+            public bool timedOut;
+            public bool requestedCompilation;
+            public int waitedMs;
+            public bool isCompiling;
+        }
+
         private static async Task HandleMenuExecuteAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             string menuPath = null;
@@ -3357,12 +3622,7 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         private static void OnLogMessageReceived(string condition, string stackTrace, LogType type)
         {
-            if (type != LogType.Error && type != LogType.Exception && type != LogType.Assert)
-            {
-                return;
-            }
-
-            var entry = new ErrorLogEntry
+            var entry = new ConsoleLogEntry
             {
                 timestampUtc = DateTime.UtcNow.ToString("o"),
                 type = type.ToString(),
@@ -3372,12 +3632,12 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             lock (LogLock)
             {
-                if (ErrorLogs.Count >= MaxStoredLogs)
+                if (ConsoleLogs.Count >= MaxStoredLogs)
                 {
-                    ErrorLogs.RemoveAt(0);
+                    ConsoleLogs.RemoveAt(0);
                 }
 
-                ErrorLogs.Add(entry);
+                ConsoleLogs.Add(entry);
             }
         }
 
@@ -3404,6 +3664,8 @@ namespace ProjectSD.EditorTools.UnityMcp
             public int port;
             public bool isPlaying;
             public bool isPlayingOrWillChange;
+            public bool isPlayModeChanging;
+            public bool rawIsPlayingOrWillChange;
             public bool isCompiling;
             public string projectKey;
             public string projectRootPath;
@@ -3421,6 +3683,8 @@ namespace ProjectSD.EditorTools.UnityMcp
             public bool isDirty;
             public bool isPlaying;
             public bool isPlayingOrWillChange;
+            public bool isPlayModeChanging;
+            public bool rawIsPlayingOrWillChange;
         }
 
         [Serializable]
@@ -3429,6 +3693,8 @@ namespace ProjectSD.EditorTools.UnityMcp
             public string action;
             public bool isPlaying;
             public bool isPlayingOrWillChange;
+            public bool isPlayModeChanging;
+            public bool rawIsPlayingOrWillChange;
         }
 
         [Serializable]
@@ -3439,14 +3705,14 @@ namespace ProjectSD.EditorTools.UnityMcp
         }
 
         [Serializable]
-        private sealed class ErrorLogsResponse
+        private sealed class ConsoleLogsResponse
         {
             public int count;
-            public ErrorLogEntry[] items;
+            public ConsoleLogEntry[] items;
         }
 
         [Serializable]
-        private sealed class ErrorLogEntry
+        private sealed class ConsoleLogEntry
         {
             public string timestampUtc;
             public string type;
