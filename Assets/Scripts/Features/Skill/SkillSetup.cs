@@ -31,7 +31,7 @@ namespace Features.Skill
         [Required, SerializeField]
         private SkillCatalogData _catalogData;
 
-        [Required, SerializeField]
+        [SerializeField]
         private StartSkillSelectionView _startSkillSelectionView;
 
         private EventBus _eventBus;
@@ -63,6 +63,12 @@ namespace Features.Skill
             IStatusQueryPort statusQuery,
             System.Action onComplete)
         {
+            if (_startSkillSelectionView == null)
+            {
+                Debug.LogError("[SkillSetup] StartSkillSelectionView is not assigned on the scene instance.");
+                return;
+            }
+
             _eventBus = eventBus;
             _playerTransform = playerTransform;
             _camera = camera;

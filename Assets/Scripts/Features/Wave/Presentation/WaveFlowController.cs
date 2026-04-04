@@ -21,6 +21,8 @@ namespace Features.Wave.Presentation
         private readonly SelectionTimer _selectionTimer = new SelectionTimer();
         private RewardCandidate[] _cachedCandidates;
 
+        public SelectionTimer SelectionTimer => _selectionTimer;
+
         public void Initialize(
             WaveLoopUseCase waveLoop,
             IWaveTablePort waveTable,

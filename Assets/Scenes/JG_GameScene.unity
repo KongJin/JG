@@ -205,22 +205,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &9091000003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 54170186}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
-  button: {fileID: 54170188}
-  iconImage: {fileID: 1829513438}
-  nameLabel: {fileID: 1989409250}
-  selectedFrame: {fileID: 1697230045}
 --- !u!114 &54170189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2149,22 +2133,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &9091000002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 433180882}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
-  button: {fileID: 433180884}
-  iconImage: {fileID: 1311679393}
-  nameLabel: {fileID: 1114126792}
-  selectedFrame: {fileID: 727550388}
 --- !u!114 &433180885
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2985,22 +2953,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &9091000008
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 648151918}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
-  button: {fileID: 648151920}
-  iconImage: {fileID: 2146254571}
-  nameLabel: {fileID: 64018220}
-  selectedFrame: {fileID: 664764730}
 --- !u!114 &648151921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3648,22 +3600,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &9091000005
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 799281804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
-  button: {fileID: 799281806}
-  iconImage: {fileID: 636910196}
-  nameLabel: {fileID: 1919616695}
-  selectedFrame: {fileID: 2086891351}
 --- !u!114 &799281807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5092,22 +5028,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &9091000007
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1476429202}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
-  button: {fileID: 1476429204}
-  iconImage: {fileID: 1854886496}
-  nameLabel: {fileID: 2021859795}
-  selectedFrame: {fileID: 2104475857}
 --- !u!114 &1476429205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6997,22 +6917,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &9091000001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1902782285}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
-  button: {fileID: 1902782287}
-  iconImage: {fileID: 1714039836}
-  nameLabel: {fileID: 1570983532}
-  selectedFrame: {fileID: 1585904245}
 --- !u!114 &1902782288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7291,22 +7195,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &9091000006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1920931060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
-  button: {fileID: 1920931062}
-  iconImage: {fileID: 781138084}
-  nameLabel: {fileID: 973504544}
-  selectedFrame: {fileID: 1533722379}
 --- !u!114 &1920931063
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8077,22 +7965,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &9091000004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2074259288}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
-  button: {fileID: 2074259290}
-  iconImage: {fileID: 1948115751}
-  nameLabel: {fileID: 1655582954}
-  selectedFrame: {fileID: 1213909496}
 --- !u!114 &2074259291
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8708,6 +8580,134 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2146254569}
   m_CullTransparentMesh: 1
+--- !u!114 &9091000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902782285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
+  button: {fileID: 1902782287}
+  iconImage: {fileID: 1714039836}
+  nameLabel: {fileID: 1570983532}
+  selectedFrame: {fileID: 1585904245}
+--- !u!114 &9091000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 433180882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
+  button: {fileID: 433180884}
+  iconImage: {fileID: 1311679393}
+  nameLabel: {fileID: 1114126792}
+  selectedFrame: {fileID: 727550388}
+--- !u!114 &9091000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54170186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
+  button: {fileID: 54170188}
+  iconImage: {fileID: 1829513438}
+  nameLabel: {fileID: 1989409250}
+  selectedFrame: {fileID: 1697230045}
+--- !u!114 &9091000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074259288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
+  button: {fileID: 2074259290}
+  iconImage: {fileID: 1948115751}
+  nameLabel: {fileID: 1655582954}
+  selectedFrame: {fileID: 1213909496}
+--- !u!114 &9091000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 799281804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
+  button: {fileID: 799281806}
+  iconImage: {fileID: 636910196}
+  nameLabel: {fileID: 1919616695}
+  selectedFrame: {fileID: 2086891351}
+--- !u!114 &9091000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1920931060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
+  button: {fileID: 1920931062}
+  iconImage: {fileID: 781138084}
+  nameLabel: {fileID: 973504544}
+  selectedFrame: {fileID: 1533722379}
+--- !u!114 &9091000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1476429202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
+  button: {fileID: 1476429204}
+  iconImage: {fileID: 1854886496}
+  nameLabel: {fileID: 2021859795}
+  selectedFrame: {fileID: 2104475857}
+--- !u!114 &9091000008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 648151918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a211accbfe3ed48b4c480ed679d714, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SkillSelectButton
+  button: {fileID: 648151920}
+  iconImage: {fileID: 2146254571}
+  nameLabel: {fileID: 64018220}
+  selectedFrame: {fileID: 664764730}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -8,6 +8,11 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - 포트 확인: `ProjectSettings/UnityMcpPort.txt` (없으면 기본 51234, 충돌 시 52000대 fallback)
 - 호출 방법: `powershell -Command "Invoke-RestMethod -Uri 'http://127.0.0.1:{port}/...' -Method ..."`
 
+## 작업 순서 주의
+
+- Unity가 플레이 중일 때 C# 스크립트나 브리지 코드(`Assets/Editor/UnityMcp/**`)를 수정해도 새 코드가 즉시 컴파일/반영되지 않을 수 있다.
+- 새 엔드포인트 추가, 브리지 수정, 일반 스크립트 수정이 필요하면 반드시 `Play Stop -> 파일 수정 -> 컴파일 완료 확인 -> 브리지 상태 확인 -> 다시 Play` 순서로 진행한다.
+
 ## 엔드포인트
 
 ### 조회
@@ -27,6 +32,19 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 | POST | `/play/start` | 플레이 모드 시작 |
 | POST | `/play/stop` | 플레이 모드 정지 |
 | POST | `/screenshot/capture` | 플레이 중 Game View 스크린샷을 프로젝트 내부 PNG로 저장하고 경로 반환 |
+
+#### `/scene/open` Body
+
+```json
+{
+  "scenePath": "Assets/Scenes/JG_LobbyScene.unity",
+  "saveCurrentSceneIfDirty": true
+}
+```
+
+- `scenePath`: 열 씬 경로
+- `saveCurrentSceneIfDirty`: `true`면 현재 활성 씬이 dirty 상태일 때 먼저 자동 저장한 뒤 새 씬을 연다. Unity 저장 확인 모달을 피하고 싶을 때 사용한다.
+- `saveCurrentSceneIfDirty`를 주지 않거나 `false`면 기존처럼 Unity의 저장 확인창을 따른다.
 
 #### `/screenshot/capture` Body
 
@@ -54,6 +72,7 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 | POST | `/input/text` | 플레이 중 Game View에 문자열 입력 |
 | POST | `/input/scroll` | 플레이 중 Game View에 마우스 휠 이벤트 전달 |
 | POST | `/input/key-combo` | 자주 쓰는 키 조합 프리셋 실행 |
+| POST | `/ui/button/invoke` | 플레이 중 씬 경로로 `Button.onClick` 직접 invoke |
 
 #### `/input/click` Body
 
@@ -162,6 +181,19 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - 지원 프리셋: `copy`, `paste`, `cut`, `selectAll`, `undo`, `redo`, `submit`, `cancel`, `tabForward`, `tabBackward`, `delete`
 - 현재 프리셋은 Windows 기준 `Control` 조합을 사용한다
 - `repeat`로 같은 조합을 여러 번 연속 전송할 수 있다
+
+#### `/ui/button/invoke` Body
+
+```json
+{
+  "path": "/Canvas/LobbyPanel/CreateRoomButton"
+}
+```
+
+- `path`: 씬 하이어라키 기준 GameObject 경로. 대상 오브젝트에 `UnityEngine.UI.Button` 컴포넌트가 있어야 한다
+- 이 엔드포인트는 Game View 좌표 클릭을 우회하고 `Button.onClick.Invoke()`를 직접 호출한다
+- 플레이 모드에서만 호출 가능하다. 플레이 중이 아니면 `409 Button invoke unavailable`을 반환한다
+- 좌표 클릭/submit이 반응하지 않는 UI 흐름 검증용으로 사용한다
 
 ### 게임오브젝트
 
@@ -288,6 +320,7 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - 프리팹 엔드포인트(`/prefab/get`, `/prefab/set`, `/prefab/add-component`)는 `AssetDatabase.LoadAssetAtPath` 기반 — **프리팹 에셋 직접 수정 가능**
 - 스크린샷 엔드포인트는 플레이 모드가 켜져 있어야 한다. 기본 출력 경로는 `Temp/UnityMcp/Screenshots`
 - 입력 엔드포인트도 플레이 모드가 켜져 있어야 한다. 좌표는 Game View 기준이다
+- `/ui/button/invoke`도 플레이 모드가 켜져 있어야 하며, 씬 오브젝트 경로를 정확히 넘겨야 한다
 - 입력 엔드포인트는 Game View 이벤트 기반이라, 운영체제 레벨 마우스/키보드를 직접 움직이는 방식은 아니다
 - 스크롤/조합키 해석은 게임 코드와 포커스 상태에 따라 반응이 다를 수 있다
 - POST 엔드포인트에 GET으로 호출하면 404 반환

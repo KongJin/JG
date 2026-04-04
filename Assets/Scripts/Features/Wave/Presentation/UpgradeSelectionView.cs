@@ -1,6 +1,7 @@
 using System;
 using Features.Skill.Domain;
 using Features.Skill.Presentation;
+using Features.Wave.Application;
 using Features.Wave.Application.Events;
 using Features.Wave.Application.Ports;
 using Shared.Attributes;
@@ -30,15 +31,15 @@ namespace Features.Wave.Presentation
         private ISkillIconPort _iconPort;
         private DomainEntityId _localPlayerId;
         private RewardCandidate[] _candidates;
-        private float _countdown;
-        private bool _countdownActive;
+        private SelectionTimer _selectionTimer;
 
-        public void Initialize(IEventPublisher publisher, IEventSubscriber subscriber, DomainEntityId localPlayerId, ISkillIconPort iconPort)
+        public void Initialize(IEventPublisher publisher, IEventSubscriber subscriber, DomainEntityId localPlayerId, ISkillIconPort iconPort, SelectionTimer selectionTimer)
         {
             _publisher = publisher;
             _subscriber = subscriber;
             _localPlayerId = localPlayerId;
             _iconPort = iconPort;
+            _selectionTimer = selectionTimer;
 
             panel.SetActive(false);
 
@@ -80,29 +81,22 @@ namespace Features.Wave.Presentation
                 }
             }
 
-            _countdown = e.SelectionDuration;
-            _countdownActive = true;
             if (countdownText != null)
-                countdownText.text = Mathf.CeilToInt(_countdown).ToString();
+                countdownText.text = Mathf.CeilToInt(e.SelectionDuration).ToString();
 
             panel.SetActive(true);
         }
 
         private void Update()
         {
-            if (!_countdownActive) return;
+            if (_selectionTimer == null || !_selectionTimer.IsRunning) return;
 
-            _countdown -= Time.deltaTime;
             if (countdownText != null)
-                countdownText.text = Mathf.CeilToInt(Mathf.Max(0f, _countdown)).ToString();
-
-            if (_countdown <= 0f)
-                _countdownActive = false;
+                countdownText.text = Mathf.CeilToInt(Mathf.Max(0f, _selectionTimer.Remaining)).ToString();
         }
 
         private void OnSkillSelected(SkillSelectedEvent e)
         {
-            _countdownActive = false;
             _candidates = null;
             panel.SetActive(false);
         }
@@ -112,7 +106,6 @@ namespace Features.Wave.Presentation
             if (_candidates == null || index >= _candidates.Length)
                 return;
 
-            _countdownActive = false;
             panel.SetActive(false);
             var c = _candidates[index];
             _publisher.Publish(new SkillSelectedEvent(_localPlayerId, c.SkillId, c.DisplayName, c.Type, c.Axis));

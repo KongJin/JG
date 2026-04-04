@@ -732,6 +732,12 @@ namespace ProjectSD.EditorTools.UnityMcp
                     return;
                 }
 
+                if (method == "POST" && path == "/ui/button/invoke")
+                {
+                    await HandleUiButtonInvokeAsync(request, response);
+                    return;
+                }
+
                 if (method == "GET" && path == "/console/errors")
                 {
                     await HandleConsoleErrorsAsync(request, response);
@@ -1351,6 +1357,58 @@ namespace ProjectSD.EditorTools.UnityMcp
             }
         }
 
+        private static async Task HandleUiButtonInvokeAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            UiButtonInvokeRequest req = null;
+            if (request.HasEntityBody)
+            {
+                var body = await ReadRequestBodyAsync(request);
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    req = JsonUtility.FromJson<UiButtonInvokeRequest>(body);
+                }
+            }
+
+            try
+            {
+                var result = await RunOnMainThreadAsync(() => ExecuteUiButtonInvoke(req));
+                await WriteJsonAsync(response, 200, result);
+            }
+            catch (ArgumentException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse
+                    {
+                        error = "Invalid button invoke request",
+                        detail = ex.Message
+                    });
+            }
+            catch (MissingMemberException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    404,
+                    new ErrorResponse
+                    {
+                        error = "Button not found",
+                        detail = ex.Message
+                    });
+            }
+            catch (InvalidOperationException ex)
+            {
+                await WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse
+                    {
+                        error = "Button invoke unavailable",
+                        detail = ex.Message
+                    });
+            }
+        }
+
         private static async Task HandleConsoleErrorsAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             var limit = 20;
@@ -1740,6 +1798,45 @@ namespace ProjectSD.EditorTools.UnityMcp
                 character = preset.character == '\0' ? string.Empty : preset.character.ToString(),
                 modifiers = preset.modifiers.ToString(),
                 repeat = repeat
+            };
+        }
+
+        private static UiButtonInvokeResponse ExecuteUiButtonInvoke(UiButtonInvokeRequest req)
+        {
+            if (req == null || string.IsNullOrWhiteSpace(req.path))
+            {
+                throw new ArgumentException("path is required.");
+            }
+
+            if (!EditorApplication.isPlaying)
+            {
+                throw new InvalidOperationException("UI button invoke requires play mode.");
+            }
+
+            var gameObject = GameObject.Find(req.path);
+            if (gameObject == null)
+            {
+                throw new MissingMemberException("GameObject not found: " + req.path);
+            }
+
+            var button = gameObject.GetComponent<Button>();
+            if (button == null)
+            {
+                throw new MissingMemberException("Button component not found on: " + req.path);
+            }
+
+            button.onClick.Invoke();
+
+            return new UiButtonInvokeResponse
+            {
+                success = true,
+                message = "Invoked Button.onClick: " + req.path,
+                path = GetTransformPath(gameObject.transform),
+                name = gameObject.name,
+                activeSelf = gameObject.activeSelf,
+                activeInHierarchy = gameObject.activeInHierarchy,
+                interactable = button.interactable,
+                persistentListenerCount = button.onClick.GetPersistentEventCount()
             };
         }
 
@@ -2973,11 +3070,13 @@ namespace ProjectSD.EditorTools.UnityMcp
         private static async Task HandleSceneOpenAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             string scenePath = null;
+            var saveCurrentSceneIfDirty = false;
             try
             {
                 var body = await ReadRequestBodyAsync(request);
                 var json = JsonUtility.FromJson<SceneOpenRequest>(body);
                 scenePath = json?.scenePath;
+                saveCurrentSceneIfDirty = json != null && json.saveCurrentSceneIfDirty;
             }
             catch { /* fall through to validation */ }
 
@@ -2989,6 +3088,38 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             var result = await RunOnMainThreadAsync(() =>
             {
+                if (saveCurrentSceneIfDirty)
+                {
+                    var activeScene = SceneManager.GetActiveScene();
+                    if (activeScene.IsValid() && activeScene.isDirty)
+                    {
+                        if (string.IsNullOrWhiteSpace(activeScene.path))
+                        {
+                            return new GenericResponse
+                            {
+                                success = false,
+                                message = "Current scene has unsaved changes but no path. Save it manually before opening another scene."
+                            };
+                        }
+
+                        if (!EditorSceneManager.SaveScene(activeScene))
+                        {
+                            return new GenericResponse
+                            {
+                                success = false,
+                                message = "Failed to save current scene before opening: " + activeScene.path
+                            };
+                        }
+                    }
+
+                    var scene = EditorSceneManager.OpenScene(scenePath);
+                    return new GenericResponse
+                    {
+                        success = scene.IsValid(),
+                        message = scene.IsValid() ? "Opened scene: " + scenePath : "Failed to open scene: " + scenePath
+                    };
+                }
+
                 if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 {
                     var scene = EditorSceneManager.OpenScene(scenePath);
@@ -2998,6 +3129,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                         message = scene.IsValid() ? "Opened scene: " + scenePath : "Failed to open scene: " + scenePath
                     };
                 }
+
                 return new GenericResponse { success = false, message = "User cancelled scene save prompt" };
             });
 
@@ -3005,7 +3137,11 @@ namespace ProjectSD.EditorTools.UnityMcp
         }
 
         [Serializable]
-        private class SceneOpenRequest { public string scenePath; }
+        private class SceneOpenRequest
+        {
+            public string scenePath;
+            public bool saveCurrentSceneIfDirty;
+        }
 
         private static async Task HandleSceneSaveAsync(HttpListenerResponse response)
         {
@@ -3654,6 +3790,25 @@ namespace ProjectSD.EditorTools.UnityMcp
             public string character;
             public string modifiers;
             public int repeat;
+        }
+
+        [Serializable]
+        private sealed class UiButtonInvokeRequest
+        {
+            public string path;
+        }
+
+        [Serializable]
+        private sealed class UiButtonInvokeResponse
+        {
+            public bool success;
+            public string message;
+            public string path;
+            public string name;
+            public bool activeSelf;
+            public bool activeInHierarchy;
+            public bool interactable;
+            public int persistentListenerCount;
         }
     }
 }

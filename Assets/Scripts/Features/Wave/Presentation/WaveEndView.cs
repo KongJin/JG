@@ -1,6 +1,7 @@
 using Shared.Attributes;
 using System;
 using Features.Wave.Application.Events;
+using Features.Wave.Domain;
 using Shared.EventBus;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +17,7 @@ namespace Features.Wave.Presentation
         {
             subscriber.Subscribe(this, new Action<WaveVictoryEvent>(OnVictory));
             subscriber.Subscribe(this, new Action<WaveDefeatEvent>(OnDefeat));
+            subscriber.Subscribe(this, new Action<WaveHydratedEvent>(OnWaveHydrated));
 
             if (panel != null) panel.SetActive(false);
         }
@@ -28,6 +30,19 @@ namespace Features.Wave.Presentation
         private void OnDefeat(WaveDefeatEvent e)
         {
             Show("Defeat!");
+        }
+
+        private void OnWaveHydrated(WaveHydratedEvent e)
+        {
+            switch (e.State)
+            {
+                case WaveState.Victory:
+                    Show("Victory!");
+                    break;
+                case WaveState.Defeat:
+                    Show("Defeat!");
+                    break;
+            }
         }
 
         private void Show(string message)

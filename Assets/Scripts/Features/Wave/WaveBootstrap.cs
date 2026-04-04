@@ -73,7 +73,7 @@ namespace Features.Wave
             _endView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _endView));
 
-            _upgradeView.Initialize(eventBus, eventBus, localPlayerId, iconPort);
+            _upgradeView.Initialize(eventBus, eventBus, localPlayerId, iconPort, _flowController.SelectionTimer);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _upgradeView));
 
             _upgradeResultView.Initialize(eventBus);

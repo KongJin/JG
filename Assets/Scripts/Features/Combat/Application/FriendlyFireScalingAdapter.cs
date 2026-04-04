@@ -11,8 +11,14 @@ namespace Features.Combat.Application
 
         public FriendlyFireScalingAdapter(IEventSubscriber subscriber)
         {
+            subscriber.Subscribe(this, new Action<WaveCountdownStartedEvent>(OnWaveCountdownStarted));
             subscriber.Subscribe(this, new Action<WaveStartedEvent>(OnWaveStarted));
             subscriber.Subscribe(this, new Action<WaveHydratedEvent>(OnWaveHydrated));
+        }
+
+        private void OnWaveCountdownStarted(WaveCountdownStartedEvent e)
+        {
+            _currentWaveIndex = e.WaveIndex;
         }
 
         private void OnWaveStarted(WaveStartedEvent e)

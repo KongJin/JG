@@ -60,7 +60,7 @@ PlayerNetworkAdapter.RPC_ApplyDamage
 ## 레이어 메모
 
 - **Domain**: `DamageType`, `DamageRule`, `CombatTarget`, `RelationshipType`, `RelationshipRule`
-- **Application**: `ApplyDamageUseCase` (string→DomainEntityId 변환 오버로드 포함, 옵셔널 `IFriendlyFireScalingPort` 주입), `CombatNetworkEventHandler`, `CombatReplicationEventHandler`, `ZoneDamageHandler` (ZoneTickEvent 구독 → ApplyDamageUseCase 경유), `FriendlyFireScalingAdapter` (`IFriendlyFireScalingPort` 구현, `WaveStartedEvent` + `WaveHydratedEvent` 구독하여 웨이브별 FF 배율 제공 — late-join/master-switch 포함), `ICombatTargetPort`, `ICombatTargetProvider` (`CombatTargetDamageResult.IsDowned` 포함), `ICombatNetworkCommandPort`, `IEntityAffiliationPort`, `IFriendlyFireScalingPort`, `DamageAppliedEvent` (`IsDowned` 포함), `DamageReplicatedEvent`, `FriendlyFireAppliedEvent`
+- **Application**: `ApplyDamageUseCase` (string→DomainEntityId 변환 오버로드 포함, 옵셔널 `IFriendlyFireScalingPort` 주입), `CombatNetworkEventHandler`, `CombatReplicationEventHandler`, `ZoneDamageHandler` (ZoneTickEvent 구독 → ApplyDamageUseCase 경유), `FriendlyFireScalingAdapter` (`IFriendlyFireScalingPort` 구현, `WaveCountdownStartedEvent` + `WaveStartedEvent` + `WaveHydratedEvent` 구독하여 웨이브별 FF 배율 제공 — 카운트다운 시점부터 동기화, late-join/master-switch 포함), `ICombatTargetPort`, `ICombatTargetProvider` (`CombatTargetDamageResult.IsDowned` 포함), `ICombatNetworkCommandPort`, `IEntityAffiliationPort`, `IFriendlyFireScalingPort`, `DamageAppliedEvent` (`IsDowned` 포함), `DamageReplicatedEvent`, `FriendlyFireAppliedEvent`
 - **Infrastructure**: `CombatTargetAdapter` (ICombatTargetPort 구현, ICombatTargetProvider 기반 딕셔너리)
 - **Presentation**: `CombatTargetView` (데미지 반응/피격 피드백), `FriendlyFireFeedbackView` (아군 피격 경고/피드백)
 - **Bootstrap**: `CombatBootstrap` (조립, `RegisterTarget` API) - 피처 루트에 위치. 이벤트 핸들링은 `CombatNetworkEventHandler`/`CombatReplicationEventHandler`가 EventBus를 직접 구독한다.
@@ -118,7 +118,7 @@ FriendlyFireFeedbackView는 별도 Canvas(`FFBannerCanvas`, ScreenSpace-Overlay,
 - **FF 배율**: `FriendlyFireScalingAdapter`가 `WaveHydratedEvent`도 구독하므로, late-join/master-switch 시 `ForceState()`를 통해 올바른 웨이브 인덱스를 수신한다. `ApplyDamageUseCase.Execute()`에서 매 호출마다 관계를 조회하므로 동기화 이슈 없음.
 - **FF 이벤트 재생**: `FriendlyFireAppliedEvent`는 로컬 UI 피드백 전용. 네트워크로 전파되지 않으며, late-join 클라이언트에 과거 FF 이벤트를 재생하지 않음 (의도적 — 과거 피드백은 의미 없음).
 - **Replicated path**: `ExecuteReplicated()`는 이미 계산된 최종 데미지를 받으므로 FF 배율을 재적용하지 않음. `FriendlyFireAppliedEvent`만 로컬 피드백용으로 발행.
-- **Host/Client 비대칭**: 없음. 공격자 클라이언트가 `Execute()`로 배율 적용 + RPC 전파, 피격자 클라이언트가 `ExecuteReplicated()`로 수신. 양쪽 모두 로컬 `FriendlyFireAppliedEvent`를 독립적으로 발행.
+- **Host/Client 비대칭**: 없음. `FriendlyFireScalingAdapter`가 `WaveCountdownStartedEvent`를 구독하여 카운트다운 시작 시점부터 Master/Client 모두 동일한 웨이브 인덱스를 사용한다. 공격자 클라이언트가 `Execute()`로 배율 적용 + RPC 전파, 피격자 클라이언트가 `ExecuteReplicated()`로 수신. 양쪽 모두 로컬 `FriendlyFireAppliedEvent`를 독립적으로 발행.
 
 ## 현재 구현 기준 결정
 
@@ -136,5 +136,5 @@ FriendlyFireFeedbackView는 별도 Canvas(`FFBannerCanvas`, ScreenSpace-Overlay,
 - **Player**: `PlayerCombatTargetProvider`가 `ICombatTargetProvider` 구현
 - **Player**: `PlayerCombatNetworkPortAdapter`가 `ICombatNetworkCommandPort` 구현
 - **Player**: `EntityAffiliationAdapter`가 `IEntityAffiliationPort` 구현 (ID 프리픽스 기반 소속 판정)
-- **Wave**: `WaveStartedEvent`, `WaveHydratedEvent` (`FriendlyFireScalingAdapter`가 웨이브 인덱스 추적에 사용 — 정상 진행 + late-join/master-switch)
+- **Wave**: `WaveCountdownStartedEvent`, `WaveStartedEvent`, `WaveHydratedEvent` (`FriendlyFireScalingAdapter`가 웨이브 인덱스 추적에 사용 — 카운트다운 시점부터 동기화 + late-join/master-switch)
 - **Shared**: `EventBus`, `Result`, `EntityIdHolder`, `DomainEntityId`, `SoundRequestEvent`
