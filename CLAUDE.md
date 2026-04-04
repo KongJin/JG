@@ -1,63 +1,21 @@
 # CLAUDE.md
 
 This project follows **Feature-first Clean Architecture**.
-Refer to the `/agent` directory for detailed rules.
-Game design is documented in `/agent/game_design.md`.
+
+- **Folders, layers, dependencies, feature/EventBus rules, naming, cross-feature ports:** `/agent/architecture.md` (single source of truth).
+- **Game design:** `/agent/game_design.md`
+- **Author intent, distribution/validation, confidentiality:** `/agent/developer_context.md`
+- **Work-level cohesion, SSOT for docs/tools:** `/agent/work_principles.md`
 
 ---
 
-## Architecture
+## Mandatory workflow
 
-```
-Features/<FeatureName>/
-  Domain/
-  Application/
-  Presentation/
-  Infrastructure/
-  <FeatureName>Setup.cs      # Bootstrap: composition root
-  <FeatureName>Bootstrap.cs  # Bootstrap: scene-level wiring
-Shared/
-```
-
-- Each feature is self-contained and grows independently.
-- **MANDATORY**: Before modifying ANY file under `Features/<Name>/` or `Shared/`, you MUST read the corresponding `README.md` first. Do NOT skip this step.
-- **MANDATORY**: When modifying code under `Features/<Name>/` or `Shared/`, you MUST update the corresponding `README.md` to reflect the change. Do NOT skip this step.
-- **MANDATORY**: When making design decisions — (1) colocate code that changes for the same reason, (2) minimize ripple effect by exposing interface, not implementation. Do not jump to conclusions — check current code first, then answer based on evidence. If unsure whether a change violates project rules, ask before proceeding.
-- **MANDATORY**: When writing or modifying code, you MUST follow `/agent/anti_patterns.md`. Do NOT skip this step.
-- **MANDATORY**: Scene-owned features must keep their README scene contract current: required references, runtime-created objects, allowed lookup exceptions, initialization order, and late-join/reconnect behavior.
-- `Shared` contains only reusable cross-feature utilities — never feature-specific code.
-- Cross-feature dependency is encouraged — layer direction만 지키면 피처 간 적극적으로 의존한다.
-- Only split a feature into two when a concept gains an independent lifecycle.
-
----
-
-## Dependency Direction
-
-```
-Presentation -> Application -> Domain
-Infrastructure -> Application
-Shared -> (no feature dependency)
-```
-
-- `Domain`: no Unity API, no Photon API, no IO, no database.
-- `Application`: depends on Domain, Shared, and other features' Application or Domain.
-- `Presentation`: depends on Application, Domain, Shared, and other features' same-or-inner layers.
-- `Infrastructure`: depends on Application, Domain, Shared, and other features' same-or-inner layers; implements Application ports; no business logic.
-
----
-
-## Layer Responsibilities
-
-| Layer | Contains | Must NOT contain |
-|---|---|---|
-| Domain | Entities, ValueObjects, business rules | Unity/Photon API, IO, UI |
-| Application | UseCases, port interfaces, events, EventHandlers | Domain invariants (계산·검증은 Domain에 위임), Unity API |
-| Presentation | View, InputHandler | Business logic |
-| Infrastructure | Photon/DB adapters, external SDKs | Business logic |
-| Bootstrap | Composition and wiring (Setup/Bootstrap classes at feature root) | Business logic, rendering |
-
-- UseCases must remain thin — coordinate domain logic, not contain it.
-- Each feature has ONE Setup or Bootstrap class at its root (not in a Bootstrap folder).
+* Before modifying **any** file under `Features/<Name>/` or `Shared/`, read that area’s **`README.md`**. Do not skip.
+* When modifying code under `Features/<Name>/` or `Shared/`, update the corresponding **`README.md`**. Do not skip.
+* When making design decisions: (1) colocate what changes for the same reason, (2) prefer interfaces over leaking implementation. Check the code first; if a change might violate rules, ask before proceeding.
+* When writing or modifying code, follow **`/agent/anti_patterns.md`**. Do not skip.
+* Scene-owned features: keep the **README scene contract** current (references, runtime objects, allowed lookups, init order, late-join/reconnect).
 
 ---
 
@@ -109,19 +67,6 @@ Shared -> (no feature dependency)
 
 ---
 
-## Naming Conventions
-
-- **Entity**: no suffix — `Lobby`, `Room`, `RoomMember`
-- **UseCases**: `LobbyUseCases`, `PlayerUseCases` (피처당 하나로 통합)
-- **NetworkEventHandler**: `LobbyNetworkEventHandler`, `PlayerNetworkEventHandler`
-- **Port interface**: `ILobbyRepository`, `IPlayerNetworkCommandPort`, `IPlayerNetworkCallbackPort`
-- **Event**: `LobbyUpdatedEvent`, `RoomUpdatedEvent`, `GameStartedEvent`
-- **EventBus**: `IEventBus`, `EventBus` (in `Shared/EventBus/`)
-- **Adapter**: `LobbyPhotonAdapter`, `ClockAdapter`
-- **View**: `LobbyView`, `RoomListView`, `RoomDetailView`
-
----
-
 ## Unity MCP Bridge
 
 Unity 에디터 작업이 필요할 때 로컬 HTTP 브리지를 사용한다.
@@ -151,15 +96,11 @@ Before applying a bulk replacement or mechanical edit across many files:
 
 ## Rule Priority (on conflict)
 
-1. `dependency_rules.md`
-2. `layer_rules.md`
-3. `architecture.md`
-4. `feature_rules.md`
-5. `naming_rules.md`
-6. `anti_patterns.md` (contains established patterns discovered through refactoring)
-7. `event_rules.md` (이벤트 체인 방향, 깊이 제한, 이벤트 vs 직접 호출 판단)
-8. `initialization_order.md` (피처 간 초기화 순서, 의존 관계 맵)
-9. `state_ownership.md` (CustomProperties 키별 소유권, 동기화 채널 선택)
+1. `architecture.md` (folders, features, dependencies, layers, naming, ports)
+2. `anti_patterns.md` (established patterns from refactoring)
+3. `event_rules.md` (이벤트 체인 방향, 깊이 제한, 이벤트 vs 직접 호출 판단)
+4. `initialization_order.md` (피처 간 초기화 순서, 의존 관계 맵)
+5. `state_ownership.md` (CustomProperties 키별 소유권, 동기화 채널 선택)
 
 ---
 
