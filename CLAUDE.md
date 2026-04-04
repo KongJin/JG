@@ -127,6 +127,7 @@ Shared -> (no feature dependency)
 Unity 에디터 작업이 필요할 때 로컬 HTTP 브리지를 사용한다.
 
 - **MANDATORY**: 브리지를 사용하기 전에 `Assets/Editor/UnityMcp/README.md`를 먼저 읽어라. 엔드포인트 목록, 요청/응답 형식, 주의사항이 기록되어 있다.
+- **MANDATORY**: Unity가 플레이 중일 때는 C# 스크립트(특히 `Assets/Editor/**` 브리지 코드)를 수정한 뒤 즉시 반영될 것이라 가정하지 마라. 스크립트/브리지 수정이 필요하면 먼저 플레이를 멈추고, 컴파일 완료를 확인한 다음 다시 테스트를 시작한다.
 - 코드: `Assets/Editor/UnityMcp/UnityMcpBridge.cs`
 - 주소: `http://127.0.0.1:{port}/` (포트는 `ProjectSettings/UnityMcpPort.txt`에서 읽거나 `/health`로 확인)
 - 호출: `powershell -Command "Invoke-RestMethod ..."`
@@ -159,3 +160,11 @@ Before applying a bulk replacement or mechanical edit across many files:
 7. `event_rules.md` (이벤트 체인 방향, 깊이 제한, 이벤트 vs 직접 호출 판단)
 8. `initialization_order.md` (피처 간 초기화 순서, 의존 관계 맵)
 9. `state_ownership.md` (CustomProperties 키별 소유권, 동기화 채널 선택)
+
+---
+
+## Agent Collaboration
+
+- 자동화된 교차 에이전트 리뷰/중계 체인은 사용하지 않는다.
+- 외부 에이전트 호출을 전제로 한 스크립트, 프롬프트 릴레이, 우회성 오케스트레이션은 프로젝트 규칙에서 제외한다.
+- 추가 검토가 필요하면 현재 작업 맥락에서 직접 검토하거나 사람이 명시적으로 범위를 정해 수동으로 진행한다.
