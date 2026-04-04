@@ -16,6 +16,14 @@ namespace Features.Wave.Presentation
         [Required, SerializeField] private Text resultText;
         [SerializeField] private float displayDuration = 2f;
 
+        private void Awake()
+        {
+            if (panel != null)
+            {
+                panel.SetActive(false);
+            }
+        }
+
         public void Initialize(IEventSubscriber subscriber)
         {
             subscriber.Subscribe(this, new Action<SkillSelectedEvent>(OnSkillSelected));
