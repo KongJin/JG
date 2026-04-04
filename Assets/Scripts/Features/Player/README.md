@@ -91,7 +91,7 @@ PlayerNetworkAdapter.RPC_RescueChannelStart / RPC_RescueChannelCancel
 
 - **GameSceneBootstrap** (`GameSceneBootstrap.cs`, 씬 오브젝트): `PhotonNetwork.Instantiate`로 PlayerCharacter 프리팹 생성, `[Required, SerializeField]`로 연결된 `CameraFollower`를 플레이어에 부착하고 씬 공통 `SceneErrorPresenter`를 초기화한다.
 - `GameSceneBootstrap`은 로컬/리모트 분기 없이 하나의 `ConnectPlayer()` 경로로 모든 플레이어를 연결한다 (Registry + HUD + CombatTarget + Wave 등록). HUD 프리팹에서 `GetComponent<PlayerHealthHudView>()`는 런타임 Instantiate 프리팹이라 Inspector wiring 불가 — Runtime Lookup Policy 허용 예외.
-- 로컬 전용 씬 시스템(SkillSetup, SoundPlayer, BleedoutTicker, RescueChannelTicker, InvulnerabilityTicker, DownedOverlayView)은 `Start()`에서 로컬 플레이어 스폰 직후 1회 호출한다. 이는 조건 분기가 아니라 실행 순서에 의한 것이다.
+- 로컬 전용 씬 시스템(SkillSetup, BleedoutTicker, RescueChannelTicker, InvulnerabilityTicker, DownedOverlayView)은 `Start()`에서 로컬 플레이어 스폰 직후 1회 호출한다. **SoundPlayer**는 `JG_LobbyScene`에서 DDOL 단일 인스턴스로 생성되며, 게임 씬에서는 `SoundPlayer.Instance.Initialize(gameEventBus, localPlayerId)`로만 재바인딩한다(게임 씬에 `SoundPlayer` 직렬화 필드 없음).
 - Inspector 연결 필드는 `[Required, SerializeField]`로 선언해 씬/프리팹 저장 시 누락을 검증한다.
 - `WaveBootstrap`은 optional 의존성이므로 `[SerializeField]`만 사용하고 `[Required]`를 붙이지 않는다. null이면 Wave 관련 로직을 스킵한다.
 - 플레이어 식별자는 `PlayerNetworkAdapter.StablePlayerId`를 기준으로 로컬/원격 모두 동일하게 생성한다.

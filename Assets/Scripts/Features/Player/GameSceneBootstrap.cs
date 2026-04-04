@@ -36,7 +36,6 @@ namespace Features.Player
         [Required, SerializeField] private CombatBootstrap _combatBootstrap;
         [Required, SerializeField] private ZoneSetup _zoneSetup;
         [Required, SerializeField] private SceneErrorPresenter _sceneErrorPresenter;
-        [Required, SerializeField] private SoundPlayer _soundPlayer;
         [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
         [Required, SerializeField] private ManaRegenTicker _manaRegenTicker;
         [Required, SerializeField] private ManaBarView _manaBarView;
@@ -138,7 +137,15 @@ namespace Features.Player
             _downedOverlayView.Initialize(_eventBus, localSetup.PlayerId, localSetup.BleedoutTrackerInstance, localSetup.RescueChannelTrackerInstance);
             _invulnerabilityTicker.Initialize(localSetup.InvulnerabilityTrackerInstance);
 
-            _soundPlayer.Initialize(_eventBus, localSetup.PlayerId.Value);
+            if (SoundPlayer.Instance == null)
+            {
+                Debug.LogError(
+                    "[GameSceneBootstrap] SoundPlayer.Instance is null. Start from JG_LobbyScene so the DDOL SoundPlayer is created; playing JG_GameScene alone will not load it.");
+            }
+            else
+            {
+                SoundPlayer.Instance.Initialize(_eventBus, localSetup.PlayerId.Value);
+            }
 
             // ProjectileSpawner, ZoneSetup은 EventBus만 필요 → 선택 전에 초기화
             // 선택 UI 중에도 원격 스킬 이벤트(ProjectileRequestedEvent, ZoneRequestedEvent) 수신 가능

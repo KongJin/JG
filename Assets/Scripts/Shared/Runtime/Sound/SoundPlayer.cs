@@ -1,4 +1,4 @@
-using Shared.Attributes;
+﻿using Shared.Attributes;
 using System;
 using System.Collections.Generic;
 using Shared.EventBus;
@@ -12,6 +12,10 @@ namespace Shared.Runtime.Sound
 {
     public sealed class SoundPlayer : MonoBehaviour
     {
+        public const string LobbyOwnerId = "lobby";
+
+        public static SoundPlayer Instance { get; private set; }
+
         [Required, SerializeField] private GameObject audioSourcePrefab;
         [Required, SerializeField] private SoundCatalog catalog;
         [SerializeField] private int initialPoolSize = 8;
@@ -25,23 +29,58 @@ namespace Shared.Runtime.Sound
         private readonly Dictionary<GameObject, PooledAudioSource> _cache =
             new Dictionary<GameObject, PooledAudioSource>();
 
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
         public void Initialize(IEventSubscriber eventBus, string localPlayerId)
         {
+            ReleasePooledChildrenAndClearState();
+
             _eventBus = eventBus;
             _localPlayerId = localPlayerId;
-
-            _disposables?.Dispose();
-            _disposables = null;
-
-            _pool = new GameObjectPool(audioSourcePrefab, transform, initialPoolSize);
 
             _disposables = new DisposableScope();
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, this));
             _eventBus.Subscribe(this, new Action<SoundRequestEvent>(OnSoundRequested));
+
+            _pool = new GameObjectPool(audioSourcePrefab, transform, initialPoolSize);
+        }
+
+        private void ReleasePooledChildrenAndClearState()
+        {
+            _disposables?.Dispose();
+            _disposables = null;
+
+            var pooledObjects = GetComponentsInChildren<PooledObject>(true);
+            for (var i = pooledObjects.Length - 1; i >= 0; i--)
+            {
+                var po = pooledObjects[i];
+                if (po == null)
+                    continue;
+                if (po.gameObject == gameObject)
+                    continue;
+                Destroy(po.gameObject);
+            }
+
+            _cache.Clear();
+            _lastPlayTime.Clear();
+            _pool = null;
         }
 
         private void OnDestroy()
         {
+            if (Instance == this)
+                Instance = null;
+
             _disposables?.Dispose();
         }
 

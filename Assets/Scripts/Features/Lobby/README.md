@@ -85,12 +85,13 @@ Photon 콜백 해석과 도메인 상태 업데이트는 `LobbyNetworkEventHandl
 
 ## JG_LobbyScene (씬 계약)
 
+- **SoundPlayer (필수):** 씬 루트에 `SoundPlayer` GameObject + `Shared.Runtime.Sound.SoundPlayer` 컴포넌트. `LobbyBootstrap._soundPlayer`에 연결. `LobbyBootstrap.Awake`에서 `LobbyView.Initialize` **이전**에 `Initialize(eventBus, SoundPlayer.LobbyOwnerId)` 호출. 로비에서 `SoundRequestEvent`를 쓸 때는 **`PlaybackPolicy.All`만** 사용한다 (`LocalOnly` / `OwnerExcluded`는 게임 씬 전용).
 - **MCP/로컬 반복 테스트**: `RoomNameInput`·`DisplayNameInput`·`CapacityInput`에 씬 저장 시 기본 문자열이 들어가 있어야 `CreateRoom` 검증(방 이름 2글자 이상 등)을 타이핑 없이 통과할 수 있다. 프로덕션 빌드에서 비우려면 별도 정책으로 조정한다.
 - **난이도 (선택)**: `RoomListView`에 `TMP_Dropdown _difficultyDropdown`을 연결하면 옵션 순서가 **0=Normal, 1=Easy, 2=Hard**여야 한다. 미연결이면 항상 Normal(0). 드롭다운 값은 **그대로** `LobbyUseCases.CreateRoom`에 넘기며, 0~2 밖이면 `LobbyRule.ValidateDifficultyPreset`에서 실패한다(뷰에서 중복 클램프하지 않음). `RoomItemView`·`RoomDetailView`의 난이도 텍스트 필드는 선택 사항(미연결 시 비워 둠).
 
 ## Bootstrap
 
-- **LobbyBootstrap** (씬 오브젝트, 피처 루트에 위치): `SceneErrorPresenter` → LobbyPhotonAdapter → LobbyNetworkEventHandler → LobbyUseCases → LobbyView 순서로 조립
+- **LobbyBootstrap** (씬 오브젝트, 피처 루트에 위치): `SceneErrorPresenter` → (동기 구독/리포지토리/핸들러/유스케이스) → **`SoundPlayer.Initialize` (LobbyView 이전)** → `LobbyView.Initialize` → `LobbyUpdatedEvent` 발행
 - `SceneLoaderAdapter`는 plain C# class이므로 Inspector에서 연결하지 않고 `Awake()`에서 직접 생성한다
 - `LobbyView`는 에러 텍스트를 직접 관리하지 않고, 씬 공통 `SceneErrorPresenter`가 배너를 렌더링한다
 - Inspector 연결 필드는 `[Required, SerializeField]`로 선언해 씬 저장 시 누락을 검증한다

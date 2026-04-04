@@ -134,6 +134,11 @@ Pure C# adapters are preferred when possible.
 - documented in the feature README
 - not used as fallback for missing scene references
 
+**DDOL singleton (Shared infrastructure only):**
+- Default: do not introduce new static `Instance` + `DontDestroyOnLoad` patterns in feature code.
+- Allowed only for `Shared/**` infrastructure when a single process-wide service is required. Example: `SoundPlayer.Instance` — one audio root, created from the lobby scene, `Initialize` rebinds per-scene `EventBus`. The first scene wires it with `[Required, SerializeField]`; later scenes use `Instance` only for rebind, not scene `Find*`.
+- Forbidden: arbitrary DDOL singletons in feature Presentation/Infrastructure.
+
 ### 7. Scene Contract
 **Rule:** Scene-owned features must declare their scene contract in the feature README.
 

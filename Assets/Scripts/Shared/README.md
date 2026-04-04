@@ -143,13 +143,11 @@ publisher.Publish(new SoundRequestEvent(new SoundRequest(
 
 ### 씬 조립
 
-```csharp
-// GameSceneBootstrap에서
-_soundPlayer.Initialize(eventBus, localPlayerId.Value);
-```
+- **단일 인스턴스 (DDOL):** `SoundPlayer`는 `JG_LobbyScene` 루트에 두고 Inspector에서 `SoundCatalog`·오디오 프리팹을 연결한다. `Awake`에서 `DontDestroyOnLoad` + `SoundPlayer.Instance`로 유지한다. `LobbyBootstrap`이 `_view.Initialize` **이전**에 `Initialize(lobbyEventBus, SoundPlayer.LobbyOwnerId)`를 호출한다.
+- **게임 씬:** `JG_GameScene`에는 `SoundPlayer` 오브젝트를 두지 않는다. `GameSceneBootstrap`이 로컬 플레이어 준비 후 `SoundPlayer.Instance.Initialize(gameEventBus, localPlayerId)`로 **EventBus·ownerId 재바인딩**한다. `Instance == null`이면 로비를 거치지 않았거나 씬 배선 누락이다 (`Debug.LogError`).
+- **로비 사운드 규약:** 로비에서는 `PlaybackPolicy.All`만 사용한다. `LocalOnly` / `OwnerExcluded`는 게임 도메인 `PlayerId`가 바인딩된 뒤(게임 씬)부터 의미가 있다.
 
-SoundPlayer GameObject에 `SoundCatalog`와 오디오 프리팹을 Inspector에서 연결한다.
-오디오 프리팹에는 `AudioSource` + `PooledObject` + `LifetimeRelease` + `PooledAudioSource`를 붙인다.
+오디오 프리팹에는 `AudioSource` + `PooledObject` + `LifetimeRelease` + `PooledAudioSource`를 붙인다. `Initialize` 재호출 시 `PooledObject`가 있는 자식만 파괴해 풀 누적을 막는다.
 
 ## Lifecycle 유틸
 

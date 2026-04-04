@@ -1,4 +1,4 @@
-using Shared.Attributes;
+﻿using Shared.Attributes;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
 using Features.Lobby.Infrastructure;
@@ -7,6 +7,7 @@ using Features.Lobby.Infrastructure.Photon;
 using Features.Lobby.Presentation;
 using Shared.Analytics;
 using Shared.EventBus;
+using Shared.Runtime.Sound;
 using Shared.Time;
 using Shared.Ui;
 using UnityEngine;
@@ -22,6 +23,9 @@ public sealed class LobbyBootstrap : MonoBehaviour
 
     [Required, SerializeField]
     private SceneErrorPresenter _sceneErrorPresenter;
+
+    [Required, SerializeField]
+    private SoundPlayer _soundPlayer;
 
     private LobbyNetworkEventHandler _syncHandler;
     private readonly EventBus _eventBus = new EventBus();
@@ -48,6 +52,8 @@ public sealed class LobbyBootstrap : MonoBehaviour
 
         var useCases = new LobbyUseCases(repository, network, clock);
 
+        _soundPlayer.Initialize(_eventBus, SoundPlayer.LobbyOwnerId);
+
         _view.Initialize(_eventBus, _eventBus, useCases);
         _eventBus.Publish(new LobbyUpdatedEvent(repository.LoadLobby() ?? new DomainLobby()));
     }
@@ -64,3 +70,4 @@ public sealed class LobbyBootstrap : MonoBehaviour
         _sceneLoader.LoadScene(e.SceneName);
     }
 }
+

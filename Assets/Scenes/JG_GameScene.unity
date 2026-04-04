@@ -322,53 +322,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 64018218}
   m_CullTransparentMesh: 1
---- !u!1 &72651453
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 72651455}
-  - component: {fileID: 72651454}
-  m_Layer: 0
-  m_Name: SoundPlayer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &72651454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 72651453}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7e4e11ffefa7ff45bafe9eb2e8ec08b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Shared.Runtime.Sound.SoundPlayer
-  audioSourcePrefab: {fileID: 4459536716551180174, guid: 5e3f256091dc5d546b9adc51695f93d8, type: 3}
-  catalog: {fileID: 11400000, guid: ce12d1d3fadb19541b6cf905025c8794, type: 2}
-  initialPoolSize: 8
---- !u!4 &72651455
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 72651453}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+
 --- !u!1 &75000751
 GameObject:
   m_ObjectHideFlags: 0
@@ -892,7 +846,6 @@ MonoBehaviour:
   _combatBootstrap: {fileID: 554149865}
   _zoneSetup: {fileID: 430989465}
   _sceneErrorPresenter: {fileID: 1944029315}
-  _soundPlayer: {fileID: 72651454}
   _playerSceneRegistry: {fileID: 258126767}
   _manaRegenTicker: {fileID: 258126773}
   _manaBarView: {fileID: 668470707}
@@ -8723,7 +8676,6 @@ SceneRoots:
   - {fileID: 1944029314}
   - {fileID: 1588875749}
   - {fileID: 1839300770}
-  - {fileID: 72651455}
   - {fileID: 419748949}
   - {fileID: 1811844700}
   - {fileID: 547194458}

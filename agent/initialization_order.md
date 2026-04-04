@@ -9,6 +9,23 @@
 
 ---
 
+### 현재 LobbyScene 초기화 순서 (LobbyBootstrap)
+
+`EventBus`는 필드 초기화로 한 인스턴스가 존재한다. `SoundPlayer`는 **로비 씬 루트**에 두고 `Awake`에서 `DontDestroyOnLoad` + 단일 `Instance`로 등록된다.
+
+```
+1. SceneErrorPresenter.Initialize(eventBus)
+2. EventBus Subscribe (SceneLoadRequestedEvent 등)
+3. Analytics / Repository / LobbyNetworkEventHandler / LobbyUseCases
+4. SoundPlayer.Initialize(eventBus, SoundPlayer.LobbyOwnerId)  ← LobbyView.Initialize 이전
+5. LobbyView.Initialize
+6. LobbyUpdatedEvent 발행
+```
+
+로비에서 발행하는 `SoundRequestEvent`는 규약상 **`PlaybackPolicy.All`만** 사용한다 (`LocalOnly` / `OwnerExcluded`는 게임 씬 재바인딩 이후).
+
+---
+
 ### 현재 GameScene 초기화 순서 (GameSceneBootstrap)
 
 초기화는 두 단계로 나뉜다:
@@ -23,7 +40,7 @@
 5. Player            — PlayerSetup.Initialize (Status.SpeedModifier 주입)
 6. Combat            — CombatBootstrap.Initialize (localPlayer 주입)
 7. UI & Subsystems   — ManaRegenTicker, BleedoutTicker, RescueChannelTicker,
-                       InvulnerabilityTicker, SoundPlayer
+                       InvulnerabilityTicker, SoundPlayer.Instance.Initialize (DDOL, 로비에서 생성됨)
 8. ProjectileSpawner — EventBus만 필요, 선택 전 초기화 (원격 스킬 이벤트 수신)
 9. ZoneSetup         — EventBus만 필요, 선택 전 초기화 (원격 스킬 이벤트 수신)
 10. Remote Players   — _remotePlayerWiringReady = true, 큐 처리
