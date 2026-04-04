@@ -5,6 +5,7 @@ using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Lifecycle;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Features.Skill.Presentation
 {
@@ -12,6 +13,15 @@ namespace Features.Skill.Presentation
     {
         [Required, SerializeField]
         private SlotView[] slotViews;
+
+        [Tooltip("선택. 뽑기 더미에 다음 스킬이 있을 때 표시 (MVP ① 덱 순환 직관). 비우면 이벤트만 구독하고 UI는 건너뜀.")]
+        [SerializeField]
+        private Image nextDrawPreviewIcon;
+
+        [Tooltip("선택. 예: \"다음\"")]
+        [SerializeField]
+        private Text nextDrawHintLabel;
+
         private static readonly string[] SlotLabels = { "RMB", "Q" };
 
         private IEventSubscriber _eventBus;
@@ -35,8 +45,11 @@ namespace Features.Skill.Presentation
                 slotViews[i].ClearSkill();
             }
 
+            ApplyNextDrawPreview(null);
+
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, this));
             _eventBus.Subscribe(this, new System.Action<SkillEquippedEvent>(OnSkillEquipped));
+            _eventBus.Subscribe(this, new System.Action<DeckNextDrawPreviewEvent>(OnDeckNextDrawPreview));
         }
 
         private void OnDestroy()
@@ -51,6 +64,44 @@ namespace Features.Skill.Presentation
             var icon = _iconPort?.GetIcon(e.SkillId.Value);
             slotViews[e.SlotIndex].SetSkill(icon);
             Debug.Log($"[BarView] Slot {e.SlotIndex} equipped: {e.SkillId}");
+        }
+
+        private void OnDeckNextDrawPreview(DeckNextDrawPreviewEvent e)
+        {
+            ApplyNextDrawPreview(e.NextSkillId);
+        }
+
+        private void ApplyNextDrawPreview(string nextSkillIdOrNull)
+        {
+            if (nextDrawPreviewIcon == null && nextDrawHintLabel == null)
+                return;
+
+            if (string.IsNullOrEmpty(nextSkillIdOrNull))
+            {
+                if (nextDrawPreviewIcon != null)
+                {
+                    nextDrawPreviewIcon.sprite = null;
+                    nextDrawPreviewIcon.enabled = false;
+                }
+
+                if (nextDrawHintLabel != null)
+                    nextDrawHintLabel.gameObject.SetActive(false);
+                return;
+            }
+
+            var sprite = _iconPort?.GetIcon(nextSkillIdOrNull);
+            if (nextDrawPreviewIcon != null)
+            {
+                nextDrawPreviewIcon.sprite = sprite;
+                nextDrawPreviewIcon.enabled = sprite != null;
+            }
+
+            if (nextDrawHintLabel != null)
+            {
+                nextDrawHintLabel.gameObject.SetActive(true);
+                if (string.IsNullOrEmpty(nextDrawHintLabel.text))
+                    nextDrawHintLabel.text = "다음";
+            }
         }
     }
 }

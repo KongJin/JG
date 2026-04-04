@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Features.Wave.Application;
 using Features.Wave.Application.Events;
 using Features.Wave.Application.Ports;
@@ -79,6 +80,9 @@ namespace Features.Wave.Presentation
         {
             _cachedCandidates = e.Candidates;
             _selectionTimer.Start(e.SelectionDuration);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            LogRewardCandidatesOffered(e);
+#endif
         }
 
         private void OnSkillSelected(SkillSelectedEvent e)
@@ -97,6 +101,11 @@ namespace Features.Wave.Presentation
             if (_cachedCandidates == null || _cachedCandidates.Length == 0) return;
 
             var c = _cachedCandidates[0];
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.Log(
+                $"[MvpReward] auto_select contextWaveIndex={_waveLoop.CurrentWaveIndex} " +
+                $"index=0 type={c.Type} skillId={c.SkillId} axis={c.Axis}");
+#endif
             _publisher.Publish(new SkillSelectedEvent(
                 _localPlayerId, c.SkillId, c.DisplayName, c.Type, c.Axis));
         }
@@ -122,5 +131,21 @@ namespace Features.Wave.Presentation
         {
             _subscriber?.UnsubscribeAll(this);
         }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        private static void LogRewardCandidatesOffered(SkillSelectionRequestedEvent e)
+        {
+            var sb = new StringBuilder();
+            sb.Append("[MvpReward] candidates_offered waveIndex=").Append(e.WaveIndex).Append(" order=");
+            for (var i = 0; i < e.Candidates.Length; i++)
+            {
+                var c = e.Candidates[i];
+                if (i > 0) sb.Append(';');
+                sb.Append(i).Append(':').Append(c.Type).Append(':').Append(c.SkillId);
+            }
+
+            Debug.Log(sb.ToString());
+        }
+#endif
     }
 }

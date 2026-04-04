@@ -129,8 +129,9 @@ namespace Features.Skill
             // 덱 순환 핸들러
             var deckCycleHandler = new DeckCycleHandler(
                 _deck, _skillBar, _equipSkillUseCase,
-                id => _catalog.Get(id), _casterId, _eventBus);
+                id => _catalog.Get(id), _casterId, _eventBus, _eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, deckCycleHandler));
+            deckCycleHandler.PublishDeckPreview();
 
             _skillUpgradeAdapter = new SkillUpgradeAdapter(
                 new Domain.SkillUpgradeLevel(),

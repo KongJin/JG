@@ -32,6 +32,8 @@ namespace Features.Wave.Presentation
         private DomainEntityId _localPlayerId;
         private RewardCandidate[] _candidates;
         private SelectionTimer _selectionTimer;
+        private int _rewardContextWaveIndex;
+        private float _selectionDurationSeconds;
 
         public void Initialize(IEventPublisher publisher, IEventSubscriber subscriber, DomainEntityId localPlayerId, ISkillIconPort iconPort, SelectionTimer selectionTimer)
         {
@@ -54,6 +56,8 @@ namespace Features.Wave.Presentation
         private void OnSelectionRequested(SkillSelectionRequestedEvent e)
         {
             _candidates = e.Candidates;
+            _rewardContextWaveIndex = e.WaveIndex;
+            _selectionDurationSeconds = e.SelectionDuration;
 
             var buttons = new[] { countButton, rangeButton, durationButton };
             var labels = new[] { countLabel, rangeLabel, durationLabel };
@@ -108,6 +112,14 @@ namespace Features.Wave.Presentation
 
             panel.SetActive(false);
             var c = _candidates[index];
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            var elapsed = _selectionTimer != null
+                ? _selectionDurationSeconds - _selectionTimer.Remaining
+                : 0f;
+            Debug.Log(
+                $"[MvpReward] manual_select contextWaveIndex={_rewardContextWaveIndex} " +
+                $"index={index} type={c.Type} skillId={c.SkillId} axis={c.Axis} elapsedSec={elapsed:F2}");
+#endif
             _publisher.Publish(new SkillSelectedEvent(_localPlayerId, c.SkillId, c.DisplayName, c.Type, c.Axis));
         }
 

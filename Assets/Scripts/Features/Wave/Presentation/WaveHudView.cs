@@ -13,6 +13,11 @@ namespace Features.Wave.Presentation
         [Required, SerializeField] private Text waveText;
         [Required, SerializeField] private Text countdownText;
         [Required, SerializeField] private Text statusText;
+
+        [Tooltip("선택. 웨이브1 카운트다운 시 덱 순환 안내 한 줄 (MVP ①·리텐션). 비우면 표시 안 함.")]
+        [SerializeField]
+        private Text firstWaveDeckHintText;
+
         [SerializeField] private float statusDisplayDuration = 2f;
 
         private float _statusTimer;
@@ -28,6 +33,7 @@ namespace Features.Wave.Presentation
 
             if (countdownText != null) countdownText.gameObject.SetActive(false);
             if (statusText != null) statusText.gameObject.SetActive(false);
+            SetFirstWaveDeckHintVisible(false);
         }
 
         private void Update()
@@ -65,6 +71,8 @@ namespace Features.Wave.Presentation
 
             if (statusText != null)
                 statusText.gameObject.SetActive(false);
+
+            SetFirstWaveDeckHintVisible(e.WaveIndex == 0);
         }
 
         private void OnWaveStarted(WaveStartedEvent e)
@@ -76,6 +84,8 @@ namespace Features.Wave.Presentation
 
             if (countdownText != null)
                 countdownText.gameObject.SetActive(false);
+
+            SetFirstWaveDeckHintVisible(false);
         }
 
         private void OnWaveCleared(WaveClearedEvent e)
@@ -97,12 +107,15 @@ namespace Features.Wave.Presentation
                     countdownText.gameObject.SetActive(true);
                     countdownText.text = $"{Mathf.CeilToInt(e.CountdownRemaining)}";
                 }
+
+                SetFirstWaveDeckHintVisible(e.WaveIndex == 0);
             }
             else
             {
                 _isCountingDown = false;
                 if (countdownText != null)
                     countdownText.gameObject.SetActive(false);
+                SetFirstWaveDeckHintVisible(false);
             }
         }
 
@@ -112,6 +125,22 @@ namespace Features.Wave.Presentation
             statusText.text = message;
             statusText.gameObject.SetActive(true);
             _statusTimer = statusDisplayDuration;
+        }
+
+        private void SetFirstWaveDeckHintVisible(bool visible)
+        {
+            if (firstWaveDeckHintText == null)
+                return;
+
+            if (!visible)
+            {
+                firstWaveDeckHintText.gameObject.SetActive(false);
+                return;
+            }
+
+            firstWaveDeckHintText.gameObject.SetActive(true);
+            if (string.IsNullOrEmpty(firstWaveDeckHintText.text))
+                firstWaveDeckHintText.text = "RMB·Q로 스킬 시전. 시전한 슬롯에는 덱에서 다음 스킬이 옵니다.";
         }
 
     }

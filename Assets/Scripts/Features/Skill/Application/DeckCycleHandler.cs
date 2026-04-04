@@ -17,6 +17,7 @@ namespace Features.Skill.Application
         private readonly EquipSkillUseCase _equip;
         private readonly Func<string, SkillEntity> _skillLookup;
         private readonly DomainEntityId _localCasterId;
+        private readonly IEventPublisher _publisher;
 
         public DeckCycleHandler(
             Deck deck,
@@ -24,15 +25,23 @@ namespace Features.Skill.Application
             EquipSkillUseCase equip,
             Func<string, SkillEntity> skillLookup,
             DomainEntityId localCasterId,
-            IEventSubscriber subscriber)
+            IEventSubscriber subscriber,
+            IEventPublisher publisher)
         {
             _deck = deck;
             _bar = bar;
             _equip = equip;
             _skillLookup = skillLookup;
             _localCasterId = localCasterId;
+            _publisher = publisher;
 
             subscriber.Subscribe(this, new Action<SkillCastedEvent>(OnSkillCasted));
+        }
+
+        /// <summary>초기 장착 직후 등, 덱 미리보기 HUD를 한 번 갱신한다.</summary>
+        public void PublishDeckPreview()
+        {
+            _publisher.Publish(new DeckNextDrawPreviewEvent(_deck.PeekNextDrawSkillId()));
         }
 
         private void OnSkillCasted(SkillCastedEvent e)
@@ -42,12 +51,21 @@ namespace Features.Skill.Application
             _deck.Discard(e.SkillId);
 
             var nextId = _deck.Draw();
-            if (string.IsNullOrEmpty(nextId.Value)) return;
+            if (string.IsNullOrEmpty(nextId.Value))
+            {
+                _publisher.Publish(new DeckNextDrawPreviewEvent(null));
+                return;
+            }
 
             var nextSkill = _skillLookup(nextId.Value);
-            if (nextSkill == null) return;
+            if (nextSkill == null)
+            {
+                _publisher.Publish(new DeckNextDrawPreviewEvent(null));
+                return;
+            }
 
             _equip.Execute(_bar, e.SlotIndex, nextSkill);
+            _publisher.Publish(new DeckNextDrawPreviewEvent(_deck.PeekNextDrawSkillId()));
         }
     }
 }

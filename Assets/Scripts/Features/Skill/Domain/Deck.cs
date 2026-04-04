@@ -24,6 +24,16 @@ namespace Features.Skill.Domain
         public IReadOnlyList<DomainEntityId> DrawPileIds => _drawPile.AsReadOnly();
         public IReadOnlyList<DomainEntityId> DiscardPileIds => _discardPile.AsReadOnly();
 
+        /// <summary>
+        /// 다음 <see cref="Draw"/>로 뽑힐 스킬 id. 뽑기 더미가 비어 있으면 null(셔플 직전에는 미리 알 수 없음).
+        /// </summary>
+        public string PeekNextDrawSkillId()
+        {
+            if (_drawPile.Count == 0)
+                return null;
+            return _drawPile[^1].Value;
+        }
+
         public DomainEntityId Draw()
         {
             if (_drawPile.Count == 0)
