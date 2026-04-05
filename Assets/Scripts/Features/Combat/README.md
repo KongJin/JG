@@ -1,8 +1,15 @@
 # Combat Feature
 
-대상 방어력 기반 데미지 계산과 데미지 적용 이벤트 발행을 담당한다.
+Combat 피처는 대상 방어력 기반 데미지 계산과 데미지 적용 이벤트 발행을 담당한다.
 
-## 현재 책임
+## 먼저 읽을 규칙
+
+- 전역 구조, 레이어, scene contract 체크리스트: [architecture.md](../../../../agent/architecture.md)
+- Bootstrap 책임, EventHandler 위치, runtime lookup 예외: [anti_patterns.md](../../../../agent/anti_patterns.md)
+- 이벤트 체인 방향과 직접 호출 판단: [event_rules.md](../../../../agent/event_rules.md)
+- 게임 씬 전역 초기화 순서: [initialization_order.md](../../../../agent/initialization_order.md)
+
+## 이 피처의 책임
 
 - `DamageRule`로 최종 데미지를 계산한다.
 - 타깃 포트를 통해 데미지를 적용한다.
@@ -10,7 +17,13 @@
 - `ICombatTargetProvider`를 통해 외부 피처(Player 등)가 데미지 파이프라인에 참여한다.
 - `CombatTargetDamageResult`에 `IsDowned` 필드를 포함하여 다운 상태를 전파한다.
 
-## 데이터 흐름
+## 로컬 계약
+
+- 실제 데미지 계산은 권한 있는 로컬 경로에서만 수행하고, 원격 클라이언트는 replication 경로만 재현한다.
+- Friendly Fire 배율은 Combat가 적용하며, replicated path에서는 재계산하지 않는다.
+- scene wiring과 직렬화 필드 계약은 아래 `## 씬 계약`을 따른다.
+
+## 핵심 흐름
 
 ### 로컬 (공격자 클라이언트) — Projectile 경로
 
@@ -62,7 +75,7 @@ PlayerNetworkAdapter.RPC_ApplyDamage
 - **Domain**: `DamageType`, `DamageRule`, `CombatTarget`, `RelationshipType`, `RelationshipRule`
 - **Application**: `ApplyDamageUseCase` (string→DomainEntityId 변환 오버로드 포함, 옵셔널 `IFriendlyFireScalingPort` 주입), `CombatNetworkEventHandler`, `CombatReplicationEventHandler`, `ZoneDamageHandler` (ZoneTickEvent 구독 → ApplyDamageUseCase 경유), `FriendlyFireScalingAdapter` (`IFriendlyFireScalingPort` 구현, `WaveCountdownStartedEvent` + `WaveStartedEvent` + `WaveHydratedEvent` 구독하여 웨이브별 FF 배율 제공 — 카운트다운 시점부터 동기화, late-join/master-switch 포함), `ICombatTargetPort`, `ICombatTargetProvider` (`CombatTargetDamageResult.IsDowned` 포함), `ICombatNetworkCommandPort`, `IEntityAffiliationPort`, `IFriendlyFireScalingPort`, `DamageAppliedEvent` (`IsDowned` 포함), `DamageReplicatedEvent`, `FriendlyFireAppliedEvent`
 - **Infrastructure**: `CombatTargetAdapter` (ICombatTargetPort 구현, ICombatTargetProvider 기반 딕셔너리)
-- **Presentation**: `CombatTargetView` (데미지 반응/피격 피드백), `FriendlyFireFeedbackView` (아군 피격 경고/피드백)
+- **Presentation**: `CombatTargetView` (데미지 반응/피격 피드백), `FriendlyFireFeedbackView` (아군 피격 경고/피드백), `DamageNumberSpawner` (DamageAppliedEvent 구독 → EntityIdHolder 위치에 월드 플로팅 텍스트 스폰), `DamageNumberView` (개별 플로팅 숫자 애니메이션 + 자동 파괴)
 - **Bootstrap**: `CombatBootstrap` (조립, `RegisterTarget` API) - 피처 루트에 위치. 이벤트 핸들링은 `CombatNetworkEventHandler`/`CombatReplicationEventHandler`가 EventBus를 직접 구독한다.
 
 ## 프렌들리 파이어 (Friendly Fire)
@@ -94,14 +107,22 @@ PlayerNetworkAdapter.RPC_ApplyDamage
 | `_bannerPanel` | `GameObject` | 배너 패널 (SetActive로 표시/숨김) |
 | `_bannerText` | `Text` | 배너 메시지 텍스트 |
 
-FriendlyFireFeedbackView는 별도 Canvas(`FFBannerCanvas`, ScreenSpace-Overlay, sortingOrder=100)에 배치. 내부에 Panel + Text 자식 구조.
+FriendlyFireFeedbackView는 `JG_GameScene`의 `UIRoot/FFBannerCanvas`에 배치한다(ScreenSpace-Overlay, sortingOrder=100). 내부에 Panel + Text 자식 구조.
+
+### Required Serialized References (DamageNumberSpawner)
+
+| 필드 | 타입 | 용도 |
+|---|---|---|
+| `damageNumberPrefab` | `GameObject` | 대미지 숫자 프리팹 (DamageNumberView + World-Space Canvas + CanvasGroup) |
+
+`DamageNumberSpawner`는 `JG_GameScene`의 `GameSceneRoot/CombatSystems` 아래에 두고, `GameSceneRoot`에서 선택 연결한다. `Initialize(eventBus)` 호출 후 `DamageAppliedEvent`를 구독하여 `EntityIdHolder.TryGet(targetId)` 위치에 프리팹을 Instantiate한다.
 
 ### Runtime-created objects
-없음 — 모든 UI는 scene-owned.
+- `DamageNumberView` 인스턴스: `DamageNumberSpawner`가 `DamageAppliedEvent`마다 프리팹에서 Instantiate. lifetime(0.8초) 후 자동 Destroy.
 
 ### 초기화 순서
 
-1. `GameSceneBootstrap`이 `FriendlyFireScalingAdapter` 생성 (Wave 모드일 때) → `CombatBootstrap.Initialize(eventBus, networkPort, localAuthorityId, affiliation, ffScaling)` 호출
+1. `GameSceneRoot`가 `FriendlyFireScalingAdapter` 생성 (Wave 모드일 때) → `CombatBootstrap.Initialize(eventBus, networkPort, localAuthorityId, affiliation, ffScaling)` 호출
 2. `CombatBootstrap`이 내부에서:
    - `CombatTargetAdapter.Initialize()`
    - `ApplyDamageUseCase` 생성 (`IEntityAffiliationPort` 필수 주입)
@@ -110,7 +131,7 @@ FriendlyFireFeedbackView는 별도 Canvas(`FFBannerCanvas`, ScreenSpace-Overlay,
    - `ZoneDamageHandler` 생성 (EventBus 직접 구독, localAuthorityId로 권한 필터)
    - `CombatTargetView[]` 초기화
    - `FriendlyFireFeedbackView.Initialize(subscriber, publisher, localPlayerId)` 호출
-3. 이후 `GameSceneBootstrap`이 `CombatBootstrap.RegisterTarget()`으로 플레이어/적 등록
+3. 이후 `GameSceneRoot`가 `CombatBootstrap.RegisterTarget()`으로 플레이어/적 등록
 
 ### Late-join / Reconnect 동작
 
@@ -137,4 +158,4 @@ FriendlyFireFeedbackView는 별도 Canvas(`FFBannerCanvas`, ScreenSpace-Overlay,
 - **Player**: `PlayerCombatNetworkPortAdapter`가 `ICombatNetworkCommandPort` 구현
 - **Player**: `EntityAffiliationAdapter`가 `IEntityAffiliationPort` 구현 (ID 프리픽스 기반 소속 판정)
 - **Wave**: `WaveCountdownStartedEvent`, `WaveStartedEvent`, `WaveHydratedEvent` (`FriendlyFireScalingAdapter`가 웨이브 인덱스 추적에 사용 — 카운트다운 시점부터 동기화 + late-join/master-switch)
-- **Shared**: `EventBus`, `Result`, `EntityIdHolder`, `DomainEntityId`, `SoundRequestEvent`
+- **Shared**: `EventBus`, `Result`, `EntityIdHolder` (static registry: `TryGet(id)` — 대미지 숫자 위치 조회), `DomainEntityId`, `SoundRequestEvent`

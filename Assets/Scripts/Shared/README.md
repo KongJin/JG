@@ -1,12 +1,31 @@
 # Shared
 
-프로젝트 전역에서 재사용되는 공통 유틸리티와 계약을 둔다.
-피처 전용 로직은 두지 않는다.
+Shared는 프로젝트 전역에서 재사용되는 공통 유틸리티와 계약만 둔다. 피처 전용 로직은 두지 않는다.
+
+## 먼저 읽을 규칙
+
+- 전역 구조와 Shared 경계: [architecture.md](../../../agent/architecture.md)
+- Shared로 올리면 안 되는 패턴과 DDOL 예외: [anti_patterns.md](../../../agent/anti_patterns.md)
+- 문서 소유권과 SSOT 운영 원칙: [work_principles.md](../../../agent/work_principles.md)
+
+## Shared에 들어갈 수 있는 것
+
+- 여러 feature가 함께 쓰는 순수 유틸리티
+- 전역 계약 타입과 공통 이벤트 인프라
+- 특정 feature 소유로 보기 어려운 공통 런타임 서비스
+- 문서화된 예외를 가진 Shared 인프라 (`SoundPlayer.Instance` 같은 DDOL 서비스)
+
+## Shared에 넣으면 안 되는 것
+
+- 특정 feature 하나의 생명주기나 규칙에 묶인 코드
+- cross-feature import를 피하려고 억지로 뽑은 추상화
+- scene wiring 누락을 런타임에 복구하는 fallback 로직
+- feature 전용 상태, 규칙, 화면 흐름
 
 ## 포함되는 공통 요소
 
 - `EventBus` — 씬/피처 로컬 이벤트 발행·구독
-- `Kernel` — `Result`, `DomainEntityId` 같은 기본 타입
+- `Kernel` — `Result`, `DomainEntityId`, `EntityIdHolder` (MonoBehaviour, static registry로 `TryGet(id)` 위치 조회 제공) 같은 기본 타입
 - `Math`, `Time` — 순수 유틸리티
 - `Lifecycle` — EventBus/InputAction 같은 런타임 구독 해제 유틸
 - `Attributes/RequiredAttribute` — Inspector 직렬화 필드 누락 검증용 어트리뷰트
@@ -144,7 +163,7 @@ publisher.Publish(new SoundRequestEvent(new SoundRequest(
 ### 씬 조립
 
 - **단일 인스턴스 (DDOL):** `SoundPlayer`는 `JG_LobbyScene` 루트에 두고 Inspector에서 `SoundCatalog`·오디오 프리팹을 연결한다. `Awake`에서 `DontDestroyOnLoad` + `SoundPlayer.Instance`로 유지한다. `LobbyBootstrap`이 `_view.Initialize` **이전**에 `Initialize(lobbyEventBus, SoundPlayer.LobbyOwnerId)`를 호출한다.
-- **게임 씬:** `JG_GameScene`에는 `SoundPlayer` 오브젝트를 두지 않는다. `GameSceneBootstrap`이 로컬 플레이어 준비 후 `SoundPlayer.Instance.Initialize(gameEventBus, localPlayerId)`로 **EventBus·ownerId 재바인딩**한다. `Instance == null`이면 로비를 거치지 않았거나 씬 배선 누락이다 (`Debug.LogError`).
+- **게임 씬:** `JG_GameScene`에는 `SoundPlayer` 오브젝트를 두지 않는다. 씬 루트 `GameSceneRoot`가 로컬 플레이어 준비 후 `SoundPlayer.Instance.Initialize(gameEventBus, localPlayerId)`로 **EventBus·ownerId 재바인딩**한다. Wave/Status/Ticker 일부 시스템이 자식 GO로 분리되어 있어도 재바인딩 책임은 계속 루트 `GameSceneRoot`에 있다. `Instance == null`이면 로비를 거치지 않았거나 씬 배선 누락이다 (`Debug.LogError`). `PooledAudioSource` 같은 pooled runtime 인스턴스도 `JG_GameScene` asset에 저장하지 않는다.
 - **로비 사운드 규약:** 로비에서는 `PlaybackPolicy.All`만 사용한다. `LocalOnly` / `OwnerExcluded`는 게임 도메인 `PlayerId`가 바인딩된 뒤(게임 씬)부터 의미가 있다.
 
 오디오 프리팹에는 `AudioSource` + `PooledObject` + `LifetimeRelease` + `PooledAudioSource`를 붙인다. `Initialize` 재호출 시 `PooledObject`가 있는 자식만 파괴해 풀 누적을 막는다.
