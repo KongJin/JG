@@ -22,3 +22,4 @@ MonoBehaviour:
   resourcesLoadPath: Enemy/CoreHunterEnemy
   targetMode: 2
   aggroRadius: 5.5
+  stopDistance: 2

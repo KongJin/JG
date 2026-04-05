@@ -162,7 +162,7 @@ publisher.Publish(new SoundRequestEvent(new SoundRequest(
 
 ### 씬 조립
 
-- **단일 인스턴스 (DDOL):** `SoundPlayer`는 `JG_LobbyScene` 루트에 두고 Inspector에서 `SoundCatalog`·오디오 프리팹을 연결한다. `Awake`에서 `DontDestroyOnLoad` + `SoundPlayer.Instance`로 유지한다. `LobbyBootstrap`이 `_view.Initialize` **이전**에 `Initialize(lobbyEventBus, SoundPlayer.LobbyOwnerId)`를 호출한다.
+- **단일 인스턴스 (DDOL):** `SoundPlayer`는 `JG_LobbyScene`의 최상위 루트 `SoundPlayer`에 두고 Inspector에서 `SoundCatalog`·오디오 프리팹을 연결한다. `Awake`에서 `DontDestroyOnLoad` + `SoundPlayer.Instance`로 유지한다. `LobbyBootstrap`이 `_view.Initialize` **이전**에 `Initialize(lobbyEventBus, SoundPlayer.LobbyOwnerId)`를 호출한다.
 - **게임 씬:** `JG_GameScene`에는 `SoundPlayer` 오브젝트를 두지 않는다. 씬 루트 `GameSceneRoot`가 로컬 플레이어 준비 후 `SoundPlayer.Instance.Initialize(gameEventBus, localPlayerId)`로 **EventBus·ownerId 재바인딩**한다. Wave/Status/Ticker 일부 시스템이 자식 GO로 분리되어 있어도 재바인딩 책임은 계속 루트 `GameSceneRoot`에 있다. `Instance == null`이면 로비를 거치지 않았거나 씬 배선 누락이다 (`Debug.LogError`). `PooledAudioSource` 같은 pooled runtime 인스턴스도 `JG_GameScene` asset에 저장하지 않는다.
 - **로비 사운드 규약:** 로비에서는 `PlaybackPolicy.All`만 사용한다. `LocalOnly` / `OwnerExcluded`는 게임 도메인 `PlayerId`가 바인딩된 뒤(게임 씬)부터 의미가 있다.
 

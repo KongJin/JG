@@ -1,8 +1,14 @@
 # Lobby Feature
 
-멀티플레이 로비 기능. 방 생성/입장/퇴장, 팀 변경, 레디, 게임 시작을 담당한다.
+Lobby 피처는 멀티플레이 로비의 방 생성/입장/퇴장, 팀 변경, 레디, 게임 시작을 담당한다.
 
-## 책임
+## 먼저 읽을 규칙
+
+- 전역 구조, 레이어, 포트 위치: [architecture.md](../../../../agent/architecture.md)
+- 구현 금지 사항과 EventHandler/Bootstrap 역할 분리: [anti_patterns.md](../../../../agent/anti_patterns.md)
+- Room/Player `CustomProperties` 소유권: [state_ownership.md](../../../../agent/state_ownership.md)
+
+## 이 피처의 책임
 
 - 방 목록 조회 및 표시
 - 방 생성/입장/퇴장
@@ -10,7 +16,13 @@
 - 방 내 팀 변경, 레디 상태 토글
 - 게임 시작 조건 검증 및 시작 트리거
 
-## 이벤트 흐름
+## 로컬 계약
+
+- Lobby만 Room `difficultyPreset`을 쓴다. 다른 피처는 읽기만 허용된다.
+- UseCase는 커맨드만 발사하고, Photon 콜백 해석과 도메인 상태 반영은 `LobbyNetworkEventHandler`만 담당한다.
+- 동기/비동기 실패는 씬 공통 에러 UI로 수렴한다.
+
+## 핵심 흐름
 
 ### 명령 경로 (로컬 → 네트워크)
 
@@ -85,13 +97,17 @@ Photon 콜백 해석과 도메인 상태 업데이트는 `LobbyNetworkEventHandl
 
 ## JG_LobbyScene (씬 계약)
 
-- **SoundPlayer (필수):** 씬 루트에 `SoundPlayer` GameObject + `Shared.Runtime.Sound.SoundPlayer` 컴포넌트. `LobbyBootstrap._soundPlayer`에 연결. `LobbyBootstrap.Awake`에서 `LobbyView.Initialize` **이전**에 `Initialize(eventBus, SoundPlayer.LobbyOwnerId)` 호출. 로비에서 `SoundRequestEvent`를 쓸 때는 **`PlaybackPolicy.All`만** 사용한다 (`LocalOnly` / `OwnerExcluded`는 게임 씬 전용).
+- 최상위 루트는 `WorldRoot`, `UIRoot`, `ServiceRoot`에 더해 DDOL 예외인 `SoundPlayer`까지 포함한다.
+- `WorldRoot` 아래에는 `Main Camera`, `Directional Light`를 둔다.
+- `UIRoot` 아래에는 `Canvas`, `EventSystem`을 둔다.
+- `ServiceRoot` 아래에는 `LobbyBootstrap`, `SharedPhoton`을 둔다.
+- **SoundPlayer (필수):** `SoundPlayer`는 DDOL 유지 때문에 최상위 루트에 둔다. `LobbyBootstrap._soundPlayer`에 연결하고, `LobbyBootstrap.Awake`에서 `LobbyView.Initialize` **이전**에 `Initialize(eventBus, SoundPlayer.LobbyOwnerId)` 호출한다. 로비에서 `SoundRequestEvent`를 쓸 때는 **`PlaybackPolicy.All`만** 사용한다 (`LocalOnly` / `OwnerExcluded`는 게임 씬 전용).
 - **MCP/로컬 반복 테스트**: `RoomNameInput`·`DisplayNameInput`·`CapacityInput`에 씬 저장 시 기본 문자열이 들어가 있어야 `CreateRoom` 검증(방 이름 2글자 이상 등)을 타이핑 없이 통과할 수 있다. 프로덕션 빌드에서 비우려면 별도 정책으로 조정한다.
 - **난이도 (선택)**: `RoomListView`에 `TMP_Dropdown _difficultyDropdown`을 연결하면 옵션 순서가 **0=Normal, 1=Easy, 2=Hard**여야 한다. 미연결이면 항상 Normal(0). 드롭다운 값은 **그대로** `LobbyUseCases.CreateRoom`에 넘기며, 0~2 밖이면 `LobbyRule.ValidateDifficultyPreset`에서 실패한다(뷰에서 중복 클램프하지 않음). `RoomItemView`·`RoomDetailView`의 난이도 텍스트 필드는 선택 사항(미연결 시 비워 둠).
 
 ## Bootstrap
 
-- **LobbyBootstrap** (씬 오브젝트, 피처 루트에 위치): `SceneErrorPresenter` → (동기 구독/리포지토리/핸들러/유스케이스) → **`SoundPlayer.Initialize` (LobbyView 이전)** → `LobbyView.Initialize` → `LobbyUpdatedEvent` 발행
+- **LobbyBootstrap** (`ServiceRoot/LobbyBootstrap`, 씬 오브젝트): `SceneErrorPresenter` → (동기 구독/리포지토리/핸들러/유스케이스) → **`SoundPlayer.Initialize` (LobbyView 이전)** → `LobbyView.Initialize` → `LobbyUpdatedEvent` 발행
 - `SceneLoaderAdapter`는 plain C# class이므로 Inspector에서 연결하지 않고 `Awake()`에서 직접 생성한다
 - `LobbyView`는 에러 텍스트를 직접 관리하지 않고, 씬 공통 `SceneErrorPresenter`가 배너를 렌더링한다
 - Inspector 연결 필드는 `[Required, SerializeField]`로 선언해 씬 저장 시 누락을 검증한다

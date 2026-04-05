@@ -1,15 +1,25 @@
 # Projectile Feature
 
-투사체의 생성, 궤적 계산, 충돌 판정, 시각 연출을 담당한다.
+Projectile 피처는 투사체 생성, 궤적 계산, 충돌 판정, 시각 연출을 담당한다.
 
-## 책임
+## 먼저 읽을 규칙
+
+- 전역 구조, 레이어, 포트 위치: [architecture.md](../../../../agent/architecture.md)
+- Application에 Unity 타입을 두지 않는 규칙과 Bootstrap 책임: [anti_patterns.md](../../../../agent/anti_patterns.md)
+
+## 이 피처의 책임
 
 - 투사체 스폰 (프리팹 인스턴스화)
 - 매 프레임 궤적 전략에 따른 이동
 - 충돌 시 Hit 전략에 따른 판정 (파괴/관통/반사/연쇄)
 - 시각 이펙트 (색상, 수명 관리)
 
-## 이벤트 흐름
+## 로컬 계약
+
+- 투사체 자체는 네트워크 동기화하지 않는다. Skill RPC 이후 각 클라이언트가 로컬 투사체를 스폰한다.
+- `ProjectileSpawner`가 투사체 생성의 유일한 진입점이며, 프리팹 계약은 아래 `## Bootstrap`과 `## 프리팹 설정 주의`를 따른다.
+
+## 핵심 흐름
 
 ```
 Skill Feature → ProjectileRequestedEvent(ownerId, spec, position, direction, statusPayload, allyDamageScale)

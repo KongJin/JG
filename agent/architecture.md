@@ -1,15 +1,15 @@
 # /agent/architecture.md
 
-**코드 구조·피처 경계·의존 방향·레이어 책임·네이밍·크로스 피처 포트**의 단일 근거(SSOT)다.  
-(기존 `dependency_rules.md`, `layer_rules.md`, `feature_rules.md`, `naming_rules.md`를 이 파일로 통합했다.)
+이 문서는 **코드 구조·피처 경계·의존 방향·레이어 책임·네이밍·크로스 피처 포트·scene contract 체크리스트**의 단일 근거(SSOT)다.  
+엔트리포인트는 `CLAUDE.md`이고, 각 feature `README.md`는 이 문서의 체크리스트를 자기 피처 값으로 채우는 **로컬 계약 문서**다. 전역 구조 규칙은 여기서만 정의한다.
 
 시각 요약(Mermaid): [`docs/architecture-diagram.md`](../docs/architecture-diagram.md) — 표·본문은 **이 문서**와 같아야 한다.
 
 ---
 
-## Folder structure
+## 폴더 구조
 
-The project follows **Feature-first Clean Architecture**.
+이 프로젝트는 **Feature-first Clean Architecture**를 따른다.
 
 ```
 Assets/Scripts/Features/<FeatureName>/
@@ -22,20 +22,23 @@ Assets/Scripts/Features/<FeatureName>/
 Assets/Scripts/Shared/
 ```
 
-Each feature must be self-contained.
+각 feature는 독립적으로 성장해야 한다.
 
-* Do not move feature-specific code into Shared.
-* Shared must only contain reusable cross-feature utilities.
-* Infrastructure implements Application ports.
-* Domain must stay framework-independent.
-* Bootstrap (Setup/Bootstrap classes at feature root) handles composition and wiring between layers.
-* Scene-owned features must define a scene contract in their **feature `README.md`**.
-* Networked features must define one explicit initialization path and late-join behavior in their **feature `README.md`**.
-* Runtime fallback creation must not replace missing scene/prefab setup.
+* feature 전용 코드를 Shared로 올리지 않는다.
+* Shared에는 여러 feature가 함께 쓰는 공통 유틸만 둔다.
+* Infrastructure는 Application port를 구현한다.
+* Domain은 프레임워크 비의존을 유지한다.
+* Bootstrap (`Setup`/`Bootstrap`)은 레이어 간 조립과 wiring만 담당한다.
+* scene-owned feature는 자기 `README.md`에 scene contract를 기록한다.
+* networked feature는 자기 `README.md`에 명시적 초기화 경로와 late-join 동작을 기록한다.
+* 런타임 fallback 생성으로 누락된 scene/prefab setup을 대체하지 않는다.
 
-Features should grow independently. Only split a feature when a concept gains an independent lifecycle.
+개념이 독립 생명주기를 얻기 전에는 feature 안에 남긴다.
 
 ### Scene contract (README)
+
+scene contract 체크리스트의 소유자는 이 문서다.
+각 feature `README.md`는 아래 항목을 자기 피처 기준으로 채우고, 항목 정의 자체를 다시 바꾸지 않는다.
 
 Every scene-owned feature must document:
 
@@ -77,10 +80,10 @@ Keep concepts inside a feature unless they have an independent lifecycle (e.g. R
 
 ### EventBus ownership
 
-**One EventBus per scene.** Each scene Bootstrap (e.g. `GameSceneBootstrap`, `LobbyBootstrap`) creates `new EventBus()` once and injects it into every feature in that scene.
+**One EventBus per scene.** Each scene Bootstrap/root (e.g. `GameSceneRoot`, `LobbyBootstrap`) creates `new EventBus()` once and injects it into every feature in that scene.
 
 ```
-GameSceneBootstrap
+GameSceneRoot
   └─ _eventBus = new EventBus()
        ├─ PlayerSetup.Initialize(eventBus, ...)
        ├─ CombatBootstrap.Initialize(eventBus, ...)
@@ -173,7 +176,7 @@ Rules: Implements Application ports; no business logic.
 
 ### Bootstrap
 
-Composition root at feature root (`SkillSetup`, `GameSceneBootstrap`, etc.) — **not** inside a `Bootstrap/` folder.
+Composition root at feature root (`SkillSetup`, `GameSceneRoot`, etc.) — **not** inside a `Bootstrap/` folder.
 
 Allowed: Object creation, dependency wiring, initialization order, subscribing (delegate handling to Application EventHandlers).
 

@@ -105,6 +105,7 @@ PlayerNetworkAdapter.RPC_RescueChannelStart / RPC_RescueChannelCancel
 - **GameSceneRoot** (`GameSceneRoot.cs`, 씬 루트 오브젝트): `PhotonNetwork.Instantiate`로 PlayerCharacter 프리팹 생성, `[Required, SerializeField]`로 연결된 `CameraFollower`를 플레이어에 부착하고 씬 공통 `SceneErrorPresenter`를 초기화한다.
 - `GameSceneRoot`는 로컬/리모트 분기 없이 하나의 `ConnectPlayer()` 경로로 모든 플레이어를 연결한다 (Registry + HUD + CombatTarget + Wave 등록). HUD 프리팹에서 `GetComponent<PlayerHealthHudView>()`는 런타임 Instantiate 프리팹이라 Inspector wiring 불가 — Runtime Lookup Policy 허용 예외.
 - 로컬 전용 씬 시스템(SkillSetup, BleedoutTicker, RescueChannelTicker, InvulnerabilityTicker, DownedOverlayView)은 `Start()`에서 로컬 플레이어 스폰 직후 1회 호출한다. **SoundPlayer**는 `JG_LobbyScene`에서 DDOL 단일 인스턴스로 생성되며, 게임 씬에서는 `SoundPlayer.Instance.Initialize(gameEventBus, localPlayerId)`로만 재바인딩한다(게임 씬에 `SoundPlayer` 직렬화 필드 없음).
+- `JG_GameScene` 단독 실행은 지원 대상이 아니다. 이 경우 `SoundPlayer.Instance == null` 오류 로그만 남기고, 사운드 없이 나머지 초기화는 계속 진행한다.
 - `DownedOverlayCanvas`는 **Screen Space - Overlay**, `Override Sorting=true`, `Sorting Order=600`으로 HUD 위에 렌더링한다. `OverlayRoot` / `RescueChannelGroup`는 `RectTransform` 기반 UI 컨테이너여야 하며, 기본 상태는 비활성이다(다운/구조 이벤트로만 표시).
 - 로컬 플레이어가 완전히 사망(`PlayerDiedEvent`)하면 `DownedOverlayView`는 오버레이를 즉시 숨긴다. 다운 상태 UI와 웨이브 패배 화면이 동시에 겹치지 않게 하기 위함이다.
 - Inspector 연결 필드는 `[Required, SerializeField]`로 선언해 씬/프리팹 저장 시 누락을 검증한다.

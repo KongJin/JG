@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Features.Combat;
 using Features.Combat.Application;
+using Features.Combat.Presentation;
 using Features.Player.Application;
 using Features.Player.Application.Ports;
 using Features.Player.Infrastructure;
@@ -22,7 +23,7 @@ using UnityEngine;
 
 namespace Features.Player
 {
-    public sealed class GameSceneBootstrap : MonoBehaviourPunCallbacks
+    public sealed class GameSceneRoot : MonoBehaviourPunCallbacks
     {
         [Header("Player")]
         [SerializeField] private string _playerPrefabName = "PlayerCharacter";
@@ -43,6 +44,9 @@ namespace Features.Player
         [Required, SerializeField] private RescueChannelTicker _rescueChannelTicker;
         [Required, SerializeField] private DownedOverlayView _downedOverlayView;
         [Required, SerializeField] private InvulnerabilityTicker _invulnerabilityTicker;
+
+        [Header("Combat Feedback")]
+        [SerializeField] private DamageNumberSpawner _damageNumberSpawner;
 
         [Header("Status (Buff/Debuff)")]
         [Required, SerializeField] private StatusSetup _statusSetup;
@@ -128,11 +132,14 @@ namespace Features.Player
             if (_waveBootstrap != null && _coreObjective == null)
             {
                 Debug.LogError(
-                    "[GameSceneBootstrap] WaveBootstrap is set but CoreObjective is missing. Assign CoreObjectiveBootstrap on the objective GameObject.");
+                    "[GameSceneRoot] WaveBootstrap is set but CoreObjective is missing. Assign CoreObjectiveBootstrap on the objective GameObject.");
             }
 
             if (_coreObjective != null)
                 _coreObjective.RegisterCombatTarget(_combatBootstrap);
+
+            if (_damageNumberSpawner != null)
+                _damageNumberSpawner.Initialize(_eventBus);
 
             if (_waveBootstrap == null)
             {
@@ -149,10 +156,12 @@ namespace Features.Player
             _downedOverlayView.Initialize(_eventBus, localSetup.PlayerId, localSetup.BleedoutTrackerInstance, localSetup.RescueChannelTrackerInstance);
             _invulnerabilityTicker.Initialize(localSetup.InvulnerabilityTrackerInstance);
 
+            // SoundPlayer is a DDOL singleton created from JG_LobbyScene.
+            // Running JG_GameScene directly is allowed, but audio stays unavailable.
             if (SoundPlayer.Instance == null)
             {
                 Debug.LogError(
-                    "[GameSceneBootstrap] SoundPlayer.Instance is null. Start from JG_LobbyScene so the DDOL SoundPlayer is created; playing JG_GameScene alone will not load it.");
+                    "[GameSceneRoot] SoundPlayer.Instance is null. Start from JG_LobbyScene so the DDOL SoundPlayer is created; playing JG_GameScene alone will not load it.");
             }
             else
             {
@@ -181,7 +190,7 @@ namespace Features.Player
                         if (_coreObjective == null)
                         {
                             Debug.LogError(
-                                "[GameSceneBootstrap] Cannot initialize Wave without CoreObjectiveBootstrap.");
+                                "[GameSceneRoot] Cannot initialize Wave without CoreObjectiveBootstrap.");
                             return;
                         }
 
@@ -201,19 +210,16 @@ namespace Features.Player
             if (!_playerSceneRegistry.TryRegister(setup))
                 return;
 
-            if (!setup.NetworkAdapter.IsMine)
-            {
-                var hudGo = Instantiate(_healthHudPrefab, _hudCanvas.transform, false);
-                var hudView = hudGo.GetComponent<PlayerHealthHudView>();
-                hudView.Initialize(
-                    _eventBus,
-                    setup.PlayerId,
-                    setup.MaxHp,
-                    false,
-                    setup.transform,
-                    _camera,
-                    _hudCanvas);
-            }
+            var hudGo = Instantiate(_healthHudPrefab, _hudCanvas.transform, false);
+            var hudView = hudGo.GetComponent<PlayerHealthHudView>();
+            hudView.Initialize(
+                _eventBus,
+                setup.PlayerId,
+                setup.MaxHp,
+                setup.NetworkAdapter.IsMine,
+                setup.transform,
+                _camera,
+                _hudCanvas);
 
             _combatBootstrap.RegisterTarget(setup.PlayerId, setup.CombatTargetProvider);
 

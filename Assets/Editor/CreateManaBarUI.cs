@@ -85,11 +85,11 @@ public static class CreateManaBarUI
         so.FindProperty("_manaFillImage").objectReferenceValue = fillImg;
         so.ApplyModifiedProperties();
 
-        // Wire to GameSceneBootstrap
-        var bootstrap = GameObject.Find("GameSceneBootstrap");
+        // Wire to GameSceneRoot
+        var bootstrap = GameObject.Find("GameSceneRoot");
         if (bootstrap != null)
         {
-            var comp = bootstrap.GetComponent<Features.Player.GameSceneBootstrap>();
+            var comp = bootstrap.GetComponent<Features.Player.GameSceneRoot>();
             if (comp != null)
             {
                 var bso = new SerializedObject(comp);

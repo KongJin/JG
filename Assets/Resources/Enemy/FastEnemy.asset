@@ -22,3 +22,4 @@ MonoBehaviour:
   resourcesLoadPath: Enemy/FastEnemy
   targetMode: 0
   aggroRadius: 0
+  stopDistance: 0

@@ -14,7 +14,7 @@ feature `README.md`는 이 문서의 순서를 다시 길게 복붙하지 말고
 
 ### 현재 LobbyScene 초기화 순서 (LobbyBootstrap)
 
-`EventBus`는 필드 초기화로 한 인스턴스가 존재한다. `SoundPlayer`는 **로비 씬 루트**에 두고 `Awake`에서 `DontDestroyOnLoad` + 단일 `Instance`로 등록된다.
+`EventBus`는 필드 초기화로 한 인스턴스가 존재한다. `SoundPlayer`는 `JG_LobbyScene`의 최상위 루트 `SoundPlayer`에 두고 `Awake`에서 `DontDestroyOnLoad` + 단일 `Instance`로 등록된다. `WorldRoot` / `UIRoot` / `ServiceRoot` 그룹화는 가독성용이며, DDOL 예외인 `SoundPlayer`만 별도 루트로 둔다.
 
 ```
 1. SceneErrorPresenter.Initialize(eventBus)

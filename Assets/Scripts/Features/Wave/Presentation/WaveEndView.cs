@@ -19,7 +19,7 @@ namespace Features.Wave.Presentation
             subscriber.Subscribe(this, new Action<WaveDefeatEvent>(OnDefeat));
             subscriber.Subscribe(this, new Action<WaveHydratedEvent>(OnWaveHydrated));
 
-            if (panel != null) panel.SetActive(false);
+            panel.SetActive(false);
         }
 
         private void OnVictory(WaveVictoryEvent e)

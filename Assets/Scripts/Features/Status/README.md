@@ -1,14 +1,39 @@
 # Status Feature
 
-런타임 버프/디버프 상태 레이어를 담당한다. PlayerSpec을 직접 수정하지 않고, 별도의 상태 컨테이너로 효과를 관리한다.
+Status 피처는 런타임 버프/디버프 상태 레이어를 담당한다. PlayerSpec을 직접 수정하지 않고 별도 상태 컨테이너로 효과를 관리한다.
 
-## 현재 책임
+## 먼저 읽을 규칙
+
+- 전역 구조, 레이어, 포트 위치: [architecture.md](../../../../agent/architecture.md)
+- EventHandler 위치, Bootstrap 책임, Unity 타입 금지 규칙: [anti_patterns.md](../../../../agent/anti_patterns.md)
+- 게임 씬 전역 초기화 순서와 Status 선행 초기화 전제: [initialization_order.md](../../../../agent/initialization_order.md)
+
+## 이 피처의 책임
 
 - 상태 적용(Apply), 갱신(Refresh), 만료(Expire), 틱 피해(Burn) 처리
 - 중첩 규칙: Refresh(Haste, Slow), Independent(Burn 최대 3스택, Expand/Extend/Multiply/Count 최대 10스택)
 - 이동속도 변경(Haste/Slow)을 Player에 제공 (`ISpeedModifierPort`)
 - 범위/지속/개수 변경(Expand/Extend/Multiply)을 Skill에 제공 (`IStatusQueryPort`)
 - 네트워크 동기화: 적용/틱 데미지를 RPC로 복제
+
+## 로컬 계약
+
+- Status는 Player보다 먼저 초기화되어 `SpeedModifier`를 제공해야 한다.
+- 상태 적용 트리거는 다른 피처 이벤트를 `StatusApplyRequestedEvent`로 수렴한 뒤 `StatusUseCases`로만 처리한다.
+- 상태 만료 타이머는 로컬에서 관리하고, 적용/틱 데미지만 RPC로 복제한다.
+
+## 핵심 흐름
+
+```text
+ProjectileHitEvent / SelfRequestedEvent / ZoneTickEvent
+  → StatusTriggerHandler
+    → StatusApplyRequestedEvent
+      → StatusEventHandler
+        → StatusUseCases.ApplyStatus()
+          → StatusContainer.Apply(effect)
+          → IStatusNetworkCommandPort.SendApplyStatus()
+          → StatusAppliedEvent
+```
 
 ## v1 포함 상태
 
@@ -22,7 +47,7 @@
 | Multiply | 데미지 증폭 | Independent, 최대 10스택 | Skill (발동 시 조회) |
 | Count | 발사/스폰 수 증가 | Independent, 최대 10스택 | Skill (발동 시 조회) |
 
-## 데이터 흐름
+## 상세 흐름
 
 ### 상태 적용
 
@@ -92,11 +117,11 @@ CastSkillUseCase.Execute()
 
 ## 씬 의존성
 
-- `StatusSetup`은 GameSceneBootstrap과 같은 씬에 배치
+- `StatusSetup`은 GameSceneRoot와 같은 씬에 배치
 - `StatusTickController`는 `StatusSetup`이 Inspector에서 참조
 - `StatusNetworkAdapter`는 플레이어 프리팹에 컴포넌트로 부착 (PhotonView 공유)
-- GameSceneBootstrap이 로컬 플레이어의 `StatusNetworkAdapter`를 `StatusSetup.Initialize()`에 전달
-- 원격 플레이어가 접속하면 `GameSceneBootstrap.ConnectPlayer()`에서 `StatusSetup.RegisterRemoteCallbackPort()`로 해당 adapter의 콜백도 연결
+- GameSceneRoot가 로컬 플레이어의 `StatusNetworkAdapter`를 `StatusSetup.Initialize()`에 전달
+- 원격 플레이어가 접속하면 `GameSceneRoot.ConnectPlayer()`에서 `StatusSetup.RegisterRemoteCallbackPort()`로 해당 adapter의 콜백도 연결
 - `StatusNetworkEventHandler.WireCallbackPort()`가 여러 adapter의 RPC 콜백을 동일한 `StatusUseCases`로 라우팅
 
 ## 레이어 메모

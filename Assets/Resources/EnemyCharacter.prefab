@@ -185,6 +185,7 @@ MonoBehaviour:
   _networkAdapter: {fileID: 400000000000000009}
   _aiAdapter: {fileID: 400000000000000010}
   _view: {fileID: 400000000000000011}
+  _healthBarPrefab: {fileID: 2918160170201470558, guid: 435f252d222efea47b105c0f0067efed, type: 3}
   _contactDetector: {fileID: 400000000000000012}
   _entityIdHolder: {fileID: 400000000000000013}
 --- !u!114 &400000000000000009

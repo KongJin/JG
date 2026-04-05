@@ -14,25 +14,25 @@
 
 본 파일은 **무엇을 어느 순서로 손대는지**만 적는다. 결정이 바뀌면 위 SSOT를 먼저 고친 뒤 여기 체크리스트를 맞춘다.
 
-**프로젝트 규칙:** [CLAUDE.md](../CLAUDE.md) 필수 워크플로, [anti_patterns.md](anti_patterns.md), [architecture.md](architecture.md)를 코드 작업 시 함께 따른다.
+**프로젝트 규칙:** [CLAUDE.md](../CLAUDE.md)의 필수 워크플로를 시작점으로 삼고, 상세 판단은 [anti_patterns.md](anti_patterns.md), [architecture.md](architecture.md), [state_ownership.md](state_ownership.md)를 따른다.
 
 ---
 
-## CLAUDE.md·anti_patterns 정합성 검증
+## SSOT·anti_patterns 정합성 검증
 
 아래는 **본 계획을 그대로 구현할 때** 지켜야 할 대응 관계다. 충돌이 없도록 설계했다.
 
 | 규칙 출처 | 요구 | 본 계획과의 관계 |
 |-----------|------|------------------|
-| CLAUDE — 네트워크 | 방 단위 **상태**는 `CustomProperties` | 난이도 프리셋은 **Room CustomProperties**로만 동기화. RPC 전용으로 두지 않는다. |
-| CLAUDE — Network 피처 | CommandPort / CallbackPort, Adapter 구현 | Lobby: 기존 `LobbyPhotonAdapter` 패턴에 **방 속성 병합(SetCustomProperties)** 추가. Wave가 값을 **읽기만** 하면 Wave 쪽은 기존 `WaveNetworkAdapter`와 동일하게 **인프라에서 Room 읽기** 가능; **쓰기는 Lobby만** ([state_ownership.md](state_ownership.md)). |
+| state_ownership — 동기화 채널 | 방 단위 **상태**는 `CustomProperties` | 난이도 프리셋은 **Room CustomProperties**로만 동기화. RPC 전용으로 두지 않는다. |
+| architecture / anti_patterns — Network 피처 | CommandPort / CallbackPort, Adapter 구현 | Lobby: 기존 `LobbyPhotonAdapter` 패턴에 **방 속성 병합(SetCustomProperties)** 추가. Wave가 값을 **읽기만** 하면 Wave 쪽은 기존 `WaveNetworkAdapter`와 동일하게 **인프라에서 Room 읽기** 가능; **쓰기는 Lobby만** ([state_ownership.md](state_ownership.md)). |
 | anti_patterns — View | View/InputHandler에 비즈니스·네트워크 로직 금지 | 난이도 UI는 **입력만** → `LobbyUseCases` → Adapter. `LobbyView`에서 직접 `PhotonNetwork` 호출 금지. |
 | anti_patterns — Domain | Domain에 네트워킹·Unity API 금지 | 프리셋 ID→배율 매핑은 **Wave.Application** 등 순수 C#에 둔다(아래 Phase C). |
 | anti_patterns — Bootstrap | 비즈니스 분기·게임 규칙 장문 금지 | `WaveBootstrap`은 **주입·구독·Initialize 호출만**. 스폰 개수 배율 계산은 **Application 정적 매핑 또는 소형 유스케이스**로 분리. |
 | anti_patterns — Dual state | 동일 개념 이중 소유 금지 | 난이도의 근원은 **Room CP 한 곳**. Wave에 별도 “난이도 도메인 엔티티”를 두지 않고, 스폰 시점에 **읽기·적용**만 한다. |
 | anti_patterns — GetComponent | 의존성은 `[Required, SerializeField]` | 새 어댑터·뷰 참조는 **씬/프리팹 배선**으로만. Photon Instantiate 예외는 기존 Enemy 경로 README대로. |
 | anti_patterns — Port 위치 | Unity 타입 없는 포트만 Application/Ports | 배율 조회가 `float`/`int`만 쓰면 `Features/Wave/Application/Ports`에 `IDifficultySpawnScale` 같은 **읽기 전용 포트** 가능. Unity 의존 시 Presentation으로. |
-| CLAUDE — 피처 수정 시 | `Features/<Name>/README.md` 갱신 | Phase C 이후 **Lobby·Wave README**에 Room 키, 읽기 시점, late-join 시 난이도 반영 여부 명시. |
+| CLAUDE 워크플로 | `Features/<Name>/README.md` 갱신 | Phase C 이후 **Lobby·Wave README**에 Room 키, 읽기 시점, late-join 시 난이도 반영 여부 명시. |
 
 **키 문자열:** `difficultyPreset`(가칭) 값은 [state_ownership.md](state_ownership.md)에 한 줄로 고정하고, Lobby 상수(`LobbyPhotonConstants`)와 Wave 인프라의 읽기 키가 **동일 문자열**이어야 한다. Wave가 Lobby 어셈블리를 참조하지 않도록, **문자열은 양쪽 각각 상수로 두고 SSOT 문서로 동기화**하거나, 아키텍처상 허용 시 **공유 최소 상수** 한 파일로만 맞춘다(새 공유 파일 추가 시 [architecture.md](architecture.md)와 팀 합의).
 
@@ -179,7 +179,7 @@ flowchart TD
 
 ---
 
-## 피처 README 갱신 (CLAUDE.md 워크플로)
+## 피처 README 갱신 (필수 워크플로)
 
 코드·씬을 건드린 피처마다 해당 `README.md`를 갱신한다.
 
@@ -206,5 +206,5 @@ flowchart TD
 
 - `game_design.md` 수치·문장을 본 문서만 보고 임의 변경하지 않는다. 반영은 SSOT에서 확정 후.
 - Phase 2(시너지·메타·런 연장 등)는 [game_design.md](game_design.md) Phase 2 절 범위 밖에서 확장하지 않는다.
-- [CLAUDE.md](../CLAUDE.md)에서 금지한 동기화 경로 사용: `PhotonTransformView` 등 **CustomProperties / RPC / SerializeView** 밖 채널로 난이도만 동기화하지 않는다.
+- [state_ownership.md](state_ownership.md)와 네트워크 규칙에 어긋나는 동기화 경로 사용: `PhotonTransformView` 등 **CustomProperties / RPC / SerializeView** 밖 채널로 난이도만 동기화하지 않는다.
 - 난이도를 **이중 저장**(예: Room CP + 별도 정적 싱글톤)하지 않는다 — **Room CP 단일 근원**.

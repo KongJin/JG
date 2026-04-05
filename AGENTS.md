@@ -1,1 +1,5 @@
-Refer to ./CLAUDE.md for all project rules and guidelines.
+프로젝트 규칙의 진입점은 `./CLAUDE.md`다.
+작업을 시작할 때는 먼저 `CLAUDE.md`에서 전역 SSOT를 고르고, 그다음 해당 feature `README.md`로 내려간다.
+여러 문서를 동시에 추측해서 읽지 말고, `CLAUDE.md`가 가리키는 소유 문서를 기준으로 판단한다.
+성급하게 구현하지 말고, 먼저 맥락을 깊게 읽는다.
+애매하면 빨리 패치하지 말고 근거를 더 모은다.
