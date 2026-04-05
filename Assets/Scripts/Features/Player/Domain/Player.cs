@@ -16,25 +16,19 @@ namespace Features.Player.Domain
 
         public PlayerSpec Spec { get; }
         public Float3 Position { get; private set; }
-        public float VerticalVelocity { get; private set; }
-        public bool IsGrounded { get; private set; }
-        public bool IsSprinting { get; private set; }
 
         public float MaxHp { get; }
         public float CurrentHp { get; private set; }
         public LifeState LifeState { get; private set; } = LifeState.Alive;
         public bool IsAlive => LifeState == LifeState.Alive;
-        public bool IsDowned => LifeState == LifeState.Downed;
         public bool IsDead => LifeState == LifeState.Dead;
-        public bool IsInvulnerable { get; private set; }
-        public float BleedoutElapsed { get; private set; }
 
         public float MaxMana { get; }
         public float CurrentMana { get; private set; }
 
         public float TakeDamage(float damage)
         {
-            if (IsDead || IsDowned || IsInvulnerable)
+            if (IsDead || IsInvulnerable)
                 return CurrentHp;
 
             if (damage < 0f)
@@ -44,38 +38,11 @@ namespace Features.Player.Domain
             if (CurrentHp < 0f)
                 CurrentHp = 0f;
 
-            if (CurrentHp <= 0f && IsAlive)
-            {
-                LifeState = LifeState.Downed;
-                BleedoutElapsed = 0f;
-            }
-
             return CurrentHp;
         }
 
-        public void TickBleedout(float deltaTime)
-        {
-            if (!IsDowned)
-                return;
-
-            BleedoutElapsed += deltaTime;
-            if (BleedoutRule.IsExpired(BleedoutElapsed))
-            {
-                LifeState = LifeState.Dead;
-            }
-        }
-
+        public bool IsInvulnerable { get; private set; }
         public float InvulnerabilityRemaining { get; private set; }
-
-        public void Rescue(float hp, float mana)
-        {
-            CurrentHp = hp;
-            CurrentMana = mana;
-            LifeState = LifeState.Alive;
-            IsInvulnerable = true;
-            InvulnerabilityRemaining = RescueRule.InvulnerabilityDuration;
-            BleedoutElapsed = 0f;
-        }
 
         public void TickInvulnerability(float deltaTime)
         {
@@ -90,16 +57,6 @@ namespace Features.Player.Domain
             }
         }
 
-        public void ForceDowned()
-        {
-            if (IsDowned || IsDead)
-                return;
-
-            CurrentHp = 0f;
-            LifeState = LifeState.Downed;
-            BleedoutElapsed = 0f;
-        }
-
         public void Die()
         {
             LifeState = LifeState.Dead;
@@ -112,7 +69,6 @@ namespace Features.Player.Domain
             CurrentMana = MaxMana;
             IsInvulnerable = false;
             LifeState = LifeState.Alive;
-            BleedoutElapsed = 0f;
         }
 
         public void Hydrate(float hp, float mana)
@@ -143,38 +99,9 @@ namespace Features.Player.Domain
             IsInvulnerable = value;
         }
 
-        public Float3 CalculateMovement(Float2 input, float deltaTime, float speedOverride = -1f)
-        {
-            var baseSpeed = speedOverride >= 0f
-                ? speedOverride
-                : Spec.WalkSpeed;
-            var speed = MovementRule.SelectSpeed(baseSpeed, IsSprinting, Spec.SprintMultiplier);
-            var horizontal = MovementRule.CalculateDelta(input, speed, deltaTime);
-
-            VerticalVelocity = MovementRule.ApplyGravity(VerticalVelocity, Spec.Gravity, deltaTime, IsGrounded);
-
-            return new Float3(horizontal.X, VerticalVelocity * deltaTime, horizontal.Z);
-        }
-
-        public bool TryJump()
-        {
-            if (!IsGrounded || !IsAlive)
-                return false;
-
-            VerticalVelocity = Spec.JumpForce;
-            return true;
-        }
-
-        public void SetSprinting(bool value)
-        {
-            IsSprinting = value;
-        }
-
         public void ApplyMovement(Float3 position, bool isGrounded)
         {
             Position = position;
-            IsGrounded = isGrounded;
-            if (isGrounded) VerticalVelocity = 0f;
         }
     }
 }

@@ -19,9 +19,6 @@ namespace Features.Combat
         [Required, SerializeField]
         private CombatTargetView[] _targetViews = new CombatTargetView[0];
 
-        [SerializeField]
-        private FriendlyFireFeedbackView _friendlyFireFeedbackView;
-
         private ApplyDamageUseCase _applyDamage;
         private CombatNetworkEventHandler _eventHandler;
         private CombatReplicationEventHandler _replicationEventHandler;
@@ -33,8 +30,7 @@ namespace Features.Combat
             EventBus eventBus,
             ICombatNetworkCommandPort networkPort,
             DomainEntityId localAuthorityId,
-            IEntityAffiliationPort affiliation,
-            IFriendlyFireScalingPort ffScaling = null
+            IEntityAffiliationPort affiliation
         )
         {
             if (eventBus == null)
@@ -51,8 +47,7 @@ namespace Features.Combat
             _applyDamage = new ApplyDamageUseCase(
                 _targetAdapter, _eventBus,
                 networkPort ?? NoOpCombatNetworkPort.Instance,
-                affiliation,
-                ffScaling
+                affiliation
             );
             _eventHandler = new CombatNetworkEventHandler(_applyDamage, _eventBus, localAuthorityId);
             _replicationEventHandler = new CombatReplicationEventHandler(_applyDamage, _eventBus);
@@ -72,9 +67,6 @@ namespace Features.Combat
 
                 view.Initialize(_eventBus);
             }
-
-            if (_friendlyFireFeedbackView != null)
-                _friendlyFireFeedbackView.Initialize(_eventBus, _eventBus, localAuthorityId);
         }
 
         private void OnDestroy()

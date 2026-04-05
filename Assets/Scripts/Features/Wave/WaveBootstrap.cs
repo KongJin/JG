@@ -2,8 +2,6 @@ using Shared.Attributes;
 using Features.Combat;
 using Features.Enemy;
 using Features.Enemy.Application.Ports;
-using Features.Skill.Infrastructure;
-using Features.Skill.Presentation;
 using Features.Wave.Application;
 using Features.Wave.Application.Events;
 using Features.Wave.Application.Ports;
@@ -13,7 +11,6 @@ using Features.Wave.Presentation;
 using Photon.Pun;
 using Photon.Realtime;
 using Shared.EventBus;
-using Features.Skill.Application.Ports;
 using Shared.Kernel;
 using Shared.Lifecycle;
 using UnityEngine;
@@ -30,8 +27,6 @@ namespace Features.Wave
         [Required, SerializeField] private WaveHudView _hudView;
         [Required, SerializeField] private WaveEndView _endView;
         [Required, SerializeField] private WaveFlowController _flowController;
-        [Required, SerializeField] private UpgradeSelectionView _upgradeView;
-        [Required, SerializeField] private UpgradeResultView _upgradeResultView;
         [Required, SerializeField] private WaveNetworkAdapter _networkAdapter;
         [Required, SerializeField] private CoreHealthHudView _coreHealthView;
 
@@ -53,10 +48,7 @@ namespace Features.Wave
             EventBus eventBus,
             CombatBootstrap combatBootstrap,
             DomainEntityId localPlayerId,
-            ISkillRewardPort skillReward,
-            ISkillIconPort iconPort,
-            ICoreObjectiveQuery coreObjectiveQuery,
-            ISkillUpgradeCommandPort upgradeCommand = null)
+            ICoreObjectiveQuery coreObjectiveQuery)
         {
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
@@ -73,7 +65,7 @@ namespace Features.Wave
             _spawnAdapter.Initialize(
                 eventBus, combatBootstrap, _playerPositionQuery, _coreObjectiveQuery, _waveTable, spawnMultiplier);
 
-            _waveLoop = new WaveLoopUseCase(eventBus, _waveTable.Waves.Length, skillReward);
+            _waveLoop = new WaveLoopUseCase(eventBus, _waveTable.Waves.Length);
             var waveLoop = _waveLoop;
             var waveHandler = new WaveEventHandler(eventBus, waveLoop, aliveQuery, ObjectiveCoreIds.Default);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, waveHandler));
@@ -81,20 +73,11 @@ namespace Features.Wave
             var networkHandler = new WaveNetworkEventHandler(eventBus, _networkAdapter, _networkAdapter, waveLoop);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, networkHandler));
 
-            var rewardHandler = new SkillRewardHandler(eventBus, skillReward, upgradeCommand);
-            _disposables.Add(EventBusSubscription.ForOwner(eventBus, rewardHandler));
-
             _hudView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _hudView));
 
             _endView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _endView));
-
-            _upgradeView.Initialize(eventBus, eventBus, localPlayerId, iconPort, _flowController.SelectionTimer);
-            _disposables.Add(EventBusSubscription.ForOwner(eventBus, _upgradeView));
-
-            _upgradeResultView.Initialize(eventBus);
-            _disposables.Add(EventBusSubscription.ForOwner(eventBus, _upgradeResultView));
 
             _flowController.Initialize(waveLoop, (IWaveTablePort)_waveTable, (IWaveSpawnPort)_spawnAdapter, eventBus, eventBus, localPlayerId);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _flowController));

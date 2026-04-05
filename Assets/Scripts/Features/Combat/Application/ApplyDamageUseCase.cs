@@ -12,21 +12,18 @@ namespace Features.Combat.Application
         private readonly IEventPublisher _eventBus;
         private readonly ICombatNetworkCommandPort _network;
         private readonly IEntityAffiliationPort _affiliation;
-        private readonly IFriendlyFireScalingPort _ffScaling;
 
         public ApplyDamageUseCase(
             ICombatTargetPort target,
             IEventPublisher eventBus,
             ICombatNetworkCommandPort network,
-            IEntityAffiliationPort affiliation,
-            IFriendlyFireScalingPort ffScaling = null
+            IEntityAffiliationPort affiliation
         )
         {
             _target = target;
             _eventBus = eventBus;
             _network = network;
             _affiliation = affiliation;
-            _ffScaling = ffScaling;
         }
 
         public Result Execute(string targetIdValue, float baseDamage, DamageType damageType)
@@ -54,17 +51,7 @@ namespace Features.Combat.Application
             if (rel == RelationshipType.Self)
                 return Result.Success();
 
-            if (rel == RelationshipType.Ally)
-            {
-                var baseMultiplier = _ffScaling != null
-                    ? _ffScaling.GetAllyDamageMultiplier()
-                    : RelationshipRule.GetDamageMultiplier(rel);
-                finalDamage *= baseMultiplier * allyDamageScale;
-            }
-            else
-            {
-                finalDamage *= RelationshipRule.GetDamageMultiplier(rel);
-            }
+            finalDamage *= RelationshipRule.GetDamageMultiplier(rel);
 
             var damageResult = _target.ApplyDamage(targetId, finalDamage);
 
@@ -81,13 +68,6 @@ namespace Features.Combat.Application
                     damageResult.IsDowned
                 )
             );
-
-            if (rel == RelationshipType.Ally)
-            {
-                _eventBus.Publish(
-                    new FriendlyFireAppliedEvent(attackerId, targetId, finalDamage)
-                );
-            }
 
             return Result.Success();
         }
@@ -115,18 +95,6 @@ namespace Features.Combat.Application
                     damageResult.IsDowned
                 )
             );
-
-            var hasAttacker = !string.IsNullOrWhiteSpace(attackerId.Value);
-            if (hasAttacker)
-            {
-                var rel = _affiliation.GetRelationship(attackerId, targetId);
-                if (rel == RelationshipType.Ally)
-                {
-                    _eventBus.Publish(
-                        new FriendlyFireAppliedEvent(attackerId, targetId, damage)
-                    );
-                }
-            }
 
             return Result.Success();
         }

@@ -21,20 +21,11 @@ namespace Features.Player.Application
             _publisher = publisher;
             _playerLookup = playerLookup;
 
-            networkCallbacks.OnRemoteJumped = HandleRemoteJumped;
             networkCallbacks.OnRemoteDamaged = HandleRemoteDamaged;
             networkCallbacks.OnRemoteRespawned = HandleRemoteRespawned;
             networkCallbacks.OnHealthSynced = HandleHealthSynced;
             networkCallbacks.OnManaSynced = HandleManaSynced;
             networkCallbacks.OnLifeStateSynced = HandleLifeStateSynced;
-            networkCallbacks.OnRemoteRescued = HandleRemoteRescued;
-            networkCallbacks.OnRemoteRescueChannelStarted = HandleRemoteRescueChannelStarted;
-            networkCallbacks.OnRemoteRescueChannelCancelled = HandleRemoteRescueChannelCancelled;
-        }
-
-        private void HandleRemoteJumped(DomainEntityId playerId)
-        {
-            _publisher.Publish(new PlayerJumpedEvent(playerId));
         }
 
         private void HandleRemoteDamaged(DomainEntityId targetId, float damage,
@@ -77,10 +68,6 @@ namespace Features.Player.Application
 
             switch (state)
             {
-                case LifeState.Downed:
-                    player?.ForceDowned();
-                    _publisher.Publish(new PlayerDownedEvent(targetId, default));
-                    break;
                 case LifeState.Dead:
                     player?.Die();
                     _publisher.Publish(new PlayerDiedEvent(targetId, default));
@@ -98,42 +85,6 @@ namespace Features.Player.Application
                     }
                     break;
             }
-        }
-
-        private void HandleRemoteRescued(DomainEntityId rescuerId, DomainEntityId targetId)
-        {
-            var player = _playerLookup?.Resolve(targetId);
-            if (player == null || !player.IsDowned)
-                return;
-
-            var hp = player.MaxHp * RescueRule.HpPercent;
-            var mana = player.MaxMana * RescueRule.ManaPercent;
-            player.Rescue(hp, mana);
-
-            _publisher.Publish(new PlayerRescuedEvent(
-                targetId,
-                rescuerId,
-                player.CurrentHp,
-                player.MaxHp,
-                player.CurrentMana,
-                player.MaxMana
-            ));
-
-            _publisher.Publish(new PlayerHealthChangedEvent(
-                targetId, player.CurrentHp, player.MaxHp, 0f, false));
-
-            _publisher.Publish(new PlayerManaChangedEvent(
-                targetId, player.CurrentMana, player.MaxMana));
-        }
-
-        private void HandleRemoteRescueChannelStarted(DomainEntityId rescuerId, DomainEntityId targetId)
-        {
-            _publisher.Publish(new RescueChannelStartedEvent(rescuerId, targetId));
-        }
-
-        private void HandleRemoteRescueChannelCancelled(DomainEntityId targetId)
-        {
-            _publisher.Publish(new RescueChannelCancelledEvent(targetId));
         }
     }
 }

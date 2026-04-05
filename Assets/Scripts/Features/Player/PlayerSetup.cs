@@ -53,9 +53,6 @@ namespace Features.Player
         public IManaPort ManaPort { get; private set; }
         public ManaAdapter ManaAdapterInstance { get; private set; }
         public Domain.Player DomainPlayer { get; private set; }
-        public BleedoutTracker BleedoutTrackerInstance { get; private set; }
-        public RescueChannelTracker RescueChannelTrackerInstance { get; private set; }
-        public InvulnerabilityTracker InvulnerabilityTrackerInstance { get; private set; }
 
         public float MaxHp { get; private set; }
         public float MaxMana { get; private set; }
@@ -87,17 +84,12 @@ namespace Features.Player
             var clock = new ClockAdapter();
             _useCases = existingUseCases != null
                 ? existingUseCases
-                : new PlayerUseCases(_motorAdapter, _networkAdapter, eventBus, clock, speedModifier, eventBus, playerLookup);
+                : new PlayerUseCases(_motorAdapter, _networkAdapter, eventBus, clock);
 
             var spawnResult = _useCases.Spawn(
                 new PlayerSpec(
-                    walkSpeed: 5f,
-                    sprintMultiplier: 1.8f,
-                    jumpForce: 8f,
-                    gravity: 20f,
                     maxHp: 100f,
                     defense: 5f,
-                    rotationSpeed: 720f,
                     maxMana: 100f,
                     manaRegenPerSecond: 5f
                 ),
@@ -127,18 +119,7 @@ namespace Features.Player
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _useCases));
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, damageHandler));
 
-            var bleedoutTracker = new BleedoutTracker(player, eventBus, eventBus, _networkAdapter);
-            _disposables.Add(EventBusSubscription.ForOwner(eventBus, bleedoutTracker));
-            BleedoutTrackerInstance = bleedoutTracker;
-
-            RescueChannelTrackerInstance = new RescueChannelTracker(eventBus, eventBus, _networkAdapter);
-            _disposables.Add(EventBusSubscription.ForOwner(eventBus, RescueChannelTrackerInstance));
-
-            var invulnerabilityTracker = new InvulnerabilityTracker(player, eventBus);
-            _disposables.Add(EventBusSubscription.ForOwner(eventBus, invulnerabilityTracker));
-            InvulnerabilityTrackerInstance = invulnerabilityTracker;
-
-            _inputHandler.Initialize(player, _useCases, eventBus, RescueChannelTrackerInstance);
+            _inputHandler.Initialize(player, _useCases);
             _view.Initialize(true, eventBus, player.Id);
             MaxHp = player.MaxHp;
             MaxMana = player.MaxMana;
@@ -151,13 +132,10 @@ namespace Features.Player
 
             _playerId = _networkAdapter.StablePlayerId;
             var remoteSpec = new PlayerSpec(
-                walkSpeed: 0f,
-                sprintMultiplier: 1f,
-                jumpForce: 0f,
-                gravity: 0f,
                 maxHp: 100f,
                 defense: 5f,
-                rotationSpeed: 0f
+                maxMana: 100f,
+                manaRegenPerSecond: 5f
             );
             var remotePlayer = PlayerUseCases.SpawnRemote(remoteSpec, _playerId).Value;
             DomainPlayer = remotePlayer;

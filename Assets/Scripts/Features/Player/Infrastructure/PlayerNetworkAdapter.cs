@@ -28,15 +28,11 @@ namespace Features.Player.Infrastructure
         public DomainEntityId StablePlayerId => new DomainEntityId(GetStablePlayerIdValue());
 
         // IPlayerNetworkCallbackPort
-        public System.Action<DomainEntityId> OnRemoteJumped { get; set; }
         public System.Action<DomainEntityId, float, DamageType, DomainEntityId> OnRemoteDamaged { set; private get; }
         public System.Action<DomainEntityId> OnRemoteRespawned { get; set; }
         public System.Action<DomainEntityId, float, float> OnHealthSynced { get; set; }
         public System.Action<DomainEntityId, float, float> OnManaSynced { get; set; }
         public System.Action<DomainEntityId, LifeState> OnLifeStateSynced { get; set; }
-        public System.Action<DomainEntityId, DomainEntityId> OnRemoteRescued { get; set; }
-        public System.Action<DomainEntityId, DomainEntityId> OnRemoteRescueChannelStarted { get; set; }
-        public System.Action<DomainEntityId> OnRemoteRescueChannelCancelled { get; set; }
 
         private void Update()
         {
@@ -58,11 +54,6 @@ namespace Features.Player.Infrastructure
                 _networkPosition = (Vector3)stream.ReceiveNext();
                 _networkRotation = (Quaternion)stream.ReceiveNext();
             }
-        }
-
-        public void SendJump(DomainEntityId playerId)
-        {
-            photonView.RPC(nameof(RPC_Jump), RpcTarget.Others, playerId.Value);
         }
 
         public void SendDamage(DomainEntityId targetId, float damage, DamageType damageType, DomainEntityId attackerId)
@@ -111,21 +102,6 @@ namespace Features.Player.Infrastructure
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
 
-        public void SendRescue(DomainEntityId rescuerId, DomainEntityId targetId)
-        {
-            photonView.RPC(nameof(RPC_Rescue), RpcTarget.All, rescuerId.Value, targetId.Value);
-        }
-
-        public void SendRescueChannelStart(DomainEntityId rescuerId, DomainEntityId targetId)
-        {
-            photonView.RPC(nameof(RPC_RescueChannelStart), RpcTarget.Others, rescuerId.Value, targetId.Value);
-        }
-
-        public void SendRescueChannelCancel(DomainEntityId targetId)
-        {
-            photonView.RPC(nameof(RPC_RescueChannelCancel), RpcTarget.Others, targetId.Value);
-        }
-
         public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, Hashtable changedProps)
         {
             if (targetPlayer == null || targetPlayer.IsLocal)
@@ -158,26 +134,8 @@ namespace Features.Player.Infrastructure
 
             if (changedProps.TryGetValue(LifeStateKey, out var lsRaw) && lsRaw is int lsInt)
             {
-                if (!System.Enum.IsDefined(typeof(LifeState), lsInt))
-                {
-                    Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] OnPlayerPropertiesUpdate: invalid LifeState {lsInt}.");
-                    return;
-                }
                 OnLifeStateSynced?.Invoke(playerId, (LifeState)lsInt);
             }
-        }
-
-        [PunRPC]
-        private void RPC_Jump(string playerIdValue)
-        {
-            if (string.IsNullOrEmpty(playerIdValue))
-            {
-                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_Jump: playerIdValue is null or empty.");
-                return;
-            }
-
-            var playerId = new DomainEntityId(playerIdValue);
-            OnRemoteJumped?.Invoke(playerId);
         }
 
         [PunRPC]
@@ -218,47 +176,6 @@ namespace Features.Player.Infrastructure
             OnRemoteRespawned?.Invoke(targetId);
         }
 
-        [PunRPC]
-        private void RPC_Rescue(string rescuerIdValue, string targetIdValue)
-        {
-            if (string.IsNullOrEmpty(rescuerIdValue) || string.IsNullOrEmpty(targetIdValue))
-            {
-                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_Rescue: rescuerIdValue or targetIdValue is null or empty.");
-                return;
-            }
-
-            var rescuerId = new DomainEntityId(rescuerIdValue);
-            var targetId = new DomainEntityId(targetIdValue);
-            OnRemoteRescued?.Invoke(rescuerId, targetId);
-        }
-
-        [PunRPC]
-        private void RPC_RescueChannelStart(string rescuerIdValue, string targetIdValue)
-        {
-            if (string.IsNullOrEmpty(rescuerIdValue) || string.IsNullOrEmpty(targetIdValue))
-            {
-                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_RescueChannelStart: rescuerIdValue or targetIdValue is null or empty.");
-                return;
-            }
-
-            var rescuerId = new DomainEntityId(rescuerIdValue);
-            var targetId = new DomainEntityId(targetIdValue);
-            OnRemoteRescueChannelStarted?.Invoke(rescuerId, targetId);
-        }
-
-        [PunRPC]
-        private void RPC_RescueChannelCancel(string targetIdValue)
-        {
-            if (string.IsNullOrEmpty(targetIdValue))
-            {
-                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_RescueChannelCancel: targetIdValue is null or empty.");
-                return;
-            }
-
-            var targetId = new DomainEntityId(targetIdValue);
-            OnRemoteRescueChannelCancelled?.Invoke(targetId);
-        }
-
         public void HydrateFromProperties()
         {
             if (photonView == null || photonView.Owner == null)
@@ -281,11 +198,6 @@ namespace Features.Player.Infrastructure
 
             if (props.TryGetValue(LifeStateKey, out var lsRaw) && lsRaw is int lsInt)
             {
-                if (!System.Enum.IsDefined(typeof(LifeState), lsInt))
-                {
-                    Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] HydrateFromProperties: invalid LifeState {lsInt}.");
-                    return;
-                }
                 OnLifeStateSynced?.Invoke(playerId, (LifeState)lsInt);
             }
         }

@@ -1,8 +1,6 @@
 using Features.Wave.Application.Events;
-using Features.Wave.Application.Ports;
 using Features.Wave.Domain;
 using Shared.EventBus;
-using Shared.Kernel;
 
 namespace Features.Wave.Application
 {
@@ -10,13 +8,11 @@ namespace Features.Wave.Application
     {
         private readonly IEventPublisher _eventBus;
         private readonly WaveProgress _progress;
-        private readonly ISkillRewardPort _skillReward;
 
-        public WaveLoopUseCase(IEventPublisher eventBus, int totalWaves, ISkillRewardPort skillReward)
+        public WaveLoopUseCase(IEventPublisher eventBus, int totalWaves)
         {
             _eventBus = eventBus;
             _progress = new WaveProgress(totalWaves);
-            _skillReward = skillReward;
         }
 
         public WaveState CurrentState => _progress.State;
@@ -63,24 +59,6 @@ namespace Features.Wave.Application
                 _eventBus.Publish(new WaveClearedEvent(_progress.CurrentWaveIndex));
                 _progress.AdvanceWave();
             }
-        }
-
-        public bool EnterUpgradeSelection()
-        {
-            var candidates = _skillReward.DrawRewardCandidates(1, 2);
-            if (candidates.Length == 0)
-            {
-                _progress.ExitUpgradeSelection();
-                return false;
-            }
-            _progress.EnterUpgradeSelection();
-            _eventBus.Publish(new SkillSelectionRequestedEvent(_progress.CurrentWaveIndex, candidates));
-            return true;
-        }
-
-        public void ExitUpgradeSelection()
-        {
-            _progress.ExitUpgradeSelection();
         }
 
         public void ForceState(int waveIndex, WaveState state, float countdownRemaining = 0f)

@@ -40,10 +40,6 @@ namespace Features.Player
         [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
         [Required, SerializeField] private ManaRegenTicker _manaRegenTicker;
         [Required, SerializeField] private ManaBarView _manaBarView;
-        [Required, SerializeField] private BleedoutTicker _bleedoutTicker;
-        [Required, SerializeField] private RescueChannelTicker _rescueChannelTicker;
-        [Required, SerializeField] private DownedOverlayView _downedOverlayView;
-        [Required, SerializeField] private InvulnerabilityTicker _invulnerabilityTicker;
 
         [Header("Combat Feedback")]
         [SerializeField] private DamageNumberSpawner _damageNumberSpawner;
@@ -121,13 +117,7 @@ namespace Features.Player
             localSetup.Initialize(_eventBus, speedModifier: _statusSetup.SpeedModifier, sceneRegistry: _playerSceneRegistry, playerLookup: _playerLookup);
 
             // Combat
-            FriendlyFireScalingAdapter ffScaling = null;
-            if (_waveBootstrap != null)
-            {
-                ffScaling = new FriendlyFireScalingAdapter(_eventBus);
-                _disposables.Add(EventBusSubscription.ForOwner(_eventBus, ffScaling));
-            }
-            _combatBootstrap.Initialize(_eventBus, localSetup.CombatNetworkPort, localSetup.PlayerId, new EntityAffiliationAdapter(), ffScaling);
+            _combatBootstrap.Initialize(_eventBus, localSetup.CombatNetworkPort, localSetup.PlayerId, new EntityAffiliationAdapter());
 
             if (_waveBootstrap != null && _coreObjective == null)
             {
@@ -151,10 +141,6 @@ namespace Features.Player
 
             _manaRegenTicker.Initialize(localSetup.ManaAdapterInstance);
             _manaBarView.Initialize(_eventBus, localSetup.PlayerId, localSetup.MaxMana);
-            _bleedoutTicker.Initialize(localSetup.BleedoutTrackerInstance);
-            _rescueChannelTicker.Initialize(localSetup.RescueChannelTrackerInstance, localSetup.UseCases);
-            _downedOverlayView.Initialize(_eventBus, localSetup.PlayerId, localSetup.BleedoutTrackerInstance, localSetup.RescueChannelTrackerInstance);
-            _invulnerabilityTicker.Initialize(localSetup.InvulnerabilityTrackerInstance);
 
             // SoundPlayer is a DDOL singleton created from JG_LobbyScene.
             // Running JG_GameScene directly is allowed, but audio stays unavailable.
@@ -195,8 +181,7 @@ namespace Features.Player
                         }
 
                         _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId,
-                            _skillSetup.SkillReward, _skillSetup.SkillIcon, _coreObjective,
-                            _skillSetup.SkillUpgradeCommand);
+                            _skillSetup.SkillIcon, _coreObjective);
                         _waveBootstrap.RegisterPlayer(player.transform);
                     }
                 });
