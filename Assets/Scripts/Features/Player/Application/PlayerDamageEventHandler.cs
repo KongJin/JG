@@ -1,5 +1,6 @@
 using System;
 using Features.Combat.Application.Events;
+using Features.Player.Application.Events;
 using Shared.EventBus;
 
 namespace Features.Player.Application
