@@ -104,8 +104,6 @@ namespace Features.Player.Presentation
 
             _eventBus.Subscribe(this, new System.Action<PlayerHealthChangedEvent>(OnHealthChanged));
             _eventBus.Subscribe(this, new System.Action<PlayerRespawnedEvent>(OnRespawned));
-            _eventBus.Subscribe(this, new System.Action<PlayerDownedEvent>(OnDowned));
-            _eventBus.Subscribe(this, new System.Action<PlayerRescuedEvent>(OnRescued));
         }
 
         private void LateUpdate()
@@ -160,22 +158,6 @@ namespace Features.Player.Presentation
 
             gameObject.SetActive(true);
             UpdateFillColor(1f);
-        }
-
-        private void OnDowned(PlayerDownedEvent e)
-        {
-            if (!_isLocalPlayer || !e.PlayerId.Equals(_playerId))
-                return;
-
-            gameObject.SetActive(false);
-        }
-
-        private void OnRescued(PlayerRescuedEvent e)
-        {
-            if (!_isLocalPlayer || !e.RescuedId.Equals(_playerId))
-                return;
-
-            gameObject.SetActive(true);
         }
 
         private void UpdateFillColor(float healthPercent)

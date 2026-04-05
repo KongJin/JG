@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using Features.Wave.Application;
 using Features.Wave.Application.Events;
 using Features.Wave.Application.Ports;
@@ -19,11 +18,6 @@ namespace Features.Wave.Presentation
         private IEventPublisher _publisher;
         private DomainEntityId _localPlayerId;
 
-        private readonly SelectionTimer _selectionTimer = new SelectionTimer();
-        private RewardCandidate[] _cachedCandidates;
-
-        public SelectionTimer SelectionTimer => _selectionTimer;
-
         public void Initialize(
             WaveLoopUseCase waveLoop,
             IWaveTablePort waveTable,
@@ -39,10 +33,7 @@ namespace Features.Wave.Presentation
             _publisher = publisher;
             _localPlayerId = localPlayerId;
 
-            _subscriber.Subscribe(this, new Action<SkillSelectedEvent>(OnSkillSelected));
-            _subscriber.Subscribe(this, new Action<SkillSelectionSkippedEvent>(OnSelectionSkipped));
             _subscriber.Subscribe(this, new Action<GameStartEvent>(OnGameStart));
-            _subscriber.Subscribe(this, new Action<SkillSelectionRequestedEvent>(OnSelectionRequested));
         }
 
         public void StartFirstWave()
@@ -62,59 +53,13 @@ namespace Features.Wave.Presentation
             }
             else if (_waveLoop.CurrentState == WaveState.Cleared)
             {
-                if (!_waveLoop.EnterUpgradeSelection())
-                    StartCountdownForCurrentWave();
-            }
-            else if (_waveLoop.CurrentState == WaveState.UpgradeSelection)
-            {
-                if (_selectionTimer.Tick(Time.deltaTime))
-                    AutoSkipSelection();
+                StartCountdownForCurrentWave();
             }
         }
 
         private void OnGameStart(GameStartEvent e)
         {
             StartFirstWave();
-        }
-
-        private void OnSelectionRequested(SkillSelectionRequestedEvent e)
-        {
-            _cachedCandidates = e.Candidates;
-            _selectionTimer.Start(e.SelectionDuration);
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            LogRewardCandidatesOffered(e);
-#endif
-        }
-
-        private void OnSkillSelected(SkillSelectedEvent e)
-        {
-            _selectionTimer.Stop();
-            _cachedCandidates = null;
-
-            if (_waveLoop.CurrentState != WaveState.UpgradeSelection) return;
-
-            _waveLoop.ExitUpgradeSelection();
-            StartCountdownForCurrentWave();
-        }
-
-        private void OnSelectionSkipped(SkillSelectionSkippedEvent e)
-        {
-            _selectionTimer.Stop();
-            _cachedCandidates = null;
-
-            if (_waveLoop.CurrentState != WaveState.UpgradeSelection) return;
-
-            _waveLoop.ExitUpgradeSelection();
-            StartCountdownForCurrentWave();
-        }
-
-        private void AutoSkipSelection()
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Debug.Log(
-                $"[MvpReward] auto_skip contextWaveIndex={_waveLoop.CurrentWaveIndex}");
-#endif
-            _publisher.Publish(new SkillSelectionSkippedEvent(_localPlayerId, _waveLoop.CurrentWaveIndex));
         }
 
         private void StartCountdownForCurrentWave()
@@ -138,21 +83,5 @@ namespace Features.Wave.Presentation
         {
             _subscriber?.UnsubscribeAll(this);
         }
-
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        private static void LogRewardCandidatesOffered(SkillSelectionRequestedEvent e)
-        {
-            var sb = new StringBuilder();
-            sb.Append("[MvpReward] candidates_offered waveIndex=").Append(e.WaveIndex).Append(" order=");
-            for (var i = 0; i < e.Candidates.Length; i++)
-            {
-                var c = e.Candidates[i];
-                if (i > 0) sb.Append(';');
-                sb.Append(i).Append(':').Append(c.Type).Append(':').Append(c.SkillId);
-            }
-
-            Debug.Log(sb.ToString());
-        }
-#endif
     }
 }

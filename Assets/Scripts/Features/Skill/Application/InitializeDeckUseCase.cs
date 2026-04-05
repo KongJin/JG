@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Features.Skill.Domain;
-using Features.Wave.Application.Ports;
 using Shared.Kernel;
 
 namespace Features.Skill.Application

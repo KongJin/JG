@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using Features.Skill.Application.Ports;
 using Features.Skill.Domain;
-using Features.Wave.Application.Ports;
 using Shared.Kernel;
 
 namespace Features.Skill.Application
 {
-    public sealed class SkillRewardAdapter : ISkillRewardPort
+    public sealed class SkillRewardAdapter
     {
         private readonly Deck _deck;
         private readonly SkillBar _bar;
@@ -53,58 +52,6 @@ namespace Features.Skill.Application
             for (var i = 0; i < take; i++)
                 result[i] = available[i];
             return result;
-        }
-
-        public RewardCandidate[] DrawRewardCandidates(int newCount, int upgradeCount)
-        {
-            var results = new List<RewardCandidate>();
-
-            // 1. 새 스킬
-            var newSkills = DrawCandidates(newCount);
-            foreach (var s in newSkills)
-                results.Add(new RewardCandidate(s.SkillId, s.DisplayName));
-
-            // 2. 강화 후보
-            if (_upgradeCommand != null && _upgradeQuery != null && upgradeCount > 0)
-            {
-                var upgradeCandidates = new List<RewardCandidate>();
-                var deckSkillIds = CollectDeckSkillIds();
-
-                foreach (var skillId in deckSkillIds)
-                {
-                    var axes = _getEnabledAxes?.Invoke(skillId);
-                    if (axes == null) continue;
-
-                    var displayName = _getDisplayName?.Invoke(skillId) ?? skillId;
-
-                    foreach (var axis in axes)
-                    {
-                        if (!_upgradeCommand.CanUpgrade(skillId, axis)) continue;
-
-                        var level = _upgradeQuery.GetLevel(skillId, axis);
-                        upgradeCandidates.Add(new RewardCandidate(
-                            skillId, displayName, axis, level, GetAxisDescription(axis)));
-                    }
-                }
-
-                // Fisher-Yates shuffle
-                for (var i = upgradeCandidates.Count - 1; i > 0; i--)
-                {
-                    var j = _rng.Next(i + 1);
-                    (upgradeCandidates[i], upgradeCandidates[j]) = (upgradeCandidates[j], upgradeCandidates[i]);
-                }
-
-                var take = Math.Min(upgradeCount, upgradeCandidates.Count);
-                for (var i = 0; i < take; i++)
-                    results.Add(upgradeCandidates[i]);
-            }
-
-            return results.ToArray();
-        }
-
-        public void AddToDeck(string skillId)
-        {
-            _deck.AddToDiscardPile(new DomainEntityId(skillId));
         }
 
         private List<SkillRewardCandidate> GetAvailableNewSkills()

@@ -40,7 +40,6 @@ namespace Features.Skill
         private SkillBar _skillBar;
         private Deck _deck;
         private DisposableScope _disposables;
-        private SkillRewardAdapter _skillRewardAdapter;
         private SkillIconAdapter _skillIconAdapter;
         private SkillUpgradeAdapter _skillUpgradeAdapter;
 
@@ -52,7 +51,6 @@ namespace Features.Skill
         private IStatusQueryPort _statusQuery;
         private List<InitializeDeckUseCase.SkillEntry> _entries;
 
-        public ISkillRewardPort SkillReward => _skillRewardAdapter;
         public ISkillIconPort SkillIcon => _skillIconAdapter;
         public ISkillUpgradeQueryPort SkillUpgradeQuery => _skillUpgradeAdapter;
         public ISkillUpgradeCommandPort SkillUpgradeCommand => _skillUpgradeAdapter;
@@ -145,12 +143,6 @@ namespace Features.Skill
                 _playerTransform,
                 _camera,
                 _eventBus);
-
-            _skillRewardAdapter = new SkillRewardAdapter(
-                _deck, _skillBar, deckSetup.RewardPool,
-                _skillUpgradeAdapter, _skillUpgradeAdapter,
-                id => _catalog.GetData(id)?.Presentation?.DisplayName ?? id,
-                id => _catalog.GetData(id)?.GrowthAxes.GetEnabledAxes());
 
             // SkillsReady CustomProperty 설정
             _networkAdapter.SyncSkillsReady();

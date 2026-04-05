@@ -64,8 +64,7 @@ namespace Features.Combat.Application
                     damageType,
                     damageResult.RemainingHealth,
                     damageResult.IsDead,
-                    attackerId,
-                    damageResult.IsDowned
+                    attackerId
                 )
             );
 
@@ -91,8 +90,7 @@ namespace Features.Combat.Application
                     damageType,
                     damageResult.RemainingHealth,
                     damageResult.IsDead,
-                    attackerId,
-                    damageResult.IsDowned
+                    attackerId
                 )
             );
 
