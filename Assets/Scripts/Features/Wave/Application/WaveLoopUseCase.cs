@@ -1,6 +1,7 @@
 using Features.Wave.Application.Events;
 using Features.Wave.Domain;
 using Shared.EventBus;
+using Shared.Kernel;
 
 namespace Features.Wave.Application
 {
