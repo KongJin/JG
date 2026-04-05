@@ -21,6 +21,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+. (Join-Path $PSScriptRoot "mcp-test-common.ps1")
+
 $script:TestSteps = New-Object System.Collections.ArrayList
 $script:TestScreenshots = New-Object System.Collections.ArrayList
 $script:TestOk = $true
@@ -104,84 +106,6 @@ function Write-TestResultJson {
     }
 }
 
-function Get-UnityMcpBaseUrl {
-    param([string]$ExplicitBaseUrl)
-    if (-not [string]::IsNullOrWhiteSpace($ExplicitBaseUrl)) { return $ExplicitBaseUrl.TrimEnd("/") }
-    $portFile = Join-Path $PSScriptRoot "..\ProjectSettings\UnityMcpPort.txt"
-    if (Test-Path $portFile) {
-        $t = (Get-Content $portFile -Raw).Trim()
-        if ($t -match '^\d+$') { return "http://127.0.0.1:$t" }
-    }
-    return "http://127.0.0.1:51234"
-}
-
-function Invoke-McpJson {
-    param([string]$Root, [string]$SubPath, [object]$Body = $null)
-    $uri = "$Root$SubPath"
-    if ($null -eq $Body) { return Invoke-RestMethod -Method Post -Uri $uri }
-    return Invoke-RestMethod -Method Post -Uri $uri -ContentType "application/json" -Body ($Body | ConvertTo-Json -Compress)
-}
-
-function Get-McpPlayModeChanging {
-    param([object]$State)
-    if ($null -ne $State.PSObject.Properties["isPlayModeChanging"]) { return [bool]$State.isPlayModeChanging }
-    if ($null -ne $State.PSObject.Properties["isPlayingOrWillChange"]) { return [bool]$State.isPlayingOrWillChange }
-    return $false
-}
-
-function Wait-McpPlayModeReady {
-    param([string]$Root, [int]$TimeoutSec, [double]$PollSec)
-    $sw = [System.Diagnostics.Stopwatch]::StartNew()
-    $deadline = (Get-Date).AddSeconds($TimeoutSec)
-    while ((Get-Date) -lt $deadline) {
-        try {
-            $s = Invoke-RestMethod -Uri "$Root/health" -Method Get -ErrorAction Stop
-            if ($s.isPlaying -and -not (Get-McpPlayModeChanging -State $s) -and -not $s.isCompiling) {
-                $sw.Stop()
-                return @{ State = $s; ElapsedMs = $sw.ElapsedMilliseconds }
-            }
-        }
-        catch { }
-        Start-Sleep -Seconds $PollSec
-    }
-    $sw.Stop()
-    throw "Play mode did not stabilize within ${TimeoutSec}s."
-}
-
-function Wait-McpActiveScene {
-    param([string]$Root, [string]$SceneName, [int]$TimeoutSec, [double]$PollSec)
-    $sw = [System.Diagnostics.Stopwatch]::StartNew()
-    $deadline = (Get-Date).AddSeconds($TimeoutSec)
-    while ((Get-Date) -lt $deadline) {
-        try {
-            $s = Invoke-RestMethod -Uri "$Root/health" -Method Get -ErrorAction Stop
-            if ($s.activeScene -eq $SceneName) {
-                $sw.Stop()
-                return @{ State = $s; ElapsedMs = $sw.ElapsedMilliseconds }
-            }
-        }
-        catch { }
-        Start-Sleep -Seconds $PollSec
-    }
-    $sw.Stop()
-    throw "Active scene did not become '$SceneName' within ${TimeoutSec}s."
-}
-
-function Write-McpConsoleLogs {
-    param([string]$Root, [string]$Label, [int]$Limit = 80)
-    Write-Host "`n=== Console logs: $Label ===" -ForegroundColor Magenta
-    try {
-        $c = Invoke-RestMethod -Uri "$Root/console/logs?limit=$Limit" -Method Get
-        Write-Host "count=$($c.count)"
-        foreach ($i in $c.items) {
-            Write-Host "[$($i.type)] $($i.message)"
-        }
-    }
-    catch {
-        Write-Host "console/logs failed: $($_.Exception.Message)"
-    }
-}
-
 function Capture-McpStep {
     param([string]$Root, [string]$Name)
     $rel = "Temp/UnityMcp/Screenshots/lobby-scene-test-$Name.png"
@@ -199,24 +123,19 @@ function Capture-McpStep {
     }
 }
 
-function Invoke-McpUiButton {
-    param([string]$Root, [string]$Path)
-    Invoke-McpJson -Root $Root -SubPath "/ui/button/invoke" -Body @{ path = $Path }
-}
-
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $BaseUrl
 $resultPathResolved = if ([string]::IsNullOrWhiteSpace($ResultJsonPath)) { Get-DefaultResultJsonPath } else { $ResultJsonPath }
 
 try {
     $script:CurrentStep = "health_precheck"
     Write-Host "MCP: $root" -ForegroundColor Cyan
-    $h = Invoke-RestMethod -Uri "$root/health" -Method Get
+    $h = Invoke-McpGetJson -Root $root -SubPath "/health"
     if (-not $h.ok) { throw "MCP /health not ok." }
     $script:LastHealth = $h
     Add-TestStep -Name "health_precheck" -Ok $true -Detail "scene=$($h.activeScene)"
     Write-Host "Before: scene=$($h.activeScene) playing=$($h.isPlaying) compiling=$($h.isCompiling)"
 
-    Write-McpConsoleLogs -Root $root -Label "before flow" -Limit 40
+    Write-McpRecentConsole -Root $root -Label "before flow" -LogLimit 40 -ErrorLimit 10
 
     $lobbyScenePath = "Assets/Scenes/JG_LobbyScene.unity"
     if ($h.isPlaying -and $h.activeScene -ne "JG_LobbyScene") {
@@ -226,7 +145,7 @@ try {
         $stopDeadline = (Get-Date).AddSeconds(90)
         while ((Get-Date) -lt $stopDeadline) {
             try {
-                $h = Invoke-RestMethod -Uri "$root/health" -Method Get -ErrorAction Stop
+                $h = Invoke-McpGetJson -Root $root -SubPath "/health"
                 if (-not $h.isPlaying -and -not (Get-McpPlayModeChanging -State $h)) { break }
             }
             catch { }
@@ -256,7 +175,7 @@ try {
 
     $script:CurrentStep = "lobby_scene_active"
     Write-Host "Wait active scene JG_LobbyScene (timeout ${LobbySceneActiveTimeoutSec}s)..." -ForegroundColor Yellow
-    $ls = Wait-McpActiveScene -Root $root -SceneName "JG_LobbyScene" -TimeoutSec $LobbySceneActiveTimeoutSec -PollSec $PlayModePollSec
+    $ls = Wait-McpSceneActive -Root $root -SceneName "JG_LobbyScene" -TimeoutSec $LobbySceneActiveTimeoutSec -PollSec $PlayModePollSec
     Add-TestStep -Name "lobby_scene_active" -Ok $true -ElapsedMs $ls.ElapsedMs
 
     $script:CurrentStep = "lobby_settle_wait"
@@ -267,39 +186,44 @@ try {
     Add-TestStep -Name "lobby_settle_wait" -Ok $true -Detail "seconds=$PhotonWaitSec" -ElapsedMs $swSettle.ElapsedMilliseconds
 
     Capture-McpStep -Root $root -Name "01-after-lobby-settle" | Out-Null
-    Write-McpConsoleLogs -Root $root -Label "after play + lobby scene + settle wait" -Limit 50
+    Write-McpRecentConsole -Root $root -Label "after play + lobby scene + settle wait" -LogLimit 50 -ErrorLimit 12
 
     $script:CurrentStep = "create_room"
-    Invoke-McpJson -Root $root -SubPath "/ui/button/invoke" -Body @{ path = "/Canvas/lobby/RoomListView/Header/CreateRoomButton" }
-    Write-Host "CreateRoom invoked." -ForegroundColor Yellow
+    $createSpec = Get-McpUiPath -Key "Lobby.CreateRoom"
+    $createResult = Invoke-McpButton -Root $root -Path $createSpec.Path -FallbackName $createSpec.FallbackName -Label "Create Room"
+    Write-Host "CreateRoom invoked: $($createResult.path)" -ForegroundColor Yellow
     Add-TestStep -Name "create_room" -Ok $true
     Start-Sleep -Seconds $AfterCreateWaitSec
     Capture-McpStep -Root $root -Name "02-after-create-room" | Out-Null
-    Write-McpConsoleLogs -Root $root -Label "after CreateRoom" -Limit 50
+    Write-McpRecentConsole -Root $root -Label "after CreateRoom" -LogLimit 50 -ErrorLimit 12
 
     $script:CurrentStep = "ready"
-    Invoke-McpJson -Root $root -SubPath "/ui/button/invoke" -Body @{ path = "/Canvas/lobby/RoomDetailPanel/ReadyButton" }
+    $readySpec = Get-McpUiPath -Key "Lobby.Ready"
+    $readyResult = Invoke-McpButton -Root $root -Path $readySpec.Path -FallbackName $readySpec.FallbackName -Label "Ready"
+    Write-Host "Ready invoked: $($readyResult.path)" -ForegroundColor Yellow
     Add-TestStep -Name "ready" -Ok $true
     Start-Sleep -Seconds $AfterReadyWaitSec
     Capture-McpStep -Root $root -Name "03-after-ready" | Out-Null
-    Write-McpConsoleLogs -Root $root -Label "after Ready" -Limit 50
+    Write-McpRecentConsole -Root $root -Label "after Ready" -LogLimit 50 -ErrorLimit 12
 
     $script:CurrentStep = "start"
-    Invoke-McpJson -Root $root -SubPath "/ui/button/invoke" -Body @{ path = "/Canvas/lobby/RoomDetailPanel/StartGameButton" }
+    $startSpec = Get-McpUiPath -Key "Lobby.StartGame"
+    $startResult = Invoke-McpButton -Root $root -Path $startSpec.Path -FallbackName $startSpec.FallbackName -Label "Start Game"
+    Write-Host "StartGame invoked: $($startResult.path)" -ForegroundColor Yellow
     Write-Host "StartGame invoked. Waiting ${AfterStartWaitSec}s..." -ForegroundColor Yellow
     Add-TestStep -Name "start" -Ok $true
     Start-Sleep -Seconds $AfterStartWaitSec
     Capture-McpStep -Root $root -Name "04-after-start-wait" | Out-Null
-    Write-McpConsoleLogs -Root $root -Label "after Start + wait" -Limit 80
+    Write-McpRecentConsole -Root $root -Label "after Start + wait" -LogLimit 80 -ErrorLimit 20
 
-    $h2 = Invoke-RestMethod -Uri "$root/health" -Method Get
+    $h2 = Invoke-McpGetJson -Root $root -SubPath "/health"
     $script:LastHealth = $h2
     Write-Host "`nAfter: scene=$($h2.activeScene) playing=$($h2.isPlaying)" -ForegroundColor Green
 
     for ($i = 1; $i -le 5; $i++) {
         if ($h2.activeScene -eq "JG_GameScene") { break }
         Start-Sleep -Seconds 3
-        $h2 = Invoke-RestMethod -Uri "$root/health" -Method Get
+        $h2 = Invoke-McpGetJson -Root $root -SubPath "/health"
         $script:LastHealth = $h2
         Write-Host "Poll $i : scene=$($h2.activeScene)"
     }
@@ -312,24 +236,25 @@ try {
 
     if ($inGame) {
         Capture-McpStep -Root $root -Name "05-game-scene" | Out-Null
-        Write-McpConsoleLogs -Root $root -Label "on JG_GameScene" -Limit 60
+        Write-McpRecentConsole -Root $root -Label "on JG_GameScene" -LogLimit 60 -ErrorLimit 15
 
         if ($CompleteGameSceneStartSkills) {
             $script:CurrentStep = "start_skills"
-            $p0 = "/StartSkillSelectionCanvas/Panel/ButtonGrid/SkillButton0"
-            $p1 = "/StartSkillSelectionCanvas/Panel/ButtonGrid/SkillButton1"
-            $pConfirm = "/StartSkillSelectionCanvas/Panel/ConfirmButton"
+            $p0 = Get-McpUiPath -Key "Game.StartSkillButton0"
+            $p1 = Get-McpUiPath -Key "Game.StartSkillButton1"
+            $pConfirm = Get-McpUiPath -Key "Game.StartSkillConfirm"
             Write-Host "`n--- Game scene: start skill selection (2 picks + confirm) ---" -ForegroundColor Cyan
             Start-Sleep -Seconds 1
             try {
-                Invoke-McpUiButton -Root $root -Path $p0
+                $pick0 = Invoke-McpButton -Root $root -Path $p0.Path -FallbackName $p0.FallbackName -Label "Start Skill Button 0"
                 Start-Sleep -Milliseconds 400
-                Invoke-McpUiButton -Root $root -Path $p1
+                $pick1 = Invoke-McpButton -Root $root -Path $p1.Path -FallbackName $p1.FallbackName -Label "Start Skill Button 1"
                 Start-Sleep -Milliseconds 400
-                Invoke-McpUiButton -Root $root -Path $pConfirm
+                $confirm = Invoke-McpButton -Root $root -Path $pConfirm.Path -FallbackName $pConfirm.FallbackName -Label "Start Skill Confirm"
+                Write-Host "Start skill picks: $($pick0.path), $($pick1.path), confirm=$($confirm.path)" -ForegroundColor Yellow
                 Start-Sleep -Seconds 2
                 Capture-McpStep -Root $root -Name "06-after-start-skills-confirmed" | Out-Null
-                Write-McpConsoleLogs -Root $root -Label "after start skill confirm" -Limit 80
+                Write-McpRecentConsole -Root $root -Label "after start skill confirm" -LogLimit 80 -ErrorLimit 20
                 Add-TestStep -Name "start_skills" -Ok $true
             }
             catch {

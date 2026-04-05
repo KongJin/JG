@@ -25,9 +25,12 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
   4. 버퍼 이전 로그·에디터 전체 로그는 `Editor.log` 최근 구간까지 읽어 보완
 - 테스트 결과를 공유할 때는 가능하면 **화면 상태 + 콘솔/로그 상태**를 함께 적는다.
 - 통합 스모크: `tools/mcp-test-lobby-scene.ps1` — 로비 플로우 + 스크린샷·콘솔. **게임 씬 시작 스킬 선택까지** 포함하려면 `-CompleteGameSceneStartSkills` (씬 경로는 `Features/Skill/README.md` MCP 절 참고).
+- UI 버튼 경로와 공통 폴링/콘솔 헬퍼는 `tools/mcp-test-common.ps1`를 기준으로 맞춘다. 로비·게임 UI 자동화 스크립트는 이 파일을 dot-source 하므로, 경로가 바뀌면 여기부터 갱신한다.
+- `GET /scene/hierarchy`가 특정 조건에서 기대와 다르게 보이면 브리지를 바로 고치지 말고 `tools/mcp-diagnose-scene-hierarchy.ps1`로 `depth`/`includeComponents`/`path` 조합을 먼저 기록한다.
 - **JSON 결과 (스모크 판정용)**: 아래 스크립트는 종료 시 `schemaVersion`, `ok`, `steps[]`, `finalHealth`, `screenshots[]`, (실패 시) `failure` 를 UTF-8 JSON 파일로 쓴다. 실패 시 **exit code 1**.
   - `tools/mcp-test-lobby-scene.ps1` — 기본 `Temp/UnityMcp/last-lobby-scene-test.json`. `-ResultJsonPath`로 경로 지정, `-WriteJsonToStdout`면 파일 저장 후 동일 JSON을 stdout에도 출력.
   - `tools/mcp-lobby-to-game.ps1` — 기본 `Temp/UnityMcp/last-lobby-to-game.json`. 동일 파라미터.
+  - `tools/mcp-diagnose-scene-hierarchy.ps1` — 기본 `Temp/UnityMcp/scene-hierarchy-diagnose.json`. 루트/서브트리 질의를 함께 저장해 `scene/hierarchy` 누락 재현 자료로 쓴다.
   - CI 예: `powershell -File .\tools\mcp-test-lobby-scene.ps1; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }` 또는 (jq 설치 시) `... | Out-Null; jq -e .ok Temp/UnityMcp/last-lobby-scene-test.json`
 
 ## 엔드포인트
@@ -234,7 +237,7 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 
 ```json
 {
-  "path": "/Canvas/LobbyPanel/CreateRoomButton"
+  "path": "/UIRoot/Canvas/lobby/RoomListView/Header/CreateRoomButton"
 }
 ```
 
@@ -251,15 +254,39 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 
 1. `POST /scene/open` — `Assets/Scenes/JG_LobbyScene.unity`
 2. `POST /play/start`
-3. 플레이 모드 전환·첫 프레임까지 대기: `/health`로 `isPlaying`이고 `isPlayModeChanging`·`isCompiling`이 꺼질 때까지 폴링 (`mcp-lobby-to-game.ps1` 기본 타임아웃 120s, `-PlayModeReadyTimeoutSec` / `-PlayModePollSec` 조정). 하위 호환용 `isPlayingOrWillChange`도 동일한 의미(전환 중 여부)로 유지되며, Unity 원본 값은 `rawIsPlayingOrWillChange`에서 확인할 수 있다.
-4. `/health`로 활성 씬이 `JG_LobbyScene`인지 확인한 뒤, 고정 대기 (`mcp-lobby-to-game.ps1` 기본 `3s`, `-PhotonWaitSec`으로 조절) 후 Create Room
-5. `POST /ui/button/invoke` — `path`: `/Canvas/lobby/RoomListView/Header/CreateRoomButton`
-6. 방 입장·UI 반영까지 잠시 대기
-7. `POST /ui/button/invoke` — `path`: `/Canvas/lobby/RoomDetailPanel/ReadyButton`
-8. `POST /ui/button/invoke` — `path`: `/Canvas/lobby/RoomDetailPanel/StartGameButton` (마스터만 유효)
-9. `PhotonNetwork.LoadLevel` 후 활성 씬이 `JG_GameScene`으로 바뀌는지 `/health`의 `activeScene` 등으로 확인
+3. `/health`로 플레이 모드 전환·첫 프레임까지 대기: `isPlaying == true`, `isPlayModeChanging == false`, `isCompiling == false`를 확인한다. (`tools/mcp-test-common.ps1`의 `Wait-McpPlayModeReady`, 스크립트 기본 타임아웃 `120s`)
+4. `/health`로 활성 씬이 `JG_LobbyScene`인지 확인한다. (`Wait-McpSceneActive`)
+5. 고정 대기 후 `POST /ui/button/invoke` — `path`: `/UIRoot/Canvas/lobby/RoomListView/Header/CreateRoomButton`
+6. `GET /console/logs`, `GET /console/errors`로 Create Room 직후 상태를 본다. 필요하면 `POST /screenshot/capture`
+7. `POST /ui/button/invoke` — `path`: `/UIRoot/Canvas/lobby/RoomDetailPanel/ReadyButton`
+8. 다시 `GET /console/logs`, `GET /console/errors`
+9. `POST /ui/button/invoke` — `path`: `/UIRoot/Canvas/lobby/RoomDetailPanel/StartGameButton` (마스터만 유효)
+10. `PhotonNetwork.LoadLevel` 후 `/health`의 `activeScene`이 `JG_GameScene`으로 바뀌는지 확인하고, 필요하면 스크린샷을 남긴다
 
-프로젝트 루트에서 한 번에 돌리려면 `tools/mcp-lobby-to-game.ps1`을 사용한다. 포트는 `ProjectSettings/UnityMcpPort.txt` 또는 `-BaseUrl`로 지정한다. 이미 플레이 중이고 활성 씬이 `JG_LobbyScene`이면 `scene/open`·`play/start`는 건너뛴다(에디터는 플레이 모드에서 씬 열기를 허용하지 않음). 다른 씬에서 플레이 중이면 먼저 `play/stop` 후 로비를 연다. 로비 씬 이름이 `/health`에 늦게 잡히면 `-LobbySceneActiveTimeoutSec`으로 대기 상한을 늘린다.
+자주 쓰는 UI 경로는 `tools/mcp-test-common.ps1`의 `Get-McpUiPathSpec`이 SSOT다. 예를 들면:
+
+- 로비 Create Room: `/UIRoot/Canvas/lobby/RoomListView/Header/CreateRoomButton`
+- 로비 Ready: `/UIRoot/Canvas/lobby/RoomDetailPanel/ReadyButton`
+- 로비 Start Game: `/UIRoot/Canvas/lobby/RoomDetailPanel/StartGameButton`
+- 공용 에러 배너 루트: `/UIRoot/Canvas/ErrorBannerRoot`
+- 공용 에러 모달 닫기: `/UIRoot/Canvas/ErrorModalRoot/Panel/DismissButton`
+- 시작 스킬 선택 패널: `/UIRoot/StartSkillSelectionCanvas/Panel`
+
+프로젝트 루트에서 한 번에 돌리려면 `tools/mcp-lobby-to-game.ps1` 또는 `tools/mcp-test-lobby-scene.ps1`을 사용한다. 두 스크립트 모두 `tools/mcp-test-common.ps1`을 통해 경로/폴링/콘솔 수집을 공유한다. 포트는 `ProjectSettings/UnityMcpPort.txt` 또는 `-BaseUrl`로 지정한다. 이미 플레이 중이고 활성 씬이 `JG_LobbyScene`이면 `scene/open`·`play/start`는 건너뛴다(에디터는 플레이 모드에서 씬 열기를 허용하지 않음). 다른 씬에서 플레이 중이면 먼저 `play/stop` 후 로비를 연다. 로비 씬 이름이 `/health`에 늦게 잡히면 `-LobbySceneActiveTimeoutSec`으로 대기 상한을 늘린다.
+
+#### 테스트 성공 기준
+
+스크립트 기반 MCP 테스트가 "성공"으로 간주되려면 다음 기준을 모두 충족해야 한다.
+
+| 기준 | 수치 | 비고 |
+|---|---|---|
+| 전체 소요 시간 | **120초 이내** | 로비 진입 → 게임 씬 진입 기준 |
+| 콘솔 에러 | **0개** | `GET /console/errors` 기준. Photon dev region 경고는 제외 |
+| 스크린 | **최소 3장** | 로비, 스킬선택, 게임 HUD (선택적 플래그) |
+| JSON 결과 | **매 실행 시 생성** | `Temp/UnityMcp/last-*.json`, `ok: true` |
+| 계층 재현 진단 | **별도 스크립트** | `tools/mcp-hierarchy-diag.ps1`로 `/scene/hierarchy` 응답 안정성 검증 |
+
+실패 시 스크립트는 `exit 1`을 반환하며, JSON 결과 파일의 `failure` 필드에 실패 단계와 메시지가 기록된다.
 
 ### 게임오브젝트
 
@@ -301,8 +328,8 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 
 ```json
 {
-  "gameObjectPath": "/GameSceneBootstrap",
-  "componentType": "GameSceneBootstrap",
+  "gameObjectPath": "/GameSceneRoot",
+  "componentType": "GameSceneRoot",
   "propertyName": "_someField",
   "value": "값"
 }
@@ -312,7 +339,7 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
 - 문자열: `"hello"`
 - 숫자: `"3.5"`
 - bool: `"true"` / `"false"`
-- 오브젝트 참조: `"/경로::컴포넌트타입"` (예: `"/GameSceneBootstrap::StatusSetup"`)
+- 오브젝트 참조: `"/경로::컴포넌트타입"` (예: `"/GameSceneRoot::StatusSetup"`)
 - 에셋 참조: `assetPath` 필드 사용 (예: `"assetPath": "Assets/Resources/MyAsset.asset"`)
 
 ### 메뉴

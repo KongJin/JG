@@ -9,26 +9,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-function Get-UnityMcpBaseUrl {
-    param([string]$ExplicitBaseUrl)
-    if (-not [string]::IsNullOrWhiteSpace($ExplicitBaseUrl)) { return $ExplicitBaseUrl.TrimEnd("/") }
-    $portFile = Join-Path $PSScriptRoot "..\ProjectSettings\UnityMcpPort.txt"
-    if (Test-Path $portFile) {
-        $t = (Get-Content $portFile -Raw).Trim()
-        if ($t -match '^\d+$') { return "http://127.0.0.1:$t" }
-    }
-    return "http://127.0.0.1:51234"
-}
-
-function Invoke-McpJson {
-    param([string]$Root, [string]$SubPath, [object]$Body = $null)
-    $uri = "$Root$SubPath"
-    if ($null -eq $Body) { return Invoke-RestMethod -Method Post -Uri $uri }
-    return Invoke-RestMethod -Method Post -Uri $uri -ContentType "application/json" -Body ($Body | ConvertTo-Json -Compress)
-}
+. (Join-Path $PSScriptRoot "mcp-test-common.ps1")
 
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $BaseUrl
-$h = Invoke-RestMethod -Uri "$root/health" -Method Get
+$h = Invoke-McpGetJson -Root $root -SubPath "/health"
 if (-not $h.ok) { throw "MCP /health not ok." }
 if (-not $h.isPlaying) { throw "Play mode is off. Enter play on JG_GameScene first." }
 if ($h.activeScene -ne "JG_GameScene") {
@@ -37,16 +21,17 @@ if ($h.activeScene -ne "JG_GameScene") {
 
 Write-Host "MCP: $root | scene=JG_GameScene | start skill UI invoke" -ForegroundColor Cyan
 
-$p0 = "/StartSkillSelectionCanvas/Panel/ButtonGrid/SkillButton0"
-$p1 = "/StartSkillSelectionCanvas/Panel/ButtonGrid/SkillButton1"
-$pConfirm = "/StartSkillSelectionCanvas/Panel/ConfirmButton"
+$p0 = Get-McpUiPath -Key "Game.StartSkillButton0"
+$p1 = Get-McpUiPath -Key "Game.StartSkillButton1"
+$pConfirm = Get-McpUiPath -Key "Game.StartSkillConfirm"
 
-Invoke-McpJson -Root $root -SubPath "/ui/button/invoke" -Body @{ path = $p0 }
+$pick0 = Invoke-McpButton -Root $root -Path $p0.Path -FallbackName $p0.FallbackName -Label "Start Skill Button 0"
 Start-Sleep -Milliseconds 400
-Invoke-McpJson -Root $root -SubPath "/ui/button/invoke" -Body @{ path = $p1 }
+$pick1 = Invoke-McpButton -Root $root -Path $p1.Path -FallbackName $p1.FallbackName -Label "Start Skill Button 1"
 Start-Sleep -Milliseconds 400
-Invoke-McpJson -Root $root -SubPath "/ui/button/invoke" -Body @{ path = $pConfirm }
+$confirm = Invoke-McpButton -Root $root -Path $pConfirm.Path -FallbackName $pConfirm.FallbackName -Label "Start Skill Confirm"
 Start-Sleep -Seconds 1
+Write-Host "Invoked paths: $($pick0.path), $($pick1.path), confirm=$($confirm.path)" -ForegroundColor Yellow
 
 $r = Invoke-McpJson -Root $root -SubPath "/screenshot/capture" -Body @{
     outputPath = "Temp/UnityMcp/Screenshots/game-scene-after-start-skills.png"
@@ -54,12 +39,7 @@ $r = Invoke-McpJson -Root $root -SubPath "/screenshot/capture" -Body @{
 }
 Write-Host "Screenshot: $($r.relativePath)" -ForegroundColor Green
 
-try {
-    $c = Invoke-RestMethod -Uri "$root/console/logs?limit=60" -Method Get
-    Write-Host "Console count=$($c.count)" -ForegroundColor Gray
-    foreach ($i in $c.items) { Write-Host "[$($i.type)] $($i.message)" }
-}
-catch { Write-Host "console/logs: $($_.Exception.Message)" }
+Write-McpRecentConsole -Root $root -Label "after start skill confirm" -LogLimit 60 -ErrorLimit 20
 
 if (-not $NoStopPlay) {
     Invoke-McpJson -Root $root -SubPath "/play/stop"
