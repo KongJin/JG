@@ -113,7 +113,6 @@ namespace Features.Combat
             private NoOpCombatNetworkPort() { }
 
             public void SendDamage(DomainEntityId targetId, float damage, DamageType damageType, DomainEntityId attackerId) { }
-            public void SendDeath(DomainEntityId targetId, DomainEntityId killerId) { }
             public void SendRespawn(DomainEntityId targetId) { }
         }
     }

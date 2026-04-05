@@ -30,7 +30,6 @@ namespace Features.Player.Infrastructure
         // IPlayerNetworkCallbackPort
         public System.Action<DomainEntityId> OnRemoteJumped { get; set; }
         public System.Action<DomainEntityId, float, DamageType, DomainEntityId> OnRemoteDamaged { set; private get; }
-        public System.Action<DomainEntityId, DomainEntityId> OnRemoteDied { get; set; }
         public System.Action<DomainEntityId> OnRemoteRespawned { get; set; }
         public System.Action<DomainEntityId, float, float> OnHealthSynced { get; set; }
         public System.Action<DomainEntityId, float, float> OnManaSynced { get; set; }
@@ -70,12 +69,6 @@ namespace Features.Player.Infrastructure
         {
             photonView.RPC(nameof(RPC_ApplyDamage), RpcTarget.Others,
                 targetId.Value, damage, (int)damageType, attackerId.Value);
-        }
-
-        public void SendDeath(DomainEntityId targetId, DomainEntityId killerId)
-        {
-            photonView.RPC(nameof(RPC_PlayerDied), RpcTarget.Others,
-                targetId.Value, killerId.Value);
         }
 
         public void SendRespawn(DomainEntityId targetId)
@@ -210,20 +203,6 @@ namespace Features.Player.Infrastructure
             var attackerId = string.IsNullOrEmpty(attackerIdValue) ? default : new DomainEntityId(attackerIdValue);
             var damageType = (DamageType)damageTypeInt;
             OnRemoteDamaged?.Invoke(targetId, damage, damageType, attackerId);
-        }
-
-        [PunRPC]
-        private void RPC_PlayerDied(string targetIdValue, string killerIdValue)
-        {
-            if (string.IsNullOrEmpty(targetIdValue))
-            {
-                Debug.LogWarning($"[{nameof(PlayerNetworkAdapter)}] RPC_PlayerDied: targetIdValue is null or empty.");
-                return;
-            }
-
-            var targetId = new DomainEntityId(targetIdValue);
-            var killerId = string.IsNullOrEmpty(killerIdValue) ? default : new DomainEntityId(killerIdValue);
-            OnRemoteDied?.Invoke(targetId, killerId);
         }
 
         [PunRPC]

@@ -1,16 +1,29 @@
 # Enemy Feature
 
-적(Enemy) 엔티티의 생성, AI, 전투 통합, 접촉 데미지를 담당한다.
+Enemy 피처는 적 엔티티의 생성, AI, 전투 통합, 접촉 데미지를 담당한다.
 
-## 현재 책임
+## 먼저 읽을 규칙
+
+- 전역 구조, 레이어, scene contract 체크리스트: [architecture.md](../../../../agent/architecture.md)
+- Bootstrap 책임, runtime lookup 예외, static event 예외: [anti_patterns.md](../../../../agent/anti_patterns.md)
+- 게임 씬 전역 초기화 순서와 late-join 전제: [initialization_order.md](../../../../agent/initialization_order.md)
+
+## 이 피처의 책임
 
 - 적 도메인 엔티티 생성 및 HP 관리
-- Master 클라이언트에서 이동 목표 결정: `EnemySpec.TargetMode` + `AggroRadius`에 따라 플레이어/코어 우선순위 (`EnemyMoveTargetResolver` in `SpawnEnemyUseCase.cs`, `ICoreObjectiveQuery` + `IPlayerPositionQuery` 주입)
+- Master 클라이언트에서 이동 목표 결정: `EnemySpec.TargetMode` + `AggroRadius`에 따라 플레이어/코어 우선순위 (`EnemyMoveTargetResolver` in `SpawnEnemyUseCase.cs`, Enemy 소유 포트 `ICoreObjectiveQuery` + `IPlayerPositionQuery` 주입)
+- `EnemySpec.StopDistance`(`EnemyData.stopDistance`): **코어를 추적 중일 때만** 적용되는 XZ 정지 거리. 코어는 트리거 콜라이더만 있으므로 물리 막힘 없이도 적이 셸 근처에서 멈추게 한다. 플레이어를 추적 중일 때는 접촉 피해를 위해 기존처럼 거의 겹칠 때까지 전진한다. `0`이면 레거시 정지(3D 거리 거의 0)만 사용한다.
 - 기존 Combat 시스템에 `RegisterTarget()`으로 통합 — 플레이어 투사체로 처치 가능
 - 접촉 데미지: Master가 `OnTriggerStay`로 감지 → `CombatBootstrap.ApplyDamage()` 호출
 - 위치 동기화: `IPunObservable`로 Master→클라이언트 위치 전송
 
-## 데이터 흐름
+## 로컬 계약
+
+- Master는 `EnemyData`로 명시적 초기화하고, 비-Master는 `EnemySetup.EnemyArrived` 경로로만 초기화한다.
+- 원격 적 스펙의 기준값은 Photon `InstantiationData[0]`에 담긴 Resources 경로다.
+- `EnemySetup.ResolveDataFromInstantiation()`의 같은 GameObject `PhotonView` 조회는 문서화된 허용 예외다.
+
+## 핵심 흐름
 
 ### 스폰 (Master)
 
@@ -67,7 +80,7 @@ EnemyContactDamageDetector.OnTriggerStay()
 - **Domain**: `Enemy` (Entity), `EnemySpec` (readonly struct; `EnemyTargetMode` enum 동일 파일)
 - **Application**: `SpawnEnemyUseCase`, `EnemyMoveTargetResolver` (같은 파일), `EnemyDamageEventHandler`, 이벤트 3개
 - **Infrastructure**: `EnemyData` (ScriptableObject), `EnemyCombatTargetProvider`, `EnemyNetworkAdapter`, `EnemyAiAdapter`
-- **Presentation**: `EnemyView` (피격 플래시), `EnemyContactDamageDetector`
+- **Presentation**: `EnemyView` (피격 플래시), `EnemyHealthBarView` (World-Space Canvas 기반 체력바, Billboard), `EnemyContactDamageDetector`
 - **Bootstrap**: `EnemySetup` (프리팹 컴포지션 루트)
 
 ## 초기화 메모
@@ -84,8 +97,14 @@ EnemyContactDamageDetector.OnTriggerStay()
 `Assets/Resources/EnemyCharacter.prefab`:
 - PhotonView, EnemySetup, EnemyNetworkAdapter, EnemyAiAdapter
 - EnemyView, EnemyContactDamageDetector, EntityIdHolder
+- `EnemySetup._healthBarPrefab` → `Assets/Resources/EnemyHealthBar.prefab` 에셋 참조
 - Collider (trigger) + Rigidbody (kinematic)
 - 임시 메시 (큐브/캡슐)
+
+`Assets/Resources/EnemyHealthBar.prefab`:
+- World-Space Canvas + Slider + Fill Image + `EnemyHealthBarView`
+- `EnemySetup.SpawnHealthBar()`가 Initialize 시 Instantiate → 적 Transform 자식으로 부착
+- GetComponent 예외: Instantiate한 프리팹에서 `EnemyHealthBarView`를 가져온다. 같은 GameObject, 1회, Photon Instantiate가 아닌 로컬 Instantiate이므로 Inspector 연결 불가 — Runtime Lookup Policy 허용 예외에 해당
 
 `Assets/Resources/EnemyCharacterCore.prefab`:
 - 코어 공성 적 시각용 대형 프리팹(선택). 컴포지션 계약은 `EnemyCharacter.prefab`과 동일.
@@ -94,5 +113,5 @@ EnemyContactDamageDetector.OnTriggerStay()
 ## 피처 의존성
 
 - **Combat**: `CombatBootstrap.RegisterTarget()`, `ApplyDamage()`, `ICombatTargetProvider`
-- **Wave**: `IPlayerPositionQuery`, `ICoreObjectiveQuery` (AI 이동 목표; 두 포트는 `Application/Ports/IPlayerPositionQuery.cs`에 정의)
+- **Wave**: `CoreObjectiveBootstrap`, `PlayerPositionQueryAdapter`가 Enemy 소유 포트 `IPlayerPositionQuery`, `ICoreObjectiveQuery`를 구현해 AI 이동 목표를 제공
 - **Shared**: `Entity`, `DomainEntityId`, `EntityIdHolder`, `EventBus`

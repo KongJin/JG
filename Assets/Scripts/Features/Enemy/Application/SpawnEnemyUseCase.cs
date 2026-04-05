@@ -1,7 +1,7 @@
 using System;
 using Features.Enemy.Application.Events;
+using Features.Enemy.Application.Ports;
 using Features.Enemy.Domain;
-using Features.Wave.Application.Ports;
 using Shared.EventBus;
 using Shared.Kernel;
 
@@ -33,6 +33,7 @@ namespace Features.Enemy.Application
             float ez,
             IPlayerPositionQuery players,
             ICoreObjectiveQuery core,
+            out bool isCoreTarget,
             out float dx,
             out float dy,
             out float dz)
@@ -40,12 +41,17 @@ namespace Features.Enemy.Application
             switch (spec.TargetMode)
             {
                 case EnemyTargetMode.ChaseNearestPlayer:
+                    isCoreTarget = false;
                     (dx, dy, dz) = players.GetNearestPlayerPosition(ex, ey, ez);
                     return true;
 
                 case EnemyTargetMode.ChaseCore:
                     if (core.TryGetCoreWorldPosition(out dx, out dy, out dz))
+                    {
+                        isCoreTarget = true;
                         return true;
+                    }
+                    isCoreTarget = false;
                     (dx, dy, dz) = players.GetNearestPlayerPosition(ex, ey, ez);
                     return true;
 
@@ -53,9 +59,16 @@ namespace Features.Enemy.Application
                     if (spec.AggroRadius > 0f &&
                         players.TryGetNearestPlayerWithinHorizontalRadius(
                             ex, ey, ez, spec.AggroRadius, out dx, out dy, out dz))
+                    {
+                        isCoreTarget = false;
                         return true;
+                    }
                     if (core.TryGetCoreWorldPosition(out dx, out dy, out dz))
+                    {
+                        isCoreTarget = true;
                         return true;
+                    }
+                    isCoreTarget = false;
                     (dx, dy, dz) = players.GetNearestPlayerPosition(ex, ey, ez);
                     return true;
 

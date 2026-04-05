@@ -1,6 +1,7 @@
 using Shared.Attributes;
 using Features.Combat;
 using Features.Enemy;
+using Features.Enemy.Application.Ports;
 using Features.Skill.Infrastructure;
 using Features.Skill.Presentation;
 using Features.Wave.Application;
@@ -32,6 +33,7 @@ namespace Features.Wave
         [Required, SerializeField] private UpgradeSelectionView _upgradeView;
         [Required, SerializeField] private UpgradeResultView _upgradeResultView;
         [Required, SerializeField] private WaveNetworkAdapter _networkAdapter;
+        [Required, SerializeField] private CoreHealthHudView _coreHealthView;
 
         [Tooltip("선택. 연결 시 스폰 배율을 이 컴포넌트에서만 조회한다. 비우면 Initialize 시 Room에서 직접 읽는다.")]
         [SerializeField]
@@ -96,6 +98,9 @@ namespace Features.Wave
 
             _flowController.Initialize(waveLoop, (IWaveTablePort)_waveTable, (IWaveSpawnPort)_spawnAdapter, eventBus, eventBus, localPlayerId);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _flowController));
+
+            _coreHealthView.Initialize(eventBus, coreObjectiveQuery.CoreId, coreObjectiveQuery.CoreMaxHp);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, _coreHealthView));
 
             EnemySetup.EnemyArrived += OnEnemyArrived;
 

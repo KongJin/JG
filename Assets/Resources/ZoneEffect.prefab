@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4684368228571635311}
   - component: {fileID: 3517442384041128187}
   - component: {fileID: 1927236261646503477}
+  - component: {fileID: 2939057820588137287}
   m_Layer: 0
   m_Name: ZoneEffect
   m_TagString: Untagged
@@ -128,3 +129,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Features.Zone.Presentation.ZoneView
   _fadeSpeed: 1
+--- !u!114 &2939057820588137287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62931960490395139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f8cf37a95be16c43a6efb47b4dda330, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Zone.Presentation.ZoneCollisionDetector

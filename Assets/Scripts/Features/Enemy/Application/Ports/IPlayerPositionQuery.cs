@@ -1,6 +1,6 @@
 using Shared.Kernel;
 
-namespace Features.Wave.Application.Ports
+namespace Features.Enemy.Application.Ports
 {
     public interface IPlayerPositionQuery
     {
@@ -19,6 +19,7 @@ namespace Features.Wave.Application.Ports
     public interface ICoreObjectiveQuery
     {
         DomainEntityId CoreId { get; }
+        float CoreMaxHp { get; }
 
         bool TryGetCoreWorldPosition(out float x, out float y, out float z);
     }

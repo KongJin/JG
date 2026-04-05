@@ -1,6 +1,6 @@
 using Features.Combat;
+using Features.Enemy.Application.Ports;
 using Features.Wave.Application;
-using Features.Wave.Application.Ports;
 using Features.Wave.Domain;
 using Features.Wave.Infrastructure;
 using Shared.Attributes;
@@ -19,6 +19,7 @@ namespace Features.Wave
         private bool _registered;
 
         public DomainEntityId CoreId => ObjectiveCoreIds.Default;
+        public float CoreMaxHp => _maxHp;
 
         public bool TryGetCoreWorldPosition(out float x, out float y, out float z)
         {

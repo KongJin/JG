@@ -23,7 +23,6 @@ namespace Features.Player.Application
 
             networkCallbacks.OnRemoteJumped = HandleRemoteJumped;
             networkCallbacks.OnRemoteDamaged = HandleRemoteDamaged;
-            networkCallbacks.OnRemoteDied = HandleRemoteDied;
             networkCallbacks.OnRemoteRespawned = HandleRemoteRespawned;
             networkCallbacks.OnHealthSynced = HandleHealthSynced;
             networkCallbacks.OnManaSynced = HandleManaSynced;
@@ -42,13 +41,6 @@ namespace Features.Player.Application
             Features.Combat.Domain.DamageType damageType, DomainEntityId attackerId)
         {
             _publisher.Publish(new DamageReplicatedEvent(targetId, damage, damageType, attackerId));
-        }
-
-        private void HandleRemoteDied(DomainEntityId targetId, DomainEntityId killerId)
-        {
-            // Death is conveyed via the damage replication path (DamageReplicatedEvent →
-            // ExecuteReplicated → DamageAppliedEvent → PlayerDamageEventHandler → PlayerDiedEvent).
-            // No separate handling needed here.
         }
 
         private void HandleRemoteRespawned(DomainEntityId targetId)

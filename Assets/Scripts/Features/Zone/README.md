@@ -1,14 +1,26 @@
 # Zone Feature
 
-지속/범위형 스킬의 시각 영역을 스폰하고, 영역 내 엔티티에 틱 데미지와 상태효과를 적용하는 피처다.
+Zone 피처는 지속/범위형 스킬의 시각 영역을 스폰하고, 영역 내 엔티티에 틱 데미지와 상태효과를 적용한다.
 
-## 현재 책임
+## 먼저 읽을 규칙
+
+- 전역 구조, 레이어, 포트 위치: [architecture.md](../../../../agent/architecture.md)
+- Bootstrap 책임과 runtime wiring 규칙: [anti_patterns.md](../../../../agent/anti_patterns.md)
+
+## 이 피처의 책임
 
 - Skill 피처가 발행한 `ZoneRequestedEvent`를 해석한다.
 - Zone 도메인 엔티티를 생성한다.
 - Zone 프리팹 스폰과 수명 관리를 Zone 피처 내부에서 수행한다.
 - 영역 내 엔티티를 감지하여 틱 간격으로 `ZoneTickEvent`를 발행한다.
 - `ZoneTickEvent`에 `StatusPayload`, `AllyDamageScale`을 포함하여 Status 피처의 `StatusTriggerHandler`가 상태효과를, Combat 피처의 `ZoneDamageHandler`가 데미지를 적용할 수 있게 한다. Zone 데미지는 항상 Magical이며, `ZoneDamageHandler`가 하드코딩한다.
+
+## 로컬 계약
+
+- Zone은 별도 네트워크 어댑터를 두지 않는다.
+- Skill이 각 클라이언트에서 발행한 `ZoneRequestedEvent`를 받아 로컬 시각 연출과 충돌 감지만 수행한다.
+- 위치 계산과 `ZoneSpec` 생성은 `SpawnZoneUseCase` 내부에서만 수행한다.
+- `ZoneEffect.prefab`은 `ZoneView`, `ZoneCollisionDetector`, `CapsuleCollider(isTrigger=true)`를 모두 포함해야 한다. 누락은 런타임에 복구하지 않는다.
 
 ## 핵심 흐름
 
@@ -39,7 +51,7 @@ Skill ZoneRequestedEvent (SkillSpec with StatusPayload)
 - 틱 간격(StatusPayload.TickInterval 또는 기본 0.5초)마다 `ZoneTickEvent` 발행
 - 풀 리셋 시 상태 초기화 (`IPoolResetHandler`)
 
-## 현재 구현 기준 결정
+## 구현 기준
 
 - Zone은 별도 네트워크 어댑터를 두지 않는다.
 - Skill 피처가 이미 RPC 이후 `ZoneRequestedEvent`를 각 클라이언트에서 발행하므로,

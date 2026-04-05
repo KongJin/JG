@@ -55,14 +55,11 @@ namespace Features.Zone
             var worldPosition = position.ToVector3();
             var viewGo = _zonePool.Rent(worldPosition, Quaternion.identity);
             var view = viewGo.GetComponent<ZoneView>();
+            var detector = viewGo.GetComponent<ZoneCollisionDetector>();
 
             view.Initialize(radius, duration);
             view.SetColor(_zoneColor);
             view.name = $"{_zonePrefab.name}_{Time.time}";
-
-            var detector = viewGo.GetComponent<ZoneCollisionDetector>();
-            if (detector == null)
-                detector = viewGo.AddComponent<ZoneCollisionDetector>();
             detector.Initialize(zoneId, casterId, baseDamage, statusPayload, _eventPublisher, allyDamageScale);
         }
     }

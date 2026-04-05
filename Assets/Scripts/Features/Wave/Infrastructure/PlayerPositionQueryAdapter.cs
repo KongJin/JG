@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Features.Combat.Application.Ports;
-using Features.Wave.Application.Ports;
+using Features.Enemy.Application.Ports;
 using Features.Wave.Domain;
 using UnityEngine;
 

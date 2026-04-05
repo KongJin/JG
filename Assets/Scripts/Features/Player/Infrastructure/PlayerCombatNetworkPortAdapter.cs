@@ -24,11 +24,6 @@ namespace Features.Player.Infrastructure
             _playerNetwork.SendDamage(targetId, damage, damageType, attackerId);
         }
 
-        public void SendDeath(DomainEntityId targetId, DomainEntityId killerId)
-        {
-            _playerNetwork.SendDeath(targetId, killerId);
-        }
-
         public void SendRespawn(DomainEntityId targetId)
         {
             _playerNetwork.SendRespawn(targetId);
