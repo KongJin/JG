@@ -1,0 +1,101 @@
+name: Rule Harness Nightly
+
+on:
+  schedule:
+    - cron: '0 17 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Preview doc edits without writing files'
+        required: false
+        default: false
+        type: boolean
+      model:
+        description: 'Override RULE_HARNESS_MODEL for this run'
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  rule-harness:
+    runs-on: windows-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      RULE_HARNESS_MODEL: ${{ vars.RULE_HARNESS_MODEL || 'gpt-4.1-mini' }}
+      RULE_HARNESS_PUSH_TOKEN: ${{ secrets.RULE_HARNESS_PUSH_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run rule harness
+        shell: pwsh
+        run: |
+          $dryRun = $false
+          if ('${{ github.event_name }}' -eq 'workflow_dispatch' -and '${{ inputs.dry_run }}' -eq 'true') {
+            $dryRun = $true
+          }
+
+          if ('${{ github.event_name }}' -eq 'workflow_dispatch' -and '${{ inputs.model }}' -ne '') {
+            $env:RULE_HARNESS_MODEL = '${{ inputs.model }}'
+          }
+
+          $args = @(
+            '.\tools\rule-harness\run-rule-harness.ps1',
+            '-ArtifactDir', '.\Temp\RuleHarness'
+          )
+          if ($dryRun) {
+            $args += '-DryRun'
+          }
+
+          & pwsh -NoProfile -ExecutionPolicy Bypass @args
+
+      - name: Upload rule harness artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rule-harness-report
+          path: Temp/RuleHarness/rule-harness-report.json
+          if-no-files-found: error
+
+      - name: Commit doc sync
+        if: ${{ success() }}
+        shell: pwsh
+        run: |
+          $report = Get-Content -Path '.\Temp\RuleHarness\rule-harness-report.json' -Raw | ConvertFrom-Json
+          if ($report.failed) {
+            Write-Host 'High-severity findings or harness errors exist. Skipping auto-commit.'
+            exit 0
+          }
+
+          if (-not $report.applied) {
+            Write-Host 'No doc edits were applied.'
+            exit 0
+          }
+
+          $status = git status --short
+          if (-not $status) {
+            Write-Host 'Working tree is clean after rule harness.'
+            exit 0
+          }
+
+          $token = if ($env:RULE_HARNESS_PUSH_TOKEN) { $env:RULE_HARNESS_PUSH_TOKEN } else { '${{ github.token }}' }
+          git config user.name 'rule-harness[bot]'
+          git config user.email 'rule-harness[bot]@users.noreply.github.com'
+          git remote set-url origin "https://x-access-token:$token@github.com/${{ github.repository }}.git"
+          git add -- 'CLAUDE.md' 'agent/*.md' 'Assets/Scripts/Features/*/README.md' 'Assets/Scripts/Shared/README.md' 'Assets/Editor/UnityMcp/README.md'
+          git commit -m "docs(rule-harness): sync SSOT with repo state [skip ci]"
+          git push origin HEAD:${{ github.ref_name }}
+
+      - name: Fail on high severity code violations
+        if: ${{ always() }}
+        shell: pwsh
+        run: |
+          $report = Get-Content -Path '.\Temp\RuleHarness\rule-harness-report.json' -Raw | ConvertFrom-Json
+          if ($report.failed) {
+            Write-Error 'Rule harness found high severity violations or encountered a harness failure.'
+          }

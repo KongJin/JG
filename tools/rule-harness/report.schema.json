@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kongjin.github.io/jg/rule-harness-report.schema.json",
+  "title": "Rule Harness Report",
+  "type": "object",
+  "required": [
+    "runId",
+    "commitSha",
+    "scannedFeatures",
+    "findings",
+    "docEdits",
+    "applied",
+    "failed"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string"
+    },
+    "commitSha": {
+      "type": "string"
+    },
+    "scannedFeatures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "findingType",
+          "severity",
+          "ownerDoc",
+          "evidence",
+          "confidence"
+        ],
+        "properties": {
+          "findingType": {
+            "enum": [
+              "code_violation",
+              "doc_drift",
+              "missing_rule",
+              "broken_reference"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "ownerDoc": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "line": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "snippet": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "proposedDocEdit": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "docEdits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "targetPath",
+          "status"
+        ],
+        "properties": {
+          "targetPath": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "proposed",
+              "applied",
+              "skipped",
+              "rejected",
+              "failed"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "applied": {
+      "type": "boolean"
+    },
+    "failed": {
+      "type": "boolean"
+    }
+  }
+}

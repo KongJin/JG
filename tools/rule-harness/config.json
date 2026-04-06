@@ -1,0 +1,54 @@
+{
+  "scan": {
+    "include": [
+      "Assets/Scripts/**/*.cs"
+    ],
+    "exclude": [
+      "Assets/FromStore/**",
+      "Library/**",
+      "Temp/**",
+      "Build/**",
+      "obj/**"
+    ]
+  },
+  "ssot": {
+    "scopeDocs": [
+      "CLAUDE.md",
+      "agent/*.md",
+      "Assets/Scripts/Features/*/README.md",
+      "Assets/Scripts/Shared/README.md",
+      "Assets/Editor/UnityMcp/README.md"
+    ]
+  },
+  "docs": {
+    "allowlist": [
+      "CLAUDE.md",
+      "agent/*.md",
+      "Assets/Scripts/Features/*/README.md",
+      "Assets/Scripts/Shared/README.md",
+      "Assets/Editor/UnityMcp/README.md"
+    ],
+    "denylist": [
+      "docs/design/**"
+    ]
+  },
+  "severityPolicy": {
+    "missingSsotReference": "high",
+    "missingFeatureReadme": "high",
+    "missingFeatureBootstrap": "high",
+    "unityInDomain": "high",
+    "unityInApplication": "high",
+    "undocumentedCustomProperty": "high",
+    "brokenReference": "medium",
+    "agentFailure": "high"
+  },
+  "llm": {
+    "defaultModel": "gpt-4.1-mini",
+    "maxFindingsForReview": 40,
+    "maxSnippetChars": 6000
+  },
+  "schedule": {
+    "utcCron": "0 17 * * *",
+    "kstTime": "02:00"
+  }
+}
