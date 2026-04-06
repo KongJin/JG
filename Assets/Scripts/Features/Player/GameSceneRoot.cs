@@ -181,7 +181,7 @@ namespace Features.Player
                         }
 
                         _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId,
-                            _skillSetup.SkillIcon, _coreObjective);
+                            _coreObjective);
                         _waveBootstrap.RegisterPlayer(player.transform);
                     }
                 });

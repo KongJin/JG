@@ -17,11 +17,11 @@ namespace Features.Player.Infrastructure
 
         public CombatTargetDamageResult ApplyDamage(float damage)
         {
-            if (_player.IsInvulnerable || _player.IsDead || _player.IsDowned)
-                return new CombatTargetDamageResult(_player.CurrentHp, _player.IsDead, _player.IsDowned);
+            if (_player.IsInvulnerable || _player.IsDead)
+                return new CombatTargetDamageResult(_player.CurrentHp, _player.IsDead);
 
             var remaining = _player.TakeDamage(damage);
-            return new CombatTargetDamageResult(remaining, _player.IsDead, _player.IsDowned);
+            return new CombatTargetDamageResult(remaining, _player.IsDead);
         }
     }
 }

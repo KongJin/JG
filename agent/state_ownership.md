@@ -37,6 +37,13 @@
 |----|-----------|-----------|------|
 | `skillsReady` | Skill | `SkillNetworkAdapter.SyncSkillsReady()` | 스킬 선택 완료 여부 |
 
+#### Garage CustomProperties (Photon Player)
+
+| 키 | 소유 피처 | 쓰기 위치 | 용도 |
+|----|-----------|-----------|------|
+| `garageRoster` | Garage | `GarageNetworkAdapter.SyncRoster()` | JSON 직렬화 편성 데이터 (3~5기 유닛 조합). **읽기:** Battle Feature (전투 진입 시 복원). late-join 시 `OnPlayerPropertiesUpdate`에서 복구. |
+| `garageReady` | Garage | `GarageNetworkAdapter.SyncReady()` | 편성 완료 여부 (bool). **읽기:** Lobby Feature (시작 버튼 활성화 조건). |
+
 #### Room CustomProperties (Photon Room — 로비 단계, Lobby 전용 쓰기)
 
 | 키 | 소유 피처 | 쓰기 위치 | 용도 |

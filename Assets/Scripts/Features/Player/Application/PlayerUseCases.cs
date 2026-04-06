@@ -53,7 +53,7 @@ namespace Features.Player.Application
 
         public Result Move(Domain.Player player, Float2 moveInput, float deltaTime)
         {
-            var delta = new Float3(moveInput.X, 0f, moveInput.Z);
+            var delta = new Float3(moveInput.X, 0f, moveInput.Y);
             var result = _motor.Move(delta);
             player.ApplyMovement(result.Position, result.IsGrounded);
             return Result.Success();

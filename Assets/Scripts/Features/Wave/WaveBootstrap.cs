@@ -1,7 +1,7 @@
-using Shared.Attributes;
 using Features.Combat;
 using Features.Enemy;
 using Features.Enemy.Application.Ports;
+using Features.Skill.Infrastructure;
 using Features.Wave.Application;
 using Features.Wave.Application.Events;
 using Features.Wave.Application.Ports;
@@ -10,6 +10,7 @@ using Features.Wave.Infrastructure;
 using Features.Wave.Presentation;
 using Photon.Pun;
 using Photon.Realtime;
+using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Lifecycle;
@@ -21,16 +22,33 @@ namespace Features.Wave
 {
     public sealed class WaveBootstrap : MonoBehaviourPunCallbacks
     {
-        [Required, SerializeField] private WaveTableData _waveTable;
-        [Required, SerializeField] private EnemySpawnAdapter _spawnAdapter;
-        [Required, SerializeField] private PlayerPositionQueryAdapter _playerPositionQuery;
-        [Required, SerializeField] private WaveHudView _hudView;
-        [Required, SerializeField] private WaveEndView _endView;
-        [Required, SerializeField] private WaveFlowController _flowController;
-        [Required, SerializeField] private WaveNetworkAdapter _networkAdapter;
-        [Required, SerializeField] private CoreHealthHudView _coreHealthView;
+        [Required, SerializeField]
+        private WaveTableData _waveTable;
 
-        [Tooltip("선택. 연결 시 스폰 배율을 이 컴포넌트에서만 조회한다. 비우면 Initialize 시 Room에서 직접 읽는다.")]
+        [Required, SerializeField]
+        private EnemySpawnAdapter _spawnAdapter;
+
+        [Required, SerializeField]
+        private PlayerPositionQueryAdapter _playerPositionQuery;
+
+        [Required, SerializeField]
+        private WaveHudView _hudView;
+
+        [Required, SerializeField]
+        private WaveEndView _endView;
+
+        [Required, SerializeField]
+        private WaveFlowController _flowController;
+
+        [Required, SerializeField]
+        private WaveNetworkAdapter _networkAdapter;
+
+        [Required, SerializeField]
+        private CoreHealthHudView _coreHealthView;
+
+        [Tooltip(
+            "선택. 연결 시 스폰 배율을 이 컴포넌트에서만 조회한다. 비우면 Initialize 시 Room에서 직접 읽는다."
+        )]
         [SerializeField]
         private RoomDifficultySpawnScaleProvider _difficultySpawnScale;
 
@@ -48,7 +66,8 @@ namespace Features.Wave
             EventBus eventBus,
             CombatBootstrap combatBootstrap,
             DomainEntityId localPlayerId,
-            ICoreObjectiveQuery coreObjectiveQuery)
+            ICoreObjectiveQuery coreObjectiveQuery
+        )
         {
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
@@ -63,14 +82,30 @@ namespace Features.Wave
 
             var spawnMultiplier = ResolveSpawnCountMultiplier();
             _spawnAdapter.Initialize(
-                eventBus, combatBootstrap, _playerPositionQuery, _coreObjectiveQuery, _waveTable, spawnMultiplier);
+                eventBus,
+                combatBootstrap,
+                _playerPositionQuery,
+                _coreObjectiveQuery,
+                _waveTable,
+                spawnMultiplier
+            );
 
             _waveLoop = new WaveLoopUseCase(eventBus, _waveTable.Waves.Length);
             var waveLoop = _waveLoop;
-            var waveHandler = new WaveEventHandler(eventBus, waveLoop, aliveQuery, ObjectiveCoreIds.Default);
+            var waveHandler = new WaveEventHandler(
+                eventBus,
+                waveLoop,
+                aliveQuery,
+                ObjectiveCoreIds.Default
+            );
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, waveHandler));
 
-            var networkHandler = new WaveNetworkEventHandler(eventBus, _networkAdapter, _networkAdapter, waveLoop);
+            var networkHandler = new WaveNetworkEventHandler(
+                eventBus,
+                _networkAdapter,
+                _networkAdapter,
+                waveLoop
+            );
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, networkHandler));
 
             _hudView.Initialize(eventBus);
@@ -79,10 +114,21 @@ namespace Features.Wave
             _endView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _endView));
 
-            _flowController.Initialize(waveLoop, (IWaveTablePort)_waveTable, (IWaveSpawnPort)_spawnAdapter, eventBus, eventBus, localPlayerId);
+            _flowController.Initialize(
+                waveLoop,
+                (IWaveTablePort)_waveTable,
+                (IWaveSpawnPort)_spawnAdapter,
+                eventBus,
+                eventBus,
+                localPlayerId
+            );
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _flowController));
 
-            _coreHealthView.Initialize(eventBus, coreObjectiveQuery.CoreId, coreObjectiveQuery.CoreMaxHp);
+            _coreHealthView.Initialize(
+                eventBus,
+                coreObjectiveQuery.CoreId,
+                coreObjectiveQuery.CoreMaxHp
+            );
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _coreHealthView));
 
             EnemySetup.EnemyArrived += OnEnemyArrived;
@@ -103,19 +149,27 @@ namespace Features.Wave
             _playerPositionQuery.RegisterPlayer(playerTransform);
         }
 
-        public override void OnPlayerPropertiesUpdate(PhotonPlayer targetPlayer, Hashtable changedProps)
+        public override void OnPlayerPropertiesUpdate(
+            PhotonPlayer targetPlayer,
+            Hashtable changedProps
+        )
         {
-            if (!_initialized || _gameStarted) return;
-            if (!PhotonNetwork.IsMasterClient) return;
-            if (!changedProps.ContainsKey("skillsReady")) return;
+            if (!_initialized || _gameStarted)
+                return;
+            if (!PhotonNetwork.IsMasterClient)
+                return;
+            if (!changedProps.ContainsKey("skillsReady"))
+                return;
 
             TryStartGame();
         }
 
         public override void OnMasterClientSwitched(PhotonPlayer newMasterClient)
         {
-            if (!_initialized) return;
-            if (!PhotonNetwork.IsMasterClient) return;
+            if (!_initialized)
+                return;
+            if (!PhotonNetwork.IsMasterClient)
+                return;
 
             if (!_gameStarted)
                 TryStartGame();
@@ -130,7 +184,8 @@ namespace Features.Wave
 
         private void TryStartGame()
         {
-            if (_gameStarted) return;
+            if (_gameStarted)
+                return;
 
             foreach (var player in PhotonNetwork.PlayerList)
             {
@@ -152,7 +207,12 @@ namespace Features.Wave
             if (PhotonNetwork.IsMasterClient)
                 return;
 
-            enemy.Initialize(_eventBus, _combatBootstrap, _playerPositionQuery, _coreObjectiveQuery);
+            enemy.Initialize(
+                _eventBus,
+                _combatBootstrap,
+                _playerPositionQuery,
+                _coreObjectiveQuery
+            );
         }
 
         private void OnDestroy()
