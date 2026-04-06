@@ -76,7 +76,7 @@ StartSkillSelectedEvent 수신
 
 ## 데이터 드리븐 구조
 
-스킬 분류 체계(다축 택소노미)와 현재 코드 필드의 매핑은 [skill_ontology.md](../../../../agent/skill_ontology.md) 참조.
+스킬 분류 체계(다축 택소노미)와 현재 코드 필드의 매핑은 [skill_ontology.md](../../../../docs/design/skill_ontology.md) 참조.
 
 ### ScriptableObject
 

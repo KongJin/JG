@@ -1,6 +1,6 @@
 # 재미 vs 리스크 — 4인 전문가 페르소나 토의
 
-워크숍·에이전트 롤플레이용 보조 문서다. **게임 컨셉·수치·MVP 정의의 SSOT는 [game_design.md](game_design.md)** 만 따른다. 여기서는 질문·입장 초안·토의 기록만 정리한다.
+워크숍·에이전트 롤플레이용 보조 문서다. **게임 컨셉·수치·MVP 정의의 SSOT는 [game_design.md](../../agent/game_design.md)** 만 따른다. 여기서는 질문·입장 초안·토의 기록만 정리한다.
 
 **근거 요약:** MVP는 2~4인, 약 5분, 웨이브 생존, 프렌들리 파이어, 슬롯 2 + 덱 순환, 웨이브 종료마다 3지선다, 다운 후 구조.
 
@@ -53,7 +53,7 @@
 
 ## 토의 운영 루틴 (약 40~45분)
 
-**사전 읽기 (토의 전):** [game_design.md](game_design.md)의 MVP·코어 재미, 직전 플레이테스트 메모([playtest_mvp_template.md](playtest_mvp_template.md) 양식 권장).
+**사전 읽기 (토의 전):** [game_design.md](../../agent/game_design.md)의 MVP·코어 재미, 직전 플레이테스트 메모([playtest_mvp_template.md](playtest_mvp_template.md) 양식 권장).
 
 1. **1라운드 (약 15분):** A → B → C → D 순. 각자 **약 2분** 안에  
    - 가장 강한 **재미 한 줄**  

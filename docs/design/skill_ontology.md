@@ -8,7 +8,7 @@
 - LoL 전체 분석용 학술 문서가 아니라, JG 스킬 확장 시 **설계 기준선** 역할을 한다.
 - MVP(8스킬)에서 실제로 구분이 필요한 축은 **코어 축**으로, 나머지는 **확장 축**으로 표기한다.
 - 코드 enum/SO 필드로의 반영은 Phase 2(스킬 태그 시너지) 시점에서 선택적으로 진행한다.
-- **성장(Growth):** Count/Range/Duration/Safety는 "스킬 분류"가 아니라 "성장 시스템"이므로 이 문서에 포함하지 않는다. → [game_design.md](game_design.md) § 성장 구조 참조.
+- **성장(Growth):** Count/Range/Duration/Safety는 "스킬 분류"가 아니라 "성장 시스템"이므로 이 문서에 포함하지 않는다. → [game_design.md](../../agent/game_design.md) § 성장 구조 참조.
 
 ---
 
@@ -493,7 +493,7 @@ Phase 2 (스킬 태그 시너지 도입 시)
 
 ### 코드화 시 규칙 (anti_patterns 정합)
 
-태그·enum을 코드에 넣을 때는 [anti_patterns.md](anti_patterns.md)를 따른다.
+태그·enum을 코드에 넣을 때는 [anti_patterns.md](../../agent/anti_patterns.md)를 따른다.
 
 - **Behavioral switch on type enums:** 분기가 커지면 Factory + Strategy로 옮긴다. 단순 커맨드 디스패치·값 매핑용 switch는 허용된다.
 - **Silent fallback in exhaustive switch:** 새 enum 값 추가 시 `default`에서 조용히 fallback 하지 않고 `throw new ArgumentOutOfRangeException` 등으로 즉시 실패시킨다.

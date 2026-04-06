@@ -1,6 +1,6 @@
 # MVP 플레이테스트 세션 노트 템플릿
 
-측정 문장·통과 기준의 SSOT는 [game_design.md](game_design.md) § MVP 검증 포인트 / 이번 분기 측정 정의다. 이 파일은 **세션마다 복사해 빈칸만 채운다.**
+측정 문장·통과 기준의 SSOT는 [game_design.md](../../agent/game_design.md) § MVP 검증 포인트 / 이번 분기 측정 정의다. 이 파일은 **세션마다 복사해 빈칸만 채운다.**
 
 ---
 

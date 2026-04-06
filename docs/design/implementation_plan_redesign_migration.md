@@ -1,10 +1,10 @@
-# /agent/implementation_plan_redesign_migration.md
+# /docs/design/implementation_plan_redesign_migration.md
 
 ## 목적
 
 이 문서는 현재 구현을 새 게임 방향에 맞춰 옮기기 위한 migration 계획서다.
-제품 SSOT는 `agent/game_design.md`이며, 이 문서는 설계를 다시 정의하지 않고 구현 전환 순서와 갭만 정리한다.
-실제 작업 순서, 씬 교체 전략, 컷오버 체크포인트는 `agent/implementation_plan_redesign_execution.md`를 따른다.
+제품 SSOT는 `../../agent/game_design.md`이며, 이 문서는 설계를 다시 정의하지 않고 구현 전환 순서와 갭만 정리한다.
+실제 작업 순서, 씬 교체 전략, 컷오버 체크포인트는 `implementation_plan_redesign_execution.md`를 따른다.
 
 ---
 
@@ -55,7 +55,7 @@
 
 ### 1. 용어와 루프 고정
 
-- `agent/game_design.md`를 기준으로 신규 용어를 고정한다.
+- `../../agent/game_design.md`를 기준으로 신규 용어를 고정한다.
 - 신규 문서와 신규 코드에서는 `mana`, `skill deck`, `friendly fire`, `down/rescue`를 제품 핵심으로 다시 도입하지 않는다.
 - 팀 공용 용어는 `garage`, `unit`, `module`, `energy`, `summon`, `core defense`, `anchor radius`로 통일한다.
 
@@ -94,8 +94,8 @@
 ### 7. 문서/피처 README 동기화
 
 - 각 feature가 새 책임으로 실제 전환되면 해당 README를 같은 패스에서 갱신한다.
-- 초기화 순서가 바뀌면 `agent/initialization_order.md`를 갱신한다.
-- 피처 경계가 재편되면 `agent/architecture.md`를 갱신한다.
+- 초기화 순서가 바뀌면 `../../agent/initialization_order.md`를 갱신한다.
+- 피처 경계가 재편되면 `../../agent/architecture.md`를 갱신한다.
 
 ---
 

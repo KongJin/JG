@@ -1,9 +1,9 @@
-# /agent/implementation_plan_redesign_execution.md
+# /docs/design/implementation_plan_redesign_execution.md
 
 ## 목적
 
 이 문서는 redesign 방향을 실제 구현으로 옮기기 위한 실행 계획서다.
-제품 기준은 `agent/game_design.md`이고, 이 문서는 현재 레포의 구형 액션 구조를 어떤 순서로 걷어내고 새 씬/피처 흐름으로 갈아탈지 정의한다.
+제품 기준은 `../../agent/game_design.md`이고, 이 문서는 현재 레포의 구형 액션 구조를 어떤 순서로 걷어내고 새 씬/피처 흐름으로 갈아탈지 정의한다.
 
 ---
 
@@ -141,7 +141,7 @@ redesign에서는 아래로 바뀐다.
 
 작업:
 
-- `agent/game_design.md` 기준 용어를 팀 공용 기준으로 확정
+- `../../agent/game_design.md` 기준 용어를 팀 공용 기준으로 확정
 - `implementation_plan_redesign_migration.md`와 이 문서를 기준으로 작업 순서 고정
 - 새 작업에서 `마나`, `덱 순환`, `다운/구조`를 핵심으로 삼지 않도록 합의
 
@@ -369,9 +369,9 @@ UI 최소 요소:
    - 보상 선택 제거, 코어 방어/연속 압박 중심으로 재작성
 5. `Assets/Scripts/Features/Combat/README.md`
    - FF/플레이어 직시전 중심 설명 제거
-6. `agent/initialization_order.md`
+6. `../../agent/initialization_order.md`
    - 새 로비/전투 씬 초기화 순서로 교체
-7. `agent/architecture.md`
+7. `../../agent/architecture.md`
    - 피처 경계가 충분히 바뀌면 개념 설명 업데이트
 
 ---
