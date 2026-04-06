@@ -6,6 +6,7 @@
   "required": [
     "runId",
     "commitSha",
+    "execution",
     "scannedFeatures",
     "findings",
     "docEdits",
@@ -18,6 +19,28 @@
     },
     "commitSha": {
       "type": "string"
+    },
+    "execution": {
+      "type": "object",
+      "required": [
+        "dryRun",
+        "llmEnabled",
+        "llmModel"
+      ],
+      "properties": {
+        "dryRun": {
+          "type": "boolean"
+        },
+        "llmEnabled": {
+          "type": "boolean"
+        },
+        "llmModel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
     },
     "scannedFeatures": {
       "type": "array",

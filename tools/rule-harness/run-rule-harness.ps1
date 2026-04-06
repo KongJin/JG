@@ -5,7 +5,10 @@ param(
     [string]$ReportPath,
     [string]$SummaryPath = $env:GITHUB_STEP_SUMMARY,
     [string]$ReviewJsonPath,
+    [string]$ApiKey = $env:OPENAI_API_KEY,
     [string]$Model = $env:RULE_HARNESS_MODEL,
+    [switch]$DisableLlm,
+    [switch]$RequireLlm,
     [switch]$DryRun
 )
 
@@ -22,11 +25,24 @@ if (-not $ReportPath) {
     $ReportPath = Join-Path $ArtifactDir 'rule-harness-report.json'
 }
 
+$llmEnabled = (-not $DisableLlm) -and (-not [string]::IsNullOrWhiteSpace($ApiKey))
+if ($RequireLlm -and -not $llmEnabled) {
+    throw 'LLM mode was required, but no API key is available. Set OPENAI_API_KEY or pass -ApiKey.'
+}
+
+if ($llmEnabled) {
+    Write-Host "Rule harness LLM review enabled. Model: $Model"
+}
+else {
+    Write-Host 'Rule harness running in static-only mode.'
+}
+
 $report = Invoke-RuleHarness `
     -RepoRoot $RepoRoot `
     -ConfigPath $ConfigPath `
-    -ApiKey $env:OPENAI_API_KEY `
+    -ApiKey $ApiKey `
     -Model $Model `
+    -DisableLlm:$DisableLlm `
     -DryRun:$DryRun `
     -ReviewJsonPath $ReviewJsonPath `
     -SummaryPath $SummaryPath

@@ -639,6 +639,9 @@ function Write-RuleHarnessSummary {
     [void]$lines.Add('## Rule Harness')
     [void]$lines.Add('')
     [void]$lines.Add(('- Commit: `{0}`' -f $Report.commitSha))
+    [void]$lines.Add("- Dry run: $($Report.execution.dryRun)")
+    [void]$lines.Add("- LLM enabled: $($Report.execution.llmEnabled)")
+    [void]$lines.Add("- LLM model: $($Report.execution.llmModel)")
     [void]$lines.Add("- Scanned features: $($Report.scannedFeatures.Count)")
     [void]$lines.Add("- Findings: $($Report.findings.Count)")
     [void]$lines.Add("- Doc edits: $($Report.docEdits.Count)")
@@ -671,6 +674,7 @@ function Invoke-RuleHarness {
         [string]$ApiKey,
         [string]$Model,
         [switch]$DryRun,
+        [switch]$DisableLlm,
         [string]$ReviewJsonPath,
         [string]$SummaryPath
     )
@@ -679,6 +683,12 @@ function Invoke-RuleHarness {
     if ([string]::IsNullOrWhiteSpace($Model)) {
         $Model = $config.llm.defaultModel
     }
+
+    if ($DisableLlm) {
+        $ApiKey = $null
+    }
+
+    $llmEnabled = -not [string]::IsNullOrWhiteSpace($ApiKey)
 
     $staticFindings = Get-RuleHarnessStaticFindings -RepoRoot $RepoRoot -Config $config
     $harnessErrors = [System.Collections.Generic.List[object]]::new()
@@ -746,6 +756,11 @@ function Invoke-RuleHarness {
     $report = [pscustomobject]@{
         runId           = [guid]::NewGuid().ToString()
         commitSha       = (git -C $RepoRoot rev-parse HEAD).Trim()
+        execution       = [pscustomobject]@{
+            dryRun     = [bool]$DryRun
+            llmEnabled = [bool]$llmEnabled
+            llmModel   = if ($llmEnabled) { $Model } else { $null }
+        }
         scannedFeatures = @(Get-RuleHarnessFeatureDirectories -RepoRoot $RepoRoot | ForEach-Object { $_.Name })
         findings        = $findings
         docEdits        = @($applyResult.edits)
