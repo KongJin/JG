@@ -10,8 +10,8 @@ namespace Features.Player.Domain
             Spec = spec;
             MaxHp = spec.MaxHp;
             CurrentHp = spec.MaxHp;
-            MaxMana = spec.MaxMana;
-            CurrentMana = spec.MaxMana;
+            MaxEnergy = spec.MaxEnergy;
+            CurrentEnergy = spec.MaxEnergy;
         }
 
         public PlayerSpec Spec { get; }
@@ -23,8 +23,8 @@ namespace Features.Player.Domain
         public bool IsAlive => LifeState == LifeState.Alive;
         public bool IsDead => LifeState == LifeState.Dead;
 
-        public float MaxMana { get; }
-        public float CurrentMana { get; private set; }
+        public float MaxEnergy { get; }
+        public float CurrentEnergy { get; private set; }
 
         public float TakeDamage(float damage)
         {
@@ -66,32 +66,32 @@ namespace Features.Player.Domain
         public void Respawn()
         {
             CurrentHp = MaxHp;
-            CurrentMana = MaxMana;
+            CurrentEnergy = MaxEnergy;
             IsInvulnerable = false;
             LifeState = LifeState.Alive;
         }
 
-        public void Hydrate(float hp, float mana)
+        public void Hydrate(float hp, float energy)
         {
             CurrentHp = System.Math.Max(0f, System.Math.Min(hp, MaxHp));
-            CurrentMana = System.Math.Max(0f, System.Math.Min(mana, MaxMana));
+            CurrentEnergy = System.Math.Max(0f, System.Math.Min(energy, MaxEnergy));
         }
 
-        public bool SpendMana(float cost)
+        public bool SpendEnergy(float cost)
         {
             if (cost <= 0f)
                 return true;
-            if (CurrentMana < cost)
+            if (CurrentEnergy < cost)
                 return false;
-            CurrentMana -= cost;
+            CurrentEnergy -= cost;
             return true;
         }
 
-        public void RegenMana(float deltaTime)
+        public void RegenEnergy(float deltaTime, float regenPerSecond)
         {
-            if (CurrentMana >= MaxMana)
+            if (CurrentEnergy >= MaxEnergy)
                 return;
-            CurrentMana = System.Math.Min(MaxMana, CurrentMana + Spec.ManaRegenPerSecond * deltaTime);
+            CurrentEnergy = System.Math.Min(MaxEnergy, CurrentEnergy + regenPerSecond * deltaTime);
         }
 
         public void SetInvulnerable(bool value)

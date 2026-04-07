@@ -1,5 +1,6 @@
 using Features.Garage.Application.Ports;
 using Features.Garage.Infrastructure;
+using Features.Unit.Infrastructure;
 using Shared.Attributes;
 using Shared.EventBus;
 using UnityEngine;
@@ -14,28 +15,26 @@ namespace Features.Garage
     public sealed class GarageBootstrap : MonoBehaviour
     {
         [Required, SerializeField]
-        private ModuleCatalog _moduleCatalog;
-
-        [Required, SerializeField]
         private GarageNetworkAdapter _networkAdapter;
 
         private GarageSetup _setup;
         private GarageJsonPersistence _persistence;
-        private CompositionDataProvider _compositionDataProvider;
         private RosterValidationProvider _rosterValidationProvider;
 
         public GarageSetup Setup => _setup;
 
         /// <summary>
         /// Garage Feature 초기화.
-        /// 씬 Bootstrap(예: LobbyBootstrap)에서 EventBus를 주입하고 호출한다.
+        /// 씬 Bootstrap(예: LobbyBootstrap)에서 EventBus와 Unit 조합 포트를 주입하고 호출한다.
         /// </summary>
-        public void Initialize(EventBus eventBus)
+        public void Initialize(
+            EventBus eventBus,
+            IUnitCompositionPort compositionPort,
+            ModuleCatalog unitCatalog)
         {
             // Infrastructure 어댑터 생성 (순수 C#만 new, Photon/MonoBehaviour는 Inspector 연결)
             _persistence = new GarageJsonPersistence();
-            _compositionDataProvider = new CompositionDataProvider(_moduleCatalog);
-            _rosterValidationProvider = new RosterValidationProvider(_moduleCatalog);
+            _rosterValidationProvider = new RosterValidationProvider(unitCatalog);
 
             // Composition root 생성 및 초기화
             _setup = new GarageSetup();
@@ -43,7 +42,7 @@ namespace Features.Garage
                 eventBus,
                 _networkAdapter,
                 _persistence,
-                _compositionDataProvider,
+                compositionPort,
                 _rosterValidationProvider);
         }
 

@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using Features.Combat;
 using Features.Combat.Application;
 using Features.Combat.Presentation;
+using Features.Garage;
 using Features.Player.Application;
 using Features.Player.Application.Ports;
 using Features.Player.Infrastructure;
 using Features.Player.Presentation;
 using Features.Projectile;
-using Features.Skill;
 using Features.Status;
+using Features.Unit;
 using Features.Wave;
 using Features.Zone;
 using Photon.Pun;
@@ -16,6 +17,7 @@ using Shared.Analytics;
 using Shared.Attributes;
 using Shared.ErrorHandling;
 using Shared.EventBus;
+using Shared.Kernel;
 using Shared.Lifecycle;
 using Shared.Runtime.Sound;
 using Shared.Ui;
@@ -32,14 +34,17 @@ namespace Features.Player
         [Required, SerializeField] private CameraFollower _cameraFollower;
         [Required, SerializeField] private GameObject _healthHudPrefab;
         [Required, SerializeField] private Canvas _hudCanvas;
-        [Required, SerializeField] private SkillSetup _skillSetup;
         [Required, SerializeField] private ProjectileSpawner _projectileSpawner;
         [Required, SerializeField] private CombatBootstrap _combatBootstrap;
         [Required, SerializeField] private ZoneSetup _zoneSetup;
         [Required, SerializeField] private SceneErrorPresenter _sceneErrorPresenter;
         [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
-        [Required, SerializeField] private ManaRegenTicker _manaRegenTicker;
-        [Required, SerializeField] private ManaBarView _manaBarView;
+        [Required, SerializeField] private EnergyRegenTicker _energyRegenTicker;
+        [Required, SerializeField] private EnergyBarView _energyBarView;
+
+        [Header("Unit & Garage")]
+        [Required, SerializeField] private UnitBootstrap _unitBootstrap;
+        [Required, SerializeField] private GarageBootstrap _garageBootstrap;
 
         [Header("Combat Feedback")]
         [SerializeField] private DamageNumberSpawner _damageNumberSpawner;
@@ -61,6 +66,63 @@ namespace Features.Player
         private bool _dropOffLogged;
         private readonly Queue<PlayerSetup> _pendingRemotePlayers = new();
         private bool _remotePlayerWiringReady;
+
+        // Unit specs per player (computed from GarageRoster)
+        private Dictionary<DomainEntityId, Unit.Domain.Unit[]> _playerUnitSpecs = new();
+
+        /// <summary>
+        /// Unit/Garage Feature 초기화 및 Unit 스펙 계산.
+        /// </summary>
+        private void InitializeUnitAndGarage(PlayerSetup localPlayerSetup)
+        {
+            // 1. Unit Bootstrap 초기화
+            _unitBootstrap.Initialize(_eventBus);
+
+            // 2. Garage Bootstrap 초기화
+            _garageBootstrap.Initialize(
+                _eventBus,
+                _unitBootstrap.CompositionPort,
+                _unitBootstrap.Catalog);
+
+            // 3. GarageRoster 복원 (CustomProperties에서 읽기)
+            RestoreGarageRosterFromRoom();
+
+            // 4. Unit 스펙 계산
+            ComputeUnitSpecs(localPlayerSetup.PlayerId);
+        }
+
+        /// <summary>
+        /// Room CustomProperties에서 GarageRoster를 복원한다.
+        /// </summary>
+        private void RestoreGarageRosterFromRoom()
+        {
+            if (!PhotonNetwork.InRoom)
+            {
+                Debug.LogWarning("[GameSceneRoot] Cannot restore GarageRoster: not in room.");
+                return;
+            }
+
+            var props = PhotonNetwork.CurrentRoom.CustomProperties;
+            if (props == null || !props.ContainsKey("garageRoster"))
+            {
+                Debug.LogWarning("[GameSceneRoot] GarageRoster not found in room properties.");
+                return;
+            }
+
+            // TODO: GarageRoster 역직렬화
+            // 현재는 GarageFeature에서 CustomProperties 읽는 구현 필요
+            // garageBootstrap.Setup.InitializeGarageUseCase.Execute(loadouts) 호출
+        }
+
+        /// <summary>
+        /// 로컬 플레이어의 Unit 스펙을 계산한다.
+        /// </summary>
+        private void ComputeUnitSpecs(DomainEntityId playerId)
+        {
+            // TODO: GarageSetup.InitializeGarageUseCase가 반환하는 UnitLoadout[]을
+            // ComposeUnitUseCase로 계산하여 _playerUnitSpecs에 저장
+            // _playerUnitSpecs[playerId] = units;
+        }
 
         private void Awake()
         {
@@ -139,8 +201,9 @@ namespace Features.Player
 
             ConnectPlayer(localSetup);
 
-            _manaRegenTicker.Initialize(localSetup.ManaAdapterInstance);
-            _manaBarView.Initialize(_eventBus, localSetup.PlayerId, localSetup.MaxMana);
+            // Energy (Mana renamed to Energy)
+            _energyRegenTicker.Initialize(localSetup.EnergyAdapterInstance);
+            _energyBarView.Initialize(_eventBus, localSetup.PlayerId, localSetup.MaxEnergy);
 
             // SoundPlayer is a DDOL singleton created from JG_LobbyScene.
             // Running JG_GameScene directly is allowed, but audio stays unavailable.
@@ -154,8 +217,7 @@ namespace Features.Player
                 SoundPlayer.Instance.Initialize(_eventBus, localSetup.PlayerId.Value);
             }
 
-            // ProjectileSpawner, ZoneSetup은 EventBus만 필요 → 선택 전에 초기화
-            // 선택 UI 중에도 원격 스킬 이벤트(ProjectileRequestedEvent, ZoneRequestedEvent) 수신 가능
+            // ProjectileSpawner, ZoneSetup은 EventBus만 필요
             _projectileSpawner.Initialize(_eventBus, _eventBus);
             _zoneSetup.Initialize(_eventBus);
 
@@ -164,27 +226,23 @@ namespace Features.Player
             while (_pendingRemotePlayers.Count > 0)
                 ConnectPlayer(_pendingRemotePlayers.Dequeue());
 
-            // 스킬 선택 시작 (WaveBootstrap은 SkillReward 필요 → 선택 완료 후 초기화)
-            _skillSetup.InitializePreSelection(
-                _eventBus, player.transform, _camera,
-                localSetup.PlayerId, localSetup.ManaPort,
-                _statusSetup.StatusQuery,
-                onComplete: () =>
-                {
-                    if (_waveBootstrap != null)
-                    {
-                        if (_coreObjective == null)
-                        {
-                            Debug.LogError(
-                                "[GameSceneRoot] Cannot initialize Wave without CoreObjectiveBootstrap.");
-                            return;
-                        }
+            // Unit/Garage 초기화 및 Unit 스펙 계산
+            InitializeUnitAndGarage(localSetup);
 
-                        _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId,
-                            _coreObjective);
-                        _waveBootstrap.RegisterPlayer(player.transform);
-                    }
-                });
+            // Wave 초기화 (Skill 선택 제거, 바로 시작)
+            if (_waveBootstrap != null)
+            {
+                if (_coreObjective == null)
+                {
+                    Debug.LogError(
+                        "[GameSceneRoot] Cannot initialize Wave without CoreObjectiveBootstrap.");
+                    return;
+                }
+
+                _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId,
+                    _coreObjective);
+                _waveBootstrap.RegisterPlayer(player.transform);
+            }
         }
 
         private void ConnectPlayer(PlayerSetup setup)

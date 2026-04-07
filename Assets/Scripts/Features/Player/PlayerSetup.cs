@@ -4,8 +4,6 @@ using Features.Player.Application.Ports;
 using Features.Player.Domain;
 using Features.Player.Infrastructure;
 using Features.Player.Presentation;
-using Features.Skill.Application.Ports;
-using Features.Status.Infrastructure;
 using Photon.Pun;
 using Shared.Attributes;
 using Shared.EventBus;
@@ -50,12 +48,12 @@ namespace Features.Player
         public PlayerNetworkAdapter NetworkAdapter => _networkAdapter;
         public StatusNetworkAdapter StatusNetworkAdapter => _statusNetworkAdapter;
         public PlayerUseCases UseCases => _useCases;
-        public IManaPort ManaPort { get; private set; }
-        public ManaAdapter ManaAdapterInstance { get; private set; }
+        public IEnergyPort EnergyPort { get; private set; }
+        public EnergyAdapter EnergyAdapterInstance { get; private set; }
         public Domain.Player DomainPlayer { get; private set; }
 
         public float MaxHp { get; private set; }
-        public float MaxMana { get; private set; }
+        public float MaxEnergy { get; private set; }
         public bool IsInitialized { get; private set; }
 
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
@@ -108,8 +106,8 @@ namespace Features.Player
 
             _entityIdHolder.Set(player.Id);
 
-            ManaAdapterInstance = new ManaAdapter(player, _networkAdapter, eventBus);
-            ManaPort = ManaAdapterInstance;
+            EnergyAdapterInstance = new EnergyAdapter(player, _networkAdapter, eventBus);
+            EnergyPort = EnergyAdapterInstance;
 
             new PlayerNetworkEventHandler(eventBus, _networkAdapter, playerLookup);
             _combatTargetProvider = new PlayerCombatTargetProvider(player);
@@ -122,7 +120,7 @@ namespace Features.Player
             _inputHandler.Initialize(player, _useCases);
             _view.Initialize(true, eventBus, player.Id);
             MaxHp = player.MaxHp;
-            MaxMana = player.MaxMana;
+            MaxEnergy = player.MaxEnergy;
             IsInitialized = true;
         }
 

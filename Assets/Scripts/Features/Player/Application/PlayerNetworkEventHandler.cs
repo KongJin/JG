@@ -24,7 +24,7 @@ namespace Features.Player.Application
             networkCallbacks.OnRemoteDamaged = HandleRemoteDamaged;
             networkCallbacks.OnRemoteRespawned = HandleRemoteRespawned;
             networkCallbacks.OnHealthSynced = HandleHealthSynced;
-            networkCallbacks.OnManaSynced = HandleManaSynced;
+            networkCallbacks.OnEnergySynced = HandleEnergySynced;
             networkCallbacks.OnLifeStateSynced = HandleLifeStateSynced;
         }
 
@@ -51,15 +51,15 @@ namespace Features.Player.Application
         private void HandleHealthSynced(DomainEntityId targetId, float currentHp, float maxHp)
         {
             var player = _playerLookup?.Resolve(targetId);
-            player?.Hydrate(currentHp, player.CurrentMana);
+            player?.Hydrate(currentHp, player.CurrentEnergy);
             _publisher.Publish(new PlayerHealthChangedEvent(targetId, currentHp, maxHp, 0f, false));
         }
 
-        private void HandleManaSynced(DomainEntityId targetId, float currentMana, float maxMana)
+        private void HandleEnergySynced(DomainEntityId targetId, float currentEnergy, float maxEnergy)
         {
             var player = _playerLookup?.Resolve(targetId);
-            player?.Hydrate(player.CurrentHp, currentMana);
-            _publisher.Publish(new PlayerManaChangedEvent(targetId, currentMana, maxMana));
+            player?.Hydrate(player.CurrentHp, currentEnergy);
+            _publisher.Publish(new PlayerEnergyChangedEvent(targetId, currentEnergy, maxEnergy));
         }
 
         private void HandleLifeStateSynced(DomainEntityId targetId, LifeState state)
@@ -80,8 +80,8 @@ namespace Features.Player.Application
                             targetId, player.CurrentHp, player.MaxHp));
                         _publisher.Publish(new PlayerHealthChangedEvent(
                             targetId, player.CurrentHp, player.MaxHp, 0f, false));
-                        _publisher.Publish(new PlayerManaChangedEvent(
-                            targetId, player.CurrentMana, player.MaxMana));
+                        _publisher.Publish(new PlayerEnergyChangedEvent(
+                            targetId, player.CurrentEnergy, player.MaxEnergy));
                     }
                     break;
             }

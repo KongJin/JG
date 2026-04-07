@@ -20,8 +20,8 @@ namespace Features.Player.Infrastructure
 
         private const string HealthKey = "hp";
         private const string MaxHealthKey = "maxHp";
-        private const string ManaKey = "mana";
-        private const string MaxManaKey = "maxMana";
+        private const string EnergyKey = "energy";
+        private const string MaxEnergyKey = "maxEnergy";
         private const string LifeStateKey = "lifeState";
 
         public bool IsMine => photonView.IsMine;
@@ -31,7 +31,7 @@ namespace Features.Player.Infrastructure
         public System.Action<DomainEntityId, float, DamageType, DomainEntityId> OnRemoteDamaged { set; private get; }
         public System.Action<DomainEntityId> OnRemoteRespawned { get; set; }
         public System.Action<DomainEntityId, float, float> OnHealthSynced { get; set; }
-        public System.Action<DomainEntityId, float, float> OnManaSynced { get; set; }
+        public System.Action<DomainEntityId, float, float> OnEnergySynced { get; set; }
         public System.Action<DomainEntityId, LifeState> OnLifeStateSynced { get; set; }
 
         private void Update()
@@ -79,14 +79,14 @@ namespace Features.Player.Infrastructure
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
 
-        public void SyncMana(DomainEntityId targetId, float currentMana, float maxMana)
+        public void SyncEnergy(DomainEntityId targetId, float currentEnergy, float maxEnergy)
         {
             if (photonView == null || !photonView.IsMine) return;
 
             var props = new Hashtable
             {
-                { ManaKey, currentMana },
-                { MaxManaKey, maxMana }
+                { EnergyKey, currentEnergy },
+                { MaxEnergyKey, maxEnergy }
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
@@ -124,12 +124,12 @@ namespace Features.Player.Infrastructure
                 OnHealthSynced?.Invoke(playerId, hpF, mhp);
             }
 
-            if (changedProps.TryGetValue(ManaKey, out var manaRaw) && manaRaw is float mana)
+            if (changedProps.TryGetValue(EnergyKey, out var energyRaw) && energyRaw is float energy)
             {
-                var maxMana = changedProps.TryGetValue(MaxManaKey, out var maxManaRaw) && maxManaRaw is float mm
-                    ? mm
-                    : (targetPlayer.CustomProperties.TryGetValue(MaxManaKey, out var mmFallback) && mmFallback is float mmF ? mmF : 100f);
-                OnManaSynced?.Invoke(playerId, mana, maxMana);
+                var maxEnergy = changedProps.TryGetValue(MaxEnergyKey, out var maxEnergyRaw) && maxEnergyRaw is float me
+                    ? me
+                    : (targetPlayer.CustomProperties.TryGetValue(MaxEnergyKey, out var meFallback) && meFallback is float meF ? meF : 100f);
+                OnEnergySynced?.Invoke(playerId, energy, maxEnergy);
             }
 
             if (changedProps.TryGetValue(LifeStateKey, out var lsRaw) && lsRaw is int lsInt)
@@ -190,10 +190,10 @@ namespace Features.Player.Infrastructure
                 OnHealthSynced?.Invoke(playerId, hp, maxHp);
             }
 
-            if (props.TryGetValue(ManaKey, out var manaRaw) && manaRaw is float mana)
+            if (props.TryGetValue(EnergyKey, out var energyRaw) && energyRaw is float energy)
             {
-                var maxMana = props.TryGetValue(MaxManaKey, out var mmRaw) && mmRaw is float mm ? mm : 100f;
-                OnManaSynced?.Invoke(playerId, mana, maxMana);
+                var maxEnergy = props.TryGetValue(MaxEnergyKey, out var meRaw) && meRaw is float me ? me : 100f;
+                OnEnergySynced?.Invoke(playerId, energy, maxEnergy);
             }
 
             if (props.TryGetValue(LifeStateKey, out var lsRaw) && lsRaw is int lsInt)

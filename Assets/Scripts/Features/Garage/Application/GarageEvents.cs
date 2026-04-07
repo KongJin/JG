@@ -1,4 +1,5 @@
 using Features.Garage.Domain;
+using Features.Unit.Domain;
 
 namespace Features.Garage.Application
 {
@@ -22,7 +23,12 @@ namespace Features.Garage.Application
     public readonly struct UnitComposedEvent
     {
         public int SlotIndex { get; }
-        public UnitComposition.ComposedStats Stats { get; }
+        public float Hp { get; }
+        public float AttackDamage { get; }
+        public float AttackSpeed { get; }
+        public float Range { get; }
+        public float MoveRange { get; }
+        public float AnchorRange { get; }
         public int SummonCost { get; }
         public UnitRole Role { get; }
         public bool IsValid { get; }
@@ -30,14 +36,24 @@ namespace Features.Garage.Application
 
         public UnitComposedEvent(
             int slotIndex,
-            UnitComposition.ComposedStats stats,
+            float hp,
+            float attackDamage,
+            float attackSpeed,
+            float range,
+            float moveRange,
+            float anchorRange,
             int summonCost,
             UnitRole role,
             bool isValid,
             string errorMessage)
         {
             SlotIndex = slotIndex;
-            Stats = stats;
+            Hp = hp;
+            AttackDamage = attackDamage;
+            AttackSpeed = attackSpeed;
+            Range = range;
+            MoveRange = moveRange;
+            AnchorRange = anchorRange;
             SummonCost = summonCost;
             Role = role;
             IsValid = isValid;

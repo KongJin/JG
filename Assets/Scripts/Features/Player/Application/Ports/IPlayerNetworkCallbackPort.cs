@@ -9,7 +9,7 @@ namespace Features.Player.Application.Ports
         System.Action<DomainEntityId, float, DamageType, DomainEntityId> OnRemoteDamaged { set; }
         System.Action<DomainEntityId> OnRemoteRespawned { set; }
         System.Action<DomainEntityId, float, float> OnHealthSynced { set; }
-        System.Action<DomainEntityId, float, float> OnManaSynced { set; }
+        System.Action<DomainEntityId, float, float> OnEnergySynced { set; }
         System.Action<DomainEntityId, LifeState> OnLifeStateSynced { set; }
     }
 }
