@@ -2,6 +2,8 @@ param(
     [string]$TaskName = 'JG Rule Harness GLM',
     [int]$IntervalMinutes = 60,
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
+    [string]$Model = 'glm-5',
+    [string]$ApiBaseUrl = 'https://open.bigmodel.cn/api/paas/v4',
     [switch]$WakeToRun
 )
 
@@ -28,7 +30,9 @@ $actionArgs = @(
     '-NoProfile',
     '-ExecutionPolicy', 'Bypass',
     '-File', ('"{0}"' -f $scriptPath),
-    '-RequireLlm'
+    '-RequireLlm',
+    '-Model', ('"{0}"' -f $Model),
+    '-ApiBaseUrl', ('"{0}"' -f $ApiBaseUrl)
 ) -join ' '
 
 $action = New-ScheduledTaskAction `
@@ -63,4 +67,6 @@ Write-Host "Registered scheduled task: $TaskName"
 Write-Host "Interval (minutes): $IntervalMinutes"
 Write-Host "First run: $startAt"
 Write-Host "Command: $scriptPath"
+Write-Host "Model: $Model"
+Write-Host "ApiBaseUrl: $ApiBaseUrl"
 Write-Host "WakeToRun: $WakeToRun"

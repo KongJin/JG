@@ -61,6 +61,12 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\register-rule-harn
 powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-harness-scheduled-task.ps1
 ```
 
+작업 스케줄러에서 가장 안정적인 키 주입:
+
+```powershell
+[Environment]::SetEnvironmentVariable('RULE_HARNESS_API_KEY', 'YOUR_GLM_KEY', 'User')
+```
+
 ## 주요 옵션
 
 - `-DryRun`
@@ -92,3 +98,5 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 - `GLM-5`는 공식 문서상 OpenAI-compatible chat completions 엔드포인트를 지원한다.
 - 기본 URL은 `https://open.bigmodel.cn/api/paas/v4` 로 맞춰져 있다.
 - 예약 작업은 `-RequireLlm`으로 실행되므로, 실제 작업 스케줄러 세션에서 `GLM_API_KEY`가 보이지 않으면 run log에 실패가 남는다.
+- 스케줄러 등록 스크립트는 기본으로 `-Model glm-5 -ApiBaseUrl https://open.bigmodel.cn/api/paas/v4` 를 task action에 직접 넣는다.
+- 키는 `GLM_API_KEY`보다 `RULE_HARNESS_API_KEY`를 사용자 환경변수로 저장하는 편이 스케줄러 세션에서 더 예측 가능하다.
