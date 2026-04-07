@@ -695,22 +695,11 @@ function Invoke-RuleHarnessDocSync {
     $systemPrompt = Get-Content -Path (Join-Path $RepoRoot 'tools/rule-harness/prompts/doc-sync.md') -Raw
     $edits = [System.Collections.Generic.List[object]]::new()
     $docGroups = @($Findings | Group-Object ownerDoc)
-    $maxOwnerDocs = if ($Config.llm.PSObject.Properties.Name -contains 'maxOwnerDocsForDocSync') {
-        [int]$Config.llm.maxOwnerDocsForDocSync
-    }
-    else {
-        3
-    }
     $maxTargetDocChars = if ($Config.llm.PSObject.Properties.Name -contains 'maxTargetDocCharsForSync') {
         [int]$Config.llm.maxTargetDocCharsForSync
     }
     else {
         20000
-    }
-
-    if ($docGroups.Count -gt $maxOwnerDocs) {
-        Write-Host "Rule harness doc sync skipped. Owner docs $($docGroups.Count) exceeded limit $maxOwnerDocs."
-        return @()
     }
 
     Write-Host "Rule harness doc sync stage started. Owner docs: $($docGroups.Count)"
@@ -1308,6 +1297,7 @@ function Invoke-RuleHarnessCommit {
 function Invoke-RuleHarnessMutationPlan {
     param(
         [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
         [object[]]$PlannedBatches,
         [Parameter(Mandatory)]
         [object[]]$InitialStaticFindings,
@@ -1355,6 +1345,32 @@ function Invoke-RuleHarnessMutationPlan {
     }
 
     [void]$decisionTrace.Add("Mutation loop enabled. Mode=$($MutationState.mode)")
+    if ($PlannedBatches.Count -eq 0) {
+        [void]$decisionTrace.Add('No planned batches were generated. Mutation stage completed without edits.')
+        return [pscustomobject]@{
+            decisionTrace       = @($decisionTrace)
+            validationResults   = @()
+            appliedBatches      = @()
+            skippedBatches      = @()
+            rollbackBatches     = @()
+            docEdits            = @()
+            finalStaticFindings = @($finalStaticFindings)
+            commit              = [pscustomobject]@{
+                attempted = $false
+                created   = $false
+                sha       = $null
+                branch    = (Get-RuleHarnessCurrentBranch -RepoRoot $RepoRoot)
+                message   = $null
+            }
+            rollback            = [pscustomobject]@{
+                performed     = $false
+                failedBatches = @()
+            }
+            failed              = $false
+            applied             = $false
+        }
+    }
+
     $globalTargetFiles = @($PlannedBatches | ForEach-Object { $_.targetFiles } | Sort-Object -Unique)
     $globalSnapshots = Get-RuleHarnessFileSnapshots -RepoRoot $RepoRoot -TargetFiles $globalTargetFiles
     $currentFindings = @($InitialStaticFindings)

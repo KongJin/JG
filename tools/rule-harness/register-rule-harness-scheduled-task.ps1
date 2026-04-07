@@ -11,8 +11,8 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-if ($IntervalMinutes -lt 15) {
-    throw 'IntervalMinutes must be 15 or greater.'
+if ($IntervalMinutes -lt 1) {
+    throw 'IntervalMinutes must be 1 or greater.'
 }
 
 $scriptPath = Join-Path $RepoRoot 'tools/rule-harness/run-rule-harness-scheduled.ps1'
@@ -45,7 +45,8 @@ $action = New-ScheduledTaskAction `
 $settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries `
-    -StartWhenAvailable
+    -StartWhenAvailable `
+    -MultipleInstances IgnoreNew
 
 if ($WakeToRun) {
     $settings.WakeToRun = $true

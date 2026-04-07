@@ -59,7 +59,6 @@
     "requestTimeoutSec": 120,
     "maxFindingsForReview": 40,
     "maxSnippetChars": 6000,
-    "maxOwnerDocsForDocSync": 3,
     "maxTargetDocCharsForSync": 20000
   },
   "validation": {
