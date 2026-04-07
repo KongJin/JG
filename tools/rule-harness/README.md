@@ -21,7 +21,8 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-rule-harness.p
 LLM 리뷰 포함:
 
 ```powershell
-$env:OPENAI_API_KEY='YOUR_KEY'
+$env:GLM_API_KEY='YOUR_KEY'
+$env:RULE_HARNESS_MODEL='glm-5'
 powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-rule-harness.ps1 -DryRun -RequireLlm
 ```
 
@@ -36,7 +37,9 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-rule-harness.p
 - `-RequireLlm`
   - LLM이 실제로 켜지지 않으면 바로 실패한다.
 - `-ApiKey`
-  - `OPENAI_API_KEY` 대신 직접 키를 넘긴다.
+  - `RULE_HARNESS_API_KEY`, `OPENAI_API_KEY`, `GLM_API_KEY` 대신 직접 키를 넘긴다.
+- `-ApiBaseUrl`
+  - provider base URL을 직접 지정한다. 비우면 `glm-*` 모델은 `https://open.bigmodel.cn/api/paas/v4`, 그 외는 OpenAI 기본 URL을 쓴다.
 - `-Model`
   - `RULE_HARNESS_MODEL` 대신 모델을 직접 지정한다.
 - `-ReviewJsonPath`
@@ -49,3 +52,9 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-rule-harness.p
 - `execution.dryRun`
 - `execution.llmEnabled`
 - `execution.llmModel`
+- `execution.llmApiBaseUrl`
+
+## GLM 메모
+
+- `GLM-5`는 공식 문서상 OpenAI-compatible chat completions 엔드포인트를 지원한다.
+- 기본 URL은 `https://open.bigmodel.cn/api/paas/v4` 로 맞춰져 있다.

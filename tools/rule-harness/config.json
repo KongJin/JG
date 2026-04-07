@@ -44,6 +44,8 @@
   },
   "llm": {
     "defaultModel": "gpt-4.1-mini",
+    "defaultApiBaseUrl": "https://api.openai.com/v1",
+    "glmApiBaseUrl": "https://open.bigmodel.cn/api/paas/v4",
     "maxFindingsForReview": 40,
     "maxSnippetChars": 6000
   },

@@ -420,6 +420,8 @@ function Invoke-RuleHarnessChatCompletion {
         [Parameter(Mandatory)]
         [string]$Model,
         [Parameter(Mandatory)]
+        [string]$ApiBaseUrl,
+        [Parameter(Mandatory)]
         [string]$SystemPrompt,
         [Parameter(Mandatory)]
         [string]$UserPrompt,
@@ -437,8 +439,9 @@ function Invoke-RuleHarnessChatCompletion {
         )
     }
 
+    $endpoint = '{0}/chat/completions' -f $ApiBaseUrl.TrimEnd('/')
     $response = Invoke-RestMethod `
-        -Uri 'https://api.openai.com/v1/chat/completions' `
+        -Uri $endpoint `
         -Method Post `
         -Headers @{
             Authorization = "Bearer $ApiKey"
@@ -458,6 +461,7 @@ function Invoke-RuleHarnessAgentReview {
         [Parameter(Mandatory)]
         [object]$Config,
         [string]$ApiKey,
+        [string]$ApiBaseUrl,
         [string]$Model,
         [string]$ReviewJsonPath
     )
@@ -476,7 +480,7 @@ function Invoke-RuleHarnessAgentReview {
         staticFindings = @($StaticFindings | Select-Object -First $Config.llm.maxFindingsForReview)
     } | ConvertTo-Json -Depth 50
 
-    $raw = Invoke-RuleHarnessChatCompletion -Model $Model -SystemPrompt $systemPrompt -UserPrompt $payload -ApiKey $ApiKey
+    $raw = Invoke-RuleHarnessChatCompletion -Model $Model -ApiBaseUrl $ApiBaseUrl -SystemPrompt $systemPrompt -UserPrompt $payload -ApiKey $ApiKey
     @(($raw | ConvertFrom-Json).findings)
 }
 
@@ -488,6 +492,8 @@ function Invoke-RuleHarnessDocSync {
         [string]$RepoRoot,
         [Parameter(Mandatory)]
         [string]$ApiKey,
+        [Parameter(Mandatory)]
+        [string]$ApiBaseUrl,
         [Parameter(Mandatory)]
         [string]$Model
     )
@@ -510,7 +516,7 @@ function Invoke-RuleHarnessDocSync {
             findings    = @($group.Group)
         } | ConvertTo-Json -Depth 50
 
-        $raw = Invoke-RuleHarnessChatCompletion -Model $Model -SystemPrompt $systemPrompt -UserPrompt $payload -ApiKey $ApiKey
+        $raw = Invoke-RuleHarnessChatCompletion -Model $Model -ApiBaseUrl $ApiBaseUrl -SystemPrompt $systemPrompt -UserPrompt $payload -ApiKey $ApiKey
         foreach ($edit in @(($raw | ConvertFrom-Json).edits)) {
             [void]$edits.Add($edit)
         }
@@ -672,6 +678,7 @@ function Invoke-RuleHarness {
         [Parameter(Mandatory)]
         [string]$ConfigPath,
         [string]$ApiKey,
+        [string]$ApiBaseUrl,
         [string]$Model,
         [switch]$DryRun,
         [switch]$DisableLlm,
@@ -682,6 +689,27 @@ function Invoke-RuleHarness {
     $config = Get-RuleHarnessConfig -ConfigPath $ConfigPath
     if ([string]::IsNullOrWhiteSpace($Model)) {
         $Model = $config.llm.defaultModel
+    }
+
+    if ([string]::IsNullOrWhiteSpace($ApiKey)) {
+        if ($Model -match '^glm-' -and -not [string]::IsNullOrWhiteSpace($env:GLM_API_KEY)) {
+            $ApiKey = $env:GLM_API_KEY
+        }
+        elseif (-not [string]::IsNullOrWhiteSpace($env:RULE_HARNESS_API_KEY)) {
+            $ApiKey = $env:RULE_HARNESS_API_KEY
+        }
+    }
+
+    if ([string]::IsNullOrWhiteSpace($ApiBaseUrl)) {
+        if (-not [string]::IsNullOrWhiteSpace($env:RULE_HARNESS_API_BASE_URL)) {
+            $ApiBaseUrl = $env:RULE_HARNESS_API_BASE_URL
+        }
+        elseif ($Model -match '^glm-') {
+            $ApiBaseUrl = $config.llm.glmApiBaseUrl
+        }
+        else {
+            $ApiBaseUrl = $config.llm.defaultApiBaseUrl
+        }
     }
 
     if ($DisableLlm) {
@@ -700,6 +728,7 @@ function Invoke-RuleHarness {
                 -RepoRoot $RepoRoot `
                 -Config $config `
                 -ApiKey $ApiKey `
+                -ApiBaseUrl $ApiBaseUrl `
                 -Model $Model `
                 -ReviewJsonPath $ReviewJsonPath
         )
@@ -733,6 +762,7 @@ function Invoke-RuleHarness {
                     -Findings $eligibleDocFindings `
                     -RepoRoot $RepoRoot `
                     -ApiKey $ApiKey `
+                    -ApiBaseUrl $ApiBaseUrl `
                     -Model $Model
             )
         }
@@ -760,6 +790,7 @@ function Invoke-RuleHarness {
             dryRun     = [bool]$DryRun
             llmEnabled = [bool]$llmEnabled
             llmModel   = if ($llmEnabled) { $Model } else { $null }
+            llmApiBaseUrl = if ($llmEnabled) { $ApiBaseUrl } else { $null }
         }
         scannedFeatures = @(Get-RuleHarnessFeatureDirectories -RepoRoot $RepoRoot | ForEach-Object { $_.Name })
         findings        = $findings

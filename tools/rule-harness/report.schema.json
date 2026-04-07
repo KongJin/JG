@@ -25,7 +25,8 @@
       "required": [
         "dryRun",
         "llmEnabled",
-        "llmModel"
+        "llmModel",
+        "llmApiBaseUrl"
       ],
       "properties": {
         "dryRun": {
@@ -35,6 +36,12 @@
           "type": "boolean"
         },
         "llmModel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "llmApiBaseUrl": {
           "type": [
             "string",
             "null"
