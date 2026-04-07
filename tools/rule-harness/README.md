@@ -28,6 +28,39 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-rule-harness.p
 
 결과는 기본적으로 `Temp/RuleHarness/rule-harness-report.json` 에 저장된다.
 
+## 로컬 주기 실행
+
+기본 1시간 주기 등록:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\register-rule-harness-scheduled-task.ps1
+```
+
+30분 주기로 등록:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\register-rule-harness-scheduled-task.ps1 -IntervalMinutes 30
+```
+
+예약 작업이 실제로 호출하는 스크립트:
+
+```powershell
+.\tools\rule-harness\run-rule-harness-scheduled.ps1
+```
+
+출력 위치:
+
+- `Temp/RuleHarnessScheduled/<timestamp>/rule-harness-report.json`
+- `Temp/RuleHarnessScheduled/<timestamp>/rule-harness-summary.md`
+- `Temp/RuleHarnessScheduled/<timestamp>/rule-harness.log`
+- `Temp/RuleHarnessScheduled/latest-run.txt`
+
+예약 해제:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-harness-scheduled-task.ps1
+```
+
 ## 주요 옵션
 
 - `-DryRun`
@@ -58,3 +91,4 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-rule-harness.p
 
 - `GLM-5`는 공식 문서상 OpenAI-compatible chat completions 엔드포인트를 지원한다.
 - 기본 URL은 `https://open.bigmodel.cn/api/paas/v4` 로 맞춰져 있다.
+- 예약 작업은 `-RequireLlm`으로 실행되므로, 실제 작업 스케줄러 세션에서 `GLM_API_KEY`가 보이지 않으면 run log에 실패가 남는다.
