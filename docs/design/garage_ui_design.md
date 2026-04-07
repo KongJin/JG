@@ -4,7 +4,7 @@
 `unit_module_design.md`와 `module_data_structure.md`의 하위 문서다.
 
 **상위 계획 의존 문서**:
-- `../../agent/game_design.md` — 게임 디자인 SSOT ("가벼운 차고", 코옵 PvE)
+- `./game_design.md` — 게임 디자인 SSOT ("가벼운 차고", 코옵 PvE)
 - `implementation_plan_redesign_execution.md` — 로비 편성 단계 분리 전략
 - `implementation_plan_unit_module.md` — 네트워크 계약, CustomProperties 소유권
 - `../../agent/state_ownership.md` — CustomProperties 소유권 맵
@@ -592,7 +592,7 @@ GarageScreen (Presentation)
 
 ## 참고 문서
 
-- `../../agent/game_design.md` — 게임 디자인 SSOT
+- `./game_design.md` — 게임 디자인 SSOT
 - `unit_module_design.md` — 유닛/모듈 설계 SSOT
 - `module_data_structure.md` — 데이터 구조 정의
 - `implementation_plan_unit_module.md` — 구현 계획 (네트워크 계약 포함)

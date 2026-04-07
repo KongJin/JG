@@ -23,7 +23,7 @@
 * Strategy pattern file structure — enum, interface, factory go in one file. Each implementation (Strategy class) gets its own file.
 * GetComponent for dependency acquisition — use `[Required, SerializeField]`로 선언하고 Inspector에서 연결한다. `GetComponent`/`FindObjectsByType`/`FindObjectOfType`/`Resources.FindObjectsOfTypeAll` 등 런타임 탐색은 의존성 획득이나 씬 wiring에 사용하지 않는다. `[Required]`는 씬/프리팹 저장 시 Editor가 자동 검증하므로 런타임 null 방어 코드도 불필요하다.
 * Runtime fallback wiring — missing scene/prefab references must not be silently repaired with `GetComponent`, `AddComponent`, `CreateDefault`, or runtime UI creation. Fix the scene/prefab instead.
-* Script edit during play mode expectation — Unity 플레이 중에 C# 스크립트나 `Assets/Editor/**` 브리지 코드를 수정하고 즉시 컴파일/적용될 것이라 가정하지 않는다. 이런 수정이 필요하면 반드시 `Play Stop -> 스크립트 수정 -> 컴파일 완료 확인 -> 테스트 재개` 순서를 따른다. MCP 호출·로그 확인 SOP는 `Assets/Editor/UnityMcp/README.md`를 따른다.
+* Script edit during play mode expectation — Unity 플레이 중에 C# 스크립트나 `Assets/Editor/**` 브리지 코드를 수정하고 즉시 컴파일/적용될 것이라 가정하지 않는다. 이런 수정이 필요하면 반드시 `Play Stop -> 스크립트 수정 -> 컴파일 완료 확인 -> 테스트 재개` 순서를 따른다. MCP 호출·로그 확인 SOP는 `/Assets/Editor/UnityMcp/README.md`를 따른다.
 
 * Dual state — the same concept (health, position, etc.) must not be managed by two domain entities independently. Only one Source of Truth may exist. Example: Player.CurrentHp and CombatTarget.CurrentHealth existing simultaneously will inevitably diverge.
 * Network-shared entity with local ID — 네트워크로 공유되는 엔티티(플레이어 등)의 ID를 `DomainEntityId.New()`로 로컬 생성하면 안 된다. 반드시 네트워크 안정 소스(Photon ActorNumber, ViewID 등)에서 파생해야 한다. `DomainEntityId.New()`는 한 클라이언트 안에서만 존재하는 엔티티(투사체, 스킬 인스턴스 등)에만 사용한다.

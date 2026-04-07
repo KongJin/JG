@@ -1,9 +1,9 @@
 # /agent/architecture.md
 
 이 문서는 **코드 구조·피처 경계·의존 방향·레이어 책임·네이밍·크로스 피처 포트·scene contract 체크리스트**의 단일 근거(SSOT)다.  
-엔트리포인트는 `CLAUDE.md`이고, 각 feature `README.md`는 이 문서의 체크리스트를 자기 피처 값으로 채우는 **로컬 계약 문서**다. 전역 구조 규칙은 여기서만 정의한다.
+엔트리포인트는 `../CLAUDE.md`이고, 각 feature README는 이 문서의 체크리스트를 자기 피처 값으로 채우는 **로컬 계약 문서**다. 전역 구조 규칙은 여기서만 정의한다.
 
-시각 요약(Mermaid): [`docs/architecture-diagram.md`](../docs/architecture-diagram.md) — 표·본문은 **이 문서**와 같아야 한다.
+시각 요약(Mermaid): [architecture-diagram.md](../docs/architecture-diagram.md) — 표·본문은 **이 문서**와 같아야 한다.
 
 ---
 
@@ -29,8 +29,8 @@ Assets/Scripts/Shared/
 * Infrastructure는 Application port를 구현한다.
 * Domain은 프레임워크 비의존을 유지한다.
 * Bootstrap (`Setup`/`Bootstrap`)은 레이어 간 조립과 wiring만 담당한다.
-* scene-owned feature는 자기 `README.md`에 scene contract를 기록한다.
-* networked feature는 자기 `README.md`에 명시적 초기화 경로와 late-join 동작을 기록한다.
+* scene-owned feature는 자기 feature README에 scene contract를 기록한다.
+* networked feature는 자기 feature README에 명시적 초기화 경로와 late-join 동작을 기록한다.
 * 런타임 fallback 생성으로 누락된 scene/prefab setup을 대체하지 않는다.
 
 개념이 독립 생명주기를 얻기 전에는 feature 안에 남긴다.
@@ -38,7 +38,7 @@ Assets/Scripts/Shared/
 ### Scene contract (README)
 
 scene contract 체크리스트의 소유자는 이 문서다.
-각 feature `README.md`는 아래 항목을 자기 피처 기준으로 채우고, 항목 정의 자체를 다시 바꾸지 않는다.
+각 feature README는 아래 항목을 자기 피처 기준으로 채우고, 항목 정의 자체를 다시 바꾸지 않는다.
 
 Every scene-owned feature must document:
 
@@ -182,7 +182,7 @@ Allowed: Object creation, dependency wiring, initialization order, subscribing (
 
 Not allowed: Event handling logic in Bootstrap, business logic, domain entity creation (use UseCase).
 
-Rules: No business or rendering logic; **one** Setup or Bootstrap class at feature root (see also `anti_patterns.md`).
+Rules: No business or rendering logic; **one** Setup or Bootstrap class at feature root (see also `./anti_patterns.md`).
 
 ---
 
@@ -202,4 +202,4 @@ Rules: No business or rendering logic; **one** Setup or Bootstrap class at featu
 
 ## asmdef (optional future)
 
-There is **no** per-feature `asmdef` under `Assets/Scripts/Features/**` today; layers are enforced by convention and review. If assemblies are split later, update **this file** and `docs/architecture-diagram.md` together.
+There is **no** per-feature `asmdef` under `Assets/Scripts/Features/**` today; layers are enforced by convention and review. If assemblies are split later, update **this file** and `../docs/architecture-diagram.md` together.

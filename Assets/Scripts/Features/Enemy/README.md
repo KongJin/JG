@@ -6,7 +6,7 @@ Enemy 피처는 적 엔티티의 생성, AI, 전투 통합, 접촉 데미지를 
 
 - 전역 구조, 레이어, scene contract 체크리스트: [architecture.md](../../../../agent/architecture.md)
 - Bootstrap 책임, runtime lookup 예외, static event 예외: [anti_patterns.md](../../../../agent/anti_patterns.md)
-- 게임 씬 전역 초기화 순서와 late-join 전제: [initialization_order.md](../../../../agent/initialization_order.md)
+- 이 피처의 초기화 순서와 late-join 전제: 이 문서의 `## 로컬 계약`
 
 ## 이 피처의 책임
 

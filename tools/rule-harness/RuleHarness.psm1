@@ -426,7 +426,8 @@ function Invoke-RuleHarnessChatCompletion {
         [Parameter(Mandatory)]
         [string]$UserPrompt,
         [Parameter(Mandatory)]
-        [string]$ApiKey
+        [string]$ApiKey,
+        [int]$TimeoutSec = 120
     )
 
     $body = @{
@@ -440,6 +441,7 @@ function Invoke-RuleHarnessChatCompletion {
     }
 
     $endpoint = '{0}/chat/completions' -f $ApiBaseUrl.TrimEnd('/')
+    Write-Host "Rule harness chat completion request started. Model: $Model TimeoutSec: $TimeoutSec Endpoint: $endpoint"
     $response = Invoke-RestMethod `
         -Uri $endpoint `
         -Method Post `
@@ -447,7 +449,9 @@ function Invoke-RuleHarnessChatCompletion {
             Authorization = "Bearer $ApiKey"
             'Content-Type' = 'application/json'
         } `
-        -Body ($body | ConvertTo-Json -Depth 50)
+        -Body ($body | ConvertTo-Json -Depth 50) `
+        -TimeoutSec $TimeoutSec
+    Write-Host "Rule harness chat completion request finished. Model: $Model"
 
     $response.choices[0].message.content
 }
@@ -463,6 +467,7 @@ function Invoke-RuleHarnessAgentReview {
         [string]$ApiKey,
         [string]$ApiBaseUrl,
         [string]$Model,
+        [int]$TimeoutSec = 120,
         [string]$ReviewJsonPath
     )
 
@@ -480,7 +485,9 @@ function Invoke-RuleHarnessAgentReview {
         staticFindings = @($StaticFindings | Select-Object -First $Config.llm.maxFindingsForReview)
     } | ConvertTo-Json -Depth 50
 
-    $raw = Invoke-RuleHarnessChatCompletion -Model $Model -ApiBaseUrl $ApiBaseUrl -SystemPrompt $systemPrompt -UserPrompt $payload -ApiKey $ApiKey
+    Write-Host "Rule harness LLM review stage started. Findings sent: $(@($StaticFindings | Select-Object -First $Config.llm.maxFindingsForReview).Count)"
+    $raw = Invoke-RuleHarnessChatCompletion -Model $Model -ApiBaseUrl $ApiBaseUrl -SystemPrompt $systemPrompt -UserPrompt $payload -ApiKey $ApiKey -TimeoutSec $TimeoutSec
+    Write-Host 'Rule harness LLM review stage finished.'
     @(($raw | ConvertFrom-Json).findings)
 }
 
@@ -495,7 +502,8 @@ function Invoke-RuleHarnessDocSync {
         [Parameter(Mandatory)]
         [string]$ApiBaseUrl,
         [Parameter(Mandatory)]
-        [string]$Model
+        [string]$Model,
+        [int]$TimeoutSec = 120
     )
 
     if ([string]::IsNullOrWhiteSpace($ApiKey)) {
@@ -504,23 +512,37 @@ function Invoke-RuleHarnessDocSync {
 
     $systemPrompt = Get-Content -Path (Join-Path $RepoRoot 'tools/rule-harness/prompts/doc-sync.md') -Raw
     $edits = [System.Collections.Generic.List[object]]::new()
-    foreach ($group in ($Findings | Group-Object ownerDoc)) {
+    $docGroups = @($Findings | Group-Object ownerDoc)
+    Write-Host "Rule harness doc sync stage started. Owner docs: $($docGroups.Count)"
+    foreach ($group in $docGroups) {
+        $docStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
         $fullPath = Join-Path $RepoRoot $group.Name
         if (-not (Test-Path -LiteralPath $fullPath)) {
+            Write-Host "Rule harness doc sync skipped missing target: $($group.Name)"
             continue
         }
 
+        Write-Host "Rule harness doc sync preparing payload for $($group.Name). Findings: $($group.Count)"
+        $currentText = Get-Content -Path $fullPath -Raw
+        Write-Host "Rule harness doc sync loaded target for $($group.Name). TextChars: $($currentText.Length)"
         $payload = @{
             targetPath  = $group.Name
-            currentText = Get-Content -Path $fullPath -Raw
+            currentText = $currentText
             findings    = @($group.Group)
         } | ConvertTo-Json -Depth 50
+        Write-Host "Rule harness doc sync payload prepared for $($group.Name). PayloadChars: $($payload.Length) PrepMs: $($docStopwatch.ElapsedMilliseconds)"
 
-        $raw = Invoke-RuleHarnessChatCompletion -Model $Model -ApiBaseUrl $ApiBaseUrl -SystemPrompt $systemPrompt -UserPrompt $payload -ApiKey $ApiKey
-        foreach ($edit in @(($raw | ConvertFrom-Json).edits)) {
+        Write-Host "Rule harness doc sync request started for $($group.Name). Findings: $($group.Count)"
+        $raw = Invoke-RuleHarnessChatCompletion -Model $Model -ApiBaseUrl $ApiBaseUrl -SystemPrompt $systemPrompt -UserPrompt $payload -ApiKey $ApiKey -TimeoutSec $TimeoutSec
+        $parsed = $raw | ConvertFrom-Json
+        $parsedEdits = @($parsed.edits)
+        Write-Host "Rule harness doc sync request finished for $($group.Name). ProposedEdits: $($parsedEdits.Count) ElapsedMs: $($docStopwatch.ElapsedMilliseconds)"
+        foreach ($edit in $parsedEdits) {
             [void]$edits.Add($edit)
         }
+        $docStopwatch.Stop()
     }
+    Write-Host "Rule harness doc sync stage finished. Proposed edits: $($edits.Count)"
 
     @($edits)
 }
@@ -690,6 +712,12 @@ function Invoke-RuleHarness {
     if ([string]::IsNullOrWhiteSpace($Model)) {
         $Model = $config.llm.defaultModel
     }
+    $timeoutSec = if ($config.llm.PSObject.Properties.Name -contains 'requestTimeoutSec') {
+        [int]$config.llm.requestTimeoutSec
+    }
+    else {
+        120
+    }
 
     if ([string]::IsNullOrWhiteSpace($ApiKey)) {
         if ($Model -match '^glm-' -and -not [string]::IsNullOrWhiteSpace($env:GLM_API_KEY)) {
@@ -718,7 +746,9 @@ function Invoke-RuleHarness {
 
     $llmEnabled = -not [string]::IsNullOrWhiteSpace($ApiKey)
 
-    $staticFindings = Get-RuleHarnessStaticFindings -RepoRoot $RepoRoot -Config $config
+    Write-Host 'Rule harness static scan started.'
+    $staticFindings = @(Get-RuleHarnessStaticFindings -RepoRoot $RepoRoot -Config $config)
+    Write-Host "Rule harness static scan finished. Findings: $($staticFindings.Count)"
     $harnessErrors = [System.Collections.Generic.List[object]]::new()
 
     try {
@@ -730,8 +760,10 @@ function Invoke-RuleHarness {
                 -ApiKey $ApiKey `
                 -ApiBaseUrl $ApiBaseUrl `
                 -Model $Model `
+                -TimeoutSec $timeoutSec `
                 -ReviewJsonPath $ReviewJsonPath
         )
+        Write-Host "Rule harness reviewed findings count: $($reviewedFindings.Count)"
     }
     catch {
         [void]$harnessErrors.Add((New-RuleHarnessFinding `
@@ -739,11 +771,12 @@ function Invoke-RuleHarness {
             -Severity $config.severityPolicy.agentFailure `
             -OwnerDoc 'CLAUDE.md' `
             -Title 'Rule harness agent review failed' `
-            -Message $_.Exception.Message `
+            -Message "Stage=agent_review TimeoutSec=$timeoutSec $($_.Exception.Message)" `
             -Evidence @([pscustomobject]@{ path = 'tools/rule-harness'; line = $null; snippet = $_.Exception.GetType().FullName }) `
             -Confidence 'high' `
             -Source 'harness'))
         $reviewedFindings = @($staticFindings)
+        Write-Host "Rule harness agent review failed. TimeoutSec: $timeoutSec Error: $($_.Exception.Message)"
     }
 
     $eligibleDocFindings = @(
@@ -753,9 +786,10 @@ function Invoke-RuleHarness {
             (Test-RuleHarnessDocAllowed -RelativePath $_.ownerDoc -Config $config)
         }
     )
+    Write-Host "Rule harness eligible doc findings: $($eligibleDocFindings.Count)"
 
     $docEdits = @()
-    if ($eligibleDocFindings.Count -gt 0) {
+    if ($llmEnabled -and $eligibleDocFindings.Count -gt 0) {
         try {
             $docEdits = @(
                 Invoke-RuleHarnessDocSync `
@@ -763,8 +797,10 @@ function Invoke-RuleHarness {
                     -RepoRoot $RepoRoot `
                     -ApiKey $ApiKey `
                     -ApiBaseUrl $ApiBaseUrl `
-                    -Model $Model
+                    -Model $Model `
+                    -TimeoutSec $timeoutSec
             )
+            Write-Host "Rule harness doc sync produced edits: $($docEdits.Count)"
         }
         catch {
             [void]$harnessErrors.Add((New-RuleHarnessFinding `
@@ -772,14 +808,17 @@ function Invoke-RuleHarness {
                 -Severity $config.severityPolicy.agentFailure `
                 -OwnerDoc 'CLAUDE.md' `
                 -Title 'Rule harness doc sync failed' `
-                -Message $_.Exception.Message `
+                -Message "Stage=doc_sync TimeoutSec=$timeoutSec $($_.Exception.Message)" `
                 -Evidence @([pscustomobject]@{ path = 'tools/rule-harness'; line = $null; snippet = $_.Exception.GetType().FullName }) `
                 -Confidence 'high' `
                 -Source 'harness'))
+            Write-Host "Rule harness doc sync failed. TimeoutSec: $timeoutSec Error: $($_.Exception.Message)"
         }
     }
 
+    Write-Host "Rule harness apply-doc-edits stage started. Requested edits: $($docEdits.Count)"
     $applyResult = Invoke-RuleHarnessDocEdits -Edits $docEdits -RepoRoot $RepoRoot -Config $config -DryRun:$DryRun
+    Write-Host "Rule harness apply-doc-edits stage finished. Result entries: $($applyResult.edits.Count) Touched: $($applyResult.touched)"
     $findings = @($reviewedFindings + $harnessErrors)
     $failed = (@($findings | Where-Object { $_.severity -eq 'high' -and $_.findingType -eq 'code_violation' }).Count -gt 0) -or ($harnessErrors.Count -gt 0)
 
@@ -791,6 +830,7 @@ function Invoke-RuleHarness {
             llmEnabled = [bool]$llmEnabled
             llmModel   = if ($llmEnabled) { $Model } else { $null }
             llmApiBaseUrl = if ($llmEnabled) { $ApiBaseUrl } else { $null }
+            llmTimeoutSec = if ($llmEnabled) { $timeoutSec } else { $null }
         }
         scannedFeatures = @(Get-RuleHarnessFeatureDirectories -RepoRoot $RepoRoot | ForEach-Object { $_.Name })
         findings        = $findings

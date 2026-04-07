@@ -6,7 +6,7 @@ Status 피처는 런타임 버프/디버프 상태 레이어를 담당한다. Pl
 
 - 전역 구조, 레이어, 포트 위치: [architecture.md](../../../../agent/architecture.md)
 - EventHandler 위치, Bootstrap 책임, Unity 타입 금지 규칙: [anti_patterns.md](../../../../agent/anti_patterns.md)
-- 게임 씬 전역 초기화 순서와 Status 선행 초기화 전제: [initialization_order.md](../../../../agent/initialization_order.md)
+- 이 피처의 초기화 순서와 Status 선행 초기화 전제: 이 문서의 `## 로컬 계약`
 
 ## 이 피처의 책임
 

@@ -3,7 +3,7 @@ using System;
 namespace Features.Skill.Domain
 {
     /// <summary>
-    /// EffectRole 계열 분류 플래그. Phase 2 태그 시너지·필터용. 상세는 agent/skill_ontology.md.
+    /// EffectRole 계열 분류 플래그. Phase 2 태그 시너지·필터용. 상세는 Skill README의 데이터 드리븐 구조 섹션 참조.
     /// </summary>
     [Flags]
     public enum SkillGameplayTags : uint

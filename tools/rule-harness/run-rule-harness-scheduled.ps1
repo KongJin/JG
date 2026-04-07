@@ -1,6 +1,9 @@
 param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
     [string]$OutputRoot = (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path 'Temp/RuleHarnessScheduled'),
+    [string]$ApiKey,
+    [string]$ApiBaseUrl,
+    [string]$Model,
     [switch]$RequireLlm = $true,
     [switch]$DisableLlm
 )
@@ -37,6 +40,9 @@ try {
         -ArtifactDir $runDir `
         -ReportPath $reportPath `
         -SummaryPath $summaryPath `
+        -ApiKey $ApiKey `
+        -ApiBaseUrl $ApiBaseUrl `
+        -Model $Model `
         -RequireLlm:$requireLlmForRun `
         -DisableLlm:$DisableLlm
 

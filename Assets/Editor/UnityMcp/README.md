@@ -24,7 +24,7 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Claude Code
   3. 에러만 빠르게 볼 때는 **`GET /console/errors`** (Error/Exception/Assert만, 최근부터 최대 `limit`개)
   4. 버퍼 이전 로그·에디터 전체 로그는 `Editor.log` 최근 구간까지 읽어 보완
 - 테스트 결과를 공유할 때는 가능하면 **화면 상태 + 콘솔/로그 상태**를 함께 적는다.
-- 통합 스모크: `tools/mcp-test-lobby-scene.ps1` — 로비 플로우 + 스크린샷·콘솔. **게임 씬 시작 스킬 선택까지** 포함하려면 `-CompleteGameSceneStartSkills` (씬 경로는 `Features/Skill/README.md` MCP 절 참고).
+- 통합 스모크: `tools/mcp-test-lobby-scene.ps1` — 로비 플로우 + 스크린샷·콘솔. **게임 씬 시작 스킬 선택까지** 포함하려면 `-CompleteGameSceneStartSkills` (씬 경로는 `../../Scripts/Features/Skill/README.md` MCP 절 참고).
 - UI 버튼 경로와 공통 폴링/콘솔 헬퍼는 `tools/mcp-test-common.ps1`를 기준으로 맞춘다. 로비·게임 UI 자동화 스크립트는 이 파일을 dot-source 하므로, 경로가 바뀌면 여기부터 갱신한다.
 - `GET /scene/hierarchy`가 특정 조건에서 기대와 다르게 보이면 브리지를 바로 고치지 말고 `tools/mcp-diagnose-scene-hierarchy.ps1`로 `depth`/`includeComponents`/`path` 조합을 먼저 기록한다.
 - **JSON 결과 (스모크 판정용)**: 아래 스크립트는 종료 시 `schemaVersion`, `ok`, `steps[]`, `finalHealth`, `screenshots[]`, (실패 시) `failure` 를 UTF-8 JSON 파일로 쓴다. 실패 시 **exit code 1**.
