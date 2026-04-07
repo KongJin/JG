@@ -6,13 +6,13 @@ Lobby 피처는 멀티플레이 로비의 방 생성/입장/퇴장, 팀 변경, 
 
 - 전역 구조, 레이어, 포트 위치: [architecture.md](../../../../agent/architecture.md)
 - 구현 금지 사항과 EventHandler/Bootstrap 역할 분리: [anti_patterns.md](../../../../agent/anti_patterns.md)
-- Room/Player `CustomProperties` 소유권: [state_ownership.md](../../../../agent/state_ownership.md)
+- Room/Player `CustomProperties` 소유권: 이 문서의 `## 네트워크 동기화`
 
 ## 이 피처의 책임
 
 - 방 목록 조회 및 표시
 - 방 생성/입장/퇴장
-- 방 **난이도 프리셋** (Room `CustomProperties`: `difficultyPreset` int 0 Normal / 1 Easy / 2 Hard) — 방 생성 시 `LobbyPhotonAdapter`가 설정, Wave 피처는 읽기만 ([state_ownership.md](../../../../agent/state_ownership.md))
+- 방 **난이도 프리셋** (Room `CustomProperties`: `difficultyPreset` int 0 Normal / 1 Easy / 2 Hard) — 방 생성 시 `LobbyPhotonAdapter`가 설정, Wave 피처는 읽기만 (소유권 기준은 이 문서의 `## 네트워크 동기화`)
 - 방 내 팀 변경, 레디 상태 토글
 - 게임 시작 조건 검증 및 시작 트리거
 
@@ -68,6 +68,10 @@ Photon 콜백 해석과 도메인 상태 업데이트는 `LobbyNetworkEventHandl
 | 팀, 레디, 닉네임 | `CustomProperties` (상태 동기화) | 늦게 입장한 유저에게 자동 동기화 |
 | 게임 시작 | `RaiseEvent` (이산 이벤트) | 전체 방 알림 |
 | 방 입퇴장 | Photon 자체 콜백 | 멤버 변동 감지 |
+
+소유권 기준:
+- Lobby만 Room `difficultyPreset`을 쓴다. 다른 피처는 읽기만 허용된다.
+- Lobby만 `memberId`, `displayName`, `team`, `isReady`를 쓴다. 다른 피처는 읽기만 허용된다.
 
 `LobbyPhotonAdapter`가 `ILobbyNetworkCommandPort`(송신)와 `ILobbyNetworkCallbackPort`(수신)을 모두 구현한다.
 

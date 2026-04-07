@@ -40,6 +40,12 @@ $customPropertyFindings = Get-RuleHarnessStaticFindings -RepoRoot (Join-Path $fi
 Assert-RuleHarness `
     -Condition (@($customPropertyFindings | Where-Object { $_.findingType -eq 'missing_rule' -and $_.message -match 'newKey' }).Count -ge 1) `
     -Message 'Expected undocumented CustomProperties key finding.'
+Assert-RuleHarness `
+    -Condition (@($customPropertyFindings | Where-Object { $_.remediationKind -eq 'rule_fix' }).Count -ge 1) `
+    -Message 'Expected undocumented CustomProperties key to default to rule_fix.'
+Assert-RuleHarness `
+    -Condition (@($customPropertyFindings | Where-Object { $_.ownerDoc -eq 'Assets/Scripts/Features/Foo/README.md' }).Count -ge 1) `
+    -Message 'Expected undocumented CustomProperties key ownerDoc to point at the owning feature README.'
 
 $applyAllowedRoot = Join-Path $scratchRoot 'apply-allowed'
 Copy-Item -LiteralPath (Join-Path $fixturesRoot 'apply-allowed') -Destination $applyAllowedRoot -Recurse -Force
@@ -77,5 +83,71 @@ $applyRejectedResult = Invoke-RuleHarnessDocEdits `
 Assert-RuleHarness `
     -Condition ($applyRejectedResult.edits[0].status -eq 'rejected') `
     -Message 'Expected docs/design edit to be rejected by allowlist.'
+
+$reviewedFindings = ConvertTo-RuleHarnessReviewedFindings -Findings @(
+    [pscustomobject]@{
+        findingType = 'broken_reference'
+        severity = 'medium'
+        ownerDoc = 'Assets/Scripts/Features/Foo/README.md'
+        title = 'Broken markdown reference'
+        message = 'README still points to a moved file.'
+        confidence = 'high'
+        source = 'agent_review'
+        evidence = @()
+    },
+    [pscustomobject]@{
+        findingType = 'missing_rule'
+        severity = 'high'
+        ownerDoc = 'Assets/Scripts/Features/Bar/README.md'
+        title = 'Missing feature bootstrap root'
+        message = "Feature 'Bar' has no root-level *Setup.cs or *Bootstrap.cs file."
+        confidence = 'high'
+        source = 'agent_review'
+        evidence = @()
+    }
+)
+$plannedBatches = Get-RuleHarnessPlannedBatches `
+    -ReviewedFindings $reviewedFindings `
+    -DocEdits @(
+        [pscustomobject]@{
+            targetPath = 'Assets/Scripts/Features/Foo/README.md'
+            searchText = '../../../../agent/old.md'
+            replaceText = '../../../../agent/architecture.md'
+            reason = 'Fix moved rule doc path.'
+        }
+    ) `
+    -RepoRoot $applyAllowedRoot
+Assert-RuleHarness `
+    -Condition (@($plannedBatches | Where-Object kind -eq 'rule_fix').Count -eq 1) `
+    -Message 'Expected one rule_fix batch for allowlisted doc edits.'
+Assert-RuleHarness `
+    -Condition (@($plannedBatches | Where-Object { $_.kind -eq 'code_fix' -and $_.targetFiles -contains 'Assets/Scripts/Features/Bar/BarSetup.cs' }).Count -eq 1) `
+    -Message 'Expected one code_fix batch for missing bootstrap root.'
+
+$dirtyRepoRoot = Join-Path $scratchRoot 'dirty-targets'
+Copy-Item -LiteralPath (Join-Path $fixturesRoot 'apply-allowed') -Destination $dirtyRepoRoot -Recurse -Force
+Push-Location $dirtyRepoRoot
+try {
+    git init | Out-Null
+    git config user.name 'rule-harness-tests'
+    git config user.email 'rule-harness-tests@example.com'
+    git add .
+    git commit -m 'init' | Out-Null
+    Add-Content -Path 'Assets/Scripts/Features/Foo/README.md' -Value "`nDirty change"
+}
+finally {
+    Pop-Location
+}
+$dirtyTargets = Get-RuleHarnessDirtyTargetPaths `
+    -RepoRoot $dirtyRepoRoot `
+    -TargetFiles @('Assets/Scripts/Features/Foo/README.md')
+Assert-RuleHarness `
+    -Condition ('Assets/Scripts/Features/Foo/README.md' -in $dirtyTargets) `
+    -Message 'Expected dirty target detection to return modified README.'
+
+$mutationState = Get-RuleHarnessMutationState -Config $config -MutationMode 'code_and_rules' -EnableMutation
+Assert-RuleHarness `
+    -Condition ($mutationState.enabled -and $mutationState.mode -eq 'code_and_rules') `
+    -Message 'Expected mutation state to honor explicit code_and_rules mode.'
 
 Write-Host 'Rule harness fixture tests passed.'

@@ -7,7 +7,7 @@
 
 - 전역 구조, 레이어, 포트 위치: [architecture.md](../../../../agent/architecture.md)
 - 구현 금지 사항과 Bootstrap 역할 분리: [anti_patterns.md](../../../../agent/anti_patterns.md)
-- Garage CustomProperties 소유권: [state_ownership.md](../../../../agent/state_ownership.md)
+- Garage CustomProperties 소유권: 이 문서의 `### 네트워크 동기화`
 - 유닛/모듈 설계 SSOT: [unit_module_design.md](../../../../docs/design/unit_module_design.md)
 - 데이터 구조 정의: [module_data_structure.md](../../../../docs/design/module_data_structure.md)
 - Unit Feature 분리 설계: [unit_feature_separation.md](../../../../docs/design/unit_feature_separation.md)

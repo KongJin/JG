@@ -8,6 +8,9 @@ param(
     [string]$ApiKey,
     [string]$ApiBaseUrl = $env:RULE_HARNESS_API_BASE_URL,
     [string]$Model = $(if ($env:RULE_HARNESS_MODEL) { $env:RULE_HARNESS_MODEL } elseif ($env:GLM_API_KEY) { 'glm-5' } else { $null }),
+    [string]$MutationMode = $env:RULE_HARNESS_MUTATION_MODE,
+    [switch]$EnableMutation,
+    [switch]$DisableMutation,
     [switch]$DisableLlm,
     [switch]$RequireLlm,
     [switch]$DryRun
@@ -61,12 +64,26 @@ else {
     Write-Host 'Rule harness running in static-only mode.'
 }
 
+if ($DisableMutation) {
+    Write-Host 'Rule harness mutation disabled by switch.'
+}
+elseif ($EnableMutation -or -not [string]::IsNullOrWhiteSpace($MutationMode)) {
+    $effectiveMutationMode = if ([string]::IsNullOrWhiteSpace($MutationMode)) { 'code_and_rules' } else { $MutationMode }
+    Write-Host "Rule harness mutation mode: $effectiveMutationMode"
+}
+else {
+    Write-Host 'Rule harness mutation mode: config-default'
+}
+
 $report = Invoke-RuleHarness `
     -RepoRoot $RepoRoot `
     -ConfigPath $ConfigPath `
     -ApiKey $ApiKey `
     -ApiBaseUrl $effectiveApiBaseUrl `
     -Model $Model `
+    -MutationMode $MutationMode `
+    -EnableMutation:$EnableMutation `
+    -DisableMutation:$DisableMutation `
     -DisableLlm:$DisableLlm `
     -DryRun:$DryRun `
     -ReviewJsonPath $ReviewJsonPath `

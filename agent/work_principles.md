@@ -26,7 +26,7 @@
 | 재미·리스크 워크숍(4인 페르소나 토의·질문 풀) | [discussion_game_fun_personas.md](../docs/discussions/discussion_game_fun_personas.md) — 수치·MVP 정의는 `../docs/design/game_design.md`만 SSOT |
 | MVP 재미 검증 실행 분해(체크리스트·파일 맵) | [implementation_plan_mvp_fun.md](../docs/plans/implementation_plan_mvp_fun.md) — 수치·통과 기준·MVP 문장은 `../docs/design/game_design.md`만 SSOT |
 | MVP 플레이테스트 세션 노트 (양식) | [playtest_mvp_template.md](../docs/playtest/playtest_mvp_template.md) — 측정 정의·통과 기준은 `../docs/design/game_design.md`만 SSOT |
-| 네트워크 키·소유권 | [state_ownership.md](state_ownership.md) |
+| 네트워크 키·소유권 | owning feature README (`../Assets/Scripts/Features/<Name>/README.md`) |
 | 피처별 씬·초기화 | `../Assets/Scripts/Features/<Name>/README.md` |
 | 에디터 MCP 등 자동화 계약 | 해당 도구 README (예: `/Assets/Editor/UnityMcp/README.md`) |
 | 스킬 분류 태그와 현재 코드 매핑 | [Skill README](../Assets/Scripts/Features/Skill/README.md) — 수치·MVP 정의는 `../docs/design/game_design.md`만 SSOT |

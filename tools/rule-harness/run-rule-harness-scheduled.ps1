@@ -4,6 +4,7 @@ param(
     [string]$ApiKey,
     [string]$ApiBaseUrl,
     [string]$Model,
+    [string]$MutationMode = 'code_and_rules',
     [switch]$RequireLlm = $true,
     [switch]$DisableLlm
 )
@@ -43,6 +44,8 @@ try {
         -ApiKey $ApiKey `
         -ApiBaseUrl $ApiBaseUrl `
         -Model $Model `
+        -MutationMode $MutationMode `
+        -EnableMutation `
         -RequireLlm:$requireLlmForRun `
         -DisableLlm:$DisableLlm
 

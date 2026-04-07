@@ -4,6 +4,7 @@ param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
     [string]$Model = 'glm-5',
     [string]$ApiBaseUrl = 'https://open.bigmodel.cn/api/paas/v4',
+    [string]$MutationMode = 'code_and_rules',
     [switch]$WakeToRun
 )
 
@@ -32,7 +33,8 @@ $actionArgs = @(
     '-File', ('"{0}"' -f $scriptPath),
     '-RequireLlm',
     '-Model', ('"{0}"' -f $Model),
-    '-ApiBaseUrl', ('"{0}"' -f $ApiBaseUrl)
+    '-ApiBaseUrl', ('"{0}"' -f $ApiBaseUrl),
+    '-MutationMode', ('"{0}"' -f $MutationMode)
 ) -join ' '
 
 $action = New-ScheduledTaskAction `
@@ -69,4 +71,5 @@ Write-Host "First run: $startAt"
 Write-Host "Command: $scriptPath"
 Write-Host "Model: $Model"
 Write-Host "ApiBaseUrl: $ApiBaseUrl"
+Write-Host "MutationMode: $MutationMode"
 Write-Host "WakeToRun: $WakeToRun"

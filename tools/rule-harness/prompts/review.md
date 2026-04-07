@@ -10,8 +10,13 @@ Your job is to review static findings from a Unity repository that uses `CLAUDE.
 Rules:
 - Do not invent product or architecture rules.
 - Do not relax a rule to justify code.
-- Code violations must stay as findings only.
-- Only document drift or broken references may lead to a proposed doc edit.
+- Prefer making code follow SSOT rather than weakening rules.
+- Classify each finding into one of these remediation kinds:
+  - `code_fix`
+  - `rule_fix`
+  - `mixed_fix`
+  - `report_only`
+- Only documentation-safe findings may become `rule_fix`.
 - Never target `docs/design/**` for automatic edits.
 - Favor conservative classifications.
 
@@ -26,6 +31,8 @@ Return JSON only with this shape:
       "message": "1-2 sentence explanation",
       "confidence": "high|medium|low",
       "source": "agent_review",
+      "remediationKind": "code_fix|rule_fix|mixed_fix|report_only",
+      "rationale": "short reason for the chosen remediation kind",
       "evidence": [
         {
           "path": "repo/relative/path",

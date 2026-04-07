@@ -10,6 +10,14 @@
     "scannedFeatures",
     "findings",
     "docEdits",
+    "plannedBatches",
+    "appliedBatches",
+    "skippedBatches",
+    "rollbackBatches",
+    "decisionTrace",
+    "validationResults",
+    "commit",
+    "rollback",
     "applied",
     "failed"
   ],
@@ -26,7 +34,10 @@
         "dryRun",
         "llmEnabled",
         "llmModel",
-        "llmApiBaseUrl"
+        "llmApiBaseUrl",
+        "mutationEnabled",
+        "mutationMode",
+        "branch"
       ],
       "properties": {
         "dryRun": {
@@ -42,6 +53,28 @@
           ]
         },
         "llmApiBaseUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "llmTimeoutSec": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "mutationEnabled": {
+          "type": "boolean"
+        },
+        "mutationMode": {
+          "enum": [
+            "report_only",
+            "doc_only",
+            "code_and_rules"
+          ]
+        },
+        "branch": {
           "type": [
             "string",
             "null"
@@ -97,6 +130,17 @@
           "source": {
             "type": "string"
           },
+          "remediationKind": {
+            "enum": [
+              "code_fix",
+              "rule_fix",
+              "mixed_fix",
+              "report_only"
+            ]
+          },
+          "rationale": {
+            "type": "string"
+          },
           "evidence": {
             "type": "array",
             "items": {
@@ -148,6 +192,141 @@
             ]
           },
           "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "plannedBatches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "targetFiles",
+          "reason",
+          "validation",
+          "expectedFindingsResolved",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "code_fix",
+              "rule_fix",
+              "mixed_fix"
+            ]
+          },
+          "targetFiles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reason": {
+            "type": "string"
+          },
+          "validation": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expectedFindingsResolved": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "appliedBatches": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "skippedBatches": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "rollbackBatches": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "decisionTrace": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "validationResults": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "commit": {
+      "type": "object",
+      "required": [
+        "attempted",
+        "created",
+        "sha",
+        "branch",
+        "message"
+      ],
+      "properties": {
+        "attempted": {
+          "type": "boolean"
+        },
+        "created": {
+          "type": "boolean"
+        },
+        "sha": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "branch": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "required": [
+        "performed",
+        "failedBatches"
+      ],
+      "properties": {
+        "performed": {
+          "type": "boolean"
+        },
+        "failedBatches": {
+          "type": "array",
+          "items": {
             "type": "string"
           }
         }

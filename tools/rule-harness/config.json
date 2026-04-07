@@ -32,6 +32,16 @@
       "docs/design/**"
     ]
   },
+  "mutation": {
+    "enabled": true,
+    "mode": "code_and_rules",
+    "branchPolicy": "current_branch",
+    "commitMessagePrefix": "autofix(rule-harness):",
+    "maxBatchesPerRun": 3,
+    "maxFilesPerBatch": 8,
+    "stopOnFirstFailure": true,
+    "requireCleanTargets": true
+  },
   "severityPolicy": {
     "missingSsotReference": "high",
     "missingFeatureReadme": "high",
@@ -48,7 +58,13 @@
     "glmApiBaseUrl": "https://open.bigmodel.cn/api/paas/v4",
     "requestTimeoutSec": 120,
     "maxFindingsForReview": 40,
-    "maxSnippetChars": 6000
+    "maxSnippetChars": 6000,
+    "maxOwnerDocsForDocSync": 3,
+    "maxTargetDocCharsForSync": 20000
+  },
+  "validation": {
+    "runHarnessTests": true,
+    "harnessTestScript": "tools/rule-harness/tests/Run-RuleHarnessTests.ps1"
   },
   "schedule": {
     "utcCron": "0 17 * * *",
