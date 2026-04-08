@@ -1,5 +1,6 @@
 using Shared.Attributes;
 using System;
+using Features.Player.Application.Events;
 using Features.Wave.Application.Events;
 using Features.Wave.Domain;
 using Shared.EventBus;
@@ -13,8 +14,12 @@ namespace Features.Wave.Presentation
         [Required, SerializeField] private GameObject panel;
         [Required, SerializeField] private Text resultText;
 
-        public void Initialize(IEventSubscriber subscriber)
+        private IEventPublisher _publisher;
+
+        public void Initialize(IEventSubscriber subscriber, IEventPublisher publisher)
         {
+            _publisher = publisher;
+
             subscriber.Subscribe(this, new Action<WaveVictoryEvent>(OnVictory));
             subscriber.Subscribe(this, new Action<WaveDefeatEvent>(OnDefeat));
             subscriber.Subscribe(this, new Action<WaveHydratedEvent>(OnWaveHydrated));
@@ -25,11 +30,21 @@ namespace Features.Wave.Presentation
         private void OnVictory(WaveVictoryEvent e)
         {
             Show("Victory!");
+            _publisher.Publish(new GameEndEvent(
+                default(Shared.Kernel.DomainEntityId),
+                default(Shared.Kernel.DomainEntityId),
+                isLocalPlayerDead: false,
+                "Victory!"));
         }
 
         private void OnDefeat(WaveDefeatEvent e)
         {
             Show("Defeat!");
+            _publisher.Publish(new GameEndEvent(
+                default(Shared.Kernel.DomainEntityId),
+                default(Shared.Kernel.DomainEntityId),
+                isLocalPlayerDead: true,
+                "Defeat!"));
         }
 
         private void OnWaveHydrated(WaveHydratedEvent e)
@@ -38,9 +53,19 @@ namespace Features.Wave.Presentation
             {
                 case WaveState.Victory:
                     Show("Victory!");
+                    _publisher.Publish(new GameEndEvent(
+                        default(Shared.Kernel.DomainEntityId),
+                        default(Shared.Kernel.DomainEntityId),
+                        isLocalPlayerDead: false,
+                        "Victory!"));
                     break;
                 case WaveState.Defeat:
                     Show("Defeat!");
+                    _publisher.Publish(new GameEndEvent(
+                        default(Shared.Kernel.DomainEntityId),
+                        default(Shared.Kernel.DomainEntityId),
+                        isLocalPlayerDead: true,
+                        "Defeat!"));
                     break;
             }
         }

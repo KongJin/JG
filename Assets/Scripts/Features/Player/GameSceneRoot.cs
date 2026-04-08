@@ -182,7 +182,7 @@ namespace Features.Player
             _sceneStartTime = Time.realtimeSinceStartup;
             _analytics.LogGameStart(_matchId);
             RoundCounter.Increment();
-            var analyticsHandler = new GameAnalyticsEventHandler(_analytics, _eventBus);
+            var analyticsHandler = new GameAnalyticsEventHandler(_analytics, _eventBus, _sceneStartTime);
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, analyticsHandler));
 
             _playerLookup = new PlayerLookupAdapter(_playerSceneRegistry);

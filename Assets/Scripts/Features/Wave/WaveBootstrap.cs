@@ -126,7 +126,7 @@ namespace Features.Wave
             _hudView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _hudView));
 
-            _endView.Initialize(eventBus);
+            _endView.Initialize(eventBus, eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _endView));
 
             _flowController.Initialize(
