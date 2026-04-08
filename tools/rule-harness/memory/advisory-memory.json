@@ -1,4 +1,25 @@
-{
-  "schemaVersion": 1,
-  "entries": []
+﻿{
+    "schemaVersion":  1,
+    "entries":  [
+                    {
+                        "signature":  "harness-stage-failed|Rule harness doc sync failed|tools/rule-harness/README.md|harness|Stage=doc_sync TimeoutSec=# 작업 시간이 초과되었습니다.",
+                        "scopeType":  "harness",
+                        "scopePath":  "tools/rule-harness/README.md",
+                        "symptoms":  "Stage=doc_sync TimeoutSec=120 작업 시간이 초과되었습니다.",
+                        "preferredRepairStrategy":  "Improve harness prompts, config, tests, or docs before retrying.",
+                        "validationHints":  [
+                                                "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+                                                "tools/rule-harness/README.md"
+                                            ],
+                        "confidence":  "high",
+                        "hitCount":  1,
+                        "distinctCommitCount":  1,
+                        "commitShas":  [
+                                           "47b32576ff40b57bf8639585bed400512349e4d3"
+                                       ],
+                        "lastSeen":  "2026-04-08T15:01:39.3367418Z",
+                        "promotionTarget":  "tools/rule-harness/README.md",
+                        "status":  "observed"
+                    }
+                ]
 }

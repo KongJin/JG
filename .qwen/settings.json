@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir *)",
+      "Bash(where *)",
+      "Bash(\"c:\\program files\\unity\\hub\\editor\\6000.3.9f1\\editor\\unity.exe\" *)",
+      "Bash(cmd *)",
+      "Bash(set *)",
+      "Bash(%unity_path% *)",
+      "Bash(\"c:/program files/unity/hub/editor/6000.3.9f1/editor/unity.exe\" *)",
+      "Bash(timeout *)",
+      "Bash(type *)",
+      "Bash(findstr *)"
+    ]
+  },
+  "$version": 3
+}
