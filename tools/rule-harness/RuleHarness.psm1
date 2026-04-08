@@ -315,21 +315,13 @@ function Get-RuleHarnessActionItemForSkippedBatch {
     }
 
     switch ($reasonCode) {
-        'missing-validation-registry' {
+        'manual-validation-required' {
             return New-RuleHarnessActionItem `
-                -Kind 'extend-validation-registry' `
+                -Kind 'manual-validation-required' `
                 -Severity 'high' `
-                -Summary ("Add validation coverage for batch {0}" -f [string]$SkippedBatch.id) `
-                -Details ("Targeted validation is missing. Add or fix an entry in {0} so this code batch can run feature validation." -f [string]$Config.validation.registryPath) `
-                -RelatedPaths (Get-RuleHarnessCombinedPaths -Primary $targetFiles -Secondary @([string]$Config.validation.registryPath))
-        }
-        'no-targeted-tests' {
-            return New-RuleHarnessActionItem `
-                -Kind 'add-targeted-tests' `
-                -Severity 'high' `
-                -Summary ("Add targeted validation for batch {0}" -f [string]$SkippedBatch.id) `
-                -Details ("The validation registry resolved no runnable scripts for this batch. Add targeted tests or smoke scripts referenced by {0}." -f [string]$Config.validation.registryPath) `
-                -RelatedPaths (Get-RuleHarnessCombinedPaths -Primary $targetFiles -Secondary @([string]$Config.validation.registryPath))
+                -Summary ("Manual validation required for batch {0}" -f [string]$SkippedBatch.id) `
+                -Details ([string]$SkippedBatch.reason) `
+                -RelatedPaths $targetFiles
         }
         'dirty-target-files' {
             $targetsText = if ($SkippedBatch.PSObject.Properties.Name -contains 'targets' -and @($SkippedBatch.targets).Count -gt 0) {
@@ -916,54 +908,6 @@ function Get-RuleHarnessBatchFingerprint {
     -join ($hashBytes | ForEach-Object { $_.ToString('x2') })
 }
 
-function Get-RuleHarnessValidationRegistryPath {
-    param(
-        [Parameter(Mandatory)]
-        [string]$RepoRoot,
-        [Parameter(Mandatory)]
-        [object]$Config
-    )
-
-    $relativePath = if ($Config.validation.PSObject.Properties.Name -contains 'registryPath') {
-        [string]$Config.validation.registryPath
-    }
-    else {
-        'tools/rule-harness/validation-registry.json'
-    }
-
-    [pscustomobject]@{
-        relativePath = $relativePath.Replace('\', '/')
-        fullPath     = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $relativePath))
-    }
-}
-
-function Get-RuleHarnessValidationRegistry {
-    param(
-        [Parameter(Mandatory)]
-        [string]$RepoRoot,
-        [Parameter(Mandatory)]
-        [object]$Config
-    )
-
-    $pathInfo = Get-RuleHarnessValidationRegistryPath -RepoRoot $RepoRoot -Config $Config
-    if (-not (Test-Path -LiteralPath $pathInfo.fullPath)) {
-        return [pscustomobject]@{
-            path         = $pathInfo.fullPath
-            relativePath = $pathInfo.relativePath
-            schemaVersion = 1
-            features     = [pscustomobject]@{}
-        }
-    }
-
-    $raw = Get-Content -Path $pathInfo.fullPath -Raw | ConvertFrom-Json
-    [pscustomobject]@{
-        path          = $pathInfo.fullPath
-        relativePath  = $pathInfo.relativePath
-        schemaVersion = if ($raw.PSObject.Properties.Name -contains 'schemaVersion') { [int]$raw.schemaVersion } else { 1 }
-        features      = if ($raw.PSObject.Properties.Name -contains 'features') { $raw.features } else { [pscustomobject]@{} }
-    }
-}
-
 function Get-RuleHarnessMemoryStorePath {
     param(
         [Parameter(Mandatory)]
@@ -1131,10 +1075,53 @@ function Get-RuleHarnessFeatureTestAssets {
     @($assets | Sort-Object -Unique)
 }
 
-function Get-RuleHarnessInferredStructuralChecks {
+function Get-RuleHarnessBatchFeatureNames {
     param(
         [Parameter(Mandatory)]
         [object]$Batch
+    )
+
+    $featureNames = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($featureName in @($Batch.featureNames)) {
+        if (-not [string]::IsNullOrWhiteSpace([string]$featureName)) {
+            [void]$featureNames.Add([string]$featureName)
+        }
+    }
+
+    foreach ($targetPath in @($Batch.targetFiles)) {
+        $normalized = [string]$targetPath
+        if ($normalized -match '^Assets/Scripts/Features/(?<feature>[^/]+)/') {
+            [void]$featureNames.Add([string]$Matches['feature'])
+        }
+    }
+
+    @($featureNames | Sort-Object)
+}
+
+function Test-RuleHarnessSensitiveValidationScope {
+    param(
+        [Parameter(Mandatory)]
+        [string[]]$TargetFiles
+    )
+
+    foreach ($targetPath in @($TargetFiles)) {
+        $normalized = ([string]$targetPath).Replace('\', '/')
+        if ($normalized -like 'Assets/Editor/UnityMcp/*' -or
+            $normalized -like 'Assets/Scenes/*.unity' -or
+            $normalized -like 'Assets/**/*.prefab') {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Get-RuleHarnessInferredStructuralChecks {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Batch,
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
     )
 
     $checks = [System.Collections.Generic.List[object]]::new()
@@ -1151,6 +1138,44 @@ function Get-RuleHarnessInferredStructuralChecks {
             runnable = $true
             details  = 'Static scan must resolve the expected findings without introducing new high-severity findings.'
         })
+        [void]$checks.Add([pscustomobject]@{
+            name     = 'no_new_high_severity_findings'
+            source   = 'inferred'
+            runnable = $true
+            details  = 'Static scan must not introduce new high-severity findings.'
+        })
+        [void]$checks.Add([pscustomobject]@{
+            name     = 'feature_root_contract_present'
+            source   = 'inferred'
+            runnable = $true
+            details  = 'Touched feature scopes must keep a root-level *Setup.cs or *Bootstrap.cs contract.'
+        })
+        [void]$checks.Add([pscustomobject]@{
+            name     = 'owner_doc_references_resolve'
+            source   = 'inferred'
+            runnable = $true
+            details  = 'CLAUDE.md and current global owner docs must keep valid markdown references.'
+        })
+
+        $featureNames = @(Get-RuleHarnessBatchFeatureNames -Batch $Batch)
+        $featureTestAssets = @(Get-RuleHarnessFeatureTestAssets -RepoRoot $RepoRoot -FeatureNames $featureNames)
+        if ($featureTestAssets.Count -gt 0) {
+            [void]$checks.Add([pscustomobject]@{
+                name     = 'feature_test_assets_present'
+                source   = 'feature_test_assets'
+                runnable = $false
+                details  = "Feature test assets detected: $($featureTestAssets.Count)"
+            })
+        }
+
+        if (Test-RuleHarnessSensitiveValidationScope -TargetFiles @($Batch.targetFiles)) {
+            [void]$checks.Add([pscustomobject]@{
+                name     = 'unity_or_scene_scope_detected'
+                source   = 'inferred'
+                runnable = $false
+                details  = 'UnityMcp, scene, or prefab scope detected; runtime validation is not built into this phase.'
+            })
+        }
     }
 
     @($checks)
@@ -1163,9 +1188,7 @@ function Get-RuleHarnessDiscoveredValidationPlan {
         [Parameter(Mandatory)]
         [string]$RepoRoot,
         [Parameter(Mandatory)]
-        [object]$Config,
-        [Parameter(Mandatory)]
-        [object]$ValidationRegistry
+        [object]$Config
     )
 
     $scopeInfo = Get-RuleHarnessScopeInfo -RepoRoot $RepoRoot -OwnerDoc ([string](@($Batch.ownerDocs)[0])) -TargetFiles @($Batch.targetFiles)
@@ -1177,64 +1200,26 @@ function Get-RuleHarnessDiscoveredValidationPlan {
             source             = 'rule-only'
             confidence         = 'high'
             runnable           = $false
-            scripts            = @()
             featureTestAssets  = @()
             inferredChecks     = @()
-            registryHints      = @()
             checks             = @()
             status             = 'rule_only'
             reasonCode         = 'rule-only'
         }
     }
 
-    $featureNames = @($Batch.featureNames | Sort-Object -Unique)
-    $runnerScripts = @(Get-RuleHarnessTargetedTestScripts -RepoRoot $RepoRoot -FeatureNames $featureNames)
+    $featureNames = @(Get-RuleHarnessBatchFeatureNames -Batch $Batch)
     $featureTestAssets = @(Get-RuleHarnessFeatureTestAssets -RepoRoot $RepoRoot -FeatureNames $featureNames)
-    $registryHints = [System.Collections.Generic.List[string]]::new()
-    $registryScripts = [System.Collections.Generic.List[string]]::new()
-    foreach ($featureName in $featureNames) {
-        $featureProperty = $ValidationRegistry.features.PSObject.Properties[$featureName]
-        if ($null -eq $featureProperty) {
-            continue
-        }
-
-        [void]$registryHints.Add("$($ValidationRegistry.relativePath):$featureName")
-        $entry = $featureProperty.Value
-        foreach ($scriptPath in @($entry.scripts) + @($entry.smoke)) {
-            if ([string]::IsNullOrWhiteSpace([string]$scriptPath)) {
-                continue
-            }
-
-            $fullPath = Join-Path $RepoRoot ([string]$scriptPath)
-            if (Test-Path -LiteralPath $fullPath) {
-                [void]$registryScripts.Add([System.IO.Path]::GetFullPath($fullPath))
-            }
-        }
-    }
-
-    $selectedScripts = if (@($runnerScripts).Count -gt 0) {
-        @($runnerScripts)
-    }
-    else {
-        @($registryScripts | Sort-Object -Unique)
-    }
-    $inferredChecks = @(Get-RuleHarnessInferredStructuralChecks -Batch $Batch)
-    $source = if (@($runnerScripts).Count -gt 0) {
-        'feature_runner'
-    }
-    elseif (@($registryScripts).Count -gt 0) {
-        'registry_hint'
-    }
-    elseif (@($featureTestAssets).Count -gt 0) {
+    $inferredChecks = @(Get-RuleHarnessInferredStructuralChecks -Batch $Batch -RepoRoot $RepoRoot)
+    $source = if (@($featureTestAssets).Count -gt 0) {
         'feature_test_assets'
     }
     else {
         'inferred'
     }
-    $confidence = if (@($selectedScripts).Count -gt 0) {
-        'high'
-    }
-    elseif (@($featureTestAssets).Count -gt 0) {
+    $hasSensitiveScope = Test-RuleHarnessSensitiveValidationScope -TargetFiles @($Batch.targetFiles)
+    $hasCrossFeatureScope = $featureNames.Count -gt 1
+    $confidence = if (@($featureTestAssets).Count -gt 0 -and -not $hasSensitiveScope -and -not $hasCrossFeatureScope) {
         'medium'
     }
     else {
@@ -1242,14 +1227,6 @@ function Get-RuleHarnessDiscoveredValidationPlan {
     }
 
     $checks = [System.Collections.Generic.List[object]]::new()
-    foreach ($script in @($selectedScripts)) {
-        [void]$checks.Add([pscustomobject]@{
-            name     = 'targeted_script'
-            source   = $source
-            runnable = $true
-            details  = $script
-        })
-    }
     foreach ($check in $inferredChecks) {
         [void]$checks.Add($check)
     }
@@ -1260,11 +1237,9 @@ function Get-RuleHarnessDiscoveredValidationPlan {
         scopePath          = $scopeInfo.scopePath
         source             = $source
         confidence         = $confidence
-        runnable           = (@($selectedScripts).Count -gt 0)
-        scripts            = @($selectedScripts | Sort-Object -Unique)
+        runnable           = (@($checks | Where-Object { $_.runnable }).Count -gt 0)
         featureTestAssets  = @($featureTestAssets)
         inferredChecks     = @($inferredChecks)
-        registryHints      = @($registryHints)
         checks             = @($checks)
         status             = 'ok'
         reasonCode         = $null
@@ -1564,113 +1539,6 @@ function Get-RuleHarnessBatchOwnershipAssessment {
     [pscustomobject]@{
         status = 'accepted'
         reason = $null
-    }
-}
-
-function Get-RuleHarnessTargetedValidationPlan {
-    param(
-        [Parameter(Mandatory)]
-        [object]$Batch,
-        [Parameter(Mandatory)]
-        [string]$RepoRoot,
-        [Parameter(Mandatory)]
-        [object]$Config,
-        [Parameter(Mandatory)]
-        [object]$ValidationRegistry
-    )
-
-    if ($Batch.kind -eq 'rule_fix') {
-        return [pscustomobject]@{
-            status     = 'rule_only'
-            scripts    = @()
-            source     = 'rule-only'
-            reasonCode = 'rule-only'
-        }
-    }
-
-    $featureNames = @($Batch.featureNames | Sort-Object -Unique)
-    if ($featureNames.Count -eq 0) {
-        return [pscustomobject]@{
-            status     = 'missing'
-            scripts    = @()
-            source     = $ValidationRegistry.relativePath
-            reasonCode = 'missing-validation-registry'
-        }
-    }
-
-    $scripts = [System.Collections.Generic.List[string]]::new()
-    $sources = [System.Collections.Generic.List[string]]::new()
-    foreach ($featureName in $featureNames) {
-        $featureProperty = $ValidationRegistry.features.PSObject.Properties[$featureName]
-        if ($null -eq $featureProperty) {
-            return [pscustomobject]@{
-                status     = 'missing'
-                scripts    = @()
-                source     = $ValidationRegistry.relativePath
-                reasonCode = 'missing-validation-registry'
-            }
-        }
-
-        $entry = $featureProperty.Value
-        $requiredForKinds = if ($entry.PSObject.Properties.Name -contains 'requiredForKinds' -and @($entry.requiredForKinds).Count -gt 0) {
-            @($entry.requiredForKinds)
-        }
-        else {
-            @('code_fix', 'mixed_fix')
-        }
-
-        if ($Batch.kind -notin $requiredForKinds) {
-            return [pscustomobject]@{
-                status     = 'missing'
-                scripts    = @()
-                source     = $ValidationRegistry.relativePath
-                reasonCode = 'missing-validation-registry'
-            }
-        }
-
-        foreach ($scriptPath in @($entry.scripts) + @($entry.smoke)) {
-            if ([string]::IsNullOrWhiteSpace([string]$scriptPath)) {
-                continue
-            }
-
-            $fullPath = Join-Path $RepoRoot ([string]$scriptPath)
-            if (-not (Test-Path -LiteralPath $fullPath)) {
-                return [pscustomobject]@{
-                    status     = 'missing'
-                    scripts    = @()
-                    source     = $ValidationRegistry.relativePath
-                    reasonCode = 'missing-validation-registry'
-                }
-            }
-
-            [void]$scripts.Add([System.IO.Path]::GetFullPath($fullPath))
-        }
-        [void]$sources.Add("$($ValidationRegistry.relativePath):$featureName")
-    }
-
-    if ($scripts.Count -eq 0) {
-        if ($Config.validation.requireRegistryForCodeBatches) {
-            return [pscustomobject]@{
-                status     = 'missing'
-                scripts    = @()
-                source     = $ValidationRegistry.relativePath
-                reasonCode = 'missing-validation-registry'
-            }
-        }
-
-        return [pscustomobject]@{
-            status     = 'missing'
-            scripts    = @()
-            source     = $ValidationRegistry.relativePath
-            reasonCode = 'no-targeted-tests'
-        }
-    }
-
-    [pscustomobject]@{
-        status     = 'ok'
-        scripts    = @($scripts | Sort-Object -Unique)
-        source     = ($sources -join ', ')
-        reasonCode = $null
     }
 }
 
@@ -2197,6 +2065,66 @@ function Invoke-RuleHarnessDocEdits {
     }
 }
 
+function Test-RuleHarnessFeatureRootContracts {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string[]]$FeatureNames
+    )
+
+    $missing = [System.Collections.Generic.List[string]]::new()
+    foreach ($featureName in @($FeatureNames | Sort-Object -Unique)) {
+        $featureRoot = Join-Path $RepoRoot "Assets/Scripts/Features/$featureName"
+        if (-not (Test-Path -LiteralPath $featureRoot)) {
+            [void]$missing.Add($featureName)
+            continue
+        }
+
+        $rootBootstrap = Get-ChildItem -LiteralPath $featureRoot -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Extension -eq '.cs' -and ($_.Name -like '*Setup.cs' -or $_.Name -like '*Bootstrap.cs') } |
+            Select-Object -First 1
+        if ($null -eq $rootBootstrap) {
+            [void]$missing.Add($featureName)
+        }
+    }
+
+    [pscustomobject]@{
+        passed  = ($missing.Count -eq 0)
+        missing = @($missing)
+    }
+}
+
+function Test-RuleHarnessOwnerDocReferences {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $broken = [System.Collections.Generic.List[string]]::new()
+    foreach ($doc in Get-RuleHarnessScopeDocs -RepoRoot $RepoRoot -Config $Config) {
+        $docFull = Join-Path $RepoRoot $doc
+        if (-not (Test-Path -LiteralPath $docFull)) {
+            [void]$broken.Add($doc)
+            continue
+        }
+
+        foreach ($target in Get-RuleHarnessMarkdownTargets -Content (Get-Content -Path $docFull -Raw)) {
+            $resolved = Resolve-RuleHarnessTargetPath -RepoRoot $RepoRoot -SourcePath $doc -Target $target
+            if ($null -ne $resolved -and -not $resolved.Exists) {
+                [void]$broken.Add("$doc -> $target")
+            }
+        }
+    }
+
+    [pscustomobject]@{
+        passed = ($broken.Count -eq 0)
+        broken = @($broken | Select-Object -Unique)
+    }
+}
+
 function Get-RuleHarnessBootstrapSetupContent {
     param(
         [Parameter(Mandatory)]
@@ -2335,7 +2263,7 @@ function Get-RuleHarnessPlannedBatches {
                 -Kind 'code_fix' `
                 -TargetFiles @($targetPath) `
                 -Reason "Add missing root setup scaffold for feature '$featureName' to satisfy the architecture bootstrap contract." `
-                -Validation @('rule_harness_tests', 'targeted_tests', 'static_scan') `
+                -Validation @('rule_harness_tests', 'inferred_validation', 'static_scan') `
                 -ExpectedFindingsResolved @($key) `
                 -Operations @([pscustomobject]@{
                     type       = 'write_file'
@@ -2382,29 +2310,6 @@ function Get-RuleHarnessDirtyTargetPaths {
     }
 
     @($dirty)
-}
-
-function Get-RuleHarnessTargetedTestScripts {
-    param(
-        [Parameter(Mandatory)]
-        [string]$RepoRoot,
-        [Parameter(Mandatory)]
-        [string[]]$FeatureNames
-    )
-
-    $scripts = [System.Collections.Generic.List[string]]::new()
-    foreach ($featureName in $FeatureNames | Sort-Object -Unique) {
-        $featureTestRoot = Join-Path $RepoRoot "Tests/$featureName"
-        if (-not (Test-Path -LiteralPath $featureTestRoot)) {
-            continue
-        }
-
-        foreach ($script in Get-ChildItem -LiteralPath $featureTestRoot -Recurse -File -Filter 'Run-*.ps1' -ErrorAction SilentlyContinue) {
-            [void]$scripts.Add($script.FullName)
-        }
-    }
-
-    @($scripts | Sort-Object -Unique)
 }
 
 function Get-RuleHarnessFileSnapshots {
@@ -2595,7 +2500,7 @@ function Invoke-RuleHarnessBatchValidation {
         validation = 'discovered_validation_plan'
         status     = 'passed'
         source     = [string]$ValidationPlan.source
-        details    = "Confidence=$($ValidationPlan.confidence) Runnable=$($ValidationPlan.runnable) Scripts=$(@($ValidationPlan.scripts).Count) InferredChecks=$(@($ValidationPlan.inferredChecks).Count) FeatureAssets=$(@($ValidationPlan.featureTestAssets).Count) RegistryHints=$(@($ValidationPlan.registryHints).Count)"
+        details    = "Confidence=$($ValidationPlan.confidence) Runnable=$($ValidationPlan.runnable) Checks=$(@($ValidationPlan.checks).Count) InferredChecks=$(@($ValidationPlan.inferredChecks).Count) FeatureAssets=$(@($ValidationPlan.featureTestAssets).Count)"
     })
 
     if ($Config.validation.runHarnessTests) {
@@ -2620,38 +2525,7 @@ function Invoke-RuleHarnessBatchValidation {
     }
 
     if ($Batch.kind -ne 'rule_fix') {
-        if (@($ValidationPlan.scripts).Count -eq 0) {
-            [void]$results.Add([pscustomobject]@{
-                batchId    = $Batch.id
-                validation = 'targeted_tests'
-                status     = 'skipped'
-                source     = [string]$ValidationPlan.source
-                details    = 'No runnable feature-local runner was discovered; relying on inferred structural checks and static scan.'
-            })
-        }
-        else {
-            foreach ($script in @($ValidationPlan.scripts)) {
-                $scriptResult = Invoke-RuleHarnessValidationScript `
-                    -ScriptPath $script `
-                    -ValidationName 'targeted_tests' `
-                    -BatchId ([string]$Batch.id) `
-                    -Source ([string]$ValidationPlan.source) `
-                    -FailureReason 'targeted-tests-failed' `
-                    -Label (Split-Path -Leaf $script)
-                [void]$results.Add($scriptResult.result)
-                if (-not $scriptResult.passed) {
-                    return [pscustomobject]@{
-                        passed        = $false
-                        findingsAfter = $BaselineStaticFindings
-                        results       = @($results)
-                        failureReason = [string]$scriptResult.failureReason
-                        failureMessage = [string]$scriptResult.failureMessage
-                        failureSource = [string]$scriptResult.failureSource
-                    }
-                }
-            }
-        }
-
+        $checkNotes = [System.Collections.Generic.List[string]]::new()
         $missingTargets = @($Batch.targetFiles | Where-Object {
             -not (Test-Path -LiteralPath (Join-Path $RepoRoot ([string]$_)))
         })
@@ -2659,34 +2533,82 @@ function Invoke-RuleHarnessBatchValidation {
             $details = "Missing target files after apply: $($missingTargets -join ', ')"
             [void]$results.Add([pscustomobject]@{
                 batchId    = $Batch.id
-                validation = 'inferred_structural_checks'
+                validation = 'inferred_validation'
                 status     = 'failed'
                 source     = 'inferred'
                 details    = $details
             })
             return [pscustomobject]@{
-                passed        = $false
-                findingsAfter = $BaselineStaticFindings
-                results       = @($results)
-                failureReason = 'inferred-check-failed'
+                passed         = $false
+                findingsAfter  = $BaselineStaticFindings
+                results        = @($results)
+                failureReason  = 'inferred-check-failed'
                 failureMessage = $details
-                failureSource = 'inferred'
+                failureSource  = 'inferred'
             }
         }
-        elseif (@($ValidationPlan.inferredChecks).Count -gt 0) {
+        [void]$checkNotes.Add('target_files_exist')
+
+        $featureNames = @(Get-RuleHarnessBatchFeatureNames -Batch $Batch)
+        $featureRootContracts = Test-RuleHarnessFeatureRootContracts -RepoRoot $RepoRoot -FeatureNames $featureNames
+        if (-not $featureRootContracts.passed) {
+            $details = "Missing root feature contracts after apply: $($featureRootContracts.missing -join ', ')"
             [void]$results.Add([pscustomobject]@{
                 batchId    = $Batch.id
-                validation = 'inferred_structural_checks'
-                status     = 'passed'
+                validation = 'inferred_validation'
+                status     = 'failed'
                 source     = 'inferred'
-                details    = "Checks=$((@($ValidationPlan.inferredChecks | ForEach-Object { $_.name }) -join ', '))"
+                details    = $details
             })
+            return [pscustomobject]@{
+                passed         = $false
+                findingsAfter  = $BaselineStaticFindings
+                results        = @($results)
+                failureReason  = 'inferred-check-failed'
+                failureMessage = $details
+                failureSource  = 'inferred'
+            }
         }
+        [void]$checkNotes.Add('feature_root_contract_present')
+
+        $ownerDocReferences = Test-RuleHarnessOwnerDocReferences -RepoRoot $RepoRoot -Config $Config
+        if (-not $ownerDocReferences.passed) {
+            $details = "Broken owner doc references after apply: $($ownerDocReferences.broken -join '; ')"
+            [void]$results.Add([pscustomobject]@{
+                batchId    = $Batch.id
+                validation = 'inferred_validation'
+                status     = 'failed'
+                source     = 'inferred'
+                details    = $details
+            })
+            return [pscustomobject]@{
+                passed         = $false
+                findingsAfter  = $BaselineStaticFindings
+                results        = @($results)
+                failureReason  = 'inferred-check-failed'
+                failureMessage = $details
+                failureSource  = 'inferred'
+            }
+        }
+        [void]$checkNotes.Add('owner_doc_references_resolve')
+
+        if (@($ValidationPlan.inferredChecks).Count -gt 0) {
+            [void]$checkNotes.Add('expected_findings_resolved')
+            [void]$checkNotes.Add('no_new_high_severity_findings')
+        }
+
+        [void]$results.Add([pscustomobject]@{
+            batchId    = $Batch.id
+            validation = 'inferred_validation'
+            status     = 'passed'
+            source     = [string]$ValidationPlan.source
+            details    = "Checks=$($checkNotes -join ', ')"
+        })
     }
     else {
         [void]$results.Add([pscustomobject]@{
             batchId    = $Batch.id
-            validation = 'targeted_tests'
+            validation = 'inferred_validation'
             status     = 'skipped'
             source     = 'rule-only'
             details    = 'rule-only batch'
@@ -2726,7 +2648,7 @@ function Get-RuleHarnessPreferredRepairStrategy {
     )
 
     switch ([string]$ScopeInfo.scopeType) {
-        'feature' { return 'Update the owner README or add a feature-local runner before retrying.' }
+        'feature' { return 'Update the owning rule doc or strengthen inferred validation coverage before retrying.' }
         'harness' { return 'Improve harness prompts, config, tests, or docs before retrying.' }
         default { return 'Amend the owning global rule doc before retrying.' }
     }
@@ -2925,7 +2847,7 @@ function Invoke-RuleHarnessBatchAttemptLoop {
         -ScopePath $scopeInfo.scopePath `
         -Symptoms $failureMessage `
         -PreferredRepairStrategy (Get-RuleHarnessPreferredRepairStrategy -ScopeInfo $scopeInfo) `
-        -ValidationHints @($ValidationPlan.scripts + $ValidationPlan.featureTestAssets + $ValidationPlan.registryHints) `
+        -ValidationHints @(@($ValidationPlan.featureTestAssets) + @($ValidationPlan.checks | ForEach-Object { [string]$_.name })) `
         -Confidence ([string]$ValidationPlan.confidence) `
         -CommitSha $CommitSha `
         -PromotionTarget $scopeInfo.promotionTarget `
@@ -3155,21 +3077,6 @@ function Invoke-RuleHarnessMutationPlanCore {
     $historyState = Read-RuleHarnessHistoryState -RepoRoot $RepoRoot -Config $Config
     Write-Host "Rule harness history lookup finished. Entries: $($historyState.loadedEntryCount) GcRemoved: $($historyState.gcRemovedCount)"
 
-    Write-Host 'Rule harness validation registry lookup started.'
-    $validationRegistry = Get-RuleHarnessValidationRegistry -RepoRoot $RepoRoot -Config $Config
-    $validationRegistryCount = if ($null -ne $validationRegistry.features) { @($validationRegistry.features.PSObject.Properties).Count } else { 0 }
-    Write-Host "Rule harness validation registry lookup finished. Path: $($validationRegistry.relativePath) Features: $validationRegistryCount"
-    [void]$stageResults.Add((New-RuleHarnessStageResult `
-        -Stage 'validation_registry_lookup' `
-        -Status 'passed' `
-        -Attempted $true `
-        -Summary ("Loaded validation registry hints with {0} feature entries." -f $validationRegistryCount) `
-        -Details ([pscustomobject]@{
-            path = $validationRegistry.relativePath
-            featureCount = $validationRegistryCount
-            mode = 'optional-hints'
-        })))
-
     $memoryStore = Read-RuleHarnessMemoryStore -RepoRoot $RepoRoot -Config $Config
     $learningSettings = Get-RuleHarnessLearningSettings -Config $Config
 
@@ -3341,16 +3248,16 @@ function Invoke-RuleHarnessMutationPlanCore {
             continue
         }
 
-        $discoveredPlan = Get-RuleHarnessDiscoveredValidationPlan -Batch $batch -RepoRoot $RepoRoot -Config $Config -ValidationRegistry $validationRegistry
+        $discoveredPlan = Get-RuleHarnessDiscoveredValidationPlan -Batch $batch -RepoRoot $RepoRoot -Config $Config
         [void]$discoveredValidationPlans.Add($discoveredPlan)
-        [void]$decisionTrace.Add("Batch $($batch.id) capability discovery: source=$($discoveredPlan.source) confidence=$($discoveredPlan.confidence) scripts=$(@($discoveredPlan.scripts).Count) inferredChecks=$(@($discoveredPlan.inferredChecks).Count)")
-        if ($batch.kind -ne 'rule_fix' -and @($discoveredPlan.scripts).Count -eq 0) {
+        [void]$decisionTrace.Add("Batch $($batch.id) capability discovery: source=$($discoveredPlan.source) confidence=$($discoveredPlan.confidence) checks=$(@($discoveredPlan.checks).Count) inferredChecks=$(@($discoveredPlan.inferredChecks).Count)")
+        if ($batch.kind -ne 'rule_fix' -and [string]$discoveredPlan.confidence -ne 'high') {
             [void]$actionItems.Add((New-RuleHarnessActionItem `
-                -Kind 'increase-validation-confidence' `
+                -Kind 'increase-inference-coverage' `
                 -Severity $(if ([string]$discoveredPlan.confidence -eq 'low') { 'high' } else { 'medium' }) `
-                -Summary ("Add runnable feature validation for batch {0}" -f [string]$batch.id) `
-                -Details ("No `Tests/<Feature>/Run-*.ps1` runner was discovered. The harness will proceed with inferred checks and static scan. Confidence={0}." -f [string]$discoveredPlan.confidence) `
-                -RelatedPaths (Get-RuleHarnessCombinedPaths -Primary @($batch.targetFiles) -Secondary @($discoveredPlan.featureTestAssets + $discoveredPlan.registryHints))))
+                -Summary ("Increase inference coverage for batch {0}" -f [string]$batch.id) `
+                -Details ("Runnerless validation is relying on inferred checks only. Confidence={0}. Add stronger inferred signals or broader static coverage before trusting auto-apply." -f [string]$discoveredPlan.confidence) `
+                -RelatedPaths (Get-RuleHarnessCombinedPaths -Primary @($batch.targetFiles) -Secondary @($discoveredPlan.featureTestAssets))))
         }
 
         $ownershipAssessment = Get-RuleHarnessBatchOwnershipAssessment -Batch $batch -RepoRoot $RepoRoot -Config $Config
@@ -3362,6 +3269,22 @@ function Invoke-RuleHarnessMutationPlanCore {
                 kind         = $batch.kind
                 reason       = $ownershipAssessment.reason
                 reasonCode   = 'ownership-preflight-rejected'
+                status       = 'skipped'
+                fingerprint  = $fingerprint
+                attemptCount = [int]$historyEntry.attemptCount
+            }
+            [void]$skippedBatches.Add($skippedBatch)
+            [void]$actionItems.Add((Get-RuleHarnessActionItemForSkippedBatch -SkippedBatch $skippedBatch -PlannedBatch $batch -Config $Config))
+            continue
+        }
+
+        if ($batch.kind -ne 'rule_fix' -and [string]$discoveredPlan.confidence -eq 'low') {
+            $historyEntry = Set-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint -Status 'skipped' -Reason 'manual-validation-required'
+            $skippedBatch = [pscustomobject]@{
+                id           = $batch.id
+                kind         = $batch.kind
+                reason       = "Validation confidence is low for this runnerless batch. Manual validation is required before auto-apply. Source=$($discoveredPlan.source)"
+                reasonCode   = 'manual-validation-required'
                 status       = 'skipped'
                 fingerprint  = $fingerprint
                 attemptCount = [int]$historyEntry.attemptCount
