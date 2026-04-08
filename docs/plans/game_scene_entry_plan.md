@@ -1,22 +1,9 @@
 # 게임 씬 진입 계획 (Game Scene Entry Plan)
 
 > **마지막 업데이트**: 2026-04-08
-> **Phase 0~3 완료** — 컴파일 수정, Unit/Garage 통합, 소환 시스템 기본 구축, Wave/Enemy와 Unit 연결
-> **다음 작업**: Phase 4 — 재소환 시스템
+> 진행 상황: [`progress.md`](./progress.md)
 
 이 문서는 GameScene 진입 시점에 해야 할 작업들을 정의한다.
-
-### 현재 진행 상태
-
-| Phase | 상태 | 요약 |
-|---|---|---|
-| Phase 0: 씬 진입 전 | ✅ 완료 | GarageRoster 직렬화, Room 진입 시 동기화 |
-| Phase 1: GameScene 초기화 | ✅ 완료 | EventBus, Unit/Garage Bootstrap, Unit 스펙 계산 |
-| Phase 2: 소환 시스템 | 🟨 기본 구축 | SummonUnitUseCase, SummonPhotonAdapter, Energy 시스템 |
-| Phase 3: Wave/Enemy와 Unit 연결 | ✅ 완료 | GameStartEvent 조건 제거, Enemy → Unit 타겟팅, BattleEntity Combat 등록 |
-| Phase 4: 재소환 시스템 | 🔜 다음 | UnitDiedEvent 구독, 재소환 실행 |
-| Phase 5: 네트워크 동기화 | ⏸ 보류 | Late-join, BattleEntity 상태 동기화 |
-| Phase 6: 게임 종료 | ⏸ 보류 | Victory/Defeat, 결과 화면 |
 
 ---
 
