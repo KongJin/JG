@@ -142,6 +142,239 @@ function New-RuleHarnessFinding {
     }
 }
 
+function New-RuleHarnessStageResult {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Stage,
+        [Parameter(Mandatory)]
+        [string]$Status,
+        [Parameter(Mandatory)]
+        [bool]$Attempted,
+        [Parameter(Mandatory)]
+        [string]$Summary,
+        $Details = $null
+    )
+
+    [pscustomobject]@{
+        stage     = $Stage
+        status    = $Status
+        attempted = $Attempted
+        summary   = $Summary
+        details   = $Details
+    }
+}
+
+function New-RuleHarnessActionItem {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Kind,
+        [Parameter(Mandatory)]
+        [string]$Severity,
+        [Parameter(Mandatory)]
+        [string]$Summary,
+        [Parameter(Mandatory)]
+        [string]$Details,
+        [string[]]$RelatedPaths = @()
+    )
+
+    [pscustomobject]@{
+        kind         = $Kind
+        severity     = $Severity
+        summary      = $Summary
+        details      = $Details
+        relatedPaths = @($RelatedPaths | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Select-Object -Unique)
+    }
+}
+
+function Get-RuleHarnessFeedbackPathHints {
+    param(
+        [string]$ReportPathHint,
+        [string]$SummaryPathHint,
+        [string]$LogPathHint
+    )
+
+    $parts = [System.Collections.Generic.List[string]]::new()
+    if (-not [string]::IsNullOrWhiteSpace($ReportPathHint)) {
+        [void]$parts.Add("report: $ReportPathHint")
+    }
+    if (-not [string]::IsNullOrWhiteSpace($SummaryPathHint)) {
+        [void]$parts.Add("summary: $SummaryPathHint")
+    }
+    if (-not [string]::IsNullOrWhiteSpace($LogPathHint)) {
+        [void]$parts.Add("log: $LogPathHint")
+    }
+
+    if ($parts.Count -eq 0) {
+        return $null
+    }
+
+    "Inspect " + ($parts -join ', ')
+}
+
+function Get-RuleHarnessCombinedPaths {
+    param(
+        [string[]]$Primary = @(),
+        [string[]]$Secondary = @()
+    )
+
+    @(@($Primary) + @($Secondary) | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Select-Object -Unique)
+}
+
+function Merge-RuleHarnessActionItems {
+    param(
+        [object[]]$Items
+    )
+
+    $merged = [System.Collections.Generic.List[object]]::new()
+    $seen = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($item in @($Items)) {
+        if ($null -eq $item) {
+            continue
+        }
+
+        $key = '{0}|{1}|{2}|{3}' -f [string]$item.kind, [string]$item.severity, [string]$item.summary, [string]$item.details
+        if ($seen.Add($key)) {
+            [void]$merged.Add($item)
+        }
+    }
+
+    @($merged)
+}
+
+function Get-RuleHarnessActionItemsForFindings {
+    param(
+        [AllowEmptyCollection()]
+        [object[]]$Findings,
+        [string]$ReportPathHint,
+        [string]$SummaryPathHint,
+        [string]$LogPathHint
+    )
+
+    $pathHint = Get-RuleHarnessFeedbackPathHints -ReportPathHint $ReportPathHint -SummaryPathHint $SummaryPathHint -LogPathHint $LogPathHint
+    $items = [System.Collections.Generic.List[object]]::new()
+    foreach ($finding in @($Findings)) {
+        $relatedPaths = [System.Collections.Generic.List[string]]::new()
+        if (-not [string]::IsNullOrWhiteSpace([string]$finding.ownerDoc)) {
+            [void]$relatedPaths.Add([string]$finding.ownerDoc)
+        }
+        foreach ($evidence in @($finding.evidence)) {
+            if ($null -ne $evidence -and -not [string]::IsNullOrWhiteSpace([string]$evidence.path)) {
+                [void]$relatedPaths.Add([string]$evidence.path)
+            }
+        }
+
+        if ([string]$finding.source -eq 'harness') {
+            $details = [string]$finding.message
+            if ($pathHint) {
+                $details = "$details. $pathHint."
+            }
+
+            $kind = if ([string]$finding.title -match 'agent review failed') { 'check-llm-connectivity' } else { 'check-harness-stage' }
+            [void]$items.Add((New-RuleHarnessActionItem `
+                -Kind $kind `
+                -Severity ([string]$finding.severity) `
+                -Summary ([string]$finding.title) `
+                -Details $details `
+                -RelatedPaths @($relatedPaths)))
+            continue
+        }
+
+        if ([string]$finding.remediationKind -eq 'rule_fix') {
+            $details = [string]$finding.message
+            if ($pathHint) {
+                $details = "$details. $pathHint."
+            }
+
+            [void]$items.Add((New-RuleHarnessActionItem `
+                -Kind 'update-owner-doc' `
+                -Severity ([string]$finding.severity) `
+                -Summary ("Update {0}" -f [string]$finding.ownerDoc) `
+                -Details $details `
+                -RelatedPaths @($relatedPaths)))
+        }
+    }
+
+    Merge-RuleHarnessActionItems -Items @($items)
+}
+
+function Get-RuleHarnessActionItemForSkippedBatch {
+    param(
+        [Parameter(Mandatory)]
+        [object]$SkippedBatch,
+        [object]$PlannedBatch,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $reasonCode = [string]$SkippedBatch.reasonCode
+    $targetFiles = if ($null -ne $PlannedBatch -and $PlannedBatch.PSObject.Properties.Name -contains 'targetFiles') {
+        @($PlannedBatch.targetFiles)
+    }
+    else {
+        @()
+    }
+
+    switch ($reasonCode) {
+        'missing-validation-registry' {
+            return New-RuleHarnessActionItem `
+                -Kind 'extend-validation-registry' `
+                -Severity 'high' `
+                -Summary ("Add validation coverage for batch {0}" -f [string]$SkippedBatch.id) `
+                -Details ("Targeted validation is missing. Add or fix an entry in {0} so this code batch can run feature validation." -f [string]$Config.validation.registryPath) `
+                -RelatedPaths (Get-RuleHarnessCombinedPaths -Primary $targetFiles -Secondary @([string]$Config.validation.registryPath))
+        }
+        'no-targeted-tests' {
+            return New-RuleHarnessActionItem `
+                -Kind 'add-targeted-tests' `
+                -Severity 'high' `
+                -Summary ("Add targeted validation for batch {0}" -f [string]$SkippedBatch.id) `
+                -Details ("The validation registry resolved no runnable scripts for this batch. Add targeted tests or smoke scripts referenced by {0}." -f [string]$Config.validation.registryPath) `
+                -RelatedPaths (Get-RuleHarnessCombinedPaths -Primary $targetFiles -Secondary @([string]$Config.validation.registryPath))
+        }
+        'dirty-target-files' {
+            $targetsText = if ($SkippedBatch.PSObject.Properties.Name -contains 'targets' -and @($SkippedBatch.targets).Count -gt 0) {
+                @($SkippedBatch.targets) -join ', '
+            }
+            else {
+                @($targetFiles) -join ', '
+            }
+            return New-RuleHarnessActionItem `
+                -Kind 'clean-target-files' `
+                -Severity 'medium' `
+                -Summary ("Clean target files before rerunning batch {0}" -f [string]$SkippedBatch.id) `
+                -Details ("The batch was suppressed because target files are already dirty: {0}." -f $targetsText) `
+                -RelatedPaths (Get-RuleHarnessCombinedPaths -Primary $targetFiles -Secondary @($SkippedBatch.targets))
+        }
+        'ownership-preflight-rejected' {
+            return New-RuleHarnessActionItem `
+                -Kind 'fix-ownership-scope' `
+                -Severity 'high' `
+                -Summary ("Fix ownership mismatch for batch {0}" -f [string]$SkippedBatch.id) `
+                -Details ([string]$SkippedBatch.reason) `
+                -RelatedPaths $targetFiles
+        }
+        'risk-threshold-exceeded' {
+            return New-RuleHarnessActionItem `
+                -Kind 'review-risk-threshold' `
+                -Severity 'medium' `
+                -Summary ("Review risk threshold for batch {0}" -f [string]$SkippedBatch.id) `
+                -Details ([string]$SkippedBatch.reason) `
+                -RelatedPaths $targetFiles
+        }
+        'max-attempts-reached' {
+            return New-RuleHarnessActionItem `
+                -Kind 'inspect-repeated-failure' `
+                -Severity 'medium' `
+                -Summary ("Inspect repeated failures for batch {0}" -f [string]$SkippedBatch.id) `
+                -Details ("This batch already hit the retry limit on the current commit. Check validation failures or history before retrying.") `
+                -RelatedPaths $targetFiles
+        }
+        default {
+            return $null
+        }
+    }
+}
+
 function Get-RuleHarnessFeatureDirectories {
     param(
         [Parameter(Mandatory)]
@@ -173,17 +406,122 @@ function Get-RuleHarnessScopeDocs {
         }
     }
 
+    foreach ($doc in Get-RuleHarnessClaudeReferencedDocs -RepoRoot $RepoRoot) {
+        [void]$docs.Add($doc)
+    }
+
+    @($docs | Sort-Object)
+}
+
+function Get-RuleHarnessClaudeReferencedDocs {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
     $claude = Join-Path $RepoRoot 'CLAUDE.md'
-    if (Test-Path -LiteralPath $claude) {
-        foreach ($target in Get-RuleHarnessMarkdownTargets -Content (Get-Content -Path $claude -Raw)) {
-            $resolved = Resolve-RuleHarnessTargetPath -RepoRoot $RepoRoot -SourcePath 'CLAUDE.md' -Target $target
-            if ($null -ne $resolved) {
-                [void]$docs.Add($resolved.RelativePath)
-            }
+    if (-not (Test-Path -LiteralPath $claude)) {
+        return @()
+    }
+
+    $docs = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($target in Get-RuleHarnessMarkdownTargets -Content (Get-Content -Path $claude -Raw)) {
+        $resolved = Resolve-RuleHarnessTargetPath -RepoRoot $RepoRoot -SourcePath 'CLAUDE.md' -Target $target
+        if ($null -ne $resolved) {
+            [void]$docs.Add($resolved.RelativePath)
         }
     }
 
     @($docs | Sort-Object)
+}
+
+function Get-RuleHarnessPreferredClaudeDoc {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string[]]$Keywords
+    )
+
+    $claude = Join-Path $RepoRoot 'CLAUDE.md'
+    $referencedDocs = @(Get-RuleHarnessClaudeReferencedDocs -RepoRoot $RepoRoot)
+    if (-not (Test-Path -LiteralPath $claude)) {
+        return 'CLAUDE.md'
+    }
+
+    $keywordPattern = if (@($Keywords).Count -gt 0) {
+        ($Keywords | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | ForEach-Object { [regex]::Escape([string]$_) }) -join '|'
+    }
+    else {
+        $null
+    }
+
+    foreach ($line in Get-Content -Path $claude) {
+        if (-not [string]::IsNullOrWhiteSpace($keywordPattern) -and $line -notmatch $keywordPattern) {
+            continue
+        }
+
+        foreach ($target in Get-RuleHarnessMarkdownTargets -Content $line) {
+            $resolved = Resolve-RuleHarnessTargetPath -RepoRoot $RepoRoot -SourcePath 'CLAUDE.md' -Target $target
+            if ($null -ne $resolved -and $resolved.Exists) {
+                return $resolved.RelativePath
+            }
+        }
+    }
+
+    foreach ($doc in @($referencedDocs)) {
+        foreach ($keyword in @($Keywords)) {
+            if ($doc -match ([regex]::Escape([string]$keyword))) {
+                return $doc
+            }
+        }
+    }
+
+    return 'CLAUDE.md'
+}
+
+function Get-RuleHarnessArchitectureOwnerDoc {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    Get-RuleHarnessPreferredClaudeDoc `
+        -RepoRoot $RepoRoot `
+        -Keywords @('architecture', '피처 경계', '레이어', '포트', '네이밍', 'folders', 'dependencies', 'folder')
+}
+
+function Get-RuleHarnessGovernanceOwnerDoc {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    Get-RuleHarnessPreferredClaudeDoc `
+        -RepoRoot $RepoRoot `
+        -Keywords @('work_principles', '문서 소유권', 'SSOT', '운영 원칙', 'ownership', 'governance')
+}
+
+function Test-RuleHarnessGlobalRuleDoc {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string]$RelativePath
+    )
+
+    $normalized = $RelativePath.Replace('\', '/')
+    if ($normalized -eq 'CLAUDE.md') {
+        return $true
+    }
+
+    if ($normalized -like 'Assets/Scripts/Features/*/README.md' -or
+        $normalized -eq 'Assets/Scripts/Shared/README.md' -or
+        $normalized -eq 'Assets/Editor/UnityMcp/README.md') {
+        return $false
+    }
+
+    $normalized -in @(Get-RuleHarnessClaudeReferencedDocs -RepoRoot $RepoRoot)
 }
 
 function Get-RuleHarnessScriptFiles {
@@ -630,6 +968,438 @@ function Get-RuleHarnessValidationRegistry {
     }
 }
 
+function Get-RuleHarnessMemoryStorePath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $relativePath = if ($Config.PSObject.Properties.Name -contains 'learning' -and $Config.learning.PSObject.Properties.Name -contains 'memoryPath') {
+        [string]$Config.learning.memoryPath
+    }
+    else {
+        'tools/rule-harness/memory/advisory-memory.json'
+    }
+
+    [pscustomobject]@{
+        relativePath = $relativePath.Replace('\', '/')
+        fullPath     = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $relativePath))
+    }
+}
+
+function Read-RuleHarnessMemoryStore {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $pathInfo = Get-RuleHarnessMemoryStorePath -RepoRoot $RepoRoot -Config $Config
+    if (-not (Test-Path -LiteralPath $pathInfo.fullPath)) {
+        return [pscustomobject]@{
+            path          = $pathInfo.fullPath
+            relativePath  = $pathInfo.relativePath
+            schemaVersion = 1
+            entries       = [System.Collections.Generic.List[object]]::new()
+            dirty         = $false
+        }
+    }
+
+    $raw = Get-Content -Path $pathInfo.fullPath -Raw | ConvertFrom-Json
+    $entries = [System.Collections.Generic.List[object]]::new()
+    foreach ($entry in @($raw.entries)) {
+        [void]$entries.Add($entry)
+    }
+
+    [pscustomobject]@{
+        path          = $pathInfo.fullPath
+        relativePath  = $pathInfo.relativePath
+        schemaVersion = if ($raw.PSObject.Properties.Name -contains 'schemaVersion') { [int]$raw.schemaVersion } else { 1 }
+        entries       = $entries
+        dirty         = $false
+    }
+}
+
+function Save-RuleHarnessMemoryStore {
+    param(
+        [Parameter(Mandatory)]
+        [object]$MemoryStore
+    )
+
+    $parent = Split-Path -Parent $MemoryStore.path
+    if (-not (Test-Path -LiteralPath $parent)) {
+        New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    }
+
+    $payload = [pscustomobject]@{
+        schemaVersion = $MemoryStore.schemaVersion
+        entries       = @($MemoryStore.entries | Sort-Object scopePath, signature)
+    }
+    $payload | ConvertTo-Json -Depth 50 | Set-Content -Path $MemoryStore.path -Encoding UTF8
+    $MemoryStore.dirty = $false
+}
+
+function Get-RuleHarnessScopeInfo {
+    param(
+        [string]$RepoRoot,
+        [string]$OwnerDoc,
+        [string[]]$TargetFiles = @()
+    )
+
+    $scopePath = if (-not [string]::IsNullOrWhiteSpace($OwnerDoc)) { [string]$OwnerDoc } elseif (@($TargetFiles).Count -gt 0) { [string]$TargetFiles[0] } else { 'CLAUDE.md' }
+    $scopeType = 'global'
+    $promotionTarget = $scopePath
+
+    if ($scopePath -match '^Assets/Scripts/Features/(?<feature>[^/]+)/README\.md$') {
+        $scopeType = 'feature'
+        $promotionTarget = $scopePath
+    }
+    elseif ($scopePath -like 'Assets/Scripts/Shared/*') {
+        $scopeType = 'shared'
+        $promotionTarget = 'Assets/Scripts/Shared/README.md'
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($RepoRoot) -and (Test-RuleHarnessGlobalRuleDoc -RepoRoot $RepoRoot -RelativePath $scopePath)) {
+        $scopeType = 'global'
+        $governanceDoc = Get-RuleHarnessGovernanceOwnerDoc -RepoRoot $RepoRoot
+        $architectureDoc = Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot
+        if ($scopePath -eq $architectureDoc -or $scopePath -eq 'CLAUDE.md') {
+            $promotionTarget = $governanceDoc
+        }
+        else {
+            $promotionTarget = $scopePath
+        }
+    }
+    elseif ($scopePath -eq 'CLAUDE.md') {
+        $scopeType = 'global'
+        $promotionTarget = if (-not [string]::IsNullOrWhiteSpace($RepoRoot)) { Get-RuleHarnessGovernanceOwnerDoc -RepoRoot $RepoRoot } else { 'CLAUDE.md' }
+    }
+    elseif ($scopePath -like 'tools/rule-harness/*') {
+        $scopeType = 'harness'
+        $promotionTarget = 'tools/rule-harness/README.md'
+    }
+    elseif (@($TargetFiles | Where-Object { $_ -like 'tools/rule-harness/*' }).Count -gt 0) {
+        $scopeType = 'harness'
+        $promotionTarget = 'tools/rule-harness/README.md'
+    }
+
+    [pscustomobject]@{
+        scopeType       = $scopeType
+        scopePath       = $scopePath
+        promotionTarget = $promotionTarget
+    }
+}
+
+function Get-RuleHarnessLearningSettings {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $learningConfig = if ($Config.PSObject.Properties.Name -contains 'learning') { $Config.learning } else { [pscustomobject]@{} }
+    [pscustomobject]@{
+        maxSameRunAttempts      = if ($learningConfig.PSObject.Properties.Name -contains 'maxSameRunAttempts') { [int]$learningConfig.maxSameRunAttempts } else { 2 }
+        promotionMinHits        = if ($learningConfig.PSObject.Properties.Name -contains 'promotionMinHits') { [int]$learningConfig.promotionMinHits } else { 3 }
+        promotionMinDistinctCommits = if ($learningConfig.PSObject.Properties.Name -contains 'promotionMinDistinctCommits') { [int]$learningConfig.promotionMinDistinctCommits } else { 2 }
+    }
+}
+
+function Get-RuleHarnessFeatureTestAssets {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string[]]$FeatureNames
+    )
+
+    $assets = [System.Collections.Generic.List[string]]::new()
+    foreach ($featureName in @($FeatureNames | Sort-Object -Unique)) {
+        $featureTestRoot = Join-Path $RepoRoot "Tests/$featureName"
+        if (-not (Test-Path -LiteralPath $featureTestRoot)) {
+            continue
+        }
+
+        foreach ($file in Get-ChildItem -LiteralPath $featureTestRoot -Recurse -File -ErrorAction SilentlyContinue) {
+            [void]$assets.Add((ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $file.FullName))
+        }
+    }
+
+    @($assets | Sort-Object -Unique)
+}
+
+function Get-RuleHarnessInferredStructuralChecks {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Batch
+    )
+
+    $checks = [System.Collections.Generic.List[object]]::new()
+    if ($Batch.kind -ne 'rule_fix') {
+        [void]$checks.Add([pscustomobject]@{
+            name     = 'target_files_exist'
+            source   = 'inferred'
+            runnable = $true
+            details  = 'Ensure all mutation target files still exist after apply.'
+        })
+        [void]$checks.Add([pscustomobject]@{
+            name     = 'expected_findings_resolved'
+            source   = 'inferred'
+            runnable = $true
+            details  = 'Static scan must resolve the expected findings without introducing new high-severity findings.'
+        })
+    }
+
+    @($checks)
+}
+
+function Get-RuleHarnessDiscoveredValidationPlan {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Batch,
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config,
+        [Parameter(Mandatory)]
+        [object]$ValidationRegistry
+    )
+
+    $scopeInfo = Get-RuleHarnessScopeInfo -RepoRoot $RepoRoot -OwnerDoc ([string](@($Batch.ownerDocs)[0])) -TargetFiles @($Batch.targetFiles)
+    if ($Batch.kind -eq 'rule_fix') {
+        return [pscustomobject]@{
+            batchId            = $Batch.id
+            scopeType          = $scopeInfo.scopeType
+            scopePath          = $scopeInfo.scopePath
+            source             = 'rule-only'
+            confidence         = 'high'
+            runnable           = $false
+            scripts            = @()
+            featureTestAssets  = @()
+            inferredChecks     = @()
+            registryHints      = @()
+            checks             = @()
+            status             = 'rule_only'
+            reasonCode         = 'rule-only'
+        }
+    }
+
+    $featureNames = @($Batch.featureNames | Sort-Object -Unique)
+    $runnerScripts = @(Get-RuleHarnessTargetedTestScripts -RepoRoot $RepoRoot -FeatureNames $featureNames)
+    $featureTestAssets = @(Get-RuleHarnessFeatureTestAssets -RepoRoot $RepoRoot -FeatureNames $featureNames)
+    $registryHints = [System.Collections.Generic.List[string]]::new()
+    $registryScripts = [System.Collections.Generic.List[string]]::new()
+    foreach ($featureName in $featureNames) {
+        $featureProperty = $ValidationRegistry.features.PSObject.Properties[$featureName]
+        if ($null -eq $featureProperty) {
+            continue
+        }
+
+        [void]$registryHints.Add("$($ValidationRegistry.relativePath):$featureName")
+        $entry = $featureProperty.Value
+        foreach ($scriptPath in @($entry.scripts) + @($entry.smoke)) {
+            if ([string]::IsNullOrWhiteSpace([string]$scriptPath)) {
+                continue
+            }
+
+            $fullPath = Join-Path $RepoRoot ([string]$scriptPath)
+            if (Test-Path -LiteralPath $fullPath) {
+                [void]$registryScripts.Add([System.IO.Path]::GetFullPath($fullPath))
+            }
+        }
+    }
+
+    $selectedScripts = if (@($runnerScripts).Count -gt 0) {
+        @($runnerScripts)
+    }
+    else {
+        @($registryScripts | Sort-Object -Unique)
+    }
+    $inferredChecks = @(Get-RuleHarnessInferredStructuralChecks -Batch $Batch)
+    $source = if (@($runnerScripts).Count -gt 0) {
+        'feature_runner'
+    }
+    elseif (@($registryScripts).Count -gt 0) {
+        'registry_hint'
+    }
+    elseif (@($featureTestAssets).Count -gt 0) {
+        'feature_test_assets'
+    }
+    else {
+        'inferred'
+    }
+    $confidence = if (@($selectedScripts).Count -gt 0) {
+        'high'
+    }
+    elseif (@($featureTestAssets).Count -gt 0) {
+        'medium'
+    }
+    else {
+        'low'
+    }
+
+    $checks = [System.Collections.Generic.List[object]]::new()
+    foreach ($script in @($selectedScripts)) {
+        [void]$checks.Add([pscustomobject]@{
+            name     = 'targeted_script'
+            source   = $source
+            runnable = $true
+            details  = $script
+        })
+    }
+    foreach ($check in $inferredChecks) {
+        [void]$checks.Add($check)
+    }
+
+    [pscustomobject]@{
+        batchId            = $Batch.id
+        scopeType          = $scopeInfo.scopeType
+        scopePath          = $scopeInfo.scopePath
+        source             = $source
+        confidence         = $confidence
+        runnable           = (@($selectedScripts).Count -gt 0)
+        scripts            = @($selectedScripts | Sort-Object -Unique)
+        featureTestAssets  = @($featureTestAssets)
+        inferredChecks     = @($inferredChecks)
+        registryHints      = @($registryHints)
+        checks             = @($checks)
+        status             = 'ok'
+        reasonCode         = $null
+    }
+}
+
+function Get-RuleHarnessFailureSignature {
+    param(
+        [Parameter(Mandatory)]
+        [string]$FailureReason,
+        [string]$PrimarySource,
+        [string]$OwnerDoc,
+        [string]$BatchKind,
+        [string]$Message
+    )
+
+    $normalizedMessage = if ([string]::IsNullOrWhiteSpace($Message)) {
+        ''
+    }
+    else {
+        ([regex]::Replace([string]$Message, '\d+', '#')).Trim()
+    }
+
+    '{0}|{1}|{2}|{3}|{4}' -f $FailureReason, $PrimarySource, $OwnerDoc, $BatchKind, $normalizedMessage
+}
+
+function Find-RuleHarnessMemoryEntry {
+    param(
+        [Parameter(Mandatory)]
+        [object]$MemoryStore,
+        [Parameter(Mandatory)]
+        [string]$Signature,
+        [Parameter(Mandatory)]
+        [string]$ScopePath
+    )
+
+    $matches = @($MemoryStore.entries | Where-Object {
+        [string]$_.signature -eq $Signature -and [string]$_.scopePath -eq $ScopePath
+    } | Select-Object -First 1)
+    if ($matches.Count -eq 0) {
+        return $null
+    }
+
+    $matches[0]
+}
+
+function Update-RuleHarnessMemoryStoreEntry {
+    param(
+        [Parameter(Mandatory)]
+        [object]$MemoryStore,
+        [Parameter(Mandatory)]
+        [string]$Signature,
+        [Parameter(Mandatory)]
+        [string]$ScopeType,
+        [Parameter(Mandatory)]
+        [string]$ScopePath,
+        [Parameter(Mandatory)]
+        [string]$Symptoms,
+        [Parameter(Mandatory)]
+        [string]$PreferredRepairStrategy,
+        [string[]]$ValidationHints = @(),
+        [Parameter(Mandatory)]
+        [string]$Confidence,
+        [Parameter(Mandatory)]
+        [string]$CommitSha,
+        [Parameter(Mandatory)]
+        [string]$PromotionTarget,
+        [Parameter(Mandatory)]
+        [string]$Status
+    )
+
+    $existing = Find-RuleHarnessMemoryEntry -MemoryStore $MemoryStore -Signature $Signature -ScopePath $ScopePath
+    $now = (Get-Date).ToUniversalTime().ToString('o')
+    if ($null -eq $existing) {
+        $existing = [pscustomobject]@{
+            signature               = $Signature
+            scopeType               = $ScopeType
+            scopePath               = $ScopePath
+            symptoms                = $Symptoms
+            preferredRepairStrategy = $PreferredRepairStrategy
+            validationHints         = @($ValidationHints | Select-Object -Unique)
+            confidence              = $Confidence
+            hitCount                = 1
+            distinctCommitCount     = 1
+            commitShas              = @($CommitSha)
+            lastSeen                = $now
+            promotionTarget         = $PromotionTarget
+            status                  = $Status
+        }
+        [void]$MemoryStore.entries.Add($existing)
+    }
+    else {
+        $existing.symptoms = $Symptoms
+        $existing.preferredRepairStrategy = $PreferredRepairStrategy
+        $existing.validationHints = @(@($existing.validationHints) + @($ValidationHints) | Select-Object -Unique)
+        $existing.confidence = $Confidence
+        $existing.hitCount = [int]$existing.hitCount + 1
+        $commitShas = @(@($existing.commitShas) + @($CommitSha) | Select-Object -Unique)
+        $existing.commitShas = $commitShas
+        $existing.distinctCommitCount = @($commitShas).Count
+        $existing.lastSeen = $now
+        $existing.promotionTarget = $PromotionTarget
+        $existing.status = $Status
+    }
+
+    $MemoryStore.dirty = $true
+    $existing
+}
+
+function Get-RuleHarnessPromotionCandidate {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Entry,
+        [Parameter(Mandatory)]
+        [string]$Rationale,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $settings = Get-RuleHarnessLearningSettings -Config $Config
+    if ([int]$Entry.hitCount -lt $settings.promotionMinHits -or [int]$Entry.distinctCommitCount -lt $settings.promotionMinDistinctCommits) {
+        return $null
+    }
+
+    [pscustomobject]@{
+        signature              = [string]$Entry.signature
+        scopeType              = [string]$Entry.scopeType
+        scopePath              = [string]$Entry.scopePath
+        targetDoc              = [string]$Entry.promotionTarget
+        rationale              = $Rationale
+        hitCount               = [int]$Entry.hitCount
+        distinctCommitCount    = [int]$Entry.distinctCommitCount
+        suggestedRuleTextScope = if ([string]$Entry.scopeType -eq 'feature') { 'owner-doc-amendment' } elseif ([string]$Entry.scopeType -eq 'harness') { 'harness-guidance-amendment' } else { 'global-rule-amendment' }
+        status                 = [string]$Entry.status
+    }
+}
+
 function Get-RuleHarnessRiskLabel {
     param(
         [int]$Score
@@ -682,7 +1452,7 @@ function Get-RuleHarnessBatchRiskAssessment {
         $score = if ($isScaffoldBatch) { [int]$scores.featureRootScaffold } else { [int]$scores.existingCodeFileEdit }
     }
 
-    if (@($Batch.targetFiles | Where-Object { $_ -like 'agent/*.md' }).Count -gt 0) {
+    if (@($Batch.targetFiles | Where-Object { Test-RuleHarnessGlobalRuleDoc -RepoRoot $RepoRoot -RelativePath ([string]$_) }).Count -gt 0) {
         $score += [int]$scores.agentDocPenalty
     }
 
@@ -704,6 +1474,8 @@ function Get-RuleHarnessBatchOwnershipAssessment {
         [Parameter(Mandatory)]
         [object]$Batch,
         [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
         [object]$Config
     )
 
@@ -721,6 +1493,8 @@ function Get-RuleHarnessBatchOwnershipAssessment {
             reason = 'Batch has no owner docs.'
         }
     }
+
+    $architectureOwnerDoc = Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot
 
     foreach ($targetPath in @($Batch.targetFiles)) {
         $normalized = $targetPath.Replace('\', '/')
@@ -743,10 +1517,11 @@ function Get-RuleHarnessBatchOwnershipAssessment {
         }
 
         if ($normalized -like 'Assets/Scripts/Shared/*') {
-            if (@($ownerDocs | Where-Object { $_ -notin @('Assets/Scripts/Shared/README.md', 'agent/architecture.md') }).Count -gt 0) {
+            $allowedOwnerDocs = @('Assets/Scripts/Shared/README.md', $architectureOwnerDoc) | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Select-Object -Unique
+            if (@($ownerDocs | Where-Object { $_ -notin $allowedOwnerDocs }).Count -gt 0) {
                 return [pscustomobject]@{
                     status = 'rejected'
-                    reason = "Shared path '$normalized' only allows Shared README or agent/architecture.md ownership."
+                    reason = "Shared path '$normalized' only allows Shared README or the current global architecture owner doc."
                 }
             }
             continue
@@ -772,11 +1547,11 @@ function Get-RuleHarnessBatchOwnershipAssessment {
             continue
         }
 
-        if ($normalized -like 'agent/*.md') {
+        if (Test-RuleHarnessGlobalRuleDoc -RepoRoot $RepoRoot -RelativePath $normalized) {
             if ($Batch.kind -ne 'rule_fix' -or @($Batch.sourceFindingTypes | Where-Object { $_ -notin @('broken_reference', 'doc_drift') }).Count -gt 0) {
                 return [pscustomobject]@{
                     status = 'rejected'
-                    reason = "Agent rule docs only allow rule-fix batches backed by broken_reference or doc_drift findings."
+                    reason = "Global rule docs only allow rule-fix batches backed by broken_reference or doc_drift findings."
                 }
             }
             continue
@@ -905,6 +1680,7 @@ function Get-RuleHarnessStaticFindings {
     )
 
     $findings = [System.Collections.Generic.List[object]]::new()
+    $architectureOwnerDoc = Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot
 
     foreach ($doc in Get-RuleHarnessScopeDocs -RepoRoot $RepoRoot -Config $Config) {
         $docFull = Join-Path $RepoRoot $doc
@@ -986,7 +1762,7 @@ function Get-RuleHarnessStaticFindings {
                 [void]$findings.Add((New-RuleHarnessFinding `
                     -FindingType 'code_violation' `
                     -Severity $Config.severityPolicy.unityInDomain `
-                    -OwnerDoc 'agent/architecture.md' `
+                    -OwnerDoc $architectureOwnerDoc `
                     -Title 'Framework API used in Domain' `
                     -Message "Domain layer file '$relative' references Unity or Photon APIs." `
                     -Evidence @([pscustomobject]@{ path = $relative; line = $line; snippet = (Get-RuleHarnessLineSnippet -Lines $lines -Line $line) }) `
@@ -1003,7 +1779,7 @@ function Get-RuleHarnessStaticFindings {
                 [void]$findings.Add((New-RuleHarnessFinding `
                     -FindingType 'code_violation' `
                     -Severity $Config.severityPolicy.unityInApplication `
-                    -OwnerDoc 'agent/architecture.md' `
+                    -OwnerDoc $architectureOwnerDoc `
                     -Title 'Unity API used in Application' `
                     -Message "Application layer file '$relative' appears to reference Unity or Photon API types." `
                     -Evidence @([pscustomobject]@{ path = $relative; line = $line; snippet = (Get-RuleHarnessLineSnippet -Lines $lines -Line $line) }) `
@@ -1108,8 +1884,13 @@ function Invoke-RuleHarnessChatCompletion {
 function ConvertTo-RuleHarnessReviewedFindings {
     param(
         [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
         [object[]]$Findings
     )
+
+    if ($null -eq $Findings -or @($Findings).Count -eq 0) {
+        return @()
+    }
 
     $normalized = [System.Collections.Generic.List[object]]::new()
     foreach ($finding in $Findings) {
@@ -1232,6 +2013,7 @@ function Get-RuleHarnessMutationState {
 function Invoke-RuleHarnessAgentReview {
     param(
         [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
         [object[]]$StaticFindings,
         [Parameter(Mandatory)]
         [string]$RepoRoot,
@@ -1243,6 +2025,10 @@ function Invoke-RuleHarnessAgentReview {
         [int]$TimeoutSec = 120,
         [string]$ReviewJsonPath
     )
+
+    if (@($StaticFindings).Count -eq 0) {
+        return @()
+    }
 
     if ($ReviewJsonPath) {
         return @((ConvertTo-RuleHarnessReviewedFindings -Findings @((Get-Content -Path $ReviewJsonPath -Raw | ConvertFrom-Json).findings)))
@@ -1336,6 +2122,8 @@ function Invoke-RuleHarnessDocSync {
 function Test-RuleHarnessDocAllowed {
     param(
         [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
         [string]$RelativePath,
         [Parameter(Mandatory)]
         [object]$Config
@@ -1346,7 +2134,11 @@ function Test-RuleHarnessDocAllowed {
         return $false
     }
 
-    Test-RuleHarnessWildcardMatch -Path $normalized -Patterns $Config.docs.allowlist
+    if (Test-RuleHarnessWildcardMatch -Path $normalized -Patterns $Config.docs.allowlist) {
+        return $true
+    }
+
+    $normalized -in @(Get-RuleHarnessClaudeReferencedDocs -RepoRoot $RepoRoot)
 }
 
 function Invoke-RuleHarnessDocEdits {
@@ -1373,7 +2165,7 @@ function Invoke-RuleHarnessDocEdits {
 
     foreach ($edit in $Edits) {
         $targetPath = [string]$edit.targetPath
-        if (-not (Test-RuleHarnessDocAllowed -RelativePath $targetPath -Config $Config)) {
+        if (-not (Test-RuleHarnessDocAllowed -RepoRoot $RepoRoot -RelativePath $targetPath -Config $Config)) {
             [void]$results.Add([pscustomobject]@{
                 targetPath = $targetPath
                 status     = 'rejected'
@@ -1504,6 +2296,7 @@ function New-RuleHarnessBatch {
 function Get-RuleHarnessPlannedBatches {
     param(
         [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
         [object[]]$ReviewedFindings,
         [Parameter(Mandatory)]
         [AllowEmptyCollection()]
@@ -1515,6 +2308,10 @@ function Get-RuleHarnessPlannedBatches {
     $batches = [System.Collections.Generic.List[object]]::new()
     $consumedFindingKeys = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     $counter = 1
+
+    if (@($ReviewedFindings).Count -eq 0 -and @($DocEdits).Count -eq 0) {
+        return @()
+    }
 
     foreach ($group in @($DocEdits | Group-Object targetPath)) {
         $batchId = 'batch-{0:d3}' -f $counter
@@ -1738,6 +2535,74 @@ function Invoke-RuleHarnessBatchOperations {
     }
 }
 
+function Invoke-RuleHarnessValidationScript {
+    param(
+        [Parameter(Mandatory)]
+        [string]$ScriptPath,
+        [Parameter(Mandatory)]
+        [string]$ValidationName,
+        [Parameter(Mandatory)]
+        [string]$BatchId,
+        [Parameter(Mandatory)]
+        [string]$Source,
+        [Parameter(Mandatory)]
+        [string]$FailureReason,
+        [string]$Label
+    )
+
+    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    try {
+        & powershell -NoProfile -ExecutionPolicy Bypass -File $ScriptPath | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "$ValidationName script exited with code $LASTEXITCODE."
+        }
+
+        $details = if ([string]::IsNullOrWhiteSpace($Label)) {
+            "ElapsedMs=$($stopwatch.ElapsedMilliseconds)"
+        }
+        else {
+            "$Label ElapsedMs=$($stopwatch.ElapsedMilliseconds)"
+        }
+
+        return [pscustomobject]@{
+            passed         = $true
+            result         = [pscustomobject]@{
+                batchId    = $BatchId
+                validation = $ValidationName
+                status     = 'passed'
+                source     = $Source
+                details    = $details
+            }
+            failureReason  = $null
+            failureMessage = $null
+            failureSource  = $null
+        }
+    }
+    catch {
+        $failureMessage = $_.Exception.Message
+        $details = if ([string]::IsNullOrWhiteSpace($Label)) {
+            $failureMessage
+        }
+        else {
+            "${Label}: $failureMessage"
+        }
+
+        return [pscustomobject]@{
+            passed         = $false
+            result         = [pscustomobject]@{
+                batchId    = $BatchId
+                validation = $ValidationName
+                status     = 'failed'
+                source     = $Source
+                details    = $details
+            }
+            failureReason  = $FailureReason
+            failureMessage = $failureMessage
+            failureSource  = $ScriptPath
+        }
+    }
+}
+
 function Invoke-RuleHarnessBatchValidation {
     param(
         [Parameter(Mandatory)]
@@ -1747,93 +2612,103 @@ function Invoke-RuleHarnessBatchValidation {
         [Parameter(Mandatory)]
         [object]$Config,
         [Parameter(Mandatory)]
-        [object]$TargetedValidationPlan,
+        [object]$ValidationPlan,
         [Parameter(Mandatory)]
         [object[]]$BaselineStaticFindings
     )
 
     $results = [System.Collections.Generic.List[object]]::new()
+    [void]$results.Add([pscustomobject]@{
+        batchId    = $Batch.id
+        validation = 'discovered_validation_plan'
+        status     = 'passed'
+        source     = [string]$ValidationPlan.source
+        details    = "Confidence=$($ValidationPlan.confidence) Runnable=$($ValidationPlan.runnable) Scripts=$(@($ValidationPlan.scripts).Count) InferredChecks=$(@($ValidationPlan.inferredChecks).Count) FeatureAssets=$(@($ValidationPlan.featureTestAssets).Count) RegistryHints=$(@($ValidationPlan.registryHints).Count)"
+    })
 
     if ($Config.validation.runHarnessTests) {
         $scriptPath = Join-Path $RepoRoot ([string]$Config.validation.harnessTestScript)
-        $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-        try {
-            & powershell -NoProfile -ExecutionPolicy Bypass -File $scriptPath | Out-Null
-            if ($LASTEXITCODE -ne 0) {
-                throw "Harness test script exited with code $LASTEXITCODE."
-            }
-            [void]$results.Add([pscustomobject]@{
-                batchId    = $Batch.id
-                validation = 'rule_harness_tests'
-                status     = 'passed'
-                source     = [string]$Config.validation.harnessTestScript
-                details    = "ElapsedMs=$($stopwatch.ElapsedMilliseconds)"
-            })
-        }
-        catch {
-            [void]$results.Add([pscustomobject]@{
-                batchId    = $Batch.id
-                validation = 'rule_harness_tests'
-                status     = 'failed'
-                source     = [string]$Config.validation.harnessTestScript
-                details    = $_.Exception.Message
-            })
+        $scriptResult = Invoke-RuleHarnessValidationScript `
+            -ScriptPath $scriptPath `
+            -ValidationName 'rule_harness_tests' `
+            -BatchId ([string]$Batch.id) `
+            -Source ([string]$Config.validation.harnessTestScript) `
+            -FailureReason 'rule-harness-tests-failed'
+        [void]$results.Add($scriptResult.result)
+        if (-not $scriptResult.passed) {
             return [pscustomobject]@{
                 passed        = $false
                 findingsAfter = $BaselineStaticFindings
                 results       = @($results)
-                failureReason = 'rule-harness-tests-failed'
+                failureReason = [string]$scriptResult.failureReason
+                failureMessage = [string]$scriptResult.failureMessage
+                failureSource = [string]$scriptResult.failureSource
             }
         }
     }
 
     if ($Batch.kind -ne 'rule_fix') {
-        if ($TargetedValidationPlan.status -ne 'ok' -or @($TargetedValidationPlan.scripts).Count -eq 0) {
+        if (@($ValidationPlan.scripts).Count -eq 0) {
             [void]$results.Add([pscustomobject]@{
                 batchId    = $Batch.id
                 validation = 'targeted_tests'
                 status     = 'skipped'
-                source     = [string]$TargetedValidationPlan.source
-                details    = [string]$TargetedValidationPlan.reasonCode
+                source     = [string]$ValidationPlan.source
+                details    = 'No runnable feature-local runner was discovered; relying on inferred structural checks and static scan.'
+            })
+        }
+        else {
+            foreach ($script in @($ValidationPlan.scripts)) {
+                $scriptResult = Invoke-RuleHarnessValidationScript `
+                    -ScriptPath $script `
+                    -ValidationName 'targeted_tests' `
+                    -BatchId ([string]$Batch.id) `
+                    -Source ([string]$ValidationPlan.source) `
+                    -FailureReason 'targeted-tests-failed' `
+                    -Label (Split-Path -Leaf $script)
+                [void]$results.Add($scriptResult.result)
+                if (-not $scriptResult.passed) {
+                    return [pscustomobject]@{
+                        passed        = $false
+                        findingsAfter = $BaselineStaticFindings
+                        results       = @($results)
+                        failureReason = [string]$scriptResult.failureReason
+                        failureMessage = [string]$scriptResult.failureMessage
+                        failureSource = [string]$scriptResult.failureSource
+                    }
+                }
+            }
+        }
+
+        $missingTargets = @($Batch.targetFiles | Where-Object {
+            -not (Test-Path -LiteralPath (Join-Path $RepoRoot ([string]$_)))
+        })
+        if ($missingTargets.Count -gt 0) {
+            $details = "Missing target files after apply: $($missingTargets -join ', ')"
+            [void]$results.Add([pscustomobject]@{
+                batchId    = $Batch.id
+                validation = 'inferred_structural_checks'
+                status     = 'failed'
+                source     = 'inferred'
+                details    = $details
             })
             return [pscustomobject]@{
                 passed        = $false
                 findingsAfter = $BaselineStaticFindings
                 results       = @($results)
-                failureReason = [string]$TargetedValidationPlan.reasonCode
+                failureReason = 'inferred-check-failed'
+                failureMessage = $details
+                failureSource = 'inferred'
             }
         }
-
-        foreach ($script in @($TargetedValidationPlan.scripts)) {
-            $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-            try {
-                & powershell -NoProfile -ExecutionPolicy Bypass -File $script | Out-Null
-                if ($LASTEXITCODE -ne 0) {
-                    throw "Targeted test script exited with code $LASTEXITCODE."
-                }
-                [void]$results.Add([pscustomobject]@{
-                    batchId    = $Batch.id
-                    validation = 'targeted_tests'
-                    status     = 'passed'
-                    source     = [string]$TargetedValidationPlan.source
-                    details    = "$(Split-Path -Leaf $script) ElapsedMs=$($stopwatch.ElapsedMilliseconds)"
-                })
-            }
-            catch {
-                [void]$results.Add([pscustomobject]@{
-                    batchId    = $Batch.id
-                    validation = 'targeted_tests'
-                    status     = 'failed'
-                    source     = [string]$TargetedValidationPlan.source
-                    details    = "$(Split-Path -Leaf $script): $($_.Exception.Message)"
-                })
-                return [pscustomobject]@{
-                    passed        = $false
-                    findingsAfter = $BaselineStaticFindings
-                    results       = @($results)
-                    failureReason = 'targeted-tests-failed'
-                }
-            }
+        elseif (@($ValidationPlan.inferredChecks).Count -gt 0) {
+            [void]$results.Add([pscustomobject]@{
+                batchId    = $Batch.id
+                validation = 'inferred_structural_checks'
+                status     = 'passed'
+                source     = 'inferred'
+                details    = "Checks=$((@($ValidationPlan.inferredChecks | ForEach-Object { $_.name }) -join ', '))"
+            })
         }
     }
     else {
@@ -1853,12 +2728,13 @@ function Invoke-RuleHarnessBatchValidation {
     $resolvedCount = @($Batch.expectedFindingsResolved | Where-Object { $_ -notin $afterKeys }).Count
     $newHigh = @($afterHigh | Where-Object { $_ -notin $baselineHigh })
     $staticPassed = ($resolvedCount -eq $Batch.expectedFindingsResolved.Count) -and ($newHigh.Count -eq 0) -and ($afterFindings.Count -lt $BaselineStaticFindings.Count -or $resolvedCount -gt 0)
+    $staticDetails = "Before=$($BaselineStaticFindings.Count) After=$($afterFindings.Count) Resolved=$resolvedCount Expected=$($Batch.expectedFindingsResolved.Count) NewHigh=$($newHigh.Count)"
     [void]$results.Add([pscustomobject]@{
         batchId    = $Batch.id
         validation = 'static_scan'
         status     = if ($staticPassed) { 'passed' } else { 'failed' }
         source     = 'static-scan'
-        details    = "Before=$($BaselineStaticFindings.Count) After=$($afterFindings.Count) Resolved=$resolvedCount Expected=$($Batch.expectedFindingsResolved.Count) NewHigh=$($newHigh.Count)"
+        details    = $staticDetails
     })
 
     [pscustomobject]@{
@@ -1866,7 +2742,253 @@ function Invoke-RuleHarnessBatchValidation {
         findingsAfter = @($afterFindings)
         results       = @($results)
         failureReason = if ($staticPassed) { $null } else { 'static-scan-failed' }
+        failureMessage = if ($staticPassed) { $null } else { $staticDetails }
+        failureSource = if ($staticPassed) { $null } else { 'static-scan' }
     }
+}
+
+function Get-RuleHarnessPreferredRepairStrategy {
+    param(
+        [Parameter(Mandatory)]
+        [object]$ScopeInfo
+    )
+
+    switch ([string]$ScopeInfo.scopeType) {
+        'feature' { return 'Update the owner README or add a feature-local runner before retrying.' }
+        'harness' { return 'Improve harness prompts, config, tests, or docs before retrying.' }
+        default { return 'Amend the owning global rule doc before retrying.' }
+    }
+}
+
+function New-RuleHarnessBatchAttemptResult {
+    param(
+        [Parameter(Mandatory)]
+        [bool]$Success,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$FindingsAfter,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$DocEdits,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [string[]]$TouchedPaths,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$ValidationResults,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$LearningTrace,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$MemoryHits,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$MemoryUpdates,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$PromotionCandidates,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [string[]]$DecisionTrace,
+        [string]$FailureReason,
+        [string]$FailureMessage,
+        [int]$RetryAttempts
+    )
+
+    [pscustomobject]@{
+        success             = $Success
+        findingsAfter       = @($FindingsAfter)
+        docEdits            = @($DocEdits)
+        touchedPaths        = @($TouchedPaths)
+        validationResults   = @($ValidationResults)
+        learningTrace       = @($LearningTrace)
+        memoryHits          = @($MemoryHits)
+        memoryUpdates       = @($MemoryUpdates)
+        promotionCandidates = @($PromotionCandidates)
+        decisionTrace       = @($DecisionTrace)
+        failureReason       = $FailureReason
+        failureMessage      = $FailureMessage
+        retryAttempts       = [int]$RetryAttempts
+    }
+}
+
+function Invoke-RuleHarnessBatchAttemptLoop {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Batch,
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config,
+        [Parameter(Mandatory)]
+        [object[]]$BaselineStaticFindings,
+        [Parameter(Mandatory)]
+        [object]$ValidationPlan,
+        [Parameter(Mandatory)]
+        [object]$MemoryStore,
+        [Parameter(Mandatory)]
+        [object]$LearningSettings,
+        [Parameter(Mandatory)]
+        [string]$CommitSha
+    )
+
+    $validationResults = [System.Collections.Generic.List[object]]::new()
+    $learningTrace = [System.Collections.Generic.List[object]]::new()
+    $memoryHits = [System.Collections.Generic.List[object]]::new()
+    $memoryUpdates = [System.Collections.Generic.List[object]]::new()
+    $promotionCandidates = [System.Collections.Generic.List[object]]::new()
+    $decisionTrace = [System.Collections.Generic.List[string]]::new()
+    $scopeInfo = Get-RuleHarnessScopeInfo -RepoRoot $RepoRoot -OwnerDoc ([string](@($Batch.ownerDocs)[0])) -TargetFiles @($Batch.targetFiles)
+    $batchSnapshots = Get-RuleHarnessFileSnapshots -RepoRoot $RepoRoot -TargetFiles @($Batch.targetFiles)
+    $attemptLimit = [Math]::Max(1, [int]$LearningSettings.maxSameRunAttempts)
+    $retryAttempts = 0
+    $lastSignature = $null
+    $retryMemoryEntries = @()
+    $currentFindings = @($BaselineStaticFindings)
+
+    for ($attemptIndex = 1; $attemptIndex -le $attemptLimit; $attemptIndex++) {
+        $memoryEntriesUsedThisAttempt = @($retryMemoryEntries)
+        if ($attemptIndex -gt 1) {
+            $retryAttempts++
+            [void]$decisionTrace.Add("Retry attempt $attemptIndex/$attemptLimit started for batch $($Batch.id).")
+        }
+
+        $attemptDocEdits = @()
+        $attemptTouchedPaths = @()
+        try {
+            $applyResult = Invoke-RuleHarnessBatchOperations -Batch $Batch -RepoRoot $RepoRoot -Config $Config
+            $attemptDocEdits = @($applyResult.docEditResults)
+            $attemptTouchedPaths = @($applyResult.touchedPaths)
+            $validation = Invoke-RuleHarnessBatchValidation -Batch $Batch -RepoRoot $RepoRoot -Config $Config -ValidationPlan $ValidationPlan -BaselineStaticFindings $currentFindings
+            foreach ($result in $validation.results) {
+                [void]$validationResults.Add($result)
+            }
+
+            if ($validation.passed) {
+                [void]$learningTrace.Add([pscustomobject]@{
+                    batchId                    = $Batch.id
+                    attempt                    = $attemptIndex
+                    normalizedFailureSignature = $null
+                    memoryEntriesUsed          = @($memoryEntriesUsedThisAttempt | ForEach-Object { [string]$_.signature })
+                    repairDelta                = if ($attemptIndex -eq 1) { 'initial-attempt' } else { 'memory-informed-retry' }
+                    verificationResult         = 'passed'
+                })
+                return (New-RuleHarnessBatchAttemptResult `
+                    -Success $true `
+                    -FindingsAfter @($validation.findingsAfter) `
+                    -DocEdits @($attemptDocEdits) `
+                    -TouchedPaths @($attemptTouchedPaths) `
+                    -ValidationResults @($validationResults) `
+                    -LearningTrace @($learningTrace) `
+                    -MemoryHits @($memoryHits) `
+                    -MemoryUpdates @($memoryUpdates) `
+                    -PromotionCandidates @($promotionCandidates) `
+                    -DecisionTrace @($decisionTrace) `
+                    -RetryAttempts $retryAttempts)
+            }
+
+            Restore-RuleHarnessFileSnapshots -RepoRoot $RepoRoot -Snapshots $batchSnapshots
+            $failureReason = [string]$validation.failureReason
+            $failureMessage = [string]$validation.failureMessage
+            $failureSource = if ([string]::IsNullOrWhiteSpace([string]$validation.failureSource)) { [string]$ValidationPlan.source } else { [string]$validation.failureSource }
+        }
+        catch {
+            Restore-RuleHarnessFileSnapshots -RepoRoot $RepoRoot -Snapshots $batchSnapshots
+            $failureReason = 'apply-failed'
+            $failureMessage = $_.Exception.Message
+            $failureSource = 'apply'
+            [void]$validationResults.Add([pscustomobject]@{
+                batchId    = $Batch.id
+                validation = 'apply'
+                status     = 'failed'
+                source     = 'apply'
+                details    = $failureMessage
+            })
+        }
+
+        $signature = Get-RuleHarnessFailureSignature -FailureReason $failureReason -PrimarySource $failureSource -OwnerDoc $scopeInfo.scopePath -BatchKind ([string]$Batch.kind) -Message $failureMessage
+        $matchedMemoryEntry = Find-RuleHarnessMemoryEntry -MemoryStore $MemoryStore -Signature $signature -ScopePath $scopeInfo.scopePath
+        if ($null -ne $matchedMemoryEntry) {
+            [void]$memoryHits.Add([pscustomobject]@{
+                batchId           = $Batch.id
+                attempt           = $attemptIndex
+                signature         = [string]$matchedMemoryEntry.signature
+                scopePath         = [string]$matchedMemoryEntry.scopePath
+                preferredStrategy = [string]$matchedMemoryEntry.preferredRepairStrategy
+                promotionTarget   = [string]$matchedMemoryEntry.promotionTarget
+            })
+            $retryMemoryEntries = @($matchedMemoryEntry)
+        }
+        else {
+            $retryMemoryEntries = @()
+        }
+
+        [void]$learningTrace.Add([pscustomobject]@{
+            batchId                    = $Batch.id
+            attempt                    = $attemptIndex
+            normalizedFailureSignature = $signature
+            memoryEntriesUsed          = @($memoryEntriesUsedThisAttempt | ForEach-Object { [string]$_.signature })
+            repairDelta                = if ($attemptIndex -eq 1) { 'initial-attempt' } else { 'memory-informed-retry' }
+            verificationResult         = $failureReason
+        })
+        [void]$decisionTrace.Add("Attempt $attemptIndex for batch $($Batch.id) failed with signature $signature")
+
+        if ($attemptIndex -ge $attemptLimit) {
+            break
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($lastSignature) -and $signature -eq $lastSignature) {
+            [void]$decisionTrace.Add("Batch $($Batch.id) repeated the same normalized failure signature; no further retries will run.")
+            break
+        }
+
+        $lastSignature = $signature
+    }
+
+    $memoryEntry = Update-RuleHarnessMemoryStoreEntry `
+        -MemoryStore $MemoryStore `
+        -Signature $signature `
+        -ScopeType $scopeInfo.scopeType `
+        -ScopePath $scopeInfo.scopePath `
+        -Symptoms $failureMessage `
+        -PreferredRepairStrategy (Get-RuleHarnessPreferredRepairStrategy -ScopeInfo $scopeInfo) `
+        -ValidationHints @($ValidationPlan.scripts + $ValidationPlan.featureTestAssets + $ValidationPlan.registryHints) `
+        -Confidence ([string]$ValidationPlan.confidence) `
+        -CommitSha $CommitSha `
+        -PromotionTarget $scopeInfo.promotionTarget `
+        -Status 'observed'
+    [void]$memoryUpdates.Add([pscustomobject]@{
+        batchId             = $Batch.id
+        signature           = [string]$memoryEntry.signature
+        scopeType           = [string]$memoryEntry.scopeType
+        scopePath           = [string]$memoryEntry.scopePath
+        confidence          = [string]$memoryEntry.confidence
+        hitCount            = [int]$memoryEntry.hitCount
+        distinctCommitCount = [int]$memoryEntry.distinctCommitCount
+        promotionTarget     = [string]$memoryEntry.promotionTarget
+        status              = [string]$memoryEntry.status
+    })
+
+    $promotionCandidate = Get-RuleHarnessPromotionCandidate -Entry $memoryEntry -Rationale ("Recurring failure for batch {0}: {1}" -f [string]$Batch.id, [string]$failureReason) -Config $Config
+    if ($null -ne $promotionCandidate) {
+        [void]$promotionCandidates.Add($promotionCandidate)
+    }
+
+    return (New-RuleHarnessBatchAttemptResult `
+        -Success $false `
+        -FindingsAfter @($BaselineStaticFindings) `
+        -DocEdits @() `
+        -TouchedPaths @() `
+        -ValidationResults @($validationResults) `
+        -LearningTrace @($learningTrace) `
+        -MemoryHits @($memoryHits) `
+        -MemoryUpdates @($memoryUpdates) `
+        -PromotionCandidates @($promotionCandidates) `
+        -DecisionTrace @($decisionTrace) `
+        -FailureReason $failureReason `
+        -FailureMessage $failureMessage `
+        -RetryAttempts $retryAttempts)
 }
 
 function Invoke-RuleHarnessCommit {
@@ -1919,6 +3041,116 @@ function Invoke-RuleHarnessMutationPlan {
         [AllowEmptyCollection()]
         [object[]]$PlannedBatches,
         [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$InitialStaticFindings,
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config,
+        [Parameter(Mandatory)]
+        [object]$MutationState,
+        [switch]$DryRun
+    )
+
+    return Invoke-RuleHarnessMutationPlanCore `
+        -PlannedBatches $PlannedBatches `
+        -InitialStaticFindings $InitialStaticFindings `
+        -RepoRoot $RepoRoot `
+        -Config $Config `
+        -MutationState $MutationState `
+        -DryRun:$DryRun
+}
+
+function New-RuleHarnessMutationPlanResult {
+    param(
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$StageResults,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$ActionItems,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [string[]]$DecisionTrace,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$ValidationResults,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$AppliedBatches,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$SkippedBatches,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$RollbackBatches,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$DocEdits,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$FinalStaticFindings,
+        [Parameter(Mandatory)]
+        [object]$HistorySummary,
+        [Parameter(Mandatory)]
+        [object]$Commit,
+        [Parameter(Mandatory)]
+        [bool]$RollbackPerformed,
+        [Parameter(Mandatory)]
+        [bool]$Failed,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$DiscoveredValidationPlan,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$LearningTrace,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$MemoryHits,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$MemoryUpdates,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$PromotionCandidates,
+        [Parameter(Mandatory)]
+        [int]$RetryAttempts
+    )
+
+    [pscustomobject]@{
+        stageResults             = @($StageResults)
+        actionItems              = @(Merge-RuleHarnessActionItems -Items @($ActionItems))
+        decisionTrace            = @($DecisionTrace)
+        validationResults        = @($ValidationResults)
+        appliedBatches           = @($AppliedBatches)
+        skippedBatches           = @($SkippedBatches)
+        rollbackBatches          = @($RollbackBatches)
+        docEdits                 = @($DocEdits)
+        finalStaticFindings      = @($FinalStaticFindings)
+        historySummary           = $HistorySummary
+        commit                   = $Commit
+        rollback                 = [pscustomobject]@{
+            performed     = $RollbackPerformed
+            failedBatches = @($RollbackBatches | ForEach-Object { $_.id })
+        }
+        failed                   = $Failed
+        applied                  = (@($AppliedBatches).Count -gt 0)
+        discoveredValidationPlan = @($DiscoveredValidationPlan)
+        learningTrace            = @($LearningTrace)
+        memoryHits               = @($MemoryHits)
+        memoryUpdates            = @($MemoryUpdates)
+        promotionCandidates      = @($PromotionCandidates)
+        retryAttempts            = [int]$RetryAttempts
+    }
+}
+
+function Invoke-RuleHarnessMutationPlanCore {
+    param(
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$PlannedBatches,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
         [object[]]$InitialStaticFindings,
         [Parameter(Mandatory)]
         [string]$RepoRoot,
@@ -1935,6 +3167,14 @@ function Invoke-RuleHarnessMutationPlan {
     $skippedBatches = [System.Collections.Generic.List[object]]::new()
     $rollbackBatches = [System.Collections.Generic.List[object]]::new()
     $docEdits = [System.Collections.Generic.List[object]]::new()
+    $stageResults = [System.Collections.Generic.List[object]]::new()
+    $actionItems = [System.Collections.Generic.List[object]]::new()
+    $discoveredValidationPlans = [System.Collections.Generic.List[object]]::new()
+    $learningTrace = [System.Collections.Generic.List[object]]::new()
+    $memoryHits = [System.Collections.Generic.List[object]]::new()
+    $memoryUpdates = [System.Collections.Generic.List[object]]::new()
+    $promotionCandidates = [System.Collections.Generic.List[object]]::new()
+    $retryAttempts = 0
     $finalStaticFindings = @($InitialStaticFindings)
     $branch = Get-RuleHarnessCurrentBranch -RepoRoot $RepoRoot
     $commitSha = ((Invoke-RuleHarnessGit -RepoRoot $RepoRoot -Arguments @('rev-parse', 'HEAD')) | Select-Object -First 1).Trim()
@@ -1947,11 +3187,24 @@ function Invoke-RuleHarnessMutationPlan {
     $validationRegistry = Get-RuleHarnessValidationRegistry -RepoRoot $RepoRoot -Config $Config
     $validationRegistryCount = if ($null -ne $validationRegistry.features) { @($validationRegistry.features.PSObject.Properties).Count } else { 0 }
     Write-Host "Rule harness validation registry lookup finished. Path: $($validationRegistry.relativePath) Features: $validationRegistryCount"
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'validation_registry_lookup' `
+        -Status 'passed' `
+        -Attempted $true `
+        -Summary ("Loaded validation registry hints with {0} feature entries." -f $validationRegistryCount) `
+        -Details ([pscustomobject]@{
+            path = $validationRegistry.relativePath
+            featureCount = $validationRegistryCount
+            mode = 'optional-hints'
+        })))
+
+    $memoryStore = Read-RuleHarnessMemoryStore -RepoRoot $RepoRoot -Config $Config
+    $learningSettings = Get-RuleHarnessLearningSettings -Config $Config
 
     foreach ($batch in @($PlannedBatches)) {
         $fingerprint = Get-RuleHarnessBatchFingerprint -Batch $batch
         $riskAssessment = Get-RuleHarnessBatchRiskAssessment -Batch $batch -RepoRoot $RepoRoot -Config $Config -MutationMode $MutationState.mode
-        $ownershipAssessment = Get-RuleHarnessBatchOwnershipAssessment -Batch $batch -Config $Config
+        $ownershipAssessment = Get-RuleHarnessBatchOwnershipAssessment -Batch $batch -RepoRoot $RepoRoot -Config $Config
         Set-RuleHarnessObjectProperty -Object $batch -Name 'fingerprint' -Value $fingerprint
         Set-RuleHarnessObjectProperty -Object $batch -Name 'riskScore' -Value $riskAssessment.score
         Set-RuleHarnessObjectProperty -Object $batch -Name 'riskLabel' -Value $riskAssessment.label
@@ -1959,68 +3212,100 @@ function Invoke-RuleHarnessMutationPlan {
     }
 
     $historySummary = [pscustomobject]@{
-        statePath        = $historyState.path
-        loadedEntryCount = $historyState.loadedEntryCount
-        activeEntryCount = @($historyState.entries.Keys).Count
-        gcRemovedCount   = $historyState.gcRemovedCount
+        statePath         = $historyState.path
+        loadedEntryCount  = $historyState.loadedEntryCount
+        activeEntryCount  = @($historyState.entries.Keys).Count
+        gcRemovedCount    = $historyState.gcRemovedCount
         touchedEntryCount = 0
+    }
+
+    $emptyCommit = [pscustomobject]@{
+        attempted = $false
+        created   = $false
+        sha       = $null
+        branch    = $branch
+        message   = $null
     }
 
     if (-not $MutationState.enabled -or $MutationState.mode -eq 'report_only') {
         [void]$decisionTrace.Add("Mutation loop disabled. Mode=$($MutationState.mode)")
+        [void]$stageResults.Add((New-RuleHarnessStageResult `
+            -Stage 'mutation' `
+            -Status 'skipped' `
+            -Attempted $false `
+            -Summary ("Mutation loop is disabled for mode {0}." -f $MutationState.mode) `
+            -Details ([pscustomobject]@{
+                mode = $MutationState.mode
+                retryAttempts = 0
+            })))
+        [void]$stageResults.Add((New-RuleHarnessStageResult `
+            -Stage 'commit' `
+            -Status 'skipped' `
+            -Attempted $false `
+            -Summary 'Commit stage was skipped because no mutation ran.' `
+            -Details $null))
         Save-RuleHarnessHistoryState -HistoryState $historyState
-        return [pscustomobject]@{
-            decisionTrace       = @($decisionTrace)
-            validationResults   = @()
-            appliedBatches      = @()
-            skippedBatches      = @()
-            rollbackBatches     = @()
-            docEdits            = @()
-            finalStaticFindings = @($finalStaticFindings)
-            historySummary      = $historySummary
-            commit              = [pscustomobject]@{
-                attempted = $false
-                created   = $false
-                sha       = $null
-                branch    = $branch
-                message   = $null
-            }
-            rollback            = [pscustomobject]@{
-                performed    = $false
-                failedBatches = @()
-            }
-            failed              = $false
-            applied             = $false
-        }
+        return (New-RuleHarnessMutationPlanResult `
+            -StageResults @($stageResults) `
+            -ActionItems @() `
+            -DecisionTrace @($decisionTrace) `
+            -ValidationResults @() `
+            -AppliedBatches @() `
+            -SkippedBatches @() `
+            -RollbackBatches @() `
+            -DocEdits @() `
+            -FinalStaticFindings @($finalStaticFindings) `
+            -HistorySummary $historySummary `
+            -Commit $emptyCommit `
+            -RollbackPerformed $false `
+            -Failed $false `
+            -DiscoveredValidationPlan @() `
+            -LearningTrace @() `
+            -MemoryHits @() `
+            -MemoryUpdates @() `
+            -PromotionCandidates @() `
+            -RetryAttempts 0)
     }
 
     [void]$decisionTrace.Add("Mutation loop enabled. Mode=$($MutationState.mode)")
     if ($PlannedBatches.Count -eq 0) {
         [void]$decisionTrace.Add('No planned batches were generated. Mutation stage completed without edits.')
+        [void]$stageResults.Add((New-RuleHarnessStageResult `
+            -Stage 'mutation' `
+            -Status 'passed' `
+            -Attempted $true `
+            -Summary 'No planned batches were generated.' `
+            -Details ([pscustomobject]@{
+                plannedBatchCount = 0
+                retryAttempts = 0
+            })))
+        [void]$stageResults.Add((New-RuleHarnessStageResult `
+            -Stage 'commit' `
+            -Status 'skipped' `
+            -Attempted $false `
+            -Summary 'Commit stage was skipped because no batch touched the workspace.' `
+            -Details $null))
         Save-RuleHarnessHistoryState -HistoryState $historyState
-        return [pscustomobject]@{
-            decisionTrace       = @($decisionTrace)
-            validationResults   = @()
-            appliedBatches      = @()
-            skippedBatches      = @()
-            rollbackBatches     = @()
-            docEdits            = @()
-            finalStaticFindings = @($finalStaticFindings)
-            historySummary      = $historySummary
-            commit              = [pscustomobject]@{
-                attempted = $false
-                created   = $false
-                sha       = $null
-                branch    = $branch
-                message   = $null
-            }
-            rollback            = [pscustomobject]@{
-                performed     = $false
-                failedBatches = @()
-            }
-            failed              = $false
-            applied             = $false
-        }
+        return (New-RuleHarnessMutationPlanResult `
+            -StageResults @($stageResults) `
+            -ActionItems @() `
+            -DecisionTrace @($decisionTrace) `
+            -ValidationResults @() `
+            -AppliedBatches @() `
+            -SkippedBatches @() `
+            -RollbackBatches @() `
+            -DocEdits @() `
+            -FinalStaticFindings @($finalStaticFindings) `
+            -HistorySummary $historySummary `
+            -Commit $emptyCommit `
+            -RollbackPerformed $false `
+            -Failed $false `
+            -DiscoveredValidationPlan @() `
+            -LearningTrace @() `
+            -MemoryHits @() `
+            -MemoryUpdates @() `
+            -PromotionCandidates @() `
+            -RetryAttempts 0)
     }
 
     $globalTargetFiles = @($PlannedBatches | ForEach-Object { $_.targetFiles } | Sort-Object -Unique)
@@ -2030,27 +3315,14 @@ function Invoke-RuleHarnessMutationPlan {
     $failureTriggered = $false
     $appliedBatchObjects = [System.Collections.Generic.List[object]]::new()
     $failureReasonCode = $null
-
-    $nonActionableReasons = if ($Config.history.PSObject.Properties.Name -contains 'nonActionableReasons') {
-        @($Config.history.nonActionableReasons)
-    }
-    else {
-        @()
-    }
-    $maxAttemptsPerCommit = if ($Config.history.PSObject.Properties.Name -contains 'maxAttemptsPerCommit') {
-        [int]$Config.history.maxAttemptsPerCommit
-    }
-    else {
-        2
-    }
+    $nonActionableReasons = if ($Config.history.PSObject.Properties.Name -contains 'nonActionableReasons') { @($Config.history.nonActionableReasons) } else { @() }
+    $maxAttemptsPerCommit = if ($Config.history.PSObject.Properties.Name -contains 'maxAttemptsPerCommit') { [int]$Config.history.maxAttemptsPerCommit } else { 2 }
 
     foreach ($batch in @($PlannedBatches | Select-Object -First ([int]$Config.mutation.maxBatchesPerRun))) {
-        Write-Host "Rule harness batch planning resumed. Id: $($batch.id) Kind: $($batch.kind)"
         $fingerprint = [string]$batch.fingerprint
         $historyEntry = Get-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint
 
         if ($MutationState.mode -eq 'doc_only' -and $batch.kind -ne 'rule_fix') {
-            [void]$decisionTrace.Add("Skipped $($batch.id) because doc_only mode does not allow kind=$($batch.kind).")
             Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'skipped'
             [void]$skippedBatches.Add([pscustomobject]@{
                 id           = $batch.id
@@ -2065,7 +3337,6 @@ function Invoke-RuleHarnessMutationPlan {
         }
 
         if (@($batch.targetFiles).Count -gt [int]$Config.mutation.maxFilesPerBatch) {
-            [void]$decisionTrace.Add("Skipped $($batch.id) because target file count exceeded maxFilesPerBatch.")
             Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'skipped'
             [void]$skippedBatches.Add([pscustomobject]@{
                 id           = $batch.id
@@ -2079,17 +3350,11 @@ function Invoke-RuleHarnessMutationPlan {
             continue
         }
 
-        $dirtyTargets = if ($Config.mutation.requireCleanTargets) {
-            @(Get-RuleHarnessDirtyTargetPaths -RepoRoot $RepoRoot -TargetFiles $batch.targetFiles)
-        }
-        else {
-            @()
-        }
+        $dirtyTargets = if ($Config.mutation.requireCleanTargets) { @(Get-RuleHarnessDirtyTargetPaths -RepoRoot $RepoRoot -TargetFiles $batch.targetFiles) } else { @() }
         if (@($dirtyTargets).Count -gt 0) {
             $historyEntry = Set-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint -Status 'skipped' -Reason 'dirty-target-files'
-            [void]$decisionTrace.Add("Rule harness batch suppressed before apply. Id: $($batch.id) Reason: dirty-target-files Targets: $($dirtyTargets -join ', ')")
             Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'skipped'
-            [void]$skippedBatches.Add([pscustomobject]@{
+            $skippedBatch = [pscustomobject]@{
                 id           = $batch.id
                 kind         = $batch.kind
                 reason       = 'dirty-target-files'
@@ -2098,34 +3363,29 @@ function Invoke-RuleHarnessMutationPlan {
                 targets      = $dirtyTargets
                 fingerprint  = $fingerprint
                 attemptCount = [int]$historyEntry.attemptCount
-            })
+            }
+            [void]$skippedBatches.Add($skippedBatch)
+            [void]$actionItems.Add((Get-RuleHarnessActionItemForSkippedBatch -SkippedBatch $skippedBatch -PlannedBatch $batch -Config $Config))
             continue
         }
 
-        $targetedValidationPlan = Get-RuleHarnessTargetedValidationPlan -Batch $batch -RepoRoot $RepoRoot -Config $Config -ValidationRegistry $validationRegistry
-        if ($Batch.kind -ne 'rule_fix' -and $targetedValidationPlan.status -ne 'ok') {
-            $historyEntry = Set-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint -Status 'skipped' -Reason ([string]$targetedValidationPlan.reasonCode)
-            [void]$decisionTrace.Add("Rule harness batch suppressed before apply. Id: $($batch.id) Reason: $($targetedValidationPlan.reasonCode)")
-            Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'skipped'
-            [void]$skippedBatches.Add([pscustomobject]@{
-                id           = $batch.id
-                kind         = $batch.kind
-                reason       = [string]$targetedValidationPlan.reasonCode
-                reasonCode   = [string]$targetedValidationPlan.reasonCode
-                status       = 'skipped'
-                fingerprint  = $fingerprint
-                attemptCount = [int]$historyEntry.attemptCount
-            })
-            continue
+        $discoveredPlan = Get-RuleHarnessDiscoveredValidationPlan -Batch $batch -RepoRoot $RepoRoot -Config $Config -ValidationRegistry $validationRegistry
+        [void]$discoveredValidationPlans.Add($discoveredPlan)
+        [void]$decisionTrace.Add("Batch $($batch.id) capability discovery: source=$($discoveredPlan.source) confidence=$($discoveredPlan.confidence) scripts=$(@($discoveredPlan.scripts).Count) inferredChecks=$(@($discoveredPlan.inferredChecks).Count)")
+        if ($batch.kind -ne 'rule_fix' -and @($discoveredPlan.scripts).Count -eq 0) {
+            [void]$actionItems.Add((New-RuleHarnessActionItem `
+                -Kind 'increase-validation-confidence' `
+                -Severity $(if ([string]$discoveredPlan.confidence -eq 'low') { 'high' } else { 'medium' }) `
+                -Summary ("Add runnable feature validation for batch {0}" -f [string]$batch.id) `
+                -Details ("No `Tests/<Feature>/Run-*.ps1` runner was discovered. The harness will proceed with inferred checks and static scan. Confidence={0}." -f [string]$discoveredPlan.confidence) `
+                -RelatedPaths (Get-RuleHarnessCombinedPaths -Primary @($batch.targetFiles) -Secondary @($discoveredPlan.featureTestAssets + $discoveredPlan.registryHints))))
         }
 
-        $ownershipAssessment = Get-RuleHarnessBatchOwnershipAssessment -Batch $batch -Config $Config
+        $ownershipAssessment = Get-RuleHarnessBatchOwnershipAssessment -Batch $batch -RepoRoot $RepoRoot -Config $Config
         Set-RuleHarnessObjectProperty -Object $batch -Name 'ownershipStatus' -Value $ownershipAssessment.status
         if ($ownershipAssessment.status -eq 'rejected') {
             $historyEntry = Set-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint -Status 'skipped' -Reason 'ownership-preflight-rejected'
-            [void]$decisionTrace.Add("Rule harness batch suppressed before apply. Id: $($batch.id) Reason: ownership-preflight-rejected Detail: $($ownershipAssessment.reason)")
-            Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'skipped'
-            [void]$skippedBatches.Add([pscustomobject]@{
+            $skippedBatch = [pscustomobject]@{
                 id           = $batch.id
                 kind         = $batch.kind
                 reason       = $ownershipAssessment.reason
@@ -2133,7 +3393,9 @@ function Invoke-RuleHarnessMutationPlan {
                 status       = 'skipped'
                 fingerprint  = $fingerprint
                 attemptCount = [int]$historyEntry.attemptCount
-            })
+            }
+            [void]$skippedBatches.Add($skippedBatch)
+            [void]$actionItems.Add((Get-RuleHarnessActionItemForSkippedBatch -SkippedBatch $skippedBatch -PlannedBatch $batch -Config $Config))
             continue
         }
 
@@ -2141,9 +3403,7 @@ function Invoke-RuleHarnessMutationPlan {
         Set-RuleHarnessObjectProperty -Object $batch -Name 'riskScore' -Value $riskAssessment.score
         Set-RuleHarnessObjectProperty -Object $batch -Name 'riskLabel' -Value $riskAssessment.label
         if (-not $riskAssessment.allowed) {
-            [void]$decisionTrace.Add("Rule harness batch suppressed before apply. Id: $($batch.id) Reason: risk-threshold-exceeded Score: $($riskAssessment.score) Threshold: $($riskAssessment.threshold)")
-            Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'skipped'
-            [void]$skippedBatches.Add([pscustomobject]@{
+            $skippedBatch = [pscustomobject]@{
                 id           = $batch.id
                 kind         = $batch.kind
                 reason       = "Score $($riskAssessment.score) exceeded threshold $($riskAssessment.threshold)."
@@ -2151,14 +3411,14 @@ function Invoke-RuleHarnessMutationPlan {
                 status       = 'skipped'
                 fingerprint  = $fingerprint
                 attemptCount = if ($null -ne $historyEntry) { [int]$historyEntry.attemptCount } else { 0 }
-            })
+            }
+            [void]$skippedBatches.Add($skippedBatch)
+            [void]$actionItems.Add((Get-RuleHarnessActionItemForSkippedBatch -SkippedBatch $skippedBatch -PlannedBatch $batch -Config $Config))
             continue
         }
 
         $historyEntry = Get-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint
         if ($null -ne $historyEntry -and [string]$historyEntry.lastStatus -eq 'applied') {
-            [void]$decisionTrace.Add("Rule harness batch suppressed before apply. Id: $($batch.id) Reason: already-applied-on-commit")
-            Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'skipped'
             [void]$skippedBatches.Add([pscustomobject]@{
                 id           = $batch.id
                 kind         = $batch.kind
@@ -2172,8 +3432,6 @@ function Invoke-RuleHarnessMutationPlan {
         }
 
         if ($null -ne $historyEntry -and [string]$historyEntry.lastReason -in $nonActionableReasons) {
-            [void]$decisionTrace.Add("Rule harness batch suppressed before apply. Id: $($batch.id) Reason: $($historyEntry.lastReason)")
-            Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'skipped'
             [void]$skippedBatches.Add([pscustomobject]@{
                 id           = $batch.id
                 kind         = $batch.kind
@@ -2187,9 +3445,7 @@ function Invoke-RuleHarnessMutationPlan {
         }
 
         if ($null -ne $historyEntry -and [int]$historyEntry.attemptCount -ge $maxAttemptsPerCommit) {
-            [void]$decisionTrace.Add("Rule harness batch suppressed before apply. Id: $($batch.id) Reason: max-attempts-reached Attempts: $($historyEntry.attemptCount)")
-            Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'skipped'
-            [void]$skippedBatches.Add([pscustomobject]@{
+            $skippedBatch = [pscustomobject]@{
                 id           = $batch.id
                 kind         = $batch.kind
                 reason       = 'max-attempts-reached'
@@ -2197,12 +3453,13 @@ function Invoke-RuleHarnessMutationPlan {
                 status       = 'skipped'
                 fingerprint  = $fingerprint
                 attemptCount = [int]$historyEntry.attemptCount
-            })
+            }
+            [void]$skippedBatches.Add($skippedBatch)
+            [void]$actionItems.Add((Get-RuleHarnessActionItemForSkippedBatch -SkippedBatch $skippedBatch -PlannedBatch $batch -Config $Config))
             continue
         }
 
         if ($DryRun) {
-            [void]$decisionTrace.Add("Dry run left $($batch.id) in proposed state.")
             Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'proposed'
             [void]$skippedBatches.Add([pscustomobject]@{
                 id           = $batch.id
@@ -2216,32 +3473,28 @@ function Invoke-RuleHarnessMutationPlan {
             continue
         }
 
-        try {
-            Write-Host "Rule harness patch apply started. Batch: $($batch.id) Targets: $($batch.targetFiles -join ', ')"
-            $applyResult = Invoke-RuleHarnessBatchOperations -Batch $batch -RepoRoot $RepoRoot -Config $Config
-            foreach ($docEdit in $applyResult.docEditResults) {
-                [void]$docEdits.Add($docEdit)
-            }
-            foreach ($target in $applyResult.touchedPaths) {
-                [void]$touchedTargetFiles.Add($target)
-            }
-            Write-Host "Rule harness patch apply finished. Batch: $($batch.id) Touched: $(@($applyResult.touchedPaths).Count)"
+        $attemptResult = Invoke-RuleHarnessBatchAttemptLoop `
+            -Batch $batch `
+            -RepoRoot $RepoRoot `
+            -Config $Config `
+            -BaselineStaticFindings $currentFindings `
+            -ValidationPlan $discoveredPlan `
+            -MemoryStore $memoryStore `
+            -LearningSettings $learningSettings `
+            -CommitSha $commitSha
 
-            Write-Host "Rule harness validation started. Batch: $($batch.id)"
-            $validation = Invoke-RuleHarnessBatchValidation -Batch $batch -RepoRoot $RepoRoot -Config $Config -TargetedValidationPlan $targetedValidationPlan -BaselineStaticFindings $currentFindings
-            foreach ($result in $validation.results) {
-                [void]$validationResults.Add($result)
-            }
+        foreach ($entry in @($attemptResult.validationResults)) { [void]$validationResults.Add($entry) }
+        foreach ($entry in @($attemptResult.learningTrace)) { [void]$learningTrace.Add($entry) }
+        foreach ($entry in @($attemptResult.memoryHits)) { [void]$memoryHits.Add($entry) }
+        foreach ($entry in @($attemptResult.memoryUpdates)) { [void]$memoryUpdates.Add($entry) }
+        foreach ($entry in @($attemptResult.promotionCandidates)) { [void]$promotionCandidates.Add($entry) }
+        foreach ($entry in @($attemptResult.decisionTrace)) { [void]$decisionTrace.Add($entry) }
+        $retryAttempts += [int]$attemptResult.retryAttempts
 
-            if (-not $validation.passed) {
-                $failureReasonCode = [string]$validation.failureReason
-                [void]$decisionTrace.Add("Batch $($batch.id) failed validation: $failureReasonCode")
-                [void](Set-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint -Status 'failed' -Reason $failureReasonCode)
-                $failureTriggered = $true
-                break
-            }
-
-            $currentFindings = @($validation.findingsAfter)
+        if ($attemptResult.success) {
+            foreach ($docEdit in @($attemptResult.docEdits)) { [void]$docEdits.Add($docEdit) }
+            foreach ($target in @($attemptResult.touchedPaths)) { [void]$touchedTargetFiles.Add($target) }
+            $currentFindings = @($attemptResult.findingsAfter)
             Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'applied'
             [void]$appliedBatches.Add([pscustomobject]@{
                 id          = $batch.id
@@ -2251,24 +3504,21 @@ function Invoke-RuleHarnessMutationPlan {
                 reason      = $batch.reason
             })
             [void]$appliedBatchObjects.Add($batch)
-            [void]$decisionTrace.Add("Batch $($batch.id) applied successfully and reduced findings.")
-        }
-        catch {
-            [void]$validationResults.Add([pscustomobject]@{
-                batchId    = $batch.id
-                validation = 'apply'
-                status     = 'failed'
-                source     = 'apply'
-                details    = $_.Exception.Message
-            })
-            [void]$decisionTrace.Add("Batch $($batch.id) threw an exception: $($_.Exception.Message)")
-            $failureReasonCode = 'apply-failed'
-            [void](Set-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint -Status 'failed' -Reason $failureReasonCode)
-            $failureTriggered = $true
-            break
+            continue
         }
 
-        if ($failureTriggered -and $Config.mutation.stopOnFirstFailure) {
+        [void](Set-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint -Status 'failed' -Reason ([string]$attemptResult.failureReason))
+        foreach ($promotionCandidate in @($attemptResult.promotionCandidates)) {
+            [void]$actionItems.Add((New-RuleHarnessActionItem `
+                -Kind 'promote-durable-rule' `
+                -Severity 'high' `
+                -Summary ("Promote recurring failure guidance to {0}" -f [string]$promotionCandidate.targetDoc) `
+                -Details ("Signature {0} repeated across {1} runs and {2} commits. Capture the durable rule in the owning doc." -f [string]$promotionCandidate.signature, [int]$promotionCandidate.hitCount, [int]$promotionCandidate.distinctCommitCount) `
+                -RelatedPaths (Get-RuleHarnessCombinedPaths -Primary @($batch.targetFiles) -Secondary @([string]$promotionCandidate.targetDoc))))
+        }
+        $failureTriggered = $true
+        $failureReasonCode = [string]$attemptResult.failureReason
+        if ($Config.mutation.stopOnFirstFailure) {
             break
         }
     }
@@ -2293,25 +3543,42 @@ function Invoke-RuleHarnessMutationPlan {
         $finalStaticFindings = @($currentFindings)
     }
 
-    $commitResult = [pscustomobject]@{
-        attempted = $false
-        created   = $false
-        sha       = $null
-        branch    = $branch
-        message   = $null
+    if (-not $DryRun -and $memoryStore.dirty) {
+        Save-RuleHarnessMemoryStore -MemoryStore $memoryStore
     }
 
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'mutation' `
+        -Status $(if ($failureTriggered) { 'failed' } elseif (@($appliedBatches).Count -gt 0) { 'passed' } elseif (@($skippedBatches).Count -gt 0) { 'skipped' } else { 'passed' }) `
+        -Attempted $true `
+        -Summary $(if ($failureTriggered) { 'Mutation stage failed and rolled back touched files.' } elseif (@($appliedBatches).Count -gt 0) { "Applied $(@($appliedBatches).Count) batch(es)." } elseif (@($skippedBatches).Count -gt 0) { "No batch was applied. Skipped $(@($skippedBatches).Count) batch(es)." } else { 'Mutation stage completed without workspace changes.' }) `
+        -Details ([pscustomobject]@{
+            appliedBatchCount = @($appliedBatches).Count
+            skippedBatchCount = @($skippedBatches).Count
+            retryAttempts = $retryAttempts
+            memoryUpdates = @($memoryUpdates).Count
+            promotionCandidates = @($promotionCandidates).Count
+            failureReason = $failureReasonCode
+        })))
+
+    $commitResult = $emptyCommit
     if (-not $failureTriggered -and $touchedTargetFiles.Count -gt 0) {
         try {
-            Write-Host "Rule harness commit stage started. Files: $($touchedTargetFiles.Count)"
             $commitResult = Invoke-RuleHarnessCommit -RepoRoot $RepoRoot -Config $Config -TargetFiles @($touchedTargetFiles) -AppliedBatches @($appliedBatches)
-            Write-Host "Rule harness commit stage finished. Created: $($commitResult.created)"
             if ($commitResult.created) {
                 foreach ($batch in $appliedBatchObjects) {
                     [void](Set-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint ([string]$batch.fingerprint) -Status 'applied' -Reason 'applied')
                 }
-                [void]$decisionTrace.Add("Created commit $($commitResult.sha) on branch $($commitResult.branch).")
             }
+            [void]$stageResults.Add((New-RuleHarnessStageResult `
+                -Stage 'commit' `
+                -Status 'passed' `
+                -Attempted $true `
+                -Summary $(if ($commitResult.created) { "Created commit $($commitResult.sha)." } else { 'Commit stage ran without creating a new commit.' }) `
+                -Details ([pscustomobject]@{
+                    branch = $commitResult.branch
+                    message = $commitResult.message
+                })))
         }
         catch {
             Restore-RuleHarnessFileSnapshots -RepoRoot $RepoRoot -Snapshots $globalSnapshots
@@ -2320,25 +3587,36 @@ function Invoke-RuleHarnessMutationPlan {
             $finalStaticFindings = @($InitialStaticFindings)
             foreach ($appliedBatch in $appliedBatches) {
                 [void](Set-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint ([string]($appliedBatchObjects | Where-Object id -eq $appliedBatch.id | Select-Object -First 1).fingerprint) -Status 'failed' -Reason 'commit-failed')
-                [void]$rollbackBatches.Add([pscustomobject]@{
-                    id     = $appliedBatch.id
-                    kind   = $appliedBatch.kind
-                    status = 'rolled_back'
-                })
+                [void]$rollbackBatches.Add([pscustomobject]@{ id = $appliedBatch.id; kind = $appliedBatch.kind; status = 'rolled_back' })
             }
             $appliedBatches.Clear()
-            $commitResult = [pscustomobject]@{
-                attempted = $true
-                created   = $false
-                sha       = $null
-                branch    = $branch
-                message   = $null
-            }
-            [void]$decisionTrace.Add("Commit failed and all mutations were rolled back: $($_.Exception.Message)")
+            [void]$stageResults.Add((New-RuleHarnessStageResult `
+                -Stage 'commit' `
+                -Status 'failed' `
+                -Attempted $true `
+                -Summary 'Commit stage failed and changes were rolled back.' `
+                -Details ([pscustomobject]@{
+                    message = $_.Exception.Message
+                })))
         }
     }
     elseif (-not $failureTriggered) {
-        [void]$decisionTrace.Add('No batch produced committed workspace changes.')
+        [void]$stageResults.Add((New-RuleHarnessStageResult `
+            -Stage 'commit' `
+            -Status 'skipped' `
+            -Attempted $false `
+            -Summary 'Commit stage was skipped because no batch touched the workspace.' `
+            -Details $null))
+    }
+    else {
+        [void]$stageResults.Add((New-RuleHarnessStageResult `
+            -Stage 'commit' `
+            -Status 'skipped' `
+            -Attempted $false `
+            -Summary 'Commit stage was skipped because mutation failed before commit.' `
+            -Details ([pscustomobject]@{
+                failureReason = $failureReasonCode
+            })))
     }
 
     Save-RuleHarnessHistoryState -HistoryState $historyState
@@ -2350,23 +3628,26 @@ function Invoke-RuleHarnessMutationPlan {
         touchedEntryCount = $historyState.touchedKeys.Count
     }
 
-    [pscustomobject]@{
-        decisionTrace     = @($decisionTrace)
-        validationResults = @($validationResults)
-        appliedBatches    = @($appliedBatches)
-        skippedBatches    = @($skippedBatches)
-        rollbackBatches   = @($rollbackBatches)
-        docEdits          = @($docEdits)
-        finalStaticFindings = @($finalStaticFindings)
-        historySummary    = $historySummary
-        commit            = $commitResult
-        rollback          = [pscustomobject]@{
-            performed    = $rollbackPerformed
-            failedBatches = @($rollbackBatches | ForEach-Object { $_.id })
-        }
-        failed            = $failureTriggered
-        applied           = ($appliedBatches.Count -gt 0)
-    }
+    return (New-RuleHarnessMutationPlanResult `
+        -StageResults @($stageResults) `
+        -ActionItems @($actionItems) `
+        -DecisionTrace @($decisionTrace) `
+        -ValidationResults @($validationResults) `
+        -AppliedBatches @($appliedBatches) `
+        -SkippedBatches @($skippedBatches) `
+        -RollbackBatches @($rollbackBatches) `
+        -DocEdits @($docEdits) `
+        -FinalStaticFindings @($finalStaticFindings) `
+        -HistorySummary $historySummary `
+        -Commit $commitResult `
+        -RollbackPerformed $rollbackPerformed `
+        -Failed $failureTriggered `
+        -DiscoveredValidationPlan @($discoveredValidationPlans) `
+        -LearningTrace @($learningTrace) `
+        -MemoryHits @($memoryHits) `
+        -MemoryUpdates @($memoryUpdates) `
+        -PromotionCandidates @($promotionCandidates) `
+        -RetryAttempts $retryAttempts)
 }
 
 function Write-RuleHarnessSummary {
@@ -2395,9 +3676,39 @@ function Write-RuleHarnessSummary {
     [void]$lines.Add("- Skipped batches: $($Report.skippedBatches.Count)")
     [void]$lines.Add("- Rollback performed: $($Report.rollback.performed)")
     [void]$lines.Add("- Commit created: $($Report.commit.created)")
+    [void]$lines.Add("- Retry attempts: $($Report.retryAttempts)")
+    [void]$lines.Add("- Memory hits: $($Report.memoryHits.Count)")
+    [void]$lines.Add("- Memory updates: $($Report.memoryUpdates.Count)")
+    [void]$lines.Add("- Promotion candidates: $($Report.promotionCandidates.Count)")
     [void]$lines.Add("- Applied: $($Report.applied)")
     [void]$lines.Add("- Failed: $($Report.failed)")
     [void]$lines.Add('')
+
+    if ($Report.stageResults.Count -gt 0) {
+        [void]$lines.Add('### Stage Status')
+        foreach ($stageResult in $Report.stageResults) {
+            $attemptText = if ($stageResult.attempted) { 'attempted' } else { 'not-attempted' }
+            [void]$lines.Add(('- `{0}` [{1}/{2}] {3}' -f $stageResult.stage, $stageResult.status, $attemptText, $stageResult.summary))
+        }
+        [void]$lines.Add('')
+    }
+
+    if ($Report.actionItems.Count -gt 0) {
+        [void]$lines.Add('### Next Actions')
+        foreach ($item in @($Report.actionItems | Select-Object -First 5)) {
+            [void]$lines.Add(('- [{0}] {1}' -f $item.severity, $item.summary))
+            [void]$lines.Add(('  {0}' -f $item.details))
+        }
+        [void]$lines.Add('')
+    }
+
+    if ($Report.promotionCandidates.Count -gt 0) {
+        [void]$lines.Add('### Promotion Candidates')
+        foreach ($candidate in @($Report.promotionCandidates | Select-Object -First 5)) {
+            [void]$lines.Add(('- `{0}` -> `{1}` ({2} runs / {3} commits)' -f $candidate.signature, $candidate.targetDoc, $candidate.hitCount, $candidate.distinctCommitCount))
+        }
+        [void]$lines.Add('')
+    }
 
     if ($Report.decisionTrace.Count -gt 0) {
         [void]$lines.Add('### Decision Trace')
@@ -2438,7 +3749,9 @@ function Invoke-RuleHarness {
         [switch]$DryRun,
         [switch]$DisableLlm,
         [string]$ReviewJsonPath,
-        [string]$SummaryPath
+        [string]$SummaryPath,
+        [string]$ReportPathHint,
+        [string]$LogPathHint
     )
 
     $config = Get-RuleHarnessConfig -ConfigPath $ConfigPath
@@ -2480,15 +3793,34 @@ function Invoke-RuleHarness {
     $llmEnabled = -not [string]::IsNullOrWhiteSpace($ApiKey)
     $mutationState = Get-RuleHarnessMutationState -Config $config -MutationMode $MutationMode -EnableMutation:$EnableMutation -DisableMutation:$DisableMutation
     $harnessErrors = [System.Collections.Generic.List[object]]::new()
+    $stageResults = [System.Collections.Generic.List[object]]::new()
 
     Write-Host 'Rule harness discover stage started.'
     $scannedFeatures = @(Get-RuleHarnessFeatureDirectories -RepoRoot $RepoRoot | ForEach-Object { $_.Name })
     Write-Host "Rule harness discover stage finished. Features: $($scannedFeatures.Count)"
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'discover' `
+        -Status 'passed' `
+        -Attempted $true `
+        -Summary ("Discovered {0} feature directories." -f $scannedFeatures.Count) `
+        -Details ([pscustomobject]@{
+            featureCount = $scannedFeatures.Count
+            features = @($scannedFeatures)
+        })))
 
     Write-Host 'Rule harness static scan started.'
     $staticFindings = @(Get-RuleHarnessStaticFindings -RepoRoot $RepoRoot -Config $config)
     Write-Host "Rule harness static scan finished. Findings: $($staticFindings.Count)"
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'static_scan' `
+        -Status 'passed' `
+        -Attempted $true `
+        -Summary ("Static scan produced {0} finding(s)." -f $staticFindings.Count) `
+        -Details ([pscustomobject]@{
+            findingCount = $staticFindings.Count
+        })))
 
+    $diagnoseAttempted = $llmEnabled -or -not [string]::IsNullOrWhiteSpace($ReviewJsonPath)
     try {
         $reviewedFindings = @(
             Invoke-RuleHarnessAgentReview `
@@ -2502,12 +3834,29 @@ function Invoke-RuleHarness {
                 -ReviewJsonPath $ReviewJsonPath
         )
         Write-Host "Rule harness reviewed findings count: $($reviewedFindings.Count)"
+        $diagnoseStatus = if ($diagnoseAttempted) { 'passed' } else { 'skipped' }
+        $diagnoseSummary = if ($diagnoseAttempted) {
+            "Diagnose stage reviewed $($reviewedFindings.Count) finding(s)."
+        }
+        else {
+            'Diagnose stage used static findings because LLM review was disabled.'
+        }
+        [void]$stageResults.Add((New-RuleHarnessStageResult `
+            -Stage 'diagnose' `
+            -Status $diagnoseStatus `
+            -Attempted $diagnoseAttempted `
+            -Summary $diagnoseSummary `
+            -Details ([pscustomobject]@{
+                reviewedFindingCount = $reviewedFindings.Count
+                llmEnabled = [bool]$llmEnabled
+                reviewJsonPath = $ReviewJsonPath
+            })))
     }
     catch {
         [void]$harnessErrors.Add((New-RuleHarnessFinding `
             -FindingType 'missing_rule' `
             -Severity $config.severityPolicy.agentFailure `
-            -OwnerDoc 'CLAUDE.md' `
+            -OwnerDoc 'tools/rule-harness/README.md' `
             -Title 'Rule harness agent review failed' `
             -Message "Stage=diagnose TimeoutSec=$timeoutSec $($_.Exception.Message)" `
             -Evidence @([pscustomobject]@{ path = 'tools/rule-harness'; line = $null; snippet = $_.Exception.GetType().FullName }) `
@@ -2516,13 +3865,22 @@ function Invoke-RuleHarness {
             -RemediationKind 'report_only'))
         $reviewedFindings = @(ConvertTo-RuleHarnessReviewedFindings -Findings $staticFindings)
         Write-Host "Rule harness diagnose stage failed. TimeoutSec: $timeoutSec Error: $($_.Exception.Message)"
+        [void]$stageResults.Add((New-RuleHarnessStageResult `
+            -Stage 'diagnose' `
+            -Status 'failed' `
+            -Attempted $diagnoseAttempted `
+            -Summary 'Diagnose stage failed; static findings were used as fallback.' `
+            -Details ([pscustomobject]@{
+                message = $_.Exception.Message
+                timeoutSec = $timeoutSec
+            })))
     }
 
     $eligibleDocFindings = @(
         $reviewedFindings | Where-Object {
             $_.remediationKind -in @('rule_fix', 'mixed_fix') -and
             $_.confidence -eq 'high' -and
-            (Test-RuleHarnessDocAllowed -RelativePath $_.ownerDoc -Config $config)
+            (Test-RuleHarnessDocAllowed -RepoRoot $RepoRoot -RelativePath $_.ownerDoc -Config $config)
         }
     )
     Write-Host "Rule harness eligible doc findings: $($eligibleDocFindings.Count)"
@@ -2541,24 +3899,71 @@ function Invoke-RuleHarness {
                     -TimeoutSec $timeoutSec
             )
             Write-Host "Rule harness doc sync produced edits: $($docEdits.Count)"
+            [void]$stageResults.Add((New-RuleHarnessStageResult `
+                -Stage 'doc_sync' `
+                -Status 'passed' `
+                -Attempted $true `
+                -Summary ("Doc sync proposed {0} edit(s)." -f $docEdits.Count) `
+                -Details ([pscustomobject]@{
+                    eligibleFindingCount = $eligibleDocFindings.Count
+                    docEditCount = $docEdits.Count
+                })))
         }
         catch {
             [void]$harnessErrors.Add((New-RuleHarnessFinding `
                 -FindingType 'missing_rule' `
                 -Severity $config.severityPolicy.agentFailure `
-                -OwnerDoc 'CLAUDE.md' `
+                -OwnerDoc 'tools/rule-harness/README.md' `
                 -Title 'Rule harness doc sync failed' `
                 -Message "Stage=doc_sync TimeoutSec=$timeoutSec $($_.Exception.Message)" `
                 -Evidence @([pscustomobject]@{ path = 'tools/rule-harness'; line = $null; snippet = $_.Exception.GetType().FullName }) `
                 -Confidence 'high' `
                 -Source 'harness'))
             Write-Host "Rule harness doc sync failed. TimeoutSec: $timeoutSec Error: $($_.Exception.Message)"
+            [void]$stageResults.Add((New-RuleHarnessStageResult `
+                -Stage 'doc_sync' `
+                -Status 'failed' `
+                -Attempted $true `
+                -Summary 'Doc sync failed and no doc edits were produced.' `
+                -Details ([pscustomobject]@{
+                    eligibleFindingCount = $eligibleDocFindings.Count
+                    message = $_.Exception.Message
+                    timeoutSec = $timeoutSec
+                })))
         }
+    }
+    else {
+        $docSyncSummary = if (-not $llmEnabled) {
+            'Doc sync was skipped because LLM mode is disabled.'
+        }
+        elseif ($eligibleDocFindings.Count -eq 0) {
+            'Doc sync was skipped because there were no eligible high-confidence doc findings.'
+        }
+        else {
+            'Doc sync was skipped.'
+        }
+        [void]$stageResults.Add((New-RuleHarnessStageResult `
+            -Stage 'doc_sync' `
+            -Status 'skipped' `
+            -Attempted $false `
+            -Summary $docSyncSummary `
+            -Details ([pscustomobject]@{
+                eligibleFindingCount = $eligibleDocFindings.Count
+                llmEnabled = [bool]$llmEnabled
+            })))
     }
 
     Write-Host 'Rule harness patch plan stage started.'
     $plannedBatches = @(Get-RuleHarnessPlannedBatches -ReviewedFindings $reviewedFindings -DocEdits $docEdits -RepoRoot $RepoRoot)
     Write-Host "Rule harness patch plan stage finished. Planned batches: $($plannedBatches.Count)"
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'patch_plan' `
+        -Status 'passed' `
+        -Attempted $true `
+        -Summary ("Patch plan produced {0} batch(es)." -f $plannedBatches.Count) `
+        -Details ([pscustomobject]@{
+            plannedBatchCount = $plannedBatches.Count
+        })))
 
     $mutationResult = Invoke-RuleHarnessMutationPlan `
         -PlannedBatches $plannedBatches `
@@ -2568,14 +3973,114 @@ function Invoke-RuleHarness {
         -MutationState $mutationState `
         -DryRun:$DryRun
 
+    $reportMemoryHits = [System.Collections.Generic.List[object]]::new()
+    foreach ($entry in @($mutationResult.memoryHits)) {
+        [void]$reportMemoryHits.Add($entry)
+    }
+    $reportMemoryUpdates = [System.Collections.Generic.List[object]]::new()
+    foreach ($entry in @($mutationResult.memoryUpdates)) {
+        [void]$reportMemoryUpdates.Add($entry)
+    }
+    $reportPromotionCandidates = [System.Collections.Generic.List[object]]::new()
+    foreach ($entry in @($mutationResult.promotionCandidates)) {
+        [void]$reportPromotionCandidates.Add($entry)
+    }
+    $reportLearningTrace = [System.Collections.Generic.List[object]]::new()
+    foreach ($entry in @($mutationResult.learningTrace)) {
+        [void]$reportLearningTrace.Add($entry)
+    }
+    $reportCommitSha = ((Invoke-RuleHarnessGit -RepoRoot $RepoRoot -Arguments @('rev-parse', 'HEAD')) | Select-Object -First 1).Trim()
+
+    if ($harnessErrors.Count -gt 0) {
+        $harnessMemoryStore = Read-RuleHarnessMemoryStore -RepoRoot $RepoRoot -Config $config
+        foreach ($harnessError in @($harnessErrors)) {
+            $scopeInfo = Get-RuleHarnessScopeInfo -RepoRoot $RepoRoot -OwnerDoc ([string]$harnessError.ownerDoc) -TargetFiles @('tools/rule-harness')
+            $signature = Get-RuleHarnessFailureSignature `
+                -FailureReason 'harness-stage-failed' `
+                -PrimarySource ([string]$harnessError.title) `
+                -OwnerDoc $scopeInfo.scopePath `
+                -BatchKind 'harness' `
+                -Message ([string]$harnessError.message)
+            $matchedMemoryEntry = Find-RuleHarnessMemoryEntry -MemoryStore $harnessMemoryStore -Signature $signature -ScopePath $scopeInfo.scopePath
+            if ($null -ne $matchedMemoryEntry) {
+                [void]$reportMemoryHits.Add([pscustomobject]@{
+                    batchId           = 'harness'
+                    attempt           = 1
+                    signature         = [string]$matchedMemoryEntry.signature
+                    scopePath         = [string]$matchedMemoryEntry.scopePath
+                    preferredStrategy = [string]$matchedMemoryEntry.preferredRepairStrategy
+                    promotionTarget   = [string]$matchedMemoryEntry.promotionTarget
+                })
+            }
+
+            $updatedEntry = Update-RuleHarnessMemoryStoreEntry `
+                -MemoryStore $harnessMemoryStore `
+                -Signature $signature `
+                -ScopeType $scopeInfo.scopeType `
+                -ScopePath $scopeInfo.scopePath `
+                -Symptoms ([string]$harnessError.message) `
+                -PreferredRepairStrategy 'Improve harness prompts, config, tests, or docs before retrying.' `
+                -ValidationHints @('tools/rule-harness/tests/Run-RuleHarnessTests.ps1', 'tools/rule-harness/README.md') `
+                -Confidence 'high' `
+                -CommitSha $reportCommitSha `
+                -PromotionTarget $scopeInfo.promotionTarget `
+                -Status 'observed'
+            [void]$reportMemoryUpdates.Add([pscustomobject]@{
+                batchId             = 'harness'
+                signature           = [string]$updatedEntry.signature
+                scopeType           = [string]$updatedEntry.scopeType
+                scopePath           = [string]$updatedEntry.scopePath
+                confidence          = [string]$updatedEntry.confidence
+                hitCount            = [int]$updatedEntry.hitCount
+                distinctCommitCount = [int]$updatedEntry.distinctCommitCount
+                promotionTarget     = [string]$updatedEntry.promotionTarget
+                status              = [string]$updatedEntry.status
+            })
+            [void]$reportLearningTrace.Add([pscustomobject]@{
+                batchId                    = 'harness'
+                attempt                    = 1
+                normalizedFailureSignature = $signature
+                memoryEntriesUsed          = if ($null -ne $matchedMemoryEntry) { @([string]$matchedMemoryEntry.signature) } else { @() }
+                repairDelta                = 'harness-learning-recorded'
+                verificationResult         = 'failed'
+            })
+
+            $promotionCandidate = Get-RuleHarnessPromotionCandidate -Entry $updatedEntry -Rationale ([string]$harnessError.title) -Config $config
+            if ($null -ne $promotionCandidate) {
+                [void]$reportPromotionCandidates.Add($promotionCandidate)
+            }
+        }
+
+        if (-not $DryRun -and $harnessMemoryStore.dirty) {
+            Save-RuleHarnessMemoryStore -MemoryStore $harnessMemoryStore
+        }
+    }
+
     $findings = @($mutationResult.finalStaticFindings + $harnessErrors)
     $failed = (@($findings | Where-Object { $_.severity -eq 'high' -and $_.findingType -eq 'code_violation' }).Count -gt 0) -or
         ($harnessErrors.Count -gt 0) -or
         [bool]$mutationResult.failed
+    $reportActionItems = @(Merge-RuleHarnessActionItems -Items @(
+        @($mutationResult.actionItems) +
+        @($reportPromotionCandidates | ForEach-Object {
+            New-RuleHarnessActionItem `
+                -Kind 'promote-durable-rule' `
+                -Severity 'high' `
+                -Summary ("Promote recurring failure guidance to {0}" -f [string]$_.targetDoc) `
+                -Details ("Signature {0} repeated across {1} runs and {2} commits. Capture the durable rule in the owning doc." -f [string]$_.signature, [int]$_.hitCount, [int]$_.distinctCommitCount) `
+                -RelatedPaths @([string]$_.targetDoc)
+        }) +
+        @(Get-RuleHarnessActionItemsForFindings `
+            -Findings $findings `
+            -ReportPathHint $ReportPathHint `
+            -SummaryPathHint $SummaryPath `
+            -LogPathHint $LogPathHint)
+    ))
+    $allStageResults = @($stageResults) + @($mutationResult.stageResults)
 
     $report = [pscustomobject]@{
         runId            = [guid]::NewGuid().ToString()
-        commitSha        = ((Invoke-RuleHarnessGit -RepoRoot $RepoRoot -Arguments @('rev-parse', 'HEAD')) | Select-Object -First 1).Trim()
+        commitSha        = $reportCommitSha
         execution        = [pscustomobject]@{
             dryRun          = [bool]$DryRun
             llmEnabled      = [bool]$llmEnabled
@@ -2586,6 +4091,9 @@ function Invoke-RuleHarness {
             mutationMode    = $mutationState.mode
             branch          = Get-RuleHarnessCurrentBranch -RepoRoot $RepoRoot
             statePath       = $mutationResult.historySummary.statePath
+            reportPath      = $ReportPathHint
+            summaryPath     = $SummaryPath
+            logPath         = $LogPathHint
         }
         scannedFeatures   = $scannedFeatures
         findings          = $findings
@@ -2608,8 +4116,16 @@ function Invoke-RuleHarness {
         appliedBatches    = @($mutationResult.appliedBatches)
         skippedBatches    = @($mutationResult.skippedBatches)
         rollbackBatches   = @($mutationResult.rollbackBatches)
+        stageResults      = @($allStageResults)
+        actionItems       = @($reportActionItems)
         decisionTrace     = @($mutationResult.decisionTrace)
         validationResults = @($mutationResult.validationResults)
+        discoveredValidationPlan = @($mutationResult.discoveredValidationPlan)
+        learningTrace     = @($reportLearningTrace)
+        memoryHits        = @($reportMemoryHits)
+        memoryUpdates     = @($reportMemoryUpdates)
+        promotionCandidates = @($reportPromotionCandidates)
+        retryAttempts     = [int]$mutationResult.retryAttempts
         historySummary    = $mutationResult.historySummary
         commit            = $mutationResult.commit
         rollback          = $mutationResult.rollback

@@ -14,7 +14,6 @@
   "ssot": {
     "scopeDocs": [
       "CLAUDE.md",
-      "agent/*.md",
       "Assets/Scripts/Features/*/README.md",
       "Assets/Scripts/Shared/README.md",
       "Assets/Editor/UnityMcp/README.md"
@@ -23,7 +22,6 @@
   "docs": {
     "allowlist": [
       "CLAUDE.md",
-      "agent/*.md",
       "Assets/Scripts/Features/*/README.md",
       "Assets/Scripts/Shared/README.md",
       "Assets/Editor/UnityMcp/README.md"
@@ -66,8 +64,6 @@
     "gcDays": 14,
     "maxAttemptsPerCommit": 2,
     "nonActionableReasons": [
-      "missing-validation-registry",
-      "no-targeted-tests",
       "dirty-target-files",
       "ownership-preflight-rejected"
     ]
@@ -76,7 +72,13 @@
     "runHarnessTests": true,
     "harnessTestScript": "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
     "registryPath": "tools/rule-harness/validation-registry.json",
-    "requireRegistryForCodeBatches": true
+    "requireRegistryForCodeBatches": false
+  },
+  "learning": {
+    "memoryPath": "tools/rule-harness/memory/advisory-memory.json",
+    "maxSameRunAttempts": 2,
+    "promotionMinHits": 3,
+    "promotionMinDistinctCommits": 2
   },
   "risk": {
     "enabled": true,

@@ -14,8 +14,16 @@
     "appliedBatches",
     "skippedBatches",
     "rollbackBatches",
+    "stageResults",
+    "actionItems",
     "decisionTrace",
     "validationResults",
+    "discoveredValidationPlan",
+    "learningTrace",
+    "memoryHits",
+    "memoryUpdates",
+    "promotionCandidates",
+    "retryAttempts",
     "historySummary",
     "commit",
     "rollback",
@@ -74,6 +82,24 @@
             "report_only",
             "doc_only",
             "code_and_rules"
+          ]
+        },
+        "reportPath": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "summaryPath": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "logPath": {
+          "type": [
+            "string",
+            "null"
           ]
         },
         "statePath": {
@@ -324,6 +350,73 @@
         "type": "object"
       }
     },
+    "stageResults": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "stage",
+          "status",
+          "attempted",
+          "summary"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "attempted": {
+            "type": "boolean"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "details": {
+            "type": [
+              "object",
+              "array",
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "actionItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "severity",
+          "summary",
+          "details",
+          "relatedPaths"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          },
+          "relatedPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "decisionTrace": {
       "type": "array",
       "items": {
@@ -355,6 +448,39 @@
           }
         }
       }
+    },
+    "discoveredValidationPlan": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "learningTrace": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "memoryHits": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "memoryUpdates": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "promotionCandidates": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "retryAttempts": {
+      "type": "integer"
     },
     "historySummary": {
       "type": "object",

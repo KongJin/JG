@@ -5,7 +5,7 @@
 기본 기준 문서:
 
 - `CLAUDE.md`
-- `agent/*.md`
+- `CLAUDE.md` 가 직접 가리키는 global owner docs
 - `Assets/Scripts/Features/*/README.md`
 - `Assets/Scripts/Shared/README.md`
 - `Assets/Editor/UnityMcp/README.md`
@@ -27,6 +27,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-rule-harness.p
 ```
 
 결과는 기본적으로 `Temp/RuleHarness/rule-harness-report.json` 에 저장된다.
+요약을 함께 남기면 `stageResults`, `actionItems`가 반영된 markdown summary를 바로 읽을 수 있다.
 
 기본 mutation mode는 config 기준 `code_and_rules` 이고, `-DryRun`이면 수정 없이 계획/검증 대상만 계산한다.
 
@@ -56,6 +57,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\register-rule-harn
 - `Temp/RuleHarnessScheduled/<timestamp>/rule-harness-summary.md`
 - `Temp/RuleHarnessScheduled/<timestamp>/rule-harness.log`
 - `Temp/RuleHarnessScheduled/latest-run.txt`
+- `Temp/RuleHarnessScheduled/latest-status.json`
 - 반복 실패/재시도 상태: `Temp/RuleHarnessState/history.json`
 
 예약 해제:
@@ -93,11 +95,18 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 - `-ReviewJsonPath`
   - OpenAI 호출 대신 미리 저장한 리뷰 JSON을 읽는다.
 
-## Validation Registry
+## Validation Discovery
 
-- code/mixed batch의 targeted validation은 `tools/rule-harness/validation-registry.json` 를 기준으로 정한다.
-- 기본 구조는 `schemaVersion`, `features.<Feature>.scripts[]`, `features.<Feature>.smoke[]`, `features.<Feature>.requiredForKinds[]` 이다.
-- registry entry가 없는 feature code batch는 apply 전에 `missing-validation-registry` 로 skip된다.
+- code/mixed batch는 이제 `validation-registry.json` 등록 여부와 무관하게 repair loop에 들어갈 수 있다.
+- 검증 계획은 다음 우선순위로 자동 발견된다.
+  1. `Tests/<Feature>/Run-*.ps1`
+  2. `CLAUDE.md`, 현재 global owner docs, owner README 계약에서 추론한 structural check
+  3. `Tests/<Feature>/` 아래 기존 test asset
+  4. `tools/rule-harness/validation-registry.json` 의 optional hint
+  5. 하네스 fixture test + static scan
+- registry는 migration 동안 유지되는 hint 레이어다. 없다고 해서 `missing-validation-registry`로 막지 않는다.
+- runner script가 없으면 하네스는 inferred structural check + static scan으로 계속 진행하고, report의 `discoveredValidationPlan`과 `actionItems`에 confidence/다음 조치를 남긴다.
+- advisory memory는 `tools/rule-harness/memory/advisory-memory.json` 에 저장되며 SSOT가 아니다. prompt/판단 우선순위는 항상 `CLAUDE.md -> owner docs -> advisory memory -> current failure context` 순서다.
 
 ## 보고서 확인
 
@@ -114,13 +123,36 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 - `appliedBatches`
 - `skippedBatches`
 - `rollbackBatches`
+- `stageResults`
+- `actionItems`
 - `decisionTrace`
 - `validationResults`
+- `discoveredValidationPlan`
+- `learningTrace`
+- `memoryHits`
+- `memoryUpdates`
+- `promotionCandidates`
+- `retryAttempts`
 - `historySummary`
 - `commit`
 - `rollback`
 
 문서 sync skip 이유나 batch 검증 실패 이유는 `decisionTrace`, `validationResults`, `rule-harness.log` 에서 확인할 수 있다.
+
+`rule-harness-summary.md`는 개수 요약 뒤에 `Stage Status`, `Next Actions`를 붙여서 지금 막힌 지점과 다음 조치를 먼저 보여준다.
+반복 실패가 누적되면 `Promotion Candidates`와 `promotionCandidates` 필드에서 어느 owner doc으로 규칙을 승격해야 하는지 볼 수 있다.
+예약 실행에서는 `latest-status.json` 이 마지막 실행 경로와 상위 액션 아이템, promotion candidate, retry count를 바로 가리킨다.
+
+## 운영 체크
+
+- 마지막 예약 실행을 빨리 확인할 때는 `Temp/RuleHarnessScheduled/latest-status.json` 을 먼저 연다.
+- stage별 성공/실패 흐름을 보려면 `rule-harness-summary.md` 의 `Stage Status`를 본다.
+- 다음 액션만 빠르게 보려면 `rule-harness-summary.md` 의 `Next Actions` 또는 `latest-status.json.topActionItems`를 본다.
+- 자기개선 루프가 이번 run에서 뭘 학습했는지는 `memoryUpdates`, `learningTrace`, `latest-status.json.learnedAnything`를 본다.
+- 반복 실패를 owner doc 규칙으로 올릴 시점은 `promotionCandidates` 또는 `latest-status.json.topPromotionCandidates`를 본다.
+- LLM 연결 실패가 보이면 `execution.llmApiBaseUrl`, `execution.logPath`, `actionItems`를 보고 API 키, 네트워크, endpoint를 함께 확인한다.
+- runner script가 없어서 confidence가 낮게 나오면 `Tests/<Feature>/Run-*.ps1` 를 추가하고 필요하면 `validation-registry.json` 에 hint를 보강한다.
+- 예약 작업 산출물은 `latest-run.txt`로 run 디렉터리를 찾고, 그 디렉터리의 report/summary/log를 순서대로 열면 된다.
 
 ## GLM 메모
 

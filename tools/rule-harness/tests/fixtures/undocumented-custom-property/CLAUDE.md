@@ -1,3 +1,3 @@
 # CLAUDE
 
-See `/agent/state_ownership.md`.
+See `/docs/ownership/ownership-rules.md`.

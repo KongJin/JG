@@ -4,6 +4,7 @@ param(
     [string]$ArtifactDir = (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path 'Temp/RuleHarness'),
     [string]$ReportPath,
     [string]$SummaryPath = $env:GITHUB_STEP_SUMMARY,
+    [string]$LogPathHint,
     [string]$ReviewJsonPath,
     [string]$ApiKey,
     [string]$ApiBaseUrl = $env:RULE_HARNESS_API_BASE_URL,
@@ -87,7 +88,9 @@ $report = Invoke-RuleHarness `
     -DisableLlm:$DisableLlm `
     -DryRun:$DryRun `
     -ReviewJsonPath $ReviewJsonPath `
-    -SummaryPath $SummaryPath
+    -SummaryPath $SummaryPath `
+    -ReportPathHint $ReportPath `
+    -LogPathHint $LogPathHint
 
 $report | ConvertTo-Json -Depth 50 | Set-Content -Path $ReportPath -Encoding UTF8
 Write-Host "Rule harness report written to $ReportPath"

@@ -1,4 +1,4 @@
 ﻿# Foo
 
-See [rules](../../../../agent/old.md).
+See [rules](../../../../docs/rules/legacy-rule.md).
 

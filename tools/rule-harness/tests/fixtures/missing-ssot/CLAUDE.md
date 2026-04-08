@@ -1,3 +1,3 @@
 # CLAUDE
 
-See `/agent/missing.md`.
+See `/docs/rules/missing-global-rule.md`.

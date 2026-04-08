@@ -24,10 +24,13 @@ $reportPath = Join-Path $runDir 'rule-harness-report.json'
 $summaryPath = Join-Path $runDir 'rule-harness-summary.md'
 $logPath = Join-Path $runDir 'rule-harness.log'
 $latestPointer = Join-Path $OutputRoot 'latest-run.txt'
+$latestStatusPath = Join-Path $OutputRoot 'latest-status.json'
+$runTimestamp = Get-Date -Format o
+$scheduledError = $null
 
 Start-Transcript -Path $logPath -Force | Out-Null
 try {
-    Write-Host "Rule harness scheduled run started at $(Get-Date -Format o)"
+    Write-Host "Rule harness scheduled run started at $runTimestamp"
     Write-Host "RepoRoot: $RepoRoot"
     Write-Host "Output: $runDir"
 
@@ -47,11 +50,51 @@ try {
         -MutationMode $MutationMode `
         -EnableMutation `
         -RequireLlm:$requireLlmForRun `
-        -DisableLlm:$DisableLlm
+        -DisableLlm:$DisableLlm `
+        -LogPathHint $logPath
 
-    Set-Content -Path $latestPointer -Value $runDir -Encoding UTF8
     Write-Host "Rule harness scheduled run finished at $(Get-Date -Format o)"
 }
+catch {
+    $scheduledError = $_.Exception
+    Write-Host "Rule harness scheduled run failed at $(Get-Date -Format o): $($scheduledError.Message)"
+}
 finally {
+    $report = $null
+    if (Test-Path -LiteralPath $reportPath) {
+        $report = Get-Content -Path $reportPath -Raw | ConvertFrom-Json
+    }
+
+    $topActionItems = @()
+    if ($null -ne $report -and @($report.actionItems).Count -gt 0) {
+        $topActionItems = [object[]]@($report.actionItems | Select-Object -First 5)
+    }
+
+    $topPromotionCandidates = @()
+    if ($null -ne $report -and @($report.promotionCandidates).Count -gt 0) {
+        $topPromotionCandidates = [object[]]@($report.promotionCandidates | Select-Object -First 3)
+    }
+
+    $latestStatus = [pscustomobject]@{
+        runDir                = $runDir
+        reportPath            = $reportPath
+        summaryPath           = $summaryPath
+        logPath               = $logPath
+        failed                = if ($null -ne $report) { [bool]$report.failed } else { $true }
+        llmEnabled            = if ($null -ne $report) { [bool]$report.execution.llmEnabled } else { (-not $DisableLlm) }
+        timestamp             = $runTimestamp
+        topActionItems        = $topActionItems
+        topPromotionCandidates = $topPromotionCandidates
+        retryCount            = if ($null -ne $report) { [int]$report.retryAttempts } else { 0 }
+        learnedAnything       = if ($null -ne $report) { (@($report.memoryUpdates).Count -gt 0) -or (@($report.promotionCandidates).Count -gt 0) } else { $false }
+        errorMessage          = if ($null -ne $scheduledError) { $scheduledError.Message } else { $null }
+    }
+
+    Set-Content -Path $latestPointer -Value $runDir -Encoding UTF8
+    $latestStatus | ConvertTo-Json -Depth 20 | Set-Content -Path $latestStatusPath -Encoding UTF8
     Stop-Transcript | Out-Null
+}
+
+if ($null -ne $scheduledError) {
+    throw $scheduledError
 }

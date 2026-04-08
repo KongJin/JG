@@ -1,3 +1,3 @@
 # CLAUDE
 
-See `/agent/architecture.md`.
+See `/docs/rules/architecture-rules.md`.
