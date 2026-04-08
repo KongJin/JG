@@ -99,6 +99,8 @@ namespace Features.Unit.Infrastructure
             PhotonNetwork.CurrentRoom.SetCustomProperties(props);
         }
 
+        private bool _hasReceivedSync;
+
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
             if (stream.IsWriting)
@@ -114,6 +116,13 @@ namespace Features.Unit.Infrastructure
                 _networkPosition = (Vector3)stream.ReceiveNext();
                 _networkCurrentHp = (float)stream.ReceiveNext();
                 _isDead = (bool)stream.ReceiveNext();
+
+                // 첫 수신 시 로컬 BattleEntity 도메인에 반영
+                if (!_hasReceivedSync && _battleEntity != null)
+                {
+                    _battleEntity.SetHpFromNetwork(_networkCurrentHp);
+                    _hasReceivedSync = true;
+                }
             }
         }
 
