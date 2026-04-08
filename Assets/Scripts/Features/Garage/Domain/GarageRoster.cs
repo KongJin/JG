@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Features.Garage.Domain
 {
     /// <summary>
-    /// 플레이어의 차고 편성. 3~5기 유닛 + 각각의 모듈 조합 저장.
+    /// 플레이어의 차고 편성. 3~6기 유닛 + 각각의 모듈 조합 저장.
     /// 네트워크 직렬화(JSON) 지원 — 순수 C#.
     /// </summary>
     [Serializable]
@@ -33,9 +33,9 @@ namespace Features.Garage.Domain
         public List<UnitLoadout> loadout = new List<UnitLoadout>();
 
         /// <summary>
-        /// 편성이 유효한가 (3~5기).
+        /// 편성이 유효한가 (3~6기).
         /// </summary>
-        public bool IsValid => loadout != null && loadout.Count >= 3 && loadout.Count <= 5;
+        public bool IsValid => loadout != null && loadout.Count >= 3 && loadout.Count <= 6;
 
         public int Count => loadout != null ? loadout.Count : 0;
 

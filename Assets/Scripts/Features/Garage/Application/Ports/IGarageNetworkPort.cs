@@ -35,5 +35,11 @@ namespace Features.Garage.Application.Ports
         /// 룸 내 모든 플레이어 편성 데이터 조회.
         /// </summary>
         System.Collections.Generic.Dictionary<object, GarageRoster> GetAllPlayersRosters();
+
+        /// <summary>
+        /// 로컬 플레이어의 편성 데이터 조회.
+        /// GameScene 진입 시 CustomProperties에서 복원된 데이터 사용.
+        /// </summary>
+        GarageRoster GetLocalPlayerRoster();
     }
 }

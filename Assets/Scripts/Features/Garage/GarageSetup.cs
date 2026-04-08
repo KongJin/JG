@@ -14,12 +14,14 @@ namespace Features.Garage
     public sealed class GarageSetup
     {
         private DisposableScope _disposables;
+        private IGarageNetworkPort _networkPort;
 
         // Application UseCases
         public InitializeGarageUseCase InitializeGarage { get; private set; }
         public ComposeUnitUseCase ComposeUnit { get; private set; }
         public ValidateRosterUseCase ValidateRoster { get; private set; }
         public SaveRosterUseCase SaveRoster { get; private set; }
+        public IGarageNetworkPort NetworkPort => _networkPort;
 
         /// <summary>
         /// Garage Feature 초기화.
@@ -34,6 +36,7 @@ namespace Features.Garage
         {
             _disposables?.Dispose();
             _disposables = new DisposableScope();
+            _networkPort = networkPort;
 
             // Application UseCases 조립
             ComposeUnit = new ComposeUnitUseCase(compositionPort);

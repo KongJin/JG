@@ -61,6 +61,15 @@ namespace Features.Garage.Infrastructure
             return result;
         }
 
+        public GarageRoster GetLocalPlayerRoster()
+        {
+            if (PhotonNetwork.LocalPlayer == null)
+                return new GarageRoster();
+
+            var actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+            return GetPlayerRoster(actorNumber);
+        }
+
         // Photon 콜백: MonoBehaviourPunCallbacks에서 public override로 구현해야 인터페이스 메서드가 정확히 일치함.
         // 이 패턴은 PlayerNetworkAdapter, LobbyPhotonAdapter, WaveBootstrap에서 동일하게 사용됨.
         public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
