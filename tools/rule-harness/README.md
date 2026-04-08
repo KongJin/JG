@@ -95,15 +95,20 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 
 ## Validation Discovery
 
-- code/mixed batch는 이제 `validation-registry.json` 등록 여부와 무관하게 repair loop에 들어갈 수 있다.
-- 검증 계획은 다음 우선순위로 자동 발견된다.
-  1. `Tests/<Feature>/Run-*.ps1`
-  2. `CLAUDE.md`, 현재 global owner docs, 실제 `Setup` / `Bootstrap` 와 코드 구조에서 추론한 structural check
-  3. `Tests/<Feature>/` 아래 기존 test asset
-  4. `tools/rule-harness/validation-registry.json` 의 optional hint
-  5. 하네스 fixture test + static scan
-- registry는 migration 동안 유지되는 hint 레이어다. 없다고 해서 `missing-validation-registry`로 막지 않는다.
-- runner script가 없으면 하네스는 inferred structural check + static scan으로 계속 진행하고, report의 `discoveredValidationPlan`과 `actionItems`에 confidence/다음 조치를 남긴다.
+- code/mixed batch도 별도 runner 없이 repair loop에 들어갈 수 있다.
+- 검증 계획은 이제 하네스 내부 추론만으로 계산된다.
+  1. `CLAUDE.md`, 현재 global owner docs, 실제 `Setup` / `Bootstrap`, 코드 구조에서 inferred check를 만든다.
+  2. `Tests/<Feature>/` 아래 기존 test asset 존재 여부를 confidence 신호로만 쓴다.
+  3. 하네스 fixture test와 static scan으로 결과를 확인한다.
+- `discoveredValidationPlan` 은 스크립트 목록 대신 아래 정보만 남긴다.
+  - `source`: `rule-only | inferred | feature_test_assets`
+  - `confidence`: `high | medium | low`
+  - `runnable`: 하네스 내장 check 중 실제 실행 가능한 check 존재 여부
+  - `checks`: inferred check 목록
+  - `featureTestAssets`: feature test asset 존재 신호
+- code/mixed batch의 기본 confidence는 보수적으로 계산한다. feature test asset이 없거나, UnityMcp/scene/prefab 범위를 건드리거나, cross-feature 범위가 넓으면 `low` 로 내려간다.
+- `low` confidence code/mixed batch는 auto-apply 대신 `manual-validation-required` 로 skip된다.
+- Unity MCP runtime smoke 통합은 이번 phase 범위 밖이다. 관련 범위는 `low` confidence로 분류해 추후 phase에서 다룬다.
 - advisory memory는 `tools/rule-harness/memory/advisory-memory.json` 에 저장되며 SSOT가 아니다. prompt/판단 우선순위는 항상 `CLAUDE.md -> owner docs -> advisory memory -> current failure context` 순서다.
 
 ## 보고서 확인
@@ -149,7 +154,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 - 자기개선 루프가 이번 run에서 뭘 학습했는지는 `memoryUpdates`, `learningTrace`, `latest-status.json.learnedAnything`를 본다.
 - 반복 실패를 owner doc 규칙으로 올릴 시점은 `promotionCandidates` 또는 `latest-status.json.topPromotionCandidates`를 본다.
 - LLM 연결 실패가 보이면 `execution.llmApiBaseUrl`, `execution.logPath`, `actionItems`를 보고 API 키, 네트워크, endpoint를 함께 확인한다.
-- runner script가 없어서 confidence가 낮게 나오면 `Tests/<Feature>/Run-*.ps1` 를 추가하고 필요하면 `validation-registry.json` 에 hint를 보강한다.
+- `manual-validation-required` 가 보이면 하네스가 아직 충분히 강한 inferred signal을 못 찾은 것이다. 해당 feature의 구조 규칙, static coverage, feature test asset 유무를 먼저 보강한다.
 - 예약 작업 산출물은 `latest-run.txt`로 run 디렉터리를 찾고, 그 디렉터리의 report/summary/log를 순서대로 열면 된다.
 
 ## GLM 메모
