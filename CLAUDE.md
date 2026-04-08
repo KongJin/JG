@@ -54,3 +54,35 @@
 4. `/docs/design/game_design.md` (게임 컨셉 SSOT — 코드 책임과 기획 방향이 충돌하면 이 문서가 우선)
 5. 해당 feature의 `*Setup.cs` / `*Bootstrap.cs`와 실제 씬/프리팹 계약 (로컬 wiring, lookup 예외, 네트워크 키 실제 사용 경로)
 6. `/agent/work_principles.md` (문서 운영, SSOT 소유권, 응집도 원칙)
+
+---
+
+## 진행 상황 (Game Scene Entry)
+
+**마지막 업데이트**: 2026-04-08
+
+| Phase | 상태 | 요약 |
+|---|---|---|
+| Phase 0: 씬 진입 전 | ✅ 완료 | GarageRoster 직렬화, Room 진입 시 동기화 |
+| Phase 1: GameScene 초기화 | ✅ 완료 | EventBus, Unit/Garage Bootstrap, Unit 스펙 계산 |
+| Phase 2: 소환 시스템 | 🟨 기본 구축 | SummonUnitUseCase, Energy 시스템, UnitSlot UI (3슬롯) |
+| Phase 3: Wave/Enemy와 Unit 연결 | ✅ 완료 | GameStartEvent 조건 제거, Enemy → Unit 타겟팅, BattleEntity Combat 등록 |
+| Phase 4: 재소환 시스템 | ✅ 완료 | UnitDiedEvent, UnitDeathEventHandler, 재소환 UI |
+| Phase 5: 네트워크 동기화 | 🟨 일부 | Energy/Mana 통합, IPlayerSpecProvider, GetLocalPlayerRoster |
+| Phase 6: 게임 종료 | ✅ 완료 | GameEndEvent 재설계, GameEndAnalytics, WaveEndView 개선, Lobby 복귀 |
+
+### 미완료 TODO
+- UnitSlotView 드래그 앤 드롭 배치 (현재 클릭만)
+- UnitSlotsContainer 로테이션 완성 (6개 중 3개 표시 전환)
+- Phase 5 완성 — Late-join, BattleEntity 상태 동기화
+- UnitCatalog에서 실제 스펙 조회 (`CreateTemporaryUnitSpec()` 대체)
+- WaveEndView → 실제 Lobby 씬 전환 (현재 `PhotonNetwork.LeaveRoom()`만)
+- Firebase Analytics 연동
+
+### 주요 변경 사항 (최근 커밋)
+- 포트 소유권: `port_ownership.md` → `architecture-diagram.md` 통합 (Mermaid 의존성 그래프)
+- Player: Mana → Energy 변경, IPlayerSpecProvider 도입, InitializeLocal/Remote 분리
+- Garage: 슬롯 5→6 확장, GetLocalPlayerRoster, RestoreGarageRosterUseCase
+- Unit: 소환 시스템, 슬롯 UI, ComputePlayerUnitSpecsUseCase
+- Wave: Victory/Defeat 통계, Lobby 복귀 버튼
+- Agent 문서 5개 삭제 (game_design.md, state_ownership.md, initialization_order.md, firebase_hosting.md, webgl_optimization.md)
