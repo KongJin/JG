@@ -123,6 +123,9 @@ namespace Features.Garage.Domain
         [SerializeField] private float hpBonus;        // HP 보정값 (+500)
         [SerializeField] private float moveRange;      // 이동범위 (m) (절대값)
 
+        [Header("Anchor")]
+        [SerializeField] private float anchorRange;    // 앵커 반경 (m) (전투 중 교전 가능 범위)
+
         [Header("Description")]
         [SerializeField, TextArea] private string description;
 
@@ -130,6 +133,7 @@ namespace Features.Garage.Domain
         public string DisplayName => displayName;
         public float HpBonus => hpBonus;
         public float MoveRange => moveRange;
+        public float AnchorRange => anchorRange;
     }
 }
 ```

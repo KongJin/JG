@@ -73,6 +73,14 @@ Assets/Scripts/Features/Unit/
 앵커 반경은 **기동 모듈(Mobility Module)** 이 결정한다.
 `MobilityModuleData.anchorRange` 필드에 저장되며, `ModuleStats.AnchorRange`를 통해 계산에 사용된다.
 
+### CustomProperties 소유권
+
+- `battle_hp`는 Unit이 소유하는 Room `CustomProperties` 키다.
+- `battle_dead`는 Unit이 소유하는 Room `CustomProperties` 키다.
+- 쓰기 주체는 `BattleEntityPhotonController.SyncState()`를 호출하는 owner 인스턴스이며, 전투 상태 변경 시 authoritative write를 수행한다.
+- 다른 클라이언트와 다른 피처는 이 키들을 read-only로만 소비한다.
+- 목적은 전투 중 BattleEntity 상태 동기화와 late-join 시 상태 복원의 근거를 남기는 것이다.
+
 ## Bootstrap
 
 - **UnitBootstrap** (`ServiceRoot/UnitBootstrap` 또는 로비 씬의 적절한 위치):

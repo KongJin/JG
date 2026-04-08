@@ -3,6 +3,7 @@ using Features.Combat;
 using Features.Combat.Application;
 using Features.Combat.Presentation;
 using Features.Garage;
+using Features.Garage.Application;
 using Features.Player.Application;
 using Features.Player.Application.Ports;
 using Features.Player.Infrastructure;
@@ -10,6 +11,9 @@ using Features.Player.Presentation;
 using Features.Projectile;
 using Features.Status;
 using Features.Unit;
+using Features.Unit.Application;
+using Features.Unit.Application.Ports;
+using Features.Unit.Presentation;
 using Features.Wave;
 using Features.Zone;
 using Photon.Pun;
@@ -20,6 +24,7 @@ using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Lifecycle;
 using Shared.Runtime.Sound;
+using Shared.Time;
 using Shared.Ui;
 using UnityEngine;
 
@@ -41,10 +46,16 @@ namespace Features.Player
         [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
         [Required, SerializeField] private EnergyRegenTicker _energyRegenTicker;
         [Required, SerializeField] private EnergyBarView _energyBarView;
+        [Required, SerializeField] private PlayerSetup _localPlayerSetup;
 
         [Header("Unit & Garage")]
         [Required, SerializeField] private UnitBootstrap _unitBootstrap;
         [Required, SerializeField] private GarageBootstrap _garageBootstrap;
+
+        [Header("Unit Summon UI")]
+        [SerializeField] private UnitSlotsContainer _unitSlotsContainer;
+        [SerializeField] private RectTransform _unitSlotsParent;
+        [SerializeField] private UnitSlotView _unitSlotPrefab;
 
         [Header("Combat Feedback")]
         [SerializeField] private DamageNumberSpawner _damageNumberSpawner;
@@ -69,6 +80,8 @@ namespace Features.Player
 
         // Unit specs per player (computed from GarageRoster)
         private Dictionary<DomainEntityId, Unit.Domain.Unit[]> _playerUnitSpecs = new();
+        private RestoreGarageRosterUseCase _restoreGarageRosterUseCase;
+        private ComputePlayerUnitSpecsUseCase _computePlayerUnitSpecsUseCase;
 
         /// <summary>
         /// Unit/Garage Feature 초기화 및 Unit 스펙 계산.
@@ -84,44 +97,72 @@ namespace Features.Player
                 _unitBootstrap.CompositionPort,
                 _unitBootstrap.Catalog);
 
-            // 3. GarageRoster 복원 (CustomProperties에서 읽기)
-            RestoreGarageRosterFromRoom();
+            // 3. UseCase들 생성
+            _restoreGarageRosterUseCase = new RestoreGarageRosterUseCase(_garageBootstrap.Setup.NetworkPort);
+            _computePlayerUnitSpecsUseCase = new ComputePlayerUnitSpecsUseCase(
+                _garageBootstrap.Setup.ComposeUnit,
+                new ClockAdapter(),
+                _eventBus);
 
-            // 4. Unit 스펙 계산
-            ComputeUnitSpecs(localPlayerSetup.PlayerId);
+            // 4. GarageRoster 복원 (CustomProperties에서 읽기)
+            var loadouts = RestoreGarageRosterFromRoom(localPlayerSetup.PlayerId);
+
+            // 5. Unit 스펙 계산
+            ComputeUnitSpecs(localPlayerSetup.PlayerId, loadouts);
         }
 
         /// <summary>
         /// Room CustomProperties에서 GarageRoster를 복원한다.
         /// </summary>
-        private void RestoreGarageRosterFromRoom()
+        private GarageRoster.UnitLoadout[] RestoreGarageRosterFromRoom(DomainEntityId playerId)
         {
             if (!PhotonNetwork.InRoom)
             {
                 Debug.LogWarning("[GameSceneRoot] Cannot restore GarageRoster: not in room.");
-                return;
+                return new GarageRoster.UnitLoadout[0];
             }
 
-            var props = PhotonNetwork.CurrentRoom.CustomProperties;
-            if (props == null || !props.ContainsKey("garageRoster"))
-            {
-                Debug.LogWarning("[GameSceneRoot] GarageRoster not found in room properties.");
-                return;
-            }
-
-            // TODO: GarageRoster 역직렬화
-            // 현재는 GarageFeature에서 CustomProperties 읽는 구현 필요
-            // garageBootstrap.Setup.InitializeGarageUseCase.Execute(loadouts) 호출
+            return _restoreGarageRosterUseCase.Execute();
         }
 
         /// <summary>
         /// 로컬 플레이어의 Unit 스펙을 계산한다.
         /// </summary>
-        private void ComputeUnitSpecs(DomainEntityId playerId)
+        private void ComputeUnitSpecs(DomainEntityId playerId, GarageRoster.UnitLoadout[] loadouts)
         {
-            // TODO: GarageSetup.InitializeGarageUseCase가 반환하는 UnitLoadout[]을
-            // ComposeUnitUseCase로 계산하여 _playerUnitSpecs에 저장
-            // _playerUnitSpecs[playerId] = units;
+            var units = _computePlayerUnitSpecsUseCase.Execute(loadouts, playerId);
+            _playerUnitSpecs[playerId] = units;
+
+            Debug.Log($"[GameSceneRoot] Computed {units.Length} unit specs for player {playerId.Value}");
+        }
+
+        /// <summary>
+        /// Phase 4: 소환 슬롯 UI 초기화.
+        /// 계산된 Unit specs를 기반으로 3개 표시 슬롯을 생성한다.
+        /// </summary>
+        private void InitializeSummonSlots(DomainEntityId playerId)
+        {
+            if (!_playerUnitSpecs.TryGetValue(playerId, out var specs) || specs.Length == 0)
+            {
+                Debug.LogWarning("[GameSceneRoot] No unit specs for player. Summon slots not initialized.");
+                return;
+            }
+
+            if (_unitSlotsContainer == null)
+            {
+                Debug.LogWarning("[GameSceneRoot] UnitSlotsContainer not assigned. Summon UI skipped.");
+                return;
+            }
+
+            var energyPort = new UnitEnergyAdapter(_localPlayerSetup.EnergyAdapterInstance);
+
+            _unitSlotsContainer.Initialize(
+                _eventBus,
+                _unitBootstrap.BattleEntitySetup.SummonUnit,
+                energyPort,
+                specs,
+                playerId,
+                transform.position); // TODO: 실제 배치 영역 중앙 좌표로 변경
         }
 
         private void Awake()
@@ -166,20 +207,26 @@ namespace Features.Player
             var player = PhotonNetwork.Instantiate(
                 _playerPrefabName,
                 spawnPosition,
-                Quaternion.identity
-            );
+                Quaternion.identity);
 
+            // TODO: GetComponent 대체 - Anti-pattern.md에서 GetComponent 금지
+            // 현재 Photon instantiate 후 PlayerSetup 획득 불가피
+            // 향후 LocalPlayerArrived 이벤트 패턴으로 변경 권장
+            _localPlayerSetup = player.GetComponent<PlayerSetup>();
             _cameraFollower.Initialize(player.transform, _camera.transform.position - player.transform.position);
 
-            var localSetup = player.GetComponent<PlayerSetup>();
-
             // Status (must initialize before PlayerSetup so SpeedModifier is ready)
-            _statusSetup.Initialize(_eventBus, localSetup.StatusNetworkAdapter, localSetup.StatusNetworkAdapter, PhotonNetwork.IsMasterClient);
+            _statusSetup.Initialize(_eventBus, _localPlayerSetup.StatusNetworkAdapter, _localPlayerSetup.StatusNetworkAdapter, PhotonNetwork.IsMasterClient);
 
-            localSetup.Initialize(_eventBus, speedModifier: _statusSetup.SpeedModifier, sceneRegistry: _playerSceneRegistry, playerLookup: _playerLookup);
+            _localPlayerSetup.InitializeLocal(
+                _eventBus,
+                new DefaultPlayerSpecProvider(),
+                _statusSetup.SpeedModifier,
+                _playerSceneRegistry,
+                _playerLookup);
 
             // Combat
-            _combatBootstrap.Initialize(_eventBus, localSetup.CombatNetworkPort, localSetup.PlayerId, new EntityAffiliationAdapter());
+            _combatBootstrap.Initialize(_eventBus, _localPlayerSetup.CombatNetworkPort, _localPlayerSetup.PlayerId, new EntityAffiliationAdapter());
 
             if (_waveBootstrap != null && _coreObjective == null)
             {
@@ -199,11 +246,11 @@ namespace Features.Player
                 _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndHandler));
             }
 
-            ConnectPlayer(localSetup);
+            ConnectPlayer(_localPlayerSetup);
 
             // Energy (Mana renamed to Energy)
-            _energyRegenTicker.Initialize(localSetup.EnergyAdapterInstance);
-            _energyBarView.Initialize(_eventBus, localSetup.PlayerId, localSetup.MaxEnergy);
+            _energyRegenTicker.Initialize(_localPlayerSetup.EnergyAdapterInstance);
+            _energyBarView.Initialize(_eventBus, _localPlayerSetup.PlayerId, _localPlayerSetup.MaxEnergy);
 
             // SoundPlayer is a DDOL singleton created from JG_LobbyScene.
             // Running JG_GameScene directly is allowed, but audio stays unavailable.
@@ -227,7 +274,7 @@ namespace Features.Player
                 ConnectPlayer(_pendingRemotePlayers.Dequeue());
 
             // Unit/Garage 초기화 및 Unit 스펙 계산
-            InitializeUnitAndGarage(localSetup);
+            InitializeUnitAndGarage(_localPlayerSetup);
 
             // Wave 초기화 (Skill 선택 제거, 바로 시작)
             if (_waveBootstrap != null)
@@ -239,16 +286,41 @@ namespace Features.Player
                     return;
                 }
 
-                _waveBootstrap.Initialize(_eventBus, _combatBootstrap, localSetup.PlayerId,
+                _waveBootstrap.Initialize(_eventBus, _combatBootstrap, _localPlayerSetup.PlayerId,
                     _coreObjective);
                 _waveBootstrap.RegisterPlayer(player.transform);
+
+                // Phase 3: BattleEntity 소환 시스템 연결
+                _unitBootstrap.InitializeBattleEntity(
+                    _eventBus,
+                    _localPlayerSetup.EnergyAdapterInstance,
+                    _combatBootstrap,
+                    _waveBootstrap.UnitPositionQuery);
+
+                // Phase 4: 소환 UI 초기화
+                InitializeSummonSlots(_localPlayerSetup.PlayerId);
             }
         }
 
         private void ConnectPlayer(PlayerSetup setup)
         {
             if (!setup.IsInitialized)
-                setup.Initialize(_eventBus, playerLookup: _playerLookup);
+            {
+                var specProvider = new DefaultPlayerSpecProvider();
+                if (setup.NetworkAdapter.IsMine)
+                {
+                    setup.InitializeLocal(
+                        _eventBus,
+                        specProvider,
+                        _statusSetup.SpeedModifier,
+                        _playerSceneRegistry,
+                        _playerLookup);
+                }
+                else
+                {
+                    setup.InitializeRemote(_eventBus, specProvider, _playerLookup);
+                }
+            }
 
             if (!_playerSceneRegistry.TryRegister(setup))
                 return;

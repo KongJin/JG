@@ -1,5 +1,8 @@
+using Features.Combat;
 using Features.Garage.Application.Ports;
+using Features.Unit.Application.Ports;
 using Features.Unit.Infrastructure;
+using Features.Wave.Infrastructure;
 using Shared.Attributes;
 using Shared.EventBus;
 using UnityEngine;
@@ -13,13 +16,20 @@ namespace Features.Unit
     /// </summary>
     public sealed class UnitBootstrap : MonoBehaviour
     {
+        [Header("Unit Catalog")]
         [Required, SerializeField]
         private ModuleCatalog _moduleCatalog;
 
+        [Header("BattleEntity")]
+        [Required, SerializeField]
+        private SummonPhotonAdapter _summonAdapter;
+
         private UnitSetup _setup;
+        private BattleEntitySetup _battleEntitySetup;
         private UnitCompositionProvider _compositionProvider;
 
         public UnitSetup Setup => _setup;
+        public BattleEntitySetup BattleEntitySetup => _battleEntitySetup;
 
         /// <summary>
         /// Unit Bootstrap의 ModuleCatalog 참조.
@@ -45,6 +55,23 @@ namespace Features.Unit
             // Composition root 생성 및 초기화
             _setup = new UnitSetup();
             _setup.Initialize(eventBus, _compositionProvider);
+
+            // BattleEntity Setup
+            _battleEntitySetup = new BattleEntitySetup();
+            // energyPort는 GameSceneRoot에서 주입 (Player Feature에서 제공)
+        }
+
+        /// <summary>
+        /// BattleEntity Feature 초기화 (Energy 포트 + Combat + UnitPosition 주입).
+        /// GameSceneRoot에서 호출.
+        /// </summary>
+        public void InitializeBattleEntity(
+            EventBus eventBus,
+            IUnitEnergyPort energyPort,
+            CombatBootstrap combatBootstrap,
+            UnitPositionQueryAdapter unitPositionQuery)
+        {
+            _battleEntitySetup.Initialize(eventBus, energyPort, _summonAdapter, combatBootstrap, unitPositionQuery);
         }
 
         /// <summary>
@@ -53,12 +80,15 @@ namespace Features.Unit
         public void Cleanup()
         {
             _setup?.Cleanup();
+            _battleEntitySetup?.Cleanup();
             _setup = null;
+            _battleEntitySetup = null;
         }
 
         private void OnDestroy()
         {
             _setup?.Cleanup();
+            _battleEntitySetup?.Cleanup();
         }
     }
 }

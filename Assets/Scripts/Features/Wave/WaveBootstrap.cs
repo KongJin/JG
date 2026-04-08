@@ -32,6 +32,9 @@ namespace Features.Wave
         private PlayerPositionQueryAdapter _playerPositionQuery;
 
         [Required, SerializeField]
+        private UnitPositionQueryAdapter _unitPositionQuery;
+
+        [Required, SerializeField]
         private WaveHudView _hudView;
 
         [Required, SerializeField]
@@ -57,10 +60,19 @@ namespace Features.Wave
         private DisposableScope _disposables;
         private WaveLoopUseCase _waveLoop;
         private ICoreObjectiveQuery _coreObjectiveQuery;
+        private HostilePositionQuery _hostilePositionQuery;
         private bool _initialized;
         private bool _gameStarted;
 
-        public IPlayerPositionQuery PlayerPositionQuery => _playerPositionQuery;
+        /// <summary>
+        /// Enemy AI가 사용하는 통합 적대 대상 위치 쿼리.
+        /// </summary>
+        public IPlayerPositionQuery HostilePositionQuery => _hostilePositionQuery;
+
+        /// <summary>
+        /// Unit 위치 등록용. GameSceneRoot에서 BattleEntity Transform을 등록한다.
+        /// </summary>
+        public UnitPositionQueryAdapter UnitPositionQuery => _unitPositionQuery;
 
         public void Initialize(
             EventBus eventBus,
@@ -76,6 +88,9 @@ namespace Features.Wave
             _disposables?.Dispose();
             _disposables = new DisposableScope();
 
+            // Phase 3: 통합 적대 대상 쿼리 (Player + BattleEntity)
+            _hostilePositionQuery = new HostilePositionQuery(_playerPositionQuery, _unitPositionQuery);
+
             var playerCount = PhotonNetwork.PlayerList.Length;
             var aliveQuery = new AlivePlayerQueryAdapter(eventBus, playerCount);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, aliveQuery));
@@ -84,7 +99,7 @@ namespace Features.Wave
             _spawnAdapter.Initialize(
                 eventBus,
                 combatBootstrap,
-                _playerPositionQuery,
+                _hostilePositionQuery,
                 _coreObjectiveQuery,
                 _waveTable,
                 spawnMultiplier
@@ -154,14 +169,7 @@ namespace Features.Wave
             Hashtable changedProps
         )
         {
-            if (!_initialized || _gameStarted)
-                return;
-            if (!PhotonNetwork.IsMasterClient)
-                return;
-            if (!changedProps.ContainsKey("skillsReady"))
-                return;
-
-            TryStartGame();
+            // Phase 3: No longer waiting for skillsReady — game starts immediately
         }
 
         public override void OnMasterClientSwitched(PhotonPlayer newMasterClient)
@@ -187,12 +195,7 @@ namespace Features.Wave
             if (_gameStarted)
                 return;
 
-            foreach (var player in PhotonNetwork.PlayerList)
-            {
-                if (!SkillNetworkAdapter.IsPlayerSkillsReady(player))
-                    return;
-            }
-
+            // Phase 3: No condition — start immediately
             _gameStarted = true;
             _eventBus.Publish(new GameStartEvent());
         }
@@ -210,7 +213,7 @@ namespace Features.Wave
             enemy.Initialize(
                 _eventBus,
                 _combatBootstrap,
-                _playerPositionQuery,
+                _hostilePositionQuery,
                 _coreObjectiveQuery
             );
         }

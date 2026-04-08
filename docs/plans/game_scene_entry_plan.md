@@ -1,11 +1,22 @@
 # 게임 씬 진입 계획 (Game Scene Entry Plan)
 
-> **마지막 업데이트**: 2026-04-07
-> **기획 결정 반영 완료** — 아래 "기획 결정 사항" 섹션 참조
+> **마지막 업데이트**: 2026-04-08
+> **Phase 0~3 완료** — 컴파일 수정, Unit/Garage 통합, 소환 시스템 기본 구축, Wave/Enemy와 Unit 연결
+> **다음 작업**: Phase 4 — 재소환 시스템
 
 이 문서는 GameScene 진입 시점에 해야 할 작업들을 정의한다.
-현재 `GameSceneRoot.cs`는 **Player 중심**의 초기화만 하고 있으며,
-**Unit/Garage** 기반 소환 시스템으로 전환하면서 대대적인 재구성이 필요하다.
+
+### 현재 진행 상태
+
+| Phase | 상태 | 요약 |
+|---|---|---|
+| Phase 0: 씬 진입 전 | ✅ 완료 | GarageRoster 직렬화, Room 진입 시 동기화 |
+| Phase 1: GameScene 초기화 | ✅ 완료 | EventBus, Unit/Garage Bootstrap, Unit 스펙 계산 |
+| Phase 2: 소환 시스템 | 🟨 기본 구축 | SummonUnitUseCase, SummonPhotonAdapter, Energy 시스템 |
+| Phase 3: Wave/Enemy와 Unit 연결 | ✅ 완료 | GameStartEvent 조건 제거, Enemy → Unit 타겟팅, BattleEntity Combat 등록 |
+| Phase 4: 재소환 시스템 | 🔜 다음 | UnitDiedEvent 구독, 재소환 실행 |
+| Phase 5: 네트워크 동기화 | ⏸ 보류 | Late-join, BattleEntity 상태 동기화 |
+| Phase 6: 게임 종료 | ⏸ 보류 | Victory/Defeat, 결과 화면 |
 
 ---
 
@@ -141,14 +152,20 @@
 | P2-5 | 소환 입력 (클릭+드래그) | Presentation | 🟥 필수 | 슬롯 클릭 → 배치 영역 하이라이트 → 배치 |
 | P2-6 | BattleEntity 스폰 | Combat/Unit | 🟥 필수 | PhotonNetwork.Instantiate로 BattleEntity 생성 (Owner 기반 RPC) |
 
-### Phase 3: Wave/Enemy와 Unit 연결
+### Phase 3: Wave/Enemy와 Unit 연결 ✅ 완료
 
-| # | 작업 | 담당 | 우선순위 | 상세 |
-|---|---|---|---|---|
-| P3-1 | WaveBootstrap 초기화 | Wave | 🟥 필수 | GameStartEvent 조건 제거, 바로 시작 |
-| P3-2 | Enemy 스폰 시스템 | Enemy | 🟥 필수 | 기존 유지, WaveTable 기반 |
-| P3-3 | Enemy → Unit Combat 연결 | Combat | 🟥 필수 | Enemy가 Unit(플레이어 소환물)도 타겟팅 |
-| P3-4 | CoreObjective 방어 목표 | Wave | 🟥 필수 | 기존 유지, 코어 HP 관리 |
+| # | 작업 | 담당 | 우선순위 | 상세 | 상태 |
+|---|---|---|---|---|---|
+| P3-1 | WaveBootstrap 초기화 | Wave | 🟥 필수 | GameStartEvent 조건 제거, 바로 시작 | ✅ 완료 |
+| P3-2 | Enemy 스폰 시스템 | Enemy | 🟥 필수 | 기존 유지, WaveTable 기반 | ✅ 완료 |
+| P3-3 | Enemy → Unit Combat 연결 | Combat | 🟥 필수 | Enemy가 Unit(플레이어 소환물)도 타겟팅 | ✅ 완료 |
+| P3-4 | CoreObjective 방어 목표 | Wave | 🟥 필수 | 기존 유지, 코어 HP 관리 | ✅ 완료 |
+
+#### Phase 3 구현 상세 (추가 파일)
+- `BattleEntityCombatTargetProvider` — BattleEntity를 `ICombatTargetProvider`로 Combat 데미지 파이프라인 등록
+- `BattleEntityPrefabSetup` — Photon instantiate 시 BattleEntity 도메인 생성, Combat 등록, 위치 등록
+- `HostilePositionQuery` + `UnitPositionQueryAdapter` — Enemy AI가 Player + BattleEntity 동시 타겟팅
+- `EntityAffiliationAdapter` 확장 — BattleEntity/Enemy/Core 관계 판정 추가
 
 ### Phase 4: 재소환 시스템
 

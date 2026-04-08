@@ -3,7 +3,7 @@
 이 문서는 **코드 구조·피처 경계·의존 방향·레이어 책임·네이밍·크로스 피처 포트·scene contract 체크리스트**의 단일 근거(SSOT)다.  
 엔트리포인트는 `../CLAUDE.md`이고, 각 feature README는 이 문서의 체크리스트를 자기 피처 값으로 채우는 **로컬 계약 문서**다. 전역 구조 규칙은 여기서만 정의한다.
 
-시각 요약(Mermaid): [architecture-diagram.md](../docs/architecture-diagram.md) — 표·본문은 **이 문서**와 같아야 한다.
+시각 요약(Mermaid): [architecture-diagram.md](../docs/design/architecture-diagram.md) — 표·본문은 **이 문서**와 같아야 한다.
 
 ---
 
@@ -202,4 +202,4 @@ Rules: No business or rendering logic; **one** Setup or Bootstrap class at featu
 
 ## asmdef (optional future)
 
-There is **no** per-feature `asmdef` under `Assets/Scripts/Features/**` today; layers are enforced by convention and review. If assemblies are split later, update **this file** and `../docs/architecture-diagram.md` together.
+There is **no** per-feature `asmdef` under `Assets/Scripts/Features/**` today; layers are enforced by convention and review. If assemblies are split later, update **this file** and `../docs/design/architecture-diagram.md` together.
