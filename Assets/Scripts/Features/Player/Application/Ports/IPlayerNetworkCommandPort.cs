@@ -11,5 +11,8 @@ namespace Features.Player.Application.Ports
         void SyncHealth(DomainEntityId targetId, float currentHp, float maxHp);
         void SyncEnergy(DomainEntityId targetId, float currentEnergy, float maxEnergy);
         void SyncLifeState(DomainEntityId playerId, LifeState state);
+        
+        // TODO: Remove - Skill system compatibility
+        void SyncMana(DomainEntityId targetId, float currentMana, float maxMana);
     }
 }

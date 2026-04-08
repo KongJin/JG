@@ -64,35 +64,26 @@ namespace Features.Player
             RemoteArrived?.Invoke(this);
         }
 
-        public void Initialize(EventBus eventBus, PlayerUseCases existingUseCases = null, ISpeedModifierPort speedModifier = null, PlayerSceneRegistry sceneRegistry = null, IPlayerLookupPort playerLookup = null)
+        /// <summary>
+        /// 로컬 플레이어 초기화.
+        /// </summary>
+        public void InitializeLocal(
+            EventBus eventBus,
+            IPlayerSpecProvider specProvider,
+            ISpeedModifierPort speedModifier,
+            PlayerSceneRegistry sceneRegistry,
+            IPlayerLookupPort playerLookup)
         {
             if (IsInitialized)
                 return;
 
-            if (_networkAdapter.IsMine)
-                InitializeLocal(eventBus, existingUseCases, speedModifier, sceneRegistry, playerLookup);
-            else
-                InitializeRemote(eventBus, playerLookup);
-        }
-
-        private void InitializeLocal(EventBus eventBus, PlayerUseCases existingUseCases, ISpeedModifierPort speedModifier, PlayerSceneRegistry sceneRegistry, IPlayerLookupPort playerLookup)
-        {
             _disposables = new DisposableScope();
 
             var clock = new ClockAdapter();
-            _useCases = existingUseCases != null
-                ? existingUseCases
-                : new PlayerUseCases(_motorAdapter, _networkAdapter, eventBus, clock);
+            _useCases = new PlayerUseCases(_motorAdapter, _networkAdapter, eventBus, clock);
 
-            var spawnResult = _useCases.Spawn(
-                new PlayerSpec(
-                    maxHp: 100f,
-                    defense: 5f,
-                    maxMana: 100f,
-                    manaRegenPerSecond: 5f
-                ),
-                _networkAdapter.StablePlayerId
-            );
+            var spec = specProvider.GetLocalPlayerSpec();
+            var spawnResult = _useCases.Spawn(spec, _networkAdapter.StablePlayerId);
 
             if (spawnResult.IsFailure)
             {
@@ -124,18 +115,22 @@ namespace Features.Player
             IsInitialized = true;
         }
 
-        private void InitializeRemote(EventBus eventBus, IPlayerLookupPort playerLookup)
+        /// <summary>
+        /// 원격 플레이어 초기화.
+        /// </summary>
+        public void InitializeRemote(
+            EventBus eventBus,
+            IPlayerSpecProvider specProvider,
+            IPlayerLookupPort playerLookup)
         {
+            if (IsInitialized)
+                return;
+
             _disposables = new DisposableScope();
 
             _playerId = _networkAdapter.StablePlayerId;
-            var remoteSpec = new PlayerSpec(
-                maxHp: 100f,
-                defense: 5f,
-                maxMana: 100f,
-                manaRegenPerSecond: 5f
-            );
-            var remotePlayer = PlayerUseCases.SpawnRemote(remoteSpec, _playerId).Value;
+            var spec = specProvider.GetRemotePlayerSpec();
+            var remotePlayer = PlayerUseCases.SpawnRemote(spec, _playerId).Value;
             DomainPlayer = remotePlayer;
             new PlayerNetworkEventHandler(eventBus, _networkAdapter, playerLookup);
             _combatTargetProvider = new PlayerCombatTargetProvider(remotePlayer);

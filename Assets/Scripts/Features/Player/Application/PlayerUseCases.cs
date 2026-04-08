@@ -73,12 +73,12 @@ namespace Features.Player.Application
                 _localPlayer.CurrentHp,
                 _localPlayer.MaxHp
             ));
-            _eventBus.Publish(new PlayerManaChangedEvent(
+            _eventBus.Publish(new PlayerEnergyChangedEvent(
                 _localPlayer.Id,
-                _localPlayer.CurrentMana,
-                _localPlayer.MaxMana
+                _localPlayer.CurrentEnergy,
+                _localPlayer.MaxEnergy
             ));
-            _network.SyncMana(_localPlayer.Id, _localPlayer.CurrentMana, _localPlayer.MaxMana);
+            _network.SyncEnergy(_localPlayer.Id, _localPlayer.CurrentEnergy, _localPlayer.MaxEnergy);
         }
     }
 }

@@ -102,6 +102,13 @@ namespace Features.Player.Infrastructure
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
 
+        // TODO: Remove - Skill system compatibility
+        public void SyncMana(DomainEntityId targetId, float currentMana, float maxMana)
+        {
+            // Mana is now Energy - no-op for compatibility
+            // Energy is already synced via SyncEnergy
+        }
+
         public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, Hashtable changedProps)
         {
             if (targetPlayer == null || targetPlayer.IsLocal)

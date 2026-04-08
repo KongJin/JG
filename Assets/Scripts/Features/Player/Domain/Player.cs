@@ -26,6 +26,11 @@ namespace Features.Player.Domain
         public float MaxEnergy { get; }
         public float CurrentEnergy { get; private set; }
 
+        // TODO: Remove Mana fields - Skill system is being integrated into Unit attacks
+        // See: docs/design/game_design.md - "Skill 시스템: 유닛의 공격 형태로 통합"
+        internal float MaxMana => MaxEnergy;
+        internal float CurrentMana => CurrentEnergy;
+
         public float TakeDamage(float damage)
         {
             if (IsDead || IsInvulnerable)
@@ -102,6 +107,21 @@ namespace Features.Player.Domain
         public void ApplyMovement(Float3 position, bool isGrounded)
         {
             Position = position;
+        }
+
+        // TODO: Remove Mana methods - Skill system is being integrated into Unit attacks
+        // See: docs/design/game_design.md - "Skill 시스템: 유닛의 공격 형태로 통합"
+        // These methods are temporary compatibility wrappers around Energy
+        internal bool SpendMana(float cost)
+        {
+            return SpendEnergy(cost);
+        }
+
+        internal void RegenMana(float deltaTime)
+        {
+            // Skill Mana regen uses constant rate from PlayerSpec
+            // This is a simplified wrapper - actual regen logic should use spec.ManaRegenPerSecond
+            RegenEnergy(deltaTime, 5f); // Default fallback rate
         }
     }
 }
