@@ -30,6 +30,40 @@ graph TB
     style Shared fill:#888,stroke:#333,color:#fff
 ```
 
+## 포트 소유권 패턴
+
+크로스 피처 포트는 **Consumer-Driven Contract** 패턴을 따른다:
+
+| 항목 | 위치 | 규칙 |
+|---|---|---|
+| **포트 인터페이스** | `Consumer/Application/Ports/` | 사용하는 쪽(Consumer)에서 정의 |
+| **포트 구현** | `Provider/Infrastructure/` | 제공하는 쪽(Provider)에서 구현 |
+
+셀프 피처 포트는 동일 피처 내에서 정의·구현한다.
+
+### 피처 간 의존성 그래프
+
+```mermaid
+graph LR
+    Combat -->|ICombatNetworkCommandPort<br/>ICombatTargetProvider| Player
+    Combat -->|ICombatTargetProvider| Enemy
+    Combat -->|ICombatTargetProvider| Unit
+    Combat -->|ICombatTargetProvider<br/>IEntityAffiliationPort| Wave
+    Enemy -->|IPlayerPositionQuery| Wave
+    Garage -->|IUnitCompositionPort| Unit
+    Player -->|ISpeedModifierPort| Status
+    Skill -->|IManaPort<br/>IStatusQueryPort| Player
+    Skill -->|IStatusQueryPort| Status
+    Unit -->|IUnitEnergyPort| Player
+    Wave -->|IWaveSpawnPort| Enemy
+
+    classDef consumer fill:#a94,stroke:#333,color:#fff
+    classDef provider fill:#4a9,stroke:#333,color:#fff
+    class Combat,Enemy,Garage,Player,Skill,Unit,Wave consumer
+```
+
+> **화살표 방향**: Consumer → Provider (포트를 사용하는 쪽에서 정의, 제공하는 쪽이 구현)
+
 ## 어셈블리(asmdef)
 
 현재 `Assets/Scripts/Features/**` 쪽 **프로젝트 코드에는 피처별 `asmdef`가 없다.** 레이어 준수는 폴더·리뷰·규칙 문서로 유지한다.

@@ -5,7 +5,7 @@
 ## 먼저 읽을 규칙
 
 - 전역 구조, scene contract 체크리스트: [architecture.md](../../../../agent/architecture.md)
-- 크로스 피처 포트 소유권: [port_ownership.md](../../../../docs/design/port_ownership.md)
+- 포트 소유권 패턴: [architecture-diagram.md](../../../../docs/design/architecture-diagram.md#포트-소유권-패턴)
 - 게임 디자인 SSOT: [game_design.md](../../../../docs/design/game_design.md)
 
 > **기획 참고**: 플레이어는 직접 조작 아바타가 아닌 **차고 소유자, 전투 중 소환자, 빌드 책임자**로 정의됨. 기존 이동/점프 코드는 잔존하지만 신규 게임 루프에서 비활성 상태.

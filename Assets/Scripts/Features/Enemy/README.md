@@ -5,7 +5,7 @@
 ## 먼저 읽을 규칙
 
 - 전역 구조, scene contract 체크리스트: [architecture.md](../../../../agent/architecture.md)
-- 크로스 피처 포트 소유권: [port_ownership.md](../../../../docs/design/port_ownership.md)
+- 포트 소유권 패턴: [architecture-diagram.md](../../../../docs/design/architecture-diagram.md#포트-소유권-패턴)
 
 ## 씬 계약 (적 프리팹)
 
