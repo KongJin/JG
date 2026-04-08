@@ -46,6 +46,7 @@ Assets/Scripts/Features/Garage/
 │   │   ├── IGarageNetworkPort.cs       ← 편성 네트워크 동기화 포트
 │   │   └── IGaragePersistencePort.cs   ← 저장/불러오기 포트
 │   ├── InitializeGarageUseCase.cs      ← 차고 초기화
+│   ├── RestoreGarageRosterUseCase.cs   ← GameScene 진입 시 Room CustomProperties에서 GarageRoster 복원
 │   ├── ValidateRosterUseCase.cs        ← 편성 유효성 검증
 │   ├── SaveRosterUseCase.cs            ← 편성 저장 + 네트워크 동기화
 │   └── GarageEvents.cs                 ← 도메인 이벤트 정의

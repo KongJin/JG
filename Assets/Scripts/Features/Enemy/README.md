@@ -11,7 +11,7 @@ Enemy 피처는 적 엔티티의 생성, AI, 전투 통합, 접촉 데미지를 
 ## 이 피처의 책임
 
 - 적 도메인 엔티티 생성 및 HP 관리
-- Master 클라이언트에서 이동 목표 결정: `EnemySpec.TargetMode` + `AggroRadius`에 따라 플레이어/코어 우선순위 (`EnemyMoveTargetResolver` in `SpawnEnemyUseCase.cs`, Enemy 소유 포트 `ICoreObjectiveQuery` + `IPlayerPositionQuery` 주입)
+- Master 클라이언트에서 이동 목표 결정: `EnemySpec.TargetMode` + `AggroRadius`에 따라 **플레이어/BattleEntity/코어** 우선순위 (`EnemyMoveTargetResolver` in `SpawnEnemyUseCase.cs`, Enemy 소유 포트 `ICoreObjectiveQuery` + `IPlayerPositionQuery` 주입). Phase 3 이후 `HostilePositionQuery`(Wave)가 Player + BattleEntity 통합 조회를 제공하여 적이 유닛도 타겟팅.
 - `EnemySpec.StopDistance`(`EnemyData.stopDistance`): **코어를 추적 중일 때만** 적용되는 XZ 정지 거리. 코어는 트리거 콜라이더만 있으므로 물리 막힘 없이도 적이 셸 근처에서 멈추게 한다. 플레이어를 추적 중일 때는 접촉 피해를 위해 기존처럼 거의 겹칠 때까지 전진한다. `0`이면 레거시 정지(3D 거리 거의 0)만 사용한다.
 - 기존 Combat 시스템에 `RegisterTarget()`으로 통합 — 플레이어 투사체로 처치 가능
 - 접촉 데미지: Master가 `OnTriggerStay`로 감지 → `CombatBootstrap.ApplyDamage()` 호출
@@ -113,5 +113,5 @@ EnemyContactDamageDetector.OnTriggerStay()
 ## 피처 의존성
 
 - **Combat**: `CombatBootstrap.RegisterTarget()`, `ApplyDamage()`, `ICombatTargetProvider`
-- **Wave**: `CoreObjectiveBootstrap`, `PlayerPositionQueryAdapter`가 Enemy 소유 포트 `IPlayerPositionQuery`, `ICoreObjectiveQuery`를 구현해 AI 이동 목표를 제공
+- **Wave**: `CoreObjectiveBootstrap`, `HostilePositionQuery` (Phase 3 신규 — Player + BattleEntity 통합 조회)가 Enemy 소유 포트 `IPlayerPositionQuery`, `ICoreObjectiveQuery`를 구현해 AI 이동 목표를 제공
 - **Shared**: `Entity`, `DomainEntityId`, `EntityIdHolder`, `EventBus`
