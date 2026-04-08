@@ -57,13 +57,14 @@
     "maxAttemptsPerCommit": 2,
     "nonActionableReasons": [
       "dirty-target-files",
-      "ownership-preflight-rejected",
-      "manual-validation-required"
+      "ownership-preflight-rejected"
     ]
   },
   "validation": {
     "runHarnessTests": true,
-    "harnessTestScript": "tools/rule-harness/tests/Run-RuleHarnessTests.ps1"
+    "harnessTestScript": "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+    "registryPath": "tools/rule-harness/validation-registry.json",
+    "requireRegistryForCodeBatches": false
   },
   "learning": {
     "memoryPath": "tools/rule-harness/memory/advisory-memory.json",
