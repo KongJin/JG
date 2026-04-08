@@ -240,11 +240,13 @@ namespace Features.Player
             if (_damageNumberSpawner != null)
                 _damageNumberSpawner.Initialize(_eventBus);
 
-            if (_waveBootstrap == null)
-            {
-                var gameEndHandler = new GameEndEventHandler(_eventBus, _eventBus, localSetup.PlayerId);
-                _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndHandler));
-            }
+            // GameEnd 핸들러 — PvE/PvP 모두에서 GameEndEvent 구독
+            var gameEndHandler = new GameEndEventHandler(_eventBus, _eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndHandler));
+
+            // GameEndAnalytics — 소환/처치 카운팅 + 게임 종료 시 통계 로그
+            var gameEndAnalytics = new GameEndAnalytics(_eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndAnalytics));
 
             ConnectPlayer(_localPlayerSetup);
 
