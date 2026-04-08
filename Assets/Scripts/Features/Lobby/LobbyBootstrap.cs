@@ -1,10 +1,14 @@
 ﻿using Shared.Attributes;
+using Features.Garage;
+using Features.Garage.Application.Ports;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
 using Features.Lobby.Infrastructure;
 using Features.Lobby.Infrastructure.Persistence;
 using Features.Lobby.Infrastructure.Photon;
 using Features.Lobby.Presentation;
+using Features.Unit;
+using Features.Unit.Infrastructure;
 using Shared.Analytics;
 using Shared.EventBus;
 using Shared.Runtime.Sound;
@@ -26,6 +30,12 @@ public sealed class LobbyBootstrap : MonoBehaviour
 
     [Required, SerializeField]
     private SoundPlayer _soundPlayer;
+
+    [Required, SerializeField]
+    private UnitBootstrap _unitBootstrap;
+
+    [Required, SerializeField]
+    private GarageBootstrap _garageBootstrap;
 
     private LobbyNetworkEventHandler _syncHandler;
     private readonly EventBus _eventBus = new EventBus();
@@ -56,6 +66,15 @@ public sealed class LobbyBootstrap : MonoBehaviour
 
         _view.Initialize(_eventBus, _eventBus, useCases);
         _eventBus.Publish(new LobbyUpdatedEvent(repository.LoadLobby() ?? new DomainLobby()));
+
+        // Unit Feature 초기화 (Garage보다 먼저)
+        _unitBootstrap.Initialize(_eventBus);
+
+        // Garage Feature 초기화 (Unit이 제공하는 compositionPort 사용)
+        _garageBootstrap.Initialize(
+            _eventBus,
+            _unitBootstrap.CompositionPort,
+            _unitBootstrap.Catalog);
     }
 
     private void OnApplicationQuit()
@@ -68,6 +87,12 @@ public sealed class LobbyBootstrap : MonoBehaviour
     private void OnSceneLoadRequested(SceneLoadRequestedEvent e)
     {
         _sceneLoader.LoadScene(e.SceneName);
+    }
+
+    private void OnDestroy()
+    {
+        _garageBootstrap?.Cleanup();
+        _unitBootstrap?.Cleanup();
     }
 }
 
