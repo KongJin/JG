@@ -515,12 +515,6 @@ function Test-RuleHarnessGlobalRuleDoc {
         return $true
     }
 
-    if ($normalized -like 'Assets/Scripts/Features/*/README.md' -or
-        $normalized -eq 'Assets/Scripts/Shared/README.md' -or
-        $normalized -eq 'Assets/Editor/UnityMcp/README.md') {
-        return $false
-    }
-
     $normalized -in @(Get-RuleHarnessClaudeReferencedDocs -RepoRoot $RepoRoot)
 }
 
@@ -551,15 +545,17 @@ function Get-RuleHarnessScriptFiles {
 function Get-RuleHarnessOwningRuleDocForScript {
     param(
         [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
         [string]$RelativeScriptPath
     )
 
-    if ($RelativeScriptPath -match '^Assets/Scripts/Features/(?<feature>[^/]+)/') {
-        return "Assets/Scripts/Features/$($Matches['feature'])/README.md"
+    if ($RelativeScriptPath -like 'Assets/Scripts/*') {
+        return (Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot)
     }
 
-    if ($RelativeScriptPath -like 'Assets/Scripts/Shared/*') {
-        return 'Assets/Scripts/Shared/README.md'
+    if ($RelativeScriptPath -like 'Assets/Editor/UnityMcp/*') {
+        return (Get-RuleHarnessPreferredClaudeDoc -RepoRoot $RepoRoot -Keywords @('unity_mcp', 'Unity MCP', 'MCP', 'editor automation'))
     }
 
     return $null
@@ -1052,21 +1048,27 @@ function Get-RuleHarnessScopeInfo {
     $scopePath = if (-not [string]::IsNullOrWhiteSpace($OwnerDoc)) { [string]$OwnerDoc } elseif (@($TargetFiles).Count -gt 0) { [string]$TargetFiles[0] } else { 'CLAUDE.md' }
     $scopeType = 'global'
     $promotionTarget = $scopePath
+    $architectureDoc = if (-not [string]::IsNullOrWhiteSpace($RepoRoot)) { Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot } else { $null }
+    $governanceDoc = if (-not [string]::IsNullOrWhiteSpace($RepoRoot)) { Get-RuleHarnessGovernanceOwnerDoc -RepoRoot $RepoRoot } else { $null }
+    $unityMcpDoc = if (-not [string]::IsNullOrWhiteSpace($RepoRoot)) { Get-RuleHarnessPreferredClaudeDoc -RepoRoot $RepoRoot -Keywords @('unity_mcp', 'Unity MCP', 'MCP', 'editor automation') } else { $null }
 
-    if ($scopePath -match '^Assets/Scripts/Features/(?<feature>[^/]+)/README\.md$') {
-        $scopeType = 'feature'
-        $promotionTarget = $scopePath
+    if ($scopePath -like 'Assets/Scripts/Features/*' -or $scopePath -like 'Assets/Scripts/Shared/*') {
+        $scopeType = 'global'
+        $promotionTarget = if ([string]::IsNullOrWhiteSpace($architectureDoc)) { 'CLAUDE.md' } else { $architectureDoc }
     }
-    elseif ($scopePath -like 'Assets/Scripts/Shared/*') {
-        $scopeType = 'shared'
-        $promotionTarget = 'Assets/Scripts/Shared/README.md'
+    elseif ($scopePath -like 'Assets/Editor/UnityMcp/*') {
+        $scopeType = 'global'
+        $promotionTarget = if ([string]::IsNullOrWhiteSpace($unityMcpDoc)) { 'CLAUDE.md' } else { $unityMcpDoc }
     }
     elseif (-not [string]::IsNullOrWhiteSpace($RepoRoot) -and (Test-RuleHarnessGlobalRuleDoc -RepoRoot $RepoRoot -RelativePath $scopePath)) {
         $scopeType = 'global'
-        $governanceDoc = Get-RuleHarnessGovernanceOwnerDoc -RepoRoot $RepoRoot
-        $architectureDoc = Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot
         if ($scopePath -eq $architectureDoc -or $scopePath -eq 'CLAUDE.md') {
-            $promotionTarget = $governanceDoc
+            if ([string]::IsNullOrWhiteSpace($governanceDoc) -or $governanceDoc -eq 'CLAUDE.md' -or $governanceDoc -eq $scopePath) {
+                $promotionTarget = if ([string]::IsNullOrWhiteSpace($architectureDoc)) { 'CLAUDE.md' } else { $architectureDoc }
+            }
+            else {
+                $promotionTarget = $governanceDoc
+            }
         }
         else {
             $promotionTarget = $scopePath
@@ -1506,32 +1508,33 @@ function Get-RuleHarnessBatchOwnershipAssessment {
         }
 
         if ($normalized -match '^Assets/Scripts/Features/(?<feature>[^/]+)/') {
-            $expectedOwner = "Assets/Scripts/Features/$($Matches['feature'])/README.md"
-            if (@($ownerDocs | Where-Object { $_ -ne $expectedOwner }).Count -gt 0) {
+            $allowedOwnerDocs = @($architectureOwnerDoc) | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Select-Object -Unique
+            if (@($ownerDocs | Where-Object { $_ -notin $allowedOwnerDocs }).Count -gt 0) {
                 return [pscustomobject]@{
                     status = 'rejected'
-                    reason = "Feature-owned path '$normalized' requires owner doc '$expectedOwner'."
+                    reason = "Feature-owned path '$normalized' requires the current global architecture rule doc."
                 }
             }
             continue
         }
 
         if ($normalized -like 'Assets/Scripts/Shared/*') {
-            $allowedOwnerDocs = @('Assets/Scripts/Shared/README.md', $architectureOwnerDoc) | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Select-Object -Unique
+            $allowedOwnerDocs = @($architectureOwnerDoc) | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Select-Object -Unique
             if (@($ownerDocs | Where-Object { $_ -notin $allowedOwnerDocs }).Count -gt 0) {
                 return [pscustomobject]@{
                     status = 'rejected'
-                    reason = "Shared path '$normalized' only allows Shared README or the current global architecture owner doc."
+                    reason = "Shared path '$normalized' only allows the current global architecture rule doc."
                 }
             }
             continue
         }
 
         if ($normalized -like 'Assets/Editor/UnityMcp/*') {
-            if (@($ownerDocs | Where-Object { $_ -ne 'Assets/Editor/UnityMcp/README.md' }).Count -gt 0) {
+            $unityMcpOwnerDoc = Get-RuleHarnessPreferredClaudeDoc -RepoRoot $RepoRoot -Keywords @('unity_mcp', 'Unity MCP', 'MCP', 'editor automation')
+            if (@($ownerDocs | Where-Object { $_ -ne $unityMcpOwnerDoc }).Count -gt 0) {
                 return [pscustomobject]@{
                     status = 'rejected'
-                    reason = "UnityMcp path '$normalized' requires Assets/Editor/UnityMcp/README.md ownership."
+                    reason = "UnityMcp path '$normalized' requires the current Unity MCP rule doc referenced from CLAUDE.md."
                 }
             }
             continue
@@ -1720,19 +1723,6 @@ function Get-RuleHarnessStaticFindings {
 
     foreach ($feature in Get-RuleHarnessFeatureDirectories -RepoRoot $RepoRoot) {
         $relative = ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $feature.FullName
-        $readme = Join-Path $feature.FullName 'README.md'
-        if (-not (Test-Path -LiteralPath $readme)) {
-            [void]$findings.Add((New-RuleHarnessFinding `
-                -FindingType 'missing_rule' `
-                -Severity $Config.severityPolicy.missingFeatureReadme `
-                -OwnerDoc "$relative/README.md" `
-                -Title 'Missing feature README' `
-                -Message "Feature '$($feature.Name)' does not declare a local README contract." `
-                -Evidence @([pscustomobject]@{ path = $relative; line = $null; snippet = $feature.Name }) `
-                -RemediationKind 'rule_fix' `
-                -Rationale 'Feature-local contracts live in README files.'))
-        }
-
         $rootBootstrap = Get-ChildItem -LiteralPath $feature.FullName -File |
             Where-Object { $_.Extension -eq '.cs' -and ($_.Name -like '*Setup.cs' -or $_.Name -like '*Bootstrap.cs') } |
             Select-Object -First 1
@@ -1741,7 +1731,7 @@ function Get-RuleHarnessStaticFindings {
             [void]$findings.Add((New-RuleHarnessFinding `
                 -FindingType 'missing_rule' `
                 -Severity $Config.severityPolicy.missingFeatureBootstrap `
-                -OwnerDoc "$relative/README.md" `
+                -OwnerDoc $architectureOwnerDoc `
                 -Title 'Missing feature bootstrap root' `
                 -Message "Feature '$($feature.Name)' has no root-level *Setup.cs or *Bootstrap.cs file." `
                 -Evidence @([pscustomobject]@{ path = $relative; line = $null; snippet = 'Expected root-level Setup/Bootstrap file' }) `
@@ -1787,32 +1777,6 @@ function Get-RuleHarnessStaticFindings {
                     -RemediationKind 'code_fix' `
                     -Rationale 'The code is violating a stable architecture rule and should be refactored.'))
             }
-        }
-    }
-
-    foreach ($script in Get-RuleHarnessScriptFiles -RepoRoot $RepoRoot -Config $Config) {
-        $relative = ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $script.FullName
-        $ownerDoc = Get-RuleHarnessOwningRuleDocForScript -RelativeScriptPath $relative
-        if ([string]::IsNullOrWhiteSpace($ownerDoc)) {
-            continue
-        }
-
-        $documentedKeys = Get-RuleHarnessDocumentedCustomPropertyKeys -RepoRoot $RepoRoot -OwnerDoc $ownerDoc
-        foreach ($key in Get-RuleHarnessCustomPropertyKeysFromFile -FilePath $script.FullName) {
-            if ($key -in $documentedKeys) {
-                continue
-            }
-
-            [void]$findings.Add((New-RuleHarnessFinding `
-                -FindingType 'missing_rule' `
-                -Severity $Config.severityPolicy.undocumentedCustomProperty `
-                -OwnerDoc $ownerDoc `
-                -Title 'Undocumented CustomProperties key' `
-                -Message "CustomProperties key '$key' is used in code but not documented in the owning feature README." `
-                -Evidence @([pscustomobject]@{ path = $relative; line = $null; snippet = $key }) `
-                -Confidence 'high' `
-                -RemediationKind 'rule_fix' `
-                -Rationale 'CustomProperties ownership now lives in the owning feature README and should reflect code-visible keys.'))
         }
     }
 
@@ -2343,8 +2307,16 @@ function Get-RuleHarnessPlannedBatches {
 
         if ($finding.remediationKind -eq 'code_fix' -and $finding.title -eq 'Missing feature bootstrap root') {
             $featureName = $null
-            if ($finding.ownerDoc -match '^Assets/Scripts/Features/(?<feature>[^/]+)/README\.md$') {
-                $featureName = $Matches['feature']
+            foreach ($evidence in @($finding.evidence)) {
+                $evidencePath = [string]$evidence.path
+                if ($evidencePath -match '^Assets/Scripts/Features/(?<feature>[^/]+)/') {
+                    $featureName = $Matches['feature']
+                    break
+                }
+            }
+
+            if ([string]::IsNullOrWhiteSpace($featureName) -and [string]$finding.message -match "Feature '([^']+)'") {
+                $featureName = $Matches[1]
             }
 
             if ([string]::IsNullOrWhiteSpace($featureName)) {

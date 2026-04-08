@@ -98,7 +98,7 @@ Features/Unit/                          ← 독립된 Unit Feature
 │   └── PassiveTraitData.cs             ← 패시브 SO
 ├── UnitBootstrap.cs                    ← Composition root
 ├── UnitSetup.cs                        ← Scene-level wiring
-└── README.md
+└── UnitSetup.cs                       ← Scene-level wiring contract
 
 Features/Garage/                        ← 편성 관리 전문
 ├── Domain/
@@ -115,7 +115,7 @@ Features/Garage/                        ← 편성 관리 전문
 ├── Infrastructure/
 │   ├── GarageNetworkAdapter.cs
 │   └── GarageJsonPersistence.cs
-└── README.md
+└── GarageSetup.cs                     ← Lobby wiring contract
 ```
 
 ### 책임 분리
@@ -755,7 +755,7 @@ Combat → Unit.Domain (Unit 스펙 읽기 전용)
 ### Step 1: Unit Feature 스캐폴딩
 1. `Features/Unit/` 폴더 구조 생성 (Domain/, Application/, Infrastructure/)
 2. `UnitBootstrap.cs`, `UnitSetup.cs` 스켈레톤 생성
-3. `../../Assets/Scripts/Features/Unit/README.md` 작성
+3. `../../Assets/Scripts/Features/Unit/UnitSetup.cs` / `UnitBootstrap.cs` 스켈레톤 정리
 
 ### Step 2: Domain 이동
 4. `Unit.cs` 이동 (네임스페이스 변경, `FinalAnchorRange` 추가)

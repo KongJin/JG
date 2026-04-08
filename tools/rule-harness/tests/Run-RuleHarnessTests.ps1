@@ -38,17 +38,6 @@ Assert-RuleHarness `
     -Condition (@($unityInAppFindings | Where-Object { $_.findingType -eq 'code_violation' -and $_.title -eq 'Unity API used in Application' }).Count -ge 1) `
     -Message 'Expected Application layer Unity API violation.'
 
-$customPropertyFindings = Get-RuleHarnessStaticFindings -RepoRoot (Join-Path $fixturesRoot 'undocumented-custom-property') -Config $config
-Assert-RuleHarness `
-    -Condition (@($customPropertyFindings | Where-Object { $_.findingType -eq 'missing_rule' -and $_.message -match 'newKey' }).Count -ge 1) `
-    -Message 'Expected undocumented CustomProperties key finding.'
-Assert-RuleHarness `
-    -Condition (@($customPropertyFindings | Where-Object { $_.remediationKind -eq 'rule_fix' }).Count -ge 1) `
-    -Message 'Expected undocumented CustomProperties key to default to rule_fix.'
-Assert-RuleHarness `
-    -Condition (@($customPropertyFindings | Where-Object { $_.ownerDoc -eq 'Assets/Scripts/Features/Foo/README.md' }).Count -ge 1) `
-    -Message 'Expected undocumented CustomProperties key ownerDoc to point at the owning feature README.'
-
 $applyAllowedRoot = Join-Path $scratchRoot 'apply-allowed'
 Copy-Item -LiteralPath (Join-Path $fixturesRoot 'apply-allowed') -Destination $applyAllowedRoot -Recurse -Force
 $applyAllowedResult = Invoke-RuleHarnessDocEdits `
@@ -56,18 +45,18 @@ $applyAllowedResult = Invoke-RuleHarnessDocEdits `
     -Config $config `
     -Edits @(
         [pscustomobject]@{
-            targetPath = 'Assets/Scripts/Features/Foo/README.md'
-            searchText = '../../../../docs/rules/legacy-rule.md'
-            replaceText = '../../../../docs/rules/current-rule.md'
+            targetPath = 'docs/rules/feature-rules.md'
+            searchText = 'legacy-rule.md'
+            replaceText = 'current-rule.md'
             reason = 'Fix moved rule doc path.'
         }
     )
 Assert-RuleHarness `
     -Condition ($applyAllowedResult.edits[0].status -eq 'applied') `
-    -Message 'Expected allowlisted README doc edit to apply.'
+    -Message 'Expected CLAUDE-referenced rule doc edit to apply.'
 Assert-RuleHarness `
-    -Condition ((Get-Content -Path (Join-Path $applyAllowedRoot 'Assets/Scripts/Features/Foo/README.md') -Raw) -match 'current-rule\.md') `
-    -Message 'Expected README content to be updated.'
+    -Condition ((Get-Content -Path (Join-Path $applyAllowedRoot 'docs/rules/feature-rules.md') -Raw) -match 'current-rule\.md') `
+    -Message 'Expected rule doc content to be updated.'
 
 $applyRejectedRoot = Join-Path $scratchRoot 'apply-rejected'
 Copy-Item -LiteralPath (Join-Path $fixturesRoot 'apply-rejected') -Destination $applyRejectedRoot -Recurse -Force
@@ -119,9 +108,9 @@ $reviewedFindings = ConvertTo-RuleHarnessReviewedFindings -Findings @(
     [pscustomobject]@{
         findingType = 'broken_reference'
         severity = 'medium'
-        ownerDoc = 'Assets/Scripts/Features/Foo/README.md'
+        ownerDoc = 'docs/rules/feature-rules.md'
         title = 'Broken markdown reference'
-        message = 'README still points to a moved file.'
+        message = 'Rule doc still points to a moved file.'
         confidence = 'high'
         source = 'agent_review'
         evidence = @()
@@ -129,21 +118,21 @@ $reviewedFindings = ConvertTo-RuleHarnessReviewedFindings -Findings @(
     [pscustomobject]@{
         findingType = 'missing_rule'
         severity = 'high'
-        ownerDoc = 'Assets/Scripts/Features/Bar/README.md'
+        ownerDoc = $testArchitectureOwnerDoc
         title = 'Missing feature bootstrap root'
         message = "Feature 'Bar' has no root-level *Setup.cs or *Bootstrap.cs file."
         confidence = 'high'
         source = 'agent_review'
-        evidence = @()
+        evidence = @([pscustomobject]@{ path = 'Assets/Scripts/Features/Bar'; line = $null; snippet = 'Expected root-level Setup/Bootstrap file' })
     }
 )
 $plannedBatches = Get-RuleHarnessPlannedBatches `
     -ReviewedFindings $reviewedFindings `
     -DocEdits @(
         [pscustomobject]@{
-            targetPath = 'Assets/Scripts/Features/Foo/README.md'
-            searchText = '../../../../docs/rules/legacy-rule.md'
-            replaceText = '../../../../docs/rules/current-rule.md'
+            targetPath = 'docs/rules/feature-rules.md'
+            searchText = 'legacy-rule.md'
+            replaceText = 'current-rule.md'
             reason = 'Fix moved rule doc path.'
         }
     ) `
@@ -164,17 +153,17 @@ try {
     git config user.email 'rule-harness-tests@example.com'
     git add .
     git commit -m 'init' | Out-Null
-    Add-Content -Path 'Assets/Scripts/Features/Foo/README.md' -Value "`nDirty change"
+    Add-Content -Path 'docs/rules/feature-rules.md' -Value "`nDirty change"
 }
 finally {
     Pop-Location
 }
 $dirtyTargets = Get-RuleHarnessDirtyTargetPaths `
     -RepoRoot $dirtyRepoRoot `
-    -TargetFiles @('Assets/Scripts/Features/Foo/README.md')
+    -TargetFiles @('docs/rules/feature-rules.md')
 Assert-RuleHarness `
-    -Condition ('Assets/Scripts/Features/Foo/README.md' -in $dirtyTargets) `
-    -Message 'Expected dirty target detection to return modified README.'
+    -Condition ('docs/rules/feature-rules.md' -in $dirtyTargets) `
+    -Message 'Expected dirty target detection to return modified rule doc.'
 
 $mutationState = Get-RuleHarnessMutationState -Config $config -MutationMode 'code_and_rules' -EnableMutation
 Assert-RuleHarness `
@@ -206,11 +195,12 @@ function Initialize-RuleHarnessMutationRepo {
     )
 
     New-Item -ItemType Directory -Path (Join-Path $RepoPath 'Assets/Scripts/Features/Bar') -Force | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $RepoPath 'docs/rules') -Force | Out-Null
     New-Item -ItemType Directory -Path (Join-Path $RepoPath 'tools/rule-harness/tests') -Force | Out-Null
     New-Item -ItemType Directory -Path (Join-Path $RepoPath 'Tests/Bar') -Force | Out-Null
 
-    Set-Content -Path (Join-Path $RepoPath 'CLAUDE.md') -Value '# Fixture' -Encoding UTF8
-    Set-Content -Path (Join-Path $RepoPath 'Assets/Scripts/Features/Bar/README.md') -Value '# Bar' -Encoding UTF8
+    Set-Content -Path (Join-Path $RepoPath 'CLAUDE.md') -Value 'Read `/docs/rules/architecture-rules.md`.' -Encoding UTF8
+    Set-Content -Path (Join-Path $RepoPath 'docs/rules/architecture-rules.md') -Value '# Architecture Rules' -Encoding UTF8
     Set-Content -Path (Join-Path $RepoPath 'tools/rule-harness/tests/Run-RuleHarnessTests.ps1') -Value 'Write-Host ''fixture harness tests passed''' -Encoding UTF8
     if ($IncludeBarService) {
         Set-Content -Path (Join-Path $RepoPath 'Assets/Scripts/Features/Bar/BarService.cs') -Value 'namespace Features.Bar { public sealed class BarService { } }' -Encoding UTF8
@@ -305,7 +295,7 @@ function New-RuleHarnessBootstrapFinding {
         message = "Feature 'Bar' has no root-level *Setup.cs or *Bootstrap.cs file."
         confidence = 'high'
         source = 'agent_review'
-        evidence = @()
+        evidence = @([pscustomobject]@{ path = 'Assets/Scripts/Features/Bar'; line = $null; snippet = 'Expected root-level Setup/Bootstrap file' })
         remediationKind = 'code_fix'
     }
 }
@@ -313,7 +303,7 @@ function New-RuleHarnessBootstrapFinding {
 $missingRegistryRepo = Join-Path $scratchRoot 'mutation-missing-registry'
 Initialize-RuleHarnessMutationRepo -RepoPath $missingRegistryRepo
 $missingRegistryConfig = New-RuleHarnessTestConfig -SourceConfig $config
-$missingRegistryFinding = New-RuleHarnessBootstrapFinding -OwnerDoc 'Assets/Scripts/Features/Bar/README.md'
+$missingRegistryFinding = New-RuleHarnessBootstrapFinding -OwnerDoc $testArchitectureOwnerDoc
 $missingRegistryBatches = Get-RuleHarnessPlannedBatches `
     -ReviewedFindings @(ConvertTo-RuleHarnessReviewedFindings -Findings @($missingRegistryFinding)) `
     -DocEdits @() `
@@ -347,7 +337,7 @@ Assert-RuleHarness `
 $fallbackValidationRepo = Join-Path $scratchRoot 'mutation-fallback-validation'
 Initialize-RuleHarnessMutationRepo -RepoPath $fallbackValidationRepo -SkipRunnerScript -IncludeFeatureTestAsset
 $fallbackValidationConfig = New-RuleHarnessTestConfig -SourceConfig $config
-$fallbackValidationFinding = New-RuleHarnessBootstrapFinding -OwnerDoc 'Assets/Scripts/Features/Bar/README.md'
+$fallbackValidationFinding = New-RuleHarnessBootstrapFinding -OwnerDoc $testArchitectureOwnerDoc
 $fallbackValidationBatches = Get-RuleHarnessPlannedBatches `
     -ReviewedFindings @(ConvertTo-RuleHarnessReviewedFindings -Findings @($fallbackValidationFinding)) `
     -DocEdits @() `
@@ -371,7 +361,7 @@ Assert-RuleHarness `
 $failingValidationRepo = Join-Path $scratchRoot 'mutation-failing-validation'
 Initialize-RuleHarnessMutationRepo -RepoPath $failingValidationRepo -IncludeRegistry -FailTargetedTests
 $failingValidationConfig = New-RuleHarnessTestConfig -SourceConfig $config
-$failingValidationFinding = New-RuleHarnessBootstrapFinding -OwnerDoc 'Assets/Scripts/Features/Bar/README.md'
+$failingValidationFinding = New-RuleHarnessBootstrapFinding -OwnerDoc $testArchitectureOwnerDoc
 $failingValidationBatches = Get-RuleHarnessPlannedBatches `
     -ReviewedFindings @(ConvertTo-RuleHarnessReviewedFindings -Findings @($failingValidationFinding)) `
     -DocEdits @() `
@@ -421,13 +411,13 @@ $failingValidationResult3 = Invoke-RuleHarnessMutationPlan `
     -Config $failingValidationConfig `
     -MutationState $mutationState
 Assert-RuleHarness `
-    -Condition (@($failingValidationResult3.promotionCandidates | Where-Object { $_.targetDoc -eq 'Assets/Scripts/Features/Bar/README.md' }).Count -ge 1) `
-    -Message 'Expected recurring feature-local failures to propose promotion to the owner README.'
+    -Condition (@($failingValidationResult3.promotionCandidates | Where-Object { $_.targetDoc -eq $testArchitectureOwnerDoc }).Count -ge 1) `
+    -Message 'Expected recurring feature-local failures to propose promotion to the architecture rule doc.'
 
 $ownershipRejectRepo = Join-Path $scratchRoot 'mutation-ownership-reject'
 Initialize-RuleHarnessMutationRepo -RepoPath $ownershipRejectRepo -IncludeRegistry
 $ownershipRejectConfig = New-RuleHarnessTestConfig -SourceConfig $config
-$ownershipRejectFinding = New-RuleHarnessBootstrapFinding -OwnerDoc $testArchitectureOwnerDoc
+$ownershipRejectFinding = New-RuleHarnessBootstrapFinding -OwnerDoc $testGovernanceOwnerDoc
 $ownershipRejectBatch = [pscustomobject]@{
     id = 'batch-ownership'
     kind = 'code_fix'
@@ -437,7 +427,7 @@ $ownershipRejectBatch = [pscustomobject]@{
     expectedFindingsResolved = @("missing_rule|$testArchitectureOwnerDoc|Missing feature bootstrap root")
     status = 'planned'
     featureNames = @('Bar')
-    ownerDocs = @($testArchitectureOwnerDoc)
+    ownerDocs = @($testGovernanceOwnerDoc)
     sourceFindingTypes = @('missing_rule')
     fingerprint = $null
     riskScore = $null
@@ -459,7 +449,7 @@ $ownershipRejectResult = Invoke-RuleHarnessMutationPlan `
     -MutationState $mutationState
 Assert-RuleHarness `
     -Condition ($ownershipRejectResult.skippedBatches[0].reasonCode -eq 'ownership-preflight-rejected') `
-    -Message 'Expected feature-owned scaffold batch with global owner doc to fail ownership preflight.'
+    -Message 'Expected feature-owned scaffold batch with a non-architecture global owner doc to fail ownership preflight.'
 
 $riskThresholdRepo = Join-Path $scratchRoot 'mutation-risk-threshold'
 Initialize-RuleHarnessMutationRepo -RepoPath $riskThresholdRepo -IncludeRegistry -IncludeBarService
@@ -470,10 +460,10 @@ $riskThresholdBatch = [pscustomobject]@{
     targetFiles = @('Assets/Scripts/Features/Bar/BarService.cs')
     reason = 'Modify existing code file.'
     validation = @('rule_harness_tests', 'targeted_tests', 'static_scan')
-    expectedFindingsResolved = @('missing_rule|Assets/Scripts/Features/Bar/README.md|Synthetic')
+    expectedFindingsResolved = @("missing_rule|$testArchitectureOwnerDoc|Synthetic")
     status = 'planned'
     featureNames = @('Bar')
-    ownerDocs = @('Assets/Scripts/Features/Bar/README.md')
+    ownerDocs = @($testArchitectureOwnerDoc)
     sourceFindingTypes = @('missing_rule')
     fingerprint = $null
     riskScore = $null
@@ -594,7 +584,7 @@ Assert-RuleHarness `
     -Message 'Expected recurring cross-feature/global issues to propose promotion to the correct global agent doc.'
 
 $feedbackRepo = Join-Path $scratchRoot 'feedback-loop'
-Initialize-RuleHarnessFixtureRepo -RepoPath $feedbackRepo -FixtureName 'undocumented-custom-property'
+Initialize-RuleHarnessFixtureRepo -RepoPath $feedbackRepo -FixtureName 'missing-ssot'
 New-Item -ItemType Directory -Path (Join-Path $feedbackRepo 'Temp') -Force | Out-Null
 $feedbackSummaryPath = Join-Path $feedbackRepo 'Temp/feedback-summary.md'
 $feedbackReport = Invoke-RuleHarness `
@@ -618,7 +608,7 @@ Assert-RuleHarness `
     -Message 'Expected report to expose self-improvement loop output fields.'
 
 $llmFailureRepo = Join-Path $scratchRoot 'feedback-loop-llm-failure'
-Initialize-RuleHarnessFixtureRepo -RepoPath $llmFailureRepo -FixtureName 'undocumented-custom-property'
+Initialize-RuleHarnessFixtureRepo -RepoPath $llmFailureRepo -FixtureName 'missing-ssot'
 New-Item -ItemType Directory -Path (Join-Path $llmFailureRepo 'Temp') -Force | Out-Null
 $llmFailureSummaryPath = Join-Path $llmFailureRepo 'Temp/feedback-summary.md'
 $llmFailureReport = Invoke-RuleHarness `
@@ -645,7 +635,7 @@ Assert-RuleHarness `
     -Message 'Expected harness-originated failures to create advisory memory updates without becoming SSOT.'
 
 $scheduledRepo = Join-Path $scratchRoot 'scheduled-status'
-Initialize-RuleHarnessFixtureRepo -RepoPath $scheduledRepo -FixtureName 'undocumented-custom-property'
+Initialize-RuleHarnessFixtureRepo -RepoPath $scheduledRepo -FixtureName 'missing-ssot'
 Push-Location $scheduledRepo
 try {
     & (Join-Path $scheduledRepo 'tools/rule-harness/run-rule-harness-scheduled.ps1') -DisableLlm -MutationMode 'code_and_rules'

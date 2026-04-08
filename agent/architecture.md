@@ -1,7 +1,7 @@
 # /agent/architecture.md
 
 이 문서는 **코드 구조·피처 경계·의존 방향·레이어 책임·네이밍·크로스 피처 포트·scene contract 체크리스트**의 단일 근거(SSOT)다.  
-엔트리포인트는 `../CLAUDE.md`이고, 각 feature README는 이 문서의 체크리스트를 자기 피처 값으로 채우는 **로컬 계약 문서**다. 전역 구조 규칙은 여기서만 정의한다.
+엔트리포인트는 `../CLAUDE.md`이고, 전역 구조 규칙은 여기서만 정의한다. feature-local wiring과 초기화 계약은 별도 README가 아니라 실제 `Setup`/`Bootstrap`, 씬/프리팹 직렬화 참조, 관련 코드 경로에서 드러나야 한다.
 
 시각 요약(Mermaid): [architecture-diagram.md](../docs/design/architecture-diagram.md) — 표·본문은 **이 문서**와 같아야 한다.
 
@@ -29,18 +29,18 @@ Assets/Scripts/Shared/
 * Infrastructure는 Application port를 구현한다.
 * Domain은 프레임워크 비의존을 유지한다.
 * Bootstrap (`Setup`/`Bootstrap`)은 레이어 간 조립과 wiring만 담당한다.
-* scene-owned feature는 자기 feature README에 scene contract를 기록한다.
-* networked feature는 자기 feature README에 명시적 초기화 경로와 late-join 동작을 기록한다.
+* scene-owned feature는 자기 `Setup`/`Bootstrap`, 씬/프리팹 직렬화 참조, 관련 코드에서 scene contract를 드러낸다.
+* networked feature는 명시적 초기화 경로와 late-join 동작을 코드와 전역 규칙으로 추적 가능하게 유지한다.
 * 런타임 fallback 생성으로 누락된 scene/prefab setup을 대체하지 않는다.
 
 개념이 독립 생명주기를 얻기 전에는 feature 안에 남긴다.
 
-### Scene contract (README)
+### Scene contract (code and scene assets)
 
 scene contract 체크리스트의 소유자는 이 문서다.
-각 feature README는 아래 항목을 자기 피처 기준으로 채우고, 항목 정의 자체를 다시 바꾸지 않는다.
+각 feature는 아래 항목을 자기 피처의 `Setup`/`Bootstrap`, 씬/프리팹 직렬화 참조, 관련 코드 경로로 충족해야 하며, 항목 정의 자체를 다시 바꾸지 않는다.
 
-Every scene-owned feature must document:
+Every scene-owned feature must make explicit:
 
 * required GameObjects/components
 * required serialized references
@@ -49,6 +49,8 @@ Every scene-owned feature must document:
 * allowed runtime lookup exceptions
 * initialization order
 * late-join / reconnect behavior for networked objects
+
+위 항목을 별도 feature README로 중복 서술하지 않는다. 전역 규칙은 이 문서에만 두고, 로컬 사실은 실제 코드/씬 자산이 보여줘야 한다.
 
 ---
 

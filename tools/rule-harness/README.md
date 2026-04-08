@@ -6,9 +6,7 @@
 
 - `CLAUDE.md`
 - `CLAUDE.md` 가 직접 가리키는 global owner docs
-- `Assets/Scripts/Features/*/README.md`
-- `Assets/Scripts/Shared/README.md`
-- `Assets/Editor/UnityMcp/README.md`
+- 실제 `Setup` / `Bootstrap` 와 관련 코드 경로
 
 ## 로컬 실행
 
@@ -100,7 +98,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 - code/mixed batch는 이제 `validation-registry.json` 등록 여부와 무관하게 repair loop에 들어갈 수 있다.
 - 검증 계획은 다음 우선순위로 자동 발견된다.
   1. `Tests/<Feature>/Run-*.ps1`
-  2. `CLAUDE.md`, 현재 global owner docs, owner README 계약에서 추론한 structural check
+  2. `CLAUDE.md`, 현재 global owner docs, 실제 `Setup` / `Bootstrap` 와 코드 구조에서 추론한 structural check
   3. `Tests/<Feature>/` 아래 기존 test asset
   4. `tools/rule-harness/validation-registry.json` 의 optional hint
   5. 하네스 fixture test + static scan

@@ -39,8 +39,8 @@ namespace Features.Unit
             // Application UseCases 조립
             SummonUnit = new SummonUnitUseCase(energyPort, summonAdapter, eventBus);
 
-            // 사망 핸들러 — UnitDiedEvent 구독, Photon 파괴
-            var deathHandler = new UnitDeathEventHandler(eventBus);
+            // 사망 핸들러 — UnitDiedEvent 구독, Photon 파괴는 Infrastructure에 위임
+            var deathHandler = new UnitDeathEventHandler(eventBus, new BattleEntityDespawnAdapter());
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, deathHandler));
         }
 

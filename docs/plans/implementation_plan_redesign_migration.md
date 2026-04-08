@@ -47,7 +47,7 @@
 1. 제품 개념은 먼저 바꾸고, 구현은 단계적으로 따라온다.
 2. 구형 시스템을 신규 시스템 위에 임시로 덧씌우지 않는다.
 3. 같은 의미를 구형/신규 용어로 이중 정의하지 않는다.
-4. 씬 계약과 feature README는 실제 wiring이 바뀌는 시점에 함께 갱신한다.
+4. 씬 계약은 실제 wiring이 바뀌는 시점에 해당 feature의 `Setup`/`Bootstrap`, 씬/프리팹 직렬화 계약, 전역 규칙 문서와 함께 갱신한다.
 
 ---
 
@@ -91,10 +91,10 @@
 - 플레이어당 유닛 편성 3~5기
 - 유닛 역할 차이를 만드는 최소 모듈 조합
 
-### 7. 문서/피처 README 동기화
+### 7. 문서/코드 계약 동기화
 
-- 각 feature가 새 책임으로 실제 전환되면 해당 README를 같은 패스에서 갱신한다.
-- 초기화 순서가 바뀌면 관련 feature `README.md`의 scene contract와 initialization order를 갱신한다.
+- 각 feature가 새 책임으로 실제 전환되면 해당 `Setup`/`Bootstrap`와 전역 규칙 문서를 같은 패스에서 갱신한다.
+- 초기화 순서가 바뀌면 관련 feature의 scene/prefab wiring과 initialization order가 코드에서 추적 가능하게 유지되도록 갱신한다.
 - 피처 경계가 재편되면 `../../agent/architecture.md`를 갱신한다.
 
 ---

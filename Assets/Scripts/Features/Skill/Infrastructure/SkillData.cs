@@ -43,7 +43,7 @@ namespace Features.Skill.Infrastructure
         [SerializeField] private GrowthAxisConfig growthAxes;
 
         [Header("Classification")]
-        [Tooltip("비어 있으면 damage·상태이상·딜리버리로 보조 추론. 상세 기준은 Skill README의 데이터 드리븐 구조 섹션 참조.")]
+        [Tooltip("비어 있으면 damage·상태이상·딜리버리로 보조 추론. 상세 기준은 SkillGameplayTags / SkillGameplayTagResolver / game_design 문서를 따른다.")]
         [SerializeField] private SkillGameplayTags gameplayTags;
 
         public string SkillId => skillId;

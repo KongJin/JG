@@ -10,7 +10,7 @@
 | 재미 워크숍·페르소나·토의 기록 | [discussion_game_fun_personas.md](../discussions/discussion_game_fun_personas.md) |
 | 플레이 세션 노트 양식 | [playtest_mvp_template.md](../playtest/playtest_mvp_template.md) |
 | Room/Player CustomProperties 키 소유권 | [state_ownership.md](../../agent/state_ownership.md) — **새 키 추가 시 반드시 갱신** |
-| 스킬 분류 태그와 현재 코드 매핑 | [Skill README](../../Assets/Scripts/Features/Skill/README.md) — 수치·MVP 정의는 `game_design.md`만 SSOT |
+| 스킬 분류 태그와 현재 코드 매핑 | [SkillGameplayTags.cs](../../Assets/Scripts/Features/Skill/Domain/SkillGameplayTags.cs), [SkillGameplayTagResolver.cs](../../Assets/Scripts/Features/Skill/Domain/SkillGameplayTagResolver.cs), [SkillData.cs](../../Assets/Scripts/Features/Skill/Infrastructure/SkillData.cs) — 수치·MVP 정의는 `game_design.md`만 SSOT |
 
 본 파일은 **무엇을 어느 순서로 손대는지**만 적는다. 결정이 바뀌면 위 SSOT를 먼저 고친 뒤 여기 체크리스트를 맞춘다.
 
@@ -32,7 +32,7 @@
 | anti_patterns — Dual state | 동일 개념 이중 소유 금지 | 난이도의 근원은 **Room CP 한 곳**. Wave에 별도 “난이도 도메인 엔티티”를 두지 않고, 스폰 시점에 **읽기·적용**만 한다. |
 | anti_patterns — GetComponent | 의존성은 `[Required, SerializeField]` | 새 어댑터·뷰 참조는 **씬/프리팹 배선**으로만. Photon Instantiate 예외는 기존 Enemy 경로 README대로. |
 | anti_patterns — Port 위치 | Unity 타입 없는 포트만 Application/Ports | 배율 조회가 `float`/`int`만 쓰면 `Features/Wave/Application/Ports`에 `IDifficultySpawnScale` 같은 **읽기 전용 포트** 가능. Unity 의존 시 Presentation으로. |
-| CLAUDE 워크플로 | `Features/<Name>/README.md` 갱신 | Phase C 이후 **Lobby·Wave README**에 Room 키, 읽기 시점, late-join 시 난이도 반영 여부 명시. |
+| CLAUDE 워크플로 | 관련 feature의 `Setup`/`Bootstrap`, 실제 키 사용 코드, 전역 규칙 문서 동기화 | Phase C 이후 Lobby·Wave 코드 경로에서 Room 키, 읽기 시점, late-join 시 난이도 반영 여부가 추적 가능해야 한다. |
 
 **키 문자열:** `difficultyPreset`(가칭) 값은 [state_ownership.md](../../agent/state_ownership.md)에 한 줄로 고정하고, Lobby 상수(`LobbyPhotonConstants`)와 Wave 인프라의 읽기 키가 **동일 문자열**이어야 한다. Wave가 Lobby 어셈블리를 참조하지 않도록, **문자열은 양쪽 각각 상수로 두고 SSOT 문서로 동기화**하거나, 아키텍처상 허용 시 **공유 최소 상수** 한 파일로만 맞춘다(새 공유 파일 추가 시 [architecture.md](../../agent/architecture.md)와 팀 합의).
 
@@ -41,7 +41,7 @@
 | 항목 | 판단 |
 |------|------|
 | View에 네트워크/도메인 규칙 | 로비 뷰는 입력·표시만; Photon은 `LobbyUseCases`→Adapter. `BarView`에서 **Debug.Log 제거**([anti_patterns.md](../../agent/anti_patterns.md) 로깅 위치 권장에 맞춤). |
-| `GetComponent` | `EnemySetup`이 **같은 GameObject**의 `PhotonView`로 `InstantiationData` 읽기 → anti_patterns **예외(한 번·로컬·문서화)**. [Enemy/README.md](../../Assets/Scripts/Features/Enemy/README.md)에 예외 한 줄 명시. |
+| `GetComponent` | `EnemySetup`이 **같은 GameObject**의 `PhotonView`로 `InstantiationData` 읽기 → anti_patterns 예외(한 번·로컬·주석/규칙 문서로 추적). |
 | Bootstrap | `WaveBootstrap`은 `ResolveSpawnCountMultiplier()`로 배율만 조회해 `EnemySpawnAdapter`에 **주입**; 매핑은 `DifficultySpawnScale`(Application). 선택 `RoomDifficultySpawnScaleProvider`(`IDifficultySpawnScale`) 연결 시 조회 경로를 한 컴포넌트로 모음(미연결 시 Reader+Scale 폴백). |
 | Dual state | 난이도는 Room CP 단일 근원; Wave는 런타임 복제 엔티티로 보관하지 않음. |
 | `DifficultySpawnScale`의 `int` 기본값 | 네트워크에서 온 int에 대한 `_ => 1f`는 **enum silent default 금지** 규칙과 별개(검증은 Lobby 도메인 `ValidateDifficultyPreset`). |
@@ -83,14 +83,14 @@ flowchart TD
 
 ### 코드·씬 (구체)
 
-- [ ] [DeckCycleHandler.cs](../../Assets/Scripts/Features/Skill/Application/DeckCycleHandler.cs): `DeckNextDrawPreviewEvent` 발행 시점(시전 후·초기화)이 README와 일치하는지 확인.
+- [ ] [DeckCycleHandler.cs](../../Assets/Scripts/Features/Skill/Application/DeckCycleHandler.cs): `DeckNextDrawPreviewEvent` 발행 시점(시전 후·초기화)이 현재 Skill 코드 계약과 일치하는지 확인.
 - [ ] [BarView.cs](../../Assets/Scripts/Features/Skill/Presentation/UI/BarView.cs): `OnEnable`/이벤트 구독에서 아이콘·라벨 갱신 로직이 null 안전한지 확인. 변경 시 **Presentation만** — Application에 `Sprite`/`Color` 이외 포트 추가 금지([anti_patterns.md](../../agent/anti_patterns.md) 포트 배치).
 - [ ] 게임 씬에서 스킬 바가 붙은 프리팹/오브젝트: Inspector에서 `nextDrawPreviewIcon`, `nextDrawHintLabel` **SerializeField 연결**.
-- [ ] (선택) `firstWaveDeckHintText` 등 Wave HUD 힌트는 [Wave/README.md](../../Assets/Scripts/Features/Wave/README.md)에 따름 — 덱 규칙 **장문 설명**을 전투 중에 늘리지 않기(페르소나 C와 충돌 방지).
+- [ ] (선택) `firstWaveDeckHintText` 등 Wave HUD 힌트는 [game_design.md](../design/game_design.md)와 실제 Wave UI copy 기준으로 조정 — 덱 규칙 장문 설명을 전투 중에 늘리지 않기(페르소나 C와 충돌 방지).
 
 ### 체크리스트 (구현/에디터)
 
-- [ ] [Skill/README.md](../../Assets/Scripts/Features/Skill/README.md): 덱 다음 장 미리보기 — `DeckNextDrawPreviewEvent`, `BarView`의 `nextDrawPreviewIcon` / `nextDrawHintLabel`.
+- [ ] [DeckCycleHandler.cs](../../Assets/Scripts/Features/Skill/Application/DeckCycleHandler.cs), [BarView.cs](../../Assets/Scripts/Features/Skill/Presentation/UI/BarView.cs), [SkillSetup.cs](../../Assets/Scripts/Features/Skill/SkillSetup.cs): 덱 다음 장 미리보기 흐름이 현재 코드 기준으로 일관적인지 확인.
 - [ ] 씬·프리팹에서 위 필드가 **연결되어 있는지** Inspector로 확인 ([BarView.cs](../../Assets/Scripts/Features/Skill/Presentation/UI/BarView.cs)).
 - [ ] 미연결이면 연결하거나, 측정을 **인터뷰만**으로 할지 `../design/game_design.md` 측정 정의와 맞게 기록.
 
@@ -118,7 +118,7 @@ flowchart TD
 
 - [ ] [EnemySpawnAdapter.cs](../../Assets/Scripts/Features/Wave/Infrastructure/EnemySpawnAdapter.cs): `SpawnWaveEnemiesCoroutine`이 `entry.Count`·`entry.EnemyData`만 사용 — **변종 혼합은 웨이브 테이블 SO만으로 가능**.
 - [ ] **스폰 개수 배율**(Phase C와 연동 시): `entry.Count * multiplier` 산식은 **Wave.Application** 순수 함수(예: `SpawnCountScaling.Apply(int baseCount, float multiplier)`)로 두고, Adapter는 결과만 사용 — **WaveBootstrap에 산식·분기 금지**([anti_patterns.md](../../agent/anti_patterns.md) Bootstrap).
-- [ ] 행동 패턴 변경 시: [EnemyAiAdapter.cs](../../Assets/Scripts/Features/Enemy/Infrastructure/EnemyAiAdapter.cs) 또는 `EnemyData` 확장 + Factory/Strategy — `EnemySetup`·Master 전용 AI 초기화 순서는 [Enemy/README.md](../../Assets/Scripts/Features/Enemy/README.md) 유지.
+- [ ] 행동 패턴 변경 시: [EnemyAiAdapter.cs](../../Assets/Scripts/Features/Enemy/Infrastructure/EnemyAiAdapter.cs) 또는 `EnemyData` 확장 + Factory/Strategy — `EnemySetup`과 Master 전용 AI 초기화 순서는 코드에서 추적 가능한 단일 경로를 유지.
 
 ---
 
@@ -147,7 +147,7 @@ flowchart TD
 ### C-4. Wave — 읽기·배율 (게임 씬)
 
 - [ ] **프리셋→배율:** `Features/Wave/Application`에 정수 프리셋 ID → `float` 배율(들) 순수 매핑. 수치는 `../design/game_design.md` 확정 후 코드/상수에 반영.
-- [ ] **읽기 시점:** [WaveBootstrap.Initialize](../../Assets/Scripts/Features/Wave/WaveBootstrap.cs)에서 `_spawnAdapter.Initialize(...)` **이전**에 Room에서 프리셋 읽기 → 배율을 `EnemySpawnAdapter.Initialize`에 인자로 전달하거나, `IWaveSpawnPort` 구현체에 주입. **late-join:** [WaveNetworkAdapter.HydrateFromRoomProperties](../../Assets/Scripts/Features/Wave/Infrastructure/WaveNetworkAdapter.cs)와 같은 패턴으로 “이미 방에 들어온 클라이언트”가 프리셋을 놓치지 않는지 README에 명시(난이도는 웨이브 진행 중 변경 안 함이 기본).
+- [ ] **읽기 시점:** [WaveBootstrap.Initialize](../../Assets/Scripts/Features/Wave/WaveBootstrap.cs)에서 `_spawnAdapter.Initialize(...)` **이전**에 Room에서 프리셋 읽기 → 배율을 `EnemySpawnAdapter.Initialize`에 인자로 전달하거나, `IWaveSpawnPort` 구현체에 주입. **late-join:** [WaveNetworkAdapter.HydrateFromRoomProperties](../../Assets/Scripts/Features/Wave/Infrastructure/WaveNetworkAdapter.cs)와 같은 패턴으로 “이미 방에 들어온 클라이언트”가 프리셋을 놓치지 않는지 코드와 전역 규칙 기준으로 확인(난이도는 웨이브 진행 중 변경 안 함이 기본).
 - [ ] [EnemySpawnAdapter.cs](../../Assets/Scripts/Features/Wave/Infrastructure/EnemySpawnAdapter.cs): 코루틴에서 스폰 루프 횟수에만 배율 적용할지, `EnemyData` 스펙 복제 후 HP에 곱할지는 **game_design**과 맞추고, **도메인 엔티티 생성 규칙**은 기존 `SpawnEnemyUseCase` 경로 존중.
 
 ### C-5. 검증 (아키텍처 스모크)
@@ -164,7 +164,7 @@ flowchart TD
 
 ### 구현 상태 (레포)
 
-- **에디터·Development 빌드**에서 `[MvpReward]` 로그가 이미 남는다: [WaveFlowController.cs](../../Assets/Scripts/Features/Wave/Presentation/WaveFlowController.cs), [UpgradeSelectionView.cs](../../Assets/Scripts/Features/Wave/Presentation/UpgradeSelectionView.cs). 상세는 [Wave/README.md](../../Assets/Scripts/Features/Wave/README.md).
+- **에디터·Development 빌드**에서 `[MvpReward]` 로그가 이미 남는다: [WaveFlowController.cs](../../Assets/Scripts/Features/Wave/Presentation/WaveFlowController.cs), [UpgradeSelectionView.cs](../../Assets/Scripts/Features/Wave/Presentation/UpgradeSelectionView.cs).
 
 ### 코드·빌드 (구체)
 
@@ -179,16 +179,16 @@ flowchart TD
 
 ---
 
-## 피처 README 갱신 (필수 워크플로)
+## 코드·규칙 동기화 (필수 워크플로)
 
-코드·씬을 건드린 피처마다 해당 `README.md`를 갱신한다.
+코드·씬을 건드린 피처마다 해당 feature의 `Setup`/`Bootstrap`, 실제 wiring, 관련 전역 규칙 문서를 같은 패스에서 점검한다.
 
 | 피처 | 트리거 예시 |
 |------|-------------|
-| [Skill](../../Assets/Scripts/Features/Skill/README.md) | BarView·덱 미리보기 연결·UI 수정 시 |
-| [Wave](../../Assets/Scripts/Features/Wave/README.md) | 스폰 배율·난이도 읽기·Bootstrap 시 |
-| [Lobby](../../Assets/Scripts/Features/Lobby/README.md) | Room 속성·로비 UI·난이도 선택 시 |
-| [Enemy](../../Assets/Scripts/Features/Enemy/README.md) | AI·스펙 파이프라인 변경 시 |
+| [SkillSetup.cs](../../Assets/Scripts/Features/Skill/SkillSetup.cs) | BarView·덱 미리보기 연결·UI 수정 시 |
+| [WaveBootstrap.cs](../../Assets/Scripts/Features/Wave/WaveBootstrap.cs) | 스폰 배율·난이도 읽기·Bootstrap 시 |
+| [LobbyBootstrap.cs](../../Assets/Scripts/Features/Lobby/LobbyBootstrap.cs) | Room 속성·로비 UI·난이도 선택 시 |
+| [EnemySetup.cs](../../Assets/Scripts/Features/Enemy/EnemySetup.cs) | AI·스펙 파이프라인 변경 시 |
 
 ---
 
@@ -198,7 +198,7 @@ flowchart TD
 - [ ] `EnemyData` **2종 이상** + 웨이브 테이블이 디자인 방향(예: 5웨이브)에 **데이터상** 정렬.
 - [ ] 로비 난이도: Room 동기화 + 인게임 배율 + 로비 **한 줄(또는 동등)** 표시.
 - [ ] `state_ownership.md`에 새 Room 키 반영.
-- [ ] 변경한 피처 README 정리.
+- [ ] 변경한 피처의 실제 wiring/code contract와 전역 규칙 문서 정리.
 
 ---
 

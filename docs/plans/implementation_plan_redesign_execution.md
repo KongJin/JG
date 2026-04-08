@@ -59,7 +59,7 @@
 1. 새 시스템은 구형 시스템의 옵션 분기나 임시 플래그로 만들지 않는다.
 2. 새 씬에서는 `mana`, `start skill selection`, `deck rotation`, `friendly fire`, `down/rescue`를 전제하지 않는다.
 3. 구형 피처 폴더를 재사용하더라도, 책임은 새 SSOT 기준으로 재정의한다.
-4. 씬 계약은 실제 씬이 생기는 즉시 해당 feature README와 함께 갱신한다.
+4. 씬 계약은 실제 씬이 생기는 즉시 해당 feature의 `Setup`/`Bootstrap`, 씬/프리팹 wiring, 전역 규칙 문서와 함께 갱신한다.
 5. 컷오버 전까지는 "구형 씬은 구형 규칙", "신규 씬은 신규 규칙"으로 분리한다.
 
 ---
@@ -260,7 +260,7 @@ UI 최소 요소:
 중요:
 
 - 이 단계에서는 기존 `Skill` 폴더를 바로 이름 변경하지 않아도 된다
-- 대신 README와 클래스 책임부터 새 의미로 바꾼다
+- 대신 클래스 책임과 관련 규칙 문서부터 새 의미로 바꾼다
 
 완료 기준:
 
@@ -355,22 +355,22 @@ UI 최소 요소:
 
 ---
 
-## 문서 동기화 순서
+## 코드·규칙 동기화 순서
 
 실구현과 함께 아래 문서를 같은 패스에서 갱신한다.
 
-1. `Assets/Scripts/Features/Lobby/README.md`
+1. `Assets/Scripts/Features/Lobby/LobbyBootstrap.cs`
    - 편성 단계와 시작 조건
-2. `Assets/Scripts/Features/Player/README.md`
-   - 이동/점프/다운/구조 제거, 에너지/소환 권한 중심으로 재작성
-3. `Assets/Scripts/Features/Skill/README.md`
-   - 시작 스킬/덱 순환 제거, 유닛 슬롯/모듈/편성 중심으로 재작성
-4. `Assets/Scripts/Features/Wave/README.md`
-   - 보상 선택 제거, 코어 방어/연속 압박 중심으로 재작성
-5. `Assets/Scripts/Features/Combat/README.md`
+2. `Assets/Scripts/Features/Player/PlayerSetup.cs`
+   - 이동/점프/다운/구조 제거, 에너지/소환 권한 중심으로 재정의
+3. `Assets/Scripts/Features/Skill/SkillSetup.cs`
+   - 시작 스킬/덱 순환 제거, 유닛 슬롯/모듈/편성 중심으로 재정의
+4. `Assets/Scripts/Features/Wave/WaveBootstrap.cs`
+   - 보상 선택 제거, 코어 방어/연속 압박 중심으로 재정의
+5. `Assets/Scripts/Features/Combat/CombatBootstrap.cs`
    - FF/플레이어 직시전 중심 설명 제거
-6. 각 관련 feature `README.md`
-   - 새 로비/전투 씬 초기화 순서와 scene contract로 교체
+6. 각 관련 feature의 `Setup`/`Bootstrap`와 실제 씬 wiring
+   - 새 로비/전투 씬 초기화 순서와 scene contract 반영
 7. `../../agent/architecture.md`
    - 피처 경계가 충분히 바뀌면 개념 설명 업데이트
 

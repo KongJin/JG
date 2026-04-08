@@ -13,18 +13,12 @@
   },
   "ssot": {
     "scopeDocs": [
-      "CLAUDE.md",
-      "Assets/Scripts/Features/*/README.md",
-      "Assets/Scripts/Shared/README.md",
-      "Assets/Editor/UnityMcp/README.md"
+      "CLAUDE.md"
     ]
   },
   "docs": {
     "allowlist": [
-      "CLAUDE.md",
-      "Assets/Scripts/Features/*/README.md",
-      "Assets/Scripts/Shared/README.md",
-      "Assets/Editor/UnityMcp/README.md"
+      "CLAUDE.md"
     ],
     "denylist": [
       "docs/design/**"
@@ -42,11 +36,9 @@
   },
   "severityPolicy": {
     "missingSsotReference": "high",
-    "missingFeatureReadme": "high",
     "missingFeatureBootstrap": "high",
     "unityInDomain": "high",
     "unityInApplication": "high",
-    "undocumentedCustomProperty": "high",
     "brokenReference": "medium",
     "agentFailure": "high"
   },

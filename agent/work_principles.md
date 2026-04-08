@@ -26,21 +26,21 @@
 | 재미·리스크 워크숍(4인 페르소나 토의·질문 풀) | [discussion_game_fun_personas.md](../docs/discussions/discussion_game_fun_personas.md) — 수치·MVP 정의는 `../docs/design/game_design.md`만 SSOT |
 | MVP 재미 검증 실행 분해(체크리스트·파일 맵) | [implementation_plan_mvp_fun.md](../docs/plans/implementation_plan_mvp_fun.md) — 수치·통과 기준·MVP 문장은 `../docs/design/game_design.md`만 SSOT |
 | MVP 플레이테스트 세션 노트 (양식) | [playtest_mvp_template.md](../docs/playtest/playtest_mvp_template.md) — 측정 정의·통과 기준은 `../docs/design/game_design.md`만 SSOT |
-| 네트워크 키·소유권 | owning feature README (`../Assets/Scripts/Features/<Name>/README.md`) |
-| 피처별 씬·초기화 | `../Assets/Scripts/Features/<Name>/README.md` |
-| 에디터 MCP 등 자동화 계약 | 해당 도구 README (예: `/Assets/Editor/UnityMcp/README.md`) |
-| 스킬 분류 태그와 현재 코드 매핑 | [Skill README](../Assets/Scripts/Features/Skill/README.md) — 수치·MVP 정의는 `../docs/design/game_design.md`만 SSOT |
+| 네트워크 키·소유권 | 키를 실제로 쓰는 feature code (`../Assets/Scripts/Features/<Name>/Application/**`, `../Assets/Scripts/Features/<Name>/Infrastructure/**`) + [architecture.md](architecture.md) |
+| 피처별 씬·초기화 | 해당 feature의 `Setup`/`Bootstrap`, 씬/프리팹 직렬화 계약 |
+| 에디터 MCP 등 자동화 계약 | [unity_mcp.md](../docs/ops/unity_mcp.md) |
+| 스킬 분류 태그와 현재 코드 매핑 | [SkillGameplayTags.cs](../Assets/Scripts/Features/Skill/Domain/SkillGameplayTags.cs), [SkillGameplayTagResolver.cs](../Assets/Scripts/Features/Skill/Domain/SkillGameplayTagResolver.cs), [SkillData.cs](../Assets/Scripts/Features/Skill/Infrastructure/SkillData.cs) — 수치·MVP 정의는 `../docs/design/game_design.md`만 SSOT |
 | 제품·배포·기밀 맥락 | [developer_context.md](developer_context.md) |
 
 같은 사실(예: CustomProperty 의미)을 **두 문서에 풀어서 정의하지 않는다**. 보조 문서에는 한 줄 위임만 두고, **역참조로 순환이 생기지 않게** 한다.
-엔트리포인트 문서(`../CLAUDE.md`, area README의 "먼저 읽기" 섹션 등)는 **찾아가는 길과 작업 순서만 요약**하고, 규칙 본문은 해당 SSOT에만 둔다.
+엔트리포인트 문서(`../CLAUDE.md` 등)는 **찾아가는 길과 작업 순서만 요약**하고, 규칙 본문은 해당 SSOT에만 둔다.
 
 ---
 
 ## 작업 레벨별 응집도
 
-- **씬/프리팹**: 요구 오브젝트·참조·순서는 **해당 피처 README의 씬 계약**에만 상세히 쓴다. 다른 README는 중복 나열 대신 위임한다.
-- **자동화 스크립트 / MCP**: 입력(경로, 대상)을 명시하고, **비즈니스 규칙을 스크립트 안에서 새로 정의하지 않는다**. 규칙은 도메인·Application 또는 README에 두고, 도구는 적용·검증만 담당한다.
+- **씬/프리팹**: 요구 오브젝트·참조·순서는 **해당 피처의 Setup/Bootstrap와 실제 serialized contract**에만 남긴다. 같은 내용을 별도 README로 중복 서술하지 않는다.
+- **자동화 스크립트 / MCP**: 입력(경로, 대상)을 명시하고, **비즈니스 규칙을 스크립트 안에서 새로 정의하지 않는다**. 규칙은 도메인·Application 또는 전역 규칙 문서에 두고, 도구는 적용·검증만 담당한다.
 - **분석(Firebase 등)**: 이벤트 이름·의미는 **코드 상수 한 곳 또는 문서 한 곳**에만 두고 대시보드와 이중 정의하지 않는다.
 
 ---
