@@ -56,6 +56,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\register-rule-harn
 - `Temp/RuleHarnessScheduled/<timestamp>/rule-harness-summary.md`
 - `Temp/RuleHarnessScheduled/<timestamp>/rule-harness.log`
 - `Temp/RuleHarnessScheduled/latest-run.txt`
+- 반복 실패/재시도 상태: `Temp/RuleHarnessState/history.json`
 
 예약 해제:
 
@@ -92,6 +93,12 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 - `-ReviewJsonPath`
   - OpenAI 호출 대신 미리 저장한 리뷰 JSON을 읽는다.
 
+## Validation Registry
+
+- code/mixed batch의 targeted validation은 `tools/rule-harness/validation-registry.json` 를 기준으로 정한다.
+- 기본 구조는 `schemaVersion`, `features.<Feature>.scripts[]`, `features.<Feature>.smoke[]`, `features.<Feature>.requiredForKinds[]` 이다.
+- registry entry가 없는 feature code batch는 apply 전에 `missing-validation-registry` 로 skip된다.
+
 ## 보고서 확인
 
 보고서 JSON의 아래 필드를 보면 실제로 LLM이 사용됐는지 확인할 수 있다.
@@ -109,15 +116,19 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 - `rollbackBatches`
 - `decisionTrace`
 - `validationResults`
+- `historySummary`
 - `commit`
 - `rollback`
+
+문서 sync skip 이유나 batch 검증 실패 이유는 `decisionTrace`, `validationResults`, `rule-harness.log` 에서 확인할 수 있다.
 
 ## GLM 메모
 
 - `GLM-5`는 공식 문서상 OpenAI-compatible chat completions 엔드포인트를 지원한다.
 - 기본 URL은 `https://open.bigmodel.cn/api/paas/v4` 로 맞춰져 있다.
 - LLM HTTP 호출에는 기본 `120초` timeout이 걸려 있다. 오래 멈춘 것처럼 보이면 `rule-harness.log` 에서 `static scan`, `LLM review`, `doc sync`, `apply-doc-edits` 단계 로그를 보면 된다.
-- doc sync는 병목 방지를 위해 hard guard가 있다. owner doc 수가 기본 `3`개를 넘거나, 대상 문서가 기본 `20000`자를 넘으면 해당 run에서는 문서 sync를 건너뛰고 report-only로 남긴다.
+- doc sync는 문서별 request timeout과 대상 문서 크기 제한으로 제어된다. 대상 문서가 기본 `20000`자를 넘으면 그 문서만 skip하고, run 전체는 계속 진행한다.
+- 같은 commit에서 같은 batch가 반복 실패하면 `Temp/RuleHarnessState/history.json` 을 기준으로 suppression 하거나 `max-attempts-reached` 로 skip될 수 있다.
 - 예약 작업은 `-RequireLlm -MutationMode code_and_rules` 로 실행되므로, 실제 작업 스케줄러 세션에서 `GLM_API_KEY`가 보이지 않으면 run log에 실패가 남는다.
 - 스케줄러 등록 스크립트는 기본으로 `-Model glm-5 -ApiBaseUrl https://open.bigmodel.cn/api/paas/v4 -MutationMode code_and_rules` 를 task action에 직접 넣는다.
 - 키는 `GLM_API_KEY`보다 `RULE_HARNESS_API_KEY`를 사용자 환경변수로 저장하는 편이 스케줄러 세션에서 더 예측 가능하다.

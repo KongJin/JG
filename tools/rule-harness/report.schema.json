@@ -16,6 +16,7 @@
     "rollbackBatches",
     "decisionTrace",
     "validationResults",
+    "historySummary",
     "commit",
     "rollback",
     "applied",
@@ -37,6 +38,7 @@
         "llmApiBaseUrl",
         "mutationEnabled",
         "mutationMode",
+        "statePath",
         "branch"
       ],
       "properties": {
@@ -72,6 +74,12 @@
             "report_only",
             "doc_only",
             "code_and_rules"
+          ]
+        },
+        "statePath": {
+          "type": [
+            "string",
+            "null"
           ]
         },
         "branch": {
@@ -244,6 +252,30 @@
           },
           "status": {
             "type": "string"
+          },
+          "riskScore": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "riskLabel": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fingerprint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "ownershipStatus": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         }
       }
@@ -257,7 +289,33 @@
     "skippedBatches": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "reasonCode": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "fingerprint": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "attemptCount": {
+            "type": "integer"
+          }
+        }
       }
     },
     "rollbackBatches": {
@@ -275,7 +333,54 @@
     "validationResults": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "properties": {
+          "batchId": {
+            "type": "string"
+          },
+          "validation": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "details": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "historySummary": {
+      "type": "object",
+      "required": [
+        "statePath",
+        "loadedEntryCount",
+        "activeEntryCount",
+        "gcRemovedCount",
+        "touchedEntryCount"
+      ],
+      "properties": {
+        "statePath": {
+          "type": "string"
+        },
+        "loadedEntryCount": {
+          "type": "integer"
+        },
+        "activeEntryCount": {
+          "type": "integer"
+        },
+        "gcRemovedCount": {
+          "type": "integer"
+        },
+        "touchedEntryCount": {
+          "type": "integer"
+        }
       }
     },
     "commit": {

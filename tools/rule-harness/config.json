@@ -61,9 +61,41 @@
     "maxSnippetChars": 6000,
     "maxTargetDocCharsForSync": 20000
   },
+  "history": {
+    "statePath": "Temp/RuleHarnessState/history.json",
+    "gcDays": 14,
+    "maxAttemptsPerCommit": 2,
+    "nonActionableReasons": [
+      "missing-validation-registry",
+      "no-targeted-tests",
+      "dirty-target-files",
+      "ownership-preflight-rejected"
+    ]
+  },
   "validation": {
     "runHarnessTests": true,
-    "harnessTestScript": "tools/rule-harness/tests/Run-RuleHarnessTests.ps1"
+    "harnessTestScript": "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+    "registryPath": "tools/rule-harness/validation-registry.json",
+    "requireRegistryForCodeBatches": true
+  },
+  "risk": {
+    "enabled": true,
+    "maxAutoApplyScoreByMode": {
+      "report_only": 0,
+      "doc_only": 25,
+      "code_and_rules": 40
+    },
+    "scores": {
+      "brokenReferenceDocFix": 10,
+      "featureReadmeContract": 20,
+      "featureRootScaffold": 30,
+      "existingCodeFileEdit": 60,
+      "mixedRuleCodeBatch": 70,
+      "agentDocPenalty": 20
+    }
+  },
+  "ownership": {
+    "enabled": true
   },
   "schedule": {
     "utcCron": "0 17 * * *",

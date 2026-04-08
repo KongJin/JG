@@ -150,4 +150,246 @@ Assert-RuleHarness `
     -Condition ($mutationState.enabled -and $mutationState.mode -eq 'code_and_rules') `
     -Message 'Expected mutation state to honor explicit code_and_rules mode.'
 
+function New-RuleHarnessTestConfig {
+    param(
+        [Parameter(Mandatory)]
+        [object]$SourceConfig
+    )
+
+    $clone = ($SourceConfig | ConvertTo-Json -Depth 30) | ConvertFrom-Json
+    $clone.validation.harnessTestScript = 'tools/rule-harness/tests/Run-RuleHarnessTests.ps1'
+    $clone.validation.registryPath = 'tools/rule-harness/validation-registry.json'
+    $clone.history.statePath = 'Temp/RuleHarnessState/history.json'
+    $clone
+}
+
+function Initialize-RuleHarnessMutationRepo {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoPath,
+        [switch]$IncludeRegistry,
+        [switch]$FailTargetedTests,
+        [switch]$IncludeBarService
+    )
+
+    New-Item -ItemType Directory -Path (Join-Path $RepoPath 'Assets/Scripts/Features/Bar') -Force | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $RepoPath 'tools/rule-harness/tests') -Force | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $RepoPath 'Tests/Bar') -Force | Out-Null
+
+    Set-Content -Path (Join-Path $RepoPath 'CLAUDE.md') -Value '# Fixture' -Encoding UTF8
+    Set-Content -Path (Join-Path $RepoPath 'Assets/Scripts/Features/Bar/README.md') -Value '# Bar' -Encoding UTF8
+    Set-Content -Path (Join-Path $RepoPath 'tools/rule-harness/tests/Run-RuleHarnessTests.ps1') -Value 'Write-Host ''fixture harness tests passed''' -Encoding UTF8
+    if ($IncludeBarService) {
+        Set-Content -Path (Join-Path $RepoPath 'Assets/Scripts/Features/Bar/BarService.cs') -Value 'namespace Features.Bar { public sealed class BarService { } }' -Encoding UTF8
+    }
+
+    $targetedTestContent = if ($FailTargetedTests) {
+        'throw ''targeted validation failed'''
+    }
+    else {
+        'Write-Host ''targeted validation passed'''
+    }
+    Set-Content -Path (Join-Path $RepoPath 'Tests/Bar/Run-BarValidation.ps1') -Value $targetedTestContent -Encoding UTF8
+
+    if ($IncludeRegistry) {
+        New-Item -ItemType Directory -Path (Join-Path $RepoPath 'tools/rule-harness') -Force | Out-Null
+        $registry = @'
+{
+  "$schema": "./validation-registry.schema.json",
+  "schemaVersion": 1,
+  "features": {
+    "Bar": {
+      "scripts": [
+        "Tests/Bar/Run-BarValidation.ps1"
+      ],
+      "smoke": [],
+      "requiredForKinds": [
+        "code_fix",
+        "mixed_fix"
+      ]
+    }
+  }
+}
+'@
+        Set-Content -Path (Join-Path $RepoPath 'tools/rule-harness/validation-registry.json') -Value $registry -Encoding UTF8
+    }
+
+    Push-Location $RepoPath
+    try {
+        git init | Out-Null
+        git config user.name 'rule-harness-tests'
+        git config user.email 'rule-harness-tests@example.com'
+        git add .
+        git commit -m 'init' | Out-Null
+    }
+    finally {
+        Pop-Location
+    }
+}
+
+function New-RuleHarnessBootstrapFinding {
+    param(
+        [Parameter(Mandatory)]
+        [string]$OwnerDoc
+    )
+
+    [pscustomobject]@{
+        findingType = 'missing_rule'
+        severity = 'high'
+        ownerDoc = $OwnerDoc
+        title = 'Missing feature bootstrap root'
+        message = "Feature 'Bar' has no root-level *Setup.cs or *Bootstrap.cs file."
+        confidence = 'high'
+        source = 'agent_review'
+        evidence = @()
+        remediationKind = 'code_fix'
+    }
+}
+
+$missingRegistryRepo = Join-Path $scratchRoot 'mutation-missing-registry'
+Initialize-RuleHarnessMutationRepo -RepoPath $missingRegistryRepo
+$missingRegistryConfig = New-RuleHarnessTestConfig -SourceConfig $config
+$missingRegistryFinding = New-RuleHarnessBootstrapFinding -OwnerDoc 'Assets/Scripts/Features/Bar/README.md'
+$missingRegistryBatches = Get-RuleHarnessPlannedBatches `
+    -ReviewedFindings @(ConvertTo-RuleHarnessReviewedFindings -Findings @($missingRegistryFinding)) `
+    -DocEdits @() `
+    -RepoRoot $missingRegistryRepo
+$missingRegistryResult1 = Invoke-RuleHarnessMutationPlan `
+    -PlannedBatches $missingRegistryBatches `
+    -InitialStaticFindings @($missingRegistryFinding) `
+    -RepoRoot $missingRegistryRepo `
+    -Config $missingRegistryConfig `
+    -MutationState $mutationState
+Assert-RuleHarness `
+    -Condition ($missingRegistryResult1.skippedBatches[0].reasonCode -eq 'missing-validation-registry') `
+    -Message 'Expected code batch without registry entry to skip before apply.'
+Assert-RuleHarness `
+    -Condition (-not (Test-Path -LiteralPath (Join-Path $missingRegistryRepo 'Assets/Scripts/Features/Bar/BarSetup.cs'))) `
+    -Message 'Expected missing-registry batch to leave no scaffold file behind.'
+Assert-RuleHarness `
+    -Condition ($missingRegistryBatches[0].riskScore -eq 30 -and $missingRegistryBatches[0].riskLabel -eq 'medium' -and $missingRegistryBatches[0].ownershipStatus -eq 'accepted') `
+    -Message 'Expected scaffold batch metadata to include risk score and accepted ownership.'
+$missingRegistryResult2 = Invoke-RuleHarnessMutationPlan `
+    -PlannedBatches $missingRegistryBatches `
+    -InitialStaticFindings @($missingRegistryFinding) `
+    -RepoRoot $missingRegistryRepo `
+    -Config $missingRegistryConfig `
+    -MutationState $mutationState
+Assert-RuleHarness `
+    -Condition ($missingRegistryResult2.skippedBatches[0].attemptCount -ge 2) `
+    -Message 'Expected repeated missing-registry batch to record repeated history attempts.'
+$missingRegistryHistory = Read-RuleHarnessHistoryState -RepoRoot $missingRegistryRepo -Config $missingRegistryConfig
+Assert-RuleHarness `
+    -Condition (@($missingRegistryHistory.entries.Keys).Count -ge 1) `
+    -Message 'Expected mutation history to persist skipped batch state.'
+
+$failingValidationRepo = Join-Path $scratchRoot 'mutation-failing-validation'
+Initialize-RuleHarnessMutationRepo -RepoPath $failingValidationRepo -IncludeRegistry -FailTargetedTests
+$failingValidationConfig = New-RuleHarnessTestConfig -SourceConfig $config
+$failingValidationFinding = New-RuleHarnessBootstrapFinding -OwnerDoc 'Assets/Scripts/Features/Bar/README.md'
+$failingValidationBatches = Get-RuleHarnessPlannedBatches `
+    -ReviewedFindings @(ConvertTo-RuleHarnessReviewedFindings -Findings @($failingValidationFinding)) `
+    -DocEdits @() `
+    -RepoRoot $failingValidationRepo
+$failingValidationResult1 = Invoke-RuleHarnessMutationPlan `
+    -PlannedBatches $failingValidationBatches `
+    -InitialStaticFindings @($failingValidationFinding) `
+    -RepoRoot $failingValidationRepo `
+    -Config $failingValidationConfig `
+    -MutationState $mutationState
+$failingValidationResult2 = Invoke-RuleHarnessMutationPlan `
+    -PlannedBatches $failingValidationBatches `
+    -InitialStaticFindings @($failingValidationFinding) `
+    -RepoRoot $failingValidationRepo `
+    -Config $failingValidationConfig `
+    -MutationState $mutationState
+$failingValidationResult3 = Invoke-RuleHarnessMutationPlan `
+    -PlannedBatches $failingValidationBatches `
+    -InitialStaticFindings @($failingValidationFinding) `
+    -RepoRoot $failingValidationRepo `
+    -Config $failingValidationConfig `
+    -MutationState $mutationState
+Assert-RuleHarness `
+    -Condition ($failingValidationResult1.failed -and $failingValidationResult2.failed) `
+    -Message 'Expected targeted test failure to fail the first two attempts.'
+Assert-RuleHarness `
+    -Condition ($failingValidationResult3.skippedBatches[0].reasonCode -eq 'max-attempts-reached') `
+    -Message 'Expected the third repeated targeted test failure to be suppressed by max-attempts.'
+Assert-RuleHarness `
+    -Condition (-not (Test-Path -LiteralPath (Join-Path $failingValidationRepo 'Assets/Scripts/Features/Bar/BarSetup.cs'))) `
+    -Message 'Expected repeated failed code batch to leave no scaffold file behind.'
+
+$ownershipRejectRepo = Join-Path $scratchRoot 'mutation-ownership-reject'
+Initialize-RuleHarnessMutationRepo -RepoPath $ownershipRejectRepo -IncludeRegistry
+$ownershipRejectConfig = New-RuleHarnessTestConfig -SourceConfig $config
+$ownershipRejectFinding = New-RuleHarnessBootstrapFinding -OwnerDoc 'agent/architecture.md'
+$ownershipRejectBatch = [pscustomobject]@{
+    id = 'batch-ownership'
+    kind = 'code_fix'
+    targetFiles = @('Assets/Scripts/Features/Bar/BarSetup.cs')
+    reason = 'Add missing root setup scaffold for ownership test.'
+    validation = @('rule_harness_tests', 'targeted_tests', 'static_scan')
+    expectedFindingsResolved = @('missing_rule|agent/architecture.md|Missing feature bootstrap root')
+    status = 'planned'
+    featureNames = @('Bar')
+    ownerDocs = @('agent/architecture.md')
+    sourceFindingTypes = @('missing_rule')
+    fingerprint = $null
+    riskScore = $null
+    riskLabel = $null
+    ownershipStatus = 'pending'
+    operations = @(
+        [pscustomobject]@{
+            type = 'write_file'
+            targetPath = 'Assets/Scripts/Features/Bar/BarSetup.cs'
+            content = 'namespace Features.Bar { public sealed class BarSetup { } }'
+        }
+    )
+}
+$ownershipRejectResult = Invoke-RuleHarnessMutationPlan `
+    -PlannedBatches @($ownershipRejectBatch) `
+    -InitialStaticFindings @($ownershipRejectFinding) `
+    -RepoRoot $ownershipRejectRepo `
+    -Config $ownershipRejectConfig `
+    -MutationState $mutationState
+Assert-RuleHarness `
+    -Condition ($ownershipRejectResult.skippedBatches[0].reasonCode -eq 'ownership-preflight-rejected') `
+    -Message 'Expected feature-owned scaffold batch with global owner doc to fail ownership preflight.'
+
+$riskThresholdRepo = Join-Path $scratchRoot 'mutation-risk-threshold'
+Initialize-RuleHarnessMutationRepo -RepoPath $riskThresholdRepo -IncludeRegistry -IncludeBarService
+$riskThresholdConfig = New-RuleHarnessTestConfig -SourceConfig $config
+$riskThresholdBatch = [pscustomobject]@{
+    id = 'batch-risk'
+    kind = 'code_fix'
+    targetFiles = @('Assets/Scripts/Features/Bar/BarService.cs')
+    reason = 'Modify existing code file.'
+    validation = @('rule_harness_tests', 'targeted_tests', 'static_scan')
+    expectedFindingsResolved = @('missing_rule|Assets/Scripts/Features/Bar/README.md|Synthetic')
+    status = 'planned'
+    featureNames = @('Bar')
+    ownerDocs = @('Assets/Scripts/Features/Bar/README.md')
+    sourceFindingTypes = @('missing_rule')
+    fingerprint = $null
+    riskScore = $null
+    riskLabel = $null
+    ownershipStatus = 'pending'
+    operations = @(
+        [pscustomobject]@{
+            type = 'write_file'
+            targetPath = 'Assets/Scripts/Features/Bar/BarService.cs'
+            content = 'namespace Features.Bar { public sealed class BarService { public int Value => 1; } }'
+        }
+    )
+}
+$riskThresholdResult = Invoke-RuleHarnessMutationPlan `
+    -PlannedBatches @($riskThresholdBatch) `
+    -InitialStaticFindings @($missingRegistryFinding) `
+    -RepoRoot $riskThresholdRepo `
+    -Config $riskThresholdConfig `
+    -MutationState $mutationState
+Assert-RuleHarness `
+    -Condition ($riskThresholdResult.skippedBatches[0].reasonCode -eq 'risk-threshold-exceeded') `
+    -Message 'Expected existing code file edits above the threshold to skip before apply.'
+
 Write-Host 'Rule harness fixture tests passed.'

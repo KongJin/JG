@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kongjin.github.io/jg/rule-harness-validation-registry.schema.json",
+  "title": "Rule Harness Validation Registry",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "features"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "features": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "scripts",
+          "smoke",
+          "requiredForKinds"
+        ],
+        "properties": {
+          "scripts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "smoke": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requiredForKinds": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "code_fix",
+                "mixed_fix"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
