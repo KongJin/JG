@@ -1,6 +1,5 @@
 using Shared.Attributes;
 using System;
-using Features.Player.Application.Events;
 using Features.Wave.Application.Events;
 using Features.Wave.Domain;
 using Photon.Pun;
@@ -10,6 +9,10 @@ using UnityEngine.UI;
 
 namespace Features.Wave.Presentation
 {
+    /// <summary>
+    /// Wave 승패 시 결과 패널을 표시한다.
+    /// GameEndEvent 발행 책임은 WaveGameEndBridge(Application)에 있다.
+    /// </summary>
     public sealed class WaveEndView : MonoBehaviour
     {
         [Required, SerializeField] private GameObject panel;
@@ -17,13 +20,10 @@ namespace Features.Wave.Presentation
         [SerializeField] private Text statsText;
         [SerializeField] private Button returnToLobbyButton;
 
-        private IEventPublisher _publisher;
         private bool _gameEnded;
 
-        public void Initialize(IEventSubscriber subscriber, IEventPublisher publisher)
+        public void Initialize(IEventSubscriber subscriber)
         {
-            _publisher = publisher;
-
             subscriber.Subscribe(this, new Action<WaveVictoryEvent>(OnVictory));
             subscriber.Subscribe(this, new Action<WaveDefeatEvent>(OnDefeat));
             subscriber.Subscribe(this, new Action<WaveHydratedEvent>(OnWaveHydrated));
@@ -41,22 +41,14 @@ namespace Features.Wave.Presentation
         {
             if (_gameEnded) return;
             _gameEnded = true;
-
-            Show("Victory!", buildStats: true, isVictory: true);
-            _publisher.Publish(new GameEndEvent(
-                isVictory: true,
-                message: "Victory!"));
+            Show("Victory!", isVictory: true);
         }
 
         private void OnDefeat(WaveDefeatEvent e)
         {
             if (_gameEnded) return;
             _gameEnded = true;
-
-            Show("Defeat!", buildStats: true, isVictory: false);
-            _publisher.Publish(new GameEndEvent(
-                isVictory: false,
-                message: "Defeat!"));
+            Show("Defeat!", isVictory: false);
         }
 
         private void OnWaveHydrated(WaveHydratedEvent e)
@@ -66,28 +58,22 @@ namespace Features.Wave.Presentation
                 case WaveState.Victory:
                     if (_gameEnded) return;
                     _gameEnded = true;
-                    Show("Victory!", buildStats: true, isVictory: true);
-                    _publisher.Publish(new GameEndEvent(
-                        isVictory: true,
-                        message: "Victory!"));
+                    Show("Victory!", isVictory: true);
                     break;
                 case WaveState.Defeat:
                     if (_gameEnded) return;
                     _gameEnded = true;
-                    Show("Defeat!", buildStats: true, isVictory: false);
-                    _publisher.Publish(new GameEndEvent(
-                        isVictory: false,
-                        message: "Defeat!"));
+                    Show("Defeat!", isVictory: false);
                     break;
             }
         }
 
-        private void Show(string message, bool buildStats, bool isVictory)
+        private void Show(string message, bool isVictory)
         {
             if (panel != null) panel.SetActive(true);
             if (resultText != null) resultText.text = message;
 
-            if (buildStats && statsText != null)
+            if (statsText != null)
             {
                 statsText.text = $"결과: {(isVictory ? "승리" : "패배")}";
             }
@@ -101,10 +87,9 @@ namespace Features.Wave.Presentation
         private void OnReturnToLobbyClicked()
         {
             // TODO: SceneLoaderPort를 통해 Lobby 씬으로 전환
-            // 임시: PhotonNetwork.LeaveRoom()
-            if (Photon.Pun.PhotonNetwork.InRoom)
+            if (PhotonNetwork.InRoom)
             {
-                Photon.Pun.PhotonNetwork.LeaveRoom();
+                PhotonNetwork.LeaveRoom();
             }
         }
     }

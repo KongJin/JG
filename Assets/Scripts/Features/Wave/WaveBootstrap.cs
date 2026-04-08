@@ -126,8 +126,12 @@ namespace Features.Wave
             _hudView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _hudView));
 
-            _endView.Initialize(eventBus, eventBus);
+            _endView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _endView));
+
+            // Wave 승패 → GameEndEvent 변환 발행 (Application layer 책임)
+            var gameEndBridge = new WaveGameEndBridge(eventBus, eventBus, () => UnityEngine.Time.realtimeSinceStartup);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, gameEndBridge));
 
             _flowController.Initialize(
                 waveLoop,

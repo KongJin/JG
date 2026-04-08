@@ -241,12 +241,16 @@ namespace Features.Player
                 _damageNumberSpawner.Initialize(_eventBus);
 
             // GameEnd 핸들러 — PvE/PvP 모두에서 GameEndEvent 구독
-            var gameEndHandler = new GameEndEventHandler(_eventBus, _eventBus);
+            var gameEndHandler = new GameEndEventHandler(_eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndHandler));
 
-            // GameEndAnalytics — 소환/처치 카운팅 + 게임 종료 시 통계 로그
-            var gameEndAnalytics = new GameEndAnalytics(_eventBus);
+            // GameEndAnalytics — 소환/처치 카운팅 + GameEndReportRequestedEvent 발행
+            var gameEndAnalytics = new GameEndAnalytics(_eventBus, _eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndAnalytics));
+
+            // GameEnd 리포트 로깅 (Bootstrap 책임 — Debug.Log 허용)
+            var reportHandler = new GameEndReportHandler(_eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, reportHandler));
 
             ConnectPlayer(_localPlayerSetup);
 
