@@ -1,6 +1,6 @@
 # 진행 상황 (Game Scene Entry)
 
-> **마지막 업데이트**: 2026-04-08
+> **마지막 업데이트**: 2026-04-09
 
 ## Phase 진행률
 
@@ -8,22 +8,26 @@
 |---|---|---|
 | Phase 0: 씬 진입 전 | ✅ 완료 | GarageRoster 직렬화, Room 진입 시 동기화 |
 | Phase 1: GameScene 초기화 | ✅ 완료 | EventBus, Unit/Garage Bootstrap, Unit 스펙 계산 |
-| Phase 2: 소환 시스템 | 🟨 기본 구축 | SummonUnitUseCase, Energy 시스템, UnitSlot UI (3슬롯) |
+| Phase 2: 소환 시스템 | ✅ 완료 | SummonUnitUseCase, Energy 시스템, UnitSlot UI (드래그+클릭), 로테이션 |
 | Phase 3: Wave/Enemy와 Unit 연결 | ✅ 완료 | GameStartEvent 조건 제거, Enemy → Unit 타겟팅, BattleEntity Combat 등록 |
 | Phase 4: 재소환 시스템 | ✅ 완료 | UnitDiedEvent, UnitDeathEventHandler, 재소환 UI |
-| Phase 5: 네트워크 동기화 | 🟨 일부 | Energy/Mana 통합, IPlayerSpecProvider, GetLocalPlayerRoster |
-| Phase 6: 게임 종료 | ✅ 완료 | GameEndEvent 재설계, GameEndAnalytics, WaveEndView 개선, Lobby 복귀 |
+| Phase 5: 네트워크 동기화 | ✅ 완료 | Energy/Mana 통합, IPlayerSpecProvider, GetLocalPlayerRoster, BattleEntity late-join HP sync |
+| Phase 6: 게임 종료 | ✅ 완료 | GameEndEvent 재설계, GameEndAnalytics, WaveEndView 개선, Lobby 복귀, Firebase Analytics |
 
 ## 미완료 TODO
 
-- UnitSlotView 드래그 앤 드롭 배치 (현재 클릭만)
-- UnitSlotsContainer 로테이션 완성 (6개 중 3개 표시 전환)
-- Phase 5 완성 — Late-join, BattleEntity 상태 동기화
-- UnitCatalog에서 실제 스펙 조회 (`CreateTemporaryUnitSpec()` 대체)
-- WaveEndView → 실제 Lobby 씬 전환 (현재 `PhotonNetwork.LeaveRoom()`만)
-- Firebase Analytics 연동
+- (없음 — Phase 0~6 전체 완료)
 
 ## 최근 변경 사항
+
+### 2026-04-09
+
+| 커밋 | 내용 |
+|---|---|
+| `2540305` | feat(analytics): add LogGameResult for Firebase game outcome tracking |
+| `733a376` | feat(phase5): BattleEntity late-join state sync via instantiation data |
+| `d53e90a` | feat(unit): replace CreateTemporaryUnitSpec with real UnitSpec, add Lobby scene transition |
+| `9655638` | feat(unit): fix compilation errors, add drag-drop and rotation support |
 
 ### 2026-04-08
 
