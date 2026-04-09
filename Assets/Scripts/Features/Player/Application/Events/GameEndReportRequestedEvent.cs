@@ -2,7 +2,7 @@ namespace Features.Player.Application.Events
 {
     /// <summary>
     /// 게임 종료 시 통계 리포트 요청 이벤트.
-    /// Application 계층에서 발행하고 Bootstrap이 Debug.Log로 출력한다.
+    /// Application 계층에서 발행하고 Bootstrap이 수신해서 로그로 출력한다.
     /// </summary>
     public readonly struct GameEndReportRequestedEvent
     {

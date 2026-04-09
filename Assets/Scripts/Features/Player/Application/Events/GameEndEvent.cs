@@ -4,6 +4,8 @@ namespace Features.Player.Application.Events
 {
     /// <summary>
     /// 게임 종료 이벤트. Wave 승패 및 기본 통계를 전달한다.
+    /// Player 피처가 게임 생명주기 이벤트의 소유자이며,
+    /// WaveGameEndBridge가 Wave 이벤트를 이 이벤트로 변환하여 발행한다.
     /// </summary>
     public readonly struct GameEndEvent
     {

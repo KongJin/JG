@@ -17,11 +17,11 @@ namespace Features.Wave.Application
         public WaveGameEndBridge(
             IEventSubscriber subscriber,
             IEventPublisher publisher,
-            Func<float> getCurrentTimeSeconds = null
+            Func<float> getCurrentTimeSeconds
         )
         {
             _publisher = publisher;
-            _getCurrentTimeSeconds = getCurrentTimeSeconds ?? (() => UnityEngine.Time.realtimeSinceStartup);
+            _getCurrentTimeSeconds = getCurrentTimeSeconds;
 
             subscriber.Subscribe(this, new Action<WaveVictoryEvent>(OnVictory));
             subscriber.Subscribe(this, new Action<WaveDefeatEvent>(OnDefeat));

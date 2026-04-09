@@ -249,8 +249,7 @@ namespace Features.Player
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndAnalytics));
 
             // GameEnd 리포트 로깅 (Bootstrap 책임 — Debug.Log 허용)
-            var reportHandler = new GameEndReportHandler(_eventBus);
-            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, reportHandler));
+            _disposables.Add(_eventBus.Subscribe(this, new System.Action<Features.Player.Application.Events.GameEndReportRequestedEvent>(OnGameEndReport)));
 
             ConnectPlayer(_localPlayerSetup);
 
@@ -366,6 +365,18 @@ namespace Features.Player
             }
 
             ConnectPlayer(setup);
+        }
+
+        private void OnGameEndReport(Features.Player.Application.Events.GameEndReportRequestedEvent e)
+        {
+            Debug.Log($"[GameEnd] ===== Game Result =====");
+            Debug.Log($"  Result:     {(e.IsVictory ? "Victory" : "Defeat")}");
+            Debug.Log($"  Wave:       {e.ReachedWave}");
+            Debug.Log($"  Play Time:  {e.PlayTimeSeconds:F1}s ({e.PlayTimeSeconds / 60f:F1}m)");
+            Debug.Log($"  Summons:    {e.SummonCount}");
+            Debug.Log($"  Unit Kills: {e.UnitKillCount}");
+            Debug.Log($"  K/D Ratio:  {(e.SummonCount > 0 ? (float)e.UnitKillCount / e.SummonCount : 0):F2}");
+            Debug.Log($"[GameEnd] =========================");
         }
 
         private void OnDestroy()
