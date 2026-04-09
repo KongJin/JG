@@ -31,8 +31,36 @@ namespace Features.Unit
 
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
         {
-            // Signal arrival for non-master fallback (same pattern as EnemySetup)
+            // Instantiation data에서 unitId, ownerId, 초기HP 추출
+            var data = info.photonView.InstantiationData;
+            if (data != null && data.Length >= 2)
+            {
+                var unitIdStr = (string)data[0];
+                var ownerIdStr = (string)data[1];
+                var initialHp = data.Length >= 3 ? (float)data[2] : 100f;
+
+                // GameSceneRoot 또는 UnitBootstrap를 통해 의존성 주입받아야 함
+                // 현재는 정적 이벤트로 전달 (Composition Root가 Subscribe)
+                _pendingUnitId = unitIdStr;
+                _pendingOwnerId = new DomainEntityId(ownerIdStr);
+                _pendingInitialHp = initialHp;
+            }
+
             BattleEntityArrived?.Invoke(this);
+        }
+
+        private string _pendingUnitId;
+        private DomainEntityId _pendingOwnerId;
+        private float _pendingInitialHp;
+
+        public void TryInitializeFromPending(
+            EventBus eventBus,
+            CombatBootstrap combatBootstrap,
+            UnitPositionQueryAdapter unitPositionQuery,
+            Unit unitSpec)
+        {
+            if (_pendingUnitId == null || unitSpec == null) return;
+            Initialize(eventBus, combatBootstrap, unitPositionQuery, unitSpec, _pendingOwnerId, _pendingInitialHp);
         }
 
         public void Initialize(
@@ -41,6 +69,26 @@ namespace Features.Unit
             UnitPositionQueryAdapter unitPositionQuery,
             Unit unitSpec,
             DomainEntityId ownerId)
+        {
+            // Owner 경로: instantiation data 무시하고 unitSpec 직접 사용
+            if (_pendingUnitId != null)
+            {
+                // 이미 pending 데이터가 있으면 late-join 시나리오
+                Initialize(eventBus, combatBootstrap, unitPositionQuery, unitSpec, _pendingOwnerId, _pendingInitialHp);
+            }
+            else
+            {
+                Initialize(eventBus, combatBootstrap, unitPositionQuery, unitSpec, ownerId, unitSpec.FinalHp);
+            }
+        }
+
+        private void Initialize(
+            EventBus eventBus,
+            CombatBootstrap combatBootstrap,
+            UnitPositionQueryAdapter unitPositionQuery,
+            Unit unitSpec,
+            DomainEntityId ownerId,
+            float initialHp)
         {
             if (_initialized) return;
 
@@ -51,9 +99,9 @@ namespace Features.Unit
             var battleEntityId = new DomainEntityId($"battle-{unitSpec.Id.Value}-{gameObject.GetInstanceID()}");
             BattleEntityId = battleEntityId;
 
-            // BattleEntity 도메인 생성 (실제 UnitSpec 사용)
+            // BattleEntity 도메인 생성 (실제 UnitSpec 사용, late-join 시 초기HP 보정)
             var spawnPos = new Float3(transform.position.x, transform.position.y, transform.position.z);
-            _battleEntity = new BattleEntity(battleEntityId, unitSpec, ownerId, spawnPos);
+            _battleEntity = new BattleEntity(battleEntityId, unitSpec, ownerId, spawnPos, initialHp: initialHp);
 
             // EntityIdHolder 설정
             _entityIdHolder.Set(battleEntityId);

@@ -24,12 +24,13 @@ namespace Features.Unit.Domain
             DomainEntityId id,
             Unit unitSpec,
             DomainEntityId ownerId,
-            Float3 spawnPosition) : base(id)
+            Float3 spawnPosition,
+            float? initialHp = null) : base(id)
         {
             UnitSpec = unitSpec;
             OwnerId = ownerId;
             MaxHp = unitSpec.FinalHp;
-            CurrentHp = unitSpec.FinalHp;
+            CurrentHp = initialHp != null ? Mathf.Clamp(initialHp.Value, 0f, unitSpec.FinalHp) : unitSpec.FinalHp;
             Position = spawnPosition;
         }
 

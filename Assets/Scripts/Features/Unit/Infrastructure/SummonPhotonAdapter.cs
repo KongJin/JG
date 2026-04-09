@@ -47,12 +47,13 @@ namespace Features.Unit.Infrastructure
             var spawnPos = new Vector3(spawnPosition.X, spawnPosition.Y, spawnPosition.Z);
 
             // Photon을 통한 소환 (Owner가 인스턴스화)
+            // Instantiation data에 unitId, ownerId, 초기HP 전달 (late-joiner도 정확한 상태로 스폰)
             var spawnedGo = PhotonNetwork.Instantiate(
                 _battleEntityPrefab.name,
                 spawnPos,
                 Quaternion.identity,
                 0,
-                new object[] { unitSpec.Id.Value, ownerId.Value });
+                new object[] { unitSpec.Id.Value, ownerId.Value, (float)unitSpec.FinalHp });
 
             // 부모 설정
             if (_spawnParent != null)
