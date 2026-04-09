@@ -19,6 +19,8 @@ namespace Features.Unit.Presentation
         [SerializeField] private float _screenToPlaneY = 0f;
 
         [Header("Drag")]
+        [Tooltip("드래그 고스트 Prefab (RectTransform + Image + CanvasGroup).")]
+        [Required, SerializeField] private GameObject _dragGhostPrefab;
         [SerializeField] private Vector2 _dragGhostSize = new Vector2(80f, 80f);
 
         [Header("Placement")]
@@ -116,21 +118,32 @@ namespace Features.Unit.Presentation
         private void CreateDragGhost()
         {
             if (_canvas == null) return;
+            if (_dragGhostPrefab == null) return;
 
-            var ghostGo = new GameObject("DragGhost");
-            _dragGhost = ghostGo.AddComponent<RectTransform>();
-            _canvasGroup = ghostGo.AddComponent<CanvasGroup>();
+            // Prefab 기반으로 인스턴스화
+            var ghostGo = Instantiate(_dragGhostPrefab, _canvas.transform);
+            ghostGo.name = "DragGhost";
+            _dragGhost = ghostGo.GetComponent<RectTransform>();
+            _canvasGroup = ghostGo.GetComponent<CanvasGroup>();
+
+            if (_canvasGroup == null)
+            {
+                _canvasGroup = ghostGo.AddComponent<CanvasGroup>();
+            }
             _canvasGroup.alpha = 0.7f;
 
-            var ghostImage = ghostGo.AddComponent<UnityEngine.UI.Image>();
-            if (TryGetComponent<UnityEngine.UI.Image>(out var slotImage))
+            // 슬롯 이미지 스프라이트 복제
+            if (_dragGhost.TryGetComponent<UnityEngine.UI.Image>(out var ghostImage) &&
+                TryGetComponent<UnityEngine.UI.Image>(out var slotImage))
             {
                 ghostImage.sprite = slotImage.sprite;
             }
 
-            _dragGhost.sizeDelta = _dragGhostSize;
-            _dragGhost.SetParent(_canvas.transform, false);
-            _dragGhost.SetAsLastSibling();
+            if (_dragGhost != null)
+            {
+                _dragGhost.sizeDelta = _dragGhostSize;
+                _dragGhost.SetAsLastSibling();
+            }
         }
 
         private void DestroyDragGhost()
