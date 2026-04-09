@@ -53,7 +53,10 @@
         "mutationMode",
         "statePath",
         "branch",
-        "docProposalPath"
+        "docProposalPath",
+        "compileVerified",
+        "cleanLevel",
+        "compileStatusPath"
       ],
       "properties": {
         "dryRun": {
@@ -109,6 +112,18 @@
           ]
         },
         "docProposalPath": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "compileVerified": {
+          "type": "boolean"
+        },
+        "cleanLevel": {
+          "type": "string"
+        },
+        "compileStatusPath": {
           "type": [
             "string",
             "null"

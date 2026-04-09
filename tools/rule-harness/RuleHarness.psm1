@@ -733,6 +733,161 @@ function Find-RuleHarnessPatternEvidence {
     return $null
 }
 
+function Get-RuleHarnessScriptTextWithoutComments {
+    param(
+        [AllowEmptyString()]
+        [string[]]$Lines
+    )
+
+    $content = [string]::Join("`n", @($Lines))
+    $withoutBlockComments = [regex]::Replace($content, '(?s)/\*.*?\*/', '')
+    [regex]::Replace($withoutBlockComments, '(?m)//.*$', '')
+}
+
+function Get-RuleHarnessUsingNamespaces {
+    param(
+        [AllowEmptyString()]
+        [string[]]$Lines
+    )
+
+    $namespaces = [System.Collections.Generic.List[string]]::new()
+    foreach ($line in @($Lines)) {
+        $match = [regex]::Match([string]$line, '^\s*using\s+(?:static\s+)?(?:\w+\s*=\s*)?(?<ns>[\w.]+)\s*;')
+        if ($match.Success) {
+            [void]$namespaces.Add([string]$match.Groups['ns'].Value)
+        }
+    }
+
+    @($namespaces | Select-Object -Unique)
+}
+
+function Test-RuleHarnessHasUsingNamespace {
+    param(
+        [AllowEmptyString()]
+        [string[]]$Lines,
+        [Parameter(Mandatory)]
+        [string]$Namespace
+    )
+
+    foreach ($line in @($Lines)) {
+        if ([string]$line -match ("^\s*using\s+(?:static\s+)?(?:\w+\s*=\s*)?{0}\s*;" -f [regex]::Escape($Namespace))) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Get-RuleHarnessLayerFromRelativePath {
+    param(
+        [string]$RelativePath
+    )
+
+    $normalized = [string]$RelativePath
+    if ([string]::IsNullOrWhiteSpace($normalized)) {
+        return $null
+    }
+
+    $normalized = $normalized.Replace('\', '/')
+    if ($normalized -match '^Assets/Scripts/Shared/') {
+        return 'Shared'
+    }
+    if ($normalized -match '^Assets/Scripts/Features/[^/]+/[^/]+(?:Setup|Bootstrap)\.cs$') {
+        return 'Bootstrap'
+    }
+    if ($normalized -match '/Infrastructure/') {
+        return 'Infrastructure'
+    }
+    if ($normalized -match '/Presentation/') {
+        return 'Presentation'
+    }
+    if ($normalized -match '/Application/') {
+        return 'Application'
+    }
+    if ($normalized -match '/Domain/') {
+        return 'Domain'
+    }
+
+    return $null
+}
+
+function Get-RuleHarnessLayerViolationForUsing {
+    param(
+        [string]$CurrentLayer,
+        [string]$Namespace
+    )
+
+    if ([string]::IsNullOrWhiteSpace($CurrentLayer) -or [string]::IsNullOrWhiteSpace($Namespace)) {
+        return $null
+    }
+
+    switch ($CurrentLayer) {
+        'Domain' {
+            if ($Namespace -match '^Features\.\w+\.Application(\.|$)') { return 'Domain -> Application forbidden' }
+            if ($Namespace -match '^Features\.\w+\.Presentation(\.|$)') { return 'Domain -> Presentation forbidden' }
+            if ($Namespace -match '^Features\.\w+\.Infrastructure(\.|$)') { return 'Domain -> Infrastructure forbidden' }
+            if ($Namespace -match '^Features\.\w+\.Bootstrap(\.|$)') { return 'Domain -> Bootstrap forbidden' }
+        }
+        'Application' {
+            if ($Namespace -match '^Features\.\w+\.Presentation(\.|$)') { return 'Application -> Presentation forbidden' }
+            if ($Namespace -match '^Features\.\w+\.Infrastructure(\.|$)') { return 'Application -> Infrastructure forbidden' }
+            if ($Namespace -match '^Features\.\w+\.Bootstrap(\.|$)') { return 'Application -> Bootstrap forbidden' }
+        }
+        'Presentation' {
+            if ($Namespace -match '^Photon(\.|$)') { return 'Presentation -> Photon forbidden' }
+            if ($Namespace -match '^Features\.\w+\.Infrastructure(\.|$)') { return 'Presentation -> Infrastructure forbidden' }
+            if ($Namespace -match '^Features\.\w+\.Bootstrap(\.|$)') { return 'Presentation -> Bootstrap forbidden' }
+        }
+        'Infrastructure' {
+            if ($Namespace -match '^Features\.\w+\.Presentation(\.|$)') { return 'Infrastructure -> Presentation forbidden' }
+            if ($Namespace -match '^Features\.\w+\.Bootstrap(\.|$)') { return 'Infrastructure -> Bootstrap forbidden' }
+        }
+        'Shared' {
+            if ($Namespace -match '^Features\.') { return 'Shared -> Features forbidden' }
+        }
+    }
+
+    return $null
+}
+
+function Find-RuleHarnessShortTypeShadowingEvidence {
+    param(
+        [AllowEmptyString()]
+        [string[]]$Lines,
+        [Parameter(Mandatory)]
+        [string]$ShortTypeName
+    )
+
+    $pattern = "(?<![\w\.])$([regex]::Escape($ShortTypeName))(?:\s*\[\]|\s+[A-Za-z_][A-Za-z0-9_]*|\s*\()"
+    for ($i = 0; $i -lt $Lines.Count; $i++) {
+        $line = [string]$Lines[$i]
+        if (Test-RuleHarnessCommentOnlyLine -Line $line) {
+            continue
+        }
+        $lineForMatch = [regex]::Replace($line, '"(?:[^"\\]|\\.)*"', '""')
+        $lineForMatch = [regex]::Replace($lineForMatch, "'(?:[^'\\]|\\.)*'", "''")
+        if ($line -match '^\s*(using|namespace)\b') {
+            continue
+        }
+        if ($lineForMatch -match ("^\s*(?:public|internal|private|protected)?\s*(?:sealed\s+)?(?:partial\s+)?(?:class|struct|interface|enum)\s+{0}\b" -f [regex]::Escape($ShortTypeName))) {
+            continue
+        }
+        if ($lineForMatch -match ("Features\.[A-Za-z0-9_\.]*\.{0}\b" -f [regex]::Escape($ShortTypeName))) {
+            continue
+        }
+
+        if ($lineForMatch -match $pattern) {
+            return [pscustomobject]@{
+                line    = ($i + 1)
+                snippet = $line
+                pattern = $pattern
+            }
+        }
+    }
+
+    return $null
+}
+
 function Get-RuleHarnessFindingKey {
     param(
         [Parameter(Mandatory)]
@@ -754,6 +909,188 @@ function Get-RuleHarnessCurrentBranch {
     }
 
     ($branch | Select-Object -First 1).Trim()
+}
+
+function Get-RuleHarnessCompileStatusPath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $relativePath = if ($Config.PSObject.Properties.Name -contains 'state' -and
+        $Config.state.PSObject.Properties.Name -contains 'compileStatusPath' -and
+        -not [string]::IsNullOrWhiteSpace([string]$Config.state.compileStatusPath)) {
+        [string]$Config.state.compileStatusPath
+    }
+    else {
+        'Temp/RuleHarnessState/compile-status.json'
+    }
+
+    [pscustomobject]@{
+        relativePath = $relativePath
+        fullPath     = Join-Path $RepoRoot $relativePath
+    }
+}
+
+function Get-RuleHarnessCompileGateStatus {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $statusPath = Get-RuleHarnessCompileStatusPath -RepoRoot $RepoRoot -Config $Config
+    if (-not (Test-Path -LiteralPath $statusPath.fullPath)) {
+        return [pscustomobject]@{
+            compileVerified = $false
+            cleanLevel      = 'static-clean only'
+            statusPath      = [string]$statusPath.relativePath
+            failed          = $false
+            stageResult     = New-RuleHarnessStageResult `
+                -Stage 'compile_gate' `
+                -Status 'skipped' `
+                -Attempted $false `
+                -Summary 'Compile-clean was not verified by the runnerless harness. Treat this run as static-clean only.' `
+                -Details ([pscustomobject]@{
+                    compileVerified = $false
+                    cleanLevel = 'static-clean only'
+                    statusPath = [string]$statusPath.relativePath
+                })
+            actionItems     = @(
+                New-RuleHarnessActionItem `
+                    -Kind 'verify-unity-compile' `
+                    -Severity 'medium' `
+                    -Summary 'Verify Unity compile before calling this clean' `
+                    -Details 'Runnerless harness could not confirm compile-clean. Re-open Unity or refresh the compile status file before reporting clean.' `
+                    -RelatedPaths @([string]$statusPath.relativePath)
+            )
+        }
+    }
+
+    try {
+        $rawStatus = Get-Content -Path $statusPath.fullPath -Raw | ConvertFrom-Json
+    }
+    catch {
+        return [pscustomobject]@{
+            compileVerified = $false
+            cleanLevel      = 'static-clean only'
+            statusPath      = [string]$statusPath.relativePath
+            failed          = $true
+            stageResult     = New-RuleHarnessStageResult `
+                -Stage 'compile_gate' `
+                -Status 'failed' `
+                -Attempted $true `
+                -Summary 'Compile status file exists but could not be parsed.' `
+                -Details ([pscustomobject]@{
+                    compileVerified = $false
+                    cleanLevel = 'static-clean only'
+                    statusPath = [string]$statusPath.relativePath
+                })
+            actionItems     = @(
+                New-RuleHarnessActionItem `
+                    -Kind 'repair-compile-status' `
+                    -Severity 'high' `
+                    -Summary 'Repair the compile status handoff file' `
+                    -Details ("Rule harness could not parse compile status at {0}. Recreate the file after a fresh Unity compile." -f [string]$statusPath.relativePath) `
+                    -RelatedPaths @([string]$statusPath.relativePath)
+            )
+        }
+    }
+
+    $status = [string]$rawStatus.status
+    $checkedAtUtc = if ($rawStatus.PSObject.Properties.Name -contains 'checkedAtUtc') { [string]$rawStatus.checkedAtUtc } else { $null }
+    $source = if ($rawStatus.PSObject.Properties.Name -contains 'source') { [string]$rawStatus.source } else { 'unknown' }
+    $runtimeSmokeClean = $rawStatus.PSObject.Properties.Name -contains 'runtimeSmokeClean' -and [bool]$rawStatus.runtimeSmokeClean
+    $summary = if ($rawStatus.PSObject.Properties.Name -contains 'summary' -and -not [string]::IsNullOrWhiteSpace([string]$rawStatus.summary)) {
+        [string]$rawStatus.summary
+    }
+    else {
+        "Compile status source=$source checkedAt=$checkedAtUtc"
+    }
+
+    switch ($status) {
+        'passed' {
+            $cleanLevel = if ($runtimeSmokeClean) { 'compile-clean + runtime-smoke-clean' } else { 'compile-clean' }
+            return [pscustomobject]@{
+                compileVerified = $true
+                cleanLevel      = $cleanLevel
+                statusPath      = [string]$statusPath.relativePath
+                failed          = $false
+                stageResult     = New-RuleHarnessStageResult `
+                    -Stage 'compile_gate' `
+                    -Status 'passed' `
+                    -Attempted $true `
+                    -Summary ("Compile verification passed. Level={0}." -f $cleanLevel) `
+                    -Details ([pscustomobject]@{
+                        compileVerified = $true
+                        cleanLevel = $cleanLevel
+                        checkedAtUtc = $checkedAtUtc
+                        source = $source
+                        statusPath = [string]$statusPath.relativePath
+                    })
+                actionItems     = @()
+            }
+        }
+        'failed' {
+            return [pscustomobject]@{
+                compileVerified = $false
+                cleanLevel      = 'static-clean only'
+                statusPath      = [string]$statusPath.relativePath
+                failed          = $true
+                stageResult     = New-RuleHarnessStageResult `
+                    -Stage 'compile_gate' `
+                    -Status 'failed' `
+                    -Attempted $true `
+                    -Summary 'Compile verification failed.' `
+                    -Details ([pscustomobject]@{
+                        compileVerified = $false
+                        cleanLevel = 'static-clean only'
+                        checkedAtUtc = $checkedAtUtc
+                        source = $source
+                        statusPath = [string]$statusPath.relativePath
+                    })
+                actionItems     = @(
+                    New-RuleHarnessActionItem `
+                        -Kind 'fix-compile-errors' `
+                        -Severity 'high' `
+                        -Summary 'Fix Unity compile errors before rerunning rule harness' `
+                        -Details $summary `
+                        -RelatedPaths @([string]$statusPath.relativePath)
+                )
+            }
+        }
+        default {
+            return [pscustomobject]@{
+                compileVerified = $false
+                cleanLevel      = 'static-clean only'
+                statusPath      = [string]$statusPath.relativePath
+                failed          = $false
+                stageResult     = New-RuleHarnessStageResult `
+                    -Stage 'compile_gate' `
+                    -Status 'skipped' `
+                    -Attempted $true `
+                    -Summary 'Compile status file did not declare a passed/failed result. Treat this run as static-clean only.' `
+                    -Details ([pscustomobject]@{
+                        compileVerified = $false
+                        cleanLevel = 'static-clean only'
+                        checkedAtUtc = $checkedAtUtc
+                        source = $source
+                        statusPath = [string]$statusPath.relativePath
+                    })
+                actionItems     = @(
+                    New-RuleHarnessActionItem `
+                        -Kind 'verify-unity-compile' `
+                        -Severity 'medium' `
+                        -Summary 'Verify Unity compile before calling this clean' `
+                        -Details $summary `
+                        -RelatedPaths @([string]$statusPath.relativePath)
+                )
+            }
+        }
+    }
 }
 
 function Invoke-RuleHarnessGit {
@@ -2601,6 +2938,35 @@ function Get-RuleHarnessStaticFindings {
     foreach ($script in $scriptFiles) {
         $relative = ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $script.FullName
         $lines = Get-Content -Path $script.FullName
+        $layer = Get-RuleHarnessLayerFromRelativePath -RelativePath $relative
+        $usingNamespaces = @(Get-RuleHarnessUsingNamespaces -Lines $lines)
+        $contentWithoutComments = Get-RuleHarnessScriptTextWithoutComments -Lines $lines
+        $codeWithoutCommentsOrStrings = [regex]::Replace($contentWithoutComments, '"(?:[^"\\]|\\.)*"', '""')
+        $codeWithoutCommentsOrStrings = [regex]::Replace($codeWithoutCommentsOrStrings, "'(?:[^'\\]|\\.)*'", "''")
+        $featureName = Get-RuleHarnessFeatureNameFromPath -RelativePath $relative
+
+        foreach ($usingNamespace in @($usingNamespaces)) {
+            $layerViolation = Get-RuleHarnessLayerViolationForUsing -CurrentLayer $layer -Namespace ([string]$usingNamespace)
+            if ($null -eq $layerViolation) {
+                continue
+            }
+
+            $evidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @(
+                ("^\s*using\s+(?:static\s+)?(?:\w+\s*=\s*)?{0}\s*;" -f [regex]::Escape([string]$usingNamespace))
+            )
+            [void]$findings.Add((New-RuleHarnessFinding `
+                -FindingType 'code_violation' `
+                -Severity 'high' `
+                -OwnerDoc $architectureOwnerDoc `
+                -Title 'Layer dependency violation' `
+                -Message ("{0} file '{1}' imports forbidden namespace '{2}'." -f $layer, $relative, [string]$usingNamespace) `
+                -Evidence @([pscustomobject]@{ path = $relative; line = if ($null -ne $evidence) { [int]$evidence.line } else { $null }; snippet = if ($null -ne $evidence) { [string]$evidence.snippet } else { [string]$usingNamespace } }) `
+                -Confidence 'high' `
+                -RemediationKind 'report_only' `
+                -Rationale ("Compile-clean hazard: {0}." -f $layerViolation)))
+            [void]$docCandidates.Add($architectureOwnerDoc)
+            break
+        }
 
         if ($relative -match '/Domain/') {
             $evidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @(
@@ -2648,6 +3014,159 @@ function Get-RuleHarnessStaticFindings {
                     -Confidence 'high' `
                     -RemediationKind 'code_fix' `
                     -Rationale 'The code is violating a stable architecture rule and should be refactored.'))
+                [void]$docCandidates.Add($architectureOwnerDoc)
+            }
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($featureName)) {
+            $sameNameTypePath = Join-Path $RepoRoot ("Assets/Scripts/Features/{0}/Domain/{0}.cs" -f $featureName)
+            if ((Test-Path -LiteralPath $sameNameTypePath) -and $relative -notlike "Assets/Scripts/Features/$featureName/Domain/$featureName.cs") {
+                $shadowEvidence = Find-RuleHarnessShortTypeShadowingEvidence -Lines $lines -ShortTypeName $featureName
+                if ($null -ne $shadowEvidence) {
+                    [void]$findings.Add((New-RuleHarnessFinding `
+                        -FindingType 'code_violation' `
+                        -Severity 'high' `
+                        -OwnerDoc $architectureOwnerDoc `
+                        -Title 'Feature short-type shadowing' `
+                        -Message ("File '{0}' uses bare short type '{1}' inside feature namespace 'Features.{1}'. Use an alias or fully-qualified name." -f $relative, $featureName) `
+                        -Evidence @([pscustomobject]@{ path = $relative; line = [int]$shadowEvidence.line; snippet = [string]$shadowEvidence.snippet }) `
+                        -Confidence 'high' `
+                        -RemediationKind 'report_only' `
+                        -Rationale 'Compile-clean hazard: same-name feature namespaces and types must not rely on bare identifiers.'))
+                    [void]$docCandidates.Add($architectureOwnerDoc)
+                }
+            }
+        }
+
+        $phantomContractEvidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @('\bIEventBus\b')
+        if ($null -ne $phantomContractEvidence) {
+            [void]$findings.Add((New-RuleHarnessFinding `
+                -FindingType 'code_violation' `
+                -Severity 'high' `
+                -OwnerDoc $architectureOwnerDoc `
+                -Title 'Phantom shared contract name' `
+                -Message ("File '{0}' references 'IEventBus', but Shared.EventBus does not define that contract. Use the real EventBus contracts instead." -f $relative) `
+                -Evidence @([pscustomobject]@{ path = $relative; line = [int]$phantomContractEvidence.line; snippet = [string]$phantomContractEvidence.snippet }) `
+                -Confidence 'high' `
+                -RemediationKind 'report_only' `
+                -Rationale 'Compile-clean hazard: phantom shared contract names drift away from the actual Shared declarations.'))
+            [void]$docCandidates.Add($architectureOwnerDoc)
+        }
+
+        $knownImportChecks = @(
+            [pscustomobject]@{
+                symbolLabel = 'Func<>'
+                pattern = '\bFunc\s*<'
+                requiredNamespace = 'System'
+                requiredUsing = 'using System;'
+                fullyQualifiedPattern = '(?:global::)?System\.Func\s*<'
+            },
+            [pscustomobject]@{
+                symbolLabel = 'GarageRoster'
+                pattern = '(?<!\.)\bGarageRoster\b'
+                requiredNamespace = 'Features.Garage.Domain'
+                requiredUsing = 'using Features.Garage.Domain;'
+                fullyQualifiedPattern = '(?:Features\.)?Garage\.Domain\.GarageRoster\b'
+            },
+            [pscustomobject]@{
+                symbolLabel = 'StatusNetworkAdapter'
+                pattern = '(?<!\.)\bStatusNetworkAdapter\b'
+                requiredNamespace = 'Features.Status.Infrastructure'
+                requiredUsing = 'using Features.Status.Infrastructure;'
+                fullyQualifiedPattern = 'Features\.Status\.Infrastructure\.StatusNetworkAdapter\b'
+            },
+            [pscustomobject]@{
+                symbolLabel = 'SceneLoaderAdapter'
+                pattern = '(?<!\.)\bSceneLoaderAdapter\b'
+                requiredNamespace = 'Features.Lobby.Infrastructure'
+                requiredUsing = 'using Features.Lobby.Infrastructure;'
+                fullyQualifiedPattern = 'Features\.Lobby\.Infrastructure\.SceneLoaderAdapter\b'
+            },
+            [pscustomobject]@{
+                symbolLabel = 'Required'
+                pattern = '\[(?:[^\]]*,\s*)*Required(?:Attribute)?(?:\s*,|\])'
+                requiredNamespace = 'Shared.Attributes'
+                requiredUsing = 'using Shared.Attributes;'
+                fullyQualifiedPattern = 'Shared\.Attributes\.Required\b'
+            }
+        )
+        foreach ($importCheck in $knownImportChecks) {
+            if ($codeWithoutCommentsOrStrings -notmatch [string]$importCheck.pattern) {
+                continue
+            }
+            if ($codeWithoutCommentsOrStrings -match [string]$importCheck.fullyQualifiedPattern) {
+                continue
+            }
+            if ($codeWithoutCommentsOrStrings -match ("namespace\s+{0}\b" -f [regex]::Escape([string]$importCheck.requiredNamespace))) {
+                continue
+            }
+            if (Test-RuleHarnessHasUsingNamespace -Lines $lines -Namespace ([string]$importCheck.requiredNamespace)) {
+                continue
+            }
+
+            $importEvidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @([string]$importCheck.pattern)
+            if ($null -eq $importEvidence) {
+                continue
+            }
+
+            [void]$findings.Add((New-RuleHarnessFinding `
+                -FindingType 'code_violation' `
+                -Severity 'high' `
+                -OwnerDoc $architectureOwnerDoc `
+                -Title 'Missing import after symbol move' `
+                -Message ("File '{0}' uses '{1}' without importing '{2}'. Add '{3}' or use the fully-qualified name." -f $relative, [string]$importCheck.symbolLabel, [string]$importCheck.requiredNamespace, [string]$importCheck.requiredUsing) `
+                -Evidence @([pscustomobject]@{ path = $relative; line = [int]$importEvidence.line; snippet = [string]$importEvidence.snippet }) `
+                -Confidence 'high' `
+                -RemediationKind 'report_only' `
+                -Rationale 'Compile-clean hazard: moved symbol imports must stay explicit after refactors.'))
+            [void]$docCandidates.Add($architectureOwnerDoc)
+        }
+
+        $eventDriftRules = @(
+            [pscustomobject]@{ eventToken = 'GameEndEvent'; staleMember = 'IsLocalPlayerDead' },
+            [pscustomobject]@{ eventToken = 'DamageAppliedEvent'; staleMember = 'RemainingHp' }
+        )
+        foreach ($eventDriftRule in $eventDriftRules) {
+            if ($codeWithoutCommentsOrStrings -notmatch ("\b{0}\b" -f [regex]::Escape([string]$eventDriftRule.eventToken))) {
+                continue
+            }
+            if ($codeWithoutCommentsOrStrings -notmatch ("\b{0}\b" -f [regex]::Escape([string]$eventDriftRule.staleMember))) {
+                continue
+            }
+
+            $driftEvidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @(
+                ("\b{0}\b" -f [regex]::Escape([string]$eventDriftRule.staleMember))
+            )
+            if ($null -eq $driftEvidence) {
+                continue
+            }
+
+            [void]$findings.Add((New-RuleHarnessFinding `
+                -FindingType 'code_violation' `
+                -Severity 'high' `
+                -OwnerDoc $architectureOwnerDoc `
+                -Title 'Event contract drift' `
+                -Message ("File '{0}' assumes stale event member '{1}' on '{2}'. Producer, bridge, and consumer contracts drifted out of sync." -f $relative, [string]$eventDriftRule.staleMember, [string]$eventDriftRule.eventToken) `
+                -Evidence @([pscustomobject]@{ path = $relative; line = [int]$driftEvidence.line; snippet = [string]$driftEvidence.snippet }) `
+                -Confidence 'high' `
+                -RemediationKind 'report_only' `
+                -Rationale 'Compile-clean hazard: event payload changes must update producers, bridges, and consumers together.'))
+            [void]$docCandidates.Add($architectureOwnerDoc)
+        }
+
+        if ($codeWithoutCommentsOrStrings -match '\bIUnitEnergyPort\b' -and $codeWithoutCommentsOrStrings -match '\bnew\s+EnergyAdapter\s*\(') {
+            $energyBridgeEvidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @('\bnew\s+EnergyAdapter\s*\(')
+            if ($null -ne $energyBridgeEvidence) {
+                [void]$findings.Add((New-RuleHarnessFinding `
+                    -FindingType 'code_violation' `
+                    -Severity 'high' `
+                    -OwnerDoc $architectureOwnerDoc `
+                    -Title 'Concrete/interface drift' `
+                    -Message ("File '{0}' mixes IUnitEnergyPort with direct EnergyAdapter construction. Use the dedicated bridge adapter instead of the concrete Player adapter." -f $relative) `
+                    -Evidence @([pscustomobject]@{ path = $relative; line = [int]$energyBridgeEvidence.line; snippet = [string]$energyBridgeEvidence.snippet }) `
+                    -Confidence 'high' `
+                    -RemediationKind 'report_only' `
+                    -Rationale 'Compile-clean hazard: cross-feature adapters must satisfy the declared interface contract, not the concrete source type.'))
                 [void]$docCandidates.Add($architectureOwnerDoc)
             }
         }
@@ -4875,6 +5394,8 @@ function Write-RuleHarnessSummary {
     [void]$lines.Add("- LLM model: $($Report.execution.llmModel)")
     [void]$lines.Add("- Mutation enabled: $($Report.execution.mutationEnabled)")
     [void]$lines.Add("- Mutation mode: $($Report.execution.mutationMode)")
+    [void]$lines.Add("- Compile verified: $($Report.execution.compileVerified)")
+    [void]$lines.Add("- Clean level: $($Report.execution.cleanLevel)")
     [void]$lines.Add("- Scanned features: $($Report.scannedFeatures.Count)")
     [void]$lines.Add("- Completed scopes: $($Report.completedScopes.Count)")
     [void]$lines.Add("- Findings: $($Report.findings.Count)")
@@ -5034,6 +5555,7 @@ function Invoke-RuleHarness {
     $reactivatedProposalCount = 0
     $sameRunResolvedScopeCount = 0
     $staleStateRepairedCount = 0
+    $compileGateStatus = $null
 
     Write-Host 'Rule harness discover stage started.'
     Write-Host "Rule harness discover stage finished. Features: $($orderedScopes.Count) Selected: $($selectedScopes.Count)"
@@ -5266,6 +5788,9 @@ function Invoke-RuleHarness {
             stoppedScope = if ($null -ne $stoppedScope) { [string]$stoppedScope.scopeId } else { $null }
         })))
 
+    $compileGateStatus = Get-RuleHarnessCompileGateStatus -RepoRoot $RepoRoot -Config $config
+    [void]$stageResults.Add($compileGateStatus.stageResult)
+
     if ($null -eq $mutationResult) {
         $mutationResult = Invoke-RuleHarnessMutationPlan `
             -PlannedBatches @() `
@@ -5382,6 +5907,7 @@ function Invoke-RuleHarness {
     }
     $reportActionItems = @(Merge-RuleHarnessActionItems -Items @(
         @($preMutationActionItems) +
+        @($compileGateStatus.actionItems) +
         @($mutationResult.actionItems) +
         @($reportPromotionCandidates | ForEach-Object {
             New-RuleHarnessActionItem `
@@ -5417,6 +5943,9 @@ function Invoke-RuleHarness {
             summaryPath     = $SummaryPath
             logPath         = $LogPathHint
             docProposalPath = $docProposalPath
+            compileVerified = [bool]$compileGateStatus.compileVerified
+            cleanLevel      = [string]$compileGateStatus.cleanLevel
+            compileStatusPath = [string]$compileGateStatus.statusPath
         }
         scannedFeatures   = @($attemptedScopes)
         scannedScopes     = @($attemptedScopes)
@@ -5458,7 +5987,7 @@ function Invoke-RuleHarness {
         commit            = $mutationResult.commit
         rollback          = $mutationResult.rollback
         applied           = [bool]$mutationResult.applied
-        failed            = [bool]$failed
+        failed            = ([bool]$failed -or [bool]$compileGateStatus.failed)
     }
 
     if (-not [string]::IsNullOrWhiteSpace($docProposalPath)) {

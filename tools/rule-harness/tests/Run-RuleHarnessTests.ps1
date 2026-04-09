@@ -130,6 +130,27 @@ function Write-FeatureScanStateFixture {
     } | ConvertTo-Json -Depth 20 | Set-Content -Path $statePath -Encoding UTF8
 }
 
+function Write-CompileStatusFixture {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoPath,
+        [Parameter(Mandatory)]
+        [string]$Status,
+        [string]$Summary = '',
+        [bool]$RuntimeSmokeClean = $false
+    )
+
+    $statePath = Join-Path $RepoPath 'Temp/RuleHarnessState/compile-status.json'
+    New-Item -ItemType Directory -Path (Split-Path -Parent $statePath) -Force | Out-Null
+    [pscustomobject]@{
+        status            = $Status
+        summary           = $Summary
+        source            = 'fixture'
+        checkedAtUtc      = '2026-04-09T12:34:56Z'
+        runtimeSmokeClean = $RuntimeSmokeClean
+    } | ConvertTo-Json -Depth 10 | Set-Content -Path $statePath -Encoding UTF8
+}
+
 $orderingRepo = Join-Path $scratchRoot 'feature-ordering'
 Initialize-RuleHarnessScopeRepo -RepoPath $orderingRepo -Features @(
     [pscustomobject]@{ Name = 'Aged'; ApplicationContent = 'namespace Features.Aged.Application { public sealed class AgedService { } }' },
@@ -553,6 +574,162 @@ Assert-RuleHarness `
     -Condition (@($qualifiedFindings | Where-Object { $_.title -eq 'Unity API used in Application' }).Count -eq 1) `
     -Message 'Expected fully-qualified UnityEngine references in Application files to be reported as Unity API findings.'
 
+$shadowRepo = Join-Path $scratchRoot 'short-type-shadowing'
+Initialize-RuleHarnessScopeRepo -RepoPath $shadowRepo -Features @(
+    [pscustomobject]@{ Name = 'Unit'; ApplicationContent = @"
+namespace Features.Unit.Application
+{
+    public sealed class UnitService
+    {
+        private Unit[] _units;
+    }
+}
+"@ }
+)
+New-Item -ItemType Directory -Path (Join-Path $shadowRepo 'Assets/Scripts/Features/Unit/Domain') -Force | Out-Null
+Set-Content -Path (Join-Path $shadowRepo 'Assets/Scripts/Features/Unit/Domain/Unit.cs') -Value @"
+namespace Features.Unit.Domain
+{
+    public sealed class Unit
+    {
+    }
+}
+"@ -Encoding UTF8
+$shadowFindings = Get-RuleHarnessStaticFindings `
+    -RepoRoot $shadowRepo `
+    -Config $config `
+    -ScopeId 'Unit'
+Assert-RuleHarness `
+    -Condition (@($shadowFindings | Where-Object { $_.title -eq 'Feature short-type shadowing' }).Count -eq 1) `
+    -Message 'Expected same-name feature type usage without alias to be reported as short-type shadowing.'
+
+$phantomRepo = Join-Path $scratchRoot 'phantom-contract'
+Initialize-RuleHarnessScopeRepo -RepoPath $phantomRepo -Features @(
+    [pscustomobject]@{ Name = 'Phantom'; ApplicationContent = @"
+using Shared.EventBus;
+
+namespace Features.Phantom.Application
+{
+    public sealed class PhantomService
+    {
+        private IEventBus _bus;
+    }
+}
+"@ }
+)
+$phantomFindings = Get-RuleHarnessStaticFindings `
+    -RepoRoot $phantomRepo `
+    -Config $config `
+    -ScopeId 'Phantom'
+Assert-RuleHarness `
+    -Condition (@($phantomFindings | Where-Object { $_.title -eq 'Phantom shared contract name' }).Count -eq 1) `
+    -Message 'Expected IEventBus usage to be reported as a phantom shared contract.'
+
+$importRepo = Join-Path $scratchRoot 'missing-imports'
+Initialize-RuleHarnessScopeRepo -RepoPath $importRepo -Features @(
+    [pscustomobject]@{ Name = 'Imports'; ApplicationContent = @"
+namespace Features.Imports.Application
+{
+    public sealed class ImportsService
+    {
+        private Func<float> _clock;
+        private GarageRoster _roster;
+        private StatusNetworkAdapter _status;
+        private SceneLoaderAdapter _loader;
+    }
+}
+"@ }
+)
+$importFindings = Get-RuleHarnessStaticFindings `
+    -RepoRoot $importRepo `
+    -Config $config `
+    -ScopeId 'Imports'
+Assert-RuleHarness `
+    -Condition (@($importFindings | Where-Object { $_.title -eq 'Missing import after symbol move' }).Count -ge 4) `
+    -Message 'Expected known moved symbols without imports to be reported as missing import drift.'
+
+$eventDriftRepo = Join-Path $scratchRoot 'event-contract-drift'
+Initialize-RuleHarnessScopeRepo -RepoPath $eventDriftRepo -Features @(
+    [pscustomobject]@{ Name = 'Player'; ApplicationContent = @"
+namespace Features.Player.Application
+{
+    public sealed class DriftService
+    {
+        public void Handle(GameEndEvent e)
+        {
+            if (e.IsLocalPlayerDead)
+            {
+            }
+        }
+    }
+}
+"@ }
+)
+$eventDriftFindings = Get-RuleHarnessStaticFindings `
+    -RepoRoot $eventDriftRepo `
+    -Config $config `
+    -ScopeId 'Player'
+Assert-RuleHarness `
+    -Condition (@($eventDriftFindings | Where-Object { $_.title -eq 'Event contract drift' }).Count -eq 1) `
+    -Message 'Expected stale GameEndEvent member access to be reported as event contract drift.'
+
+$layerRepo = Join-Path $scratchRoot 'layer-violations'
+Initialize-RuleHarnessScopeRepo -RepoPath $layerRepo -Features @(
+    [pscustomobject]@{ Name = 'Wave'; ApplicationContent = 'namespace Features.Wave.Application { public sealed class Placeholder { } }' }
+)
+New-Item -ItemType Directory -Path (Join-Path $layerRepo 'Assets/Scripts/Features/Wave/Presentation') -Force | Out-Null
+Set-Content -Path (Join-Path $layerRepo 'Assets/Scripts/Features/Wave/Presentation/WaveView.cs') -Value @"
+using Photon.Pun;
+
+namespace Features.Wave.Presentation
+{
+    public sealed class WaveView
+    {
+    }
+}
+"@ -Encoding UTF8
+New-Item -ItemType Directory -Path (Join-Path $layerRepo 'Assets/Scripts/Features/Wave/Infrastructure') -Force | Out-Null
+Set-Content -Path (Join-Path $layerRepo 'Assets/Scripts/Features/Wave/Infrastructure/WaveInfra.cs') -Value @"
+using Features.Wave.Presentation;
+
+namespace Features.Wave.Infrastructure
+{
+    public sealed class WaveInfra
+    {
+    }
+}
+"@ -Encoding UTF8
+$layerFindings = Get-RuleHarnessStaticFindings `
+    -RepoRoot $layerRepo `
+    -Config $config `
+    -ScopeId 'Wave'
+Assert-RuleHarness `
+    -Condition (@($layerFindings | Where-Object { $_.title -eq 'Layer dependency violation' }).Count -ge 2) `
+    -Message 'Expected Presentation->Photon and Infrastructure->Presentation imports to be reported as layer dependency violations.'
+
+$bridgeRepo = Join-Path $scratchRoot 'energy-bridge-drift'
+Initialize-RuleHarnessScopeRepo -RepoPath $bridgeRepo -Features @(
+    [pscustomobject]@{ Name = 'Player'; ApplicationContent = @"
+namespace Features.Player.Application
+{
+    public sealed class BridgeService
+    {
+        public object Build(IUnitEnergyPort port)
+        {
+            return new EnergyAdapter();
+        }
+    }
+}
+"@ }
+)
+$bridgeFindings = Get-RuleHarnessStaticFindings `
+    -RepoRoot $bridgeRepo `
+    -Config $config `
+    -ScopeId 'Player'
+Assert-RuleHarness `
+    -Condition (@($bridgeFindings | Where-Object { $_.title -eq 'Concrete/interface drift' }).Count -eq 1) `
+    -Message 'Expected direct EnergyAdapter construction next to IUnitEnergyPort usage to be reported as concrete/interface drift.'
+
 $timeRepo = Join-Path $scratchRoot 'qualified-time-fix'
 Initialize-RuleHarnessScopeRepo -RepoPath $timeRepo -Features @(
     [pscustomobject]@{ Name = 'Timer'; ApplicationContent = @"
@@ -697,6 +874,41 @@ Assert-RuleHarness `
 Assert-RuleHarness `
     -Condition ($null -ne $unplannedPatchPlan -and [int]$unplannedPatchPlan.details.unplannedFindingCount -eq 1) `
     -Message 'Expected patch_plan stage details to record unplanned findings when no recipe matched.'
+
+$compileGateRepo = Join-Path $scratchRoot 'compile-gate-default'
+Initialize-RuleHarnessScopeRepo -RepoPath $compileGateRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+$compileGateReport = Invoke-RuleHarness `
+    -RepoRoot $compileGateRepo `
+    -ConfigPath (Join-Path $compileGateRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+$compileGateStage = @($compileGateReport.stageResults | Where-Object stage -eq 'compile_gate' | Select-Object -First 1)[0]
+Assert-RuleHarness `
+    -Condition ($compileGateReport.execution.cleanLevel -eq 'static-clean only' -and -not [bool]$compileGateReport.execution.compileVerified -and $null -ne $compileGateStage -and [string]$compileGateStage.status -eq 'skipped') `
+    -Message 'Expected runs without compile evidence to be classified as static-clean only.'
+Assert-RuleHarness `
+    -Condition (@($compileGateReport.actionItems | Where-Object kind -eq 'verify-unity-compile').Count -eq 1) `
+    -Message 'Expected runs without compile evidence to request explicit Unity compile verification.'
+
+$compilePassedRepo = Join-Path $scratchRoot 'compile-gate-passed'
+Initialize-RuleHarnessScopeRepo -RepoPath $compilePassedRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+Write-CompileStatusFixture -RepoPath $compilePassedRepo -Status 'passed' -Summary 'Unity compile succeeded.'
+$compilePassedReport = Invoke-RuleHarness `
+    -RepoRoot $compilePassedRepo `
+    -ConfigPath (Join-Path $compilePassedRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+$compilePassedStage = @($compilePassedReport.stageResults | Where-Object stage -eq 'compile_gate' | Select-Object -First 1)[0]
+Assert-RuleHarness `
+    -Condition ($compilePassedReport.execution.cleanLevel -eq 'compile-clean' -and [bool]$compilePassedReport.execution.compileVerified -and $null -ne $compilePassedStage -and [string]$compilePassedStage.status -eq 'passed') `
+    -Message 'Expected compile status handoff to upgrade runs from static-clean only to compile-clean.'
+Assert-RuleHarness `
+    -Condition (@($compilePassedReport.actionItems | Where-Object kind -eq 'verify-unity-compile').Count -eq 0) `
+    -Message 'Expected compile-clean runs to omit the manual compile verification reminder.'
 
 $scheduledRepo = Join-Path $scratchRoot 'scheduled-status'
 Initialize-RuleHarnessScopeRepo -RepoPath $scheduledRepo -Features @(

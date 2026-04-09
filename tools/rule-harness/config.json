@@ -66,7 +66,8 @@
   },
   "state": {
     "featureScanStatePath": "Temp/RuleHarnessState/feature-scan-state.json",
-    "docProposalBacklogPath": "Temp/RuleHarnessState/doc-proposals.json"
+    "docProposalBacklogPath": "Temp/RuleHarnessState/doc-proposals.json",
+    "compileStatusPath": "Temp/RuleHarnessState/compile-status.json"
   },
   "validation": {
     "runHarnessTests": true,
