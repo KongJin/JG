@@ -1276,6 +1276,12 @@ function ConvertTo-RuleHarnessDocProposalBacklogEntry {
     }
 
     $summary = [string]$Entry.summary
+    if ([string]::IsNullOrWhiteSpace($summary) -and $Entry.PSObject.Properties.Name -contains 'normalizedSummary') {
+        $summary = [string]$Entry.normalizedSummary
+    }
+    if ([string]::IsNullOrWhiteSpace($summary)) {
+        $summary = "Review rule for $targetDoc"
+    }
     $details = if ($Entry.PSObject.Properties.Name -contains 'details') { [string]$Entry.details } else { [string]$Entry.message }
     $evidence = ConvertTo-RuleHarnessEvidenceObjects -Evidence @($Entry.evidence)
     $activeEvidence = if ($Entry.PSObject.Properties.Name -contains 'activeEvidence' -and $null -ne $Entry.activeEvidence) {
@@ -1381,6 +1387,27 @@ function Merge-RuleHarnessDocProposalBacklogEntry {
     if ([string]$IncomingEntry.lastSeenUtc -gt [string]$ExistingEntry.lastSeenUtc) {
         $winner = $IncomingEntry
     }
+    $firstSeenUtc = @(
+        [string]$ExistingEntry.firstSeenUtc
+        [string]$IncomingEntry.firstSeenUtc
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object | Select-Object -First 1
+    $lastActiveSeenUtc = @(
+        [string]$ExistingEntry.lastActiveSeenUtc
+        [string]$IncomingEntry.lastActiveSeenUtc
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object | Select-Object -Last 1
+    $resolvedAtUtc = if ($existingActive -or $incomingActive) {
+        $null
+    }
+    else {
+        @(
+            [string]$ExistingEntry.resolvedAtUtc
+            [string]$IncomingEntry.resolvedAtUtc
+        ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object | Select-Object -Last 1
+    }
+    $lastSeenUtc = @(
+        [string]$ExistingEntry.lastSeenUtc
+        [string]$IncomingEntry.lastSeenUtc
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object | Select-Object -Last 1
 
     [pscustomobject]@{
         targetDoc           = [string]$winner.targetDoc
@@ -1388,9 +1415,9 @@ function Merge-RuleHarnessDocProposalBacklogEntry {
         primaryEvidencePath = [string]$winner.primaryEvidencePath
         signature           = [string]$winner.signature
         status              = if ($existingActive -or $incomingActive) { 'active' } else { 'resolved' }
-        firstSeenUtc        = @([string]$ExistingEntry.firstSeenUtc, [string]$IncomingEntry.firstSeenUtc | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object | Select-Object -First 1)
-        lastActiveSeenUtc   = @([string]$ExistingEntry.lastActiveSeenUtc, [string]$IncomingEntry.lastActiveSeenUtc | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object | Select-Object -Last 1)
-        resolvedAtUtc       = if ($existingActive -or $incomingActive) { $null } else { @([string]$ExistingEntry.resolvedAtUtc, [string]$IncomingEntry.resolvedAtUtc | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object | Select-Object -Last 1) }
+        firstSeenUtc        = $firstSeenUtc
+        lastActiveSeenUtc   = $lastActiveSeenUtc
+        resolvedAtUtc       = $resolvedAtUtc
         activeScopeId       = if ($incomingActive -and -not [string]::IsNullOrWhiteSpace([string]$IncomingEntry.activeScopeId)) { [string]$IncomingEntry.activeScopeId } elseif ($existingActive) { [string]$ExistingEntry.activeScopeId } else { $null }
         activeEvidence      = if ($incomingActive -and @($IncomingEntry.activeEvidence).Count -gt 0) { @($IncomingEntry.activeEvidence) } elseif ($existingActive) { @($ExistingEntry.activeEvidence) } else { @() }
         scopeId             = if (-not [string]::IsNullOrWhiteSpace([string]$winner.scopeId)) { [string]$winner.scopeId } else { [string]$ExistingEntry.scopeId }
@@ -1399,7 +1426,7 @@ function Merge-RuleHarnessDocProposalBacklogEntry {
         details             = [string]$winner.details
         suggestion          = [string]$winner.suggestion
         hitCount            = [int]$ExistingEntry.hitCount + [int]$IncomingEntry.hitCount
-        lastSeenUtc         = @([string]$ExistingEntry.lastSeenUtc, [string]$IncomingEntry.lastSeenUtc | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object | Select-Object -Last 1)
+        lastSeenUtc         = $lastSeenUtc
         lastRunId           = if ([string]$IncomingEntry.lastSeenUtc -gt [string]$ExistingEntry.lastSeenUtc) { [string]$IncomingEntry.lastRunId } else { [string]$ExistingEntry.lastRunId }
         severity            = [string]$winner.severity
         relatedPaths        = @(@($ExistingEntry.relatedPaths) + @($IncomingEntry.relatedPaths) | Select-Object -Unique)
@@ -4618,7 +4645,7 @@ function Write-RuleHarnessSummary {
 
     if ($null -ne $Report.stoppedScope) {
         [void]$lines.Add('### Stopped Scope')
-        [void]$lines.Add(('- `{0}` findings={1} severity={2} plannedBatches={3} docProposals={4}' -f [string]$Report.stoppedScope.scopeId, [int]$Report.stoppedScope.findingCount, [string]$Report.stoppedScope.highestSeverity, [int]$Report.stoppedScope.plannedBatchCount, [int]$Report.stoppedScope.docProposalCount))
+        [void]$lines.Add(('- `{0}` findings={1} severity={2} plannedBatches={3} docProposals={4} finalStatus={5} remainingFindings={6} resolvedInRun={7}' -f [string]$Report.stoppedScope.scopeId, [int]$Report.stoppedScope.findingCount, [string]$Report.stoppedScope.highestSeverity, [int]$Report.stoppedScope.plannedBatchCount, [int]$Report.stoppedScope.docProposalCount, [string]$Report.stoppedScope.finalStatus, [int]$Report.stoppedScope.remainingFindingCount, [bool]$Report.stoppedScope.resolvedInRun))
         [void]$lines.Add('')
     }
 
@@ -4733,6 +4760,10 @@ function Invoke-RuleHarness {
     $mutationResult = $null
     $diagnoseAttempted = $llmEnabled -or -not [string]::IsNullOrWhiteSpace($ReviewJsonPath)
     $diagnoseFailed = $false
+    $resolvedProposalCount = 0
+    $reactivatedProposalCount = 0
+    $sameRunResolvedScopeCount = 0
+    $staleStateRepairedCount = 0
 
     Write-Host 'Rule harness discover stage started.'
     Write-Host "Rule harness discover stage finished. Features: $($orderedScopes.Count) Selected: $($selectedScopes.Count)"
@@ -4748,6 +4779,7 @@ function Invoke-RuleHarness {
 
     foreach ($scope in @($selectedScopes)) {
         [void]$attemptedScopes.Add([string]$scope.scopeId)
+        $previousScopeState = if ($featureScanState.entries.ContainsKey([string]$scope.scopeId)) { $featureScanState.entries[[string]$scope.scopeId] } else { $null }
         $scopeStaticFindings = @(Get-RuleHarnessStaticFindings -RepoRoot $RepoRoot -Config $config -ScopeId ([string]$scope.scopeId))
         $staticFindingCount += $scopeStaticFindings.Count
 
@@ -4786,12 +4818,25 @@ function Invoke-RuleHarness {
 
         $scopeErrors = @($scopeReviewedFindings | Where-Object { $_.severity -in @('high', 'medium') })
         if ($scopeErrors.Count -eq 0) {
+            $cleanupResult = Resolve-RuleHarnessDocProposalBacklogForScope `
+                -Backlog $docProposalBacklog `
+                -ScopeId ([string]$scope.scopeId) `
+                -CurrentFindings @() `
+                -RunId $runId
+            $resolvedProposalCount += [int]$cleanupResult.resolvedCount
+            if ($null -ne $previousScopeState -and (
+                [string]$previousScopeState.lastResult -ne 'clean' -or
+                -not [string]::IsNullOrWhiteSpace([string]$previousScopeState.lastFindingSeverity) -or
+                -not [string]::IsNullOrWhiteSpace([string]$previousScopeState.lastStoppedReason)
+            )) {
+                $staleStateRepairedCount++
+            }
             [void]$completedScopes.Add([string]$scope.scopeId)
             Set-RuleHarnessFeatureScanEntry `
                 -FeatureScanState $featureScanState `
                 -ScopeId ([string]$scope.scopeId) `
                 -LastResult 'clean' `
-                -LastFindingSeverity (Get-RuleHarnessHighestSeverity -Findings @($scopeReviewedFindings)) `
+                -LastFindingSeverity $null `
                 -LastRunId $runId `
                 -LastCommitSha ((Invoke-RuleHarnessGit -RepoRoot $RepoRoot -Arguments @('rev-parse', 'HEAD')) | Select-Object -First 1).Trim() `
                 -LastStoppedReason $null
@@ -4806,7 +4851,8 @@ function Invoke-RuleHarness {
         foreach ($proposal in @($scopeDocProposals)) {
             [void]$docProposals.Add($proposal)
         }
-        Update-RuleHarnessDocProposalBacklog -Backlog $docProposalBacklog -Proposals @($scopeDocProposals) -RunId $runId
+        $backlogUpdate = Update-RuleHarnessDocProposalBacklog -Backlog $docProposalBacklog -Proposals @($scopeDocProposals) -RunId $runId
+        $reactivatedProposalCount += [int]$backlogUpdate.reactivatedCount
 
         Write-Host "Rule harness patch plan stage started for scope $($scope.scopeId)."
         $plannedBatches = @(Get-RuleHarnessPlannedBatches -ReviewedFindings @($scopeErrors) -DocEdits @() -RepoRoot $RepoRoot)
@@ -4824,24 +4870,48 @@ function Invoke-RuleHarness {
             -RelaxScopeGuards `
             -DryRun:$DryRun
 
-        $scopeResult = if ([bool]$mutationResult.applied) {
-            'applied'
-        }
-        elseif ([bool]$mutationResult.failed) {
+        $remainingScopeFindings = @(
+            @($mutationResult.finalStaticFindings) |
+                Where-Object {
+                    $_.severity -in @('high', 'medium') -and
+                    (Test-RuleHarnessFindingMatchesScope -Finding $_ -ScopeId ([string]$scope.scopeId))
+                }
+        )
+        $cleanupResult = Resolve-RuleHarnessDocProposalBacklogForScope `
+            -Backlog $docProposalBacklog `
+            -ScopeId ([string]$scope.scopeId) `
+            -CurrentFindings @($remainingScopeFindings) `
+            -RunId $runId
+        $resolvedProposalCount += [int]$cleanupResult.resolvedCount
+
+        $scopeResult = if ([bool]$mutationResult.failed) {
             'failed'
+        }
+        elseif ($remainingScopeFindings.Count -eq 0) {
+            'clean'
         }
         else {
             'findings'
+        }
+        if ($scopeResult -eq 'clean') {
+            $sameRunResolvedScopeCount++
+            if ($null -ne $previousScopeState -and (
+                [string]$previousScopeState.lastResult -ne 'clean' -or
+                -not [string]::IsNullOrWhiteSpace([string]$previousScopeState.lastFindingSeverity) -or
+                -not [string]::IsNullOrWhiteSpace([string]$previousScopeState.lastStoppedReason)
+            )) {
+                $staleStateRepairedCount++
+            }
         }
         $scopeCommitSha = ((Invoke-RuleHarnessGit -RepoRoot $RepoRoot -Arguments @('rev-parse', 'HEAD')) | Select-Object -First 1).Trim()
         Set-RuleHarnessFeatureScanEntry `
             -FeatureScanState $featureScanState `
             -ScopeId ([string]$scope.scopeId) `
             -LastResult $scopeResult `
-            -LastFindingSeverity (Get-RuleHarnessHighestSeverity -Findings @($scopeReviewedFindings)) `
+            -LastFindingSeverity $(if ($scopeResult -eq 'clean') { $null } elseif ($remainingScopeFindings.Count -gt 0) { Get-RuleHarnessHighestSeverity -Findings @($remainingScopeFindings) } else { Get-RuleHarnessHighestSeverity -Findings @($scopeErrors) }) `
             -LastRunId $runId `
             -LastCommitSha $scopeCommitSha `
-            -LastStoppedReason $scopeResult
+            -LastStoppedReason $(if ($scopeResult -eq 'clean') { $null } else { $scopeResult })
 
         $stoppedScope = [pscustomobject]@{
             scopeId             = [string]$scope.scopeId
@@ -4849,6 +4919,9 @@ function Invoke-RuleHarness {
             highestSeverity     = Get-RuleHarnessHighestSeverity -Findings @($scopeErrors)
             plannedBatchCount   = $plannedBatchCount
             docProposalCount    = @($scopeDocProposals).Count
+            finalStatus         = $scopeResult
+            remainingFindingCount = $remainingScopeFindings.Count
+            resolvedInRun       = ($scopeResult -eq 'clean')
         }
         break
     }
@@ -4894,6 +4967,18 @@ function Invoke-RuleHarness {
         -Summary ("Doc mutation is disabled. Generated {0} proposal(s)." -f $docProposals.Count) `
         -Details ([pscustomobject]@{
             docProposalCount = $docProposals.Count
+        })))
+
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'state_cleanup' `
+        -Status 'passed' `
+        -Attempted $true `
+        -Summary ("Resolved {0} proposal(s), reactivated {1}, repaired {2} stale state entrie(s), same-run resolved scopes={3}." -f $resolvedProposalCount, $reactivatedProposalCount, $staleStateRepairedCount, $sameRunResolvedScopeCount) `
+        -Details ([pscustomobject]@{
+            resolvedProposalCount = $resolvedProposalCount
+            reactivatedProposalCount = $reactivatedProposalCount
+            sameRunResolvedScopeCount = $sameRunResolvedScopeCount
+            staleStateRepairedCount = $staleStateRepairedCount
         })))
 
     [void]$stageResults.Add((New-RuleHarnessStageResult `

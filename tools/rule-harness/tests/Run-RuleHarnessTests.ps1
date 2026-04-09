@@ -243,6 +243,62 @@ Assert-RuleHarness `
 Assert-RuleHarness `
     -Condition (@($stopBacklog.entries).Count -ge 1 -and (Test-Path -LiteralPath $stopProposalPath)) `
     -Message 'Expected high/medium findings to populate both the proposal backlog and the per-run proposal markdown file.'
+Assert-RuleHarness `
+    -Condition ($stopReport.stoppedScope.finalStatus -eq 'clean' -and [int]$stopReport.stoppedScope.remainingFindingCount -eq 0 -and [bool]$stopReport.stoppedScope.resolvedInRun) `
+    -Message 'Expected same-run auto-fix success to record a clean stopped scope with zero remaining findings.'
+Assert-RuleHarness `
+    -Condition ([string]$stopFeatureState.entries['Broken'].lastResult -eq 'clean' -and $null -eq $stopFeatureState.entries['Broken'].lastFindingSeverity -and $null -eq $stopFeatureState.entries['Broken'].lastStoppedReason) `
+    -Message 'Expected same-run auto-fix success to persist a clean feature state entry.'
+Assert-RuleHarness `
+    -Condition (@($stopBacklog.entries | Where-Object status -eq 'resolved').Count -ge 1) `
+    -Message 'Expected same-run auto-fix success to resolve the matching doc proposal backlog entry.'
+Assert-RuleHarness `
+    -Condition (@($stopReport.stageResults | Where-Object stage -eq 'state_cleanup' | Select-Object -First 1).Count -eq 1) `
+    -Message 'Expected reports to include the state_cleanup stage.'
+
+$staleRepo = Join-Path $scratchRoot 'stale-cleanup'
+Initialize-RuleHarnessScopeRepo -RepoPath $staleRepo -Features @(
+    [pscustomobject]@{ Name = 'Stale'; ApplicationContent = @"
+using UnityEngine;
+
+namespace Features.Stale.Application
+{
+    public sealed class StaleService
+    {
+    }
+}
+"@ }
+)
+$staleReport1 = Invoke-RuleHarness `
+    -RepoRoot $staleRepo `
+    -ConfigPath (Join-Path $staleRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+Set-Content -Path (Join-Path $staleRepo 'Assets/Scripts/Features/Stale/Application/StaleService.cs') -Value @"
+namespace Features.Stale.Application
+{
+    public sealed class StaleService
+    {
+    }
+}
+"@ -Encoding UTF8
+$staleReport2 = Invoke-RuleHarness `
+    -RepoRoot $staleRepo `
+    -ConfigPath (Join-Path $staleRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+$staleFeatureState = Read-RuleHarnessFeatureScanState -RepoRoot $staleRepo -Config $config
+$staleBacklog = Read-RuleHarnessDocProposalBacklog -RepoRoot $staleRepo -Config $config
+$staleCleanupStage = @($staleReport2.stageResults | Where-Object stage -eq 'state_cleanup' | Select-Object -First 1)[0]
+Assert-RuleHarness `
+    -Condition ($null -ne $staleReport1.stoppedScope -and [string]$staleFeatureState.entries['Stale'].lastResult -eq 'clean' -and $null -eq $staleFeatureState.entries['Stale'].lastFindingSeverity -and $null -eq $staleFeatureState.entries['Stale'].lastStoppedReason) `
+    -Message 'Expected a clean rescan after a manual fix to repair stale feature state back to clean.'
+Assert-RuleHarness `
+    -Condition (@($staleBacklog.entries).Count -eq 1 -and [string]$staleBacklog.entries[0].status -eq 'resolved') `
+    -Message 'Expected a clean rescan after a manual fix to resolve the matching doc proposal ledger entry.'
+Assert-RuleHarness `
+    -Condition ($null -ne $staleCleanupStage -and [int]$staleCleanupStage.details.resolvedProposalCount -ge 1 -and [int]$staleCleanupStage.details.staleStateRepairedCount -ge 1) `
+    -Message 'Expected state_cleanup to report both resolved proposals and repaired stale state after a clean rescan.'
 
 $repeatRepo = Join-Path $scratchRoot 'proposal-repeat'
 Initialize-RuleHarnessScopeRepo -RepoPath $repeatRepo -Features @(
@@ -261,20 +317,136 @@ namespace Features.Loop.Application
 }
 "@ }
 )
+$repeatReviewPath1 = Join-Path $repeatRepo 'Temp/review-1.json'
+[pscustomobject]@{
+    findings = @(
+        [pscustomobject]@{
+            findingType = 'code_violation'
+            severity = 'high'
+            ownerDoc = 'docs/rules/architecture-rules.md'
+            title = 'Unity API used in Application'
+            message = 'Application layer file ''Assets/Scripts/Features/Loop/Application/LoopService.cs'' appears to reference Unity API types.'
+            confidence = 'high'
+            source = 'agent_review'
+            remediationKind = 'code_fix'
+            rationale = ''
+            evidence = @([pscustomobject]@{ path = 'Assets/Scripts/Features/Loop/Application/LoopService.cs'; line = 1; snippet = 'using UnityEngine;' })
+            proposedDocEdit = $null
+        }
+    )
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $repeatReviewPath1 -Encoding UTF8
+$repeatReviewPath2 = Join-Path $repeatRepo 'Temp/review-2.json'
+[pscustomobject]@{
+    findings = @(
+        [pscustomobject]@{
+            findingType = 'code_violation'
+            severity = 'high'
+            ownerDoc = 'docs/rules/architecture-rules.md'
+            title = 'Unity API used in Application layer'
+            message = 'Application layer file ''Assets/Scripts/Features/Loop/Application/LoopService.cs'' appears to reference Unity API types.'
+            confidence = 'high'
+            source = 'agent_review'
+            remediationKind = 'code_fix'
+            rationale = ''
+            evidence = @([pscustomobject]@{ path = 'Assets/Scripts/Features/Loop/Application/LoopService.cs'; line = 1; snippet = 'using UnityEngine;' })
+            proposedDocEdit = $null
+        }
+    )
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $repeatReviewPath2 -Encoding UTF8
 $repeatReport1 = Invoke-RuleHarness `
     -RepoRoot $repeatRepo `
     -ConfigPath (Join-Path $repeatRepo 'tools/rule-harness/config.json') `
     -DisableLlm `
-    -DryRun
+    -DryRun `
+    -ReviewJsonPath $repeatReviewPath1
 $repeatReport2 = Invoke-RuleHarness `
     -RepoRoot $repeatRepo `
     -ConfigPath (Join-Path $repeatRepo 'tools/rule-harness/config.json') `
     -DisableLlm `
-    -DryRun
+    -DryRun `
+    -ReviewJsonPath $repeatReviewPath2
 $repeatBacklog = Read-RuleHarnessDocProposalBacklog -RepoRoot $repeatRepo -Config $config
 Assert-RuleHarness `
-    -Condition (@($repeatReport1.docProposals).Count -ge 1 -and @($repeatBacklog.entries).Count -eq 1 -and [int]$repeatBacklog.entries[0].hitCount -eq 2) `
-    -Message 'Expected repeated high/medium findings to dedupe into one backlog entry and increment hitCount.'
+    -Condition (@($repeatReport1.docProposals).Count -ge 1 -and @($repeatReport2.docProposals).Count -ge 1 -and @($repeatBacklog.entries).Count -eq 1 -and [int]$repeatBacklog.entries[0].hitCount -eq 2 -and [string]$repeatBacklog.entries[0].findingFamily -eq 'code_violation/application_unity_api') `
+    -Message 'Expected retitled high/medium findings to dedupe by canonical signature into one backlog entry.'
+
+$reopenRepo = Join-Path $scratchRoot 'proposal-reopen'
+Initialize-RuleHarnessScopeRepo -RepoPath $reopenRepo -Features @(
+    [pscustomobject]@{ Name = 'Loop'; ApplicationContent = @"
+using UnityEngine;
+
+namespace Features.Loop.Application
+{
+    public sealed class LoopService
+    {
+    }
+}
+"@ }
+)
+$reopenReviewPath = Join-Path $reopenRepo 'Temp/review.json'
+[pscustomobject]@{
+    findings = @(
+        [pscustomobject]@{
+            findingType = 'code_violation'
+            severity = 'high'
+            ownerDoc = 'docs/rules/architecture-rules.md'
+            title = 'Unity API used in Application layer'
+            message = 'Application layer file ''Assets/Scripts/Features/Loop/Application/LoopService.cs'' appears to reference Unity API types.'
+            confidence = 'high'
+            source = 'agent_review'
+            remediationKind = 'code_fix'
+            rationale = ''
+            evidence = @([pscustomobject]@{ path = 'Assets/Scripts/Features/Loop/Application/LoopService.cs'; line = 1; snippet = 'using UnityEngine;' })
+            proposedDocEdit = $null
+        }
+    )
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $reopenReviewPath -Encoding UTF8
+$reopenReport1 = Invoke-RuleHarness `
+    -RepoRoot $reopenRepo `
+    -ConfigPath (Join-Path $reopenRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun `
+    -ReviewJsonPath $reopenReviewPath
+Set-Content -Path (Join-Path $reopenRepo 'Assets/Scripts/Features/Loop/Application/LoopService.cs') -Value @"
+namespace Features.Loop.Application
+{
+    public sealed class LoopService
+    {
+    }
+}
+"@ -Encoding UTF8
+$reopenReport2 = Invoke-RuleHarness `
+    -RepoRoot $reopenRepo `
+    -ConfigPath (Join-Path $reopenRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+Set-Content -Path (Join-Path $reopenRepo 'Assets/Scripts/Features/Loop/Application/LoopService.cs') -Value @"
+using UnityEngine;
+
+namespace Features.Loop.Application
+{
+    public sealed class LoopService
+    {
+    }
+}
+"@ -Encoding UTF8
+$reopenReport3 = Invoke-RuleHarness `
+    -RepoRoot $reopenRepo `
+    -ConfigPath (Join-Path $reopenRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun `
+    -ReviewJsonPath $reopenReviewPath
+$reopenBacklog = Read-RuleHarnessDocProposalBacklog -RepoRoot $reopenRepo -Config $config
+$reopenCleanupStage = @($reopenReport3.stageResults | Where-Object stage -eq 'state_cleanup' | Select-Object -First 1)[0]
+Assert-RuleHarness `
+    -Condition ($null -ne $reopenReport1.stoppedScope -and $null -eq $reopenReport2.stoppedScope -and $null -ne $reopenReport3.stoppedScope) `
+    -Message 'Expected reopen test to create, resolve, and then re-detect the same proposal signature across three runs.'
+Assert-RuleHarness `
+    -Condition (@($reopenBacklog.entries).Count -eq 1 -and [string]$reopenBacklog.entries[0].status -eq 'active' -and [int]$reopenBacklog.entries[0].hitCount -eq 2) `
+    -Message 'Expected a resolved proposal entry to reactivate in place instead of creating a duplicate entry.'
+Assert-RuleHarness `
+    -Condition ($null -ne $reopenCleanupStage -and [int]$reopenCleanupStage.details.reactivatedProposalCount -ge 1) `
+    -Message 'Expected state_cleanup to record when a resolved proposal signature is reactivated.'
 
 $relatedRepo = Join-Path $scratchRoot 'related-feature-edit'
 Initialize-RuleHarnessScopeRepo -RepoPath $relatedRepo -Features @(

@@ -169,6 +169,30 @@
         },
         "docProposalCount": {
           "type": "integer"
+        },
+        "finalStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "clean",
+            "findings",
+            "failed",
+            null
+          ]
+        },
+        "remainingFindingCount": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "resolvedInRun": {
+          "type": [
+            "boolean",
+            "null"
+          ]
         }
       }
     },
