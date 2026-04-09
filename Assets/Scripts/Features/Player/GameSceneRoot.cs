@@ -4,6 +4,7 @@ using Features.Combat.Application;
 using Features.Combat.Presentation;
 using Features.Garage;
 using Features.Garage.Application;
+using Features.Lobby.Application.Ports;
 using Features.Player.Application;
 using Features.Player.Application.Ports;
 using Features.Player.Infrastructure;
@@ -67,6 +68,9 @@ namespace Features.Player
         [SerializeField] private WaveBootstrap _waveBootstrap;
         [Tooltip("PvE일 때 필수. Combat.Initialize 직후 RegisterTarget.")]
         [SerializeField] private CoreObjectiveBootstrap _coreObjective;
+
+        [Header("Scene Transition")]
+        [SerializeField] private string _lobbySceneName = "JG_LobbyScene";
 
         private EventBus _eventBus;
         private DisposableScope _disposables;
@@ -406,6 +410,10 @@ namespace Features.Player
             _dropOffLogged = true;
             if (_analytics != null)
                 _analytics.LogDropOff("game_leave", Time.realtimeSinceStartup - _sceneStartTime);
+
+            // Lobby 씬으로 전환
+            var sceneLoader = new SceneLoaderAdapter();
+            sceneLoader.LoadScene(_lobbySceneName);
         }
     }
 }

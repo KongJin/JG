@@ -64,8 +64,7 @@ namespace Features.Unit.Infrastructure
             var prefabSetup = spawnedGo.GetComponent<BattleEntityPrefabSetup>();
             if (prefabSetup != null)
             {
-                var battleEntityId = new DomainEntityId($"battle-{unitSpec.Id.Value}-{spawnedGo.GetInstanceID()}");
-                prefabSetup.Initialize(_eventBus, _combatBootstrap, _unitPositionQuery, unitSpec.Id.Value, ownerId);
+                prefabSetup.Initialize(_eventBus, _combatBootstrap, _unitPositionQuery, unitSpec, ownerId);
             }
             else
             {

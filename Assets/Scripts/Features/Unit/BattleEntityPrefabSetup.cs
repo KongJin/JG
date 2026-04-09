@@ -39,7 +39,7 @@ namespace Features.Unit
             EventBus eventBus,
             CombatBootstrap combatBootstrap,
             UnitPositionQueryAdapter unitPositionQuery,
-            string unitIdStr,
+            Unit unitSpec,
             DomainEntityId ownerId)
         {
             if (_initialized) return;
@@ -48,18 +48,12 @@ namespace Features.Unit
             _combatBootstrap = combatBootstrap;
             _unitPositionQuery = unitPositionQuery;
 
-            // UnitSpec 조회 (UnitCatalog에서)
-            // TODO: UnitSpec을 인스턴스 데이터나 공유 레지스트리에서 조회
-            // 현재는 임시로 빈 spec 사용 — Phase 3에서 Catalog 연동 필요
-            var battleEntityId = new DomainEntityId($"battle-{unitIdStr}-{gameObject.GetInstanceID()}");
+            var battleEntityId = new DomainEntityId($"battle-{unitSpec.Id.Value}-{gameObject.GetInstanceID()}");
             BattleEntityId = battleEntityId;
 
-            // 임시 UnitSpec (실제로는 Catalog에서 가져와야 함)
-            var tempSpec = CreateTemporaryUnitSpec(unitIdStr);
-
-            // BattleEntity 도메인 생성
+            // BattleEntity 도메인 생성 (실제 UnitSpec 사용)
             var spawnPos = new Float3(transform.position.x, transform.position.y, transform.position.z);
-            _battleEntity = new BattleEntity(battleEntityId, tempSpec, ownerId, spawnPos);
+            _battleEntity = new BattleEntity(battleEntityId, unitSpec, ownerId, spawnPos);
 
             // EntityIdHolder 설정
             _entityIdHolder.Set(battleEntityId);
@@ -77,31 +71,9 @@ namespace Features.Unit
             _photonController.SetBattleEntity(_battleEntity, eventBus, eventBus, ownerId);
 
             // 소환 완료 이벤트 발행
-            eventBus.Publish(new Application.Events.UnitSummonCompletedEvent(ownerId, battleEntityId, tempSpec));
+            eventBus.Publish(new Application.Events.UnitSummonCompletedEvent(ownerId, battleEntityId, unitSpec));
 
             _initialized = true;
-        }
-
-        /// <summary>
-        /// 임시 UnitSpec 생성.
-        /// TODO: UnitCatalog에서 실제 스펙을 조회하도록 변경.
-        /// </summary>
-        private static Unit CreateTemporaryUnitSpec(string unitIdStr)
-        {
-            return new Unit(
-                id: new DomainEntityId(unitIdStr),
-                frameId: "temp-frame",
-                firepowerModuleId: "temp-firepower",
-                mobilityModuleId: "temp-mobility",
-                passiveTraitId: null,
-                passiveTraitCostBonus: 0,
-                finalHp: 100f,
-                finalAttackDamage: 10f,
-                finalAttackSpeed: 1f,
-                finalRange: 5f,
-                finalMoveRange: 3f,
-                finalAnchorRange: 5f,
-                summonCost: 10);
         }
 
         private void OnDestroy()
