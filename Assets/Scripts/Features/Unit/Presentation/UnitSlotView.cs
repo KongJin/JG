@@ -35,6 +35,9 @@ namespace Features.Unit.Presentation
         private Vector3 _spawnPosition;
         private bool _canAfford;
 
+        /// <summary>현재 슬롯의 유닛 스펙.</summary>
+        public Unit UnitSpec => _unitSpec;
+
         public void Initialize(
             IEventSubscriber eventBus,
             SummonUnitUseCase summonUseCase,
@@ -65,6 +68,13 @@ namespace Features.Unit.Presentation
         }
 
         public void OnPointerClick(PointerEventData eventData)
+        {
+            if (!_canAfford) return;
+            OnClicked();
+        }
+
+        /// <summary>슬롯 클릭 시 소환 실행 (InputHandler에서도 호출 가능).</summary>
+        public void OnClicked()
         {
             if (!_canAfford) return;
             Summon();

@@ -18,10 +18,14 @@ namespace Features.Unit.Presentation
     {
         [Header("Slot Prefab")]
         [Required, SerializeField] private UnitSlotView _slotPrefab;
+        [SerializeField] private UnitSlotInputHandler _inputHandlerPrefab;
 
         [Header("Layout")]
         [Required, SerializeField] private RectTransform _slotsParent;
+        [Required, SerializeField] private Canvas _canvas;
+        [SerializeField] private Camera _worldCamera;
 
+        private IEventBus _fullEventBus;
         private IEventSubscriber _eventBus;
         private SummonUnitUseCase _summonUseCase;
         private IUnitEnergyPort _energyPort;
@@ -29,25 +33,33 @@ namespace Features.Unit.Presentation
         private Unit[] _roster; // 최대 6개
         private DomainEntityId _ownerId;
         private int _nextIndex; // 다음에 표시할 슬롯 인덱스 (0~5 로테이션)
+        private int _visibleStart; // 현재 보이는 슬롯의 시작 인덱스 (0~3)
 
         private readonly List<UnitSlotView> _activeSlots = new();
+
+        /// <summary>전체 로스터 유닛 수.</summary>
+        public int TotalUnits => _roster != null ? _roster.Length : 0;
 
         /// <summary>
         /// 소환 슬롯 컨테이너 초기화.
         /// </summary>
         public void Initialize(
-            IEventSubscriber eventBus,
+            IEventBus eventBus,
             SummonUnitUseCase summonUseCase,
             IUnitEnergyPort energyPort,
             Unit[] roster,
             DomainEntityId ownerId,
             Vector3 defaultSpawnPosition)
         {
+            _fullEventBus = eventBus;
             _eventBus = eventBus;
             _summonUseCase = summonUseCase;
             _energyPort = energyPort;
             _roster = roster;
             _ownerId = ownerId;
+
+            // UnitSummonCompletedEvent 구독 — 소환 시 슬롯 교체
+            _fullEventBus.Subscribe(this, new System.Action<Features.Unit.Application.Events.UnitSummonCompletedEvent>(OnSummonCompleted));
 
             // 처음 3개 슬롯 생성
             var visibleCount = Mathf.Min(3, roster.Length);
@@ -73,7 +85,45 @@ namespace Features.Unit.Presentation
                 _ownerId,
                 spawnPosition);
 
+            // 드래그 앤 드롭 핸들러 연결
+            if (_inputHandlerPrefab != null && _canvas != null)
+            {
+                var inputGo = Instantiate(_inputHandlerPrefab.gameObject, slotGo.transform, false);
+                var inputHandler = inputGo.GetComponent<UnitSlotInputHandler>();
+                if (_worldCamera != null)
+                {
+                    inputHandler.SetWorldCamera(_worldCamera);
+                }
+                inputHandler.Initialize(
+                    _roster[rosterIndex],
+                    _fullEventBus,
+                    OnSummonRequested,
+                    _canvas);
+            }
+
             _activeSlots.Add(slotView);
+        }
+
+        /// <summary>
+        /// 드래그 앤 드롭으로 소환 요청.
+        /// </summary>
+        private void OnSummonRequested(Unit unitSpec, Shared.Math.Float3 spawnPosition)
+        {
+            _summonUseCase.Execute(_ownerId, unitSpec, spawnPosition);
+        }
+
+        /// <summary>
+        /// 소환 완료 이벤트 구독.
+        /// </summary>
+        private void OnSummonCompleted(Features.Unit.Application.Events.UnitSummonCompletedEvent e)
+        {
+            if (e.PlayerId != _ownerId) return;
+
+            // 첫 번째 슬롯을 교체 (가장 왼쪽 슬롯)
+            if (_activeSlots.Count > 0)
+            {
+                OnUnitSummoned(0);
+            }
         }
 
         /// <summary>
@@ -108,6 +158,46 @@ namespace Features.Unit.Presentation
                     _activeSlots.RemoveAt(slotIndex);
                     Destroy(oldSlot.gameObject);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 다음 3개로 로테이션 (Clash Royale 스타일).
+        /// </summary>
+        public void RotateNext()
+        {
+            if (_roster == null || _visibleStart + 3 >= _roster.Length) return;
+
+            _visibleStart++;
+            RebuildSlots();
+        }
+
+        /// <summary>
+        /// 이전 3개로 로테이션.
+        /// </summary>
+        public void RotatePrevious()
+        {
+            if (_visibleStart <= 0) return;
+
+            _visibleStart--;
+            RebuildSlots();
+        }
+
+        private void RebuildSlots()
+        {
+            // 기존 슬롯 제거
+            foreach (var slot in _activeSlots)
+            {
+                if (slot != null) Destroy(slot.gameObject);
+            }
+            _activeSlots.Clear();
+
+            // 새 슬롯 생성
+            var visibleCount = Mathf.Min(3, _roster.Length - _visibleStart);
+            // spawnPosition은 임시로 Vector3.zero — 실제 배치 시 보정 필요
+            for (var i = 0; i < visibleCount; i++)
+            {
+                CreateSlot(_visibleStart + i, Vector3.zero);
             }
         }
     }

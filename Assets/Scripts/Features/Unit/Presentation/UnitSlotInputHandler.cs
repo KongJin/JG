@@ -1,4 +1,5 @@
 using Features.Unit.Domain;
+using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Math;
 using UnityEngine;
@@ -8,39 +9,53 @@ namespace Features.Unit.Presentation
 {
     /// <summary>
     /// 유닛 슬롯 입력 처리 (클릭 + 드래그 앤 드롭).
+    /// UnitSlotView와 함께 같은 GO에 붙이거나, 별도 컴포넌트로 초기화.
     /// </summary>
     public sealed class UnitSlotInputHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
     {
-        private UnitSlotView _slotView;
+        [Header("Configuration")]
+        [Required, SerializeField] private Camera _worldCamera;
+        [SerializeField] private float _screenToPlaneY = 0f;
+
+        [Header("Drag")]
+        [SerializeField] private Vector2 _dragGhostSize = new Vector2(80f, 80f);
+
+        private Unit _unitSpec;
         private IEventBus _eventBus;
         private System.Action<Unit, Float3> _onSummonRequested;
-
         private Canvas _canvas;
+
         private RectTransform _dragGhost;
         private CanvasGroup _canvasGroup;
         private bool _isDragging;
 
         public void Initialize(
-            UnitSlotView slotView,
+            Unit unitSpec,
             IEventBus eventBus,
             System.Action<Unit, Float3> onSummonRequested,
             Canvas canvas)
         {
-            _slotView = slotView;
+            _unitSpec = unitSpec;
             _eventBus = eventBus;
             _onSummonRequested = onSummonRequested;
             _canvas = canvas;
         }
 
+        /// <summary>월드 카메라 설정 (UnitSlotsContainer에서 주입).</summary>
+        public void SetWorldCamera(Camera camera)
+        {
+            _worldCamera = camera;
+        }
+
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (_isDragging) return; // 드래그 중이면 클릭 무시
-
-            _slotView.OnClicked();
+            if (_isDragging) return;
+            // 클릭은 UnitSlotView.OnClicked()가 처리하므로 여기선 무시
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            if (_unitSpec == null) return;
             _isDragging = true;
             CreateDragGhost();
         }
@@ -48,25 +63,19 @@ namespace Features.Unit.Presentation
         public void OnDrag(PointerEventData eventData)
         {
             if (!_isDragging || _dragGhost == null) return;
-
-            // 드래그 고스트 위치 업데이트
-            var rectTransform = _dragGhost.rectTransform;
-            rectTransform.position = eventData.position;
+            _dragGhost.position = eventData.position;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
             if (!_isDragging) return;
-
             _isDragging = false;
             DestroyDragGhost();
 
-            // 배치 가능 영역 확인
-            if (IsInDeployZone(eventData.position))
+            if (IsInDeployZone(eventData.position) && _unitSpec != null)
             {
-                // 소환 요청 (Float3로 변환)
                 var worldPos = ScreenToWorldPosition(eventData.position);
-                _onSummonRequested?.Invoke(_slotView.UnitSpec, new Float3(worldPos.x, worldPos.y, worldPos.z));
+                _onSummonRequested?.Invoke(_unitSpec, new Float3(worldPos.x, worldPos.y, worldPos.z));
             }
         }
 
@@ -74,20 +83,18 @@ namespace Features.Unit.Presentation
         {
             if (_canvas == null) return;
 
-            // 드래그 고스트 생성
             var ghostGo = new GameObject("DragGhost");
             _dragGhost = ghostGo.AddComponent<RectTransform>();
             _canvasGroup = ghostGo.AddComponent<CanvasGroup>();
             _canvasGroup.alpha = 0.7f;
 
-            // 아이콘 복사 (선택사항)
             var ghostImage = ghostGo.AddComponent<UnityEngine.UI.Image>();
-            if (_slotView.TryGetComponent<UnityEngine.UI.Image>(out var slotImage))
+            if (TryGetComponent<UnityEngine.UI.Image>(out var slotImage))
             {
                 ghostImage.sprite = slotImage.sprite;
             }
 
-            _dragGhost.sizeDelta = Vector2.one * 100f;
+            _dragGhost.sizeDelta = _dragGhostSize;
             _dragGhost.SetParent(_canvas.transform, false);
             _dragGhost.SetAsLastSibling();
         }
@@ -104,21 +111,17 @@ namespace Features.Unit.Presentation
 
         private bool IsInDeployZone(Vector2 screenPosition)
         {
-            // TODO: 배치 가능 영역 판정
-            // 현재는 임시로 화면 하반부를 배치 영역으로 간주
-            var screenHeight = Screen.height;
-            return screenPosition.y < screenHeight * 0.5f;
+            // 화면 하반부를 배치 영역으로 간주
+            return screenPosition.y < Screen.height * 0.5f;
         }
 
         private Vector3 ScreenToWorldPosition(Vector2 screenPosition)
         {
-            // TODO: Camera.main 또는 직렬화 필드 사용
-            // 현재는 임시 구현
-            var camera = Camera.main;
-            if (camera == null) return Vector3.zero;
+            if (_worldCamera == null) return Vector3.zero;
 
-            screenPosition.z = 10f;
-            return camera.ScreenToWorldPoint(screenPosition);
+            var ray = _worldCamera.ScreenPointToRay(new Vector3(screenPosition.x, screenPosition.y, 0f));
+            var t = (_screenToPlaneY - ray.origin.y) / ray.direction.y;
+            return ray.GetPoint(t);
         }
     }
 }
