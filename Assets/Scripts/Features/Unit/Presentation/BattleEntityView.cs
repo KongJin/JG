@@ -1,4 +1,6 @@
+using Features.Combat.Application.Events;
 using Features.Unit.Application.Events;
+using Features.Unit.Application.Ports;
 using Features.Unit.Domain;
 using Shared.Attributes;
 using Shared.EventBus;
@@ -11,7 +13,7 @@ namespace Features.Unit.Presentation
     /// BattleEntity의 시각 표현.
     /// HP 바, 데미지 플래시, 사망 효과 등을 담당.
     /// </summary>
-    public sealed class BattleEntityView : MonoBehaviour
+    public sealed class BattleEntityView : MonoBehaviour, IBattleEntityViewPort
     {
         [Header("References")]
         [Required, SerializeField] private EntityIdHolder _entityIdHolder;

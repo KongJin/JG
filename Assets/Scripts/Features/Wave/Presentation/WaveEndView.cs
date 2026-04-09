@@ -2,7 +2,6 @@ using Shared.Attributes;
 using System;
 using Features.Wave.Application.Events;
 using Features.Wave.Domain;
-using Photon.Pun;
 using Shared.EventBus;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,9 +20,11 @@ namespace Features.Wave.Presentation
         [SerializeField] private Button returnToLobbyButton;
 
         private bool _gameEnded;
+        private Action _onReturnToLobbyRequested;
 
-        public void Initialize(IEventSubscriber subscriber)
+        public void Initialize(IEventSubscriber subscriber, Action onReturnToLobbyRequested)
         {
+            _onReturnToLobbyRequested = onReturnToLobbyRequested;
             subscriber.Subscribe(this, new Action<WaveVictoryEvent>(OnVictory));
             subscriber.Subscribe(this, new Action<WaveDefeatEvent>(OnDefeat));
             subscriber.Subscribe(this, new Action<WaveHydratedEvent>(OnWaveHydrated));
@@ -86,11 +87,7 @@ namespace Features.Wave.Presentation
 
         private void OnReturnToLobbyClicked()
         {
-            // TODO: SceneLoaderPort를 통해 Lobby 씬으로 전환
-            if (PhotonNetwork.InRoom)
-            {
-                PhotonNetwork.LeaveRoom();
-            }
+            _onReturnToLobbyRequested?.Invoke();
         }
     }
 }

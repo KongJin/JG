@@ -1,4 +1,5 @@
 using Features.Unit.Application;
+using Features.Unit.Application.Ports;
 using Features.Unit.Domain;
 using Shared.Attributes;
 using Shared.EventBus;
@@ -7,6 +8,7 @@ using Shared.Math;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Presentation
 {
@@ -30,19 +32,19 @@ namespace Features.Unit.Presentation
         private SummonUnitUseCase _summonUseCase;
         private IUnitEnergyPort _energyPort;
 
-        private Unit _unitSpec;
+        private UnitSpec _unitSpec;
         private DomainEntityId _ownerId;
         private Vector3 _spawnPosition;
         private bool _canAfford;
 
         /// <summary>현재 슬롯의 유닛 스펙.</summary>
-        public Unit UnitSpec => _unitSpec;
+        public UnitSpec UnitSpec => _unitSpec;
 
         public void Initialize(
             IEventSubscriber eventBus,
             SummonUnitUseCase summonUseCase,
             IUnitEnergyPort energyPort,
-            Unit unitSpec,
+            UnitSpec unitSpec,
             DomainEntityId ownerId,
             Vector3 spawnPosition)
         {

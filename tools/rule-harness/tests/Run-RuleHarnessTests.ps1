@@ -612,6 +612,61 @@ Assert-RuleHarness `
     -Condition ([string]$timeState.entries['Timer'].lastResult -eq 'clean' -and $null -eq $timeState.entries['Timer'].lastFindingSeverity) `
     -Message 'Expected the time-provider recipe to persist a clean state entry after the fix.'
 
+$unscaledRepo = Join-Path $scratchRoot 'qualified-unscaled-time-fix'
+Initialize-RuleHarnessScopeRepo -RepoPath $unscaledRepo -Features @(
+    [pscustomobject]@{ Name = 'Clock'; ApplicationContent = @"
+namespace Features.Clock.Application
+{
+    public sealed class ClockService
+    {
+        private readonly float _startedAt;
+
+        public ClockService()
+        {
+            _startedAt = UnityEngine.Time.unscaledTime;
+        }
+    }
+}
+"@ }
+)
+Set-Content -Path (Join-Path $unscaledRepo 'Assets/Scripts/Features/Clock/ClockSetup.cs') -Value @"
+using Features.Clock.Application;
+
+namespace Features.Clock
+{
+    public sealed class ClockSetup
+    {
+        public ClockService Build()
+        {
+            return new ClockService();
+        }
+    }
+}
+"@ -Encoding UTF8
+Push-Location $unscaledRepo
+try {
+    git add .
+    git commit -m 'custom clock setup' | Out-Null
+}
+finally {
+    Pop-Location
+}
+$unscaledReport = Invoke-RuleHarness `
+    -RepoRoot $unscaledRepo `
+    -ConfigPath (Join-Path $unscaledRepo 'tools/rule-harness/config.json') `
+    -DisableLlm
+$unscaledAppContent = Get-Content -Path (Join-Path $unscaledRepo 'Assets/Scripts/Features/Clock/Application/ClockService.cs') -Raw
+$unscaledSetupContent = Get-Content -Path (Join-Path $unscaledRepo 'Assets/Scripts/Features/Clock/ClockSetup.cs') -Raw
+Assert-RuleHarness `
+    -Condition ($unscaledReport.commit.created -and $unscaledReport.stoppedScope.scopeId -eq 'Clock' -and $unscaledReport.stoppedScope.finalStatus -eq 'clean') `
+    -Message 'Expected the time-provider recipe to generalize to other float-returning UnityEngine.Time properties.'
+Assert-RuleHarness `
+    -Condition ($unscaledAppContent.Contains('_timeProvider();') -and -not $unscaledAppContent.Contains('UnityEngine.Time.unscaledTime')) `
+    -Message 'Expected the Application file to replace UnityEngine.Time.unscaledTime with the injected time provider.'
+Assert-RuleHarness `
+    -Condition ($unscaledSetupContent.Contains('new ClockService(() => UnityEngine.Time.unscaledTime)')) `
+    -Message 'Expected the setup call site to inject the specific UnityEngine.Time property that was originally referenced.'
+
 $unplannedRepo = Join-Path $scratchRoot 'unplanned-code-fix'
 Initialize-RuleHarnessScopeRepo -RepoPath $unplannedRepo -Features @(
     [pscustomobject]@{ Name = 'Logger'; ApplicationContent = @"

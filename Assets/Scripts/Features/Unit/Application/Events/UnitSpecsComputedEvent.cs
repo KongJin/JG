@@ -1,5 +1,6 @@
 using Features.Unit.Domain;
 using Shared.Kernel;
+using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Application.Events
 {
@@ -9,9 +10,9 @@ namespace Features.Unit.Application.Events
     public readonly struct UnitSpecsComputedEvent
     {
         public DomainEntityId PlayerId { get; }
-        public Unit[] UnitSpecs { get; }
+        public UnitSpec[] UnitSpecs { get; }
 
-        public UnitSpecsComputedEvent(DomainEntityId playerId, Unit[] unitSpecs)
+        public UnitSpecsComputedEvent(DomainEntityId playerId, UnitSpec[] unitSpecs)
         {
             PlayerId = playerId;
             UnitSpecs = unitSpecs;

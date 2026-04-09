@@ -9,6 +9,7 @@ using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Math;
 using UnityEngine;
+using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Infrastructure
 {
@@ -24,7 +25,7 @@ namespace Features.Unit.Infrastructure
         [Header("Spawn Settings")]
         [SerializeField] private Transform _spawnParent;
 
-        private IEventPublisher _eventBus;
+        private EventBus _eventBus;
         private CombatBootstrap _combatBootstrap;
         private UnitPositionQueryAdapter _unitPositionQuery;
 
@@ -32,7 +33,7 @@ namespace Features.Unit.Infrastructure
         /// 소환기 초기화. ISummonExecutionPort는 순수 생성만 담당하므로
         /// Combat/위치 등록 의존성은 여기서 직접 주입받는다.
         /// </summary>
-        public void Initialize(IEventPublisher eventBus, CombatBootstrap combatBootstrap, UnitPositionQueryAdapter unitPositionQuery)
+        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap, UnitPositionQueryAdapter unitPositionQuery)
         {
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
@@ -42,7 +43,7 @@ namespace Features.Unit.Infrastructure
         /// <summary>
         /// BattleEntity 생성 (Owner 기반).
         /// </summary>
-        public DomainEntityId SpawnBattleEntity(Unit unitSpec, Float3 spawnPosition, DomainEntityId ownerId)
+        public DomainEntityId SpawnBattleEntity(UnitSpec unitSpec, Float3 spawnPosition, DomainEntityId ownerId)
         {
             var spawnPos = new Vector3(spawnPosition.X, spawnPosition.Y, spawnPosition.Z);
 

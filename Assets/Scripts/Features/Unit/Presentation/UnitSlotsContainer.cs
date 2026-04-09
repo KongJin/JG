@@ -7,6 +7,7 @@ using Shared.EventBus;
 using Shared.Kernel;
 using UnityEngine;
 using UnityEngine.UI;
+using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Presentation
 {
@@ -25,12 +26,18 @@ namespace Features.Unit.Presentation
         [Required, SerializeField] private Canvas _canvas;
         [SerializeField] private Camera _worldCamera;
 
-        private IEventBus _fullEventBus;
+        [Header("Placement")]
+        [Tooltip("배치 영역 판정용 PlacementArea 참조.")]
+        [SerializeField] private PlacementArea _placementArea;
+        [Tooltip("배치 실패 시 에러 표시 UI View.")]
+        [SerializeField] private PlacementErrorView _errorView;
+
+        private IEventSubscriber _fullEventBus;
         private IEventSubscriber _eventBus;
         private SummonUnitUseCase _summonUseCase;
         private IUnitEnergyPort _energyPort;
 
-        private Unit[] _roster; // 최대 6개
+        private UnitSpec[] _roster; // 최대 6개
         private DomainEntityId _ownerId;
         private int _nextIndex; // 다음에 표시할 슬롯 인덱스 (0~5 로테이션)
         private int _visibleStart; // 현재 보이는 슬롯의 시작 인덱스 (0~3)
@@ -44,12 +51,13 @@ namespace Features.Unit.Presentation
         /// 소환 슬롯 컨테이너 초기화.
         /// </summary>
         public void Initialize(
-            IEventBus eventBus,
+            IEventSubscriber eventBus,
             SummonUnitUseCase summonUseCase,
             IUnitEnergyPort energyPort,
-            Unit[] roster,
+            UnitSpec[] roster,
             DomainEntityId ownerId,
-            Vector3 defaultSpawnPosition)
+            Vector3 defaultSpawnPosition,
+            PlacementArea placementArea)
         {
             _fullEventBus = eventBus;
             _eventBus = eventBus;
@@ -57,6 +65,7 @@ namespace Features.Unit.Presentation
             _energyPort = energyPort;
             _roster = roster;
             _ownerId = ownerId;
+            _placementArea = placementArea;
 
             // UnitSummonCompletedEvent 구독 — 소환 시 슬롯 교체
             _fullEventBus.Subscribe(this, new System.Action<Features.Unit.Application.Events.UnitSummonCompletedEvent>(OnSummonCompleted));
@@ -96,7 +105,9 @@ namespace Features.Unit.Presentation
                     OnSummonRequested,
                     _ => OnSlotClicked(slotView),
                     _canvas,
-                    _worldCamera);
+                    _worldCamera,
+                    _placementArea,
+                    _errorView);
             }
 
             _activeSlots.Add(slotView);
@@ -105,7 +116,7 @@ namespace Features.Unit.Presentation
         /// <summary>
         /// 드래그 앤 드롭으로 소환 요청.
         /// </summary>
-        private void OnSummonRequested(Unit unitSpec, Shared.Math.Float3 spawnPosition)
+        private void OnSummonRequested(UnitSpec unitSpec, Shared.Math.Float3 spawnPosition)
         {
             _summonUseCase.Execute(_ownerId, unitSpec, spawnPosition);
         }
@@ -116,9 +127,9 @@ namespace Features.Unit.Presentation
         private void OnSlotClicked(UnitSlotView slotView)
         {
             if (slotView.UnitSpec == null) return;
-            // 현재 슬롯의 스펙으로 소환 (고정 위치)
-            // TODO: 실제 배치 영역 선택 시 position 보정
-            _summonUseCase.Execute(_ownerId, slotView.UnitSpec, new Shared.Math.Float3(0, 0, 0));
+            // 현재 슬롯의 스펙으로 소환 (PlacementArea 중심 위치 사용)
+            var spawnPos = _placementArea != null ? _placementArea.Center : Vector3.zero;
+            _summonUseCase.Execute(_ownerId, slotView.UnitSpec, new Shared.Math.Float3(spawnPos.x, spawnPos.y, spawnPos.z));
         }
 
         /// <summary>

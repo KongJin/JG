@@ -1,13 +1,16 @@
 using Features.Combat;
+using Features.Combat.Application.Events;
 using Features.Unit.Application.Events;
+using Features.Unit.Application.Ports;
 using Features.Unit.Domain;
-using Features.Unit.Presentation;
 using Features.Wave.Infrastructure;
 using Photon.Pun;
+using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Math;
 using UnityEngine;
+using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Infrastructure
 {
@@ -19,7 +22,7 @@ namespace Features.Unit.Infrastructure
     {
         public static event System.Action<BattleEntityPrefabSetup> BattleEntityArrived;
 
-        [Required, SerializeField] private BattleEntityView _view;
+        [Required, SerializeField] private MonoBehaviour _view;
         [Required, SerializeField] private BattleEntityPhotonController _photonController;
         [Required, SerializeField] private EntityIdHolder _entityIdHolder;
 
@@ -27,6 +30,7 @@ namespace Features.Unit.Infrastructure
         private CombatBootstrap _combatBootstrap;
         private UnitPositionQueryAdapter _unitPositionQuery;
         private BattleEntity _battleEntity;
+        private IBattleEntityViewPort _viewPort;
         private bool _initialized;
 
         public DomainEntityId BattleEntityId { get; private set; }
@@ -60,7 +64,7 @@ namespace Features.Unit.Infrastructure
             EventBus eventBus,
             CombatBootstrap combatBootstrap,
             UnitPositionQueryAdapter unitPositionQuery,
-            Unit unitSpec)
+            UnitSpec unitSpec)
         {
             if (_pendingUnitId == null || unitSpec == null) return;
             Initialize(eventBus, combatBootstrap, unitPositionQuery, unitSpec, _pendingOwnerId, _pendingInitialHp);
@@ -70,7 +74,7 @@ namespace Features.Unit.Infrastructure
             EventBus eventBus,
             CombatBootstrap combatBootstrap,
             UnitPositionQueryAdapter unitPositionQuery,
-            Unit unitSpec,
+            UnitSpec unitSpec,
             DomainEntityId ownerId)
         {
             // Owner 경로: instantiation data 무시하고 unitSpec 직접 사용
@@ -89,7 +93,7 @@ namespace Features.Unit.Infrastructure
             EventBus eventBus,
             CombatBootstrap combatBootstrap,
             UnitPositionQueryAdapter unitPositionQuery,
-            Unit unitSpec,
+            UnitSpec unitSpec,
             DomainEntityId ownerId,
             float initialHp)
         {
@@ -98,6 +102,13 @@ namespace Features.Unit.Infrastructure
             _eventBus = eventBus;
             _combatBootstrap = combatBootstrap;
             _unitPositionQuery = unitPositionQuery;
+            _viewPort = _view as IBattleEntityViewPort;
+
+            if (_viewPort == null)
+            {
+                Debug.LogError("[BattleEntityPrefabSetup] View must implement IBattleEntityViewPort.", this);
+                return;
+            }
 
             var battleEntityId = new DomainEntityId($"battle-{unitSpec.Id.Value}-{gameObject.GetInstanceID()}");
             BattleEntityId = battleEntityId;
@@ -116,7 +127,7 @@ namespace Features.Unit.Infrastructure
             unitPositionQuery.RegisterUnit(transform);
 
             // View 초기화
-            _view.Initialize(eventBus, _battleEntity);
+            _viewPort.Initialize(eventBus, _battleEntity);
 
             // Photon controller 초기화
             _photonController.SetBattleEntity(_battleEntity, eventBus, eventBus, ownerId);

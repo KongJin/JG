@@ -4,6 +4,8 @@ using Features.Combat.Application;
 using Features.Combat.Presentation;
 using Features.Garage;
 using Features.Garage.Application;
+using Features.Garage.Domain;
+using Features.Lobby.Infrastructure;
 using Features.Lobby.Application.Ports;
 using Features.Player.Application;
 using Features.Player.Application.Ports;
@@ -141,10 +143,10 @@ namespace Features.Player
         }
 
         /// <summary>
-        /// Phase 4: 소환 슬롯 UI 초기화.
+        /// Phase 4: 소환 슬롯 UI 초기화 + 초기 Energy 검증.
         /// 계산된 Unit specs를 기반으로 3개 표시 슬롯을 생성한다.
         /// </summary>
-        private void InitializeSummonSlots(DomainEntityId playerId)
+        private void ValidateAndInitializeSummonSlots(DomainEntityId playerId)
         {
             if (!_playerUnitSpecs.TryGetValue(playerId, out var specs) || specs.Length == 0)
             {
@@ -152,10 +154,28 @@ namespace Features.Player
                 return;
             }
 
+            // P8-4: 초기 Energy 검증
+            var initialEnergy = _localPlayerSetup.EnergyAdapterInstance.GetCurrentEnergy(playerId);
+            var energyResult = InitialEnergyValidator.Validate(initialEnergy, specs);
+            if (!energyResult.IsValid)
+            {
+                Debug.LogWarning(
+                    $"[GameSceneRoot] Player {playerId.Value} starts with insufficient energy " +
+                    $"({energyResult.InitialEnergy:F1} < {energyResult.MinSummonCost:F1}). " +
+                    $"Consider increasing initial energy.");
+            }
+
             if (_unitSlotsContainer == null)
             {
                 Debug.LogWarning("[GameSceneRoot] UnitSlotsContainer not assigned. Summon UI skipped.");
                 return;
+            }
+
+            // PlacementArea 가져오기
+            var placementArea = _coreObjective?.PlacementArea;
+            if (placementArea == null)
+            {
+                Debug.LogWarning("[GameSceneRoot] PlacementArea not available. Using default spawn position.");
             }
 
             var energyPort = new UnitEnergyAdapter(_localPlayerSetup.EnergyAdapterInstance);
@@ -166,7 +186,8 @@ namespace Features.Player
                 energyPort,
                 specs,
                 playerId,
-                transform.position); // TODO: 실제 배치 영역 중앙 좌표로 변경
+                placementArea?.Center ?? transform.position,
+                placementArea);
         }
 
         private void Awake()
@@ -253,7 +274,8 @@ namespace Features.Player
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndAnalytics));
 
             // GameEnd 리포트 로깅 (Bootstrap 책임 — Debug.Log 허용)
-            _disposables.Add(_eventBus.Subscribe(this, new System.Action<Features.Player.Application.Events.GameEndReportRequestedEvent>(OnGameEndReport)));
+            _eventBus.Subscribe(this, new System.Action<Features.Player.Application.Events.GameEndReportRequestedEvent>(OnGameEndReport));
+            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, this));
 
             ConnectPlayer(_localPlayerSetup);
 
@@ -270,7 +292,7 @@ namespace Features.Player
             }
             else
             {
-                SoundPlayer.Instance.Initialize(_eventBus, localSetup.PlayerId.Value);
+                SoundPlayer.Instance.Initialize(_eventBus, _localPlayerSetup.PlayerId.Value);
             }
 
             // ProjectileSpawner, ZoneSetup은 EventBus만 필요
@@ -302,12 +324,12 @@ namespace Features.Player
                 // Phase 3: BattleEntity 소환 시스템 연결
                 _unitBootstrap.InitializeBattleEntity(
                     _eventBus,
-                    _localPlayerSetup.EnergyAdapterInstance,
+                    new UnitEnergyAdapter(_localPlayerSetup.EnergyAdapterInstance),
                     _combatBootstrap,
                     _waveBootstrap.UnitPositionQuery);
 
                 // Phase 4: 소환 UI 초기화
-                InitializeSummonSlots(_localPlayerSetup.PlayerId);
+                ValidateAndInitializeSummonSlots(_localPlayerSetup.PlayerId);
             }
         }
 

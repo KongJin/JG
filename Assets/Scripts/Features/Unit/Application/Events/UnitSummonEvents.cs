@@ -1,6 +1,7 @@
 using Features.Unit.Domain;
 using Shared.Kernel;
 using Shared.Math;
+using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Application.Events
 {
@@ -10,10 +11,10 @@ namespace Features.Unit.Application.Events
     public readonly struct UnitSummonRequestedEvent
     {
         public DomainEntityId PlayerId { get; }
-        public Unit UnitSpec { get; }
+        public UnitSpec UnitSpec { get; }
         public Float3 SpawnPosition { get; }
 
-        public UnitSummonRequestedEvent(DomainEntityId playerId, Unit unitSpec, Float3 spawnPosition)
+        public UnitSummonRequestedEvent(DomainEntityId playerId, UnitSpec unitSpec, Float3 spawnPosition)
         {
             PlayerId = playerId;
             UnitSpec = unitSpec;
@@ -28,9 +29,9 @@ namespace Features.Unit.Application.Events
     {
         public DomainEntityId PlayerId { get; }
         public DomainEntityId BattleEntityId { get; }
-        public Unit UnitSpec { get; }
+        public UnitSpec UnitSpec { get; }
 
-        public UnitSummonCompletedEvent(DomainEntityId playerId, DomainEntityId battleEntityId, Unit unitSpec)
+        public UnitSummonCompletedEvent(DomainEntityId playerId, DomainEntityId battleEntityId, UnitSpec unitSpec)
         {
             PlayerId = playerId;
             BattleEntityId = battleEntityId;
@@ -44,10 +45,10 @@ namespace Features.Unit.Application.Events
     public readonly struct UnitSummonFailedEvent
     {
         public DomainEntityId PlayerId { get; }
-        public Unit UnitSpec { get; }
+        public UnitSpec UnitSpec { get; }
         public string Reason { get; }
 
-        public UnitSummonFailedEvent(DomainEntityId playerId, Unit unitSpec, string reason)
+        public UnitSummonFailedEvent(DomainEntityId playerId, UnitSpec unitSpec, string reason)
         {
             PlayerId = playerId;
             UnitSpec = unitSpec;

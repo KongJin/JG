@@ -4,6 +4,7 @@ using Features.Unit.Domain;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Math;
+using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Application
 {
@@ -36,7 +37,7 @@ namespace Features.Unit.Application
         /// <param name="unitSpec">소환할 유닛 스펙</param>
         /// <param name="spawnPosition">배치 위치</param>
         /// <returns>소환 성공 여부</returns>
-        public bool Execute(DomainEntityId playerId, Unit unitSpec, Float3 spawnPosition)
+        public bool Execute(DomainEntityId playerId, UnitSpec unitSpec, Float3 spawnPosition)
         {
             // 1. Energy 차감 시도
             var cost = unitSpec.SummonCost;

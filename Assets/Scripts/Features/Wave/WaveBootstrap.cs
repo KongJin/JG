@@ -126,7 +126,7 @@ namespace Features.Wave
             _hudView.Initialize(eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _hudView));
 
-            _endView.Initialize(eventBus);
+            _endView.Initialize(eventBus, HandleReturnToLobbyRequested);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _endView));
 
             // Wave 승패 → GameEndEvent 변환 발행 (Application layer 책임)
@@ -220,6 +220,14 @@ namespace Features.Wave
                 _hostilePositionQuery,
                 _coreObjectiveQuery
             );
+        }
+
+        private void HandleReturnToLobbyRequested()
+        {
+            if (!PhotonNetwork.InRoom)
+                return;
+
+            PhotonNetwork.LeaveRoom();
         }
 
         private void OnDestroy()

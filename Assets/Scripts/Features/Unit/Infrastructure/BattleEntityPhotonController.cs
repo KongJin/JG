@@ -1,6 +1,6 @@
+using Features.Combat.Application.Events;
 using Features.Unit.Application.Events;
 using Features.Unit.Domain;
-using Features.Unit.Presentation;
 using Photon.Pun;
 using Shared.Attributes;
 using Shared.EventBus;
@@ -17,9 +17,6 @@ namespace Features.Unit.Infrastructure
     public sealed class BattleEntityPhotonController : MonoBehaviourPunCallbacks, IPunObservable
     {
         [Header("References")]
-        [Required, SerializeField] private BattleEntityView _view;
-
-        [Header("Sync Settings")]
         [SerializeField] private float _positionSyncInterval = 0.1f;
         [SerializeField] private float _lerpSpeed = 15f;
 
@@ -73,7 +70,7 @@ namespace Features.Unit.Infrastructure
             if (!photonView.IsMine) return;
             if (!e.TargetId.Equals(_battleEntity.Id)) return;
 
-            _networkCurrentHp = e.RemainingHp;
+            _networkCurrentHp = e.RemainingHealth;
             _isDead = e.IsDead;
 
             // 상태 동기화 (CustomProperties 사용)

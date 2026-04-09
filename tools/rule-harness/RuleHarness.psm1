@@ -3203,9 +3203,19 @@ function Get-RuleHarnessTimeProviderCodeFixOperations {
         [string]$Content
     )
 
-    if ($TargetPath.Replace('\', '/') -notmatch '/Application/' -or $Content -notmatch 'UnityEngine\.Time\.time') {
+    if ($TargetPath.Replace('\', '/') -notmatch '/Application/' -or $Content -notmatch 'UnityEngine\.Time\.[A-Za-z_][A-Za-z0-9_]*') {
         return @()
     }
+
+    $timeExpressions = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+    foreach ($match in @([regex]::Matches($Content, 'UnityEngine\.Time\.(?<member>[A-Za-z_][A-Za-z0-9_]*)'))) {
+        [void]$timeExpressions.Add([string]$match.Value)
+    }
+    $distinctTimeExpressions = @($timeExpressions)
+    if ($distinctTimeExpressions.Count -ne 1) {
+        return @()
+    }
+    $timeExpression = [string]$distinctTimeExpressions[0]
 
     $featureName = Get-RuleHarnessFeatureNameFromPath -RelativePath $TargetPath
     if ([string]::IsNullOrWhiteSpace($featureName)) {
@@ -3277,7 +3287,7 @@ function Get-RuleHarnessTimeProviderCodeFixOperations {
             1)
     }
 
-    $updatedContent = $updatedContent.Replace('UnityEngine.Time.time', '_timeProvider()')
+    $updatedContent = $updatedContent.Replace($timeExpression, '_timeProvider()')
     if ($updatedContent -eq $Content) {
         return @()
     }
@@ -3314,11 +3324,11 @@ function Get-RuleHarnessTimeProviderCodeFixOperations {
 
     $callSiteMatch = $callSiteMatches[0]
     $callArgs = [string]$callSiteMatch.match.Groups['args'].Value
-    if ($callArgs -match 'UnityEngine\.Time\.time' -or $callArgs -match 'timeProvider') {
+    if ($callArgs -match 'UnityEngine\.Time\.[A-Za-z_][A-Za-z0-9_]*' -or $callArgs -match 'timeProvider') {
         return @()
     }
 
-    $newCallArgs = if ([string]::IsNullOrWhiteSpace($callArgs)) { '() => UnityEngine.Time.time' } else { "$callArgs, () => UnityEngine.Time.time" }
+    $newCallArgs = if ([string]::IsNullOrWhiteSpace($callArgs)) { "() => $timeExpression" } else { "$callArgs, () => $timeExpression" }
     $updatedCallSiteContent = $callSiteMatch.content.Substring(0, $callSiteMatch.match.Groups['args'].Index) + $newCallArgs + $callSiteMatch.content.Substring($callSiteMatch.match.Groups['args'].Index + $callSiteMatch.match.Groups['args'].Length)
     if ($updatedCallSiteContent -eq $callSiteMatch.content) {
         return @()

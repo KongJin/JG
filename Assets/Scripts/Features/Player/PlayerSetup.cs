@@ -4,6 +4,7 @@ using Features.Player.Application.Ports;
 using Features.Player.Domain;
 using Features.Player.Infrastructure;
 using Features.Player.Presentation;
+using Features.Status.Infrastructure;
 using Photon.Pun;
 using Shared.Attributes;
 using Shared.EventBus;
@@ -36,6 +37,10 @@ namespace Features.Player
 
         [Required, SerializeField]
         private StatusNetworkAdapter _statusNetworkAdapter;
+
+        [Header("Energy")]
+        [Tooltip("Energy 재생 곡선 설정.")]
+        [SerializeField] private EnergyRegenCurveConfig _regenCurveConfig;
 
         private PlayerUseCases _useCases;
         private PlayerCombatTargetProvider _combatTargetProvider;
@@ -97,7 +102,7 @@ namespace Features.Player
 
             _entityIdHolder.Set(player.Id);
 
-            EnergyAdapterInstance = new EnergyAdapter(player, _networkAdapter, eventBus, Time.time);
+            EnergyAdapterInstance = new EnergyAdapter(player, _networkAdapter, eventBus, _regenCurveConfig.ToCurve(), Time.time);
             EnergyPort = EnergyAdapterInstance;
 
             new PlayerNetworkEventHandler(eventBus, _networkAdapter, playerLookup);

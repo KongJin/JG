@@ -5,6 +5,7 @@ using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Time;
 using System.Collections.Generic;
+using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Application
 {
@@ -34,9 +35,9 @@ namespace Features.Unit.Application
         /// <param name="loadouts">Garage에서 저장한 유닛 편성</param>
         /// <param name="ownerId">소유자 플레이어 ID</param>
         /// <returns>계산된 Unit 스펙 배열 (실패한 항목 제외)</returns>
-        public Unit[] Execute(Garage.Domain.GarageRoster.UnitLoadout[] loadouts, DomainEntityId ownerId)
+        public UnitSpec[] Execute(Garage.Domain.GarageRoster.UnitLoadout[] loadouts, DomainEntityId ownerId)
         {
-            var units = new List<Unit>();
+            var units = new List<UnitSpec>();
 
             foreach (var loadout in loadouts)
             {

@@ -3,6 +3,7 @@ using Features.Skill.Application.Events;
 using Features.Wave.Application.Events;
 using Shared.Analytics;
 using Shared.EventBus;
+using System;
 
 namespace Features.Player.Application
 {
@@ -57,7 +58,6 @@ namespace Features.Player.Application
                 new AnalyticsParams()
                     .Add("result", e.Message)
                     .Add("playtime", playtime)
-                    .Add("is_local_dead", e.IsLocalPlayerDead ? 1 : 0)
                     .Build());
         }
     }

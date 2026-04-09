@@ -1,7 +1,7 @@
 # /agent/architecture.md
 
 이 문서는 **코드 구조·피처 경계·의존 방향·레이어 책임·네이밍·크로스 피처 포트·scene contract 체크리스트**의 단일 근거(SSOT)다.  
-엔트리포인트는 `../CLAUDE.md`이고, 전역 구조 규칙은 여기서만 정의한다. feature-local wiring과 초기화 계약은 별도 README가 아니라 실제 `Setup`/`Bootstrap`, 씬/프리팹 직렬화 참조, 관련 코드 경로에서 드러나야 한다.
+엔트리포인트는 `../CLAUDE.md`이고, 전역 구조 규칙은 여기서만 정의한다. feature-local 계약은 feature root `README.md`에 두되, wiring과 실제 씬/프리팹 사실은 `Setup`/`Bootstrap`, 씬/프리팹 직렬화 참조, 관련 코드 경로에서 드러나야 한다.
 
 시각 요약(Mermaid): [architecture-diagram.md](../docs/design/architecture-diagram.md) — 표·본문은 **이 문서**와 같아야 한다.
 
@@ -17,9 +17,11 @@ Assets/Scripts/Features/<FeatureName>/
   Application/
   Presentation/
   Infrastructure/
+  README.md                  # feature-local contract
   <FeatureName>Setup.cs      # Bootstrap: composition root
   <FeatureName>Bootstrap.cs   # Bootstrap: scene-level wiring
 Assets/Scripts/Shared/
+  README.md                  # shared-local contract
 ```
 
 각 feature는 독립적으로 성장해야 한다.
@@ -32,8 +34,26 @@ Assets/Scripts/Shared/
 * scene-owned feature는 자기 `Setup`/`Bootstrap`, 씬/프리팹 직렬화 참조, 관련 코드에서 scene contract를 드러낸다.
 * networked feature는 명시적 초기화 경로와 late-join 동작을 코드와 전역 규칙으로 추적 가능하게 유지한다.
 * 런타임 fallback 생성으로 누락된 scene/prefab setup을 대체하지 않는다.
+* 각 feature root는 `README.md`를 갖고, 책임/로컬 계약/scene contract entry를 최신 상태로 유지한다.
 
 개념이 독립 생명주기를 얻기 전에는 feature 안에 남긴다.
+
+### Feature-local contract docs
+
+각 feature root `README.md`는 전역 구조를 다시 정의하지 않는다. 대신 아래 로컬 사실만 기록한다.
+
+* feature responsibility
+* root `Setup` / `Bootstrap` entrypoints
+* scene-owned or prefab-owned contract
+* runtime-created objects
+* allowed lookup exceptions
+* cross-feature dependencies actually used
+* late-join / reconnect notes when relevant
+* feature-specific compile hazards
+* same-name type alias policy
+* scene-owned helper type ownership
+
+Shared root `README.md`는 Shared에 둘 수 있는 공통 계약과 금지 대상을 로컬 관점에서 요약한다.
 
 ### Scene contract (code and scene assets)
 
@@ -50,7 +70,7 @@ Every scene-owned feature must make explicit:
 * initialization order
 * late-join / reconnect behavior for networked objects
 
-위 항목을 별도 feature README로 중복 서술하지 않는다. 전역 규칙은 이 문서에만 두고, 로컬 사실은 실제 코드/씬 자산이 보여줘야 한다.
+전역 항목 정의는 이 문서가 소유한다. feature README에는 자기 피처가 어떤 GameObject, serialized reference, runtime object를 요구하는지만 기록한다.
 
 ---
 
@@ -77,6 +97,7 @@ Rules:
 
 * Cross-feature dependency is allowed as long as **layer direction** is respected (same-or-inner layer only).
 * Wiring/composition across a feature's layers must live in that feature's Setup/Bootstrap class.
+* Feature 이름과 같은 short type name (`Unit`, `Player`, `Wave` 등)을 같은 feature 내부에서 타입으로 참조할 때는 alias 또는 fully-qualified name을 사용한다.
 
 Keep concepts inside a feature unless they have an independent lifecycle (e.g. Room in Lobby until Room needs its own lifecycle).
 
@@ -96,7 +117,10 @@ GameSceneRoot
 
 * Features do **not** create their own EventBus.
 * Different scene ⇒ different EventBus (Lobby vs Game).
-* `IEventPublisher` / `IEventSubscriber` split only if a real need appears; `IEventBus` is enough for now.
+* Scene root는 보통 `EventBus` 구현체 하나를 생성하고, 필요한 곳에 `IEventPublisher` / `IEventSubscriber` 또는 `EventBus`를 명시적으로 주입한다.
+* concrete type을 직접 받는 권한은 기본적으로 Bootstrap / composition root에만 있다.
+* Application / Presentation / Infrastructure는 기본적으로 필요한 최소 계약만 받는다.
+* Shared 계약명은 실제 선언된 인터페이스/클래스만 사용한다. 존재하지 않는 `IEventBus` 같은 phantom type을 새로 가정하지 않는다.
 
 ---
 
@@ -160,7 +184,8 @@ Allowed: UseCase classes, repository interfaces, network port interfaces, domain
 
 Not allowed: Unity API (including `UnityEngine.Debug.Log*`), Photon API, `MonoBehaviour`, direct file IO.
 
-Rules: UseCases stay thin; business rules stay in Domain; UseCases publish via `IEventBus` — they do not call View directly.
+Rules: UseCases stay thin; business rules stay in Domain; UseCases publish via `IEventPublisher` or `EventBus` — they do not call View directly.
+Rules: Application은 실제 존재하는 계약 타입만 사용한다. Unity/Shared 타입 이동 후 namespace drift가 생기지 않도록 필요한 `using` 또는 fully-qualified name을 명시한다.
 
 ### Presentation
 
@@ -168,7 +193,8 @@ User interaction and UI.
 
 Allowed: View (`MonoBehaviour`), `InputHandler`.
 
-Rules: No business logic; View subscribes to `IEventBus` and renders; `InputHandler` calls UseCases directly.
+Rules: No business logic; View subscribes via `IEventSubscriber` or `EventBus` and renders; `InputHandler` calls UseCases directly.
+Rules: `PlacementArea` 같은 scene-owned placement contract와 Unity 의존 helper는 Presentation 또는 scene-owned contract에 둔다. Domain에 두지 않는다.
 
 ### Infrastructure
 
@@ -195,10 +221,28 @@ Rules: No business or rendering logic; **one** Setup or Bootstrap class at featu
 * **NetworkEventHandler:** `LobbyNetworkEventHandler`, `PlayerNetworkEventHandler`
 * **Port interface:** `ILobbyRepository`, `IPlayerNetworkCommandPort` — use clear feature context, avoid overly generic names
 * **Event:** past tense + `Event` — `LobbyUpdatedEvent`, `GameStartedEvent`
-* **EventBus:** `IEventBus`, `EventBus` in `Shared/EventBus/`
+* **EventBus:** `IEventPublisher`, `IEventSubscriber`, `EventBus` in `Shared/EventBus/`
 * **Adapter:** `LobbyPhotonAdapter`, `ClockAdapter`
 * **View:** `LobbyView`, `RoomListView`
 * **InputHandler:** `LobbyInputHandler`
+
+### Type naming safety
+
+feature 이름이 namespace와 type short name을 동시에 차지하는 경우가 있다.
+
+예:
+
+* `Features.Unit` namespace
+* `Features.Unit.Domain.Unit` type
+
+이 경우 아래를 따른다.
+
+* same feature 안에서는 `Unit`, `Player`, `Wave` 같은 이름을 bare identifier로 타입처럼 쓰지 않는다.
+* alias를 필수 기본값으로 본다.
+* 예: `using UnitSpec = Features.Unit.Domain.Unit;`
+* alias가 없으면 fully-qualified name을 쓴다.
+
+이 규칙은 compile-clean을 위한 구조 규칙이며, `validation_gates.md`의 `compile-clean` 정의와 함께 해석한다.
 
 ---
 

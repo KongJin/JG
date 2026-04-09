@@ -33,9 +33,17 @@
 * Unity types in Application — do not put Sprite, GameObject, AudioClip, Color, Debug.Log/LogWarning/LogError, or any UnityEngine API in Application-layer events, ports, or use cases. If a port needs Unity types, it belongs in Presentation, not Application/Ports. Logging belongs in Bootstrap/Infrastructure.
 * Single-reference private function — 호출 지점이 하나뿐인 private 메서드는 추출하지 않는다. 호출부에 직접 인라인한다. 읽는 사람이 한 함수 안에서 흐름을 따라갈 수 있어야 한다. 예외: (1) 콜백/이벤트 핸들러로 등록되는 함수, (2) 두 곳 이상에서 호출되는 함수.
 * Type naming collision — one feature 안에서 같은 short type name의 `MonoBehaviour`를 두 개 만들지 않는다. Presentation 컴포넌트 이름도 feature 전체에서 유일해야 한다.
+* Feature short-type shadowing — feature namespace 이름과 같은 short type (`Unit`, `Player`, `Wave` 등)을 bare identifier로 사용해 namespace/type 충돌을 유발하지 않는다. alias 또는 fully-qualified name을 사용한다.
 * Static event discipline — static event는 엔진/네트워크 콜백을 Application or Bootstrap으로 bridge할 때만 예외적으로 허용한다. gameplay event bus 대체제로 사용하지 않는다. 사용 시 `OnDestroy` 해제와 README 명시는 필수다.
 * Runtime UI creation in production — 운영용 UI는 scene-owned 또는 prefab-owned이어야 한다. runtime UI 생성은 debug tooling 또는 일시적 migration에서만 허용한다.
 * Silent fallback in exhaustive switch — enum을 switch로 분기할 때, default에서 fallback 값을 반환하지 않는다. 새 enum 값 추가 시 컴파일러가 경고하지 않으므로, default는 `throw new ArgumentOutOfRangeException()`으로 즉시 실패시킨다. `Debug.LogError` + fallback 반환은 문제를 숨긴다. (실제 사례: SkillData.CreateDelivery에서 default가 SelfDelivery를 반환하여 새 DeliveryType 추가 시 silent corruption 가능성이 있었음)
+* Phantom shared contract names — Shared에 실제 선언되지 않은 계약 이름을 가정해서 쓰지 않는다. 예: `IEventBus`를 실제 선언 없이 새 공용 계약처럼 사용하는 것 금지. Shared 계약은 실제 선언 파일을 기준으로 참조한다.
+* Missing import after symbol move — `RequiredAttribute`, `GarageRoster`, `StatusNetworkAdapter`, `Func<>` 같이 자주 이동하거나 namespace가 분명한 심볼은 사용 시 필요한 `using` 또는 fully-qualified name을 명시한다. IDE가 알아서 잡아줄 것이라 가정하지 않는다.
+* Event contract drift — 이벤트 producer/consumer/bridge가 서로 다른 필드 집합을 가정하는 상태를 허용하지 않는다. 이벤트 payload 변경 시 producer, consumer, bridge를 함께 검토한다. 예: `GameEndEvent`에 없는 `IsLocalPlayerDead`를 consumer가 계속 참조하는 상태.
+* Concrete/interface drift — 한쪽은 interface, 한쪽은 concrete 구현체를 요구해 wiring이 깨지는 상태를 허용하지 않는다. Bootstrap만 concrete를 직접 조립하고, 그 밖의 레이어는 최소 계약을 받는다. 예: `EventBus` / `IEventPublisher` 가정이 엇갈려 `SummonPhotonAdapter` wiring이 깨지는 상태.
+* Scene-owned helper in Domain — `PlacementArea`처럼 Unity 의존 scene helper, 입력 판정 helper, 시각화 보조 타입을 Domain에 두지 않는다. 이런 타입은 Presentation 또는 scene-owned contract 쪽에 둔다.
+* Subscription return value assumption — `Subscribe()`의 반환형을 임의로 `IDisposable`처럼 취급하지 않는다. EventBus ownership 해제는 `EventBusSubscription.ForOwner(...)` 또는 명시적 cleanup으로 처리한다.
+* Stale symbol after refactor — 리팩터링 전 필드/메서드/타입명을 계속 참조하는 상태를 허용하지 않는다. 예: 이동된 타입, 삭제된 이벤트 필드, 바뀐 adapter 이름을 그대로 쓰는 상태.
 
 ---
 
@@ -145,6 +153,13 @@ Pure C# adapters are preferred when possible.
 **Rule:** Scene-owned features must keep their scene contract explicit in `Setup`/`Bootstrap`, serialized scene/prefab references, and related code paths.
 
 The required scene-contract checklist is owned by `architecture.md`. Do not redefine that checklist differently in local docs; keep the actual code/scene wiring current and point back to the architecture rule when needed.
+
+### 8. Compile-clean gate
+**Rule:** 정적 아키텍처 규칙을 통과해도 Unity compile error가 있으면 `clean`이 아니다.
+
+* 하네스 또는 사람이 `resolved`를 선언하기 전에 compile 상태를 확인한다.
+* namespace drift, missing using, phantom contract, short-type shadowing, event contract drift, concrete/interface drift, scene-owned helper placement drift는 모두 compile-clean을 깨는 구조 문제로 본다.
+* `validation_gates.md`의 `compile-clean` 정의를 함께 따른다.
 
 ---
 

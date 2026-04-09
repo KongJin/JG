@@ -1,5 +1,6 @@
 using Features.Combat;
 using Features.Unit.Application;
+using Features.Unit.Application.Ports;
 using Features.Unit.Infrastructure;
 using Features.Wave.Infrastructure;
 using Shared.EventBus;

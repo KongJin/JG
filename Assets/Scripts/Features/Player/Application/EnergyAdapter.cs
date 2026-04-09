@@ -13,23 +13,32 @@ namespace Features.Player.Application
         private readonly Domain.Player _player;
         private readonly IPlayerNetworkCommandPort _network;
         private readonly IEventPublisher _publisher;
+        private readonly EnergyRegenCurve _regenCurve;
+        private readonly float _gameStartTime;
 
         private float _lastSyncTime;
         private const float SyncInterval = 0.25f;
-
-        // Energy 재생 곡선 관련 (시간에 따라 증가)
-        private float _baseRegenRate = 5f; // 초당 기본 재생
-        private float _gameStartTime;
 
         public EnergyAdapter(
             Domain.Player player,
             IPlayerNetworkCommandPort network,
             IEventPublisher publisher,
+            EnergyRegenCurve regenCurve)
+            : this(player, network, publisher, regenCurve, 0f)
+        {
+        }
+
+        public EnergyAdapter(
+            Domain.Player player,
+            IPlayerNetworkCommandPort network,
+            IEventPublisher publisher,
+            EnergyRegenCurve regenCurve,
             float gameStartTime)
         {
             _player = player;
             _network = network;
             _publisher = publisher;
+            _regenCurve = regenCurve;
             _gameStartTime = gameStartTime;
         }
 
@@ -51,7 +60,8 @@ namespace Features.Player.Application
         public void TickRegen(float deltaTime, float currentTime)
         {
             var prevEnergy = _player.CurrentEnergy;
-            var regenRate = GetRegenRate(currentTime);
+            var elapsed = currentTime - _gameStartTime;
+            var regenRate = _regenCurve.GetRegenRate(elapsed);
             _player.RegenEnergy(deltaTime, regenRate);
 
             if (_player.CurrentEnergy == prevEnergy)
@@ -64,18 +74,6 @@ namespace Features.Player.Application
                 _lastSyncTime = currentTime;
                 _network.SyncEnergy(_player.Id, _player.CurrentEnergy, _player.MaxEnergy);
             }
-        }
-
-        /// <summary>
-        /// 게임 경과 시간에 따라 증가하는 Energy 재생률 계산.
-        /// </summary>
-        private float GetRegenRate(float currentTime)
-        {
-            var elapsed = currentTime - _gameStartTime;
-            // 단순 선형 증가: 초당 0.1씩 증가 (최대 2배)
-            // 예: 0초 = 5/s, 50초 = 10/s
-            var scalingFactor = 1f + (elapsed / 100f); // 100초에 2배
-            return _baseRegenRate * scalingFactor;
         }
 
         private void PublishEnergyChanged()

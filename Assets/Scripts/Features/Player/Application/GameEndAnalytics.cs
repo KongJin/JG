@@ -45,7 +45,7 @@ namespace Features.Player.Application
 
         private void OnGameEnd(GameEndEvent e)
         {
-            var playTime = _playTimer.Elapsed.TotalSeconds;
+            var playTime = (float)_playTimer.Elapsed.TotalSeconds;
             var finalPlayTime = e.PlayTimeSeconds > 0f ? e.PlayTimeSeconds : playTime;
 
             _publisher.Publish(new GameEndReportRequestedEvent(

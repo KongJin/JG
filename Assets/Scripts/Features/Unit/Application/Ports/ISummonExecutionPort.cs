@@ -1,6 +1,7 @@
 using Features.Unit.Domain;
 using Shared.Kernel;
 using Shared.Math;
+using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Application.Ports
 {
@@ -10,6 +11,6 @@ namespace Features.Unit.Application.Ports
     /// </summary>
     public interface ISummonExecutionPort
     {
-        DomainEntityId SpawnBattleEntity(Unit unitSpec, Float3 spawnPosition, DomainEntityId ownerId);
+        DomainEntityId SpawnBattleEntity(UnitSpec unitSpec, Float3 spawnPosition, DomainEntityId ownerId);
     }
 }

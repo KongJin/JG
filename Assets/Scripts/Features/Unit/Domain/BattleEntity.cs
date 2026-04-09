@@ -54,7 +54,7 @@ namespace Features.Unit.Domain
         public void MoveTo(Float3 newPosition)
         {
             // 앵커 반경 제한 확인
-            var distance = Float3.Distance(Position, newPosition);
+            var distance = (newPosition - Position).Magnitude;
             if (distance > UnitSpec.FinalAnchorRange)
             {
                 // 앵커 반경 밖으로 이동 불가
