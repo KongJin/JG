@@ -24,12 +24,13 @@ namespace Features.Player.Application
         public EnergyAdapter(
             Domain.Player player,
             IPlayerNetworkCommandPort network,
-            IEventPublisher publisher)
+            IEventPublisher publisher,
+            float gameStartTime)
         {
             _player = player;
             _network = network;
             _publisher = publisher;
-            _gameStartTime = UnityEngine.Time.time;
+            _gameStartTime = gameStartTime;
         }
 
         public bool TrySpendEnergy(DomainEntityId ownerId, float cost)

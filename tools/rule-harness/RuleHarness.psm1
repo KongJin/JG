@@ -636,6 +636,44 @@ function Get-RuleHarnessLineSnippet {
     return $Lines[$index]
 }
 
+function Test-RuleHarnessCommentOnlyLine {
+    param(
+        [AllowEmptyString()]
+        [string]$Line
+    )
+
+    [string]$Line -match '^\s*(//|///|/\*|\*|\*/)'
+}
+
+function Find-RuleHarnessPatternEvidence {
+    param(
+        [Parameter(Mandatory)]
+        [AllowEmptyString()]
+        [string[]]$Lines,
+        [Parameter(Mandatory)]
+        [string[]]$Patterns
+    )
+
+    for ($i = 0; $i -lt $Lines.Count; $i++) {
+        $line = [string]$Lines[$i]
+        if (Test-RuleHarnessCommentOnlyLine -Line $line) {
+            continue
+        }
+
+        foreach ($pattern in @($Patterns)) {
+            if ($line -match $pattern) {
+                return [pscustomobject]@{
+                    line    = ($i + 1)
+                    snippet = $line
+                    pattern = $pattern
+                }
+            }
+        }
+    }
+
+    return $null
+}
+
 function Get-RuleHarnessFindingKey {
     param(
         [Parameter(Mandatory)]
@@ -810,6 +848,788 @@ function Save-RuleHarnessHistoryState {
     }
 
     Set-Content -Path $HistoryState.path -Value ($payload | ConvertTo-Json -Depth 20) -Encoding UTF8
+}
+
+function Get-RuleHarnessFeatureScanStatePath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $relativePath = if ($Config.PSObject.Properties.Name -contains 'state' -and $Config.state.PSObject.Properties.Name -contains 'featureScanStatePath') {
+        [string]$Config.state.featureScanStatePath
+    }
+    else {
+        'Temp/RuleHarnessState/feature-scan-state.json'
+    }
+
+    [pscustomobject]@{
+        relativePath = $relativePath.Replace('\', '/')
+        fullPath     = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $relativePath))
+    }
+}
+
+function Read-RuleHarnessFeatureScanState {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $pathInfo = Get-RuleHarnessFeatureScanStatePath -RepoRoot $RepoRoot -Config $Config
+    $entries = @{}
+    if (Test-Path -LiteralPath $pathInfo.fullPath) {
+        try {
+            $raw = Get-Content -Path $pathInfo.fullPath -Raw | ConvertFrom-Json
+            foreach ($entry in @($raw.entries)) {
+                if ($null -eq $entry -or [string]::IsNullOrWhiteSpace([string]$entry.scopeId)) {
+                    continue
+                }
+
+                $entries[[string]$entry.scopeId] = $entry
+            }
+        }
+        catch {
+            $entries = @{}
+        }
+    }
+
+    [pscustomobject]@{
+        path         = $pathInfo.fullPath
+        relativePath = $pathInfo.relativePath
+        entries      = $entries
+    }
+}
+
+function Save-RuleHarnessFeatureScanState {
+    param(
+        [Parameter(Mandatory)]
+        [object]$FeatureScanState
+    )
+
+    $parent = Split-Path -Parent $FeatureScanState.path
+    if (-not (Test-Path -LiteralPath $parent)) {
+        New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    }
+
+    $payload = [pscustomobject]@{
+        schemaVersion = 1
+        entries       = @($FeatureScanState.entries.Values | Sort-Object {
+            $entry = $_
+            if ($null -eq $entry -or [string]::IsNullOrWhiteSpace([string]$entry.lastCheckedAtUtc)) {
+                return '0000-00-00T00:00:00.0000000+00:00'
+            }
+
+            [string]$entry.lastCheckedAtUtc
+        }, scopeId)
+    }
+    $payload | ConvertTo-Json -Depth 20 | Set-Content -Path $FeatureScanState.path -Encoding UTF8
+}
+
+function Set-RuleHarnessFeatureScanEntry {
+    param(
+        [Parameter(Mandatory)]
+        [object]$FeatureScanState,
+        [Parameter(Mandatory)]
+        [string]$ScopeId,
+        [Parameter(Mandatory)]
+        [string]$LastResult,
+        [string]$LastFindingSeverity,
+        [string]$LastRunId,
+        [string]$LastCommitSha,
+        [string]$LastStoppedReason
+    )
+
+    $FeatureScanState.entries[$ScopeId] = [pscustomobject]@{
+        scopeId             = $ScopeId
+        lastCheckedAtUtc    = [DateTimeOffset]::UtcNow.ToString('o')
+        lastResult          = $LastResult
+        lastFindingSeverity = if ([string]::IsNullOrWhiteSpace($LastFindingSeverity)) { $null } else { $LastFindingSeverity }
+        lastRunId           = if ([string]::IsNullOrWhiteSpace($LastRunId)) { $null } else { $LastRunId }
+        lastCommitSha       = if ([string]::IsNullOrWhiteSpace($LastCommitSha)) { $null } else { $LastCommitSha }
+        lastStoppedReason   = if ([string]::IsNullOrWhiteSpace($LastStoppedReason)) { $null } else { $LastStoppedReason }
+    }
+}
+
+function Get-RuleHarnessOrderedFeatureScopes {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $featureScanState = Read-RuleHarnessFeatureScanState -RepoRoot $RepoRoot -Config $Config
+    $scopes = [System.Collections.Generic.List[object]]::new()
+    foreach ($feature in @(Get-RuleHarnessFeatureDirectories -RepoRoot $RepoRoot)) {
+        $scopeId = [string]$feature.Name
+        $stateEntry = if ($featureScanState.entries.ContainsKey($scopeId)) { $featureScanState.entries[$scopeId] } else { $null }
+        [void]$scopes.Add([pscustomobject]@{
+            scopeId          = $scopeId
+            featurePath      = ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $feature.FullName
+            lastCheckedAtUtc = if ($null -ne $stateEntry -and $stateEntry.PSObject.Properties.Name -contains 'lastCheckedAtUtc') { [string]$stateEntry.lastCheckedAtUtc } else { $null }
+        })
+    }
+
+    @($scopes | Sort-Object `
+        @{ Expression = { if ([string]::IsNullOrWhiteSpace([string]$_.lastCheckedAtUtc)) { 0 } else { 1 } } }, `
+        @{ Expression = { if ([string]::IsNullOrWhiteSpace([string]$_.lastCheckedAtUtc)) { '0000-00-00T00:00:00.0000000+00:00' } else { [string]$_.lastCheckedAtUtc } } }, `
+        @{ Expression = { [string]$_.scopeId } })
+}
+
+function Get-RuleHarnessDocProposalBacklogPath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $relativePath = if ($Config.PSObject.Properties.Name -contains 'state' -and $Config.state.PSObject.Properties.Name -contains 'docProposalBacklogPath') {
+        [string]$Config.state.docProposalBacklogPath
+    }
+    else {
+        'Temp/RuleHarnessState/doc-proposals.json'
+    }
+
+    [pscustomobject]@{
+        relativePath = $relativePath.Replace('\', '/')
+        fullPath     = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $relativePath))
+    }
+}
+
+function Read-RuleHarnessDocProposalBacklog {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $pathInfo = Get-RuleHarnessDocProposalBacklogPath -RepoRoot $RepoRoot -Config $Config
+    $entries = [System.Collections.Generic.List[object]]::new()
+    if (Test-Path -LiteralPath $pathInfo.fullPath) {
+        try {
+            $raw = Get-Content -Path $pathInfo.fullPath -Raw | ConvertFrom-Json
+            $mergedEntries = @{}
+            foreach ($rawEntry in @($raw.entries)) {
+                $entry = ConvertTo-RuleHarnessDocProposalBacklogEntry -Entry $rawEntry
+                if ($null -eq $entry) {
+                    continue
+                }
+
+                if ($mergedEntries.ContainsKey([string]$entry.signature)) {
+                    $mergedEntries[[string]$entry.signature] = Merge-RuleHarnessDocProposalBacklogEntry `
+                        -ExistingEntry $mergedEntries[[string]$entry.signature] `
+                        -IncomingEntry $entry
+                    continue
+                }
+
+                $mergedEntries[[string]$entry.signature] = $entry
+            }
+
+            foreach ($entry in @($mergedEntries.Values)) {
+                [void]$entries.Add($entry)
+            }
+        }
+        catch {
+            $entries = [System.Collections.Generic.List[object]]::new()
+        }
+    }
+
+    [pscustomobject]@{
+        path         = $pathInfo.fullPath
+        relativePath = $pathInfo.relativePath
+        entries      = $entries
+        dirty        = $false
+    }
+}
+
+function Save-RuleHarnessDocProposalBacklog {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Backlog
+    )
+
+    $parent = Split-Path -Parent $Backlog.path
+    if (-not (Test-Path -LiteralPath $parent)) {
+        New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    }
+
+    $payload = [pscustomobject]@{
+        schemaVersion = 1
+        entries       = @($Backlog.entries | Sort-Object signature, targetDoc, primaryEvidencePath)
+    }
+    $payload | ConvertTo-Json -Depth 30 | Set-Content -Path $Backlog.path -Encoding UTF8
+    $Backlog.dirty = $false
+}
+
+function Get-RuleHarnessFindingSeverityRank {
+    param(
+        [string]$Severity
+    )
+
+    switch ([string]$Severity) {
+        'high' { return 3 }
+        'medium' { return 2 }
+        'low' { return 1 }
+        default { return 0 }
+    }
+}
+
+function Get-RuleHarnessHighestSeverity {
+    param(
+        [AllowEmptyCollection()]
+        [object[]]$Findings
+    )
+
+    $highest = $null
+    $rank = -1
+    foreach ($finding in @($Findings)) {
+        $currentRank = Get-RuleHarnessFindingSeverityRank -Severity ([string]$finding.severity)
+        if ($currentRank -gt $rank) {
+            $rank = $currentRank
+            $highest = [string]$finding.severity
+        }
+    }
+
+    $highest
+}
+
+function Get-RuleHarnessRelatedPathsForFinding {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding
+    )
+
+    $paths = [System.Collections.Generic.List[string]]::new()
+    if (-not [string]::IsNullOrWhiteSpace([string]$Finding.ownerDoc)) {
+        [void]$paths.Add([string]$Finding.ownerDoc)
+    }
+    foreach ($evidence in @($Finding.evidence)) {
+        if ($null -ne $evidence -and -not [string]::IsNullOrWhiteSpace([string]$evidence.path)) {
+            [void]$paths.Add([string]$evidence.path)
+        }
+    }
+
+    @($paths | Select-Object -Unique)
+}
+
+function Test-RuleHarnessFindingMatchesScope {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding,
+        [Parameter(Mandatory)]
+        [string]$ScopeId
+    )
+
+    $scopePrefix = "Assets/Scripts/Features/$ScopeId/"
+    foreach ($evidence in @($Finding.evidence)) {
+        $path = [string]$evidence.path
+        if ($path -like "$scopePrefix*" -or $path -eq "Assets/Scripts/Features/$ScopeId") {
+            return $true
+        }
+    }
+
+    if ([string]$Finding.message -match ("Feature '{0}'" -f [regex]::Escape($ScopeId))) {
+        return $true
+    }
+
+    return $false
+}
+
+function ConvertTo-RuleHarnessEvidenceObjects {
+    param(
+        [AllowEmptyCollection()]
+        [object[]]$Evidence
+    )
+
+    @($Evidence | ForEach-Object {
+        if ($null -eq $_) {
+            return
+        }
+
+        [pscustomobject]@{
+            path    = if ([string]::IsNullOrWhiteSpace([string]$_.path)) { $null } else { ([string]$_.path).Replace('\', '/') }
+            line    = if ($null -eq $_.line) { $null } else { [int]$_.line }
+            snippet = [string]$_.snippet
+        }
+    })
+}
+
+function Get-RuleHarnessFindingPrimaryEvidencePath {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding
+    )
+
+    foreach ($evidence in @(ConvertTo-RuleHarnessEvidenceObjects -Evidence @($Finding.evidence))) {
+        if (-not [string]::IsNullOrWhiteSpace([string]$evidence.path)) {
+            return [string]$evidence.path
+        }
+    }
+
+    return $null
+}
+
+function Get-RuleHarnessFindingFamily {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding
+    )
+
+    $findingType = [string]$Finding.findingType
+    $title = [string]$Finding.title
+    if ([string]::IsNullOrWhiteSpace($title) -and $Finding.PSObject.Properties.Name -contains 'summary') {
+        $title = [string]$Finding.summary
+    }
+
+    $message = [string]$Finding.message
+    if ([string]::IsNullOrWhiteSpace($message) -and $Finding.PSObject.Properties.Name -contains 'details') {
+        $message = [string]$Finding.details
+    }
+
+    $primaryPath = [string](Get-RuleHarnessFindingPrimaryEvidencePath -Finding $Finding)
+    switch ($findingType) {
+        'code_violation' {
+            if ($title -match 'Domain' -or $message -match 'Domain layer' -or $primaryPath -match '/Domain/') {
+                return 'code_violation/domain_framework_api'
+            }
+
+            if ($title -match 'Application' -or $message -match 'Application layer' -or $primaryPath -match '/Application/') {
+                return 'code_violation/application_unity_api'
+            }
+
+            return 'code_violation/generic'
+        }
+        'missing_rule' {
+            if ($title -match 'bootstrap|setup' -or $message -match 'bootstrap|setup') {
+                return 'missing_rule/feature_bootstrap_root'
+            }
+
+            return 'missing_rule/generic'
+        }
+        'broken_reference' {
+            if ($title -match 'reference|document' -or $message -match 'reference|document|SSOT') {
+                return 'broken_reference/markdown_target'
+            }
+
+            return 'broken_reference/generic'
+        }
+        'doc_drift' {
+            return 'doc_drift/generic'
+        }
+        default {
+            if ([string]::IsNullOrWhiteSpace($findingType)) {
+                return 'unknown/generic'
+            }
+
+            return ("{0}/generic" -f $findingType)
+        }
+    }
+}
+
+function Get-RuleHarnessFindingSignature {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding
+    )
+
+    $ownerDoc = [string]$Finding.ownerDoc
+    if ($Finding.PSObject.Properties.Name -contains 'targetDoc' -and [string]::IsNullOrWhiteSpace($ownerDoc)) {
+        $ownerDoc = [string]$Finding.targetDoc
+    }
+
+    $ownerDoc = if ([string]::IsNullOrWhiteSpace($ownerDoc)) { '<no-owner-doc>' } else { $ownerDoc.Replace('\', '/').Trim() }
+    $family = Get-RuleHarnessFindingFamily -Finding $Finding
+    $primaryPath = Get-RuleHarnessFindingPrimaryEvidencePath -Finding $Finding
+    $primaryPath = if ([string]::IsNullOrWhiteSpace($primaryPath)) { '<no-evidence-path>' } else { $primaryPath.Trim() }
+    ('{0}|{1}|{2}' -f $ownerDoc, $family, $primaryPath).ToLowerInvariant()
+}
+
+function Get-RuleHarnessProposalStatus {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Entry
+    )
+
+    $status = if ($Entry.PSObject.Properties.Name -contains 'status') { [string]$Entry.status } else { $null }
+    if ([string]::IsNullOrWhiteSpace($status)) {
+        return 'active'
+    }
+
+    $status
+}
+
+function ConvertTo-RuleHarnessDocProposalBacklogEntry {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Entry
+    )
+
+    $targetDoc = [string]$Entry.targetDoc
+    if ([string]::IsNullOrWhiteSpace($targetDoc)) {
+        return $null
+    }
+
+    $summary = [string]$Entry.summary
+    $details = if ($Entry.PSObject.Properties.Name -contains 'details') { [string]$Entry.details } else { [string]$Entry.message }
+    $evidence = ConvertTo-RuleHarnessEvidenceObjects -Evidence @($Entry.evidence)
+    $activeEvidence = if ($Entry.PSObject.Properties.Name -contains 'activeEvidence' -and $null -ne $Entry.activeEvidence) {
+        ConvertTo-RuleHarnessEvidenceObjects -Evidence @($Entry.activeEvidence)
+    }
+    else {
+        @($evidence | Select-Object -First 3)
+    }
+
+    $findingLike = [pscustomobject]@{
+        findingType = if ($Entry.PSObject.Properties.Name -contains 'findingType') { [string]$Entry.findingType } else { $null }
+        ownerDoc    = $targetDoc
+        targetDoc   = $targetDoc
+        title       = $summary
+        summary     = $summary
+        message     = $details
+        details     = $details
+        evidence    = $evidence
+    }
+
+    $status = Get-RuleHarnessProposalStatus -Entry $Entry
+    $findingFamily = if ($Entry.PSObject.Properties.Name -contains 'findingFamily' -and -not [string]::IsNullOrWhiteSpace([string]$Entry.findingFamily)) {
+        [string]$Entry.findingFamily
+    }
+    else {
+        Get-RuleHarnessFindingFamily -Finding $findingLike
+    }
+    $primaryEvidencePath = if ($Entry.PSObject.Properties.Name -contains 'primaryEvidencePath' -and -not [string]::IsNullOrWhiteSpace([string]$Entry.primaryEvidencePath)) {
+        ([string]$Entry.primaryEvidencePath).Replace('\', '/')
+    }
+    else {
+        Get-RuleHarnessFindingPrimaryEvidencePath -Finding $findingLike
+    }
+    $signature = if ($Entry.PSObject.Properties.Name -contains 'signature' -and -not [string]::IsNullOrWhiteSpace([string]$Entry.signature)) {
+        [string]$Entry.signature
+    }
+    else {
+        Get-RuleHarnessFindingSignature -Finding $findingLike
+    }
+
+    $scopeId = if ($Entry.PSObject.Properties.Name -contains 'scopeId') { [string]$Entry.scopeId } else { $null }
+    $activeScopeId = if ($Entry.PSObject.Properties.Name -contains 'activeScopeId' -and -not [string]::IsNullOrWhiteSpace([string]$Entry.activeScopeId)) {
+        [string]$Entry.activeScopeId
+    }
+    else {
+        $scopeId
+    }
+    $firstSeenUtc = if ($Entry.PSObject.Properties.Name -contains 'firstSeenUtc' -and -not [string]::IsNullOrWhiteSpace([string]$Entry.firstSeenUtc)) {
+        [string]$Entry.firstSeenUtc
+    }
+    elseif ($Entry.PSObject.Properties.Name -contains 'lastSeenUtc' -and -not [string]::IsNullOrWhiteSpace([string]$Entry.lastSeenUtc)) {
+        [string]$Entry.lastSeenUtc
+    }
+    else {
+        [DateTimeOffset]::UtcNow.ToString('o')
+    }
+    $lastActiveSeenUtc = if ($Entry.PSObject.Properties.Name -contains 'lastActiveSeenUtc' -and -not [string]::IsNullOrWhiteSpace([string]$Entry.lastActiveSeenUtc)) {
+        [string]$Entry.lastActiveSeenUtc
+    }
+    elseif ($Entry.PSObject.Properties.Name -contains 'lastSeenUtc' -and -not [string]::IsNullOrWhiteSpace([string]$Entry.lastSeenUtc)) {
+        [string]$Entry.lastSeenUtc
+    }
+    else {
+        $firstSeenUtc
+    }
+
+    [pscustomobject]@{
+        targetDoc          = $targetDoc
+        findingFamily      = $findingFamily
+        primaryEvidencePath = $primaryEvidencePath
+        signature          = $signature
+        status             = $status
+        firstSeenUtc       = $firstSeenUtc
+        lastActiveSeenUtc  = $lastActiveSeenUtc
+        resolvedAtUtc      = if ($Entry.PSObject.Properties.Name -contains 'resolvedAtUtc' -and -not [string]::IsNullOrWhiteSpace([string]$Entry.resolvedAtUtc)) { [string]$Entry.resolvedAtUtc } else { $null }
+        activeScopeId      = if ($status -eq 'active' -and -not [string]::IsNullOrWhiteSpace($activeScopeId)) { $activeScopeId } else { $null }
+        activeEvidence     = if ($status -eq 'active') { @($activeEvidence | Select-Object -First 3) } else { @() }
+        scopeId            = $scopeId
+        normalizedSummary  = if ($Entry.PSObject.Properties.Name -contains 'normalizedSummary' -and -not [string]::IsNullOrWhiteSpace([string]$Entry.normalizedSummary)) { [string]$Entry.normalizedSummary } else { $summary.Trim().ToLowerInvariant() }
+        summary            = $summary
+        details            = $details
+        suggestion         = [string]$Entry.suggestion
+        hitCount           = if ($Entry.PSObject.Properties.Name -contains 'hitCount') { [int]$Entry.hitCount } else { 1 }
+        lastSeenUtc        = if ($Entry.PSObject.Properties.Name -contains 'lastSeenUtc' -and -not [string]::IsNullOrWhiteSpace([string]$Entry.lastSeenUtc)) { [string]$Entry.lastSeenUtc } else { $lastActiveSeenUtc }
+        lastRunId          = if ($Entry.PSObject.Properties.Name -contains 'lastRunId') { [string]$Entry.lastRunId } else { $null }
+        severity           = if ($Entry.PSObject.Properties.Name -contains 'severity') { [string]$Entry.severity } else { $null }
+        relatedPaths       = @($Entry.relatedPaths | ForEach-Object { [string]$_ } | Select-Object -Unique)
+        evidence           = @($evidence | Select-Object -First 3)
+    }
+}
+
+function Merge-RuleHarnessDocProposalBacklogEntry {
+    param(
+        [Parameter(Mandatory)]
+        [object]$ExistingEntry,
+        [Parameter(Mandatory)]
+        [object]$IncomingEntry
+    )
+
+    $existingActive = ([string]$ExistingEntry.status -eq 'active')
+    $incomingActive = ([string]$IncomingEntry.status -eq 'active')
+    $winner = $ExistingEntry
+    if ([string]$IncomingEntry.lastSeenUtc -gt [string]$ExistingEntry.lastSeenUtc) {
+        $winner = $IncomingEntry
+    }
+
+    [pscustomobject]@{
+        targetDoc           = [string]$winner.targetDoc
+        findingFamily       = [string]$winner.findingFamily
+        primaryEvidencePath = [string]$winner.primaryEvidencePath
+        signature           = [string]$winner.signature
+        status              = if ($existingActive -or $incomingActive) { 'active' } else { 'resolved' }
+        firstSeenUtc        = @([string]$ExistingEntry.firstSeenUtc, [string]$IncomingEntry.firstSeenUtc | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object | Select-Object -First 1)
+        lastActiveSeenUtc   = @([string]$ExistingEntry.lastActiveSeenUtc, [string]$IncomingEntry.lastActiveSeenUtc | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object | Select-Object -Last 1)
+        resolvedAtUtc       = if ($existingActive -or $incomingActive) { $null } else { @([string]$ExistingEntry.resolvedAtUtc, [string]$IncomingEntry.resolvedAtUtc | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object | Select-Object -Last 1) }
+        activeScopeId       = if ($incomingActive -and -not [string]::IsNullOrWhiteSpace([string]$IncomingEntry.activeScopeId)) { [string]$IncomingEntry.activeScopeId } elseif ($existingActive) { [string]$ExistingEntry.activeScopeId } else { $null }
+        activeEvidence      = if ($incomingActive -and @($IncomingEntry.activeEvidence).Count -gt 0) { @($IncomingEntry.activeEvidence) } elseif ($existingActive) { @($ExistingEntry.activeEvidence) } else { @() }
+        scopeId             = if (-not [string]::IsNullOrWhiteSpace([string]$winner.scopeId)) { [string]$winner.scopeId } else { [string]$ExistingEntry.scopeId }
+        normalizedSummary   = [string]$winner.normalizedSummary
+        summary             = [string]$winner.summary
+        details             = [string]$winner.details
+        suggestion          = [string]$winner.suggestion
+        hitCount            = [int]$ExistingEntry.hitCount + [int]$IncomingEntry.hitCount
+        lastSeenUtc         = @([string]$ExistingEntry.lastSeenUtc, [string]$IncomingEntry.lastSeenUtc | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object | Select-Object -Last 1)
+        lastRunId           = if ([string]$IncomingEntry.lastSeenUtc -gt [string]$ExistingEntry.lastSeenUtc) { [string]$IncomingEntry.lastRunId } else { [string]$ExistingEntry.lastRunId }
+        severity            = [string]$winner.severity
+        relatedPaths        = @(@($ExistingEntry.relatedPaths) + @($IncomingEntry.relatedPaths) | Select-Object -Unique)
+        evidence            = if (@($winner.evidence).Count -gt 0) { @($winner.evidence) } else { @($ExistingEntry.evidence) }
+    }
+}
+
+function ConvertTo-RuleHarnessDocProposal {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding,
+        [Parameter(Mandatory)]
+        [string]$ScopeId
+    )
+
+    $summary = if ([string]::IsNullOrWhiteSpace([string]$Finding.title)) {
+        "Review rule for $([string]$Finding.ownerDoc)"
+    }
+    else {
+        [string]$Finding.title
+    }
+
+    [pscustomobject]@{
+        findingFamily      = Get-RuleHarnessFindingFamily -Finding $Finding
+        primaryEvidencePath = Get-RuleHarnessFindingPrimaryEvidencePath -Finding $Finding
+        signature          = Get-RuleHarnessFindingSignature -Finding $Finding
+        scopeId            = $ScopeId
+        targetDoc          = [string]$Finding.ownerDoc
+        severity           = [string]$Finding.severity
+        summary            = $summary
+        normalizedSummary  = ($summary.Trim().ToLowerInvariant())
+        details            = [string]$Finding.message
+        suggestion         = ("- Consider adding or tightening a rule in `{0}` for `{1}`." -f [string]$Finding.ownerDoc, $summary)
+        relatedPaths       = @(Get-RuleHarnessRelatedPathsForFinding -Finding $Finding)
+        evidence           = @($Finding.evidence | ForEach-Object {
+            [pscustomobject]@{
+                path    = [string]$_.path
+                line    = if ($null -eq $_.line) { $null } else { [int]$_.line }
+                snippet = [string]$_.snippet
+            }
+        })
+    }
+}
+
+function Update-RuleHarnessDocProposalBacklog {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Backlog,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$Proposals,
+        [Parameter(Mandatory)]
+        [string]$RunId
+    )
+
+    $createdCount = 0
+    $updatedCount = 0
+    $reactivatedCount = 0
+
+    foreach ($proposal in @($Proposals)) {
+        if ([string]::IsNullOrWhiteSpace([string]$proposal.targetDoc) -or [string]::IsNullOrWhiteSpace([string]$proposal.signature)) {
+            continue
+        }
+
+        $existing = $null
+        foreach ($entry in @($Backlog.entries)) {
+            if ([string]$entry.signature -eq [string]$proposal.signature) {
+                $existing = $entry
+                break
+            }
+        }
+
+        $timestamp = [DateTimeOffset]::UtcNow.ToString('o')
+        if ($null -eq $existing) {
+            [void]$Backlog.entries.Add([pscustomobject]@{
+                targetDoc           = [string]$proposal.targetDoc
+                findingFamily       = [string]$proposal.findingFamily
+                primaryEvidencePath = [string]$proposal.primaryEvidencePath
+                signature           = [string]$proposal.signature
+                status              = 'active'
+                firstSeenUtc        = $timestamp
+                lastActiveSeenUtc   = $timestamp
+                resolvedAtUtc       = $null
+                activeScopeId       = [string]$proposal.scopeId
+                activeEvidence      = @($proposal.evidence | Select-Object -First 3)
+                scopeId             = [string]$proposal.scopeId
+                normalizedSummary   = [string]$proposal.normalizedSummary
+                summary             = [string]$proposal.summary
+                details             = [string]$proposal.details
+                suggestion          = [string]$proposal.suggestion
+                hitCount            = 1
+                lastSeenUtc         = $timestamp
+                lastRunId           = $RunId
+                severity            = [string]$proposal.severity
+                relatedPaths        = @($proposal.relatedPaths)
+                evidence            = @($proposal.evidence | Select-Object -First 3)
+            })
+            $Backlog.dirty = $true
+            $createdCount++
+            continue
+        }
+
+        $wasResolved = ([string](Get-RuleHarnessProposalStatus -Entry $existing) -eq 'resolved')
+        $existing.findingFamily = [string]$proposal.findingFamily
+        $existing.primaryEvidencePath = [string]$proposal.primaryEvidencePath
+        $existing.signature = [string]$proposal.signature
+        $existing.status = 'active'
+        $existing.firstSeenUtc = if ([string]::IsNullOrWhiteSpace([string]$existing.firstSeenUtc)) { $timestamp } else { [string]$existing.firstSeenUtc }
+        $existing.lastActiveSeenUtc = $timestamp
+        $existing.resolvedAtUtc = $null
+        $existing.activeScopeId = [string]$proposal.scopeId
+        $existing.activeEvidence = @($proposal.evidence | Select-Object -First 3)
+        $existing.scopeId = [string]$proposal.scopeId
+        $existing.normalizedSummary = [string]$proposal.normalizedSummary
+        $existing.summary = [string]$proposal.summary
+        $existing.details = [string]$proposal.details
+        $existing.suggestion = [string]$proposal.suggestion
+        $existing.hitCount = [int]$existing.hitCount + 1
+        $existing.lastSeenUtc = $timestamp
+        $existing.lastRunId = $RunId
+        $existing.severity = [string]$proposal.severity
+        $existing.relatedPaths = @($proposal.relatedPaths)
+        $existing.evidence = @($proposal.evidence | Select-Object -First 3)
+        $Backlog.dirty = $true
+        if ($wasResolved) {
+            $reactivatedCount++
+        }
+        else {
+            $updatedCount++
+        }
+    }
+
+    [pscustomobject]@{
+        createdCount     = $createdCount
+        updatedCount     = $updatedCount
+        reactivatedCount = $reactivatedCount
+    }
+}
+
+function Resolve-RuleHarnessDocProposalBacklogForScope {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Backlog,
+        [Parameter(Mandatory)]
+        [string]$ScopeId,
+        [AllowEmptyCollection()]
+        [object[]]$CurrentFindings,
+        [Parameter(Mandatory)]
+        [string]$RunId
+    )
+
+    $activeSignatures = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($finding in @($CurrentFindings)) {
+        if ([string]::IsNullOrWhiteSpace([string]$finding.ownerDoc)) {
+            continue
+        }
+
+        [void]$activeSignatures.Add((Get-RuleHarnessFindingSignature -Finding $finding))
+    }
+
+    $resolvedCount = 0
+    $resolvedSignatures = [System.Collections.Generic.List[string]]::new()
+    $timestamp = [DateTimeOffset]::UtcNow.ToString('o')
+    foreach ($entry in @($Backlog.entries)) {
+        $entryScopeId = if ($entry.PSObject.Properties.Name -contains 'activeScopeId' -and -not [string]::IsNullOrWhiteSpace([string]$entry.activeScopeId)) {
+            [string]$entry.activeScopeId
+        }
+        else {
+            [string]$entry.scopeId
+        }
+        if ([string](Get-RuleHarnessProposalStatus -Entry $entry) -ne 'active' -or $entryScopeId -ne $ScopeId) {
+            continue
+        }
+
+        if ($activeSignatures.Contains([string]$entry.signature)) {
+            continue
+        }
+
+        $entry.status = 'resolved'
+        $entry.resolvedAtUtc = $timestamp
+        $entry.activeScopeId = $null
+        $entry.activeEvidence = @()
+        $entry.lastRunId = $RunId
+        $Backlog.dirty = $true
+        $resolvedCount++
+        [void]$resolvedSignatures.Add([string]$entry.signature)
+    }
+
+    [pscustomobject]@{
+        resolvedCount      = $resolvedCount
+        resolvedSignatures = @($resolvedSignatures)
+    }
+}
+
+function Write-RuleHarnessDocProposalFile {
+    param(
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$Proposals,
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    $parent = Split-Path -Parent $Path
+    if (-not (Test-Path -LiteralPath $parent)) {
+        New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    }
+
+    $lines = [System.Collections.Generic.List[string]]::new()
+    [void]$lines.Add('# Rule Harness Doc Proposals')
+    [void]$lines.Add('')
+    if (@($Proposals).Count -eq 0) {
+        [void]$lines.Add('No high/medium doc proposals were generated in this run.')
+    }
+    else {
+        foreach ($proposal in @($Proposals)) {
+            [void]$lines.Add(('## {0} -> `{1}`' -f [string]$proposal.summary, [string]$proposal.targetDoc))
+            [void]$lines.Add('')
+            [void]$lines.Add([string]$proposal.suggestion)
+            [void]$lines.Add('')
+            [void]$lines.Add([string]$proposal.details)
+            if (@($proposal.relatedPaths).Count -gt 0) {
+                [void]$lines.Add('')
+                [void]$lines.Add(("Related: {0}" -f (@($proposal.relatedPaths) -join ', ')))
+            }
+            [void]$lines.Add('')
+        }
+    }
+
+    Set-Content -Path $Path -Value $lines -Encoding UTF8
 }
 
 function Get-RuleHarnessHistoryKey {
@@ -1610,49 +2430,69 @@ function Get-RuleHarnessStaticFindings {
         [Parameter(Mandatory)]
         [string]$RepoRoot,
         [Parameter(Mandatory)]
-        [object]$Config
+        [object]$Config,
+        [string]$ScopeId
     )
 
     $findings = [System.Collections.Generic.List[object]]::new()
     $architectureOwnerDoc = Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot
 
-    foreach ($doc in Get-RuleHarnessScopeDocs -RepoRoot $RepoRoot -Config $Config) {
-        $docFull = Join-Path $RepoRoot $doc
-        if (-not (Test-Path -LiteralPath $docFull)) {
-            [void]$findings.Add((New-RuleHarnessFinding `
-                -FindingType 'broken_reference' `
-                -Severity $Config.severityPolicy.missingSsotReference `
-                -OwnerDoc 'CLAUDE.md' `
-                -Title 'Missing SSOT document' `
-                -Message "SSOT scope references a document that does not exist: $doc" `
-                -Evidence @([pscustomobject]@{ path = 'CLAUDE.md'; line = $null; snippet = $doc }) `
-                -RemediationKind 'rule_fix' `
-                -Rationale 'The missing path lives in the SSOT scope and should be corrected in documentation.'))
-            continue
-        }
+    $featureDirectories = if ([string]::IsNullOrWhiteSpace($ScopeId)) {
+        @(Get-RuleHarnessFeatureDirectories -RepoRoot $RepoRoot)
+    }
+    else {
+        @(Get-RuleHarnessFeatureDirectories -RepoRoot $RepoRoot | Where-Object Name -eq $ScopeId)
+    }
 
-        foreach ($target in Get-RuleHarnessMarkdownTargets -Content (Get-Content -Path $docFull -Raw)) {
-            $resolved = Resolve-RuleHarnessTargetPath -RepoRoot $RepoRoot -SourcePath $doc -Target $target
-            if ($null -eq $resolved) {
+    $scriptFiles = @(Get-RuleHarnessScriptFiles -RepoRoot $RepoRoot -Config $Config)
+    if (-not [string]::IsNullOrWhiteSpace($ScopeId)) {
+        $scopePrefix = "Assets/Scripts/Features/$ScopeId/"
+        $scriptFiles = @($scriptFiles | Where-Object {
+            (ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $_.FullName) -like "$scopePrefix*"
+        })
+    }
+
+    $docCandidates = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+    if ([string]::IsNullOrWhiteSpace($ScopeId)) {
+        foreach ($doc in Get-RuleHarnessScopeDocs -RepoRoot $RepoRoot -Config $Config) {
+            $docFull = Join-Path $RepoRoot $doc
+            if (-not (Test-Path -LiteralPath $docFull)) {
+                [void]$findings.Add((New-RuleHarnessFinding `
+                    -FindingType 'broken_reference' `
+                    -Severity $Config.severityPolicy.missingSsotReference `
+                    -OwnerDoc 'CLAUDE.md' `
+                    -Title 'Missing SSOT document' `
+                    -Message "SSOT scope references a document that does not exist: $doc" `
+                    -Evidence @([pscustomobject]@{ path = 'CLAUDE.md'; line = $null; snippet = $doc }) `
+                    -RemediationKind 'rule_fix' `
+                    -Rationale 'The missing path lives in the SSOT scope and should be corrected in documentation.'))
                 continue
             }
 
-            if (-not $resolved.Exists) {
-                [void]$findings.Add((New-RuleHarnessFinding `
-                    -FindingType 'broken_reference' `
-                    -Severity $Config.severityPolicy.brokenReference `
-                    -OwnerDoc $doc `
-                    -Title 'Broken markdown reference' `
-                    -Message "Document reference does not resolve to an existing file: $target" `
-                    -Evidence @([pscustomobject]@{ path = $doc; line = $null; snippet = $target }) `
-                    -Confidence 'high' `
-                    -RemediationKind 'rule_fix' `
-                    -Rationale 'The repository path is stale and should be synchronized in the owning document.'))
+            foreach ($target in Get-RuleHarnessMarkdownTargets -Content (Get-Content -Path $docFull -Raw)) {
+                $resolved = Resolve-RuleHarnessTargetPath -RepoRoot $RepoRoot -SourcePath $doc -Target $target
+                if ($null -eq $resolved) {
+                    continue
+                }
+
+                if (-not $resolved.Exists) {
+                    [void]$findings.Add((New-RuleHarnessFinding `
+                        -FindingType 'broken_reference' `
+                        -Severity $Config.severityPolicy.brokenReference `
+                        -OwnerDoc $doc `
+                        -Title 'Broken markdown reference' `
+                        -Message "Document reference does not resolve to an existing file: $target" `
+                        -Evidence @([pscustomobject]@{ path = $doc; line = $null; snippet = $target }) `
+                        -Confidence 'high' `
+                        -RemediationKind 'rule_fix' `
+                        -Rationale 'The repository path is stale and should be synchronized in the owning document.'))
+                }
             }
         }
     }
 
-    foreach ($feature in Get-RuleHarnessFeatureDirectories -RepoRoot $RepoRoot) {
+    foreach ($feature in $featureDirectories) {
         $relative = ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $feature.FullName
         $rootBootstrap = Get-ChildItem -LiteralPath $feature.FullName -File |
             Where-Object { $_.Extension -eq '.cs' -and ($_.Name -like '*Setup.cs' -or $_.Name -like '*Bootstrap.cs') } |
@@ -1668,45 +2508,99 @@ function Get-RuleHarnessStaticFindings {
                 -Evidence @([pscustomobject]@{ path = $relative; line = $null; snippet = 'Expected root-level Setup/Bootstrap file' }) `
                 -RemediationKind 'code_fix' `
                 -Rationale 'The architecture contract requires a root setup/bootstrap artifact.'))
+            [void]$docCandidates.Add($architectureOwnerDoc)
         }
     }
 
-    foreach ($script in Get-RuleHarnessScriptFiles -RepoRoot $RepoRoot -Config $Config) {
+    foreach ($script in $scriptFiles) {
         $relative = ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $script.FullName
         $lines = Get-Content -Path $script.FullName
-        $content = $lines -join "`n"
 
         if ($relative -match '/Domain/') {
-            $pattern = 'using\s+UnityEngine\s*;|using\s+Photon|\bUnityEngine\.|\bPhoton\.'
-            if ($content -match $pattern) {
-                $line = Get-RuleHarnessFirstMatchLine -Lines $lines -Pattern $pattern
+            $evidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @(
+                'using\s+UnityEngine\s*;',
+                'using\s+Photon(?:\.[A-Za-z0-9_]+)*\s*;',
+                '\bUnityEngine\.',
+                '\bPhoton\.'
+            )
+            if ($null -ne $evidence) {
                 [void]$findings.Add((New-RuleHarnessFinding `
                     -FindingType 'code_violation' `
                     -Severity $Config.severityPolicy.unityInDomain `
                     -OwnerDoc $architectureOwnerDoc `
                     -Title 'Framework API used in Domain' `
                     -Message "Domain layer file '$relative' references Unity or Photon APIs." `
-                    -Evidence @([pscustomobject]@{ path = $relative; line = $line; snippet = (Get-RuleHarnessLineSnippet -Lines $lines -Line $line) }) `
+                    -Evidence @([pscustomobject]@{ path = $relative; line = [int]$evidence.line; snippet = [string]$evidence.snippet }) `
                     -Confidence 'high' `
                     -RemediationKind 'code_fix' `
                     -Rationale 'The code is violating a stable architecture rule and should be refactored.'))
+                [void]$docCandidates.Add($architectureOwnerDoc)
             }
         }
 
         if ($relative -match '/Application/') {
-            $pattern = 'using\s+UnityEngine\s*;|using\s+Photon|\bMonoBehaviour\b|\bGameObject\b|\bSprite\b|\bAudioClip\b|\bColor\b|Debug\.Log'
-            if ($content -match $pattern) {
-                $line = Get-RuleHarnessFirstMatchLine -Lines $lines -Pattern $pattern
+            $evidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @(
+                'using\s+UnityEngine\s*;',
+                'using\s+Photon(?:\.[A-Za-z0-9_]+)*\s*;',
+                '\bUnityEngine\.',
+                '\bPhoton\.',
+                '\bMonoBehaviour\b',
+                '\bGameObject\b',
+                '\bSprite\b',
+                '\bAudioClip\b',
+                '\bColor\b',
+                '\bDebug\s*\.\s*Log(?:Warning|Error)?\b'
+            )
+            if ($null -ne $evidence) {
                 [void]$findings.Add((New-RuleHarnessFinding `
                     -FindingType 'code_violation' `
                     -Severity $Config.severityPolicy.unityInApplication `
                     -OwnerDoc $architectureOwnerDoc `
                     -Title 'Unity API used in Application' `
                     -Message "Application layer file '$relative' appears to reference Unity or Photon API types." `
-                    -Evidence @([pscustomobject]@{ path = $relative; line = $line; snippet = (Get-RuleHarnessLineSnippet -Lines $lines -Line $line) }) `
+                    -Evidence @([pscustomobject]@{ path = $relative; line = [int]$evidence.line; snippet = [string]$evidence.snippet }) `
                     -Confidence 'high' `
                     -RemediationKind 'code_fix' `
                     -Rationale 'The code is violating a stable architecture rule and should be refactored.'))
+                [void]$docCandidates.Add($architectureOwnerDoc)
+            }
+        }
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($ScopeId)) {
+        foreach ($doc in @($docCandidates | Sort-Object)) {
+            $docFull = Join-Path $RepoRoot $doc
+            if (-not (Test-Path -LiteralPath $docFull)) {
+                [void]$findings.Add((New-RuleHarnessFinding `
+                    -FindingType 'broken_reference' `
+                    -Severity $Config.severityPolicy.missingSsotReference `
+                    -OwnerDoc 'CLAUDE.md' `
+                    -Title 'Missing owner document' `
+                    -Message "Current feature findings point at an owner doc that does not exist: $doc" `
+                    -Evidence @([pscustomobject]@{ path = 'CLAUDE.md'; line = $null; snippet = $doc }) `
+                    -RemediationKind 'rule_fix' `
+                    -Rationale 'The owner doc path referenced from the current SSOT entrypoint is missing.'))
+                continue
+            }
+
+            foreach ($target in Get-RuleHarnessMarkdownTargets -Content (Get-Content -Path $docFull -Raw)) {
+                $resolved = Resolve-RuleHarnessTargetPath -RepoRoot $RepoRoot -SourcePath $doc -Target $target
+                if ($null -eq $resolved) {
+                    continue
+                }
+
+                if (-not $resolved.Exists) {
+                    [void]$findings.Add((New-RuleHarnessFinding `
+                        -FindingType 'broken_reference' `
+                        -Severity $Config.severityPolicy.brokenReference `
+                        -OwnerDoc $doc `
+                        -Title 'Broken markdown reference' `
+                        -Message "Document reference does not resolve to an existing file: $target" `
+                        -Evidence @([pscustomobject]@{ path = $doc; line = $null; snippet = $target }) `
+                        -Confidence 'high' `
+                        -RemediationKind 'rule_fix' `
+                        -Rationale 'The repository path is stale and should be synchronized in the owning document.'))
+                }
             }
         }
     }
@@ -2148,6 +3042,92 @@ namespace Features.$FeatureName
 "@
 }
 
+function Get-RuleHarnessRelatedFeatureNamesForFinding {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding
+    )
+
+    $featureNames = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($evidence in @($Finding.evidence)) {
+        $evidencePath = [string]$evidence.path
+        if ($evidencePath -match '^Assets/Scripts/Features/(?<feature>[^/]+)/') {
+            [void]$featureNames.Add([string]$Matches['feature'])
+        }
+    }
+
+    @($featureNames | Sort-Object)
+}
+
+function Test-RuleHarnessSupportsUsingDirectiveFix {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding
+    )
+
+    $title = [string]$Finding.title
+    $message = [string]$Finding.message
+    if ($title -match 'Unity API used in Application' -or $title -match 'Framework API used in Domain') {
+        return $true
+    }
+
+    if ($message -match 'Application layer file' -and $message -match 'Unity|Photon') {
+        return $true
+    }
+
+    if ($message -match 'Domain layer file' -and $message -match 'Unity|Photon') {
+        return $true
+    }
+
+    foreach ($evidence in @($Finding.evidence)) {
+        $snippet = [string]$evidence.snippet
+        if ($snippet -match '^\s*using\s+UnityEngine\s*;' -or $snippet -match '^\s*using\s+Photon(?:\.[A-Za-z0-9_]+)*\s*;') {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Get-RuleHarnessExistingCodeFixOperations {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding,
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    $operations = [System.Collections.Generic.List[object]]::new()
+    foreach ($evidence in @($Finding.evidence)) {
+        $targetPath = [string]$evidence.path
+        if ([string]::IsNullOrWhiteSpace($targetPath) -or -not $targetPath.EndsWith('.cs')) {
+            continue
+        }
+
+        $fullPath = Join-Path $RepoRoot $targetPath
+        if (-not (Test-Path -LiteralPath $fullPath)) {
+            continue
+        }
+
+        $content = Get-Content -Path $fullPath -Raw
+        $updatedContent = $content
+        if (Test-RuleHarnessSupportsUsingDirectiveFix -Finding $Finding) {
+            $updatedContent = [regex]::Replace($updatedContent, '^[ \t]*using\s+UnityEngine\s*;\r?\n', '', 'Multiline')
+            $updatedContent = [regex]::Replace($updatedContent, '^[ \t]*using\s+Photon(?:\.[A-Za-z0-9_]+)*\s*;\r?\n', '', 'Multiline')
+        }
+
+        if ($updatedContent -ne $content) {
+            [void]$operations.Add([pscustomobject]@{
+                type       = 'write_file'
+                targetPath = $targetPath
+                content    = $updatedContent
+            })
+        }
+    }
+
+    @($operations)
+}
+
 function New-RuleHarnessBatch {
     param(
         [Parameter(Mandatory)]
@@ -2274,6 +3254,29 @@ function Get-RuleHarnessPlannedBatches {
                     content    = (Get-RuleHarnessBootstrapSetupContent -FeatureName $featureName)
                 }) `
                 -FeatureNames @($featureName) `
+                -OwnerDocs @($finding.ownerDoc) `
+                -SourceFindingTypes @($finding.findingType)))
+            continue
+        }
+
+        if ($finding.remediationKind -eq 'code_fix') {
+            $operations = @(Get-RuleHarnessExistingCodeFixOperations -Finding $finding -RepoRoot $RepoRoot)
+            if ($operations.Count -eq 0) {
+                continue
+            }
+
+            $batchId = 'batch-{0:d3}' -f $counter
+            $counter++
+            $targetFiles = @($operations | ForEach-Object { [string]$_.targetPath } | Sort-Object -Unique)
+            [void]$batches.Add((New-RuleHarnessBatch `
+                -Id $batchId `
+                -Kind 'code_fix' `
+                -TargetFiles $targetFiles `
+                -Reason ([string]$finding.message) `
+                -Validation @('rule_harness_tests', 'inferred_validation', 'static_scan') `
+                -ExpectedFindingsResolved @($key) `
+                -Operations @($operations) `
+                -FeatureNames @(Get-RuleHarnessRelatedFeatureNamesForFinding -Finding $finding) `
                 -OwnerDocs @($finding.ownerDoc) `
                 -SourceFindingTypes @($finding.findingType)))
         }
@@ -2494,7 +3497,8 @@ function Invoke-RuleHarnessBatchValidation {
         [Parameter(Mandatory)]
         [object]$ValidationPlan,
         [Parameter(Mandatory)]
-        [object[]]$BaselineStaticFindings
+        [object[]]$BaselineStaticFindings,
+        [string]$StaticScanScopeId
     )
 
     $results = [System.Collections.Generic.List[object]]::new()
@@ -2574,26 +3578,28 @@ function Invoke-RuleHarnessBatchValidation {
         }
         [void]$checkNotes.Add('feature_root_contract_present')
 
-        $ownerDocReferences = Test-RuleHarnessOwnerDocReferences -RepoRoot $RepoRoot -Config $Config
-        if (-not $ownerDocReferences.passed) {
-            $details = "Broken owner doc references after apply: $($ownerDocReferences.broken -join '; ')"
-            [void]$results.Add([pscustomobject]@{
-                batchId    = $Batch.id
-                validation = 'inferred_validation'
-                status     = 'failed'
-                source     = 'inferred'
-                details    = $details
-            })
-            return [pscustomobject]@{
-                passed         = $false
-                findingsAfter  = $BaselineStaticFindings
-                results        = @($results)
-                failureReason  = 'inferred-check-failed'
-                failureMessage = $details
-                failureSource  = 'inferred'
+        if ([string]::IsNullOrWhiteSpace($StaticScanScopeId)) {
+            $ownerDocReferences = Test-RuleHarnessOwnerDocReferences -RepoRoot $RepoRoot -Config $Config
+            if (-not $ownerDocReferences.passed) {
+                $details = "Broken owner doc references after apply: $($ownerDocReferences.broken -join '; ')"
+                [void]$results.Add([pscustomobject]@{
+                    batchId    = $Batch.id
+                    validation = 'inferred_validation'
+                    status     = 'failed'
+                    source     = 'inferred'
+                    details    = $details
+                })
+                return [pscustomobject]@{
+                    passed         = $false
+                    findingsAfter  = $BaselineStaticFindings
+                    results        = @($results)
+                    failureReason  = 'inferred-check-failed'
+                    failureMessage = $details
+                    failureSource  = 'inferred'
+                }
             }
+            [void]$checkNotes.Add('owner_doc_references_resolve')
         }
-        [void]$checkNotes.Add('owner_doc_references_resolve')
 
         if (@($ValidationPlan.inferredChecks).Count -gt 0) {
             [void]$checkNotes.Add('expected_findings_resolved')
@@ -2618,7 +3624,7 @@ function Invoke-RuleHarnessBatchValidation {
         })
     }
 
-    $afterFindings = @(Get-RuleHarnessStaticFindings -RepoRoot $RepoRoot -Config $Config)
+    $afterFindings = @(Get-RuleHarnessStaticFindings -RepoRoot $RepoRoot -Config $Config -ScopeId $StaticScanScopeId)
     $afterKeys = @($afterFindings | ForEach-Object { Get-RuleHarnessFindingKey -Finding $_ })
     $baselineHigh = @($BaselineStaticFindings | Where-Object severity -eq 'high' | ForEach-Object { Get-RuleHarnessFindingKey -Finding $_ })
     $afterHigh = @($afterFindings | Where-Object severity -eq 'high' | ForEach-Object { Get-RuleHarnessFindingKey -Finding $_ })
@@ -2727,7 +3733,8 @@ function Invoke-RuleHarnessBatchAttemptLoop {
         [Parameter(Mandatory)]
         [object]$LearningSettings,
         [Parameter(Mandatory)]
-        [string]$CommitSha
+        [string]$CommitSha,
+        [string]$StaticScanScopeId
     )
 
     $validationResults = [System.Collections.Generic.List[object]]::new()
@@ -2757,7 +3764,7 @@ function Invoke-RuleHarnessBatchAttemptLoop {
             $applyResult = Invoke-RuleHarnessBatchOperations -Batch $Batch -RepoRoot $RepoRoot -Config $Config
             $attemptDocEdits = @($applyResult.docEditResults)
             $attemptTouchedPaths = @($applyResult.touchedPaths)
-            $validation = Invoke-RuleHarnessBatchValidation -Batch $Batch -RepoRoot $RepoRoot -Config $Config -ValidationPlan $ValidationPlan -BaselineStaticFindings $currentFindings
+            $validation = Invoke-RuleHarnessBatchValidation -Batch $Batch -RepoRoot $RepoRoot -Config $Config -ValidationPlan $ValidationPlan -BaselineStaticFindings $currentFindings -StaticScanScopeId $StaticScanScopeId
             foreach ($result in $validation.results) {
                 [void]$validationResults.Add($result)
             }
@@ -2946,6 +3953,8 @@ function Invoke-RuleHarnessMutationPlan {
         [object]$Config,
         [Parameter(Mandatory)]
         [object]$MutationState,
+        [string]$StaticScanScopeId,
+        [switch]$RelaxScopeGuards,
         [switch]$DryRun
     )
 
@@ -2955,6 +3964,8 @@ function Invoke-RuleHarnessMutationPlan {
         -RepoRoot $RepoRoot `
         -Config $Config `
         -MutationState $MutationState `
+        -StaticScanScopeId $StaticScanScopeId `
+        -RelaxScopeGuards:$RelaxScopeGuards `
         -DryRun:$DryRun
 }
 
@@ -3055,6 +4066,8 @@ function Invoke-RuleHarnessMutationPlanCore {
         [object]$Config,
         [Parameter(Mandatory)]
         [object]$MutationState,
+        [string]$StaticScanScopeId,
+        [switch]$RelaxScopeGuards,
         [switch]$DryRun
     )
 
@@ -3281,7 +4294,7 @@ function Invoke-RuleHarnessMutationPlanCore {
             continue
         }
 
-        if ($batch.kind -ne 'rule_fix' -and [string]$discoveredPlan.confidence -eq 'low') {
+        if ((-not $RelaxScopeGuards) -and $batch.kind -ne 'rule_fix' -and [string]$discoveredPlan.confidence -eq 'low') {
             $historyEntry = Set-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint -Status 'skipped' -Reason 'manual-validation-required'
             $skippedBatch = [pscustomobject]@{
                 id           = $batch.id
@@ -3300,7 +4313,7 @@ function Invoke-RuleHarnessMutationPlanCore {
         $riskAssessment = Get-RuleHarnessBatchRiskAssessment -Batch $batch -RepoRoot $RepoRoot -Config $Config -MutationMode $MutationState.mode
         Set-RuleHarnessObjectProperty -Object $batch -Name 'riskScore' -Value $riskAssessment.score
         Set-RuleHarnessObjectProperty -Object $batch -Name 'riskLabel' -Value $riskAssessment.label
-        if (-not $riskAssessment.allowed) {
+        if ((-not $RelaxScopeGuards) -and (-not $riskAssessment.allowed)) {
             $skippedBatch = [pscustomobject]@{
                 id           = $batch.id
                 kind         = $batch.kind
@@ -3379,7 +4392,8 @@ function Invoke-RuleHarnessMutationPlanCore {
             -ValidationPlan $discoveredPlan `
             -MemoryStore $memoryStore `
             -LearningSettings $learningSettings `
-            -CommitSha $commitSha
+            -CommitSha $commitSha `
+            -StaticScanScopeId $StaticScanScopeId
 
         foreach ($entry in @($attemptResult.validationResults)) { [void]$validationResults.Add($entry) }
         foreach ($entry in @($attemptResult.learningTrace)) { [void]$learningTrace.Add($entry) }
@@ -3567,7 +4581,9 @@ function Write-RuleHarnessSummary {
     [void]$lines.Add("- Mutation enabled: $($Report.execution.mutationEnabled)")
     [void]$lines.Add("- Mutation mode: $($Report.execution.mutationMode)")
     [void]$lines.Add("- Scanned features: $($Report.scannedFeatures.Count)")
+    [void]$lines.Add("- Completed scopes: $($Report.completedScopes.Count)")
     [void]$lines.Add("- Findings: $($Report.findings.Count)")
+    [void]$lines.Add("- Doc proposals: $($Report.docProposals.Count)")
     [void]$lines.Add("- Doc edits: $($Report.docEdits.Count)")
     [void]$lines.Add("- Planned batches: $($Report.plannedBatches.Count)")
     [void]$lines.Add("- Applied batches: $($Report.appliedBatches.Count)")
@@ -3597,6 +4613,12 @@ function Write-RuleHarnessSummary {
             [void]$lines.Add(('- [{0}] {1}' -f $item.severity, $item.summary))
             [void]$lines.Add(('  {0}' -f $item.details))
         }
+        [void]$lines.Add('')
+    }
+
+    if ($null -ne $Report.stoppedScope) {
+        [void]$lines.Add('### Stopped Scope')
+        [void]$lines.Add(('- `{0}` findings={1} severity={2} plannedBatches={3} docProposals={4}' -f [string]$Report.stoppedScope.scopeId, [int]$Report.stoppedScope.findingCount, [string]$Report.stoppedScope.highestSeverity, [int]$Report.stoppedScope.plannedBatchCount, [int]$Report.stoppedScope.docProposalCount))
         [void]$lines.Add('')
     }
 
@@ -3692,184 +4714,207 @@ function Invoke-RuleHarness {
     $mutationState = Get-RuleHarnessMutationState -Config $config -MutationMode $MutationMode -EnableMutation:$EnableMutation -DisableMutation:$DisableMutation
     $harnessErrors = [System.Collections.Generic.List[object]]::new()
     $stageResults = [System.Collections.Generic.List[object]]::new()
+    $runId = [guid]::NewGuid().ToString()
+    $featureScanState = Read-RuleHarnessFeatureScanState -RepoRoot $RepoRoot -Config $config
+    $docProposalBacklog = Read-RuleHarnessDocProposalBacklog -RepoRoot $RepoRoot -Config $config
+    $maxScopesPerRun = if ($config.scan.PSObject.Properties.Name -contains 'maxScopesPerRun') { [int]$config.scan.maxScopesPerRun } else { 1 }
+    $orderedScopes = @(Get-RuleHarnessOrderedFeatureScopes -RepoRoot $RepoRoot -Config $config)
+    $selectedScopes = @($orderedScopes | Select-Object -First $maxScopesPerRun)
+    $attemptedScopes = [System.Collections.Generic.List[string]]::new()
+    $completedScopes = [System.Collections.Generic.List[string]]::new()
+    $findings = [System.Collections.Generic.List[object]]::new()
+    $reviewedFindingCount = 0
+    $staticFindingCount = 0
+    $plannedBatchCount = 0
+    $docProposals = [System.Collections.Generic.List[object]]::new()
+    $stoppedScope = $null
+    $plannedBatches = @()
+    $scopeStaticFindingsForMutation = @()
+    $mutationResult = $null
+    $diagnoseAttempted = $llmEnabled -or -not [string]::IsNullOrWhiteSpace($ReviewJsonPath)
+    $diagnoseFailed = $false
 
     Write-Host 'Rule harness discover stage started.'
-    $scannedFeatures = @(Get-RuleHarnessFeatureDirectories -RepoRoot $RepoRoot | ForEach-Object { $_.Name })
-    Write-Host "Rule harness discover stage finished. Features: $($scannedFeatures.Count)"
+    Write-Host "Rule harness discover stage finished. Features: $($orderedScopes.Count) Selected: $($selectedScopes.Count)"
     [void]$stageResults.Add((New-RuleHarnessStageResult `
         -Stage 'discover' `
         -Status 'passed' `
         -Attempted $true `
-        -Summary ("Discovered {0} feature directories." -f $scannedFeatures.Count) `
+        -Summary ("Selected {0} feature scope(s) from {1} total feature(s)." -f $selectedScopes.Count, $orderedScopes.Count) `
         -Details ([pscustomobject]@{
-            featureCount = $scannedFeatures.Count
-            features = @($scannedFeatures)
+            featureCount = $orderedScopes.Count
+            selectedScopes = @($selectedScopes | ForEach-Object { $_.scopeId })
         })))
 
-    Write-Host 'Rule harness static scan started.'
-    $staticFindings = @(Get-RuleHarnessStaticFindings -RepoRoot $RepoRoot -Config $config)
-    Write-Host "Rule harness static scan finished. Findings: $($staticFindings.Count)"
-    [void]$stageResults.Add((New-RuleHarnessStageResult `
-        -Stage 'static_scan' `
-        -Status 'passed' `
-        -Attempted $true `
-        -Summary ("Static scan produced {0} finding(s)." -f $staticFindings.Count) `
-        -Details ([pscustomobject]@{
-            findingCount = $staticFindings.Count
-        })))
+    foreach ($scope in @($selectedScopes)) {
+        [void]$attemptedScopes.Add([string]$scope.scopeId)
+        $scopeStaticFindings = @(Get-RuleHarnessStaticFindings -RepoRoot $RepoRoot -Config $config -ScopeId ([string]$scope.scopeId))
+        $staticFindingCount += $scopeStaticFindings.Count
 
-    $diagnoseAttempted = $llmEnabled -or -not [string]::IsNullOrWhiteSpace($ReviewJsonPath)
-    try {
-        $reviewedFindings = @(
-            Invoke-RuleHarnessAgentReview `
-                -StaticFindings $staticFindings `
-                -RepoRoot $RepoRoot `
-                -Config $config `
-                -ApiKey $ApiKey `
-                -ApiBaseUrl $ApiBaseUrl `
-                -Model $Model `
-                -TimeoutSec $timeoutSec `
-                -ReviewJsonPath $ReviewJsonPath
-        )
-        Write-Host "Rule harness reviewed findings count: $($reviewedFindings.Count)"
-        $diagnoseStatus = if ($diagnoseAttempted) { 'passed' } else { 'skipped' }
-        $diagnoseSummary = if ($diagnoseAttempted) {
-            "Diagnose stage reviewed $($reviewedFindings.Count) finding(s)."
-        }
-        else {
-            'Diagnose stage used static findings because LLM review was disabled.'
-        }
-        [void]$stageResults.Add((New-RuleHarnessStageResult `
-            -Stage 'diagnose' `
-            -Status $diagnoseStatus `
-            -Attempted $diagnoseAttempted `
-            -Summary $diagnoseSummary `
-            -Details ([pscustomobject]@{
-                reviewedFindingCount = $reviewedFindings.Count
-                llmEnabled = [bool]$llmEnabled
-                reviewJsonPath = $ReviewJsonPath
-            })))
-    }
-    catch {
-        [void]$harnessErrors.Add((New-RuleHarnessFinding `
-            -FindingType 'missing_rule' `
-            -Severity $config.severityPolicy.agentFailure `
-            -OwnerDoc 'tools/rule-harness/README.md' `
-            -Title 'Rule harness agent review failed' `
-            -Message "Stage=diagnose TimeoutSec=$timeoutSec $($_.Exception.Message)" `
-            -Evidence @([pscustomobject]@{ path = 'tools/rule-harness'; line = $null; snippet = $_.Exception.GetType().FullName }) `
-            -Confidence 'high' `
-            -Source 'harness' `
-            -RemediationKind 'report_only'))
-        $reviewedFindings = @(ConvertTo-RuleHarnessReviewedFindings -Findings $staticFindings)
-        Write-Host "Rule harness diagnose stage failed. TimeoutSec: $timeoutSec Error: $($_.Exception.Message)"
-        [void]$stageResults.Add((New-RuleHarnessStageResult `
-            -Stage 'diagnose' `
-            -Status 'failed' `
-            -Attempted $diagnoseAttempted `
-            -Summary 'Diagnose stage failed; static findings were used as fallback.' `
-            -Details ([pscustomobject]@{
-                message = $_.Exception.Message
-                timeoutSec = $timeoutSec
-            })))
-    }
-
-    $eligibleDocFindings = @(
-        $reviewedFindings | Where-Object {
-            $_.remediationKind -in @('rule_fix', 'mixed_fix') -and
-            $_.confidence -eq 'high' -and
-            (Test-RuleHarnessDocAllowed -RepoRoot $RepoRoot -RelativePath $_.ownerDoc -Config $config)
-        }
-    )
-    Write-Host "Rule harness eligible doc findings: $($eligibleDocFindings.Count)"
-
-    $docEdits = @()
-    if ($llmEnabled -and $eligibleDocFindings.Count -gt 0) {
         try {
-            $docEdits = @(
-                Invoke-RuleHarnessDocSync `
-                    -Findings $eligibleDocFindings `
+            $scopeReviewedFindings = @(
+                Invoke-RuleHarnessAgentReview `
+                    -StaticFindings $scopeStaticFindings `
                     -RepoRoot $RepoRoot `
                     -Config $config `
                     -ApiKey $ApiKey `
                     -ApiBaseUrl $ApiBaseUrl `
                     -Model $Model `
-                    -TimeoutSec $timeoutSec
+                    -TimeoutSec $timeoutSec `
+                    -ReviewJsonPath $ReviewJsonPath
             )
-            Write-Host "Rule harness doc sync produced edits: $($docEdits.Count)"
-            [void]$stageResults.Add((New-RuleHarnessStageResult `
-                -Stage 'doc_sync' `
-                -Status 'passed' `
-                -Attempted $true `
-                -Summary ("Doc sync proposed {0} edit(s)." -f $docEdits.Count) `
-                -Details ([pscustomobject]@{
-                    eligibleFindingCount = $eligibleDocFindings.Count
-                    docEditCount = $docEdits.Count
-                })))
         }
         catch {
+            $diagnoseFailed = $true
             [void]$harnessErrors.Add((New-RuleHarnessFinding `
                 -FindingType 'missing_rule' `
                 -Severity $config.severityPolicy.agentFailure `
                 -OwnerDoc 'tools/rule-harness/README.md' `
-                -Title 'Rule harness doc sync failed' `
-                -Message "Stage=doc_sync TimeoutSec=$timeoutSec $($_.Exception.Message)" `
+                -Title 'Rule harness agent review failed' `
+                -Message "Scope=$($scope.scopeId) Stage=diagnose TimeoutSec=$timeoutSec $($_.Exception.Message)" `
                 -Evidence @([pscustomobject]@{ path = 'tools/rule-harness'; line = $null; snippet = $_.Exception.GetType().FullName }) `
                 -Confidence 'high' `
-                -Source 'harness'))
-            Write-Host "Rule harness doc sync failed. TimeoutSec: $timeoutSec Error: $($_.Exception.Message)"
-            [void]$stageResults.Add((New-RuleHarnessStageResult `
-                -Stage 'doc_sync' `
-                -Status 'failed' `
-                -Attempted $true `
-                -Summary 'Doc sync failed and no doc edits were produced.' `
-                -Details ([pscustomobject]@{
-                    eligibleFindingCount = $eligibleDocFindings.Count
-                    message = $_.Exception.Message
-                    timeoutSec = $timeoutSec
-                })))
+                -Source 'harness' `
+                -RemediationKind 'report_only'))
+            $scopeReviewedFindings = @(ConvertTo-RuleHarnessReviewedFindings -Findings $scopeStaticFindings)
         }
-    }
-    else {
-        $docSyncSummary = if (-not $llmEnabled) {
-            'Doc sync was skipped because LLM mode is disabled.'
+
+        $reviewedFindingCount += @($scopeReviewedFindings).Count
+        foreach ($finding in @($scopeReviewedFindings)) {
+            [void]$findings.Add($finding)
         }
-        elseif ($eligibleDocFindings.Count -eq 0) {
-            'Doc sync was skipped because there were no eligible high-confidence doc findings.'
+
+        $scopeErrors = @($scopeReviewedFindings | Where-Object { $_.severity -in @('high', 'medium') })
+        if ($scopeErrors.Count -eq 0) {
+            [void]$completedScopes.Add([string]$scope.scopeId)
+            Set-RuleHarnessFeatureScanEntry `
+                -FeatureScanState $featureScanState `
+                -ScopeId ([string]$scope.scopeId) `
+                -LastResult 'clean' `
+                -LastFindingSeverity (Get-RuleHarnessHighestSeverity -Findings @($scopeReviewedFindings)) `
+                -LastRunId $runId `
+                -LastCommitSha ((Invoke-RuleHarnessGit -RepoRoot $RepoRoot -Arguments @('rev-parse', 'HEAD')) | Select-Object -First 1).Trim() `
+                -LastStoppedReason $null
+            continue
+        }
+
+        $scopeDocProposals = @(
+            $scopeErrors |
+                Where-Object { $_.severity -in @('high', 'medium') -and -not [string]::IsNullOrWhiteSpace([string]$_.ownerDoc) } |
+                ForEach-Object { ConvertTo-RuleHarnessDocProposal -Finding $_ -ScopeId ([string]$scope.scopeId) }
+        )
+        foreach ($proposal in @($scopeDocProposals)) {
+            [void]$docProposals.Add($proposal)
+        }
+        Update-RuleHarnessDocProposalBacklog -Backlog $docProposalBacklog -Proposals @($scopeDocProposals) -RunId $runId
+
+        Write-Host "Rule harness patch plan stage started for scope $($scope.scopeId)."
+        $plannedBatches = @(Get-RuleHarnessPlannedBatches -ReviewedFindings @($scopeErrors) -DocEdits @() -RepoRoot $RepoRoot)
+        $plannedBatchCount = @($plannedBatches).Count
+        Write-Host "Rule harness patch plan stage finished for scope $($scope.scopeId). Planned batches: $plannedBatchCount"
+
+        $scopeStaticFindingsForMutation = @($scopeStaticFindings)
+        $mutationResult = Invoke-RuleHarnessMutationPlan `
+            -PlannedBatches $plannedBatches `
+            -InitialStaticFindings $scopeStaticFindingsForMutation `
+            -RepoRoot $RepoRoot `
+            -Config $config `
+            -MutationState $mutationState `
+            -StaticScanScopeId ([string]$scope.scopeId) `
+            -RelaxScopeGuards `
+            -DryRun:$DryRun
+
+        $scopeResult = if ([bool]$mutationResult.applied) {
+            'applied'
+        }
+        elseif ([bool]$mutationResult.failed) {
+            'failed'
         }
         else {
-            'Doc sync was skipped.'
+            'findings'
         }
-        [void]$stageResults.Add((New-RuleHarnessStageResult `
-            -Stage 'doc_sync' `
-            -Status 'skipped' `
-            -Attempted $false `
-            -Summary $docSyncSummary `
-            -Details ([pscustomobject]@{
-                eligibleFindingCount = $eligibleDocFindings.Count
-                llmEnabled = [bool]$llmEnabled
-            })))
+        $scopeCommitSha = ((Invoke-RuleHarnessGit -RepoRoot $RepoRoot -Arguments @('rev-parse', 'HEAD')) | Select-Object -First 1).Trim()
+        Set-RuleHarnessFeatureScanEntry `
+            -FeatureScanState $featureScanState `
+            -ScopeId ([string]$scope.scopeId) `
+            -LastResult $scopeResult `
+            -LastFindingSeverity (Get-RuleHarnessHighestSeverity -Findings @($scopeReviewedFindings)) `
+            -LastRunId $runId `
+            -LastCommitSha $scopeCommitSha `
+            -LastStoppedReason $scopeResult
+
+        $stoppedScope = [pscustomobject]@{
+            scopeId             = [string]$scope.scopeId
+            findingCount        = $scopeErrors.Count
+            highestSeverity     = Get-RuleHarnessHighestSeverity -Findings @($scopeErrors)
+            plannedBatchCount   = $plannedBatchCount
+            docProposalCount    = @($scopeDocProposals).Count
+        }
+        break
     }
 
-    Write-Host 'Rule harness patch plan stage started.'
-    $plannedBatches = @(Get-RuleHarnessPlannedBatches -ReviewedFindings $reviewedFindings -DocEdits $docEdits -RepoRoot $RepoRoot)
-    Write-Host "Rule harness patch plan stage finished. Planned batches: $($plannedBatches.Count)"
+    Save-RuleHarnessFeatureScanState -FeatureScanState $featureScanState
+    Save-RuleHarnessDocProposalBacklog -Backlog $docProposalBacklog
+
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'static_scan' `
+        -Status 'passed' `
+        -Attempted $true `
+        -Summary ("Scanned {0} scope(s) and produced {1} finding(s)." -f $attemptedScopes.Count, $staticFindingCount) `
+        -Details ([pscustomobject]@{
+            scopeCount = $attemptedScopes.Count
+            findingCount = $staticFindingCount
+        })))
+
+    $diagnoseStatus = if ($diagnoseFailed) { 'failed' } elseif ($diagnoseAttempted) { 'passed' } else { 'skipped' }
+    $diagnoseSummary = if ($diagnoseFailed) {
+        'Diagnose stage failed for at least one scope; static findings were used as fallback.'
+    }
+    elseif ($diagnoseAttempted) {
+        "Diagnose stage reviewed $reviewedFindingCount finding(s)."
+    }
+    else {
+        'Diagnose stage used static findings because LLM review was disabled.'
+    }
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'diagnose' `
+        -Status $diagnoseStatus `
+        -Attempted $diagnoseAttempted `
+        -Summary $diagnoseSummary `
+        -Details ([pscustomobject]@{
+            reviewedFindingCount = $reviewedFindingCount
+            llmEnabled = [bool]$llmEnabled
+            reviewJsonPath = $ReviewJsonPath
+        })))
+
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'doc_proposals' `
+        -Status 'passed' `
+        -Attempted $true `
+        -Summary ("Doc mutation is disabled. Generated {0} proposal(s)." -f $docProposals.Count) `
+        -Details ([pscustomobject]@{
+            docProposalCount = $docProposals.Count
+        })))
+
     [void]$stageResults.Add((New-RuleHarnessStageResult `
         -Stage 'patch_plan' `
         -Status 'passed' `
         -Attempted $true `
-        -Summary ("Patch plan produced {0} batch(es)." -f $plannedBatches.Count) `
+        -Summary ("Patch plan produced {0} batch(es)." -f $plannedBatchCount) `
         -Details ([pscustomobject]@{
-            plannedBatchCount = $plannedBatches.Count
+            plannedBatchCount = $plannedBatchCount
+            stoppedScope = if ($null -ne $stoppedScope) { [string]$stoppedScope.scopeId } else { $null }
         })))
 
-    $mutationResult = Invoke-RuleHarnessMutationPlan `
-        -PlannedBatches $plannedBatches `
-        -InitialStaticFindings $staticFindings `
-        -RepoRoot $RepoRoot `
-        -Config $config `
-        -MutationState $mutationState `
-        -DryRun:$DryRun
+    if ($null -eq $mutationResult) {
+        $mutationResult = Invoke-RuleHarnessMutationPlan `
+            -PlannedBatches @() `
+            -InitialStaticFindings @() `
+            -RepoRoot $RepoRoot `
+            -Config $config `
+            -MutationState $mutationState `
+            -DryRun:$DryRun
+    }
 
     $reportMemoryHits = [System.Collections.Generic.List[object]]::new()
     foreach ($entry in @($mutationResult.memoryHits)) {
@@ -3954,10 +4999,27 @@ function Invoke-RuleHarness {
         }
     }
 
-    $findings = @($mutationResult.finalStaticFindings + $harnessErrors)
-    $failed = (@($findings | Where-Object { $_.severity -eq 'high' -and $_.findingType -eq 'code_violation' }).Count -gt 0) -or
+    $reportFindings = @($findings)
+    if ($null -ne $stoppedScope) {
+        $reportFindings = @(
+            @($reportFindings | Where-Object { -not (Test-RuleHarnessFindingMatchesScope -Finding $_ -ScopeId ([string]$stoppedScope.scopeId)) }) +
+            @($mutationResult.finalStaticFindings)
+        )
+    }
+
+    $reportFindings = @($reportFindings + $harnessErrors)
+    $failed = (@($reportFindings | Where-Object { $_.severity -eq 'high' -and $_.findingType -eq 'code_violation' }).Count -gt 0) -or
         ($harnessErrors.Count -gt 0) -or
         [bool]$mutationResult.failed
+    $docProposalPath = if (-not [string]::IsNullOrWhiteSpace($ReportPathHint)) {
+        Join-Path (Split-Path -Parent $ReportPathHint) 'rule-harness-doc-proposals.md'
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($SummaryPath)) {
+        Join-Path (Split-Path -Parent $SummaryPath) 'rule-harness-doc-proposals.md'
+    }
+    else {
+        Join-Path (Join-Path $RepoRoot 'Temp/RuleHarness') 'rule-harness-doc-proposals.md'
+    }
     $reportActionItems = @(Merge-RuleHarnessActionItems -Items @(
         @($mutationResult.actionItems) +
         @($reportPromotionCandidates | ForEach-Object {
@@ -3969,15 +5031,16 @@ function Invoke-RuleHarness {
                 -RelatedPaths @([string]$_.targetDoc)
         }) +
         @(Get-RuleHarnessActionItemsForFindings `
-            -Findings $findings `
+            -Findings $reportFindings `
             -ReportPathHint $ReportPathHint `
             -SummaryPathHint $SummaryPath `
             -LogPathHint $LogPathHint)
     ))
     $allStageResults = @($stageResults) + @($mutationResult.stageResults)
+    $nextScopeCandidates = @((Get-RuleHarnessOrderedFeatureScopes -RepoRoot $RepoRoot -Config $config | Select-Object -First 5) | ForEach-Object { $_.scopeId })
 
     $report = [pscustomobject]@{
-        runId            = [guid]::NewGuid().ToString()
+        runId            = $runId
         commitSha        = $reportCommitSha
         execution        = [pscustomobject]@{
             dryRun          = [bool]$DryRun
@@ -3992,9 +5055,15 @@ function Invoke-RuleHarness {
             reportPath      = $ReportPathHint
             summaryPath     = $SummaryPath
             logPath         = $LogPathHint
+            docProposalPath = $docProposalPath
         }
-        scannedFeatures   = $scannedFeatures
-        findings          = $findings
+        scannedFeatures   = @($attemptedScopes)
+        scannedScopes     = @($attemptedScopes)
+        completedScopes   = @($completedScopes)
+        stoppedScope      = $stoppedScope
+        nextScopeCandidates = @($nextScopeCandidates)
+        findings          = @($reportFindings)
+        docProposals      = @($docProposals)
         docEdits          = @($mutationResult.docEdits)
         plannedBatches    = @($plannedBatches | ForEach-Object {
             [pscustomobject]@{
@@ -4031,6 +5100,10 @@ function Invoke-RuleHarness {
         failed            = [bool]$failed
     }
 
+    if (-not [string]::IsNullOrWhiteSpace($docProposalPath)) {
+        Write-RuleHarnessDocProposalFile -Proposals @($docProposals) -Path $docProposalPath
+    }
+
     if (-not [string]::IsNullOrWhiteSpace($SummaryPath)) {
         Write-RuleHarnessSummary -Report $report -SummaryPath $SummaryPath
     }
@@ -4049,4 +5122,6 @@ Export-ModuleMember -Function `
     Get-RuleHarnessDirtyTargetPaths, `
     Get-RuleHarnessMutationState, `
     Invoke-RuleHarnessMutationPlan, `
-    Read-RuleHarnessHistoryState
+    Read-RuleHarnessHistoryState, `
+    Read-RuleHarnessFeatureScanState, `
+    Read-RuleHarnessDocProposalBacklog

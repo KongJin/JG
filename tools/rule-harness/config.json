@@ -3,6 +3,7 @@
     "include": [
       "Assets/Scripts/**/*.cs"
     ],
+    "maxScopesPerRun": 4,
     "exclude": [
       "Assets/FromStore/**",
       "Library/**",
@@ -17,6 +18,7 @@
     ]
   },
   "docs": {
+    "mutationEnabled": false,
     "allowlist": [
       "CLAUDE.md"
     ],
@@ -32,6 +34,7 @@
     "maxBatchesPerRun": 3,
     "maxFilesPerBatch": 8,
     "stopOnFirstFailure": true,
+    "stopAfterFirstScopeWithErrors": true,
     "requireCleanTargets": true
   },
   "severityPolicy": {
@@ -60,6 +63,10 @@
       "ownership-preflight-rejected",
       "manual-validation-required"
     ]
+  },
+  "state": {
+    "featureScanStatePath": "Temp/RuleHarnessState/feature-scan-state.json",
+    "docProposalBacklogPath": "Temp/RuleHarnessState/doc-proposals.json"
   },
   "validation": {
     "runHarnessTests": true,

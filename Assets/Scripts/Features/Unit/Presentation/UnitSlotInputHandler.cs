@@ -23,6 +23,7 @@ namespace Features.Unit.Presentation
         private Unit _unitSpec;
         private IEventBus _eventBus;
         private System.Action<Unit, Float3> _onSummonRequested;
+        private System.Action<Unit> _onClickRequested;
         private Canvas _canvas;
 
         private RectTransform _dragGhost;
@@ -33,24 +34,22 @@ namespace Features.Unit.Presentation
             Unit unitSpec,
             IEventBus eventBus,
             System.Action<Unit, Float3> onSummonRequested,
-            Canvas canvas)
+            System.Action<Unit> onClickRequested,
+            Canvas canvas,
+            Camera worldCamera)
         {
             _unitSpec = unitSpec;
             _eventBus = eventBus;
             _onSummonRequested = onSummonRequested;
+            _onClickRequested = onClickRequested;
             _canvas = canvas;
-        }
-
-        /// <summary>월드 카메라 설정 (UnitSlotsContainer에서 주입).</summary>
-        public void SetWorldCamera(Camera camera)
-        {
-            _worldCamera = camera;
+            _worldCamera = worldCamera;
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
             if (_isDragging) return;
-            // 클릭은 UnitSlotView.OnClicked()가 처리하므로 여기선 무시
+            _onClickRequested?.Invoke(_unitSpec);
         }
 
         public void OnBeginDrag(PointerEventData eventData)

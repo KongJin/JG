@@ -8,7 +8,12 @@
     "commitSha",
     "execution",
     "scannedFeatures",
+    "scannedScopes",
+    "completedScopes",
+    "stoppedScope",
+    "nextScopeCandidates",
     "findings",
+    "docProposals",
     "docEdits",
     "plannedBatches",
     "appliedBatches",
@@ -47,7 +52,8 @@
         "mutationEnabled",
         "mutationMode",
         "statePath",
-        "branch"
+        "branch",
+        "docProposalPath"
       ],
       "properties": {
         "dryRun": {
@@ -102,6 +108,12 @@
             "null"
           ]
         },
+        "docProposalPath": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "statePath": {
           "type": [
             "string",
@@ -117,6 +129,50 @@
       }
     },
     "scannedFeatures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "scannedScopes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "completedScopes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "stoppedScope": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "scopeId": {
+          "type": "string"
+        },
+        "findingCount": {
+          "type": "integer"
+        },
+        "highestSeverity": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "plannedBatchCount": {
+          "type": "integer"
+        },
+        "docProposalCount": {
+          "type": "integer"
+        }
+      }
+    },
+    "nextScopeCandidates": {
       "type": "array",
       "items": {
         "type": "string"
@@ -561,6 +617,58 @@
               "string",
               "null"
             ]
+          }
+        }
+      }
+    },
+    "docProposals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "scopeId",
+          "targetDoc",
+          "severity",
+          "summary",
+          "normalizedSummary",
+          "details",
+          "suggestion",
+          "relatedPaths",
+          "evidence"
+        ],
+        "properties": {
+          "scopeId": {
+            "type": "string"
+          },
+          "targetDoc": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "normalizedSummary": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          },
+          "suggestion": {
+            "type": "string"
+          },
+          "relatedPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
           }
         }
       }

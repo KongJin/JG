@@ -85,20 +85,18 @@ namespace Features.Unit.Presentation
                 _ownerId,
                 spawnPosition);
 
-            // 드래그 앤 드롭 핸들러 연결
+            // 드래그 앤 드롭 핸들러 연결 (클릭 + 드래그 모두 이 핸들러가 담당)
             if (_inputHandlerPrefab != null && _canvas != null)
             {
                 var inputGo = Instantiate(_inputHandlerPrefab.gameObject, slotGo.transform, false);
                 var inputHandler = inputGo.GetComponent<UnitSlotInputHandler>();
-                if (_worldCamera != null)
-                {
-                    inputHandler.SetWorldCamera(_worldCamera);
-                }
                 inputHandler.Initialize(
                     _roster[rosterIndex],
                     _fullEventBus,
                     OnSummonRequested,
-                    _canvas);
+                    _ => OnSlotClicked(slotView),
+                    _canvas,
+                    _worldCamera);
             }
 
             _activeSlots.Add(slotView);
@@ -110,6 +108,17 @@ namespace Features.Unit.Presentation
         private void OnSummonRequested(Unit unitSpec, Shared.Math.Float3 spawnPosition)
         {
             _summonUseCase.Execute(_ownerId, unitSpec, spawnPosition);
+        }
+
+        /// <summary>
+        /// 슬롯 클릭 시 소환 실행.
+        /// </summary>
+        private void OnSlotClicked(UnitSlotView slotView)
+        {
+            if (slotView.UnitSpec == null) return;
+            // 현재 슬롯의 스펙으로 소환 (고정 위치)
+            // TODO: 실제 배치 영역 선택 시 position 보정
+            _summonUseCase.Execute(_ownerId, slotView.UnitSpec, new Shared.Math.Float3(0, 0, 0));
         }
 
         /// <summary>
@@ -198,6 +207,14 @@ namespace Features.Unit.Presentation
             for (var i = 0; i < visibleCount; i++)
             {
                 CreateSlot(_visibleStart + i, Vector3.zero);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_fullEventBus != null)
+            {
+                _fullEventBus.UnsubscribeAll(this);
             }
         }
     }

@@ -1,7 +1,6 @@
 using Features.Combat;
 using Features.Unit.Application.Events;
 using Features.Unit.Domain;
-using Features.Unit.Infrastructure;
 using Features.Unit.Presentation;
 using Features.Wave.Infrastructure;
 using Photon.Pun;
@@ -10,8 +9,12 @@ using Shared.Kernel;
 using Shared.Math;
 using UnityEngine;
 
-namespace Features.Unit
+namespace Features.Unit.Infrastructure
 {
+    /// <summary>
+    /// Photon instantiate 시 BattleEntity 도메인 생성 + Combat/위치 등록.
+    /// MonoBehaviourPunCallbacks + IPunInstantiateMagicCallback이므로 Infrastructure에 배치.
+    /// </summary>
     public sealed class BattleEntityPrefabSetup : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
     {
         public static event System.Action<BattleEntityPrefabSetup> BattleEntityArrived;

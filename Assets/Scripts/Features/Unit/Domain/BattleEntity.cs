@@ -30,9 +30,11 @@ namespace Features.Unit.Domain
             UnitSpec = unitSpec;
             OwnerId = ownerId;
             MaxHp = unitSpec.FinalHp;
-            CurrentHp = initialHp != null ? Mathf.Clamp(initialHp.Value, 0f, unitSpec.FinalHp) : unitSpec.FinalHp;
+            CurrentHp = initialHp != null ? Clamp(initialHp.Value, 0f, unitSpec.FinalHp) : unitSpec.FinalHp;
             Position = spawnPosition;
         }
+
+        private static float Clamp(float value, float min, float max) => value < min ? min : value > max ? max : value;
 
         public float TakeDamage(float damage)
         {

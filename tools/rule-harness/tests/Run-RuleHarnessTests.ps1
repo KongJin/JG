@@ -4,15 +4,11 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path
 Import-Module (Join-Path $repoRoot 'tools/rule-harness/RuleHarness.psm1') -Force
 $config = Get-RuleHarnessConfig -ConfigPath (Join-Path $repoRoot 'tools/rule-harness/config.json')
-$fixturesRoot = Join-Path $PSScriptRoot 'fixtures'
 $scratchRoot = Join-Path $repoRoot 'Temp/RuleHarnessFixtureTests'
-$testArchitectureOwnerDoc = 'docs/rules/architecture-rules.md'
-$testGovernanceOwnerDoc = 'docs/governance/rule-governance.md'
 
 if (Test-Path -LiteralPath $scratchRoot) {
     Remove-Item -LiteralPath $scratchRoot -Recurse -Force
 }
-
 New-Item -ItemType Directory -Path $scratchRoot -Force | Out-Null
 
 function Assert-RuleHarness {
@@ -28,220 +24,82 @@ function Assert-RuleHarness {
     }
 }
 
-$missingSsotFindings = Get-RuleHarnessStaticFindings -RepoRoot (Join-Path $fixturesRoot 'missing-ssot') -Config $config
-Assert-RuleHarness `
-    -Condition (@($missingSsotFindings | Where-Object { $_.findingType -eq 'broken_reference' -and $_.severity -eq 'high' }).Count -ge 1) `
-    -Message 'Expected high broken_reference finding for missing SSOT doc.'
-
-$unityInAppFindings = Get-RuleHarnessStaticFindings -RepoRoot (Join-Path $fixturesRoot 'unity-in-application') -Config $config
-Assert-RuleHarness `
-    -Condition (@($unityInAppFindings | Where-Object { $_.findingType -eq 'code_violation' -and $_.title -eq 'Unity API used in Application' }).Count -ge 1) `
-    -Message 'Expected Application layer Unity API violation.'
-
-$applyAllowedRoot = Join-Path $scratchRoot 'apply-allowed'
-Copy-Item -LiteralPath (Join-Path $fixturesRoot 'apply-allowed') -Destination $applyAllowedRoot -Recurse -Force
-$applyAllowedResult = Invoke-RuleHarnessDocEdits `
-    -RepoRoot $applyAllowedRoot `
-    -Config $config `
-    -Edits @(
-        [pscustomobject]@{
-            targetPath = 'docs/rules/feature-rules.md'
-            searchText = 'legacy-rule.md'
-            replaceText = 'current-rule.md'
-            reason = 'Fix moved rule doc path.'
-        }
-    )
-Assert-RuleHarness `
-    -Condition ($applyAllowedResult.edits[0].status -eq 'applied') `
-    -Message 'Expected CLAUDE-referenced rule doc edit to apply.'
-Assert-RuleHarness `
-    -Condition ((Get-Content -Path (Join-Path $applyAllowedRoot 'docs/rules/feature-rules.md') -Raw) -match 'current-rule\.md') `
-    -Message 'Expected rule doc content to be updated.'
-
-$applyRejectedRoot = Join-Path $scratchRoot 'apply-rejected'
-Copy-Item -LiteralPath (Join-Path $fixturesRoot 'apply-rejected') -Destination $applyRejectedRoot -Recurse -Force
-$applyRejectedResult = Invoke-RuleHarnessDocEdits `
-    -RepoRoot $applyRejectedRoot `
-    -Config $config `
-    -Edits @(
-        [pscustomobject]@{
-            targetPath = 'docs/design/blocked.md'
-            searchText = 'old'
-            replaceText = 'new'
-            reason = 'This should be rejected.'
-        }
-    )
-Assert-RuleHarness `
-    -Condition ($applyRejectedResult.edits[0].status -eq 'rejected') `
-    -Message 'Expected docs/design edit to be rejected by allowlist.'
-
-$dynamicGlobalDocRoot = Join-Path $scratchRoot 'dynamic-global-doc'
-New-Item -ItemType Directory -Path (Join-Path $dynamicGlobalDocRoot 'docs/ops') -Force | Out-Null
-Set-Content -Path (Join-Path $dynamicGlobalDocRoot 'CLAUDE.md') -Value 'See `/docs/ops/firebase_hosting.md`.' -Encoding UTF8
-Set-Content -Path (Join-Path $dynamicGlobalDocRoot 'docs/ops/firebase_hosting.md') -Value '# Ops' -Encoding UTF8
-$dynamicGlobalDocResult = Invoke-RuleHarnessDocEdits `
-    -RepoRoot $dynamicGlobalDocRoot `
-    -Config $config `
-    -Edits @(
-        [pscustomobject]@{
-            targetPath = 'docs/ops/firebase_hosting.md'
-            searchText = '# Ops'
-            replaceText = '# Ops Guide'
-            reason = 'Verify CLAUDE-referenced global docs are allowlisted dynamically.'
-        }
-    )
-Assert-RuleHarness `
-    -Condition ($dynamicGlobalDocResult.edits[0].status -eq 'applied') `
-    -Message 'Expected CLAUDE-referenced global doc edit to apply without a static path mapping.'
-
-$movedArchitectureRoot = Join-Path $scratchRoot 'moved-architecture-owner'
-Copy-Item -LiteralPath (Join-Path $fixturesRoot 'unity-in-application') -Destination $movedArchitectureRoot -Recurse -Force
-New-Item -ItemType Directory -Path (Join-Path $movedArchitectureRoot 'docs/rules') -Force | Out-Null
-Set-Content -Path (Join-Path $movedArchitectureRoot 'CLAUDE.md') -Value 'Read `/docs/rules/architecture-rules.md` for layer boundaries.' -Encoding UTF8
-Set-Content -Path (Join-Path $movedArchitectureRoot 'docs/rules/architecture-rules.md') -Value '# Architecture Rules' -Encoding UTF8
-$movedArchitectureFindings = Get-RuleHarnessStaticFindings -RepoRoot $movedArchitectureRoot -Config $config
-Assert-RuleHarness `
-    -Condition (@($movedArchitectureFindings | Where-Object { $_.title -eq 'Unity API used in Application' -and $_.ownerDoc -eq 'docs/rules/architecture-rules.md' }).Count -ge 1) `
-    -Message 'Expected architecture violations to resolve ownerDoc from the current CLAUDE entrypoint, not a hardcoded legacy path.'
-
-$reviewedFindings = ConvertTo-RuleHarnessReviewedFindings -Findings @(
-    [pscustomobject]@{
-        findingType = 'broken_reference'
-        severity = 'medium'
-        ownerDoc = 'docs/rules/feature-rules.md'
-        title = 'Broken markdown reference'
-        message = 'Rule doc still points to a moved file.'
-        confidence = 'high'
-        source = 'agent_review'
-        evidence = @()
-    },
-    [pscustomobject]@{
-        findingType = 'missing_rule'
-        severity = 'high'
-        ownerDoc = $testArchitectureOwnerDoc
-        title = 'Missing feature bootstrap root'
-        message = "Feature 'Bar' has no root-level *Setup.cs or *Bootstrap.cs file."
-        confidence = 'high'
-        source = 'agent_review'
-        evidence = @([pscustomobject]@{ path = 'Assets/Scripts/Features/Bar'; line = $null; snippet = 'Expected root-level Setup/Bootstrap file' })
-    }
-)
-$plannedBatches = Get-RuleHarnessPlannedBatches `
-    -ReviewedFindings $reviewedFindings `
-    -DocEdits @(
-        [pscustomobject]@{
-            targetPath = 'docs/rules/feature-rules.md'
-            searchText = 'legacy-rule.md'
-            replaceText = 'current-rule.md'
-            reason = 'Fix moved rule doc path.'
-        }
-    ) `
-    -RepoRoot $applyAllowedRoot
-Assert-RuleHarness `
-    -Condition (@($plannedBatches | Where-Object kind -eq 'rule_fix').Count -eq 1) `
-    -Message 'Expected one rule_fix batch for allowlisted doc edits.'
-Assert-RuleHarness `
-    -Condition (@($plannedBatches | Where-Object { $_.kind -eq 'code_fix' -and $_.targetFiles -contains 'Assets/Scripts/Features/Bar/BarSetup.cs' }).Count -eq 1) `
-    -Message 'Expected one code_fix batch for missing bootstrap root.'
-
-$dirtyRepoRoot = Join-Path $scratchRoot 'dirty-targets'
-Copy-Item -LiteralPath (Join-Path $fixturesRoot 'apply-allowed') -Destination $dirtyRepoRoot -Recurse -Force
-Push-Location $dirtyRepoRoot
-try {
-    git init | Out-Null
-    git config user.name 'rule-harness-tests'
-    git config user.email 'rule-harness-tests@example.com'
-    git add .
-    git commit -m 'init' | Out-Null
-    Add-Content -Path 'docs/rules/feature-rules.md' -Value "`nDirty change"
-}
-finally {
-    Pop-Location
-}
-$dirtyTargets = Get-RuleHarnessDirtyTargetPaths `
-    -RepoRoot $dirtyRepoRoot `
-    -TargetFiles @('docs/rules/feature-rules.md')
-Assert-RuleHarness `
-    -Condition ('docs/rules/feature-rules.md' -in $dirtyTargets) `
-    -Message 'Expected dirty target detection to return modified rule doc.'
-
-$mutationState = Get-RuleHarnessMutationState -Config $config -MutationMode 'code_and_rules' -EnableMutation
-Assert-RuleHarness `
-    -Condition ($mutationState.enabled -and $mutationState.mode -eq 'code_and_rules') `
-    -Message 'Expected mutation state to honor explicit code_and_rules mode.'
-
 function New-RuleHarnessTestConfig {
     param(
         [Parameter(Mandatory)]
-        [object]$SourceConfig
+        [object]$SourceConfig,
+        [int]$MaxScopesPerRun = 4
     )
 
-    $clone = ($SourceConfig | ConvertTo-Json -Depth 30) | ConvertFrom-Json
+    $clone = ($SourceConfig | ConvertTo-Json -Depth 50) | ConvertFrom-Json
+    $clone.scan.maxScopesPerRun = $MaxScopesPerRun
     $clone.validation.harnessTestScript = 'tools/rule-harness/tests/Run-RuleHarnessTests.ps1'
     $clone.history.statePath = 'Temp/RuleHarnessState/history.json'
+    $clone.state.featureScanStatePath = 'Temp/RuleHarnessState/feature-scan-state.json'
+    $clone.state.docProposalBacklogPath = 'Temp/RuleHarnessState/doc-proposals.json'
     $clone
 }
 
-function Initialize-RuleHarnessMutationRepo {
+function Add-FeatureFixture {
     param(
         [Parameter(Mandatory)]
         [string]$RepoPath,
-        [switch]$IncludeBarService,
-        [switch]$IncludeFeatureTestAsset,
-        [switch]$BreakOwnerDocReferences
+        [Parameter(Mandatory)]
+        [string]$FeatureName,
+        [string]$ApplicationContent,
+        [switch]$SkipSetup
     )
 
-    New-Item -ItemType Directory -Path (Join-Path $RepoPath 'Assets/Scripts/Features/Bar') -Force | Out-Null
-    New-Item -ItemType Directory -Path (Join-Path $RepoPath 'docs/rules') -Force | Out-Null
-    New-Item -ItemType Directory -Path (Join-Path $RepoPath 'tools/rule-harness/tests') -Force | Out-Null
-    New-Item -ItemType Directory -Path (Join-Path $RepoPath 'Tests/Bar') -Force | Out-Null
+    $featureRoot = Join-Path $RepoPath "Assets/Scripts/Features/$FeatureName"
+    $appRoot = Join-Path $featureRoot 'Application'
+    New-Item -ItemType Directory -Path $appRoot -Force | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $RepoPath "Tests/$FeatureName") -Force | Out-Null
 
-    Set-Content -Path (Join-Path $RepoPath 'CLAUDE.md') -Value 'Read `/docs/rules/architecture-rules.md`.' -Encoding UTF8
-    $architectureDoc = if ($BreakOwnerDocReferences) {
-@'
-# Architecture Rules
-
-See [Missing Contract](./missing-contract.md).
-'@
+    if (-not $SkipSetup) {
+        Set-Content -Path (Join-Path $featureRoot "${FeatureName}Setup.cs") -Value @"
+namespace Features.$FeatureName
+{
+    public sealed class ${FeatureName}Setup
+    {
     }
-    else {
-        '# Architecture Rules'
-    }
-    Set-Content -Path (Join-Path $RepoPath 'docs/rules/architecture-rules.md') -Value $architectureDoc -Encoding UTF8
-    Set-Content -Path (Join-Path $RepoPath 'tools/rule-harness/tests/Run-RuleHarnessTests.ps1') -Value 'Write-Host ''fixture harness tests passed''' -Encoding UTF8
-    if ($IncludeBarService) {
-        Set-Content -Path (Join-Path $RepoPath 'Assets/Scripts/Features/Bar/BarService.cs') -Value 'namespace Features.Bar { public sealed class BarService { } }' -Encoding UTF8
+}
+"@ -Encoding UTF8
     }
 
-    if ($IncludeFeatureTestAsset) {
-        New-Item -ItemType Directory -Path (Join-Path $RepoPath 'Tests/Bar/Domain') -Force | Out-Null
-        Set-Content -Path (Join-Path $RepoPath 'Tests/Bar/Domain/BarDomainTests.cs') -Value 'namespace Tests.Bar.Domain { public sealed class BarDomainTests { } }' -Encoding UTF8
-    }
-
-    Push-Location $RepoPath
-    try {
-        git init | Out-Null
-        git config user.name 'rule-harness-tests'
-        git config user.email 'rule-harness-tests@example.com'
-        git add .
-        git commit -m 'init' | Out-Null
-    }
-    finally {
-        Pop-Location
+    if (-not [string]::IsNullOrWhiteSpace($ApplicationContent)) {
+        Set-Content -Path (Join-Path $appRoot "${FeatureName}Service.cs") -Value $ApplicationContent -Encoding UTF8
     }
 }
 
-function Initialize-RuleHarnessFixtureRepo {
+function Initialize-RuleHarnessScopeRepo {
     param(
         [Parameter(Mandatory)]
         [string]$RepoPath,
         [Parameter(Mandatory)]
-        [string]$FixtureName
+        [object[]]$Features,
+        [string]$ArchitectureDocContent = '# Architecture Rules'
     )
 
-    Copy-Item -LiteralPath (Join-Path $fixturesRoot $FixtureName) -Destination $RepoPath -Recurse -Force
+    New-Item -ItemType Directory -Path (Join-Path $RepoPath 'docs/rules') -Force | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $RepoPath 'Temp') -Force | Out-Null
+    Set-Content -Path (Join-Path $RepoPath 'CLAUDE.md') -Value 'Read `/docs/rules/architecture-rules.md`.' -Encoding UTF8
+    Set-Content -Path (Join-Path $RepoPath 'docs/rules/architecture-rules.md') -Value $ArchitectureDocContent -Encoding UTF8
+
+    foreach ($feature in @($Features)) {
+        $skipSetup = $false
+        if ($feature.PSObject.Properties.Name -contains 'SkipSetup') {
+            $skipSetup = [bool]$feature.SkipSetup
+        }
+        Add-FeatureFixture `
+            -RepoPath $RepoPath `
+            -FeatureName ([string]$feature.Name) `
+            -ApplicationContent ([string]$feature.ApplicationContent) `
+            -SkipSetup:$skipSetup
+    }
+
     New-Item -ItemType Directory -Path (Join-Path $RepoPath 'tools') -Force | Out-Null
     Copy-Item -LiteralPath (Join-Path $repoRoot 'tools/rule-harness') -Destination (Join-Path $RepoPath 'tools/rule-harness') -Recurse -Force
+    Set-Content -Path (Join-Path $RepoPath 'tools/rule-harness/tests/Run-RuleHarnessTests.ps1') -Value 'Write-Host ''fixture harness tests passed''' -Encoding UTF8
 
     Push-Location $RepoPath
     try {
@@ -256,438 +114,278 @@ function Initialize-RuleHarnessFixtureRepo {
     }
 }
 
-function New-RuleHarnessBootstrapFinding {
+function Write-FeatureScanStateFixture {
     param(
         [Parameter(Mandatory)]
-        [string]$OwnerDoc
+        [string]$RepoPath,
+        [Parameter(Mandatory)]
+        [object[]]$Entries
     )
 
+    $statePath = Join-Path $RepoPath 'Temp/RuleHarnessState/feature-scan-state.json'
+    New-Item -ItemType Directory -Path (Split-Path -Parent $statePath) -Force | Out-Null
     [pscustomobject]@{
-        findingType = 'missing_rule'
-        severity = 'high'
-        ownerDoc = $OwnerDoc
-        title = 'Missing feature bootstrap root'
-        message = "Feature 'Bar' has no root-level *Setup.cs or *Bootstrap.cs file."
-        confidence = 'high'
-        source = 'agent_review'
-        evidence = @([pscustomobject]@{ path = 'Assets/Scripts/Features/Bar'; line = $null; snippet = 'Expected root-level Setup/Bootstrap file' })
-        remediationKind = 'code_fix'
-    }
+        schemaVersion = 1
+        entries       = $Entries
+    } | ConvertTo-Json -Depth 20 | Set-Content -Path $statePath -Encoding UTF8
 }
 
-$bootstrapFinding = New-RuleHarnessBootstrapFinding -OwnerDoc $testArchitectureOwnerDoc
+$orderingRepo = Join-Path $scratchRoot 'feature-ordering'
+Initialize-RuleHarnessScopeRepo -RepoPath $orderingRepo -Features @(
+    [pscustomobject]@{ Name = 'Aged'; ApplicationContent = 'namespace Features.Aged.Application { public sealed class AgedService { } }' },
+    [pscustomobject]@{ Name = 'Fresh'; ApplicationContent = 'namespace Features.Fresh.Application { public sealed class FreshService { } }' },
+    [pscustomobject]@{ Name = 'NewA'; ApplicationContent = 'namespace Features.NewA.Application { public sealed class NewAService { } }' },
+    [pscustomobject]@{ Name = 'NewB'; ApplicationContent = 'namespace Features.NewB.Application { public sealed class NewBService { } }' }
+)
+Write-FeatureScanStateFixture -RepoPath $orderingRepo -Entries @(
+    [pscustomobject]@{ scopeId = 'Aged'; lastCheckedAtUtc = '2026-04-01T00:00:00Z'; lastResult = 'clean'; lastFindingSeverity = $null; lastRunId = 'old'; lastCommitSha = 'a'; lastStoppedReason = $null },
+    [pscustomobject]@{ scopeId = 'Fresh'; lastCheckedAtUtc = '2026-04-08T00:00:00Z'; lastResult = 'clean'; lastFindingSeverity = $null; lastRunId = 'new'; lastCommitSha = 'b'; lastStoppedReason = $null }
+)
+$orderingConfig = New-RuleHarnessTestConfig -SourceConfig $config -MaxScopesPerRun 4
+$orderingReport = Invoke-RuleHarness `
+    -RepoRoot $orderingRepo `
+    -ConfigPath (Join-Path $orderingRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+Assert-RuleHarness `
+    -Condition ((@($orderingReport.scannedScopes) -join ',') -eq 'NewA,NewB,Aged,Fresh') `
+    -Message 'Expected feature scan order to prefer unchecked scopes, then older checked scopes, then name order.'
 
-$mediumConfidenceRepo = Join-Path $scratchRoot 'mutation-medium-confidence'
-Initialize-RuleHarnessMutationRepo -RepoPath $mediumConfidenceRepo -IncludeFeatureTestAsset
-$mediumConfidenceConfig = New-RuleHarnessTestConfig -SourceConfig $config
-$mediumConfidenceBatches = Get-RuleHarnessPlannedBatches `
-    -ReviewedFindings @(ConvertTo-RuleHarnessReviewedFindings -Findings @($bootstrapFinding)) `
-    -DocEdits @() `
-    -RepoRoot $mediumConfidenceRepo
-$mediumConfidenceResult = Invoke-RuleHarnessMutationPlan `
-    -PlannedBatches $mediumConfidenceBatches `
-    -InitialStaticFindings @($bootstrapFinding) `
-    -RepoRoot $mediumConfidenceRepo `
-    -Config $mediumConfidenceConfig `
-    -MutationState $mutationState
+$quotaRepo = Join-Path $scratchRoot 'feature-quota'
+Initialize-RuleHarnessScopeRepo -RepoPath $quotaRepo -Features @(
+    [pscustomobject]@{ Name = 'One'; ApplicationContent = 'namespace Features.One.Application { public sealed class OneService { } }' },
+    [pscustomobject]@{ Name = 'Two'; ApplicationContent = 'namespace Features.Two.Application { public sealed class TwoService { } }' },
+    [pscustomobject]@{ Name = 'Three'; ApplicationContent = 'namespace Features.Three.Application { public sealed class ThreeService { } }' },
+    [pscustomobject]@{ Name = 'Four'; ApplicationContent = 'namespace Features.Four.Application { public sealed class FourService { } }' },
+    [pscustomobject]@{ Name = 'Five'; ApplicationContent = 'namespace Features.Five.Application { public sealed class FiveService { } }' }
+)
+$quotaConfig = New-RuleHarnessTestConfig -SourceConfig $config -MaxScopesPerRun 4
+$quotaReport = Invoke-RuleHarness `
+    -RepoRoot $quotaRepo `
+    -ConfigPath (Join-Path $quotaRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
 Assert-RuleHarness `
-    -Condition (-not $mediumConfidenceResult.failed -and @($mediumConfidenceResult.appliedBatches).Count -eq 1) `
-    -Message 'Expected a feature batch with test assets to apply under medium-confidence inferred validation.'
-Assert-RuleHarness `
-    -Condition (@($mediumConfidenceResult.discoveredValidationPlan | Where-Object { $_.source -eq 'feature_test_assets' -and $_.confidence -eq 'medium' -and $_.runnable }).Count -eq 1) `
-    -Message 'Expected discovered validation plan to use feature test assets as a medium-confidence signal.'
-Assert-RuleHarness `
-    -Condition (@($mediumConfidenceResult.validationResults | Where-Object { $_.validation -eq 'inferred_validation' -and $_.status -eq 'passed' }).Count -ge 1) `
-    -Message 'Expected medium-confidence batches to pass inferred validation.'
-Assert-RuleHarness `
-    -Condition (@($mediumConfidenceResult.validationResults | Where-Object { $_.validation -eq 'targeted_tests' }).Count -eq 0) `
-    -Message 'Expected runnerless validation to stop emitting targeted_tests results.'
-Assert-RuleHarness `
-    -Condition (Test-Path -LiteralPath (Join-Path $mediumConfidenceRepo 'Assets/Scripts/Features/Bar/BarSetup.cs')) `
-    -Message 'Expected inferred validation to allow the scaffold batch to apply.'
-Assert-RuleHarness `
-    -Condition (@($mediumConfidenceResult.actionItems | Where-Object { $_.kind -eq 'increase-inference-coverage' }).Count -ge 1) `
-    -Message 'Expected medium-confidence batches to emit an inference coverage follow-up action item.'
-Assert-RuleHarness `
-    -Condition ($mediumConfidenceBatches[0].riskScore -eq 30 -and $mediumConfidenceBatches[0].riskLabel -eq 'medium' -and $mediumConfidenceBatches[0].ownershipStatus -eq 'accepted') `
-    -Message 'Expected scaffold batch metadata to include risk score and accepted ownership.'
-$mediumConfidenceHistory = Read-RuleHarnessHistoryState -RepoRoot $mediumConfidenceRepo -Config $mediumConfidenceConfig
-Assert-RuleHarness `
-    -Condition (@($mediumConfidenceHistory.entries.Keys).Count -ge 1) `
-    -Message 'Expected mutation history to persist batch state after apply.'
+    -Condition (@($quotaReport.scannedScopes).Count -eq 4 -and @($quotaReport.completedScopes).Count -eq 4 -and $null -eq $quotaReport.stoppedScope) `
+    -Message 'Expected clean runs to stop after the configured max scope count.'
 
-$lowConfidenceRepo = Join-Path $scratchRoot 'mutation-low-confidence'
-Initialize-RuleHarnessMutationRepo -RepoPath $lowConfidenceRepo
-$lowConfidenceConfig = New-RuleHarnessTestConfig -SourceConfig $config
-$lowConfidenceBatches = Get-RuleHarnessPlannedBatches `
-    -ReviewedFindings @(ConvertTo-RuleHarnessReviewedFindings -Findings @($bootstrapFinding)) `
-    -DocEdits @() `
-    -RepoRoot $lowConfidenceRepo
-$lowConfidenceResult = Invoke-RuleHarnessMutationPlan `
-    -PlannedBatches $lowConfidenceBatches `
-    -InitialStaticFindings @($bootstrapFinding) `
-    -RepoRoot $lowConfidenceRepo `
-    -Config $lowConfidenceConfig `
-    -MutationState $mutationState
-Assert-RuleHarness `
-    -Condition (-not $lowConfidenceResult.failed -and @($lowConfidenceResult.appliedBatches).Count -eq 0 -and @($lowConfidenceResult.skippedBatches | Where-Object { $_.reasonCode -eq 'manual-validation-required' }).Count -eq 1) `
-    -Message 'Expected code batches without feature test assets to skip with manual-validation-required.'
-Assert-RuleHarness `
-    -Condition (@($lowConfidenceResult.discoveredValidationPlan | Where-Object { $_.source -eq 'inferred' -and $_.confidence -eq 'low' }).Count -eq 1) `
-    -Message 'Expected discovered validation plan to downgrade to low confidence when only inferred checks are available.'
-Assert-RuleHarness `
-    -Condition (@($lowConfidenceResult.actionItems | Where-Object { $_.kind -eq 'manual-validation-required' }).Count -ge 1) `
-    -Message 'Expected low-confidence skip to produce a manual validation action item.'
-Assert-RuleHarness `
-    -Condition (-not (Test-Path -LiteralPath (Join-Path $lowConfidenceRepo 'Assets/Scripts/Features/Bar/BarSetup.cs'))) `
-    -Message 'Expected low-confidence batches to skip before touching the workspace.'
-
-$unityScopeRepo = Join-Path $scratchRoot 'mutation-unity-scope'
-New-Item -ItemType Directory -Path (Join-Path $unityScopeRepo 'Assets/Editor/UnityMcp') -Force | Out-Null
-New-Item -ItemType Directory -Path (Join-Path $unityScopeRepo 'docs/ops') -Force | Out-Null
-New-Item -ItemType Directory -Path (Join-Path $unityScopeRepo 'tools/rule-harness/tests') -Force | Out-Null
-Set-Content -Path (Join-Path $unityScopeRepo 'CLAUDE.md') -Value 'Read `/docs/ops/unity_mcp.md`.' -Encoding UTF8
-Set-Content -Path (Join-Path $unityScopeRepo 'docs/ops/unity_mcp.md') -Value '# Unity MCP' -Encoding UTF8
-Set-Content -Path (Join-Path $unityScopeRepo 'tools/rule-harness/tests/Run-RuleHarnessTests.ps1') -Value 'Write-Host ''fixture harness tests passed''' -Encoding UTF8
-Push-Location $unityScopeRepo
-try {
-    git init | Out-Null
-    git config user.name 'rule-harness-tests'
-    git config user.email 'rule-harness-tests@example.com'
-    git add .
-    git commit -m 'init' | Out-Null
-}
-finally {
-    Pop-Location
-}
-$unityScopeConfig = New-RuleHarnessTestConfig -SourceConfig $config
-$unityScopeFinding = [pscustomobject]@{
-    findingType = 'code_violation'
-    severity = 'high'
-    ownerDoc = 'docs/ops/unity_mcp.md'
-    title = 'Synthetic Unity MCP issue'
-    message = 'Synthetic Unity MCP issue'
-    confidence = 'high'
-    source = 'agent_review'
-    evidence = @([pscustomobject]@{ path = 'Assets/Editor/UnityMcp'; line = $null; snippet = 'Synthetic Unity MCP issue' })
-    remediationKind = 'code_fix'
-}
-$unityScopeBatch = [pscustomobject]@{
-    id = 'batch-unity-scope'
-    kind = 'code_fix'
-    targetFiles = @('Assets/Editor/UnityMcp/GeneratedValidator.cs')
-    reason = 'Synthetic Unity MCP mutation.'
-    validation = @('rule_harness_tests', 'inferred_validation', 'static_scan')
-    expectedFindingsResolved = @('code_violation|docs/ops/unity_mcp.md|Synthetic Unity MCP issue')
-    status = 'planned'
-    featureNames = @()
-    ownerDocs = @('docs/ops/unity_mcp.md')
-    sourceFindingTypes = @('code_violation')
-    fingerprint = $null
-    riskScore = $null
-    riskLabel = $null
-    ownershipStatus = 'pending'
-    operations = @(
+$lowRepo = Join-Path $scratchRoot 'low-finding'
+Initialize-RuleHarnessScopeRepo -RepoPath $lowRepo -Features @(
+    [pscustomobject]@{ Name = 'Solo'; ApplicationContent = 'namespace Features.Solo.Application { public sealed class SoloService { } }'; SkipSetup = $true }
+)
+$lowReviewPath = Join-Path $lowRepo 'Temp/low-review.json'
+[pscustomobject]@{
+    findings = @(
         [pscustomobject]@{
-            type = 'write_file'
-            targetPath = 'Assets/Editor/UnityMcp/GeneratedValidator.cs'
-            content = 'namespace Editor.UnityMcp { public sealed class GeneratedValidator { } }'
+            findingType = 'doc_drift'
+            severity = 'low'
+            ownerDoc = 'docs/rules/architecture-rules.md'
+            title = 'Low severity note'
+            message = 'Low severity note'
+            confidence = 'low'
+            source = 'agent_review'
+            remediationKind = 'report_only'
+            rationale = ''
+            evidence = @([pscustomobject]@{ path = 'Assets/Scripts/Features/Solo/Application/SoloService.cs'; line = 1; snippet = 'SoloService' })
+            proposedDocEdit = $null
         }
     )
-}
-$unityScopeResult = Invoke-RuleHarnessMutationPlan `
-    -PlannedBatches @($unityScopeBatch) `
-    -InitialStaticFindings @($unityScopeFinding) `
-    -RepoRoot $unityScopeRepo `
-    -Config $unityScopeConfig `
-    -MutationState $mutationState
-Assert-RuleHarness `
-    -Condition (@($unityScopeResult.skippedBatches | Where-Object { $_.reasonCode -eq 'manual-validation-required' }).Count -eq 1) `
-    -Message 'Expected UnityMcp scope to skip because runtime validation is not built into this phase.'
-Assert-RuleHarness `
-    -Condition (@($unityScopeResult.discoveredValidationPlan | Where-Object { $_.confidence -eq 'low' -and @($_.checks | Where-Object { $_.name -eq 'unity_or_scene_scope_detected' }).Count -eq 1 }).Count -eq 1) `
-    -Message 'Expected sensitive UnityMcp scope to record the unity_or_scene_scope_detected inferred signal.'
-
-$failingValidationRepo = Join-Path $scratchRoot 'mutation-failing-validation'
-Initialize-RuleHarnessMutationRepo -RepoPath $failingValidationRepo -IncludeFeatureTestAsset -BreakOwnerDocReferences
-$failingValidationConfig = New-RuleHarnessTestConfig -SourceConfig $config
-$failingValidationBatches = Get-RuleHarnessPlannedBatches `
-    -ReviewedFindings @(ConvertTo-RuleHarnessReviewedFindings -Findings @($bootstrapFinding)) `
-    -DocEdits @() `
-    -RepoRoot $failingValidationRepo
-$failingValidationResult1 = Invoke-RuleHarnessMutationPlan `
-    -PlannedBatches $failingValidationBatches `
-    -InitialStaticFindings @($bootstrapFinding) `
-    -RepoRoot $failingValidationRepo `
-    -Config $failingValidationConfig `
-    -MutationState $mutationState
-Assert-RuleHarness `
-    -Condition ($failingValidationResult1.failed -and [int]$failingValidationResult1.retryAttempts -eq 1) `
-    -Message 'Expected one same-run reflective retry after the first inferred validation failure.'
-Assert-RuleHarness `
-    -Condition (@($failingValidationResult1.learningTrace | Where-Object { $_.batchId -eq $failingValidationBatches[0].id }).Count -eq 2) `
-    -Message 'Expected the failing batch to record exactly two learning-trace attempts.'
-Assert-RuleHarness `
-    -Condition (@($failingValidationResult1.memoryUpdates).Count -ge 1) `
-    -Message 'Expected repeated inferred validation failure to create an advisory memory update.'
-Assert-RuleHarness `
-    -Condition (@($failingValidationResult1.validationResults | Where-Object { $_.validation -eq 'inferred_validation' -and $_.status -eq 'failed' }).Count -ge 1) `
-    -Message 'Expected broken owner doc references to fail inferred validation.'
-Assert-RuleHarness `
-    -Condition (-not (Test-Path -LiteralPath (Join-Path $failingValidationRepo 'Assets/Scripts/Features/Bar/BarSetup.cs'))) `
-    -Message 'Expected repeated failed code batch to leave no scaffold file behind.'
-Push-Location $failingValidationRepo
-try {
-    git commit --allow-empty -m 'advance-commit-2' | Out-Null
-}
-finally {
-    Pop-Location
-}
-$failingValidationResult2 = Invoke-RuleHarnessMutationPlan `
-    -PlannedBatches $failingValidationBatches `
-    -InitialStaticFindings @($bootstrapFinding) `
-    -RepoRoot $failingValidationRepo `
-    -Config $failingValidationConfig `
-    -MutationState $mutationState
-Push-Location $failingValidationRepo
-try {
-    git commit --allow-empty -m 'advance-commit-3' | Out-Null
-}
-finally {
-    Pop-Location
-}
-$failingValidationResult3 = Invoke-RuleHarnessMutationPlan `
-    -PlannedBatches $failingValidationBatches `
-    -InitialStaticFindings @($bootstrapFinding) `
-    -RepoRoot $failingValidationRepo `
-    -Config $failingValidationConfig `
-    -MutationState $mutationState
-Assert-RuleHarness `
-    -Condition (@($failingValidationResult3.promotionCandidates | Where-Object { $_.targetDoc -eq $testArchitectureOwnerDoc }).Count -ge 1) `
-    -Message 'Expected recurring feature-local inferred validation failures to propose promotion to the architecture rule doc.'
-
-$ownershipRejectRepo = Join-Path $scratchRoot 'mutation-ownership-reject'
-Initialize-RuleHarnessMutationRepo -RepoPath $ownershipRejectRepo
-$ownershipRejectConfig = New-RuleHarnessTestConfig -SourceConfig $config
-$ownershipRejectFinding = New-RuleHarnessBootstrapFinding -OwnerDoc $testGovernanceOwnerDoc
-$ownershipRejectBatch = [pscustomobject]@{
-    id = 'batch-ownership'
-    kind = 'code_fix'
-    targetFiles = @('Assets/Scripts/Features/Bar/BarSetup.cs')
-    reason = 'Add missing root setup scaffold for ownership test.'
-    validation = @('rule_harness_tests', 'inferred_validation', 'static_scan')
-    expectedFindingsResolved = @("missing_rule|$testArchitectureOwnerDoc|Missing feature bootstrap root")
-    status = 'planned'
-    featureNames = @('Bar')
-    ownerDocs = @($testGovernanceOwnerDoc)
-    sourceFindingTypes = @('missing_rule')
-    fingerprint = $null
-    riskScore = $null
-    riskLabel = $null
-    ownershipStatus = 'pending'
-    operations = @(
-        [pscustomobject]@{
-            type = 'write_file'
-            targetPath = 'Assets/Scripts/Features/Bar/BarSetup.cs'
-            content = 'namespace Features.Bar { public sealed class BarSetup { } }'
-        }
-    )
-}
-$ownershipRejectResult = Invoke-RuleHarnessMutationPlan `
-    -PlannedBatches @($ownershipRejectBatch) `
-    -InitialStaticFindings @($ownershipRejectFinding) `
-    -RepoRoot $ownershipRejectRepo `
-    -Config $ownershipRejectConfig `
-    -MutationState $mutationState
-Assert-RuleHarness `
-    -Condition ($ownershipRejectResult.skippedBatches[0].reasonCode -eq 'ownership-preflight-rejected') `
-    -Message 'Expected feature-owned scaffold batch with a non-architecture global owner doc to fail ownership preflight.'
-
-$riskThresholdRepo = Join-Path $scratchRoot 'mutation-risk-threshold'
-Initialize-RuleHarnessMutationRepo -RepoPath $riskThresholdRepo -IncludeBarService -IncludeFeatureTestAsset
-$riskThresholdConfig = New-RuleHarnessTestConfig -SourceConfig $config
-$riskThresholdBatch = [pscustomobject]@{
-    id = 'batch-risk'
-    kind = 'code_fix'
-    targetFiles = @('Assets/Scripts/Features/Bar/BarService.cs')
-    reason = 'Modify existing code file.'
-    validation = @('rule_harness_tests', 'inferred_validation', 'static_scan')
-    expectedFindingsResolved = @("missing_rule|$testArchitectureOwnerDoc|Synthetic")
-    status = 'planned'
-    featureNames = @('Bar')
-    ownerDocs = @($testArchitectureOwnerDoc)
-    sourceFindingTypes = @('missing_rule')
-    fingerprint = $null
-    riskScore = $null
-    riskLabel = $null
-    ownershipStatus = 'pending'
-    operations = @(
-        [pscustomobject]@{
-            type = 'write_file'
-            targetPath = 'Assets/Scripts/Features/Bar/BarService.cs'
-            content = 'namespace Features.Bar { public sealed class BarService { public int Value => 1; } }'
-        }
-    )
-}
-$riskThresholdResult = Invoke-RuleHarnessMutationPlan `
-    -PlannedBatches @($riskThresholdBatch) `
-    -InitialStaticFindings @($bootstrapFinding) `
-    -RepoRoot $riskThresholdRepo `
-    -Config $riskThresholdConfig `
-    -MutationState $mutationState
-Assert-RuleHarness `
-    -Condition ($riskThresholdResult.skippedBatches[0].reasonCode -eq 'risk-threshold-exceeded') `
-    -Message 'Expected existing code file edits above the threshold to skip before apply.'
-
-$globalPromotionRepo = Join-Path $scratchRoot 'mutation-global-promotion'
-New-Item -ItemType Directory -Path (Join-Path $globalPromotionRepo 'docs/rules') -Force | Out-Null
-New-Item -ItemType Directory -Path (Join-Path $globalPromotionRepo 'docs/governance') -Force | Out-Null
-New-Item -ItemType Directory -Path (Join-Path $globalPromotionRepo 'tools/rule-harness/tests') -Force | Out-Null
-Set-Content -Path (Join-Path $globalPromotionRepo 'CLAUDE.md') -Value @'
-# Fixture
-
-See `/docs/rules/architecture-rules.md`.
-See `/docs/governance/rule-governance.md`.
-'@ -Encoding UTF8
-Set-Content -Path (Join-Path $globalPromotionRepo $testArchitectureOwnerDoc) -Value '# Architecture' -Encoding UTF8
-Set-Content -Path (Join-Path $globalPromotionRepo $testGovernanceOwnerDoc) -Value '# Work Principles' -Encoding UTF8
-Set-Content -Path (Join-Path $globalPromotionRepo 'tools/rule-harness/tests/Run-RuleHarnessTests.ps1') -Value 'throw ''fixture harness tests failed''' -Encoding UTF8
-Push-Location $globalPromotionRepo
-try {
-    git init | Out-Null
-    git config user.name 'rule-harness-tests'
-    git config user.email 'rule-harness-tests@example.com'
-    git add .
-    git commit -m 'init' | Out-Null
-}
-finally {
-    Pop-Location
-}
-$globalPromotionConfig = New-RuleHarnessTestConfig -SourceConfig $config
-$globalPromotionConfig.mutation.requireCleanTargets = $false
-$globalPromotionBatch = [pscustomobject]@{
-    id = 'batch-global-promotion'
-    kind = 'rule_fix'
-    targetFiles = @($testArchitectureOwnerDoc)
-    reason = 'Synthetic failing global rule batch.'
-    validation = @('rule_harness_tests', 'static_scan')
-    expectedFindingsResolved = @("doc_drift|$testArchitectureOwnerDoc|Synthetic global failure")
-    status = 'planned'
-    featureNames = @()
-    ownerDocs = @($testArchitectureOwnerDoc)
-    sourceFindingTypes = @('doc_drift')
-    fingerprint = $null
-    riskScore = $null
-    riskLabel = $null
-    ownershipStatus = 'pending'
-    operations = @(
-        [pscustomobject]@{
-            type = 'write_file'
-            targetPath = $testArchitectureOwnerDoc
-            content = '# Architecture'
-        }
-    )
-}
-$globalPromotionFinding = [pscustomobject]@{
-    findingType = 'doc_drift'
-    severity = 'high'
-    ownerDoc = $testArchitectureOwnerDoc
-    title = 'Synthetic global failure'
-    message = 'Synthetic global failure'
-    confidence = 'high'
-    source = 'agent_review'
-    evidence = @()
-    remediationKind = 'rule_fix'
-}
-$globalPromotionResult1 = Invoke-RuleHarnessMutationPlan `
-    -PlannedBatches @($globalPromotionBatch) `
-    -InitialStaticFindings @($globalPromotionFinding) `
-    -RepoRoot $globalPromotionRepo `
-    -Config $globalPromotionConfig `
-    -MutationState $mutationState
-Push-Location $globalPromotionRepo
-try {
-    git commit --allow-empty -m 'advance-global-2' | Out-Null
-}
-finally {
-    Pop-Location
-}
-$globalPromotionResult2 = Invoke-RuleHarnessMutationPlan `
-    -PlannedBatches @($globalPromotionBatch) `
-    -InitialStaticFindings @($globalPromotionFinding) `
-    -RepoRoot $globalPromotionRepo `
-    -Config $globalPromotionConfig `
-    -MutationState $mutationState
-Push-Location $globalPromotionRepo
-try {
-    git commit --allow-empty -m 'advance-global-3' | Out-Null
-}
-finally {
-    Pop-Location
-}
-$globalPromotionResult3 = Invoke-RuleHarnessMutationPlan `
-    -PlannedBatches @($globalPromotionBatch) `
-    -InitialStaticFindings @($globalPromotionFinding) `
-    -RepoRoot $globalPromotionRepo `
-    -Config $globalPromotionConfig `
-    -MutationState $mutationState
-Assert-RuleHarness `
-    -Condition (@($globalPromotionResult3.promotionCandidates | Where-Object { $_.targetDoc -eq $testGovernanceOwnerDoc }).Count -ge 1) `
-    -Message 'Expected recurring cross-feature/global issues to propose promotion to the correct global agent doc.'
-
-$feedbackRepo = Join-Path $scratchRoot 'feedback-loop'
-Initialize-RuleHarnessFixtureRepo -RepoPath $feedbackRepo -FixtureName 'missing-ssot'
-New-Item -ItemType Directory -Path (Join-Path $feedbackRepo 'Temp') -Force | Out-Null
-$feedbackSummaryPath = Join-Path $feedbackRepo 'Temp/feedback-summary.md'
-$feedbackReport = Invoke-RuleHarness `
-    -RepoRoot $feedbackRepo `
-    -ConfigPath (Join-Path $feedbackRepo 'tools/rule-harness/config.json') `
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $lowReviewPath -Encoding UTF8
+$lowReport = Invoke-RuleHarness `
+    -RepoRoot $lowRepo `
+    -ConfigPath (Join-Path $lowRepo 'tools/rule-harness/config.json') `
     -DisableLlm `
     -DryRun `
-    -SummaryPath $feedbackSummaryPath `
-    -ReportPathHint 'Temp/RuleHarness/rule-harness-report.json'
+    -ReviewJsonPath $lowReviewPath
+$lowBacklog = Read-RuleHarnessDocProposalBacklog -RepoRoot $lowRepo -Config $config
 Assert-RuleHarness `
-    -Condition (@($feedbackReport.stageResults | Where-Object { $_.stage -eq 'diagnose' -and $_.status -eq 'skipped' }).Count -eq 1) `
-    -Message 'Expected static-only run to mark diagnose stage as skipped.'
-Assert-RuleHarness `
-    -Condition (@($feedbackReport.actionItems | Where-Object { $_.kind -eq 'update-owner-doc' }).Count -ge 1) `
-    -Message 'Expected finding-derived action item for owner doc update.'
-Assert-RuleHarness `
-    -Condition ((Get-Content -Path $feedbackSummaryPath -Raw) -match '### Stage Status' -and (Get-Content -Path $feedbackSummaryPath -Raw) -match '### Next Actions') `
-    -Message 'Expected summary to include stage and next action sections.'
-Assert-RuleHarness `
-    -Condition ($feedbackReport.PSObject.Properties.Name -contains 'discoveredValidationPlan' -and $feedbackReport.PSObject.Properties.Name -contains 'retryAttempts') `
-    -Message 'Expected report to expose self-improvement loop output fields.'
+    -Condition (@($lowReport.findings | Where-Object severity -eq 'low').Count -eq 1 -and $null -eq $lowReport.stoppedScope -and @($lowReport.docProposals).Count -eq 0 -and @($lowBacklog.entries).Count -eq 0) `
+    -Message 'Expected low severity findings to be reported without stopping the run or entering the doc proposal backlog.'
 
-$llmFailureRepo = Join-Path $scratchRoot 'feedback-loop-llm-failure'
-Initialize-RuleHarnessFixtureRepo -RepoPath $llmFailureRepo -FixtureName 'missing-ssot'
-New-Item -ItemType Directory -Path (Join-Path $llmFailureRepo 'Temp') -Force | Out-Null
-$llmFailureSummaryPath = Join-Path $llmFailureRepo 'Temp/feedback-summary.md'
-$llmFailureReport = Invoke-RuleHarness `
-    -RepoRoot $llmFailureRepo `
-    -ConfigPath (Join-Path $llmFailureRepo 'tools/rule-harness/config.json') `
-    -ApiKey 'fixture-key' `
-    -ApiBaseUrl 'http://127.0.0.1:9' `
-    -Model 'glm-5' `
-    -DryRun `
-    -SummaryPath $llmFailureSummaryPath `
-    -ReportPathHint 'Temp/RuleHarness/rule-harness-report.json' `
-    -LogPathHint 'Temp/RuleHarness/rule-harness.log'
+$stopRepo = Join-Path $scratchRoot 'feature-stop-and-fix'
+Initialize-RuleHarnessScopeRepo -RepoPath $stopRepo -Features @(
+    [pscustomobject]@{ Name = 'CleanA'; ApplicationContent = 'namespace Features.CleanA.Application { public sealed class CleanAService { } }' },
+    [pscustomobject]@{ Name = 'Broken'; ApplicationContent = @"
+using UnityEngine;
+
+namespace Features.Broken.Application
+{
+    public sealed class BrokenService
+    {
+    }
+}
+"@ },
+    [pscustomobject]@{ Name = 'CleanB'; ApplicationContent = 'namespace Features.CleanB.Application { public sealed class CleanBService { } }' }
+)
+Write-FeatureScanStateFixture -RepoPath $stopRepo -Entries @(
+    [pscustomobject]@{ scopeId = 'Broken'; lastCheckedAtUtc = '2026-04-05T00:00:00Z'; lastResult = 'clean'; lastFindingSeverity = $null; lastRunId = 'r1'; lastCommitSha = 'a'; lastStoppedReason = $null },
+    [pscustomobject]@{ scopeId = 'CleanB'; lastCheckedAtUtc = '2026-04-06T00:00:00Z'; lastResult = 'clean'; lastFindingSeverity = $null; lastRunId = 'r2'; lastCommitSha = 'b'; lastStoppedReason = $null }
+)
+$stopReport = Invoke-RuleHarness `
+    -RepoRoot $stopRepo `
+    -ConfigPath (Join-Path $stopRepo 'tools/rule-harness/config.json') `
+    -DisableLlm
+$stopFeatureState = Read-RuleHarnessFeatureScanState -RepoRoot $stopRepo -Config $config
+$stopBacklog = Read-RuleHarnessDocProposalBacklog -RepoRoot $stopRepo -Config $config
+$stopProposalPath = Join-Path $stopRepo 'Temp/RuleHarness/rule-harness-doc-proposals.md'
 Assert-RuleHarness `
-    -Condition (@($llmFailureReport.stageResults | Where-Object { $_.stage -eq 'diagnose' -and $_.status -eq 'failed' }).Count -eq 1) `
-    -Message 'Expected LLM failure run to mark diagnose stage as failed.'
+    -Condition ((@($stopReport.scannedScopes) -join ',') -eq 'CleanA,Broken') `
+    -Message 'Expected run to stop on the first scope with high/medium findings after earlier clean scopes.'
 Assert-RuleHarness `
-    -Condition (@($llmFailureReport.stageResults | Where-Object { $_.stage -eq 'doc_sync' -and $_.status -eq 'failed' }).Count -eq 1) `
-    -Message 'Expected LLM failure run to mark doc sync stage as failed.'
+    -Condition ($stopReport.stoppedScope.scopeId -eq 'Broken' -and @($stopReport.docProposals).Count -ge 1 -and @($stopReport.docEdits).Count -eq 0) `
+    -Message 'Expected the stopped scope to emit doc proposals while blocking markdown edits.'
 Assert-RuleHarness `
-    -Condition (@($llmFailureReport.actionItems | Where-Object { $_.kind -eq 'check-llm-connectivity' -and $_.details -match 'Temp/RuleHarness/rule-harness-report.json' -and $_.details -match 'Temp/RuleHarness/rule-harness.log' }).Count -ge 1) `
-    -Message 'Expected LLM failure action item to include report and log path hints.'
+    -Condition ($stopReport.commit.created -and -not (Get-Content -Path (Join-Path $stopRepo 'Assets/Scripts/Features/Broken/Application/BrokenService.cs') -Raw).Contains('using UnityEngine;')) `
+    -Message 'Expected an existing code file in the stopped feature to be fixed and committed.'
 Assert-RuleHarness `
-    -Condition (@($llmFailureReport.memoryUpdates | Where-Object { $_.scopePath -eq 'tools/rule-harness/README.md' }).Count -ge 1) `
-    -Message 'Expected harness-originated failures to create advisory memory updates without becoming SSOT.'
+    -Condition ($stopFeatureState.entries.ContainsKey('CleanA') -and $stopFeatureState.entries.ContainsKey('Broken') -and [string]$stopFeatureState.entries['CleanB'].lastRunId -eq 'r2') `
+    -Message 'Expected only attempted scopes to receive updated lastCheckedAt timestamps.'
+Assert-RuleHarness `
+    -Condition (@($stopBacklog.entries).Count -ge 1 -and (Test-Path -LiteralPath $stopProposalPath)) `
+    -Message 'Expected high/medium findings to populate both the proposal backlog and the per-run proposal markdown file.'
+
+$repeatRepo = Join-Path $scratchRoot 'proposal-repeat'
+Initialize-RuleHarnessScopeRepo -RepoPath $repeatRepo -Features @(
+    [pscustomobject]@{ Name = 'Loop'; ApplicationContent = @"
+using UnityEngine;
+
+namespace Features.Loop.Application
+{
+    public sealed class LoopService
+    {
+        public void Run()
+        {
+            Debug.Log(""loop"");
+        }
+    }
+}
+"@ }
+)
+$repeatReport1 = Invoke-RuleHarness `
+    -RepoRoot $repeatRepo `
+    -ConfigPath (Join-Path $repeatRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+$repeatReport2 = Invoke-RuleHarness `
+    -RepoRoot $repeatRepo `
+    -ConfigPath (Join-Path $repeatRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+$repeatBacklog = Read-RuleHarnessDocProposalBacklog -RepoRoot $repeatRepo -Config $config
+Assert-RuleHarness `
+    -Condition (@($repeatReport1.docProposals).Count -ge 1 -and @($repeatBacklog.entries).Count -eq 1 -and [int]$repeatBacklog.entries[0].hitCount -eq 2) `
+    -Message 'Expected repeated high/medium findings to dedupe into one backlog entry and increment hitCount.'
+
+$relatedRepo = Join-Path $scratchRoot 'related-feature-edit'
+Initialize-RuleHarnessScopeRepo -RepoPath $relatedRepo -Features @(
+    [pscustomobject]@{ Name = 'Caller'; ApplicationContent = 'namespace Features.Caller.Application { public sealed class CallerService { } }' },
+    [pscustomobject]@{ Name = 'Helper'; ApplicationContent = @"
+using UnityEngine;
+
+namespace Features.Helper.Application
+{
+    public sealed class HelperService
+    {
+    }
+}
+"@ }
+)
+$relatedFinding = ConvertTo-RuleHarnessReviewedFindings -Findings @(
+    [pscustomobject]@{
+        findingType = 'code_violation'
+        severity = 'high'
+        ownerDoc = 'docs/rules/architecture-rules.md'
+        title = 'Unity API used in Application'
+        message = 'Caller flow requires updating a related feature implementation.'
+        confidence = 'high'
+        source = 'agent_review'
+        remediationKind = 'code_fix'
+        rationale = ''
+        evidence = @(
+            [pscustomobject]@{ path = 'Assets/Scripts/Features/Caller/Application/CallerService.cs'; line = 1; snippet = 'CallerService' },
+            [pscustomobject]@{ path = 'Assets/Scripts/Features/Helper/Application/HelperService.cs'; line = 1; snippet = 'using UnityEngine;' }
+        )
+        proposedDocEdit = $null
+    }
+)
+$relatedBatches = Get-RuleHarnessPlannedBatches -ReviewedFindings $relatedFinding -DocEdits @() -RepoRoot $relatedRepo
+Assert-RuleHarness `
+    -Condition (@($relatedBatches | Where-Object { $_.kind -eq 'code_fix' -and $_.targetFiles -contains 'Assets/Scripts/Features/Helper/Application/HelperService.cs' }).Count -eq 1) `
+    -Message 'Expected reviewed findings to permit existing-file code fixes in related features.'
+
+$retitledBatches = Get-RuleHarnessPlannedBatches -ReviewedFindings @(
+    [pscustomobject]@{
+        findingType = 'code_violation'
+        severity = 'high'
+        ownerDoc = 'docs/rules/architecture-rules.md'
+        title = 'Unity API used in Application layer'
+        message = 'Application layer file ''Assets/Scripts/Features/Helper/Application/HelperService.cs'' imports UnityEngine, which violates the Application layer purity rule.'
+        confidence = 'high'
+        source = 'agent_review'
+        remediationKind = 'code_fix'
+        rationale = ''
+        evidence = @(
+            [pscustomobject]@{ path = 'Assets/Scripts/Features/Helper/Application/HelperService.cs'; line = 1; snippet = 'using UnityEngine;' }
+        )
+        proposedDocEdit = $null
+    }
+) -DocEdits @() -RepoRoot $relatedRepo
+Assert-RuleHarness `
+    -Condition (@($retitledBatches | Where-Object { $_.kind -eq 'code_fix' -and $_.targetFiles -contains 'Assets/Scripts/Features/Helper/Application/HelperService.cs' }).Count -eq 1) `
+    -Message 'Expected LLM-retitled Unity Application findings to still produce code-fix batches when the file contains removable using directives.'
+
+$commentRepo = Join-Path $scratchRoot 'comment-only-application'
+Initialize-RuleHarnessScopeRepo -RepoPath $commentRepo -Features @(
+    [pscustomobject]@{ Name = 'CommentOnly'; ApplicationContent = @"
+namespace Features.CommentOnly.Application
+{
+    /// <summary>
+    /// Bootstrap emits Debug.Log when this event is observed.
+    /// </summary>
+    public readonly struct CommentOnlyEvent
+    {
+    }
+}
+"@ }
+)
+$commentConfig = New-RuleHarnessTestConfig -SourceConfig $config
+$commentFindings = Get-RuleHarnessStaticFindings `
+    -RepoRoot $commentRepo `
+    -Config $commentConfig `
+    -ScopeId 'CommentOnly'
+Assert-RuleHarness `
+    -Condition (@($commentFindings | Where-Object { $_.title -eq 'Unity API used in Application' }).Count -eq 0) `
+    -Message 'Expected comment-only Debug.Log references in Application files to avoid Unity API findings.'
+
+$qualifiedRepo = Join-Path $scratchRoot 'qualified-application-reference'
+Initialize-RuleHarnessScopeRepo -RepoPath $qualifiedRepo -Features @(
+    [pscustomobject]@{ Name = 'Qualified'; ApplicationContent = @"
+namespace Features.Qualified.Application
+{
+    public sealed class QualifiedService
+    {
+        public float ReadTime()
+        {
+            return UnityEngine.Time.time;
+        }
+    }
+}
+"@ }
+)
+$qualifiedConfig = New-RuleHarnessTestConfig -SourceConfig $config
+$qualifiedFindings = Get-RuleHarnessStaticFindings `
+    -RepoRoot $qualifiedRepo `
+    -Config $qualifiedConfig `
+    -ScopeId 'Qualified'
+Assert-RuleHarness `
+    -Condition (@($qualifiedFindings | Where-Object { $_.title -eq 'Unity API used in Application' }).Count -eq 1) `
+    -Message 'Expected fully-qualified UnityEngine references in Application files to be reported as Unity API findings.'
 
 $scheduledRepo = Join-Path $scratchRoot 'scheduled-status'
-Initialize-RuleHarnessFixtureRepo -RepoPath $scheduledRepo -FixtureName 'missing-ssot'
+Initialize-RuleHarnessScopeRepo -RepoPath $scheduledRepo -Features @(
+    [pscustomobject]@{ Name = 'CleanA'; ApplicationContent = 'namespace Features.CleanA.Application { public sealed class CleanAService { } }' },
+    [pscustomobject]@{ Name = 'Broken'; ApplicationContent = 'namespace Features.Broken.Application { public sealed class BrokenService { public void Run() { Debug.Log(""broken""); } } }' }
+)
 Push-Location $scheduledRepo
 try {
     & (Join-Path $scheduledRepo 'tools/rule-harness/run-rule-harness-scheduled.ps1') -DisableLlm -MutationMode 'code_and_rules'
@@ -696,18 +394,15 @@ finally {
     Pop-Location
 }
 $latestStatusPath = Join-Path $scheduledRepo 'Temp/RuleHarnessScheduled/latest-status.json'
+$latestStatus = Get-Content -Path $latestStatusPath -Raw | ConvertFrom-Json
 Assert-RuleHarness `
     -Condition (Test-Path -LiteralPath $latestStatusPath) `
     -Message 'Expected scheduled wrapper to write latest-status.json.'
-$latestStatus = Get-Content -Path $latestStatusPath -Raw | ConvertFrom-Json
 Assert-RuleHarness `
-    -Condition (-not [string]::IsNullOrWhiteSpace([string]$latestStatus.runDir) -and -not [string]::IsNullOrWhiteSpace([string]$latestStatus.reportPath) -and -not [string]::IsNullOrWhiteSpace([string]$latestStatus.logPath)) `
-    -Message 'Expected latest-status.json to include core artifact paths.'
+    -Condition (-not [string]::IsNullOrWhiteSpace([string]$latestStatus.currentScope) -and $latestStatus.PSObject.Properties.Name -contains 'completedScopes' -and $latestStatus.PSObject.Properties.Name -contains 'nextScope' -and $latestStatus.PSObject.Properties.Name -contains 'topDocProposals') `
+    -Message 'Expected scheduled latest status to expose currentScope, completedScopes, nextScope, and topDocProposals.'
 Assert-RuleHarness `
-    -Condition (-not [bool]$latestStatus.llmEnabled) `
-    -Message 'Expected scheduled latest status to record static-only execution when DisableLlm is used.'
-Assert-RuleHarness `
-    -Condition ($latestStatus.PSObject.Properties.Name -contains 'retryCount' -and $latestStatus.PSObject.Properties.Name -contains 'learnedAnything' -and $latestStatus.PSObject.Properties.Name -contains 'topPromotionCandidates') `
-    -Message 'Expected scheduled latest status to include retry/promotion/learning feedback fields.'
+    -Condition ((Test-Path -LiteralPath ([string]$latestStatus.docProposalPath)) -and (@($latestStatus.topDocProposals).Count -ge 1)) `
+    -Message 'Expected scheduled runs to emit the proposal markdown file and surface top doc proposals.'
 
 Write-Host 'Rule harness fixture tests passed.'

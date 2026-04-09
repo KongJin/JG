@@ -22,6 +22,7 @@ New-Item -ItemType Directory -Path $runDir -Force | Out-Null
 
 $reportPath = Join-Path $runDir 'rule-harness-report.json'
 $summaryPath = Join-Path $runDir 'rule-harness-summary.md'
+$docProposalPath = Join-Path $runDir 'rule-harness-doc-proposals.md'
 $logPath = Join-Path $runDir 'rule-harness.log'
 $latestPointer = Join-Path $OutputRoot 'latest-run.txt'
 $latestStatusPath = Join-Path $OutputRoot 'latest-status.json'
@@ -65,26 +66,49 @@ finally {
         $report = Get-Content -Path $reportPath -Raw | ConvertFrom-Json
     }
 
-    $topActionItems = @()
-    if ($null -ne $report -and @($report.actionItems).Count -gt 0) {
-        $topActionItems = [object[]]@($report.actionItems | Select-Object -First 5)
+    $completedScopes = [System.Collections.Generic.List[object]]::new()
+    if ($null -ne $report) {
+        foreach ($scope in @($report.completedScopes)) {
+            [void]$completedScopes.Add([string]$scope)
+        }
     }
 
-    $topPromotionCandidates = @()
+    $topActionItems = [System.Collections.Generic.List[object]]::new()
+    if ($null -ne $report -and @($report.actionItems).Count -gt 0) {
+        foreach ($item in @($report.actionItems | Select-Object -First 5)) {
+            [void]$topActionItems.Add($item)
+        }
+    }
+
+    $topPromotionCandidates = [System.Collections.Generic.List[object]]::new()
     if ($null -ne $report -and @($report.promotionCandidates).Count -gt 0) {
-        $topPromotionCandidates = [object[]]@($report.promotionCandidates | Select-Object -First 3)
+        foreach ($candidate in @($report.promotionCandidates | Select-Object -First 3)) {
+            [void]$topPromotionCandidates.Add($candidate)
+        }
+    }
+
+    $topDocProposals = [System.Collections.Generic.List[object]]::new()
+    if ($null -ne $report -and @($report.docProposals).Count -gt 0) {
+        foreach ($proposal in @($report.docProposals | Select-Object -First 5)) {
+            [void]$topDocProposals.Add($proposal)
+        }
     }
 
     $latestStatus = [pscustomobject]@{
         runDir                = $runDir
         reportPath            = $reportPath
         summaryPath           = $summaryPath
+        docProposalPath       = $docProposalPath
         logPath               = $logPath
         failed                = if ($null -ne $report) { [bool]$report.failed } else { $true }
         llmEnabled            = if ($null -ne $report) { [bool]$report.execution.llmEnabled } else { (-not $DisableLlm) }
         timestamp             = $runTimestamp
+        currentScope          = if ($null -ne $report -and $null -ne $report.stoppedScope) { [string]$report.stoppedScope.scopeId } else { $null }
+        completedScopes       = $completedScopes
+        nextScope             = if ($null -ne $report -and @($report.nextScopeCandidates).Count -gt 0) { [string]$report.nextScopeCandidates[0] } else { $null }
         topActionItems        = $topActionItems
         topPromotionCandidates = $topPromotionCandidates
+        topDocProposals       = $topDocProposals
         retryCount            = if ($null -ne $report) { [int]$report.retryAttempts } else { 0 }
         learnedAnything       = if ($null -ne $report) { (@($report.memoryUpdates).Count -gt 0) -or (@($report.promotionCandidates).Count -gt 0) } else { $false }
         errorMessage          = if ($null -ne $scheduledError) { $scheduledError.Message } else { $null }

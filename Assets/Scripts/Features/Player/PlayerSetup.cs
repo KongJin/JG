@@ -97,7 +97,7 @@ namespace Features.Player
 
             _entityIdHolder.Set(player.Id);
 
-            EnergyAdapterInstance = new EnergyAdapter(player, _networkAdapter, eventBus);
+            EnergyAdapterInstance = new EnergyAdapter(player, _networkAdapter, eventBus, Time.time);
             EnergyPort = EnergyAdapterInstance;
 
             new PlayerNetworkEventHandler(eventBus, _networkAdapter, playerLookup);

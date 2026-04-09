@@ -2,7 +2,7 @@ using Features.Combat;
 using Features.Unit.Application.Events;
 using Features.Unit.Application.Ports;
 using Features.Unit.Domain;
-using Features.Unit.Presentation;
+using Features.Unit.Infrastructure;
 using Features.Wave.Infrastructure;
 using Photon.Pun;
 using Shared.EventBus;

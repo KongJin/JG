@@ -2,6 +2,49 @@
     "schemaVersion":  1,
     "entries":  [
                     {
+                        "signature":  "static-scan-failed|static-scan|agent/architecture.md|code_fix|Before=# After=# Resolved=# Expected=# NewHigh=#",
+                        "scopeType":  "global",
+                        "scopePath":  "agent/architecture.md",
+                        "symptoms":  "Before=2 After=2 Resolved=0 Expected=1 NewHigh=0",
+                        "preferredRepairStrategy":  "Amend the owning global rule doc before retrying.",
+                        "validationHints":  [
+                                                "target_files_exist",
+                                                "expected_findings_resolved",
+                                                "no_new_high_severity_findings",
+                                                "feature_root_contract_present",
+                                                "owner_doc_references_resolve"
+                                            ],
+                        "confidence":  "low",
+                        "hitCount":  1,
+                        "distinctCommitCount":  1,
+                        "commitShas":  [
+                                           "eebb079f5e56493dc34bbc1193ac950e5737bab8"
+                                       ],
+                        "lastSeen":  "2026-04-08T23:38:40.8107560Z",
+                        "promotionTarget":  "docs/design/unit_module_design.md",
+                        "status":  "observed"
+                    },
+                    {
+                        "signature":  "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Player Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"网络错误，错误id：#d#c#，请联系客服。\"}}",
+                        "scopeType":  "harness",
+                        "scopePath":  "tools/rule-harness/README.md",
+                        "symptoms":  "Scope=Player Stage=diagnose TimeoutSec=120 HTTP request failed. Status=500 Body={\"error\":{\"code\":\"1234\",\"message\":\"网络错误，错误id：202604091658502d37196539294c63，请联系客服。\"}}",
+                        "preferredRepairStrategy":  "Improve harness prompts, config, tests, or docs before retrying.",
+                        "validationHints":  [
+                                                "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+                                                "tools/rule-harness/README.md"
+                                            ],
+                        "confidence":  "high",
+                        "hitCount":  1,
+                        "distinctCommitCount":  1,
+                        "commitShas":  [
+                                           "fc091217c45872e329ed51b4c53db0b977afbd71"
+                                       ],
+                        "lastSeen":  "2026-04-09T08:59:46.0603672Z",
+                        "promotionTarget":  "tools/rule-harness/README.md",
+                        "status":  "observed"
+                    },
+                    {
                         "signature":  "harness-stage-failed|Rule harness doc sync failed|tools/rule-harness/README.md|harness|Stage=doc_sync TimeoutSec=# 작업 시간이 초과되었습니다.",
                         "scopeType":  "harness",
                         "scopePath":  "tools/rule-harness/README.md",
