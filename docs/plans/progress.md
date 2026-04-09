@@ -13,10 +13,15 @@
 | Phase 4: 재소환 시스템 | ✅ 완료 | UnitDiedEvent, UnitDeathEventHandler, 재소환 UI |
 | Phase 5: 네트워크 동기화 | ✅ 완료 | Energy/Mana 통합, IPlayerSpecProvider, GetLocalPlayerRoster, BattleEntity late-join HP sync |
 | Phase 6: 게임 종료 | ✅ 완료 | GameEndEvent 재설계, GameEndAnalytics, WaveEndView 개선, Lobby 복귀, Firebase Analytics |
+| Phase 7: 배치 시스템 완성 | 📋 계획됨 | 배치 영역 시각화, 판정 개선, 드래그 피드백 |
+| Phase 8: Energy 재생 증가 곡선 | 📋 계획됨 | 시간 기반 재생량 증가, 초기 Energy 검증 |
+| Phase 9: 네트워크 완성 | 📋 계획됨 | BattleEntity remote 파괴 동기화, 통계 UI 개선 |
 
 ## 미완료 TODO
 
-- (없음 — Phase 0~6 전체 완료)
+- Phase 7: 배치 영역 시각화 + 판정 개선 ([`phase_7_8_9_roadmap.md`](./phase_7_8_9_roadmap.md))
+- Phase 8: Energy 재생 증가 곡선 설계 및 구현
+- Phase 9: remote BattleEntity 파괴 동기화, WaveEndView 통계 UI
 
 ## 최근 변경 사항
 

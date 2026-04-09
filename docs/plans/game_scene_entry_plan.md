@@ -362,7 +362,17 @@ Phase 3 (Wave/Enemy 통합) ──── 게임 루프 완성
 Phase 4 (재소환)
 Phase 5 (네트워크 동기화)
 Phase 6 (게임 종료)
+  ↓
+Phase 7 (배치 시스템 완성) ── 배치 영역 시각화 + 판정
+Phase 8 (Energy 재생 곡선) ─── 게임 밸런싱
+Phase 9 (네트워크 완성) ────── remote 동기화 + 통계 UI
 ```
+
+---
+
+## Phase 7~9 상세
+
+Phase 7, 8, 9의 상세 작업 목록은 [`phase_7_8_9_roadmap.md`](./phase_7_8_9_roadmap.md) 참고.
 
 ---
 
