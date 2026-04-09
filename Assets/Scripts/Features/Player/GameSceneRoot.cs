@@ -381,6 +381,12 @@ namespace Features.Player
             Debug.Log($"  Unit Kills: {e.UnitKillCount}");
             Debug.Log($"  K/D Ratio:  {(e.SummonCount > 0 ? (float)e.UnitKillCount / e.SummonCount : 0):F2}");
             Debug.Log($"[GameEnd] =========================");
+
+            // Firebase Analytics 전송
+            if (_analytics != null)
+            {
+                _analytics.LogGameResult(e.IsVictory, e.ReachedWave, e.PlayTimeSeconds, e.SummonCount, e.UnitKillCount);
+            }
         }
 
         private void OnDestroy()

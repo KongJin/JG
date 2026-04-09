@@ -15,6 +15,9 @@ namespace Shared.Analytics
         void LogGameStart(string matchId);
         void LogGameEnd(string matchId, float playTimeSeconds, int roundIndex);
 
+        // ── 게임 결과 ──
+        void LogGameResult(bool isVictory, int reachedWave, float playTimeSeconds, int summonCount, int unitKillCount);
+
         // ── 이탈 지점 ──
         void LogDropOff(string context, float elapsedSeconds);
 

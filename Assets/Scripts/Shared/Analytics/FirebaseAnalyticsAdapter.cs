@@ -53,6 +53,19 @@ namespace Shared.Analytics
             });
         }
 
+        public void LogGameResult(bool isVictory, int reachedWave, float playTimeSeconds, int summonCount, int unitKillCount)
+        {
+            LogEvent("game_result", new Dictionary<string, object>
+            {
+                { "is_victory", isVictory },
+                { "reached_wave", reachedWave },
+                { "play_time_seconds", playTimeSeconds },
+                { "summon_count", summonCount },
+                { "unit_kill_count", unitKillCount },
+                { "kd_ratio", summonCount > 0 ? (float)unitKillCount / summonCount : 0f }
+            });
+        }
+
         public void LogDropOff(string context, float elapsedSeconds)
         {
             LogEvent("drop_off", new Dictionary<string, object>
