@@ -367,6 +367,65 @@ function Get-RuleHarnessActionItemForSkippedBatch {
     }
 }
 
+function Get-RuleHarnessActionItemForUnplannedFinding {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding
+    )
+
+    $family = Get-RuleHarnessFindingFamily -Finding $Finding
+    $primaryPath = Get-RuleHarnessFindingPrimaryEvidencePath -Finding $Finding
+    $snippet = $null
+    foreach ($evidence in @($Finding.evidence)) {
+        if ($null -ne $evidence -and -not [string]::IsNullOrWhiteSpace([string]$evidence.snippet)) {
+            $snippet = [string]$evidence.snippet
+            break
+        }
+    }
+
+    $details = [string]$Finding.message
+    switch ($family) {
+        'code_violation/application_unity_api' {
+            if ($snippet -match 'Debug\s*\.\s*Log') {
+                $details = "Rule harness detected an Application-layer Unity logging dependency but does not yet have a safe auto-fix recipe for direct Debug.Log calls. Refactor this flow manually or add a logging/event recipe."
+            }
+            elseif ($snippet -match 'UnityEngine\.') {
+                $details = "Rule harness detected an Application-layer fully-qualified Unity API reference but could not derive a safe rewrite from the current recipe set. Check constructor injection/call-site wiring or add a narrower recipe."
+            }
+            elseif ($snippet -match '\bMonoBehaviour\b|\bGameObject\b|\bSprite\b|\bAudioClip\b|\bColor\b') {
+                $details = "Rule harness detected an Application-layer Unity object dependency but does not yet know how to move this type behind setup injection or a port automatically."
+            }
+            else {
+                $details = "Rule harness detected an Application-layer Unity dependency but no safe auto-fix recipe matched this pattern."
+            }
+        }
+        'code_violation/domain_framework_api' {
+            $details = "Rule harness detected a Domain-layer framework dependency but no safe auto-fix recipe matched this pattern."
+        }
+        'missing_rule/feature_bootstrap_root' {
+            $details = "Rule harness expected to scaffold a feature root setup/bootstrap file, but no safe target path was derived from the finding evidence."
+        }
+        default {
+            $details = "Rule harness could not build a safe auto-fix batch for this finding from the current recipe set."
+        }
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($primaryPath)) {
+        $details = "{0} Primary target: {1}." -f $details.TrimEnd('.'), $primaryPath
+    }
+
+    $relatedPaths = Get-RuleHarnessCombinedPaths `
+        -Primary @([string]$Finding.ownerDoc) `
+        -Secondary @(@($Finding.evidence | ForEach-Object { [string]$_.path }))
+
+    New-RuleHarnessActionItem `
+        -Kind 'expand-auto-fix-coverage' `
+        -Severity ([string]$Finding.severity) `
+        -Summary ("Auto-fix recipe missing for {0}" -f [string]$Finding.title) `
+        -Details $details `
+        -RelatedPaths $relatedPaths
+}
+
 function Get-RuleHarnessFeatureDirectories {
     param(
         [Parameter(Mandatory)]
@@ -3116,6 +3175,169 @@ function Test-RuleHarnessSupportsUsingDirectiveFix {
     return $false
 }
 
+function Get-RuleHarnessFeatureNameFromPath {
+    param(
+        [string]$RelativePath
+    )
+
+    if ([string]::IsNullOrWhiteSpace($RelativePath)) {
+        return $null
+    }
+
+    if ($RelativePath.Replace('\', '/') -match '^Assets/Scripts/Features/(?<feature>[^/]+)/') {
+        return [string]$Matches['feature']
+    }
+
+    return $null
+}
+
+function Get-RuleHarnessTimeProviderCodeFixOperations {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding,
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string]$TargetPath,
+        [Parameter(Mandatory)]
+        [string]$Content
+    )
+
+    if ($TargetPath.Replace('\', '/') -notmatch '/Application/' -or $Content -notmatch 'UnityEngine\.Time\.time') {
+        return @()
+    }
+
+    $featureName = Get-RuleHarnessFeatureNameFromPath -RelativePath $TargetPath
+    if ([string]::IsNullOrWhiteSpace($featureName)) {
+        return @()
+    }
+
+    $className = [System.IO.Path]::GetFileNameWithoutExtension($TargetPath)
+    if ([string]::IsNullOrWhiteSpace($className)) {
+        return @()
+    }
+
+    $constructorPattern = "(?ms)^(?<indent>[ \t]*)(?<access>(?:public|internal|protected|private)\s+)$([regex]::Escape($className))\s*\((?<params>.*?)\)\s*\r?\n(?<braceIndent>[ \t]*)\{"
+    $constructorMatches = [regex]::Matches($Content, $constructorPattern)
+    if ($constructorMatches.Count -ne 1) {
+        return @()
+    }
+
+    $constructorMatch = $constructorMatches[0]
+    $paramsText = [string]$constructorMatch.Groups['params'].Value
+    if ($paramsText -match 'Func\s*<\s*float\s*>\s+timeProvider' -or $paramsText -match 'timeProvider') {
+        return @()
+    }
+
+    $paramText = 'global::System.Func<float> timeProvider'
+    $newParamsText = $paramText
+    if (-not [string]::IsNullOrWhiteSpace($paramsText)) {
+        if ($paramsText.Contains("`n")) {
+            $paramIndentMatch = [regex]::Matches($paramsText, '(?m)^(?<indent>[ \t]*)\S') | Select-Object -First 1
+            $paramIndent = if ($null -ne $paramIndentMatch) { [string]$paramIndentMatch.Groups['indent'].Value } else { ([string]$constructorMatch.Groups['indent'].Value + '    ') }
+            $trimmedParams = $paramsText.TrimEnd()
+            $newParamsText = "$trimmedParams,`r`n$paramIndent$paramText"
+        }
+        else {
+            $newParamsText = "$paramsText, $paramText"
+        }
+    }
+
+    $updatedContent = $Content.Substring(0, $constructorMatch.Groups['params'].Index) + $newParamsText + $Content.Substring($constructorMatch.Groups['params'].Index + $constructorMatch.Groups['params'].Length)
+    $fieldDeclaration = 'private readonly global::System.Func<float> _timeProvider;'
+    if ($updatedContent -notmatch [regex]::Escape($fieldDeclaration)) {
+        $fieldMatches = [regex]::Matches($updatedContent, '(?m)^[ \t]*private readonly .+;\r?$')
+        if ($fieldMatches.Count -gt 0) {
+            $lastField = $fieldMatches[$fieldMatches.Count - 1]
+            $insertAt = $lastField.Index + $lastField.Length
+            $newline = if ($updatedContent.Substring([Math]::Max(0, $insertAt - 1), [Math]::Min(1, $updatedContent.Length - [Math]::Max(0, $insertAt - 1))) -eq "`n") { '' } else { "`r`n" }
+            $updatedContent = $updatedContent.Insert($insertAt, "$newline$([string]$constructorMatch.Groups['indent'].Value)$fieldDeclaration")
+        }
+        else {
+            $classBraceMatch = [regex]::Match($updatedContent, '(?ms)\bclass\b[^{]+\{')
+            if (-not $classBraceMatch.Success) {
+                return @()
+            }
+
+            $insertAt = $classBraceMatch.Index + $classBraceMatch.Length
+            $updatedContent = $updatedContent.Insert($insertAt, "`r`n$([string]$constructorMatch.Groups['indent'].Value)    $fieldDeclaration")
+        }
+    }
+
+    if ($updatedContent -notmatch '_timeProvider\s*=') {
+        $assignmentText = "$([string]$constructorMatch.Groups['indent'].Value)    _timeProvider = timeProvider ?? throw new global::System.ArgumentNullException(nameof(timeProvider));`r`n"
+        $constructorStartPattern = "(?ms)^(?<indent>[ \t]*)(?<access>(?:public|internal|protected|private)\s+)$([regex]::Escape($className))\s*\((?<params>.*?)\)\s*\r?\n(?<braceIndent>[ \t]*)\{"
+        $updatedContent = [regex]::Replace(
+            $updatedContent,
+            $constructorStartPattern,
+            {
+                param($match)
+                $match.Value + "`r`n" + $assignmentText
+            },
+            1)
+    }
+
+    $updatedContent = $updatedContent.Replace('UnityEngine.Time.time', '_timeProvider()')
+    if ($updatedContent -eq $Content) {
+        return @()
+    }
+
+    $featureRoot = Join-Path $RepoRoot ("Assets/Scripts/Features/{0}" -f $featureName)
+    $callSiteFiles = @()
+    if (Test-Path -LiteralPath $featureRoot) {
+        $callSiteFiles = @(
+            Get-ChildItem -LiteralPath $featureRoot -Recurse -File -Filter *.cs |
+                Where-Object {
+                    $relative = ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $_.FullName
+                    $relative -ne $TargetPath -and ($_.Name -like '*Setup.cs' -or $_.Name -like '*Bootstrap.cs')
+                }
+        )
+    }
+
+    $callSiteMatches = [System.Collections.Generic.List[object]]::new()
+    foreach ($file in @($callSiteFiles)) {
+        $callSiteRelativePath = ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $file.FullName
+        $callSiteContent = Get-Content -Path $file.FullName -Raw
+        $matches = [regex]::Matches($callSiteContent, "new\s+$([regex]::Escape($className))\s*\((?<args>.*?)\)")
+        foreach ($match in @($matches)) {
+            [void]$callSiteMatches.Add([pscustomobject]@{
+                path    = $callSiteRelativePath
+                content = $callSiteContent
+                match   = $match
+            })
+        }
+    }
+
+    if ($callSiteMatches.Count -ne 1) {
+        return @()
+    }
+
+    $callSiteMatch = $callSiteMatches[0]
+    $callArgs = [string]$callSiteMatch.match.Groups['args'].Value
+    if ($callArgs -match 'UnityEngine\.Time\.time' -or $callArgs -match 'timeProvider') {
+        return @()
+    }
+
+    $newCallArgs = if ([string]::IsNullOrWhiteSpace($callArgs)) { '() => UnityEngine.Time.time' } else { "$callArgs, () => UnityEngine.Time.time" }
+    $updatedCallSiteContent = $callSiteMatch.content.Substring(0, $callSiteMatch.match.Groups['args'].Index) + $newCallArgs + $callSiteMatch.content.Substring($callSiteMatch.match.Groups['args'].Index + $callSiteMatch.match.Groups['args'].Length)
+    if ($updatedCallSiteContent -eq $callSiteMatch.content) {
+        return @()
+    }
+
+    @(
+        [pscustomobject]@{
+            type       = 'write_file'
+            targetPath = $TargetPath
+            content    = $updatedContent
+        },
+        [pscustomobject]@{
+            type       = 'write_file'
+            targetPath = [string]$callSiteMatch.path
+            content    = $updatedCallSiteContent
+        }
+    )
+}
+
 function Get-RuleHarnessExistingCodeFixOperations {
     param(
         [Parameter(Mandatory)]
@@ -3149,10 +3371,19 @@ function Get-RuleHarnessExistingCodeFixOperations {
                 targetPath = $targetPath
                 content    = $updatedContent
             })
+            continue
+        }
+
+        foreach ($operation in @(Get-RuleHarnessTimeProviderCodeFixOperations -Finding $Finding -RepoRoot $RepoRoot -TargetPath $targetPath -Content $content)) {
+            [void]$operations.Add($operation)
         }
     }
 
-    @($operations)
+    @(
+        $operations |
+            Group-Object targetPath |
+            ForEach-Object { $_.Group | Select-Object -Last 1 }
+    )
 }
 
 function New-RuleHarnessBatch {
@@ -3310,6 +3541,33 @@ function Get-RuleHarnessPlannedBatches {
     }
 
     @($batches)
+}
+
+function Get-RuleHarnessUnplannedFindings {
+    param(
+        [AllowEmptyCollection()]
+        [object[]]$ReviewedFindings,
+        [AllowEmptyCollection()]
+        [object[]]$PlannedBatches
+    )
+
+    $plannedFindingKeys = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($batch in @($PlannedBatches)) {
+        foreach ($findingKey in @($batch.expectedFindingsResolved)) {
+            if (-not [string]::IsNullOrWhiteSpace([string]$findingKey)) {
+                [void]$plannedFindingKeys.Add([string]$findingKey)
+            }
+        }
+    }
+
+    @(
+        $ReviewedFindings |
+            Where-Object {
+                $_.severity -in @('high', 'medium') -and
+                $_.remediationKind -eq 'code_fix' -and
+                -not $plannedFindingKeys.Contains((Get-RuleHarnessFindingKey -Finding $_))
+            }
+    )
 }
 
 function Get-RuleHarnessDirtyTargetPaths {
@@ -4756,10 +5014,12 @@ function Invoke-RuleHarness {
     $docProposals = [System.Collections.Generic.List[object]]::new()
     $stoppedScope = $null
     $plannedBatches = @()
+    $unplannedScopeFindings = @()
     $scopeStaticFindingsForMutation = @()
     $mutationResult = $null
     $diagnoseAttempted = $llmEnabled -or -not [string]::IsNullOrWhiteSpace($ReviewJsonPath)
     $diagnoseFailed = $false
+    $preMutationActionItems = [System.Collections.Generic.List[object]]::new()
     $resolvedProposalCount = 0
     $reactivatedProposalCount = 0
     $sameRunResolvedScopeCount = 0
@@ -4857,6 +5117,10 @@ function Invoke-RuleHarness {
         Write-Host "Rule harness patch plan stage started for scope $($scope.scopeId)."
         $plannedBatches = @(Get-RuleHarnessPlannedBatches -ReviewedFindings @($scopeErrors) -DocEdits @() -RepoRoot $RepoRoot)
         $plannedBatchCount = @($plannedBatches).Count
+        $unplannedScopeFindings = @(Get-RuleHarnessUnplannedFindings -ReviewedFindings @($scopeErrors) -PlannedBatches @($plannedBatches))
+        foreach ($unplannedFinding in @($unplannedScopeFindings)) {
+            [void]$preMutationActionItems.Add((Get-RuleHarnessActionItemForUnplannedFinding -Finding $unplannedFinding))
+        }
         Write-Host "Rule harness patch plan stage finished for scope $($scope.scopeId). Planned batches: $plannedBatchCount"
 
         $scopeStaticFindingsForMutation = @($scopeStaticFindings)
@@ -4988,6 +5252,7 @@ function Invoke-RuleHarness {
         -Summary ("Patch plan produced {0} batch(es)." -f $plannedBatchCount) `
         -Details ([pscustomobject]@{
             plannedBatchCount = $plannedBatchCount
+            unplannedFindingCount = @($unplannedScopeFindings).Count
             stoppedScope = if ($null -ne $stoppedScope) { [string]$stoppedScope.scopeId } else { $null }
         })))
 
@@ -5106,6 +5371,7 @@ function Invoke-RuleHarness {
         Join-Path (Join-Path $RepoRoot 'Temp/RuleHarness') 'rule-harness-doc-proposals.md'
     }
     $reportActionItems = @(Merge-RuleHarnessActionItems -Items @(
+        @($preMutationActionItems) +
         @($mutationResult.actionItems) +
         @($reportPromotionCandidates | ForEach-Object {
             New-RuleHarnessActionItem `

@@ -553,6 +553,96 @@ Assert-RuleHarness `
     -Condition (@($qualifiedFindings | Where-Object { $_.title -eq 'Unity API used in Application' }).Count -eq 1) `
     -Message 'Expected fully-qualified UnityEngine references in Application files to be reported as Unity API findings.'
 
+$timeRepo = Join-Path $scratchRoot 'qualified-time-fix'
+Initialize-RuleHarnessScopeRepo -RepoPath $timeRepo -Features @(
+    [pscustomobject]@{ Name = 'Timer'; ApplicationContent = @"
+namespace Features.Timer.Application
+{
+    public sealed class TimerService
+    {
+        private readonly float _startedAt;
+
+        public TimerService()
+        {
+            _startedAt = UnityEngine.Time.time;
+        }
+    }
+}
+"@ }
+)
+Set-Content -Path (Join-Path $timeRepo 'Assets/Scripts/Features/Timer/TimerSetup.cs') -Value @"
+using Features.Timer.Application;
+
+namespace Features.Timer
+{
+    public sealed class TimerSetup
+    {
+        public TimerService Build()
+        {
+            return new TimerService();
+        }
+    }
+}
+"@ -Encoding UTF8
+Push-Location $timeRepo
+try {
+    git add .
+    git commit -m 'custom timer setup' | Out-Null
+}
+finally {
+    Pop-Location
+}
+$timeReport = Invoke-RuleHarness `
+    -RepoRoot $timeRepo `
+    -ConfigPath (Join-Path $timeRepo 'tools/rule-harness/config.json') `
+    -DisableLlm
+$timeAppContent = Get-Content -Path (Join-Path $timeRepo 'Assets/Scripts/Features/Timer/Application/TimerService.cs') -Raw
+$timeSetupContent = Get-Content -Path (Join-Path $timeRepo 'Assets/Scripts/Features/Timer/TimerSetup.cs') -Raw
+$timeState = Read-RuleHarnessFeatureScanState -RepoRoot $timeRepo -Config $config
+Assert-RuleHarness `
+    -Condition ($timeReport.commit.created -and $timeReport.stoppedScope.scopeId -eq 'Timer' -and $timeReport.stoppedScope.finalStatus -eq 'clean') `
+    -Message 'Expected the qualified Unity time recipe to apply, commit, and leave the stopped scope clean.'
+Assert-RuleHarness `
+    -Condition ($timeAppContent.Contains('global::System.Func<float> _timeProvider;') -and $timeAppContent.Contains('_timeProvider = timeProvider') -and $timeAppContent.Contains('_timeProvider();') -and -not $timeAppContent.Contains('UnityEngine.Time.time')) `
+    -Message 'Expected the Application file to be rewritten to use an injected time provider instead of UnityEngine.Time.time.'
+Assert-RuleHarness `
+    -Condition ($timeSetupContent.Contains('new TimerService(() => UnityEngine.Time.time)')) `
+    -Message 'Expected the feature setup call site to inject a Unity time provider lambda.'
+Assert-RuleHarness `
+    -Condition ([string]$timeState.entries['Timer'].lastResult -eq 'clean' -and $null -eq $timeState.entries['Timer'].lastFindingSeverity) `
+    -Message 'Expected the time-provider recipe to persist a clean state entry after the fix.'
+
+$unplannedRepo = Join-Path $scratchRoot 'unplanned-code-fix'
+Initialize-RuleHarnessScopeRepo -RepoPath $unplannedRepo -Features @(
+    [pscustomobject]@{ Name = 'Logger'; ApplicationContent = @"
+namespace Features.Logger.Application
+{
+    public sealed class LoggerService
+    {
+        public void Run()
+        {
+            Debug.Log(""logger"");
+        }
+    }
+}
+"@ }
+)
+$unplannedReport = Invoke-RuleHarness `
+    -RepoRoot $unplannedRepo `
+    -ConfigPath (Join-Path $unplannedRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+$unplannedPatchPlan = @($unplannedReport.stageResults | Where-Object stage -eq 'patch_plan' | Select-Object -First 1)[0]
+Assert-RuleHarness `
+    -Condition ($unplannedReport.stoppedScope.scopeId -eq 'Logger' -and @($unplannedReport.plannedBatches).Count -eq 0) `
+    -Message 'Expected unsupported Unity code-fix patterns to stop the scope without producing planned batches.'
+Assert-RuleHarness `
+    -Condition (@($unplannedReport.actionItems | Where-Object kind -eq 'expand-auto-fix-coverage').Count -eq 1) `
+    -Message 'Expected unplanned code-fix findings to surface an explainability action item.'
+Assert-RuleHarness `
+    -Condition ($null -ne $unplannedPatchPlan -and [int]$unplannedPatchPlan.details.unplannedFindingCount -eq 1) `
+    -Message 'Expected patch_plan stage details to record unplanned findings when no recipe matched.'
+
 $scheduledRepo = Join-Path $scratchRoot 'scheduled-status'
 Initialize-RuleHarnessScopeRepo -RepoPath $scheduledRepo -Features @(
     [pscustomobject]@{ Name = 'CleanA'; ApplicationContent = 'namespace Features.CleanA.Application { public sealed class CleanAService { } }' },
