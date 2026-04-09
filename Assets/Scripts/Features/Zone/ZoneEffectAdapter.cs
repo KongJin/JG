@@ -1,5 +1,5 @@
 using Shared.Attributes;
-using Features.Status.Domain;
+using Features.Zone.Application.Events;
 using Features.Zone.Application.Ports;
 using Features.Zone.Presentation;
 using Shared.EventBus;
@@ -46,7 +46,7 @@ namespace Features.Zone
             DomainEntityId zoneId,
             DomainEntityId casterId,
             float baseDamage,
-            StatusPayload statusPayload,
+            ZoneStatusPayload statusPayload,
             float allyDamageScale = 1f)
         {
             if (_zonePool == null)

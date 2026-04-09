@@ -1,9 +1,9 @@
 # /agent/architecture.md
 
 이 문서는 **코드 구조·피처 경계·의존 방향·레이어 책임·네이밍·크로스 피처 포트·scene contract 체크리스트**의 단일 근거(SSOT)다.  
-엔트리포인트는 `../CLAUDE.md`이고, 전역 구조 규칙은 여기서만 정의한다. feature-local 계약은 feature root `README.md`에 두되, wiring과 실제 씬/프리팹 사실은 `Setup`/`Bootstrap`, 씬/프리팹 직렬화 참조, 관련 코드 경로에서 드러나야 한다.
+엔트리포인트는 `../CLAUDE.md`이고, 전역 구조 규칙은 여기서만 정의한다. feature-local 계약은 feature root `/Assets/Scripts/Features/<FeatureName>/README.md`에 두되, wiring과 실제 씬/프리팹 사실은 `Setup`/`Bootstrap`, 씬/프리팹 직렬화 참조, 관련 코드 경로에서 드러나야 한다.
 
-시각 요약(Mermaid): [architecture-diagram.md](../docs/design/architecture-diagram.md) — 표·본문은 **이 문서**와 같아야 한다.
+시각 요약(layer/port only): [architecture-diagram.md](../docs/design/architecture-diagram.md) — 피처 의존 그래프의 품질 게이트는 이 문서와 validator가 소유한다.
 
 ---
 
@@ -34,13 +34,13 @@ Assets/Scripts/Shared/
 * scene-owned feature는 자기 `Setup`/`Bootstrap`, 씬/프리팹 직렬화 참조, 관련 코드에서 scene contract를 드러낸다.
 * networked feature는 명시적 초기화 경로와 late-join 동작을 코드와 전역 규칙으로 추적 가능하게 유지한다.
 * 런타임 fallback 생성으로 누락된 scene/prefab setup을 대체하지 않는다.
-* 각 feature root는 `README.md`를 갖고, 책임/로컬 계약/scene contract entry를 최신 상태로 유지한다.
+* 각 feature root는 `/Assets/Scripts/Features/<FeatureName>/README.md`를 갖고, 책임/로컬 계약/scene contract entry를 최신 상태로 유지한다.
 
 개념이 독립 생명주기를 얻기 전에는 feature 안에 남긴다.
 
 ### Feature-local contract docs
 
-각 feature root `README.md`는 전역 구조를 다시 정의하지 않는다. 대신 아래 로컬 사실만 기록한다.
+각 feature root `/Assets/Scripts/Features/<FeatureName>/README.md`는 전역 구조를 다시 정의하지 않는다. 대신 아래 로컬 사실만 기록한다.
 
 * feature responsibility
 * root `Setup` / `Bootstrap` entrypoints
@@ -53,7 +53,7 @@ Assets/Scripts/Shared/
 * same-name type alias policy
 * scene-owned helper type ownership
 
-Shared root `README.md`는 Shared에 둘 수 있는 공통 계약과 금지 대상을 로컬 관점에서 요약한다.
+Shared root `/Assets/Scripts/Shared/README.md`는 Shared에 둘 수 있는 공통 계약과 금지 대상을 로컬 관점에서 요약한다.
 
 ### Scene contract (code and scene assets)
 
@@ -148,6 +148,17 @@ Never reference:
 * Unity API in Domain
 * Photon API in Domain
 * Database logic in Domain
+
+### Feature dependency graph
+
+피처 간 의존성은 수동 diagram이나 수기 표를 SSOT로 두지 않는다.
+
+* 피처 의존 그래프는 코드에서 자동 추출한다.
+* consumer-owned `Application/Ports` 참조는 port ownership 규칙에 따라 semantic edge 방향으로 해석한다.
+* 새 피처 의존성 자체는 허용한다.
+* 단, 전체 그래프는 DAG여야 하며 `A -> B -> A`, `A -> B -> C -> A` 같은 cycle은 구조 위반이다.
+* 자동 추출 산출물은 `Temp/LayerDependencyValidator/feature-dependencies.json` 이다.
+* feature README의 `Cross-feature Dependencies` 섹션은 설명용이며, 품질 게이트 입력값으로 쓰지 않는다.
 
 ### Cross-feature port placement
 

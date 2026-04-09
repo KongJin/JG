@@ -1,4 +1,5 @@
 using Shared.Kernel;
+using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Domain
 {
@@ -94,7 +95,7 @@ namespace Features.Unit.Domain
             /// <summary>
             /// 조합 결과를 Unit 엔티티로 변환.
             /// </summary>
-            public Unit ToUnit(DomainEntityId id) => new(
+            public UnitSpec ToUnit(DomainEntityId id) => new(
                 id,
                 FrameId,
                 FirepowerModuleId,

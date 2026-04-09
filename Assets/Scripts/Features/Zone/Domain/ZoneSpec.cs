@@ -1,4 +1,4 @@
-using Features.Status.Domain;
+using Features.Zone.Application.Events;
 using Shared.Kernel;
 
 namespace Features.Zone.Domain
@@ -11,7 +11,7 @@ namespace Features.Zone.Domain
             ZoneAnchorType anchorType,
             ZoneHitType hitType,
             float baseDamage = 0f,
-            StatusPayload statusPayload = default)
+            ZoneStatusPayload statusPayload = default)
         {
             Radius = radius;
             Duration = duration;
@@ -26,7 +26,7 @@ namespace Features.Zone.Domain
         public ZoneAnchorType AnchorType { get; }
         public ZoneHitType HitType { get; }
         public float BaseDamage { get; }
-        public StatusPayload StatusPayload { get; }
+        public ZoneStatusPayload StatusPayload { get; }
 
         public override bool Equals(object obj)
         {

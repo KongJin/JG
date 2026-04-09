@@ -26,8 +26,15 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-rule-harness.p
 
 결과는 기본적으로 `Temp/RuleHarness/rule-harness-report.json` 에 저장된다.
 요약을 함께 남기면 `stageResults`, `actionItems`가 반영된 markdown summary를 바로 읽을 수 있다.
+실행 전에 하네스는 가능하면 Unity MCP를 통해 `Temp/RuleHarnessState/compile-status.json` 을 갱신한다. Unity가 닫혀 있거나 play mode면 이 파일은 `skipped` 상태로 남고, 결과는 계속 `static-clean only` 로 표시된다.
 
 기본 mutation mode는 config 기준 `code_and_rules` 이고, `-DryRun`이면 수정 없이 계획/검증 대상만 계산한다.
+
+compile handoff만 수동으로 새로 쓰고 싶으면:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\write-compile-status.ps1
+```
 
 ## 로컬 주기 실행
 
@@ -57,6 +64,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\register-rule-harn
 - `Temp/RuleHarnessScheduled/latest-run.txt`
 - `Temp/RuleHarnessScheduled/latest-status.json`
 - 반복 실패/재시도 상태: `Temp/RuleHarnessState/history.json`
+- compile handoff 상태: `Temp/RuleHarnessState/compile-status.json`
 
 예약 해제:
 

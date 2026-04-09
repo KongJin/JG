@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Features.Status.Domain;
 using Features.Zone.Application.Events;
 using Shared.EventBus;
 using Shared.Kernel;
@@ -15,7 +14,7 @@ namespace Features.Zone.Presentation
         private DomainEntityId _zoneId;
         private DomainEntityId _casterId;
         private float _baseDamage;
-        private StatusPayload _statusPayload;
+        private ZoneStatusPayload _statusPayload;
         private float _allyDamageScale;
         private float _tickInterval;
         private IEventPublisher _publisher;
@@ -27,7 +26,7 @@ namespace Features.Zone.Presentation
             DomainEntityId zoneId,
             DomainEntityId casterId,
             float baseDamage,
-            StatusPayload statusPayload,
+            ZoneStatusPayload statusPayload,
             IEventPublisher publisher,
             float allyDamageScale = 1f)
         {

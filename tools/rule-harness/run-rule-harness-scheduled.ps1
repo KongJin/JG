@@ -6,7 +6,10 @@ param(
     [string]$Model,
     [string]$MutationMode = 'code_and_rules',
     [switch]$RequireLlm = $true,
-    [switch]$DisableLlm
+    [switch]$DisableLlm,
+    [switch]$SkipCompileStatusRefresh,
+    [string]$UnityMcpBaseUrl,
+    [int]$CompileStatusTimeoutSec = 300
 )
 
 Set-StrictMode -Version Latest
@@ -52,6 +55,9 @@ try {
         -EnableMutation `
         -RequireLlm:$requireLlmForRun `
         -DisableLlm:$DisableLlm `
+        -SkipCompileStatusRefresh:$SkipCompileStatusRefresh `
+        -UnityMcpBaseUrl $UnityMcpBaseUrl `
+        -CompileStatusTimeoutSec $CompileStatusTimeoutSec `
         -LogPathHint $logPath
 
     Write-Host "Rule harness scheduled run finished at $(Get-Date -Format o)"

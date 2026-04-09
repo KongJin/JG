@@ -1,6 +1,6 @@
 # Architecture Diagram
 
-구조·의존·레이어의 **단일 기준**은 [`/agent/architecture.md`](../agent/architecture.md)이다. 이 파일은 그림으로만 요약한다.
+구조·의존·레이어의 **단일 기준**은 [`/agent/architecture.md`](../../agent/architecture.md)이다. 이 파일은 레이어/포트 구조만 그림으로 요약한다.
 
 ```mermaid
 graph TB
@@ -41,28 +41,14 @@ graph TB
 
 셀프 피처 포트는 동일 피처 내에서 정의·구현한다.
 
-### 피처 간 의존성 그래프
+## 피처 간 의존성 그래프
 
-```mermaid
-graph LR
-    Combat -->|ICombatNetworkCommandPort<br/>ICombatTargetProvider| Player
-    Combat -->|ICombatTargetProvider| Enemy
-    Combat -->|ICombatTargetProvider| Unit
-    Combat -->|ICombatTargetProvider<br/>IEntityAffiliationPort| Wave
-    Enemy -->|IPlayerPositionQuery| Wave
-    Garage -->|IUnitCompositionPort| Unit
-    Player -->|ISpeedModifierPort| Status
-    Skill -->|IManaPort<br/>IStatusQueryPort| Player
-    Skill -->|IStatusQueryPort| Status
-    Unit -->|IUnitEnergyPort| Player
-    Wave -->|IWaveSpawnPort| Enemy
+피처 간 dependency graph는 이 문서에서 수동으로 유지하지 않는다.
 
-    classDef consumer fill:#a94,stroke:#333,color:#fff
-    classDef provider fill:#4a9,stroke:#333,color:#fff
-    class Combat,Enemy,Garage,Player,Skill,Unit,Wave consumer
-```
-
-> **화살표 방향**: Consumer → Provider (포트를 사용하는 쪽에서 정의, 제공하는 쪽이 구현)
+* 현재 그래프는 `Temp/LayerDependencyValidator/feature-dependencies.json` generated artifact를 본다.
+* `Application/Ports` 참조는 consumer-owned port 규칙을 반영해 semantic edge 방향으로 해석한다.
+* 품질 게이트는 “새 의존성 금지”가 아니라 “cycle 금지”다.
+* 즉 `A -> B`는 허용하지만 `A -> B -> A`, `A -> B -> C -> A`는 구조 위반이다.
 
 ## 어셈블리(asmdef)
 

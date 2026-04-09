@@ -1,4 +1,4 @@
-using Features.Status.Domain;
+using Features.Zone.Application.Events;
 using Shared.Kernel;
 using Shared.Math;
 
@@ -13,7 +13,7 @@ namespace Features.Zone.Application.Ports
             DomainEntityId zoneId,
             DomainEntityId casterId,
             float baseDamage,
-            StatusPayload statusPayload,
+            ZoneStatusPayload statusPayload,
             float allyDamageScale = 1f);
     }
 }

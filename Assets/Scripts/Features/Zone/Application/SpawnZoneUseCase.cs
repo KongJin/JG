@@ -1,4 +1,3 @@
-using Features.Status.Domain;
 using Features.Zone.Application.Events;
 using Features.Zone.Domain;
 using Features.Zone.Application.Ports;
@@ -29,7 +28,7 @@ namespace Features.Zone.Application
             float range,
             float cooldown,
             float baseDamage = 0f,
-            StatusPayload statusPayload = default,
+            ZoneStatusPayload statusPayload = default,
             float allyDamageScale = 1f)
         {
             var spawnPos = position + direction.Normalized * (range * 0.5f);

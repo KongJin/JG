@@ -1,4 +1,4 @@
-using Features.Unit.Domain;
+using UnitSpec = Features.Unit.Domain.Unit;
 using Shared.Kernel;
 using Shared.Math;
 
@@ -11,7 +11,7 @@ namespace Features.Unit.Domain
     /// </summary>
     public sealed class BattleEntity : Entity
     {
-        public Unit UnitSpec { get; }
+        public UnitSpec UnitSpec { get; }
         public DomainEntityId OwnerId { get; }
 
         public float MaxHp { get; }
@@ -22,7 +22,7 @@ namespace Features.Unit.Domain
 
         public BattleEntity(
             DomainEntityId id,
-            Unit unitSpec,
+            UnitSpec unitSpec,
             DomainEntityId ownerId,
             Float3 spawnPosition,
             float? initialHp = null) : base(id)

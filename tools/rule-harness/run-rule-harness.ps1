@@ -14,6 +14,9 @@ param(
     [switch]$DisableMutation,
     [switch]$DisableLlm,
     [switch]$RequireLlm,
+    [switch]$SkipCompileStatusRefresh,
+    [string]$UnityMcpBaseUrl,
+    [int]$CompileStatusTimeoutSec = 300,
     [switch]$DryRun
 )
 
@@ -21,6 +24,18 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 Import-Module (Join-Path $PSScriptRoot 'RuleHarness.psm1') -Force
+
+if (-not $SkipCompileStatusRefresh) {
+    try {
+        & (Join-Path $PSScriptRoot 'write-compile-status.ps1') `
+            -RepoRoot $RepoRoot `
+            -UnityMcpBaseUrl $UnityMcpBaseUrl `
+            -TimeoutSec $CompileStatusTimeoutSec
+    }
+    catch {
+        Write-Warning ("Rule harness compile status refresh failed: {0}" -f $_.Exception.Message)
+    }
+}
 
 if (-not (Test-Path -LiteralPath $ArtifactDir)) {
     New-Item -ItemType Directory -Path $ArtifactDir -Force | Out-Null
