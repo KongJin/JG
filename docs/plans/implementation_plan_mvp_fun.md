@@ -9,12 +9,12 @@
 | 수치·통과 기준·MVP 문장·웨이브 시간표 | [game_design.md](../design/game_design.md) 만 수정 |
 | 재미 워크숍·페르소나·토의 기록 | [discussion_game_fun_personas.md](../discussions/discussion_game_fun_personas.md) |
 | 플레이 세션 노트 양식 | [playtest_mvp_template.md](../playtest/playtest_mvp_template.md) |
-| Room/Player CustomProperties 키 소유권 | [state_ownership.md](../../agent/state_ownership.md) — **새 키 추가 시 반드시 갱신** |
+| Room/Player CustomProperties 키 소유권 | 실제 키를 쓰는 feature code (`Application/**`, `Infrastructure/**`) + [architecture.md](../../agent/architecture.md) + [work_principles.md](../../agent/work_principles.md) — **새 키 추가 시 owner 코드와 관련 문서를 함께 갱신** |
 | 스킬 분류 태그와 현재 코드 매핑 | [SkillGameplayTags.cs](../../Assets/Scripts/Features/Skill/Domain/SkillGameplayTags.cs), [SkillGameplayTagResolver.cs](../../Assets/Scripts/Features/Skill/Domain/SkillGameplayTagResolver.cs), [SkillData.cs](../../Assets/Scripts/Features/Skill/Infrastructure/SkillData.cs) — 수치·MVP 정의는 `game_design.md`만 SSOT |
 
 본 파일은 **무엇을 어느 순서로 손대는지**만 적는다. 결정이 바뀌면 위 SSOT를 먼저 고친 뒤 여기 체크리스트를 맞춘다.
 
-**프로젝트 규칙:** [CLAUDE.md](../../CLAUDE.md)의 필수 워크플로를 시작점으로 삼고, 상세 판단은 [anti_patterns.md](../../agent/anti_patterns.md), [architecture.md](../../agent/architecture.md), [state_ownership.md](../../agent/state_ownership.md)를 따른다.
+**프로젝트 규칙:** [CLAUDE.md](../../CLAUDE.md)의 필수 워크플로를 시작점으로 삼고, 상세 판단은 [anti_patterns.md](../../agent/anti_patterns.md), [architecture.md](../../agent/architecture.md), [work_principles.md](../../agent/work_principles.md)를 따른다.
 
 ---
 
@@ -24,8 +24,8 @@
 
 | 규칙 출처 | 요구 | 본 계획과의 관계 |
 |-----------|------|------------------|
-| state_ownership — 동기화 채널 | 방 단위 **상태**는 `CustomProperties` | 난이도 프리셋은 **Room CustomProperties**로만 동기화. RPC 전용으로 두지 않는다. |
-| architecture / anti_patterns — Network 피처 | CommandPort / CallbackPort, Adapter 구현 | Lobby: 기존 `LobbyPhotonAdapter` 패턴에 **방 속성 병합(SetCustomProperties)** 추가. Wave가 값을 **읽기만** 하면 Wave 쪽은 기존 `WaveNetworkAdapter`와 동일하게 **인프라에서 Room 읽기** 가능; **쓰기는 Lobby만** ([state_ownership.md](../../agent/state_ownership.md)). |
+| 실제 owner code + architecture / work_principles | 방 단위 **상태**는 `CustomProperties`와 owner 코드 기준으로 추적 | 난이도 프리셋은 **Room CustomProperties**로만 동기화. RPC 전용으로 두지 않는다. |
+| architecture / anti_patterns — Network 피처 | CommandPort / CallbackPort, Adapter 구현 | Lobby: 기존 `LobbyPhotonAdapter` 패턴에 **방 속성 병합(SetCustomProperties)** 추가. Wave가 값을 **읽기만** 하면 Wave 쪽은 기존 `WaveNetworkAdapter`와 동일하게 **인프라에서 Room 읽기** 가능; **쓰기는 Lobby만** 유지한다. |
 | anti_patterns — View | View/InputHandler에 비즈니스·네트워크 로직 금지 | 난이도 UI는 **입력만** → `LobbyUseCases` → Adapter. `LobbyView`에서 직접 `PhotonNetwork` 호출 금지. |
 | anti_patterns — Domain | Domain에 네트워킹·Unity API 금지 | 프리셋 ID→배율 매핑은 **Wave.Application** 등 순수 C#에 둔다(아래 Phase C). |
 | anti_patterns — Bootstrap | 비즈니스 분기·게임 규칙 장문 금지 | `WaveBootstrap`은 **주입·구독·Initialize 호출만**. 스폰 개수 배율 계산은 **Application 정적 매핑 또는 소형 유스케이스**로 분리. |
@@ -34,7 +34,7 @@
 | anti_patterns — Port 위치 | Unity 타입 없는 포트만 Application/Ports | 배율 조회가 `float`/`int`만 쓰면 `Features/Wave/Application/Ports`에 `IDifficultySpawnScale` 같은 **읽기 전용 포트** 가능. Unity 의존 시 Presentation으로. |
 | CLAUDE 워크플로 | 관련 feature의 `Setup`/`Bootstrap`, 실제 키 사용 코드, 전역 규칙 문서 동기화 | Phase C 이후 Lobby·Wave 코드 경로에서 Room 키, 읽기 시점, late-join 시 난이도 반영 여부가 추적 가능해야 한다. |
 
-**키 문자열:** `difficultyPreset`(가칭) 값은 [state_ownership.md](../../agent/state_ownership.md)에 한 줄로 고정하고, Lobby 상수(`LobbyPhotonConstants`)와 Wave 인프라의 읽기 키가 **동일 문자열**이어야 한다. Wave가 Lobby 어셈블리를 참조하지 않도록, **문자열은 양쪽 각각 상수로 두고 SSOT 문서로 동기화**하거나, 아키텍처상 허용 시 **공유 최소 상수** 한 파일로만 맞춘다(새 공유 파일 추가 시 [architecture.md](../../agent/architecture.md)와 팀 합의).
+**키 문자열:** `difficultyPreset`(가칭) 값은 Lobby write-side 상수와 Wave read-side 상수에 **동일 문자열**로 고정하고, 관련 판단 근거는 [architecture.md](../../agent/architecture.md)와 [work_principles.md](../../agent/work_principles.md) 기준으로 문서화한다. Wave가 Lobby 어셈블리를 참조하지 않도록, **문자열은 양쪽 각각 상수로 두고 owner 코드와 문서를 함께 동기화**하거나, 아키텍처상 허용 시 **공유 최소 상수** 한 파일로만 맞춘다.
 
 ### 구현 반영 후 anti_patterns 재점검 요약
 
@@ -128,9 +128,9 @@ flowchart TD
 
 ### C-1. 계약
 
-- [ ] [state_ownership.md](../../agent/state_ownership.md): Room 행에 키·소유(Lobby)·용도·쓰기 위치 표 추가.
+- [ ] Lobby write-side 코드와 Wave read-side 코드 기준으로 키·소유(Lobby)·용도·쓰기 위치를 문서화한다.
 - [ ] [LobbyPhotonConstants.cs](../../Assets/Scripts/Features/Lobby/Infrastructure/Photon/LobbyPhotonConstants.cs): 키 상수(문자열) 추가.
-- [ ] Wave 읽기: `Features/Wave/Infrastructure`에 **키 문자열 상수** 별도 선언 — 주석으로 `state_ownership`과 동일해야 함을 명시(Wave→Lobby 프로젝트 참조 추가는 피함).
+- [ ] Wave 읽기: `Features/Wave/Infrastructure`에 **키 문자열 상수** 별도 선언 — Lobby write-side 상수와 동일 문자열임을 주석으로 명시(Wave→Lobby 프로젝트 참조 추가는 피함).
 
 ### C-2. Lobby — 쓰기 (CustomProperties만)
 
@@ -197,7 +197,7 @@ flowchart TD
 - [ ] `../design/game_design.md` **①** 측정을 1회 이상 수행하고, 결과를 토의 메모 또는 플레이테스트 템플릿에 남김.
 - [ ] `EnemyData` **2종 이상** + 웨이브 테이블이 디자인 방향(예: 5웨이브)에 **데이터상** 정렬.
 - [ ] 로비 난이도: Room 동기화 + 인게임 배율 + 로비 **한 줄(또는 동등)** 표시.
-- [ ] `state_ownership.md`에 새 Room 키 반영.
+- [ ] 새 Room 키의 owner/read 경로와 관련 문서 반영.
 - [ ] 변경한 피처의 실제 wiring/code contract와 전역 규칙 문서 정리.
 
 ---
@@ -206,5 +206,5 @@ flowchart TD
 
 - `../design/game_design.md` 수치·문장을 본 문서만 보고 임의 변경하지 않는다. 반영은 SSOT에서 확정 후.
 - Phase 2(시너지·메타·런 연장 등)는 [game_design.md](../design/game_design.md) Phase 2 절 범위 밖에서 확장하지 않는다.
-- [state_ownership.md](../../agent/state_ownership.md)와 네트워크 규칙에 어긋나는 동기화 경로 사용: `PhotonTransformView` 등 **CustomProperties / RPC / SerializeView** 밖 채널로 난이도만 동기화하지 않는다.
+- 실제 owner 코드와 네트워크 규칙에 어긋나는 동기화 경로 사용: `PhotonTransformView` 등 **CustomProperties / RPC / SerializeView** 밖 채널로 난이도만 동기화하지 않는다.
 - 난이도를 **이중 저장**(예: Room CP + 별도 정적 싱글톤)하지 않는다 — **Room CP 단일 근원**.

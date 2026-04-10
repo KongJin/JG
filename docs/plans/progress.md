@@ -1,6 +1,6 @@
 # 진행 상황 (Game Scene Entry)
 
-> **마지막 업데이트**: 2026-04-09
+> **마지막 업데이트**: 2026-04-10
 
 ## Phase 진행률
 
@@ -13,17 +13,30 @@
 | Phase 4: 재소환 시스템 | ✅ 완료 | UnitDiedEvent, UnitDeathEventHandler, 재소환 UI |
 | Phase 5: 네트워크 동기화 | ✅ 완료 | Energy/Mana 통합, IPlayerSpecProvider, GetLocalPlayerRoster, BattleEntity late-join HP sync |
 | Phase 6: 게임 종료 | ✅ 완료 | GameEndEvent 재설계, GameEndAnalytics, WaveEndView 개선, Lobby 복귀, Firebase Analytics |
-| Phase 7: 배치 시스템 완성 | 📋 계획됨 | 배치 영역 시각화, 판정 개선, 드래그 피드백 |
-| Phase 8: Energy 재생 증가 곡선 | 📋 계획됨 | 시간 기반 재생량 증가, 초기 Energy 검증 |
-| Phase 9: 네트워크 완성 | 📋 계획됨 | BattleEntity remote 파괴 동기화, 통계 UI 개선 |
+| Phase 7: 배치 시스템 완성 | ✅ 완료 | PlacementArea, PlacementAreaView, 드래그 피드백, 영역 검증, MaterialFactory, ErrorView |
+| Phase 8: Energy 재생 증가 곡선 | ✅ 완료 | EnergyRegenCurve (시간 기반 60s→180s, 3→5/s), EnergyRegenCurveConfig, TickRegen wiring |
+| Phase 9: 네트워크 완성 | 🟨 대부분 완료 | BattleEntityPhotonController (IPunObservable HP/pos/dead sync), BattleEntityDespawnAdapter, WaveEndView 통계, GameEndAnalytics |
 
 ## 미완료 TODO
 
-- Phase 7: 배치 영역 시각화 + 판정 개선 ([`phase_7_8_9_roadmap.md`](./phase_7_8_9_roadmap.md))
-- Phase 8: Energy 재생 증가 곡선 설계 및 구현
-- Phase 9: remote BattleEntity 파괴 동기화, WaveEndView 통계 UI
+- Phase 9: 명시적 `[PunRPC]` 기반 BattleEntity remote 사망 동기화 (현재 PUN 자동 전파에 의존)
+- Unity Inspector wiring 검증: `PlacementAreaView`, `DragGhostPrefab` 등 직렬화 참조 할당 확인
+- 실제 멀티플레이어 smoke 테스트: late-join, BattleEntity sync, Energy sync
 
-## 최근 변경 사항
+### 최근 변경 사항
+
+### 2026-04-10
+
+| 커밋 | 내용 |
+|---|---|
+| `b01947f` | chore: gate rule harness on feature dependency dag |
+| `1ccab5e` | chore: expand rule harness code fix recipes |
+| `ec3be02` | chore: strengthen rule harness feedback loop |
+| `4dcd9e4` | fix: rename scenes (JG_ prefix removed), fix compile errors, update validator |
+| `54447f2` | docs(rules): unify Korean/English mixed language in agent/*.md |
+| `b897879` | fix(zone): move ZoneStatusPayload to Domain layer, break layer violation |
+| `d295479` | fix(zone): break Status->Player->Zone->Status cycle with ZoneStatusPayload |
+| `9445434` | feat(phase9): complete network sync — stats UI and drag ghost prefab |
 
 ### 2026-04-09
 
@@ -54,7 +67,7 @@
 - **Garage**: 슬롯 5→6 확장, GetLocalPlayerRoster, RestoreGarageRosterUseCase
 - **Unit**: 소환 시스템, 슬롯 UI, ComputePlayerUnitSpecsUseCase
 - **Wave**: Victory/Defeat 통계, Lobby 복귀 버튼
-- **Agent 문서 5개 삭제**: game_design.md, state_ownership.md, initialization_order.md, firebase_hosting.md, webgl_optimization.md
+- **문서 정리**: obsolete agent 문서 일부 제거와 규칙 문서 참조 정리
 
 ## 전체 로드맵
 
