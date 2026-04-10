@@ -275,7 +275,24 @@ if ($waitTimedOut -or $waitStillCompiling) {
     return
 }
 
-$recentErrors = Get-McpRecentErrors -Root $mcpRoot -Limit 100
+$recentErrors = $null
+try {
+    $recentErrors = Get-McpRecentErrors -Root $mcpRoot -Limit 100
+}
+catch {
+    Write-CompileStatusFile `
+        -Status 'unavailable' `
+        -Summary ("Unity console error fetch failed: {0}" -f $_.Exception.Message) `
+        -ReasonCode 'unity-mcp-unreachable' `
+        -ExtraFields @{
+            mcpRoot = $mcpRoot
+            activeScene = [string]$health.activeScene
+            waitedMs = $waitedMs
+            requestedCompilation = $waitRequestedCompilation
+        }
+    return
+}
+
 $compileErrors = @(
     foreach ($entry in @($recentErrors.items)) {
         if (Test-IsCompileErrorEntry -Entry $entry -StartedAtUtc $startedAtUtc) {
@@ -305,7 +322,24 @@ if ($compileErrors.Count -gt 0) {
     return
 }
 
-$postHealth = Invoke-McpGetJson -Root $mcpRoot -SubPath "/health"
+$postHealth = $null
+try {
+    $postHealth = Invoke-McpGetJson -Root $mcpRoot -SubPath "/health"
+}
+catch {
+    Write-CompileStatusFile `
+        -Status 'unavailable' `
+        -Summary ("Unity post-compile health check failed: {0}" -f $_.Exception.Message) `
+        -ReasonCode 'unity-mcp-unreachable' `
+        -ExtraFields @{
+            mcpRoot = $mcpRoot
+            activeScene = [string]$health.activeScene
+            waitedMs = $waitedMs
+            requestedCompilation = $waitRequestedCompilation
+        }
+    return
+}
+
 if ([bool]$postHealth.isCompiling) {
     Write-CompileStatusFile `
         -Status 'blocked' `

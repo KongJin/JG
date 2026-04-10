@@ -945,6 +945,90 @@ function Get-RuleHarnessCompileStatusPath {
     }
 }
 
+function Get-RuleHarnessFeatureDependencyReportPath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $relativePath = if ($Config.PSObject.Properties.Name -contains 'state' -and
+        $Config.state.PSObject.Properties.Name -contains 'featureDependencyReportPath' -and
+        -not [string]::IsNullOrWhiteSpace([string]$Config.state.featureDependencyReportPath)) {
+        [string]$Config.state.featureDependencyReportPath
+    }
+    else {
+        'Temp/LayerDependencyValidator/feature-dependencies.json'
+    }
+
+    [pscustomobject]@{
+        relativePath = $relativePath
+        fullPath     = Join-Path $RepoRoot $relativePath
+    }
+}
+
+function ConvertTo-RuleHarnessFeatureDependencyEvidence {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Evidence,
+        [string]$Snippet
+    )
+
+    [pscustomobject]@{
+        path    = [string]$Evidence.path
+        line    = if ($Evidence.PSObject.Properties.Name -contains 'line') { [int]$Evidence.line } else { $null }
+        snippet = $Snippet
+    }
+}
+
+function Get-RuleHarnessFeatureDependencyCycleFindings {
+    param(
+        [Parameter(Mandatory)]
+        [object[]]$Cycles,
+        [Parameter(Mandatory)]
+        [string]$OwnerDoc
+    )
+
+    $findings = [System.Collections.Generic.List[object]]::new()
+    foreach ($cycle in @($Cycles)) {
+        $features = @($cycle.features | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+        if ($features.Count -eq 0) {
+            continue
+        }
+
+        $cyclePath = if ($features.Count -gt 1) {
+            (@($features) + @($features[0])) -join ' -> '
+        }
+        else {
+            "$($features[0]) -> $($features[0])"
+        }
+        $snippet = "Cycle: $cyclePath"
+        $evidence = @($cycle.evidence | ForEach-Object { ConvertTo-RuleHarnessFeatureDependencyEvidence -Evidence $_ -Snippet $snippet })
+        if ($evidence.Count -eq 0) {
+            $evidence = @([pscustomobject]@{
+                path    = $null
+                line    = $null
+                snippet = $snippet
+            })
+        }
+
+        [void]$findings.Add((New-RuleHarnessFinding `
+            -FindingType 'code_violation' `
+            -Severity 'high' `
+            -OwnerDoc $OwnerDoc `
+            -Title 'Feature dependency cycle' `
+            -Message ("Feature dependency cycle detected: {0}." -f $cyclePath) `
+            -Evidence $evidence `
+            -Confidence 'high' `
+            -Source 'static' `
+            -RemediationKind 'report_only' `
+            -Rationale 'Feature dependency graph must remain acyclic even when new cross-feature edges are allowed.'))
+    }
+
+    @($findings)
+}
+
 function Get-RuleHarnessCompileGateStatus {
     param(
         [Parameter(Mandatory)]
@@ -1174,6 +1258,166 @@ function Get-RuleHarnessCompileGateStatus {
                 )
             }
         }
+    }
+}
+
+function Get-RuleHarnessFeatureDependencyGateStatus {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $reportPath = Get-RuleHarnessFeatureDependencyReportPath -RepoRoot $RepoRoot -Config $Config
+    $sourceRelativePath = 'Assets/Editor/LayerDependencyValidator.cs'
+    $sourceFullPath = Join-Path $RepoRoot $sourceRelativePath
+    $architectureOwnerDoc = Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot
+
+    if (-not (Test-Path -LiteralPath $sourceFullPath) -and -not (Test-Path -LiteralPath $reportPath.fullPath)) {
+        return [pscustomobject]@{
+            featureDependencyGateStatus = 'unsupported'
+            featureDependencyCycleCount = 0
+            reportPath                  = [string]$reportPath.relativePath
+            failed                      = $false
+            findings                    = @()
+            stageResult                 = New-RuleHarnessStageResult `
+                -Stage 'feature_dependency_gate' `
+                -Status 'skipped' `
+                -Attempted $false `
+                -Summary 'Feature dependency graph validation is not configured for this repository snapshot.' `
+                -Details ([pscustomobject]@{
+                    sourcePath = $sourceRelativePath
+                    reportPath = [string]$reportPath.relativePath
+                })
+            actionItems                 = @()
+        }
+    }
+
+    if (-not (Test-Path -LiteralPath $reportPath.fullPath)) {
+        return [pscustomobject]@{
+            featureDependencyGateStatus = 'missing'
+            featureDependencyCycleCount = 0
+            reportPath                  = [string]$reportPath.relativePath
+            failed                      = $true
+            findings                    = @()
+            stageResult                 = New-RuleHarnessStageResult `
+                -Stage 'feature_dependency_gate' `
+                -Status 'failed' `
+                -Attempted $true `
+                -Summary 'Feature dependency report is missing.' `
+                -Details ([pscustomobject]@{
+                    sourcePath = $sourceRelativePath
+                    reportPath = [string]$reportPath.relativePath
+                })
+            actionItems                 = @(
+                New-RuleHarnessActionItem `
+                    -Kind 'refresh-feature-dependency-report' `
+                    -Severity 'high' `
+                    -Summary 'Refresh the feature dependency graph artifact' `
+                    -Details ("Rule harness expected feature dependency report at {0}. Re-run write-feature-dependency-report.ps1 or inspect LayerDependencyValidator." -f [string]$reportPath.relativePath) `
+                    -RelatedPaths @([string]$sourceRelativePath, [string]$reportPath.relativePath)
+            )
+        }
+    }
+
+    try {
+        $rawReport = Get-Content -Path $reportPath.fullPath -Raw | ConvertFrom-Json
+    }
+    catch {
+        return [pscustomobject]@{
+            featureDependencyGateStatus = 'invalid'
+            featureDependencyCycleCount = 0
+            reportPath                  = [string]$reportPath.relativePath
+            failed                      = $true
+            findings                    = @()
+            stageResult                 = New-RuleHarnessStageResult `
+                -Stage 'feature_dependency_gate' `
+                -Status 'failed' `
+                -Attempted $true `
+                -Summary 'Feature dependency report exists but could not be parsed.' `
+                -Details ([pscustomobject]@{
+                    sourcePath = $sourceRelativePath
+                    reportPath = [string]$reportPath.relativePath
+                })
+            actionItems                 = @(
+                New-RuleHarnessActionItem `
+                    -Kind 'repair-feature-dependency-report' `
+                    -Severity 'high' `
+                    -Summary 'Repair the feature dependency graph artifact' `
+                    -Details ("Rule harness could not parse feature dependency report at {0}. Recreate the file after checking LayerDependencyValidator." -f [string]$reportPath.relativePath) `
+                    -RelatedPaths @([string]$sourceRelativePath, [string]$reportPath.relativePath)
+            )
+        }
+    }
+
+    $hasCycles = $rawReport.PSObject.Properties.Name -contains 'hasCycles' -and [bool]$rawReport.hasCycles
+    $featureCount = if ($rawReport.PSObject.Properties.Name -contains 'featureCount') { [int]$rawReport.featureCount } else { 0 }
+    $edgeCount = if ($rawReport.PSObject.Properties.Name -contains 'edgeCount') { [int]$rawReport.edgeCount } else { 0 }
+    $generatedAtUtc = if ($rawReport.PSObject.Properties.Name -contains 'generatedAtUtc') { [string]$rawReport.generatedAtUtc } else { $null }
+    $cycles = @($rawReport.cycles)
+
+    if ($hasCycles) {
+        $cycleFindings = @(Get-RuleHarnessFeatureDependencyCycleFindings -Cycles $cycles -OwnerDoc $architectureOwnerDoc)
+        $relatedPaths = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+        [void]$relatedPaths.Add([string]$sourceRelativePath)
+        [void]$relatedPaths.Add([string]$reportPath.relativePath)
+        foreach ($cycleFinding in @($cycleFindings)) {
+            foreach ($evidence in @($cycleFinding.evidence)) {
+                if ($null -ne $evidence -and -not [string]::IsNullOrWhiteSpace([string]$evidence.path)) {
+                    [void]$relatedPaths.Add([string]$evidence.path)
+                }
+            }
+        }
+
+        return [pscustomobject]@{
+            featureDependencyGateStatus = 'failed'
+            featureDependencyCycleCount = @($cycleFindings).Count
+            reportPath                  = [string]$reportPath.relativePath
+            failed                      = $true
+            findings                    = @($cycleFindings)
+            stageResult                 = New-RuleHarnessStageResult `
+                -Stage 'feature_dependency_gate' `
+                -Status 'failed' `
+                -Attempted $true `
+                -Summary ("Feature dependency graph contains {0} cycle(s)." -f @($cycleFindings).Count) `
+                -Details ([pscustomobject]@{
+                    generatedAtUtc = $generatedAtUtc
+                    reportPath = [string]$reportPath.relativePath
+                    featureCount = $featureCount
+                    edgeCount = $edgeCount
+                    cycleCount = @($cycleFindings).Count
+                })
+            actionItems                 = @(
+                New-RuleHarnessActionItem `
+                    -Kind 'break-feature-dependency-cycle' `
+                    -Severity 'high' `
+                    -Summary 'Break feature dependency cycles before rerunning rule harness' `
+                    -Details ("LayerDependencyValidator reported {0} cycle(s). Keep cross-feature dependencies acyclic." -f @($cycleFindings).Count) `
+                    -RelatedPaths @($relatedPaths)
+            )
+        }
+    }
+
+    return [pscustomobject]@{
+        featureDependencyGateStatus = 'passed'
+        featureDependencyCycleCount = 0
+        reportPath                  = [string]$reportPath.relativePath
+        failed                      = $false
+        findings                    = @()
+        stageResult                 = New-RuleHarnessStageResult `
+            -Stage 'feature_dependency_gate' `
+            -Status 'passed' `
+            -Attempted $true `
+            -Summary ("Feature dependency graph is acyclic. Features={0} Edges={1}." -f $featureCount, $edgeCount) `
+            -Details ([pscustomobject]@{
+                generatedAtUtc = $generatedAtUtc
+                reportPath = [string]$reportPath.relativePath
+                featureCount = $featureCount
+                edgeCount = $edgeCount
+                cycleCount = 0
+            })
+        actionItems                 = @()
     }
 }
 
@@ -5763,6 +6007,8 @@ function Write-RuleHarnessSummary {
     [void]$lines.Add("- Compile verified: $($Report.execution.compileVerified)")
     [void]$lines.Add("- Clean level: $($Report.execution.cleanLevel)")
     [void]$lines.Add("- Compile gate status: $($Report.execution.compileGateStatus)")
+    [void]$lines.Add("- Feature dependency gate status: $($Report.execution.featureDependencyGateStatus)")
+    [void]$lines.Add("- Feature dependency cycles: $($Report.execution.featureDependencyCycleCount)")
     [void]$lines.Add("- Scanned features: $($Report.scannedFeatures.Count)")
     [void]$lines.Add("- Completed scopes: $($Report.completedScopes.Count)")
     [void]$lines.Add("- Findings: $($Report.findings.Count)")
@@ -6155,6 +6401,9 @@ function Invoke-RuleHarness {
             stoppedScope = if ($null -ne $stoppedScope) { [string]$stoppedScope.scopeId } else { $null }
         })))
 
+    $featureDependencyGateStatus = Get-RuleHarnessFeatureDependencyGateStatus -RepoRoot $RepoRoot -Config $config
+    [void]$stageResults.Add($featureDependencyGateStatus.stageResult)
+
     $compileGateStatus = Get-RuleHarnessCompileGateStatus -RepoRoot $RepoRoot -Config $config
     [void]$stageResults.Add($compileGateStatus.stageResult)
 
@@ -6251,7 +6500,7 @@ function Invoke-RuleHarness {
         }
     }
 
-    $reportFindings = @($findings)
+    $reportFindings = @($findings + $featureDependencyGateStatus.findings)
     if ($null -ne $stoppedScope) {
         $reportFindings = @(
             @($reportFindings | Where-Object { -not (Test-RuleHarnessFindingMatchesScope -Finding $_ -ScopeId ([string]$stoppedScope.scopeId)) }) +
@@ -6274,6 +6523,7 @@ function Invoke-RuleHarness {
     }
     $reportActionItems = @(Merge-RuleHarnessActionItems -Items @(
         @($preMutationActionItems) +
+        @($featureDependencyGateStatus.actionItems) +
         @($compileGateStatus.actionItems) +
         @($mutationResult.actionItems) +
         @($reportPromotionCandidates | ForEach-Object {
@@ -6315,6 +6565,9 @@ function Invoke-RuleHarness {
             compileGateStatus = [string]$compileGateStatus.compileGateStatus
             compileGateReasonCode = [string]$compileGateStatus.compileGateReasonCode
             compileStatusPath = [string]$compileGateStatus.statusPath
+            featureDependencyGateStatus = [string]$featureDependencyGateStatus.featureDependencyGateStatus
+            featureDependencyCycleCount = [int]$featureDependencyGateStatus.featureDependencyCycleCount
+            featureDependencyReportPath = [string]$featureDependencyGateStatus.reportPath
         }
         scannedFeatures   = @($attemptedScopes)
         scannedScopes     = @($attemptedScopes)
@@ -6356,7 +6609,7 @@ function Invoke-RuleHarness {
         commit            = $mutationResult.commit
         rollback          = $mutationResult.rollback
         applied           = [bool]$mutationResult.applied
-        failed            = ([bool]$failed -or [bool]$compileGateStatus.failed)
+        failed            = ([bool]$failed -or [bool]$featureDependencyGateStatus.failed -or [bool]$compileGateStatus.failed)
     }
 
     if (-not [string]::IsNullOrWhiteSpace($docProposalPath)) {

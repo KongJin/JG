@@ -58,7 +58,10 @@
         "cleanLevel",
         "compileGateStatus",
         "compileGateReasonCode",
-        "compileStatusPath"
+        "compileStatusPath",
+        "featureDependencyGateStatus",
+        "featureDependencyCycleCount",
+        "featureDependencyReportPath"
       ],
       "properties": {
         "dryRun": {
@@ -139,6 +142,15 @@
             "string",
             "null"
           ]
+        },
+        "featureDependencyGateStatus": {
+          "type": "string"
+        },
+        "featureDependencyCycleCount": {
+          "type": "integer"
+        },
+        "featureDependencyReportPath": {
+          "type": "string"
         },
         "statePath": {
           "type": [

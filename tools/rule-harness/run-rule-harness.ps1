@@ -15,6 +15,7 @@ param(
     [switch]$DisableLlm,
     [switch]$RequireLlm,
     [switch]$SkipCompileStatusRefresh,
+    [switch]$SkipFeatureDependencyRefresh,
     [string]$UnityMcpBaseUrl,
     [int]$CompileStatusTimeoutSec = 300,
     [switch]$DryRun
@@ -34,6 +35,19 @@ if (-not $SkipCompileStatusRefresh) {
     }
     catch {
         Write-Warning ("Rule harness compile status refresh failed: {0}" -f $_.Exception.Message)
+    }
+}
+
+if (-not $SkipFeatureDependencyRefresh) {
+    $featureDependencySourcePath = Join-Path $RepoRoot 'Assets\Editor\LayerDependencyValidator.cs'
+    if (Test-Path -LiteralPath $featureDependencySourcePath) {
+        try {
+            & (Join-Path $PSScriptRoot 'write-feature-dependency-report.ps1') `
+                -RepoRoot $RepoRoot
+        }
+        catch {
+            Write-Warning ("Rule harness feature dependency report refresh failed: {0}" -f $_.Exception.Message)
+        }
     }
 }
 

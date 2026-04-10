@@ -31,6 +31,10 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-rule-harness.p
 - `unavailable`: Unity MCP 미연결/비정상.
 - `blocked`: play mode, compile 진행 중, timeout 같은 일시적 차단 상태.
 - `unavailable` / `blocked` 는 `static-clean only` 로 남지만, `failed` 와는 별도 원인으로 보고된다.
+실행 전에 `Assets/Editor/LayerDependencyValidator.cs` 가 있으면 `Temp/LayerDependencyValidator/feature-dependencies.json` 도 함께 갱신한다.
+- `passed`: feature dependency graph가 DAG다.
+- `failed`: feature dependency cycle이 있거나 report가 손상됐다.
+- `unsupported`: 현재 repo snapshot에 LayerDependencyValidator 소스가 없어 gate를 적용하지 않았다.
 
 기본 mutation mode는 config 기준 `code_and_rules` 이고, `-DryRun`이면 수정 없이 계획/검증 대상만 계산한다.
 

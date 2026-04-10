@@ -8,6 +8,7 @@ param(
     [switch]$RequireLlm = $true,
     [switch]$DisableLlm,
     [switch]$SkipCompileStatusRefresh,
+    [switch]$SkipFeatureDependencyRefresh,
     [string]$UnityMcpBaseUrl,
     [int]$CompileStatusTimeoutSec = 300
 )
@@ -56,6 +57,7 @@ try {
         -RequireLlm:$requireLlmForRun `
         -DisableLlm:$DisableLlm `
         -SkipCompileStatusRefresh:$SkipCompileStatusRefresh `
+        -SkipFeatureDependencyRefresh:$SkipFeatureDependencyRefresh `
         -UnityMcpBaseUrl $UnityMcpBaseUrl `
         -CompileStatusTimeoutSec $CompileStatusTimeoutSec `
         -LogPathHint $logPath

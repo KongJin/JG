@@ -153,6 +153,29 @@ function Write-CompileStatusFixture {
     } | ConvertTo-Json -Depth 10 | Set-Content -Path $statePath -Encoding UTF8
 }
 
+function Write-FeatureDependencyReportFixture {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoPath,
+        [Parameter(Mandatory)]
+        [bool]$HasCycles,
+        [object[]]$Cycles = @(),
+        [int]$FeatureCount = 1,
+        [int]$EdgeCount = 0
+    )
+
+    $statePath = Join-Path $RepoPath 'Temp/LayerDependencyValidator/feature-dependencies.json'
+    New-Item -ItemType Directory -Path (Split-Path -Parent $statePath) -Force | Out-Null
+    [pscustomobject]@{
+        generatedAtUtc = '2026-04-10T12:34:56Z'
+        featureCount   = $FeatureCount
+        edgeCount      = $EdgeCount
+        hasCycles      = $HasCycles
+        edges          = @()
+        cycles         = @($Cycles)
+    } | ConvertTo-Json -Depth 10 | Set-Content -Path $statePath -Encoding UTF8
+}
+
 $orderingRepo = Join-Path $scratchRoot 'feature-ordering'
 Initialize-RuleHarnessScopeRepo -RepoPath $orderingRepo -Features @(
     [pscustomobject]@{ Name = 'Aged'; ApplicationContent = 'namespace Features.Aged.Application { public sealed class AgedService { } }' },
@@ -1087,6 +1110,49 @@ $compileFailedReport = Invoke-RuleHarness `
 Assert-RuleHarness `
     -Condition ([string]$compileFailedReport.execution.compileGateStatus -eq 'failed' -and [bool]$compileFailedReport.failed -and @($compileFailedReport.actionItems | Where-Object kind -eq 'fix-compile-errors').Count -eq 1) `
     -Message 'Expected actual Unity compile errors to remain a hard failure.'
+
+$featureDependencyPassedRepo = Join-Path $scratchRoot 'feature-dependency-gate-passed'
+Initialize-RuleHarnessScopeRepo -RepoPath $featureDependencyPassedRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+New-Item -ItemType Directory -Path (Join-Path $featureDependencyPassedRepo 'Assets/Editor') -Force | Out-Null
+Set-Content -Path (Join-Path $featureDependencyPassedRepo 'Assets/Editor/LayerDependencyValidator.cs') -Value 'public sealed class LayerDependencyValidator { }' -Encoding UTF8
+Write-FeatureDependencyReportFixture -RepoPath $featureDependencyPassedRepo -HasCycles $false -FeatureCount 4 -EdgeCount 7
+$featureDependencyPassedReport = Invoke-RuleHarness `
+    -RepoRoot $featureDependencyPassedRepo `
+    -ConfigPath (Join-Path $featureDependencyPassedRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+Assert-RuleHarness `
+    -Condition ([string]$featureDependencyPassedReport.execution.featureDependencyGateStatus -eq 'passed' -and [int]$featureDependencyPassedReport.execution.featureDependencyCycleCount -eq 0 -and -not [bool]$featureDependencyPassedReport.failed) `
+    -Message 'Expected acyclic feature dependency reports to pass the feature dependency gate.'
+
+$featureDependencyFailedRepo = Join-Path $scratchRoot 'feature-dependency-gate-failed'
+Initialize-RuleHarnessScopeRepo -RepoPath $featureDependencyFailedRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+New-Item -ItemType Directory -Path (Join-Path $featureDependencyFailedRepo 'Assets/Editor') -Force | Out-Null
+Set-Content -Path (Join-Path $featureDependencyFailedRepo 'Assets/Editor/LayerDependencyValidator.cs') -Value 'public sealed class LayerDependencyValidator { }' -Encoding UTF8
+Write-FeatureDependencyReportFixture -RepoPath $featureDependencyFailedRepo -HasCycles $true -FeatureCount 3 -EdgeCount 3 -Cycles @(
+    [pscustomobject]@{
+        features = @('Combat', 'Enemy')
+        evidence = @(
+            [pscustomobject]@{ path = 'Assets/Scripts/Features/Combat/Application/CombatLoop.cs'; line = 12 },
+            [pscustomobject]@{ path = 'Assets/Scripts/Features/Enemy/Application/EnemyLoop.cs'; line = 18 }
+        )
+    }
+)
+$featureDependencyFailedReport = Invoke-RuleHarness `
+    -RepoRoot $featureDependencyFailedRepo `
+    -ConfigPath (Join-Path $featureDependencyFailedRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+Assert-RuleHarness `
+    -Condition ([string]$featureDependencyFailedReport.execution.featureDependencyGateStatus -eq 'failed' -and [int]$featureDependencyFailedReport.execution.featureDependencyCycleCount -eq 1 -and [bool]$featureDependencyFailedReport.failed) `
+    -Message 'Expected feature dependency cycles to fail the feature dependency gate.'
+Assert-RuleHarness `
+    -Condition (@($featureDependencyFailedReport.findings | Where-Object { $_.title -eq 'Feature dependency cycle' }).Count -eq 1 -and @($featureDependencyFailedReport.actionItems | Where-Object kind -eq 'break-feature-dependency-cycle').Count -eq 1) `
+    -Message 'Expected feature dependency cycles to surface a finding and action item.'
 
 $scheduledRepo = Join-Path $scratchRoot 'scheduled-status'
 Initialize-RuleHarnessScopeRepo -RepoPath $scheduledRepo -Features @(
