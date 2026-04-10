@@ -7,7 +7,7 @@ $config = Get-RuleHarnessConfig -ConfigPath (Join-Path $repoRoot 'tools/rule-har
 $scratchRoot = Join-Path $repoRoot 'Temp/RuleHarnessFixtureTests'
 
 if (Test-Path -LiteralPath $scratchRoot) {
-    Remove-Item -LiteralPath $scratchRoot -Recurse -Force
+    Remove-Item -LiteralPath $scratchRoot -Recurse -Force -ErrorAction SilentlyContinue
 }
 New-Item -ItemType Directory -Path $scratchRoot -Force | Out-Null
 
@@ -32,15 +32,22 @@ function Invoke-RuleHarnessTestGit {
         [string[]]$Arguments
     )
 
-    $output = @(& git -C $RepoPath @Arguments 2>$null)
-    if ($LASTEXITCODE -ne 0) {
-        $commandText = @($Arguments) -join ' '
-        $message = "Fixture git command failed: git -C $RepoPath $commandText"
-        if (@($output).Count -gt 0) {
-            $message = "$message`n$($output -join [Environment]::NewLine)"
-        }
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $output = @(& git -C $RepoPath @Arguments 2>$null)
+        if ($LASTEXITCODE -ne 0) {
+            $commandText = @($Arguments) -join ' '
+            $message = "Fixture git command failed: git -C $RepoPath $commandText"
+            if (@($output).Count -gt 0) {
+                $message = "$message`n$($output -join [Environment]::NewLine)"
+            }
 
-        throw $message
+            throw $message
+        }
+    }
+    finally {
+        $ErrorActionPreference = $previousPreference
     }
 
     @($output)
