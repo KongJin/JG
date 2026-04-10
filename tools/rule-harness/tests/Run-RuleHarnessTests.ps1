@@ -24,6 +24,28 @@ function Assert-RuleHarness {
     }
 }
 
+function Invoke-RuleHarnessTestGit {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoPath,
+        [Parameter(Mandatory)]
+        [string[]]$Arguments
+    )
+
+    $output = @(& git -C $RepoPath @Arguments 2>$null)
+    if ($LASTEXITCODE -ne 0) {
+        $commandText = @($Arguments) -join ' '
+        $message = "Fixture git command failed: git -C $RepoPath $commandText"
+        if (@($output).Count -gt 0) {
+            $message = "$message`n$($output -join [Environment]::NewLine)"
+        }
+
+        throw $message
+    }
+
+    @($output)
+}
+
 function New-RuleHarnessTestConfig {
     param(
         [Parameter(Mandatory)]
@@ -103,11 +125,11 @@ function Initialize-RuleHarnessScopeRepo {
 
     Push-Location $RepoPath
     try {
-        git init | Out-Null
-        git config user.name 'rule-harness-tests'
-        git config user.email 'rule-harness-tests@example.com'
-        git add .
-        git commit -m 'init' | Out-Null
+        Invoke-RuleHarnessTestGit -RepoPath $RepoPath -Arguments @('init') | Out-Null
+        Invoke-RuleHarnessTestGit -RepoPath $RepoPath -Arguments @('config', 'user.name', 'rule-harness-tests') | Out-Null
+        Invoke-RuleHarnessTestGit -RepoPath $RepoPath -Arguments @('config', 'user.email', 'rule-harness-tests@example.com') | Out-Null
+        Invoke-RuleHarnessTestGit -RepoPath $RepoPath -Arguments @('add', '.') | Out-Null
+        Invoke-RuleHarnessTestGit -RepoPath $RepoPath -Arguments @('commit', '-m', 'init') | Out-Null
     }
     finally {
         Pop-Location
@@ -953,8 +975,8 @@ namespace Features.Timer
 "@ -Encoding UTF8
 Push-Location $timeRepo
 try {
-    git add .
-    git commit -m 'custom timer setup' | Out-Null
+    Invoke-RuleHarnessTestGit -RepoPath $timeRepo -Arguments @('add', '.') | Out-Null
+    Invoke-RuleHarnessTestGit -RepoPath $timeRepo -Arguments @('commit', '-m', 'custom timer setup') | Out-Null
 }
 finally {
     Pop-Location
@@ -1012,8 +1034,8 @@ namespace Features.Clock
 "@ -Encoding UTF8
 Push-Location $unscaledRepo
 try {
-    git add .
-    git commit -m 'custom clock setup' | Out-Null
+    Invoke-RuleHarnessTestGit -RepoPath $unscaledRepo -Arguments @('add', '.') | Out-Null
+    Invoke-RuleHarnessTestGit -RepoPath $unscaledRepo -Arguments @('commit', '-m', 'custom clock setup') | Out-Null
 }
 finally {
     Pop-Location
