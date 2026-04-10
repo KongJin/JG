@@ -1,4 +1,4 @@
-namespace Features.Projectile.Domain.Hit
+﻿namespace Features.Projectile.Domain.Hit
 {
     public sealed class BounceHitResolver : IHitResolver
     {
@@ -9,7 +9,7 @@ namespace Features.Projectile.Domain.Hit
             _maxBounces = maxBounces;
         }
 
-        public IHitResult Resolve(Projectile projectile)
+        public IHitResult Resolve(global::Features.Projectile.Domain.Projectile projectile)
         {
             if (projectile.HitCount >= _maxBounces)
                 return new DestroyHitResult();
@@ -18,3 +18,4 @@ namespace Features.Projectile.Domain.Hit
         }
     }
 }
+

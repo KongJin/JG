@@ -1,4 +1,4 @@
-namespace Features.Projectile.Domain.Hit
+﻿namespace Features.Projectile.Domain.Hit
 {
     public sealed class DestroyHitResult : IHitResult
     {
@@ -9,3 +9,4 @@ namespace Features.Projectile.Domain.Hit
         }
     }
 }
+

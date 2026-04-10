@@ -1,4 +1,4 @@
-namespace Features.Projectile.Domain.Hit
+﻿namespace Features.Projectile.Domain.Hit
 {
     public sealed class ChainHitResolver : IHitResolver
     {
@@ -18,3 +18,4 @@ namespace Features.Projectile.Domain.Hit
         }
     }
 }
+
