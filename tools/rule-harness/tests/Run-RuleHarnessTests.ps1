@@ -137,6 +137,7 @@ function Write-CompileStatusFixture {
         [Parameter(Mandatory)]
         [string]$Status,
         [string]$Summary = '',
+        [string]$ReasonCode = '',
         [bool]$RuntimeSmokeClean = $false
     )
 
@@ -146,6 +147,7 @@ function Write-CompileStatusFixture {
         status            = $Status
         summary           = $Summary
         source            = 'fixture'
+        reasonCode        = $ReasonCode
         checkedAtUtc      = '2026-04-09T12:34:56Z'
         runtimeSmokeClean = $RuntimeSmokeClean
     } | ConvertTo-Json -Depth 10 | Set-Content -Path $statePath -Encoding UTF8
@@ -648,6 +650,68 @@ Assert-RuleHarness `
     -Condition (@($importFindings | Where-Object { $_.title -eq 'Missing import after symbol move' }).Count -ge 4) `
     -Message 'Expected known moved symbols without imports to be reported as missing import drift.'
 
+$shadowFixRepo = Join-Path $scratchRoot 'short-type-shadowing-fix'
+Initialize-RuleHarnessScopeRepo -RepoPath $shadowFixRepo -Features @(
+    [pscustomobject]@{ Name = 'Unit'; ApplicationContent = @"
+namespace Features.Unit.Application
+{
+    public sealed class UnitService
+    {
+        private Unit[] _units;
+
+        public Unit Copy(Unit source)
+        {
+            return source;
+        }
+    }
+}
+"@ }
+)
+New-Item -ItemType Directory -Path (Join-Path $shadowFixRepo 'Assets/Scripts/Features/Unit/Domain') -Force | Out-Null
+Set-Content -Path (Join-Path $shadowFixRepo 'Assets/Scripts/Features/Unit/Domain/Unit.cs') -Value @"
+namespace Features.Unit.Domain
+{
+    public sealed class Unit
+    {
+    }
+}
+"@ -Encoding UTF8
+$shadowFixReport = Invoke-RuleHarness `
+    -RepoRoot $shadowFixRepo `
+    -ConfigPath (Join-Path $shadowFixRepo 'tools/rule-harness/config.json') `
+    -DisableLlm
+$shadowFixContent = Get-Content -Path (Join-Path $shadowFixRepo 'Assets/Scripts/Features/Unit/Application/UnitService.cs') -Raw
+Assert-RuleHarness `
+    -Condition ($shadowFixReport.commit.created -and $shadowFixReport.stoppedScope.scopeId -eq 'Unit' -and $shadowFixReport.stoppedScope.finalStatus -eq 'clean') `
+    -Message 'Expected short-type shadowing findings to be auto-fixed and leave the feature clean.'
+Assert-RuleHarness `
+    -Condition ($shadowFixContent.Contains('private global::Features.Unit.Domain.Unit[] _units;') -and $shadowFixContent.Contains('public global::Features.Unit.Domain.Unit Copy(global::Features.Unit.Domain.Unit source)')) `
+    -Message 'Expected short-type shadowing auto-fix to rewrite bare feature-type references to fully-qualified names.'
+
+$importFixRepo = Join-Path $scratchRoot 'missing-import-fix'
+Initialize-RuleHarnessScopeRepo -RepoPath $importFixRepo -Features @(
+    [pscustomobject]@{ Name = 'Imports'; ApplicationContent = @"
+namespace Features.Imports.Application
+{
+    public sealed class ImportsService
+    {
+        private Func<float> _clock;
+    }
+}
+"@ }
+)
+$importFixReport = Invoke-RuleHarness `
+    -RepoRoot $importFixRepo `
+    -ConfigPath (Join-Path $importFixRepo 'tools/rule-harness/config.json') `
+    -DisableLlm
+$importFixContent = Get-Content -Path (Join-Path $importFixRepo 'Assets/Scripts/Features/Imports/Application/ImportsService.cs') -Raw
+Assert-RuleHarness `
+    -Condition ($importFixReport.commit.created -and $importFixReport.stoppedScope.scopeId -eq 'Imports' -and $importFixReport.stoppedScope.finalStatus -eq 'clean') `
+    -Message 'Expected missing-import findings to be auto-fixed and leave the feature clean.'
+Assert-RuleHarness `
+    -Condition ($importFixContent.Contains('using System;') -and $importFixContent.Contains('private Func<float> _clock;')) `
+    -Message 'Expected missing-import auto-fix to add the required using directive without rewriting the symbol usage.'
+
 $eventDriftRepo = Join-Path $scratchRoot 'event-contract-drift'
 Initialize-RuleHarnessScopeRepo -RepoPath $eventDriftRepo -Features @(
     [pscustomobject]@{ Name = 'Player'; ApplicationContent = @"
@@ -909,6 +973,55 @@ Assert-RuleHarness `
 Assert-RuleHarness `
     -Condition (@($compilePassedReport.actionItems | Where-Object kind -eq 'verify-unity-compile').Count -eq 0) `
     -Message 'Expected compile-clean runs to omit the manual compile verification reminder.'
+Assert-RuleHarness `
+    -Condition ([string]$compilePassedReport.execution.compileGateStatus -eq 'passed') `
+    -Message 'Expected compile-clean runs to expose a passed compile gate status.'
+
+$compileUnavailableRepo = Join-Path $scratchRoot 'compile-gate-unavailable'
+Initialize-RuleHarnessScopeRepo -RepoPath $compileUnavailableRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+Write-CompileStatusFixture -RepoPath $compileUnavailableRepo -Status 'unavailable' -ReasonCode 'unity-mcp-unreachable' -Summary 'Unity MCP health check failed.'
+$compileUnavailableReport = Invoke-RuleHarness `
+    -RepoRoot $compileUnavailableRepo `
+    -ConfigPath (Join-Path $compileUnavailableRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+$compileUnavailableStage = @($compileUnavailableReport.stageResults | Where-Object stage -eq 'compile_gate' | Select-Object -First 1)[0]
+Assert-RuleHarness `
+    -Condition (-not [bool]$compileUnavailableReport.execution.compileVerified -and [string]$compileUnavailableReport.execution.compileGateStatus -eq 'unavailable' -and [string]$compileUnavailableStage.status -eq 'skipped' -and -not [bool]$compileUnavailableReport.failed) `
+    -Message 'Expected Unity MCP availability failures to be classified separately from real compile failures.'
+Assert-RuleHarness `
+    -Condition (@($compileUnavailableReport.actionItems | Where-Object kind -eq 'restore-unity-mcp').Count -eq 1) `
+    -Message 'Expected unavailable compile verification to request Unity MCP restoration.'
+
+$compileBlockedRepo = Join-Path $scratchRoot 'compile-gate-blocked'
+Initialize-RuleHarnessScopeRepo -RepoPath $compileBlockedRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+Write-CompileStatusFixture -RepoPath $compileBlockedRepo -Status 'blocked' -ReasonCode 'play-mode-active' -Summary 'Unity is currently in play mode.'
+$compileBlockedReport = Invoke-RuleHarness `
+    -RepoRoot $compileBlockedRepo `
+    -ConfigPath (Join-Path $compileBlockedRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+Assert-RuleHarness `
+    -Condition ([string]$compileBlockedReport.execution.compileGateStatus -eq 'blocked' -and @($compileBlockedReport.actionItems | Where-Object kind -eq 'retry-compile-verification').Count -eq 1 -and -not [bool]$compileBlockedReport.failed) `
+    -Message 'Expected play-mode or compiling states to be classified as blocked compile verification, not compile failure.'
+
+$compileFailedRepo = Join-Path $scratchRoot 'compile-gate-failed'
+Initialize-RuleHarnessScopeRepo -RepoPath $compileFailedRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+Write-CompileStatusFixture -RepoPath $compileFailedRepo -Status 'failed' -ReasonCode 'compile-errors' -Summary 'Unity compile reported 2 error(s).'
+$compileFailedReport = Invoke-RuleHarness `
+    -RepoRoot $compileFailedRepo `
+    -ConfigPath (Join-Path $compileFailedRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+Assert-RuleHarness `
+    -Condition ([string]$compileFailedReport.execution.compileGateStatus -eq 'failed' -and [bool]$compileFailedReport.failed -and @($compileFailedReport.actionItems | Where-Object kind -eq 'fix-compile-errors').Count -eq 1) `
+    -Message 'Expected actual Unity compile errors to remain a hard failure.'
 
 $scheduledRepo = Join-Path $scratchRoot 'scheduled-status'
 Initialize-RuleHarnessScopeRepo -RepoPath $scheduledRepo -Features @(

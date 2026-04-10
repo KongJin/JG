@@ -93,6 +93,7 @@ function Write-CompileStatusFile {
         [Parameter(Mandatory)]
         [string]$Summary,
         [string]$Source = 'unity-mcp',
+        [string]$ReasonCode = '',
         [bool]$RuntimeSmoke = $false,
         [hashtable]$ExtraFields = @{}
     )
@@ -106,6 +107,7 @@ function Write-CompileStatusFile {
         status            = $Status
         summary           = $Summary
         source            = $Source
+        reasonCode        = $ReasonCode
         checkedAtUtc      = (Get-Date).ToUniversalTime().ToString('o')
         runtimeSmokeClean = $RuntimeSmoke
     }
@@ -192,16 +194,18 @@ try {
 }
 catch {
     Write-CompileStatusFile `
-        -Status 'skipped' `
+        -Status 'unavailable' `
         -Summary ("Unity MCP health check failed: {0}" -f $_.Exception.Message) `
+        -ReasonCode 'unity-mcp-unreachable' `
         -ExtraFields @{ mcpRoot = $mcpRoot }
     return
 }
 
 if (-not [bool]$health.ok) {
     Write-CompileStatusFile `
-        -Status 'skipped' `
+        -Status 'unavailable' `
         -Summary 'Unity MCP reported ok=false, so compile-clean could not be verified.' `
+        -ReasonCode 'unity-mcp-not-ok' `
         -ExtraFields @{
             mcpRoot = $mcpRoot
             activeScene = [string]$health.activeScene
@@ -211,8 +215,9 @@ if (-not [bool]$health.ok) {
 
 if ([bool]$health.isPlaying -or (Get-McpPlayModeChanging -State $health)) {
     Write-CompileStatusFile `
-        -Status 'skipped' `
+        -Status 'blocked' `
         -Summary 'Unity is in or transitioning through play mode, so compile-clean verification was skipped.' `
+        -ReasonCode 'play-mode-active' `
         -ExtraFields @{
             mcpRoot = $mcpRoot
             activeScene = [string]$health.activeScene
@@ -239,8 +244,9 @@ try {
 }
 catch {
     Write-CompileStatusFile `
-        -Status 'skipped' `
+        -Status 'unavailable' `
         -Summary ("Unity compile wait failed: {0}" -f $_.Exception.Message) `
+        -ReasonCode 'unity-mcp-unreachable' `
         -ExtraFields @{
             mcpRoot = $mcpRoot
             activeScene = [string]$health.activeScene
@@ -255,8 +261,9 @@ $waitedMs = Get-OptionalInt -InputObject $waitResult -PropertyName 'waitedMs'
 
 if ($waitTimedOut -or $waitStillCompiling) {
     Write-CompileStatusFile `
-        -Status 'skipped' `
+        -Status 'blocked' `
         -Summary 'Unity compile wait did not complete within the allotted time.' `
+        -ReasonCode 'compile-wait-timeout' `
         -ExtraFields @{
             mcpRoot = $mcpRoot
             activeScene = [string]$health.activeScene
@@ -287,6 +294,7 @@ if ($compileErrors.Count -gt 0) {
     Write-CompileStatusFile `
         -Status 'failed' `
         -Summary ("Unity compile reported {0} compile error(s): {1}" -f $compileErrors.Count, ($topMessages -join ' | ')) `
+        -ReasonCode 'compile-errors' `
         -ExtraFields @{
             mcpRoot = $mcpRoot
             activeScene = [string]$health.activeScene
@@ -300,8 +308,9 @@ if ($compileErrors.Count -gt 0) {
 $postHealth = Invoke-McpGetJson -Root $mcpRoot -SubPath "/health"
 if ([bool]$postHealth.isCompiling) {
     Write-CompileStatusFile `
-        -Status 'skipped' `
+        -Status 'blocked' `
         -Summary 'Unity still reports isCompiling=true after compile wait returned.' `
+        -ReasonCode 'compile-still-running' `
         -ExtraFields @{
             mcpRoot = $mcpRoot
             activeScene = [string]$postHealth.activeScene
@@ -313,6 +322,7 @@ if ([bool]$postHealth.isCompiling) {
 Write-CompileStatusFile `
     -Status 'passed' `
     -Summary 'Unity compile succeeded via Unity MCP.' `
+    -ReasonCode 'compile-succeeded' `
     -RuntimeSmoke $RuntimeSmokeClean.IsPresent `
     -ExtraFields @{
         mcpRoot = $mcpRoot

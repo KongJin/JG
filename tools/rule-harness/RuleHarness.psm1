@@ -947,6 +947,8 @@ function Get-RuleHarnessCompileGateStatus {
         return [pscustomobject]@{
             compileVerified = $false
             cleanLevel      = 'static-clean only'
+            compileGateStatus = 'missing'
+            compileGateReasonCode = 'compile-status-missing'
             statusPath      = [string]$statusPath.relativePath
             failed          = $false
             stageResult     = New-RuleHarnessStageResult `
@@ -977,6 +979,8 @@ function Get-RuleHarnessCompileGateStatus {
         return [pscustomobject]@{
             compileVerified = $false
             cleanLevel      = 'static-clean only'
+            compileGateStatus = 'invalid'
+            compileGateReasonCode = 'compile-status-invalid'
             statusPath      = [string]$statusPath.relativePath
             failed          = $true
             stageResult     = New-RuleHarnessStageResult `
@@ -1001,6 +1005,7 @@ function Get-RuleHarnessCompileGateStatus {
     }
 
     $status = [string]$rawStatus.status
+    $reasonCode = if ($rawStatus.PSObject.Properties.Name -contains 'reasonCode') { [string]$rawStatus.reasonCode } else { $null }
     $checkedAtUtc = if ($rawStatus.PSObject.Properties.Name -contains 'checkedAtUtc') { [string]$rawStatus.checkedAtUtc } else { $null }
     $source = if ($rawStatus.PSObject.Properties.Name -contains 'source') { [string]$rawStatus.source } else { 'unknown' }
     $runtimeSmokeClean = $rawStatus.PSObject.Properties.Name -contains 'runtimeSmokeClean' -and [bool]$rawStatus.runtimeSmokeClean
@@ -1017,6 +1022,8 @@ function Get-RuleHarnessCompileGateStatus {
             return [pscustomobject]@{
                 compileVerified = $true
                 cleanLevel      = $cleanLevel
+                compileGateStatus = 'passed'
+                compileGateReasonCode = $reasonCode
                 statusPath      = [string]$statusPath.relativePath
                 failed          = $false
                 stageResult     = New-RuleHarnessStageResult `
@@ -1038,6 +1045,8 @@ function Get-RuleHarnessCompileGateStatus {
             return [pscustomobject]@{
                 compileVerified = $false
                 cleanLevel      = 'static-clean only'
+                compileGateStatus = 'failed'
+                compileGateReasonCode = $reasonCode
                 statusPath      = [string]$statusPath.relativePath
                 failed          = $true
                 stageResult     = New-RuleHarnessStageResult `
@@ -1062,10 +1071,74 @@ function Get-RuleHarnessCompileGateStatus {
                 )
             }
         }
+        'unavailable' {
+            return [pscustomobject]@{
+                compileVerified = $false
+                cleanLevel      = 'static-clean only'
+                compileGateStatus = 'unavailable'
+                compileGateReasonCode = $reasonCode
+                statusPath      = [string]$statusPath.relativePath
+                failed          = $false
+                stageResult     = New-RuleHarnessStageResult `
+                    -Stage 'compile_gate' `
+                    -Status 'skipped' `
+                    -Attempted $true `
+                    -Summary 'Compile verification was unavailable because Unity MCP could not be reached or did not report healthy status.' `
+                    -Details ([pscustomobject]@{
+                        compileVerified = $false
+                        cleanLevel = 'static-clean only'
+                        checkedAtUtc = $checkedAtUtc
+                        source = $source
+                        reasonCode = $reasonCode
+                        statusPath = [string]$statusPath.relativePath
+                    })
+                actionItems     = @(
+                    New-RuleHarnessActionItem `
+                        -Kind 'restore-unity-mcp' `
+                        -Severity 'medium' `
+                        -Summary 'Restore Unity MCP connectivity before trusting compile status' `
+                        -Details $summary `
+                        -RelatedPaths @([string]$statusPath.relativePath)
+                )
+            }
+        }
+        'blocked' {
+            return [pscustomobject]@{
+                compileVerified = $false
+                cleanLevel      = 'static-clean only'
+                compileGateStatus = 'blocked'
+                compileGateReasonCode = $reasonCode
+                statusPath      = [string]$statusPath.relativePath
+                failed          = $false
+                stageResult     = New-RuleHarnessStageResult `
+                    -Stage 'compile_gate' `
+                    -Status 'skipped' `
+                    -Attempted $true `
+                    -Summary 'Compile verification was blocked by Unity state, so this run remains static-clean only.' `
+                    -Details ([pscustomobject]@{
+                        compileVerified = $false
+                        cleanLevel = 'static-clean only'
+                        checkedAtUtc = $checkedAtUtc
+                        source = $source
+                        reasonCode = $reasonCode
+                        statusPath = [string]$statusPath.relativePath
+                    })
+                actionItems     = @(
+                    New-RuleHarnessActionItem `
+                        -Kind 'retry-compile-verification' `
+                        -Severity 'medium' `
+                        -Summary 'Retry compile verification when Unity is idle' `
+                        -Details $summary `
+                        -RelatedPaths @([string]$statusPath.relativePath)
+                )
+            }
+        }
         default {
             return [pscustomobject]@{
                 compileVerified = $false
                 cleanLevel      = 'static-clean only'
+                compileGateStatus = if ([string]::IsNullOrWhiteSpace($status)) { 'unknown' } else { $status }
+                compileGateReasonCode = $reasonCode
                 statusPath      = [string]$statusPath.relativePath
                 failed          = $false
                 stageResult     = New-RuleHarnessStageResult `
@@ -3031,7 +3104,7 @@ function Get-RuleHarnessStaticFindings {
                         -Message ("File '{0}' uses bare short type '{1}' inside feature namespace 'Features.{1}'. Use an alias or fully-qualified name." -f $relative, $featureName) `
                         -Evidence @([pscustomobject]@{ path = $relative; line = [int]$shadowEvidence.line; snippet = [string]$shadowEvidence.snippet }) `
                         -Confidence 'high' `
-                        -RemediationKind 'report_only' `
+                        -RemediationKind 'code_fix' `
                         -Rationale 'Compile-clean hazard: same-name feature namespaces and types must not rely on bare identifiers.'))
                     [void]$docCandidates.Add($architectureOwnerDoc)
                 }
@@ -3117,7 +3190,7 @@ function Get-RuleHarnessStaticFindings {
                 -Message ("File '{0}' uses '{1}' without importing '{2}'. Add '{3}' or use the fully-qualified name." -f $relative, [string]$importCheck.symbolLabel, [string]$importCheck.requiredNamespace, [string]$importCheck.requiredUsing) `
                 -Evidence @([pscustomobject]@{ path = $relative; line = [int]$importEvidence.line; snippet = [string]$importEvidence.snippet }) `
                 -Confidence 'high' `
-                -RemediationKind 'report_only' `
+                -RemediationKind 'code_fix' `
                 -Rationale 'Compile-clean hazard: moved symbol imports must stay explicit after refactors.'))
             [void]$docCandidates.Add($architectureOwnerDoc)
         }
@@ -3710,6 +3783,139 @@ function Get-RuleHarnessFeatureNameFromPath {
     return $null
 }
 
+function Get-RuleHarnessPrimaryCodeEvidencePath {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding
+    )
+
+    foreach ($evidence in @($Finding.evidence)) {
+        $path = [string]$evidence.path
+        if (-not [string]::IsNullOrWhiteSpace($path) -and $path.EndsWith('.cs')) {
+            return $path
+        }
+    }
+
+    return $null
+}
+
+function Add-RuleHarnessUsingDirective {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Content,
+        [Parameter(Mandatory)]
+        [string]$UsingDirective
+    )
+
+    if ([string]::IsNullOrWhiteSpace($UsingDirective)) {
+        return $Content
+    }
+
+    if ($Content -match ("(?m)^[ \t]*{0}\s*$" -f [regex]::Escape($UsingDirective))) {
+        return $Content
+    }
+
+    $newline = if ($Content -match "`r`n") { "`r`n" } else { "`n" }
+    $usingMatches = [regex]::Matches($Content, '(?m)^[ \t]*using\s+[^\r\n;]+;\s*(?:\r?\n|$)')
+    if ($usingMatches.Count -gt 0) {
+        $lastUsing = $usingMatches[$usingMatches.Count - 1]
+        return $Content.Insert($lastUsing.Index + $lastUsing.Length, $UsingDirective + $newline)
+    }
+
+    $namespaceMatch = [regex]::Match($Content, '(?m)^[ \t]*namespace\b')
+    if ($namespaceMatch.Success) {
+        return $Content.Insert($namespaceMatch.Index, $UsingDirective + $newline + $newline)
+    }
+
+    return $UsingDirective + $newline + $newline + $Content
+}
+
+function Get-RuleHarnessMissingImportFixContent {
+    param(
+        [Parameter(Mandatory)]
+        [object[]]$Findings,
+        [Parameter(Mandatory)]
+        [string]$Content
+    )
+
+    $requiredUsings = [System.Collections.Generic.List[string]]::new()
+    foreach ($finding in @($Findings)) {
+        if ([string]$finding.title -ne 'Missing import after symbol move') {
+            continue
+        }
+
+        if ([string]$finding.message -match "Add '(?<using>using [^']+;)'") {
+            $usingDirective = [string]$Matches['using']
+            if ($usingDirective -notin @($requiredUsings)) {
+                [void]$requiredUsings.Add($usingDirective)
+            }
+        }
+    }
+
+    $updatedContent = $Content
+    foreach ($usingDirective in @($requiredUsings)) {
+        $updatedContent = Add-RuleHarnessUsingDirective -Content $updatedContent -UsingDirective $usingDirective
+    }
+
+    return $updatedContent
+}
+
+function Get-RuleHarnessShortTypeShadowingFixContent {
+    param(
+        [Parameter(Mandatory)]
+        [string]$TargetPath,
+        [Parameter(Mandatory)]
+        [object[]]$Findings,
+        [Parameter(Mandatory)]
+        [string]$Content
+    )
+
+    if (@($Findings | Where-Object { [string]$_.title -eq 'Feature short-type shadowing' }).Count -eq 0) {
+        return $Content
+    }
+
+    $featureName = Get-RuleHarnessFeatureNameFromPath -RelativePath $TargetPath
+    if ([string]::IsNullOrWhiteSpace($featureName)) {
+        return $Content
+    }
+
+    $fullyQualifiedType = "global::Features.$featureName.Domain.$featureName"
+    $typeTokenPattern = "(?<![\w\.]){0}(?![\w])" -f [regex]::Escape($featureName)
+    $declarationPattern = "^\s*(?:\[[^\]]+\]\s*)*(?:(?:public|internal|protected|private)\s+)?(?:(?:sealed|abstract|static|partial)\s+)*(?:class|struct|interface|enum|record)\s+{0}\b" -f [regex]::Escape($featureName)
+    $lineMatches = [regex]::Matches($Content, '.*(?:\r?\n|$)')
+    $builder = [System.Text.StringBuilder]::new()
+    $replacedAny = $false
+
+    foreach ($lineMatch in @($lineMatches)) {
+        $line = [string]$lineMatch.Value
+        if ($line.Length -eq 0) {
+            continue
+        }
+
+        $trimmed = $line.TrimStart()
+        if ($trimmed -match '^using\s+' -or
+            $trimmed -match '^namespace\s+' -or
+            $trimmed -match '^//' -or
+            $trimmed -match '^(?s)/\*' -or
+            $trimmed -match $declarationPattern) {
+            [void]$builder.Append($line)
+            continue
+        }
+
+        $updatedLine = [regex]::Replace($line, $typeTokenPattern, $fullyQualifiedType)
+        if ($updatedLine -ne $line) {
+            $replacedAny = $true
+        }
+        [void]$builder.Append($updatedLine)
+    }
+
+    if (-not $replacedAny) {
+        return $Content
+    }
+
+    return $builder.ToString()
+}
+
 function Get-RuleHarnessTimeProviderCodeFixOperations {
     param(
         [Parameter(Mandatory)]
@@ -3867,6 +4073,37 @@ function Get-RuleHarnessTimeProviderCodeFixOperations {
     )
 }
 
+function Get-RuleHarnessGroupedExistingCodeFixOperations {
+    param(
+        [Parameter(Mandatory)]
+        [object[]]$Findings,
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string]$TargetPath
+    )
+
+    $fullPath = Join-Path $RepoRoot $TargetPath
+    if (-not (Test-Path -LiteralPath $fullPath)) {
+        return @()
+    }
+
+    $content = Get-Content -Path $fullPath -Raw
+    $updatedContent = Get-RuleHarnessMissingImportFixContent -Findings $Findings -Content $content
+    $updatedContent = Get-RuleHarnessShortTypeShadowingFixContent -TargetPath $TargetPath -Findings $Findings -Content $updatedContent
+    if ($updatedContent -eq $content) {
+        return @()
+    }
+
+    @(
+        [pscustomobject]@{
+            type       = 'write_file'
+            targetPath = $TargetPath
+            content    = $updatedContent
+        }
+    )
+}
+
 function Get-RuleHarnessExistingCodeFixOperations {
     param(
         [Parameter(Mandatory)]
@@ -3995,6 +4232,48 @@ function Get-RuleHarnessPlannedBatches {
             -Operations @([pscustomobject]@{ type = 'doc_edit'; edits = @($group.Group) }) `
             -OwnerDocs @($ownerFindings | ForEach-Object { $_.ownerDoc }) `
             -SourceFindingTypes @($ownerFindings | ForEach-Object { $_.findingType })))
+    }
+
+    $groupedExistingFileFixTitles = @(
+        'Missing import after symbol move',
+        'Feature short-type shadowing'
+    )
+    $groupedCodeFixFindings = @(
+        $ReviewedFindings |
+            Where-Object {
+                $_.remediationKind -eq 'code_fix' -and
+                [string]$_.title -in $groupedExistingFileFixTitles
+            }
+    )
+    foreach ($group in @($groupedCodeFixFindings | Group-Object { Get-RuleHarnessPrimaryCodeEvidencePath -Finding $_ })) {
+        $targetPath = [string]$group.Name
+        if ([string]::IsNullOrWhiteSpace($targetPath)) {
+            continue
+        }
+
+        $operations = @(Get-RuleHarnessGroupedExistingCodeFixOperations -Findings @($group.Group) -RepoRoot $RepoRoot -TargetPath $targetPath)
+        if ($operations.Count -eq 0) {
+            continue
+        }
+
+        $batchId = 'batch-{0:d3}' -f $counter
+        $counter++
+        $expectedFindingsResolved = @($group.Group | ForEach-Object { Get-RuleHarnessFindingKey -Finding $_ })
+        foreach ($finding in @($group.Group)) {
+            [void]$consumedFindingKeys.Add((Get-RuleHarnessFindingKey -Finding $finding))
+        }
+
+        [void]$batches.Add((New-RuleHarnessBatch `
+            -Id $batchId `
+            -Kind 'code_fix' `
+            -TargetFiles @($targetPath) `
+            -Reason ("Resolve {0} existing-file code finding(s) in '{1}'." -f @($group.Group).Count, $targetPath) `
+            -Validation @('rule_harness_tests', 'inferred_validation', 'static_scan') `
+            -ExpectedFindingsResolved $expectedFindingsResolved `
+            -Operations @($operations) `
+            -FeatureNames @($group.Group | ForEach-Object { Get-RuleHarnessRelatedFeatureNamesForFinding -Finding $_ } | Sort-Object -Unique) `
+            -OwnerDocs @($group.Group | ForEach-Object { $_.ownerDoc } | Sort-Object -Unique) `
+            -SourceFindingTypes @($group.Group | ForEach-Object { $_.findingType } | Sort-Object -Unique)))
     }
 
     foreach ($finding in $ReviewedFindings) {
@@ -5396,6 +5675,7 @@ function Write-RuleHarnessSummary {
     [void]$lines.Add("- Mutation mode: $($Report.execution.mutationMode)")
     [void]$lines.Add("- Compile verified: $($Report.execution.compileVerified)")
     [void]$lines.Add("- Clean level: $($Report.execution.cleanLevel)")
+    [void]$lines.Add("- Compile gate status: $($Report.execution.compileGateStatus)")
     [void]$lines.Add("- Scanned features: $($Report.scannedFeatures.Count)")
     [void]$lines.Add("- Completed scopes: $($Report.completedScopes.Count)")
     [void]$lines.Add("- Findings: $($Report.findings.Count)")
@@ -5945,6 +6225,8 @@ function Invoke-RuleHarness {
             docProposalPath = $docProposalPath
             compileVerified = [bool]$compileGateStatus.compileVerified
             cleanLevel      = [string]$compileGateStatus.cleanLevel
+            compileGateStatus = [string]$compileGateStatus.compileGateStatus
+            compileGateReasonCode = [string]$compileGateStatus.compileGateReasonCode
             compileStatusPath = [string]$compileGateStatus.statusPath
         }
         scannedFeatures   = @($attemptedScopes)
