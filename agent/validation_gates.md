@@ -19,6 +19,7 @@
 * 금지된 Unity API / Photon API 사용
 * feature 경계 / 포트 방향 위반
 * 문서 owner/reference 규칙 위반
+* **문서·코드 상태 불일치** (완료된 Phase가 `progress.md`에 반영되지 않음)
 * 하네스가 구현한 기타 정적 규칙
 
 제외:
@@ -78,9 +79,11 @@ Unity Editor 기준 컴파일 에러가 0이다.
 3. 코드 수정
 4. Unity 컴파일 확인
 5. 필요 시 런타임 스모크 확인
-6. 최종 상태 기록
+6. **문서·진행 상태 동기화** (`progress.md`, `QWEN.md`, 관련 SSOT)
+7. 최종 상태 기록
 
 코드 수정 후 컴파일 확인 없이 `resolved` 또는 `clean`을 선언하지 않는다.
+코드 완료 후 문서 업데이트 없이 `resolved` 또는 `clean`을 선언하지 않는다.
 
 ---
 
