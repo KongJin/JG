@@ -1,4 +1,3 @@
-using Features.Combat.Domain;
 using Features.Player.Domain;
 using Shared.Kernel;
 

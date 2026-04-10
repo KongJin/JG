@@ -11,7 +11,7 @@ namespace Features.Projectile.Application.Events
             DomainEntityId ownerId,
             ProjectileSpec spec,
             float baseDamage,
-            HitDamageType damageType,
+            DamageType damageType,
             Float3 position,
             Float3 direction,
             StatusPayload statusPayload = default,
@@ -31,7 +31,7 @@ namespace Features.Projectile.Application.Events
         public DomainEntityId OwnerId { get; }
         public ProjectileSpec Spec { get; }
         public float BaseDamage { get; }
-        public HitDamageType DamageType { get; }
+        public DamageType DamageType { get; }
         public Float3 Position { get; }
         public Float3 Direction { get; }
         public StatusPayload StatusPayload { get; }

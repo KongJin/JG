@@ -29,7 +29,7 @@ namespace Features.Player.Application
         }
 
         private void HandleRemoteDamaged(DomainEntityId targetId, float damage,
-            Features.Combat.Domain.DamageType damageType, DomainEntityId attackerId)
+            DamageType damageType, DomainEntityId attackerId)
         {
             _publisher.Publish(new DamageReplicatedEvent(targetId, damage, damageType, attackerId));
         }

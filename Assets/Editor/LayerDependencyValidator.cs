@@ -4,13 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+
+#if !LAYER_VALIDATION_NO_UNITY
 using UnityEditor;
 using UnityEngine;
+#endif
 
-namespace Editor
+namespace ProjectSD.LayerValidation
 {
-    [InitializeOnLoad]
-    public static class LayerDependencyValidator
+    public static class LayerDependencyAnalyzer
     {
         private static readonly Regex UsingRegex = new Regex(
             @"^\s*using\s+(?:static\s+)?(?:\w+\s*=\s*)?([\w.]+)\s*;"
@@ -20,28 +22,30 @@ namespace Editor
         private static readonly Regex FeatureReferenceRegex = new Regex(
             @"\b(Features\.(\w+)(?:\.[A-Za-z_]\w*)+)"
         );
-        private const string DependencyReportRelativePath = "Temp/LayerDependencyValidator/feature-dependencies.json";
 
-        static LayerDependencyValidator()
-        {
-            Validate(silent: true);
-        }
+        public const string DependencyReportRelativePath = "Temp/LayerDependencyValidator/feature-dependencies.json";
 
-        [MenuItem("Tools/Validate Layer Dependencies")]
-        public static void ValidateFromMenu()
+        public static LayerDependencyAnalysisResult Analyze(string scriptsRoot)
         {
-            Validate(silent: false);
-        }
+            if (string.IsNullOrWhiteSpace(scriptsRoot))
+                throw new ArgumentException("scriptsRoot is required.", "scriptsRoot");
 
-        private static void Validate(bool silent)
-        {
-            var scriptsRoot = Path.Combine(Application.dataPath, "Scripts");
             if (!Directory.Exists(scriptsRoot))
-                return;
-
-            var repoRoot = Directory.GetParent(Application.dataPath)?.FullName;
-            if (string.IsNullOrWhiteSpace(repoRoot))
-                return;
+            {
+                return new LayerDependencyAnalysisResult
+                {
+                    layerViolations = Array.Empty<LayerViolation>(),
+                    report = new FeatureDependencyReport
+                    {
+                        generatedAtUtc = DateTime.UtcNow.ToString("o"),
+                        featureCount = 0,
+                        edgeCount = 0,
+                        hasCycles = false,
+                        edges = Array.Empty<FeatureDependencyEdge>(),
+                        cycles = Array.Empty<FeatureDependencyCycle>()
+                    }
+                };
+            }
 
             var csFiles = Directory.GetFiles(scriptsRoot, "*.cs", SearchOption.AllDirectories);
             Array.Sort(csFiles, StringComparer.OrdinalIgnoreCase);
@@ -67,30 +71,11 @@ namespace Editor
                 CollectFeatureDependencies(relativePath, normalizedPath, layer, rawLines, sanitizedLines, features, edgeMap);
             }
 
-            var report = BuildFeatureDependencyReport(features, edgeMap);
-            WriteFeatureDependencyReport(repoRoot, report);
-
-            LogLayerViolations(layerViolations);
-            LogFeatureCycles(report.cycles);
-
-            if (!silent)
+            return new LayerDependencyAnalysisResult
             {
-                if (layerViolations.Count == 0)
-                    Debug.Log("[Layer Rule] No violations found.");
-
-                if (report.hasCycles)
-                {
-                    Debug.LogError(
-                        $"[Feature Dependency Rule] {report.cycles.Length} cycle(s) found. JSON: {DependencyReportRelativePath}"
-                    );
-                }
-                else
-                {
-                    Debug.Log(
-                        $"[Feature Dependency Rule] Graph is acyclic. Features={report.featureCount}, Edges={report.edgeCount}. JSON: {DependencyReportRelativePath}"
-                    );
-                }
-            }
+                layerViolations = layerViolations.ToArray(),
+                report = BuildFeatureDependencyReport(features, edgeMap)
+            };
         }
 
         private static string DetectLayer(string path)
@@ -112,18 +97,16 @@ namespace Editor
 
         private static string Check(string ns, string layer)
         {
-            // 레이어 방향 규칙은 유지한다.
-            // 피처 간 참조 자체는 허용하지만, cycle 검사는 별도 그래프 단계에서 수행한다.
             switch (layer)
             {
                 case "Domain":
-                    if (ns.StartsWith("UnityEngine"))
+                    if (ns.StartsWith("UnityEngine", StringComparison.Ordinal))
                         return "Domain → UnityEngine 금지";
-                    if (ns.StartsWith("UnityEditor"))
+                    if (ns.StartsWith("UnityEditor", StringComparison.Ordinal))
                         return "Domain → UnityEditor 금지";
-                    if (ns.StartsWith("Photon"))
+                    if (ns.StartsWith("Photon", StringComparison.Ordinal))
                         return "Domain → Photon 금지";
-                    if (ns.StartsWith("System.IO"))
+                    if (ns.StartsWith("System.IO", StringComparison.Ordinal))
                         return "Domain → System.IO 금지";
                     if (CheckForbiddenLayer(ns, "Application"))
                         return "Domain → Application 참조 금지";
@@ -136,11 +119,11 @@ namespace Editor
                     break;
 
                 case "Application":
-                    if (ns.StartsWith("UnityEngine"))
+                    if (ns.StartsWith("UnityEngine", StringComparison.Ordinal))
                         return "Application → UnityEngine 금지";
-                    if (ns.StartsWith("UnityEditor"))
+                    if (ns.StartsWith("UnityEditor", StringComparison.Ordinal))
                         return "Application → UnityEditor 금지";
-                    if (ns.StartsWith("Photon"))
+                    if (ns.StartsWith("Photon", StringComparison.Ordinal))
                         return "Application → Photon 금지";
                     if (CheckForbiddenLayer(ns, "Presentation"))
                         return "Application → Presentation 참조 금지";
@@ -151,7 +134,7 @@ namespace Editor
                     break;
 
                 case "Presentation":
-                    if (ns.StartsWith("Photon"))
+                    if (ns.StartsWith("Photon", StringComparison.Ordinal))
                         return "Presentation → Photon 금지";
                     if (CheckForbiddenLayer(ns, "Infrastructure"))
                         return "Presentation → Infrastructure 참조 금지";
@@ -166,11 +149,8 @@ namespace Editor
                         return "Infrastructure → Bootstrap 참조 금지";
                     break;
 
-                case "Bootstrap":
-                    break;
-
                 case "Shared":
-                    if (ns.StartsWith("Features."))
+                    if (ns.StartsWith("Features.", StringComparison.Ordinal))
                         return "Shared → Features 참조 금지";
                     break;
             }
@@ -231,7 +211,6 @@ namespace Editor
             if (string.IsNullOrWhiteSpace(layer))
                 return;
 
-            // Ignore cross-cutting observers that would otherwise add non-gameplay cycles.
             if (IsGraphIgnoredFile(normalizedPath))
                 return;
 
@@ -244,12 +223,14 @@ namespace Editor
                 var usingMatch = UsingRegex.Match(rawLines[i]);
                 if (usingMatch.Success)
                 {
+                    string fromFeature;
+                    string toFeature;
                     if (TryResolveFeatureEdge(
                         currentFeature,
                         usingMatch.Groups[1].Value,
                         features,
-                        out var fromFeature,
-                        out var toFeature))
+                        out fromFeature,
+                        out toFeature))
                     {
                         AddEdge(edgeMap, fromFeature, toFeature, relativePath, i + 1);
                     }
@@ -260,12 +241,14 @@ namespace Editor
 
                 foreach (Match featureMatch in FeatureReferenceRegex.Matches(sanitizedLines[i]))
                 {
+                    string fromFeature;
+                    string toFeature;
                     if (!TryResolveFeatureEdge(
                         currentFeature,
                         featureMatch.Groups[1].Value,
                         features,
-                        out var fromFeature,
-                        out var toFeature))
+                        out fromFeature,
+                        out toFeature))
                         continue;
 
                     AddEdge(edgeMap, fromFeature, toFeature, relativePath, i + 1);
@@ -295,11 +278,11 @@ namespace Editor
 
             foreach (var feature in features)
             {
-                var prefix = $"Features.{feature}.";
+                var prefix = "Features." + feature + ".";
                 if (namespaceOrType.StartsWith(prefix, StringComparison.Ordinal))
                     return feature;
 
-                if (string.Equals(namespaceOrType, $"Features.{feature}", StringComparison.Ordinal))
+                if (string.Equals(namespaceOrType, "Features." + feature, StringComparison.Ordinal))
                     return feature;
             }
 
@@ -338,9 +321,9 @@ namespace Editor
 
         private static bool IsConsumerOwnedPortReference(string namespaceOrType, string feature)
         {
-            var prefix = $"Features.{feature}.Application.Ports";
+            var prefix = "Features." + feature + ".Application.Ports";
             return string.Equals(namespaceOrType, prefix, StringComparison.Ordinal) ||
-                namespaceOrType.StartsWith($"{prefix}.", StringComparison.Ordinal);
+                namespaceOrType.StartsWith(prefix + ".", StringComparison.Ordinal);
         }
 
         private static bool IsGraphIgnoredFile(string normalizedPath)
@@ -357,7 +340,8 @@ namespace Editor
             int line)
         {
             var key = GetEdgeKey(fromFeature, toFeature);
-            if (!edgeMap.TryGetValue(key, out var edge))
+            FeatureEdgeAccumulator edge;
+            if (!edgeMap.TryGetValue(key, out edge))
             {
                 edge = new FeatureEdgeAccumulator
                 {
@@ -405,7 +389,8 @@ namespace Editor
 
             foreach (var edge in edgeMap.Values)
             {
-                if (!adjacency.TryGetValue(edge.from, out var neighbors))
+                List<string> neighbors;
+                if (!adjacency.TryGetValue(edge.from, out neighbors))
                     continue;
 
                 if (!neighbors.Contains(edge.to))
@@ -445,11 +430,13 @@ namespace Editor
             state[feature] = 1;
             stack.Add(feature);
 
-            if (adjacency.TryGetValue(feature, out var neighbors))
+            List<string> neighbors;
+            if (adjacency.TryGetValue(feature, out neighbors))
             {
                 foreach (var neighbor in neighbors)
                 {
-                    if (!state.TryGetValue(neighbor, out var neighborState))
+                    int neighborState;
+                    if (!state.TryGetValue(neighbor, out neighborState))
                     {
                         VisitFeature(neighbor, adjacency, edgeMap, state, stack, cycles);
                         continue;
@@ -488,7 +475,8 @@ namespace Editor
             {
                 var from = cyclePath[i];
                 var to = cyclePath[(i + 1) % cyclePath.Count];
-                if (!edgeMap.TryGetValue(GetEdgeKey(from, to), out var edge) || edge.evidence.Count == 0)
+                FeatureEdgeAccumulator edge;
+                if (!edgeMap.TryGetValue(GetEdgeKey(from, to), out edge) || edge.evidence.Count == 0)
                     continue;
 
                 evidence.Add(edge.evidence[0]);
@@ -522,50 +510,6 @@ namespace Editor
             return rotations[0];
         }
 
-        private static void WriteFeatureDependencyReport(string repoRoot, FeatureDependencyReport report)
-        {
-            var outputPath = Path.Combine(repoRoot, DependencyReportRelativePath);
-            var outputDirectory = Path.GetDirectoryName(outputPath);
-            if (!string.IsNullOrWhiteSpace(outputDirectory) && !Directory.Exists(outputDirectory))
-            {
-                Directory.CreateDirectory(outputDirectory);
-            }
-
-            var json = JsonUtility.ToJson(report, prettyPrint: true);
-            File.WriteAllText(outputPath, json);
-        }
-
-        private static void LogLayerViolations(List<LayerViolation> layerViolations)
-        {
-            foreach (var violation in layerViolations)
-            {
-                Debug.LogError(
-                    $"[Layer Rule] {violation.path}:{violation.line} — {violation.message}\n  using {violation.usingNamespace};"
-                );
-            }
-
-            if (layerViolations.Count > 0)
-            {
-                Debug.LogError($"[Layer Rule] {layerViolations.Count} violation(s) found.");
-            }
-        }
-
-        private static void LogFeatureCycles(FeatureDependencyCycle[] cycles)
-        {
-            foreach (var cycle in cycles)
-            {
-                var cyclePath = string.Join(" -> ", cycle.features);
-                var closedCycle = $"{cyclePath} -> {cycle.features[0]}";
-                var evidenceSummary = cycle.evidence != null && cycle.evidence.Length > 0
-                    ? string.Join(", ", cycle.evidence.Select(evidence => $"{evidence.path}:{evidence.line}"))
-                    : "no evidence";
-
-                Debug.LogError(
-                    $"[Feature Dependency Rule] Cycle detected: {closedCycle}\n  Evidence: {evidenceSummary}"
-                );
-            }
-        }
-
         private static string ToAssetRelativePath(string normalizedPath)
         {
             var assetsIndex = normalizedPath.IndexOf("/Assets/", StringComparison.Ordinal);
@@ -580,7 +524,7 @@ namespace Editor
 
         private static string GetEdgeKey(string fromFeature, string toFeature)
         {
-            return $"{fromFeature}->{toFeature}";
+            return fromFeature + "->" + toFeature;
         }
 
         private static string NormalizeNewlines(string text)
@@ -725,7 +669,7 @@ namespace Editor
 
         private static bool CheckForbiddenLayer(string ns, string forbiddenLayer)
         {
-            if (!ns.StartsWith("Features."))
+            if (!ns.StartsWith("Features.", StringComparison.Ordinal))
                 return false;
 
             var match = ForbiddenLayerRegex.Match(ns);
@@ -747,49 +691,16 @@ namespace Editor
             CharLiteral
         }
 
-        [Serializable]
-        private sealed class FeatureDependencyReport
-        {
-            public string generatedAtUtc;
-            public int featureCount;
-            public int edgeCount;
-            public bool hasCycles;
-            public FeatureDependencyEdge[] edges;
-            public FeatureDependencyCycle[] cycles;
-        }
-
-        [Serializable]
-        private sealed class FeatureDependencyEdge
-        {
-            public string from;
-            public string to;
-            public FeatureDependencyEvidence[] evidence;
-        }
-
-        [Serializable]
-        private sealed class FeatureDependencyCycle
-        {
-            public string[] features;
-            public FeatureDependencyEvidence[] evidence;
-        }
-
-        [Serializable]
-        private sealed class FeatureDependencyEvidence
-        {
-            public string path;
-            public int line;
-        }
-
         private sealed class FeatureEdgeAccumulator
         {
             public string from;
             public string to;
             public readonly List<FeatureDependencyEvidence> evidence = new List<FeatureDependencyEvidence>();
-            readonly HashSet<string> _evidenceKeys = new HashSet<string>(StringComparer.Ordinal);
+            private readonly HashSet<string> _evidenceKeys = new HashSet<string>(StringComparer.Ordinal);
 
             public void AddEvidence(string path, int line)
             {
-                var key = $"{path}:{line}";
+                var key = path + ":" + line;
                 if (!_evidenceKeys.Add(key))
                     return;
 
@@ -819,13 +730,151 @@ namespace Editor
                 };
             }
         }
+    }
 
-        private sealed class LayerViolation
+    [Serializable]
+    public sealed class LayerDependencyAnalysisResult
+    {
+        public LayerViolation[] layerViolations;
+        public FeatureDependencyReport report;
+    }
+
+    [Serializable]
+    public sealed class FeatureDependencyReport
+    {
+        public string generatedAtUtc;
+        public int featureCount;
+        public int edgeCount;
+        public bool hasCycles;
+        public FeatureDependencyEdge[] edges;
+        public FeatureDependencyCycle[] cycles;
+    }
+
+    [Serializable]
+    public sealed class FeatureDependencyEdge
+    {
+        public string from;
+        public string to;
+        public FeatureDependencyEvidence[] evidence;
+    }
+
+    [Serializable]
+    public sealed class FeatureDependencyCycle
+    {
+        public string[] features;
+        public FeatureDependencyEvidence[] evidence;
+    }
+
+    [Serializable]
+    public sealed class FeatureDependencyEvidence
+    {
+        public string path;
+        public int line;
+    }
+
+    [Serializable]
+    public sealed class LayerViolation
+    {
+        public string path;
+        public int line;
+        public string message;
+        public string usingNamespace;
+    }
+}
+
+#if !LAYER_VALIDATION_NO_UNITY
+namespace Editor
+{
+    [InitializeOnLoad]
+    public static class LayerDependencyValidator
+    {
+        static LayerDependencyValidator()
         {
-            public string path;
-            public int line;
-            public string message;
-            public string usingNamespace;
+            Validate(silent: true);
+        }
+
+        [MenuItem("Tools/Validate Layer Dependencies")]
+        public static void ValidateFromMenu()
+        {
+            Validate(silent: false);
+        }
+
+        private static void Validate(bool silent)
+        {
+            var scriptsRoot = Path.Combine(Application.dataPath, "Scripts");
+            var repoRoot = Directory.GetParent(Application.dataPath)?.FullName;
+            if (string.IsNullOrWhiteSpace(repoRoot) || !Directory.Exists(scriptsRoot))
+                return;
+
+            var analysis = ProjectSD.LayerValidation.LayerDependencyAnalyzer.Analyze(scriptsRoot);
+            WriteFeatureDependencyReport(repoRoot, analysis.report);
+
+            LogLayerViolations(analysis.layerViolations);
+            LogFeatureCycles(analysis.report.cycles);
+
+            if (!silent)
+            {
+                if (analysis.layerViolations.Length == 0)
+                    Debug.Log("[Layer Rule] No violations found.");
+
+                if (analysis.report.hasCycles)
+                {
+                    Debug.LogError(
+                        $"[Feature Dependency Rule] {analysis.report.cycles.Length} cycle(s) found. JSON: {ProjectSD.LayerValidation.LayerDependencyAnalyzer.DependencyReportRelativePath}"
+                    );
+                }
+                else
+                {
+                    Debug.Log(
+                        $"[Feature Dependency Rule] Graph is acyclic. Features={analysis.report.featureCount}, Edges={analysis.report.edgeCount}. JSON: {ProjectSD.LayerValidation.LayerDependencyAnalyzer.DependencyReportRelativePath}"
+                    );
+                }
+            }
+        }
+
+        private static void WriteFeatureDependencyReport(string repoRoot, ProjectSD.LayerValidation.FeatureDependencyReport report)
+        {
+            var outputPath = Path.Combine(repoRoot, ProjectSD.LayerValidation.LayerDependencyAnalyzer.DependencyReportRelativePath);
+            var outputDirectory = Path.GetDirectoryName(outputPath);
+            if (!string.IsNullOrWhiteSpace(outputDirectory) && !Directory.Exists(outputDirectory))
+            {
+                Directory.CreateDirectory(outputDirectory);
+            }
+
+            var json = JsonUtility.ToJson(report, prettyPrint: true);
+            File.WriteAllText(outputPath, json);
+        }
+
+        private static void LogLayerViolations(ProjectSD.LayerValidation.LayerViolation[] layerViolations)
+        {
+            foreach (var violation in layerViolations)
+            {
+                Debug.LogError(
+                    $"[Layer Rule] {violation.path}:{violation.line} — {violation.message}\n  using {violation.usingNamespace};"
+                );
+            }
+
+            if (layerViolations.Length > 0)
+            {
+                Debug.LogError($"[Layer Rule] {layerViolations.Length} violation(s) found.");
+            }
+        }
+
+        private static void LogFeatureCycles(ProjectSD.LayerValidation.FeatureDependencyCycle[] cycles)
+        {
+            foreach (var cycle in cycles)
+            {
+                var cyclePath = string.Join(" -> ", cycle.features);
+                var closedCycle = $"{cyclePath} -> {cycle.features[0]}";
+                var evidenceSummary = cycle.evidence != null && cycle.evidence.Length > 0
+                    ? string.Join(", ", Array.ConvertAll(cycle.evidence, evidence => $"{evidence.path}:{evidence.line}"))
+                    : "no evidence";
+
+                Debug.LogError(
+                    $"[Feature Dependency Rule] Cycle detected: {closedCycle}\n  Evidence: {evidenceSummary}"
+                );
+            }
         }
     }
 }
+#endif

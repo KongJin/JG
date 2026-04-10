@@ -1,3 +1,5 @@
+using Shared.Kernel;
+
 namespace Features.Combat.Domain
 {
     public static class DamageRule

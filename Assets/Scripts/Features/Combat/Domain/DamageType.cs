@@ -1,4 +1,4 @@
-namespace Features.Combat.Domain
+namespace Shared.Kernel
 {
     public enum DamageType
     {

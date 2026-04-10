@@ -24,7 +24,7 @@ namespace Features.Projectile.Application
 
         public Result Execute(IProjectilePhysicsPort physics, DomainEntityId ownerId, ProjectileSpec spec)
         {
-            return Execute(physics, ownerId, spec, 0f, HitDamageType.Magical, Float3.Zero);
+            return Execute(physics, ownerId, spec, 0f, DamageType.Magical, Float3.Zero);
         }
 
         public Result Execute(
@@ -32,7 +32,7 @@ namespace Features.Projectile.Application
             DomainEntityId ownerId,
             ProjectileSpec spec,
             float baseDamage,
-            HitDamageType damageType,
+            DamageType damageType,
             Float3 targetPosition,
             StatusPayload statusPayload = default,
             float allyDamageScale = 1f

@@ -1,5 +1,4 @@
 using Features.Combat.Application.Ports;
-using Features.Combat.Domain;
 using Features.Player.Application.Ports;
 using Shared.Kernel;
 

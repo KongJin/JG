@@ -8,6 +8,7 @@ using Features.Skill.Domain;
 using Features.Skill.Domain.Delivery;
 using Features.Status.Application.Events;
 using Shared.EventBus;
+using Shared.Kernel;
 using Shared.Math;
 
 namespace Features.Skill.Application
@@ -108,7 +109,7 @@ namespace Features.Skill.Application
             if (count <= 1)
             {
                 _publisher.Publish(new ProjectileRequestedEvent(
-                    data.CasterId, projectileSpec, data.Damage, HitDamageType.Magical,
+                    data.CasterId, projectileSpec, data.Damage, DamageType.Magical,
                     data.Position, data.Direction, data.StatusPayload, allyDamageScale));
                 return;
             }
@@ -128,7 +129,7 @@ namespace Features.Skill.Application
                 var rotatedDir = new Float3(dx * cos - dz * sin, data.Direction.Y, dx * sin + dz * cos);
 
                 _publisher.Publish(new ProjectileRequestedEvent(
-                    data.CasterId, projectileSpec, data.Damage, HitDamageType.Magical,
+                    data.CasterId, projectileSpec, data.Damage, DamageType.Magical,
                     data.Position, rotatedDir, data.StatusPayload, allyDamageScale));
             }
         }
