@@ -1,6 +1,7 @@
 using Features.Skill.Application.Events;
 using Features.Status.Domain;
 using Features.Zone.Application.Events;
+using Features.Zone.Domain;
 using Shared.EventBus;
 
 namespace Features.Zone.Application

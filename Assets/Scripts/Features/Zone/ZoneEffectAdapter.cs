@@ -1,6 +1,7 @@
 using Shared.Attributes;
 using Features.Zone.Application.Events;
 using Features.Zone.Application.Ports;
+using Features.Zone.Domain;
 using Features.Zone.Presentation;
 using Shared.EventBus;
 using Shared.Kernel;

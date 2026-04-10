@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Features.Zone.Application.Events;
+using Features.Zone.Domain;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Runtime.Pooling;

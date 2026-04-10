@@ -1,4 +1,4 @@
-using Features.Zone.Application.Events;
+using Features.Zone.Domain;
 using Shared.Kernel;
 using Shared.Math;
 

@@ -1,4 +1,3 @@
-using Features.Zone.Application.Events;
 using Shared.Kernel;
 
 namespace Features.Zone.Domain
