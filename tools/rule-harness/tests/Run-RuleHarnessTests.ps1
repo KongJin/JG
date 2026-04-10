@@ -627,6 +627,42 @@ Assert-RuleHarness `
     -Condition (@($phantomFindings | Where-Object { $_.title -eq 'Phantom shared contract name' }).Count -eq 1) `
     -Message 'Expected IEventBus usage to be reported as a phantom shared contract.'
 
+$phantomFixRepo = Join-Path $scratchRoot 'phantom-contract-fix'
+Initialize-RuleHarnessScopeRepo -RepoPath $phantomFixRepo -Features @(
+    [pscustomobject]@{ Name = 'Phantom'; ApplicationContent = @"
+using Shared.EventBus;
+
+namespace Features.Phantom.Application
+{
+    public sealed class PhantomService
+    {
+        private readonly IEventBus _publisher;
+
+        public PhantomService(IEventBus publisher)
+        {
+            _publisher = publisher;
+        }
+
+        public void Run()
+        {
+            _publisher.Publish(42);
+        }
+    }
+}
+"@ }
+)
+$phantomFixReport = Invoke-RuleHarness `
+    -RepoRoot $phantomFixRepo `
+    -ConfigPath (Join-Path $phantomFixRepo 'tools/rule-harness/config.json') `
+    -DisableLlm
+$phantomFixContent = Get-Content -Path (Join-Path $phantomFixRepo 'Assets/Scripts/Features/Phantom/Application/PhantomService.cs') -Raw
+Assert-RuleHarness `
+    -Condition ($phantomFixReport.commit.created -and $phantomFixReport.stoppedScope.scopeId -eq 'Phantom' -and $phantomFixReport.stoppedScope.finalStatus -eq 'clean') `
+    -Message 'Expected publish-only phantom event bus usage to be auto-fixed and leave the feature clean.'
+Assert-RuleHarness `
+    -Condition ($phantomFixContent.Contains('IEventPublisher _publisher;') -and $phantomFixContent.Contains('PhantomService(IEventPublisher publisher)')) `
+    -Message 'Expected phantom event bus auto-fix to replace IEventBus with the concrete publish-side contract.'
+
 $importRepo = Join-Path $scratchRoot 'missing-imports'
 Initialize-RuleHarnessScopeRepo -RepoPath $importRepo -Features @(
     [pscustomobject]@{ Name = 'Imports'; ApplicationContent = @"
@@ -736,6 +772,35 @@ $eventDriftFindings = Get-RuleHarnessStaticFindings `
 Assert-RuleHarness `
     -Condition (@($eventDriftFindings | Where-Object { $_.title -eq 'Event contract drift' }).Count -eq 1) `
     -Message 'Expected stale GameEndEvent member access to be reported as event contract drift.'
+
+$eventRenameRepo = Join-Path $scratchRoot 'event-contract-rename-fix'
+Initialize-RuleHarnessScopeRepo -RepoPath $eventRenameRepo -Features @(
+    [pscustomobject]@{ Name = 'Wave'; ApplicationContent = @"
+using Features.Combat.Application.Events;
+
+namespace Features.Wave.Application
+{
+    public sealed class DriftService
+    {
+        public float Read(DamageAppliedEvent e)
+        {
+            return e.RemainingHp;
+        }
+    }
+}
+"@ }
+)
+$eventRenameReport = Invoke-RuleHarness `
+    -RepoRoot $eventRenameRepo `
+    -ConfigPath (Join-Path $eventRenameRepo 'tools/rule-harness/config.json') `
+    -DisableLlm
+$eventRenameContent = Get-Content -Path (Join-Path $eventRenameRepo 'Assets/Scripts/Features/Wave/Application/WaveService.cs') -Raw
+Assert-RuleHarness `
+    -Condition ($eventRenameReport.commit.created -and $eventRenameReport.stoppedScope.scopeId -eq 'Wave' -and $eventRenameReport.stoppedScope.finalStatus -eq 'clean') `
+    -Message 'Expected rename-only event contract drift to be auto-fixed and leave the feature clean.'
+Assert-RuleHarness `
+    -Condition ($eventRenameContent.Contains('e.RemainingHealth') -and -not $eventRenameContent.Contains('RemainingHp')) `
+    -Message 'Expected event contract drift auto-fix to rewrite stale member names when the replacement is mechanical.'
 
 $layerRepo = Join-Path $scratchRoot 'layer-violations'
 Initialize-RuleHarnessScopeRepo -RepoPath $layerRepo -Features @(

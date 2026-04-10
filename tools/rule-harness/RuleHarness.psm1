@@ -744,6 +744,17 @@ function Get-RuleHarnessScriptTextWithoutComments {
     [regex]::Replace($withoutBlockComments, '(?m)//.*$', '')
 }
 
+function Get-RuleHarnessCodeWithoutCommentsOrStrings {
+    param(
+        [AllowEmptyString()]
+        [string]$Content
+    )
+
+    $contentWithoutComments = Get-RuleHarnessScriptTextWithoutComments -Lines @($Content -split "\r?\n")
+    $withoutDoubleQuotedStrings = [regex]::Replace($contentWithoutComments, '"(?:[^"\\]|\\.)*"', '""')
+    [regex]::Replace($withoutDoubleQuotedStrings, "'(?:[^'\\]|\\.)*'", "''")
+}
+
 function Get-RuleHarnessUsingNamespaces {
     param(
         [AllowEmptyString()]
@@ -3014,8 +3025,7 @@ function Get-RuleHarnessStaticFindings {
         $layer = Get-RuleHarnessLayerFromRelativePath -RelativePath $relative
         $usingNamespaces = @(Get-RuleHarnessUsingNamespaces -Lines $lines)
         $contentWithoutComments = Get-RuleHarnessScriptTextWithoutComments -Lines $lines
-        $codeWithoutCommentsOrStrings = [regex]::Replace($contentWithoutComments, '"(?:[^"\\]|\\.)*"', '""')
-        $codeWithoutCommentsOrStrings = [regex]::Replace($codeWithoutCommentsOrStrings, "'(?:[^'\\]|\\.)*'", "''")
+        $codeWithoutCommentsOrStrings = Get-RuleHarnessCodeWithoutCommentsOrStrings -Content $contentWithoutComments
         $featureName = Get-RuleHarnessFeatureNameFromPath -RelativePath $relative
 
         foreach ($usingNamespace in @($usingNamespaces)) {
@@ -3113,6 +3123,7 @@ function Get-RuleHarnessStaticFindings {
 
         $phantomContractEvidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @('\bIEventBus\b')
         if ($null -ne $phantomContractEvidence) {
+            $phantomReplacement = Get-RuleHarnessPhantomEventBusReplacement -CodeText $codeWithoutCommentsOrStrings
             [void]$findings.Add((New-RuleHarnessFinding `
                 -FindingType 'code_violation' `
                 -Severity 'high' `
@@ -3121,7 +3132,7 @@ function Get-RuleHarnessStaticFindings {
                 -Message ("File '{0}' references 'IEventBus', but Shared.EventBus does not define that contract. Use the real EventBus contracts instead." -f $relative) `
                 -Evidence @([pscustomobject]@{ path = $relative; line = [int]$phantomContractEvidence.line; snippet = [string]$phantomContractEvidence.snippet }) `
                 -Confidence 'high' `
-                -RemediationKind 'report_only' `
+                -RemediationKind $(if ([string]::IsNullOrWhiteSpace($phantomReplacement)) { 'report_only' } else { 'code_fix' }) `
                 -Rationale 'Compile-clean hazard: phantom shared contract names drift away from the actual Shared declarations.'))
             [void]$docCandidates.Add($architectureOwnerDoc)
         }
@@ -3196,8 +3207,8 @@ function Get-RuleHarnessStaticFindings {
         }
 
         $eventDriftRules = @(
-            [pscustomobject]@{ eventToken = 'GameEndEvent'; staleMember = 'IsLocalPlayerDead' },
-            [pscustomobject]@{ eventToken = 'DamageAppliedEvent'; staleMember = 'RemainingHp' }
+            [pscustomobject]@{ eventToken = 'GameEndEvent'; staleMember = 'IsLocalPlayerDead'; replacement = $null },
+            [pscustomobject]@{ eventToken = 'DamageAppliedEvent'; staleMember = 'RemainingHp'; replacement = 'RemainingHealth' }
         )
         foreach ($eventDriftRule in $eventDriftRules) {
             if ($codeWithoutCommentsOrStrings -notmatch ("\b{0}\b" -f [regex]::Escape([string]$eventDriftRule.eventToken))) {
@@ -3222,7 +3233,7 @@ function Get-RuleHarnessStaticFindings {
                 -Message ("File '{0}' assumes stale event member '{1}' on '{2}'. Producer, bridge, and consumer contracts drifted out of sync." -f $relative, [string]$eventDriftRule.staleMember, [string]$eventDriftRule.eventToken) `
                 -Evidence @([pscustomobject]@{ path = $relative; line = [int]$driftEvidence.line; snippet = [string]$driftEvidence.snippet }) `
                 -Confidence 'high' `
-                -RemediationKind 'report_only' `
+                -RemediationKind $(if ([string]::IsNullOrWhiteSpace([string]$eventDriftRule.replacement)) { 'report_only' } else { 'code_fix' }) `
                 -Rationale 'Compile-clean hazard: event payload changes must update producers, bridges, and consumers together.'))
             [void]$docCandidates.Add($architectureOwnerDoc)
         }
@@ -3799,6 +3810,33 @@ function Get-RuleHarnessPrimaryCodeEvidencePath {
     return $null
 }
 
+function Get-RuleHarnessPhantomEventBusReplacement {
+    param(
+        [Parameter(Mandatory)]
+        [string]$CodeText
+    )
+
+    if ($CodeText -notmatch '\bIEventBus\b') {
+        return $null
+    }
+
+    $hasPublishUsage = $CodeText -match '\.\s*Publish\s*(?:<|\()' -or $CodeText -match '\bPublish\s*(?:<|\()'
+    $hasSubscribeUsage = $CodeText -match '\.\s*Subscribe\s*(?:<|\()' -or
+        $CodeText -match '\bSubscribe\s*(?:<|\()' -or
+        $CodeText -match '\.\s*UnsubscribeAll\s*\(' -or
+        $CodeText -match '\bUnsubscribeAll\s*\('
+
+    if ($hasPublishUsage -and -not $hasSubscribeUsage) {
+        return 'IEventPublisher'
+    }
+
+    if ($hasSubscribeUsage -and -not $hasPublishUsage) {
+        return 'IEventSubscriber'
+    }
+
+    return $null
+}
+
 function Add-RuleHarnessUsingDirective {
     param(
         [Parameter(Mandatory)]
@@ -3830,6 +3868,25 @@ function Add-RuleHarnessUsingDirective {
     return $UsingDirective + $newline + $newline + $Content
 }
 
+function Get-RuleHarnessPhantomEventBusFixContent {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Content
+    )
+
+    $codeWithoutCommentsOrStrings = Get-RuleHarnessCodeWithoutCommentsOrStrings -Content $Content
+    $replacement = Get-RuleHarnessPhantomEventBusReplacement -CodeText $codeWithoutCommentsOrStrings
+    if ([string]::IsNullOrWhiteSpace($replacement)) {
+        return $Content
+    }
+
+    if ($Content -notmatch '\bIEventBus\b') {
+        return $Content
+    }
+
+    return [regex]::Replace($Content, '\bIEventBus\b', $replacement)
+}
+
 function Get-RuleHarnessMissingImportFixContent {
     param(
         [Parameter(Mandatory)]
@@ -3855,6 +3912,32 @@ function Get-RuleHarnessMissingImportFixContent {
     $updatedContent = $Content
     foreach ($usingDirective in @($requiredUsings)) {
         $updatedContent = Add-RuleHarnessUsingDirective -Content $updatedContent -UsingDirective $usingDirective
+    }
+
+    return $updatedContent
+}
+
+function Get-RuleHarnessEventContractDriftFixContent {
+    param(
+        [Parameter(Mandatory)]
+        [object[]]$Findings,
+        [Parameter(Mandatory)]
+        [string]$Content
+    )
+
+    $updatedContent = $Content
+    foreach ($finding in @($Findings)) {
+        if ([string]$finding.title -ne 'Event contract drift') {
+            continue
+        }
+
+        if ([string]$finding.message -match "stale event member '(?<member>[^']+)' on '(?<event>[^']+)'") {
+            $staleMember = [string]$Matches['member']
+            $eventToken = [string]$Matches['event']
+            if ($eventToken -eq 'DamageAppliedEvent' -and $staleMember -eq 'RemainingHp') {
+                $updatedContent = [regex]::Replace($updatedContent, '(?<=\.)RemainingHp\b', 'RemainingHealth')
+            }
+        }
     }
 
     return $updatedContent
@@ -4089,7 +4172,9 @@ function Get-RuleHarnessGroupedExistingCodeFixOperations {
     }
 
     $content = Get-Content -Path $fullPath -Raw
-    $updatedContent = Get-RuleHarnessMissingImportFixContent -Findings $Findings -Content $content
+    $updatedContent = Get-RuleHarnessPhantomEventBusFixContent -Content $content
+    $updatedContent = Get-RuleHarnessMissingImportFixContent -Findings $Findings -Content $updatedContent
+    $updatedContent = Get-RuleHarnessEventContractDriftFixContent -Findings $Findings -Content $updatedContent
     $updatedContent = Get-RuleHarnessShortTypeShadowingFixContent -TargetPath $TargetPath -Findings $Findings -Content $updatedContent
     if ($updatedContent -eq $content) {
         return @()
@@ -4235,8 +4320,10 @@ function Get-RuleHarnessPlannedBatches {
     }
 
     $groupedExistingFileFixTitles = @(
+        'Phantom shared contract name',
         'Missing import after symbol move',
-        'Feature short-type shadowing'
+        'Feature short-type shadowing',
+        'Event contract drift'
     )
     $groupedCodeFixFindings = @(
         $ReviewedFindings |
