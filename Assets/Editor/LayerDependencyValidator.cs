@@ -64,7 +64,7 @@ namespace Editor
                     CollectLayerViolations(relativePath, layer, rawLines, layerViolations);
                 }
 
-                CollectFeatureDependencies(relativePath, normalizedPath, rawLines, sanitizedLines, features, edgeMap);
+                CollectFeatureDependencies(relativePath, normalizedPath, layer, rawLines, sanitizedLines, features, edgeMap);
             }
 
             var report = BuildFeatureDependencyReport(features, edgeMap);
@@ -222,11 +222,19 @@ namespace Editor
         private static void CollectFeatureDependencies(
             string relativePath,
             string normalizedPath,
+            string layer,
             string[] rawLines,
             string[] sanitizedLines,
             string[] features,
             Dictionary<string, FeatureEdgeAccumulator> edgeMap)
         {
+            if (string.IsNullOrWhiteSpace(layer))
+                return;
+
+            // Ignore cross-cutting observers that would otherwise add non-gameplay cycles.
+            if (IsGraphIgnoredFile(normalizedPath))
+                return;
+
             var currentFeature = DetectFeatureName(normalizedPath);
             if (string.IsNullOrWhiteSpace(currentFeature))
                 return;
@@ -320,14 +328,8 @@ namespace Editor
             if (!IsFeatureDependency(currentFeature, referencedFeature))
                 return false;
 
-            // Consumer-owned Application/Ports references represent the consumer asking the
-            // current feature for a capability, so flip the edge to keep the semantic graph.
             if (IsConsumerOwnedPortReference(namespaceOrType, referencedFeature))
-            {
-                fromFeature = referencedFeature;
-                toFeature = currentFeature;
-                return true;
-            }
+                return false;
 
             fromFeature = currentFeature;
             toFeature = referencedFeature;
@@ -339,6 +341,12 @@ namespace Editor
             var prefix = $"Features.{feature}.Application.Ports";
             return string.Equals(namespaceOrType, prefix, StringComparison.Ordinal) ||
                 namespaceOrType.StartsWith($"{prefix}.", StringComparison.Ordinal);
+        }
+
+        private static bool IsGraphIgnoredFile(string normalizedPath)
+        {
+            var fileName = Path.GetFileNameWithoutExtension(normalizedPath);
+            return fileName.IndexOf("Analytics", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private static void AddEdge(

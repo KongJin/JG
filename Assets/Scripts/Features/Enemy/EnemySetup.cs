@@ -1,6 +1,7 @@
 using System;
 using Shared.Attributes;
 using Features.Combat;
+using Features.Combat.Infrastructure;
 using Features.Enemy.Application;
 using Features.Enemy.Application.Events;
 using Features.Enemy.Application.Ports;
@@ -25,7 +26,6 @@ namespace Features.Enemy
         [Required, SerializeField] private EntityIdHolder _entityIdHolder;
 
         private EventBus _eventBus;
-        private EnemyDamageEventHandler _damageHandler;
 
         public DomainEntityId EnemyId { get; private set; }
         public bool IsInitialized { get; private set; }
@@ -77,15 +77,19 @@ namespace Features.Enemy
             var spec = data.ToSpec();
 
             var enemy = new SpawnEnemyUseCase(eventBus).Execute(EnemyId, spec);
-            combatBootstrap.RegisterTarget(EnemyId, new EnemyCombatTargetProvider(enemy));
-            _damageHandler = new EnemyDamageEventHandler(enemy, EnemyId, eventBus, eventBus);
+            combatBootstrap.RegisterTarget(EnemyId, new EnemyCombatTargetProvider(enemy, EnemyId, eventBus));
 
             _entityIdHolder.Set(EnemyId);
 
             if (PhotonNetwork.IsMasterClient)
             {
                 _aiAdapter.Initialize(spec, playerQuery, coreQuery);
-                _contactDetector.Initialize(combatBootstrap, EnemyId, spec.ContactDamage, spec.ContactCooldown);
+                _contactDetector.Initialize(
+                    new EnemyContactDamagePortAdapter(combatBootstrap),
+                    EnemyId,
+                    spec.ContactDamage,
+                    spec.ContactCooldown
+                );
             }
             else
             {
@@ -118,8 +122,6 @@ namespace Features.Enemy
 
         private void OnDestroy()
         {
-            if (_damageHandler != null)
-                _eventBus?.UnsubscribeAll(_damageHandler);
             _eventBus?.UnsubscribeAll(this);
         }
 

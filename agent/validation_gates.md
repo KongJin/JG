@@ -58,10 +58,10 @@ Unity Editor 기준 컴파일 에러가 0이다.
 * 사람 또는 하네스가 `clean`이라고 보고하려면 최소 `static-clean + compile-clean`을 만족해야 한다.
 * `runtime-smoke-clean`은 가능한 경우 추가로 보고한다.
 * Unity가 꺼져 있거나 compile 상태를 확인하지 못한 경우, 결과는 반드시 `static-clean only`로 표시한다.
-* `static-clean only`는 임시 상태다. 운영 보고, handoff, scheduled summary에서 이를 `clean`이라고 부르지 않는다.
-* `resolved`는 코드 수정 후 compile 확인까지 끝났을 때만 사용할 수 있다.
+* `static-clean only`는 임시 상태다. 운영 보고, 인계, 정기 요약에서 이를 `clean`이라고 부르지 않는다.
+* `resolved`는 코드 수정 후 컴파일 확인까지 끝났을 때만 사용할 수 있다.
 
-추천 출력 예:
+권장 출력 예:
 
 * `static-clean only`
 * `compile-clean`
@@ -69,22 +69,22 @@ Unity Editor 기준 컴파일 에러가 0이다.
 
 ---
 
-## Required Order
+## 필수 순서
 
 기본 순서는 아래를 따른다.
 
 1. 전역/로컬 SSOT 확인
 2. 정적 규칙 점검
 3. 코드 수정
-4. Unity compile 확인
-5. 필요 시 runtime smoke 확인
+4. Unity 컴파일 확인
+5. 필요 시 런타임 스모크 확인
 6. 최종 상태 기록
 
-코드 수정 후 compile 확인 없이 `resolved` 또는 `clean`을 선언하지 않는다.
+코드 수정 후 컴파일 확인 없이 `resolved` 또는 `clean`을 선언하지 않는다.
 
 ---
 
-## Rule Additions Required By This Gate
+## 이 게이트에 필요한 규칙 추가
 
 `compile-clean`을 위해 아래 정적 안전 규칙을 유지한다.
 
@@ -92,8 +92,8 @@ Unity Editor 기준 컴파일 에러가 0이다.
 * 존재하지 않는 Shared 계약명 사용 금지
 * 자주 이동하는 심볼의 namespace drift 탐지
 * concrete vs interface drift 탐지
-* event contract drift 탐지
-* layer-safe type placement drift 탐지
+* 이벤트 계약 drift 탐지
+* 레이어 안전 타입 배치 drift 탐지
 * feature root `README.md` 존재 확인
 
 대표 구조 문제:
@@ -115,7 +115,7 @@ Unity Editor 기준 컴파일 에러가 0이다.
 
 ---
 
-## Ownership
+## 소유권
 
 * 전역 게이트 규칙: `agent/*.md`
 * feature 로컬 계약: `Assets/Scripts/Features/<Name>/README.md`

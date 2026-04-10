@@ -156,7 +156,7 @@ namespace Features.Player
 
             // P8-4: 초기 Energy 검증
             var initialEnergy = _localPlayerSetup.EnergyAdapterInstance.GetCurrentEnergy(playerId);
-            var energyResult = InitialEnergyValidator.Validate(initialEnergy, specs);
+            var energyResult = Features.Unit.Application.InitialEnergyValidator.Validate(initialEnergy, specs);
             if (!energyResult.IsValid)
             {
                 Debug.LogWarning(

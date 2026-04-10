@@ -1,4 +1,3 @@
-using Features.Combat.Domain;
 using Features.Projectile.Application.Events;
 using Features.Projectile.Domain;
 using Features.Projectile.Domain.Hit;
@@ -7,6 +6,7 @@ using Features.Skill.Application.Events;
 using Features.Skill.Application.Ports;
 using Features.Skill.Domain;
 using Features.Skill.Domain.Delivery;
+using Features.Status.Application.Events;
 using Shared.EventBus;
 using Shared.Math;
 
@@ -55,7 +55,7 @@ namespace Features.Skill.Application
                     );
                     break;
                 case DeliveryType.Self:
-                    _publisher.Publish(new SelfRequestedEvent(data.SkillId, data.CasterId, spec, data.Position));
+                    PublishSelf(data, spec);
                     break;
             }
 
@@ -83,13 +83,32 @@ namespace Features.Skill.Application
             }
         }
 
+        private void PublishSelf(SkillCastNetworkData data, SkillSpec spec)
+        {
+            _publisher.Publish(new SelfRequestedEvent(data.SkillId, data.CasterId, spec, data.Position));
+
+            if (!spec.StatusPayload.HasEffect)
+                return;
+
+            _publisher.Publish(
+                new StatusApplyRequestedEvent(
+                    data.CasterId,
+                    spec.StatusPayload.Type,
+                    spec.StatusPayload.Magnitude,
+                    spec.StatusPayload.Duration,
+                    data.CasterId,
+                    spec.StatusPayload.TickInterval
+                )
+            );
+        }
+
         private void PublishProjectiles(SkillCastNetworkData data, ProjectileSpec projectileSpec, float allyDamageScale)
         {
             var count = data.ProjectileCount;
             if (count <= 1)
             {
                 _publisher.Publish(new ProjectileRequestedEvent(
-                    data.CasterId, projectileSpec, data.Damage, DamageType.Magical,
+                    data.CasterId, projectileSpec, data.Damage, HitDamageType.Magical,
                     data.Position, data.Direction, data.StatusPayload, allyDamageScale));
                 return;
             }
@@ -109,7 +128,7 @@ namespace Features.Skill.Application
                 var rotatedDir = new Float3(dx * cos - dz * sin, data.Direction.Y, dx * sin + dz * cos);
 
                 _publisher.Publish(new ProjectileRequestedEvent(
-                    data.CasterId, projectileSpec, data.Damage, DamageType.Magical,
+                    data.CasterId, projectileSpec, data.Damage, HitDamageType.Magical,
                     data.Position, rotatedDir, data.StatusPayload, allyDamageScale));
             }
         }

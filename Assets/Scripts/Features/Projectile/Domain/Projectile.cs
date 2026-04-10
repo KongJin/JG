@@ -1,4 +1,3 @@
-using Features.Combat.Domain;
 using Features.Status.Domain;
 using Shared.Kernel;
 
@@ -11,7 +10,7 @@ namespace Features.Projectile.Domain
             DomainEntityId ownerId,
             ProjectileSpec spec,
             float baseDamage,
-            DamageType damageType,
+            HitDamageType damageType,
             StatusPayload statusPayload = default,
             float allyDamageScale = 1f
         ) : base(id)
@@ -29,7 +28,7 @@ namespace Features.Projectile.Domain
         public DomainEntityId OwnerId { get; }
         public ProjectileSpec Spec { get; }
         public float BaseDamage { get; }
-        public DamageType DamageType { get; }
+        public HitDamageType DamageType { get; }
         public StatusPayload StatusPayload { get; }
         public float AllyDamageScale { get; }
         public bool IsAlive { get; private set; }

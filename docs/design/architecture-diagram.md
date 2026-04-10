@@ -46,7 +46,9 @@ graph TB
 피처 간 dependency graph는 이 문서에서 수동으로 유지하지 않는다.
 
 * 현재 그래프는 `Temp/LayerDependencyValidator/feature-dependencies.json` generated artifact를 본다.
-* `Application/Ports` 참조는 consumer-owned port 규칙을 반영해 semantic edge 방향으로 해석한다.
+* feature root의 composition code(`*Setup`, `*Bootstrap`, scene root)는 그래프에서 제외하고, 레이어 내부 코드만 DAG 품질 게이트에 반영한다.
+* `Application/Ports` 참조는 승인된 DIP seam으로 보고 edge에서 제외한다.
+* analytics/reporting 전용 observer 코드는 gameplay DAG 품질 게이트에서 제외한다.
 * 품질 게이트는 “새 의존성 금지”가 아니라 “cycle 금지”다.
 * 즉 `A -> B`는 허용하지만 `A -> B -> A`, `A -> B -> C -> A`는 구조 위반이다.
 

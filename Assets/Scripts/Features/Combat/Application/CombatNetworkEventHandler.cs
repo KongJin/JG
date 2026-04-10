@@ -27,7 +27,24 @@ namespace Features.Combat.Application
             if (_hasAuthorityFilter && !e.OwnerId.Equals(_localAuthorityId))
                 return;
 
-            _applyDamage.Execute(e.TargetId, e.BaseDamage, e.DamageType, e.OwnerId, e.AllyDamageScale);
+            _applyDamage.Execute(
+                e.TargetId,
+                e.BaseDamage,
+                ConvertDamageType(e.DamageType),
+                e.OwnerId,
+                e.AllyDamageScale
+            );
+        }
+
+        private static Domain.DamageType ConvertDamageType(HitDamageType damageType)
+        {
+            return damageType switch
+            {
+                HitDamageType.Physical => Domain.DamageType.Physical,
+                HitDamageType.Magical => Domain.DamageType.Magical,
+                HitDamageType.True => Domain.DamageType.True,
+                _ => Domain.DamageType.Physical,
+            };
         }
     }
 }

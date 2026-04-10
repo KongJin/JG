@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Features.Status.Application.Events;
+using Features.Status.Domain;
 using Features.Zone.Application.Events;
 using Features.Zone.Domain;
 using Shared.EventBus;
@@ -60,6 +62,33 @@ namespace Features.Zone.Presentation
 
             _lastTickTimes[key] = now;
             _publisher.Publish(new ZoneTickEvent(_zoneId, _casterId, targetId, _baseDamage, _statusPayload, _allyDamageScale));
+
+            var statusType = ConvertZoneStatusType(_statusPayload.Type);
+            if (!statusType.HasValue)
+                return;
+
+            _publisher.Publish(
+                new StatusApplyRequestedEvent(
+                    targetId,
+                    statusType.Value,
+                    _statusPayload.Magnitude,
+                    _statusPayload.Duration,
+                    _casterId,
+                    _statusPayload.TickInterval
+                )
+            );
+        }
+
+        private static StatusType? ConvertZoneStatusType(ZoneStatusPayload.ZoneStatusType zoneType)
+        {
+            return zoneType switch
+            {
+                ZoneStatusPayload.ZoneStatusType.Slow => StatusType.Slow,
+                ZoneStatusPayload.ZoneStatusType.Haste => StatusType.Haste,
+                ZoneStatusPayload.ZoneStatusType.DoT => StatusType.Burn,
+                ZoneStatusPayload.ZoneStatusType.None => null,
+                _ => null,
+            };
         }
 
         public void OnRentFromPool()

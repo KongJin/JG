@@ -3,6 +3,7 @@ using Features.Projectile.Application.Ports;
 using Features.Projectile.Domain;
 using Features.Projectile.Domain.Hit;
 using Features.Projectile.Domain.Trajectory;
+using Features.Status.Application.Events;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Math;
@@ -87,6 +88,20 @@ namespace Features.Projectile.Infrastructure
                     _projectile.AllyDamageScale
                 )
             );
+
+            if (_projectile.StatusPayload.HasEffect)
+            {
+                _eventBus.Publish(
+                    new StatusApplyRequestedEvent(
+                        holder.Id,
+                        _projectile.StatusPayload.Type,
+                        _projectile.StatusPayload.Magnitude,
+                        _projectile.StatusPayload.Duration,
+                        _projectile.OwnerId,
+                        _projectile.StatusPayload.TickInterval
+                    )
+                );
+            }
 
             if (!_projectile.IsAlive)
                 ReleaseSelf();

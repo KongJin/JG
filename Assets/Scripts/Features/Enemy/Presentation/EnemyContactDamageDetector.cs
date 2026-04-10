@@ -1,5 +1,4 @@
-using Features.Combat;
-using Features.Combat.Domain;
+using Features.Enemy.Application.Ports;
 using Shared.Kernel;
 using UnityEngine;
 
@@ -7,16 +6,16 @@ namespace Features.Enemy.Presentation
 {
     public sealed class EnemyContactDamageDetector : MonoBehaviour
     {
-        private CombatBootstrap _combatBootstrap;
+        private IEnemyContactDamagePort _contactDamagePort;
         private DomainEntityId _enemyId;
         private float _damage;
         private float _cooldown;
         private float _lastDamageTime;
         private bool _initialized;
 
-        public void Initialize(CombatBootstrap combatBootstrap, DomainEntityId enemyId, float damage, float cooldown)
+        public void Initialize(IEnemyContactDamagePort contactDamagePort, DomainEntityId enemyId, float damage, float cooldown)
         {
-            _combatBootstrap = combatBootstrap;
+            _contactDamagePort = contactDamagePort;
             _enemyId = enemyId;
             _damage = damage;
             _cooldown = cooldown;
@@ -34,7 +33,7 @@ namespace Features.Enemy.Presentation
             var targetId = holder.Id;
             if (targetId.Value != null && targetId.Value.StartsWith("enemy")) return;
 
-            _combatBootstrap.ApplyDamage(targetId, _damage, DamageType.Physical, _enemyId);
+            _contactDamagePort.ApplyContactDamage(targetId, _damage, _enemyId);
             _lastDamageTime = Time.time;
         }
     }
