@@ -13,10 +13,31 @@ if ([string]::IsNullOrWhiteSpace($ScriptsRoot)) {
 
 $coreSourcePath = Join-Path $RepoRoot 'Assets\Editor\LayerDependencyValidator.cs'
 if (-not (Test-Path -LiteralPath $coreSourcePath)) {
-    throw "Layer dependency analyzer core not found: $coreSourcePath"
+    return [pscustomobject]@{
+        outputPath = $null
+        featureCount = 0
+        edgeCount = 0
+        hasCycles = $false
+        layerViolationCount = 0
+        status = 'unsupported'
+        reason = 'feature-dependency-analyzer-core-missing'
+    }
 }
 
 $typeDefinition = Get-Content -Path $coreSourcePath -Raw
+$typePattern = 'public\s+static\s+class\s+LayerDependencyAnalyzer'
+if ($typeDefinition -notmatch $typePattern) {
+    return [pscustomobject]@{
+        outputPath = $null
+        featureCount = 0
+        edgeCount = 0
+        hasCycles = $false
+        layerViolationCount = 0
+        status = 'unsupported'
+        reason = 'feature-dependency-analyzer-type-missing'
+    }
+}
+
 $typeDefinition = [regex]::Replace(
     $typeDefinition,
     '(?ms)^#if !LAYER_VALIDATION_NO_UNITY\r?\nusing UnityEditor;\r?\nusing UnityEngine;\r?\n#endif\r?\n',
@@ -59,6 +80,16 @@ function Convert-FeatureDependencyCycle {
     [pscustomobject]@{
         features = @($Cycle.features)
         evidence = @($Cycle.evidence | ForEach-Object { Convert-FeatureDependencyEvidence $_ })
+        edges = @($Cycle.edges | ForEach-Object { Convert-FeatureDependencyEdge $_ })
+        preferredBreakCandidates = @($Cycle.preferredBreakCandidates | ForEach-Object {
+            [pscustomobject]@{
+                recipe = $_.recipe
+                from = $_.from
+                to = $_.to
+                reason = $_.reason
+                evidence = @($_.evidence | ForEach-Object { Convert-FeatureDependencyEvidence $_ })
+            }
+        })
     }
 }
 
@@ -87,4 +118,6 @@ $jsonObject | ConvertTo-Json -Depth 8 | Set-Content -Path $OutputPath -Encoding 
     edgeCount = $report.edgeCount
     hasCycles = $report.hasCycles
     layerViolationCount = @($analysis.layerViolations).Count
+    status = 'passed'
+    reason = $null
 }

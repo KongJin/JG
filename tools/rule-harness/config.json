@@ -18,9 +18,10 @@
     ]
   },
   "docs": {
-    "mutationEnabled": false,
+    "mutationEnabled": true,
     "allowlist": [
-      "CLAUDE.md"
+      "CLAUDE.md",
+      "agent/*.md"
     ],
     "denylist": [
       "docs/design/**"

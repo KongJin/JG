@@ -176,6 +176,44 @@ function Write-FeatureDependencyReportFixture {
     } | ConvertTo-Json -Depth 10 | Set-Content -Path $statePath -Encoding UTF8
 }
 
+function Copy-FeatureDependencyValidatorFixture {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoPath
+    )
+
+    $editorRoot = Join-Path $RepoPath 'Assets/Editor'
+    New-Item -ItemType Directory -Path $editorRoot -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $repoRoot 'Assets/Editor/LayerDependencyValidator.cs') -Destination (Join-Path $editorRoot 'LayerDependencyValidator.cs') -Force
+}
+
+function Write-CompileRefreshStub {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoPath,
+        [string]$Status = 'passed'
+    )
+
+    $scriptPath = Join-Path $RepoPath 'tools/rule-harness/write-compile-status.ps1'
+    Set-Content -Path $scriptPath -Value @"
+param([string]`$RepoRoot = (Resolve-Path (Join-Path `$PSScriptRoot '..\\..')).Path)
+`$outputPath = Join-Path `$RepoRoot 'Temp/RuleHarnessState/compile-status.json'
+New-Item -ItemType Directory -Path (Split-Path -Parent `$outputPath) -Force | Out-Null
+[pscustomobject]@{
+    status = '$Status'
+    summary = 'fixture compile status'
+    source = 'fixture-refresh'
+    reasonCode = ''
+    checkedAtUtc = '2026-04-10T12:34:56Z'
+    runtimeSmokeClean = `$false
+} | ConvertTo-Json -Depth 10 | Set-Content -Path `$outputPath -Encoding UTF8
+[pscustomobject]@{
+    status = '$Status'
+    outputPath = `$outputPath
+}
+"@ -Encoding UTF8
+}
+
 $orderingRepo = Join-Path $scratchRoot 'feature-ordering'
 Initialize-RuleHarnessScopeRepo -RepoPath $orderingRepo -Features @(
     [pscustomobject]@{ Name = 'Aged'; ApplicationContent = 'namespace Features.Aged.Application { public sealed class AgedService { } }' },
@@ -1153,6 +1191,158 @@ Assert-RuleHarness `
 Assert-RuleHarness `
     -Condition (@($featureDependencyFailedReport.findings | Where-Object { $_.title -eq 'Feature dependency cycle' }).Count -eq 1 -and @($featureDependencyFailedReport.actionItems | Where-Object kind -eq 'break-feature-dependency-cycle').Count -eq 1) `
     -Message 'Expected feature dependency cycles to surface a finding and action item.'
+Assert-RuleHarness `
+    -Condition ($featureDependencyPassedReport.PSObject.Properties.Name -contains 'featureDependencyRepairPolicySnapshot' -and [string]$featureDependencyPassedReport.featureDependencyRepairPolicySnapshot.sourceOrder[0] -eq 'CLAUDE.md' -and @($featureDependencyPassedReport.featureDependencyRepairPolicySnapshot.sourceOrder) -contains 'docs/rules/architecture-rules.md') `
+    -Message 'Expected cycle repair reports to expose the CLAUDE.md -> owner doc policy source order.'
+
+$featureDependencyUnsupportedRepo = Join-Path $scratchRoot 'feature-dependency-repair-unsupported'
+Initialize-RuleHarnessScopeRepo -RepoPath $featureDependencyUnsupportedRepo -Features @(
+    [pscustomobject]@{ Name = 'Combat'; ApplicationContent = @"
+using Features.Enemy.Application;
+
+namespace Features.Combat.Application
+{
+    public sealed class CombatService
+    {
+        private readonly EnemyService _enemy;
+
+        public CombatService(EnemyService enemy)
+        {
+            _enemy = enemy;
+        }
+
+        public int Run()
+        {
+            return _enemy.GetThreat();
+        }
+    }
+}
+"@ },
+    [pscustomobject]@{ Name = 'Enemy'; ApplicationContent = @"
+using Features.Combat.Application;
+
+namespace Features.Enemy.Application
+{
+    public sealed class EnemyService
+    {
+        public int GetThreat()
+        {
+            return 7;
+        }
+
+        public CombatService Echo(CombatService combat)
+        {
+            return combat;
+        }
+    }
+}
+"@ }
+) -ArchitectureDocContent '# Architecture Rules'
+Set-Content -Path (Join-Path $featureDependencyUnsupportedRepo 'Assets/Scripts/Features/Combat/CombatSetup.cs') -Value @"
+using Features.Combat.Application;
+using Features.Enemy.Application;
+
+namespace Features.Combat
+{
+    public sealed class CombatSetup
+    {
+        public CombatService Create()
+        {
+            return new CombatService(new EnemyService());
+        }
+    }
+}
+"@ -Encoding UTF8
+Copy-FeatureDependencyValidatorFixture -RepoPath $featureDependencyUnsupportedRepo
+Write-CompileRefreshStub -RepoPath $featureDependencyUnsupportedRepo -Status 'passed'
+$featureDependencyUnsupportedReport = Invoke-RuleHarness `
+    -RepoRoot $featureDependencyUnsupportedRepo `
+    -ConfigPath (Join-Path $featureDependencyUnsupportedRepo 'tools/rule-harness/config.json') `
+    -DisableLlm
+Assert-RuleHarness `
+    -Condition ([string]$featureDependencyUnsupportedReport.execution.featureDependencyGateStatus -eq 'failed' -and [string]$featureDependencyUnsupportedReport.execution.featureDependencyRepairStatus -eq 'failed' -and [int]$featureDependencyUnsupportedReport.execution.featureDependencyUnsupportedCycleCount -eq 1 -and [bool]$featureDependencyUnsupportedReport.failed) `
+    -Message 'Expected doc-blocked cycles to fail automatic feature dependency repair and remain failed.'
+Assert-RuleHarness `
+    -Condition (@($featureDependencyUnsupportedReport.findings | Where-Object { $_.title -eq 'Feature dependency cycle repair unsupported' }).Count -eq 1 -and -not (Test-Path -LiteralPath (Join-Path $featureDependencyUnsupportedRepo 'Assets/Scripts/Features/Combat/Application/Ports/IEnemyServicePort.cs'))) `
+    -Message 'Expected unsupported cycle repair runs to collect a repair-unsupported finding without mutating code.'
+
+$featureDependencyRepairRepo = Join-Path $scratchRoot 'feature-dependency-repair-port'
+Initialize-RuleHarnessScopeRepo -RepoPath $featureDependencyRepairRepo -Features @(
+    [pscustomobject]@{ Name = 'Combat'; ApplicationContent = @"
+using Features.Enemy.Application;
+
+namespace Features.Combat.Application
+{
+    public sealed class CombatService
+    {
+        private readonly EnemyService _enemy;
+
+        public CombatService(EnemyService enemy)
+        {
+            _enemy = enemy;
+        }
+
+        public int Run()
+        {
+            return _enemy.GetThreat();
+        }
+    }
+}
+"@ },
+    [pscustomobject]@{ Name = 'Enemy'; ApplicationContent = @"
+using Features.Combat.Application;
+
+namespace Features.Enemy.Application
+{
+    public sealed class EnemyService
+    {
+        public int GetThreat()
+        {
+            return 7;
+        }
+
+        public CombatService Echo(CombatService combat)
+        {
+            return combat;
+        }
+    }
+}
+"@ }
+) -ArchitectureDocContent @"
+# Architecture Rules
+
+consumer-owned Application/Ports seams are preferred for cross-feature dependencies.
+Application/Ports references are excluded from the DAG gate.
+"@
+Set-Content -Path (Join-Path $featureDependencyRepairRepo 'Assets/Scripts/Features/Combat/CombatSetup.cs') -Value @"
+using Features.Combat.Application;
+using Features.Enemy.Application;
+
+namespace Features.Combat
+{
+    public sealed class CombatSetup
+    {
+        public CombatService Create()
+        {
+            return new CombatService(new EnemyService());
+        }
+    }
+}
+"@ -Encoding UTF8
+Copy-FeatureDependencyValidatorFixture -RepoPath $featureDependencyRepairRepo
+Write-CompileRefreshStub -RepoPath $featureDependencyRepairRepo -Status 'passed'
+$featureDependencyRepairReport = Invoke-RuleHarness `
+    -RepoRoot $featureDependencyRepairRepo `
+    -ConfigPath (Join-Path $featureDependencyRepairRepo 'tools/rule-harness/config.json') `
+    -DisableLlm
+$combatServiceContent = Get-Content -Path (Join-Path $featureDependencyRepairRepo 'Assets/Scripts/Features/Combat/Application/CombatService.cs') -Raw
+$combatSetupContent = Get-Content -Path (Join-Path $featureDependencyRepairRepo 'Assets/Scripts/Features/Combat/CombatSetup.cs') -Raw
+Assert-RuleHarness `
+    -Condition ([string]$featureDependencyRepairReport.execution.featureDependencyGateStatus -eq 'passed' -and [string]$featureDependencyRepairReport.execution.featureDependencyRepairStatus -eq 'passed' -and [string]$featureDependencyRepairReport.execution.compileGateStatus -eq 'passed' -and -not [bool]$featureDependencyRepairReport.failed) `
+    -Message 'Expected supported cycles to be repaired into a compile-clean acyclic graph.'
+Assert-RuleHarness `
+    -Condition ((Test-Path -LiteralPath (Join-Path $featureDependencyRepairRepo 'Assets/Scripts/Features/Combat/Application/Ports/IEnemyServicePort.cs')) -and (Test-Path -LiteralPath (Join-Path $featureDependencyRepairRepo 'Assets/Scripts/Features/Enemy/Infrastructure/EnemyServicePortAdapter.cs')) -and $combatServiceContent.Contains('IEnemyServicePort') -and $combatSetupContent.Contains('EnemyServicePortAdapter') -and @($featureDependencyRepairReport.featureDependencyRepairCodeCommits).Count -ge 1) `
+    -Message 'Expected port inversion repair to create the consumer port, provider adapter, and code commit.'
 
 $scheduledRepo = Join-Path $scratchRoot 'scheduled-status'
 Initialize-RuleHarnessScopeRepo -RepoPath $scheduledRepo -Features @(

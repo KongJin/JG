@@ -512,7 +512,21 @@ function Get-RuleHarnessPreferredClaudeDoc {
             continue
         }
 
-        foreach ($target in Get-RuleHarnessMarkdownTargets -Content $line) {
+        $lineTargets = @(Get-RuleHarnessMarkdownTargets -Content $line)
+        $preferredTargets = if (-not [string]::IsNullOrWhiteSpace($keywordPattern)) {
+            @($lineTargets | Where-Object { [string]$_ -match $keywordPattern })
+        }
+        else {
+            @()
+        }
+        $candidateTargets = if (@($preferredTargets).Count -gt 0) {
+            @($preferredTargets) + @($lineTargets | Where-Object { $preferredTargets -notcontains $_ })
+        }
+        else {
+            @($lineTargets)
+        }
+
+        foreach ($target in $candidateTargets) {
             $resolved = Resolve-RuleHarnessTargetPath -RepoRoot $RepoRoot -SourcePath 'CLAUDE.md' -Target $target
             if ($null -ne $resolved -and $resolved.Exists) {
                 return $resolved.RelativePath
@@ -551,6 +565,39 @@ function Get-RuleHarnessGovernanceOwnerDoc {
     Get-RuleHarnessPreferredClaudeDoc `
         -RepoRoot $RepoRoot `
         -Keywords @('work_principles', '문서 소유권', 'SSOT', '운영 원칙', 'ownership', 'governance')
+}
+
+function Get-RuleHarnessAntiPatternsOwnerDoc {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    Get-RuleHarnessPreferredClaudeDoc `
+        -RepoRoot $RepoRoot `
+        -Keywords @('anti_patterns', '금지 패턴', '하지 말아야', 'anti pattern', '예외 판단')
+}
+
+function Get-RuleHarnessEventRulesOwnerDoc {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    Get-RuleHarnessPreferredClaudeDoc `
+        -RepoRoot $RepoRoot `
+        -Keywords @('event_rules', '이벤트 체인', '이벤트 vs 직접 호출', 'EventBus', '직접 호출')
+}
+
+function Get-RuleHarnessValidationGatesOwnerDoc {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    Get-RuleHarnessPreferredClaudeDoc `
+        -RepoRoot $RepoRoot `
+        -Keywords @('validation_gates', 'clean', 'compile-clean', 'runtime-smoke-clean', '검증 게이트')
 }
 
 function Test-RuleHarnessGlobalRuleDoc {
@@ -1419,6 +1466,1347 @@ function Get-RuleHarnessFeatureDependencyGateStatus {
             })
         actionItems                 = @()
     }
+}
+
+function Get-RuleHarnessDocumentContent {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string]$RelativePath
+    )
+
+    if ([string]::IsNullOrWhiteSpace($RelativePath)) {
+        return $null
+    }
+
+    $fullPath = Join-Path $RepoRoot $RelativePath
+    if (-not (Test-Path -LiteralPath $fullPath)) {
+        return $null
+    }
+
+    Get-Content -Path $fullPath -Raw
+}
+
+function Get-RuleHarnessCycleRepairPolicySnapshot {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    $claudePath = 'CLAUDE.md'
+    $architectureDoc = Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot
+    $antiPatternsDoc = Get-RuleHarnessAntiPatternsOwnerDoc -RepoRoot $RepoRoot
+    $eventRulesDoc = Get-RuleHarnessEventRulesOwnerDoc -RepoRoot $RepoRoot
+    $validationDoc = Get-RuleHarnessValidationGatesOwnerDoc -RepoRoot $RepoRoot
+
+    $claudeText = Get-RuleHarnessDocumentContent -RepoRoot $RepoRoot -RelativePath $claudePath
+    $architectureText = Get-RuleHarnessDocumentContent -RepoRoot $RepoRoot -RelativePath $architectureDoc
+    $antiPatternsText = Get-RuleHarnessDocumentContent -RepoRoot $RepoRoot -RelativePath $antiPatternsDoc
+    $eventRulesText = Get-RuleHarnessDocumentContent -RepoRoot $RepoRoot -RelativePath $eventRulesDoc
+    $validationText = Get-RuleHarnessDocumentContent -RepoRoot $RepoRoot -RelativePath $validationDoc
+
+    $consumerOwnedPortsPreferred = -not [string]::IsNullOrWhiteSpace($architectureText) -and
+        $architectureText -match 'consumer-owned' -and
+        $architectureText -match 'Application/Ports'
+    $cleanRequiresCompile = -not [string]::IsNullOrWhiteSpace($validationText) -and
+        $validationText -match 'static-clean \+ compile-clean'
+
+    $sourceOrder = [System.Collections.Generic.List[string]]::new()
+    foreach ($source in @($claudePath, $architectureDoc, $antiPatternsDoc, $eventRulesDoc, $validationDoc)) {
+        if (-not [string]::IsNullOrWhiteSpace([string]$source) -and -not $sourceOrder.Contains([string]$source)) {
+            [void]$sourceOrder.Add([string]$source)
+        }
+    }
+
+    [pscustomobject]@{
+        sourceOrder = @($sourceOrder)
+        sources = [pscustomobject]@{
+            claude = $claudePath
+            architecture = $architectureDoc
+            antiPatterns = $antiPatternsDoc
+            eventRules = $eventRulesDoc
+            validationGates = $validationDoc
+        }
+        constraints = [pscustomobject]@{
+            dagPortExceptionDocumented = -not [string]::IsNullOrWhiteSpace($architectureText) -and $architectureText -match 'Application/Ports'
+            analyticsObserverExceptionDocumented = -not [string]::IsNullOrWhiteSpace($architectureText) -and $architectureText -match 'analytics/reporting'
+            consumerOwnedPortsPreferred = $consumerOwnedPortsPreferred
+            sharedOwnershipDocumented = -not [string]::IsNullOrWhiteSpace($architectureText) -and $architectureText -match 'Shared'
+            eventCycleRequiresDirectCallReplacement = -not [string]::IsNullOrWhiteSpace($eventRulesText) -and $eventRulesText -match '직접 호출' -and $eventRulesText -match '순환'
+            antiPhantomSharedContract = -not [string]::IsNullOrWhiteSpace($antiPatternsText) -and $antiPatternsText -match 'Phantom shared 계약'
+            antiConcreteInterfaceDrift = -not [string]::IsNullOrWhiteSpace($antiPatternsText) -and $antiPatternsText -match 'Concrete/interface drift'
+            antiEventContractDrift = -not [string]::IsNullOrWhiteSpace($antiPatternsText) -and $antiPatternsText -match '이벤트 계약 drift'
+            cleanRequiresCompile = $cleanRequiresCompile
+        }
+        preferredDirections = @(
+            if ($consumerOwnedPortsPreferred) { 'port_inversion' }
+        )
+        summary = if ($consumerOwnedPortsPreferred -and $cleanRequiresCompile) {
+            'Docs prefer consumer-owned Application/Ports seams and require compile-clean before declaring clean.'
+        }
+        elseif ($consumerOwnedPortsPreferred) {
+            'Docs prefer consumer-owned Application/Ports seams, but compile-clean guidance was not detected.'
+        }
+        else {
+            'Repair policy snapshot did not confirm consumer-owned Application/Ports guidance.'
+        }
+    }
+}
+
+function Get-RuleHarnessFeatureDependencyRefreshScriptPath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    $relativePath = 'tools/rule-harness/write-feature-dependency-report.ps1'
+    $fullPath = Join-Path $RepoRoot $relativePath
+    if (-not (Test-Path -LiteralPath $fullPath)) {
+        return $null
+    }
+
+    [pscustomobject]@{
+        relativePath = $relativePath
+        fullPath = $fullPath
+    }
+}
+
+function Test-RuleHarnessFeatureDependencyAnalyzerAvailability {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    $coreSourcePath = Join-Path $RepoRoot 'Assets/Editor/LayerDependencyValidator.cs'
+    if (-not (Test-Path -LiteralPath $coreSourcePath)) {
+        return [pscustomobject]@{
+            available = $false
+            reason = 'feature-dependency-analyzer-core-missing'
+            path = $coreSourcePath
+        }
+    }
+
+    $content = Get-Content -Path $coreSourcePath -Raw
+    if ($content -notmatch 'public\s+static\s+class\s+LayerDependencyAnalyzer') {
+        return [pscustomobject]@{
+            available = $false
+            reason = 'feature-dependency-analyzer-type-missing'
+            path = $coreSourcePath
+        }
+    }
+
+    [pscustomobject]@{
+        available = $true
+        reason = $null
+        path = $coreSourcePath
+    }
+}
+
+function Invoke-RuleHarnessFeatureDependencyReportRefresh {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    $scriptPath = Get-RuleHarnessFeatureDependencyRefreshScriptPath -RepoRoot $RepoRoot
+    if ($null -eq $scriptPath) {
+        return [pscustomobject]@{
+            attempted = $false
+            succeeded = $false
+            scriptPath = $null
+            output = $null
+            error = 'feature-dependency-refresh-script-missing'
+        }
+    }
+
+    $analyzerAvailability = Test-RuleHarnessFeatureDependencyAnalyzerAvailability -RepoRoot $RepoRoot
+    if (-not [bool]$analyzerAvailability.available) {
+        return [pscustomobject]@{
+            attempted = $false
+            succeeded = $false
+            scriptPath = [string]$scriptPath.relativePath
+            output = @()
+            error = [string]$analyzerAvailability.reason
+        }
+    }
+
+    try {
+        $output = @(& powershell -NoProfile -ExecutionPolicy Bypass -File $scriptPath.fullPath -RepoRoot $RepoRoot)
+        return [pscustomobject]@{
+            attempted = $true
+            succeeded = ($LASTEXITCODE -eq 0)
+            scriptPath = [string]$scriptPath.relativePath
+            output = @($output)
+            error = if ($LASTEXITCODE -eq 0) { $null } else { "exit-code-$LASTEXITCODE" }
+        }
+    }
+    catch {
+        return [pscustomobject]@{
+            attempted = $true
+            succeeded = $false
+            scriptPath = [string]$scriptPath.relativePath
+            output = @()
+            error = $_.Exception.Message
+        }
+    }
+}
+
+function Get-RuleHarnessCompileRefreshScriptPath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    $relativePath = 'tools/rule-harness/write-compile-status.ps1'
+    $fullPath = Join-Path $RepoRoot $relativePath
+    if (-not (Test-Path -LiteralPath $fullPath)) {
+        return $null
+    }
+
+    [pscustomobject]@{
+        relativePath = $relativePath
+        fullPath = $fullPath
+    }
+}
+
+function Invoke-RuleHarnessCompileStatusRefresh {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    $scriptPath = Get-RuleHarnessCompileRefreshScriptPath -RepoRoot $RepoRoot
+    if ($null -eq $scriptPath) {
+        return [pscustomobject]@{
+            attempted = $false
+            succeeded = $false
+            scriptPath = $null
+            output = $null
+            error = 'compile-refresh-script-missing'
+        }
+    }
+
+    try {
+        $output = @(& powershell -NoProfile -ExecutionPolicy Bypass -File $scriptPath.fullPath -RepoRoot $RepoRoot)
+        return [pscustomobject]@{
+            attempted = $true
+            succeeded = ($LASTEXITCODE -eq 0)
+            scriptPath = [string]$scriptPath.relativePath
+            output = @($output)
+            error = if ($LASTEXITCODE -eq 0) { $null } else { "exit-code-$LASTEXITCODE" }
+        }
+    }
+    catch {
+        return [pscustomobject]@{
+            attempted = $true
+            succeeded = $false
+            scriptPath = [string]$scriptPath.relativePath
+            output = @()
+            error = $_.Exception.Message
+        }
+    }
+}
+
+function Get-RuleHarnessFeatureDependencyReportObject {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $pathInfo = Get-RuleHarnessFeatureDependencyReportPath -RepoRoot $RepoRoot -Config $Config
+    if (-not (Test-Path -LiteralPath $pathInfo.fullPath)) {
+        return $null
+    }
+
+    Get-Content -Path $pathInfo.fullPath -Raw | ConvertFrom-Json
+}
+
+function Get-RuleHarnessFeatureDependencyCyclePath {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Cycle
+    )
+
+    $features = @($Cycle.features | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+    if ($features.Count -eq 0) {
+        return '<unknown-cycle>'
+    }
+
+    if ($features.Count -eq 1) {
+        return "$($features[0]) -> $($features[0])"
+    }
+
+    (@($features) + @($features[0])) -join ' -> '
+}
+
+function Get-RuleHarnessFeatureDependencyCycleSignature {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Cycle
+    )
+
+    (@($Cycle.features | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })) -join '->'
+}
+
+function Get-RuleHarnessFeatureTypeDefinitions {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string]$FeatureName
+    )
+
+    $featureRoot = Join-Path $RepoRoot "Assets/Scripts/Features/$FeatureName"
+    if (-not (Test-Path -LiteralPath $featureRoot)) {
+        return @()
+    }
+
+    $definitions = [System.Collections.Generic.List[object]]::new()
+    foreach ($file in Get-ChildItem -LiteralPath $featureRoot -Recurse -File -Filter '*.cs') {
+        $content = Get-Content -Path $file.FullName -Raw
+        $namespaceMatch = [regex]::Match($content, '(?m)^\s*namespace\s+(?<namespace>[A-Za-z0-9_.]+)')
+        $namespaceName = if ($namespaceMatch.Success) { [string]$namespaceMatch.Groups['namespace'].Value } else { $null }
+        foreach ($match in [regex]::Matches($content, '(?m)^\s*public\s+(?:sealed\s+|abstract\s+|partial\s+)?class\s+(?<name>[A-Za-z_][A-Za-z0-9_]*)')) {
+            [void]$definitions.Add([pscustomobject]@{
+                name = [string]$match.Groups['name'].Value
+                namespace = $namespaceName
+                path = ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $file.FullName
+                content = $content
+            })
+        }
+    }
+
+    @($definitions)
+}
+
+function Test-RuleHarnessPortMemberTypeSupported {
+    param(
+        [AllowEmptyString()]
+        [string]$TypeName
+    )
+
+    if ([string]::IsNullOrWhiteSpace($TypeName)) {
+        return $false
+    }
+
+    $trimmed = $TypeName.Trim()
+    if ($trimmed -match 'UnityEngine|MonoBehaviour|GameObject|Transform|Sprite|AudioClip|Color') {
+        return $false
+    }
+
+    if ($trimmed -match '^Features\.') {
+        return $false
+    }
+
+    if ($trimmed -match '\b(?:List|Dictionary|HashSet|IEnumerable|Func|Action)<') {
+        return $false
+    }
+
+    return $trimmed -match '^(?:void|bool|int|float|double|decimal|long|short|byte|string|object|Guid|DateTime|TimeSpan|Vector2Int|Vector3Int|[A-Z][A-Za-z0-9_]*(?:\?|\[\])?)$'
+}
+
+function Get-RuleHarnessPublicMembersForType {
+    param(
+        [Parameter(Mandatory)]
+        [string]$TypeContent,
+        [Parameter(Mandatory)]
+        [string]$TypeName,
+        [Parameter(Mandatory)]
+        [string[]]$RequestedMembers
+    )
+
+    $members = [System.Collections.Generic.List[object]]::new()
+    foreach ($memberName in @($RequestedMembers | Sort-Object -Unique)) {
+        $methodMatch = [regex]::Match(
+            $TypeContent,
+            ("(?m)^\s*public\s+(?<return>[A-Za-z0-9_<>,.\?\[\]]+)\s+(?<name>{0})\s*\((?<params>[^)]*)\)" -f [regex]::Escape($memberName))
+        )
+        if ($methodMatch.Success -and [string]$methodMatch.Groups['name'].Value -ne $TypeName) {
+            $returnType = [string]$methodMatch.Groups['return'].Value
+            if (-not (Test-RuleHarnessPortMemberTypeSupported -TypeName $returnType)) {
+                return @()
+            }
+
+            $parameterList = @()
+            foreach ($rawParam in @(([string]$methodMatch.Groups['params'].Value -split ',') | ForEach-Object { $_.Trim() } | Where-Object { $_ })) {
+                if ($rawParam -match '^(?<type>[A-Za-z0-9_<>,.\?\[\]]+)\s+(?<name>[A-Za-z_][A-Za-z0-9_]*)$') {
+                    $parameterType = [string]$Matches['type']
+                    if (-not (Test-RuleHarnessPortMemberTypeSupported -TypeName $parameterType)) {
+                        return @()
+                    }
+
+                    $parameterList += [pscustomobject]@{
+                        type = $parameterType
+                        name = [string]$Matches['name']
+                    }
+                }
+                else {
+                    return @()
+                }
+            }
+
+            [void]$members.Add([pscustomobject]@{
+                kind = 'method'
+                name = $memberName
+                returnType = $returnType
+                parameters = @($parameterList)
+            })
+            continue
+        }
+
+        $propertyMatch = [regex]::Match(
+            $TypeContent,
+            ("(?m)^\s*public\s+(?<type>[A-Za-z0-9_<>,.\?\[\]]+)\s+(?<name>{0})\s*\{{\s*get;" -f [regex]::Escape($memberName))
+        )
+        if ($propertyMatch.Success) {
+            $propertyType = [string]$propertyMatch.Groups['type'].Value
+            if (-not (Test-RuleHarnessPortMemberTypeSupported -TypeName $propertyType)) {
+                return @()
+            }
+
+            [void]$members.Add([pscustomobject]@{
+                kind = 'property'
+                name = $memberName
+                returnType = $propertyType
+                parameters = @()
+            })
+            continue
+        }
+
+        return @()
+    }
+
+    @($members)
+}
+
+function Get-RuleHarnessPortInversionPlan {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Cycle,
+        [Parameter(Mandatory)]
+        [object]$Edge,
+        [Parameter(Mandatory)]
+        [object]$PolicySnapshot
+    )
+
+    if (-not [bool]$PolicySnapshot.constraints.consumerOwnedPortsPreferred) {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @('consumer-owned-application-ports-not-confirmed')
+            blockedByCodeAmbiguity = @()
+            blockedBySafety = @()
+            reason = 'Owner docs did not confirm consumer-owned Application/Ports as the preferred seam.'
+        }
+    }
+
+    $evidence = @($Edge.evidence | Where-Object { $null -ne $_ -and -not [string]::IsNullOrWhiteSpace([string]$_.path) })
+    if ($evidence.Count -eq 0) {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @()
+            blockedByCodeAmbiguity = @('missing-edge-evidence')
+            blockedBySafety = @()
+            reason = 'Cycle edge had no usable evidence path.'
+        }
+    }
+
+    $consumerFeature = [string]$Edge.from
+    $providerFeature = [string]$Edge.to
+    $consumerPath = [string]$evidence[0].path
+    $consumerFullPath = Join-Path $RepoRoot $consumerPath
+    if (-not (Test-Path -LiteralPath $consumerFullPath)) {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @()
+            blockedByCodeAmbiguity = @('consumer-file-missing')
+            blockedBySafety = @()
+            reason = "Consumer evidence path is missing: $consumerPath"
+        }
+    }
+
+    $consumerContent = Get-Content -Path $consumerFullPath -Raw
+    if ($consumerPath -match '/(?:Application/Ports/|Infrastructure/|Presentation/|Domain/)?(?:[^/]+Setup|[^/]+Bootstrap)\.cs$') {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @()
+            blockedByCodeAmbiguity = @('composition-root-edge')
+            blockedBySafety = @()
+            reason = 'V1 port inversion does not rewrite composition-root-only evidence.'
+        }
+    }
+
+    $providerDefinitions = @(Get-RuleHarnessFeatureTypeDefinitions -RepoRoot $RepoRoot -FeatureName $providerFeature)
+    $providerTypeMatches = @(
+        $providerDefinitions |
+            Where-Object {
+                $consumerContent -match ("\b{0}\b" -f [regex]::Escape([string]$_.name))
+            } |
+            Select-Object -Property * -Unique
+    )
+    if ($providerTypeMatches.Count -ne 1) {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @()
+            blockedByCodeAmbiguity = @('provider-type-not-unique')
+            blockedBySafety = @()
+            reason = "Expected exactly one provider concrete type in $consumerPath but found $($providerTypeMatches.Count)."
+        }
+    }
+
+    $providerType = $providerTypeMatches[0]
+    $providerTypeName = [string]$providerType.name
+    if ($consumerContent -match ("\bnew\s+{0}\s*\(" -f [regex]::Escape($providerTypeName)) -or
+        $consumerContent -match ("\b{0}\s*\." -f [regex]::Escape($providerTypeName))) {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @()
+            blockedByCodeAmbiguity = @('consumer-uses-construction-or-static-api')
+            blockedBySafety = @()
+            reason = "Consumer file $consumerPath constructs or statically references $providerTypeName."
+        }
+    }
+
+    $fieldMatches = @([regex]::Matches($consumerContent, ("(?m)^\s*(?:private|protected|public|internal)\s+(?:readonly\s+)?{0}\s+(?<name>_[A-Za-z][A-Za-z0-9_]*)\s*;" -f [regex]::Escape($providerTypeName))) | ForEach-Object {
+        [string]$_.Groups['name'].Value
+    } | Select-Object -Unique)
+    if ($fieldMatches.Count -ne 1) {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @()
+            blockedByCodeAmbiguity = @('consumer-dependency-field-not-unique')
+            blockedBySafety = @()
+            reason = "Expected exactly one injected dependency field typed as $providerTypeName in $consumerPath."
+        }
+    }
+
+    $dependencyField = [string]$fieldMatches[0]
+    $usedMembers = @([regex]::Matches($consumerContent, ("\b{0}\.(?<member>[A-Za-z_][A-Za-z0-9_]*)\b" -f [regex]::Escape($dependencyField))) | ForEach-Object {
+        [string]$_.Groups['member'].Value
+    } | Sort-Object -Unique)
+    if ($usedMembers.Count -eq 0) {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @()
+            blockedByCodeAmbiguity = @('no-member-usage-detected')
+            blockedBySafety = @()
+            reason = "No provider member usage was detected through $dependencyField in $consumerPath."
+        }
+    }
+
+    $publicMembers = @(Get-RuleHarnessPublicMembersForType -TypeContent ([string]$providerType.content) -TypeName $providerTypeName -RequestedMembers $usedMembers)
+    if ($publicMembers.Count -ne $usedMembers.Count) {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @()
+            blockedByCodeAmbiguity = @('member-signature-ambiguous')
+            blockedBySafety = @('member-signature-unsupported')
+            reason = "Provider member signatures for $providerTypeName could not be promoted to an Application/Ports interface safely."
+        }
+    }
+
+    $consumerClassMatch = [regex]::Match($consumerContent, '(?m)^\s*public\s+(?:sealed\s+|partial\s+)?class\s+(?<name>[A-Za-z_][A-Za-z0-9_]*)')
+    if (-not $consumerClassMatch.Success) {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @()
+            blockedByCodeAmbiguity = @('consumer-class-not-found')
+            blockedBySafety = @()
+            reason = "Consumer class declaration could not be located in $consumerPath."
+        }
+    }
+
+    $consumerClassName = [string]$consumerClassMatch.Groups['name'].Value
+    $setupCandidates = @(
+        Get-ChildItem -LiteralPath (Join-Path $RepoRoot "Assets/Scripts/Features/$consumerFeature") -Recurse -File -Filter '*.cs' |
+            Where-Object { $_.Name -match '(Setup|Bootstrap)\.cs$' }
+    )
+    $setupMatches = [System.Collections.Generic.List[object]]::new()
+    foreach ($setupFile in @($setupCandidates)) {
+        $setupContent = Get-Content -Path $setupFile.FullName -Raw
+        if ($setupContent -notmatch ("\bnew\s+{0}\s*\(" -f [regex]::Escape($consumerClassName))) {
+            continue
+        }
+
+        if ($setupContent -notmatch ("\bnew\s+{0}\s*\(" -f [regex]::Escape($providerTypeName))) {
+            continue
+        }
+
+        [void]$setupMatches.Add([pscustomobject]@{
+            path = ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $setupFile.FullName
+            content = $setupContent
+        })
+    }
+
+    if ($setupMatches.Count -ne 1) {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @()
+            blockedByCodeAmbiguity = @('wiring-site-not-unique')
+            blockedBySafety = @()
+            reason = "Expected exactly one setup/bootstrap wiring site for $consumerClassName and $providerTypeName."
+        }
+    }
+
+    $consumerNamespaceMatch = [regex]::Match($consumerContent, '(?m)^\s*namespace\s+(?<namespace>[A-Za-z0-9_.]+)')
+    $consumerNamespace = if ($consumerNamespaceMatch.Success) { [string]$consumerNamespaceMatch.Groups['namespace'].Value } else { "Features.$consumerFeature.Application" }
+    $portsNamespace = "Features.$consumerFeature.Application.Ports"
+    $interfaceName = "I{0}Port" -f $providerTypeName
+    $adapterName = "{0}PortAdapter" -f $providerTypeName
+    $interfacePath = "Assets/Scripts/Features/$consumerFeature/Application/Ports/$interfaceName.cs"
+    $adapterPath = "Assets/Scripts/Features/$providerFeature/Infrastructure/$adapterName.cs"
+    $setupPath = [string]$setupMatches[0].path
+    $setupContent = [string]$setupMatches[0].content
+
+    $interfaceMembersText = @(
+        foreach ($member in @($publicMembers)) {
+            if ([string]$member.kind -eq 'property') {
+                "        {0} {1} {{ get; }}" -f [string]$member.returnType, [string]$member.name
+            }
+            else {
+                $parameterText = @($member.parameters | ForEach-Object { "{0} {1}" -f [string]$_.type, [string]$_.name }) -join ', '
+                "        {0} {1}({2});" -f [string]$member.returnType, [string]$member.name, $parameterText
+            }
+        }
+    ) -join "`r`n"
+
+    $interfaceContent = @"
+namespace $portsNamespace
+{
+    public interface $interfaceName
+    {
+$interfaceMembersText
+    }
+}
+"@
+
+    $adapterMembersText = @(
+        foreach ($member in @($publicMembers)) {
+            if ([string]$member.kind -eq 'property') {
+                "        public {0} {1} => _inner.{1};" -f [string]$member.returnType, [string]$member.name
+            }
+            else {
+                $parameterText = @($member.parameters | ForEach-Object { "{0} {1}" -f [string]$_.type, [string]$_.name }) -join ', '
+                $argumentText = @($member.parameters | ForEach-Object { [string]$_.name }) -join ', '
+                "        public {0} {1}({2}) => _inner.{1}({3});" -f [string]$member.returnType, [string]$member.name, $parameterText, $argumentText
+            }
+        }
+    ) -join "`r`n"
+
+    $providerNamespace = if ([string]::IsNullOrWhiteSpace([string]$providerType.namespace)) { "Features.$providerFeature.Infrastructure" } else { [string]$providerType.namespace }
+    $adapterContent = @"
+using $portsNamespace;
+using $providerNamespace;
+
+namespace Features.$providerFeature.Infrastructure
+{
+    public sealed class $adapterName : $interfaceName
+    {
+        private readonly $providerTypeName _inner;
+
+        public $adapterName($providerTypeName inner)
+        {
+            _inner = inner;
+        }
+
+$adapterMembersText
+    }
+}
+"@
+
+    $updatedConsumerContent = Add-RuleHarnessUsingDirective -Content $consumerContent -UsingDirective "using $portsNamespace;"
+    $updatedConsumerContent = [regex]::Replace($updatedConsumerContent, ("\b{0}\b" -f [regex]::Escape($providerTypeName)), $interfaceName)
+    if (-not [string]::IsNullOrWhiteSpace([string]$providerType.namespace)) {
+        $updatedConsumerContent = [regex]::Replace(
+            $updatedConsumerContent,
+            ("(?m)^[ \t]*using\s+{0}\s*;\r?\n" -f [regex]::Escape([string]$providerType.namespace)),
+            ''
+        )
+    }
+    if ($updatedConsumerContent -eq $consumerContent) {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @()
+            blockedByCodeAmbiguity = @('consumer-rewrite-noop')
+            blockedBySafety = @()
+            reason = "Consumer rewrite for $consumerPath did not change the file."
+        }
+    }
+
+    $updatedSetupContent = Add-RuleHarnessUsingDirective -Content $setupContent -UsingDirective "using Features.$providerFeature.Infrastructure;"
+    $updatedSetupContent = [regex]::Replace(
+        $updatedSetupContent,
+        ("new\s+{0}\s*\((?<args>[^()]*)\)" -f [regex]::Escape($providerTypeName)),
+        ('new {0}(new {1}(${{args}}))' -f $adapterName, $providerTypeName),
+        1
+    )
+    if ($updatedSetupContent -eq $setupContent) {
+        return [pscustomobject]@{
+            supported = $false
+            blockedByDocRules = @()
+            blockedByCodeAmbiguity = @('wiring-rewrite-noop')
+            blockedBySafety = @()
+            reason = "Setup/bootstrap wiring rewrite for $setupPath did not change the file."
+        }
+    }
+
+    [pscustomobject]@{
+        supported = $true
+        recipe = 'port_inversion'
+        cycleSignature = Get-RuleHarnessFeatureDependencyCycleSignature -Cycle $Cycle
+        cyclePath = Get-RuleHarnessFeatureDependencyCyclePath -Cycle $Cycle
+        consumerFeature = $consumerFeature
+        providerFeature = $providerFeature
+        interfaceName = $interfaceName
+        adapterName = $adapterName
+        targetEdge = [pscustomobject]@{
+            from = $consumerFeature
+            to = $providerFeature
+            evidencePath = $consumerPath
+        }
+        targetFiles = @($consumerPath, $interfacePath, $adapterPath, $setupPath)
+        operations = @(
+            [pscustomobject]@{ type = 'write_file'; targetPath = $consumerPath; content = $updatedConsumerContent },
+            [pscustomobject]@{ type = 'write_file'; targetPath = $interfacePath; content = $interfaceContent },
+            [pscustomobject]@{ type = 'write_file'; targetPath = $adapterPath; content = $adapterContent },
+            [pscustomobject]@{ type = 'write_file'; targetPath = $setupPath; content = $updatedSetupContent }
+        )
+        memberNames = @($usedMembers)
+        blockedByDocRules = @()
+        blockedByCodeAmbiguity = @()
+        blockedBySafety = @()
+        reason = "Invert $consumerFeature -> $providerFeature through consumer-owned Application/Ports."
+    }
+}
+
+function Get-RuleHarnessManagedCycleRepairDocEdits {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string]$TargetDoc,
+        [Parameter(Mandatory)]
+        [string]$Signature,
+        [Parameter(Mandatory)]
+        [string]$Recipe,
+        [Parameter(Mandatory)]
+        [string]$Rationale
+    )
+
+    $fullPath = Join-Path $RepoRoot $TargetDoc
+    if (-not (Test-Path -LiteralPath $fullPath)) {
+        return @()
+    }
+
+    $currentText = Get-Content -Path $fullPath -Raw
+    $noteLine = "* Rule harness learned cycle pattern `$Signature`: prefer $Recipe. $Rationale"
+    if ($currentText.Contains($noteLine)) {
+        return @()
+    }
+
+    $heading = '## Rule Harness Learned Notes'
+    $updatedText = if ($currentText.Contains($heading)) {
+        $currentText.Replace($heading, "$heading`r`n$noteLine")
+    }
+    else {
+        $currentText.TrimEnd() + "`r`n`r`n$heading`r`n$noteLine`r`n"
+    }
+
+    @([pscustomobject]@{
+        targetPath = $TargetDoc
+        searchText = $currentText
+        replaceText = $updatedText
+    })
+}
+
+function New-RuleHarnessFeatureDependencyRepairResult {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Status,
+        [Parameter(Mandatory)]
+        [bool]$Attempted,
+        [Parameter(Mandatory)]
+        [bool]$Failed,
+        [Parameter(Mandatory)]
+        [int]$AttemptCount,
+        [Parameter(Mandatory)]
+        [int]$UnsupportedCycleCount,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$Summaries,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$StageResults,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$ActionItems,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$ValidationResults,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$MemoryHits,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$MemoryUpdates,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$PromotionCandidates,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$LearningTrace,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$UnsupportedFindings,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$CodeCommits,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$DocCommits,
+        [object]$PolicySnapshot = $null
+    )
+
+    [pscustomobject]@{
+        status = $Status
+        attempted = $Attempted
+        failed = $Failed
+        attemptCount = [int]$AttemptCount
+        unsupportedCycleCount = [int]$UnsupportedCycleCount
+        summaries = @($Summaries)
+        stageResults = @($StageResults)
+        actionItems = @(Merge-RuleHarnessActionItems -Items @($ActionItems))
+        validationResults = @($ValidationResults)
+        memoryHits = @($MemoryHits)
+        memoryUpdates = @($MemoryUpdates)
+        promotionCandidates = @($PromotionCandidates)
+        learningTrace = @($LearningTrace)
+        unsupportedFindings = @($UnsupportedFindings)
+        codeCommits = @($CodeCommits)
+        docCommits = @($DocCommits)
+        policySnapshot = $PolicySnapshot
+    }
+}
+
+function Invoke-RuleHarnessFeatureDependencyRepair {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config,
+        [switch]$DryRun
+    )
+
+    $stageResults = [System.Collections.Generic.List[object]]::new()
+    $actionItems = [System.Collections.Generic.List[object]]::new()
+    $validationResults = [System.Collections.Generic.List[object]]::new()
+    $memoryHits = [System.Collections.Generic.List[object]]::new()
+    $memoryUpdates = [System.Collections.Generic.List[object]]::new()
+    $promotionCandidates = [System.Collections.Generic.List[object]]::new()
+    $learningTrace = [System.Collections.Generic.List[object]]::new()
+    $summaries = [System.Collections.Generic.List[object]]::new()
+    $unsupportedFindings = [System.Collections.Generic.List[object]]::new()
+    $codeCommits = [System.Collections.Generic.List[object]]::new()
+    $docCommits = [System.Collections.Generic.List[object]]::new()
+
+    $policySnapshot = Get-RuleHarnessCycleRepairPolicySnapshot -RepoRoot $RepoRoot
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'feature_dependency_repair_policy' `
+        -Status 'passed' `
+        -Attempted $true `
+        -Summary $policySnapshot.summary `
+        -Details $policySnapshot))
+
+    $initialGate = Get-RuleHarnessFeatureDependencyGateStatus -RepoRoot $RepoRoot -Config $Config
+    if ([string]$initialGate.featureDependencyGateStatus -eq 'unsupported') {
+        [void]$stageResults.Add((New-RuleHarnessStageResult `
+            -Stage 'feature_dependency_repair' `
+            -Status 'skipped' `
+            -Attempted $false `
+            -Summary 'Feature dependency repair skipped because this repository snapshot does not expose LayerDependencyValidator artifacts.' `
+            -Details ([pscustomobject]@{
+                gateStatus = [string]$initialGate.featureDependencyGateStatus
+                reportPath = [string]$initialGate.reportPath
+            })))
+        return (New-RuleHarnessFeatureDependencyRepairResult `
+            -Status 'skipped' `
+            -Attempted $false `
+            -Failed $false `
+            -AttemptCount 0 `
+            -UnsupportedCycleCount 0 `
+            -Summaries @($summaries) `
+            -StageResults @($stageResults) `
+            -ActionItems @($actionItems) `
+            -ValidationResults @($validationResults) `
+            -MemoryHits @($memoryHits) `
+            -MemoryUpdates @($memoryUpdates) `
+            -PromotionCandidates @($promotionCandidates) `
+            -LearningTrace @($learningTrace) `
+            -UnsupportedFindings @($unsupportedFindings) `
+            -CodeCommits @($codeCommits) `
+            -DocCommits @($docCommits) `
+            -PolicySnapshot $policySnapshot)
+    }
+
+    $memoryStore = Read-RuleHarnessMemoryStore -RepoRoot $RepoRoot -Config $Config
+    $learningSettings = Get-RuleHarnessLearningSettings -Config $Config
+    $maxRepairAttempts = if ($Config.mutation.PSObject.Properties.Name -contains 'maxBatchesPerRun') {
+        [Math]::Max(1, [int]$Config.mutation.maxBatchesPerRun)
+    }
+    else {
+        1
+    }
+
+    $attemptCount = 0
+    $architectureOwnerDoc = Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot
+
+    for ($attemptIndex = 1; $attemptIndex -le $maxRepairAttempts; $attemptIndex++) {
+        $report = Get-RuleHarnessFeatureDependencyReportObject -RepoRoot $RepoRoot -Config $Config
+        if ($null -eq $report) {
+            [void]$stageResults.Add((New-RuleHarnessStageResult `
+                -Stage 'feature_dependency_repair' `
+                -Status 'failed' `
+                -Attempted $true `
+                -Summary 'Feature dependency repair could not load the dependency report.' `
+                -Details ([pscustomobject]@{ reportPath = (Get-RuleHarnessFeatureDependencyReportPath -RepoRoot $RepoRoot -Config $Config).relativePath })))
+            return (New-RuleHarnessFeatureDependencyRepairResult `
+                -Status 'failed' `
+                -Attempted $true `
+                -Failed $true `
+                -AttemptCount $attemptCount `
+                -UnsupportedCycleCount 0 `
+                -Summaries @($summaries) `
+                -StageResults @($stageResults) `
+                -ActionItems @($actionItems) `
+                -ValidationResults @($validationResults) `
+                -MemoryHits @($memoryHits) `
+                -MemoryUpdates @($memoryUpdates) `
+                -PromotionCandidates @($promotionCandidates) `
+                -LearningTrace @($learningTrace) `
+                -UnsupportedFindings @($unsupportedFindings) `
+                -CodeCommits @($codeCommits) `
+                -DocCommits @($docCommits) `
+                -PolicySnapshot $policySnapshot)
+        }
+
+        $cycles = @($report.cycles)
+        if ($cycles.Count -eq 0) {
+            $status = if ($attemptCount -gt 0) { 'passed' } else { 'skipped' }
+            [void]$stageResults.Add((New-RuleHarnessStageResult `
+                -Stage 'feature_dependency_repair' `
+                -Status $(if ($status -eq 'passed') { 'passed' } else { 'skipped' }) `
+                -Attempted ($attemptCount -gt 0) `
+                -Summary $(if ($attemptCount -gt 0) { "Feature dependency repair resolved cycle(s) in $attemptCount attempt(s)." } else { 'Feature dependency graph is already acyclic; no repair ran.' }) `
+                -Details ([pscustomobject]@{
+                    attemptCount = $attemptCount
+                    unsupportedCycleCount = 0
+                })))
+            if (-not $DryRun -and $memoryStore.dirty) {
+                Save-RuleHarnessMemoryStore -MemoryStore $memoryStore
+            }
+            return (New-RuleHarnessFeatureDependencyRepairResult `
+                -Status $status `
+                -Attempted ($attemptCount -gt 0) `
+                -Failed $false `
+                -AttemptCount $attemptCount `
+                -UnsupportedCycleCount 0 `
+                -Summaries @($summaries) `
+                -StageResults @($stageResults) `
+                -ActionItems @($actionItems) `
+                -ValidationResults @($validationResults) `
+                -MemoryHits @($memoryHits) `
+                -MemoryUpdates @($memoryUpdates) `
+                -PromotionCandidates @($promotionCandidates) `
+                -LearningTrace @($learningTrace) `
+                -UnsupportedFindings @($unsupportedFindings) `
+                -CodeCommits @($codeCommits) `
+                -DocCommits @($docCommits) `
+                -PolicySnapshot $policySnapshot)
+        }
+
+        $supportedPlans = [System.Collections.Generic.List[object]]::new()
+        $unsupportedCycles = [System.Collections.Generic.List[object]]::new()
+        foreach ($cycle in @($cycles)) {
+            $candidateEdges = @()
+            if ($cycle.PSObject.Properties.Name -contains 'edges' -and $null -ne $cycle.edges) {
+                $candidateEdges = @($cycle.edges)
+            }
+
+            if ($candidateEdges.Count -eq 0 -and $cycle.PSObject.Properties.Name -contains 'preferredBreakCandidates') {
+                foreach ($candidate in @($cycle.preferredBreakCandidates)) {
+                    $matchingEdge = @($cycle.edges | Where-Object { [string]$_.from -eq [string]$candidate.from -and [string]$_.to -eq [string]$candidate.to } | Select-Object -First 1)
+                    if ($matchingEdge.Count -gt 0) {
+                        $candidateEdges += $matchingEdge
+                    }
+                }
+            }
+
+            $attempts = [System.Collections.Generic.List[object]]::new()
+            $chosenPlan = $null
+            foreach ($edge in @($candidateEdges)) {
+                $plan = Get-RuleHarnessPortInversionPlan -RepoRoot $RepoRoot -Cycle $cycle -Edge $edge -PolicySnapshot $policySnapshot
+                [void]$attempts.Add($plan)
+                if ($plan.supported) {
+                    $chosenPlan = $plan
+                    break
+                }
+            }
+
+            if ($null -eq $chosenPlan) {
+                $primaryFailure = if ($attempts.Count -gt 0) { $attempts[0] } else { [pscustomobject]@{ reason = 'No candidate edge was available for planning.'; blockedByDocRules = @(); blockedByCodeAmbiguity = @('no-candidate-edge'); blockedBySafety = @() } }
+                $cyclePath = Get-RuleHarnessFeatureDependencyCyclePath -Cycle $cycle
+                $finding = New-RuleHarnessFinding `
+                    -FindingType 'code_violation' `
+                    -Severity 'high' `
+                    -OwnerDoc $architectureOwnerDoc `
+                    -Title 'Feature dependency cycle repair unsupported' `
+                    -Message ("Automatic cycle repair is not yet safe for {0}: {1}" -f $cyclePath, [string]$primaryFailure.reason) `
+                    -Evidence @($cycle.evidence) `
+                    -Confidence 'high' `
+                    -Source 'static' `
+                    -RemediationKind 'report_only' `
+                    -Rationale 'Cycle repair follows CLAUDE.md -> owner doc -> code. When the seam is ambiguous or doc constraints do not allow the recipe, the run fails after collecting all unsupported cycles.'
+                Set-RuleHarnessObjectProperty -Object $finding -Name 'blockedByDocRules' -Value @($primaryFailure.blockedByDocRules)
+                Set-RuleHarnessObjectProperty -Object $finding -Name 'blockedByCodeAmbiguity' -Value @($primaryFailure.blockedByCodeAmbiguity)
+                Set-RuleHarnessObjectProperty -Object $finding -Name 'blockedBySafety' -Value @($primaryFailure.blockedBySafety)
+                [void]$unsupportedFindings.Add($finding)
+                [void]$unsupportedCycles.Add([pscustomobject]@{
+                    cycle = $cycle
+                    failure = $primaryFailure
+                })
+                continue
+            }
+
+            [void]$supportedPlans.Add($chosenPlan)
+        }
+
+        if ($unsupportedCycles.Count -gt 0) {
+            foreach ($entry in @($unsupportedCycles)) {
+                $cycle = $entry.cycle
+                $failure = $entry.failure
+                $signature = "feature-cycle-unsupported|" + (Get-RuleHarnessFeatureDependencyCycleSignature -Cycle $cycle)
+                $scopePath = if ($cycle.features.Count -gt 0) { "Assets/Scripts/Features/$([string]$cycle.features[0])" } else { 'Assets/Scripts/Features' }
+                $headSha = ((Invoke-RuleHarnessGit -RepoRoot $RepoRoot -Arguments @('rev-parse', 'HEAD')) | Select-Object -First 1).Trim()
+                $memoryEntry = Update-RuleHarnessMemoryStoreEntry `
+                    -MemoryStore $memoryStore `
+                    -Signature $signature `
+                    -ScopeType 'feature' `
+                    -ScopePath $scopePath `
+                    -Symptoms ([string]$failure.reason) `
+                    -PreferredRepairStrategy 'Add a narrower structural repair recipe or strengthen owner-doc guidance before retrying.' `
+                    -ValidationHints @('tools/rule-harness/write-feature-dependency-report.ps1', 'tools/rule-harness/tests/Run-RuleHarnessTests.ps1') `
+                    -Confidence 'high' `
+                    -CommitSha $headSha `
+                    -PromotionTarget $architectureOwnerDoc `
+                    -Status 'observed'
+                Set-RuleHarnessObjectProperty -Object $memoryEntry -Name 'selectedRecipe' -Value $null
+                Set-RuleHarnessObjectProperty -Object $memoryEntry -Name 'blockedByDocRules' -Value @($failure.blockedByDocRules)
+                Set-RuleHarnessObjectProperty -Object $memoryEntry -Name 'blockedByCodeAmbiguity' -Value @($failure.blockedByCodeAmbiguity)
+                [void]$memoryUpdates.Add([pscustomobject]@{
+                    signature = [string]$memoryEntry.signature
+                    scopePath = [string]$memoryEntry.scopePath
+                    hitCount = [int]$memoryEntry.hitCount
+                    distinctCommitCount = [int]$memoryEntry.distinctCommitCount
+                    blockedByDocRules = @($failure.blockedByDocRules)
+                    blockedByCodeAmbiguity = @($failure.blockedByCodeAmbiguity)
+                })
+                $promotionCandidate = Get-RuleHarnessPromotionCandidate -Entry $memoryEntry -Rationale 'Recurring unsupported feature dependency cycle repair' -Config $Config
+                if ($null -ne $promotionCandidate) {
+                    [void]$promotionCandidates.Add($promotionCandidate)
+                }
+            }
+
+            if (-not $DryRun -and $memoryStore.dirty) {
+                Save-RuleHarnessMemoryStore -MemoryStore $memoryStore
+            }
+
+            [void]$stageResults.Add((New-RuleHarnessStageResult `
+                -Stage 'feature_dependency_repair' `
+                -Status 'failed' `
+                -Attempted $true `
+                -Summary ("Feature dependency repair stopped because {0} cycle(s) were unsupported." -f $unsupportedCycles.Count) `
+                -Details ([pscustomobject]@{
+                    unsupportedCycleCount = $unsupportedCycles.Count
+                    attemptCount = $attemptCount
+                })))
+            [void]$actionItems.Add((New-RuleHarnessActionItem `
+                -Kind 'expand-cycle-repair-recipe' `
+                -Severity 'high' `
+                -Summary 'Extend automatic cycle repair coverage' `
+                -Details ("Rule harness collected {0} unsupported cycle(s) after applying CLAUDE.md -> owner doc -> code policy ordering." -f $unsupportedCycles.Count) `
+                -RelatedPaths @($architectureOwnerDoc, (Get-RuleHarnessFeatureDependencyReportPath -RepoRoot $RepoRoot -Config $Config).relativePath)))
+
+            return (New-RuleHarnessFeatureDependencyRepairResult `
+                -Status 'failed' `
+                -Attempted $true `
+                -Failed $true `
+                -AttemptCount $attemptCount `
+                -UnsupportedCycleCount $unsupportedCycles.Count `
+                -Summaries @($summaries) `
+                -StageResults @($stageResults) `
+                -ActionItems @($actionItems) `
+                -ValidationResults @($validationResults) `
+                -MemoryHits @($memoryHits) `
+                -MemoryUpdates @($memoryUpdates) `
+                -PromotionCandidates @($promotionCandidates) `
+                -LearningTrace @($learningTrace) `
+                -UnsupportedFindings @($unsupportedFindings) `
+                -CodeCommits @($codeCommits) `
+                -DocCommits @($docCommits) `
+                -PolicySnapshot $policySnapshot)
+        }
+
+        $selectedPlan = $supportedPlans[0]
+        [void]$summaries.Add([pscustomobject]@{
+            cyclePath = [string]$selectedPlan.cyclePath
+            recipe = [string]$selectedPlan.recipe
+            targetEdge = $selectedPlan.targetEdge
+            status = if ($DryRun) { 'planned' } else { 'applying' }
+        })
+        if ($DryRun) {
+            [void]$stageResults.Add((New-RuleHarnessStageResult `
+                -Stage 'feature_dependency_repair' `
+                -Status 'skipped' `
+                -Attempted $true `
+                -Summary ("Dry-run planned feature dependency repair for {0}." -f [string]$selectedPlan.cyclePath) `
+                -Details $selectedPlan))
+            return (New-RuleHarnessFeatureDependencyRepairResult `
+                -Status 'planned' `
+                -Attempted $true `
+                -Failed $false `
+                -AttemptCount 1 `
+                -UnsupportedCycleCount 0 `
+                -Summaries @($summaries) `
+                -StageResults @($stageResults) `
+                -ActionItems @($actionItems) `
+                -ValidationResults @($validationResults) `
+                -MemoryHits @($memoryHits) `
+                -MemoryUpdates @($memoryUpdates) `
+                -PromotionCandidates @($promotionCandidates) `
+                -LearningTrace @($learningTrace) `
+                -UnsupportedFindings @($unsupportedFindings) `
+                -CodeCommits @($codeCommits) `
+                -DocCommits @($docCommits) `
+                -PolicySnapshot $policySnapshot)
+        }
+
+        $attemptCount++
+        $batch = [pscustomobject]@{
+            id = "feature-cycle-repair-$attemptIndex"
+            kind = 'code_fix'
+            targetFiles = @($selectedPlan.targetFiles)
+            operations = @($selectedPlan.operations)
+        }
+        $snapshots = Get-RuleHarnessFileSnapshots -RepoRoot $RepoRoot -TargetFiles @($batch.targetFiles)
+        $beforeCycleCount = @($cycles).Count
+        try {
+            $applyResult = Invoke-RuleHarnessBatchOperations -Batch $batch -RepoRoot $RepoRoot -Config $Config
+            $refreshResult = Invoke-RuleHarnessFeatureDependencyReportRefresh -RepoRoot $RepoRoot
+            [void]$validationResults.Add([pscustomobject]@{
+                batchId = $batch.id
+                validation = 'feature_dependency_refresh'
+                status = if ($refreshResult.succeeded) { 'passed' } else { 'failed' }
+                source = if ($null -eq $refreshResult.scriptPath) { 'none' } else { [string]$refreshResult.scriptPath }
+                details = if ($refreshResult.succeeded) { 'Feature dependency report refreshed.' } else { [string]$refreshResult.error }
+            })
+
+            $compileRefresh = Invoke-RuleHarnessCompileStatusRefresh -RepoRoot $RepoRoot
+            [void]$validationResults.Add([pscustomobject]@{
+                batchId = $batch.id
+                validation = 'compile_refresh'
+                status = if ($compileRefresh.succeeded -or -not $compileRefresh.attempted) { 'passed' } else { 'failed' }
+                source = if ($null -eq $compileRefresh.scriptPath) { 'none' } else { [string]$compileRefresh.scriptPath }
+                details = if ($compileRefresh.succeeded) { 'Compile status refreshed.' } elseif (-not $compileRefresh.attempted) { 'Compile refresh script not present; using existing handoff file.' } else { [string]$compileRefresh.error }
+            })
+
+            $afterGate = Get-RuleHarnessFeatureDependencyGateStatus -RepoRoot $RepoRoot -Config $Config
+            $afterCompile = Get-RuleHarnessCompileGateStatus -RepoRoot $RepoRoot -Config $Config
+            $afterCycleCount = [int]$afterGate.featureDependencyCycleCount
+            $cycleReduced = $afterCycleCount -lt $beforeCycleCount
+            $compilePassed = [string]$afterCompile.compileGateStatus -eq 'passed'
+
+            [void]$validationResults.Add([pscustomobject]@{
+                batchId = $batch.id
+                validation = 'feature_dependency_gate'
+                status = if ($cycleReduced) { 'passed' } else { 'failed' }
+                source = [string]$afterGate.reportPath
+                details = "Before=$beforeCycleCount After=$afterCycleCount"
+            })
+            [void]$validationResults.Add([pscustomobject]@{
+                batchId = $batch.id
+                validation = 'compile_gate'
+                status = if ($compilePassed) { 'passed' } else { 'failed' }
+                source = [string]$afterCompile.statusPath
+                details = "Status=$([string]$afterCompile.compileGateStatus) CleanLevel=$([string]$afterCompile.cleanLevel)"
+            })
+
+            if (-not $cycleReduced -or -not $compilePassed) {
+                Restore-RuleHarnessFileSnapshots -RepoRoot $RepoRoot -Snapshots $snapshots
+                [void]$stageResults.Add((New-RuleHarnessStageResult `
+                    -Stage 'feature_dependency_repair' `
+                    -Status 'failed' `
+                    -Attempted $true `
+                    -Summary ("Feature dependency repair rollbacked {0} because validation failed." -f [string]$selectedPlan.cyclePath) `
+                    -Details ([pscustomobject]@{
+                        cycleReduced = $cycleReduced
+                        compileGateStatus = [string]$afterCompile.compileGateStatus
+                        beforeCycleCount = $beforeCycleCount
+                        afterCycleCount = $afterCycleCount
+                    })))
+                [void]$actionItems.Add((New-RuleHarnessActionItem `
+                    -Kind 'repair-cycle-recipe-validation' `
+                    -Severity 'high' `
+                    -Summary 'Repair recipe did not survive DAG/compile validation' `
+                    -Details ("Recipe {0} for {1} was rolled back because cycleReduced={2} compileGateStatus={3}." -f [string]$selectedPlan.recipe, [string]$selectedPlan.cyclePath, $cycleReduced, [string]$afterCompile.compileGateStatus) `
+                    -RelatedPaths @($selectedPlan.targetFiles)))
+                return (New-RuleHarnessFeatureDependencyRepairResult `
+                    -Status 'failed' `
+                    -Attempted $true `
+                    -Failed $true `
+                    -AttemptCount $attemptCount `
+                    -UnsupportedCycleCount 0 `
+                    -Summaries @($summaries) `
+                    -StageResults @($stageResults) `
+                    -ActionItems @($actionItems) `
+                    -ValidationResults @($validationResults) `
+                    -MemoryHits @($memoryHits) `
+                    -MemoryUpdates @($memoryUpdates) `
+                    -PromotionCandidates @($promotionCandidates) `
+                    -LearningTrace @($learningTrace) `
+                    -UnsupportedFindings @($unsupportedFindings) `
+                    -CodeCommits @($codeCommits) `
+                    -DocCommits @($docCommits) `
+                    -PolicySnapshot $policySnapshot)
+            }
+
+            $commitResult = Invoke-RuleHarnessCommit -RepoRoot $RepoRoot -Config $Config -TargetFiles @($applyResult.touchedPaths) -AppliedBatches @($batch)
+            [void]$codeCommits.Add($commitResult)
+            $signature = "feature-cycle-repair|" + [string]$selectedPlan.cycleSignature
+            $memoryEntry = Update-RuleHarnessMemoryStoreEntry `
+                -MemoryStore $memoryStore `
+                -Signature $signature `
+                -ScopeType 'feature' `
+                -ScopePath "Assets/Scripts/Features/$([string]$selectedPlan.consumerFeature)" `
+                -Symptoms ("Repaired {0} via {1}" -f [string]$selectedPlan.cyclePath, [string]$selectedPlan.recipe) `
+                -PreferredRepairStrategy 'Prefer consumer-owned Application/Ports seams when a cross-feature concrete dependency forms a cycle.' `
+                -ValidationHints @('tools/rule-harness/write-feature-dependency-report.ps1', 'tools/rule-harness/write-compile-status.ps1') `
+                -Confidence 'high' `
+                -CommitSha ([string]$commitResult.sha) `
+                -PromotionTarget $architectureOwnerDoc `
+                -Status 'resolved'
+            Set-RuleHarnessObjectProperty -Object $memoryEntry -Name 'selectedRecipe' -Value ([string]$selectedPlan.recipe)
+            Set-RuleHarnessObjectProperty -Object $memoryEntry -Name 'blockedByDocRules' -Value @()
+            Set-RuleHarnessObjectProperty -Object $memoryEntry -Name 'blockedByCodeAmbiguity' -Value @()
+            [void]$memoryUpdates.Add([pscustomobject]@{
+                signature = [string]$memoryEntry.signature
+                scopePath = [string]$memoryEntry.scopePath
+                hitCount = [int]$memoryEntry.hitCount
+                distinctCommitCount = [int]$memoryEntry.distinctCommitCount
+                selectedRecipe = [string]$selectedPlan.recipe
+            })
+            [void]$learningTrace.Add([pscustomobject]@{
+                batchId = $batch.id
+                attempt = $attemptIndex
+                normalizedFailureSignature = $null
+                memoryEntriesUsed = @()
+                repairDelta = [string]$selectedPlan.recipe
+                verificationResult = 'passed'
+            })
+
+            $promotionCandidate = Get-RuleHarnessPromotionCandidate -Entry $memoryEntry -Rationale 'Recurring successful feature dependency cycle repair' -Config $Config
+            if ($null -ne $promotionCandidate) {
+                [void]$promotionCandidates.Add($promotionCandidate)
+                $docEdits = @(Get-RuleHarnessManagedCycleRepairDocEdits -RepoRoot $RepoRoot -TargetDoc ([string]$promotionCandidate.targetDoc) -Signature ([string]$promotionCandidate.signature) -Recipe 'consumer-owned Application/Ports port inversion' -Rationale 'This note was promoted from repeated automatic cycle repair results.')
+                if ($docEdits.Count -gt 0) {
+                    $docApply = Invoke-RuleHarnessDocEdits -Edits @($docEdits) -RepoRoot $RepoRoot -Config $Config
+                    $appliedDocPaths = @($docApply.edits | Where-Object status -eq 'applied' | ForEach-Object { [string]$_.targetPath } | Select-Object -Unique)
+                    if ($appliedDocPaths.Count -gt 0) {
+                        $docBatch = [pscustomobject]@{ id = "feature-cycle-doc-$attemptIndex" }
+                        $docCommit = Invoke-RuleHarnessCommit -RepoRoot $RepoRoot -Config $Config -TargetFiles $appliedDocPaths -AppliedBatches @($docBatch)
+                        [void]$docCommits.Add($docCommit)
+                    }
+                }
+            }
+
+            [void]$summaries.Add([pscustomobject]@{
+                cyclePath = [string]$selectedPlan.cyclePath
+                recipe = [string]$selectedPlan.recipe
+                targetEdge = $selectedPlan.targetEdge
+                status = 'committed'
+                commitSha = [string]$commitResult.sha
+                remainingCycles = $afterCycleCount
+            })
+        }
+        catch {
+            Restore-RuleHarnessFileSnapshots -RepoRoot $RepoRoot -Snapshots $snapshots
+            [void]$stageResults.Add((New-RuleHarnessStageResult `
+                -Stage 'feature_dependency_repair' `
+                -Status 'failed' `
+                -Attempted $true `
+                -Summary ("Feature dependency repair failed while applying {0}." -f [string]$selectedPlan.cyclePath) `
+                -Details ([pscustomobject]@{ message = $_.Exception.Message })))
+            return (New-RuleHarnessFeatureDependencyRepairResult `
+                -Status 'failed' `
+                -Attempted $true `
+                -Failed $true `
+                -AttemptCount $attemptCount `
+                -UnsupportedCycleCount 0 `
+                -Summaries @($summaries) `
+                -StageResults @($stageResults) `
+                -ActionItems @($actionItems) `
+                -ValidationResults @($validationResults) `
+                -MemoryHits @($memoryHits) `
+                -MemoryUpdates @($memoryUpdates) `
+                -PromotionCandidates @($promotionCandidates) `
+                -LearningTrace @($learningTrace) `
+                -UnsupportedFindings @($unsupportedFindings) `
+                -CodeCommits @($codeCommits) `
+                -DocCommits @($docCommits) `
+                -PolicySnapshot $policySnapshot)
+        }
+    }
+
+    if (-not $DryRun -and $memoryStore.dirty) {
+        Save-RuleHarnessMemoryStore -MemoryStore $memoryStore
+    }
+
+    $finalReport = Get-RuleHarnessFeatureDependencyReportObject -RepoRoot $RepoRoot -Config $Config
+    $finalCycles = if ($null -eq $finalReport) { 0 } else { @($finalReport.cycles).Count }
+    $finalCompile = Get-RuleHarnessCompileGateStatus -RepoRoot $RepoRoot -Config $Config
+    $finalStatus = if ($finalCycles -eq 0 -and [string]$finalCompile.compileGateStatus -eq 'passed') { 'passed' } else { 'failed' }
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'feature_dependency_repair' `
+        -Status $(if ($finalStatus -eq 'passed') { 'passed' } else { 'failed' }) `
+        -Attempted ($attemptCount -gt 0) `
+        -Summary ("Feature dependency repair finished with status={0}. RemainingCycles={1} CompileGate={2}" -f $finalStatus, $finalCycles, [string]$finalCompile.compileGateStatus) `
+        -Details ([pscustomobject]@{
+            attemptCount = $attemptCount
+            remainingCycles = $finalCycles
+            compileGateStatus = [string]$finalCompile.compileGateStatus
+        })))
+
+    return (New-RuleHarnessFeatureDependencyRepairResult `
+        -Status $finalStatus `
+        -Attempted ($attemptCount -gt 0) `
+        -Failed ($finalStatus -ne 'passed') `
+        -AttemptCount $attemptCount `
+        -UnsupportedCycleCount 0 `
+        -Summaries @($summaries) `
+        -StageResults @($stageResults) `
+        -ActionItems @($actionItems) `
+        -ValidationResults @($validationResults) `
+        -MemoryHits @($memoryHits) `
+        -MemoryUpdates @($memoryUpdates) `
+        -PromotionCandidates @($promotionCandidates) `
+        -LearningTrace @($learningTrace) `
+        -UnsupportedFindings @($unsupportedFindings) `
+        -CodeCommits @($codeCommits) `
+        -DocCommits @($docCommits) `
+        -PolicySnapshot $policySnapshot)
 }
 
 function Invoke-RuleHarnessGit {
@@ -6009,6 +7397,9 @@ function Write-RuleHarnessSummary {
     [void]$lines.Add("- Compile gate status: $($Report.execution.compileGateStatus)")
     [void]$lines.Add("- Feature dependency gate status: $($Report.execution.featureDependencyGateStatus)")
     [void]$lines.Add("- Feature dependency cycles: $($Report.execution.featureDependencyCycleCount)")
+    [void]$lines.Add("- Feature dependency repair status: $($Report.execution.featureDependencyRepairStatus)")
+    [void]$lines.Add("- Feature dependency repair attempts: $($Report.execution.featureDependencyRepairAttemptCount)")
+    [void]$lines.Add("- Feature dependency unsupported cycles: $($Report.execution.featureDependencyUnsupportedCycleCount)")
     [void]$lines.Add("- Scanned features: $($Report.scannedFeatures.Count)")
     [void]$lines.Add("- Completed scopes: $($Report.completedScopes.Count)")
     [void]$lines.Add("- Findings: $($Report.findings.Count)")
@@ -6055,6 +7446,14 @@ function Write-RuleHarnessSummary {
         [void]$lines.Add('### Promotion Candidates')
         foreach ($candidate in @($Report.promotionCandidates | Select-Object -First 5)) {
             [void]$lines.Add(('- `{0}` -> `{1}` ({2} runs / {3} commits)' -f $candidate.signature, $candidate.targetDoc, $candidate.hitCount, $candidate.distinctCommitCount))
+        }
+        [void]$lines.Add('')
+    }
+
+    if ($Report.featureDependencyRepairSummaries.Count -gt 0) {
+        [void]$lines.Add('### Feature Dependency Repair')
+        foreach ($summary in @($Report.featureDependencyRepairSummaries | Select-Object -First 5)) {
+            [void]$lines.Add(('- `{0}` recipe={1} status={2} remainingCycles={3}' -f [string]$summary.cyclePath, [string]$summary.recipe, [string]$summary.status, [string]$summary.remainingCycles))
         }
         [void]$lines.Add('')
     }
@@ -6401,8 +7800,33 @@ function Invoke-RuleHarness {
             stoppedScope = if ($null -ne $stoppedScope) { [string]$stoppedScope.scopeId } else { $null }
         })))
 
+    $featureDependencyRefresh = Invoke-RuleHarnessFeatureDependencyReportRefresh -RepoRoot $RepoRoot
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'feature_dependency_refresh' `
+        -Status $(if ($featureDependencyRefresh.succeeded) { 'passed' } elseif ($featureDependencyRefresh.attempted) { 'failed' } else { 'skipped' }) `
+        -Attempted ([bool]$featureDependencyRefresh.attempted) `
+        -Summary $(if ($featureDependencyRefresh.succeeded) { 'Feature dependency report refreshed before gate evaluation.' } elseif ($featureDependencyRefresh.attempted) { 'Feature dependency report refresh failed before gate evaluation.' } else { 'Feature dependency report refresh script is not available in this repository snapshot.' }) `
+        -Details $featureDependencyRefresh))
+
     $featureDependencyGateStatus = Get-RuleHarnessFeatureDependencyGateStatus -RepoRoot $RepoRoot -Config $config
     [void]$stageResults.Add($featureDependencyGateStatus.stageResult)
+
+    $featureDependencyRepair = Invoke-RuleHarnessFeatureDependencyRepair -RepoRoot $RepoRoot -Config $config -DryRun:$DryRun
+    foreach ($repairStage in @($featureDependencyRepair.stageResults)) {
+        [void]$stageResults.Add($repairStage)
+    }
+
+    $featureDependencyGateStatus = Get-RuleHarnessFeatureDependencyGateStatus -RepoRoot $RepoRoot -Config $config
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'feature_dependency_gate_post_repair' `
+        -Status $(if ([bool]$featureDependencyGateStatus.failed) { 'failed' } else { 'passed' }) `
+        -Attempted ([bool]$featureDependencyRepair.attempted) `
+        -Summary ("Post-repair feature dependency gate status={0} cycles={1}." -f [string]$featureDependencyGateStatus.featureDependencyGateStatus, [int]$featureDependencyGateStatus.featureDependencyCycleCount) `
+        -Details ([pscustomobject]@{
+            gateStatus = [string]$featureDependencyGateStatus.featureDependencyGateStatus
+            cycleCount = [int]$featureDependencyGateStatus.featureDependencyCycleCount
+            reportPath = [string]$featureDependencyGateStatus.reportPath
+        })))
 
     $compileGateStatus = Get-RuleHarnessCompileGateStatus -RepoRoot $RepoRoot -Config $config
     [void]$stageResults.Add($compileGateStatus.stageResult)
@@ -6421,16 +7845,28 @@ function Invoke-RuleHarness {
     foreach ($entry in @($mutationResult.memoryHits)) {
         [void]$reportMemoryHits.Add($entry)
     }
+    foreach ($entry in @($featureDependencyRepair.memoryHits)) {
+        [void]$reportMemoryHits.Add($entry)
+    }
     $reportMemoryUpdates = [System.Collections.Generic.List[object]]::new()
     foreach ($entry in @($mutationResult.memoryUpdates)) {
+        [void]$reportMemoryUpdates.Add($entry)
+    }
+    foreach ($entry in @($featureDependencyRepair.memoryUpdates)) {
         [void]$reportMemoryUpdates.Add($entry)
     }
     $reportPromotionCandidates = [System.Collections.Generic.List[object]]::new()
     foreach ($entry in @($mutationResult.promotionCandidates)) {
         [void]$reportPromotionCandidates.Add($entry)
     }
+    foreach ($entry in @($featureDependencyRepair.promotionCandidates)) {
+        [void]$reportPromotionCandidates.Add($entry)
+    }
     $reportLearningTrace = [System.Collections.Generic.List[object]]::new()
     foreach ($entry in @($mutationResult.learningTrace)) {
+        [void]$reportLearningTrace.Add($entry)
+    }
+    foreach ($entry in @($featureDependencyRepair.learningTrace)) {
         [void]$reportLearningTrace.Add($entry)
     }
     $reportCommitSha = ((Invoke-RuleHarnessGit -RepoRoot $RepoRoot -Arguments @('rev-parse', 'HEAD')) | Select-Object -First 1).Trim()
@@ -6500,7 +7936,7 @@ function Invoke-RuleHarness {
         }
     }
 
-    $reportFindings = @($findings + $featureDependencyGateStatus.findings)
+    $reportFindings = @($findings + $featureDependencyGateStatus.findings + @($featureDependencyRepair.unsupportedFindings))
     if ($null -ne $stoppedScope) {
         $reportFindings = @(
             @($reportFindings | Where-Object { -not (Test-RuleHarnessFindingMatchesScope -Finding $_ -ScopeId ([string]$stoppedScope.scopeId)) }) +
@@ -6524,6 +7960,7 @@ function Invoke-RuleHarness {
     $reportActionItems = @(Merge-RuleHarnessActionItems -Items @(
         @($preMutationActionItems) +
         @($featureDependencyGateStatus.actionItems) +
+        @($featureDependencyRepair.actionItems) +
         @($compileGateStatus.actionItems) +
         @($mutationResult.actionItems) +
         @($reportPromotionCandidates | ForEach-Object {
@@ -6568,6 +8005,9 @@ function Invoke-RuleHarness {
             featureDependencyGateStatus = [string]$featureDependencyGateStatus.featureDependencyGateStatus
             featureDependencyCycleCount = [int]$featureDependencyGateStatus.featureDependencyCycleCount
             featureDependencyReportPath = [string]$featureDependencyGateStatus.reportPath
+            featureDependencyRepairStatus = [string]$featureDependencyRepair.status
+            featureDependencyRepairAttemptCount = [int]$featureDependencyRepair.attemptCount
+            featureDependencyUnsupportedCycleCount = [int]$featureDependencyRepair.unsupportedCycleCount
         }
         scannedFeatures   = @($attemptedScopes)
         scannedScopes     = @($attemptedScopes)
@@ -6598,18 +8038,22 @@ function Invoke-RuleHarness {
         stageResults      = @($allStageResults)
         actionItems       = @($reportActionItems)
         decisionTrace     = @($mutationResult.decisionTrace)
-        validationResults = @($mutationResult.validationResults)
+        validationResults = @(@($mutationResult.validationResults) + @($featureDependencyRepair.validationResults))
         discoveredValidationPlan = @($mutationResult.discoveredValidationPlan)
         learningTrace     = @($reportLearningTrace)
         memoryHits        = @($reportMemoryHits)
         memoryUpdates     = @($reportMemoryUpdates)
         promotionCandidates = @($reportPromotionCandidates)
+        featureDependencyRepairSummaries = @($featureDependencyRepair.summaries)
+        featureDependencyRepairCodeCommits = @($featureDependencyRepair.codeCommits)
+        featureDependencyRepairDocCommits = @($featureDependencyRepair.docCommits)
+        featureDependencyRepairPolicySnapshot = $featureDependencyRepair.policySnapshot
         retryAttempts     = [int]$mutationResult.retryAttempts
         historySummary    = $mutationResult.historySummary
         commit            = $mutationResult.commit
         rollback          = $mutationResult.rollback
         applied           = [bool]$mutationResult.applied
-        failed            = ([bool]$failed -or [bool]$featureDependencyGateStatus.failed -or [bool]$compileGateStatus.failed)
+        failed            = ([bool]$failed -or [bool]$featureDependencyGateStatus.failed -or [bool]$compileGateStatus.failed -or [bool]$featureDependencyRepair.failed)
     }
 
     if (-not [string]::IsNullOrWhiteSpace($docProposalPath)) {

@@ -36,6 +36,19 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-rule-harness.p
 - `failed`: feature dependency cycle이 있거나 report가 손상됐다.
 - `unsupported`: 현재 repo snapshot에 LayerDependencyValidator 소스가 없어 gate를 적용하지 않았다.
 
+feature dependency repair는 문서 우선순위를 고정한 채 동작한다.
+- 정책 우선순위: `CLAUDE.md -> owner docs -> code analysis`
+- 문서 역할: `repair hint`, `safety constraint`, `preferred direction`
+- 실제 patch 가능 여부: 코드 분석으로 최종 확정
+- 문서가 모호하면 repair는 더 보수적으로 `unsupported` 로 남긴다.
+
+현재 구조 repair v1은 `Port 역전`만 자동수정한다.
+- consumer feature의 `Application/Ports`에 port interface 생성
+- provider feature의 `Infrastructure`에 adapter 생성
+- `Setup` / `Bootstrap` / composition root wiring 수정
+- 생성자 시그니처와 call-site 연쇄 수정 허용
+- `Shared 이동`, `event edge rewrite`, ambiguous edge는 아직 자동수정하지 않는다
+
 기본 mutation mode는 config 기준 `code_and_rules` 이고, `-DryRun`이면 수정 없이 계획/검증 대상만 계산한다.
 
 compile handoff만 수동으로 새로 쓰고 싶으면:
@@ -150,6 +163,10 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 - `rollbackBatches`
 - `stageResults`
 - `actionItems`
+- `execution.featureDependencyGateStatus`
+- `execution.featureDependencyRepairStatus`
+- `execution.featureDependencyRepairAttemptCount`
+- `execution.featureDependencyUnsupportedCycleCount`
 - `decisionTrace`
 - `validationResults`
 - `discoveredValidationPlan`
@@ -157,6 +174,10 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 - `memoryHits`
 - `memoryUpdates`
 - `promotionCandidates`
+- `featureDependencyRepairSummaries`
+- `featureDependencyRepairCodeCommits`
+- `featureDependencyRepairDocCommits`
+- `featureDependencyRepairPolicySnapshot`
 - `retryAttempts`
 - `historySummary`
 - `commit`
@@ -167,6 +188,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 `rule-harness-summary.md`는 개수 요약 뒤에 `Stage Status`, `Next Actions`를 붙여서 지금 막힌 지점과 다음 조치를 먼저 보여준다.
 반복 실패가 누적되면 `Promotion Candidates`와 `promotionCandidates` 필드에서 어느 owner doc으로 규칙을 승격해야 하는지 볼 수 있다.
 예약 실행에서는 `latest-status.json` 이 마지막 실행 경로와 상위 액션 아이템, promotion candidate, retry count를 바로 가리킨다.
+feature dependency repair가 켜진 run에서는 `feature_dependency_refresh`, `feature_dependency_gate`, `feature_dependency_repair`, `feature_dependency_gate_post_repair` stage를 순서대로 보면 된다.
 
 ## 운영 체크
 

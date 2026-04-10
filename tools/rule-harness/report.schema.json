@@ -61,7 +61,10 @@
         "compileStatusPath",
         "featureDependencyGateStatus",
         "featureDependencyCycleCount",
-        "featureDependencyReportPath"
+        "featureDependencyReportPath",
+        "featureDependencyRepairStatus",
+        "featureDependencyRepairAttemptCount",
+        "featureDependencyUnsupportedCycleCount"
       ],
       "properties": {
         "dryRun": {
@@ -151,6 +154,15 @@
         },
         "featureDependencyReportPath": {
           "type": "string"
+        },
+        "featureDependencyRepairStatus": {
+          "type": "string"
+        },
+        "featureDependencyRepairAttemptCount": {
+          "type": "integer"
+        },
+        "featureDependencyUnsupportedCycleCount": {
+          "type": "integer"
         },
         "statePath": {
           "type": [
@@ -758,6 +770,30 @@
       "items": {
         "type": "object"
       }
+    },
+    "featureDependencyRepairSummaries": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "featureDependencyRepairCodeCommits": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "featureDependencyRepairDocCommits": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "featureDependencyRepairPolicySnapshot": {
+      "type": [
+        "object",
+        "null"
+      ]
     },
     "retryAttempts": {
       "type": "integer"

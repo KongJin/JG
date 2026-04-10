@@ -471,6 +471,7 @@ namespace ProjectSD.LayerValidation
                 return;
 
             var evidence = new List<FeatureDependencyEvidence>();
+            var cycleEdges = new List<FeatureDependencyEdge>();
             for (var i = 0; i < cyclePath.Count; i++)
             {
                 var from = cyclePath[i];
@@ -480,13 +481,51 @@ namespace ProjectSD.LayerValidation
                     continue;
 
                 evidence.Add(edge.evidence[0]);
+                cycleEdges.Add(edge.ToReportEdge());
             }
 
             cycles.Add(signature, new FeatureDependencyCycle
             {
                 features = cyclePath.ToArray(),
-                evidence = evidence.ToArray()
+                evidence = evidence.ToArray(),
+                edges = cycleEdges.ToArray(),
+                preferredBreakCandidates = GetPreferredBreakCandidates(cycleEdges).ToArray()
             });
+        }
+
+        private static IEnumerable<FeatureDependencyBreakCandidate> GetPreferredBreakCandidates(
+            IEnumerable<FeatureDependencyEdge> cycleEdges)
+        {
+            foreach (var edge in cycleEdges)
+            {
+                var evidence = edge.evidence != null && edge.evidence.Length > 0 ? edge.evidence[0] : null;
+                if (evidence == null || string.IsNullOrWhiteSpace(evidence.path))
+                    continue;
+
+                if (IsCompositionRootPath(evidence.path) || IsConsumerOwnedPortReferencePath(evidence.path))
+                    continue;
+
+                if (!(Contains(evidence.path, "/Application/") ||
+                      Contains(evidence.path, "/Presentation/") ||
+                      Contains(evidence.path, "/Infrastructure/")))
+                    continue;
+
+                yield return new FeatureDependencyBreakCandidate
+                {
+                    recipe = "port_inversion",
+                    from = edge.from,
+                    to = edge.to,
+                    reason = "Cross-feature concrete dependency from consumer code may be inverted through a consumer-owned Application/Ports seam.",
+                    evidence = new[]
+                    {
+                        new FeatureDependencyEvidence
+                        {
+                            path = evidence.path,
+                            line = evidence.line
+                        }
+                    }
+                };
+            }
         }
 
         private static string GetCycleSignature(List<string> cyclePath)
@@ -525,6 +564,21 @@ namespace ProjectSD.LayerValidation
         private static string GetEdgeKey(string fromFeature, string toFeature)
         {
             return fromFeature + "->" + toFeature;
+        }
+
+        private static bool IsCompositionRootPath(string relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+                return false;
+
+            var fileName = Path.GetFileNameWithoutExtension(relativePath);
+            return fileName.EndsWith("Setup", StringComparison.Ordinal) ||
+                fileName.EndsWith("Bootstrap", StringComparison.Ordinal);
+        }
+
+        private static bool IsConsumerOwnedPortReferencePath(string relativePath)
+        {
+            return !string.IsNullOrWhiteSpace(relativePath) && Contains(relativePath, "/Application/Ports/");
         }
 
         private static string NormalizeNewlines(string text)
@@ -762,6 +816,18 @@ namespace ProjectSD.LayerValidation
     public sealed class FeatureDependencyCycle
     {
         public string[] features;
+        public FeatureDependencyEvidence[] evidence;
+        public FeatureDependencyEdge[] edges;
+        public FeatureDependencyBreakCandidate[] preferredBreakCandidates;
+    }
+
+    [Serializable]
+    public sealed class FeatureDependencyBreakCandidate
+    {
+        public string recipe;
+        public string from;
+        public string to;
+        public string reason;
         public FeatureDependencyEvidence[] evidence;
     }
 
