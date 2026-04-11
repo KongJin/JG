@@ -20,7 +20,7 @@ using PhotonPlayer = Photon.Realtime.Player;
 
 namespace Features.Wave
 {
-    public sealed class WaveBootstrap : MonoBehaviourPunCallbacks
+    public sealed class WaveSetup : MonoBehaviourPunCallbacks
     {
         [Required, SerializeField]
         private WaveTableData _waveTable;
@@ -56,7 +56,7 @@ namespace Features.Wave
         private RoomDifficultySpawnScaleProvider _difficultySpawnScale;
 
         private EventBus _eventBus;
-        private CombatBootstrap _combatBootstrap;
+        private CombatSetup _combatSetup;
         private DisposableScope _disposables;
         private WaveLoopUseCase _waveLoop;
         private ICoreObjectiveQuery _coreObjectiveQuery;
@@ -76,13 +76,13 @@ namespace Features.Wave
 
         public void Initialize(
             EventBus eventBus,
-            CombatBootstrap combatBootstrap,
+            CombatSetup combatSetup,
             DomainEntityId localPlayerId,
             ICoreObjectiveQuery coreObjectiveQuery
         )
         {
             _eventBus = eventBus;
-            _combatBootstrap = combatBootstrap;
+            _combatSetup = combatSetup;
             _coreObjectiveQuery = coreObjectiveQuery;
 
             _disposables?.Dispose();
@@ -98,7 +98,7 @@ namespace Features.Wave
             var spawnMultiplier = ResolveSpawnCountMultiplier();
             _spawnAdapter.Initialize(
                 eventBus,
-                combatBootstrap,
+                combatSetup,
                 _hostilePositionQuery,
                 _coreObjectiveQuery,
                 _waveTable,
@@ -216,7 +216,7 @@ namespace Features.Wave
 
             enemy.Initialize(
                 _eventBus,
-                _combatBootstrap,
+                _combatSetup,
                 _hostilePositionQuery,
                 _coreObjectiveQuery
             );

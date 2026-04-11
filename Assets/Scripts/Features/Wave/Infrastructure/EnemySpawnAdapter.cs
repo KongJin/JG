@@ -14,7 +14,7 @@ namespace Features.Wave.Infrastructure
     public sealed class EnemySpawnAdapter : MonoBehaviour, IWaveSpawnPort
     {
         private EventBus _eventBus;
-        private CombatBootstrap _combatBootstrap;
+        private CombatSetup _combatBootstrap;
         private IPlayerPositionQuery _playerQuery;
         private ICoreObjectiveQuery _coreObjectiveQuery;
         private WaveTableData _waveTable;
@@ -22,7 +22,7 @@ namespace Features.Wave.Infrastructure
 
         public void Initialize(
             EventBus eventBus,
-            CombatBootstrap combatBootstrap,
+            CombatSetup combatBootstrap,
             IPlayerPositionQuery playerQuery,
             ICoreObjectiveQuery coreObjectiveQuery,
             WaveTableData waveTable = null,

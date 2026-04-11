@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Features.Wave
 {
-    public sealed class CoreObjectiveBootstrap : MonoBehaviour, ICoreObjectiveQuery
+    public sealed class CoreObjectiveSetup : MonoBehaviour, ICoreObjectiveQuery
     {
         [Required, SerializeField] private Transform _coreAnchor;
         [Required, SerializeField] private EntityIdHolder _entityIdHolder;
@@ -63,7 +63,7 @@ namespace Features.Wave
             }
             else
             {
-                Debug.LogWarning("[CoreObjectiveBootstrap] Core position not available for PlacementArea initialization.");
+                Debug.LogWarning("[CoreObjectiveSetup] Core position not available for PlacementArea initialization.");
             }
 
             // 시각화 초기화
@@ -94,21 +94,21 @@ namespace Features.Wave
             return true;
         }
 
-        public void RegisterCombatTarget(CombatBootstrap combatBootstrap)
+        public void RegisterCombatTarget(CombatSetup combatSetup)
         {
             if (_registered)
                 return;
 
-            if (combatBootstrap == null)
+            if (combatSetup == null)
             {
-                Debug.LogError("[CoreObjectiveBootstrap] CombatBootstrap is missing.", this);
+                Debug.LogError("[CoreObjectiveSetup] CombatSetup is missing.", this);
                 return;
             }
 
             var id = ObjectiveCoreIds.Default;
             _entityIdHolder.Set(id);
             var domain = new SpawnObjectiveCoreUseCase().Execute(id, _maxHp, _defense);
-            combatBootstrap.RegisterTarget(id, new ObjectiveCoreCombatTargetProvider(domain));
+            combatSetup.RegisterTarget(id, new ObjectiveCoreCombatTargetProvider(domain));
             _registered = true;
         }
     }
