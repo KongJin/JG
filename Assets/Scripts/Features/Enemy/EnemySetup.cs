@@ -37,7 +37,7 @@ namespace Features.Enemy
 
         public void Initialize(
             EventBus eventBus,
-            CombatBootstrap combatBootstrap,
+            CombatSetup combatBootstrap,
             IPlayerPositionQuery playerQuery,
             ICoreObjectiveQuery coreQuery)
         {
@@ -46,7 +46,7 @@ namespace Features.Enemy
 
         public void Initialize(
             EventBus eventBus,
-            CombatBootstrap combatBootstrap,
+            CombatSetup combatBootstrap,
             EnemyData data,
             IPlayerPositionQuery playerQuery,
             ICoreObjectiveQuery coreQuery)
@@ -62,7 +62,7 @@ namespace Features.Enemy
 
             if (combatBootstrap == null)
             {
-                Debug.LogError("[EnemySetup] CombatBootstrap is missing.", this);
+                Debug.LogError("[EnemySetup] CombatSetup is missing.", this);
                 return;
             }
 

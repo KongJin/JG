@@ -27,7 +27,7 @@ namespace Features.Unit.Infrastructure
         [Required, SerializeField] private EntityIdHolder _entityIdHolder;
 
         private EventBus _eventBus;
-        private CombatBootstrap _combatBootstrap;
+        private CombatSetup _combatSetup;
         private UnitPositionQueryAdapter _unitPositionQuery;
         private BattleEntity _battleEntity;
         private IBattleEntityViewPort _viewPort;
@@ -46,7 +46,7 @@ namespace Features.Unit.Infrastructure
                 var ownerIdStr = (string)data[1];
                 var initialHp = data.Length >= 3 ? (float)data[2] : 100f;
 
-                // GameSceneRoot 또는 UnitBootstrap를 통해 의존성 주입받아야 함
+                // GameSceneRoot 또는 UnitSetup를 통해 의존성 주입받아야 함
                 // 현재는 정적 이벤트로 전달 (Composition Root가 Subscribe)
                 _pendingUnitId = unitIdStr;
                 _pendingOwnerId = new DomainEntityId(ownerIdStr);
@@ -62,7 +62,7 @@ namespace Features.Unit.Infrastructure
 
         public void TryInitializeFromPending(
             EventBus eventBus,
-            CombatBootstrap combatBootstrap,
+            CombatSetup combatBootstrap,
             UnitPositionQueryAdapter unitPositionQuery,
             UnitSpec unitSpec)
         {
@@ -72,7 +72,7 @@ namespace Features.Unit.Infrastructure
 
         public void Initialize(
             EventBus eventBus,
-            CombatBootstrap combatBootstrap,
+            CombatSetup combatBootstrap,
             UnitPositionQueryAdapter unitPositionQuery,
             UnitSpec unitSpec,
             DomainEntityId ownerId)
@@ -91,7 +91,7 @@ namespace Features.Unit.Infrastructure
 
         private void Initialize(
             EventBus eventBus,
-            CombatBootstrap combatBootstrap,
+            CombatSetup combatBootstrap,
             UnitPositionQueryAdapter unitPositionQuery,
             UnitSpec unitSpec,
             DomainEntityId ownerId,
@@ -100,7 +100,7 @@ namespace Features.Unit.Infrastructure
             if (_initialized) return;
 
             _eventBus = eventBus;
-            _combatBootstrap = combatBootstrap;
+            _combatSetup = combatBootstrap;
             _unitPositionQuery = unitPositionQuery;
             _viewPort = _view as IBattleEntityViewPort;
 
@@ -121,7 +121,7 @@ namespace Features.Unit.Infrastructure
             _entityIdHolder.Set(battleEntityId);
 
             // Combat target으로 등록
-            combatBootstrap.RegisterTarget(battleEntityId, new BattleEntityCombatTargetProvider(_battleEntity));
+            _combatSetup.RegisterTarget(battleEntityId, new BattleEntityCombatTargetProvider(_battleEntity));
 
             // Unit 위치 쿼리에 등록
             unitPositionQuery.RegisterUnit(transform);

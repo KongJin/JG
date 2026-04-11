@@ -6,9 +6,9 @@ namespace Features.Combat.Infrastructure
 {
     public sealed class EnemyContactDamagePortAdapter : IEnemyContactDamagePort
     {
-        private readonly CombatBootstrap _combatBootstrap;
+        private readonly CombatSetup _combatBootstrap;
 
-        public EnemyContactDamagePortAdapter(CombatBootstrap combatBootstrap)
+        public EnemyContactDamagePortAdapter(CombatSetup combatBootstrap)
         {
             _combatBootstrap = combatBootstrap;
         }

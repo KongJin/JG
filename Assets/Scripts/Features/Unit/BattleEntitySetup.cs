@@ -28,7 +28,7 @@ namespace Features.Unit
             EventBus eventBus,
             IUnitEnergyPort energyPort,
             SummonPhotonAdapter summonAdapter,
-            CombatBootstrap combatBootstrap,
+            CombatSetup combatBootstrap,
             UnitPositionQueryAdapter unitPositionQuery)
         {
             _disposables?.Dispose();

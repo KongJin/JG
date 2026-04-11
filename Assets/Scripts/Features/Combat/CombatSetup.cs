@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Features.Combat
 {
-    public sealed class CombatBootstrap : MonoBehaviour
+    public sealed class CombatSetup : MonoBehaviour
     {
         [Required, SerializeField]
         private CombatTargetAdapter _targetAdapter;
@@ -35,7 +35,7 @@ namespace Features.Combat
         {
             if (eventBus == null)
             {
-                Debug.LogError("[CombatBootstrap] EventBus is not provided.", this);
+                Debug.LogError("[CombatSetup] EventBus is not provided.", this);
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace Features.Combat
                 var view = _targetViews[i];
                 if (view == null)
                 {
-                    Debug.LogError($"[CombatBootstrap] CombatTargetView at index {i} is null.", this);
+                    Debug.LogError($"[CombatSetup] CombatTargetView at index {i} is null.", this);
                     continue;
                 }
 

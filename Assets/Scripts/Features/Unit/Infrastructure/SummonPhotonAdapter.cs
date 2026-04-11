@@ -26,17 +26,17 @@ namespace Features.Unit.Infrastructure
         [SerializeField] private Transform _spawnParent;
 
         private EventBus _eventBus;
-        private CombatBootstrap _combatBootstrap;
+        private CombatSetup _combatSetup;
         private UnitPositionQueryAdapter _unitPositionQuery;
 
         /// <summary>
         /// 소환기 초기화. ISummonExecutionPort는 순수 생성만 담당하므로
         /// Combat/위치 등록 의존성은 여기서 직접 주입받는다.
         /// </summary>
-        public void Initialize(EventBus eventBus, CombatBootstrap combatBootstrap, UnitPositionQueryAdapter unitPositionQuery)
+        public void Initialize(EventBus eventBus, CombatSetup combatBootstrap, UnitPositionQueryAdapter unitPositionQuery)
         {
             _eventBus = eventBus;
-            _combatBootstrap = combatBootstrap;
+            _combatSetup = combatBootstrap;
             _unitPositionQuery = unitPositionQuery;
         }
 
@@ -66,7 +66,7 @@ namespace Features.Unit.Infrastructure
             var prefabSetup = spawnedGo.GetComponent<BattleEntityPrefabSetup>();
             if (prefabSetup != null)
             {
-                prefabSetup.Initialize(_eventBus, _combatBootstrap, _unitPositionQuery, unitSpec, ownerId);
+                prefabSetup.Initialize(_eventBus, _combatSetup, _unitPositionQuery, unitSpec, ownerId);
             }
             else
             {
