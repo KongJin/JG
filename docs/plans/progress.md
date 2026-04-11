@@ -16,18 +16,17 @@
 | Phase 7: 배치 시스템 완성 | ✅ 완료 | PlacementArea, PlacementAreaView, 드래그 피드백, 영역 검증, MaterialFactory, ErrorView |
 | Phase 8: Energy 재생 증가 곡선 | ✅ 완료 | EnergyRegenCurve (시간 기반 60s→180s, 3→5/s), EnergyRegenCurveConfig, TickRegen wiring |
 | Phase 9: 네트워크 완성 | ✅ 완료 | BattleEntityPhotonController (IPunObservable HP/pos/dead sync), BattleEntityDespawnAdapter, WaveEndView 통계 |
-| Phase 10: 계정 시스템 | 📋 기획 완료 | Firebase Auth + Firestore, 익명 기본 → Google 업그레이드, 크로스 디바이스 동기화 |
+| Phase 10: 계정 시스템 | 🟨 구현 진행 중 | Firebase REST API 기반 Account Feature 골격 완료, Lobby/Garage 통합 완료 |
 
 ## 미완료 TODO
 
 - Phase 9: Unity Inspector wiring 검증 (`PlacementAreaView`, `DragGhostPrefab` 등 직렬화 참조 할당 확인)
 - Phase 9: 실제 멀티플레이어 smoke 테스트 (late-join, BattleEntity sync, Energy sync)
-- Phase 10: Firebase Auth 연동 (익명 로그인 + 로딩 화면)
-- Phase 10: Firestore 데이터 구조 + CRUD + Account Feature 골격
-- Phase 10: GarageRoster 로컬 → Firestore 전환
-- Phase 10: Google 로그인 연동 (계정 업그레이드)
-- Phase 10: 닉네임 변경 (월 1회 검증)
+- Phase 10: Firebase Console 설정 (API Key, Project ID, Firestore DB 생성)
+- Phase 10: Unity Inspector에 AccountConfig, LoginLoadingView, AccountSettingsView 할당
+- Phase 10: Google 로그인 연동 (계정 업그레이드) — 후속 Phase
 - Phase 10: 설정 (볼륨, 언어) Firestore 동기화
+- Phase 10: WebGL 빌드 smoke 테스트
 - Phase 10: 계정 삭제 기능 + UI
 
 ## 다음 작업 메모
@@ -41,20 +40,16 @@
 
 ### 2026-04-11
 
-- done: Garage UI Presentation을 `GaragePageController + GarageRosterListView + GarageUnitEditorView + GarageResultPanelView + presenter/state/viewmodel` 구조로 분리
-- done: `GarageSetup`, `LobbyView`, `CodexLobbyScene`, `CodexLobbyGarageAugmenter`를 새 3분할 Garage scene contract에 맞춰 갱신
-- done: `GaragePageController`, `GarageDraftEvaluation`의 `Result<Unit>` nullable 가정 제거, compile 통과
-- done: Garage editor가 committed slot과 unsaved draft를 더 분명히 드러내도록 subtitle/clear-state 정리
-- done: `RoomDetailView`가 재초기화 중복 버튼 구독과 stale local ready 상태를 남기지 않도록 보강
-- done: Feature README 전량 삭제 (Lobby, Garage) — `agent/*.md`가 전역 규칙 SSOT
-- done: Unity Editor TMP 경고 수정 (`enableWordWrapping` → `textWrappingMode`)
-- done: CodexLobbyScene.unity Bootstrap → Setup GUID 교체 + 필드명 갱신
-- done: `agent/unity.md` 신규 생성 — Unity meta GUID 보존, 씬 직렬화, 프리팹 계약 규칙 문서화
-- done: `CLAUDE.md`에 `unity.md` 참조 추가 (먼저 읽기, 진입 경로, 충돌 우선순위)
-- done: 계정 시스템 기획 문서화 (`account_system_plan.md`) — Firebase Auth + Firestore, 익명 기본 → Google 업그레이드
-- next: Garage 탭 왕복 smoke test, Ready interlock 플레이 검증
-- next: Phase 9 네트워크 완성 (Inspector wiring, 멀티플레이어 smoke test)
-- next: Phase 10 계정 시스템 구현 착수
+- done: Account Feature 골격 — Domain (Account, PlayerStats, UserSettings), Application Ports/UseCases, Infrastructure (FirebaseAuthRestAdapter, FirestoreRestPort), AccountSetup
+- done: Presentation — LoginLoadingView (로딩 오버레이), AccountSettingsView (계정 설정)
+- done: LobbySetup에 Account 통합 — 익명 로그인 → 성공 시 로비 진입
+- done: SaveRosterUseCase 수정 — 로컬 JSON → Firestore 저장 + Photon 동기화 유지
+- done: GarageSetup → IAccountDataPort 주입, SaveRoster async 전환
+- done: GaragePageController → SaveRoster async 호출로 변경
+- done: AuthTokenProvider — 순환 의존성 방지용 정적 토큰 제공자
+- next: Firebase Console 설정 (API Key, Project ID, Firestore DB)
+- next: Unity Inspector에 AccountConfig, LoginLoadingView, AccountSettingsView 할당
+- next: WebGL 빌드 smoke 테스트
 
 ### 2026-04-10
 
