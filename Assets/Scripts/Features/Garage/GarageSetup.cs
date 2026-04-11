@@ -49,7 +49,7 @@ namespace Features.Garage
             EventBus eventBus,
             IUnitCompositionPort compositionPort,
             ModuleCatalog unitCatalog,
-            IAccountDataPort accountDataPort)
+            IAccountDataPort accountDataPort = null)
         {
             _accountDataPort = accountDataPort;
             _rosterValidationProvider = new RosterValidationProvider(unitCatalog);
@@ -61,11 +61,24 @@ namespace Features.Garage
             ComposeUnit = new ComposeUnitUseCase(compositionPort);
             InitializeGarage = new InitializeGarageUseCase(new GarageJsonPersistence(), eventBus);
             ValidateRoster = new ValidateRosterUseCase(_rosterValidationProvider);
-            SaveRoster = new SaveRosterUseCase(
-                accountDataPort,
-                _networkAdapter,
-                eventBus,
-                () => Features.Account.Infrastructure.AuthTokenProvider.GetCurrentUid());
+
+            if (accountDataPort != null)
+            {
+                SaveRoster = new SaveRosterUseCase(
+                    accountDataPort,
+                    _networkAdapter,
+                    eventBus,
+                    () => Features.Account.Infrastructure.AuthTokenProvider.GetCurrentUid());
+            }
+            else
+            {
+                // 폴백: AccountSetup 미연결 시 로컬 저장만 (GameScene 등)
+                SaveRoster = new SaveRosterUseCase(
+                    accountDataPort,
+                    _networkAdapter,
+                    eventBus,
+                    () => null);
+            }
 
             if (_pageController != null)
                 _pageController.Initialize(this, BuildPanelCatalog(unitCatalog));
