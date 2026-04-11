@@ -4,11 +4,26 @@ using Features.Lobby.Application.Events;
 using Shared.EventBus;
 using Shared.Lifecycle;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Features.Lobby.Presentation
 {
     public sealed class LobbyView : MonoBehaviour
     {
+        [Header("Pages")]
+        [SerializeField]
+        private GameObject _lobbyPageRoot;
+
+        [SerializeField]
+        private GameObject _garagePageRoot;
+
+        [Header("Tabs")]
+        [SerializeField]
+        private Button _lobbyTabButton;
+
+        [SerializeField]
+        private Button _garageTabButton;
+
         [Header("Panels")]
         [Required, SerializeField]
         private GameObject _roomListPanel;
@@ -30,6 +45,7 @@ namespace Features.Lobby.Presentation
         private IEventSubscriber _eventBus;
         private IEventPublisher _eventPublisher;
         private DisposableScope _disposables = new DisposableScope();
+        private bool _tabsHooked;
 
         public void Initialize(IEventSubscriber eventBus, IEventPublisher eventPublisher, LobbyUseCases useCases)
         {
@@ -51,7 +67,8 @@ namespace Features.Lobby.Presentation
             _disposables = new DisposableScope();
 
             _roomListView.Initialize(useCases, eventPublisher);
-            _roomDetailView.Initialize(useCases, eventPublisher);
+            _roomDetailView.Initialize(useCases, eventBus, eventPublisher);
+            HookTabs();
 
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, this));
             _eventBus.Subscribe<LobbyUpdatedEvent>(this, e => RenderLobby(e.Lobby));
@@ -59,6 +76,7 @@ namespace Features.Lobby.Presentation
             _eventBus.Subscribe<RoomListReceivedEvent>(this, e => RenderRoomList(e));
             _eventBus.Subscribe<GameStartedEvent>(this, e => RenderStartGame(e.Room));
 
+            ShowLobbyPage();
             ShowRoomList();
         }
 
@@ -111,6 +129,51 @@ namespace Features.Lobby.Presentation
                 _roomListPanel.SetActive(false);
             if (_roomDetailPanel != null)
                 _roomDetailPanel.SetActive(true);
+        }
+
+        private void HookTabs()
+        {
+            if (_tabsHooked)
+                return;
+
+            _tabsHooked = true;
+
+            if (_lobbyTabButton != null)
+                _lobbyTabButton.onClick.AddListener(ShowLobbyPage);
+            if (_garageTabButton != null)
+                _garageTabButton.onClick.AddListener(ShowGaragePage);
+        }
+
+        private void ShowLobbyPage()
+        {
+            if (_lobbyPageRoot != null)
+                _lobbyPageRoot.SetActive(true);
+            if (_garagePageRoot != null)
+                _garagePageRoot.SetActive(false);
+
+            UpdateTabState(true);
+        }
+
+        private void ShowGaragePage()
+        {
+            if (_lobbyPageRoot != null)
+                _lobbyPageRoot.SetActive(true);
+            if (_garagePageRoot != null)
+                _garagePageRoot.SetActive(true);
+            if (_roomListPanel != null)
+                _roomListPanel.SetActive(false);
+            if (_roomDetailPanel != null)
+                _roomDetailPanel.SetActive(false);
+
+            UpdateTabState(false);
+        }
+
+        private void UpdateTabState(bool lobbyActive)
+        {
+            if (_lobbyTabButton != null)
+                _lobbyTabButton.interactable = !lobbyActive;
+            if (_garageTabButton != null)
+                _garageTabButton.interactable = lobbyActive;
         }
     }
 }

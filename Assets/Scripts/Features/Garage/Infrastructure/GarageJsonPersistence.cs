@@ -38,7 +38,9 @@ namespace Features.Garage.Infrastructure
 
                 string json = File.ReadAllText(path);
                 var wrapper = JsonUtility.FromJson<GarageRosterWrapper>(json);
-                return wrapper?.roster ?? new GarageRoster();
+                var roster = wrapper?.roster ?? new GarageRoster();
+                roster.Normalize();
+                return roster;
             }
             catch (System.Exception e)
             {

@@ -5,7 +5,7 @@ namespace Features.Garage.Application
 {
     /// <summary>
     /// 편성 유효성 검증 UseCase.
-    /// 3~5기 체크 + 금지조합 검사.
+    /// 3~6기 체크 + 금지조합 검사.
     /// </summary>
     public sealed class ValidateRosterUseCase
     {
@@ -45,7 +45,7 @@ namespace Features.Garage.Application
 
             if (!roster.IsValid)
             {
-                errorMessage = $"편성 유닛 수는 3~5기여야 합니다. (현재: {roster.Count}기)";
+                errorMessage = $"편성 유닛 수는 3~6기여야 합니다. (현재: {roster.Count}기)";
                 return Result.Failure(errorMessage);
             }
 
@@ -53,6 +53,15 @@ namespace Features.Garage.Application
             for (int i = 0; i < roster.loadout.Count; i++)
             {
                 var unit = roster.loadout[i];
+                if (unit == null || !unit.HasAnySelection)
+                    continue;
+
+                if (!unit.IsComplete)
+                {
+                    errorMessage = $"슬롯 {i + 1}: 프레임과 모듈을 모두 선택해야 합니다.";
+                    return Result.Failure(errorMessage);
+                }
+
                 bool isValid = _validationProvider.TryValidateComposition(
                     unit.frameId,
                     unit.firepowerModuleId,

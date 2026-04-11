@@ -1,5 +1,6 @@
 using Features.Garage.Application.Ports;
 using Features.Garage.Infrastructure;
+using Features.Garage.Presentation;
 using Features.Unit.Infrastructure;
 using Shared.Attributes;
 using Shared.EventBus;
@@ -16,6 +17,9 @@ namespace Features.Garage
     {
         [Required, SerializeField]
         private GarageNetworkAdapter _networkAdapter;
+
+        [SerializeField]
+        private GaragePanelView _panelView;
 
         private GarageSetup _setup;
         private GarageJsonPersistence _persistence;
@@ -44,6 +48,55 @@ namespace Features.Garage
                 _persistence,
                 compositionPort,
                 _rosterValidationProvider);
+
+            if (_panelView != null)
+                _panelView.Initialize(eventBus, _setup, BuildPanelCatalog(unitCatalog));
+        }
+
+        private static GaragePanelCatalog BuildPanelCatalog(ModuleCatalog unitCatalog)
+        {
+            var frames = new System.Collections.Generic.List<GaragePanelCatalog.FrameOption>();
+            for (int i = 0; i < unitCatalog.UnitFrames.Count; i++)
+            {
+                var frame = unitCatalog.UnitFrames[i];
+                frames.Add(new GaragePanelCatalog.FrameOption
+                {
+                    Id = frame.FrameId,
+                    DisplayName = frame.DisplayName,
+                    BaseHp = frame.BaseHp,
+                    BaseAttackSpeed = frame.BaseAttackSpeed
+                });
+            }
+
+            var firepower = new System.Collections.Generic.List<GaragePanelCatalog.FirepowerOption>();
+            for (int i = 0; i < unitCatalog.FirepowerModules.Count; i++)
+            {
+                var module = unitCatalog.FirepowerModules[i];
+                firepower.Add(new GaragePanelCatalog.FirepowerOption
+                {
+                    Id = module.ModuleId,
+                    DisplayName = module.DisplayName,
+                    AttackDamage = module.AttackDamage,
+                    AttackSpeed = module.AttackSpeed,
+                    Range = module.Range
+                });
+            }
+
+            var mobility = new System.Collections.Generic.List<GaragePanelCatalog.MobilityOption>();
+            for (int i = 0; i < unitCatalog.MobilityModules.Count; i++)
+            {
+                var module = unitCatalog.MobilityModules[i];
+                mobility.Add(new GaragePanelCatalog.MobilityOption
+                {
+                    Id = module.ModuleId,
+                    DisplayName = module.DisplayName,
+                    HpBonus = module.HpBonus,
+                    MoveRange = module.MoveRange,
+                    AnchorRange = module.AnchorRange
+                });
+            }
+
+            return new GaragePanelCatalog(frames, firepower, mobility);
         }
 
         /// <summary>

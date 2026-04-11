@@ -21,7 +21,7 @@ namespace Features.Unit
         private ModuleCatalog _moduleCatalog;
 
         [Header("BattleEntity")]
-        [Required, SerializeField]
+        [SerializeField]
         private SummonPhotonAdapter _summonAdapter;
 
         private UnitSetup _setup;
@@ -71,6 +71,12 @@ namespace Features.Unit
             CombatBootstrap combatBootstrap,
             UnitPositionQueryAdapter unitPositionQuery)
         {
+            if (_summonAdapter == null)
+            {
+                Debug.LogError("[UnitBootstrap] SummonPhotonAdapter is missing. BattleEntity initialization cannot continue.", this);
+                return;
+            }
+
             _battleEntitySetup.Initialize(eventBus, energyPort, _summonAdapter, combatBootstrap, unitPositionQuery);
         }
 

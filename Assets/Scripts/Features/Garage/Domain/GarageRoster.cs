@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Features.Garage.Domain
 {
@@ -10,6 +11,8 @@ namespace Features.Garage.Domain
     [Serializable]
     public sealed class GarageRoster
     {
+        public const int MaxSlots = 6;
+
         /// <summary>
         /// 편성된 유닛 한 기의 데이터.
         /// </summary>
@@ -28,6 +31,18 @@ namespace Features.Garage.Domain
                 this.firepowerModuleId = firepowerModuleId;
                 this.mobilityModuleId = mobilityModuleId;
             }
+
+            public bool HasAnySelection =>
+                !string.IsNullOrWhiteSpace(frameId) ||
+                !string.IsNullOrWhiteSpace(firepowerModuleId) ||
+                !string.IsNullOrWhiteSpace(mobilityModuleId);
+
+            public bool IsComplete =>
+                !string.IsNullOrWhiteSpace(frameId) &&
+                !string.IsNullOrWhiteSpace(firepowerModuleId) &&
+                !string.IsNullOrWhiteSpace(mobilityModuleId);
+
+            public UnitLoadout Clone() => new(frameId, firepowerModuleId, mobilityModuleId);
         }
 
         public List<UnitLoadout> loadout = new List<UnitLoadout>();
@@ -35,42 +50,86 @@ namespace Features.Garage.Domain
         /// <summary>
         /// 편성이 유효한가 (3~6기).
         /// </summary>
-        public bool IsValid => loadout != null && loadout.Count >= 3 && loadout.Count <= 6;
+        public bool IsValid => Count >= 3 && Count <= MaxSlots;
 
-        public int Count => loadout != null ? loadout.Count : 0;
+        public int Count
+        {
+            get
+            {
+                Normalize();
+                int count = 0;
+                for (int i = 0; i < loadout.Count; i++)
+                {
+                    if (loadout[i]?.IsComplete == true)
+                        count++;
+                }
 
-        public GarageRoster() { }
+                return count;
+            }
+        }
+
+        public GarageRoster()
+        {
+            Normalize();
+        }
 
         public GarageRoster(List<UnitLoadout> loadout)
         {
             this.loadout = loadout != null ? new List<UnitLoadout>(loadout) : new List<UnitLoadout>();
+            Normalize();
         }
 
         /// <summary>
-        /// 유닛을 편성에 추가.
+        /// 직렬화 호환을 위해 슬롯 개수를 6칸으로 정규화한다.
         /// </summary>
-        public void AddUnit(UnitLoadout unit)
+        public void Normalize()
         {
-            if (loadout == null) loadout = new List<UnitLoadout>();
-            loadout.Add(unit);
+            loadout ??= new List<UnitLoadout>();
+
+            for (int i = 0; i < loadout.Count; i++)
+                loadout[i] ??= new UnitLoadout();
+
+            while (loadout.Count < MaxSlots)
+                loadout.Add(new UnitLoadout());
+
+            if (loadout.Count > MaxSlots)
+                loadout = loadout.Take(MaxSlots).ToList();
         }
 
         /// <summary>
-        /// 인덱스로 유닛 제거.
+        /// 슬롯 조회.
         /// </summary>
-        public void RemoveUnitAt(int index)
+        public UnitLoadout GetSlot(int index)
         {
-            if (loadout == null || index < 0 || index >= loadout.Count) return;
-            loadout.RemoveAt(index);
+            Normalize();
+            if (index < 0 || index >= MaxSlots)
+                return new UnitLoadout();
+
+            return loadout[index] ?? new UnitLoadout();
         }
 
         /// <summary>
-        /// 인덱스로 유닛 업데이트 (모듈 조합 변경).
+        /// 슬롯 저장/갱신.
         /// </summary>
-        public void UpdateUnit(int index, UnitLoadout unit)
+        public void SetSlot(int index, UnitLoadout unit)
         {
-            if (loadout == null || index < 0 || index >= loadout.Count) return;
-            loadout[index] = unit;
+            Normalize();
+            if (index < 0 || index >= MaxSlots)
+                return;
+
+            loadout[index] = unit?.Clone() ?? new UnitLoadout();
+        }
+
+        /// <summary>
+        /// 슬롯 비우기.
+        /// </summary>
+        public void ClearSlot(int index)
+        {
+            Normalize();
+            if (index < 0 || index >= MaxSlots)
+                return;
+
+            loadout[index] = new UnitLoadout();
         }
 
         /// <summary>
@@ -78,7 +137,34 @@ namespace Features.Garage.Domain
         /// </summary>
         public void Clear()
         {
-            loadout?.Clear();
+            loadout = new List<UnitLoadout>();
+            Normalize();
+        }
+
+        public GarageRoster Clone()
+        {
+            Normalize();
+
+            var cloned = new List<UnitLoadout>(MaxSlots);
+            for (int i = 0; i < MaxSlots; i++)
+                cloned.Add(GetSlot(i).Clone());
+
+            return new GarageRoster(cloned);
+        }
+
+        public UnitLoadout[] GetFilledLoadouts()
+        {
+            Normalize();
+
+            var filled = new List<UnitLoadout>();
+            for (int i = 0; i < MaxSlots; i++)
+            {
+                var slot = GetSlot(i);
+                if (slot.IsComplete)
+                    filled.Add(slot.Clone());
+            }
+
+            return filled.ToArray();
         }
     }
 }

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa51a681b0454114b8a7807fe3eb5b73, type: 3}
+  m_Name: ModuleCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.ModuleCatalog
+  unitFrames:
+  - {fileID: 11400000, guid: b4a383fad3b7ccd4bb98229fbada3b43, type: 2}
+  - {fileID: 11400000, guid: 9fbe05eb0ae5b474087fed9583f403e5, type: 2}
+  - {fileID: 11400000, guid: 4d1ba1e71063b6b439bd0a01677230c4, type: 2}
+  firepowerModules:
+  - {fileID: 11400000, guid: 4d6b420d1d80f8e4cbc5cebfcaab837f, type: 2}
+  - {fileID: 11400000, guid: 78e77ff89f6c2e44ebfcd5bbca1726be, type: 2}
+  - {fileID: 11400000, guid: 3f7c5bc33507e6d43b63d274945b1266, type: 2}
+  mobilityModules:
+  - {fileID: 11400000, guid: c4d6dfdd0f63d6a429847418ee7106af, type: 2}
+  - {fileID: 11400000, guid: 29ce7c904bbc1344b859ad4343b11d1e, type: 2}
+  - {fileID: 11400000, guid: f3279584f70707246ae94f9ee3f43f73, type: 2}

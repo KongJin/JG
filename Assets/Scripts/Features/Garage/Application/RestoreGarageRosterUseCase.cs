@@ -28,7 +28,7 @@ namespace Features.Garage.Application
                 return new GarageRoster.UnitLoadout[0];
             }
 
-            return roster.loadout.ToArray();
+            return roster.GetFilledLoadouts();
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Features.Garage.Application
                 return new GarageRoster.UnitLoadout[0];
             }
 
-            return roster.loadout.ToArray();
+            return roster.GetFilledLoadouts();
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Features.Garage.Application
                 var roster = kvp.Value;
                 if (roster != null && roster.IsValid)
                 {
-                    result[kvp.Key] = roster.loadout.ToArray();
+                    result[kvp.Key] = roster.GetFilledLoadouts();
                 }
             }
 

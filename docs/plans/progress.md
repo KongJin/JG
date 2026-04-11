@@ -1,6 +1,6 @@
 # 진행 상황 (Game Scene Entry)
 
-> **마지막 업데이트**: 2026-04-10
+> **마지막 업데이트**: 2026-04-11
 
 ## Phase 진행률
 
@@ -22,6 +22,14 @@
 - Phase 9: 명시적 `[PunRPC]` 기반 BattleEntity remote 사망 동기화 (현재 PUN 자동 전파에 의존)
 - Unity Inspector wiring 검증: `PlacementAreaView`, `DragGhostPrefab` 등 직렬화 참조 할당 확인
 - 실제 멀티플레이어 smoke 테스트: late-join, BattleEntity sync, Energy sync
+
+## 다음 작업 메모
+
+- `CodexLobbyScene`에 `Garage`를 별도 씬이 아닌 상단 탭 페이지로 구현했다.
+- 현재 범위는 `Garage UI + 자동 저장 + Ready 연동`이며, 기준 편성은 `6편성 / 최소 3기 Ready`다.
+- `Clear`로 최소 편성 수를 깨는 경우에만 Ready를 해제하고, 무효 조합은 슬롯에 확정 저장하지 않는다.
+- 다음 확인 포인트는 실제 플레이 테스트에서 Garage 탭 전환, 자동 저장, Ready auto-cancel 동작을 함께 검증하는 것이다.
+- 상세 계획은 [`codex_lobby_garage_panel_plan.md`](./codex_lobby_garage_panel_plan.md) 참고.
 
 ### 최근 변경 사항
 

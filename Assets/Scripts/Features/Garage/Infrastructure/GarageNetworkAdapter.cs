@@ -24,6 +24,7 @@ namespace Features.Garage.Infrastructure
         {
             if (PhotonNetwork.LocalPlayer == null) return;
 
+            roster?.Normalize();
             string json = JsonUtility.ToJson(new RosterWrapper { roster = roster });
             var props = new ExitGames.Client.Photon.Hashtable { { KeyGarageRoster, json } };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
@@ -40,7 +41,10 @@ namespace Features.Garage.Infrastructure
         public GarageRoster GetPlayerRoster(object playerId)
         {
             if (playerId is int actorNumber && _cachedRosters.TryGetValue(actorNumber, out var roster))
+            {
+                roster.Normalize();
                 return roster;
+            }
             return new GarageRoster();
         }
 
@@ -82,7 +86,9 @@ namespace Features.Garage.Infrastructure
                 try
                 {
                     var wrapper = JsonUtility.FromJson<RosterWrapper>(json);
-                    _cachedRosters[actorNumber] = wrapper?.roster ?? new GarageRoster();
+                    var roster = wrapper?.roster ?? new GarageRoster();
+                    roster.Normalize();
+                    _cachedRosters[actorNumber] = roster;
                 }
                 catch
                 {

@@ -39,18 +39,14 @@ namespace Features.Garage.Application
                 return Result.Failure(errorMessage);
             }
 
-            if (!roster.IsValid)
-            {
-                errorMessage = $"편성 유닛 수는 3~5기여야 합니다. (현재: {roster.Count}기)";
-                return Result.Failure(errorMessage);
-            }
+            roster.Normalize();
 
             // 로컬 저장 (보조 캐시)
             _persistence.Save(roster);
 
             // 네트워크 동기화 (실제 전투 진입용 데이터)
             _network.SyncRoster(roster);
-            _network.SyncReady(true);
+            _network.SyncReady(roster.IsValid);
 
             _eventBus.Publish(new RosterSavedEvent(roster));
 

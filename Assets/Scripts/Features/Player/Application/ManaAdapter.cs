@@ -27,25 +27,25 @@ namespace Features.Player.Application
 
         public bool TrySpendMana(DomainEntityId casterId, float cost)
         {
-            if (!_player.SpendMana(cost))
+            if (!_player.SpendEnergy(cost))
                 return false;
 
             PublishManaChanged();
-            _network.SyncMana(_player.Id, _player.CurrentMana, _player.MaxMana);
+            _network.SyncEnergy(_player.Id, _player.CurrentEnergy, _player.MaxEnergy);
             return true;
         }
 
         public float GetCurrentMana(DomainEntityId casterId)
         {
-            return _player.CurrentMana;
+            return _player.CurrentEnergy;
         }
 
         public void TickRegen(float deltaTime, float currentTime)
         {
-            var prevMana = _player.CurrentMana;
-            _player.RegenMana(deltaTime);
+            var prevMana = _player.CurrentEnergy;
+            _player.RegenEnergy(deltaTime, _player.Spec.EnergyRegenPerSecond);
 
-            if (_player.CurrentMana == prevMana)
+            if (_player.CurrentEnergy == prevMana)
                 return;
 
             PublishManaChanged();
@@ -53,14 +53,14 @@ namespace Features.Player.Application
             if (currentTime - _lastSyncTime >= SyncInterval)
             {
                 _lastSyncTime = currentTime;
-                _network.SyncMana(_player.Id, _player.CurrentMana, _player.MaxMana);
+                _network.SyncEnergy(_player.Id, _player.CurrentEnergy, _player.MaxEnergy);
             }
         }
 
         private void PublishManaChanged()
         {
-            _publisher.Publish(new PlayerManaChangedEvent(
-                _player.Id, _player.CurrentMana, _player.MaxMana));
+            _publisher.Publish(new PlayerEnergyChangedEvent(
+                _player.Id, _player.CurrentEnergy, _player.MaxEnergy));
         }
     }
 }

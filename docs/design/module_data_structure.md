@@ -467,7 +467,7 @@ namespace Features.Garage.Infrastructure
 namespace Features.Garage.Domain
 {
     /// <summary>
-    /// 플레이어의 차고 편성. 3~5기 유닛 + 각각의 모듈 조합 저장.
+    /// 플레이어의 차고 편성. 3~6기 유닛 + 각각의 모듈 조합 저장.
     /// </summary>
     [Serializable]
     public sealed class GarageRoster
@@ -543,7 +543,7 @@ namespace Features.Garage.Infrastructure
 |---|---|
 | `SkillData` (ScriptableObject) | `UnitFrameData` + `FirepowerModuleData` + `MobilityModuleData` |
 | `manaCost` | `CostCalculator` 자동 계산 |
-| `Deck` | `GarageRoster` (3~5기 편성) |
+| `Deck` | `GarageRoster` (3~6기 편성) |
 | `InitializeDeckUseCase` | `InitializeGarageUseCase` |
 
 ### 과도기 허용 상태

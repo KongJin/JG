@@ -1,11 +1,13 @@
 using Shared.Attributes;
 using System.Collections.Generic;
+using Features.Garage.Application;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
 using Features.Lobby.Domain;
 using Shared.ErrorHandling;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Lifecycle;
 using Shared.Runtime.Pooling;
 using TMPro;
 using UnityEngine;
@@ -52,17 +54,21 @@ namespace Features.Lobby.Presentation
         private Button _startGameButton;
 
         private LobbyUseCases _useCases;
+        private IEventSubscriber _eventSubscriber;
         private IEventPublisher _eventPublisher;
+        private DisposableScope _disposables = new();
 
         private GameObjectPool _memberItemPool;
         private DomainEntityId _currentRoomId;
         private DomainEntityId _localMemberId;
         private bool _localIsReady;
+        private bool _garageReadyEligible;
         private readonly List<GameObject> _activeItems = new();
 
-        public void Initialize(LobbyUseCases useCases, IEventPublisher eventPublisher)
+        public void Initialize(LobbyUseCases useCases, IEventSubscriber eventSubscriber, IEventPublisher eventPublisher)
         {
             _useCases = useCases;
+            _eventSubscriber = eventSubscriber;
             _eventPublisher = eventPublisher;
             _memberItemPool = new GameObjectPool(_memberItemPrefab.gameObject, _memberListContent);
 
@@ -76,6 +82,12 @@ namespace Features.Lobby.Presentation
                 _readyButton.onClick.AddListener(HandleToggleReady);
             if (_startGameButton != null)
                 _startGameButton.onClick.AddListener(HandleStartGame);
+
+            _disposables.Dispose();
+            _disposables = new DisposableScope();
+            _disposables.Add(EventBusSubscription.ForOwner(_eventSubscriber, this));
+            _eventSubscriber.Subscribe<GarageInitializedEvent>(this, e => HandleGarageRosterChanged(e.Roster));
+            _eventSubscriber.Subscribe<RosterSavedEvent>(this, e => HandleGarageRosterChanged(e.Roster));
         }
 
         public void SetLocalMemberId(DomainEntityId memberId)
@@ -107,6 +119,7 @@ namespace Features.Lobby.Presentation
 
             RenderMemberList(room.Members);
             UpdateLocalReadyState(room.Members);
+            UpdateReadyButtonState();
 
             if (_startGameButton != null)
                 _startGameButton.interactable = room.OwnerId.Equals(_localMemberId);
@@ -131,11 +144,11 @@ namespace Features.Lobby.Presentation
                 if (member.Id.Equals(_localMemberId))
                 {
                     _localIsReady = member.IsReady;
-                    if (_readyButtonText != null)
-                        _readyButtonText.text = _localIsReady ? "Cancel" : "Ready";
                     break;
                 }
             }
+
+            UpdateReadyButtonState();
         }
 
         private void HandleLeave()
@@ -152,6 +165,15 @@ namespace Features.Lobby.Presentation
 
         private void HandleToggleReady()
         {
+            if (!_garageReadyEligible && !_localIsReady)
+            {
+                UiErrorResultBridge.PublishBannerIfFailure(
+                    _eventPublisher,
+                    Result.Failure("Ready requires at least 3 saved Garage units."),
+                    "Lobby");
+                return;
+            }
+
             var result = _useCases.SetReady(_currentRoomId, _localMemberId, !_localIsReady);
             UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
         }
@@ -167,6 +189,44 @@ namespace Features.Lobby.Presentation
             foreach (var go in _activeItems)
                 _memberItemPool.Return(go);
             _activeItems.Clear();
+        }
+
+        private void HandleGarageRosterChanged(Features.Garage.Domain.GarageRoster roster)
+        {
+            _garageReadyEligible = roster != null && roster.IsValid;
+
+            if (!_garageReadyEligible && _localIsReady && !string.IsNullOrEmpty(_currentRoomId.Value) && !string.IsNullOrEmpty(_localMemberId.Value))
+            {
+                var result = _useCases.SetReady(_currentRoomId, _localMemberId, false);
+                UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
+                _localIsReady = false;
+            }
+
+            UpdateReadyButtonState();
+        }
+
+        private void UpdateReadyButtonState()
+        {
+            if (_readyButton == null)
+                return;
+
+            _readyButton.interactable = _garageReadyEligible || _localIsReady;
+
+            if (_readyButtonText == null)
+                return;
+
+            if (!_garageReadyEligible && !_localIsReady)
+            {
+                _readyButtonText.text = "Need 3 Units";
+                return;
+            }
+
+            _readyButtonText.text = _localIsReady ? "Cancel" : "Ready";
+        }
+
+        private void OnDestroy()
+        {
+            _disposables.Dispose();
         }
     }
 }
