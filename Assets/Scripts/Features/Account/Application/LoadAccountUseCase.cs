@@ -29,7 +29,7 @@ namespace Features.Account.Application
 
             return new AccountData
             {
-                Account = account,
+                Profile = account,
                 Stats = stats ?? new PlayerStats(),
                 Settings = settings ?? new UserSettings(),
                 GarageRoster = garage
