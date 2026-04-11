@@ -777,7 +777,7 @@ GameObject:
   - component: {fileID: 132455969}
   - component: {fileID: 132455968}
   m_Layer: 0
-  m_Name: LobbyBootstrap
+  m_Name: LobbySetup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -792,15 +792,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 132455967}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c52e46666b71b78428ff54d7d73b4767, type: 3}
+  m_Script: {fileID: 11500000, guid: f34823ad48af7cc4cb445b690366f2f6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LobbyBootstrap
+  m_EditorClassIdentifier: Assembly-CSharp::LobbySetup
   _view: {fileID: 1779197428}
   _photonAdapter: {fileID: 1307649040}
   _sceneErrorPresenter: {fileID: 883618688}
   _soundPlayer: {fileID: 1760273551}
-  _unitBootstrap: {fileID: 1395573295}
-  _garageBootstrap: {fileID: 144047011}
+  _unitSetup: {fileID: 1395573295}
+  _garageSetup: {fileID: 144047011}
   _sessionStartTime: 0
 --- !u!4 &132455969
 Transform:
@@ -828,7 +828,7 @@ GameObject:
   - component: {fileID: 144047012}
   - component: {fileID: 144047011}
   m_Layer: 0
-  m_Name: GarageBootstrap
+  m_Name: GarageSetup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -843,9 +843,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 144047010}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3af29bb7765b58440afc78471554eb1b, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c196a0ea1be0b841bb4f7afe52e4bc3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Garage.GarageBootstrap
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Garage.GarageSetup
   _networkAdapter: {fileID: 1861058838}
   _panelView: {fileID: 297768832}
 --- !u!4 &144047012
@@ -11442,7 +11442,7 @@ GameObject:
   - component: {fileID: 1395573296}
   - component: {fileID: 1395573295}
   m_Layer: 0
-  m_Name: UnitBootstrap
+  m_Name: UnitSetup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11457,9 +11457,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1395573294}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13b16ebd74fbce543a10b900a43c4acf, type: 3}
+  m_Script: {fileID: 11500000, guid: 908fcf39faf5766449d7d049bb6385ec, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.UnitBootstrap
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.UnitSetup
   _moduleCatalog: {fileID: 11400000, guid: 24fdccea3da65de4f9bbb1cd8b6f9327, type: 2}
   _summonAdapter: {fileID: 0}
 --- !u!4 &1395573296
