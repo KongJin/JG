@@ -71,10 +71,7 @@ $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $BaseUrl
 $resultPathResolved = if ([string]::IsNullOrWhiteSpace($ResultJsonPath)) { Get-DefaultResultJsonPath } else { $ResultJsonPath }
 
 if (-not [string]::IsNullOrWhiteSpace($ScenePath)) {
-    Invoke-McpJson -Root $root -SubPath "/scene/open" -Body @{
-        scenePath = $ScenePath
-        saveCurrentSceneIfDirty = $true
-    } | Out-Null
+    Invoke-McpSceneOpenAndWait -Root $root -ScenePath $ScenePath -SaveCurrentSceneIfDirty $true -TimeoutSec 60 -PollSec 0.5 | Out-Null
 }
 
 $health = Invoke-McpGetJson -Root $root -SubPath "/health"

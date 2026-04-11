@@ -6,7 +6,7 @@
 [CmdletBinding()]
 param(
     [string]$BaseUrl,
-    [string]$TargetScene = "Assets/Scenes/JG_GameScene.unity",
+    [string]$TargetScene = "Assets/Scenes/GameScene.unity",
     [string]$RootPath = "/UIRoot",
     [int]$MaxDepth = 12,
     [int]$PlayModeReadyTimeoutSec = 120,
@@ -106,11 +106,8 @@ try {
     # Enter play mode if not already
     if (-not $h.isPlaying) {
         Write-Host "Opening scene and starting play mode..." -ForegroundColor Yellow
-        Invoke-McpJson -Root $root -SubPath "/scene/open" -Body @{
-            scenePath = $TargetScene
-            saveCurrentSceneIfDirty = $true
-        }
-        Invoke-McpJson -Root $root -SubPath "/play/start"
+        Invoke-McpSceneOpenAndWait -Root $root -ScenePath $TargetScene -SaveCurrentSceneIfDirty $true -TimeoutSec 60 -PollSec $PlayModePollSec | Out-Null
+        Invoke-McpPlayStartAndWaitForBridge -Root $root -TimeoutSec $PlayModeReadyTimeoutSec -PollSec $PlayModePollSec | Out-Null
 
         Write-Host "Waiting for play mode ready..." -ForegroundColor Yellow
         Wait-McpPlayModeReady -Root $root -TimeoutSec $PlayModeReadyTimeoutSec -PollSec $PlayModePollSec | Out-Null

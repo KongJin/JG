@@ -22,7 +22,7 @@ namespace Features.Lobby.Infrastructure.Photon
             ILobbyNetworkCallbackPort
     {
         [Required, SerializeField]
-        private string DefaultGameSceneName = "JG_GameScene";
+        private string DefaultGameSceneName = "GameScene";
 
         private readonly PhotonPlayerPropertyManager _propertyManager = new();
 

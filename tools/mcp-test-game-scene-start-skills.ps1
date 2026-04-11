@@ -1,4 +1,4 @@
-# JG_GameScene 플레이 중일 때만: 시작 스킬 2개 선택 + 확인 (MCP 버튼 invoke)
+# GameScene 플레이 중일 때만: 시작 스킬 2개 선택 + 확인 (MCP 버튼 invoke)
 # 로비 없이 게임 씬만 열어 둔 뒤 또는 -CompleteGameSceneStartSkills 대신 수동 진입 후 사용.
 
 [CmdletBinding()]
@@ -14,12 +14,12 @@ $ErrorActionPreference = "Stop"
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $BaseUrl
 $h = Invoke-McpGetJson -Root $root -SubPath "/health"
 if (-not $h.ok) { throw "MCP /health not ok." }
-if (-not $h.isPlaying) { throw "Play mode is off. Enter play on JG_GameScene first." }
-if ($h.activeScene -ne "JG_GameScene") {
-    throw "Active scene is '$($h.activeScene)', expected JG_GameScene."
+if (-not $h.isPlaying) { throw "Play mode is off. Enter play on GameScene first." }
+if ($h.activeScene -ne "GameScene") {
+    throw "Active scene is '$($h.activeScene)', expected GameScene."
 }
 
-Write-Host "MCP: $root | scene=JG_GameScene | start skill UI invoke" -ForegroundColor Cyan
+Write-Host "MCP: $root | scene=GameScene | start skill UI invoke" -ForegroundColor Cyan
 
 $p0 = Get-McpUiPath -Key "Game.StartSkillButton0"
 $p1 = Get-McpUiPath -Key "Game.StartSkillButton1"
@@ -42,6 +42,6 @@ Write-Host "Screenshot: $($r.relativePath)" -ForegroundColor Green
 Write-McpRecentConsole -Root $root -Label "after start skill confirm" -LogLimit 60 -ErrorLimit 20
 
 if (-not $NoStopPlay) {
-    Invoke-McpJson -Root $root -SubPath "/play/stop"
+    Invoke-McpPlayStopAndWait -Root $root -TimeoutSec 90 -PollSec 0.5 | Out-Null
     Write-Host "Play stopped." -ForegroundColor Gray
 }

@@ -5,22 +5,25 @@
                         "signature":  "static-scan-failed|static-scan|agent/architecture.md|code_fix|Before=# After=# Resolved=# Expected=# NewHigh=#",
                         "scopeType":  "global",
                         "scopePath":  "agent/architecture.md",
-                        "symptoms":  "Before=2 After=2 Resolved=0 Expected=1 NewHigh=0",
+                        "symptoms":  "Before=8 After=7 Resolved=0 Expected=1 NewHigh=0",
                         "preferredRepairStrategy":  "Amend the owning global rule doc before retrying.",
                         "validationHints":  [
                                                 "target_files_exist",
                                                 "expected_findings_resolved",
                                                 "no_new_high_severity_findings",
                                                 "feature_root_contract_present",
-                                                "owner_doc_references_resolve"
+                                                "owner_doc_references_resolve",
+                                                "Tests/Projectile/Run-ProjectileValidation.ps1",
+                                                "feature_test_assets_present"
                                             ],
-                        "confidence":  "low",
-                        "hitCount":  1,
-                        "distinctCommitCount":  1,
+                        "confidence":  "medium",
+                        "hitCount":  2,
+                        "distinctCommitCount":  2,
                         "commitShas":  [
-                                           "eebb079f5e56493dc34bbc1193ac950e5737bab8"
+                                           "eebb079f5e56493dc34bbc1193ac950e5737bab8",
+                                           "792f1531d72ef229713a376d365ad4f854ded97e"
                                        ],
-                        "lastSeen":  "2026-04-08T23:38:40.8107560Z",
+                        "lastSeen":  "2026-04-10T21:01:04.8196044Z",
                         "promotionTarget":  "docs/design/unit_module_design.md",
                         "status":  "observed"
                     },

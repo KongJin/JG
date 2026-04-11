@@ -1,6 +1,6 @@
-# JG_LobbyScene → (선택) JG_GameScene 시작 스킬 선택까지 MCP 단계 테스트. 스크린샷 + /console/logs + JSON 요약
+# LobbyScene → (선택) GameScene 시작 스킬 선택까지 MCP 단계 테스트. 스크린샷 + /console/logs + JSON 요약
 # 전제: MCP 브리지, Photon, 씬 입력 기본값(방 이름 등)
-# 플레이 안정화 → /health 로 JG_LobbyScene 확인 → PhotonWaitSec(기본 3초) 후 버튼 시퀀스.
+# 플레이 안정화 → /health 로 LobbyScene 확인 → PhotonWaitSec(기본 3초) 후 버튼 시퀀스.
 # JSON: -ResultJsonPath (기본 Temp/UnityMcp/last-lobby-scene-test.json), -WriteJsonToStdout
 
 [CmdletBinding()]
@@ -137,34 +137,23 @@ try {
 
     Write-McpRecentConsole -Root $root -Label "before flow" -LogLimit 40 -ErrorLimit 10
 
-    $lobbyScenePath = "Assets/Scenes/JG_LobbyScene.unity"
-    if ($h.isPlaying -and $h.activeScene -ne "JG_LobbyScene") {
+    $lobbyScenePath = "Assets/Scenes/LobbyScene.unity"
+    if ($h.isPlaying -and $h.activeScene -ne "LobbyScene") {
         $script:CurrentStep = "stop_play_wrong_scene"
         Write-Host "Stopping play (was $($h.activeScene))..." -ForegroundColor Yellow
-        Invoke-McpJson -Root $root -SubPath "/play/stop"
-        $stopDeadline = (Get-Date).AddSeconds(90)
-        while ((Get-Date) -lt $stopDeadline) {
-            try {
-                $h = Invoke-McpGetJson -Root $root -SubPath "/health"
-                if (-not $h.isPlaying -and -not (Get-McpPlayModeChanging -State $h)) { break }
-            }
-            catch { }
-            Start-Sleep -Seconds $PlayModePollSec
-        }
+        $stopResult = Invoke-McpPlayStopAndWait -Root $root -TimeoutSec 90 -PollSec $PlayModePollSec
+        $h = $stopResult.StoppedState
         Add-TestStep -Name "stop_play_for_lobby" -Ok (-not $h.isPlaying) -Detail "was_not_lobby_scene"
     }
 
     if (-not $h.isPlaying) {
         $script:CurrentStep = "scene_open_play_start"
-        Invoke-McpJson -Root $root -SubPath "/scene/open" -Body @{
-            scenePath               = $lobbyScenePath
-            saveCurrentSceneIfDirty = $true
-        }
-        Invoke-McpJson -Root $root -SubPath "/play/start"
+        Invoke-McpSceneOpenAndWait -Root $root -ScenePath $lobbyScenePath -SaveCurrentSceneIfDirty $true -TimeoutSec 60 -PollSec $PlayModePollSec | Out-Null
+        Invoke-McpPlayStartAndWaitForBridge -Root $root -TimeoutSec $PlayModeReadyTimeoutSec -PollSec $PlayModePollSec | Out-Null
         Add-TestStep -Name "scene_open_and_play_start" -Ok $true
     }
     else {
-        Write-Host "Already playing JG_LobbyScene — skip open/start." -ForegroundColor Gray
+        Write-Host "Already playing LobbyScene — skip open/start." -ForegroundColor Gray
         Add-TestStep -Name "scene_open_and_play_start" -Ok $true -Detail "skipped_already_in_lobby_play"
     }
 
@@ -174,8 +163,8 @@ try {
     Add-TestStep -Name "play_mode_ready" -Ok $true -ElapsedMs $pm.ElapsedMs
 
     $script:CurrentStep = "lobby_scene_active"
-    Write-Host "Wait active scene JG_LobbyScene (timeout ${LobbySceneActiveTimeoutSec}s)..." -ForegroundColor Yellow
-    $ls = Wait-McpSceneActive -Root $root -SceneName "JG_LobbyScene" -TimeoutSec $LobbySceneActiveTimeoutSec -PollSec $PlayModePollSec
+    Write-Host "Wait active scene LobbyScene (timeout ${LobbySceneActiveTimeoutSec}s)..." -ForegroundColor Yellow
+    $ls = Wait-McpSceneActive -Root $root -SceneName "LobbyScene" -TimeoutSec $LobbySceneActiveTimeoutSec -PollSec $PlayModePollSec
     Add-TestStep -Name "lobby_scene_active" -Ok $true -ElapsedMs $ls.ElapsedMs
 
     $script:CurrentStep = "lobby_settle_wait"
@@ -221,22 +210,22 @@ try {
     Write-Host "`nAfter: scene=$($h2.activeScene) playing=$($h2.isPlaying)" -ForegroundColor Green
 
     for ($i = 1; $i -le 5; $i++) {
-        if ($h2.activeScene -eq "JG_GameScene") { break }
+        if ($h2.activeScene -eq "GameScene") { break }
         Start-Sleep -Seconds 3
         $h2 = Invoke-McpGetJson -Root $root -SubPath "/health"
         $script:LastHealth = $h2
         Write-Host "Poll $i : scene=$($h2.activeScene)"
     }
 
-    $inGame = ($h2.activeScene -eq "JG_GameScene")
+    $inGame = ($h2.activeScene -eq "GameScene")
     Add-TestStep -Name "game_scene" -Ok $inGame -Detail "activeScene=$($h2.activeScene)"
     if (-not $inGame -and $null -eq $script:Failure) {
-        $script:Failure = @{ step = "game_scene"; message = "Expected JG_GameScene, was $($h2.activeScene)." }
+        $script:Failure = @{ step = "game_scene"; message = "Expected GameScene, was $($h2.activeScene)." }
     }
 
     if ($inGame) {
         Capture-McpStep -Root $root -Name "05-game-scene" | Out-Null
-        Write-McpRecentConsole -Root $root -Label "on JG_GameScene" -LogLimit 60 -ErrorLimit 15
+        Write-McpRecentConsole -Root $root -Label "on GameScene" -LogLimit 60 -ErrorLimit 15
 
         if ($CompleteGameSceneStartSkills) {
             $script:CurrentStep = "start_skills"
@@ -267,12 +256,12 @@ try {
     elseif ($CompleteGameSceneStartSkills) {
         Add-TestStep -Name "start_skills" -Ok $false -Detail "skipped_not_in_game_scene"
         $script:TestOk = $false
-        $script:Failure = @{ step = "game_scene"; message = "Expected JG_GameScene for start skills." }
+        $script:Failure = @{ step = "game_scene"; message = "Expected GameScene for start skills." }
     }
 
     if (-not $NoStopPlay) {
         $script:CurrentStep = "play_stop"
-        Invoke-McpJson -Root $root -SubPath "/play/stop"
+        Invoke-McpPlayStopAndWait -Root $root -TimeoutSec 90 -PollSec $PlayModePollSec | Out-Null
         Write-Host "Play stopped." -ForegroundColor Gray
         Add-TestStep -Name "play_stop" -Ok $true
     }

@@ -46,6 +46,45 @@ function Invoke-McpGetJson {
     return Invoke-RestMethod -Method Get -Uri $uri
 }
 
+function Wait-McpBridgeHealthy {
+    param(
+        [string]$Root,
+        [int]$TimeoutSec = 60,
+        [double]$PollSec = 0.5
+    )
+
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    $lastError = $null
+
+    while ((Get-Date) -lt $deadline) {
+        try {
+            $state = Invoke-McpGetJson -Root $Root -SubPath "/health"
+            if ($null -ne $state -and $state.ok) {
+                $sw.Stop()
+                return @{
+                    State = $state
+                    ElapsedMs = $sw.ElapsedMilliseconds
+                }
+            }
+
+            $lastError = "MCP /health returned ok=false."
+        }
+        catch {
+            $lastError = $_.Exception.Message
+        }
+
+        Start-Sleep -Seconds $PollSec
+    }
+
+    $sw.Stop()
+    if ([string]::IsNullOrWhiteSpace($lastError)) {
+        $lastError = "Unknown bridge health failure."
+    }
+
+    throw "Unity MCP bridge did not become healthy within ${TimeoutSec}s. Last error: $lastError"
+}
+
 function Get-McpPlayModeChanging {
     param([object]$State)
 
@@ -87,6 +126,92 @@ function Wait-McpPlayModeReady {
 
     $sw.Stop()
     throw "Play mode did not stabilize within ${TimeoutSec}s."
+}
+
+function Wait-McpPlayModeStopped {
+    param(
+        [string]$Root,
+        [int]$TimeoutSec,
+        [double]$PollSec
+    )
+
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    while ((Get-Date) -lt $deadline) {
+        try {
+            $state = Invoke-McpGetJson -Root $Root -SubPath "/health"
+            if (-not $state.isPlaying -and -not (Get-McpPlayModeChanging -State $state)) {
+                $sw.Stop()
+                return @{
+                    State = $state
+                    ElapsedMs = $sw.ElapsedMilliseconds
+                }
+            }
+        }
+        catch { }
+
+        Start-Sleep -Seconds $PollSec
+    }
+
+    $sw.Stop()
+    throw "Play mode did not stop within ${TimeoutSec}s."
+}
+
+function Invoke-McpSceneOpenAndWait {
+    param(
+        [string]$Root,
+        [string]$ScenePath,
+        [bool]$SaveCurrentSceneIfDirty = $true,
+        [int]$TimeoutSec = 60,
+        [double]$PollSec = 0.5
+    )
+
+    $response = Invoke-McpJson -Root $Root -SubPath "/scene/open" -Body @{
+        scenePath = $ScenePath
+        saveCurrentSceneIfDirty = $SaveCurrentSceneIfDirty
+    }
+
+    $health = Wait-McpBridgeHealthy -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec
+    return [PSCustomObject]@{
+        Response = $response
+        Health = $health.State
+        ElapsedMs = $health.ElapsedMs
+    }
+}
+
+function Invoke-McpPlayStartAndWaitForBridge {
+    param(
+        [string]$Root,
+        [int]$TimeoutSec = 60,
+        [double]$PollSec = 0.5
+    )
+
+    $response = Invoke-McpJson -Root $Root -SubPath "/play/start"
+    $health = Wait-McpBridgeHealthy -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec
+    return [PSCustomObject]@{
+        Response = $response
+        Health = $health.State
+        ElapsedMs = $health.ElapsedMs
+    }
+}
+
+function Invoke-McpPlayStopAndWait {
+    param(
+        [string]$Root,
+        [int]$TimeoutSec = 90,
+        [double]$PollSec = 0.5
+    )
+
+    $response = Invoke-McpJson -Root $Root -SubPath "/play/stop"
+    $bridge = Wait-McpBridgeHealthy -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec
+    $stopped = Wait-McpPlayModeStopped -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec
+
+    return [PSCustomObject]@{
+        Response = $response
+        Health = $bridge.State
+        StoppedState = $stopped.State
+        ElapsedMs = $bridge.ElapsedMs + $stopped.ElapsedMs
+    }
 }
 
 function Wait-McpSceneActive {
