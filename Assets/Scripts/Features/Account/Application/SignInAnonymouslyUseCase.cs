@@ -29,7 +29,7 @@ namespace Features.Account.Application
                 await _dataPort.SaveProfile(account, token.IdToken);
             }
 
-            return account;
+            return Result<AccountProfile>.Success(account);
         }
     }
 }
