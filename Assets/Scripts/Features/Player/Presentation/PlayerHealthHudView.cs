@@ -39,21 +39,6 @@ namespace Features.Player.Presentation
         private void Awake()
         {
             _rectTransform = transform as RectTransform;
-
-            if (_healthSlider == null)
-            {
-                Debug.LogError("[PlayerHealthHudView] HealthSlider is not assigned.", this);
-            }
-
-            if (_healthFillImage == null)
-            {
-                Debug.LogError("[PlayerHealthHudView] HealthFillImage is not assigned.", this);
-            }
-
-            if (_rectTransform == null)
-            {
-                Debug.LogError("[PlayerHealthHudView] RectTransform is missing.", this);
-            }
         }
 
         public void Initialize(
@@ -133,7 +118,7 @@ namespace Features.Player.Presentation
 
         private void OnDestroy()
         {
-            _eventBus?.UnsubscribeAll(this);
+            _eventBus.UnsubscribeAll(this);
         }
 
         private void OnHealthChanged(PlayerHealthChangedEvent e)
