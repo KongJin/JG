@@ -39,9 +39,16 @@ namespace Features.Garage.Presentation
             _isInitialized = true;
             _state.Initialize(_setup.InitializeGarage.Execute() ?? new GarageRoster());
 
-            if (!_setup.SaveRoster.Execute(_state.CommittedRoster, out var errorMessage).IsSuccess)
-                _state.SetValidationOverride(errorMessage);
+            _ = SaveRosterAsync(_state.CommittedRoster);
 
+            Render();
+        }
+
+        private async System.Threading.Tasks.Task SaveRosterAsync(GarageRoster roster)
+        {
+            var result = await _setup.SaveRoster.Execute(roster);
+            if (!result.IsSuccess)
+                _state.SetValidationOverride(result.Error);
             Render();
         }
 
@@ -89,14 +96,15 @@ namespace Features.Garage.Presentation
             Render();
         }
 
-        private void ClearSelectedSlot()
+        private async void ClearSelectedSlot()
         {
             var updatedRoster = _state.CommittedRoster.Clone();
             updatedRoster.ClearSlot(_state.SelectedSlotIndex);
 
-            if (!_setup.SaveRoster.Execute(updatedRoster, out var errorMessage).IsSuccess)
+            var result = await _setup.SaveRoster.Execute(updatedRoster);
+            if (!result.IsSuccess)
             {
-                _state.SetValidationOverride(errorMessage);
+                _state.SetValidationOverride(result.Error);
                 Render();
                 return;
             }
@@ -107,7 +115,7 @@ namespace Features.Garage.Presentation
             Render();
         }
 
-        private void TryCommitEditingDraft()
+        private async void TryCommitEditingDraft()
         {
             _state.ClearValidationOverride();
 
@@ -127,9 +135,10 @@ namespace Features.Garage.Presentation
                 _state.EditingFirepowerId,
                 _state.EditingMobilityId));
 
-            if (!_setup.SaveRoster.Execute(updatedRoster, out var errorMessage).IsSuccess)
+            var result = await _setup.SaveRoster.Execute(updatedRoster);
+            if (!result.IsSuccess)
             {
-                _state.SetValidationOverride(errorMessage);
+                _state.SetValidationOverride(result.Error);
                 return;
             }
 

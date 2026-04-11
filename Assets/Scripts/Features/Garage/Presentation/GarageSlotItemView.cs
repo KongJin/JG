@@ -18,7 +18,18 @@ namespace Features.Garage.Presentation
         [SerializeField] private Color _filledColor = new(0.17f, 0.21f, 0.32f, 1f);
         [SerializeField] private Color _emptyColor = new(0.10f, 0.12f, 0.18f, 0.92f);
 
+        [Header("Layout")]
+        [SerializeField] private float _preferredHeight = 92f;
+        [SerializeField] private float _slotNumberFontSize = 13f;
+        [SerializeField] private float _titleFontSize = 18f;
+        [SerializeField] private float _summaryFontSize = 12f;
+
         public Button Button => _button;
+
+        private void Awake()
+        {
+            NormalizeLayout();
+        }
 
         public void Render(GarageSlotViewModel viewModel)
         {
@@ -40,6 +51,26 @@ namespace Features.Garage.Presentation
                     ? _selectedColor
                     : (viewModel.HasCommittedLoadout ? _filledColor : _emptyColor);
             }
+        }
+
+        private void NormalizeLayout()
+        {
+            if (TryGetComponent<LayoutElement>(out var layoutElement))
+                layoutElement.preferredHeight = _preferredHeight;
+
+            ConfigureText(_slotNumberText, _slotNumberFontSize);
+            ConfigureText(_titleText, _titleFontSize);
+            ConfigureText(_summaryText, _summaryFontSize);
+        }
+
+        private static void ConfigureText(TMP_Text text, float fontSize)
+        {
+            if (text == null)
+                return;
+
+            text.fontSize = fontSize;
+            text.enableWordWrapping = false;
+            text.overflowMode = TextOverflowModes.Ellipsis;
         }
     }
 }

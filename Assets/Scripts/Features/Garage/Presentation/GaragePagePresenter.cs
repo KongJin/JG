@@ -28,7 +28,7 @@ namespace Features.Garage.Presentation
                     title = Catalog?.FindFrame(loadout.frameId)?.DisplayName ?? loadout.frameId;
                     var firepowerName = Catalog?.FindFirepower(loadout.firepowerModuleId)?.DisplayName ?? loadout.firepowerModuleId;
                     var mobilityName = Catalog?.FindMobility(loadout.mobilityModuleId)?.DisplayName ?? loadout.mobilityModuleId;
-                    summary = $"{firepowerName} / {mobilityName}";
+                    summary = $"{firepowerName} | {mobilityName}";
                 }
 
                 slotViewModels.Add(new GarageSlotViewModel(
@@ -80,16 +80,16 @@ namespace Features.Garage.Presentation
                 subtitle,
                 frame != null ? frame.DisplayName : "< Select Frame >",
                 frame != null
-                    ? $"Base HP {frame.BaseHp:0}  |  Base ASPD {frame.BaseAttackSpeed:0.00}"
-                    : "Choose the chassis that defines the unit's passive and base profile.",
+                    ? $"HP {frame.BaseHp:0}  ASPD {frame.BaseAttackSpeed:0.00}"
+                    : "Choose chassis",
                 firepower != null ? firepower.DisplayName : "< Select Firepower >",
                 firepower != null
-                    ? $"DMG {firepower.AttackDamage:0}  |  ASPD {firepower.AttackSpeed:0.00}  |  Range {firepower.Range:0.0}"
-                    : "Choose the weapon module that sets range and damage tempo.",
+                    ? $"DMG {firepower.AttackDamage:0}  ASPD {firepower.AttackSpeed:0.00}  RNG {firepower.Range:0.0}"
+                    : "Choose weapon",
                 mobility != null ? mobility.DisplayName : "< Select Mobility >",
                 mobility != null
-                    ? $"HP +{mobility.HpBonus:0}  |  Move {mobility.MoveRange:0.0}  |  Anchor {mobility.AnchorRange:0.0}"
-                    : "Choose the mobility frame for survivability and anchor range.",
+                    ? $"HP +{mobility.HpBonus:0}  MOV {mobility.MoveRange:0.0}  ANC {mobility.AnchorRange:0.0}"
+                    : "Choose mobility",
                 hasCommittedUnit || hasAnyDraftSelection);
         }
 

@@ -1,4 +1,6 @@
 using Shared.Attributes;
+using Features.Account;
+using Features.Account.Presentation;
 using Features.Garage;
 using Features.Garage.Application.Ports;
 using Features.Lobby.Application;
@@ -31,6 +33,13 @@ public sealed class LobbySetup : MonoBehaviour
     [Required, SerializeField]
     private SoundPlayer _soundPlayer;
 
+    [Header("Account")]
+    [SerializeField]
+    private AccountSetup _accountSetup;
+
+    [SerializeField]
+    private LoginLoadingView _loginLoadingView;
+
     [SerializeField]
     private UnitSetup _unitSetup;
 
@@ -54,6 +63,48 @@ public sealed class LobbySetup : MonoBehaviour
         _analytics.LogSessionStart();
         RoundCounter.Reset();
 
+        // Account 초기화 (익명 로그인)
+        if (_accountSetup != null && _loginLoadingView != null)
+        {
+            _accountSetup.Initialize(_eventBus);
+            _loginLoadingView.SetOnLoginSuccess(OnAccountLoginSuccess);
+            _loginLoadingView.Show();
+            _ = RunAnonymousSignIn();
+            return; // 로그인 성공 후 나머지는 OnAccountLoginSuccess에서 계속
+        }
+
+        InitializeLobby();
+    }
+
+    private async System.Threading.Tasks.Task RunAnonymousSignIn()
+    {
+        try
+        {
+            var result = await _accountSetup.SignInAnonymously.Execute();
+            if (result.IsSuccess)
+            {
+                _loginLoadingView.OnLoginSuccess();
+            }
+            else
+            {
+                _loginLoadingView.OnLoginFailed(result.Error ?? "Unknown error");
+                // 재시도는 LoginLoadingView 내부에서 처리
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[LobbySetup] Anonymous sign-in failed: {ex.Message}");
+            _loginLoadingView.OnLoginFailed(ex.Message);
+        }
+    }
+
+    private void OnAccountLoginSuccess()
+    {
+        InitializeLobby();
+    }
+
+    private void InitializeLobby()
+    {
         var repository = new LobbyRepository();
         var network = _photonAdapter;
         var clock = new ClockAdapter();
@@ -78,12 +129,19 @@ public sealed class LobbySetup : MonoBehaviour
                     "[LobbySetup] GarageSetup is assigned but UnitSetup is missing. Garage initialization is skipped.",
                     this);
             }
+            else if (_accountSetup == null)
+            {
+                Debug.LogWarning(
+                    "[LobbySetup] GarageSetup is assigned but AccountSetup is missing. Garage initialization is skipped.",
+                    this);
+            }
             else
             {
                 _garageSetup.Initialize(
                     _eventBus,
                     _unitSetup.CompositionPort,
-                    _unitSetup.Catalog);
+                    _unitSetup.Catalog,
+                    _accountSetup.DataPort);
             }
         }
     }
@@ -102,6 +160,7 @@ public sealed class LobbySetup : MonoBehaviour
 
     private void OnDestroy()
     {
+        _accountSetup?.Cleanup();
         _garageSetup?.Cleanup();
         _unitSetup?.Cleanup();
     }

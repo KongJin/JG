@@ -1,3 +1,4 @@
+using Features.Account.Application.Ports;
 using Features.Garage.Application;
 using Features.Garage.Application.Ports;
 using Features.Garage.Infrastructure;
@@ -26,7 +27,7 @@ namespace Features.Garage
         [SerializeField]
         private GaragePageController _pageController;
 
-        private GarageJsonPersistence _persistence;
+        private IAccountDataPort _accountDataPort;
         private RosterValidationProvider _rosterValidationProvider;
         private DisposableScope _disposables;
 
@@ -36,6 +37,7 @@ namespace Features.Garage
         public ValidateRosterUseCase ValidateRoster { get; private set; }
         public SaveRosterUseCase SaveRoster { get; private set; }
         public IGarageNetworkPort NetworkPort => _networkAdapter;
+        public IAccountDataPort AccountDataPort => _accountDataPort;
 
         public GarageSetup Setup => this;
 
@@ -46,10 +48,10 @@ namespace Features.Garage
         public void Initialize(
             EventBus eventBus,
             IUnitCompositionPort compositionPort,
-            ModuleCatalog unitCatalog)
+            ModuleCatalog unitCatalog,
+            IAccountDataPort accountDataPort)
         {
-            // Infrastructure 어댑터 생성 (순수 C#만 new, Photon/MonoBehaviour는 Inspector 연결)
-            _persistence = new GarageJsonPersistence();
+            _accountDataPort = accountDataPort;
             _rosterValidationProvider = new RosterValidationProvider(unitCatalog);
 
             // Composition root — UseCase 조립
@@ -57,9 +59,13 @@ namespace Features.Garage
             _disposables = new DisposableScope();
 
             ComposeUnit = new ComposeUnitUseCase(compositionPort);
-            InitializeGarage = new InitializeGarageUseCase(_persistence, eventBus);
+            InitializeGarage = new InitializeGarageUseCase(new GarageJsonPersistence(), eventBus);
             ValidateRoster = new ValidateRosterUseCase(_rosterValidationProvider);
-            SaveRoster = new SaveRosterUseCase(_persistence, _networkAdapter, eventBus);
+            SaveRoster = new SaveRosterUseCase(
+                accountDataPort,
+                _networkAdapter,
+                eventBus,
+                () => Features.Account.Infrastructure.AuthTokenProvider.GetCurrentUid());
 
             if (_pageController != null)
                 _pageController.Initialize(this, BuildPanelCatalog(unitCatalog));

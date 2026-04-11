@@ -42,8 +42,17 @@ namespace Features.Account
             _disposables = new DisposableScope();
 
             // Infrastructure
-            AuthPort = new FirebaseAuthRestAdapter(_config.firebaseApiKey);
-            DataPort = new FirestoreRestPort(_config.firebaseApiKey, _config.projectId);
+            var authAdapter = new FirebaseAuthRestAdapter(_config.firebaseApiKey);
+            var firestorePort = new FirestoreRestPort(_config.firebaseApiKey, _config.projectId);
+
+            AuthPort = authAdapter;
+            DataPort = firestorePort;
+
+            // AuthTokenProvider 설정 (순환 의존성 방지)
+            Infrastructure.AuthTokenProvider.SetProviders(
+                () => AuthPort.GetCurrentUid(),
+                () => AuthPort.GetIdToken()
+            );
 
             // UseCases
             SignInAnonymously = new SignInAnonymouslyUseCase(AuthPort, DataPort);
@@ -53,9 +62,15 @@ namespace Features.Account
             DeleteAccount = new DeleteAccountUseCase(AuthPort, DataPort);
         }
 
-        private void OnDestroy()
+        public void Cleanup()
         {
             _disposables?.Dispose();
+            _disposables = null;
+        }
+
+        private void OnDestroy()
+        {
+            Cleanup();
         }
     }
 }

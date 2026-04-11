@@ -1,3 +1,4 @@
+using Features.Account.Application.Ports;
 using Features.Garage.Application.Ports;
 using Features.Garage.Domain;
 using Shared.EventBus;
@@ -7,42 +8,59 @@ namespace Features.Garage.Application
 {
     /// <summary>
     /// 편성 저장 UseCase.
-    /// 로컬 저장 + 네트워크 동기화.
+    /// Firestore 저장 + 네트워크 동기화.
     /// </summary>
     public sealed class SaveRosterUseCase
     {
-        private readonly IGaragePersistencePort _persistence;
+        private readonly IAccountDataPort _accountDataPort;
         private readonly IGarageNetworkPort _network;
         private readonly IEventPublisher _eventBus;
+        private readonly System.Func<string> _uidProvider;
 
         public SaveRosterUseCase(
-            IGaragePersistencePort persistence,
+            IAccountDataPort accountDataPort,
             IGarageNetworkPort network,
-            IEventPublisher eventBus)
+            IEventPublisher eventBus,
+            System.Func<string> uidProvider)
         {
-            _persistence = persistence;
+            _accountDataPort = accountDataPort;
             _network = network;
             _eventBus = eventBus;
+            _uidProvider = uidProvider;
         }
 
         /// <summary>
         /// 편성 저장 실행.
-        /// 로컬 JSON 저장 + Photon CustomProperties 동기화.
+        /// Firestore 저장 + Photon CustomProperties 동기화.
         /// </summary>
-        public Result Execute(GarageRoster roster, out string errorMessage)
+        public async System.Threading.Tasks.Task<Result> Execute(GarageRoster roster)
         {
-            errorMessage = null;
-
             if (roster == null)
             {
-                errorMessage = "저장할 편성 데이터가 없습니다.";
-                return Result.Failure(errorMessage);
+                return Result.Failure("저장할 편성 데이터가 없습니다.");
             }
 
             roster.Normalize();
 
-            // 로컬 저장 (보조 캐시)
-            _persistence.Save(roster);
+            string errorMessage = null;
+
+            // Firestore 저장 (클라우드 SSOT)
+            try
+            {
+                var uid = _uidProvider?.Invoke();
+                if (!string.IsNullOrEmpty(uid))
+                {
+                    var token = await GetIdToken();
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        await _accountDataPort.SaveGarage(roster, uid, token);
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                errorMessage = $"클라우드 저장 실패: {ex.Message}";
+            }
 
             // 네트워크 동기화 (실제 전투 진입용 데이터)
             _network.SyncRoster(roster);
@@ -50,7 +68,15 @@ namespace Features.Garage.Application
 
             _eventBus.Publish(new RosterSavedEvent(roster));
 
+            if (errorMessage != null)
+                return Result.Failure(errorMessage);
+
             return Result.Success();
+        }
+
+        private async System.Threading.Tasks.Task<string> GetIdToken()
+        {
+            return await Features.Account.Infrastructure.AuthTokenProvider.GetIdToken();
         }
     }
 }
