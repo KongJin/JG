@@ -43,6 +43,7 @@
     "missingFeatureBootstrap": "high",
     "unityInDomain": "high",
     "unityInApplication": "high",
+    "hardcodedMcpUiSmoke": "high",
     "brokenReference": "medium",
     "agentFailure": "high"
   },

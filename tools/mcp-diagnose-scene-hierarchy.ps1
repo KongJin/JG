@@ -12,7 +12,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-. (Join-Path $PSScriptRoot "mcp-test-common.ps1")
+. (Join-Path $PSScriptRoot "unity-mcp\McpHelpers.ps1")
 
 function Get-DefaultResultJsonPath {
     Join-Path $PSScriptRoot "..\Temp\UnityMcp\scene-hierarchy-diagnose.json"

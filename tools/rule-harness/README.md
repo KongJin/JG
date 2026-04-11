@@ -49,6 +49,14 @@ feature dependency repair는 문서 우선순위를 고정한 채 동작한다.
 - 생성자 시그니처와 call-site 연쇄 수정 허용
 - `Shared 이동`, `event edge rewrite`, ambiguous edge는 아직 자동수정하지 않는다
 
+runtime 검증 운영 모델은 아래로 고정한다.
+- 하네스는 scene-specific runtime smoke를 자동 실행하지 않는다.
+- Unity MCP는 compile/status refresh와 generic console/hierarchy 진단에만 사용한다.
+- runtime 확인이 필요한 변경은 `manual-validation-required` 또는 `docs/playtest/runtime_validation_checklist.md` 기록으로 남긴다.
+- 정적 스캔은 `tools/`, `.github/workflows/`, `tools/rule-harness/` 아래에서 hardcoded MCP UI smoke 재유입을 차단한다.
+  - 차단 예: `/ui/button/invoke`, `/input/click`, `/input/drag`, `/input/key`, `/input/text`, `Get-McpUiPath`, `Invoke-McpButton`
+  - 예외: `tools/mcp-test-compile.ps1`, `tools/mcp-diagnose-scene-hierarchy.ps1`, `tools/mcp-hierarchy-diag.ps1`, `tools/unity-mcp/`, `tools/rule-harness/tests/`
+
 기본 mutation mode는 config 기준 `code_and_rules` 이고, `-DryRun`이면 수정 없이 계획/검증 대상만 계산한다.
 
 compile handoff만 수동으로 새로 쓰고 싶으면:
@@ -143,7 +151,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
   - `featureTestAssets`: feature test asset 존재 신호
 - code/mixed batch의 기본 confidence는 보수적으로 계산한다. feature test asset이 없거나, UnityMcp/scene/prefab 범위를 건드리거나, cross-feature 범위가 넓으면 `low` 로 내려간다.
 - `low` confidence code/mixed batch는 auto-apply 대신 `manual-validation-required` 로 skip된다.
-- Unity MCP runtime smoke 통합은 이번 phase 범위 밖이다. 관련 범위는 `low` confidence로 분류해 추후 phase에서 다룬다.
+- runtime smoke는 자동 하네스 범위 밖으로 공식 분리됐다. 관련 범위는 `manual-validation-required` 와 `docs/playtest/runtime_validation_checklist.md` 기록으로 넘긴다.
 - advisory memory는 `tools/rule-harness/memory/advisory-memory.json` 에 저장되며 SSOT가 아니다. prompt/판단 우선순위는 항상 `CLAUDE.md -> owner docs -> advisory memory -> current failure context` 순서다.
 
 ## 보고서 확인
@@ -199,6 +207,7 @@ feature dependency repair가 켜진 run에서는 `feature_dependency_refresh`, `
 - 반복 실패를 owner doc 규칙으로 올릴 시점은 `promotionCandidates` 또는 `latest-status.json.topPromotionCandidates`를 본다.
 - LLM 연결 실패가 보이면 `execution.llmApiBaseUrl`, `execution.logPath`, `actionItems`를 보고 API 키, 네트워크, endpoint를 함께 확인한다.
 - `manual-validation-required` 가 보이면 하네스가 아직 충분히 강한 inferred signal을 못 찾은 것이다. 해당 feature의 구조 규칙, static coverage, feature test asset 유무를 먼저 보강한다.
+- `remove-hardcoded-mcp-ui-smoke` 가 보이면 자동화 스크립트/워크플로우에 scene-specific UI flow가 다시 들어온 것이다. offending file을 제거하고 runtime 확인은 `docs/playtest/runtime_validation_checklist.md`로 옮긴다.
 - 예약 작업 산출물은 `latest-run.txt`로 run 디렉터리를 찾고, 그 디렉터리의 report/summary/log를 순서대로 열면 된다.
 
 ## GLM 메모

@@ -15,25 +15,17 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Codex, Clau
 - 브리지나 일반 C# 스크립트를 수정할 때는 `Play Stop -> 파일 수정 -> 컴파일 완료 확인 -> /health 확인 -> 다시 Play` 순서를 지킨다.
 - Unity MCP 테스트는 화면만 보지 말고 `/console/logs` 또는 `/console/errors`를 함께 확인한다.
 - 씬/하이어라키 문제를 의심할 때는 브리지 수정 전에 `tools/mcp-diagnose-scene-hierarchy.ps1`로 재현 정보를 남긴다.
+- runtime UI flow 회귀는 고정 스크립트로 운영하지 않는다. 공식 기록은 `docs/playtest/runtime_validation_checklist.md`에 남기고, MCP 입력 라우트는 일회성 수동 진단에만 쓴다.
 
 ## 테스트 / 로그 SOP
 
 1. `GET /health`로 브리지, 플레이, 컴파일 상태를 확인한다.
 2. 주요 액션 뒤 `GET /console/logs?limit=...`로 로그 흐름을 확인한다.
 3. 에러만 빠르게 볼 때는 `GET /console/errors?limit=...`를 쓴다.
-4. 필요하면 `Editor.log` 최근 구간과 함께 본다.
-
-통합 스모크 스크립트:
-
-- `tools/mcp-test-lobby-scene.ps1`
-- `tools/mcp-lobby-to-game.ps1`
-- `tools/mcp-diagnose-scene-hierarchy.ps1`
-
-JSON 결과 파일:
-
-- `Temp/UnityMcp/last-lobby-scene-test.json`
-- `Temp/UnityMcp/last-lobby-to-game.json`
-- `Temp/UnityMcp/scene-hierarchy-diagnose.json`
+4. compile/status 확인만 필요하면 `tools/mcp-test-compile.ps1`를 쓴다.
+5. hierarchy 재현이 필요하면 `tools/mcp-diagnose-scene-hierarchy.ps1`, `tools/mcp-hierarchy-diag.ps1` 같은 진단 스크립트를 일회성으로 실행한다.
+6. runtime flow 회귀 확인은 `docs/playtest/runtime_validation_checklist.md`에 수동으로 기록한다.
+7. 필요하면 `Editor.log` 최근 구간과 함께 본다.
 
 ## 엔드포인트
 
@@ -110,7 +102,7 @@ JSON 결과 파일:
 
 ```json
 {
-  "scenePath": "Assets/Scenes/LobbyScene.unity",
+  "scenePath": "Assets/Scenes/ExampleScene.unity",
   "saveCurrentSceneIfDirty": true
 }
 ```
@@ -122,7 +114,7 @@ JSON 결과 파일:
 
 ```json
 {
-  "outputPath": "Temp/UnityMcp/Screenshots/lobby-check.png",
+  "outputPath": "Temp/UnityMcp/Screenshots/runtime-check.png",
   "superSize": 1,
   "overwrite": true
 }
@@ -209,5 +201,5 @@ JSON 결과 파일:
 
 ## 참고
 
-- 현재 씬 예시는 실제 파일명인 `Assets/Scenes/LobbyScene.unity`, `Assets/Scenes/GameScene.unity` 기준으로 적는다.
+- 입력/UI 라우트는 브리지 기능 목록으로만 문서화한다. 특정 씬 이름, hierarchy path, 버튼 path를 고정한 자동 smoke 운영은 현재 정책 범위 밖이다.
 - `tools/unity-mcp/server.js`는 런타임에 `ProjectSettings/UnityMcpPort.txt`를 읽어 현재 포트를 따라간다.

@@ -44,14 +44,18 @@ Unity Editor 기준 컴파일 에러가 0이다.
 
 ### 3. runtime-smoke-clean (선택 보고)
 
-지정된 최소 씬/플로우 스모크 테스트가 통과한다. 이 단계는 **가능한 경우에만 추가 보고**한다.
+지정된 최소 씬/플로우 런타임 검증이 통과한다. 이 단계는 **가능한 경우에만 추가 보고**한다.
+
+현재 자동 하네스 범위에는 포함되지 않는다.
+기본 보고 경로는 `docs/playtest/runtime_validation_checklist.md` 같은 수동 체크리스트 또는 세션 검증 기록이다.
 
 예:
 
 * 대상 씬 로드 가능
 * 필수 Bootstrap/Setup가 정상 초기화
 * 필수 직렬화 참조 누락 없음
-* MCP 또는 운영용 smoke 스크립트 기준 핵심 플레이 플로우 진입 가능
+* 핵심 플레이 플로우 진입/복귀 가능
+* 필요 시 MCP의 compile/status/hierarchy/console 진단으로 보조 확인 가능
 
 ---
 
@@ -60,6 +64,7 @@ Unity Editor 기준 컴파일 에러가 0이다.
 * `static-clean`만 통과한 상태를 그냥 `clean`이라고 부르지 않는다.
 * 사람 또는 하네스가 `clean`이라고 보고하려면 최소 `static-clean + compile-clean`을 만족해야 한다.
 * `runtime-smoke-clean`은 선택적 추가 보고다. 부재 자체가 `compile-clean` 판정을 무효로 만들지는 않는다.
+* 현재 자동 하네스는 `runtime-smoke-clean`을 기본으로 생성하지 않는다. 수동 체크리스트/세션 검증으로 추가 보고할 수 있다.
 * Unity가 꺼져 있거나 compile 상태를 확인하지 못한 경우, 결과는 반드시 `static-clean only`로 표시한다.
 * `static-clean only`는 임시 상태다. 운영 보고, 인계, 정기 요약에서 이를 `clean`이라고 부르지 않는다.
 * `resolved`는 코드 수정 후 컴파일 확인까지 끝났을 때만 사용할 수 있다.

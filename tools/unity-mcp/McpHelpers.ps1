@@ -1,5 +1,3 @@
-# Common helpers for Unity MCP UI smoke tests.
-
 Set-StrictMode -Version Latest
 
 function Get-UnityMcpBaseUrl {
@@ -9,8 +7,8 @@ function Get-UnityMcpBaseUrl {
         return $ExplicitBaseUrl.TrimEnd("/")
     }
 
-    $portFile = Join-Path $PSScriptRoot "..\ProjectSettings\UnityMcpPort.txt"
-    if (Test-Path $portFile) {
+    $portFile = Join-Path $PSScriptRoot "..\..\ProjectSettings\UnityMcpPort.txt"
+    if (Test-Path -LiteralPath $portFile) {
         $portText = (Get-Content -Path $portFile -Raw).Trim()
         if ($portText -match '^\d+$') {
             return "http://127.0.0.1:$portText"
@@ -242,110 +240,6 @@ function Wait-McpSceneActive {
 
     $sw.Stop()
     throw "Active scene did not become '${SceneName}' within ${TimeoutSec}s."
-}
-
-function Get-McpUiPathSpec {
-    $spec = [ordered]@{}
-    $spec["Lobby.CreateRoom"] = [PSCustomObject]@{
-        Path = "/UIRoot/Canvas/lobby/RoomListView/Header/CreateRoomButton"
-        FallbackName = "CreateRoomButton"
-    }
-    $spec["Lobby.Ready"] = [PSCustomObject]@{
-        Path = "/UIRoot/Canvas/lobby/RoomDetailPanel/ReadyButton"
-        FallbackName = "ReadyButton"
-    }
-    $spec["Lobby.StartGame"] = [PSCustomObject]@{
-        Path = "/UIRoot/Canvas/lobby/RoomDetailPanel/StartGameButton"
-        FallbackName = "StartGameButton"
-    }
-    $spec["Shared.ErrorModalDismiss"] = [PSCustomObject]@{
-        Path = "/UIRoot/Canvas/ErrorModalRoot/Panel/DismissButton"
-        FallbackName = "DismissButton"
-    }
-    $spec["Game.StartSkillButton0"] = [PSCustomObject]@{
-        Path = "/UIRoot/StartSkillSelectionCanvas/Panel/ButtonGrid/SkillButton0"
-        FallbackName = "SkillButton0"
-    }
-    $spec["Game.StartSkillButton1"] = [PSCustomObject]@{
-        Path = "/UIRoot/StartSkillSelectionCanvas/Panel/ButtonGrid/SkillButton1"
-        FallbackName = "SkillButton1"
-    }
-    $spec["Game.StartSkillConfirm"] = [PSCustomObject]@{
-        Path = "/UIRoot/StartSkillSelectionCanvas/Panel/ConfirmButton"
-        FallbackName = "ConfirmButton"
-    }
-
-    return $spec
-}
-
-function Get-McpUiPath {
-    param([string]$Key)
-
-    $spec = Get-McpUiPathSpec
-    if (-not $spec.Contains($Key)) {
-        throw "Unknown MCP UI key: $Key"
-    }
-
-    return $spec[$Key]
-}
-
-function Find-McpUiPathFallback {
-    param(
-        [string]$Root,
-        [string]$Name
-    )
-
-    if ([string]::IsNullOrWhiteSpace($Name)) {
-        return $null
-    }
-
-    $result = Invoke-McpJson -Root $Root -SubPath "/gameobject/find" -Body @{
-        name = $Name
-        lightweight = $true
-    }
-
-    if ($result.found) {
-        return $result.path
-    }
-
-    return $null
-}
-
-function Invoke-McpButton {
-    param(
-        [string]$Root,
-        [string]$Path,
-        [string]$FallbackName = "",
-        [string]$Label = ""
-    )
-
-    $resolvedPath = $Path
-    try {
-        Invoke-McpJson -Root $Root -SubPath "/ui/button/invoke" -Body @{ path = $resolvedPath } | Out-Null
-        return [PSCustomObject]@{
-            path = $resolvedPath
-            fallbackUsed = $false
-            label = $Label
-        }
-    }
-    catch {
-        $initialMessage = $_.Exception.Message
-        if ([string]::IsNullOrWhiteSpace($FallbackName)) {
-            throw "Failed to invoke UI button '$Label' at '$Path'. $initialMessage"
-        }
-
-        $fallbackPath = Find-McpUiPathFallback -Root $Root -Name $FallbackName
-        if ([string]::IsNullOrWhiteSpace($fallbackPath)) {
-            throw "Failed to invoke UI button '$Label' at '$Path'. Fallback name '$FallbackName' not found. $initialMessage"
-        }
-
-        Invoke-McpJson -Root $Root -SubPath "/ui/button/invoke" -Body @{ path = $fallbackPath } | Out-Null
-        return [PSCustomObject]@{
-            path = $fallbackPath
-            fallbackUsed = $true
-            label = $Label
-        }
-    }
 }
 
 function Get-McpRecentLogs {

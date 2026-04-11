@@ -15,7 +15,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-. (Join-Path $PSScriptRoot "mcp-test-common.ps1")
+. (Join-Path $PSScriptRoot "unity-mcp\McpHelpers.ps1")
 
 $script:Results = @()
 $script:IssuesFound = $false

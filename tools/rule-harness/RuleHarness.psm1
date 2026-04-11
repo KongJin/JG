@@ -279,6 +279,21 @@ function Get-RuleHarnessActionItemsForFindings {
             continue
         }
 
+        if ([string]$finding.title -eq 'Hardcoded MCP UI smoke reintroduced') {
+            $details = [string]$finding.message
+            if ($pathHint) {
+                $details = "$details. $pathHint."
+            }
+
+            [void]$items.Add((New-RuleHarnessActionItem `
+                -Kind 'remove-hardcoded-mcp-ui-smoke' `
+                -Severity ([string]$finding.severity) `
+                -Summary 'Remove hardcoded MCP UI smoke from automation' `
+                -Details $details `
+                -RelatedPaths @($relatedPaths)))
+            continue
+        }
+
         if ([string]$finding.remediationKind -eq 'rule_fix') {
             $details = [string]$finding.message
             if ($pathHint) {
@@ -4929,6 +4944,157 @@ function Get-RuleHarnessStaticFindings {
     @($findings)
 }
 
+function Get-RuleHarnessHardcodedMcpUiSmokeFiles {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    $searchRoots = @(
+        'tools',
+        '.github/workflows'
+    )
+    $excludeRelativePaths = @(
+        'tools/mcp-test-compile.ps1',
+        'tools/mcp-diagnose-scene-hierarchy.ps1',
+        'tools/mcp-hierarchy-diag.ps1',
+        'tools/rule-harness/RuleHarness.psm1'
+    )
+    $excludePrefixes = @(
+        'tools/unity-mcp/',
+        'tools/rule-harness/tests/'
+    )
+    $allowedExtensions = @('.ps1', '.psm1', '.psd1', '.json', '.yml', '.yaml')
+
+    $files = [System.Collections.Generic.List[object]]::new()
+    foreach ($root in $searchRoots) {
+        $fullRoot = Join-Path $RepoRoot $root
+        if (-not (Test-Path -LiteralPath $fullRoot)) {
+            continue
+        }
+
+        foreach ($file in @(Get-ChildItem -LiteralPath $fullRoot -Recurse -File)) {
+            if ($allowedExtensions -notcontains [string]$file.Extension) {
+                continue
+            }
+
+            $relative = ConvertTo-RuleHarnessRelativePath -RepoRoot $RepoRoot -Path $file.FullName
+            if ($excludeRelativePaths -contains $relative) {
+                continue
+            }
+
+            $skip = $false
+            foreach ($prefix in $excludePrefixes) {
+                if ($relative.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+                    $skip = $true
+                    break
+                }
+            }
+
+            if (-not $skip) {
+                [void]$files.Add([pscustomobject]@{
+                    relativePath = $relative
+                    fullPath = $file.FullName
+                })
+            }
+        }
+    }
+
+    @($files)
+}
+
+function Get-RuleHarnessHardcodedMcpUiSmokeFindings {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $severity = if ($Config.severityPolicy.PSObject.Properties.Name -contains 'hardcodedMcpUiSmoke') {
+        [string]$Config.severityPolicy.hardcodedMcpUiSmoke
+    }
+    else {
+        'high'
+    }
+
+    $routeChecks = @(
+        [pscustomobject]@{ label = '/ui/button/invoke'; patterns = @('/ui/button/invoke') },
+        [pscustomobject]@{ label = '/input/click'; patterns = @('/input/click') },
+        [pscustomobject]@{ label = '/input/drag'; patterns = @('/input/drag') },
+        [pscustomobject]@{ label = '/input/key'; patterns = @('/input/key') },
+        [pscustomobject]@{ label = '/input/text'; patterns = @('/input/text') },
+        [pscustomobject]@{ label = 'Get-McpUiPath'; patterns = @('\bGet-McpUiPath\b') },
+        [pscustomobject]@{ label = 'Invoke-McpButton'; patterns = @('\bInvoke-McpButton\b') }
+    )
+    $sceneLiteralPatterns = @(
+        'Assets/Scenes/LobbyScene\.unity',
+        'Assets/Scenes/GameScene\.unity',
+        '(?<![A-Za-z0-9_])LobbyScene(?![A-Za-z0-9_])',
+        '(?<![A-Za-z0-9_])GameScene(?![A-Za-z0-9_])',
+        '/UIRoot',
+        '/Canvas/.+Button'
+    )
+    $smokeContextPatterns = @(
+        '/scene/open',
+        '/play/start',
+        'Wait-McpSceneActive',
+        'Wait-McpPlayModeReady',
+        'Invoke-McpSceneOpenAndWait',
+        'Invoke-McpPlayStartAndWaitForBridge'
+    )
+
+    $findings = [System.Collections.Generic.List[object]]::new()
+    foreach ($file in @(Get-RuleHarnessHardcodedMcpUiSmokeFiles -RepoRoot $RepoRoot)) {
+        $lines = Get-Content -Path $file.fullPath
+        $content = Get-Content -Path $file.fullPath -Raw
+        $matchedLabel = $null
+        $evidence = $null
+
+        foreach ($check in $routeChecks) {
+            $evidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @($check.patterns)
+            if ($null -ne $evidence) {
+                $matchedLabel = [string]$check.label
+                break
+            }
+        }
+
+        if ($null -eq $evidence) {
+            $hasSmokeContext = $false
+            foreach ($contextPattern in $smokeContextPatterns) {
+                if ($content -match $contextPattern) {
+                    $hasSmokeContext = $true
+                    break
+                }
+            }
+
+            if ($hasSmokeContext) {
+                $evidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns $sceneLiteralPatterns
+                if ($null -ne $evidence) {
+                    $matchedLabel = 'scene/UI flow literal'
+                }
+            }
+        }
+
+        if ($null -eq $evidence) {
+            continue
+        }
+
+        [void]$findings.Add((New-RuleHarnessFinding `
+            -FindingType 'code_violation' `
+            -Severity $severity `
+            -OwnerDoc 'tools/rule-harness/README.md' `
+            -Title 'Hardcoded MCP UI smoke reintroduced' `
+            -Message ("Automation file '{0}' reintroduces hardcoded MCP UI smoke via '{1}'. Keep rule-harness on generic compile/status checks and move runtime verification to docs/playtest manual checklists or one-off diagnostics." -f [string]$file.relativePath, [string]$matchedLabel) `
+            -Evidence @([pscustomobject]@{ path = [string]$file.relativePath; line = [int]$evidence.line; snippet = [string]$evidence.snippet }) `
+            -Confidence 'high' `
+            -RemediationKind 'report_only' `
+            -Rationale 'Automatic scene/UI flow smoke scripts are out of policy for the harness and should not re-enter automation.'))
+    }
+
+    @($findings)
+}
+
 function Invoke-RuleHarnessChatCompletion {
     param(
         [Parameter(Mandatory)]
@@ -7568,6 +7734,11 @@ function Invoke-RuleHarness {
     $sameRunResolvedScopeCount = 0
     $staleStateRepairedCount = 0
     $compileGateStatus = $null
+    $policyStaticFindings = @(Get-RuleHarnessHardcodedMcpUiSmokeFindings -RepoRoot $RepoRoot -Config $config)
+    $staticFindingCount += $policyStaticFindings.Count
+    foreach ($finding in @($policyStaticFindings)) {
+        [void]$findings.Add($finding)
+    }
 
     Write-Host 'Rule harness discover stage started.'
     Write-Host "Rule harness discover stage finished. Features: $($orderedScopes.Count) Selected: $($selectedScopes.Count)"

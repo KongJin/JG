@@ -1373,6 +1373,75 @@ Assert-RuleHarness `
     -Condition ((Test-Path -LiteralPath (Join-Path $featureDependencyRepairRepo 'Assets/Scripts/Features/Combat/Application/Ports/IEnemyServicePort.cs')) -and (Test-Path -LiteralPath (Join-Path $featureDependencyRepairRepo 'Assets/Scripts/Features/Enemy/Infrastructure/EnemyServicePortAdapter.cs')) -and $combatServiceContent.Contains('IEnemyServicePort') -and $combatSetupContent.Contains('EnemyServicePortAdapter') -and @($featureDependencyRepairReport.featureDependencyRepairCodeCommits).Count -ge 1) `
     -Message 'Expected port inversion repair to create the consumer port, provider adapter, and code commit.'
 
+$mcpPolicyViolationRepo = Join-Path $scratchRoot 'mcp-policy-violation'
+Initialize-RuleHarnessScopeRepo -RepoPath $mcpPolicyViolationRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+Set-Content -Path (Join-Path $mcpPolicyViolationRepo 'tools/reintroduced-ui-smoke.ps1') -Value @"
+`$root = "http://127.0.0.1:51234"
+Invoke-RestMethod -Method Post -Uri "`$root/ui/button/invoke" -ContentType "application/json" -Body '{"path":"/UIRoot/Canvas/lobby/RoomDetailPanel/ReadyButton"}'
+"@ -Encoding UTF8
+$mcpPolicyViolationReport = Invoke-RuleHarness `
+    -RepoRoot $mcpPolicyViolationRepo `
+    -ConfigPath (Join-Path $mcpPolicyViolationRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+Assert-RuleHarness `
+    -Condition (@($mcpPolicyViolationReport.findings | Where-Object { $_.title -eq 'Hardcoded MCP UI smoke reintroduced' -and $_.evidence[0].path -eq 'tools/reintroduced-ui-smoke.ps1' }).Count -eq 1 -and [bool]$mcpPolicyViolationReport.failed) `
+    -Message 'Expected hardcoded MCP UI smoke under tools/ to surface a dedicated high-severity finding and fail the run.'
+Assert-RuleHarness `
+    -Condition (@($mcpPolicyViolationReport.actionItems | Where-Object kind -eq 'remove-hardcoded-mcp-ui-smoke').Count -eq 1) `
+    -Message 'Expected hardcoded MCP UI smoke findings to emit a policy action item.'
+
+$mcpPolicyAllowedRepo = Join-Path $scratchRoot 'mcp-policy-allowed'
+Initialize-RuleHarnessScopeRepo -RepoPath $mcpPolicyAllowedRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+Copy-Item -LiteralPath (Join-Path $repoRoot 'tools/mcp-test-compile.ps1') -Destination (Join-Path $mcpPolicyAllowedRepo 'tools/mcp-test-compile.ps1') -Force
+$mcpPolicyAllowedReport = Invoke-RuleHarness `
+    -RepoRoot $mcpPolicyAllowedRepo `
+    -ConfigPath (Join-Path $mcpPolicyAllowedRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+Assert-RuleHarness `
+    -Condition (@($mcpPolicyAllowedReport.findings | Where-Object title -eq 'Hardcoded MCP UI smoke reintroduced').Count -eq 0 -and -not [bool]$mcpPolicyAllowedReport.failed) `
+    -Message 'Expected generic MCP compile/status scripts to avoid false positives from the hardcoded smoke policy.'
+
+$mcpPolicySummaryRepo = Join-Path $scratchRoot 'mcp-policy-summary'
+Initialize-RuleHarnessScopeRepo -RepoPath $mcpPolicySummaryRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+Set-Content -Path (Join-Path $mcpPolicySummaryRepo 'tools/reintroduced-ui-smoke.ps1') -Value @"
+function Invoke-Smoke {
+    param([string]`$Root = "http://127.0.0.1:51234")
+
+    Invoke-RestMethod -Method Post -Uri "`$Root/input/click" -ContentType "application/json" -Body '{"x":0.5,"y":0.5,"normalized":true}'
+}
+"@ -Encoding UTF8
+$summaryArtifactDir = Join-Path $mcpPolicySummaryRepo 'Temp/RuleHarnessScript'
+$summaryReportPath = Join-Path $summaryArtifactDir 'rule-harness-report.json'
+$summaryPath = Join-Path $summaryArtifactDir 'rule-harness-summary.md'
+Push-Location $mcpPolicySummaryRepo
+try {
+    & (Join-Path $mcpPolicySummaryRepo 'tools/rule-harness/run-rule-harness.ps1') `
+        -RepoRoot $mcpPolicySummaryRepo `
+        -ConfigPath (Join-Path $mcpPolicySummaryRepo 'tools/rule-harness/config.json') `
+        -ArtifactDir $summaryArtifactDir `
+        -ReportPath $summaryReportPath `
+        -SummaryPath $summaryPath `
+        -DisableLlm `
+        -DryRun `
+        -SkipCompileStatusRefresh `
+        -SkipFeatureDependencyRefresh
+}
+finally {
+    Pop-Location
+}
+$summaryContent = Get-Content -Path $summaryPath -Raw
+Assert-RuleHarness `
+    -Condition ((Test-Path -LiteralPath $summaryPath) -and $summaryContent.Contains('### Stage Status') -and $summaryContent.Contains('### Next Actions') -and $summaryContent.Contains('Remove hardcoded MCP UI smoke from automation')) `
+    -Message 'Expected summary output to surface the new MCP UI smoke policy in Stage Status and Next Actions.'
+
 $scheduledRepo = Join-Path $scratchRoot 'scheduled-status'
 Initialize-RuleHarnessScopeRepo -RepoPath $scheduledRepo -Features @(
     [pscustomobject]@{ Name = 'CleanA'; ApplicationContent = 'namespace Features.CleanA.Application { public sealed class CleanAService { } }' },

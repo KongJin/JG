@@ -34,7 +34,7 @@ See [`docs/ops/unity_mcp.md`](../../docs/ops/unity_mcp.md) for the full route in
 
 ```powershell
 $port = Get-Content .\ProjectSettings\UnityMcpPort.txt
-Invoke-RestMethod -Uri ("http://127.0.0.1:{0}/scene/open" -f $port) -Method Post -ContentType "application/json" -Body '{"scenePath":"Assets/Scenes/LobbyScene.unity","saveCurrentSceneIfDirty":true}'
+Invoke-RestMethod -Uri ("http://127.0.0.1:{0}/scene/open" -f $port) -Method Post -ContentType "application/json" -Body '{"scenePath":"Assets/Scenes/ExampleScene.unity","saveCurrentSceneIfDirty":true}'
 ```
 
 4. Register the MCP server:
