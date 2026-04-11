@@ -1,6 +1,7 @@
 ﻿using Features.Account.Application.Ports;
 using Features.Account.Domain;
 
+using Features.Garage.Domain;
 namespace Features.Account.Application
 {
     /// <summary>
@@ -45,4 +46,5 @@ namespace Features.Account.Application
         public object GarageRoster;
     }
 }
+
 
