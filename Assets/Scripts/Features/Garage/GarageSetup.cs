@@ -1,57 +1,126 @@
 using Features.Garage.Application;
 using Features.Garage.Application.Ports;
+using Features.Garage.Infrastructure;
+using Features.Garage.Presentation;
 using Features.Unit.Application;
+using Features.Unit.Infrastructure;
+using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Lifecycle;
+using UnityEngine;
 
 namespace Features.Garage
 {
     /// <summary>
-    /// Garage Feature의 Composition Root.
-    /// 의존성 주입 책임: UseCase 조립, Port 연결.
-    /// 순수 C# 클래스 — Bootstrap에서 생성/초기화.
+    /// Garage Feature의 Scene-level wiring + Composition Root.
+    /// EventBus 주입, Infrastructure 어댑터 생성, UseCase 조립.
+    /// 비즈니스 로직 없음 — 조립만 담당.
     /// </summary>
-    public sealed class GarageSetup
+    public sealed class GarageSetup : MonoBehaviour
     {
+        [Required, SerializeField]
+        private GarageNetworkAdapter _networkAdapter;
+
+        [SerializeField]
+        private GaragePanelView _panelView;
+
+        private GarageJsonPersistence _persistence;
+        private RosterValidationProvider _rosterValidationProvider;
         private DisposableScope _disposables;
-        private IGarageNetworkPort _networkPort;
 
         // Application UseCases
         public InitializeGarageUseCase InitializeGarage { get; private set; }
         public ComposeUnitUseCase ComposeUnit { get; private set; }
         public ValidateRosterUseCase ValidateRoster { get; private set; }
         public SaveRosterUseCase SaveRoster { get; private set; }
-        public IGarageNetworkPort NetworkPort => _networkPort;
+        public IGarageNetworkPort NetworkPort => _networkAdapter;
+
+        public GarageSetup Setup => this;
 
         /// <summary>
         /// Garage Feature 초기화.
-        /// Bootstrap에서 호출. EventBus와 Infrastructure 어댑터를 주입받는다.
+        /// 씬 Setup(예: LobbySetup)에서 EventBus와 Unit 조합 포트를 주입하고 호출한다.
         /// </summary>
         public void Initialize(
             EventBus eventBus,
-            IGarageNetworkPort networkPort,
-            IGaragePersistencePort persistencePort,
             IUnitCompositionPort compositionPort,
-            ValidateRosterUseCase.IRosterValidationProvider rosterValidationProvider)
+            ModuleCatalog unitCatalog)
         {
+            // Infrastructure 어댑터 생성 (순수 C#만 new, Photon/MonoBehaviour는 Inspector 연결)
+            _persistence = new GarageJsonPersistence();
+            _rosterValidationProvider = new RosterValidationProvider(unitCatalog);
+
+            // Composition root — UseCase 조립
             _disposables?.Dispose();
             _disposables = new DisposableScope();
-            _networkPort = networkPort;
 
-            // Application UseCases 조립
             ComposeUnit = new ComposeUnitUseCase(compositionPort);
-            InitializeGarage = new InitializeGarageUseCase(persistencePort, eventBus);
-            ValidateRoster = new ValidateRosterUseCase(rosterValidationProvider);
-            SaveRoster = new SaveRosterUseCase(persistencePort, networkPort, eventBus);
+            InitializeGarage = new InitializeGarageUseCase(_persistence, eventBus);
+            ValidateRoster = new ValidateRosterUseCase(_rosterValidationProvider);
+            SaveRoster = new SaveRosterUseCase(_persistence, _networkAdapter, eventBus);
+
+            if (_panelView != null)
+                _panelView.Initialize(eventBus, this, BuildPanelCatalog(unitCatalog));
+        }
+
+        private static GaragePanelCatalog BuildPanelCatalog(ModuleCatalog unitCatalog)
+        {
+            var frames = new System.Collections.Generic.List<GaragePanelCatalog.FrameOption>();
+            for (int i = 0; i < unitCatalog.UnitFrames.Count; i++)
+            {
+                var frame = unitCatalog.UnitFrames[i];
+                frames.Add(new GaragePanelCatalog.FrameOption
+                {
+                    Id = frame.FrameId,
+                    DisplayName = frame.DisplayName,
+                    BaseHp = frame.BaseHp,
+                    BaseAttackSpeed = frame.BaseAttackSpeed
+                });
+            }
+
+            var firepower = new System.Collections.Generic.List<GaragePanelCatalog.FirepowerOption>();
+            for (int i = 0; i < unitCatalog.FirepowerModules.Count; i++)
+            {
+                var module = unitCatalog.FirepowerModules[i];
+                firepower.Add(new GaragePanelCatalog.FirepowerOption
+                {
+                    Id = module.ModuleId,
+                    DisplayName = module.DisplayName,
+                    AttackDamage = module.AttackDamage,
+                    AttackSpeed = module.AttackSpeed,
+                    Range = module.Range
+                });
+            }
+
+            var mobility = new System.Collections.Generic.List<GaragePanelCatalog.MobilityOption>();
+            for (int i = 0; i < unitCatalog.MobilityModules.Count; i++)
+            {
+                var module = unitCatalog.MobilityModules[i];
+                mobility.Add(new GaragePanelCatalog.MobilityOption
+                {
+                    Id = module.ModuleId,
+                    DisplayName = module.DisplayName,
+                    HpBonus = module.HpBonus,
+                    MoveRange = module.MoveRange,
+                    AnchorRange = module.AnchorRange
+                });
+            }
+
+            return new GaragePanelCatalog(frames, firepower, mobility);
         }
 
         /// <summary>
-        /// 정리. 씬 전환 시 호출.
+        /// 씬 전환 시 정리.
         /// </summary>
         public void Cleanup()
         {
             _disposables?.Dispose();
             _disposables = null;
+        }
+
+        private void OnDestroy()
+        {
+            _disposables?.Dispose();
         }
     }
 }
