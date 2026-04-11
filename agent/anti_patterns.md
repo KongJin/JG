@@ -30,6 +30,7 @@
 * Application 내 Unity 타입 — Sprite, GameObject, AudioClip, Color, Debug.Log/LogWarning/LogError, 기타 UnityEngine API를 Application 레이어 이벤트, port, UseCase에 넣지 않는다. Unity 타입이 필요하면 Presentation에 둔다. 로깅은 Bootstrap/Infrastructure에서 담당.
 * 단일 호출 private 함수 — 호출 지점이 하나뿐인 private 메서드는 추출하지 않는다. 호출부에 직접 인라인한다. 읽는 사람이 한 함수 안에서 흐름을 따라갈 수 있어야 한다. 예외: (1) 콜백/이벤트 핸들러로 등록되는 함수, (2) 두 곳 이상에서 호출되는 함수.
 * 타입명 충돌 — 한 feature 안에서 같은 short type name의 `MonoBehaviour`를 두 개 만들지 않는다. Presentation 컴포넌트 이름도 feature 전체에서 유일해야 한다.
+* 네임스페이스-클래스명 충돌 — 피처 네임스페이스와 동일한 short name의 도메인 엔티티를 생성하지 않는다. 예: `Features.Account` 네임스페이스 아래 `Account` 클래스를 두면 C#이 `Account`를 타입이 아닌 네임스페이스로 해석하여 `CS0118` 컴파일 에러가 발생한다. 대신 `AccountProfile`, `AccountEntity` 등 접미사를 붙인다. (실제 사례: `Account.cs` → `AccountProfile.cs` 리네임)
 * Feature short-type shadowing — feature namespace 이름과 같은 short type (`Unit`, `Player`, `Wave` 등)을 bare identifier로 사용해 namespace/type 충돌을 유발하지 않는다. alias 또는 fully-qualified name을 사용한다.
 * 정적 이벤트 규칙 — 정적 이벤트는 엔진/네트워크 콜백을 Application 또는 Bootstrap으로 bridge할 때만 예외적으로 허용한다. gameplay event bus 대체제로 사용하지 않는다. 사용 시 `OnDestroy` 해제와 README 명시는 필수다.
 * 운영 환경 런타임 UI 생성 — 운영용 UI는 scene 소유 또는 prefab 소유여야 한다. 런타임 UI 생성은 디버깅 도구 또는 일시적 마이그레이션에서만 허용한다.

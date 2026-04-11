@@ -1,4 +1,4 @@
-using Features.Account.Application;
+﻿using Features.Account.Application;
 using Features.Account.Domain;
 using Shared.Attributes;
 using Shared.EventBus;
@@ -48,12 +48,12 @@ namespace Features.Account.Presentation
             HookButtons();
         }
 
-        public void Render(Account account)
+        public void Render(Domain.AccountProfile profile)
         {
-            if (_uidText != null) _uidText.text = $"UID: {account.uid}";
-            if (_authTypeText != null) _authTypeText.text = $"인증: {account.authType}";
-            if (_displayNameText != null) _displayNameText.text = $"닉네임: {account.displayName}";
-            if (_nicknameInput != null) _nicknameInput.text = account.displayName;
+            if (_uidText != null) _uidText.text = $"UID: {profile.uid}";
+            if (_authTypeText != null) _authTypeText.text = $"인증: {profile.authType}";
+            if (_displayNameText != null) _displayNameText.text = $"닉네임: {profile.displayName}";
+            if (_nicknameInput != null) _nicknameInput.text = profile.displayName;
         }
 
         private void HookButtons()
@@ -131,3 +131,4 @@ namespace Features.Account.Presentation
         }
     }
 }
+

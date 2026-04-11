@@ -1,4 +1,4 @@
-using Features.Account.Application.Ports;
+﻿using Features.Account.Application.Ports;
 using Features.Account.Domain;
 
 namespace Features.Account.Application
@@ -17,14 +17,15 @@ namespace Features.Account.Application
             _dataPort = dataPort;
         }
 
-        public async System.Threading.Tasks.Task Execute(Account account, PlayerStats stats, UserSettings settings)
+        public async System.Threading.Tasks.Task Execute(AccountProfile profile, PlayerStats stats, UserSettings settings)
         {
             var token = await _authPort.GetIdToken();
-            var uid = account.uid;
+            var uid = profile.uid;
 
-            await _dataPort.SaveProfile(account, token);
+            await _dataPort.SaveProfile(profile, token);
             await _dataPort.SaveStats(stats, uid, token);
             await _dataPort.SaveSettings(settings, uid, token);
         }
     }
 }
+

@@ -6,16 +6,16 @@ namespace Features.Account.Domain
     /// 계정 엔티티. Firebase UID 기반.
     /// </summary>
     [Serializable]
-    public sealed class Account
+    public sealed class AccountProfile
     {
         public string uid;
         public string displayName;
         public string authType; // "anonymous" | "google"
         public long createdAtUnixMs;
 
-        public Account() { }
+        public AccountProfile() { }
 
-        public Account(string uid, string authType)
+        public AccountProfile(string uid, string authType)
         {
             this.uid = uid;
             this.displayName = uid.Substring(0, Math.Min(8, uid.Length));

@@ -1,4 +1,4 @@
-using Features.Account.Application.Ports;
+﻿using Features.Account.Application.Ports;
 using Features.Account.Domain;
 
 namespace Features.Account.Application
@@ -39,9 +39,10 @@ namespace Features.Account.Application
 
     public sealed class AccountData
     {
-        public Account Account;
+        public AccountProfile Profile;
         public PlayerStats Stats;
         public UserSettings Settings;
         public object GarageRoster;
     }
 }
+

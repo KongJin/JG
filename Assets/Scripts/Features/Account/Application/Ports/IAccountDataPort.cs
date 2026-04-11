@@ -1,4 +1,4 @@
-using Features.Account.Domain;
+﻿using Features.Account.Domain;
 
 namespace Features.Account.Application.Ports
 {
@@ -10,12 +10,12 @@ namespace Features.Account.Application.Ports
         /// <summary>
         /// 계정 프로필 저장.
         /// </summary>
-        System.Threading.Tasks.Task SaveProfile(Account account, string idToken);
+        System.Threading.Tasks.Task SaveProfile(AccountProfile account, string idToken);
 
         /// <summary>
         /// 계정 프로필 로드. 없으면 null.
         /// </summary>
-        System.Threading.Tasks.Task<Account> LoadProfile(string uid, string idToken);
+        System.Threading.Tasks.Task<AccountProfile> LoadProfile(string uid, string idToken);
 
         /// <summary>
         /// 전적 데이터 저장.
@@ -53,3 +53,4 @@ namespace Features.Account.Application.Ports
         System.Threading.Tasks.Task DeleteAccount(string uid, string idToken);
     }
 }
+

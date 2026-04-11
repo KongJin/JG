@@ -1,4 +1,4 @@
-using Features.Account.Application.Ports;
+﻿using Features.Account.Application.Ports;
 using Features.Account.Domain;
 using System;
 using System.Threading.Tasks;
@@ -24,7 +24,7 @@ namespace Features.Account.Infrastructure
             _projectId = projectId;
         }
 
-        public async Task SaveProfile(Account account, string idToken)
+        public async Task SaveProfile(AccountProfile account, string idToken)
         {
             await WriteDocument("profile", "profile", new
             {
@@ -35,12 +35,12 @@ namespace Features.Account.Infrastructure
             }, idToken);
         }
 
-        public async Task<Account> LoadProfile(string uid, string idToken)
+        public async Task<AccountProfile> LoadProfile(string uid, string idToken)
         {
             var doc = await ReadDocument("profile", "profile", idToken);
             if (doc == null) return null;
 
-            return new Account
+            return new AccountProfile
             {
                 uid = GetFieldString(doc, "uid"),
                 displayName = GetFieldString(doc, "displayName"),
@@ -394,3 +394,4 @@ namespace Features.Account.Infrastructure
         public bool notFound;
     }
 }
+
