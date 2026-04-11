@@ -10,11 +10,12 @@
 3. 구현 중 금지 사항, Bootstrap 예외, runtime lookup 예외 판단은 `/agent/anti_patterns.md`를 따른다.
 4. 이벤트 체인 설계, 이벤트 vs 직접 호출 판단은 `/agent/event_rules.md`를 따른다.
 5. `clean`의 정의와 검증 게이트는 `/agent/validation_gates.md`를 따른다.
-6. 전역 초기화 순서와 late-join 전제는 각 feature의 `README.md`, `*Setup.cs` / `*Bootstrap.cs`, 씬/프리팹 직렬화 계약, 관련 전역 규칙 문서를 함께 읽고 판단한다.
-7. feature README는 로컬 계약만 다루고, 전역 구조 규칙은 `/agent/*.md`에서만 정의한다.
-8. 네트워크 상태 키와 동기화 채널은 **해당 키를 실제로 쓰는 코드**를 기준으로 본다. cross-feature로 읽을 때도 쓰기 소유 피처의 Application/Infrastructure 경로를 먼저 본다.
-9. Unity MCP나 에디터 자동화는 `/docs/ops/unity_mcp.md`를 먼저 읽는다.
-10. 대규모 기계적 치환 전에는 대상 패턴, 제외 대상, 검증 방법을 먼저 정하고 문서 의미가 바뀌면 규칙 문서도 같이 갱신한다.
+6. Unity 스크립트 리네임, meta GUID, 씬 직렬화, 프리팹 계약은 `/agent/unity.md`를 따른다.
+7. 전역 초기화 순서와 late-join 전제는 각 feature의 `README.md`, `*Setup.cs` / `*Bootstrap.cs`, 씬/프리팹 직렬화 계약, 관련 전역 규칙 문서를 함께 읽고 판단한다.
+8. feature README는 로컬 계약만 다루고, 전역 구조 규칙은 `/agent/*.md`에서만 정의한다.
+9. 네트워크 상태 키와 동기화 채널은 **해당 키를 실제로 쓰는 코드**를 기준으로 본다. cross-feature로 읽을 때도 쓰기 소유 피처의 Application/Infrastructure 경로를 먼저 본다.
+10. Unity MCP나 에디터 자동화는 `/docs/ops/unity_mcp.md`를 먼저 읽는다.
+11. 대규모 기계적 치환 전에는 대상 패턴, 제외 대상, 검증 방법을 먼저 정하고 문서 의미가 바뀌면 규칙 문서도 같이 갱신한다.
 
 ## 작업별 진입 경로
 
@@ -28,6 +29,7 @@
 | CustomProperties 키, 쓰기 소유권, 동기화 채널 선택 | 해당 키를 실제로 쓰는 `Application/Infrastructure` 코드 |
 | 로컬 씬 wiring, lookup 예외, 프리팹/씬 계약 | 해당 feature의 `README.md`, `*Setup.cs` / `*Bootstrap.cs`, 씬/프리팹 직렬화 참조, `/agent/anti_patterns.md` |
 | Shared에 둘 수 있는 것과 없는 것 | `/agent/architecture.md`, `/agent/anti_patterns.md`, `/Assets/Scripts/Shared/README.md`, `Assets/Scripts/Shared/**` |
+| Unity 스크립트 리네임, meta GUID, 씬 직렬화, 프리팹 연결 | `/agent/unity.md` |
 | Unity MCP 엔드포인트와 테스트 SOP | `/docs/ops/unity_mcp.md` |
 | 수치, MVP 기준, 디자인 문장 | `/docs/design/game_design.md` |
 | 유닛/모듈 설계 SSOT | `/docs/design/unit_module_design.md` |
@@ -55,10 +57,11 @@
 2. `/agent/anti_patterns.md` (금지 패턴, 예외 판단, 리팩터링 교훈)
 3. `/agent/event_rules.md` (이벤트 체인 방향, 깊이 제한, 이벤트 vs 직접 호출 판단)
 4. `/agent/validation_gates.md` (`clean`의 의미, compile/runtime 검증 게이트)
-5. `/docs/design/game_design.md` (게임 컨셉 SSOT — 코드 책임과 기획 방향이 충돌하면 이 문서가 우선)
-6. 해당 feature의 `README.md`, `*Setup.cs` / `*Bootstrap.cs`와 실제 씬/프리팹 계약 (로컬 wiring, lookup 예외, 네트워크 키 실제 사용 경로)
-7. `/Assets/Scripts/Shared/README.md` (Shared 로컬 계약)
-8. `/agent/work_principles.md` (문서 운영, SSOT 소유권, 응집도 원칙)
+5. `/agent/unity.md` (Unity meta GUID, 씬 직렬화, 프리팹 계약, Editor 작업 규칙)
+6. `/docs/design/game_design.md` (게임 컨셉 SSOT — 코드 책임과 기획 방향이 충돌하면 이 문서가 우선)
+7. 해당 feature의 `README.md`, `*Setup.cs` / `*Bootstrap.cs`와 실제 씬/프리팹 계약 (로컬 wiring, lookup 예외, 네트워크 키 실제 사용 경로)
+8. `/Assets/Scripts/Shared/README.md` (Shared 로컬 계약)
+9. `/agent/work_principles.md` (문서 운영, SSOT 소유권, 응집도 원칙)
 
 ---
 

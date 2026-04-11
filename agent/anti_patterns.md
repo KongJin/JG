@@ -21,9 +21,6 @@
 * `[Required]` 범위 규칙 — `[Required]`는 Inspector에서 연결되는 **참조 의존성**에만 사용한다. `bool`, `int`, `float`, `enum`, `Color`, `Vector*`, `string` 같은 스칼라/config 값에는 붙이지 않는다. 스칼라 값 검증은 `Range`, `Min`, 도메인 검증, 전용 validator로 처리한다.
 * 타입 enum 기반 조건 분기 — Factory + Strategy 패턴을 사용한다. switch는 명령 디스패치와 단순 값 매핑에만 허용.
 * Strategy 패턴 파일 구조 — enum, interface, factory는 한 파일에. 각 구현체(Strategy 클래스)는 개별 파일.
-* GetComponent 의존성 획득 금지 — `[Required, SerializeField]`로 선언하고 Inspector에서 연결한다. `GetComponent`/`FindObjectsByType`/`FindObjectOfType`/`Resources.FindObjectsOfTypeAll` 등 런타임 탐색은 의존성 획득이나 씬 wiring에 사용하지 않는다. `[Required]`는 씬/프리팹 저장 시 Editor가 자동 검증하므로 런타임 null 방어 코드도 불필요하다.
-* 런타임 폴백 wiring — 누락된 scene/prefab 참조를 `GetComponent`, `AddComponent`, `CreateDefault`, 런타임 UI 생성으로 암묵적으로 복구하지 않는다. scene/prefab을 직접 수정한다.
-* 플레이 모드 중 스크립트 수정 기대 — Unity 플레이 중에 C# 스크립트나 `Assets/Editor/**` 브리지 코드를 수정하고 즉시 컴파일/적용될 것이라 가정하지 않는다. 이런 수정이 필요하면 반드시 `Play Stop -> 스크립트 수정 -> 컴파일 완료 확인 -> 테스트 재개` 순서를 따른다. MCP 호출·로그 확인 SOP는 `/docs/ops/unity_mcp.md`를 따른다.
 
 * 이중 상태 — 동일한 개념(체력, 위치 등)을 두 개의 도메인 엔티티가 독립적으로 관리해서는 안 된다. Single Source of Truth는 하나여야 한다. 예: Player.CurrentHp와 CombatTarget.CurrentHealth가 동시에 존재하면 필어긋남.
 * 네트워크 공유 엔티티 로컬 ID — 네트워크로 공유되는 엔티티(플레이어 등)의 ID를 `DomainEntityId.New()`로 로컬 생성하면 안 된다. 반드시 네트워크 안정 소스(Photon ActorNumber, ViewID 등)에서 파생해야 한다. `DomainEntityId.New()`는 한 클라이언트 안에서만 존재하는 엔티티(투사체, 스킬 인스턴스 등)에만 사용한다.
@@ -127,34 +124,7 @@
 ✅ Bootstrap이 SpawnProjectileUseCase 호출 → UseCase가 Domain.Projectile 생성
 ```
 
-### 6. 런타임 탐색 정책
-**규칙:** 런타임 탐색은 scene/prefab 계약을 대체할 수 없다.
-
-**기본 금지:**
-- 의존성 획득을 위한 `GetComponent`
-- 누락된 의존성 복구를 위한 `AddComponent`
-- `FindObjectOfType` / `FindObjectsByType`
-- `Resources.FindObjectsOfTypeAll`
-- 런타임 객체 발견을 위한 scene scan
-
-**허용 예외 (모든 조건을 만족해야 함):**
-- 동일 GameObject 내부 helper 탐색만
-- 일회성 획득만
-- Unity/Photon이 해당 사례를 inspector에서 연결할 수 없어서 필요한 경우
-- 사용 사이트에 짧은 주석으로 정당화 또는 예외가 지속되면 전역 규칙 문서에 기록
-- 누락된 scene 참조의 폴백으로 사용 금지
-
-**DDOL singleton (Shared 인프라 전용):**
-- 기본: feature 코드에 새로운 정적 `Instance` + `DontDestroyOnLoad` 패턴을 도입하지 않는다.
-- 허용: 프로세스 전체 서비스가 필요한 `Shared/**` 인프라에만. 예: `SoundPlayer.Instance` — 오디오 루트 하나, lobby scene에서 생성, `Initialize`가 씬별 `EventBus`를 재바인딩. 첫 scene이 `[Required, SerializeField]`로 연결; 이후 scene은 `Instance`를 재바인딩에만 사용하고, scene `Find*`에는 사용 금지.
-- 금지: feature Presentation/Infrastructure에 임의의 DDOL singleton.
-
-### 7. Scene 계약
-**규칙:** scene 소유 feature는 `Setup`/`Bootstrap`, 직렬화 scene/prefab 참조, 관련 코드 경로에서 scene 계약을 명시적으로 유지해야 한다.
-
-필요한 scene 계약 체크리스트는 `architecture.md`가 소유한다. 로컬 문서에서 이 체크리스트를 재정의하지 않는다. 실제 코드/scene 연결을 최신 상태로 유지하고 필요시 architecture 규칙을 참조.
-
-### 8. 컴파일 클린 게이트
+### 6. 컴파일 클린 게이트
 **규칙:** 정적 아키텍처 규칙을 통과해도 Unity 컴파일 에러가 있으면 `clean`이 아니다.
 
 * 하네스 또는 사람이 `resolved`를 선언하기 전에 컴파일 상태를 확인한다.
