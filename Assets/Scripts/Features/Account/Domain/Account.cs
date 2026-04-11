@@ -1,0 +1,28 @@
+using System;
+
+namespace Features.Account.Domain
+{
+    /// <summary>
+    /// 계정 엔티티. Firebase UID 기반.
+    /// </summary>
+    [Serializable]
+    public sealed class Account
+    {
+        public string uid;
+        public string displayName;
+        public string authType; // "anonymous" | "google"
+        public long createdAtUnixMs;
+
+        public Account() { }
+
+        public Account(string uid, string authType)
+        {
+            this.uid = uid;
+            this.displayName = uid.Substring(0, Math.Min(8, uid.Length));
+            this.authType = authType;
+            this.createdAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        }
+
+        public DateTime CreatedAt => DateTimeOffset.FromUnixTimeMilliseconds(createdAtUnixMs).UtcDateTime;
+    }
+}
