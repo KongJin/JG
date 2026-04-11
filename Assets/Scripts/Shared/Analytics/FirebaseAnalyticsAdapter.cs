@@ -4,6 +4,11 @@ using UnityEngine;
 
 namespace Shared.Analytics
 {
+    /// <summary>
+    /// Firebase Analytics 어댑터.
+    /// WebGL 빌드: 실제 Firebase JS SDK 호출 (__Internal DllImport).
+    /// 에디터/기타 플랫폼: 디버깅용 콘솔 로그 (스텁).
+    /// </summary>
     public sealed class FirebaseAnalyticsAdapter : IAnalyticsPort
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -13,6 +18,7 @@ namespace Shared.Analytics
         static void FirebaseAnalytics_Init() { }
         static void FirebaseAnalytics_LogEvent(string eventName, string jsonParams)
         {
+            // Editor stub — logs to console. Real Firebase calls in WebGL build.
             Debug.Log($"[FirebaseStub] {eventName} {jsonParams}");
         }
 #endif

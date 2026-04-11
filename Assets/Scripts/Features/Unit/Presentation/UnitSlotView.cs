@@ -62,7 +62,7 @@ namespace Features.Unit.Presentation
         {
             if (_unitSpec == null) return;
 
-            _nameText.text = _unitSpec.FrameId; // TODO: 실제 이름 매핑
+            _nameText.text = _unitSpec.DisplayName;
             _costText.text = _unitSpec.SummonCost.ToString();
 
             _canAfford = _energyPort.GetCurrentEnergy(_ownerId) >= _unitSpec.SummonCost;

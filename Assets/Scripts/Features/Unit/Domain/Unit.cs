@@ -11,6 +11,7 @@ namespace Features.Unit.Domain
     {
         public DomainEntityId Id { get; }
         public string FrameId { get; }
+        public string DisplayName { get; }
         public string FirepowerModuleId { get; }
         public string MobilityModuleId { get; }
 
@@ -28,6 +29,7 @@ namespace Features.Unit.Domain
         public Unit(
             DomainEntityId id,
             string frameId,
+            string displayName,
             string firepowerModuleId,
             string mobilityModuleId,
             string passiveTraitId,
@@ -42,6 +44,7 @@ namespace Features.Unit.Domain
         {
             Id = id;
             FrameId = frameId;
+            DisplayName = displayName;
             FirepowerModuleId = firepowerModuleId;
             MobilityModuleId = mobilityModuleId;
             PassiveTraitId = passiveTraitId;

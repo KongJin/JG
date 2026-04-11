@@ -94,6 +94,14 @@ namespace Features.Unit.Presentation
                 _ownerId,
                 spawnPosition);
 
+            // 슬롯의 표시 위치 계산 (가로 배치)
+            if (slotGo.GetComponent<RectTransform>() is RectTransform rt)
+            {
+                var slotIndex = _activeSlots.Count;
+                var spacing = 160f; // 슬롯 간 간격
+                rt.anchoredPosition = new Vector2(slotIndex * spacing, 0f);
+            }
+
             // 드래그 앤 드롭 핸들러 연결 (클릭 + 드래그 모두 이 핸들러가 담당)
             if (_inputHandlerPrefab != null && _canvas != null)
             {
@@ -164,9 +172,9 @@ namespace Features.Unit.Presentation
                     Destroy(oldSlot.gameObject);
                 }
 
-                // 새 슬롯 생성
-                // spawnPosition은 기존 슬롯의 위치 재사용
-                CreateSlot(_nextIndex, Vector3.zero); // TODO: 실제 위치 전달 필요
+                // 새 슬롯 생성 — 소환 위치는 PlacementArea 중심 사용
+                var spawnPos = _placementArea != null ? _placementArea.Center : Vector3.zero;
+                CreateSlot(_nextIndex, spawnPos);
                 _nextIndex++;
             }
             else
@@ -214,10 +222,10 @@ namespace Features.Unit.Presentation
 
             // 새 슬롯 생성
             var visibleCount = Mathf.Min(3, _roster.Length - _visibleStart);
-            // spawnPosition은 임시로 Vector3.zero — 실제 배치 시 보정 필요
+            var spawnPos = _placementArea != null ? _placementArea.Center : Vector3.zero;
             for (var i = 0; i < visibleCount; i++)
             {
-                CreateSlot(_visibleStart + i, Vector3.zero);
+                CreateSlot(_visibleStart + i, spawnPos);
             }
         }
 
