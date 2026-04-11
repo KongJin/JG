@@ -28,46 +28,46 @@ namespace ProjectSD.EditorTools.SceneTools
 
             var canvas = UnityEngine.Object.FindFirstObjectByType<Canvas>();
             var lobbyView = UnityEngine.Object.FindFirstObjectByType<LobbyView>();
-            var lobbyBootstrap = UnityEngine.Object.FindFirstObjectByType<LobbyBootstrap>();
+            var lobbySetup = UnityEngine.Object.FindFirstObjectByType<LobbySetup>();
 
-            if (canvas == null || lobbyView == null || lobbyBootstrap == null)
-                throw new InvalidOperationException("Canvas, LobbyView, and LobbyBootstrap must exist before Garage augmentation.");
+            if (canvas == null || lobbyView == null || lobbySetup == null)
+                throw new InvalidOperationException("Canvas, LobbyView, and LobbySetup must exist before Garage augmentation.");
 
-            Augment(canvas, lobbyView, lobbyBootstrap);
+            Augment(canvas, lobbyView, lobbySetup);
             EditorSceneManager.MarkSceneDirty(scene);
             Debug.Log("[CodexLobbyGarageAugmenter] Garage page applied to CodexLobbyScene.");
         }
 
-        internal static void Augment(Canvas canvas, LobbyView lobbyView, LobbyBootstrap lobbyBootstrap)
+        internal static void Augment(Canvas canvas, LobbyView lobbyView, LobbySetup lobbySetup)
         {
             var catalog = CodexLobbyGarageDataBuilder.EnsureModuleCatalog();
 
             DestroyIfExists("TopTabs");
             DestroyIfExists("GaragePageRoot");
-            DestroyIfExists("UnitBootstrap");
+            DestroyIfExists("UnitSetup");
             DestroyIfExists("GarageNetworkAdapter");
-            DestroyIfExists("GarageBootstrap");
+            DestroyIfExists("GarageSetup");
 
             CreateTopTabs(canvas.transform, out var lobbyTabButton, out var garageTabButton);
             var garagePanelView = BuildGaragePage(canvas.transform);
             garagePanelView.gameObject.SetActive(false);
 
-            var unitBootstrap = CreateGameObject("UnitBootstrap").AddComponent<UnitBootstrap>();
-            CodexLobbyGarageDataBuilder.SetObject(unitBootstrap, "_moduleCatalog", catalog);
+            var unitSetup = CreateGameObject("UnitSetup").AddComponent<UnitSetup>();
+            CodexLobbyGarageDataBuilder.SetObject(unitSetup, "_moduleCatalog", catalog);
 
             var garageNetwork = CreateGameObject("GarageNetworkAdapter").AddComponent<GarageNetworkAdapter>();
 
-            var garageBootstrap = CreateGameObject("GarageBootstrap").AddComponent<GarageBootstrap>();
-            CodexLobbyGarageDataBuilder.SetObject(garageBootstrap, "_networkAdapter", garageNetwork);
-            CodexLobbyGarageDataBuilder.SetObject(garageBootstrap, "_panelView", garagePanelView);
+            var garageSetup = CreateGameObject("GarageSetup").AddComponent<GarageSetup>();
+            CodexLobbyGarageDataBuilder.SetObject(garageSetup, "_networkAdapter", garageNetwork);
+            CodexLobbyGarageDataBuilder.SetObject(garageSetup, "_panelView", garagePanelView);
 
             CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyPageRoot", canvas.gameObject);
             CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_garagePageRoot", garagePanelView.gameObject);
             CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyTabButton", lobbyTabButton);
             CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_garageTabButton", garageTabButton);
 
-            CodexLobbyGarageDataBuilder.SetObject(lobbyBootstrap, "_unitBootstrap", unitBootstrap);
-            CodexLobbyGarageDataBuilder.SetObject(lobbyBootstrap, "_garageBootstrap", garageBootstrap);
+            CodexLobbyGarageDataBuilder.SetObject(lobbySetup, "_unitSetup", unitSetup);
+            CodexLobbyGarageDataBuilder.SetObject(lobbySetup, "_garageSetup", garageSetup);
         }
 
         private static void CreateTopTabs(Transform parent, out Button lobbyTabButton, out Button garageTabButton)

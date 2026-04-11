@@ -82,14 +82,14 @@ namespace ProjectSD.EditorTools.SceneTools
             SetObject(lobbyView, "_roomDetailView", roomDetailView);
             SetString(lobbyView, "_gameSceneName", "GameScene");
 
-            var lobbyBootstrapGo = CreateGameObject("LobbyBootstrap");
-            var lobbyBootstrap = lobbyBootstrapGo.AddComponent<LobbyBootstrap>();
-            SetObject(lobbyBootstrap, "_view", lobbyView);
-            SetObject(lobbyBootstrap, "_photonAdapter", photonAdapter);
-            SetObject(lobbyBootstrap, "_sceneErrorPresenter", errorPresenter);
-            SetObject(lobbyBootstrap, "_soundPlayer", soundPlayer);
+            var lobbySetupGo = CreateGameObject("LobbySetup");
+            var lobbySetup = lobbySetupGo.AddComponent<LobbySetup>();
+            SetObject(lobbySetup, "_view", lobbyView);
+            SetObject(lobbySetup, "_photonAdapter", photonAdapter);
+            SetObject(lobbySetup, "_sceneErrorPresenter", errorPresenter);
+            SetObject(lobbySetup, "_soundPlayer", soundPlayer);
 
-            CodexLobbyGarageAugmenter.Augment(canvas, lobbyView, lobbyBootstrap);
+            CodexLobbyGarageAugmenter.Augment(canvas, lobbyView, lobbySetup);
 
             EditorSceneManager.MarkSceneDirty(scene);
             Debug.Log("[CodexLobbySceneBuilder] CodexLobbyScene rebuilt.");

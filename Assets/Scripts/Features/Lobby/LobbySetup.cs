@@ -1,4 +1,4 @@
-﻿using Shared.Attributes;
+using Shared.Attributes;
 using Features.Garage;
 using Features.Garage.Application.Ports;
 using Features.Lobby.Application;
@@ -17,7 +17,7 @@ using Shared.Ui;
 using UnityEngine;
 using DomainLobby = Features.Lobby.Domain.Lobby;
 
-public sealed class LobbyBootstrap : MonoBehaviour
+public sealed class LobbySetup : MonoBehaviour
 {
     [Required, SerializeField]
     private LobbyView _view;
@@ -31,11 +31,11 @@ public sealed class LobbyBootstrap : MonoBehaviour
     [Required, SerializeField]
     private SoundPlayer _soundPlayer;
 
-    [Required, SerializeField]
-    private UnitBootstrap _unitBootstrap;
+    [SerializeField]
+    private UnitSetup _unitSetup;
 
-    [Required, SerializeField]
-    private GarageBootstrap _garageBootstrap;
+    [SerializeField]
+    private GarageSetup _garageSetup;
 
     private LobbyNetworkEventHandler _syncHandler;
     private readonly EventBus _eventBus = new EventBus();
@@ -67,14 +67,25 @@ public sealed class LobbyBootstrap : MonoBehaviour
         _view.Initialize(_eventBus, _eventBus, useCases);
         _eventBus.Publish(new LobbyUpdatedEvent(repository.LoadLobby() ?? new DomainLobby()));
 
-        // Unit Feature 초기화 (Garage보다 먼저)
-        _unitBootstrap.Initialize(_eventBus);
+        if (_unitSetup != null)
+            _unitSetup.Initialize(_eventBus);
 
-        // Garage Feature 초기화 (Unit이 제공하는 compositionPort 사용)
-        _garageBootstrap.Initialize(
-            _eventBus,
-            _unitBootstrap.CompositionPort,
-            _unitBootstrap.Catalog);
+        if (_garageSetup != null)
+        {
+            if (_unitSetup == null)
+            {
+                Debug.LogWarning(
+                    "[LobbySetup] GarageSetup is assigned but UnitSetup is missing. Garage initialization is skipped.",
+                    this);
+            }
+            else
+            {
+                _garageSetup.Initialize(
+                    _eventBus,
+                    _unitSetup.CompositionPort,
+                    _unitSetup.Catalog);
+            }
+        }
     }
 
     private void OnApplicationQuit()
@@ -91,8 +102,7 @@ public sealed class LobbyBootstrap : MonoBehaviour
 
     private void OnDestroy()
     {
-        _garageBootstrap?.Cleanup();
-        _unitBootstrap?.Cleanup();
+        _garageSetup?.Cleanup();
+        _unitSetup?.Cleanup();
     }
 }
-
