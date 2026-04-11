@@ -41,6 +41,7 @@ namespace ProjectSD.EditorTools.SceneTools
         internal static void Augment(Canvas canvas, LobbyView lobbyView, LobbySetup lobbySetup)
         {
             var catalog = CodexLobbyGarageDataBuilder.EnsureModuleCatalog();
+            var lobbyPageRoot = EnsureLobbyPageRoot(canvas.transform);
 
             DestroyIfExists("TopTabs");
             DestroyIfExists("GaragePageRoot");
@@ -61,13 +62,35 @@ namespace ProjectSD.EditorTools.SceneTools
             CodexLobbyGarageDataBuilder.SetObject(garageSetup, "_networkAdapter", garageNetwork);
             CodexLobbyGarageDataBuilder.SetObject(garageSetup, "_pageController", garagePageController);
 
-            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyPageRoot", canvas.gameObject);
+            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyPageRoot", lobbyPageRoot.gameObject);
             CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_garagePageRoot", garagePageController.gameObject);
             CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyTabButton", lobbyTabButton);
             CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_garageTabButton", garageTabButton);
 
             CodexLobbyGarageDataBuilder.SetObject(lobbySetup, "_unitSetup", unitSetup);
             CodexLobbyGarageDataBuilder.SetObject(lobbySetup, "_garageSetup", garageSetup);
+        }
+
+        private static RectTransform EnsureLobbyPageRoot(Transform canvasTransform)
+        {
+            var existing = canvasTransform.Find("LobbyPageRoot") as RectTransform;
+            if (existing == null)
+            {
+                var root = CreateGameObject("LobbyPageRoot", canvasTransform, typeof(RectTransform));
+                existing = root.GetComponent<RectTransform>();
+            }
+
+            Stretch(existing, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+
+            var roomListPanel = UnityEngine.Object.FindFirstObjectByType<RoomListView>();
+            if (roomListPanel != null)
+                roomListPanel.transform.SetParent(existing, false);
+
+            var roomDetailPanel = UnityEngine.Object.FindFirstObjectByType<RoomDetailView>();
+            if (roomDetailPanel != null)
+                roomDetailPanel.transform.SetParent(existing, false);
+
+            return existing;
         }
 
         private static void CreateTopTabs(Transform parent, out Button lobbyTabButton, out Button garageTabButton)
@@ -281,7 +304,7 @@ namespace ProjectSD.EditorTools.SceneTools
             text.fontStyle = fontStyle;
             text.alignment = alignment;
             text.color = color;
-            text.textWrappingMode = TextWrappingModes.Word;
+            text.textWrappingMode = TextWrappingModes.Normal;
             return text;
         }
 

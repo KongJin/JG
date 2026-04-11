@@ -36,6 +36,7 @@ namespace ProjectSD.EditorTools.SceneTools
 
             var canvas = CreateCanvas();
             CreateBackdrop(canvas.transform);
+            var lobbyPageRoot = CreatePageRoot("LobbyPageRoot", canvas.transform);
 
             var title = CreateText(
                 "Title",
@@ -57,8 +58,8 @@ namespace ProjectSD.EditorTools.SceneTools
                 new Color32(138, 156, 196, 255));
             Stretch(subtitle.rectTransform, new Vector2(0.05f, 0.86f), new Vector2(0.95f, 0.925f), Vector2.zero, Vector2.zero);
 
-            var roomListView = BuildRoomListPanel(canvas.transform);
-            var roomDetailView = BuildRoomDetailPanel(canvas.transform);
+            var roomListView = BuildRoomListPanel(lobbyPageRoot.transform);
+            var roomDetailView = BuildRoomDetailPanel(lobbyPageRoot.transform);
             var errorPresenter = BuildSceneErrorPresenter(canvas.transform);
 
             var photonConnectionGo = CreateGameObject("PhotonConnection");
@@ -76,6 +77,7 @@ namespace ProjectSD.EditorTools.SceneTools
 
             var lobbyViewGo = CreateGameObject("LobbyView");
             var lobbyView = lobbyViewGo.AddComponent<LobbyView>();
+            SetObject(lobbyView, "_lobbyPageRoot", lobbyPageRoot);
             SetObject(lobbyView, "_roomListPanel", roomListView.gameObject);
             SetObject(lobbyView, "_roomDetailPanel", roomDetailView.gameObject);
             SetObject(lobbyView, "_roomListView", roomListView);
@@ -102,6 +104,13 @@ namespace ProjectSD.EditorTools.SceneTools
 
             var glow = CreatePanel("TopGlow", backdrop.transform, new Color32(33, 72, 139, 96));
             Stretch(glow.rectTransform, new Vector2(0.05f, 0.84f), new Vector2(0.62f, 1.04f), Vector2.zero, Vector2.zero);
+        }
+
+        private static GameObject CreatePageRoot(string name, Transform parent)
+        {
+            var root = CreateGameObject(name, parent, typeof(RectTransform));
+            Stretch(root.GetComponent<RectTransform>(), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            return root;
         }
 
         private static RoomListView BuildRoomListPanel(Transform parent)
@@ -482,7 +491,7 @@ namespace ProjectSD.EditorTools.SceneTools
             text.fontStyle = fontStyle;
             text.alignment = alignment;
             text.color = color;
-            text.enableWordWrapping = true;
+            text.textWrappingMode = TextWrappingModes.Normal;
             return text;
         }
 

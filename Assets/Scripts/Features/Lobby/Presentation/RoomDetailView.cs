@@ -63,6 +63,7 @@ namespace Features.Lobby.Presentation
         private DomainEntityId _localMemberId;
         private bool _localIsReady;
         private bool _garageReadyEligible;
+        private bool _callbacksHooked;
         private readonly List<GameObject> _activeItems = new();
 
         public void Initialize(LobbyUseCases useCases, IEventSubscriber eventSubscriber, IEventPublisher eventPublisher)
@@ -72,16 +73,16 @@ namespace Features.Lobby.Presentation
             _eventPublisher = eventPublisher;
             _memberItemPool = new GameObjectPool(_memberItemPrefab.gameObject, _memberListContent);
 
-            if (_leaveButton != null)
+            if (!_callbacksHooked)
+            {
+                _callbacksHooked = true;
+
                 _leaveButton.onClick.AddListener(HandleLeave);
-            if (_teamRedButton != null)
                 _teamRedButton.onClick.AddListener(() => HandleChangeTeam(TeamType.Red));
-            if (_teamBlueButton != null)
                 _teamBlueButton.onClick.AddListener(() => HandleChangeTeam(TeamType.Blue));
-            if (_readyButton != null)
                 _readyButton.onClick.AddListener(HandleToggleReady);
-            if (_startGameButton != null)
                 _startGameButton.onClick.AddListener(HandleStartGame);
+            }
 
             _disposables.Dispose();
             _disposables = new DisposableScope();
@@ -139,6 +140,8 @@ namespace Features.Lobby.Presentation
 
         private void UpdateLocalReadyState(IReadOnlyList<RoomMemberSnapshot> members)
         {
+            _localIsReady = false;
+
             foreach (var member in members)
             {
                 if (member.Id.Equals(_localMemberId))
@@ -165,6 +168,9 @@ namespace Features.Lobby.Presentation
 
         private void HandleToggleReady()
         {
+            if (!HasRoomMemberContext())
+                return;
+
             if (!_garageReadyEligible && !_localIsReady)
             {
                 UiErrorResultBridge.PublishBannerIfFailure(
@@ -195,7 +201,7 @@ namespace Features.Lobby.Presentation
         {
             _garageReadyEligible = roster != null && roster.IsValid;
 
-            if (!_garageReadyEligible && _localIsReady && !string.IsNullOrEmpty(_currentRoomId.Value) && !string.IsNullOrEmpty(_localMemberId.Value))
+            if (!_garageReadyEligible && _localIsReady && HasRoomMemberContext())
             {
                 var result = _useCases.SetReady(_currentRoomId, _localMemberId, false);
                 UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
@@ -207,13 +213,14 @@ namespace Features.Lobby.Presentation
 
         private void UpdateReadyButtonState()
         {
-            if (_readyButton == null)
-                return;
+            bool hasRoomMemberContext = HasRoomMemberContext();
+            _readyButton.interactable = hasRoomMemberContext && (_garageReadyEligible || _localIsReady);
 
-            _readyButton.interactable = _garageReadyEligible || _localIsReady;
-
-            if (_readyButtonText == null)
+            if (!hasRoomMemberContext)
+            {
+                _readyButtonText.text = "Ready";
                 return;
+            }
 
             if (!_garageReadyEligible && !_localIsReady)
             {
@@ -222,6 +229,12 @@ namespace Features.Lobby.Presentation
             }
 
             _readyButtonText.text = _localIsReady ? "Cancel" : "Ready";
+        }
+
+        private bool HasRoomMemberContext()
+        {
+            return !string.IsNullOrWhiteSpace(_currentRoomId.Value) &&
+                   !string.IsNullOrWhiteSpace(_localMemberId.Value);
         }
 
         private void OnDestroy()

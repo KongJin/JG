@@ -46,6 +46,7 @@ namespace Features.Lobby.Presentation
         private IEventPublisher _eventPublisher;
         private DisposableScope _disposables = new DisposableScope();
         private bool _tabsHooked;
+        private bool _showingRoomDetail;
 
         public void Initialize(IEventSubscriber eventBus, IEventPublisher eventPublisher, LobbyUseCases useCases)
         {
@@ -117,6 +118,8 @@ namespace Features.Lobby.Presentation
 
         private void ShowRoomList()
         {
+            _showingRoomDetail = false;
+
             if (_roomListPanel != null)
                 _roomListPanel.SetActive(true);
             if (_roomDetailPanel != null)
@@ -125,6 +128,8 @@ namespace Features.Lobby.Presentation
 
         private void ShowRoomDetail()
         {
+            _showingRoomDetail = true;
+
             if (_roomListPanel != null)
                 _roomListPanel.SetActive(false);
             if (_roomDetailPanel != null)
@@ -151,13 +156,18 @@ namespace Features.Lobby.Presentation
             if (_garagePageRoot != null)
                 _garagePageRoot.SetActive(false);
 
+            if (_showingRoomDetail)
+                ShowRoomDetail();
+            else
+                ShowRoomList();
+
             UpdateTabState(true);
         }
 
         private void ShowGaragePage()
         {
             if (_lobbyPageRoot != null)
-                _lobbyPageRoot.SetActive(true);
+                _lobbyPageRoot.SetActive(false);
             if (_garagePageRoot != null)
                 _garagePageRoot.SetActive(true);
             if (_roomListPanel != null)

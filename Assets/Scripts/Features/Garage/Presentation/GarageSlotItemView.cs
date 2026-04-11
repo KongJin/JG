@@ -1,4 +1,3 @@
-using Features.Garage.Domain;
 using Shared.Attributes;
 using TMPro;
 using UnityEngine;
@@ -21,35 +20,25 @@ namespace Features.Garage.Presentation
 
         public Button Button => _button;
 
-        public void Render(int slotIndex, GarageRoster.UnitLoadout loadout, GaragePanelCatalog catalog, bool isSelected)
+        public void Render(GarageSlotViewModel viewModel)
         {
+            if (viewModel == null)
+                return;
+
             if (_slotNumberText != null)
-                _slotNumberText.text = $"SLOT {slotIndex + 1}";
+                _slotNumberText.text = viewModel.SlotLabel;
 
-            if (loadout != null && loadout.IsComplete)
-            {
-                var frameName = catalog?.FindFrame(loadout.frameId)?.DisplayName ?? loadout.frameId;
-                var firepowerName = catalog?.FindFirepower(loadout.firepowerModuleId)?.DisplayName ?? loadout.firepowerModuleId;
-                var mobilityName = catalog?.FindMobility(loadout.mobilityModuleId)?.DisplayName ?? loadout.mobilityModuleId;
+            if (_titleText != null)
+                _titleText.text = viewModel.Title;
 
-                if (_titleText != null)
-                    _titleText.text = frameName;
-                if (_summaryText != null)
-                    _summaryText.text = $"{firepowerName} / {mobilityName}";
-            }
-            else
-            {
-                if (_titleText != null)
-                    _titleText.text = "Empty Slot";
-                if (_summaryText != null)
-                    _summaryText.text = "Select frame and modules";
-            }
+            if (_summaryText != null)
+                _summaryText.text = viewModel.Summary;
 
             if (_background != null)
             {
-                _background.color = isSelected
+                _background.color = viewModel.IsSelected
                     ? _selectedColor
-                    : (loadout != null && loadout.IsComplete ? _filledColor : _emptyColor);
+                    : (viewModel.HasCommittedLoadout ? _filledColor : _emptyColor);
             }
         }
     }

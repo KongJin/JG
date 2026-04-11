@@ -8,6 +8,7 @@ using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Lifecycle;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Features.Garage
 {
@@ -21,8 +22,9 @@ namespace Features.Garage
         [Required, SerializeField]
         private GarageNetworkAdapter _networkAdapter;
 
+        [FormerlySerializedAs("_panelView")]
         [SerializeField]
-        private GaragePanelView _panelView;
+        private GaragePageController _pageController;
 
         private GarageJsonPersistence _persistence;
         private RosterValidationProvider _rosterValidationProvider;
@@ -59,8 +61,8 @@ namespace Features.Garage
             ValidateRoster = new ValidateRosterUseCase(_rosterValidationProvider);
             SaveRoster = new SaveRosterUseCase(_persistence, _networkAdapter, eventBus);
 
-            if (_panelView != null)
-                _panelView.Initialize(eventBus, this, BuildPanelCatalog(unitCatalog));
+            if (_pageController != null)
+                _pageController.Initialize(this, BuildPanelCatalog(unitCatalog));
         }
 
         private static GaragePanelCatalog BuildPanelCatalog(ModuleCatalog unitCatalog)
