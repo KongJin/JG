@@ -19,6 +19,7 @@ namespace Features.Player
     public sealed class PlayerSetup : MonoBehaviour, IPunInstantiateMagicCallback
     {
         public static event System.Action<PlayerSetup> RemoteArrived;
+        public static event System.Action<PlayerSetup> LocalArrived;
 
         [Required, SerializeField]
         private PlayerNetworkAdapter _networkAdapter;
@@ -118,6 +119,8 @@ namespace Features.Player
             MaxHp = player.MaxHp;
             MaxEnergy = player.MaxEnergy;
             IsInitialized = true;
+
+            LocalArrived?.Invoke(this);
         }
 
         /// <summary>

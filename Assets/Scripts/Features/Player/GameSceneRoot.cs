@@ -43,7 +43,7 @@ namespace Features.Player
         [Required, SerializeField] private GameObject _healthHudPrefab;
         [Required, SerializeField] private Canvas _hudCanvas;
         [Required, SerializeField] private ProjectileSpawner _projectileSpawner;
-        [Required, SerializeField] private CombatBootstrap _combatBootstrap;
+        [Required, SerializeField] private CombatSetup _combatSetup;
         [Required, SerializeField] private ZoneSetup _zoneSetup;
         [Required, SerializeField] private SceneErrorPresenter _sceneErrorPresenter;
         [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
@@ -52,8 +52,8 @@ namespace Features.Player
         [Required, SerializeField] private PlayerSetup _localPlayerSetup;
 
         [Header("Unit & Garage")]
-        [Required, SerializeField] private UnitBootstrap _unitBootstrap;
-        [Required, SerializeField] private GarageBootstrap _garageBootstrap;
+        [Required, SerializeField] private UnitSetup _unitSetup;
+        [Required, SerializeField] private GarageSetup _garageSetup;
 
         [Header("Unit Summon UI")]
         [SerializeField] private UnitSlotsContainer _unitSlotsContainer;
@@ -67,12 +67,12 @@ namespace Features.Player
         [Required, SerializeField] private StatusSetup _statusSetup;
 
         [Header("Wave (PvE)")]
-        [SerializeField] private WaveBootstrap _waveBootstrap;
+        [SerializeField] private WaveSetup _waveSetup;
         [Tooltip("PvE일 때 필수. Combat.Initialize 직후 RegisterTarget.")]
-        [SerializeField] private CoreObjectiveBootstrap _coreObjective;
+        [SerializeField] private CoreObjectiveSetup _coreObjective;
 
         [Header("Scene Transition")]
-        [SerializeField] private string _lobbySceneName = "JG_LobbyScene";
+        [SerializeField] private string _lobbySceneName = "CodexLobbyScene";
 
         private EventBus _eventBus;
         private DisposableScope _disposables;
@@ -95,18 +95,18 @@ namespace Features.Player
         private void InitializeUnitAndGarage(PlayerSetup localPlayerSetup)
         {
             // 1. Unit Bootstrap 초기화
-            _unitBootstrap.Initialize(_eventBus);
+            _unitSetup.Initialize(_eventBus);
 
             // 2. Garage Bootstrap 초기화
-            _garageBootstrap.Initialize(
+            _garageSetup.Initialize(
                 _eventBus,
-                _unitBootstrap.CompositionPort,
-                _unitBootstrap.Catalog);
+                _unitSetup.CompositionPort,
+                _unitSetup.Catalog);
 
             // 3. UseCase들 생성
-            _restoreGarageRosterUseCase = new RestoreGarageRosterUseCase(_garageBootstrap.Setup.NetworkPort);
+            _restoreGarageRosterUseCase = new RestoreGarageRosterUseCase(_garageSetup.Setup.NetworkPort);
             _computePlayerUnitSpecsUseCase = new ComputePlayerUnitSpecsUseCase(
-                _garageBootstrap.Setup.ComposeUnit,
+                _garageSetup.Setup.ComposeUnit,
                 new ClockAdapter(),
                 _eventBus);
 
@@ -182,7 +182,7 @@ namespace Features.Player
 
             _unitSlotsContainer.Initialize(
                 _eventBus,
-                _unitBootstrap.BattleEntitySetup.SummonUnit,
+                _unitSetup.BattleEntitySetup.SummonUnit,
                 energyPort,
                 specs,
                 playerId,
@@ -193,52 +193,20 @@ namespace Features.Player
         private void Awake()
         {
             PlayerSetup.RemoteArrived += OnRemotePlayerArrived;
+            PlayerSetup.LocalArrived += OnLocalPlayerArrived;
         }
 
-        private void Start()
+        private void OnLocalPlayerArrived(PlayerSetup setup)
         {
-            _remotePlayerWiringReady = false;
-            _eventBus = new EventBus();
-            _disposables = new DisposableScope();
+            _localPlayerSetup = setup;
+            CompleteLocalPlayerInitialization();
+        }
 
-            // Analytics
-            _analytics = new FirebaseAnalyticsAdapter();
-            _matchId = PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.Name : "unknown";
-            _sceneStartTime = Time.realtimeSinceStartup;
-            _analytics.LogGameStart(_matchId);
-            RoundCounter.Increment();
-            var analyticsHandler = new GameAnalyticsEventHandler(_analytics, _eventBus, _sceneStartTime, () => Time.realtimeSinceStartup);
-            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, analyticsHandler));
+        private void CompleteLocalPlayerInitialization()
+        {
+            if (_localPlayerSetup == null) return;
 
-            _playerLookup = new PlayerLookupAdapter(_playerSceneRegistry);
-            _sceneErrorPresenter.Initialize(_eventBus);
-
-            if (!PhotonNetwork.InRoom)
-            {
-                _eventBus.Publish(
-                    new UiErrorRequestedEvent(
-                        UiErrorMessage.Modal(
-                            "You are not connected to a room. Please return to the lobby and join again.",
-                            "GameScene"
-                        )
-                    )
-                );
-                return;
-            }
-
-            // Spawn local player
-            var offset = Random.insideUnitCircle * _spawnRadius;
-            var spawnPosition = new Vector3(offset.x, 0f, offset.y);
-            var player = PhotonNetwork.Instantiate(
-                _playerPrefabName,
-                spawnPosition,
-                Quaternion.identity);
-
-            // TODO: GetComponent 대체 - Anti-pattern.md에서 GetComponent 금지
-            // 현재 Photon instantiate 후 PlayerSetup 획득 불가피
-            // 향후 LocalPlayerArrived 이벤트 패턴으로 변경 권장
-            _localPlayerSetup = player.GetComponent<PlayerSetup>();
-            _cameraFollower.Initialize(player.transform, _camera.transform.position - player.transform.position);
+            _cameraFollower.Initialize(_localPlayerSetup.transform, _camera.transform.position - _localPlayerSetup.transform.position);
 
             // Status (must initialize before PlayerSetup so SpeedModifier is ready)
             _statusSetup.Initialize(_eventBus, _localPlayerSetup.StatusNetworkAdapter, _localPlayerSetup.StatusNetworkAdapter, PhotonNetwork.IsMasterClient);
@@ -251,16 +219,16 @@ namespace Features.Player
                 _playerLookup);
 
             // Combat
-            _combatBootstrap.Initialize(_eventBus, _localPlayerSetup.CombatNetworkPort, _localPlayerSetup.PlayerId, new EntityAffiliationAdapter());
+            _combatSetup.Initialize(_eventBus, _localPlayerSetup.CombatNetworkPort, _localPlayerSetup.PlayerId, new EntityAffiliationAdapter());
 
-            if (_waveBootstrap != null && _coreObjective == null)
+            if (_waveSetup != null && _coreObjective == null)
             {
                 Debug.LogError(
-                    "[GameSceneRoot] WaveBootstrap is set but CoreObjective is missing. Assign CoreObjectiveBootstrap on the objective GameObject.");
+                    "[GameSceneRoot] WaveSetup is set but CoreObjective is missing. Assign CoreObjectiveSetup on the objective GameObject.");
             }
 
             if (_coreObjective != null)
-                _coreObjective.RegisterCombatTarget(_combatBootstrap);
+                _coreObjective.RegisterCombatTarget(_combatSetup);
 
             if (_damageNumberSpawner != null)
                 _damageNumberSpawner.Initialize(_eventBus);
@@ -308,29 +276,72 @@ namespace Features.Player
             InitializeUnitAndGarage(_localPlayerSetup);
 
             // Wave 초기화 (Skill 선택 제거, 바로 시작)
-            if (_waveBootstrap != null)
+            if (_waveSetup != null)
             {
                 if (_coreObjective == null)
                 {
                     Debug.LogError(
-                        "[GameSceneRoot] Cannot initialize Wave without CoreObjectiveBootstrap.");
+                        "[GameSceneRoot] Cannot initialize Wave without CoreObjectiveSetup.");
                     return;
                 }
 
-                _waveBootstrap.Initialize(_eventBus, _combatBootstrap, _localPlayerSetup.PlayerId,
+                _waveSetup.Initialize(_eventBus, _combatSetup, _localPlayerSetup.PlayerId,
                     _coreObjective);
-                _waveBootstrap.RegisterPlayer(player.transform);
+                _waveSetup.RegisterPlayer(_localPlayerSetup.transform);
 
                 // Phase 3: BattleEntity 소환 시스템 연결
-                _unitBootstrap.InitializeBattleEntity(
+                _unitSetup.InitializeBattleEntity(
                     _eventBus,
                     new UnitEnergyAdapter(_localPlayerSetup.EnergyAdapterInstance),
-                    _combatBootstrap,
-                    _waveBootstrap.UnitPositionQuery);
+                    _combatSetup,
+                    _waveSetup.UnitPositionQuery);
 
                 // Phase 4: 소환 UI 초기화
                 ValidateAndInitializeSummonSlots(_localPlayerSetup.PlayerId);
             }
+        }
+
+        private void Start()
+        {
+            _remotePlayerWiringReady = false;
+            _eventBus = new EventBus();
+            _disposables = new DisposableScope();
+
+            // Analytics
+            _analytics = new FirebaseAnalyticsAdapter();
+            _matchId = PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.Name : "unknown";
+            _sceneStartTime = Time.realtimeSinceStartup;
+            _analytics.LogGameStart(_matchId);
+            RoundCounter.Increment();
+            var analyticsHandler = new GameAnalyticsEventHandler(_analytics, _eventBus, _sceneStartTime, () => Time.realtimeSinceStartup);
+            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, analyticsHandler));
+
+            _playerLookup = new PlayerLookupAdapter(_playerSceneRegistry);
+            _sceneErrorPresenter.Initialize(_eventBus);
+
+            if (!PhotonNetwork.InRoom)
+            {
+                _eventBus.Publish(
+                    new UiErrorRequestedEvent(
+                        UiErrorMessage.Modal(
+                            "You are not connected to a room. Please return to the lobby and join again.",
+                            "GameScene"
+                        )
+                    )
+                );
+                return;
+            }
+
+            // Spawn local player
+            var offset = Random.insideUnitCircle * _spawnRadius;
+            var spawnPosition = new Vector3(offset.x, 0f, offset.y);
+            var player = PhotonNetwork.Instantiate(
+                _playerPrefabName,
+                spawnPosition,
+                Quaternion.identity);
+
+            // PlayerSetup.LocalArrived 이벤트는 PlayerSetup.Awake에서 발행됨
+            // CompleteLocalPlayerInitialization()은 OnLocalPlayerArrived에서 호출됨
         }
 
         private void ConnectPlayer(PlayerSetup setup)
@@ -367,10 +378,10 @@ namespace Features.Player
                 _camera,
                 _hudCanvas);
 
-            _combatBootstrap.RegisterTarget(setup.PlayerId, setup.CombatTargetProvider);
+            _combatSetup.RegisterTarget(setup.PlayerId, setup.CombatTargetProvider);
 
-            if (_waveBootstrap != null)
-                _waveBootstrap.RegisterPlayer(setup.transform);
+            if (_waveSetup != null)
+                _waveSetup.RegisterPlayer(setup.transform);
 
             // Wire remote player's StatusNetworkAdapter so RPC callbacks reach the shared handler
             if (!setup.NetworkAdapter.IsMine)
@@ -414,6 +425,7 @@ namespace Features.Player
         private void OnDestroy()
         {
             PlayerSetup.RemoteArrived -= OnRemotePlayerArrived;
+            PlayerSetup.LocalArrived -= OnLocalPlayerArrived;
 
             var playTime = Time.realtimeSinceStartup - _sceneStartTime;
             if (_analytics != null)
