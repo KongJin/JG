@@ -31,6 +31,7 @@
 | 네트워크 키·소유권 | 키를 실제로 쓰는 feature code (`../Assets/Scripts/Features/<Name>/Application/**`, `../Assets/Scripts/Features/<Name>/Infrastructure/**`) + [architecture.md](architecture.md) |
 | 피처별 씬·초기화 | 해당 feature의 `Setup`/`Bootstrap`, 씬/프리팹 직렬화 계약 |
 | 에디터 MCP 등 자동화 계약 | [unity_mcp.md](../docs/ops/unity_mcp.md) |
+| Codex의 repo-tracked 파일 수정 운영 | [codex_patching.md](codex_patching.md) |
 | 스킬 분류 태그와 현재 코드 매핑 | [SkillGameplayTags.cs](../Assets/Scripts/Features/Skill/Domain/SkillGameplayTags.cs), [SkillGameplayTagResolver.cs](../Assets/Scripts/Features/Skill/Domain/SkillGameplayTagResolver.cs), [SkillData.cs](../Assets/Scripts/Features/Skill/Infrastructure/SkillData.cs) — 수치·MVP 정의는 `../docs/design/game_design.md`만 SSOT |
 | 제품·배포·기밀 맥락 | [developer_context.md](developer_context.md) |
 

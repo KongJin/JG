@@ -16,6 +16,7 @@
 9. 네트워크 상태 키와 동기화 채널은 **해당 키를 실제로 쓰는 코드**를 기준으로 본다. cross-feature로 읽을 때도 쓰기 소유 피처의 Application/Infrastructure 경로를 먼저 본다.
 10. Unity MCP나 에디터 자동화는 `/docs/ops/unity_mcp.md`를 먼저 읽는다.
 11. 대규모 기계적 치환 전에는 대상 패턴, 제외 대상, 검증 방법을 먼저 정하고 문서 의미가 바뀌면 규칙 문서도 같이 갱신한다.
+12. Codex가 repo-tracked 파일을 수정할 때는 `/agent/codex_patching.md`를 먼저 읽고, 큰 패치는 분할 적용과 패치 직후 검증을 기본값으로 둔다.
 
 ## 작업별 진입 경로
 
@@ -30,6 +31,7 @@
 | 로컬 씬 wiring, lookup 예외, 프리팹/씬 계약 | 해당 feature의 `README.md`, `*Setup.cs` / `*Bootstrap.cs`, 씬/프리팹 직렬화 참조, `/agent/anti_patterns.md` |
 | Shared에 둘 수 있는 것과 없는 것 | `/agent/architecture.md`, `/agent/anti_patterns.md`, `/Assets/Scripts/Shared/README.md`, `Assets/Scripts/Shared/**` |
 | Unity 스크립트 리네임, meta GUID, 씬 직렬화, 프리팹 연결 | `/agent/unity.md` |
+| Codex의 repo-tracked 파일 수정, `apply_patch` 분할/검증 운영 | `/agent/codex_patching.md` |
 | Unity MCP 엔드포인트와 테스트 SOP | `/docs/ops/unity_mcp.md` |
 | 수치, MVP 기준, 디자인 문장 | `/docs/design/game_design.md` |
 | 유닛/모듈 설계 SSOT | `/docs/design/unit_module_design.md` |
@@ -62,6 +64,7 @@
 7. 해당 feature의 `README.md`, `*Setup.cs` / `*Bootstrap.cs`와 실제 씬/프리팹 계약 (로컬 wiring, lookup 예외, 네트워크 키 실제 사용 경로)
 8. `/Assets/Scripts/Shared/README.md` (Shared 로컬 계약)
 9. `/agent/work_principles.md` (문서 운영, SSOT 소유권, 응집도 원칙)
+10. `/agent/codex_patching.md` (Codex 전용 패치 분할/적용/검증 운영)
 
 ---
 
