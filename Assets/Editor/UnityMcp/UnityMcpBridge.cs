@@ -65,6 +65,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             EditorApplication.update += TryStartBridgeFromSchedule;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             Application.logMessageReceivedThreaded += OnLogMessageReceived;
+            CompilationPipeline.assemblyCompilationFinished += OnCompilationFinished;
             AssemblyReloadEvents.beforeAssemblyReload += StopBridge;
             EditorApplication.quitting += StopBridge;
             ScheduleStartBridge(InitialStartDelaySeconds, resetRetryCount: true);
@@ -3798,6 +3799,26 @@ namespace ProjectSD.EditorTools.UnityMcp
                 }
 
                 ConsoleLogs.Add(entry);
+            }
+        }
+
+        private static void OnCompilationFinished(string assemblyName, UnityEditor.Compilation.CompilerMessage[] messages)
+        {
+            if (messages == null)
+                return;
+
+            foreach (var msg in messages)
+            {
+                if (msg.type == UnityEditor.Compilation.CompilerMessageType.Error)
+                {
+                    var formatted = $"[Compiler Error] {assemblyName}: {msg.message}";
+                    OnLogMessageReceived(formatted, msg.file, LogType.Error);
+                }
+                else if (msg.type == UnityEditor.Compilation.CompilerMessageType.Warning)
+                {
+                    var formatted = $"[Compiler Warning] {assemblyName}: {msg.message}";
+                    OnLogMessageReceived(formatted, msg.file, LogType.Warning);
+                }
             }
         }
 
