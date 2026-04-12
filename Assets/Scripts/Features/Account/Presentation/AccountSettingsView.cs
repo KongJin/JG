@@ -67,8 +67,8 @@ namespace Features.Account.Presentation
             _currentProfile = profile;
 
             if (_uidText != null) _uidText.text = $"UID: {profile.uid}";
-            if (_authTypeText != null) _authTypeText.text = $"인증: {profile.authType}";
-            if (_displayNameText != null) _displayNameText.text = $"닉네임: {profile.displayName}";
+            if (_authTypeText != null) _authTypeText.text = profile.authType;
+            if (_displayNameText != null) _displayNameText.text = profile.displayName;
             if (_nicknameInput != null) _nicknameInput.text = profile.displayName;
 
             RefreshGoogleButtonState();
@@ -104,20 +104,20 @@ namespace Features.Account.Presentation
         {
             if (_setup == null)
             {
-                SetStatusMessage("AccountSetup이 연결되지 않았습니다.");
+                SetStatusMessage("AccountSetup is not connected.");
                 return;
             }
 
             if (_currentProfile != null && _currentProfile.authType == "google")
             {
-                SetStatusMessage("이미 Google 계정으로 연결되어 있습니다.");
+                SetStatusMessage("Already linked with Google account.");
                 RefreshGoogleButtonState();
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(_setup.GoogleWebClientId))
             {
-                SetStatusMessage("googleWebClientId가 비어 있습니다.");
+                SetStatusMessage("googleWebClientId is empty.");
                 return;
             }
 
@@ -125,14 +125,14 @@ namespace Features.Account.Presentation
             if (_googleSignInButton != null)
                 _googleSignInButton.interactable = false;
 
-            SetStatusMessage("Google 로그인 창을 여는 중...");
+            SetStatusMessage("Opening Google sign-in...");
             AccountGoogleSignIn_RequestIdToken(
                 _setup.GoogleWebClientId,
                 gameObject.name,
                 nameof(OnGoogleIdTokenReceived),
                 nameof(OnGoogleIdTokenFailed));
 #else
-            SetStatusMessage("Google 로그인은 WebGL 빌드에서만 사용할 수 있습니다.");
+            SetStatusMessage("Google sign-in is only available in WebGL builds.");
 #endif
         }
 
@@ -144,8 +144,8 @@ namespace Features.Account.Presentation
         public void OnGoogleIdTokenFailed(string errorMessage)
         {
             SetStatusMessage(string.IsNullOrWhiteSpace(errorMessage)
-                ? "Google 로그인에 실패했습니다."
-                : $"Google 로그인 실패: {errorMessage}");
+                ? "Google sign-in failed."
+                : $"Google sign-in failed: {errorMessage}");
             RefreshGoogleButtonState();
         }
 
@@ -153,7 +153,7 @@ namespace Features.Account.Presentation
         {
             try
             {
-                SetStatusMessage("Google 계정을 연결하는 중...");
+                SetStatusMessage("Linking Google account...");
 
                 var result = await _setup.SignInWithGoogle.Execute(googleIdToken);
                 if (result.IsFailure)
@@ -163,11 +163,11 @@ namespace Features.Account.Presentation
                 }
 
                 Render(result.Value);
-                SetStatusMessage("Google 계정 연결이 완료되었습니다.");
+                SetStatusMessage("Google account linked successfully.");
             }
             catch (System.Exception ex)
             {
-                SetStatusMessage($"Google 로그인 실패: {ex.Message}");
+                SetStatusMessage($"Google sign-in failed: {ex.Message}");
             }
             finally
             {
@@ -183,10 +183,10 @@ namespace Features.Account.Presentation
             var result = await _setup.ChangeDisplayName.Execute(newName);
 
             if (_nicknameMessage != null)
-                _nicknameMessage.text = result.IsSuccess ? "닉네임이 변경되었습니다." : result.Error;
+                _nicknameMessage.text = result.IsSuccess ? "Nickname changed." : result.Error;
 
             if (result.IsSuccess && _displayNameText != null)
-                _displayNameText.text = $"닉네임: {newName}";
+                _displayNameText.text = newName;
         }
 
         private void OnLogoutClicked()
@@ -197,7 +197,7 @@ namespace Features.Account.Presentation
         private void OnDeleteAccountClicked()
         {
             if (_confirmDialog != null) _confirmDialog.SetActive(true);
-            if (_confirmMessage != null) _confirmMessage.text = "정말 계정을 삭제하시겠습니까?\n모든 데이터가 영구 삭제됩니다.";
+            if (_confirmMessage != null) _confirmMessage.text = "Are you sure you want to delete your account?\nAll data will be permanently deleted.";
         }
 
         private async void OnConfirmYesClicked()
@@ -212,7 +212,7 @@ namespace Features.Account.Presentation
             }
             catch (System.Exception ex)
             {
-                SetStatusMessage($"계정 삭제 실패: {ex.Message}");
+                SetStatusMessage($"Account deletion failed: {ex.Message}");
             }
         }
 
