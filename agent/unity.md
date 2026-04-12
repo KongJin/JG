@@ -37,6 +37,29 @@ Unity Editor 전용 작업 규칙. Unity 고유 직렬화, 에디터 조작, 에
 - `m_Script: {fileID: xxx, guid: yyy, type: z}` — 이 guid가 meta의 guid와 매핑
 - `Missing (MonoScript)` = guid가 가리키는 .cs.meta가 존재하지 않음
 
+### 2.1 열려 있는 scene/prefab 외부 수정 금지
+
+**규칙:** Unity Editor에서 현재 열려 있는 `.unity` / `.prefab` 에셋은 에디터 외부에서 직접 수정하지 않는다.
+
+- ✅ scene/prefab wiring 변경은 Unity MCP 또는 에디터 내부 작업을 우선 사용
+- ✅ 외부 YAML 편집이 필요하면 먼저 사용자에게 대상 scene/prefab을 닫거나 다른 scene으로 전환하도록 요청
+- ✅ 대상 자산이 계속 열려 있으면 직접 수정하지 않음
+- ✅ 예외가 필요하면 reload 영향과 미저장 변경 손실 가능성을 설명하고 사용자 확인 후 진행
+- ❌ Unity가 열어 둔 scene/prefab을 디스크에서 직접 패치
+- ❌ reload popup을 무시한 채 직렬화 자산 수정 지속
+
+**이유:** Unity가 메모리에 들고 있는 scene/prefab과 디스크 파일이 어긋나면 reload popup이 뜨고, 사용자의 미저장 변경이 손실될 수 있다.
+
+**기본 판단 순서:**
+1. Unity MCP/에디터 내부에서 처리 가능한지 먼저 확인
+2. 불가능하면 사용자에게 대상 scene/prefab을 닫거나 다른 scene으로 전환하도록 요청
+3. 대상 자산이 계속 열려 있으면 직접 수정하지 않음
+4. 예외가 필요하면 사용자 확인 후 진행
+
+**검증:** 직접 YAML 편집 후에는 `git diff --check`로 직렬화 공백/형식 문제를 확인하고, Unity에서 reload/reimport 후 참조가 유지되는지 검증한다.
+
+**MCP 확인 작업:** scene/prefab/UI를 MCP로 확인한 경우 가능하면 종료 직전 `/screenshot/capture`로 화면을 남기고 실제 결과를 확인한다.
+
 ---
 
 ## 3. 프리팹 연결 규칙
@@ -70,11 +93,61 @@ Unity Editor 전용 작업 규칙. Unity 고유 직렬화, 에디터 조작, 에
 3. 컴파일 완료 확인
 4. 테스트 재개
 
-자세한 MCP 호출·로그 확인 SOP는 `/docs/ops/unity_mcp.md`를 따른다.
+---
+
+## 6. Unity MCP 운영
+
+**용도:** Unity Editor 안의 로컬 HTTP 브리지를 통해 scene, prefab, play mode, 로그, 스크린샷을 원격 제어/확인한다.
+
+**접속:**
+- 주소: `http://127.0.0.1:{port}/`
+- 포트: `ProjectSettings/UnityMcpPort.txt`
+- stdio 서버: `tools/unity-mcp/server.js`
+- 기본 HTTP 타임아웃: `10000ms` (`UNITY_MCP_HTTP_TIMEOUT_MS`로 덮어쓰기 가능)
+
+**기본 순서:**
+1. `GET /health`로 브리지, scene, `isCompiling`, `isPlaying` 확인
+2. 작업 전 `Play Stop -> 파일 수정 -> 컴파일 완료 확인 -> /health 확인`
+3. 주요 액션 뒤 `GET /console/logs` 또는 `GET /console/errors` 확인
+4. hierarchy/scene 문제는 `GET /scene/hierarchy` 또는 `tools/mcp-diagnose-scene-hierarchy.ps1` 사용
+5. 종료 직전 가능하면 `/screenshot/capture`로 화면 저장 후 실제 결과 확인
+
+**운영 규칙:**
+- MCP 테스트는 화면만 보지 말고 로그까지 같이 확인
+- runtime UI flow 회귀를 hardcoded 자동 스크립트로 굳히지 않음
+- 공식 기록은 `docs/playtest/runtime_validation_checklist.md`에 남기고, MCP 입력 라우트는 일회성 수동 진단에 사용
+
+**주요 엔드포인트:**
+- 조회 `GET`: `/health`, `/scene/current`, `/console/errors`, `/console/logs`, `/scene/hierarchy`, `/compile/status`
+- 플레이/컴파일/빌드 `POST`: `/scene/open`, `/scene/save`, `/play/start`, `/play/stop`, `/screenshot/capture`, `/compile/request`, `/compile/wait`, `/build/webgl`
+- 입력/UI `POST`: `/input/click`, `/input/move`, `/input/drag`, `/input/key`, `/input/text`, `/input/scroll`, `/input/key-combo`, `/ui/button/invoke`
+- 씬/오브젝트/프리팹 편집 `POST`: `/gameobject/find`, `/gameobject/create`, `/gameobject/create-primitive`, `/gameobject/destroy`, `/gameobject/set-active`, `/component/add`, `/component/set`, `/component/get`, `/prefab/save`, `/prefab/get`, `/prefab/set`, `/prefab/add-component`, `/asset/refresh`
+- 에디터 유틸리티 `POST`: `/menu/execute`
+
+**자주 쓰는 요청 형식:**
+```json
+{ "scenePath": "Assets/Scenes/ExampleScene.unity", "saveCurrentSceneIfDirty": true }
+```
+`POST /scene/open`
+
+```json
+{ "outputPath": "Temp/UnityMcp/Screenshots/runtime-check.png", "superSize": 1, "overwrite": true }
+```
+`POST /screenshot/capture`
+
+```json
+{ "requestFirst": true, "cleanBuildCache": false, "timeoutMs": 300000, "pollIntervalMs": 100 }
+```
+`POST /compile/wait`
+
+```json
+{ "path": "/Canvas/TopTabs/GarageTabButton" }
+```
+`POST /ui/button/invoke`
 
 ---
 
-## 6. 프리팹 인스턴스화 후 초기화
+## 7. 프리팹 인스턴스화 후 초기화
 
 **규칙:** `PhotonNetwork.Instantiate` 또는 `Instantiate`로 생성된 객체는 명시적인 `Initialize()` 호출로 의존성을 주입한다.
 
@@ -84,7 +157,7 @@ Unity Editor 전용 작업 규칙. Unity 고유 직렬화, 에디터 조작, 에
 
 ---
 
-## 7. 런타임 탐색 정책
+## 8. 런타임 탐색 정책
 
 **규칙:** 런타임 탐색은 scene/prefab 계약을 대체할 수 없다.
 
@@ -109,7 +182,7 @@ Unity Editor 전용 작업 규칙. Unity 고유 직렬화, 에디터 조작, 에
 
 ---
 
-## 8. Scene 계약
+## 9. Scene 계약
 
 **규칙:** scene 소유 feature는 `Setup`/`Bootstrap`, 직렬화 scene/prefab 참조, 관련 코드 경로에서 scene 계약을 명시적으로 유지해야 한다.
 

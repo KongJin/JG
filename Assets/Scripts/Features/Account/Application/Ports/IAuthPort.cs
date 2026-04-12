@@ -11,6 +11,11 @@ namespace Features.Account.Application.Ports
         System.Threading.Tasks.Task<AuthToken> SignInAnonymously();
 
         /// <summary>
+        /// Google 로그인. Google ID 토큰으로 Firebase Auth 토큰 교환.
+        /// </summary>
+        System.Threading.Tasks.Task<AuthToken> SignInWithGoogle(string googleIdToken);
+
+        /// <summary>
         /// 로그아웃. 로컬 토큰 정리.
         /// </summary>
         void SignOut();

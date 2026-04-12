@@ -17,6 +17,7 @@ using Shared.Runtime.Sound;
 using Shared.Time;
 using Shared.Ui;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using DomainLobby = Features.Lobby.Domain.Lobby;
 
 public sealed class LobbySetup : MonoBehaviour
@@ -41,6 +42,9 @@ public sealed class LobbySetup : MonoBehaviour
     private LoginLoadingView _loginLoadingView;
 
     [SerializeField]
+    private AccountSettingsView _accountSettingsView;
+
+    [SerializeField]
     private UnitSetup _unitSetup;
 
     [SerializeField]
@@ -51,6 +55,7 @@ public sealed class LobbySetup : MonoBehaviour
     private SceneLoaderAdapter _sceneLoader;
     private IAnalyticsPort _analytics;
     private float _sessionStartTime;
+    private Features.Account.Domain.AccountProfile _currentAccountProfile;
 
     private void Awake()
     {
@@ -84,6 +89,7 @@ public sealed class LobbySetup : MonoBehaviour
             var result = await _accountSetup.SignInAnonymously.Execute();
             if (result.IsSuccess)
             {
+                _currentAccountProfile = result.Value;
                 _loginLoadingView.OnLoginSuccess();
             }
             else
@@ -144,6 +150,35 @@ public sealed class LobbySetup : MonoBehaviour
                     _accountSetup?.DataPort);
             }
         }
+
+        InitializeAccountSettingsView();
+    }
+
+    private void InitializeAccountSettingsView()
+    {
+        if (_accountSettingsView == null || _accountSetup == null || _currentAccountProfile == null)
+            return;
+
+        _accountSettingsView.Initialize(_accountSetup, _eventBus, OnAccountLogoutRequested, OnAccountDeleted);
+        _accountSettingsView.Render(_currentAccountProfile);
+    }
+
+    private void OnAccountLogoutRequested()
+    {
+        _accountSetup.AuthPort?.SignOut();
+        ReloadCurrentScene();
+    }
+
+    private void OnAccountDeleted()
+    {
+        ReloadCurrentScene();
+    }
+
+    private void ReloadCurrentScene()
+    {
+        var sceneName = SceneManager.GetActiveScene().name;
+        if (!string.IsNullOrWhiteSpace(sceneName))
+            _sceneLoader.LoadScene(sceneName);
     }
 
     private void OnApplicationQuit()

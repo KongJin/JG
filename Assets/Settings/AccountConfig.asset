@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Account.Infrastructure.AccountConfig
   firebaseApiKey: AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY
   projectId: projectsd-51439
+  googleWebClientId: 375816907073-aun7vurnkbv93nin6lio8udrkm9qgprn.apps.googleusercontent.com

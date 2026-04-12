@@ -13,6 +13,7 @@ namespace Features.Account.Infrastructure
     public sealed class FirebaseAuthRestAdapter : IAuthPort
     {
         private const string SignUpUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={0}";
+        private const string SignInWithIdpUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key={0}";
         private const string TokenUrl = "https://securetoken.googleapis.com/v1/token?key={0}";
         private const string DeleteUrl = "https://identitytoolkit.googleapis.com/v1/accounts:delete?key={0}";
 
@@ -59,6 +60,41 @@ namespace Features.Account.Infrastructure
             string body = "{\"returnSecureToken\":true}";
 
             var response = await PostAsync<SignUpResponse>(url, body);
+
+            _currentIdToken = response.idToken;
+            _currentRefreshToken = response.refreshToken;
+            _currentUid = response.localId;
+            _tokenExpiryTimeMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + (response.expiresIn * 1000);
+
+            return new AuthToken
+            {
+                IdToken = _currentIdToken,
+                RefreshToken = _currentRefreshToken,
+                Uid = _currentUid,
+                ExpiresInMs = response.expiresIn * 1000
+            };
+        }
+
+        public async Task<AuthToken> SignInWithGoogle(string googleIdToken)
+        {
+            if (string.IsNullOrWhiteSpace(googleIdToken))
+                throw new ArgumentException("Google ID token is required.", nameof(googleIdToken));
+
+            string url = string.Format(SignInWithIdpUrl, _apiKey);
+            string postBody = $"id_token={Uri.EscapeDataString(googleIdToken)}&providerId=google.com";
+            string currentIdToken = string.IsNullOrEmpty(_currentIdToken) ? null : await GetIdToken();
+            string body;
+
+            if (string.IsNullOrEmpty(currentIdToken))
+            {
+                body = $"{{\"postBody\":\"{postBody}\",\"requestUri\":\"http://localhost\",\"returnSecureToken\":true,\"returnIdpCredential\":true}}";
+            }
+            else
+            {
+                body = $"{{\"postBody\":\"{postBody}\",\"requestUri\":\"http://localhost\",\"idToken\":\"{currentIdToken}\",\"returnSecureToken\":true,\"returnIdpCredential\":true}}";
+            }
+
+            var response = await PostAsync<SignInWithIdpResponse>(url, body);
 
             _currentIdToken = response.idToken;
             _currentRefreshToken = response.refreshToken;
@@ -168,6 +204,18 @@ namespace Features.Account.Infrastructure
             public string refreshToken;
             public string localId;
             public long expiresIn;
+        }
+
+        [Serializable]
+        private class SignInWithIdpResponse
+        {
+            public string idToken;
+            public string refreshToken;
+            public string localId;
+            public long expiresIn;
+            public string providerId;
+            public string displayName;
+            public bool isNewUser;
         }
 
         [Serializable]

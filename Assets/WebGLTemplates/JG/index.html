@@ -13,6 +13,7 @@
     <!-- Firebase SDK (compat 버전 — .jslib의 firebase.xxx() 호출과 호환) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <canvas id="unity-canvas" tabindex="-1"></canvas>
@@ -26,6 +27,8 @@
             companyName:   "{{{ COMPANY_NAME }}}",
             productName:   "{{{ PRODUCT_NAME }}}",
             productVersion: "{{{ PRODUCT_VERSION }}}"
+        }).then(function (unityInstance) {
+            window.unityInstance = unityInstance;
         });
     </script>
 </body>

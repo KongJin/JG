@@ -11,5 +11,9 @@ namespace Features.Account.Infrastructure
         [Header("Firebase")]
         public string firebaseApiKey;
         public string projectId;
+
+        [Header("Google OAuth (WebGL)")]
+        [Tooltip("Google OAuth Web Client ID (Google Cloud Console에서 발급)")]
+        public string googleWebClientId;
     }
 }

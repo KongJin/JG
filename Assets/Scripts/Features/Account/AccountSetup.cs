@@ -19,9 +19,11 @@ namespace Features.Account
         // Ports
         public IAuthPort AuthPort { get; private set; }
         public IAccountDataPort DataPort { get; private set; }
+        public string GoogleWebClientId => _config != null ? _config.googleWebClientId : string.Empty;
 
         // UseCases
         public SignInAnonymouslyUseCase SignInAnonymously { get; private set; }
+        public SignInWithGoogleUseCase SignInWithGoogle { get; private set; }
         public LoadAccountUseCase LoadAccount { get; private set; }
         public SaveAccountUseCase SaveAccount { get; private set; }
         public ChangeDisplayNameUseCase ChangeDisplayName { get; private set; }
@@ -56,6 +58,7 @@ namespace Features.Account
 
             // UseCases
             SignInAnonymously = new SignInAnonymouslyUseCase(AuthPort, DataPort);
+            SignInWithGoogle = new SignInWithGoogleUseCase(AuthPort, DataPort);
             LoadAccount = new LoadAccountUseCase(AuthPort, DataPort);
             SaveAccount = new SaveAccountUseCase(AuthPort, DataPort);
             ChangeDisplayName = new ChangeDisplayNameUseCase(AuthPort, DataPort);

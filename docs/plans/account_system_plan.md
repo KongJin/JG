@@ -1,7 +1,7 @@
 # 계정 시스템 기획
 
 > 생성일: 2026-04-11
-> 최종 업데이트: 2026-04-11
+> 최종 업데이트: 2026-04-12
 
 ## 개요
 
@@ -9,6 +9,13 @@ Firebase Authentication + Firestore 기반 계정 시스템.
 **WebGL 호환을 위해 Firebase REST API를 직접 호출한다** (Unity SDK 미사용).
 Phase 10은 익명 로그인 + Firestore 저장/동기화에 집중.
 Google 계정 업그레이드는 후속 Phase로 분리.
+
+## 현재 구현 스냅샷 (2026-04-12)
+
+- 완료: `IAuthPort.SignInWithGoogle`, `FirebaseAuthRestAdapter.signInWithIdp`, `SignInWithGoogleUseCase`, `AccountSetup` wiring, `AccountConfig.googleWebClientId`, WebGL JS 브리지, `AccountSettingsView` Google 로그인 버튼 코드, Firebase Auth linking 요청
+- 완료: `CodexLobbyScene`의 `GaragePageRoot`에 `AccountSettingsView`를 배치하고 `_googleSignInButton`, `_statusMessageText`, `_authTypeText`를 씬 자산에 직렬화 wiring
+- 미완료: 실제 WebGL smoke 테스트, 익명→Google 업그레이드 시 UID 유지 검증
+- 현재 실제 앱 시작 플로우: `LobbySetup` 진입 시 익명 로그인 자동 실행 후 Garage 우측 상단 계정 영역에서 Google 로그인 버튼으로 업그레이드 가능
 
 ---
 
@@ -32,10 +39,49 @@ SoundPlayer(DDOL), GameSceneRoot 초기화 계약을 깨지 않기 위함.
 - 자동 재시도 3회 (1초 간격)
 - 3회 모두 실패 → "네트워크 연결을 확인해주세요" 메시지 + 재시도 버튼
 
-### 1.2 계정 업그레이드 (향후 계획 — Phase 10 범위 아님)
-> Google OAuth → `accounts:signInWithIdp` + 기존 idToken 전달 필요.
-> WebGL에서는 JS 브리지로 Google credential 수집 필요.
-> Phase 10에서는 UI 자리만预留해두고 실제 연동은 후속 Phase에서 처리.
+### 1.2 Google 로그인 (Phase 11)
+```
+[설정 화면 → Google 로그인]
+  → WebGL: google.accounts.id.initialize/prompt → Google ID 토큰 수집
+  → POST https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key={apiKey}
+    → Body: {
+        "postBody": "id_token={GOOGLE_ID_TOKEN}&providerId=google.com",
+        "requestUri": "http://localhost",
+        "returnSecureToken": true,
+        "idToken": "{CURRENT_FIREBASE_ID_TOKEN}" // 익명 계정 linking 시 포함
+      }
+    → idToken + refreshToken + localId 발급
+      → 기존 UID와 다르면 계정 linking 또는 신규 계정 생성
+        → Firestore 프로필 로드
+```
+
+**WebGL에서 Google ID 토큰 수집:**
+```html
+<!-- index.html에 Google Sign-In SDK 추가 -->
+<script src="https://accounts.google.com/gsi/client"></script>
+```
+```csharp
+// Unity C# extern
+[DllImport("__Internal")]
+private static extern void AccountGoogleSignIn_RequestIdToken(
+    string clientId,
+    string callbackObjectName,
+    string successMethodName,
+    string errorMethodName);
+```
+
+**PC 에디터에서 테스트:**
+- WebGL이 아닌 경우: 수동으로 Google ID 토큰을 입력받거나, EditorWebRequest로 대체
+- 또는 Firebase Admin SDK로 토큰 발급 (로컬 테스트용)
+
+**계정 linking 전략:**
+- 익명 로그인 → Google 로그인: 기존 UID 유지, authType만 "google"로 업그레이드
+- 이미 Google로 로그인: 기존 프로필 로드
+
+**현재 구현 상태 (2026-04-12):**
+- 완료: Firebase Auth `signInWithIdp` 호출, UseCase, `AccountSetup` wiring, `googleWebClientId` 설정 필드, WebGL JS 브리지, `AccountSettingsView` 버튼/콜백 코드, 기존 Firebase ID 토큰 전달 기반 linking 요청
+- 완료: `CodexLobbyScene`에 `AccountSettingsView`와 Google 버튼/상태 텍스트 wiring 반영
+- 미완료: WebGL smoke 테스트, UID 유지 검증
 
 ### 1.3 토큰 관리
 ```
@@ -171,9 +217,10 @@ Features/Account/
     UserSettings.cs         // 음량, 언어 등 설정 (ValueObject)
   Application/
     Ports/
-      IAuthPort.cs          // SignInAnonymously, SignOut, DeleteAccount, GetToken
+      IAuthPort.cs          // SignInAnonymously, SignInWithGoogle, SignOut, DeleteAccount, GetToken
       IAccountDataPort.cs   // LoadProfile, SaveProfile, LoadStats, SaveStats, LoadGarage, SaveGarage, LoadSettings, SaveSettings, DeleteAccount
     SignInAnonymouslyUseCase.cs
+    SignInWithGoogleUseCase.cs
     LoadAccountUseCase.cs
     SaveAccountUseCase.cs
     ChangeDisplayNameUseCase.cs   // 월 1회 검증 (클라이언트 timestamp 기준)
@@ -186,6 +233,7 @@ Features/Account/
                             //   - 닉네임 변경 (월 1회 제한 표시)
                             //   - 로그아웃
                             //   - 계정 삭제 (확인 다이얼로그)
+                            //   - Google 로그인 버튼 (CodexLobbyScene wiring 반영)
   Infrastructure/
     FirebaseAuthRestAdapter.cs    // Firebase Auth REST API (IAuthPort 구현)
                                   // 내부: 토큰 관리, 자동 갱신 포함
@@ -255,6 +303,7 @@ public sealed class AccountConfig
 {
     public string firebaseApiKey;       // Web API Key
     public string projectId;            // Firebase 프로젝트 ID
+    public string googleWebClientId;    // Google OAuth Web Client ID
 }
 ```
 
@@ -320,6 +369,8 @@ WebGL에서는 UnityWebRequest 사용
 | 테스트 | 내용 |
 |--------|------|
 | 익명 로그인 | REST API 호출 → UID 발급 → 프로필 생성 → Lobby 진입 |
+| Google 로그인 | Google ID 토큰 수집 → signInWithIdp → 프로필 로드/생성 |
+| 계정 linking | 익명 → Google 업그레이드 시 기존 UID 유지 |
 | 로그인 실패 | 네트워크 차단 → 3회 재시도 → 실패 UI |
 | Garage 저장 | 편성 저장 → Firestore 저장 + Photon 동기화 |
 | 전투 진입 | GameScene 진입 → Photon CustomProperties에서 roster 복원 |
@@ -331,7 +382,7 @@ WebGL에서는 UnityWebRequest 사용
 
 ## 8. 진행 계획
 
-### Phase 10: 계정 시스템
+### Phase 10: 계정 시스템 (익명 로그인)
 
 | 단계 | 내용 | 예상 공수 |
 |------|------|----------|
@@ -343,6 +394,26 @@ WebGL에서는 UnityWebRequest 사용
 | 10-6 | WebGL 빌드 smoke 테스트 + 문서 | 1일 |
 
 **총 예상 공수: 6일**
+
+### Phase 11: Google 로그인
+
+| 단계 | 내용 | 예상 공수 |
+|------|------|----------|
+| 11-1 | IAuthPort에 SignInWithGoogle 메서드 추가 | 0.5일 |
+| 11-2 | FirebaseAuthRestAdapter에 signInWithIdp REST 구현 | 0.5일 |
+| 11-3 | SignInWithGoogleUseCase 생성 + AccountSetup wiring | 0.5일 |
+| 11-4 | AccountConfig에 Google webClientId 필드 추가 | 0.25일 |
+| 11-5 | WebGL JS 브리지 (google.accounts.id) | 1일 |
+| 11-6 | AccountSettingsView에 Google 로그인 버튼 추가 | 0.5일 |
+| 11-7 | 계정 linking (익명→Google 업그레이드) | 0.5일 |
+| 11-8 | WebGL 빌드 smoke 테스트 | 0.5일 |
+
+**총 예상 공수: 4.25일**
+
+**현재 상태 (2026-04-12)**
+- 완료: 11-1 ~ 11-7 코드 반영, `CodexLobbyScene` Inspector wiring 반영
+- 남음: WebGL smoke 테스트
+- 주의: Firebase Auth linking 요청은 구현됐지만 실제 UID 유지 여부는 WebGL 실기 테스트로 검증이 필요하다.
 
 ---
 
@@ -378,5 +449,7 @@ WebGL에서는 UnityWebRequest 사용
 | 테스트 방식 | WebGL 빌드 smoke 테스트 |
 | Firebase SDK | **Unity SDK 미사용, REST API 직접 호출** |
 | 빌드 사이즈 영향 | 없음 (순수 C# HTTP 통신) |
-| 공수 | 6일 (핵심만) |
-| Google 연동 | Phase 10 범위 아님, 후속 Phase에서 처리 |
+| 공수 (Phase 10) | 6일 (핵심만) |
+| 공수 (Phase 11) | 4.25일 (Google 로그인) |
+| Google 연동 | Phase 11 기반 코드/씬 wiring 반영 완료 (`signInWithIdp`, JS bridge, UI callback, Config, CodexLobbyScene 계정 UI). WebGL 검증이 남음 |
+| 계정 linking | Firebase Auth linking 요청 구현 완료. 기존 UID 유지 여부는 WebGL 실기 검증 필요 |

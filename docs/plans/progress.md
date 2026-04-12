@@ -1,6 +1,6 @@
 # 진행 상황 (Game Scene Entry)
 
-> **마지막 업데이트**: 2026-04-11
+> **마지막 업데이트**: 2026-04-12
 
 ## Phase 진행률
 
@@ -17,26 +17,40 @@
 | Phase 8: Energy 재생 증가 곡선 | ✅ 완료 | EnergyRegenCurve (시간 기반 60s→180s, 3→5/s), EnergyRegenCurveConfig, TickRegen wiring |
 | Phase 9: 네트워크 완성 | ✅ 완료 | BattleEntityPhotonController (IPunObservable HP/pos/dead sync), BattleEntityDespawnAdapter, WaveEndView 통계 |
 | Phase 10: 계정 시스템 | 🟨 구현 진행 중 | Firebase REST API 기반 Account Feature 골격 완료, Lobby/Garage 통합 완료 |
+| Phase 11: Google 로그인 | 🟨 코드 구현 완료 | SignInWithGoogle 포트/UseCase/REST/config, JS 브리지, UI 콜백, linking 요청 추가 완료. Inspector wiring/실기 테스트 미완료 |
 
 ## 미완료 TODO
 
 - Phase 9: Unity Inspector wiring 검증 (`PlacementAreaView`, `DragGhostPrefab` 등 직렬화 참조 할당 확인)
 - Phase 9: 실제 멀티플레이어 smoke 테스트 (late-join, BattleEntity sync, Energy sync)
 - Phase 10: Firebase Console 설정 (API Key, Project ID, Firestore DB 생성)
-- Phase 10: Unity Inspector에 AccountConfig, LoginLoadingView, AccountSettingsView 할당
-- Phase 10: Google 로그인 연동 (계정 업그레이드) — 후속 Phase
+- Phase 10: Unity Inspector에 AccountConfig, LoginLoadingView 할당 확인
 - Phase 10: 설정 (볼륨, 언어) Firestore 동기화
 - Phase 10: WebGL 빌드 smoke 테스트
 - Phase 10: 계정 삭제 기능 + UI
+- Phase 11: WebGL 빌드에서 Google 로그인 실기 테스트
+- Phase 11: 익명→Google 계정 linking 시 UID 유지 확인
+- Phase 11: Google 로그인 WebGL smoke 테스트
 
 ## 다음 작업 메모
 
 - `CodexLobbyScene` Garage UI 2차 리팩터링: `GaragePageController + subview` 구조 compile/runtime 안정화 진행 중
 - Garage UI 상세 계획: [`codex_lobby_garage_ui_refactor_plan.md`](./codex_lobby_garage_ui_refactor_plan.md)
 - 계정 시스템 상세 계획: [`account_system_plan.md`](./account_system_plan.md)
-- Phase 9 네트워크 완성 → Phase 10 계정 시스템 병행 예정
+- Phase 10 계정 시스템 마무리와 Phase 11 Google 로그인 사용자 플로우 연결을 병행
 
 ### 최근 변경 사항
+
+### 2026-04-12
+
+- done: Google 로그인 기반 코드 추가 — `IAuthPort.SignInWithGoogle`, `FirebaseAuthRestAdapter.signInWithIdp`, `SignInWithGoogleUseCase`, `AccountSetup` wiring
+- done: `AccountConfig.googleWebClientId` 필드 추가
+- done: WebGL JS 브리지 추가 — `google.accounts.id` SDK 로드, `GoogleSignIn.jslib`, Unity callback 연결
+- done: `AccountSettingsView`에 Google 로그인 버튼/콜백/상태 메시지 로직 추가
+- done: Firebase Auth linking 요청 추가 — 기존 Firebase ID token 전달
+- done: `CodexLobbyScene` GaragePageRoot에 `AccountSettingsView`, Google 버튼, 상태 텍스트, authType 텍스트 wiring 반영
+- done: `account_system_plan.md`에 Phase 11 현재 상태 갱신
+- next: WebGL 빌드로 UID 유지 여부 포함 실기 검증
 
 ### 2026-04-11
 

@@ -16,7 +16,7 @@ The bridge listens on the port from `ProjectSettings/UnityMcpPort.txt` and curre
 - 13 `POST` routes for scene, gameobject, component, prefab, asset editing
 - 1 `POST` route for menu execution
 
-See [`docs/ops/unity_mcp.md`](../../docs/ops/unity_mcp.md) for the full route inventory and request body examples.
+See [`agent/unity.md`](../../agent/unity.md) for the current MCP workflow rules, route inventory, and common request examples.
 
 ## Prerequisites
 

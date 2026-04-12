@@ -1,4 +1,5 @@
-﻿using Features.Account.Application;
+using System.Runtime.InteropServices;
+using Features.Account.Application;
 using Features.Account.Domain;
 using Shared.Attributes;
 using Shared.EventBus;
@@ -24,8 +25,10 @@ namespace Features.Account.Presentation
         [SerializeField] private TMP_Text _nicknameMessage;
 
         [Header("Actions")]
+        [SerializeField] private Button _googleSignInButton;
         [SerializeField] private Button _logoutButton;
         [SerializeField] private Button _deleteAccountButton;
+        [SerializeField] private TMP_Text _statusMessageText;
 
         [Header("Confirmation Dialog")]
         [SerializeField] private GameObject _confirmDialog;
@@ -37,6 +40,17 @@ namespace Features.Account.Presentation
         private EventBus _eventBus;
         private System.Action _onLogout;
         private System.Action _onDeleteAccount;
+        private AccountProfile _currentProfile;
+        private bool _buttonsHooked;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [DllImport("__Internal")]
+        private static extern void AccountGoogleSignIn_RequestIdToken(
+            string clientId,
+            string callbackObjectName,
+            string successMethodName,
+            string errorMethodName);
+#endif
 
         public void Initialize(AccountSetup setup, EventBus eventBus, System.Action onLogout, System.Action onDeleteAccount)
         {
@@ -50,14 +64,26 @@ namespace Features.Account.Presentation
 
         public void Render(Domain.AccountProfile profile)
         {
+            _currentProfile = profile;
+
             if (_uidText != null) _uidText.text = $"UID: {profile.uid}";
             if (_authTypeText != null) _authTypeText.text = $"인증: {profile.authType}";
             if (_displayNameText != null) _displayNameText.text = $"닉네임: {profile.displayName}";
             if (_nicknameInput != null) _nicknameInput.text = profile.displayName;
+
+            RefreshGoogleButtonState();
         }
 
         private void HookButtons()
         {
+            if (_buttonsHooked)
+                return;
+
+            _buttonsHooked = true;
+
+            if (_googleSignInButton != null)
+                _googleSignInButton.onClick.AddListener(OnGoogleSignInClicked);
+
             if (_nicknameApplyButton != null)
                 _nicknameApplyButton.onClick.AddListener(OnNicknameApplyClicked);
 
@@ -72,6 +98,81 @@ namespace Features.Account.Presentation
 
             if (_confirmNoButton != null)
                 _confirmNoButton.onClick.AddListener(OnConfirmNoClicked);
+        }
+
+        private void OnGoogleSignInClicked()
+        {
+            if (_setup == null)
+            {
+                SetStatusMessage("AccountSetup이 연결되지 않았습니다.");
+                return;
+            }
+
+            if (_currentProfile != null && _currentProfile.authType == "google")
+            {
+                SetStatusMessage("이미 Google 계정으로 연결되어 있습니다.");
+                RefreshGoogleButtonState();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_setup.GoogleWebClientId))
+            {
+                SetStatusMessage("googleWebClientId가 비어 있습니다.");
+                return;
+            }
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            if (_googleSignInButton != null)
+                _googleSignInButton.interactable = false;
+
+            SetStatusMessage("Google 로그인 창을 여는 중...");
+            AccountGoogleSignIn_RequestIdToken(
+                _setup.GoogleWebClientId,
+                gameObject.name,
+                nameof(OnGoogleIdTokenReceived),
+                nameof(OnGoogleIdTokenFailed));
+#else
+            SetStatusMessage("Google 로그인은 WebGL 빌드에서만 사용할 수 있습니다.");
+#endif
+        }
+
+        public void OnGoogleIdTokenReceived(string googleIdToken)
+        {
+            _ = CompleteGoogleSignInAsync(googleIdToken);
+        }
+
+        public void OnGoogleIdTokenFailed(string errorMessage)
+        {
+            SetStatusMessage(string.IsNullOrWhiteSpace(errorMessage)
+                ? "Google 로그인에 실패했습니다."
+                : $"Google 로그인 실패: {errorMessage}");
+            RefreshGoogleButtonState();
+        }
+
+        private async System.Threading.Tasks.Task CompleteGoogleSignInAsync(string googleIdToken)
+        {
+            try
+            {
+                SetStatusMessage("Google 계정을 연결하는 중...");
+
+                var result = await _setup.SignInWithGoogle.Execute(googleIdToken);
+                if (result.IsFailure)
+                {
+                    SetStatusMessage(result.Error);
+                    return;
+                }
+
+                Render(result.Value);
+                SetStatusMessage("Google 계정 연결이 완료되었습니다.");
+            }
+            catch (System.Exception ex)
+            {
+                SetStatusMessage($"Google 로그인 실패: {ex.Message}");
+            }
+            finally
+            {
+                RefreshGoogleButtonState();
+            }
         }
 
         private async void OnNicknameApplyClicked()
@@ -111,8 +212,7 @@ namespace Features.Account.Presentation
             }
             catch (System.Exception ex)
             {
-                if (_nicknameMessage != null)
-                    _nicknameMessage.text = $"계정 삭제 실패: {ex.Message}";
+                SetStatusMessage($"계정 삭제 실패: {ex.Message}");
             }
         }
 
@@ -121,8 +221,26 @@ namespace Features.Account.Presentation
             if (_confirmDialog != null) _confirmDialog.SetActive(false);
         }
 
+        private void RefreshGoogleButtonState()
+        {
+            if (_googleSignInButton == null)
+                return;
+
+            bool isGoogleLinked = _currentProfile != null && _currentProfile.authType == "google";
+            _googleSignInButton.gameObject.SetActive(!isGoogleLinked);
+            _googleSignInButton.interactable = !isGoogleLinked;
+        }
+
+        private void SetStatusMessage(string message)
+        {
+            var target = _statusMessageText != null ? _statusMessageText : _nicknameMessage;
+            if (target != null)
+                target.text = message;
+        }
+
         private void OnDestroy()
         {
+            if (_googleSignInButton != null) _googleSignInButton.onClick.RemoveAllListeners();
             if (_nicknameApplyButton != null) _nicknameApplyButton.onClick.RemoveAllListeners();
             if (_logoutButton != null) _logoutButton.onClick.RemoveAllListeners();
             if (_deleteAccountButton != null) _deleteAccountButton.onClick.RemoveAllListeners();
@@ -131,4 +249,3 @@ namespace Features.Account.Presentation
         }
     }
 }
-
