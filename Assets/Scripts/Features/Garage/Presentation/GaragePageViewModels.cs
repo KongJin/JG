@@ -7,13 +7,21 @@ namespace Features.Garage.Presentation
             string title,
             string summary,
             bool hasCommittedLoadout,
-            bool isSelected)
+            bool isSelected,
+            bool showArrow = false,
+            string frameId = null,
+            string firepowerId = null,
+            string mobilityId = null)
         {
             SlotLabel = slotLabel;
             Title = title;
             Summary = summary;
             HasCommittedLoadout = hasCommittedLoadout;
             IsSelected = isSelected;
+            ShowArrow = showArrow;
+            FrameId = frameId;
+            FirepowerId = firepowerId;
+            MobilityId = mobilityId;
         }
 
         public string SlotLabel { get; }
@@ -21,6 +29,10 @@ namespace Features.Garage.Presentation
         public string Summary { get; }
         public bool HasCommittedLoadout { get; }
         public bool IsSelected { get; }
+        public bool ShowArrow { get; }
+        public string FrameId { get; }
+        public string FirepowerId { get; }
+        public string MobilityId { get; }
     }
 
     public sealed class GarageEditorViewModel

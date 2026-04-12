@@ -14,6 +14,9 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private GarageUnitEditorView _unitEditorView;
         [Required, SerializeField] private GarageResultPanelView _resultPanelView;
 
+        [Header("Preview")]
+        [SerializeField] private GarageUnitPreviewView _unitPreviewView;
+
         private GarageSetup _setup;
         private GaragePanelCatalog _catalog;
         private GaragePageState _state;
@@ -67,6 +70,7 @@ namespace Features.Garage.Presentation
             _unitEditorView.FirepowerCycleRequested += CycleFirepower;
             _unitEditorView.MobilityCycleRequested += CycleMobility;
             _unitEditorView.ClearRequested += ClearSelectedSlot;
+            _resultPanelView.SaveClicked += OnSaveClicked;
         }
 
         private void SelectSlot(int slotIndex)
@@ -115,6 +119,19 @@ namespace Features.Garage.Presentation
             Render();
         }
 
+        private async void OnSaveClicked()
+        {
+            var result = await _setup.SaveRoster.Execute(_state.CommittedRoster);
+            if (result.IsSuccess)
+            {
+                _resultPanelView.ShowToast("Roster saved!");
+            }
+            else
+            {
+                _resultPanelView.ShowToast(result.Error, isError: true);
+            }
+        }
+
         private async void TryCommitEditingDraft()
         {
             _state.ClearValidationOverride();
@@ -148,9 +165,17 @@ namespace Features.Garage.Presentation
         private void Render()
         {
             var evaluation = EvaluateDraft();
-            _rosterListView.Render(_presenter.BuildSlotViewModels(_state));
+            var slotViewModels = _presenter.BuildSlotViewModels(_state);
+
+            _rosterListView.Render(slotViewModels);
             _unitEditorView.Render(_presenter.BuildEditorViewModel(_state));
             _resultPanelView.Render(_presenter.BuildResultViewModel(_state, evaluation));
+
+            if (_unitPreviewView != null && _catalog != null)
+            {
+                var selectedSlot = slotViewModels[_state.SelectedSlotIndex];
+                _unitPreviewView.Render(selectedSlot, _catalog);
+            }
         }
 
         private GarageDraftEvaluation EvaluateDraft()

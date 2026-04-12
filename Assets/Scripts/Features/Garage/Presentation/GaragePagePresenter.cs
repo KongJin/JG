@@ -35,7 +35,11 @@ namespace Features.Garage.Presentation
                     title,
                     summary,
                     hasCommittedLoadout,
-                    i == state.SelectedSlotIndex));
+                    i == state.SelectedSlotIndex,
+                    showArrow: i == state.SelectedSlotIndex,
+                    frameId: hasCommittedLoadout ? loadout.frameId : null,
+                    firepowerId: hasCommittedLoadout ? loadout.firepowerModuleId : null,
+                    mobilityId: hasCommittedLoadout ? loadout.mobilityModuleId : null));
             }
 
             return slotViewModels;

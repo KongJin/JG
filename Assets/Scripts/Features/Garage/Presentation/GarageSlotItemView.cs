@@ -18,6 +18,11 @@ namespace Features.Garage.Presentation
         [SerializeField] private Color _filledColor = new(0.17f, 0.21f, 0.32f, 1f);
         [SerializeField] private Color _emptyColor = new(0.10f, 0.12f, 0.18f, 0.92f);
 
+        [Header("Selection Feedback")]
+        [SerializeField] private GameObject _arrowIndicator;
+        [SerializeField] private Image _borderImage;
+        [SerializeField] private Color _glowColor = new(0.24f, 0.47f, 0.89f, 0.8f);
+
         [Header("Layout")]
         [SerializeField] private float _preferredHeight = 92f;
         [SerializeField] private float _slotNumberFontSize = 13f;
@@ -60,6 +65,30 @@ namespace Features.Garage.Presentation
                 _background.color = viewModel.IsSelected
                     ? _selectedColor
                     : (viewModel.HasCommittedLoadout ? _filledColor : _emptyColor);
+            }
+
+            // 선택 상태 시각 피드백
+            if (_arrowIndicator != null)
+                _arrowIndicator.SetActive(viewModel.ShowArrow);
+
+            if (_borderImage != null)
+                _borderImage.gameObject.SetActive(viewModel.IsSelected);
+
+            if (viewModel.IsSelected)
+            {
+                if (_borderImage != null)
+                    _borderImage.color = _glowColor;
+            }
+            else
+            {
+                // 비선택 슬롯 어둡게
+                if (_background != null && !viewModel.HasCommittedLoadout)
+                {
+                    Color c = _emptyColor;
+                    _background.color = new Color(c.r, c.g, c.b, 0.7f);
+                }
+                if (_borderImage != null)
+                    _borderImage.gameObject.SetActive(false);
             }
         }
 

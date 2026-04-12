@@ -808,6 +808,36 @@ namespace ProjectSD.EditorTools.UnityMcp
                     return;
                 }
 
+                if (method == "POST" && path == "/ui/create-button")
+                {
+                    await HandleUiCreateButtonAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/ui/create-panel")
+                {
+                    await HandleUiCreatePanelAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/ui/create-raw-image")
+                {
+                    await HandleUiCreateRawImageAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/ui/set-rect")
+                {
+                    await HandleUiSetRectAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/gameobject/set-sibling")
+                {
+                    await HandleGameObjectSetSiblingAsync(request, response);
+                    return;
+                }
+
                 if (method == "POST" && path == "/gameobject/destroy")
                 {
                     await HandleGameObjectDestroyAsync(request, response);
@@ -835,6 +865,18 @@ namespace ProjectSD.EditorTools.UnityMcp
                 if (method == "POST" && path == "/component/get")
                 {
                     await HandleComponentGetAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/component/set-serialized-field")
+                {
+                    await HandleComponentSetSerializedFieldAsync(request, response);
+                    return;
+                }
+
+                if (method == "POST" && path == "/component/auto-connect-fields")
+                {
+                    await HandleComponentAutoConnectFieldsAsync(request, response);
                     return;
                 }
 
@@ -2453,9 +2495,15 @@ namespace ProjectSD.EditorTools.UnityMcp
                 GameObject go = null;
 
                 if (!string.IsNullOrEmpty(req.path))
-                    go = GameObject.Find(req.path);
+                {
+                    go = FindGameObjectByPath(req.path);
+                    if (go == null)
+                        go = GameObject.Find(req.path);
+                }
                 else if (!string.IsNullOrEmpty(req.name))
+                {
                     go = FindGameObjectByNameInActiveScene(req.name);
+                }
 
                 if (go == null)
                     return new GameObjectResponse { found = false };
@@ -2464,6 +2512,47 @@ namespace ProjectSD.EditorTools.UnityMcp
             });
 
             await WriteJsonAsync(response, 200, result);
+        }
+
+        /// <summary>
+        /// 경로 기반으로 씬 내 GameObject를 찾습니다 (비활성 오브젝트 포함).
+        /// </summary>
+        private static GameObject FindGameObjectByPath(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return null;
+
+            var parts = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0)
+                return null;
+
+            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            var rootObjects = scene.GetRootGameObjects();
+
+            foreach (var root in rootObjects)
+            {
+                if (root.name == parts[0])
+                {
+                    var current = root.transform;
+                    bool found = true;
+
+                    for (int i = 1; i < parts.Length; i++)
+                    {
+                        var child = current.Find(parts[i]);
+                        if (child == null)
+                        {
+                            found = false;
+                            break;
+                        }
+                        current = child;
+                    }
+
+                    if (found)
+                        return current.gameObject;
+                }
+            }
+
+            return null;
         }
 
         private static GameObjectResponse BuildGameObjectResponse(GameObject go)
@@ -2559,7 +2648,9 @@ namespace ProjectSD.EditorTools.UnityMcp
                 Transform parent = null;
                 if (!string.IsNullOrEmpty(req.parent))
                 {
-                    var parentGo = GameObject.Find(req.parent);
+                    var parentGo = FindGameObjectByPath(req.parent);
+                    if (parentGo == null)
+                        parentGo = GameObject.Find(req.parent);
                     if (parentGo == null)
                         throw new Exception("Parent not found: " + req.parent);
                     parent = parentGo.transform;
@@ -2580,6 +2671,12 @@ namespace ProjectSD.EditorTools.UnityMcp
                     }
                 }
 
+                // Apply UI preset if specified
+                if (!string.IsNullOrEmpty(req.uiPreset))
+                {
+                    ApplyUiPreset(go, req.uiPreset, req.width, req.height);
+                }
+
                 EditorSceneManager.MarkSceneDirty(go.scene);
 
                 return new CreateResponse
@@ -2591,6 +2688,84 @@ namespace ProjectSD.EditorTools.UnityMcp
             });
 
             await WriteJsonAsync(response, 200, result);
+        }
+
+        private static void ApplyUiPreset(GameObject go, string preset, float? width, float? height)
+        {
+            var rect = go.GetComponent<RectTransform>();
+            if (rect == null)
+                return;
+
+            float w = width ?? 160f;
+            float h = height ?? 30f;
+
+            switch ((preset ?? "").ToLowerInvariant())
+            {
+                case "button-bottom-center":
+                    rect.anchorMin = new Vector2(0.5f, 0f);
+                    rect.anchorMax = new Vector2(0.5f, 0f);
+                    rect.pivot = new Vector2(0.5f, 0f);
+                    rect.anchoredPosition = new Vector2(0f, 30f);
+                    rect.sizeDelta = new Vector2(w, h);
+                    break;
+
+                case "button-top-center":
+                    rect.anchorMin = new Vector2(0.5f, 1f);
+                    rect.anchorMax = new Vector2(0.5f, 1f);
+                    rect.pivot = new Vector2(0.5f, 1f);
+                    rect.anchoredPosition = new Vector2(0f, -30f);
+                    rect.sizeDelta = new Vector2(w, h);
+                    break;
+
+                case "panel-top-center":
+                    rect.anchorMin = new Vector2(0.5f, 1f);
+                    rect.anchorMax = new Vector2(0.5f, 1f);
+                    rect.pivot = new Vector2(0.5f, 1f);
+                    rect.anchoredPosition = new Vector2(0f, -120f);
+                    rect.sizeDelta = new Vector2(w, h);
+                    break;
+
+                case "panel-bottom-center":
+                    rect.anchorMin = new Vector2(0.5f, 0f);
+                    rect.anchorMax = new Vector2(0.5f, 0f);
+                    rect.pivot = new Vector2(0.5f, 0f);
+                    rect.anchoredPosition = new Vector2(0f, 80f);
+                    rect.sizeDelta = new Vector2(w, h);
+                    break;
+
+                case "stretch-parent":
+                    rect.anchorMin = Vector2.zero;
+                    rect.anchorMax = Vector2.one;
+                    rect.pivot = new Vector2(0.5f, 0.5f);
+                    rect.anchoredPosition = Vector2.zero;
+                    rect.sizeDelta = Vector2.zero;
+                    break;
+
+                case "center-fixed":
+                    rect.anchorMin = new Vector2(0.5f, 0.5f);
+                    rect.anchorMax = new Vector2(0.5f, 0.5f);
+                    rect.pivot = new Vector2(0.5f, 0.5f);
+                    rect.anchoredPosition = Vector2.zero;
+                    rect.sizeDelta = new Vector2(w, h);
+                    break;
+
+                case "raw-image-top":
+                    rect.anchorMin = new Vector2(0.5f, 1f);
+                    rect.anchorMax = new Vector2(0.5f, 1f);
+                    rect.pivot = new Vector2(0.5f, 1f);
+                    rect.anchoredPosition = new Vector2(0f, -200f);
+                    rect.sizeDelta = new Vector2(w ?? 256f, h ?? 256f);
+                    break;
+
+                default:
+                    // Default to center-fixed
+                    rect.anchorMin = new Vector2(0.5f, 0.5f);
+                    rect.anchorMax = new Vector2(0.5f, 0.5f);
+                    rect.pivot = new Vector2(0.5f, 0.5f);
+                    rect.anchoredPosition = Vector2.zero;
+                    rect.sizeDelta = new Vector2(w, h);
+                    break;
+            }
         }
 
         private static async Task HandleGameObjectCreatePrimitiveAsync(HttpListenerRequest request, HttpListenerResponse response)
@@ -3962,6 +4137,9 @@ namespace ProjectSD.EditorTools.UnityMcp
             public string name;
             public string parent;
             public string[] components;
+            public string uiPreset;
+            public float? width;
+            public float? height;
         }
 
         [Serializable]
@@ -4261,6 +4439,573 @@ namespace ProjectSD.EditorTools.UnityMcp
             public bool activeInHierarchy;
             public bool interactable;
             public int persistentListenerCount;
+        }
+
+        [Serializable]
+        private sealed class UiCreatePanelRequest
+        {
+            public string name;
+            public string parent;
+            public float width;
+            public float height;
+        }
+
+        [Serializable]
+        private sealed class UiCreatePanelResponse
+        {
+            public bool success;
+            public string message;
+            public string path;
+            public string name;
+        }
+
+        private static async Task HandleUiCreatePanelAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<UiCreatePanelRequest>(body);
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                Transform parent = null;
+                if (!string.IsNullOrEmpty(req.parent))
+                {
+                    var parentGo = FindGameObjectByPath(req.parent);
+                    if (parentGo == null)
+                        parentGo = GameObject.Find(req.parent);
+                    if (parentGo == null)
+                        throw new Exception("Parent not found: " + req.parent);
+                    parent = parentGo.transform;
+                }
+
+                var go = new GameObject(string.IsNullOrEmpty(req.name) ? "Panel" : req.name);
+                if (parent != null)
+                    go.transform.SetParent(parent, false);
+
+                var rectTransform = go.AddComponent<RectTransform>();
+                rectTransform.sizeDelta = new Vector2(req.width > 0 ? req.width : 200, req.height > 0 ? req.height : 100);
+                rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+                var image = go.AddComponent<UnityEngine.UI.Image>();
+                image.color = new Color(0.1f, 0.1f, 0.15f, 0.9f);
+
+                Undo.RegisterCreatedObjectUndo(go, "MCP Create UI Panel");
+                EditorSceneManager.MarkSceneDirty(go.scene);
+
+                return new UiCreatePanelResponse
+                {
+                    success = true,
+                    message = $"Created UI Panel: {go.name}",
+                    path = GetTransformPath(go.transform),
+                    name = go.name
+                };
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        [Serializable]
+        private sealed class UiCreateRawImageRequest
+        {
+            public string name;
+            public string parent;
+            public float width;
+            public float height;
+        }
+
+        [Serializable]
+        private sealed class UiCreateRawImageResponse
+        {
+            public bool success;
+            public string message;
+            public string path;
+            public string name;
+        }
+
+        private static async Task HandleUiCreateRawImageAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<UiCreateRawImageRequest>(body);
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                Transform parent = null;
+                if (!string.IsNullOrEmpty(req.parent))
+                {
+                    var parentGo = FindGameObjectByPath(req.parent);
+                    if (parentGo == null)
+                        parentGo = GameObject.Find(req.parent);
+                    if (parentGo == null)
+                        throw new Exception("Parent not found: " + req.parent);
+                    parent = parentGo.transform;
+                }
+
+                var go = new GameObject(string.IsNullOrEmpty(req.name) ? "RawImage" : req.name);
+                if (parent != null)
+                    go.transform.SetParent(parent, false);
+
+                var rectTransform = go.AddComponent<RectTransform>();
+                rectTransform.sizeDelta = new Vector2(req.width > 0 ? req.width : 256, req.height > 0 ? req.height : 256);
+                rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+                var rawImage = go.AddComponent<UnityEngine.UI.RawImage>();
+                rawImage.color = new Color(0.05f, 0.06f, 0.1f, 1f);
+
+                Undo.RegisterCreatedObjectUndo(go, "MCP Create UI RawImage");
+                EditorSceneManager.MarkSceneDirty(go.scene);
+
+                return new UiCreateRawImageResponse
+                {
+                    success = true,
+                    message = $"Created UI RawImage: {go.name}",
+                    path = GetTransformPath(go.transform),
+                    name = go.name
+                };
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        [Serializable]
+        private sealed class UiSetRectRequest
+        {
+            public string path;
+            public float? anchoredPositionX;
+            public float? anchoredPositionY;
+            public float? sizeDeltaX;
+            public float? sizeDeltaY;
+            public float? anchorMinX;
+            public float? anchorMinY;
+            public float? anchorMaxX;
+            public float? anchorMaxY;
+            public float? pivotX;
+            public float? pivotY;
+        }
+
+        [Serializable]
+        private sealed class UiSetRectResponse
+        {
+            public bool success;
+            public string message;
+            public string path;
+        }
+
+        private static async Task HandleUiSetRectAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<UiSetRectRequest>(body);
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                var go = FindGameObjectByPath(req.path);
+                if (go == null)
+                    throw new Exception("GameObject not found: " + req.path);
+
+                var rect = go.GetComponent<RectTransform>();
+                if (rect == null)
+                    throw new Exception("RectTransform not found on: " + req.path);
+
+                if (req.anchoredPositionX.HasValue || req.anchoredPositionY.HasValue)
+                {
+                    var pos = rect.anchoredPosition;
+                    if (req.anchoredPositionX.HasValue) pos.x = req.anchoredPositionX.Value;
+                    if (req.anchoredPositionY.HasValue) pos.y = req.anchoredPositionY.Value;
+                    rect.anchoredPosition = pos;
+                }
+
+                if (req.sizeDeltaX.HasValue || req.sizeDeltaY.HasValue)
+                {
+                    var size = rect.sizeDelta;
+                    if (req.sizeDeltaX.HasValue) size.x = req.sizeDeltaX.Value;
+                    if (req.sizeDeltaY.HasValue) size.y = req.sizeDeltaY.Value;
+                    rect.sizeDelta = size;
+                }
+
+                if (req.anchorMinX.HasValue || req.anchorMinY.HasValue)
+                {
+                    var min = rect.anchorMin;
+                    if (req.anchorMinX.HasValue) min.x = req.anchorMinX.Value;
+                    if (req.anchorMinY.HasValue) min.y = req.anchorMinY.Value;
+                    rect.anchorMin = min;
+                }
+
+                if (req.anchorMaxX.HasValue || req.anchorMaxY.HasValue)
+                {
+                    var max = rect.anchorMax;
+                    if (req.anchorMaxX.HasValue) max.x = req.anchorMaxX.Value;
+                    if (req.anchorMaxY.HasValue) max.y = req.anchorMaxY.Value;
+                    rect.anchorMax = max;
+                }
+
+                if (req.pivotX.HasValue || req.pivotY.HasValue)
+                {
+                    var pivot = rect.pivot;
+                    if (req.pivotX.HasValue) pivot.x = req.pivotX.Value;
+                    if (req.pivotY.HasValue) pivot.y = req.pivotY.Value;
+                    rect.pivot = pivot;
+                }
+
+                Undo.RegisterCompleteObjectUndo(rect, "MCP Set Rect");
+                EditorSceneManager.MarkSceneDirty(go.scene);
+
+                return new UiSetRectResponse
+                {
+                    success = true,
+                    message = $"RectTransform updated: {go.name}",
+                    path = GetTransformPath(go.transform)
+                };
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        [Serializable]
+        private sealed class GameObjectSetSiblingRequest
+        {
+            public string path;
+            public int siblingIndex;
+        }
+
+        [Serializable]
+        private sealed class GameObjectSetSiblingResponse
+        {
+            public bool success;
+            public string message;
+            public string path;
+            public int siblingIndex;
+        }
+
+        private static async Task HandleGameObjectSetSiblingAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<GameObjectSetSiblingRequest>(body);
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                var go = FindGameObjectByPath(req.path);
+                if (go == null)
+                    throw new Exception("GameObject not found: " + req.path);
+
+                go.transform.SetSiblingIndex(req.siblingIndex);
+
+                Undo.RegisterCompleteObjectUndo(go.transform, "MCP Set Sibling");
+                EditorSceneManager.MarkSceneDirty(go.scene);
+
+                return new GameObjectSetSiblingResponse
+                {
+                    success = true,
+                    message = $"Sibling index set for {go.name}",
+                    path = GetTransformPath(go.transform),
+                    siblingIndex = req.siblingIndex
+                };
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        [Serializable]
+        private sealed class UiCreateButtonRequest
+        {
+            public string name;
+            public string parent;
+            public string buttonText;
+        }
+
+        [Serializable]
+        private sealed class UiCreateButtonResponse
+        {
+            public bool success;
+            public string message;
+            public string path;
+            public string name;
+        }
+
+        private static async Task HandleUiCreateButtonAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<UiCreateButtonRequest>(body);
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                Transform parent = null;
+                if (!string.IsNullOrEmpty(req.parent))
+                {
+                    var parentGo = FindGameObjectByPath(req.parent);
+                    if (parentGo == null)
+                        parentGo = GameObject.Find(req.parent);
+                    if (parentGo == null)
+                        throw new Exception("Parent not found: " + req.parent);
+                    parent = parentGo.transform;
+                }
+
+                // Create button GameObject
+                var go = new GameObject(string.IsNullOrEmpty(req.name) ? "Button" : req.name);
+                if (parent != null)
+                    go.transform.SetParent(parent, false);
+
+                // Add RectTransform
+                var rectTransform = go.AddComponent<RectTransform>();
+                rectTransform.sizeDelta = new Vector2(160, 30);
+                rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+                // Add Image (background)
+                var image = go.AddComponent<UnityEngine.UI.Image>();
+                image.color = new Color(0.2f, 0.4f, 0.9f, 1f);
+                image.type = UnityEngine.UI.Image.Type.Sliced;
+
+                // Add Button component
+                var button = go.AddComponent<UnityEngine.UI.Button>();
+
+                // Create child Text (TMP)
+                var textGo = new GameObject("Text (TMP)");
+                textGo.transform.SetParent(go.transform, false);
+                var textRect = textGo.AddComponent<RectTransform>();
+                textRect.anchorMin = Vector2.zero;
+                textRect.anchorMax = Vector2.one;
+                textRect.sizeDelta = Vector2.zero;
+
+                var tmpText = textGo.AddComponent<TMPro.TextMeshProUGUI>();
+                tmpText.text = string.IsNullOrEmpty(req.buttonText) ? "Button" : req.buttonText;
+                tmpText.fontSize = 14;
+                tmpText.alignment = TMPro.TextAlignmentOptions.Center;
+                tmpText.color = Color.white;
+
+                Undo.RegisterCreatedObjectUndo(go, "MCP Create UI Button");
+                EditorSceneManager.MarkSceneDirty(go.scene);
+
+                return new UiCreateButtonResponse
+                {
+                    success = true,
+                    message = $"Created UI Button: {go.name}",
+                    path = GetTransformPath(go.transform),
+                    name = go.name
+                };
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        [Serializable]
+        private sealed class ComponentSetSerializedFieldRequest
+        {
+            public string componentPath;
+            public string componentTypeName;
+            public string fieldName;
+            public string targetPath;
+        }
+
+        [Serializable]
+        private sealed class ComponentSetSerializedFieldResponse
+        {
+            public bool success;
+            public string message;
+            public string componentPath;
+            public string fieldName;
+            public string targetPath;
+        }
+
+        private static async Task HandleComponentSetSerializedFieldAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<ComponentSetSerializedFieldRequest>(body);
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                var go = FindGameObjectByPath(req.componentPath);
+                if (go == null)
+                    throw new Exception("Component GameObject not found: " + req.componentPath);
+
+                Component component = null;
+                if (!string.IsNullOrEmpty(req.componentTypeName))
+                {
+                    var type = System.Type.GetType(req.componentTypeName);
+                    if (type != null)
+                        component = go.GetComponent(type);
+                }
+
+                if (component == null)
+                {
+                    var components = go.GetComponents<Component>();
+                    foreach (var comp in components)
+                    {
+                        if (comp != null && comp.GetType().Name.Contains(req.componentTypeName.Split('.')[^1]))
+                        {
+                            component = comp;
+                            break;
+                        }
+                    }
+                }
+
+                if (component == null)
+                    throw new Exception($"Component not found on {req.componentPath}. Searched for: {req.componentTypeName}");
+
+                var serializedObject = new SerializedObject(component);
+                var property = serializedObject.FindProperty(req.fieldName);
+                if (property == null)
+                    throw new Exception($"Serialized field '{req.fieldName}' not found on {component.GetType().Name}");
+
+                var targetGo = FindGameObjectByPath(req.targetPath);
+                if (targetGo == null)
+                    throw new Exception("Target GameObject not found: " + req.targetPath);
+
+                property.objectReferenceValue = targetGo;
+                serializedObject.ApplyModifiedProperties();
+
+                Undo.RecordObject(component, $"MCP Set {req.fieldName}");
+                EditorSceneManager.MarkSceneDirty(go.scene);
+
+                return new ComponentSetSerializedFieldResponse
+                {
+                    success = true,
+                    message = $"Set {req.fieldName} on {component.GetType().Name}",
+                    componentPath = GetTransformPath(go.transform),
+                    fieldName = req.fieldName,
+                    targetPath = req.targetPath
+                };
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        [Serializable]
+        private sealed class ComponentAutoConnectFieldsRequest
+        {
+            public string componentPath;
+            public string componentTypeName;
+            public string searchScope;
+        }
+
+        [Serializable]
+        private sealed class ComponentAutoConnectFieldsResponse
+        {
+            public bool success;
+            public string message;
+            public string componentPath;
+            public int connectedCount;
+            public string[] connectedFields;
+        }
+
+        private static async Task HandleComponentAutoConnectFieldsAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<ComponentAutoConnectFieldsRequest>(body);
+
+            var result = await RunOnMainThreadAsync(() =>
+            {
+                var go = FindGameObjectByPath(req.componentPath);
+                if (go == null)
+                    throw new Exception("Component GameObject not found: " + req.componentPath);
+
+                Component component = null;
+                if (!string.IsNullOrEmpty(req.componentTypeName))
+                {
+                    var type = System.Type.GetType(req.componentTypeName);
+                    if (type != null)
+                        component = go.GetComponent(type);
+                }
+
+                if (component == null)
+                {
+                    var components = go.GetComponents<Component>();
+                    foreach (var comp in components)
+                    {
+                        if (comp != null && comp.GetType().Name.Contains(req.componentTypeName.Split('.')[^1]))
+                        {
+                            component = comp;
+                            break;
+                        }
+                    }
+                }
+
+                if (component == null)
+                    throw new Exception($"Component not found on {req.componentPath}");
+
+                var serializedObject = new SerializedObject(component);
+                var property = serializedObject.GetIterator();
+                var connectedFields = new List<string>();
+
+                while (property.Next(true))
+                {
+                    if (property.propertyType == SerializedPropertyType.ObjectReference &&
+                        property.objectReferenceValue == null &&
+                        !property.name.StartsWith("m_"))
+                    {
+                        var targetGo = FindGameObjectByFieldName(go, property.name, req.searchScope);
+                        if (targetGo != null)
+                        {
+                            property.objectReferenceValue = targetGo;
+                            connectedFields.Add(property.name);
+                        }
+                    }
+                }
+
+                serializedObject.ApplyModifiedProperties();
+
+                if (connectedFields.Count > 0)
+                {
+                    Undo.RecordObject(component, "MCP Auto Connect Fields");
+                    EditorSceneManager.MarkSceneDirty(go.scene);
+                }
+
+                return new ComponentAutoConnectFieldsResponse
+                {
+                    success = true,
+                    message = $"Auto-connected {connectedFields.Count} fields on {component.GetType().Name}",
+                    componentPath = GetTransformPath(go.transform),
+                    connectedCount = connectedFields.Count,
+                    connectedFields = connectedFields.ToArray()
+                };
+            });
+
+            await WriteJsonAsync(response, 200, result);
+        }
+
+        private static GameObject FindGameObjectByFieldName(GameObject contextGo, string fieldName, string searchScope)
+        {
+            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+
+            switch ((searchScope ?? "children").ToLowerInvariant())
+            {
+                case "children":
+                    return FindInChildren(contextGo, fieldName);
+                case "scene":
+                    return FindInScene(scene, fieldName);
+                default:
+                    if (searchScope.StartsWith("path:"))
+                    {
+                        var path = searchScope.Substring(5);
+                        return FindGameObjectByPath(path);
+                    }
+                    return FindInChildren(contextGo, fieldName);
+            }
+        }
+
+        private static GameObject FindInChildren(GameObject parent, string name)
+        {
+            var transforms = parent.GetComponentsInChildren<Transform>(true);
+            foreach (var t in transforms)
+            {
+                if (t.gameObject.name.Equals(name, System.StringComparison.OrdinalIgnoreCase))
+                    return t.gameObject;
+            }
+            return null;
+        }
+
+        private static GameObject FindInScene(UnityEngine.SceneManagement.Scene scene, string name)
+        {
+            var rootObjects = scene.GetRootGameObjects();
+            foreach (var root in rootObjects)
+            {
+                var found = FindInChildren(root, name);
+                if (found != null)
+                    return found;
+            }
+            return null;
         }
     }
 }
