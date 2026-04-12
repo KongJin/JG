@@ -229,15 +229,7 @@ public Result Execute(GarageRoster roster, out string errorMessage)
 - `IGarageNetworkPort` 의존성 유지 (Photon 동기화 책임)
 
 ### 4.3 GameSceneRoot
-```csharp
-// Photon 진입 시 UID 전달
-PhotonNetwork.AuthValues = new AuthenticationValues {
-    AuthType = CustomAuthenticationType.Custom,
-    UserId = account.UID
-};
-```
-- Photon Custom Authentication 무료 플랜 지원
-- Photon Cloud Console에서 Custom Authentication 활성화 필요
+- 추가적인 Photon Custom Authentication 설정은 Phase 10 범위에 포함하지 않음
 - `RestoreGarageRosterUseCase`는 기존대로 Photon CustomProperties에서 읽음
 
 ### 4.4 SoundPlayer, 설정
@@ -333,7 +325,6 @@ WebGL에서는 UnityWebRequest 사용
 | 전투 진입 | GameScene 진입 → Photon CustomProperties에서 roster 복원 |
 | 탭 왕복 | Lobby → Garage → Lobby → Garage (데이터 유지) |
 | 닉네임 변경 | 변경 → 1달 이내 재시도 차단 |
-| Photon 연동 | UID 기반 Custom Authentication → 룸 진입 |
 | WebGL 빌드 | 실제 WebGL 빌드에서 로그인/저장 동작 확인 |
 
 ---

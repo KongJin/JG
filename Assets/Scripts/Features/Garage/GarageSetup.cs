@@ -65,19 +65,17 @@ namespace Features.Garage
             if (accountDataPort != null)
             {
                 SaveRoster = new SaveRosterUseCase(
-                    accountDataPort,
+                    accountDataPort as SaveRosterUseCase.ICloudGaragePort,
                     _networkAdapter,
-                    eventBus,
-                    () => Features.Account.Infrastructure.AuthTokenProvider.GetCurrentUid());
+                    eventBus);
             }
             else
             {
                 // 폴백: AccountSetup 미연결 시 로컬 저장만 (GameScene 등)
                 SaveRoster = new SaveRosterUseCase(
-                    accountDataPort,
+                    null,
                     _networkAdapter,
-                    eventBus,
-                    () => null);
+                    eventBus);
             }
 
             if (_pageController != null)

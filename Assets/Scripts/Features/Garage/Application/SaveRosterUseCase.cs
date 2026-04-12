@@ -1,4 +1,3 @@
-using Features.Account.Application.Ports;
 using Features.Garage.Application.Ports;
 using Features.Garage.Domain;
 using Shared.EventBus;
@@ -12,26 +11,31 @@ namespace Features.Garage.Application
     /// </summary>
     public sealed class SaveRosterUseCase
     {
-        private readonly IAccountDataPort _accountDataPort;
+        /// <summary>
+        /// 클라우드 저장 포트. 없으면 Photon 동기화만 수행.
+        /// </summary>
+        public interface ICloudGaragePort
+        {
+            System.Threading.Tasks.Task SaveGarageAsync(GarageRoster roster);
+        }
+
+        private readonly ICloudGaragePort _cloudPort;
         private readonly IGarageNetworkPort _network;
         private readonly IEventPublisher _eventBus;
-        private readonly System.Func<string> _uidProvider;
 
         public SaveRosterUseCase(
-            IAccountDataPort accountDataPort,
+            ICloudGaragePort cloudPort,
             IGarageNetworkPort network,
-            IEventPublisher eventBus,
-            System.Func<string> uidProvider)
+            IEventPublisher eventBus)
         {
-            _accountDataPort = accountDataPort;
+            _cloudPort = cloudPort;
             _network = network;
             _eventBus = eventBus;
-            _uidProvider = uidProvider;
         }
 
         /// <summary>
         /// 편성 저장 실행.
-        /// Firestore 저장 + Photon CustomProperties 동기화.
+        /// 클라우드 저장 (선택) + Photon CustomProperties 동기화.
         /// </summary>
         public async System.Threading.Tasks.Task<Result> Execute(GarageRoster roster)
         {
@@ -44,17 +48,12 @@ namespace Features.Garage.Application
 
             string errorMessage = null;
 
-            // Firestore 저장 (클라우드 SSOT)
+            // 클라우드 저장 (선택)
             try
             {
-                var uid = _uidProvider?.Invoke();
-                if (!string.IsNullOrEmpty(uid))
+                if (_cloudPort != null)
                 {
-                    var token = await GetIdToken();
-                    if (!string.IsNullOrEmpty(token))
-                    {
-                        await _accountDataPort.SaveGarage(roster, uid, token);
-                    }
+                    await _cloudPort.SaveGarageAsync(roster);
                 }
             }
             catch (System.Exception ex)
@@ -72,11 +71,6 @@ namespace Features.Garage.Application
                 return Result.Failure(errorMessage);
 
             return Result.Success();
-        }
-
-        private async System.Threading.Tasks.Task<string> GetIdToken()
-        {
-            return await Features.Account.Infrastructure.AuthTokenProvider.GetIdToken();
         }
     }
 }

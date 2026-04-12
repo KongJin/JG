@@ -68,6 +68,7 @@ public sealed class LobbySetup : MonoBehaviour
         {
             _accountSetup.Initialize(_eventBus);
             _loginLoadingView.SetOnLoginSuccess(OnAccountLoginSuccess);
+            _loginLoadingView.SetOnRetryRequested(OnLoginRetryRequested);
             _loginLoadingView.Show();
             _ = RunAnonymousSignIn();
             return; // 로그인 성공 후 나머지는 OnAccountLoginSuccess에서 계속
@@ -103,6 +104,11 @@ public sealed class LobbySetup : MonoBehaviour
         InitializeLobby();
     }
 
+    private void OnLoginRetryRequested()
+    {
+        _ = RunAnonymousSignIn();
+    }
+
     private void InitializeLobby()
     {
         var repository = new LobbyRepository();
@@ -129,19 +135,13 @@ public sealed class LobbySetup : MonoBehaviour
                     "[LobbySetup] GarageSetup is assigned but UnitSetup is missing. Garage initialization is skipped.",
                     this);
             }
-            else if (_accountSetup == null)
-            {
-                Debug.LogWarning(
-                    "[LobbySetup] GarageSetup is assigned but AccountSetup is missing. Garage initialization is skipped.",
-                    this);
-            }
             else
             {
                 _garageSetup.Initialize(
                     _eventBus,
                     _unitSetup.CompositionPort,
                     _unitSetup.Catalog,
-                    _accountSetup.DataPort);
+                    _accountSetup?.DataPort);
             }
         }
     }

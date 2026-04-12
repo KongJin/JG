@@ -92,6 +92,7 @@ namespace ProjectSD.EditorTools.SceneTools
             SetObject(lobbySetup, "_soundPlayer", soundPlayer);
 
             CodexLobbyGarageAugmenter.Augment(canvas, lobbyView, lobbySetup);
+            CodexLobbyAccountAugmenter.Augment(canvas, lobbySetup);
 
             EditorSceneManager.MarkSceneDirty(scene);
             Debug.Log("[CodexLobbySceneBuilder] CodexLobbyScene rebuilt.");

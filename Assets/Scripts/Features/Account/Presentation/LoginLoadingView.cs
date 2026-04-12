@@ -20,6 +20,7 @@ namespace Features.Account.Presentation
         [Required, SerializeField] private Button _retryButton;
 
         private System.Action _onLoginSuccess;
+        private System.Action _onRetryRequested;
         private int _retryCount;
         private const int MaxRetries = 3;
 
@@ -32,7 +33,7 @@ namespace Features.Account.Presentation
         {
             if (_loadingPanel != null) _loadingPanel.SetActive(true);
             if (_errorPanel != null) _errorPanel.SetActive(false);
-            if (_statusText != null) _statusText.text = "로그인 중...";
+            if (_statusText != null) _statusText.text = "Signing in...";
             _retryCount = 0;
         }
 
@@ -53,6 +54,11 @@ namespace Features.Account.Presentation
             _onLoginSuccess = callback;
         }
 
+        public void SetOnRetryRequested(System.Action callback)
+        {
+            _onRetryRequested = callback;
+        }
+
         public void OnLoginSuccess()
         {
             Hide();
@@ -64,12 +70,12 @@ namespace Features.Account.Presentation
             _retryCount++;
             if (_retryCount >= MaxRetries)
             {
-                ShowError("네트워크 연결을 확인해주세요.\n잠시 후 다시 시도해주세요.");
+                ShowError("Please check your network connection.\nTry again in a moment.");
             }
             else
             {
                 if (_statusText != null)
-                    _statusText.text = $"로그인 실패 ({_retryCount}/{MaxRetries})\n재시도 중...";
+                    _statusText.text = $"Sign-in failed ({_retryCount}/{MaxRetries})\nRetrying...";
             }
         }
 
@@ -77,6 +83,7 @@ namespace Features.Account.Presentation
         {
             _retryCount = 0;
             Show();
+            _onRetryRequested?.Invoke();
         }
     }
 }

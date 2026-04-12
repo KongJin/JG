@@ -1,6 +1,10 @@
-﻿using Features.Account.Application.Ports;
+using Features.Account.Application.Ports;
 using Features.Account.Domain;
 using System;
+using System.Globalization;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -26,7 +30,7 @@ namespace Features.Account.Infrastructure
 
         public async Task SaveProfile(AccountProfile account, string idToken)
         {
-            await WriteDocument("profile", "profile", new
+            await WriteDocument(account.uid, "profile", "profile", new
             {
                 uid = account.uid,
                 displayName = account.displayName,
@@ -37,21 +41,22 @@ namespace Features.Account.Infrastructure
 
         public async Task<AccountProfile> LoadProfile(string uid, string idToken)
         {
-            var doc = await ReadDocument("profile", "profile", idToken);
-            if (doc == null) return null;
+            string json = await ReadDocument(uid, "profile", "profile", idToken);
+            if (string.IsNullOrEmpty(json))
+                return null;
 
             return new AccountProfile
             {
-                uid = GetFieldString(doc, "uid"),
-                displayName = GetFieldString(doc, "displayName"),
-                authType = GetFieldString(doc, "authType"),
-                createdAtUnixMs = GetFieldLong(doc, "createdAtUnixMs")
+                uid = GetFieldString(json, "uid"),
+                displayName = GetFieldString(json, "displayName"),
+                authType = GetFieldString(json, "authType"),
+                createdAtUnixMs = GetFieldLong(json, "createdAtUnixMs")
             };
         }
 
         public async Task SaveStats(PlayerStats stats, string uid, string idToken)
         {
-            await WriteDocument("stats", "stats", new
+            await WriteDocument(uid, "stats", "stats", new
             {
                 totalPlayTimeSeconds = stats.totalPlayTimeSeconds,
                 totalGames = stats.totalGames,
@@ -65,34 +70,37 @@ namespace Features.Account.Infrastructure
 
         public async Task<PlayerStats> LoadStats(string uid, string idToken)
         {
-            var doc = await ReadDocument("stats", "stats", idToken);
-            if (doc == null) return null;
+            string json = await ReadDocument(uid, "stats", "stats", idToken);
+            if (string.IsNullOrEmpty(json))
+                return null;
 
             return new PlayerStats
             {
-                totalPlayTimeSeconds = GetFieldFloat(doc, "totalPlayTimeSeconds"),
-                totalGames = GetFieldInt(doc, "totalGames"),
-                totalVictories = GetFieldInt(doc, "totalVictories"),
-                totalDefeats = GetFieldInt(doc, "totalDefeats"),
-                highestWave = GetFieldInt(doc, "highestWave"),
-                totalSummons = GetFieldInt(doc, "totalSummons"),
-                totalUnitKills = GetFieldInt(doc, "totalUnitKills")
+                totalPlayTimeSeconds = GetFieldFloat(json, "totalPlayTimeSeconds"),
+                totalGames = GetFieldInt(json, "totalGames"),
+                totalVictories = GetFieldInt(json, "totalVictories"),
+                totalDefeats = GetFieldInt(json, "totalDefeats"),
+                highestWave = GetFieldInt(json, "highestWave"),
+                totalSummons = GetFieldInt(json, "totalSummons"),
+                totalUnitKills = GetFieldInt(json, "totalUnitKills")
             };
         }
 
         public async Task SaveGarage(object roster, string uid, string idToken)
         {
             string json = JsonUtility.ToJson(new RosterWrapper { roster = roster });
-            await WriteRawDocument("garage", "roster", json, idToken);
+            await WriteRawDocument(uid, "garage", "roster", json, idToken);
         }
 
         public async Task<object> LoadGarage(string uid, string idToken)
         {
-            var doc = await ReadDocument("garage", "roster", idToken);
-            if (doc == null) return null;
+            string json = await ReadDocument(uid, "garage", "roster", idToken);
+            if (string.IsNullOrEmpty(json))
+                return null;
 
-            string jsonStr = GetFieldString(doc, "json");
-            if (string.IsNullOrEmpty(jsonStr)) return null;
+            string jsonStr = GetFieldString(json, "json");
+            if (string.IsNullOrEmpty(jsonStr))
+                return null;
 
             try
             {
@@ -108,7 +116,7 @@ namespace Features.Account.Infrastructure
 
         public async Task SaveSettings(UserSettings settings, string uid, string idToken)
         {
-            await WriteDocument("settings", "settings", new
+            await WriteDocument(uid, "settings", "settings", new
             {
                 masterVolume = settings.masterVolume,
                 bgmVolume = settings.bgmVolume,
@@ -119,35 +127,41 @@ namespace Features.Account.Infrastructure
 
         public async Task<UserSettings> LoadSettings(string uid, string idToken)
         {
-            var doc = await ReadDocument("settings", "settings", idToken);
-            if (doc == null) return null;
+            string json = await ReadDocument(uid, "settings", "settings", idToken);
+            if (string.IsNullOrEmpty(json))
+                return null;
 
             return new UserSettings
             {
-                masterVolume = GetFieldFloat(doc, "masterVolume"),
-                bgmVolume = GetFieldFloat(doc, "bgmVolume"),
-                sfxVolume = GetFieldFloat(doc, "sfxVolume"),
-                language = GetFieldString(doc, "language")
+                masterVolume = GetFieldFloat(json, "masterVolume"),
+                bgmVolume = GetFieldFloat(json, "bgmVolume"),
+                sfxVolume = GetFieldFloat(json, "sfxVolume"),
+                language = GetFieldString(json, "language")
             };
         }
 
         public async Task DeleteAccount(string uid, string idToken)
         {
-            await DeleteDocument("profile", "profile", idToken);
-            await DeleteDocument("stats", "stats", idToken);
-            await DeleteDocument("settings", "settings", idToken);
-            await DeleteDocument("garage", "roster", idToken);
+            await DeleteDocument(uid, "profile", "profile", idToken);
+            await DeleteDocument(uid, "stats", "stats", idToken);
+            await DeleteDocument(uid, "settings", "settings", idToken);
+            await DeleteDocument(uid, "garage", "roster", idToken);
         }
 
-        private string BuildDocumentUrl(string collectionId, string documentId)
+        private string BuildDocumentUrl(string uid, string collectionId, string documentId)
         {
-            return string.Format(DocumentUrl, _projectId, "{uid_placeholder}", collectionId, documentId, _apiKey);
+            return string.Format(
+                DocumentUrl,
+                _projectId,
+                Uri.EscapeDataString(uid),
+                Uri.EscapeDataString(collectionId),
+                Uri.EscapeDataString(documentId),
+                _apiKey);
         }
 
-        private async Task<FirestoreDocument> ReadDocument(string collectionId, string documentId, string idToken)
+        private async Task<string> ReadDocument(string uid, string collectionId, string documentId, string idToken)
         {
-            string url = string.Format(DocumentUrl, _projectId, "{uid_placeholder}", collectionId, documentId, _apiKey);
-            // Note: uid_placeholder is not used in the URL path for single client - the auth token determines access
+            string url = BuildDocumentUrl(uid, collectionId, documentId);
 
             using var request = new UnityWebRequest(url, "GET")
             {
@@ -157,15 +171,15 @@ namespace Features.Account.Infrastructure
             request.downloadHandler = new DownloadHandlerBuffer();
 
             var result = await SendRequestSafe(request);
-            if (!result.success) return null;
+            if (!result.success)
+                return null;
 
-            string json = request.downloadHandler.text;
-            return JsonUtility.FromJson<FirestoreDocument>(json);
+            return request.downloadHandler.text;
         }
 
-        private async Task WriteDocument(string collectionId, string documentId, object data, string idToken)
+        private async Task WriteDocument(string uid, string collectionId, string documentId, object data, string idToken)
         {
-            string url = string.Format(DocumentUrl, _projectId, "{uid_placeholder}", collectionId, documentId, _apiKey);
+            string url = BuildDocumentUrl(uid, collectionId, documentId);
             string json = BuildFieldsJson(data);
 
             using var request = new UnityWebRequest(url, "PATCH")
@@ -174,18 +188,16 @@ namespace Features.Account.Infrastructure
             };
             request.SetRequestHeader("Content-Type", "application/json");
             request.SetRequestHeader("Authorization", "Bearer " + idToken);
-
-            byte[] body = System.Text.Encoding.UTF8.GetBytes(json);
-            request.uploadHandler = new UploadHandlerRaw(body);
+            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
             request.downloadHandler = new DownloadHandlerBuffer();
 
             await SendRequest(request);
         }
 
-        private async Task WriteRawDocument(string collectionId, string documentId, string rawJson, string idToken)
+        private async Task WriteRawDocument(string uid, string collectionId, string documentId, string rawJson, string idToken)
         {
-            string url = string.Format(DocumentUrl, _projectId, "{uid_placeholder}", collectionId, documentId, _apiKey);
-            string json = $"{{\"fields\":{{\"json\":{{\"stringValue\":\"{rawJson}\"}}}}}}";
+            string url = BuildDocumentUrl(uid, collectionId, documentId);
+            string json = $"{{\"fields\":{{\"json\":{{\"stringValue\":\"{EscapeJsonString(rawJson)}\"}}}}}}";
 
             using var request = new UnityWebRequest(url, "PATCH")
             {
@@ -193,17 +205,15 @@ namespace Features.Account.Infrastructure
             };
             request.SetRequestHeader("Content-Type", "application/json");
             request.SetRequestHeader("Authorization", "Bearer " + idToken);
-
-            byte[] body = System.Text.Encoding.UTF8.GetBytes(json);
-            request.uploadHandler = new UploadHandlerRaw(body);
+            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
             request.downloadHandler = new DownloadHandlerBuffer();
 
             await SendRequest(request);
         }
 
-        private async Task DeleteDocument(string collectionId, string documentId, string idToken)
+        private async Task DeleteDocument(string uid, string collectionId, string documentId, string idToken)
         {
-            string url = string.Format(DocumentUrl, _projectId, "{uid_placeholder}", collectionId, documentId, _apiKey);
+            string url = BuildDocumentUrl(uid, collectionId, documentId);
 
             using var request = new UnityWebRequest(url, "DELETE")
             {
@@ -217,30 +227,54 @@ namespace Features.Account.Infrastructure
 
         private static string BuildFieldsJson(object data)
         {
-            // Simple reflection-based field builder
-            var json = "{\"fields\":{";
-            var type = data.GetType();
-            var fields = type.GetFields();
+            var members = data.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
+            bool useProperties = members.Length == 0;
+
+            var builder = new StringBuilder();
+            builder.Append("{\"fields\":{");
             bool first = true;
 
-            foreach (var field in fields)
+            if (useProperties)
             {
-                if (!first) json += ",";
-                first = false;
+                var properties = data.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+                for (int i = 0; i < properties.Length; i++)
+                {
+                    var property = properties[i];
+                    if (!property.CanRead || property.GetIndexParameters().Length > 0)
+                        continue;
 
-                var value = field.GetValue(data);
-                string fieldType = GetFirestoreType(value);
-                string fieldValue = FormatFirestoreValue(value);
-                json += $"\"{field.Name}\":{{{fieldType}:{fieldValue}}}";
+                    AppendField(builder, property.Name, property.GetValue(data), ref first);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < members.Length; i++)
+                    AppendField(builder, members[i].Name, members[i].GetValue(data), ref first);
             }
 
-            json += "}}";
-            return json;
+            builder.Append("}}");
+            return builder.ToString();
+        }
+
+        private static void AppendField(StringBuilder builder, string name, object value, ref bool first)
+        {
+            if (!first)
+                builder.Append(',');
+
+            first = false;
+            builder.Append('"');
+            builder.Append(name);
+            builder.Append("\":{");
+            builder.Append(GetFirestoreType(value));
+            builder.Append(':');
+            builder.Append(FormatFirestoreValue(value));
+            builder.Append('}');
         }
 
         private static string GetFirestoreType(object value)
         {
             if (value is string) return "\"stringValue\"";
+            if (value is bool) return "\"booleanValue\"";
             if (value is int) return "\"integerValue\"";
             if (value is long) return "\"integerValue\"";
             if (value is float) return "\"doubleValue\"";
@@ -250,64 +284,73 @@ namespace Features.Account.Infrastructure
 
         private static string FormatFirestoreValue(object value)
         {
-            if (value is string s) return $"\"{s}\"";
-            if (value is int i) return i.ToString();
-            if (value is long l) return l.ToString();
-            if (value is float f) return f.ToString("G9");
-            if (value is double d) return d.ToString("G9");
-            return $"\"{value}\"";
+            switch (value)
+            {
+                case null:
+                    return "\"\"";
+                case string s:
+                    return $"\"{EscapeJsonString(s)}\"";
+                case bool b:
+                    return b ? "true" : "false";
+                case int i:
+                    return i.ToString(CultureInfo.InvariantCulture);
+                case long l:
+                    return l.ToString(CultureInfo.InvariantCulture);
+                case float f:
+                    return f.ToString("G9", CultureInfo.InvariantCulture);
+                case double d:
+                    return d.ToString("G17", CultureInfo.InvariantCulture);
+                default:
+                    return $"\"{EscapeJsonString(value.ToString())}\"";
+            }
         }
 
-        private static string GetFieldString(FirestoreDocument doc, string fieldName)
+        private static string GetFieldString(string json, string fieldName)
         {
-            if (doc?.fields == null) return null;
-            foreach (var f in doc.fields)
-            {
-                if (f.key == fieldName)
-                    return f.value.stringValue;
-            }
-            return null;
+            return FindFieldValue(json, fieldName, "stringValue", unescapeString: true);
         }
 
-        private static int GetFieldInt(FirestoreDocument doc, string fieldName)
+        private static int GetFieldInt(string json, string fieldName)
         {
-            if (doc?.fields == null) return 0;
-            foreach (var f in doc.fields)
-            {
-                if (f.key == fieldName)
-                {
-                    if (int.TryParse(f.value.integerValue, out int v)) return v;
-                    if (long.TryParse(f.value.integerValue, out long lv)) return (int)lv;
-                }
-            }
-            return 0;
+            string value = FindFieldValue(json, fieldName, "integerValue", unescapeString: false);
+            return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int result) ? result : 0;
         }
 
-        private static long GetFieldLong(FirestoreDocument doc, string fieldName)
+        private static long GetFieldLong(string json, string fieldName)
         {
-            if (doc?.fields == null) return 0;
-            foreach (var f in doc.fields)
-            {
-                if (f.key == fieldName)
-                {
-                    if (long.TryParse(f.value.integerValue, out long v)) return v;
-                }
-            }
-            return 0;
+            string value = FindFieldValue(json, fieldName, "integerValue", unescapeString: false);
+            return long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long result) ? result : 0L;
         }
 
-        private static float GetFieldFloat(FirestoreDocument doc, string fieldName)
+        private static float GetFieldFloat(string json, string fieldName)
         {
-            if (doc?.fields == null) return 0f;
-            foreach (var f in doc.fields)
-            {
-                if (f.key == fieldName)
-                {
-                    if (float.TryParse(f.value.doubleValue, out float v)) return v;
-                    if (int.TryParse(f.value.integerValue, out int iv)) return iv;
-                }
-            }
-            return 0f;
+            string doubleValue = FindFieldValue(json, fieldName, "doubleValue", unescapeString: false);
+            if (float.TryParse(doubleValue, NumberStyles.Float, CultureInfo.InvariantCulture, out float parsedDouble))
+                return parsedDouble;
+
+            string integerValue = FindFieldValue(json, fieldName, "integerValue", unescapeString: false);
+            return float.TryParse(integerValue, NumberStyles.Float, CultureInfo.InvariantCulture, out float parsedInt)
+                ? parsedInt
+                : 0f;
+        }
+
+        private static string FindFieldValue(string json, string fieldName, string firestoreValueType, bool unescapeString)
+        {
+            if (string.IsNullOrEmpty(json))
+                return null;
+
+            string pattern =
+                $"\"{Regex.Escape(fieldName)}\"\\s*:\\s*\\{{\\s*\"{Regex.Escape(firestoreValueType)}\"\\s*:\\s*(?<value>\"(?:\\\\.|[^\"\\\\])*\"|-?[0-9]+(?:\\.[0-9]+)?|true|false)";
+
+            var match = Regex.Match(json, pattern);
+            if (!match.Success)
+                return null;
+
+            string rawValue = match.Groups["value"].Value;
+            if (rawValue.Length >= 2 && rawValue[0] == '"' && rawValue[rawValue.Length - 1] == '"')
+                rawValue = rawValue.Substring(1, rawValue.Length - 2);
+
+            return unescapeString ? UnescapeJsonString(rawValue) : rawValue;
         }
 
         private static Task<SendResult> SendRequestSafe(UnityWebRequest request)
@@ -322,17 +365,15 @@ namespace Features.Account.Infrastructure
                     if (request.responseCode == 404)
                     {
                         tcs.SetResult(new SendResult { success = false, notFound = true });
+                        return;
                     }
-                    else
-                    {
-                        Debug.LogError($"[Firestore] Request failed: {request.error}");
-                        tcs.SetResult(new SendResult { success = false });
-                    }
+
+                    Debug.LogError($"[Firestore] Request failed ({request.responseCode}): {request.error}\n{request.downloadHandler?.text}");
+                    tcs.SetResult(new SendResult { success = false });
+                    return;
                 }
-                else
-                {
-                    tcs.SetResult(new SendResult { success = true });
-                }
+
+                tcs.SetResult(new SendResult { success = true });
             };
 
             return tcs.Task;
@@ -347,39 +388,43 @@ namespace Features.Account.Infrastructure
             {
                 if (request.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.LogError($"[Firestore] Request failed: {request.error}");
-                    tcs.SetException(new Exception(request.error));
+                    string message = $"HTTP {request.responseCode} {request.error}";
+                    Debug.LogError($"[Firestore] Request failed ({request.responseCode}): {request.error}\n{request.downloadHandler?.text}");
+                    tcs.SetException(new Exception(message));
+                    return;
                 }
-                else
-                {
-                    tcs.SetResult(true);
-                }
+
+                tcs.SetResult(true);
             };
 
             return tcs.Task;
         }
-    }
 
-    [Serializable]
-    public sealed class FirestoreDocument
-    {
-        public FirestoreField[] fields;
-        public string name;
-    }
+        private static string EscapeJsonString(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return string.Empty;
 
-    [Serializable]
-    public sealed class FirestoreField
-    {
-        public string key;
-        public FirestoreValue value;
-    }
+            return value
+                .Replace("\\", "\\\\")
+                .Replace("\"", "\\\"")
+                .Replace("\r", "\\r")
+                .Replace("\n", "\\n")
+                .Replace("\t", "\\t");
+        }
 
-    [Serializable]
-    public sealed class FirestoreValue
-    {
-        public string stringValue;
-        public string integerValue;
-        public string doubleValue;
+        private static string UnescapeJsonString(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return string.Empty;
+
+            return value
+                .Replace("\\\"", "\"")
+                .Replace("\\n", "\n")
+                .Replace("\\r", "\r")
+                .Replace("\\t", "\t")
+                .Replace("\\\\", "\\");
+        }
     }
 
     [Serializable]
@@ -394,4 +439,3 @@ namespace Features.Account.Infrastructure
         public bool notFound;
     }
 }
-

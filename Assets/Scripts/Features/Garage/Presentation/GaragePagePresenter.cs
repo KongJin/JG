@@ -21,14 +21,13 @@ namespace Features.Garage.Presentation
                 bool hasCommittedLoadout = loadout.IsComplete;
 
                 string title = "Empty Slot";
-                string summary = "Select frame and modules";
+                string summary = $"Slot {i + 1} | Empty";
 
                 if (hasCommittedLoadout)
                 {
                     title = Catalog?.FindFrame(loadout.frameId)?.DisplayName ?? loadout.frameId;
                     var firepowerName = Catalog?.FindFirepower(loadout.firepowerModuleId)?.DisplayName ?? loadout.firepowerModuleId;
-                    var mobilityName = Catalog?.FindMobility(loadout.mobilityModuleId)?.DisplayName ?? loadout.mobilityModuleId;
-                    summary = $"{firepowerName} | {mobilityName}";
+                    summary = $"{title} | {firepowerName}";
                 }
 
                 slotViewModels.Add(new GarageSlotViewModel(

@@ -42,6 +42,7 @@
 * Domain 내 scene 보조 타입 — `PlacementArea`처럼 Unity 의존 scene helper, 입력 판정 helper, 시각화 보조 타입을 Domain에 두지 않는다. 이런 타입은 Presentation 또는 scene 소유 계약 쪽에 둔다.
 * Subscribe 반환값 가정 — `Subscribe()`의 반환형을 임의로 `IDisposable`처럼 취급하지 않는다. EventBus ownership 해제는 `EventBusSubscription.ForOwner(...)` 또는 명시적 cleanup으로 처리한다.
 * 리팩터링 후 오래된 심볼 — 리팩터링 전 필드/메서드/타입명을 계속 참조하는 상태를 허용하지 않는다. 변경 후에는 반드시 컴파일을 실행하고 모든 참조가 수정되었음을 0 errors로 확인한다.
+* 시그니처 변경 시 호출부 전수 조사 — public/protected 메서드 시그니처 변경 시 반드시 모든 호출부를 먼저 식별한다. 하위 호환이 필요하면 선택 인자나 오버로드로 처리하고, 모든 호출부를 한 번에 수정한다.
 
 ---
 
