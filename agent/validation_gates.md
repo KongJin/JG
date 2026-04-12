@@ -57,6 +57,50 @@ Unity Editor 기준 컴파일 에러가 0이다.
 * 핵심 플레이 플로우 진입/복귀 가능
 * 필요 시 MCP의 compile/status/hierarchy/console 진단으로 보조 확인 가능
 
+### 4. webgl-build-clean (선택 보고)
+
+WebGL 빌드 성공 및 성능·최적화 기준이 통과한다.
+이 단계는 **WebGL 빌드 배포 직전 또는 정기 검증 시** 추가 보고한다.
+
+**컴파일·빌드 검증:**
+* WebGL Development 빌드 에러 0
+* IL2CPP 코드 스트리핑으로 인한 런타임 MissingMethodException 없음
+* `webgl_optimization.md`는 `validation_gates.md`로 통합됨 — 별도 문서 없음
+
+**성능 게이트 (목표 지표):**
+* SetPass Calls < 50 (셰이더 교체 횟수)
+* Batches < 100 (실제 드로우콜)
+* Triangles < 100K (프레임당 폴리곤)
+* 프레임 타임 < 33ms (30fps 유지)
+
+**최적화 필수 설정:**
+* SRP Batcher: ON (가장 중요 — 셰이더 단위 배칭)
+* Static Batching: ON (움직이지 않는 배경 오브젝트용)
+* Dynamic Batching: OFF (WebGL에서 CPU 오버헤드 > 이득)
+* GPU Instancing: 반복 오브젝트(투사체, 이펙트)에 설정
+* 렌더 스케일: 0.8x (GPU 부하 절감)
+
+**금지 사항:**
+* WebGL에서 Dynamic Batching 활성화
+* Mobile_RPAsset에 과도한 포스트 프로세싱 추가
+* 2048px 초과 텍스처 (권장: 1024px 이하)
+* 실시간 그림자 남용 (1 cascade + soft shadow OFF 기본값 유지)
+
+**모니터링 방법:**
+* Unity Profiler: WebGL Development Build + Autoconnect Profiler
+* Frame Debugger: Window > Analysis > Frame Debugger
+* 브라우저 DevTools: Performance 탭 프레임 타임 측정
+* Game 뷰 Stats 패널: Batches/SetPass calls 실시간 확인
+
+**적용 우선순위:**
+```
+[즉시]  Static Batching ON → GPU Instancing 설정
+[중기]  머티리얼 통합 → 텍스처 아틀라스 → 오클루전 컬링
+[장기]  LOD → 셰이더 배리언트 → 라이트맵 튜닝
+```
+
+각 Phase 적용 후 Frame Debugger로 드로우콜 변화를 측정하고 기록한다.
+
 ---
 
 ## Clean 판정 규칙
@@ -130,6 +174,21 @@ Unity Editor 기준 컴파일 에러가 0이다.
 * 전역 게이트 규칙: `agent/*.md`
 * feature 로컬 계약: `Assets/Scripts/Features/<Name>/README.md`
 * Shared 로컬 계약: `Assets/Scripts/Shared/README.md`
-* 자동 점검 구현체: `tools/rule-harness/*`
+* 자동 점검 구현체: `Assets/Editor/LayerDependencyValidator.cs`
 
-`tools/rule-harness/*`는 실행체이지 SSOT가 아니다.
+## 정적 검증 실행 방법
+
+`LayerDependencyValidator.cs`가 static-clean의 핵심 검증 도구다.
+
+**Unity Editor에서 실행:**
+* 메뉴: `Tools > Layer Dependency Validation` (또는 유사한 Editor 메뉴)
+* 출력: `Temp/LayerDependencyValidator/feature-dependencies.json` (DAG 의존성 그래프)
+* 콘솔에 레이어 위반, cycle 존재 시 즉시 보고
+
+**검증 항목:**
+* 레이어 위반 (Domain→Unity, Application→Photon, Shared→Features 등)
+* Feature 간 cycle (`A→B→A`, `A→B→C→A`)
+* Consumer-owned port 참조는 DAG edge에서 제외
+* Analytics/reporting observer 코드는 gameplay DAG에서 제외
+
+`static-clean`을 선언하려면 validator 실행 결과 위반 0, cycle 없음이어야 한다.

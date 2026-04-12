@@ -17,6 +17,8 @@
 10. Unity MCP나 에디터 자동화는 `/agent/unity.md`를 먼저 읽는다.
 11. 대규모 기계적 치환 전에는 대상 패턴, 제외 대상, 검증 방법을 먼저 정하고 문서 의미가 바뀌면 규칙 문서도 같이 갱신한다.
 12. Codex가 repo-tracked 파일을 수정할 때는 `/agent/codex_patching.md`를 먼저 읽고, 큰 패치는 분할 적용과 패치 직후 검증을 기본값으로 둔다.
+13. UseCase 실패, 에러 코드, 예외 전파는 `/agent/error_handling.md`를 따른다.
+14. 로깅 전략, `Debug.Log` 대체, 릴리즈 빌드 로그 제어는 `/agent/logging_rules.md`를 따른다.
 
 ## 작업별 진입 경로
 
@@ -33,6 +35,8 @@
 | Unity 스크립트 리네임, meta GUID, 씬 직렬화, 프리팹 연결 | `/agent/unity.md` |
 | Codex의 repo-tracked 파일 수정, `apply_patch` 분할/검증 운영 | `/agent/codex_patching.md` |
 | Unity MCP 엔드포인트와 테스트 SOP | `/agent/unity.md` |
+| UseCase 실패, 에러 코드, 예외 전파 패턴 | `/agent/error_handling.md` |
+| 로깅 전략, Debug.Log 대체, 릴리즈 빌드 로그 제어 | `/agent/logging_rules.md` |
 | 수치, MVP 기준, 디자인 문장 | `/docs/design/game_design.md` |
 | 유닛/모듈 설계 SSOT | `/docs/design/unit_module_design.md` |
 | Unit Feature 분리 설계 | `/docs/design/unit_feature_separation.md` |
@@ -47,7 +51,7 @@
 | `/agent/` | AI 에이전트 규칙/컨텍스트 (불변, 자주 참조) |
 | `/docs/design/` | 설계 SSOT (시스템의 "무엇, 왜" — 장기 보존) |
 | `/docs/plans/` | 구현 계획 ("어떻게, 언제" — 완료 후 아카이브 가능) |
-| `/docs/ops/` | 배포·빌드·운영 (Firebase, WebGL 최적화, CI/CD) |
+| `/docs/ops/` | 배포·빌드·운영 (Firebase, CI/CD) |
 | `/docs/discussions/` | 토론/의사결정 기록 (배경, 대안, 결정 근거) |
 | `/docs/playtest/` | 플레이테스트 템플릿/기록
 
@@ -59,12 +63,14 @@
 2. `/agent/anti_patterns.md` (금지 패턴, 예외 판단, 리팩터링 교훈)
 3. `/agent/event_rules.md` (이벤트 체인 방향, 깊이 제한, 이벤트 vs 직접 호출 판단)
 4. `/agent/validation_gates.md` (`clean`의 의미, compile/runtime 검증 게이트)
-5. `/agent/unity.md` (Unity meta GUID, 씬 직렬화, 프리팹 계약, Editor 작업 규칙)
-6. `/docs/design/game_design.md` (게임 컨셉 SSOT — 코드 책임과 기획 방향이 충돌하면 이 문서가 우선)
-7. 해당 feature의 `README.md`, `*Setup.cs` / `*Bootstrap.cs`와 실제 씬/프리팹 계약 (로컬 wiring, lookup 예외, 네트워크 키 실제 사용 경로)
-8. `/Assets/Scripts/Shared/README.md` (Shared 로컬 계약)
-9. `/agent/work_principles.md` (문서 운영, SSOT 소유권, 응집도 원칙)
-10. `/agent/codex_patching.md` (Codex 전용 패치 분할/적용/검증 운영)
+5. `/agent/error_handling.md` (ErrorCode, ErrorDetail, GameException, UseCase 예외 catch, Presentation 분기, 로깅 연계)
+6. `/agent/logging_rules.md` (ILogger 기반 로깅, 릴리즈 빌드 로그 제어, 성능 규칙, 예외 처리 연계)
+7. `/agent/unity.md` (Unity meta GUID, 씬 직렬화, 프리팹 계약, Editor 작업 규칙)
+8. `/docs/design/game_design.md` (게임 컨셉 SSOT — 코드 책임과 기획 방향이 충돌하면 이 문서가 우선)
+9. 해당 feature의 `README.md`, `*Setup.cs` / `*Bootstrap.cs`와 실제 씬/프리팹 계약 (로컬 wiring, lookup 예외, 네트워크 키 실제 사용 경로)
+10. `/Assets/Scripts/Shared/README.md` (Shared 로컬 계약)
+11. `/agent/work_principles.md` (문서 운영, SSOT 소유권, 응집도 원칙)
+12. `/agent/codex_patching.md` (Codex 전용 패치 분할/적용/검증 운영)
 
 ---
 
