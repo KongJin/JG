@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using UnityEditor;
@@ -88,23 +89,25 @@ namespace ProjectSD.EditorTools.UnityMcp
             var req = JsonUtility.FromJson<ComponentSetSerializedFieldRequest>(body);
             var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
-                var go = GameObject.Find(req.gameObjectPath);
-                if (go == null) throw new Exception("GameObject not found: " + req.gameObjectPath);
-                var comp = go.GetComponent(req.componentType);
+                var go = GameObject.Find(req.componentPath);
+                if (go == null) throw new Exception("GameObject not found: " + req.componentPath);
+                var comp = go.GetComponent(req.componentTypeName);
                 if (comp == null)
                 {
                     var components = go.GetComponents<Component>();
-                    comp = components.FirstOrDefault(c => c != null && c.GetType().Name.Contains(req.componentType.Split('.')[^1]));
+                    comp = components.FirstOrDefault(c => c != null && c.GetType().Name.Contains(req.componentTypeName.Split('.')[^1]));
                 }
-                if (comp == null) throw new Exception("Component " + req.componentType + " not found on " + req.gameObjectPath);
+                if (comp == null) throw new Exception("Component " + req.componentTypeName + " not found on " + req.componentPath);
                 var so = new SerializedObject(comp);
                 var sp = so.FindProperty(req.fieldName);
-                if (sp == null) throw new Exception("Field " + req.fieldName + " not found on " + req.componentType);
+                if (sp == null) throw new Exception("Field " + req.fieldName + " not found on " + req.componentTypeName);
+                var targetGo = McpSharedHelpers.FindGameObjectByPath(req.targetPath);
+                if (targetGo == null) throw new Exception("Target GameObject not found: " + req.targetPath);
                 Undo.RecordObject(comp, "MCP SetSerializedField " + req.fieldName);
-                McpSharedHelpers.SetSerializedPropertyValue(sp, req.value, req.assetReferencePath);
+                sp.objectReferenceValue = targetGo;
                 so.ApplyModifiedProperties();
                 EditorSceneManager.MarkSceneDirty(go.scene);
-                return new ComponentSetSerializedFieldResponse { success = true, message = "Set " + req.fieldName + " on " + req.componentType };
+                return new ComponentSetSerializedFieldResponse { success = true, message = "Set " + req.fieldName + " on " + req.componentTypeName };
             });
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }

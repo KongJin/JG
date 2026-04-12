@@ -15,7 +15,7 @@ namespace ProjectSD.EditorTools.UnityMcp
     internal static class EndpointRegistry
     {
         private static readonly ConcurrentDictionary<string, IMcpEndpoint> Endpoints =
-            new ConcurrentDictionary<string, StringComparer.OrdinalIgnoreCase>();
+            new ConcurrentDictionary<string, IMcpEndpoint>(StringComparer.OrdinalIgnoreCase);
 
         private static int _registrationCount;
 

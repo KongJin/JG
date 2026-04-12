@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -123,12 +124,6 @@ namespace ProjectSD.EditorTools.UnityMcp
         internal static string ProjectKey => ComputeProjectKey(ProjectRootPath);
 
         internal static bool IsPlayModeChanging() => _isPlayModeChanging;
-
-        internal static bool IsPlayModeChanging
-        {
-            get => _isPlayModeChanging;
-            set => _isPlayModeChanging = value;
-        }
 
         // =====================================================================
         // Play Mode State
@@ -601,9 +596,9 @@ namespace ProjectSD.EditorTools.UnityMcp
                 ConsoleLogs.Add(new ConsoleLogEntry
                 {
                     type = type.ToString(),
-                    condition = Truncate(condition, MaxLogMessageLength),
+                    message = Truncate(condition, MaxLogMessageLength),
                     stackTrace = Truncate(stackTrace, MaxStackTraceLength),
-                    timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff")
+                    timestampUtc = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff")
                 });
                 while (ConsoleLogs.Count > MaxStoredLogs) ConsoleLogs.RemoveAt(0);
             }
@@ -618,9 +613,9 @@ namespace ProjectSD.EditorTools.UnityMcp
                     ConsoleLogs.Add(new ConsoleLogEntry
                     {
                         type = (m.type == CompilerMessageType.Error ? LogType.Error : LogType.Warning).ToString(),
-                        condition = Truncate(m.message, MaxLogMessageLength),
+                        message = Truncate(m.message, MaxLogMessageLength),
                         stackTrace = string.Empty,
-                        timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff")
+                        timestampUtc = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff")
                     });
                 }
                 while (ConsoleLogs.Count > MaxStoredLogs) ConsoleLogs.RemoveAt(0);

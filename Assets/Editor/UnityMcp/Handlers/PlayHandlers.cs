@@ -257,14 +257,12 @@ namespace ProjectSD.EditorTools.UnityMcp
             }
 
             var superSize = req.superSize > 0 ? req.superSize : 1;
-            var overwrite = req.overwrite;
 
             return new ScreenshotCapturePlan
             {
                 relativePath = relativePath,
                 absolutePath = absolutePath,
-                superSize = superSize,
-                overwrite = overwrite
+                superSize = superSize
             };
         }
 

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ProjectSD.EditorTools.UnityMcp
 {
@@ -159,14 +160,6 @@ namespace ProjectSD.EditorTools.UnityMcp
                 var go = GameObject.Find(req.path);
                 if (go == null) throw new Exception("GameObject not found: " + req.path);
 
-                if (!string.IsNullOrEmpty(req.parentPath))
-                {
-                    var parentGo = McpSharedHelpers.FindGameObjectByPath(req.parentPath);
-                    if (parentGo == null) parentGo = GameObject.Find(req.parentPath);
-                    if (parentGo == null) throw new Exception("Parent not found: " + req.parentPath);
-                    go.transform.SetParent(parentGo.transform, req.setWorldPositionStays);
-                }
-
                 if (req.siblingIndex >= 0) go.transform.SetSiblingIndex(req.siblingIndex);
                 EditorSceneManager.MarkSceneDirty(go.scene);
 
@@ -224,7 +217,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 case "panel-bottom-center": rect.anchorMin = new Vector2(0.5f, 0f); rect.anchorMax = new Vector2(0.5f, 0f); rect.pivot = new Vector2(0.5f, 0f); rect.anchoredPosition = new Vector2(0f, 80f); rect.sizeDelta = new Vector2(w, h); break;
                 case "stretch-parent": rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.pivot = new Vector2(0.5f, 0.5f); rect.anchoredPosition = Vector2.zero; rect.sizeDelta = Vector2.zero; break;
                 case "center-fixed": rect.anchorMin = new Vector2(0.5f, 0.5f); rect.anchorMax = new Vector2(0.5f, 0.5f); rect.pivot = new Vector2(0.5f, 0.5f); rect.anchoredPosition = Vector2.zero; rect.sizeDelta = new Vector2(w, h); break;
-                case "raw-image-top": rect.anchorMin = new Vector2(0.5f, 1f); rect.anchorMax = new Vector2(0.5f, 1f); rect.pivot = new Vector2(0.5f, 1f); rect.anchoredPosition = new Vector2(0f, -200f); rect.sizeDelta = new Vector2(w ?? 256f, h ?? 256f); break;
+                case "raw-image-top": rect.anchorMin = new Vector2(0.5f, 1f); rect.anchorMax = new Vector2(0.5f, 1f); rect.pivot = new Vector2(0.5f, 1f); rect.anchoredPosition = new Vector2(0f, -200f); rect.sizeDelta = new Vector2(w, h); break;
                 default: rect.anchorMin = new Vector2(0.5f, 0.5f); rect.anchorMax = new Vector2(0.5f, 0.5f); rect.pivot = new Vector2(0.5f, 0.5f); rect.anchoredPosition = Vector2.zero; rect.sizeDelta = new Vector2(w, h); break;
             }
         }

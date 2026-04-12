@@ -108,7 +108,9 @@ namespace ProjectSD.EditorTools.UnityMcp
             {
                 ok = !isCompiling,
                 timedOut = isCompiling,
-                message = isCompiling ? "Compilation did not finish within " + timeoutMs + "ms." : "Compilation complete."
+                requestedCompilation = false,
+                waitedMs = timeoutMs,
+                isCompiling = isCompiling
             };
 
             await UnityMcpBridge.WriteJsonAsync(response, isCompiling ? 504 : 200, responseObj);

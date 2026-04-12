@@ -15,10 +15,10 @@ namespace ProjectSD.EditorTools.UnityMcp
     {
         private sealed class PlayModeAction
         {
-            public readonly Func<bool> Action;
+            public readonly Func<PlayResponse> Action;
             public readonly TaskCompletionSource<PlayResponse> Tcs;
 
-            public PlayModeAction(Func<bool> action, TaskCompletionSource<PlayResponse> tcs)
+            public PlayModeAction(Func<PlayResponse> action, TaskCompletionSource<PlayResponse> tcs)
             {
                 Action = action;
                 Tcs = tcs;
@@ -33,7 +33,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         /// <summary>
         /// Play/Stop 작업을 큐에 등록하고 완료까지 대기한다.
         /// </summary>
-        public static Task<PlayResponse> EnqueueAsync(Func<bool> action, int timeoutMs = 10000)
+        public static Task<PlayResponse> EnqueueAsync(Func<PlayResponse> action, int timeoutMs = 10000)
         {
             var tcs = new TaskCompletionSource<PlayResponse>();
             var item = new PlayModeAction(action, tcs);
@@ -72,7 +72,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 try
                 {
                     _changing = true;
-                    var result = await UnityMcpBridge.RunOnMainThreadAsync(action.Action);
+                    var result = action.Action();
                     await Task.Delay(250); // Unity 상태 전파 대기
                     _changing = false;
 
