@@ -59,17 +59,17 @@
 
 ## 충돌 시 우선순위
 
-1. `/agent/architecture.md` (folders, features, dependencies, layers, naming, ports)
-2. `/agent/anti_patterns.md` (금지 패턴, 예외 판단, 리팩터링 교훈)
-3. `/agent/event_rules.md` (이벤트 체인 방향, 깊이 제한, 이벤트 vs 직접 호출 판단)
-4. `/agent/validation_gates.md` (`clean`의 의미, compile/runtime 검증 게이트)
+1. `/agent/architecture.md` (folders, features, dependencies, layers, naming, ports, 레이어 배치 패턴)
+2. `/agent/anti_patterns.md` (금지 패턴 — Bootstrap god class, 타입 충돌, switch 폴백, concrete/interface drift)
+3. `/agent/event_rules.md` (이벤트 체인 방향, 깊이 제한, 이벤트 vs 직접 호출 판단, 계약 drift 방지)
+4. `/agent/validation_gates.md` (`clean`의 의미, compile/runtime 검증 게이트, LayerDependencyValidator 실행)
 5. `/agent/error_handling.md` (ErrorCode, ErrorDetail, GameException, UseCase 예외 catch, Presentation 분기, 로깅 연계)
 6. `/agent/logging_rules.md` (ILogger 기반 로깅, 릴리즈 빌드 로그 제어, 성능 규칙, 예외 처리 연계)
-7. `/agent/unity.md` (Unity meta GUID, 씬 직렬화, 프리팹 계약, Editor 작업 규칙)
+7. `/agent/unity.md` (Unity meta GUID, 씬 직렬화, 프리팹 계약, 의존성 필드 규칙, 정적 이벤트, 런타임 UI 생성)
 8. `/docs/design/game_design.md` (게임 컨셉 SSOT — 코드 책임과 기획 방향이 충돌하면 이 문서가 우선)
 9. 해당 feature의 `README.md`, `*Setup.cs` / `*Bootstrap.cs`와 실제 씬/프리팹 계약 (로컬 wiring, lookup 예외, 네트워크 키 실제 사용 경로)
 10. `/Assets/Scripts/Shared/README.md` (Shared 로컬 계약)
-11. `/agent/work_principles.md` (문서 운영, SSOT 소유권, 응집도 원칙)
+11. `/agent/work_principles.md` (문서 운영, SSOT 소유권, 응집도 원칙, Plan 모드 판단 기준)
 12. `/agent/codex_patching.md` (Codex 전용 패치 분할/적용/검증 운영)
 
 ---

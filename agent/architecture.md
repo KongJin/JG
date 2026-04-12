@@ -227,6 +227,48 @@ feature root의 composition root (`SkillSetup`, `GameSceneRoot` 등) — `Bootst
 
 ---
 
+## 레이어 배치 운영 패턴
+
+architecture.md의 레이어 규칙을 코드에 적용하는 구체적 패턴이다.
+세부 금지 패턴은 [`anti_patterns.md`](anti_patterns.md)를 따른다.
+
+### 타입 의존에 따른 Port 배치
+
+**규칙:** Unity 타입을 사용하지 않는 port 인터페이스만 Application/Ports에 둔다. UnityEngine 타입(Sprite, GameObject, AudioClip, Color 등)을 참조하는 port는 Presentation에 둔다.
+
+- ✅ `Application/Ports/IZoneEffectPort.cs` — `Float3`만 사용 (Shared), Application 배치 가능
+- ✅ `Presentation/ISkillEffectPort.cs` — `GameObject`, `AudioClip` 사용 (Unity), Presentation 배치 필수
+- ✅ `Presentation/ISkillIconPort.cs` — `Sprite` 사용 (Unity), Presentation 배치 필수
+- ❌ `Application/Ports/ISkillEffectPort.cs` — Application 레이어에 Unity 타입 포함은 레이어 규칙 위반
+
+**이유:** Application 레이어는 UnityEngine에 의존해서는 안 된다. Unity 타입 port를 Application으로 옮기면 이를 참조하는 모든 Application 클래스가 "감염"된다.
+
+### 이벤트 핸들러 → Application 레이어
+
+**규칙:** 이벤트 처리 로직은 Bootstrap이 아닌 Application 레이어에 둔다.
+
+- ❌ Bootstrap에서 `OnXxxEvent()` 메서드로 이벤트를 직접 구독·처리 — 잘못됨
+- ✅ Application EventHandler가 생성자에서 EventBus를 직접 구독, Bootstrap은 생성 + `DisposableScope` 수명 관리만 — 올바름
+
+**패턴:**
+```
+<Feature>Setup.cs / <Feature>Bootstrap.cs (wiring 전용)
+  → Application EventHandler 생성 (생성자에 IEventSubscriber 주입)
+  → EventHandler가 생성자에서 구독
+  → Bootstrap이 소유권 추적: _disposables.Add(EventBusSubscription.ForOwner(eventBus, handler))
+```
+
+### UseCase를 통한 도메인 엔티티 생성
+
+Bootstrap은 도메인 엔티티를 직접 생성해서는 안 된다.
+
+```
+❌ Bootstrap이 Domain.Projectile을 직접 생성
+✅ Bootstrap이 SpawnProjectileUseCase 호출 → UseCase가 Domain.Projectile 생성
+```
+
+---
+
 ## 명명 규칙
 
 * **Entity:** 접미사 없음 — `Lobby`, `Room`, `RoomMember`

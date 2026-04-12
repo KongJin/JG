@@ -193,3 +193,40 @@ Unity Editor 전용 작업 규칙. Unity 고유 직렬화, 에디터 조작, 에
 확실하지 않을 때:
 
 Shared보다 현재 feature 안에 코드를 유지하는 것을 선호한다.
+
+---
+
+## 10. 의존성 필드 규칙
+
+**의존성 필드 멤버 3가지 규칙** (`[SerializeField]`, 주입된 참조):
+
+1. **한 번에 수신**: constructor 또는 `Initialize()`에서만. 별도 setter 메서드 금지 (예: `SetXxx()`).
+2. **올바른 레이어에서 검증**: `[Required, SerializeField]` 필드는 Editor가 씬/프리팹 저장 시 검증하므로 런타임 null-check 불필요. `Initialize()` 파라미터 등 Inspector에서 검증할 수 없는 값만 런타임에 `Debug.LogError`로 검증한다.
+3. **초기화 후 신뢰**: 이벤트 핸들러, Update, 기타 런타임 메서드에서 재검증 금지. 런타임에 null이면 초기화 버그 — NullReferenceException이 표면화되도록 둔다.
+
+**`[Required]` 범위 규칙:**
+`[Required]`는 Inspector에서 연결되는 **참조 의존성**에만 사용한다. `bool`, `int`, `float`, `enum`, `Color`, `Vector*`, `string` 같은 스칼라/config 값에는 붙이지 않는다. 스칼라 값 검증은 `Range`, `Min`, 도메인 검증, 전용 validator로 처리한다.
+
+---
+
+## 11. 타입 enum 기반 조건 분기
+
+enum 기반 switch로 타입별 행동을 분기하지 않는다. Factory + Strategy 패턴을 사용한다.
+
+**허용:** 명령 디스패치와 단순 값 매핑은 switch 허용.
+
+**Strategy 패턴 파일 구조:**
+- enum, interface, factory는 한 파일에.
+- 각 구현체(Strategy 클래스)는 개별 파일.
+
+---
+
+## 12. 정적 이벤트 규칙
+
+정적 이벤트는 엔진/네트워크 콜백을 Application 또는 Bootstrap으로 bridge할 때만 예외적으로 허용한다. gameplay event bus 대체제로 사용하지 않는다. 사용 시 `OnDestroy` 해제와 README 명시는 필수다.
+
+---
+
+## 13. 운영 환경 런타임 UI 생성
+
+운영용 UI는 scene 소유 또는 prefab 소유여야 한다. 런타임 UI 생성은 디버깅 도구 또는 일시적 마이그레이션에서만 허용한다.
