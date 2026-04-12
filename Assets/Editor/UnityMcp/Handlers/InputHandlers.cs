@@ -9,6 +9,17 @@ namespace ProjectSD.EditorTools.UnityMcp
 {
     internal static class InputHandlers
     {
+        static InputHandlers()
+        {
+            "POST".Register("/input/click", "Mouse click in game view", async (req, res) => await HandleInputClickAsync(req, res));
+            "POST".Register("/input/move", "Mouse move in game view", async (req, res) => await HandleInputMoveAsync(req, res));
+            "POST".Register("/input/drag", "Mouse drag in game view", async (req, res) => await HandleInputDragAsync(req, res));
+            "POST".Register("/input/key", "Keyboard key press", async (req, res) => await HandleInputKeyAsync(req, res));
+            "POST".Register("/input/text", "Text input", async (req, res) => await HandleInputTextAsync(req, res));
+            "POST".Register("/input/scroll", "Mouse scroll", async (req, res) => await HandleInputScrollAsync(req, res));
+            "POST".Register("/input/key-combo", "Key combo preset (copy/paste/etc)", async (req, res) => await HandleInputKeyComboAsync(req, res));
+        }
+
         public static async Task HandleInputClickAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             InputClickRequest req = null;

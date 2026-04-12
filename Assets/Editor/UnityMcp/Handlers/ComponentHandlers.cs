@@ -11,6 +11,15 @@ namespace ProjectSD.EditorTools.UnityMcp
 {
     internal static class ComponentHandlers
     {
+        static ComponentHandlers()
+        {
+            "POST".Register("/component/add", "Add component to GameObject", async (req, res) => await HandleComponentAddAsync(req, res));
+            "POST".Register("/component/set", "Set component property value", async (req, res) => await HandleComponentSetAsync(req, res));
+            "POST".Register("/component/get", "Get component serialized properties", async (req, res) => await HandleComponentGetAsync(req, res));
+            "POST".Register("/component/set-serialized-field", "Set a serialized field directly", async (req, res) => await HandleComponentSetSerializedFieldAsync(req, res));
+            "POST".Register("/component/auto-connect-fields", "Auto-wire null object references by field name", async (req, res) => await HandleComponentAutoConnectFieldsAsync(req, res));
+        }
+
         public static async Task HandleComponentAddAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             var body = await UnityMcpBridge.ReadRequestBodyAsync(request);

@@ -11,6 +11,12 @@ namespace ProjectSD.EditorTools.UnityMcp
 {
     internal static class ConsoleHandlers
     {
+        static ConsoleHandlers()
+        {
+            "GET".Register("/console/errors", "Recent error/exception/assert logs", async (req, res) => await HandleConsoleErrorsAsync(req, res, UnityMcpBridge.ConsoleLogs, UnityMcpBridge.LogLock));
+            "GET".Register("/console/logs", "All recent console logs", async (req, res) => await HandleConsoleLogsAsync(req, res, UnityMcpBridge.ConsoleLogs, UnityMcpBridge.LogLock));
+        }
+
         public static async Task HandleConsoleErrorsAsync(
             HttpListenerRequest request,
             HttpListenerResponse response,

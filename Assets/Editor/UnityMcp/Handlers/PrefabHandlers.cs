@@ -12,6 +12,14 @@ namespace ProjectSD.EditorTools.UnityMcp
 {
     internal static class PrefabHandlers
     {
+        static PrefabHandlers()
+        {
+            "POST".Register("/prefab/save", "Save GameObject as prefab asset", async (req, res) => await HandlePrefabSaveAsync(req, res));
+            "POST".Register("/prefab/get", "Get prefab asset info", async (req, res) => await HandlePrefabGetAsync(req, res));
+            "POST".Register("/prefab/set", "Set prefab component property", async (req, res) => await HandlePrefabSetAsync(req, res));
+            "POST".Register("/prefab/add-component", "Add component to prefab asset", async (req, res) => await HandlePrefabAddComponentAsync(req, res));
+        }
+
         public static async Task HandlePrefabSaveAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             var body = await UnityMcpBridge.ReadRequestBodyAsync(request);

@@ -11,6 +11,18 @@ namespace ProjectSD.EditorTools.UnityMcp
 {
     internal static class BuildHandlers
     {
+        static BuildHandlers()
+        {
+            "POST".Register("/asset/refresh", "Refresh AssetDatabase", async (req, res) => await HandleAssetRefreshAsync(res));
+            "GET".Register("/compile/status", "Check if Unity is currently compiling", async (req, res) => await HandleCompileStatusAsync(res));
+            "POST".Register("/compile/request", "Request a script reload or asset refresh", async (req, res) => await HandleCompileRequestAsync(req, res));
+            "POST".Register("/compile/wait", "Wait for compilation to finish", async (req, res) => await HandleCompileWaitAsync(req, res));
+            "POST".Register("/build/webgl", "Build WebGL player", async (req, res) => await HandleBuildWebGLAsync(req, res));
+            "POST".Register("/menu/execute", "Execute an Editor menu item", async (req, res) => await HandleMenuExecuteAsync(req, res));
+            "GET".Register("/config/get", "Get current MCP configuration", async (req, res) => await HandleConfigGetAsync(res));
+            "POST".Register("/config/set", "Update MCP configuration", async (req, res) => await HandleConfigSetAsync(req, res));
+        }
+
         public static async Task HandleAssetRefreshAsync(HttpListenerResponse response)
         {
             var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
@@ -120,6 +132,12 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
+                // 자동 씬 저장
+                if (McpConfig.AutoSaveSceneOnBuild)
+                {
+                    McpConfig.TryAutoSaveScene(out _);
+                }
+
                 var scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
                 if (scenes.Length == 0) return new GenericResponse { success = false, message = "No scenes enabled in Build Settings." };
 
@@ -172,6 +190,46 @@ namespace ProjectSD.EditorTools.UnityMcp
             });
 
             await UnityMcpBridge.WriteJsonAsync(response, result.success ? 200 : 500, result);
+        }
+
+        public static async Task HandleConfigGetAsync(HttpListenerResponse response)
+        {
+            var config = new
+            {
+                autoSaveSceneOnPlayStop = McpConfig.AutoSaveSceneOnPlayStop,
+                autoSaveSceneOnBuild = McpConfig.AutoSaveSceneOnBuild
+            };
+            await UnityMcpBridge.WriteJsonAsync(response, 200, config);
+        }
+
+        public static async Task HandleConfigSetAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
+            if (string.IsNullOrWhiteSpace(body))
+            {
+                await UnityMcpBridge.WriteJsonAsync(response, 400, new ErrorResponse { error = "Request body is required" });
+                return;
+            }
+
+            try
+            {
+                var config = JsonUtility.FromJson<ConfigSetRequest>(body);
+                if (config.autoSaveSceneOnPlayStop.HasValue) McpConfig.AutoSaveSceneOnPlayStop = config.autoSaveSceneOnPlayStop.Value;
+                if (config.autoSaveSceneOnBuild.HasValue) McpConfig.AutoSaveSceneOnBuild = config.autoSaveSceneOnBuild.Value;
+
+                await UnityMcpBridge.WriteJsonAsync(response, 200, new GenericResponse { success = true, message = "Configuration updated" });
+            }
+            catch (Exception ex)
+            {
+                await UnityMcpBridge.WriteJsonAsync(response, 400, new ErrorResponse { error = "Invalid config request", detail = ex.Message });
+            }
+        }
+
+        [Serializable]
+        private sealed class ConfigSetRequest
+        {
+            public bool? autoSaveSceneOnPlayStop;
+            public bool? autoSaveSceneOnBuild;
         }
     }
 }

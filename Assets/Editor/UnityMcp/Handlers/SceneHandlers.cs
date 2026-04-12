@@ -14,6 +14,13 @@ namespace ProjectSD.EditorTools.UnityMcp
 {
     internal static class SceneHandlers
     {
+        static SceneHandlers()
+        {
+            "GET".Register("/scene/hierarchy", "Full scene hierarchy tree", async (req, res) => await HandleSceneHierarchyAsync(req, res));
+            "POST".Register("/scene/open", "Open a scene by path", async (req, res) => await HandleSceneOpenAsync(req, res));
+            "POST".Register("/scene/save", "Save current scene", async (req, res) => await HandleSceneSaveAsync(res));
+        }
+
         public static async Task HandleSceneHierarchyAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             var maxDepthRaw = request.QueryString["depth"];

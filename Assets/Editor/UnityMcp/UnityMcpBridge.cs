@@ -475,77 +475,37 @@ namespace ProjectSD.EditorTools.UnityMcp
             var response = context.Response;
             response.Headers["Cache-Control"] = "no-cache";
 
+            var method = request.HttpMethod.ToUpperInvariant();
+            var path = NormalizePath(request.Url == null ? "/" : request.Url.AbsolutePath);
+
             try
             {
-                var method = request.HttpMethod.ToUpperInvariant();
-                var path = NormalizePath(request.Url == null ? "/" : request.Url.AbsolutePath);
+                await McpRequestLogger.RecordAsync(method, path, async () =>
+                {
+                    try
+                    {
+                        // Debug endpoints for listing registered endpoints and request logs
+                        if (method == "GET" && path == "/debug/endpoints")
+                        {
+                            await EndpointRegistry.HandleListEndpointsAsync(response);
+                            return 200;
+                        }
 
-                // --- Play / Health ---
-                if (method == "GET" && path == "/health") { await PlayHandlers.HandleHealthAsync(response); return; }
-                if (method == "GET" && path == "/scene/current") { await PlayHandlers.HandleCurrentSceneAsync(response); return; }
-                if (method == "POST" && path == "/play/start") { await PlayHandlers.HandlePlayStartAsync(response); return; }
-                if (method == "POST" && path == "/play/stop") { await PlayHandlers.HandlePlayStopAsync(response); return; }
-                if (method == "POST" && path == "/screenshot/capture") { await PlayHandlers.HandleScreenshotCaptureAsync(request, response); return; }
+                        // Try dynamic endpoint dispatch
+                        if (EndpointRegistry.TryDispatch(method, path, request, response))
+                        {
+                            return response.StatusCode;
+                        }
 
-                // --- Input ---
-                if (method == "POST" && path == "/input/click") { await InputHandlers.HandleInputClickAsync(request, response); return; }
-                if (method == "POST" && path == "/input/move") { await InputHandlers.HandleInputMoveAsync(request, response); return; }
-                if (method == "POST" && path == "/input/drag") { await InputHandlers.HandleInputDragAsync(request, response); return; }
-                if (method == "POST" && path == "/input/key") { await InputHandlers.HandleInputKeyAsync(request, response); return; }
-                if (method == "POST" && path == "/input/text") { await InputHandlers.HandleInputTextAsync(request, response); return; }
-                if (method == "POST" && path == "/input/scroll") { await InputHandlers.HandleInputScrollAsync(request, response); return; }
-                if (method == "POST" && path == "/input/key-combo") { await InputHandlers.HandleInputKeyComboAsync(request, response); return; }
-
-                // --- Console ---
-                if (method == "GET" && path == "/console/errors") { await ConsoleHandlers.HandleConsoleErrorsAsync(request, response, ConsoleLogs, LogLock); return; }
-                if (method == "GET" && path == "/console/logs") { await ConsoleHandlers.HandleConsoleLogsAsync(request, response, ConsoleLogs, LogLock); return; }
-
-                // --- Scene ---
-                if (method == "GET" && path == "/scene/hierarchy") { await SceneHandlers.HandleSceneHierarchyAsync(request, response); return; }
-                if (method == "POST" && path == "/scene/open") { await SceneHandlers.HandleSceneOpenAsync(request, response); return; }
-                if (method == "POST" && path == "/scene/save") { await SceneHandlers.HandleSceneSaveAsync(response); return; }
-
-                // --- GameObject ---
-                if (method == "POST" && path == "/gameobject/find") { await GameObjectHandlers.HandleGameObjectFindAsync(request, response); return; }
-                if (method == "POST" && path == "/gameobject/create") { await GameObjectHandlers.HandleGameObjectCreateAsync(request, response); return; }
-                if (method == "POST" && path == "/gameobject/create-primitive") { await GameObjectHandlers.HandleGameObjectCreatePrimitiveAsync(request, response); return; }
-                if (method == "POST" && path == "/gameobject/destroy") { await GameObjectHandlers.HandleGameObjectDestroyAsync(request, response); return; }
-                if (method == "POST" && path == "/gameobject/set-active") { await GameObjectHandlers.HandleGameObjectSetActiveAsync(request, response); return; }
-                if (method == "POST" && path == "/gameobject/set-sibling") { await GameObjectHandlers.HandleGameObjectSetSiblingAsync(request, response); return; }
-
-                // --- Component ---
-                if (method == "POST" && path == "/component/add") { await ComponentHandlers.HandleComponentAddAsync(request, response); return; }
-                if (method == "POST" && path == "/component/set") { await ComponentHandlers.HandleComponentSetAsync(request, response); return; }
-                if (method == "POST" && path == "/component/get") { await ComponentHandlers.HandleComponentGetAsync(request, response); return; }
-                if (method == "POST" && path == "/component/set-serialized-field") { await ComponentHandlers.HandleComponentSetSerializedFieldAsync(request, response); return; }
-                if (method == "POST" && path == "/component/auto-connect-fields") { await ComponentHandlers.HandleComponentAutoConnectFieldsAsync(request, response); return; }
-
-                // --- Prefab ---
-                if (method == "POST" && path == "/prefab/save") { await PrefabHandlers.HandlePrefabSaveAsync(request, response); return; }
-                if (method == "POST" && path == "/prefab/get") { await PrefabHandlers.HandlePrefabGetAsync(request, response); return; }
-                if (method == "POST" && path == "/prefab/set") { await PrefabHandlers.HandlePrefabSetAsync(request, response); return; }
-                if (method == "POST" && path == "/prefab/add-component") { await PrefabHandlers.HandlePrefabAddComponentAsync(request, response); return; }
-
-                // --- UI ---
-                if (method == "POST" && path == "/ui/button/invoke") { await UiHandlers.HandleUiButtonInvokeAsync(request, response); return; }
-                if (method == "POST" && path == "/ui/create-button") { await UiHandlers.HandleUiCreateButtonAsync(request, response); return; }
-                if (method == "POST" && path == "/ui/create-panel") { await UiHandlers.HandleUiCreatePanelAsync(request, response); return; }
-                if (method == "POST" && path == "/ui/create-raw-image") { await UiHandlers.HandleUiCreateRawImageAsync(request, response); return; }
-                if (method == "POST" && path == "/ui/set-rect") { await UiHandlers.HandleUiSetRectAsync(request, response); return; }
-
-                // --- Build / Compile / Menu ---
-                if (method == "POST" && path == "/asset/refresh") { await BuildHandlers.HandleAssetRefreshAsync(response); return; }
-                if (method == "GET" && path == "/compile/status") { await BuildHandlers.HandleCompileStatusAsync(response); return; }
-                if (method == "POST" && path == "/compile/request") { await BuildHandlers.HandleCompileRequestAsync(request, response); return; }
-                if (method == "POST" && path == "/compile/wait") { await BuildHandlers.HandleCompileWaitAsync(request, response); return; }
-                if (method == "POST" && path == "/build/webgl") { await BuildHandlers.HandleBuildWebGLAsync(request, response); return; }
-                if (method == "POST" && path == "/menu/execute") { await BuildHandlers.HandleMenuExecuteAsync(request, response); return; }
-
-                await WriteJsonAsync(response, 404, new ErrorResponse { error = "Not found", detail = method + " " + path });
-            }
-            catch (Exception ex)
-            {
-                await WriteJsonAsync(response, 500, new ErrorResponse { error = "Bridge failure", detail = ex.Message });
+                        await WriteJsonAsync(response, 404, new ErrorResponse { error = "Not found", detail = method + " " + path });
+                        return 404;
+                    }
+                    catch (Exception)
+                    {
+                        await WriteJsonAsync(response, 500, new ErrorResponse { error = "Bridge failure", detail = "Internal error" });
+                        return 500;
+                    }
+                });
             }
             finally { CloseResponse(response); }
         }

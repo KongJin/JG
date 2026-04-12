@@ -10,6 +10,15 @@ namespace ProjectSD.EditorTools.UnityMcp
 {
     internal static class UiHandlers
     {
+        static UiHandlers()
+        {
+            "POST".Register("/ui/button/invoke", "Invoke a Unity UI Button.onClick", async (req, res) => await HandleUiButtonInvokeAsync(req, res));
+            "POST".Register("/ui/create-button", "Create a UI Button with TMP text", async (req, res) => await HandleUiCreateButtonAsync(req, res));
+            "POST".Register("/ui/create-panel", "Create a UI Panel (Image)", async (req, res) => await HandleUiCreatePanelAsync(req, res));
+            "POST".Register("/ui/create-raw-image", "Create a UI RawImage", async (req, res) => await HandleUiCreateRawImageAsync(req, res));
+            "POST".Register("/ui/set-rect", "Modify RectTransform properties", async (req, res) => await HandleUiSetRectAsync(req, res));
+        }
+
         public static async Task HandleUiButtonInvokeAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             UiButtonInvokeRequest req = null;

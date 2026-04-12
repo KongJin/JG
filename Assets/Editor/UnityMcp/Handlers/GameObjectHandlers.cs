@@ -13,6 +13,16 @@ namespace ProjectSD.EditorTools.UnityMcp
 {
     internal static class GameObjectHandlers
     {
+        static GameObjectHandlers()
+        {
+            "POST".Register("/gameobject/find", "Find GameObject by path or name", async (req, res) => await HandleGameObjectFindAsync(req, res));
+            "POST".Register("/gameobject/create", "Create new GameObject", async (req, res) => await HandleGameObjectCreateAsync(req, res));
+            "POST".Register("/gameobject/create-primitive", "Create primitive (cube/sphere/etc)", async (req, res) => await HandleGameObjectCreatePrimitiveAsync(req, res));
+            "POST".Register("/gameobject/destroy", "Destroy GameObject", async (req, res) => await HandleGameObjectDestroyAsync(req, res));
+            "POST".Register("/gameobject/set-active", "Set GameObject active state", async (req, res) => await HandleGameObjectSetActiveAsync(req, res));
+            "POST".Register("/gameobject/set-sibling", "Set sibling order", async (req, res) => await HandleGameObjectSetSiblingAsync(req, res));
+        }
+
         public static async Task HandleGameObjectFindAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
