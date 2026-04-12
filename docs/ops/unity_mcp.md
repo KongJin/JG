@@ -15,6 +15,7 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Codex, Clau
 - 브리지나 일반 C# 스크립트를 수정할 때는 `Play Stop -> 파일 수정 -> 컴파일 완료 확인 -> /health 확인 -> 다시 Play` 순서를 지킨다.
 - Unity MCP 테스트는 화면만 보지 말고 `/console/logs` 또는 `/console/errors`를 함께 확인한다.
 - 씬/하이어라키 문제를 의심할 때는 브리지 수정 전에 `tools/mcp-diagnose-scene-hierarchy.ps1`로 재현 정보를 남긴다.
+- MCP 작업 마무리 단계에서는 **최종 작업 위치/화면 상태를 유지한 채** `/screenshot/capture`로 캡처를 남기고, 캡처 이미지를 직접 확인한 뒤 종료한다.
 - runtime UI flow 회귀는 고정 스크립트로 운영하지 않는다. 공식 기록은 `docs/playtest/runtime_validation_checklist.md`에 남기고, MCP 입력 라우트는 일회성 수동 진단에만 쓴다.
 
 ## 테스트 / 로그 SOP
@@ -25,7 +26,8 @@ Unity 에디터 안에서 로컬 HTTP 서버를 띄워 외부 도구(Codex, Clau
 4. compile/status 확인만 필요하면 `tools/mcp-test-compile.ps1`를 쓴다.
 5. hierarchy 재현이 필요하면 `tools/mcp-diagnose-scene-hierarchy.ps1`, `tools/mcp-hierarchy-diag.ps1` 같은 진단 스크립트를 일회성으로 실행한다.
 6. runtime flow 회귀 확인은 `docs/playtest/runtime_validation_checklist.md`에 수동으로 기록한다.
-7. 필요하면 `Editor.log` 최근 구간과 함께 본다.
+7. 작업 종료 직전에는 현재 작업 위치에서 `/screenshot/capture`를 호출하고, 저장된 이미지를 열어 실제 결과가 의도와 맞는지 확인한다.
+8. 필요하면 `Editor.log` 최근 구간과 함께 본다.
 
 ## 엔드포인트
 
