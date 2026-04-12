@@ -38,7 +38,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 Transform parent = null;
                 if (!string.IsNullOrEmpty(req.parent))
                 {
-                    var parentGo = FindGameObjectByPath(req.parent);
+                    var parentGo = McpSharedHelpers.FindGameObjectByPath(req.parent);
                     if (parentGo == null) parentGo = GameObject.Find(req.parent);
                     if (parentGo == null) throw new Exception("Parent not found: " + req.parent);
                     parent = parentGo.transform;
@@ -54,7 +54,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 image.color = new Color(0.1f, 0.1f, 0.15f, 0.9f);
                 Undo.RegisterCreatedObjectUndo(go, "MCP Create UI Panel");
                 EditorSceneManager.MarkSceneDirty(go.scene);
-                return new UiCreatePanelResponse { success = true, message = "Created UI Panel: " + go.name, path = GetTransformPath(go.transform), name = go.name };
+                return new UiCreatePanelResponse { success = true, message = "Created UI Panel: " + go.name, path = McpSharedHelpers.GetTransformPath(go.transform), name = go.name };
             });
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }
@@ -68,7 +68,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 Transform parent = null;
                 if (!string.IsNullOrEmpty(req.parent))
                 {
-                    var parentGo = FindGameObjectByPath(req.parent);
+                    var parentGo = McpSharedHelpers.FindGameObjectByPath(req.parent);
                     if (parentGo == null) parentGo = GameObject.Find(req.parent);
                     if (parentGo == null) throw new Exception("Parent not found: " + req.parent);
                     parent = parentGo.transform;
@@ -84,7 +84,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 rawImage.color = new Color(0.05f, 0.06f, 0.1f, 1f);
                 Undo.RegisterCreatedObjectUndo(go, "MCP Create UI RawImage");
                 EditorSceneManager.MarkSceneDirty(go.scene);
-                return new UiCreateRawImageResponse { success = true, message = "Created UI RawImage: " + go.name, path = GetTransformPath(go.transform), name = go.name };
+                return new UiCreateRawImageResponse { success = true, message = "Created UI RawImage: " + go.name, path = McpSharedHelpers.GetTransformPath(go.transform), name = go.name };
             });
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }
@@ -95,7 +95,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             var req = JsonUtility.FromJson<UiSetRectRequest>(body);
             var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
-                var go = FindGameObjectByPath(req.path);
+                var go = McpSharedHelpers.FindGameObjectByPath(req.path);
                 if (go == null) throw new Exception("GameObject not found: " + req.path);
                 var rect = go.GetComponent<RectTransform>();
                 if (rect == null) throw new Exception("RectTransform not found on: " + req.path);
@@ -106,7 +106,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 if (req.pivotX.HasValue || req.pivotY.HasValue) { var pivot = rect.pivot; if (req.pivotX.HasValue) pivot.x = req.pivotX.Value; if (req.pivotY.HasValue) pivot.y = req.pivotY.Value; rect.pivot = pivot; }
                 Undo.RegisterCompleteObjectUndo(rect, "MCP Set Rect");
                 EditorSceneManager.MarkSceneDirty(go.scene);
-                return new UiSetRectResponse { success = true, message = "RectTransform updated: " + go.name, path = GetTransformPath(go.transform) };
+                return new UiSetRectResponse { success = true, message = "RectTransform updated: " + go.name, path = McpSharedHelpers.GetTransformPath(go.transform) };
             });
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }
@@ -120,7 +120,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 Transform parent = null;
                 if (!string.IsNullOrEmpty(req.parent))
                 {
-                    var parentGo = FindGameObjectByPath(req.parent);
+                    var parentGo = McpSharedHelpers.FindGameObjectByPath(req.parent);
                     if (parentGo == null) parentGo = GameObject.Find(req.parent);
                     if (parentGo == null) throw new Exception("Parent not found: " + req.parent);
                     parent = parentGo.transform;
@@ -135,7 +135,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 var image = go.AddComponent<UnityEngine.UI.Image>();
                 image.color = new Color(0.2f, 0.4f, 0.9f, 1f);
                 image.type = UnityEngine.UI.Image.Type.Sliced;
-                var button = go.AddComponent<UnityEngine.UI.Button>();
+                go.AddComponent<UnityEngine.UI.Button>();
                 var textGo = new GameObject("Text (TMP)");
                 textGo.transform.SetParent(go.transform, false);
                 var textRect = textGo.AddComponent<RectTransform>();
@@ -153,7 +153,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 }
                 Undo.RegisterCreatedObjectUndo(go, "MCP Create UI Button");
                 EditorSceneManager.MarkSceneDirty(go.scene);
-                return new UiCreateButtonResponse { success = true, message = "Created UI Button: " + go.name, path = GetTransformPath(go.transform), name = go.name };
+                return new UiCreateButtonResponse { success = true, message = "Created UI Button: " + go.name, path = McpSharedHelpers.GetTransformPath(go.transform), name = go.name };
             });
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }
@@ -173,37 +173,10 @@ namespace ProjectSD.EditorTools.UnityMcp
             button.onClick.Invoke();
             return new UiButtonInvokeResponse
             {
-                success = true, message = "Invoked Button.onClick: " + req.path, path = GetTransformPath(gameObject.transform),
+                success = true, message = "Invoked Button.onClick: " + req.path, path = McpSharedHelpers.GetTransformPath(gameObject.transform),
                 name = gameObject.name, activeSelf = gameObject.activeSelf, activeInHierarchy = gameObject.activeInHierarchy,
                 interactable = button.interactable, persistentListenerCount = button.onClick.GetPersistentEventCount()
             };
-        }
-
-        private static string GetTransformPath(Transform t)
-        {
-            var parts = new System.Collections.Generic.List<string>();
-            var current = t;
-            while (current != null) { parts.Insert(0, current.name); current = current.parent; }
-            return "/" + string.Join("/", parts);
-        }
-
-        private static GameObject FindGameObjectByPath(string path)
-        {
-            if (string.IsNullOrEmpty(path)) return null;
-            var parts = path.Split(new[] { '/' }, System.StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length == 0) return null;
-            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-            foreach (var root in scene.GetRootGameObjects())
-            {
-                if (root.name == parts[0])
-                {
-                    var current = root.transform;
-                    bool found = true;
-                    for (int i = 1; i < parts.Length; i++) { var child = current.Find(parts[i]); if (child == null) { found = false; break; } current = child; }
-                    if (found) return current.gameObject;
-                }
-            }
-            return null;
         }
     }
 }

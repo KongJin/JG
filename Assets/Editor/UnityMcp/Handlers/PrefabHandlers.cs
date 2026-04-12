@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -72,7 +73,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 }
                 else
                 {
-                    ComponentHandlers.SetSerializedPropertyValue(sp, req.value, req.assetReferencePath);
+                    McpSharedHelpers.SetSerializedPropertyValue(sp, req.value, req.assetReferencePath);
                 }
                 so.ApplyModifiedProperties();
                 EditorUtility.SetDirty(comp);
@@ -119,59 +120,23 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             var filterActive = componentFilter != null && componentFilter.Length > 0;
             var components = go.GetComponents<Component>();
-            var compInfos = new System.Collections.Generic.List<ComponentInfo>();
+            var compInfos = new List<ComponentInfo>();
             foreach (var comp in components)
             {
                 if (comp == null) continue;
                 var type = comp.GetType();
                 var info = new ComponentInfo { typeName = type.Name, fullTypeName = type.FullName };
-                if (!lightweight && !filterActive) info.properties = CollectSerializedPropertiesForComponent(comp);
+                if (!lightweight && !filterActive) info.properties = McpSharedHelpers.CollectSerializedPropertiesForComponent(comp);
                 else info.properties = new PropertyInfo[0];
-                if (filterActive && !MatchesComponentTypeFilter(type, componentFilter)) continue;
+                if (filterActive && !McpSharedHelpers.MatchesComponentTypeFilter(type, componentFilter)) continue;
                 compInfos.Add(info);
             }
             return new GameObjectResponse
             {
-                found = true, name = go.name, path = GetTransformPath(go.transform),
+                found = true, name = go.name, path = McpSharedHelpers.GetTransformPath(go.transform),
                 activeSelf = go.activeSelf, layer = LayerMask.LayerToName(go.layer),
                 tag = go.tag, components = compInfos.ToArray()
             };
-        }
-
-        private static bool MatchesComponentTypeFilter(Type type, string[] filters)
-        {
-            if (filters == null || filters.Length == 0) return false;
-            foreach (var f in filters)
-            {
-                if (string.IsNullOrEmpty(f)) continue;
-                if (type.Name.Equals(f, StringComparison.OrdinalIgnoreCase)) return true;
-                if (!string.IsNullOrEmpty(type.FullName) && type.FullName.Equals(f, StringComparison.OrdinalIgnoreCase)) return true;
-            }
-            return false;
-        }
-
-        private static string GetTransformPath(Transform t)
-        {
-            var parts = new System.Collections.Generic.List<string>();
-            var current = t;
-            while (current != null) { parts.Insert(0, current.name); current = current.parent; }
-            return "/" + string.Join("/", parts);
-        }
-
-        private static PropertyInfo[] CollectSerializedPropertiesForComponent(Component comp)
-        {
-            var so = new SerializedObject(comp);
-            var props = new System.Collections.Generic.List<PropertyInfo>();
-            var sp = so.GetIterator();
-            if (sp.NextVisible(true))
-            {
-                do
-                {
-                    if (sp.name == "m_Script") continue;
-                    props.Add(new PropertyInfo { name = sp.name, type = sp.propertyType.ToString(), value = ComponentHandlers.GetSerializedPropertyValue(sp) });
-                } while (sp.NextVisible(false));
-            }
-            return props.ToArray();
         }
     }
 }
