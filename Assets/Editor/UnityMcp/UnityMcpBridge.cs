@@ -154,6 +154,9 @@ namespace ProjectSD.EditorTools.UnityMcp
             _startScheduled = false;
             var preferredPort = ResolvePort();
 
+            // 핸들러 static constructor 강제 실행 → EndpointRegistry에 자동 등록
+            RegisterAllHandlers();
+
             if (IsRunning)
             {
                 Debug.Log("[Unity MCP] Bridge already running at " + BuildListenerPrefix(_activePort));
@@ -447,7 +450,9 @@ namespace ProjectSD.EditorTools.UnityMcp
             while (!cancellationToken.IsCancellationRequested && IsRunning)
             {
                 HttpListenerContext context;
-                try { context = await _listener.GetContextAsync(); }
+                var listener = _listener;
+                if (listener == null) return;
+                try { context = await listener.GetContextAsync(); }
                 catch (HttpListenerException) when (cancellationToken.IsCancellationRequested) { return; }
                 catch (ObjectDisposedException) when (cancellationToken.IsCancellationRequested) { return; }
                 catch (Exception ex)
@@ -487,7 +492,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                         }
 
                         // Try dynamic endpoint dispatch
-                        if (EndpointRegistry.TryDispatch(method, path, request, response))
+                        if (await EndpointRegistry.TryDispatch(method, path, request, response))
                         {
                             return response.StatusCode;
                         }
@@ -495,8 +500,9 @@ namespace ProjectSD.EditorTools.UnityMcp
                         await WriteJsonAsync(response, 404, new ErrorResponse { error = "Not found", detail = method + " " + path });
                         return 404;
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        Debug.LogError("[Unity MCP] Unhandled exception in request handler: " + ex);
                         await WriteJsonAsync(response, 500, new ErrorResponse { error = "Bridge failure", detail = "Internal error" });
                         return 500;
                     }
@@ -522,10 +528,120 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             response.StatusCode = statusCode;
             response.ContentType = "application/json; charset=utf-8";
-            var json = JsonUtility.ToJson(payload);
+            var json = SerializeToJson(payload);
             var buffer = Encoding.UTF8.GetBytes(json);
             response.ContentLength64 = buffer.Length;
             await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+        }
+
+        /// <summary>
+        /// JsonUtility는 anonymous type을 지원하지 않으므로, 직접 직렬화한다.
+        /// [Serializable] 클래스 → JsonUtility.ToJson
+        /// anonymous type / Dictionary → 수동 JSON 생성
+        /// </summary>
+        private static string SerializeToJson(object payload)
+        {
+            if (payload == null) return "null";
+
+            var type = payload.GetType();
+
+            // anonymous type 감지: IsSealed && IsClass && 이름에 <> 또는 VB$ 또는 생성자 이름이 <>c__
+            if (IsAnonymousType(type))
+            {
+                return SerializeAnonymousType(payload);
+            }
+
+            // Named class → JsonUtility
+            return JsonUtility.ToJson(payload);
+        }
+
+        private static bool IsAnonymousType(Type type)
+        {
+            if (!type.IsSealed || !type.IsClass) return false;
+            var name = type.Name;
+            // C# anonymous type: <>f__AnonymousType0`1
+            // C# 10+: <>f__AnonymousType0
+            return name.Contains("<>f__AnonymousType") || name.Contains("<>__AnonymousType");
+        }
+
+        private static string SerializeAnonymousType(object obj)
+        {
+            if (obj == null) return "null";
+            var type = obj.GetType();
+            var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var sb = new StringBuilder();
+            sb.Append('{');
+            var first = true;
+            foreach (var prop in props)
+            {
+                if (!first) sb.Append(',');
+                first = false;
+                var value = prop.GetValue(obj, null);
+                sb.Append('"').Append(EscapeJsonString(prop.Name)).Append('"');
+                sb.Append(':');
+                AppendJsonValue(sb, value);
+            }
+            sb.Append('}');
+            return sb.ToString();
+        }
+
+        private static void AppendJsonValue(StringBuilder sb, object value)
+        {
+            if (value == null)
+            {
+                sb.Append("null");
+                return;
+            }
+
+            if (value is string s)
+            {
+                sb.Append('"').Append(EscapeJsonString(s)).Append('"');
+            }
+            else if (value is bool b)
+            {
+                sb.Append(b ? "true" : "false");
+            }
+            else if (value is int || value is long || value is float || value is double || value is byte || value is short || value is uint || value is ushort)
+            {
+                sb.Append(value.ToString());
+            }
+            else if (value is Array arr)
+            {
+                sb.Append('[');
+                for (var i = 0; i < arr.Length; i++)
+                {
+                    if (i > 0) sb.Append(',');
+                    AppendJsonValue(sb, arr.GetValue(i));
+                }
+                sb.Append(']');
+            }
+            else if (value is System.Collections.IEnumerable enumerable && !(value is string))
+            {
+                sb.Append('[');
+                var first = true;
+                foreach (var item in enumerable)
+                {
+                    if (!first) sb.Append(',');
+                    first = false;
+                    AppendJsonValue(sb, item);
+                }
+                sb.Append(']');
+            }
+            else if (IsAnonymousType(value.GetType()))
+            {
+                sb.Append(SerializeAnonymousType(value));
+            }
+            else
+            {
+                // Fallback: ToString()
+                sb.Append('"').Append(EscapeJsonString(value.ToString())).Append('"');
+            }
+        }
+
+        private static string EscapeJsonString(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return "";
+            return s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t");
         }
 
         internal static async Task WriteRawJsonAsync(HttpListenerResponse response, int statusCode, string json)
@@ -663,9 +779,23 @@ namespace ProjectSD.EditorTools.UnityMcp
             var shortName = typeName.Contains('.') ? typeName.Substring(typeName.LastIndexOf('.') + 1) : typeName;
             foreach (var asm in assemblies)
             {
-                var types = asm.GetTypes();
+                Type[] types;
+                try
+                {
+                    types = asm.GetTypes();
+                }
+                catch (System.Reflection.ReflectionTypeLoadException ex)
+                {
+                    types = ex.Types.Where(t => t != null).ToArray();
+                }
+                catch
+                {
+                    continue;
+                }
+
                 foreach (var t in types)
                 {
+                    if (t == null) continue;
                     if (t.Name.Equals(shortName, StringComparison.OrdinalIgnoreCase))
                     {
                         McpTypeNameCache[typeName] = t;
@@ -686,6 +816,49 @@ namespace ProjectSD.EditorTools.UnityMcp
             var field = type.GetField(fieldName, flags);
             if (field != null) McpFieldInfoCache[cacheKey] = field;
             return field;
+        }
+
+        // =====================================================================
+        // Handler Registration (static constructor 강제 실행)
+        // =====================================================================
+
+        private static void RegisterAllHandlers()
+        {
+            // 각 핸들러의 static constructor가 EndpointRegistry.Register()를 호출한다.
+            // 타입을 한 번이라도 참조해야 static constructor가 실행된다.
+            var handlerTypes = new[]
+            {
+                typeof(PlayHandlers),
+                typeof(SceneHandlers),
+                typeof(ConsoleHandlers),
+                typeof(InputHandlers),
+                typeof(UiHandlers),
+                typeof(GameObjectHandlers),
+                typeof(ComponentHandlers),
+                typeof(PrefabHandlers),
+                typeof(BuildHandlers),
+                typeof(DebugHandlers),
+                // Phase 1~5 새 핸들러
+                typeof(LocatorHandlers),
+                typeof(WaitHandlers),
+                typeof(EvalHandlers),
+                typeof(SnapshotHandlers),
+                typeof(ExploreHandlers),
+            };
+
+            foreach (var t in handlerTypes)
+            {
+                try
+                {
+                    System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(t.TypeHandle);
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning("[Unity MCP] Failed to initialize handler: " + t.Name + " — " + ex.Message);
+                }
+            }
+
+            Debug.Log("[Unity MCP] Registered " + EndpointRegistry.RegistrationCount + " endpoints.");
         }
     }
 }

@@ -17,6 +17,10 @@ namespace Features.Garage.Presentation
         [Header("Preview")]
         [SerializeField] private GarageUnitPreviewView _unitPreviewView;
 
+        [Header("Account (optional — 분리 가능)")]
+        [SerializeField] private UnityEngine.Component _accountSettingsView;
+        [SerializeField] private GameObject _accountPanelRoot;
+
         private GarageSetup _setup;
         private GaragePanelCatalog _catalog;
         private GaragePageState _state;
@@ -30,6 +34,9 @@ namespace Features.Garage.Presentation
             _catalog = catalog;
             _presenter = new GaragePagePresenter(_catalog);
             _state ??= new GaragePageState();
+
+            // AccountSettingsView를 GaragePageRoot 바깥으로 분리 (레이아웃 겹침 방지)
+            SeparateAccountPanel();
 
             HookCallbacks();
 
@@ -45,6 +52,37 @@ namespace Features.Garage.Presentation
             _ = SaveRosterAsync(_state.CommittedRoster);
 
             Render();
+        }
+
+        /// <summary>
+        /// AccountSettingsView를 GaragePageRoot에서 분리하여 우측 패널과 겹치지 않게 배치.
+        /// _accountPanelRoot가 설정되어 있으면 해당 패널로 이동.
+        /// </summary>
+        private void SeparateAccountPanel()
+        {
+            if (_accountSettingsView == null) return;
+            var accountTransform = _accountSettingsView.transform;
+
+            // 이미 분리가 완료되었으면 건너뛰기
+            if (_accountPanelRoot != null && accountTransform.parent == _accountPanelRoot.transform)
+                return;
+
+            // _accountPanelRoot가 지정되어 있으면 이동
+            if (_accountPanelRoot != null)
+            {
+                accountTransform.SetParent(_accountPanelRoot.transform, false);
+                accountTransform.localPosition = Vector3.zero;
+                accountTransform.localRotation = Quaternion.identity;
+                accountTransform.localScale = Vector3.one;
+            }
+            else
+            {
+                // 지정된 패널이 없으면 GaragePageRoot의 하단으로 이동 (최소한의 겹침 방지)
+                if (accountTransform.parent != null)
+                {
+                    accountTransform.SetAsLastSibling();
+                }
+            }
         }
 
         private async System.Threading.Tasks.Task SaveRosterAsync(GarageRoster roster)
@@ -105,7 +143,10 @@ namespace Features.Garage.Presentation
             var updatedRoster = _state.CommittedRoster.Clone();
             updatedRoster.ClearSlot(_state.SelectedSlotIndex);
 
+            _resultPanelView.ShowLoading(true);
             var result = await _setup.SaveRoster.Execute(updatedRoster);
+            _resultPanelView.ShowLoading(false);
+
             if (!result.IsSuccess)
             {
                 _state.SetValidationOverride(result.Error);
@@ -121,7 +162,13 @@ namespace Features.Garage.Presentation
 
         private async void OnSaveClicked()
         {
+            // 저장 중 버튼 비활성화 + 로딩 표시 — 중복 클릭 방지
+            _resultPanelView.ShowLoading(true);
+
             var result = await _setup.SaveRoster.Execute(_state.CommittedRoster);
+
+            _resultPanelView.ShowLoading(false);
+
             if (result.IsSuccess)
             {
                 _resultPanelView.ShowToast("Roster saved!");

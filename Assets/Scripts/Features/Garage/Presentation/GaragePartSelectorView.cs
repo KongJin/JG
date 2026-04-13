@@ -22,22 +22,34 @@ namespace Features.Garage.Presentation
 
         private bool _callbacksHooked;
 
+        // OnRectTransformDimensionsChange 과다 호출 방지
+        private Vector2 _lastSizeDelta;
+
         public event Action<int> CycleRequested;
 
         private void Awake()
         {
             CacheOptionalReferences();
             NormalizeLayout();
+            if (transform is RectTransform rt)
+                _lastSizeDelta = rt.sizeDelta;
         }
 
         private void OnEnable()
         {
             NormalizeLayout();
+            if (transform is RectTransform rt)
+                _lastSizeDelta = rt.sizeDelta;
         }
 
         private void OnRectTransformDimensionsChange()
         {
-            NormalizeLayout();
+            // 실제 크기 변경 시에만 NormalizeLayout 호출 — 매 프레임 중복 호출 방지
+            if (transform is RectTransform rt && rt.sizeDelta != _lastSizeDelta)
+            {
+                _lastSizeDelta = rt.sizeDelta;
+                NormalizeLayout();
+            }
         }
 
         public void Bind()
@@ -100,11 +112,16 @@ namespace Features.Garage.Presentation
 
             float valueTop = Mathf.Clamp(cardHeight * 0.34f, 30f, 34f);
             float valueHeight = Mathf.Clamp(cardHeight * 0.26f, 24f, 28f);
-            float buttonWidth = Mathf.Clamp(valueHeight * 1.8f, 40f, 48f);
+
+            // 최소 터치 영역 보장 (44px 권장)
+            const float minTouchSize = 44f;
+            float buttonWidth = Mathf.Max(minTouchSize, Mathf.Clamp(valueHeight * 1.8f, 40f, 48f));
             ConfigureTopStretchRect(valuePanel, valueTop, valueHeight, 22f, 22f);
 
-            ConfigureButtonRect(_prevButton, new Vector2(0f, 0f), new Vector2(0f, 1f), 12f, 0f, buttonWidth);
-            ConfigureButtonRect(_nextButton, new Vector2(1f, 0f), new Vector2(1f, 1f), -12f, 0f, buttonWidth);
+            // 버튼을 세로 중앙에 고정 + 높이 제한
+            float buttonHeight = valueHeight;
+            ConfigureButtonRect(_prevButton, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), 12f, 0f, buttonWidth, buttonHeight);
+            ConfigureButtonRect(_nextButton, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), -12f, 0f, buttonWidth, buttonHeight);
 
             if (_valueText != null)
             {
@@ -155,7 +172,8 @@ namespace Features.Garage.Presentation
             Vector2 anchorMax,
             float anchoredX,
             float anchoredY,
-            float width)
+            float width,
+            float height)
         {
             if (button == null)
                 return;
@@ -166,7 +184,7 @@ namespace Features.Garage.Presentation
                 rectTransform.anchorMax = anchorMax;
                 rectTransform.pivot = new Vector2(anchorMin.x, 0.5f);
                 rectTransform.anchoredPosition = new Vector2(anchoredX, anchoredY);
-                rectTransform.sizeDelta = new Vector2(width, 0f);
+                rectTransform.sizeDelta = new Vector2(width, height);
             }
         }
 

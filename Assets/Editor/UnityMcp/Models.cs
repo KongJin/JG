@@ -629,5 +629,198 @@ namespace ProjectSD.EditorTools.UnityMcp
         public float width;
         public float height;
     }
+
+    // =====================================================================
+    // Locator / Selector (Phase 1)
+    // =====================================================================
+
+    [Serializable]
+    internal sealed class LocatorRequest
+    {
+        public string selector;
+        public string scope;
+        public bool activeOnly;
+    }
+
+    [Serializable]
+    internal sealed class LocatorResponse
+    {
+        public bool found;
+        public int count;
+        public LocatorItem[] items;
+    }
+
+    [Serializable]
+    internal sealed class LocatorItem
+    {
+        public string path;
+        public string name;
+        public bool activeSelf;
+        public bool activeInHierarchy;
+        public string[] components;
+    }
+
+    [Serializable]
+    internal sealed class LocatorCountResponse
+    {
+        public int count;
+    }
+
+    [Serializable]
+    internal sealed class ErrorResponseEnvelope
+    {
+        public string code;
+        public string message;
+        public string detail;
+    }
+
+    // =====================================================================
+    // Auto-wait (Phase 2)
+    // =====================================================================
+
+    [Serializable]
+    internal sealed class WaitRequest
+    {
+        public string selector;
+        public string path;
+        public string componentType;
+        public string scope;
+        public int timeoutMs;
+        public int pollIntervalMs;
+    }
+
+    [Serializable]
+    internal sealed class WaitResponse
+    {
+        public bool success;
+        public bool timedOut;
+        public int waitedMs;
+        public string condition;
+        public LocatorItem result;
+        public string hint;
+    }
+
+    // =====================================================================
+    // Evaluate / Public State (Phase 3)
+    // =====================================================================
+
+    [Serializable]
+    internal sealed class EvalFindComponentRequest
+    {
+        public string path;
+        public string componentType;
+        public string[] fields;
+    }
+
+    [Serializable]
+    internal sealed class EvalFindComponentResponse
+    {
+        public bool success;
+        public string componentPath;
+        public string componentType;
+        public string fieldsJson; // JSON string of Dictionary<string, string>
+    }
+
+    [Serializable]
+    internal sealed class EvalGetPublicStateRequest
+    {
+        public string path;
+        public string componentType;
+        public string[] fields;
+    }
+
+    [Serializable]
+    internal sealed class EvalGetPublicStateResponse
+    {
+        public bool success;
+        public string componentPath;
+        public string componentType;
+        public string fieldsJson;
+    }
+
+    // =====================================================================
+    // Snapshot (Phase 4)
+    // =====================================================================
+
+    [Serializable]
+    internal sealed class SnapshotUiRequest
+    {
+        public int maxDepth;
+        public string canvasPath;
+    }
+
+    [Serializable]
+    internal sealed class SnapshotUiResponse
+    {
+        public string scene;
+        public string canvasPath;
+        public SnapshotUiNode[] uiNodes;
+        public int totalUiNodes;
+        public int interactiveElements;
+    }
+
+    [Serializable]
+    internal sealed class SnapshotUiNode
+    {
+        public string path;
+        public string name;
+        public bool activeSelf;
+        public int childCount;
+        public string[] views;
+    }
+
+    [Serializable]
+    internal sealed class SnapshotDiffRequest
+    {
+        public string beforeJson;
+        public string afterJson;
+    }
+
+    [Serializable]
+    internal sealed class SnapshotDiffResponse
+    {
+        public string[] added;
+        public string[] removed;
+        public string[] changed;
+    }
+
+    [Serializable]
+    internal sealed class SnapshotComponentsResponse
+    {
+        public string scene;
+        public RootComponentInfo[] rootComponents;
+    }
+
+    [Serializable]
+    internal sealed class RootComponentInfo
+    {
+        public string path;
+        public string name;
+        public string[] customComponents;
+    }
+
+    // =====================================================================
+    // Explore (Phase 5)
+    // =====================================================================
+
+    [Serializable]
+    internal sealed class ExploreInteractiveResponse
+    {
+        public string scene;
+        public InteractiveElement[] interactiveElements;
+        public int totalInteractive;
+        public string byTypeJson;
+    }
+
+    [Serializable]
+    internal sealed class InteractiveElement
+    {
+        public string path;
+        public string name;
+        public string type;
+        public string text;
+        public bool interactable;
+        public bool activeInHierarchy;
+    }
 }
 #endif

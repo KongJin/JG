@@ -97,32 +97,61 @@ Unity Editor 전용 작업 규칙. Unity 고유 직렬화, 에디터 조작, 에
 
 ## 6. Unity MCP 운영
 
-**용도:** Unity Editor 안의 로컬 HTTP 브리지를 통해 scene, prefab, play mode, 로그, 스크린샷을 원격 제어/확인한다.
+**코드 위치:** `Assets/Editor/UnityMcp/`
 
-**접속:**
+**용도:** Unity Editor 내장 HTTP 서버(`HttpListener`)를 통해 scene, prefab, play mode, 입력, 로그, 스크린샷, 빌드를 원격 제어/확인한다.
+
+### 구조
+
+```
+Assets/Editor/UnityMcp/
+  UnityMcpBridge.cs       — HttpListener 서버, [InitializeOnLoad] 자동 기동
+  EndpointRegistry.cs     — 동적 엔드포인트 등록/디스패치
+  Models.cs               — 요청/응답 DTO 전부
+  McpConfig.cs            — 메모리 설정 (AutoSaveSceneOnPlayStop/OnBuild)
+  McpSharedHelpers.cs     — 공통 유틸 (GameObject 탐색, 컴포넌트 조작 등)
+  PlayModeChangeQueue.cs  — Play mode 변경 직렬화
+  McpRequestLogger.cs     — 요청 로깅
+  Handlers/
+    BuildHandlers.cs      — /compile/*, /build/webgl, /asset/refresh, /menu/execute, /config/*
+    ComponentHandlers.cs  — /component/*
+    ConsoleHandlers.cs    — /console/errors, /console/logs
+    GameObjectHandlers.cs — /gameobject/*
+    InputHandlers.cs      — /input/*
+    PlayHandlers.cs       — /health, /scene/current, /play/*, /screenshot/*
+    PrefabHandlers.cs     — /prefab/*
+    SceneHandlers.cs      — /scene/open, /scene/save, /scene/hierarchy
+    UiHandlers.cs         — /ui/*
+```
+
+**엔드포인트 SSOT:** 문서에 엔드포인트 목록을 적어두지 않는다. 대신 아래를 따른다.
+- **런타임 조회:** `GET /debug/endpoints` — 등록된 전체 엔드포인트 + 설명 반환
+- **코드 기준:** `Handlers/*.cs` 각 파일의 static constructor에서 `Register()` 호출
+- **DTO 기준:** `Models.cs` — 모든 요청/응답 스키마
+
+### 접속
+
 - 주소: `http://127.0.0.1:{port}/`
-- 포트: `ProjectSettings/UnityMcpPort.txt`
-- stdio 서버: `tools/unity-mcp/server.js`
-- 기본 HTTP 타임아웃: `10000ms` (`UNITY_MCP_HTTP_TIMEOUT_MS`로 덮어쓰기 가능)
+- 포트: `ProjectSettings/UnityMcpPort.txt` (기본 `51234`)
+- 프로젝트 키: 경로 해시로 생성, health에서 반환 — 다른 프로젝트 bridge와 혼동 방지
+- health probe로 동일 프로젝트 bridge 인지 확인 후 재사용
 
 **기본 순서:**
-1. `GET /health`로 브리지, scene, `isCompiling`, `isPlaying` 확인
-2. 작업 전 `Play Stop -> 파일 수정 -> 컴파일 완료 확인 -> /health 확인`
+1. `GET /health`로 bridge, scene, `isCompiling`, `isPlaying`, `isPlayModeChanging` 확인
+2. 작업 전 `Play Stop → 파일 수정 → 컴파일 완료 확인 → /health 확인`
 3. 주요 액션 뒤 `GET /console/logs` 또는 `GET /console/errors` 확인
 4. hierarchy/scene 문제는 `GET /scene/hierarchy` 또는 `tools/mcp-diagnose-scene-hierarchy.ps1` 사용
-5. 종료 직전 가능하면 `/screenshot/capture`로 화면 저장 후 실제 결과 확인
+5. 종료 직전 가능하면 `POST /screenshot/capture`로 화면 저장 후 실제 결과 확인
 
-**운영 규칙:**
+### 운영 규칙
+
 - MCP 테스트는 화면만 보지 말고 로그까지 같이 확인
 - runtime UI flow 회귀를 hardcoded 자동 스크립트로 굳히지 않음
 - 공식 기록은 `docs/playtest/runtime_validation_checklist.md`에 남기고, MCP 입력 라우트는 일회성 수동 진단에 사용
-
-**주요 엔드포인트:**
-- 조회 `GET`: `/health`, `/scene/current`, `/console/errors`, `/console/logs`, `/scene/hierarchy`, `/compile/status`
-- 플레이/컴파일/빌드 `POST`: `/scene/open`, `/scene/save`, `/play/start`, `/play/stop`, `/screenshot/capture`, `/compile/request`, `/compile/wait`, `/build/webgl`
-- 입력/UI `POST`: `/input/click`, `/input/move`, `/input/drag`, `/input/key`, `/input/text`, `/input/scroll`, `/input/key-combo`, `/ui/button/invoke`
-- 씬/오브젝트/프리팹 편집 `POST`: `/gameobject/find`, `/gameobject/create`, `/gameobject/create-primitive`, `/gameobject/destroy`, `/gameobject/set-active`, `/component/add`, `/component/set`, `/component/get`, `/prefab/save`, `/prefab/get`, `/prefab/set`, `/prefab/add-component`, `/asset/refresh`
-- 에디터 유틸리티 `POST`: `/menu/execute`
+- `/ui/button/invoke`와 `/input/*`은 **play mode 전용** — Game view 렌더링 필요
+- `PlayModeChangeQueue`를 통해 play mode 변경을 직렬화 — 동시 진입 방지
+- 프로젝트 키 기반으로 다른 프로젝트 bridge와 혼동하지 않음 — health probe로 확인
+- scene/prefab wiring 변경은 가능하면 MCP/에디터 내부에서 처리 (Section 2.1 참조)
 
 **자주 쓰는 요청 형식:**
 ```json
@@ -230,3 +259,87 @@ enum 기반 switch로 타입별 행동을 분기하지 않는다. Factory + Stra
 ## 13. 운영 환경 런타임 UI 생성
 
 운영용 UI는 scene 소유 또는 prefab 소유여야 한다. 런타임 UI 생성은 디버깅 도구 또는 일시적 마이그레이션에서만 허용한다.
+
+---
+
+## 14. Unity MCP 핸들러의 메인 스레드 제약
+
+**규칙:** MCP 핸들러는 `HttpListener` thread pool에서 실행된다. Unity API(`GameObject.name`, `transform`, `GetComponent`, `SceneManager` 등)는 **반드시 `UnityMcpBridge.RunOnMainThreadAsync` 안에서만 호출**한다.
+
+```csharp
+// ❌ 잘못됨 — await 이후 Unity API 직행 호출
+var go = FindSomething();
+var path = McpSharedHelpers.GetTransformPath(go.transform); // UnityException: main thread only
+var name = go.name;                                          // 동일 에러
+
+// ✅ 올바름 — Unity API 전체를 RunOnMainThreadAsync 안에서
+var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+{
+    var go = FindSomething();
+    return new { path = McpSharedHelpers.GetTransformPath(go.transform), name = go.name };
+});
+```
+
+**polling 기반 핸들러 패턴 (Phase 2 Auto-wait):**
+
+```csharp
+// 1. condition: 호출하는 쪽에서 이미 main thread 결과를 반환
+var result = await WaitForConditionAsync(
+    () => UnityMcpBridge.RunOnMainThreadAsync(FindTarget),  // condition 자체가 main thread 통과
+    timeoutMs, pollIntervalMs, "target-found");
+
+// 2. Task.Delay 이후 — 절대 Unity API 호출 금지
+await Task.Delay(pollIntervalMs);  // 여기서는 순수 C#만
+
+// 3. 결과 추출 — 다시 RunOnMainThreadAsync로 감싸기
+var item = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+    BuildLocatorItem(foundGo));
+```
+
+**금지:**
+- `Task.Delay` 이후 `go.name`, `go.transform`, `GetComponent` 등 Unity API 호출
+- condition 함수 내부에서 Unity API를 호출하되 `RunOnMainThreadAsync`로 감싸지 않는 경우
+- 핸들러 응답 생성 시 Unity 객체를 직접 참조 (에러 시 `ObjectDisposedException` 유발)
+
+**실제 사례:** Phase 2 `WaitForConditionAsync`에서 `Task.Delay` 루프 이후 `found.name`을 호출하여 `UnityException: GetName can only be called from the main thread` 발생. condition 실행과 결과 추출을 각각 `RunOnMainThreadAsync`로 완전히 분리하여 해결.
+
+---
+
+## 15. inactive GameObject와 Coroutine
+
+**규칙:** Unity는 inactive GameObject에서 `StartCoroutine`을 호출하면 에러를 내고 코루틴을 시작하지 않는다.
+
+```
+Coroutine couldn't be started because the game object 'Xxx' is inactive!
+```
+
+View의 `Render()` 메서드가 코루틴을 사용할 때, 호출 시점에 GameObject가 inactive일 수 있다면 반드시 방어한다.
+
+```csharp
+// ❌ 잘못됨 — inactive 체크 없이 StartCoroutine 직행
+public void Render(ViewModel vm)
+{
+    StartCoroutine(FadeColor(targetColor, 0.15f));
+}
+
+// ✅ 올바름 — inactive 체크 후 fallback
+public void Render(ViewModel vm)
+{
+    if (!gameObject.activeInHierarchy)
+    {
+        // 애니메이션 건너뛰고 최종 상태 즉시 적용
+        _background.color = targetColor;
+        return;
+    }
+    StartCoroutine(FadeColor(targetColor, 0.15f));
+}
+```
+
+**판단 기준:**
+| 상황 | 접근 |
+|---|---|
+| View가 언제 Render될지 모름 (다양한 호출 경로) | View 스스로 `activeInHierarchy` 방어 |
+| 호출부가 초기화 순서를 제어함 | 호출부에서 active 보장 + View도 방어 (이중 안전) |
+| 코루틴이 실행 중 inactive로 전환 | Unity가 코루틴 자동 중단 — 별도 처리 불필요 |
+
+**실제 사례:** `GarageSlotItemView.Render()`에서 `FadeBackgroundColor` 코루틴 호출 시 `GaragePageRoot`가 inactive 상태여서 `Coroutine couldn't be started` 에러 발생. `!gameObject.activeInHierarchy` 체크 후 색상 즉시 적용 fallback 추가.

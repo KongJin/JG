@@ -73,30 +73,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             try
             {
-                var result = await PlayModeChangeQueue.EnqueueAsync(() =>
-                {
-                    if (EditorApplication.isPlaying)
-                    {
-                        return new PlayResponse
-                        {
-                            action = "start",
-                            isPlaying = true,
-                            isPlayingOrWillChange = PlayModeChangeQueue.IsChanging,
-                            isPlayModeChanging = PlayModeChangeQueue.IsChanging,
-                            rawIsPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode
-                        };
-                    }
-                    EditorApplication.isPlaying = true;
-                    var isChanging = PlayModeChangeQueue.IsChanging;
-                    return new PlayResponse
-                    {
-                        action = "start",
-                        isPlaying = EditorApplication.isPlaying,
-                        isPlayingOrWillChange = isChanging,
-                        isPlayModeChanging = isChanging,
-                        rawIsPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode
-                    };
-                });
+                var result = await PlayModeChangeQueue.EnqueuePlayAsync();
                 await UnityMcpBridge.WriteJsonAsync(response, 200, result);
             }
             catch (TimeoutException ex)
@@ -109,36 +86,13 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             try
             {
-                var result = await PlayModeChangeQueue.EnqueueAsync(() =>
+                // 자동 씬 저장
+                if (McpConfig.AutoSaveSceneOnPlayStop)
                 {
-                    // 자동 씬 저장
-                    if (McpConfig.AutoSaveSceneOnPlayStop)
-                    {
-                        McpConfig.TryAutoSaveScene(out _);
-                    }
+                    McpConfig.TryAutoSaveScene(out _);
+                }
 
-                    if (!EditorApplication.isPlaying)
-                    {
-                        return new PlayResponse
-                        {
-                            action = "stop",
-                            isPlaying = false,
-                            isPlayingOrWillChange = PlayModeChangeQueue.IsChanging,
-                            isPlayModeChanging = PlayModeChangeQueue.IsChanging,
-                            rawIsPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode
-                        };
-                    }
-                    EditorApplication.isPlaying = false;
-                    var isChanging = PlayModeChangeQueue.IsChanging;
-                    return new PlayResponse
-                    {
-                        action = "stop",
-                        isPlaying = EditorApplication.isPlaying,
-                        isPlayingOrWillChange = isChanging,
-                        isPlayModeChanging = isChanging,
-                        rawIsPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode
-                    };
-                });
+                var result = await PlayModeChangeQueue.EnqueueStopAsync();
                 await UnityMcpBridge.WriteJsonAsync(response, 200, result);
             }
             catch (TimeoutException ex)

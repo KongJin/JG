@@ -121,12 +121,15 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
-                var path = !string.IsNullOrEmpty(req.path) ? req.path : req.name;
-                var go = GameObject.Find(path);
-                if (go == null) throw new Exception("GameObject not found: " + path);
+                var go = !string.IsNullOrEmpty(req.path)
+                    ? McpSharedHelpers.FindGameObjectByPath(req.path)
+                    : null;
+                if (go == null && !string.IsNullOrEmpty(req.name))
+                    go = McpSharedHelpers.FindGameObjectByNameInActiveScene(req.name);
+                if (go == null) throw new Exception("GameObject not found: " + (req.path ?? req.name));
                 Undo.DestroyObjectImmediate(go);
                 EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
-                return new GenericResponse { success = true, message = "Destroyed: " + path };
+                return new GenericResponse { success = true, message = "Destroyed: " + (req.path ?? req.name) };
             });
 
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
@@ -139,7 +142,8 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
-                var go = GameObject.Find(req.path);
+                var go = McpSharedHelpers.FindGameObjectByPath(req.path);
+                if (go == null) go = GameObject.Find(req.path);
                 if (go == null) throw new Exception("GameObject not found: " + req.path);
                 Undo.RecordObject(go, "MCP SetActive " + req.path);
                 go.SetActive(req.active);
@@ -157,7 +161,8 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
-                var go = GameObject.Find(req.path);
+                var go = McpSharedHelpers.FindGameObjectByPath(req.path);
+                if (go == null) go = GameObject.Find(req.path);
                 if (go == null) throw new Exception("GameObject not found: " + req.path);
 
                 if (req.siblingIndex >= 0) go.transform.SetSiblingIndex(req.siblingIndex);

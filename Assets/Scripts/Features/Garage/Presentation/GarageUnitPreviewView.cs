@@ -55,6 +55,10 @@ namespace Features.Garage.Presentation
                 _previewCamera.backgroundColor = new Color(0.05f, 0.06f, 0.10f, 1f);
                 _previewCamera.clearFlags = CameraClearFlags.SolidColor;
             }
+
+            // RawImage 배경을 어두운 색으로 — 하얀 화면 방지
+            if (_rawImage != null)
+                _rawImage.color = new Color(0.05f, 0.06f, 0.10f, 1f);
         }
 
         public void Render(GarageSlotViewModel viewModel, GaragePanelCatalog catalog)
@@ -159,29 +163,49 @@ namespace Features.Garage.Presentation
         {
             if (_currentPreviewRoot == null) return;
 
-            // 마우스 드래그 감지
-            if (Input.GetMouseButtonDown(0))
+            // 마우스 드래그 감지 — Input System과 구버전 Input 모두 지원
+            var mouseDown = false;
+            var mouseUp = false;
+            var mousePos = Vector2.zero;
+
+#if ENABLE_INPUT_SYSTEM
+            // Input System 패키지를 사용하는 경우
+            var mouse = UnityEngine.InputSystem.Mouse.current;
+            if (mouse != null)
             {
-                var ray = _previewCamera.ScreenPointToRay(Input.mousePosition);
+                mouseDown = mouse.leftButton.wasPressedThisFrame;
+                mouseUp = mouse.leftButton.wasReleasedThisFrame;
+                mousePos = mouse.position.ReadValue();
+            }
+#else
+            // 구버전 Input 시스템
+            mouseDown = UnityEngine.Input.GetMouseButtonDown(0);
+            mouseUp = UnityEngine.Input.GetMouseButtonUp(0);
+            mousePos = UnityEngine.Input.mousePosition;
+#endif
+
+            if (mouseDown)
+            {
+                var ray = _previewCamera.ScreenPointToRay(mousePos);
                 if (Physics.Raycast(ray, out var hit))
                 {
                     if (hit.transform.IsChildOf(_currentPreviewRoot.transform))
                     {
                         _isDragging = true;
-                        _lastMousePosition = Input.mousePosition;
+                        _lastMousePosition = mousePos;
                     }
                 }
             }
 
-            if (Input.GetMouseButtonUp(0))
+            if (mouseUp)
                 _isDragging = false;
 
             // 회전 처리
             if (_isDragging)
             {
-                Vector2 delta = (Vector2)Input.mousePosition - _lastMousePosition;
+                Vector2 delta = mousePos - _lastMousePosition;
                 _manualRotationY += delta.x * _dragRotationMultiplier * Time.deltaTime;
-                _lastMousePosition = Input.mousePosition;
+                _lastMousePosition = mousePos;
             }
             else
             {

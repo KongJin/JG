@@ -54,6 +54,14 @@ namespace Features.Garage.Presentation
             _firepowerSelectorView.Render(viewModel.FirepowerValueText, viewModel.FirepowerHintText);
             _mobilitySelectorView.Render(viewModel.MobilityValueText, viewModel.MobilityHintText);
             _clearButton.interactable = viewModel.IsClearInteractable;
+
+            // Clear 버튼 색상 — 파괴적 액션이지만 너무 강렬하지 않게
+            if (_clearButton.TryGetComponent<UnityEngine.UI.Image>(out var btnImage))
+            {
+                btnImage.color = viewModel.IsClearInteractable
+                    ? new Color(0.55f, 0.15f, 0.15f, 1f)   // 부드러운 다크 레드
+                    : new Color(0.25f, 0.15f, 0.15f, 0.5f); // 비활성화 시 더 어둡게
+            }
         }
     }
 }

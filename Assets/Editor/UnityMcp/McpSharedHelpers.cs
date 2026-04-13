@@ -222,9 +222,18 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             switch (sp.propertyType)
             {
-                case SerializedPropertyType.Integer: sp.intValue = int.Parse(value); break;
-                case SerializedPropertyType.Boolean: sp.boolValue = bool.Parse(value); break;
-                case SerializedPropertyType.Float: sp.floatValue = float.Parse(value); break;
+                case SerializedPropertyType.Integer:
+                    if (!int.TryParse(value, out var intValue)) throw new Exception("Invalid integer value: " + value);
+                    sp.intValue = intValue;
+                    break;
+                case SerializedPropertyType.Boolean:
+                    if (!bool.TryParse(value, out var boolValue)) throw new Exception("Invalid boolean value: " + value);
+                    sp.boolValue = boolValue;
+                    break;
+                case SerializedPropertyType.Float:
+                    if (!float.TryParse(value, out var floatValue)) throw new Exception("Invalid float value: " + value);
+                    sp.floatValue = floatValue;
+                    break;
                 case SerializedPropertyType.String: sp.stringValue = value; break;
                 case SerializedPropertyType.Enum:
                     if (int.TryParse(value, out var enumIdx)) sp.enumValueIndex = enumIdx;
@@ -264,7 +273,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             if (string.IsNullOrEmpty(reference) || reference == "(null)") return null;
             if (reference.StartsWith("/", StringComparison.Ordinal)) return ResolveSceneObjectReference(sp, reference);
             var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(reference);
-            if (asset == null) throw new Exception("Asset not found at path: " + reference);
+            if (asset == null) throw new ArgumentException("Asset not found at path: " + reference);
             return asset;
         }
 
@@ -334,10 +343,17 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         public static float[] ParseFloatArray(string value)
         {
+            if (string.IsNullOrEmpty(value)) return new float[0];
             var cleaned = value.Trim('(', ')', ' ');
+            if (string.IsNullOrWhiteSpace(cleaned)) return new float[0];
             var parts = cleaned.Split(',');
             var result = new float[parts.Length];
-            for (int i = 0; i < parts.Length; i++) result[i] = float.Parse(parts[i].Trim());
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (!float.TryParse(parts[i].Trim(), out var f))
+                    throw new Exception("Invalid float value: '" + parts[i].Trim() + "' in vector: " + value);
+                result[i] = f;
+            }
             return result;
         }
 
@@ -356,6 +372,173 @@ namespace ProjectSD.EditorTools.UnityMcp
                 } while (sp.NextVisible(false));
             }
             return props.ToArray();
+        }
+
+        // =====================================================================
+        // Selector / Locator Helpers
+        // =====================================================================
+
+        /// <summary>
+        /// Selector 문법으로 GameObject를 찾는다. 1차 지원: component:, name:, path:
+        /// </summary>
+        public static List<GameObject> FindBySelector(string selector, string scope, bool activeOnly)
+        {
+            var results = new List<GameObject>();
+            if (string.IsNullOrEmpty(selector)) return results;
+
+            var searchRoots = ResolveSearchRoots(scope);
+            if (searchRoots.Count == 0) return results;
+
+            string prefix;
+            if (selector.StartsWith("component:", StringComparison.OrdinalIgnoreCase))
+                prefix = "component:";
+            else if (selector.StartsWith("name:", StringComparison.OrdinalIgnoreCase))
+                prefix = "name:";
+            else if (selector.StartsWith("path:", StringComparison.OrdinalIgnoreCase))
+                prefix = "path:";
+            else
+                return results; // 지원하지 않는 selector
+
+            var value = selector.Substring(prefix.Length);
+
+            foreach (var root in searchRoots)
+            {
+                FindInRoot(root, prefix, value, activeOnly, results);
+            }
+
+            return results;
+        }
+
+        private static List<Transform> ResolveSearchRoots(string scope)
+        {
+            var roots = new List<Transform>();
+            if (string.IsNullOrEmpty(scope))
+            {
+                // active scene 루트
+                var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                foreach (var root in scene.GetRootGameObjects())
+                    roots.Add(root.transform);
+            }
+            else if (scope.StartsWith("scene:", StringComparison.OrdinalIgnoreCase))
+            {
+                var sceneName = scope.Substring(6);
+                if (sceneName.Equals("All", StringComparison.OrdinalIgnoreCase))
+                {
+                    var sceneCount = UnityEngine.SceneManagement.SceneManager.sceneCount;
+                    for (int i = 0; i < sceneCount; i++)
+                    {
+                        var s = UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);
+                        if (s.isLoaded)
+                        {
+                            foreach (var root in s.GetRootGameObjects())
+                                roots.Add(root.transform);
+                        }
+                    }
+                }
+                else
+                {
+                    var scene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(sceneName);
+                    if (scene.isLoaded)
+                    {
+                        foreach (var root in scene.GetRootGameObjects())
+                            roots.Add(root.transform);
+                    }
+                }
+            }
+            else
+            {
+                // path scope
+                var go = FindGameObjectByPath(scope);
+                if (go != null) roots.Add(go.transform);
+            }
+            return roots;
+        }
+
+        private static void FindInRoot(Transform root, string prefix, string value, bool activeOnly, List<GameObject> results)
+        {
+            if (prefix == "path:")
+            {
+                var go = FindGameObjectByPath(value);
+                if (go != null && (!activeOnly || go.activeInHierarchy))
+                    results.Add(go);
+                return;
+            }
+
+            // BFS for component: or name:
+            var queue = new Queue<Transform>();
+            queue.Enqueue(root);
+            while (queue.Count > 0)
+            {
+                var t = queue.Dequeue();
+                var go = t.gameObject;
+                if (activeOnly && !go.activeInHierarchy)
+                {
+                    // 비활성 자식도 탐색하되 결과는 추가 안 함
+                    for (int i = 0; i < t.childCount; i++) queue.Enqueue(t.GetChild(i));
+                    continue;
+                }
+
+                bool match = false;
+                if (prefix == "name:" && go.name.Equals(value, StringComparison.Ordinal))
+                    match = true;
+                else if (prefix == "component:")
+                {
+                    var comps = go.GetComponents<Component>();
+                    foreach (var c in comps)
+                    {
+                        if (c != null && (c.GetType().Name.Equals(value, StringComparison.OrdinalIgnoreCase)
+                            || (!string.IsNullOrEmpty(c.GetType().FullName) && c.GetType().FullName.Contains(value, StringComparison.OrdinalIgnoreCase))))
+                        {
+                            match = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (match) results.Add(go);
+
+                for (int i = 0; i < t.childCount; i++) queue.Enqueue(t.GetChild(i));
+            }
+        }
+
+        /// <summary>
+        /// GameObject의 public 필드 값을 JSON 직렬화 가능한 형태로 추출.
+        /// </summary>
+        public static Dictionary<string, string> GetPublicFieldValues(Component comp, string[] fields)
+        {
+            var result = new Dictionary<string, string>();
+            var type = comp.GetType();
+            var allFields = type.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+            var targetFields = fields != null && fields.Length > 0
+                ? allFields.Where(f => Array.IndexOf(fields, f.Name) >= 0).ToArray()
+                : allFields;
+
+            foreach (var f in targetFields)
+            {
+                try
+                {
+                    var val = f.GetValue(comp);
+                    result[f.Name] = FormatPublicValue(val);
+                }
+                catch { result[f.Name] = "(error reading)"; }
+            }
+            return result;
+        }
+
+        private static string FormatPublicValue(object val)
+        {
+            if (val == null) return "(null)";
+            if (val is string s) return s;
+            if (val is int || val is float || val is bool || val is double || val is Enum) return val.ToString();
+            if (val is UnityEngine.Object uo) return uo != null ? uo.name + " (" + uo.GetType().Name + ")" : "(null Unity Object)";
+            if (val is System.Collections.IEnumerable enumerable)
+            {
+                var list = new System.Collections.ArrayList();
+                foreach (var item in enumerable) list.Add(item);
+                return "(collection: " + list.Count + " items)";
+            }
+            return val.GetType().Name;
         }
     }
 }

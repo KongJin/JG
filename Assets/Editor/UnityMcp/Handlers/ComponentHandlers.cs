@@ -95,7 +95,8 @@ namespace ProjectSD.EditorTools.UnityMcp
                 if (comp == null)
                 {
                     var components = go.GetComponents<Component>();
-                    comp = components.FirstOrDefault(c => c != null && c.GetType().Name.Contains(req.componentTypeName.Split('.')[^1]));
+                    var shortName = ExtractShortTypeName(req.componentTypeName);
+                    comp = components.FirstOrDefault(c => c != null && c.GetType().Name.Contains(shortName));
                 }
                 if (comp == null) throw new Exception("Component " + req.componentTypeName + " not found on " + req.componentPath);
                 var so = new SerializedObject(comp);
@@ -129,9 +130,10 @@ namespace ProjectSD.EditorTools.UnityMcp
                 if (component == null)
                 {
                     var components = go.GetComponents<Component>();
+                    var shortName = ExtractShortTypeName(req.componentTypeName);
                     foreach (var comp in components)
                     {
-                        if (comp != null && comp.GetType().Name.Contains(req.componentTypeName.Split('.')[^1])) { component = comp; break; }
+                        if (comp != null && comp.GetType().Name.Contains(shortName)) { component = comp; break; }
                     }
                 }
                 if (component == null) throw new Exception("Component not found on " + req.componentPath);
@@ -151,6 +153,13 @@ namespace ProjectSD.EditorTools.UnityMcp
                 return new ComponentAutoConnectFieldsResponse { success = true, message = "Auto-connected " + connectedFields.Count + " fields on " + component.GetType().Name, componentPath = McpSharedHelpers.GetTransformPath(go.transform), connectedCount = connectedFields.Count, connectedFields = connectedFields.ToArray() };
             });
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
+        }
+
+        private static string ExtractShortTypeName(string fullTypeName)
+        {
+            if (string.IsNullOrEmpty(fullTypeName)) return string.Empty;
+            var lastDot = fullTypeName.LastIndexOf('.');
+            return lastDot >= 0 ? fullTypeName.Substring(lastDot + 1) : fullTypeName;
         }
     }
 }

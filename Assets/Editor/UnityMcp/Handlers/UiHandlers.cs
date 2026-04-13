@@ -152,7 +152,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 textRect.anchorMax = Vector2.one;
                 textRect.sizeDelta = Vector2.zero;
                 var tmpType = UnityMcpBridge.ResolveTypeByFullName("TMPro.TextMeshProUGUI");
-                if (tmpType != null)
+                if (tmpType != null && typeof(TMPro.TMP_Text).IsAssignableFrom(tmpType))
                 {
                     var tmpText = (TMPro.TextMeshProUGUI)textGo.AddComponent(tmpType);
                     tmpText.text = string.IsNullOrEmpty(req.buttonText) ? "Button" : req.buttonText;

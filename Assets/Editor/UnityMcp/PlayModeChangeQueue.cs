@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
 using System;
-using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -8,92 +8,179 @@ using UnityEngine;
 namespace ProjectSD.EditorTools.UnityMcp
 {
     /// <summary>
-    /// Play/Stop 요청을 순차적으로 처리하는 큐.
-    /// 동시 요청 경합을 방지하고 실제 상태 변경 완료까지 비동기 대기한다.
+    /// Play/Stop 요청을 Unity 메인 스레드에서 순차 처리한다.
+    /// HTTP 핸들러는 백그라운드 스레드에서 실행되므로
+    /// EditorApplication.update를 통해 메인 스레드로 마샬링한다.
     /// </summary>
     internal static class PlayModeChangeQueue
     {
-        private sealed class PlayModeAction
+        private enum PendingAction
         {
-            public readonly Func<PlayResponse> Action;
-            public readonly TaskCompletionSource<PlayResponse> Tcs;
+            None,
+            Play,
+            Stop,
+        }
 
-            public PlayModeAction(Func<PlayResponse> action, TaskCompletionSource<PlayResponse> tcs)
+        private enum State
+        {
+            Idle,
+            Changing,
+            Completed,
+            TimedOut,
+        }
+
+        private static readonly object Lock = new object();
+        private static PendingAction _pending = PendingAction.None;
+        private static TaskCompletionSource<PlayResponse> _pendingTcs;
+        private static State _state = State.Idle;
+        private static CancellationTokenSource _timeoutCts;
+        private static bool _initialized;
+
+        /// <summary>
+        /// 초기화는 처음 한 번만, 메인 스레드-safe한 시점에 한다.
+        /// </summary>
+        [InitializeOnLoadMethod]
+        private static void Init()
+        {
+            if (_initialized) return;
+            _initialized = true;
+            EditorApplication.update -= Drain;
+            EditorApplication.update += Drain;
+        }
+
+        public static bool IsChanging
+        {
+            get
             {
-                Action = action;
-                Tcs = tcs;
+                lock (Lock) { return _state == State.Changing; }
             }
         }
 
-        private static readonly ConcurrentQueue<PlayModeAction> Queue = new ConcurrentQueue<PlayModeAction>();
-        private static readonly object Lock = new object();
-        private static bool _processing;
-        private static bool _changing;
-
         /// <summary>
-        /// Play/Stop 작업을 큐에 등록하고 완료까지 대기한다.
+        /// Play 모드 진입을 예약하고 완료까지 대기한다.
         /// </summary>
-        public static Task<PlayResponse> EnqueueAsync(Func<PlayResponse> action, int timeoutMs = 10000)
+        public static async Task<PlayResponse> EnqueuePlayAsync(int timeoutMs = 10000)
         {
-            var tcs = new TaskCompletionSource<PlayResponse>();
-            var item = new PlayModeAction(action, tcs);
-            Queue.Enqueue(item);
-
-            TryProcess();
-
-            // 타임아웃 적용
-            var cts = new System.Threading.CancellationTokenSource(timeoutMs);
-            cts.Token.Register(() =>
-            {
-                if (!tcs.Task.IsCompleted)
-                {
-                    tcs.SetException(new TimeoutException("Play mode change timed out after " + timeoutMs + "ms"));
-                }
-            });
-
-            return tcs.Task;
+            return await EnqueueAsync(PendingAction.Play, timeoutMs);
         }
 
-        private static void TryProcess()
+        /// <summary>
+        /// Play 모드 종료를 예약하고 완료까지 대기한다.
+        /// </summary>
+        public static async Task<PlayResponse> EnqueueStopAsync(int timeoutMs = 10000)
+        {
+            return await EnqueueAsync(PendingAction.Stop, timeoutMs);
+        }
+
+        private static async Task<PlayResponse> EnqueueAsync(PendingAction action, int timeoutMs)
         {
             lock (Lock)
             {
-                if (_processing) return;
-                _processing = true;
+                if (_pending != PendingAction.None)
+                {
+                    throw new InvalidOperationException("A play mode change is already pending.");
+                }
+                _pending = action;
+                _pendingTcs = new TaskCompletionSource<PlayResponse>();
+                _state = State.Idle;
+                if (_timeoutCts != null)
+                {
+                    _timeoutCts.Dispose();
+                    _timeoutCts = null;
+                }
             }
 
-            _ = ProcessLoopAsync();
+            _timeoutCts = new System.Threading.CancellationTokenSource(timeoutMs);
+            _timeoutCts.Token.Register(() =>
+            {
+                lock (Lock)
+                {
+                    if (_pendingTcs != null && !_pendingTcs.Task.IsCompleted && _state != State.Completed)
+                    {
+                        _state = State.TimedOut;
+                        _pendingTcs.SetException(new TimeoutException("Play mode change timed out after " + timeoutMs + "ms"));
+                        CancelPendingLocked();
+                    }
+                }
+            });
+
+            return await _pendingTcs.Task;
         }
 
-        private static async Task ProcessLoopAsync()
+        private static void CancelPendingLocked()
         {
-            while (Queue.TryDequeue(out var action))
+            _pending = PendingAction.None;
+            _pendingTcs = null;
+            if (_timeoutCts != null)
             {
-                try
-                {
-                    _changing = true;
-                    var result = action.Action();
-                    await Task.Delay(250); // Unity 상태 전파 대기
-                    _changing = false;
-
-                    action.Tcs.SetResult(result);
-                }
-                catch (Exception ex)
-                {
-                    _changing = false;
-                    action.Tcs.SetException(ex);
-                }
-
-                await Task.Delay(100); // 연속 처리 간격
+                _timeoutCts.Dispose();
+                _timeoutCts = null;
             }
-
-            lock (Lock) { _processing = false; }
         }
 
         /// <summary>
-        /// 현재 Play 모드 변경 진행 중인지 확인.
+        /// EditorApplication.update에서 매 프레임 호출된다.
+        /// 대기 중인 액션이 있으면 메인 스레드에서 실행한다.
         /// </summary>
-        public static bool IsChanging => _changing;
+        private static void Drain()
+        {
+            PendingAction action;
+            lock (Lock)
+            {
+                if (_pending == PendingAction.None) return;
+                if (_state == State.Changing) return;
+                action = _pending;
+            }
+
+            // Play mode 변경 중이거나 컴파일 중이면 스킵
+            if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling)
+                return;
+
+            TaskCompletionSource<PlayResponse> tcs;
+            lock (Lock)
+            {
+                // 다시 체크 — 대기 중에 다른 곳에서 이미 처리됐을 수 있음
+                if (_pending == PendingAction.None) return;
+                _pending = PendingAction.None;
+                _state = State.Changing;
+                tcs = _pendingTcs;
+            }
+
+            try
+            {
+                if (action == PendingAction.Play)
+                {
+                    EditorApplication.isPlaying = true;
+                }
+                else
+                {
+                    EditorApplication.isPlaying = false;
+                }
+
+                // Unity의 실제 play mode 상태 전환은 다음 프레임에 반영된다.
+                var isPlaying = action == PendingAction.Play;
+                tcs.SetResult(new PlayResponse
+                {
+                    action = isPlaying ? "start" : "stop",
+                    isPlaying = isPlaying,
+                    isPlayingOrWillChange = true,
+                    isPlayModeChanging = true,
+                    rawIsPlayingOrWillChange = true
+                });
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+            finally
+            {
+                lock (Lock)
+                {
+                    _state = State.Completed;
+                    CancelPendingLocked();
+                }
+            }
+        }
     }
 }
 #endif

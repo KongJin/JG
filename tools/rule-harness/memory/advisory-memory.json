@@ -17,8 +17,8 @@
                                                 "feature_test_assets_present"
                                             ],
                         "confidence":  "medium",
-                        "hitCount":  8,
-                        "distinctCommitCount":  8,
+                        "hitCount":  9,
+                        "distinctCommitCount":  9,
                         "commitShas":  [
                                            "eebb079f5e56493dc34bbc1193ac950e5737bab8",
                                            "792f1531d72ef229713a376d365ad4f854ded97e",
@@ -27,9 +27,10 @@
                                            "91dcf5411717f95253b4bda479e79c39ba55e10a",
                                            "4aec761640dfeba8fb3d7485ff8158f240c4d5bd",
                                            "9401a9eb1458253a772a914ecb82c084191dcfdd",
-                                           "1779f6e8e45124fdba0b691ee27fc75d5a4302c0"
+                                           "1779f6e8e45124fdba0b691ee27fc75d5a4302c0",
+                                           "0544720ea0a92417da2e7065c533624b887a8106"
                                        ],
-                        "lastSeen":  "2026-04-12T14:01:41.0655661Z",
+                        "lastSeen":  "2026-04-12T17:01:18.8528418Z",
                         "promotionTarget":  "docs/design/unit_module_design.md",
                         "status":  "observed"
                     },
@@ -77,6 +78,26 @@
                                            "fc091217c45872e329ed51b4c53db0b977afbd71"
                                        ],
                         "lastSeen":  "2026-04-09T08:59:46.0603672Z",
+                        "promotionTarget":  "tools/rule-harness/README.md",
+                        "status":  "observed"
+                    },
+                    {
+                        "signature":  "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Projectile Stage=diagnose TimeoutSec=# 작업 시간이 초과되었습니다.",
+                        "scopeType":  "harness",
+                        "scopePath":  "tools/rule-harness/README.md",
+                        "symptoms":  "Scope=Projectile Stage=diagnose TimeoutSec=120 작업 시간이 초과되었습니다.",
+                        "preferredRepairStrategy":  "Improve harness prompts, config, tests, or docs before retrying.",
+                        "validationHints":  [
+                                                "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+                                                "tools/rule-harness/README.md"
+                                            ],
+                        "confidence":  "high",
+                        "hitCount":  1,
+                        "distinctCommitCount":  1,
+                        "commitShas":  [
+                                           "0544720ea0a92417da2e7065c533624b887a8106"
+                                       ],
+                        "lastSeen":  "2026-04-13T05:01:02.3205425Z",
                         "promotionTarget":  "tools/rule-harness/README.md",
                         "status":  "observed"
                     },

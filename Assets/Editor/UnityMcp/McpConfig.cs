@@ -15,8 +15,8 @@ namespace ProjectSD.EditorTools.UnityMcp
     internal static class McpConfig
     {
         // 자동 씬 저장 옵션
-        public static bool AutoSaveSceneOnPlayStop { get; set; }
-        public static bool AutoSaveSceneOnBuild { get; set; }
+        public static bool AutoSaveSceneOnPlayStop { get; set; } = false;
+        public static bool AutoSaveSceneOnBuild { get; set; } = false;
 
         /// <summary>
         /// 현재 열려 있는 씬이 더티하면 자동으로 저장한다.

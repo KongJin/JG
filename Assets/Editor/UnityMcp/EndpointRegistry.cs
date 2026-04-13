@@ -27,12 +27,13 @@ namespace ProjectSD.EditorTools.UnityMcp
             _registrationCount++;
         }
 
-        public static bool TryDispatch(string method, string path, HttpListenerRequest request, HttpListenerResponse response)
+        public static async Task<bool> TryDispatch(string method, string path, HttpListenerRequest request, HttpListenerResponse response)
         {
             var key = method.ToUpperInvariant() + " " + path;
             if (Endpoints.TryGetValue(key, out var endpoint))
             {
-                return endpoint.HandleAsync(request, response);
+                await endpoint.HandleAsync(request, response);
+                return true;
             }
             return false;
         }
@@ -84,7 +85,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         string Method { get; }
         string Path { get; }
         string Description { get; }
-        bool HandleAsync(HttpListenerRequest request, HttpListenerResponse response);
+        Task HandleAsync(HttpListenerRequest request, HttpListenerResponse response);
     }
 
     /// <summary>
@@ -106,10 +107,9 @@ namespace ProjectSD.EditorTools.UnityMcp
             _handler = handler;
         }
 
-        public bool HandleAsync(HttpListenerRequest request, HttpListenerResponse response)
+        public async Task HandleAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
-            _ = _handler(request, response);
-            return true;
+            await _handler(request, response);
         }
     }
 
