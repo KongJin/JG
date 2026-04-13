@@ -209,7 +209,7 @@ namespace Features.Garage.Presentation
                     && (viewModel.ValidationText.Contains("Error") || viewModel.ValidationText.Contains("실패"));
                 _validationText.color = hasError
                     ? new Color(1f, 0.5f, 0.5f, 1f)
-                    : Color.white;
+                    : new Color(0.66f, 0.71f, 0.78f, 1f);  // #A8B4C8 - 대비도 향상
             }
 
             if (_statsText != null)

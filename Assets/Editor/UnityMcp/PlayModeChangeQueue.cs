@@ -132,8 +132,13 @@ namespace ProjectSD.EditorTools.UnityMcp
                 action = _pending;
             }
 
-            // Play mode 변경 중이거나 컴파일 중이면 스킵
-            if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling)
+            // 컴파일 중이면 스킵
+            if (EditorApplication.isCompiling)
+                return;
+
+            // Stop 요청일 때는 isPlayingOrWillChangePlaymode가 true여도 처리 (플레이 모드에서 정지 가능)
+            // Play 요청일 때만 진입 중 중복 진입 방지
+            if (action == PendingAction.Play && EditorApplication.isPlayingOrWillChangePlaymode)
                 return;
 
             TaskCompletionSource<PlayResponse> tcs;
