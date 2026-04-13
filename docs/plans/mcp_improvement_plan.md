@@ -1,489 +1,270 @@
-# Unity MCP 개선 계획
+# MCP Bridge 개선 계획 (v2)
 
-> 생성일: 2026-04-13
-> 상태: 초안
+> 생성일: 2026-04-14
+> 상태: 계획 작성 완료 (실행 대기)
 
-이 문서는 현재 Unity MCP 브리지의 기능을 **Playwright 스타일**의 범용 UI 탐색/제어 도구로 발전시키기 위한 개선 계획이다.
-
-Playwright의 핵심 설계 원칙:
-1. **Locator** — 요소 선택이 안정적이고 유연해야 한다
-2. **Auto-wait** — 상태 변화를 기다리는 것이 기본 동작이어야 한다
-3. **Snapshot** — 경량화된 상태 조회가 가능해야 한다
-4. **Evaluate** — 런타임에서 객체 상태를 조회할 수 있어야 한다
-
-이 원칙들을 Unity Editor 컨텍스트에 맞게 재해석한다.
+이 문서는 Unity MCP 브리지의 4가지 개선 사항을 기록한다.
 
 ---
 
-## 현재 MCP 기능 요약
+## 진행 상황
 
-### 기존 엔드포인트 (완료)
-
-| 그룹 | 엔드포인트 | 설명 |
+| 항목 | 상태 | 완료일 |
 |---|---|---|
-| **Health** | `GET /health` | 브리지 상태, play, compile, active scene |
-| | `GET /scene/current` | 현재 씬 정보 |
-| **Scene** | `GET /scene/hierarchy` | 전체 씬 계층 구조 (JSON) |
-| | `POST /scene/open` | 씬 열기 |
-| | `POST /scene/save` | 씬 저장 |
-| **GameObject** | `POST /gameobject/find` | path/name으로 찾기 |
-| | `POST /gameobject/create` | GameObject 생성 (UI 프리셋 포함) |
-| | `POST /gameobject/create-primitive` | 프리미티브 생성 |
-| | `POST /gameobject/destroy` | GameObject 삭제 |
-| | `POST /gameobject/set-active` | 활성/비활성 토글 |
-| | `POST /gameobject/set-sibling` | 형제 순서 변경 |
-| **Component** | `POST /component/add` | 컴포넌트 추가 |
-| | `POST /component/set` | 직렬화 속성 값 설정 |
-| | `POST /component/get` | 직렬화 속성 조회 |
-| | `POST /component/set-serialized-field` | SerializedField 직접 연결 |
-| | `POST /component/auto-connect-fields` | 필드명 기반 자동 연결 |
-| **UI** | `POST /ui/button/invoke` | Button.onClick 실행 (play mode 전용) |
-| | `POST /ui/create-button` | UI 버튼 생성 |
-| | `POST /ui/create-panel` | UI 패널 생성 |
-| | `POST /ui/create-raw-image` | UI RawImage 생성 |
-| | `POST /ui/set-rect` | RectTransform 수정 |
-| **Input** | `POST /input/click` | 마우스 클릭 |
-| | `POST /input/move` | 마우스 이동 |
-| | `POST /input/drag` | 마우스 드래그 |
-| | `POST /input/key` | 키보드 키 입력 |
-| | `POST /input/text` | 텍스트 입력 |
-| | `POST /input/scroll` | 마우스 스크롤 |
-| | `POST /input/key-combo` | 단축키 프리셋 (copy/paste 등) |
-| **Prefab** | `POST /prefab/save` | GameObject를 프리팹으로 저장 |
-| | `POST /prefab/get` | 프리팹 자산 조회 |
-| | `POST /prefab/set` | 프리팹 컴포넌트 속성 설정 |
-| | `POST /prefab/add-component` | 프리팹에 컴포넌트 추가 |
-| **Play** | `POST /play/start` | Play mode 진입 |
-| | `POST /play/stop` | Play mode 종료 |
-| | `POST /screenshot/capture` | 스크린샷 캡처 |
-| **Console** | `GET /console/errors` | 최근 에러 로그 |
-| | `GET /console/logs` | 최근 전체 로그 |
-| **Build** | `POST /asset/refresh` | AssetDatabase 새로고침 |
-| | `GET /compile/status` | 컴파일 상태 확인 |
-| | `POST /compile/request` | 스크립트 리로드 요청 |
-| | `POST /compile/wait` | 컴파일 완료 대기 |
-| | `POST /build/webgl` | WebGL 빌드 |
-| | `POST /menu/execute` | Editor 메뉴 항목 실행 |
-| | `GET /config/get` | MCP 설정 조회 |
-| | `POST /config/set` | MCP 설정 변경 |
+| Play Mode 중 변경 큐잉 | 🟨 계획 완료 | - |
+| MCP 응답 디버깅 개선 | 🟨 계획 완료 | - |
+| 자동 씬 저장 옵션 | 🟨 계획 완료 | - |
+| 동적 엔드포인트 등록 시스템 | ✅ 이미 충분 | - |
 
 ---
 
-## Playwright vs Unity MCP 격차 분석
+## 1. Play Mode 중 변경 큐잉 (`SceneChangeQueue.cs` 신규)
 
-| Playwright 기능 | Unity MCP 현재 | 상태 |
-|---|---|---|
-| **Locator** (querySelector, getByRole, getByText) | path/name 기반 찾기만 가능 | ❌ 격차 큼 |
-| **Auto-wait** (waitForSelector, waitForLoadState) | 대기 기능 전무 | ❌ 없음 |
-| **Snapshot** (접근성 스냅샷, 경량 상태) | hierarchy 전체 JSON (무거움) | ⚠️ 부분 |
-| **Evaluate** (런타임 JS 실행) | 런타임 메서드 호출 불가 | ❌ 없음 |
-| **네트워크 인터셉트** | Unity 네트워크와 무관 | ✅ 해당 없음 |
-| **프레임/iframe** | Prefab get/set으로 부분 커버 | ⚠️ 부분 |
-| **스크린샷** | ✅ screenshot/capture | ✅ 동등 |
-| **상호작용** (click, fill, type, key) | ✅ input/*, ui/button/invoke | ✅ 동등 |
-| **페이지 탐색** (navigate, goBack) | ✅ scene/open, scene/current | ✅ 동등 |
+### 문제
+Play Mode 중에는 Unity가 씬 수정을 허용하지 않아 MCP 요청이 실패함
+(`"This cannot be used during play mode."`)
 
----
+### 해결 방안
+`SceneChangeQueue.cs` 신규 생성 — Play Mode 중 변경 요청을 큐에 저장했다가 Play Mode 종료 시 자동 적용
 
-## 개선 항목 (우선순위별)
+### 구현 상세
 
-### Phase 1: Locator 시스템 `[Editor-only]`
+**파일:** `Assets/Editor/UnityMcp/SceneChangeQueue.cs` (신규)
 
-**문제:** 현재 `path` 탐색은 GameObject 이름이나 계층 경로에만 의존한다. UI 리팩토링 시 경로가 바뀌면 모든 호출이 깨진다.
+```csharp
+// 핵심 API
+public static async Task<bool> EnqueueOrExecuteAsync(Func<bool> execute, string description)
+```
 
-**목표:** Playwright의 `locator()`처럼 **다양한 전략으로 요소를 선택**하고, **일치하는 요소를 필터링**하는 시스템을 도입한다.
+- Play Mode이 아니면 → 즉시 실행, `true` 반환
+- Play Mode 중이면 → 큐에 저장, `false` 반환, 디버그 로그 출력
 
-> **1차 지원 selector:** `component:`, `name:`, `path:` 만 우선 구현.
-> `text:`, `tag:`, `layer:`, `button` 단축 문법은 나중에 추가.
+**큐 처리 트리거:**
+```csharp
+EditorApplication.playModeStateChanged
+  → PlayModeStateChange.EnteredEditMode 감지 시 ProcessQueueAsync() 호출
+```
 
-#### 새 엔드포인트
+**큐 처리 흐름:**
+1. 대기 중인 변경사항을 복사 후 큐 클리어
+2. 각 변경사항 순차 실행
+3. 성공 시 `EditorSceneManager.MarkSceneDirty(activeScene)`
+4. 결과 로깅 (성공/실패 카운트)
 
-| 엔드포인트 | 태그 | 설명 |
-|---|---|---|
-| `POST /locator/find` | `[Editor-only]` | selector로 GameObject 찾기 |
-| `POST /locator/find-all` | `[Editor-only]` | 일치하는 모든 GameObject 목록 |
-| `GET /locator/count` | `[Editor-only]` | 일치하는 요소 수 |
+### 응답 모델 확장
 
-#### Selector 문법 (Unity 전용)
-
-```json
+**기존 응답에 `queued` 필드 추가:**
+```csharp
+[Serializable]
+internal sealed class QueuedResponse
 {
-  "selector": "component:GarageSlotItemView",
-  "scope": "/Canvas",
-  "activeOnly": true
+    public bool success;
+    public string message;
+    public bool queued;          // 큐에 저장됨 (Play Mode 중)
+    public int pendingCount;     // 현재 큐에 쌓인 변경 요청 수
 }
 ```
 
-| Selector 패턴 | 의미 | 1차 지원 |
-|---|---|---|
-| `component:Button` | 컴포넌트를 가진 GameObject | ✅ |
-| `name:SaveButton` | GameObject 이름이 정확히 일치 | ✅ |
-| `path:/Canvas/SaveButton` | 기존 계층 경로 (하위 호환) | ✅ |
-| `text:저장` | TMP_Text에 해당 텍스트 | ⏳ 나중에 |
-| `tag:Player` | Unity 태그 일치 | ⏳ 나중에 |
-| `layer:UI` | Unity 레이어 일치 | ⏳ 나중에 |
+### 적용 대상 핸들러 (씬 수정)
 
-#### Scope 멀티씬 지원
-
-| Scope 값 | 의미 |
+| 핸들러 파일 | 대상 엔드포인트 |
 |---|---|
-| `"/Canvas"` | 지정 경로 하위만 검색 |
-| `"scene:All"` | 로드된 모든 씬 (additive 포함) |
-| `"scene:GameScene"` | 특정 씬 이름으로 제한 |
-| 생략 | active scene 루트부터
+| `GameObjectHandlers.cs` | `/gameobject/create`, `/gameobject/destroy`, `/gameobject/set-active`, `/gameobject/set-sibling` |
+| `UiHandlers.cs` | `/ui/set-rect`, `/ui/create-button`, `/ui/create-panel`, `/ui/create-raw-image` |
+| `ComponentHandlers.cs` | `/component/add`, `/component/set`, `/component/set-serialized-field`, `/component/auto-connect-fields` |
 
-#### 응답 형식
+### 적용 대상 아님 (읽기 전용)
+- `/gameobject/find`
+- `/component/get`
+- `/scene/hierarchy`
+- 기타 GET 요청
 
-```json
+---
+
+## 2. MCP 응답 디버깅 개선
+
+### 문제
+에러 시 `"Bridge failure"`만 반환, 실제 원인/스택 트레이스 확인 불가
+
+### 해결 방안
+`ErrorResponse` 모델에 `stackTrace`, `hint` 필드 추가
+
+### 구현 상세
+
+**`Models.cs` 수정:**
+```csharp
+[Serializable]
+internal sealed class ErrorResponse
 {
-  "found": true,
-  "count": 1,
-  "items": [
+    public string error;         // 기존: 에러 타입 문자열
+    public string detail;        // 기존: 상세 메시지
+    public string stackTrace;    // 신규: 스택 트레이스 (Editor에서만)
+    public string hint;          // 신규: 해결 힌트
+}
+```
+
+**`UnityMcpBridge.cs` 수정:**
+- `HandleRequestAsync()` catch 블록 개선:
+  ```csharp
+  catch (Exception ex)
+  {
+      Debug.LogError("[Unity MCP] Unhandled exception: " + ex);
+      await WriteJsonAsync(response, 500, new ErrorResponse
+      {
+          error = "Bridge failure",
+          detail = ex.Message,
+          stackTrace = ex.ToString(),  // 전체 스택 트레이스
+          hint = GetErrorHint(ex)      // 예외 타입별 힌트
+      });
+      return 500;
+  }
+  ```
+
+**`GetErrorHint()` 헬퍼:**
+| 예외 타입 | hint |
+|---|---|
+| `Exception` (message에 "not found" 포함) | "Check if the path/name is correct. Use GET /scene/hierarchy to list objects." |
+| `Exception` (message에 "parent" 포함) | "Check if the parent path exists." |
+| `NullReferenceException` | "A required reference is missing. Check the component or GameObject." |
+| `TimeoutException` | "The operation took too long. Unity may be compiling or in play mode." |
+| 기본 | "See stackTrace for details." |
+
+**404 응답 개선:**
+```csharp
+// 기존
+new ErrorResponse { error = "Not found", detail = method + " " + path }
+
+// 개선 후
+new ErrorResponse {
+    error = "Not found",
+    detail = method + " " + path,
+    hint = "Use GET /debug/endpoints to list available endpoints."
+}
+```
+
+---
+
+## 3. 자동 씬 저장 옵션
+
+### 문제
+MCP로 GameObject 생성/수정 후 씬 저장 안 하면 변경사항 손실
+
+### 해결 방안
+요청 모델에 `autoSave` 필드 추가, 공통 헬퍼로 중복 제거
+
+### 구현 상세
+
+**`Models.cs` 수정 — 관련 요청 모델에 `autoSave` 필드 추가:**
+```csharp
+[Serializable] internal sealed class CreateRequest { ... public bool autoSave; }
+[Serializable] internal sealed class UiSetRectRequest { ... public bool autoSave; }
+[Serializable] internal sealed class UiCreateButtonRequest { ... public bool autoSave; }
+[Serializable] internal sealed class UiCreatePanelRequest { ... public bool autoSave; }
+[Serializable] internal sealed class UiCreateRawImageRequest { ... public bool autoSave; }
+[Serializable] internal sealed class ComponentAddRequest { ... public bool autoSave; }
+[Serializable] internal sealed class ComponentSetRequest { ... public bool autoSave; }
+[Serializable] internal sealed class ComponentSetSerializedFieldRequest { ... public bool autoSave; }
+[Serializable] internal sealed class GameObjectSetActiveRequest { ... public bool autoSave; }
+[Serializable] internal sealed class GameObjectSetSiblingRequest { ... public bool autoSave; }
+```
+
+**`McpSharedHelpers.cs` — 공통 헬퍼 추가:**
+```csharp
+public static bool TryAutoSave()
+{
+    try
     {
-      "path": "/Canvas/GaragePageRoot/ResultPane/SaveButton",
-      "name": "SaveButton",
-      "activeSelf": true,
-      "activeInHierarchy": true,
-      "components": ["RectTransform", "Image", "Button"]
+        var scene = SceneManager.GetActiveScene();
+        if (!scene.IsValid() || string.IsNullOrWhiteSpace(scene.path)) return false;
+        return EditorSceneManager.SaveScene(scene);
     }
-  ]
-}
-```
-
----
-
-### Phase 2: 조건부 대기 (Auto-wait) `[Editor-only]`
-
-**문제:** Play mode 진입 후 UI가 렌더링되기 전에 API를 호출하면 요소를 찾지 못한다. 현재는 호출자가 직접 poll해야 한다.
-
-**목표:** 조건이 충족될 때까지 **자동으로 대기**하고, 타임아웃 시 명확한 에러를 반환한다.
-
-#### 새 엔드포인트
-
-| 엔드포인트 | 태그 | 설명 |
-|---|---|---|
-| `POST /wait/for-locator` | `[Editor-only]` | selector가 요소를 찾을 때까지 대기 |
-| `POST /wait/for-active` | `[Editor-only]` | GameObject가 active해질 때까지 대기 |
-| `POST /wait/for-component` | `[Editor-only]` | 특정 컴포넌트가 붙을 때까지 대기 |
-| `POST /wait/for-scene` | `[Editor-only]` | 특정 씬이 로드될 때까지 대기 |
-| `POST /wait/for-inactive` | `[Editor-only]` | GameObject가 inactive해질 때까지 대기 |
-
-#### 요청 형식
-
-```json
-{
-  "selector": "component:GarageResultPanelView",
-  "timeoutMs": 10000,
-  "pollIntervalMs": 100
-}
-```
-
-#### 응답 형식
-
-```json
-{
-  "success": true,
-  "waitedMs": 1200,
-  "condition": "locator-found",
-  "result": {
-    "path": "/Canvas/GaragePageRoot/ResultPane",
-    "name": "ResultPane"
-  }
-}
-```
-
-타임아웃 시:
-```json
-{
-  "success": false,
-  "timedOut": true,
-  "waitedMs": 10000,
-  "condition": "locator-found",
-  "hint": "Check if the UI has been loaded. Use GET /scene/hierarchy to inspect."
-}
-```
-
----
-
-### Phase 3: 런타임 상태 조회 (Evaluate) `[Editor-only]` `[Play-mode-only]`
-
-**문제:** UseCase 실행 결과, Domain 상태, Bootstrap의 내부 상태를 직접 조회할 방법이 없다.
-
-**목표:** Playwright의 `page.evaluate()`처럼 **런타임에서 객체 상태를 조회**할 수 있게 한다.
-
-> **제한:** public 필드 조회만 지원. 메서드 호출은 부작용/직렬화 문제로 인해 1차에서 제외.
-
-#### 새 엔드포인트
-
-| 엔드포인트 | 태그 | 설명 |
-|---|---|---|
-| `POST /eval/find-component` | `[Editor-only]` `[Play-mode-only]` | GameObject의 컴포넌트 찾기 + public 속성 조회 |
-| `POST /eval/get-public-state` | `[Editor-only]` `[Play-mode-only]` | MonoBehaviour의 public 필드 값을 JSON으로 반환 |
-
-#### 요청 형식 — public state 조회
-
-```json
-{
-  "path": "/GarageSetup",
-  "componentType": "GarageSetup",
-  "fields": ["_eventBus", "_rosterListView", "_unitEditorView"]
-}
-```
-
-#### 응답 형식
-
-```json
-{
-  "success": true,
-  "componentPath": "/GarageSetup",
-  "componentType": "Features.Garage.Presentation.GarageSetup",
-  "fields": {
-    "_eventBus": "EventBus (refs: 5)",
-    "_rosterListView": "GarageRosterListView (active: true)"
-  }
-}
-```
-
-**안전 규칙:**
-- public 멤버만 조회 가능 (private/protected 리플렉션 금지)
-- 반환 값은 JSON 직렬화 가능한 타입으로 제한 (string, int, float, bool, enum, Unity Object 이름)
-- 호출 결과는 로그로 기록 (디버깅 용도)
-- play mode에서만 의미 있는 결과 반환
-
----
-
-### Phase 4: 경량 스냅샷 `[Editor-only]`
-
-**문제:** `GET /scene/hierarchy`는 전체 씬을 JSON으로 뱉는다. CodexLobbyScene 기준 **수십 KB**에 달해서 자주 호출하기 부담스럽다.
-
-**목표:** Playwright의 접근성 스냅샷처럼 **필요한 정보만 추린 경량 뷰**를 제공한다.
-
-#### 새 엔드포인트
-
-| 엔드포인트 | 설명 |
-|---|---|
-| `GET /snapshot/ui` | Canvas UI만 — 이름, 컴포넌트 타입, active 상태 |
-| `GET /snapshot/components` | 루트 레벨 컴포넌트 요약 (Setup, Adapter, Network) |
-| `POST /snapshot/diff` | 두 snapshot 비교 — 추가/삭제/변경된 요소 |
-
-#### 응답 형식 — UI 스냅샷
-
-```json
-{
-  "scene": "CodexLobbyScene",
-  "canvasPath": "/Canvas",
-  "uiNodes": [
+    catch
     {
-      "path": "/Canvas/GaragePageRoot",
-      "name": "GaragePageRoot",
-      "activeSelf": false,
-      "childCount": 6,
-      "views": ["GaragePageController", "GarageRosterListView"]
-    },
-    {
-      "path": "/Canvas/GaragePageRoot/RosterListPane/GarageSlot1",
-      "name": "GarageSlot1",
-      "activeSelf": true,
-      "childCount": 3,
-      "views": ["Button", "GarageSlotItemView"]
+        return false;
     }
-  ],
-  "totalUiNodes": 42,
-  "interactiveElements": 15
 }
 ```
 
-**규칙:**
-- 기본 depth = 8 (설정 가능)
-- MonoBehaviour만 views에 포함 (Unity 내장 컴포넌트는 제외)
-- interactiveElements: Button, TMP_InputField, Toggle 수
+**핸들러 적용 예시:**
+```csharp
+// 기존
+EditorSceneManager.MarkSceneDirty(go.scene);
+return new CreateResponse { ... };
+
+// 개선 후
+EditorSceneManager.MarkSceneDirty(go.scene);
+var autoSaved = req.autoSave && McpSharedHelpers.TryAutoSave();
+return new CreateResponse { ..., autoSaved = autoSaved };
+```
+
+**응답 모델에 `autoSaved` 필드 추가:**
+- `CreateResponse`, `GenericResponse`, `UiCreateButtonResponse` 등 관련 응답에
+  ```csharp
+  public bool autoSaved;  // autoSave 요청으로 인해 자동 저장됨
+  ```
+
+### 사용 예시
+```bash
+# autoSave: true — 생성 후 자동 저장
+curl -X POST http://127.0.0.1:52676/gameobject/create \
+  -H "Content-Type: application/json" \
+  -d '{"name": "SaveButton", "parent": "/Canvas/Panel", "autoSave": true}'
+
+# 응답: {"success": true, "autoSaved": true, "path": "/Canvas/Panel/SaveButton", ...}
+```
 
 ---
 
-### Phase 5: 대화형 요소 목록 `[Editor-only]`
+## 4. 동적 엔드포인트 등록 시스템
 
-**문제:** 씬에 어떤 UI가 있고, 어떤 버튼이 있는지 미리 알 수 없다. hierarchy를 읽어야만 파악 가능하다.
+### 현재 상태: ✅ 이미 충분
 
-**목표:** **클릭 가능한 요소를 나열**하여 빠른 파악을 가능하게 한다.
+`EndpointRegistry.cs`가 이미 잘 구현되어 있음:
+- `IMcpEndpoint` 인터페이스
+- `FuncEndpoint` 클래스
+- `"POST".Register(path, description, handler)` 확장 메서드
+- static constructor에서 자동 등록
+- `/debug/endpoints`로 전체 엔드포인트 조회 가능
 
-> **축소:** `GET /explore/interactive` 하나로 축소. `traverse`는 Unity 게임의 동적 UI 특성상 신뢰하기 어려워 제외.
+### 추가 작업: 문서화만
 
-#### 새 엔드포인트
-
-| 엔드포인트 | 태그 | 설명 |
-|---|---|---|
-| `GET /explore/interactive` | `[Editor-only]` | 클릭/입력 가능한 모든 UI 요소 목록 |
-
-#### 응답 형식 — 대화형 요소 목록
-
-```json
+**`mcp_bridge_improvements.md`에 사용법 기록:**
+```csharp
+// 커스텀 엔드포인트 추가 예시 (임의의 .cs 파일에서)
+internal static class MyCustomHandlers
 {
-  "scene": "CodexLobbyScene",
-  "interactiveElements": [
+    static MyCustomHandlers()
     {
-      "path": "/Canvas/GaragePageRoot/TopTabs/GarageTabButton",
-      "name": "GarageTabButton",
-      "type": "Button",
-      "text": "Garage",
-      "interactable": true,
-      "activeInHierarchy": true
-    },
-    {
-      "path": "/Canvas/GaragePageRoot/RosterListPane/GarageSlot1",
-      "name": "GarageSlot1",
-      "type": "Button",
-      "text": null,
-      "interactable": true,
-      "activeInHierarchy": true
+        "POST".Register("/custom/my-action", "My custom action", async (req, res) =>
+        {
+            var body = await UnityMcpBridge.ReadRequestBodyAsync(req);
+            // ... 처리 로직
+            await UnityMcpBridge.WriteJsonAsync(res, 200, new { success = true });
+        });
     }
-  ],
-  "totalInteractive": 15,
-  "byType": {
-    "Button": 12,
-    "TMP_InputField": 3
-  }
 }
 ```
 
 ---
 
-## 구현 순서
+## 구현 파일 목록
 
-```
-Phase 1 (Locator)
-  → McpSharedHelpers.FindBySelector() 추가 (component/name/path)
-  → LocatorHandlers.cs 신규 파일
-  → 기존 /gameobject/find 하위 호환 유지
-  → scope 파라미터: path, scene:All, scene:<Name>
-
-Phase 2 (Auto-wait)
-  → WaitHandlers.cs 신규 파일
-  → Polling 루프 + 타임아웃 처리
-  → PlayModeChangeQueue와 통합 고려
-  → polling 간격 기본 100ms, main thread block 금지
-
-Phase 3 (Evaluate — 조회만)
-  → EvalHandlers.cs 신규 파일
-  → 리플렉션 기반 public 필드 접근만
-  → private/protected 리플렉션 금지
-  → play mode에서만 의미 있는 결과
-
-Phase 4 (Snapshot)
-  → SnapshotHandlers.cs 신규 파일
-  → hierarchy 응답의 경량 서브셋
-  → /snapshot/diff는 단순 JSON diff
-
-Phase 5 (Explore — 목록만)
-  → ExploreHandlers.cs 신규 파일
-  → interactive 요소 스캔 (Button, TMP_InputField, Toggle)
-  → traverse 제외 (동적 UI 특성상 신뢰 어려움)
-```
-
----
-
-## 가정 및 제약
-
-1. **Editor 전용** — 모든 새 엔드포인트는 `#if UNITY_EDITOR` 범위 내에서 동작
-2. **태그 규칙**:
-   - `[Editor-only]` — Editor에서만 의미 (대부분의 새 엔드포인트)
-   - `[Play-mode-only]` — Play mode에서만 의미 있는 결과 (`/eval/*`)
-   - 태그 없는 엔드포인트는 에디터/플레이 모드 모두에서 동작
-3. **하위 호환** — 기존 엔드포인트는 수정하지 않고 추가만 한다
-4. **멀티씬** — `scope` 파라미터로 additive 씬의 요소도 조회 가능
-5. **성능** — polling 간격은 기본 100ms, hierarchy 스캔은 depth 제한 필수, main thread block 금지
-6. **보안** — private 리플렉션 금지, public 필드 조회만 허용
-7. **문서** — 새 엔드포인트는 CLAUDE.md의 작업별 진입 경로에 반영하지 않음 (런타임 조회용이므로)
-
-### 에러 응답 형식 표준
-
-모든 새 엔드포인트는 통일된 에러 형식을 따른다:
-
-```json
-{
-  "error": {
-    "code": "TIMEOUT",
-    "message": "Locator not found within 10000ms",
-    "detail": "selector=component:GarageResultPanelView, scope=/Canvas"
-  }
-}
-```
-
-| 에러 코드 | 의미 |
+| 파일 | 작업 |
 |---|---|
-| `NOT_FOUND` | 대상 GameObject/컴포넌트가 없음 |
-| `TIMEOUT` | 대기 시간 초과 |
-| `INVALID_SELECTOR` | selector 문법 오류 |
-| `PLAY_MODE_REQUIRED` | play mode 필수 엔드포인트 |
-| `SERIALIZATION_ERROR` | JSON 직렬화 실패 |
+| `Assets/Editor/UnityMcp/SceneChangeQueue.cs` | **신규 생성** |
+| `Assets/Editor/UnityMcp/Models.cs` | ErrorResponse 필드 추가, autoSave 필드 추가, queued/autoSaved 응답 필드 추가 |
+| `Assets/Editor/UnityMcp/UnityMcpBridge.cs` | HandleRequestAsync 예외 처리 개선, GetErrorHint 헬퍼 추가 |
+| `Assets/Editor/UnityMcp/McpSharedHelpers.cs` | TryAutoSave 헬퍼 추가 |
+| `Assets/Editor/UnityMcp/Handlers/GameObjectHandlers.cs` | SceneChangeQueue, autoSave 적용 |
+| `Assets/Editor/UnityMcp/Handlers/UiHandlers.cs` | SceneChangeQueue, autoSave 적용 |
+| `Assets/Editor/UnityMcp/Handlers/ComponentHandlers.cs` | SceneChangeQueue, autoSave 적용 |
+| `agent/mcp_bridge_improvements.md` | 완료 상태로 업데이트 |
 
 ---
 
-## 파일 구조 변경 (예정)
+## Assumptions
 
-```
-Assets/Editor/UnityMcp/
-  UnityMcpBridge.cs          — 변경 없음 (라우팅은 EndpointRegistry가 처리)
-  EndpointRegistry.cs        — 변경 없음
-  Models.cs                  — 새 Request/Response 타입 추가
-  McpSharedHelpers.cs        — FindBySelector() 메서드 추가
-  Handlers/
-    LocatorHandlers.cs       — [신규] Phase 1
-    WaitHandlers.cs          — [신규] Phase 2
-    EvalHandlers.cs          — [신규] Phase 3 (조회만)
-    SnapshotHandlers.cs      — [신규] Phase 4
-    ExploreHandlers.cs       — [신규] Phase 5 (목록만)
-    BuildHandlers.cs         — 변경 없음
-    ComponentHandlers.cs     — 변경 없음
-    ConsoleHandlers.cs       — 변경 없음
-    GameObjectHandlers.cs    — 변경 없음
-    InputHandlers.cs         — 변경 없음
-    PlayHandlers.cs          — 변경 없음
-    PrefabHandlers.cs        — 변경 없음
-    SceneHandlers.cs         — 변경 없음
-    UiHandlers.cs            — 변경 없음
-```
-
----
-
-## 검토 항목
-
-- [x] Selector 문법 → 1차 `component:`, `name:`, `path:` 만 지원 (나머지는 나중에)
-- [x] Auto-wait 타임아웃 기본값 (10초) + poll 간격 100ms
-- [x] Eval → public 필드 조회만, 메서드 호출 제외
-- [x] Snapshot depth 기본값 (8) — CodexLobbyScene 최대 depth 6이므로 충분
-- [x] Explore → `GET /explore/interactive` 하나로 축소 (traverse 제외)
-- [x] 에러 응답 형식 표준 (`code`, `message`, `detail`)
-- [x] `[Editor-only]`, `[Play-mode-only]` 태그 규칙 명시
-- [x] 멀티씬 scope 지원 (`scene:All`, `scene:<Name>`)
-
----
-
-## 배운 교훈
-
-### Unity 메인 스레드 제약 (Phase 2)
-
-MCP 핸들러는 `HttpListener` thread pool에서 실행되므로, `async/await` 이후 Unity API를 직행 호출하면 `UnityException`이 발생한다.
-
-```
-UnityException: GetName can only be called from the main thread.
-```
-
-**해결:** `WaitForConditionAsync`에서 condition 실행과 결과 추출을 완전히 분리.
-- condition은 호출하는 쪽에서 `RunOnMainThreadAsync`로 감싸서 반환
-- `Task.Delay` 이후 절대 Unity API 호출 금지
-- 결과 객체(`LocatorItem`) 생성도 별도 `RunOnMainThreadAsync`로 감싸기
-
-자세한 패턴은 `/agent/unity.md` 섹션 14 참조.
-
-### 사소한 컴파일 에러로 인한 지연
-
-아래 사소한 에러들이 MCP 브리지 재시작 실패로 이어져 디버깅이 어려웠다:
-
-| 에러 | 원인 |
-|---|---|
-| `CS1022: end-of-file expected` | `enum` 키워드를 타입처럼 사용 (`Enum`이 정확함) |
-| `CS0103: EditorApplication does not exist` | `using UnityEditor;` 누락 |
-| `CS1061: WaitRequest does not contain scope` | Models.cs에 필드 추가 누락 |
-| `CS0234: System.Reflection.Instance does not exist` | `BindingFlags.Instance` → `BindingFlags.Public \| BindingFlags.Instance` |
-
-**교훈:** 새 핸들러 파일 추가 시 컴파일 에러가 있으면 MCP 브리지 자동 재시작이 실패한다. 에러 로그를 먼저 확인하고, Unity `InitializeOnLoad`가 컴파일 완료 후 자동으로 브리지를 재시작하므로 파일 수정만 정확히 하면 된다.
+- 기존 엔드포인트의 기본 동작은 변경하지 않음 (하위 호환성 유지)
+- `autoSave` 기본값은 `false` (기존 요청과 호환)
+- Play Mode 큐잉은 에디터 전용 기능 (런타임 빌드 영향 없음)
+- 스택 트레이스는 Editor 빌드에서만 포함 (릴리즈 빌드 제어는 추후 검토)

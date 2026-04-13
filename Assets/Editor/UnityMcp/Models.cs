@@ -112,6 +112,8 @@ namespace ProjectSD.EditorTools.UnityMcp
     {
         public string error;
         public string detail;
+        public string stackTrace;
+        public string hint;
     }
 
     [Serializable]
@@ -192,6 +194,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string uiPreset;
         public float? width;
         public float? height;
+        public bool autoSave;
     }
 
     [Serializable]
@@ -200,6 +203,9 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string name;
         public string path;
         public int instanceId;
+        public bool queued;
+        public int pendingCount;
+        public bool autoSaved;
     }
 
     [Serializable]
@@ -215,6 +221,7 @@ namespace ProjectSD.EditorTools.UnityMcp
     {
         public string gameObjectPath;
         public string componentType;
+        public bool autoSave;
     }
 
     [Serializable]
@@ -222,6 +229,7 @@ namespace ProjectSD.EditorTools.UnityMcp
     {
         public string path;
         public bool active;
+        public bool autoSave;
     }
 
     [Serializable]
@@ -232,6 +240,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string propertyName;
         public string value;
         public string assetPath;
+        public bool autoSave;
     }
 
     [Serializable]
@@ -292,6 +301,9 @@ namespace ProjectSD.EditorTools.UnityMcp
     {
         public bool success;
         public string message;
+        public bool queued;
+        public int pendingCount;
+        public bool autoSaved;
     }
 
     [Serializable]
@@ -500,6 +512,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string parent;
         public float width;
         public float height;
+        public bool autoSave;
     }
 
     [Serializable]
@@ -509,6 +522,9 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string message;
         public string path;
         public string name;
+        public bool queued;
+        public int pendingCount;
+        public bool autoSaved;
     }
 
     [Serializable]
@@ -518,6 +534,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string parent;
         public float width;
         public float height;
+        public bool autoSave;
     }
 
     [Serializable]
@@ -527,6 +544,9 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string message;
         public string path;
         public string name;
+        public bool queued;
+        public int pendingCount;
+        public bool autoSaved;
     }
 
     [Serializable]
@@ -543,6 +563,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         public float? anchorMaxY;
         public float? pivotX;
         public float? pivotY;
+        public bool autoSave;
     }
 
     [Serializable]
@@ -551,6 +572,9 @@ namespace ProjectSD.EditorTools.UnityMcp
         public bool success;
         public string message;
         public string path;
+        public bool queued;
+        public int pendingCount;
+        public bool autoSaved;
     }
 
     [Serializable]
@@ -558,6 +582,7 @@ namespace ProjectSD.EditorTools.UnityMcp
     {
         public string path;
         public int siblingIndex;
+        public bool autoSave;
     }
 
     [Serializable]
@@ -567,6 +592,9 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string message;
         public string path;
         public int siblingIndex;
+        public bool queued;
+        public int pendingCount;
+        public bool autoSaved;
     }
 
     [Serializable]
@@ -575,6 +603,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string name;
         public string parent;
         public string buttonText;
+        public bool autoSave;
     }
 
     [Serializable]
@@ -584,6 +613,9 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string message;
         public string path;
         public string name;
+        public bool queued;
+        public int pendingCount;
+        public bool autoSaved;
     }
 
     [Serializable]
@@ -593,6 +625,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string componentTypeName;
         public string fieldName;
         public string targetPath;
+        public bool autoSave;
     }
 
     [Serializable]
@@ -603,6 +636,9 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string componentPath;
         public string fieldName;
         public string targetPath;
+        public bool queued;
+        public int pendingCount;
+        public bool autoSaved;
     }
 
     [Serializable]
@@ -621,6 +657,9 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string componentPath;
         public int connectedCount;
         public string[] connectedFields;
+        public bool queued;
+        public int pendingCount;
+        public bool autoSaved;
     }
 
     internal sealed class GameViewInputContext

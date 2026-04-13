@@ -57,6 +57,7 @@ namespace Features.Garage.Presentation
         /// <summary>
         /// AccountSettingsView를 GaragePageRoot에서 분리하여 우측 패널과 겹치지 않게 배치.
         /// _accountPanelRoot가 설정되어 있으면 해당 패널로 이동.
+        /// 설정되지 않았으면 Scene에서 이미 올바른 위치에 있으므로 이동하지 않음.
         /// </summary>
         private void SeparateAccountPanel()
         {
@@ -75,14 +76,7 @@ namespace Features.Garage.Presentation
                 accountTransform.localRotation = Quaternion.identity;
                 accountTransform.localScale = Vector3.one;
             }
-            else
-            {
-                // 지정된 패널이 없으면 GaragePageRoot의 하단으로 이동 (최소한의 겹침 방지)
-                if (accountTransform.parent != null)
-                {
-                    accountTransform.SetAsLastSibling();
-                }
-            }
+            // _accountPanelRoot가 없으면 Scene에서 이미 올바른 위치에 있으므로 이동하지 않음
         }
 
         private async System.Threading.Tasks.Task SaveRosterAsync(GarageRoster roster)

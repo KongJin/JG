@@ -497,13 +497,24 @@ namespace ProjectSD.EditorTools.UnityMcp
                             return response.StatusCode;
                         }
 
-                        await WriteJsonAsync(response, 404, new ErrorResponse { error = "Not found", detail = method + " " + path });
+                        await WriteJsonAsync(response, 404, new ErrorResponse
+                        {
+                            error = "Not found",
+                            detail = method + " " + path,
+                            hint = "Use GET /debug/endpoints to list available endpoints."
+                        });
                         return 404;
                     }
                     catch (Exception ex)
                     {
                         Debug.LogError("[Unity MCP] Unhandled exception in request handler: " + ex);
-                        await WriteJsonAsync(response, 500, new ErrorResponse { error = "Bridge failure", detail = "Internal error" });
+                        await WriteJsonAsync(response, 500, new ErrorResponse
+                        {
+                            error = "Bridge failure",
+                            detail = ex.Message,
+                            stackTrace = ex.ToString(),
+                            hint = GetErrorHint(ex)
+                        });
                         return 500;
                     }
                 });
@@ -518,6 +529,37 @@ namespace ProjectSD.EditorTools.UnityMcp
             if (!normalized.StartsWith("/", StringComparison.Ordinal)) normalized = "/" + normalized;
             if (normalized.Length > 1 && normalized.EndsWith("/", StringComparison.Ordinal)) normalized = normalized.Substring(0, normalized.Length - 1);
             return normalized;
+        }
+
+        /// <summary>
+        /// 예외 타입에 따른 해결 힌트를 반환한다.
+        /// </summary>
+        private static string GetErrorHint(Exception ex)
+        {
+            return GetErrorHintFromMessage(ex.Message);
+        }
+
+        /// <summary>
+        /// 예외 메시지로부터 해결 힌트를 반환한다.
+        /// </summary>
+        internal static string GetErrorHintFromMessage(string message)
+        {
+            if (string.IsNullOrEmpty(message)) return "See stackTrace for details.";
+            var lowerMessage = message.ToLowerInvariant();
+
+            if (lowerMessage.Contains("not found") || lowerMessage.Contains("missing"))
+                return "Check if the path/name is correct. Use GET /scene/hierarchy to list objects.";
+            if (lowerMessage.Contains("parent"))
+                return "Check if the parent path exists.";
+            if (lowerMessage.Contains("component"))
+                return "Check if the component type and field name are correct.";
+            if (lowerMessage.Contains("null"))
+                return "A required reference is missing. Check the component or GameObject.";
+            if (lowerMessage.Contains("timed out") || lowerMessage.Contains("timeout"))
+                return "The operation took too long. Unity may be compiling or in play mode.";
+            if (lowerMessage.Contains("play mode"))
+                return "This operation requires edit mode. The change has been queued for when play mode ends.";
+            return "See stackTrace for details.";
         }
 
         // =====================================================================

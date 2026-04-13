@@ -24,6 +24,16 @@ namespace Features.Lobby.Presentation
         [SerializeField]
         private Button _garageTabButton;
 
+        [Header("Tab Visuals")]
+        [SerializeField]
+        private Color _activeTabColor = new Color(0.286f, 0.463f, 1f, 1f);    // #4976FF
+        [SerializeField]
+        private Color _inactiveTabColor = new Color(0.086f, 0.157f, 0.196f, 1f); // #162832
+        [SerializeField]
+        private Color _activeTextColor = Color.white;
+        [SerializeField]
+        private Color _inactiveTextColor = new Color(0.545f, 0.584f, 0.651f, 1f); // #8B95A8
+
         [Header("Panels")]
         [Required, SerializeField]
         private GameObject _roomListPanel;
@@ -184,6 +194,29 @@ namespace Features.Lobby.Presentation
                 _lobbyTabButton.interactable = !lobbyActive;
             if (_garageTabButton != null)
                 _garageTabButton.interactable = lobbyActive;
+
+            UpdateTabVisuals(_lobbyTabButton, lobbyActive);
+            UpdateTabVisuals(_garageTabButton, !lobbyActive);
+        }
+
+        private void UpdateTabVisuals(Button tabButton, bool isActive)
+        {
+            if (tabButton == null) return;
+
+            // 배경 색상
+            if (tabButton.TryGetComponent<UnityEngine.UI.Image>(out var bgImage))
+            {
+                bgImage.color = isActive ? _activeTabColor : _inactiveTabColor;
+            }
+
+            // 텍스트 색상
+            foreach (Transform child in tabButton.transform)
+            {
+                if (child.TryGetComponent<TMPro.TMP_Text>(out var tmpText))
+                {
+                    tmpText.color = isActive ? _activeTextColor : _inactiveTextColor;
+                }
+            }
         }
     }
 }

@@ -540,6 +540,27 @@ namespace ProjectSD.EditorTools.UnityMcp
             }
             return val.GetType().Name;
         }
+
+        // =====================================================================
+        // Scene Save Helper
+        // =====================================================================
+
+        /// <summary>
+        /// autoSave 요청이 있을 때 활성 씬을 저장한다.
+        /// </summary>
+        public static bool TryAutoSave()
+        {
+            try
+            {
+                var scene = SceneManager.GetActiveScene();
+                if (!scene.IsValid() || string.IsNullOrWhiteSpace(scene.path)) return false;
+                return EditorSceneManager.SaveScene(scene);
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
 #endif

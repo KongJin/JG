@@ -54,29 +54,63 @@ namespace ProjectSD.EditorTools.UnityMcp
             var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
             var req = JsonUtility.FromJson<CreateRequest>(body);
 
-            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+            string createdName = null;
+            string createdPath = null;
+            int createdInstanceId = 0;
+            int enqueueResult = 0;
+            string enqueueError = null;
+
+            await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
-                Transform parent = null;
-                if (!string.IsNullOrEmpty(req.parent))
+                enqueueResult = SceneChangeQueue.EnqueueOrExecute(() =>
                 {
-                    var parentGo = McpSharedHelpers.FindGameObjectByPath(req.parent);
-                    if (parentGo == null) parentGo = GameObject.Find(req.parent);
-                    if (parentGo == null) throw new Exception("Parent not found: " + req.parent);
-                    parent = parentGo.transform;
-                }
+                    Transform parent = null;
+                    if (!string.IsNullOrEmpty(req.parent))
+                    {
+                        var parentGo = McpSharedHelpers.FindGameObjectByPath(req.parent);
+                        if (parentGo == null) parentGo = GameObject.Find(req.parent);
+                        if (parentGo == null) throw new Exception("Parent not found: " + req.parent);
+                        parent = parentGo.transform;
+                    }
 
-                var go = new GameObject(string.IsNullOrEmpty(req.name) ? "New GameObject" : req.name);
-                if (parent != null) go.transform.SetParent(parent, false);
-                Undo.RegisterCreatedObjectUndo(go, "MCP Create " + go.name);
+                    var go = new GameObject(string.IsNullOrEmpty(req.name) ? "New GameObject" : req.name);
+                    if (parent != null) go.transform.SetParent(parent, false);
+                    Undo.RegisterCreatedObjectUndo(go, "MCP Create " + go.name);
 
-                if (req.components != null)
-                    foreach (var compName in req.components) McpSharedHelpers.AddComponentByName(go, compName);
+                    if (req.components != null)
+                        foreach (var compName in req.components) McpSharedHelpers.AddComponentByName(go, compName);
 
-                if (!string.IsNullOrEmpty(req.uiPreset)) ApplyUiPreset(go, req.uiPreset, req.width, req.height);
-                EditorSceneManager.MarkSceneDirty(go.scene);
+                    if (!string.IsNullOrEmpty(req.uiPreset)) ApplyUiPreset(go, req.uiPreset, req.width, req.height);
+                    EditorSceneManager.MarkSceneDirty(go.scene);
 
-                return new CreateResponse { name = go.name, path = McpSharedHelpers.GetTransformPath(go.transform), instanceId = go.GetInstanceID() };
+                    createdName = go.name;
+                    createdPath = McpSharedHelpers.GetTransformPath(go.transform);
+                    createdInstanceId = go.GetInstanceID();
+                    return true;
+                }, "Create GameObject: " + (string.IsNullOrEmpty(req.name) ? "New GameObject" : req.name), out enqueueError);
             });
+
+            if (enqueueResult == -1)
+            {
+                await UnityMcpBridge.WriteJsonAsync(response, 500, new ErrorResponse
+                {
+                    error = "Scene change failed",
+                    detail = enqueueError,
+                    hint = UnityMcpBridge.GetErrorHintFromMessage(enqueueError)
+                });
+                return;
+            }
+
+            var wasQueued = enqueueResult == 0;
+            var result = new CreateResponse
+            {
+                name = createdName,
+                path = createdPath,
+                instanceId = createdInstanceId,
+                queued = wasQueued,
+                pendingCount = wasQueued ? SceneChangeQueue.PendingCount : 0,
+                autoSaved = !wasQueued && req.autoSave && McpSharedHelpers.TryAutoSave()
+            };
 
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }
@@ -119,18 +153,47 @@ namespace ProjectSD.EditorTools.UnityMcp
             var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
             var req = JsonUtility.FromJson<FindRequest>(body);
 
-            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+            string destroyMessage = null;
+            int enqueueResult = 0;
+            string enqueueError = null;
+
+            await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
-                var go = !string.IsNullOrEmpty(req.path)
-                    ? McpSharedHelpers.FindGameObjectByPath(req.path)
-                    : null;
-                if (go == null && !string.IsNullOrEmpty(req.name))
-                    go = McpSharedHelpers.FindGameObjectByNameInActiveScene(req.name);
-                if (go == null) throw new Exception("GameObject not found: " + (req.path ?? req.name));
-                Undo.DestroyObjectImmediate(go);
-                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
-                return new GenericResponse { success = true, message = "Destroyed: " + (req.path ?? req.name) };
+                enqueueResult = SceneChangeQueue.EnqueueOrExecute(() =>
+                {
+                    var go = !string.IsNullOrEmpty(req.path)
+                        ? McpSharedHelpers.FindGameObjectByPath(req.path)
+                        : null;
+                    if (go == null && !string.IsNullOrEmpty(req.name))
+                        go = McpSharedHelpers.FindGameObjectByNameInActiveScene(req.name);
+                    if (go == null) throw new Exception("GameObject not found: " + (req.path ?? req.name));
+                    Undo.DestroyObjectImmediate(go);
+                    EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                    destroyMessage = "Destroyed: " + (req.path ?? req.name);
+                    return true;
+                }, "Destroy GameObject: " + (req.path ?? req.name), out enqueueError);
             });
+
+            if (enqueueResult == -1)
+            {
+                await UnityMcpBridge.WriteJsonAsync(response, 500, new ErrorResponse
+                {
+                    error = "Scene change failed",
+                    detail = enqueueError,
+                    hint = UnityMcpBridge.GetErrorHintFromMessage(enqueueError)
+                });
+                return;
+            }
+
+            var wasQueued = enqueueResult == 0;
+            var result = new GenericResponse
+            {
+                success = true,
+                message = destroyMessage,
+                queued = wasQueued,
+                pendingCount = wasQueued ? SceneChangeQueue.PendingCount : 0,
+                autoSaved = !wasQueued && McpSharedHelpers.TryAutoSave()
+            };
 
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }
@@ -140,16 +203,40 @@ namespace ProjectSD.EditorTools.UnityMcp
             var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
             var req = JsonUtility.FromJson<GameObjectSetActiveRequest>(body);
 
-            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+            GenericResponse result = null;
+            int enqueueResult = 0;
+            string enqueueError = null;
+
+            await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
-                var go = McpSharedHelpers.FindGameObjectByPath(req.path);
-                if (go == null) go = GameObject.Find(req.path);
-                if (go == null) throw new Exception("GameObject not found: " + req.path);
-                Undo.RecordObject(go, "MCP SetActive " + req.path);
-                go.SetActive(req.active);
-                EditorSceneManager.MarkSceneDirty(go.scene);
-                return new GenericResponse { success = true, message = "SetActive(" + req.active + "): " + req.path };
+                enqueueResult = SceneChangeQueue.EnqueueOrExecute(() =>
+                {
+                    var go = McpSharedHelpers.FindGameObjectByPath(req.path);
+                    if (go == null) go = GameObject.Find(req.path);
+                    if (go == null) throw new Exception("GameObject not found: " + req.path);
+                    Undo.RecordObject(go, "MCP SetActive " + req.path);
+                    go.SetActive(req.active);
+                    EditorSceneManager.MarkSceneDirty(go.scene);
+                    result = new GenericResponse { success = true, message = "SetActive(" + req.active + "): " + req.path };
+                    return true;
+                }, "SetActive(" + req.active + "): " + req.path, out enqueueError);
             });
+
+            if (enqueueResult == -1)
+            {
+                await UnityMcpBridge.WriteJsonAsync(response, 500, new ErrorResponse
+                {
+                    error = "Scene change failed",
+                    detail = enqueueError,
+                    hint = UnityMcpBridge.GetErrorHintFromMessage(enqueueError)
+                });
+                return;
+            }
+
+            var wasQueued = enqueueResult == 0;
+            result.queued = wasQueued;
+            result.pendingCount = wasQueued ? SceneChangeQueue.PendingCount : 0;
+            result.autoSaved = !wasQueued && req.autoSave && McpSharedHelpers.TryAutoSave();
 
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }
@@ -159,23 +246,47 @@ namespace ProjectSD.EditorTools.UnityMcp
             var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
             var req = JsonUtility.FromJson<GameObjectSetSiblingRequest>(body);
 
-            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+            GameObjectSetSiblingResponse result = null;
+            int enqueueResult = 0;
+            string enqueueError = null;
+
+            await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
-                var go = McpSharedHelpers.FindGameObjectByPath(req.path);
-                if (go == null) go = GameObject.Find(req.path);
-                if (go == null) throw new Exception("GameObject not found: " + req.path);
-
-                if (req.siblingIndex >= 0) go.transform.SetSiblingIndex(req.siblingIndex);
-                EditorSceneManager.MarkSceneDirty(go.scene);
-
-                return new GameObjectSetSiblingResponse
+                enqueueResult = SceneChangeQueue.EnqueueOrExecute(() =>
                 {
-                    success = true,
-                    message = "Set sibling: " + req.path,
-                    path = McpSharedHelpers.GetTransformPath(go.transform),
-                    siblingIndex = go.transform.GetSiblingIndex()
-                };
+                    var go = McpSharedHelpers.FindGameObjectByPath(req.path);
+                    if (go == null) go = GameObject.Find(req.path);
+                    if (go == null) throw new Exception("GameObject not found: " + req.path);
+
+                    if (req.siblingIndex >= 0) go.transform.SetSiblingIndex(req.siblingIndex);
+                    EditorSceneManager.MarkSceneDirty(go.scene);
+
+                    result = new GameObjectSetSiblingResponse
+                    {
+                        success = true,
+                        message = "Set sibling: " + req.path,
+                        path = McpSharedHelpers.GetTransformPath(go.transform),
+                        siblingIndex = go.transform.GetSiblingIndex()
+                    };
+                    return true;
+                }, "Set sibling: " + req.path, out enqueueError);
             });
+
+            if (enqueueResult == -1)
+            {
+                await UnityMcpBridge.WriteJsonAsync(response, 500, new ErrorResponse
+                {
+                    error = "Scene change failed",
+                    detail = enqueueError,
+                    hint = UnityMcpBridge.GetErrorHintFromMessage(enqueueError)
+                });
+                return;
+            }
+
+            var wasQueued = enqueueResult == 0;
+            result.queued = wasQueued;
+            result.pendingCount = wasQueued ? SceneChangeQueue.PendingCount : 0;
+            result.autoSaved = !wasQueued && req.autoSave && McpSharedHelpers.TryAutoSave();
 
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }
