@@ -1,4 +1,5 @@
 using System;
+using Features.Garage.Presentation.Theme;
 using Shared.Attributes;
 using TMPro;
 using UnityEngine;
@@ -67,10 +68,22 @@ namespace Features.Garage.Presentation
         public void Render(string valueText, string hintText)
         {
             if (_valueText != null)
+            {
                 _valueText.text = valueText;
+                bool isEmpty = string.IsNullOrEmpty(valueText) || valueText.Contains("< Select");
+                _valueText.color = isEmpty ? ThemeColors.TextMuted : ThemeColors.TextPrimary;
+            }
 
             if (_hintText != null)
+            {
                 _hintText.text = hintText;
+                _hintText.color = ThemeColors.TextSecondary;
+            }
+
+            if (_titleText != null)
+            {
+                _titleText.color = ThemeColors.TextPrimary;
+            }
         }
 
         private void NormalizeLayout()

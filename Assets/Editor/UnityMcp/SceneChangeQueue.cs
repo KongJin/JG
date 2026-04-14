@@ -13,6 +13,7 @@ namespace ProjectSD.EditorTools.UnityMcp
     /// Play Mode 중 씬 변경 요청을 큐에 저장했다가 Play Mode 종료 시 자동 적용한다.
     /// GameObject 생성/수정/삭제, Rect 변경 등 모든 씬 수정 작업에 대해 동작한다.
     /// </summary>
+    [InitializeOnLoad]
     internal static class SceneChangeQueue
     {
         private struct PendingChange
@@ -24,19 +25,55 @@ namespace ProjectSD.EditorTools.UnityMcp
         private static readonly object Lock = new object();
         private static readonly List<PendingChange> PendingChanges = new List<PendingChange>();
         private static bool _isProcessing;
-        private static bool _initialized;
         private static Action<string, int, int> _onQueueProcessed;
+        private static bool _wasInPlayMode;
 
         /// <summary>
-        /// 초기화는 처음 한 번만, 메인 스레드-safe한 시점에 한다.
+        /// Static constructor — 에디터 시작 시 이벤트 등록.
         /// </summary>
-        [InitializeOnLoadMethod]
-        private static void Init()
+        static SceneChangeQueue()
         {
-            if (_initialized) return;
-            _initialized = true;
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            EditorApplication.update -= OnEditorUpdate;
+            EditorApplication.update += OnEditorUpdate;
+            _wasInPlayMode = EditorApplication.isPlayingOrWillChangePlaymode;
+        }
+
+        /// <summary>
+        /// 도메인 리로드 후 이벤트 재등록.
+        /// </summary>
+        [InitializeOnLoadMethod]
+        private static void InitOnLoad()
+        {
+            Debug.Log("[Unity MCP] SceneChangeQueue InitOnLoad called");
+            EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            EditorApplication.update -= OnEditorUpdate;
+            EditorApplication.update += OnEditorUpdate;
+            _wasInPlayMode = EditorApplication.isPlayingOrWillChangePlaymode;
+        }
+
+        /// <summary>
+        /// 매 프레임 실행 — 플레이 모드 종료 감지 시 큐 처리.
+        /// </summary>
+        private static void OnEditorUpdate()
+        {
+            var isInPlayMode = EditorApplication.isPlayingOrWillChangePlaymode;
+            if (_wasInPlayMode && !isInPlayMode && PendingCount > 0)
+            {
+                _wasInPlayMode = isInPlayMode;
+                // 에디터 모드 진입 직후 — 메인 스레드이므로 직접 처리
+                try
+                {
+                    ProcessQueue();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("[Unity MCP] SceneChangeQueue processing failed: " + ex);
+                }
+            }
+            _wasInPlayMode = isInPlayMode;
         }
 
         /// <summary>
@@ -66,19 +103,21 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         /// <summary>
         /// Play Mode 상태가 변경될 때 큐를 처리한다.
-        /// EnterEditMode → 대기 중인 변경사항 적용
+        /// EnteredEditMode → 대기 중인 변경사항 적용 (메인 스레드에서 직접 실행)
         /// </summary>
         private static void OnPlayModeStateChanged(PlayModeStateChange state)
         {
             if (state == PlayModeStateChange.EnteredEditMode)
             {
-                UnityMcpBridge.RunOnMainThreadAsync(ProcessQueue).ContinueWith(t =>
+                // 에디터 모드 진입 시 바로 처리 — 메인 스레드이므로 직접 실행
+                try
                 {
-                    if (t.IsFaulted)
-                    {
-                        Debug.LogError("[Unity MCP] SceneChangeQueue processing failed: " + t.Exception);
-                    }
-                });
+                    ProcessQueue();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("[Unity MCP] SceneChangeQueue processing failed: " + ex);
+                }
             }
         }
 

@@ -43,7 +43,8 @@ namespace ProjectSD.EditorTools.UnityMcp
 
                 if (!string.IsNullOrEmpty(pathFilter))
                 {
-                    var target = GameObject.Find(pathFilter);
+                    var target = McpSharedHelpers.FindGameObjectByPath(pathFilter);
+                    if (target == null) target = GameObject.Find(pathFilter);
                     if (target != null)
                         AppendHierarchyNodeJson(sb, target.transform, maxDepth, 0, "", includeComponents);
                 }

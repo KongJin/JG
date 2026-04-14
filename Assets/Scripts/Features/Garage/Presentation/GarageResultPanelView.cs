@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Features.Garage.Presentation.Theme;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +14,8 @@ namespace Features.Garage.Presentation
 
         [Header("Save")]
         [SerializeField] private Button _saveButton;
+        [SerializeField] private TMP_Text _saveButtonText;
+        [SerializeField] private Image _saveButtonImage;
 
         [Header("Toast")]
         [SerializeField] private GameObject _toastPanel;
@@ -51,16 +54,43 @@ namespace Features.Garage.Presentation
             if (_toastPanel != null)
                 _toastPanel.SetActive(false);
 
-            // ToastPanel이 3D 미리보기보다 먼저 렌더링되도록 hierarchy 순서 조정
-            // Unity UI는 hierarchy에서 앞쪽일수록 뒤에 렌더링됨
-            if (_toastPanel != null && _toastPanel.transform.parent != null)
-            {
-                _toastPanel.transform.SetAsFirstSibling();
-            }
-
             // 로딩 인디케이터 초기 상태 확인
             if (_loadingIndicator != null)
                 _loadingIndicator.SetActive(false);
+
+            // 저장 버튼 초기화 — ThemeColors 기반 Primary 스타일
+            InitializeSaveButton();
+        }
+
+        private void InitializeSaveButton()
+        {
+            if (_saveButton == null) return;
+
+            // 버튼 이미지 기본 색상 (Primary Action — 파란색)
+            if (_saveButtonImage == null)
+                _saveButtonImage = _saveButton.GetComponent<Image>();
+
+            if (_saveButtonImage != null)
+                _saveButtonImage.color = ThemeColors.AccentBlue;
+
+            // 버튼 텍스트 기본 설정
+            if (_saveButtonText == null)
+                _saveButtonText = _saveButton.GetComponentInChildren<TMP_Text>();
+
+            if (_saveButtonText != null)
+            {
+                _saveButtonText.text = "Save Roster";
+                _saveButtonText.fontSize = 16;
+                _saveButtonText.alignment = TextAlignmentOptions.Center;
+                _saveButtonText.color = ThemeColors.TextPrimary;
+            }
+
+            // LayoutElement로 최소 크기 보장
+            var layoutElement = _saveButton.GetComponent<LayoutElement>();
+            if (layoutElement == null)
+                layoutElement = _saveButton.gameObject.AddComponent<LayoutElement>();
+            layoutElement.preferredHeight = 44;
+            layoutElement.minHeight = 44;
         }
 
         private void OnEnable()
@@ -199,30 +229,54 @@ namespace Features.Garage.Presentation
                 return;
 
             if (_rosterStatusText != null)
+            {
                 _rosterStatusText.text = viewModel.RosterStatusText;
+                _rosterStatusText.color = ThemeColors.TextPrimary;
+                _rosterStatusText.fontSize = 14;
+                _rosterStatusText.enableAutoSizing = false;
+            }
 
             if (_validationText != null)
             {
                 _validationText.text = viewModel.ValidationText;
-                // Validation 텍스트도 에러 시 색상 변경
                 bool hasError = !string.IsNullOrEmpty(viewModel.ValidationText)
                     && (viewModel.ValidationText.Contains("Error") || viewModel.ValidationText.Contains("실패"));
                 _validationText.color = hasError
-                    ? new Color(1f, 0.5f, 0.5f, 1f)
-                    : new Color(0.66f, 0.71f, 0.78f, 1f);  // #A8B4C8 - 대비도 향상
+                    ? ThemeColors.AccentRed
+                    : ThemeColors.TextSecondary;
+                _validationText.fontSize = 13;
+                _validationText.enableAutoSizing = false;
             }
 
             if (_statsText != null)
+            {
                 _statsText.text = viewModel.StatsText;
+                _statsText.color = ThemeColors.TextSecondary;
+                _statsText.fontSize = 13;
+                _statsText.enableAutoSizing = false;
+            }
 
-            // Save 버튼 가시성 개선 — 준비 완료 시 강조
-            if (_saveButton != null && _saveButton.TryGetComponent<UnityEngine.UI.Image>(out var saveBtnImage))
+            // Save 버튼 — 상태에 따른 색상 변화
+            if (_saveButtonImage != null)
             {
                 bool isReady = viewModel.RosterStatusText != null
                     && viewModel.RosterStatusText.Contains("Ready");
-                saveBtnImage.color = isReady
-                    ? new Color(0.2f, 0.6f, 0.3f, 1f)    // 준비 완료 시 초록 강조
-                    : new Color(0.2f, 0.4f, 0.9f, 1f);   // 기본 블루
+                _saveButtonImage.color = isReady
+                    ? ThemeColors.AccentGreen
+                    : ThemeColors.AccentBlue;
+            }
+
+            if (_saveButtonText != null)
+            {
+                bool isLoading = _loadingIndicator != null && _loadingIndicator.activeSelf;
+                _saveButtonText.text = isLoading ? "Saving..." : "Save Roster";
+                _saveButtonText.color = ThemeColors.TextPrimary;
+            }
+
+            if (_saveButton != null)
+            {
+                bool isLoading = _loadingIndicator != null && _loadingIndicator.activeSelf;
+                _saveButton.interactable = !isLoading;
             }
         }
     }

@@ -22,6 +22,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             "POST".Register("/gameobject/destroy", "Destroy GameObject", async (req, res) => await HandleGameObjectDestroyAsync(req, res));
             "POST".Register("/gameobject/set-active", "Set GameObject active state", async (req, res) => await HandleGameObjectSetActiveAsync(req, res));
             "POST".Register("/gameobject/set-sibling", "Set sibling order", async (req, res) => await HandleGameObjectSetSiblingAsync(req, res));
+            "POST".Register("/gameobject/set-parent", "Change parent of a GameObject", async (req, res) => await HandleGameObjectSetParentAsync(req, res));
         }
 
         public static async Task HandleGameObjectFindAsync(HttpListenerRequest request, HttpListenerResponse response)
@@ -270,6 +271,65 @@ namespace ProjectSD.EditorTools.UnityMcp
                     };
                     return true;
                 }, "Set sibling: " + req.path, out enqueueError);
+            });
+
+            if (enqueueResult == -1)
+            {
+                await UnityMcpBridge.WriteJsonAsync(response, 500, new ErrorResponse
+                {
+                    error = "Scene change failed",
+                    detail = enqueueError,
+                    hint = UnityMcpBridge.GetErrorHintFromMessage(enqueueError)
+                });
+                return;
+            }
+
+            var wasQueued = enqueueResult == 0;
+            result.queued = wasQueued;
+            result.pendingCount = wasQueued ? SceneChangeQueue.PendingCount : 0;
+            result.autoSaved = !wasQueued && req.autoSave && McpSharedHelpers.TryAutoSave();
+
+            await UnityMcpBridge.WriteJsonAsync(response, 200, result);
+        }
+
+        public static async Task HandleGameObjectSetParentAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<GameObjectSetParentRequest>(body);
+
+            GameObjectSetParentResponse result = null;
+            int enqueueResult = 0;
+            string enqueueError = null;
+
+            await UnityMcpBridge.RunOnMainThreadAsync(() =>
+            {
+                enqueueResult = SceneChangeQueue.EnqueueOrExecute(() =>
+                {
+                    var go = McpSharedHelpers.FindGameObjectByPath(req.path);
+                    if (go == null) go = GameObject.Find(req.path);
+                    if (go == null) throw new Exception("GameObject not found: " + req.path);
+
+                    Transform newParent = null;
+                    if (!string.IsNullOrEmpty(req.parentPath))
+                    {
+                        var parentGo = McpSharedHelpers.FindGameObjectByPath(req.parentPath);
+                        if (parentGo == null) parentGo = GameObject.Find(req.parentPath);
+                        if (parentGo == null) throw new Exception("Parent not found: " + req.parentPath);
+                        newParent = parentGo.transform;
+                    }
+
+                    Undo.SetTransformParent(go.transform, newParent, "MCP Set Parent: " + req.path);
+                    EditorSceneManager.MarkSceneDirty(go.scene);
+
+                    result = new GameObjectSetParentResponse
+                    {
+                        success = true,
+                        message = "Set parent: " + req.path + " → " + (req.parentPath ?? "(root)"),
+                        path = McpSharedHelpers.GetTransformPath(go.transform),
+                        parentPath = req.parentPath ?? ""
+                    };
+                    return true;
+                }, "Set parent: " + req.path + " → " + (req.parentPath ?? "(root)"), out enqueueError);
             });
 
             if (enqueueResult == -1)

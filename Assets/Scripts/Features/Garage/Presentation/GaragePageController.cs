@@ -56,19 +56,15 @@ namespace Features.Garage.Presentation
 
         /// <summary>
         /// AccountSettingsView를 GaragePageRoot에서 분리하여 우측 패널과 겹치지 않게 배치.
-        /// _accountPanelRoot가 설정되어 있으면 해당 패널로 이동.
-        /// 설정되지 않았으면 Scene에서 이미 올바른 위치에 있으므로 이동하지 않음.
         /// </summary>
         private void SeparateAccountPanel()
         {
             if (_accountSettingsView == null) return;
             var accountTransform = _accountSettingsView.transform;
 
-            // 이미 분리가 완료되었으면 건너뛰기
             if (_accountPanelRoot != null && accountTransform.parent == _accountPanelRoot.transform)
                 return;
 
-            // _accountPanelRoot가 지정되어 있으면 이동
             if (_accountPanelRoot != null)
             {
                 accountTransform.SetParent(_accountPanelRoot.transform, false);
@@ -76,7 +72,6 @@ namespace Features.Garage.Presentation
                 accountTransform.localRotation = Quaternion.identity;
                 accountTransform.localScale = Vector3.one;
             }
-            // _accountPanelRoot가 없으면 Scene에서 이미 올바른 위치에 있으므로 이동하지 않음
         }
 
         private async System.Threading.Tasks.Task SaveRosterAsync(GarageRoster roster)
@@ -114,6 +109,8 @@ namespace Features.Garage.Presentation
         private void CycleFrame(int delta)
         {
             _state.SetEditingFrameId(CycleId(_state.EditingFrameId, _catalog?.Frames, delta, frame => frame.Id));
+            var frameName = _catalog?.FindFrame(_state.EditingFrameId)?.DisplayName ?? _state.EditingFrameId;
+            _resultPanelView.ShowToast($"Frame → {frameName}");
             TryCommitEditingDraft();
             Render();
         }
@@ -121,6 +118,8 @@ namespace Features.Garage.Presentation
         private void CycleFirepower(int delta)
         {
             _state.SetEditingFirepowerId(CycleId(_state.EditingFirepowerId, _catalog?.Firepower, delta, module => module.Id));
+            var wpName = _catalog?.FindFirepower(_state.EditingFirepowerId)?.DisplayName ?? _state.EditingFirepowerId;
+            _resultPanelView.ShowToast($"Firepower → {wpName}");
             TryCommitEditingDraft();
             Render();
         }
@@ -128,6 +127,8 @@ namespace Features.Garage.Presentation
         private void CycleMobility(int delta)
         {
             _state.SetEditingMobilityId(CycleId(_state.EditingMobilityId, _catalog?.Mobility, delta, module => module.Id));
+            var mobName = _catalog?.FindMobility(_state.EditingMobilityId)?.DisplayName ?? _state.EditingMobilityId;
+            _resultPanelView.ShowToast($"Mobility → {mobName}");
             TryCommitEditingDraft();
             Render();
         }

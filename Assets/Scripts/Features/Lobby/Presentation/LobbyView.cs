@@ -1,3 +1,4 @@
+using Features.Garage.Presentation.Theme;
 using Shared.Attributes;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
@@ -26,13 +27,13 @@ namespace Features.Lobby.Presentation
 
         [Header("Tab Visuals")]
         [SerializeField]
-        private Color _activeTabColor = new Color(0.286f, 0.463f, 1f, 1f);    // #4976FF
+        private Color _activeTabColor = new Color(0.286f, 0.463f, 1f, 1f);
         [SerializeField]
-        private Color _inactiveTabColor = new Color(0.086f, 0.157f, 0.196f, 1f); // #162832
+        private Color _inactiveTabColor = new Color(0.086f, 0.157f, 0.196f, 1f);
         [SerializeField]
         private Color _activeTextColor = Color.white;
         [SerializeField]
-        private Color _inactiveTextColor = new Color(0.545f, 0.584f, 0.651f, 1f); // #8B95A8
+        private Color _inactiveTextColor = new Color(0.545f, 0.584f, 0.651f, 1f);
 
         [Header("Panels")]
         [Required, SerializeField]
@@ -57,6 +58,8 @@ namespace Features.Lobby.Presentation
         private DisposableScope _disposables = new DisposableScope();
         private bool _tabsHooked;
         private bool _showingRoomDetail;
+        private Image _lobbyTabBorder;
+        private Image _garageTabBorder;
 
         public void Initialize(IEventSubscriber eventBus, IEventPublisher eventPublisher, LobbyUseCases useCases)
         {
@@ -80,6 +83,7 @@ namespace Features.Lobby.Presentation
             _roomListView.Initialize(useCases, eventPublisher);
             _roomDetailView.Initialize(useCases, eventBus, eventPublisher);
             HookTabs();
+            InitializeTabBorders();
 
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, this));
             _eventBus.Subscribe<LobbyUpdatedEvent>(this, e => RenderLobby(e.Lobby));
@@ -204,9 +208,17 @@ namespace Features.Lobby.Presentation
             if (tabButton == null) return;
 
             // 배경 색상
-            if (tabButton.TryGetComponent<UnityEngine.UI.Image>(out var bgImage))
+            if (tabButton.TryGetComponent<Image>(out var bgImage))
             {
                 bgImage.color = isActive ? _activeTabColor : _inactiveTabColor;
+            }
+
+            // 활성 탭 보더 강조 (왼쪽 3px)
+            var border = tabButton == _lobbyTabButton ? _lobbyTabBorder : _garageTabBorder;
+            if (border != null)
+            {
+                border.enabled = isActive;
+                border.color = isActive ? ThemeColors.AccentBlue : Color.clear;
             }
 
             // 텍스트 색상
@@ -217,6 +229,45 @@ namespace Features.Lobby.Presentation
                     tmpText.color = isActive ? _activeTextColor : _inactiveTextColor;
                 }
             }
+        }
+
+        private void InitializeTabBorders()
+        {
+            // 탭 버튼에 왼쪽 보더 Image 추가 (활성 시 강조용)
+            CreateTabBorder(_lobbyTabButton, ref _lobbyTabBorder);
+            CreateTabBorder(_garageTabButton, ref _garageTabBorder);
+        }
+
+        private static void CreateTabBorder(Button tabButton, ref Image borderRef)
+        {
+            if (tabButton == null) return;
+
+            // 이미 자식에 "TabBorder"가 있는지 확인
+            foreach (Transform child in tabButton.transform)
+            {
+                if (child.name == "TabBorder" && child.TryGetComponent<Image>(out var existingBorder))
+                {
+                    borderRef = existingBorder;
+                    borderRef.enabled = false;
+                    return;
+                }
+            }
+
+            // 새 보더 GameObject 생성 — 왼쪽 3px
+            // UI 요소이므로 RectTransform 사용
+            var borderGO = new GameObject("TabBorder");
+            var rectTransform = borderGO.AddComponent<RectTransform>();
+            rectTransform.SetParent(tabButton.transform, false);
+
+            // 왼쪽에 3px 보더 배치
+            rectTransform.anchorMin = new Vector2(0f, 0.1f);
+            rectTransform.anchorMax = new Vector2(0f, 0.9f);
+            rectTransform.pivot = new Vector2(0f, 0.5f);
+            rectTransform.anchoredPosition = new Vector2(0f, 0f);
+            rectTransform.sizeDelta = new Vector2(3f, 0f);
+
+            borderRef = borderGO.AddComponent<Image>();
+            borderRef.enabled = false;
         }
     }
 }

@@ -308,7 +308,8 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             if (req == null || string.IsNullOrWhiteSpace(req.path)) throw new ArgumentException("path is required.");
             if (!EditorApplication.isPlaying) throw new InvalidOperationException("UI button invoke requires play mode.");
-            var gameObject = GameObject.Find(req.path);
+            var gameObject = McpSharedHelpers.FindGameObjectByPath(req.path);
+            if (gameObject == null) gameObject = GameObject.Find(req.path);
             if (gameObject == null) throw new MissingMemberException("GameObject not found: " + req.path);
             var button = gameObject.GetComponent<UnityEngine.UI.Button>();
             if (button == null) throw new MissingMemberException("Button component not found on: " + req.path);

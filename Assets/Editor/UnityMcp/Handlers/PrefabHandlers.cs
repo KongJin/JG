@@ -28,7 +28,8 @@ namespace ProjectSD.EditorTools.UnityMcp
             {
                 if (string.IsNullOrEmpty(req.gameObjectPath)) throw new Exception("gameObjectPath is required");
                 if (string.IsNullOrEmpty(req.savePath)) throw new Exception("savePath is required");
-                var go = GameObject.Find(req.gameObjectPath);
+                var go = McpSharedHelpers.FindGameObjectByPath(req.gameObjectPath);
+                if (go == null) go = GameObject.Find(req.gameObjectPath);
                 if (go == null) throw new Exception("GameObject not found: " + req.gameObjectPath);
                 var directory = Path.GetDirectoryName(req.savePath);
                 if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory)) Directory.CreateDirectory(directory);

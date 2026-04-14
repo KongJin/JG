@@ -598,6 +598,26 @@ namespace ProjectSD.EditorTools.UnityMcp
     }
 
     [Serializable]
+    internal sealed class GameObjectSetParentRequest
+    {
+        public string path;
+        public string parentPath;
+        public bool autoSave;
+    }
+
+    [Serializable]
+    internal sealed class GameObjectSetParentResponse
+    {
+        public bool success;
+        public string message;
+        public string path;
+        public string parentPath;
+        public bool queued;
+        public int pendingCount;
+        public bool autoSaved;
+    }
+
+    [Serializable]
     internal sealed class UiCreateButtonRequest
     {
         public string name;
@@ -758,6 +778,15 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string componentPath;
         public string componentType;
         public string fieldsJson; // JSON string of Dictionary<string, string>
+
+        public static EvalFindComponentResponse PlayModeRequired()
+        {
+            return new EvalFindComponentResponse
+            {
+                success = false,
+                componentType = "PLAY_MODE_REQUIRED"
+            };
+        }
     }
 
     [Serializable]
@@ -775,6 +804,15 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string componentPath;
         public string componentType;
         public string fieldsJson;
+
+        public static EvalGetPublicStateResponse PlayModeRequired()
+        {
+            return new EvalGetPublicStateResponse
+            {
+                success = false,
+                componentType = "PLAY_MODE_REQUIRED"
+            };
+        }
     }
 
     // =====================================================================

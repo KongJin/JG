@@ -41,6 +41,22 @@
 
 ### 최근 변경 사항
 
+### 2026-04-14
+
+- done: MCP eval 엔드포인트 버그 수정 — `EditorApplication.isPlaying` 메인 스레드 이동 (`EvalHandlers.cs`, `Models.cs`)
+- done: Garage UI Phase 1~4 일괄 개선 — `garage_ui_ux_improvement_plan.md` 기반
+  - done: `ThemeColors.cs` 생성 — Garage 전용 색상 토큰 체계 (`Presentation/Theme/`)
+  - done: `GarageResultPanelView` 개선 — 저장 버튼 명확화, 텍스트 대비도, Toast/로딩 통합
+  - done: `GarageSlotItemView` 개선 — 호버 피드백 (IPointerEnterHandler), ThemeColors 적용
+  - done: `GarageUnitEditorView` 개선 — Clear Slot 버튼 텍스트 명시화, ThemeColors
+  - done: `GaragePartSelectorView` 개선 — 빈 값 텍스트-muted 색상, ThemeColors
+  - done: `GaragePageController` — ResultPane Preview 요소 런타임 분리, 중복 SaveButton 제거
+  - done: `GaragePagePresenter` — subtitle 개선 (auto-save 명확화)
+  - done: `GaragePageController` — 부품 선택 시 토스트 피드백 (Frame/Firepower/Mobility 이름 표시)
+  - done: `LobbyView` — 탭 활성 시각 개선 (왼쪽 3px 보더 자동 생성)
+- next: Unity Inspector에서 직렬화 참조 검증 (`_saveButtonText`, `_saveButtonImage`, `_clearButtonText` 등)
+- next: 플레이모드 smoke 테스트 — Garage 탭 → 저장 → 토스트 → 호버 확인
+
 ### 2026-04-12
 
 - done: Google 로그인 기반 코드 추가 — `IAuthPort.SignInWithGoogle`, `FirebaseAuthRestAdapter.signInWithIdp`, `SignInWithGoogleUseCase`, `AccountSetup` wiring

@@ -27,17 +27,6 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         public static async Task HandleEvalFindComponentAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
-            if (!EditorApplication.isPlaying)
-            {
-                await UnityMcpBridge.WriteJsonAsync(response, 409, new ErrorResponseEnvelope
-                {
-                    code = "PLAY_MODE_REQUIRED",
-                    message = "This endpoint requires play mode",
-                    detail = "Use POST /play/start to enter play mode first"
-                });
-                return;
-            }
-
             EvalFindComponentRequest req = null;
             if (request.HasEntityBody)
             {
@@ -61,6 +50,12 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
+                // 메인 스레드에서 isPlaying 체크 — UnityException 방지
+                if (!EditorApplication.isPlaying)
+                {
+                    return EvalFindComponentResponse.PlayModeRequired();
+                }
+
                 var go = McpSharedHelpers.FindGameObjectByPath(req.path);
                 if (go == null)
                 {
@@ -93,16 +88,8 @@ namespace ProjectSD.EditorTools.UnityMcp
                 };
             });
 
-            await UnityMcpBridge.WriteJsonAsync(response, 200, result);
-        }
-
-        // =====================================================================
-        // POST /eval/get-public-state
-        // =====================================================================
-
-        public static async Task HandleEvalGetPublicStateAsync(HttpListenerRequest request, HttpListenerResponse response)
-        {
-            if (!EditorApplication.isPlaying)
+            // Play mode 체크 — 에러 응답 분기
+            if (result.success == false && result.componentType == "PLAY_MODE_REQUIRED")
             {
                 await UnityMcpBridge.WriteJsonAsync(response, 409, new ErrorResponseEnvelope
                 {
@@ -113,6 +100,15 @@ namespace ProjectSD.EditorTools.UnityMcp
                 return;
             }
 
+            await UnityMcpBridge.WriteJsonAsync(response, 200, result);
+        }
+
+        // =====================================================================
+        // POST /eval/get-public-state
+        // =====================================================================
+
+        public static async Task HandleEvalGetPublicStateAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
             EvalGetPublicStateRequest req = null;
             if (request.HasEntityBody)
             {
@@ -136,6 +132,12 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
+                // 메인 스레드에서 isPlaying 체크 — UnityException 방지
+                if (!EditorApplication.isPlaying)
+                {
+                    return EvalGetPublicStateResponse.PlayModeRequired();
+                }
+
                 var go = McpSharedHelpers.FindGameObjectByPath(req.path);
                 if (go == null)
                 {
@@ -167,6 +169,18 @@ namespace ProjectSD.EditorTools.UnityMcp
                     fieldsJson = DictionaryToJson(fields)
                 };
             });
+
+            // Play mode 체크 — 에러 응답 분기
+            if (result.success == false && result.componentType == "PLAY_MODE_REQUIRED")
+            {
+                await UnityMcpBridge.WriteJsonAsync(response, 409, new ErrorResponseEnvelope
+                {
+                    code = "PLAY_MODE_REQUIRED",
+                    message = "This endpoint requires play mode",
+                    detail = "Use POST /play/start to enter play mode first"
+                });
+                return;
+            }
 
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }

@@ -1,11 +1,13 @@
+using Features.Garage.Presentation.Theme;
 using Shared.Attributes;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Features.Garage.Presentation
 {
-    public sealed class GarageSlotItemView : MonoBehaviour
+    public sealed class GarageSlotItemView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [Required, SerializeField] private Button _button;
         [Required, SerializeField] private Image _background;
@@ -13,15 +15,9 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private TMP_Text _titleText;
         [Required, SerializeField] private TMP_Text _summaryText;
 
-        [Header("Colors")]
-        [SerializeField] private Color _selectedColor = new(0.24f, 0.47f, 0.89f, 1f);
-        [SerializeField] private Color _filledColor = new(0.17f, 0.21f, 0.32f, 1f);
-        [SerializeField] private Color _emptyColor = new(0.10f, 0.12f, 0.18f, 0.92f);
-
         [Header("Selection Feedback")]
         [SerializeField] private GameObject _arrowIndicator;
         [SerializeField] private Image _borderImage;
-        [SerializeField] private Color _glowColor = new(0.24f, 0.47f, 0.89f, 0.8f);
 
         [Header("Layout")]
         [SerializeField] private float _preferredHeight = 92f;
@@ -37,6 +33,10 @@ namespace Features.Garage.Presentation
         // 선택 애니메이션 — 부드럽게 전환
         private CanvasGroup _canvasGroup;
         private bool _isTransitioning;
+
+        // 호버 상태 — 빈 슬롯 클릭 가능 시각 피드백
+        private bool _isHovered;
+        private GarageSlotViewModel _currentViewModel;
 
         private void Awake()
         {
@@ -74,6 +74,8 @@ namespace Features.Garage.Presentation
             if (viewModel == null)
                 return;
 
+            _currentViewModel = viewModel;
+
             if (_slotNumberText != null)
                 _slotNumberText.text = viewModel.SlotLabel;
 
@@ -89,12 +91,10 @@ namespace Features.Garage.Presentation
             {
                 if (!gameObject.activeInHierarchy)
                 {
-                    // inactive면 애니메이션 건너뛰고 즉시 적용 (다음 active 시 올바른 색상)
                     _background.color = targetColor;
                 }
                 else if (_isTransitioning)
                 {
-                    // 이미 애니메이션 중이면 즉시 중단 후 재시작
                     StopAllCoroutines();
                     _isTransitioning = false;
                     StartCoroutine(FadeBackgroundColor(targetColor, 0.15f));
@@ -115,19 +115,17 @@ namespace Features.Garage.Presentation
             if (viewModel.IsSelected)
             {
                 if (_borderImage != null)
-                    _borderImage.color = _glowColor;
+                    _borderImage.color = ThemeColors.StateSelected;
 
-                // 선택된 슬롯 강조 — 약간의 스케일 업 + 불투명도 증가
                 if (_canvasGroup != null)
                     _canvasGroup.alpha = 1f;
             }
             else
             {
-                // 비선택 슬롯 — 채워진 슬롯은 유지, 빈 슬롯은 반투명
+                // 빈 슬롯은 약간 더 어둡게 (클릭 가능 표시 유지)
                 if (_background != null && !viewModel.HasCommittedLoadout)
                 {
-                    // 빈 슬롯은 약간 더 어둡게 (클릭 가능 표시 유지)
-                    Color c = _emptyColor;
+                    Color c = _isHovered ? ThemeColors.SlotEmptyHover : ThemeColors.SlotEmpty;
                     _background.color = new Color(c.r, c.g, c.b, 0.6f);
                 }
                 if (_borderImage != null)
@@ -138,11 +136,30 @@ namespace Features.Garage.Presentation
             }
         }
 
+        // IPointerEnterHandler / IPointerExitHandler — 빈 슬롯 호버 피드백
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _isHovered = true;
+            if (_currentViewModel != null && !_currentViewModel.HasCommittedLoadout && _background != null)
+            {
+                _background.color = new Color(ThemeColors.SlotEmptyHover.r, ThemeColors.SlotEmptyHover.g, ThemeColors.SlotEmptyHover.b, 0.7f);
+            }
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _isHovered = false;
+            if (_currentViewModel != null && _background != null)
+            {
+                Render(_currentViewModel);
+            }
+        }
+
         private Color GetSlotColor(GarageSlotViewModel viewModel)
         {
-            if (viewModel.IsSelected) return _selectedColor;
-            if (viewModel.HasCommittedLoadout) return _filledColor;
-            return _emptyColor;
+            if (viewModel.IsSelected) return ThemeColors.SlotSelected;
+            if (viewModel.HasCommittedLoadout) return ThemeColors.SlotFilled;
+            return ThemeColors.SlotEmpty;
         }
 
         private System.Collections.IEnumerator FadeBackgroundColor(Color target, float duration)

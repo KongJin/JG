@@ -56,22 +56,22 @@ namespace Features.Garage.Presentation
             if (!hasCommittedUnit && !hasAnyDraftSelection)
             {
                 title = $"Slot {state.SelectedSlotIndex + 1} Empty";
-                subtitle = "Build a loadout. Valid combinations save immediately.";
+                subtitle = "Select parts below. Changes auto-save when valid.";
             }
             else if (hasCommittedUnit && !hasDraftChanges)
             {
                 title = $"Slot {state.SelectedSlotIndex + 1} Loadout";
-                subtitle = "Saved loadout. Adjust selectors to overwrite this slot automatically.";
+                subtitle = "Saved. Change any part to update — auto-saves when valid.";
             }
             else if (hasCommittedUnit)
             {
-                title = $"Slot {state.SelectedSlotIndex + 1} Draft";
-                subtitle = "Draft edits stay in the center/right panels until a valid combination replaces the saved slot.";
+                title = $"Slot {state.SelectedSlotIndex + 1} Editing";
+                subtitle = "Changes will replace the saved loadout. Complete all 3 parts to auto-save.";
             }
             else
             {
                 title = $"Slot {state.SelectedSlotIndex + 1} Draft";
-                subtitle = "This slot is not saved yet. Complete a valid draft to commit it to the roster.";
+                subtitle = "Complete all 3 parts to save. Select Frame, Firepower, and Mobility.";
             }
 
             var frame = Catalog?.FindFrame(state.EditingFrameId);
