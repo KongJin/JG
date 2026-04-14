@@ -1,14 +1,5 @@
 {
   "permissions": {
-    "defaultMode": "bypassPermissions",
-    "additionalDirectories": [
-      "C:\\Users\\SOL\\Desktop"
-    ],
-    "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(./secrets/**)"
-    ],
     "allow": [
       "Bash(powershell *)",
       "Bash(powershell -Command *)",
@@ -16,6 +7,18 @@
       "Bash(ls *)",
       "Bash(cat *)",
       "Bash(git *)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)"
+    ],
+    "defaultMode": "bypassPermissions",
+    "additionalDirectories": [
+      "C:\\Users\\SOL\\Desktop"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "unity"
+  ]
 }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Features.Garage.Domain;
+using Features.Garage.Presentation.Theme;
 
 namespace Features.Garage.Presentation
 {
@@ -23,11 +24,6 @@ namespace Features.Garage.Presentation
         [SerializeField] private GameObject _weaponPrefab;
         [Tooltip("기동: 원뿔")]
         [SerializeField] private GameObject _thrusterPrefab;
-
-        [Header("Frame Colors")]
-        [SerializeField] private Color _strikerColor = new(0.95f, 0.5f, 0.1f);   // 주황
-        [SerializeField] private Color _bastionColor = new(0.2f, 0.4f, 0.9f);   // 파랑
-        [SerializeField] private Color _relayColor = new(0.2f, 0.8f, 0.4f);     // 초록
 
         [Header("Rotation")]
         [SerializeField] private float _autoRotationSpeed = 20f;
@@ -52,13 +48,13 @@ namespace Features.Garage.Presentation
 
             if (_previewCamera != null)
             {
-                _previewCamera.backgroundColor = new Color(0.05f, 0.06f, 0.10f, 1f);
+                _previewCamera.backgroundColor = ThemeColors.PreviewBackground;
                 _previewCamera.clearFlags = CameraClearFlags.SolidColor;
             }
 
             // RawImage 배경을 어두운 색으로 — 하얀 화면 방지
             if (_rawImage != null)
-                _rawImage.color = new Color(0.05f, 0.06f, 0.10f, 1f);
+                _rawImage.color = ThemeColors.PreviewBackground;
         }
 
         public void Render(GarageSlotViewModel viewModel, GaragePanelCatalog catalog)
@@ -124,9 +120,9 @@ namespace Features.Garage.Presentation
         {
             return frameId switch
             {
-                "frame_striker" => _strikerColor,
-                "frame_bastion" => _bastionColor,
-                "frame_relay" => _relayColor,
+                "frame_striker" => ThemeColors.PreviewFrameStriker,
+                "frame_bastion" => ThemeColors.PreviewFrameBastion,
+                "frame_relay" => ThemeColors.PreviewFrameRelay,
                 _ => Color.white
             };
         }
@@ -135,9 +131,9 @@ namespace Features.Garage.Presentation
         {
             return firepowerId switch
             {
-                "fire_scatter" => new Color(0.9f, 0.2f, 0.2f),
-                "fire_pulse" => new Color(0.9f, 0.9f, 0.2f),
-                "fire_rail" => new Color(0.6f, 0.2f, 0.9f),
+                "fire_scatter" => ThemeColors.PreviewFireScatter,
+                "fire_pulse" => ThemeColors.PreviewFirePulse,
+                "fire_rail" => ThemeColors.PreviewFireRail,
                 _ => Color.white
             };
         }
@@ -146,9 +142,9 @@ namespace Features.Garage.Presentation
         {
             return mobilityId switch
             {
-                "mob_treads" => new Color(0.5f, 0.5f, 0.5f),
+                "mob_treads" => ThemeColors.PreviewMobTreads,
                 "mob_vector" => Color.white,
-                "mob_burst" => new Color(0.2f, 0.8f, 0.4f),
+                "mob_burst" => ThemeColors.PreviewMobBurst,
                 _ => Color.white
             };
         }

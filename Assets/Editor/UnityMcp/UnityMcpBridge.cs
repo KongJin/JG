@@ -886,6 +886,10 @@ namespace ProjectSD.EditorTools.UnityMcp
                 typeof(EvalHandlers),
                 typeof(SnapshotHandlers),
                 typeof(ExploreHandlers),
+                // 개선된 핸들러 (Phase 6-8)
+                typeof(ImprovedConsoleHandlers),
+                typeof(ImprovedUiHandlers),
+                typeof(ImprovedGameObjectHandlers),
             };
 
             foreach (var t in handlerTypes)
@@ -900,7 +904,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 }
             }
 
-            Debug.Log("[Unity MCP] Registered " + EndpointRegistry.RegistrationCount + " endpoints.");
+            Debug.Log("[Unity MCP] Registered " + EndpointRegistry.RegistrationCount + " endpoints (including improved handlers).");
         }
     }
 }

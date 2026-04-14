@@ -24,6 +24,9 @@ namespace Features.Garage.Presentation
         public event Action<int> MobilityCycleRequested;
         public event Action ClearRequested;
 
+        /// <summary>부품 비교 툴팁용 호버 이벤트 (partType, delta)</summary>
+        public event Action<string, int> PartHoverRequested;
+
         public void Bind()
         {
             if (_callbacksHooked)
@@ -39,6 +42,11 @@ namespace Features.Garage.Presentation
             _firepowerSelectorView.CycleRequested += delta => FirepowerCycleRequested?.Invoke(delta);
             _mobilitySelectorView.CycleRequested += delta => MobilityCycleRequested?.Invoke(delta);
             _clearButton.onClick.AddListener(() => ClearRequested?.Invoke());
+
+            // 호버 툴팁 이벤트 전달
+            _frameSelectorView.PartHoverRequested += delta => PartHoverRequested?.Invoke("frame", delta);
+            _firepowerSelectorView.PartHoverRequested += delta => PartHoverRequested?.Invoke("firepower", delta);
+            _mobilitySelectorView.PartHoverRequested += delta => PartHoverRequested?.Invoke("mobility", delta);
         }
 
         public void Render(GarageEditorViewModel viewModel)
@@ -65,19 +73,17 @@ namespace Features.Garage.Presentation
             _mobilitySelectorView.Render(viewModel.MobilityValueText, viewModel.MobilityHintText);
             _clearButton.interactable = viewModel.IsClearInteractable;
 
+            // Clear 버튼 — 파괴적 액션 스타일
+            if (_clearButton.TryGetComponent<Image>(out var btnImage))
+            {
+                _clearButton.Apply(ButtonStyles.Danger);
+            }
+
             // Clear 버튼 텍스트 명시화
             if (_clearButtonText == null)
                 _clearButtonText = _clearButton.GetComponentInChildren<TMP_Text>();
             if (_clearButtonText != null)
                 _clearButtonText.text = "Clear Slot";
-
-            // Clear 버튼 색상 — 파괴적 액션
-            if (_clearButton.TryGetComponent<Image>(out var btnImage))
-            {
-                btnImage.color = viewModel.IsClearInteractable
-                    ? ThemeColors.AccentRed
-                    : ThemeColors.StateDisabled;
-            }
         }
     }
 }

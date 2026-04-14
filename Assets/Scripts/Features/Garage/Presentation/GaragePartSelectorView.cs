@@ -28,10 +28,14 @@ namespace Features.Garage.Presentation
 
         public event Action<int> CycleRequested;
 
+        /// <summary>호버 시 부품 비교 툴팁 표시용 이벤트 (delta: -1=이전, +1=다음)</summary>
+        public event Action<int> PartHoverRequested;
+
         private void Awake()
         {
             CacheOptionalReferences();
             NormalizeLayout();
+            ApplyButtonStyles();
             if (transform is RectTransform rt)
                 _lastSizeDelta = rt.sizeDelta;
         }
@@ -63,6 +67,19 @@ namespace Features.Garage.Presentation
             _callbacksHooked = true;
             _prevButton.onClick.AddListener(() => CycleRequested?.Invoke(-1));
             _nextButton.onClick.AddListener(() => CycleRequested?.Invoke(1));
+
+            // 호버 시 툴팁 이벤트 연결
+            AttachHoverForwarder(_prevButton, -1);
+            AttachHoverForwarder(_nextButton, 1);
+        }
+
+        private void AttachHoverForwarder(Button button, int delta)
+        {
+            if (button == null) return;
+            var forwarder = button.gameObject.GetComponent<ButtonHoverForwarder>();
+            if (forwarder == null)
+                forwarder = button.gameObject.AddComponent<ButtonHoverForwarder>();
+            forwarder.HoverEntered += () => PartHoverRequested?.Invoke(delta);
         }
 
         public void Render(string valueText, string hintText)
@@ -70,7 +87,7 @@ namespace Features.Garage.Presentation
             if (_valueText != null)
             {
                 _valueText.text = valueText;
-                bool isEmpty = string.IsNullOrEmpty(valueText) || valueText.Contains("< Select");
+                bool isEmpty = string.IsNullOrEmpty(valueText) || valueText.StartsWith("< ");
                 _valueText.color = isEmpty ? ThemeColors.TextMuted : ThemeColors.TextPrimary;
             }
 
@@ -249,6 +266,29 @@ namespace Features.Garage.Presentation
             rectTransform.anchorMax = Vector2.one;
             rectTransform.offsetMin = new Vector2(left, bottom);
             rectTransform.offsetMax = new Vector2(-right, -top);
+        }
+
+        /// <summary>
+        /// < > 버튼에 Secondary 버튼 스타일 적용.
+        /// </summary>
+        private void ApplyButtonStyles()
+        {
+            _prevButton?.Apply(ButtonStyles.Secondary);
+            _nextButton?.Apply(ButtonStyles.Secondary);
+        }
+    }
+
+    /// <summary>
+    /// 버튼 호버 시 이벤트를 발행하는 헬퍼 컴포넌트.
+    /// </summary>
+    internal sealed class ButtonHoverForwarder : MonoBehaviour,
+        UnityEngine.EventSystems.IPointerEnterHandler
+    {
+        public event Action HoverEntered;
+
+        public void OnPointerEnter(UnityEngine.EventSystems.PointerEventData eventData)
+        {
+            HoverEntered?.Invoke();
         }
     }
 }

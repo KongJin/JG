@@ -33,10 +33,27 @@ namespace Features.Garage.Presentation.Theme
         public static readonly Color StateDisabled       = ParseColor("#3D4560");
 
         // ─── 슬롯 색상 ──────────────────────────────────────
-        public static readonly Color SlotSelected        = new(0.24f, 0.47f, 0.89f, 1f);
-        public static readonly Color SlotFilled          = new(0.17f, 0.21f, 0.32f, 1f);
+        public static readonly Color SlotSelected        = ParseColor("#3E7AE5");
+        public static readonly Color SlotFilled          = ParseColor("#2B3652");
         public static readonly Color SlotEmpty           = new(0.10f, 0.12f, 0.18f, 0.92f);
         public static readonly Color SlotEmptyHover      = new(0.14f, 0.17f, 0.25f, 1f);
+
+        // ─── 3D 프리뷰 ─────────────────────────────────────
+        public static readonly Color PreviewBackground   = new(0.05f, 0.06f, 0.10f, 1f);
+        public static readonly Color PreviewFrameStriker = ParseColor("#F28019");
+        public static readonly Color PreviewFrameBastion = ParseColor("#3366E6");
+        public static readonly Color PreviewFrameRelay   = ParseColor("#33CC66");
+        public static readonly Color PreviewFireScatter  = ParseColor("#E63333");
+        public static readonly Color PreviewFirePulse    = ParseColor("#E6E633");
+        public static readonly Color PreviewFireRail     = ParseColor("#9933E6");
+        public static readonly Color PreviewMobTreads    = ParseColor("#808080");
+        public static readonly Color PreviewMobBurst     = ParseColor("#33CC66");
+
+        // ─── 토스트 ─────────────────────────────────────────
+        public static readonly Color ToastErrorBg        = new(0.35f, 0.08f, 0.08f, 0.95f);
+        public static readonly Color ToastSuccessBg      = new(0.08f, 0.30f, 0.12f, 0.95f);
+        public static readonly Color ToastErrorText      = new(1f, 0.7f, 0.7f, 1f);
+        public static readonly Color ToastSuccessText    = new(0.7f, 1f, 0.7f, 1f);
 
         // ─── 헬퍼 ───────────────────────────────────────────
         private static Color ParseColor(string hex)

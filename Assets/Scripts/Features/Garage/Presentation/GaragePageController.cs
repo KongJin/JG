@@ -3,6 +3,7 @@ using Features.Garage.Domain;
 using Shared.Attributes;
 using Shared.Kernel;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using ComposedUnit = Features.Unit.Domain.Unit;
 
 namespace Features.Garage.Presentation
@@ -98,6 +99,54 @@ namespace Features.Garage.Presentation
             _unitEditorView.MobilityCycleRequested += CycleMobility;
             _unitEditorView.ClearRequested += ClearSelectedSlot;
             _resultPanelView.SaveClicked += OnSaveClicked;
+
+            // 부품 비교 툴팁
+            _unitEditorView.PartHoverRequested += ShowPartHoverTooltip;
+        }
+
+        /// <summary>
+        /// 키보드 단축키 처리.
+        /// A/D 또는 ←/→: 현재 편집 중인 파트 순환
+        /// 1~6: 슬롯 전환
+        /// Ctrl+S: 저장
+        /// </summary>
+        private void Update()
+        {
+            var keyboard = Keyboard.current;
+            if (keyboard == null) return;
+
+            // Ctrl+S: 저장
+            if (keyboard.leftCtrlKey.isPressed || keyboard.rightCtrlKey.isPressed)
+            {
+                if (keyboard.sKey.wasPressedThisFrame)
+                {
+                    OnSaveClicked();
+                    return;
+                }
+            }
+
+            // 1~6: 슬롯 전환
+            if (keyboard.digit1Key.wasPressedThisFrame || keyboard.numpad1Key.wasPressedThisFrame) { SelectSlot(0); return; }
+            if (keyboard.digit2Key.wasPressedThisFrame || keyboard.numpad2Key.wasPressedThisFrame) { SelectSlot(1); return; }
+            if (keyboard.digit3Key.wasPressedThisFrame || keyboard.numpad3Key.wasPressedThisFrame) { SelectSlot(2); return; }
+            if (keyboard.digit4Key.wasPressedThisFrame || keyboard.numpad4Key.wasPressedThisFrame) { SelectSlot(3); return; }
+            if (keyboard.digit5Key.wasPressedThisFrame || keyboard.numpad5Key.wasPressedThisFrame) { SelectSlot(4); return; }
+            if (keyboard.digit6Key.wasPressedThisFrame || keyboard.numpad6Key.wasPressedThisFrame) { SelectSlot(5); return; }
+
+            // A/D 또는 ←/→: 현재 선택된 파트 순환
+            int delta = 0;
+            if (keyboard.aKey.wasPressedThisFrame || keyboard.leftArrowKey.wasPressedThisFrame) delta = -1;
+            else if (keyboard.dKey.wasPressedThisFrame || keyboard.rightArrowKey.wasPressedThisFrame) delta = 1;
+
+            if (delta != 0)
+            {
+                // 현재 포커스된 파트를 결정 (편집 중인 파트이 있으면 해당 파트, 없으면 Frame 우선)
+                if (!string.IsNullOrEmpty(_state.EditingFrameId)) { CycleFrame(delta); return; }
+                if (!string.IsNullOrEmpty(_state.EditingFirepowerId)) { CycleFirepower(delta); return; }
+                if (!string.IsNullOrEmpty(_state.EditingMobilityId)) { CycleMobility(delta); return; }
+                // 아무것도 편집 중이 아니면 Frame부터 시작
+                CycleFrame(delta);
+            }
         }
 
         private void SelectSlot(int slotIndex)
@@ -131,6 +180,46 @@ namespace Features.Garage.Presentation
             _resultPanelView.ShowToast($"Mobility → {mobName}");
             TryCommitEditingDraft();
             Render();
+        }
+
+        /// <summary>
+        /// 부품 버튼 호버 시 다음 부품 이름 토스트로 표시 (비교 툴팁).
+        /// </summary>
+        private void ShowPartHoverTooltip(string partType, int delta)
+        {
+            string currentId = partType switch
+            {
+                "frame" => _state.EditingFrameId,
+                "firepower" => _state.EditingFirepowerId,
+                "mobility" => _state.EditingMobilityId,
+                _ => null
+            };
+
+            string nextId = partType switch
+            {
+                "frame" => CycleId(currentId, _catalog?.Frames, delta, m => m.Id),
+                "firepower" => CycleId(currentId, _catalog?.Firepower, delta, m => m.Id),
+                "mobility" => CycleId(currentId, _catalog?.Mobility, delta, m => m.Id),
+                _ => null
+            };
+
+            string currentName = partType switch
+            {
+                "frame" => _catalog?.FindFrame(currentId)?.DisplayName ?? "—",
+                "firepower" => _catalog?.FindFirepower(currentId)?.DisplayName ?? "—",
+                "mobility" => _catalog?.FindMobility(currentId)?.DisplayName ?? "—",
+                _ => "—"
+            };
+
+            string nextName = partType switch
+            {
+                "frame" => _catalog?.FindFrame(nextId)?.DisplayName ?? "—",
+                "firepower" => _catalog?.FindFirepower(nextId)?.DisplayName ?? "—",
+                "mobility" => _catalog?.FindMobility(nextId)?.DisplayName ?? "—",
+                _ => "—"
+            };
+
+            _resultPanelView.ShowToast($"{currentName} → {nextName}");
         }
 
         private async void ClearSelectedSlot()

@@ -122,36 +122,36 @@ namespace ProjectSD.EditorTools.UnityMcp
         // Component Management
         // =====================================================================
 
+        private static readonly Dictionary<string, Type> KnownComponentTypes = new(StringComparer.OrdinalIgnoreCase)
+        {
+            { "RectTransform", typeof(RectTransform) },
+            { "Canvas", typeof(Canvas) },
+            { "CanvasScaler", typeof(UnityEngine.UI.CanvasScaler) },
+            { "GraphicRaycaster", typeof(UnityEngine.UI.GraphicRaycaster) },
+            { "Image", typeof(UnityEngine.UI.Image) },
+            { "RawImage", typeof(UnityEngine.UI.RawImage) },
+            { "Button", typeof(UnityEngine.UI.Button) },
+            { "Toggle", typeof(UnityEngine.UI.Toggle) },
+            { "Slider", typeof(UnityEngine.UI.Slider) },
+            { "Scrollbar", typeof(UnityEngine.UI.Scrollbar) },
+            { "ScrollRect", typeof(UnityEngine.UI.ScrollRect) },
+            { "InputField", typeof(UnityEngine.UI.InputField) },
+            { "Text", typeof(UnityEngine.UI.Text) },
+            { "Dropdown", typeof(UnityEngine.UI.Dropdown) },
+            { "Mask", typeof(UnityEngine.UI.Mask) },
+            { "RectMask2D", typeof(UnityEngine.UI.RectMask2D) },
+            { "LayoutElement", typeof(UnityEngine.UI.LayoutElement) },
+            { "ContentSizeFitter", typeof(UnityEngine.UI.ContentSizeFitter) },
+            { "AspectRatioFitter", typeof(UnityEngine.UI.AspectRatioFitter) },
+            { "HorizontalLayoutGroup", typeof(UnityEngine.UI.HorizontalLayoutGroup) },
+            { "VerticalLayoutGroup", typeof(UnityEngine.UI.VerticalLayoutGroup) },
+            { "GridLayoutGroup", typeof(UnityEngine.UI.GridLayoutGroup) },
+            { "CanvasGroup", typeof(CanvasGroup) },
+        };
+
         public static Component AddComponentByName(GameObject go, string typeName)
         {
-            var knownTypes = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "RectTransform", typeof(RectTransform) },
-                { "Canvas", typeof(Canvas) },
-                { "CanvasScaler", typeof(UnityEngine.UI.CanvasScaler) },
-                { "GraphicRaycaster", typeof(UnityEngine.UI.GraphicRaycaster) },
-                { "Image", typeof(UnityEngine.UI.Image) },
-                { "RawImage", typeof(UnityEngine.UI.RawImage) },
-                { "Button", typeof(UnityEngine.UI.Button) },
-                { "Toggle", typeof(UnityEngine.UI.Toggle) },
-                { "Slider", typeof(UnityEngine.UI.Slider) },
-                { "Scrollbar", typeof(UnityEngine.UI.Scrollbar) },
-                { "ScrollRect", typeof(UnityEngine.UI.ScrollRect) },
-                { "InputField", typeof(UnityEngine.UI.InputField) },
-                { "Text", typeof(UnityEngine.UI.Text) },
-                { "Dropdown", typeof(UnityEngine.UI.Dropdown) },
-                { "Mask", typeof(UnityEngine.UI.Mask) },
-                { "RectMask2D", typeof(UnityEngine.UI.RectMask2D) },
-                { "LayoutElement", typeof(UnityEngine.UI.LayoutElement) },
-                { "ContentSizeFitter", typeof(UnityEngine.UI.ContentSizeFitter) },
-                { "AspectRatioFitter", typeof(UnityEngine.UI.AspectRatioFitter) },
-                { "HorizontalLayoutGroup", typeof(UnityEngine.UI.HorizontalLayoutGroup) },
-                { "VerticalLayoutGroup", typeof(UnityEngine.UI.VerticalLayoutGroup) },
-                { "GridLayoutGroup", typeof(UnityEngine.UI.GridLayoutGroup) },
-                { "CanvasGroup", typeof(CanvasGroup) },
-            };
-
-            if (knownTypes.TryGetValue(typeName, out var knownType))
+            if (KnownComponentTypes.TryGetValue(typeName, out var knownType))
                 return Undo.AddComponent(go, knownType);
 
             // TMP types

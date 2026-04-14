@@ -66,31 +66,15 @@ namespace Features.Garage.Presentation
         {
             if (_saveButton == null) return;
 
-            // 버튼 이미지 기본 색상 (Primary Action — 파란색)
-            if (_saveButtonImage == null)
-                _saveButtonImage = _saveButton.GetComponent<Image>();
+            // ButtonStyles 적용
+            _saveButton.Apply(ButtonStyles.Primary);
 
-            if (_saveButtonImage != null)
-                _saveButtonImage.color = ThemeColors.AccentBlue;
-
-            // 버튼 텍스트 기본 설정
+            // 저장 버튼 텍스트 초기화
             if (_saveButtonText == null)
                 _saveButtonText = _saveButton.GetComponentInChildren<TMP_Text>();
 
             if (_saveButtonText != null)
-            {
                 _saveButtonText.text = "Save Roster";
-                _saveButtonText.fontSize = 16;
-                _saveButtonText.alignment = TextAlignmentOptions.Center;
-                _saveButtonText.color = ThemeColors.TextPrimary;
-            }
-
-            // LayoutElement로 최소 크기 보장
-            var layoutElement = _saveButton.GetComponent<LayoutElement>();
-            if (layoutElement == null)
-                layoutElement = _saveButton.gameObject.AddComponent<LayoutElement>();
-            layoutElement.preferredHeight = 44;
-            layoutElement.minHeight = 44;
         }
 
         private void OnEnable()
@@ -160,14 +144,14 @@ namespace Features.Garage.Presentation
             if (_toastPanel.TryGetComponent<Image>(out var panelImage))
             {
                 panelImage.color = isError
-                    ? new Color(0.35f, 0.08f, 0.08f, 0.95f)
-                    : new Color(0.08f, 0.30f, 0.12f, 0.95f);
+                    ? ThemeColors.ToastErrorBg
+                    : ThemeColors.ToastSuccessBg;
             }
 
             // 텍스트색: 순색 대신 부드러운 톤
             _toastText.color = isError
-                ? new Color(1f, 0.7f, 0.7f, 1f)
-                : new Color(0.7f, 1f, 0.7f, 1f);
+                ? ThemeColors.ToastErrorText
+                : ThemeColors.ToastSuccessText;
         }
 
         private void HideToast()
@@ -256,14 +240,18 @@ namespace Features.Garage.Presentation
                 _statsText.enableAutoSizing = false;
             }
 
-            // Save 버튼 — 상태에 따른 색상 변화
-            if (_saveButtonImage != null)
+            // Save 버튼 — 준비 완료 시 초록색으로 변경
+            if (_saveButtonImage != null && _saveButton != null)
             {
-                bool isReady = viewModel.RosterStatusText != null
-                    && viewModel.RosterStatusText.Contains("Ready");
-                _saveButtonImage.color = isReady
+                Color targetColor = viewModel.IsReady
                     ? ThemeColors.AccentGreen
                     : ThemeColors.AccentBlue;
+                _saveButtonImage.color = targetColor;
+
+                // ButtonFeedback의 baseColor도 업데이트 (호버 시 올바른 색상 사용)
+                var feedback = _saveButton.GetComponent<ButtonFeedback>();
+                if (feedback != null)
+                    feedback.UpdateBaseColor(targetColor);
             }
 
             if (_saveButtonText != null)

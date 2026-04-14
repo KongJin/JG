@@ -106,7 +106,8 @@ namespace Features.Garage.Presentation
             return new GarageResultViewModel(
                 rosterStatusText,
                 BuildValidationText(state, evaluation),
-                BuildStatsText(evaluation));
+                BuildStatsText(evaluation),
+                isReady: state.CommittedRoster.Count >= 3);
         }
 
         private static string BuildValidationText(GaragePageState state, GarageDraftEvaluation evaluation)

@@ -899,5 +899,109 @@ namespace ProjectSD.EditorTools.UnityMcp
         public bool interactable;
         public bool activeInHierarchy;
     }
+
+    // =====================================================================
+    // Log Streaming (Improved Phase 6)
+    // =====================================================================
+
+    [Serializable]
+    internal sealed class LogStreamSubscribeRequest
+    {
+        public string[] filters;    // Log 타입 필터 (Log, Warning, Error, Exception)
+        public string[] tags;       // 태그 필터 ([Account], [FirebaseAuth] 등)
+        public string contains;     // 메시지에 포함된 텍스트
+        public int sinceId;         // 이 ID 이후의 로그만 받기
+    }
+
+    [Serializable]
+    internal sealed class LogStreamResponse
+    {
+        public int id;
+        public string timestampUtc;
+        public string type;
+        public string message;
+        public string stackTrace;
+        public string[] tags;       // 로그에서 추출한 태그
+    }
+
+    [Serializable]
+    internal sealed class LogStreamStatsResponse
+    {
+        public int totalLogs;
+        public int errorCount;
+        public int warningCount;
+        public int lastLogId;
+        public long oldestLogTimestampMs;
+        public long newestLogTimestampMs;
+    }
+
+    // =====================================================================
+    // UI Direct Invoke (Improved Phase 7)
+    // =====================================================================
+
+    [Serializable]
+    internal sealed class UiInvokeRequest
+    {
+        public string path;
+        public string method;       // "click", "submit", "value", "custom"
+        public string customMethod; // 커스텀 메서드 이름 (method="custom"일 때)
+        public object[] args;       // 메서드에 전달할 인자
+    }
+
+    [Serializable]
+    internal sealed class UiInvokeResponse
+    {
+        public bool success;
+        public string message;
+        public string path;
+        public string invokedMethod;
+        public string result;       // 메서드 반환 값 (문자열)
+        public float durationMs;
+    }
+
+    // =====================================================================
+    // GameObject with Component Fields (Improved Phase 8)
+    // =====================================================================
+
+    [Serializable]
+    internal sealed class GameObjectWithFieldsResponse
+    {
+        public bool found;
+        public string name;
+        public string path;
+        public bool activeSelf;
+        public string layer;
+        public string tag;
+        public ComponentWithFields[] components;
+    }
+
+    [Serializable]
+    internal sealed class ComponentWithFields
+    {
+        public string typeName;
+        public string fullTypeName;
+        public SerializedFieldInfo[] fields;
+        public MethodInfo[] methods;
+    }
+
+    [Serializable]
+    internal sealed class SerializedFieldInfo
+    {
+        public string name;
+        public string type;
+        public string value;
+        public bool isNull;
+        public bool isObjectReference;
+        public string objectPath;    // ObjectReference일 때 대상 경로
+    }
+
+    [Serializable]
+    internal sealed class MethodInfo
+    {
+        public string name;
+        public string returnType;
+        public string[] parameterTypes;
+        public bool isPublic;
+    }
 }
 #endif

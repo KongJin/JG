@@ -8,13 +8,10 @@ using UnityEngine;
 
 namespace ProjectSD.EditorTools.UnityMcp
 {
-    /// <summary>
-    /// Phase 3: Evaluate — 런타임 public 필드 상태 조회.
-    /// [Editor-only] [Play-mode-only] 엔드포인트.
-    /// 메서드 호출은 부작용/직렬화 문제로 제외 (조회만).
-    /// </summary>
     internal static class EvalHandlers
     {
+        private const string PlayModeRequiredType = "PLAY_MODE_REQUIRED";
+
         static EvalHandlers()
         {
             "POST".Register("/eval/find-component", "Find component on GameObject and read public fields", async (req, res) => await HandleEvalFindComponentAsync(req, res));

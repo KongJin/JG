@@ -75,15 +75,18 @@ namespace Features.Garage.Presentation
         public GarageResultViewModel(
             string rosterStatusText,
             string validationText,
-            string statsText)
+            string statsText,
+            bool isReady = false)
         {
             RosterStatusText = rosterStatusText;
             ValidationText = validationText;
             StatsText = statsText;
+            IsReady = isReady;
         }
 
         public string RosterStatusText { get; }
         public string ValidationText { get; }
         public string StatsText { get; }
+        public bool IsReady { get; }
     }
 }

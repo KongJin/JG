@@ -17,8 +17,8 @@
                                                 "feature_test_assets_present"
                                             ],
                         "confidence":  "medium",
-                        "hitCount":  12,
-                        "distinctCommitCount":  12,
+                        "hitCount":  13,
+                        "distinctCommitCount":  13,
                         "commitShas":  [
                                            "eebb079f5e56493dc34bbc1193ac950e5737bab8",
                                            "792f1531d72ef229713a376d365ad4f854ded97e",
@@ -31,9 +31,10 @@
                                            "0544720ea0a92417da2e7065c533624b887a8106",
                                            "83b7c054c18a5531d7dea277e576a32fc38d0c25",
                                            "5ee866e1d9ae7655c791afa7bc35a1567fef1f6c",
-                                           "b57e439f99b4d2105d2658133f243c4878515af3"
+                                           "b57e439f99b4d2105d2658133f243c4878515af3",
+                                           "ea3a17c738039ac58380b0610e6fe81f65807bf4"
                                        ],
-                        "lastSeen":  "2026-04-13T20:01:45.3302553Z",
+                        "lastSeen":  "2026-04-14T02:02:46.9395605Z",
                         "promotionTarget":  "docs/design/unit_module_design.md",
                         "status":  "observed"
                     },
@@ -95,12 +96,13 @@
                                                 "tools/rule-harness/README.md"
                                             ],
                         "confidence":  "high",
-                        "hitCount":  1,
-                        "distinctCommitCount":  1,
+                        "hitCount":  3,
+                        "distinctCommitCount":  2,
                         "commitShas":  [
-                                           "0544720ea0a92417da2e7065c533624b887a8106"
+                                           "0544720ea0a92417da2e7065c533624b887a8106",
+                                           "ea3a17c738039ac58380b0610e6fe81f65807bf4"
                                        ],
-                        "lastSeen":  "2026-04-13T05:01:02.3205425Z",
+                        "lastSeen":  "2026-04-14T14:00:55.1946745Z",
                         "promotionTarget":  "tools/rule-harness/README.md",
                         "status":  "observed"
                     },
