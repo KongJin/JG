@@ -192,7 +192,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             var path = McpSharedHelpers.GetTransformPath(go.transform);
 
             // InputField 확인
-            var inputField = go.GetComponent<TMP_InputField>();
+            var inputField = go.GetComponent<TMPro.TMP_InputField>();
             if (inputField != null)
             {
                 inputField.onSubmit?.Invoke(inputField.text);
@@ -201,7 +201,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                     success = true,
                     message = "Invoked InputField.onSubmit",
                     path = path,
-                    invokedMethod = "TMP_InputField.onSubmit",
+                    invokedMethod = "TMPro.TMP_InputField.onSubmit",
                     durationMs = stopwatch.ElapsedMilliseconds
                 };
             }
@@ -324,7 +324,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             }
 
             // InputField 상태
-            var inputField = gameObject.GetComponent<TMP_InputField>();
+            var inputField = gameObject.GetComponent<TMPro.TMP_InputField>();
             if (inputField != null)
             {
                 state["type"] = "InputField";
@@ -397,7 +397,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             var path = McpSharedHelpers.GetTransformPath(gameObject.transform);
 
             // InputField 설정
-            var inputField = gameObject.GetComponent<TMP_InputField>();
+            var inputField = gameObject.GetComponent<TMPro.TMP_InputField>();
             if (inputField != null)
             {
                 inputField.text = req.value ?? string.Empty;
@@ -557,12 +557,12 @@ namespace ProjectSD.EditorTools.UnityMcp
                             }
                         }
 
-                        method.Invoke(comp, invokeArgs);
+                        var result = method.Invoke(comp, invokeArgs);
 
                         // 코루틴 반환값 처리
-                        if (method.ReturnType == typeof(IEnumerator))
+                        if (method.ReturnType == typeof(IEnumerator) && result is IEnumerator coroutine)
                         {
-                            go.StartCoroutine((IEnumerator)method.Invoke(comp, invokeArgs));
+                            comp.StartCoroutine(coroutine);
                             return $"Coroutine {methodName} started";
                         }
 

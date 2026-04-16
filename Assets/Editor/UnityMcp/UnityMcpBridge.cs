@@ -743,6 +743,14 @@ namespace ProjectSD.EditorTools.UnityMcp
             }
         }
 
+        /// <summary>
+        /// Batchmode에서 MainThreadActions을 수동으로 처리하기 위한 공개 메서드.
+        /// </summary>
+        internal static void DrainMainThreadActionsForBatchmode()
+        {
+            DrainMainThreadActions();
+        }
+
         // =====================================================================
         // Console Logging
         // =====================================================================
@@ -886,10 +894,13 @@ namespace ProjectSD.EditorTools.UnityMcp
                 typeof(EvalHandlers),
                 typeof(SnapshotHandlers),
                 typeof(ExploreHandlers),
-                // 개선된 핸들러 (Phase 6-8)
+                // 개선된 핸들러 (2026-04-15 개편)
                 typeof(ImprovedConsoleHandlers),
                 typeof(ImprovedUiHandlers),
                 typeof(ImprovedGameObjectHandlers),
+                // 완전 자동화 핸들러 (2026-04-15 추가)
+                typeof(AsyncMonitorHandlers),
+                typeof(UiStateMonitorHandlers),
             };
 
             foreach (var t in handlerTypes)
@@ -904,7 +915,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 }
             }
 
-            Debug.Log("[Unity MCP] Registered " + EndpointRegistry.RegistrationCount + " endpoints (including improved handlers).");
+            Debug.Log("[Unity MCP] Registered " + EndpointRegistry.RegistrationCount + " endpoints (including automation handlers).");
         }
     }
 }

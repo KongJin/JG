@@ -6,7 +6,12 @@
       "Bash(mkdir *)",
       "Bash(ls *)",
       "Bash(cat *)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Bash(mv \"C:/Users/SOL/Documents/JG/.claude/skills/rule/architecture\" \"C:/Users/SOL/Documents/JG/.claude/skills/rule-architecture\")",
+      "Bash(mv \"C:/Users/SOL/Documents/JG/.claude/skills/rule/patterns\" \"C:/Users/SOL/Documents/JG/.claude/skills/rule-patterns\")",
+      "Bash(mv \"C:/Users/SOL/Documents/JG/.claude/skills/rule/operations\" \"C:/Users/SOL/Documents/JG/.claude/skills/rule-operations\")",
+      "Bash(mv \"C:/Users/SOL/Documents/JG/.claude/skills/rule/context\" \"C:/Users/SOL/Documents/JG/.claude/skills/rule-context\")",
+      "Bash(mv \"C:/Users/SOL/Documents/JG/.claude/skills/rule/unity\" \"C:/Users/SOL/Documents/JG/.claude/skills/rule-unity\")"
     ],
     "deny": [
       "Read(./.env)",

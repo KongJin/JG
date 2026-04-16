@@ -1,6 +1,6 @@
 # 진행 상황 (Game Scene Entry)
 
-> **마지막 업데이트**: 2026-04-12
+> **마지막 업데이트**: 2026-04-15
 
 ## Phase 진행률
 
@@ -40,6 +40,27 @@
 - Phase 10 계정 시스템 마무리와 Phase 11 Google 로그인 사용자 플로우 연결을 병행
 
 ### 최근 변경 사항
+
+### 2026-04-15
+
+- done: Unity MCP 완전 자동화 - Play Mode 진입/종료 안정화, 비동기 작업 감지, UI 상태 모니터링
+  - done: PlayHandlers.cs 개선 - `/play/wait-for-play`, `/play/wait-for-stop` 엔드포인트 추가
+  - done: PlayMode 진입/종료 완전 대기 로직 구현
+  - done: AsyncMonitorHandlers.cs 추가 - 비동기 작업 추적 및 상태 모니터링
+  - done: WebRequestMonitor.cs 추가 - UnityWebRequest 타임아웃 감지
+  - done: FirebaseAuthRestAdapter.cs 개선 - 로그 추가, 타임아웃 감지
+  - done: FirestoreRestPort.cs 개선 - 로그 추가, 타임아웃 감지
+  - done: UiStateMonitorHandlers.cs 추가 - UI 활성/비활성 대기, 텍스트 대기, 컴포넌트 대기, 스크린샷 비교
+  - done: improved UI Handlers - 코드로 바인딩된 핸들러 호출 지원
+  - done: improved Console Handlers - 실시간 로그 스트리밍 (SSE), 태그 필터링
+  - done: improved GameObject Handlers - 컴포넌트 필드 값, 메서드 정보 포함
+- new: 자동화된 Play Mode 진입/종료
+- new: UnityWebRequest 타임아웃 감지 (30초)
+- new: UI 요소 상태 대기 (활성/비활성, 텍스트, 컴포넌트)
+- new: 실시간 로그 스트리밍 (SSE)
+- new: 코드로 바인딩된 버튼 핸들러 직접 호출
+
+### 2026-04-14
 
 ### 2026-04-14
 

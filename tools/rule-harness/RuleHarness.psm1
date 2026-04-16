@@ -2238,6 +2238,234 @@ function Get-RuleHarnessManagedCycleRepairDocEdits {
     })
 }
 
+function Get-RuleHarnessRecurringFailureDocEdits {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$PromotionCandidates
+    )
+
+    $edits = [System.Collections.Generic.List[object]]::new()
+
+    foreach ($candidate in @($PromotionCandidates)) {
+        $targetDoc = [string]$candidate.targetDoc
+        $signature = [string]$candidate.signature
+        $rationale = [string]$candidate.rationale
+        $preferredStrategy = if ($candidate.PSObject.Properties.Name -contains 'preferredStrategy') {
+            [string]$candidate.preferredStrategy
+        }
+        else {
+            'N/A'
+        }
+
+        $fullPath = Join-Path $RepoRoot $targetDoc
+        if (-not (Test-Path -LiteralPath $fullPath)) {
+            continue
+        }
+
+        $currentText = Get-Content -Path $fullPath -Raw
+
+        $failureType = if ($signature -like '*harness-stage-failed*') {
+            'Harness stage failure'
+        }
+        elseif ($signature -like '*static-scan-failed*') {
+            'Static scan failure'
+        }
+        elseif ($signature -like '*feature-cycle-*') {
+            'Feature dependency cycle'
+        }
+        else {
+            'Recurring failure'
+        }
+
+        $noteHeader = "## Rule Harness Learned Rules"
+        $noteLine = "* **$failureType** (`$Signature`): $preferredStrategy. $rationale"
+
+        if ($currentText.Contains($noteLine)) {
+            continue
+        }
+
+        $updatedText = if ($currentText.Contains($noteHeader)) {
+            $currentText.Replace($noteHeader, "$noteHeader`r`n$noteLine")
+        }
+        else {
+            $currentText.TrimEnd() + "`r`n`r`n$noteHeader`r`n`r`n$noteLine`r`n"
+        }
+
+        [void]$edits.Add([pscustomobject]@{
+            targetPath = $targetDoc
+            searchText = $currentText
+            replaceText = $updatedText
+        })
+    }
+
+    @($edits)
+}
+
+function Invoke-RuleHarnessRecurringFailurePromotion {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [object]$Config,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$PromotionCandidates,
+        [switch]$DryRun
+    )
+
+    $stageResults = [System.Collections.Generic.List[object]]::new()
+    $actionItems = [System.Collections.Generic.List[object]]::new()
+    $docCommits = [System.Collections.Generic.List[object]]::new()
+    $memoryUpdates = [System.Collections.Generic.List[object]]::new()
+    $learningTrace = [System.Collections.Generic.List[object]]::new()
+
+    if ($PromotionCandidates.Count -eq 0) {
+        [void]$stageResults.Add((New-RuleHarnessStageResult `
+            -Stage 'recurring_failure_promotion' `
+            -Status 'skipped' `
+            -Attempted $true `
+            -Summary 'No promotion candidates to process.' `
+            -Details ([pscustomobject]@{
+                candidateCount = 0
+            })))
+
+        return [pscustomobject]@{
+            status          = 'skipped'
+            attempted       = $true
+            failed          = $false
+            stageResults    = @($stageResults)
+            actionItems     = @($actionItems)
+            docCommits      = @($docCommits)
+            memoryUpdates   = @($memoryUpdates)
+            learningTrace   = @($learningTrace)
+            promotedCount   = 0
+        }
+    }
+
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'recurring_failure_promotion' `
+        -Status 'in_progress' `
+        -Attempted $true `
+        -Summary ("Processing {0} promotion candidate(s)." -f $PromotionCandidates.Count) `
+        -Details ([pscustomobject]@{
+            candidateCount = $PromotionCandidates.Count
+        })))
+
+    $docEdits = @(Get-RuleHarnessRecurringFailureDocEdits -RepoRoot $RepoRoot -PromotionCandidates @($PromotionCandidates))
+
+    if ($docEdits.Count -eq 0) {
+        [void]$stageResults.Add((New-RuleHarnessStageResult `
+            -Stage 'recurring_failure_promotion' `
+            -Status 'skipped' `
+            -Attempted $true `
+            -Summary 'All candidates already have corresponding rules in target docs.' `
+            -Details ([pscustomobject]@{
+                candidateCount = $PromotionCandidates.Count
+                editCount = 0
+            })))
+
+        return [pscustomobject]@{
+            status          = 'skipped'
+            attempted       = $true
+            failed          = $false
+            stageResults    = @($stageResults)
+            actionItems     = @($actionItems)
+            docCommits      = @($docCommits)
+            memoryUpdates   = @($memoryUpdates)
+            learningTrace   = @($learningTrace)
+            promotedCount   = 0
+        }
+    }
+
+    $docApply = Invoke-RuleHarnessDocEdits -Edits @($docEdits) -RepoRoot $RepoRoot -Config $Config -DryRun:$DryRun
+    $appliedEdits = @($docApply.edits | Where-Object { $_.status -eq 'applied' })
+    $skippedEdits = @($docApply.edits | Where-Object { $_.status -ne 'applied' })
+
+    foreach ($appliedEdit in @($appliedEdits)) {
+        $candidate = $PromotionCandidates | Where-Object { $_.targetDoc -eq [string]$appliedEdit.targetPath } | Select-Object -First 1
+        if ($null -ne $candidate) {
+            [void]$learningTrace.Add([pscustomobject]@{
+                batchId             = 'recurring_failure_promotion'
+                signature           = [string]$candidate.signature
+                promotedTo          = [string]$candidate.targetDoc
+                promotionRationale  = [string]$candidate.rationale
+            })
+        }
+    }
+
+    if ($appliedEdits.Count -gt 0) {
+        $appliedDocPaths = @($appliedEdits | ForEach-Object { [string]$_.targetPath } | Select-Object -Unique)
+        if (-not $DryRun) {
+            $docBatch = [pscustomobject]@{ id = 'recurring-failure-promotion' }
+            $docCommit = Invoke-RuleHarnessCommit -RepoRoot $RepoRoot -Config $Config -TargetFiles $appliedDocPaths -AppliedBatches @($docBatch)
+            [void]$docCommits.Add($docCommit)
+
+            $memoryStore = Read-RuleHarnessMemoryStore -RepoRoot $RepoRoot -Config $Config
+            foreach ($candidate in @($PromotionCandidates)) {
+                $matchedEdit = $appliedEdits | Where-Object { $_.targetPath -eq [string]$candidate.targetDoc } | Select-Object -First 1
+                if ($null -ne $matchedEdit) {
+                    $existing = Find-RuleHarnessMemoryEntry -MemoryStore $memoryStore -Signature ([string]$candidate.signature) -ScopePath ([string]$candidate.scopePath)
+                    if ($null -ne $existing) {
+                        $existing.status = 'promoted'
+                        $existing.promotedAt = (Get-Date).ToUniversalTime().ToString('o')
+                        $existing.promotedTo = [string]$candidate.targetDoc
+                        $memoryStore.dirty = $true
+                    }
+                }
+            }
+            if ($memoryStore.dirty) {
+                Save-RuleHarnessMemoryStore -MemoryStore $memoryStore
+            }
+        }
+        else {
+            [void]$actionItems.Add((New-RuleHarnessActionItem `
+                -Kind 'doc_proposal' `
+                -Severity 'high' `
+                -Summary ("Apply {0} learned rule(s) to owner docs" -f $appliedEdits.Count) `
+                -Details ("Dry run detected {0} edit(s) to apply. Re-run without -DryRun to commit changes." -f $appliedEdits.Count) `
+                -RelatedPaths @($appliedDocPaths)))
+        }
+    }
+
+    if ($skippedEdits.Count -gt 0) {
+        [void]$actionItems.Add((New-RuleHarnessActionItem `
+            -Kind 'info' `
+            -Severity 'low' `
+            -Summary ("{0} edit(s) were skipped due to conflicts or no changes." -f $skippedEdits.Count) `
+            -Details ("Skipped edits: {0}" -f [string](($skippedEdits | ForEach-Object { [string]$_.targetPath }) -join ', '))))
+    }
+
+    $finalStatus = if ($appliedEdits.Count -gt 0) { 'passed' } elseif ($docEdits.Count -eq 0) { 'skipped' } else { 'failed' }
+
+    [void]$stageResults.Add((New-RuleHarnessStageResult `
+        -Stage 'recurring_failure_promotion' `
+        -Status $finalStatus `
+        -Attempted $true `
+        -Summary ("Processed {0} candidate(s), applied {1} edit(s)." -f $PromotionCandidates.Count, $appliedEdits.Count) `
+        -Details ([pscustomobject]@{
+            candidateCount = $PromotionCandidates.Count
+            editCount = $docEdits.Count
+            appliedCount = $appliedEdits.Count
+            skippedCount = $skippedEdits.Count
+            appliedDocPaths = @($appliedEdits | ForEach-Object { [string]$_.targetPath } | Select-Object -Unique)
+        })))
+
+    [pscustomobject]@{
+        status          = $finalStatus
+        attempted       = $true
+        failed          = ($finalStatus -eq 'failed')
+        stageResults    = @($stageResults)
+        actionItems     = @($actionItems)
+        docCommits      = @($docCommits)
+        memoryUpdates   = @($memoryUpdates)
+        learningTrace   = @($learningTrace)
+        promotedCount   = $appliedEdits.Count
+    }
+}
+
 function New-RuleHarnessFeatureDependencyRepairResult {
     param(
         [Parameter(Mandatory)]
@@ -8033,6 +8261,17 @@ function Invoke-RuleHarness {
     foreach ($entry in @($featureDependencyRepair.promotionCandidates)) {
         [void]$reportPromotionCandidates.Add($entry)
     }
+
+    $recurringFailurePromotion = Invoke-RuleHarnessRecurringFailurePromotion `
+        -RepoRoot $RepoRoot `
+        -Config $config `
+        -PromotionCandidates @($reportPromotionCandidates) `
+        -DryRun:$DryRun
+
+    foreach ($promotionStage in @($recurringFailurePromotion.stageResults)) {
+        [void]$stageResults.Add($promotionStage)
+    }
+
     $reportLearningTrace = [System.Collections.Generic.List[object]]::new()
     foreach ($entry in @($mutationResult.learningTrace)) {
         [void]$reportLearningTrace.Add($entry)
@@ -8134,6 +8373,7 @@ function Invoke-RuleHarness {
         @($featureDependencyRepair.actionItems) +
         @($compileGateStatus.actionItems) +
         @($mutationResult.actionItems) +
+        @($recurringFailurePromotion.actionItems) +
         @($reportPromotionCandidates | ForEach-Object {
             New-RuleHarnessActionItem `
                 -Kind 'promote-durable-rule' `
@@ -8211,9 +8451,9 @@ function Invoke-RuleHarness {
         decisionTrace     = @($mutationResult.decisionTrace)
         validationResults = @(@($mutationResult.validationResults) + @($featureDependencyRepair.validationResults))
         discoveredValidationPlan = @($mutationResult.discoveredValidationPlan)
-        learningTrace     = @($reportLearningTrace)
+        learningTrace     = @($reportLearningTrace) + @($recurringFailurePromotion.learningTrace)
         memoryHits        = @($reportMemoryHits)
-        memoryUpdates     = @($reportMemoryUpdates)
+        memoryUpdates     = @($reportMemoryUpdates) + @($recurringFailurePromotion.memoryUpdates)
         promotionCandidates = @($reportPromotionCandidates)
         featureDependencyRepairSummaries = @($featureDependencyRepair.summaries)
         featureDependencyRepairCodeCommits = @($featureDependencyRepair.codeCommits)
@@ -8251,4 +8491,6 @@ Export-ModuleMember -Function `
     Invoke-RuleHarnessMutationPlan, `
     Read-RuleHarnessHistoryState, `
     Read-RuleHarnessFeatureScanState, `
-    Read-RuleHarnessDocProposalBacklog
+    Read-RuleHarnessDocProposalBacklog, `
+    Get-RuleHarnessRecurringFailureDocEdits, `
+    Invoke-RuleHarnessRecurringFailurePromotion

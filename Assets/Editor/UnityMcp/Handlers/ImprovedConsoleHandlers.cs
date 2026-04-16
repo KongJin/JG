@@ -22,7 +22,6 @@ namespace ProjectSD.EditorTools.UnityMcp
         private static int _nextLogId = 1;
         private static readonly object StreamLock = new object();
         private static readonly HashSet<HttpListenerResponse> ActiveStreamClients = new HashSet<HttpListenerResponse>();
-        private static bool _streamActive = false;
 
         // 태그 추출용 정규식: [태그] 형식
         private static readonly Regex TagRegex = new Regex(@"\[([^\]]+)\]", RegexOptions.Compiled);
@@ -66,14 +65,13 @@ namespace ProjectSD.EditorTools.UnityMcp
                 lock (StreamLock)
                 {
                     ActiveStreamClients.Add(response);
-                    _streamActive = true;
                 }
 
                 // 현재 로그들을 모두 전송
                 await SendExistingLogsAsync(response);
 
                 // 연결 유지 (SSE ping)
-                var pingTimer = new Timer(_ => SendPing(response), null, 30000, 30000);
+                var pingTimer = new Timer(_ => { _ = SendPing(response); }, null, 30000, 30000);
 
                 // 연결이 끊날 때까지 대기
                 var timeoutCts = new CancellationTokenSource();
@@ -118,7 +116,8 @@ namespace ProjectSD.EditorTools.UnityMcp
             }
 
             // 전송 완료 마커
-            await SendSseEventAsync(response, "ready", new { initialLogsCount = logs.Count }.ToJson());
+            var readyData = new { initialLogsCount = logs.Count };
+            await SendSseEventAsync(response, "ready", JsonUtility.ToJson(readyData));
         }
 
         private static async Task SendPing(HttpListenerResponse response)

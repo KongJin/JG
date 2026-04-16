@@ -77,6 +77,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         public bool isPlayModeChanging;
         public bool rawIsPlayingOrWillChange;
         public bool isCompiling;
+        public bool isWaitingForPlayMode;
         public string projectKey;
         public string projectRootPath;
         public string activeScene;

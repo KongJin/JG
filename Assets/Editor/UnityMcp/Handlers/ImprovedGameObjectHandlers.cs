@@ -225,7 +225,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             if (type == null) return "null";
             if (type == typeof(void)) return "void";
-            if (type == typeof(IEnumerator)) return "IEnumerator";
+            if (type == typeof(System.Collections.IEnumerator)) return "IEnumerator";
             if (type == typeof(string)) return "string";
             if (type == typeof(int)) return "int";
             if (type == typeof(float)) return "float";
