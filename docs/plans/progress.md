@@ -21,14 +21,13 @@
 
 ## 미완료 TODO
 
-- Phase 9: Unity Inspector wiring 검증 (`PlacementAreaView`, `DragGhostPrefab` 등 직렬화 참조 할당 확인)
 - Phase 9: 실제 멀티플레이어 smoke 테스트 (late-join, BattleEntity sync, Energy sync)
 - Phase 10: Firebase Console 설정 (API Key, Project ID, Firestore DB 생성)
-- Phase 10: Unity Inspector에 AccountConfig, LoginLoadingView 할당 확인
 - Phase 10: 설정 Firestore 동기화 마무리 (저장 UI, language 소비 경로)
 - Phase 10: WebGL 빌드 smoke 테스트
 - Phase 10: 계정 카드 wiring smoke + 계정 삭제 WebGL 실기 확인
-- Phase 10: 계정/Garage save-load-delete 전체 WebGL 실기 확인
+- Phase 10: Garage save/load WebGL 실기 확인
+- Phase 10: Garage save/load smoke 자동화 보강 (실제 draft dirty + PATCH 캡처)
 - Phase 10: Garage 수동 저장 UX 2차 폴리시 (슬롯 카드/결과 패널/계정 카드 완성도)
 - Phase 11: WebGL 빌드에서 Google 로그인 실기 테스트
 - Phase 11: 익명→Google 계정 linking 시 UID 유지 확인
@@ -41,18 +40,55 @@
 - Garage UI Figma handoff 계획: [`figma_ui_system_plan.md`](./figma_ui_system_plan.md)
 - Garage UI 상세 계획: [`garage_ui_ux_improvement_plan.md`](./garage_ui_ux_improvement_plan.md)
 - 계정 시스템 상세 계획: [`account_system_plan.md`](./account_system_plan.md)
-- 다음 세션 시작점: WebGL 빌드에서 Garage save-load-delete와 Google linking 실기 검증
+- 기술부채 감축 실행 계획: [`tech_debt_reduction_plan.md`](./tech_debt_reduction_plan.md)
+- WebGL 실기 체크리스트: [`webgl_smoke_checklist.md`](./webgl_smoke_checklist.md)
+- 다음 세션 시작점: `tools/webgl-smoke/garage-save-load-smoke.cjs`가 Garage draft를 실제로 바꾸도록 입력 경로를 보강하고 `garage/roster` PATCH를 다시 캡처
 
 ### 최근 변경 사항
 
 ### 2026-04-17
+
+- done: WebGL 익명 세션 지속성 복구 1차 완료
+  - done: `FirebaseAuthRestAdapter`가 WebGL에서 `localStorage + PlayerPrefs`를 함께 사용하도록 보강하고 restore/persist 로그 추가
+  - done: `Assets/Plugins/WebGL/AccountStorage.jslib` 추가 - 브라우저 `localStorage` 직접 읽기/쓰기/삭제 브리지 도입
+  - done: `Assets/WebGLTemplates/JG/index.html`에 `autoSyncPersistentDataPath: true` 반영 - WebGL 파일 저장 동기화 기본값 보강
+  - done: fast WebGL rebuild + Firebase preview 재배포 후 브라우저 저장소에서 `account.auth.*` 키 실제 생성 확인
+  - done: 같은 브라우저 `reload`에서 anonymous UID 유지 확인 (`dzKQAAyYrTad865ky4a2Yy3Hc3K3 -> same UID`)
+  - note: 기존 blocker였던 "reload 후 새 anonymous account 생성"은 해소됨
+- blocked: Garage save/load WebGL smoke 2차 실행
+  - done: 익명 세션 복구가 적용된 preview에서 `tools/webgl-smoke/garage-save-load-smoke.cjs` 재실행
+  - done: smoke 재실행 결과 `reload` 후에도 같은 UID(`8Bkwj5acimag8gM2K19FiC1uRPM2`) 유지 확인
+  - blocked: 자동 클릭/저장 입력이 Garage draft를 실제 dirty 상태로 만들지 못해 `garage/roster` PATCH가 여전히 발생하지 않음
+  - blocked: 현재 smoke 실패 원인은 인증이 아니라 입력 자동화 정확도 부족
+  - evidence: `artifacts/webgl/garage-save-load-smoke-result.json`, `garage-save-load-before.png`, `garage-save-load-after-save.png`, `garage-save-load-after-reload.png`
+- blocked: Garage save/load WebGL smoke 1차 실행
+  - env: fast WebGL build `Build/WebGL`, Firebase preview `https://projectsd-51439--qa-362a4g3j.web.app`
+  - done: `tools/webgl-smoke/garage-save-load-smoke.cjs` 추가 - Playwright 기반으로 WebGL 화면 캡처와 Firestore `garage/roster` 네트워크 이벤트 수집
+  - done: preview 배포와 익명 로그인, 초기 `garage/roster` 404까지 실기 확인
+  - blocked: 같은 브라우저 `reload`인데 익명 UID가 `0vBv6rHj4KOTts6B55u1P69m6Hr1 -> EYfpqMjpOEZfdjZ7rOmFNlxT5Y72`로 바뀜
+  - blocked: `garage/roster` PATCH 저장 요청은 잡히지 않았고, smoke는 현재 "same-account reload" 전제에서 막힘
+  - note: 우선 수정 포인트는 `FirebaseAuthRestAdapter` - 현재는 리로드 시 기존 refresh token/session 복구 없이 매번 새 anonymous sign-up을 수행하는 상태
+  - evidence: `artifacts/webgl/garage-save-load-smoke-result.json`, `garage-save-load-before.png`, `garage-save-load-after-save.png`, `garage-save-load-after-reload.png`
+- done: Lobby/Game scene Inspector wiring 1차 실검증
+  - done: MCP `Tools/Validate Required Fields`로 활성 `CodexLobbyScene` required field 검증 통과
+  - done: MCP `Tools/Audit Required Fields In Project`로 씬/프리팹 전체 required field audit 통과
+  - done: `LobbySetup`, `AccountSetup`, `LoginLoadingView`, `LobbyView`, `GaragePageController`, `GarageResultPanelView`, `GarageUnitEditorView`, `GaragePartSelectorView` 핵심 직렬화 참조를 MCP `component/get`으로 교차 확인
+  - done: Play Mode start/stop smoke에서 wiring 관련 콘솔 에러 0건 확인
+  - note: 런타임 경고는 신규 익명 계정의 Firestore 문서 없음과 Photon development-region 경고뿐이었고, Inspector 누락과는 무관
+- done: WebGL smoke 체크리스트 SSOT 추가
+  - done: `Garage save/load`, `Account delete`, `Google linking`을 분리한 수동 실기 절차 문서화
+  - done: 각 smoke에 기대 결과, 실패 시 수집 로그, 결과 기록 형식을 고정
+- done: 기술부채 감축 실행 계획 문서화
+  - done: 기술부채 우선순위를 `런타임 검증 -> WebGL smoke -> 테스트 -> async/tooling -> UX polish` 순서로 재정리
+  - done: 모호했던 `Garage save/load/delete` 표현을 `Garage save/load`, `Account delete`, `Google linking` WebGL smoke로 분리
+  - done: `progress.md` 다음 작업 메모와 용어를 새 plan 기준으로 정렬
 
 - done: Lobby/Garage UI 런타임 탐색 anti-pattern 1차 제거
   - done: `GaragePageController`, `LobbyView`의 name-based `transform.Find(...)` 레이아웃 탐색 제거
   - done: `GarageResultPanelView`, `GarageUnitEditorView`, `GaragePartSelectorView`, `AccountSettingsView`의 `GetComponentInChildren<TMP_Text>()` fallback 제거
   - done: `ButtonStyles`를 명시적 label 주입 방식으로 변경해 공통 헬퍼의 숨은 UI 구조 의존성 제거
   - done: `CodexLobbyScene`에 새 직렬화 참조와 `CanvasGroup` wiring 반영
-  - note: Unity MCP는 씬 리로드 직후 응답이 멈춰 최종 play-mode smoke는 후속 확인 필요
+  - note: 씬 리로드 직후 MCP 응답 정지는 있었지만, 후속 same-day play-mode smoke로 wiring 관련 에러 0건을 재확인함
 - done: Garage `AccountCard` MCP polish 1차
   - done: `AccountCard` 배경색을 Garage 카드 톤으로 정리해 상단 흰 블록 제거
   - done: VerticalLayoutGroup padding/spacing/content-size 설정 정리로 카드 높이와 버튼 밀도 안정화

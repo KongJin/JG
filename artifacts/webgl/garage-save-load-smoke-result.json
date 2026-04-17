@@ -1,0 +1,724 @@
+{
+  "url": "https://projectsd-51439--qa-362a4g3j.web.app",
+  "uid": "8Bkwj5acimag8gM2K19FiC1uRPM2",
+  "initialGarageGetStatus": 404,
+  "savePatchStatus": null,
+  "reloadGarageGetStatus": null,
+  "saveRequestGarageJson": null,
+  "reloadGarageJson": null,
+  "saveAndReloadMatch": false,
+  "screenshots": {
+    "before": "C:\\Users\\SOL\\Documents\\JG\\artifacts\\webgl\\garage-save-load-before.png",
+    "afterSave": "C:\\Users\\SOL\\Documents\\JG\\artifacts\\webgl\\garage-save-load-after-save.png",
+    "afterReload": "C:\\Users\\SOL\\Documents\\JG\\artifacts\\webgl\\garage-save-load-after-reload.png"
+  },
+  "consoleMessages": [
+    {
+      "type": "warning",
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0402100CC7D0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
+    },
+    {
+      "type": "log",
+      "text": "[UnityCache] 'https://projectsd-51439--qa-362a4g3j.web.app/Build/WebGL.data' successfully downloaded and stored in the browser cache"
+    },
+    {
+      "type": "log",
+      "text": "[UnityMemory] Configuration Parameters - Can be set up in boot.config\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-allocator-temp-initial-block-size-main=262144\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-allocator-temp-initial-block-size-worker=262144\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-temp-allocator-size-audio-worker=65536\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-temp-allocator-size-background-worker=32768\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-bucket-allocator-granularity=16\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-bucket-allocator-bucket-count=8\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-bucket-allocator-block-size=4194304\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-bucket-allocator-block-count=1\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-main-allocator-block-size=16777216\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-thread-allocator-block-size=16777216\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-gfx-main-allocator-block-size=16777216\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-gfx-thread-allocator-block-size=16777216\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-cache-allocator-block-size=4194304\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-typetree-allocator-block-size=2097152\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-profiler-bucket-allocator-granularity=16\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-profiler-bucket-allocator-bucket-count=8\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-profiler-bucket-allocator-block-size=4194304\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-profiler-bucket-allocator-block-count=1\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-profiler-allocator-block-size=16777216\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-profiler-editor-allocator-block-size=1048576\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-temp-allocator-size-main=4194304\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-job-temp-allocator-block-size=2097152\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-job-temp-allocator-block-size-background=1048576\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-job-temp-allocator-reduction-small-platforms=262144\"\n"
+    },
+    {
+      "type": "log",
+      "text": "Found NO interfaces on host .\n"
+    },
+    {
+      "type": "log",
+      "text": "Input System module state changed to: Initialized.\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Initialized fallback backend.\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Id: 0xdecafbad\n"
+    },
+    {
+      "type": "log",
+      "text": "Loading player data from data.unity3d\n"
+    },
+    {
+      "type": "log",
+      "text": "Initialize engine version: 6000.3.9f1 (7a9955a4f2fa)\n"
+    },
+    {
+      "type": "log",
+      "text": "[Subsystems] Discovering subsystems at path UnitySubsystems\n"
+    },
+    {
+      "type": "log",
+      "text": "Creating WebGL 2.0 context."
+    },
+    {
+      "type": "log",
+      "text": "Renderer: WebKit WebGL\n"
+    },
+    {
+      "type": "log",
+      "text": "Vendor:   WebKit\n"
+    },
+    {
+      "type": "log",
+      "text": "Version:  OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))\n"
+    },
+    {
+      "type": "log",
+      "text": "GLES:     3\n"
+    },
+    {
+      "type": "log",
+      "text": " EXT_clip_control EXT_color_buffer_float EXT_color_buffer_half_float EXT_conservative_depth EXT_depth_clamp EXT_float_blend EXT_polygon_offset_clamp EXT_texture_compression_bptc EXT_texture_compression_rgtc EXT_texture_filter_anisotropic EXT_texture_mirror_clamp_to_edge NV_shader_noperspective_interpolation OES_draw_buffers_indexed OES_sample_variables OES_shader_multisample_interpolation OES_texture_float_linear OVR_multiview2 WEBGL_clip_cull_distance WEBGL_compressed_texture_astc WEBGL_compressed_texture_etc WEBGL_compressed_texture_etc1 WEBGL_compressed_texture_s3tc WEBGL_compressed_texture_s3tc_srgb WEBGL_debug_renderer_info WEBGL_debug_shaders WEBGL_lose_context WEBGL_multi_draw WEBGL_polygon_mode WEBGL_stencil_texturing GL_EXT_clip_control GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_conservative_depth GL_EXT_depth_clamp GL_EXT_float_blend GL_EXT_polygon_offset_clamp GL_EXT_texture_compression_bptc GL_EXT_texture_compression_rgtc GL_EXT_texture_filter_anisotropic GL_EXT_texture_mirro\n"
+    },
+    {
+      "type": "log",
+      "text": "r_clamp_to_edge GL_NV_shader_noperspective_interpolation GL_OES_draw_buffers_indexed GL_OES_sample_variables GL_OES_shader_multisample_interpolation GL_OES_texture_float_linear GL_OVR_multiview2 GL_WEBGL_clip_cull_distance GL_WEBGL_compressed_texture_astc GL_WEBGL_compressed_texture_etc GL_WEBGL_compressed_texture_etc1 GL_WEBGL_compressed_texture_s3tc GL_WEBGL_compressed_texture_s3tc_srgb GL_WEBGL_debug_renderer_info GL_WEBGL_debug_shaders GL_WEBGL_lose_context GL_WEBGL_multi_draw GL_WEBGL_polygon_mode GL_WEBGL_stencil_texturing\n"
+    },
+    {
+      "type": "log",
+      "text": "OPENGL LOG: Creating OpenGL ES 3.0 graphics device ; Context level  <OpenGL ES 3.0> ; Context handle 1\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Selected backend.\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Name: PhysX\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Id: 0xf2b8ea05\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] SDK Version: 4.1.2\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Integration Version: 1.0.0\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Threading Mode: Single-Threaded\n"
+    },
+    {
+      "type": "log",
+      "text": "ERROR: Shader "
+    },
+    {
+      "type": "log",
+      "text": "Hidden/CoreSRP/CoreCopy shader is not supported on this GPU (none of subshaders/fallbacks are suitable)\n"
+    },
+    {
+      "type": "log",
+      "text": "ERROR: Shader "
+    },
+    {
+      "type": "log",
+      "text": "Hidden/Universal Render Pipeline/StencilDitherMaskSeed shader is not supported on this GPU (none of subshaders/fallbacks are suitable)\n"
+    },
+    {
+      "type": "log",
+      "text": "ERROR: Shader "
+    },
+    {
+      "type": "log",
+      "text": "Hidden/Universal/HDRDebugView shader is not supported on this GPU (none of subshaders/fallbacks are suitable)\n"
+    },
+    {
+      "type": "log",
+      "text": "Input System initialize...\n"
+    },
+    {
+      "type": "log",
+      "text": "UnloadTime: 4.000000 ms\n"
+    },
+    {
+      "type": "log",
+      "text": "[Analytics] session_start {}"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] RestoreSession uid=<empty>, hasIdToken=False, hasRefreshToken=False, expiryMs=0.\n"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] No persisted session snapshot found. Anonymous sign-in will create a new account.\n"
+    },
+    {
+      "type": "warning",
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0402100CC7D0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
+    },
+    {
+      "type": "log",
+      "text": "Audio context resumed after 1.030 seconds."
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x13e41dc24000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x13e41dc24000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x13e41dc24000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x13e41dc24000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] Request succeeded (2199ms): https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] PersistSession uid=8Bkwj5acimag8gM2K19FiC1uRPM2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776439892959.\n"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] Created new anonymous session for uid=8Bkwj5acimag8gM2K19FiC1uRPM2.\n"
+    },
+    {
+      "type": "log",
+      "text": "[PhotonConnection] Connecting...\n"
+    },
+    {
+      "type": "warning",
+      "text": "Additional Lights Cookie Format (GrayscaleHigh) is not supported by the platform. Falling back to 32-bit format (RGBA8 UNorm)\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (1123ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "log",
+      "text": "[Firestore] Request succeeded (539ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "log",
+      "text": "[Firestore] Request succeeded (557ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (531ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (588ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (558ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (535ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "warning",
+      "text": "PUN is in development mode (development build). As the 'dev region' is not empty (jp) it overrides the found best region. See PhotonServerSettings.\n"
+    },
+    {
+      "type": "log",
+      "text": "[PhotonConnection] Connected to Master. Joining lobby...\n"
+    },
+    {
+      "type": "log",
+      "text": "[PhotonConnection] Joined lobby. Ready for matchmaking.\n"
+    },
+    {
+      "type": "warning",
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0402100CC7D0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
+    },
+    {
+      "type": "log",
+      "text": "[UnityCache] 'https://projectsd-51439--qa-362a4g3j.web.app/Build/WebGL.data' successfully revalidated and served from the browser cache"
+    },
+    {
+      "type": "log",
+      "text": "[UnityMemory] Configuration Parameters - Can be set up in boot.config\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-allocator-temp-initial-block-size-main=262144\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-allocator-temp-initial-block-size-worker=262144\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-temp-allocator-size-audio-worker=65536\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-temp-allocator-size-background-worker=32768\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-bucket-allocator-granularity=16\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-bucket-allocator-bucket-count=8\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-bucket-allocator-block-size=4194304\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-bucket-allocator-block-count=1\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-main-allocator-block-size=16777216\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-thread-allocator-block-size=16777216\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-gfx-main-allocator-block-size=16777216\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-gfx-thread-allocator-block-size=16777216\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-cache-allocator-block-size=4194304\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-typetree-allocator-block-size=2097152\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-profiler-bucket-allocator-granularity=16\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-profiler-bucket-allocator-bucket-count=8\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-profiler-bucket-allocator-block-size=4194304\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-profiler-bucket-allocator-block-count=1\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-profiler-allocator-block-size=16777216\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-profiler-editor-allocator-block-size=1048576\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-temp-allocator-size-main=4194304\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-job-temp-allocator-block-size=2097152\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-job-temp-allocator-block-size-background=1048576\"\n"
+    },
+    {
+      "type": "log",
+      "text": "    \"memorysetup-job-temp-allocator-reduction-small-platforms=262144\"\n"
+    },
+    {
+      "type": "log",
+      "text": "Found NO interfaces on host .\n"
+    },
+    {
+      "type": "log",
+      "text": "Input System module state changed to: Initialized.\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Initialized fallback backend.\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Id: 0xdecafbad\n"
+    },
+    {
+      "type": "log",
+      "text": "Loading player data from data.unity3d\n"
+    },
+    {
+      "type": "log",
+      "text": "Initialize engine version: 6000.3.9f1 (7a9955a4f2fa)\n"
+    },
+    {
+      "type": "log",
+      "text": "[Subsystems] Discovering subsystems at path UnitySubsystems\n"
+    },
+    {
+      "type": "log",
+      "text": "Creating WebGL 2.0 context."
+    },
+    {
+      "type": "log",
+      "text": "Renderer: WebKit WebGL\n"
+    },
+    {
+      "type": "log",
+      "text": "Vendor:   WebKit\n"
+    },
+    {
+      "type": "log",
+      "text": "Version:  OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))\n"
+    },
+    {
+      "type": "log",
+      "text": "GLES:     3\n"
+    },
+    {
+      "type": "log",
+      "text": " EXT_clip_control EXT_color_buffer_float EXT_color_buffer_half_float EXT_conservative_depth EXT_depth_clamp EXT_float_blend EXT_polygon_offset_clamp EXT_texture_compression_bptc EXT_texture_compression_rgtc EXT_texture_filter_anisotropic EXT_texture_mirror_clamp_to_edge NV_shader_noperspective_interpolation OES_draw_buffers_indexed OES_sample_variables OES_shader_multisample_interpolation OES_texture_float_linear OVR_multiview2 WEBGL_clip_cull_distance WEBGL_compressed_texture_astc WEBGL_compressed_texture_etc WEBGL_compressed_texture_etc1 WEBGL_compressed_texture_s3tc WEBGL_compressed_texture_s3tc_srgb WEBGL_debug_renderer_info WEBGL_debug_shaders WEBGL_lose_context WEBGL_multi_draw WEBGL_polygon_mode WEBGL_stencil_texturing GL_EXT_clip_control GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_conservative_depth GL_EXT_depth_clamp GL_EXT_float_blend GL_EXT_polygon_offset_clamp GL_EXT_texture_compression_bptc GL_EXT_texture_compression_rgtc GL_EXT_texture_filter_anisotropic GL_EXT_texture_mirro\n"
+    },
+    {
+      "type": "log",
+      "text": "r_clamp_to_edge GL_NV_shader_noperspective_interpolation GL_OES_draw_buffers_indexed GL_OES_sample_variables GL_OES_shader_multisample_interpolation GL_OES_texture_float_linear GL_OVR_multiview2 GL_WEBGL_clip_cull_distance GL_WEBGL_compressed_texture_astc GL_WEBGL_compressed_texture_etc GL_WEBGL_compressed_texture_etc1 GL_WEBGL_compressed_texture_s3tc GL_WEBGL_compressed_texture_s3tc_srgb GL_WEBGL_debug_renderer_info GL_WEBGL_debug_shaders GL_WEBGL_lose_context GL_WEBGL_multi_draw GL_WEBGL_polygon_mode GL_WEBGL_stencil_texturing\n"
+    },
+    {
+      "type": "log",
+      "text": "OPENGL LOG: Creating OpenGL ES 3.0 graphics device ; Context level  <OpenGL ES 3.0> ; Context handle 1\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Selected backend.\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Name: PhysX\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Id: 0xf2b8ea05\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] SDK Version: 4.1.2\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Integration Version: 1.0.0\n"
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Threading Mode: Single-Threaded\n"
+    },
+    {
+      "type": "log",
+      "text": "ERROR: Shader "
+    },
+    {
+      "type": "log",
+      "text": "Hidden/CoreSRP/CoreCopy shader is not supported on this GPU (none of subshaders/fallbacks are suitable)\n"
+    },
+    {
+      "type": "log",
+      "text": "ERROR: Shader "
+    },
+    {
+      "type": "log",
+      "text": "Hidden/Universal Render Pipeline/StencilDitherMaskSeed shader is not supported on this GPU (none of subshaders/fallbacks are suitable)\n"
+    },
+    {
+      "type": "log",
+      "text": "ERROR: Shader "
+    },
+    {
+      "type": "log",
+      "text": "Hidden/Universal/HDRDebugView shader is not supported on this GPU (none of subshaders/fallbacks are suitable)\n"
+    },
+    {
+      "type": "log",
+      "text": "Input System initialize...\n"
+    },
+    {
+      "type": "log",
+      "text": "UnloadTime: 0.300000 ms\n"
+    },
+    {
+      "type": "log",
+      "text": "[Analytics] session_start {}"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] RestoreSession uid=8Bkwj5acimag8gM2K19FiC1uRPM2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776439892959.\n"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] Reused persisted anonymous session for uid=8Bkwj5acimag8gM2K19FiC1uRPM2.\n"
+    },
+    {
+      "type": "warning",
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0402100CC7D0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
+    },
+    {
+      "type": "log",
+      "text": "Audio context resumed after 0.680 seconds."
+    },
+    {
+      "type": "log",
+      "text": "[Firestore] Request succeeded (2250ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "log",
+      "text": "[PhotonConnection] Connecting...\n"
+    },
+    {
+      "type": "warning",
+      "text": "Additional Lights Cookie Format (GrayscaleHigh) is not supported by the platform. Falling back to 32-bit format (RGBA8 UNorm)\n"
+    },
+    {
+      "type": "log",
+      "text": "[Firestore] Request succeeded (1315ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (685ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (758ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (674ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (515ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "warning",
+      "text": "PUN is in development mode (development build). As the 'dev region' is not empty (jp) it overrides the found best region. See PhotonServerSettings.\n"
+    },
+    {
+      "type": "log",
+      "text": "[PhotonConnection] Connected to Master. Joining lobby...\n"
+    },
+    {
+      "type": "log",
+      "text": "[PhotonConnection] Joined lobby. Ready for matchmaking.\n"
+    }
+  ],
+  "pageErrors": [],
+  "garageEvents": [
+    {
+      "kind": "request",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "method": "GET",
+      "postData": null,
+      "timestamp": "2026-04-17T14:31:36.597Z"
+    },
+    {
+      "kind": "request",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "method": "GET",
+      "postData": null,
+      "timestamp": "2026-04-17T14:31:37.163Z"
+    },
+    {
+      "kind": "response",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "method": "GET",
+      "status": 404,
+      "bodyText": "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"Document \\\"projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster\\\" not found.\",\n    \"status\": \"NOT_FOUND\"\n  }\n}\n",
+      "timestamp": "2026-04-17T14:31:37.168Z"
+    },
+    {
+      "kind": "response",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "method": "GET",
+      "status": 404,
+      "bodyText": "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"Document \\\"projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster\\\" not found.\",\n    \"status\": \"NOT_FOUND\"\n  }\n}\n",
+      "timestamp": "2026-04-17T14:31:37.733Z"
+    },
+    {
+      "kind": "request",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "method": "GET",
+      "postData": null,
+      "timestamp": "2026-04-17T14:32:36.715Z"
+    },
+    {
+      "kind": "request",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "method": "GET",
+      "postData": null,
+      "timestamp": "2026-04-17T14:32:37.336Z"
+    },
+    {
+      "kind": "response",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "method": "GET",
+      "status": 404,
+      "bodyText": "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"Document \\\"projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster\\\" not found.\",\n    \"status\": \"NOT_FOUND\"\n  }\n}\n",
+      "timestamp": "2026-04-17T14:32:37.337Z"
+    },
+    {
+      "kind": "response",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "method": "GET",
+      "status": 404,
+      "bodyText": "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"Document \\\"projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster\\\" not found.\",\n    \"status\": \"NOT_FOUND\"\n  }\n}\n",
+      "timestamp": "2026-04-17T14:32:37.874Z"
+    }
+  ]
+}
