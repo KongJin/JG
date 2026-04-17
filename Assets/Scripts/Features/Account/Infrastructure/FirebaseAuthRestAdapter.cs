@@ -119,9 +119,9 @@ namespace Features.Account.Infrastructure
                 timeout = 10
             };
             request.SetRequestHeader("Content-Type", "application/json");
-            request.SetRequestHeader("Authorization", "Bearer " + idToken);
 
-            byte[] body = System.Text.Encoding.UTF8.GetBytes("{}");
+            string bodyJson = $"{{\"idToken\":\"{idToken}\"}}";
+            byte[] body = System.Text.Encoding.UTF8.GetBytes(bodyJson);
             request.uploadHandler = new UploadHandlerRaw(body);
             request.downloadHandler = new DownloadHandlerBuffer();
 

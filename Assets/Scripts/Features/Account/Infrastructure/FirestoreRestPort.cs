@@ -1,5 +1,7 @@
 using Features.Account.Application.Ports;
 using Features.Account.Domain;
+using Features.Garage.Application;
+using Features.Garage.Domain;
 using System;
 using System.Globalization;
 using System.Reflection;
@@ -15,7 +17,10 @@ namespace Features.Account.Infrastructure
     /// Firestore REST API 포트 구현.
     /// UnityWebRequest 사용 (WebGL 호환).
     /// </summary>
-    public sealed class FirestoreRestPort : IAccountDataPort
+    public sealed class FirestoreRestPort :
+        IAccountDataPort,
+        SaveRosterUseCase.ICloudGaragePort,
+        InitializeGarageUseCase.ICloudGarageLoadPort
     {
         private const string DocumentUrl = "https://firestore.googleapis.com/v1/projects/{0}/databases/(default)/documents/accounts/{1}/{2}/{3}?key={4}";
 
@@ -35,7 +40,8 @@ namespace Features.Account.Infrastructure
                 uid = account.uid,
                 displayName = account.displayName,
                 authType = account.authType,
-                createdAtUnixMs = account.createdAtUnixMs
+                createdAtUnixMs = account.createdAtUnixMs,
+                lastNicknameChangeUnixMs = account.lastNicknameChangeUnixMs
             }, idToken);
         }
 
@@ -50,7 +56,8 @@ namespace Features.Account.Infrastructure
                 uid = GetFieldString(json, "uid"),
                 displayName = GetFieldString(json, "displayName"),
                 authType = GetFieldString(json, "authType"),
-                createdAtUnixMs = GetFieldLong(json, "createdAtUnixMs")
+                createdAtUnixMs = GetFieldLong(json, "createdAtUnixMs"),
+                lastNicknameChangeUnixMs = GetFieldLong(json, "lastNicknameChangeUnixMs")
             };
         }
 
@@ -86,13 +93,16 @@ namespace Features.Account.Infrastructure
             };
         }
 
-        public async Task SaveGarage(object roster, string uid, string idToken)
+        public async Task SaveGarage(GarageRoster roster, string uid, string idToken)
         {
-            string json = JsonUtility.ToJson(new RosterWrapper { roster = roster });
+            var normalizedRoster = roster ?? new GarageRoster();
+            normalizedRoster.Normalize();
+
+            string json = JsonUtility.ToJson(new RosterWrapper { roster = normalizedRoster });
             await WriteRawDocument(uid, "garage", "roster", json, idToken);
         }
 
-        public async Task<object> LoadGarage(string uid, string idToken)
+        public async Task<GarageRoster> LoadGarage(string uid, string idToken)
         {
             string json = await ReadDocument(uid, "garage", "roster", idToken);
             if (string.IsNullOrEmpty(json))
@@ -105,6 +115,7 @@ namespace Features.Account.Infrastructure
             try
             {
                 var wrapper = JsonUtility.FromJson<RosterWrapper>(jsonStr);
+                wrapper?.roster?.Normalize();
                 return wrapper?.roster;
             }
             catch (Exception ex)
@@ -112,6 +123,28 @@ namespace Features.Account.Infrastructure
                 Debug.LogError($"[Firestore] Failed to parse garage roster: {ex.Message}");
                 return null;
             }
+        }
+
+        public async Task SaveGarageAsync(GarageRoster roster)
+        {
+            string uid = AuthTokenProvider.GetCurrentUid();
+            string idToken = await AuthTokenProvider.GetIdToken();
+
+            if (string.IsNullOrWhiteSpace(uid) || string.IsNullOrWhiteSpace(idToken))
+                throw new InvalidOperationException("Account session is not ready for garage save.");
+
+            await SaveGarage(roster, uid, idToken);
+        }
+
+        public async Task<GarageRoster> LoadGarageAsync()
+        {
+            string uid = AuthTokenProvider.GetCurrentUid();
+            string idToken = await AuthTokenProvider.GetIdToken();
+
+            if (string.IsNullOrWhiteSpace(uid) || string.IsNullOrWhiteSpace(idToken))
+                return null;
+
+            return await LoadGarage(uid, idToken);
         }
 
         public async Task SaveSettings(UserSettings settings, string uid, string idToken)
@@ -476,7 +509,7 @@ namespace Features.Account.Infrastructure
     [Serializable]
     public sealed class RosterWrapper
     {
-        public object roster;
+        public GarageRoster roster;
     }
 
     public struct SendResult

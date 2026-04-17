@@ -12,6 +12,7 @@ namespace Features.Account.Domain
         public string displayName;
         public string authType; // "anonymous" | "google"
         public long createdAtUnixMs;
+        public long lastNicknameChangeUnixMs;
 
         public AccountProfile() { }
 
@@ -21,8 +22,11 @@ namespace Features.Account.Domain
             this.displayName = uid.Substring(0, Math.Min(8, uid.Length));
             this.authType = authType;
             this.createdAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            this.lastNicknameChangeUnixMs = 0;
         }
 
         public DateTime CreatedAt => DateTimeOffset.FromUnixTimeMilliseconds(createdAtUnixMs).UtcDateTime;
+
+        public string DefaultDisplayName => uid?.Substring(0, Math.Min(8, uid.Length)) ?? string.Empty;
     }
 }

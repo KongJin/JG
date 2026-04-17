@@ -20,15 +20,18 @@ namespace Features.Garage.Application
         }
 
         private readonly ICloudGaragePort _cloudPort;
+        private readonly IGaragePersistencePort _persistence;
         private readonly IGarageNetworkPort _network;
         private readonly IEventPublisher _eventBus;
 
         public SaveRosterUseCase(
             ICloudGaragePort cloudPort,
+            IGaragePersistencePort persistence,
             IGarageNetworkPort network,
             IEventPublisher eventBus)
         {
             _cloudPort = cloudPort;
+            _persistence = persistence;
             _network = network;
             _eventBus = eventBus;
         }
@@ -60,6 +63,9 @@ namespace Features.Garage.Application
             {
                 errorMessage = $"클라우드 저장 실패: {ex.Message}";
             }
+
+            if (errorMessage == null || _cloudPort == null)
+                _persistence?.Save(roster);
 
             // 네트워크 동기화 (실제 전투 진입용 데이터)
             _network.SyncRoster(roster);

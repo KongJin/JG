@@ -11,14 +11,22 @@ namespace Features.Garage.Application
     /// </summary>
     public sealed class InitializeGarageUseCase
     {
+        public interface ICloudGarageLoadPort
+        {
+            System.Threading.Tasks.Task<GarageRoster> LoadGarageAsync();
+        }
+
+        private readonly ICloudGarageLoadPort _cloudPort;
         private readonly IGaragePersistencePort _persistence;
         private readonly IEventPublisher _eventBus;
 
         public InitializeGarageUseCase(
             IGaragePersistencePort persistence,
+            ICloudGarageLoadPort cloudPort,
             IEventPublisher eventBus)
         {
             _persistence = persistence;
+            _cloudPort = cloudPort;
             _eventBus = eventBus;
         }
 
@@ -26,14 +34,31 @@ namespace Features.Garage.Application
         /// 차고 초기화 실행.
         /// 저장된 편성이 있으면 복원, 없으면 빈 편성 생성.
         /// </summary>
-        public GarageRoster Execute()
+        public async System.Threading.Tasks.Task<GarageRoster> Execute()
         {
-            GarageRoster roster = _persistence.Load();
-            if (roster == null)
+            GarageRoster roster = null;
+
+            if (_cloudPort != null)
             {
-                roster = new GarageRoster();
+                try
+                {
+                    roster = await _cloudPort.LoadGarageAsync();
+                    if (roster != null)
+                    {
+                        roster.Normalize();
+                        _persistence?.Save(roster);
+                    }
+                }
+                catch
+                {
+                    roster = null;
+                }
             }
 
+            if (roster == null)
+                roster = _persistence?.Load() ?? new GarageRoster();
+
+            roster.Normalize();
             _eventBus.Publish(new GarageInitializedEvent(roster));
             return roster;
         }

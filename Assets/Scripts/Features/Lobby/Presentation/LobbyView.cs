@@ -1,7 +1,7 @@
 using Features.Garage.Presentation.Theme;
-using Shared.Attributes;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
+using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Lifecycle;
 using UnityEngine;
@@ -28,10 +28,13 @@ namespace Features.Lobby.Presentation
         [Header("Tab Visuals")]
         [SerializeField]
         private Color _activeTabColor = new Color(0.286f, 0.463f, 1f, 1f);
+
         [SerializeField]
         private Color _inactiveTabColor = new Color(0.086f, 0.157f, 0.196f, 1f);
+
         [SerializeField]
         private Color _activeTextColor = Color.white;
+
         [SerializeField]
         private Color _inactiveTextColor = new Color(0.545f, 0.584f, 0.651f, 1f);
 
@@ -66,7 +69,11 @@ namespace Features.Lobby.Presentation
         private bool _tabsHooked;
         private bool _showingRoomDetail;
 
-        public void Initialize(IEventSubscriber eventBus, IEventPublisher eventPublisher, LobbyUseCases useCases)
+        public void Initialize(
+            IEventSubscriber eventBus,
+            IEventPublisher eventPublisher,
+            LobbyUseCases useCases
+        )
         {
             if (_roomListView == null)
             {
@@ -196,6 +203,14 @@ namespace Features.Lobby.Presentation
             UpdateTabState(false);
         }
 
+        /// <summary>
+        /// MCP 캡처용 public 메서드
+        /// </summary>
+        public void OpenGaragePage()
+        {
+            ShowGaragePage();
+        }
+
         private void UpdateTabState(bool lobbyActive)
         {
             if (_lobbyTabButton != null)
@@ -209,7 +224,8 @@ namespace Features.Lobby.Presentation
 
         private void UpdateTabVisuals(Button tabButton, bool isActive)
         {
-            if (tabButton == null) return;
+            if (tabButton == null)
+                return;
 
             // 배경 색상
             if (tabButton.TryGetComponent<Image>(out var bgImage))

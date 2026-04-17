@@ -1,4 +1,5 @@
 ﻿using Features.Account.Domain;
+using Features.Garage.Domain;
 
 namespace Features.Account.Application.Ports
 {
@@ -30,12 +31,12 @@ namespace Features.Account.Application.Ports
         /// <summary>
         /// 편성 데이터 저장.
         /// </summary>
-        System.Threading.Tasks.Task SaveGarage(object roster, string uid, string idToken);
+        System.Threading.Tasks.Task SaveGarage(GarageRoster roster, string uid, string idToken);
 
         /// <summary>
         /// 편성 데이터 로드.
         /// </summary>
-        System.Threading.Tasks.Task<object> LoadGarage(string uid, string idToken);
+        System.Threading.Tasks.Task<GarageRoster> LoadGarage(string uid, string idToken);
 
         /// <summary>
         /// 설정 저장.

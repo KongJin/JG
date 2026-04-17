@@ -1,105 +1,94 @@
-using NUnit.Framework;
 using Features.Garage.Domain;
+using NUnit.Framework;
 using System.Collections.Generic;
 
 namespace Tests.Garage.Domain
 {
     /// <summary>
-    /// GarageRoster 테스트.
-    /// 편성 데이터 구조 + 유효성 검증.
+    /// GarageRoster의 현재 API 기준 동작 테스트.
+    /// 주의: 이 파일은 repo 루트 Tests 아래에 있어 Unity compile check에는 자동 포함되지 않는다.
     /// </summary>
-    public class GarageRosterTests
+    public sealed class GarageRosterTests
     {
         [Test]
-        public void IsValid_3기_유효()
+        public void SetSlot_ThreeCompleteUnits_AreValid()
         {
             var roster = new GarageRoster();
-            roster.AddUnit(new GarageRoster.UnitLoadout("frame1", "fire1", "mob1"));
-            roster.AddUnit(new GarageRoster.UnitLoadout("frame2", "fire2", "mob2"));
-            roster.AddUnit(new GarageRoster.UnitLoadout("frame3", "fire3", "mob3"));
+            roster.SetSlot(0, new GarageRoster.UnitLoadout("frame1", "fire1", "mob1"));
+            roster.SetSlot(1, new GarageRoster.UnitLoadout("frame2", "fire2", "mob2"));
+            roster.SetSlot(2, new GarageRoster.UnitLoadout("frame3", "fire3", "mob3"));
 
-            Assert.IsTrue(roster.IsValid);
             Assert.AreEqual(3, roster.Count);
-        }
-
-        [Test]
-        public void IsValid_5기_유효()
-        {
-            var roster = new GarageRoster();
-            for (int i = 0; i < 5; i++)
-                roster.AddUnit(new GarageRoster.UnitLoadout($"frame{i}", "fire1", "mob1"));
-
             Assert.IsTrue(roster.IsValid);
-            Assert.AreEqual(5, roster.Count);
         }
 
         [Test]
-        public void IsValid_2기_무효()
+        public void SetSlot_SixCompleteUnits_AreValid()
         {
             var roster = new GarageRoster();
-            roster.AddUnit(new GarageRoster.UnitLoadout("frame1", "fire1", "mob1"));
-            roster.AddUnit(new GarageRoster.UnitLoadout("frame2", "fire2", "mob2"));
+            for (int i = 0; i < GarageRoster.MaxSlots; i++)
+                roster.SetSlot(i, new GarageRoster.UnitLoadout($"frame{i}", $"fire{i}", $"mob{i}"));
 
-            Assert.IsFalse(roster.IsValid);
-            Assert.AreEqual(2, roster.Count);
+            Assert.AreEqual(GarageRoster.MaxSlots, roster.Count);
+            Assert.IsTrue(roster.IsValid);
         }
 
         [Test]
-        public void IsValid_6기_무효()
+        public void Normalize_TrimsOverMaxSlots()
         {
-            var roster = new GarageRoster();
-            for (int i = 0; i < 6; i++)
-                roster.AddUnit(new GarageRoster.UnitLoadout($"frame{i}", "fire1", "mob1"));
+            var loadouts = new List<GarageRoster.UnitLoadout>();
+            for (int i = 0; i < GarageRoster.MaxSlots + 2; i++)
+                loadouts.Add(new GarageRoster.UnitLoadout($"frame{i}", $"fire{i}", $"mob{i}"));
 
-            Assert.IsFalse(roster.IsValid);
-            Assert.AreEqual(6, roster.Count);
+            var roster = new GarageRoster(loadouts);
+
+            Assert.AreEqual(GarageRoster.MaxSlots, roster.loadout.Count);
+            Assert.AreEqual(GarageRoster.MaxSlots, roster.Count);
         }
 
         [Test]
-        public void IsValid_빈편성_무효()
+        public void ClearSlot_RemovesOnlySelectedSlot()
         {
             var roster = new GarageRoster();
-            Assert.IsFalse(roster.IsValid);
-            Assert.AreEqual(0, roster.Count);
-        }
+            roster.SetSlot(0, new GarageRoster.UnitLoadout("frame1", "fire1", "mob1"));
+            roster.SetSlot(1, new GarageRoster.UnitLoadout("frame2", "fire2", "mob2"));
+            roster.SetSlot(2, new GarageRoster.UnitLoadout("frame3", "fire3", "mob3"));
 
-        [Test]
-        public void RemoveUnitAt_정상동작()
-        {
-            var roster = new GarageRoster();
-            roster.AddUnit(new GarageRoster.UnitLoadout("frame1", "fire1", "mob1"));
-            roster.AddUnit(new GarageRoster.UnitLoadout("frame2", "fire2", "mob2"));
-            roster.AddUnit(new GarageRoster.UnitLoadout("frame3", "fire3", "mob3"));
-
-            roster.RemoveUnitAt(1);
+            roster.ClearSlot(1);
 
             Assert.AreEqual(2, roster.Count);
             Assert.IsFalse(roster.IsValid);
+            Assert.IsFalse(roster.GetSlot(1).HasAnySelection);
+            Assert.IsTrue(roster.GetSlot(0).IsComplete);
+            Assert.IsTrue(roster.GetSlot(2).IsComplete);
         }
 
         [Test]
-        public void UpdateUnit_정상동작()
+        public void Clone_CreatesIndependentRoster()
         {
-            var roster = new GarageRoster();
-            roster.AddUnit(new GarageRoster.UnitLoadout("frame1", "fire_single", "mob_armor"));
+            var original = new GarageRoster();
+            original.SetSlot(0, new GarageRoster.UnitLoadout("frame1", "fire1", "mob1"));
 
-            roster.UpdateUnit(0, new GarageRoster.UnitLoadout("frame1", "fire_aoe", "mob_light"));
+            var clone = original.Clone();
+            clone.SetSlot(0, new GarageRoster.UnitLoadout("frameX", "fireX", "mobX"));
 
-            Assert.AreEqual("fire_aoe", roster.loadout[0].firepowerModuleId);
-            Assert.AreEqual("mob_light", roster.loadout[0].mobilityModuleId);
+            Assert.AreEqual("frame1", original.GetSlot(0).frameId);
+            Assert.AreEqual("frameX", clone.GetSlot(0).frameId);
         }
 
         [Test]
-        public void Clear_편성초기화()
+        public void GetFilledLoadouts_ReturnsOnlyCompleteLoadoutsInOrder()
         {
             var roster = new GarageRoster();
-            for (int i = 0; i < 3; i++)
-                roster.AddUnit(new GarageRoster.UnitLoadout($"frame{i}", "fire1", "mob1"));
+            roster.SetSlot(0, new GarageRoster.UnitLoadout("frame1", "fire1", "mob1"));
+            roster.SetSlot(1, new GarageRoster.UnitLoadout("frame2", null, "mob2"));
+            roster.SetSlot(2, new GarageRoster.UnitLoadout("frame3", "fire3", "mob3"));
 
-            roster.Clear();
+            var filled = roster.GetFilledLoadouts();
 
-            Assert.AreEqual(0, roster.Count);
-            Assert.IsFalse(roster.IsValid);
+            Assert.AreEqual(2, filled.Length);
+            Assert.AreEqual("frame1", filled[0].frameId);
+            Assert.AreEqual("frame3", filled[1].frameId);
         }
     }
 }

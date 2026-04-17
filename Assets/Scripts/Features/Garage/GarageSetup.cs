@@ -57,15 +57,20 @@ namespace Features.Garage
             // Composition root — UseCase 조립
             _disposables?.Dispose();
             _disposables = new DisposableScope();
+            var localPersistence = new GarageJsonPersistence();
 
             ComposeUnit = new ComposeUnitUseCase(compositionPort);
-            InitializeGarage = new InitializeGarageUseCase(new GarageJsonPersistence(), eventBus);
+            InitializeGarage = new InitializeGarageUseCase(
+                localPersistence,
+                accountDataPort as InitializeGarageUseCase.ICloudGarageLoadPort,
+                eventBus);
             ValidateRoster = new ValidateRosterUseCase(_rosterValidationProvider);
 
             if (accountDataPort != null)
             {
                 SaveRoster = new SaveRosterUseCase(
                     accountDataPort as SaveRosterUseCase.ICloudGaragePort,
+                    localPersistence,
                     _networkAdapter,
                     eventBus);
             }
@@ -74,6 +79,7 @@ namespace Features.Garage
                 // 폴백: AccountSetup 미연결 시 로컬 저장만 (GameScene 등)
                 SaveRoster = new SaveRosterUseCase(
                     null,
+                    localPersistence,
                     _networkAdapter,
                     eventBus);
             }

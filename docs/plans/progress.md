@@ -16,8 +16,8 @@
 | Phase 7: 배치 시스템 완성 | ✅ 완료 | PlacementArea, PlacementAreaView, 드래그 피드백, 영역 검증, MaterialFactory, ErrorView |
 | Phase 8: Energy 재생 증가 곡선 | ✅ 완료 | EnergyRegenCurve (시간 기반 60s→180s, 3→5/s), EnergyRegenCurveConfig, TickRegen wiring |
 | Phase 9: 네트워크 완성 | ✅ 완료 | BattleEntityPhotonController (IPunObservable HP/pos/dead sync), BattleEntityDespawnAdapter, WaveEndView 통계 |
-| Phase 10: 계정 시스템 | 🟨 구현 진행 중 | Firebase REST API 기반 Account Feature 골격 완료, Lobby/Garage 통합 완료 |
-| Phase 11: Google 로그인 | 🟨 코드 구현 완료 | SignInWithGoogle 포트/UseCase/REST/config, JS 브리지, UI 콜백, linking 요청 추가 완료. Inspector wiring/실기 테스트 미완료 |
+| Phase 10: 계정 시스템 | 🟨 복구 진행 필요 | Firebase REST API 기반 Account Feature 골격은 있으나 Firestore/Garage 실동작은 미검증이고 일부 경로가 미연결 |
+| Phase 11: Google 로그인 | 🟨 실동작 검증 전 | Google linking 경로 코드는 존재하지만 UID 유지와 WebGL 실기 동작은 아직 검증되지 않음 |
 
 ## 미완료 TODO
 
@@ -25,9 +25,15 @@
 - Phase 9: 실제 멀티플레이어 smoke 테스트 (late-join, BattleEntity sync, Energy sync)
 - Phase 10: Firebase Console 설정 (API Key, Project ID, Firestore DB 생성)
 - Phase 10: Unity Inspector에 AccountConfig, LoginLoadingView 할당 확인
+- Phase 10: Garage Firestore 저장 연결 (`SaveRosterUseCase.ICloudGaragePort` 실제 구현 연결)
+- Phase 10: Garage Firestore 로드 연결 (Firestore 우선, 로컬 JSON fallback)
+- Phase 10: Firebase Auth `accounts:delete` body를 `idToken` 형식으로 수정
+- Phase 10: 로그인 자동 재시도 실제 동작 복구 (`LoginLoadingView` + `LobbySetup`)
+- Phase 10: 닉네임 cooldown timestamp 저장 (`lastNicknameChangeUnixMs`)
 - Phase 10: 설정 (볼륨, 언어) Firestore 동기화
 - Phase 10: WebGL 빌드 smoke 테스트
 - Phase 10: 계정 삭제 기능 + UI
+- Phase 10: stale Garage 테스트 복구 + Unity Test Runner 연결
 - Phase 11: WebGL 빌드에서 Google 로그인 실기 테스트
 - Phase 11: 익명→Google 계정 linking 시 UID 유지 확인
 - Phase 11: Google 로그인 WebGL smoke 테스트
@@ -45,6 +51,10 @@
 
 ### 2026-04-17
 
+- done: Account/Garage 실제 코드 리뷰 기반으로 계정 시스템 SSOT 문서 정정
+  - done: `account_system_plan.md`를 "기능 추가 계획"에서 "복구 계획 SSOT"로 재작성
+  - done: Phase 10/11 상태를 실제 코드 기준으로 낮추고 복구 TODO를 `progress.md`에 반영
+  - note: 현재 계정 시스템은 골격 구현 상태이며 Garage Firestore 저장/복원, 삭제 REST 형식, 자동 재시도, 닉네임 cooldown, stale 테스트 복구가 남아 있음
 - done: Garage-first Figma / handoff SSOT 문서 추가
   - done: `docs/design/ui_foundations.md` 추가 — Garage 레이아웃, 토큰, 컴포넌트, Unity 변환 규칙 SSOT
   - done: `docs/plans/figma_ui_system_plan.md` 추가 — Garage-first Figma 실행 체크리스트

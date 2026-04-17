@@ -1,4 +1,3 @@
-using Shared.Attributes;
 using Features.Account;
 using Features.Account.Presentation;
 using Features.Garage;
@@ -12,6 +11,7 @@ using Features.Lobby.Presentation;
 using Features.Unit;
 using Features.Unit.Infrastructure;
 using Shared.Analytics;
+using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Runtime.Sound;
 using Shared.Time;
@@ -22,6 +22,8 @@ using DomainLobby = Features.Lobby.Domain.Lobby;
 
 public sealed class LobbySetup : MonoBehaviour
 {
+    private const int MaxAutoSignInAttempts = 3;
+
     [Required, SerializeField]
     private LobbyView _view;
 
@@ -56,6 +58,7 @@ public sealed class LobbySetup : MonoBehaviour
     private IAnalyticsPort _analytics;
     private float _sessionStartTime;
     private Features.Account.Domain.AccountProfile _currentAccountProfile;
+    private bool _isSigningIn;
 
     private void Awake()
     {
@@ -84,24 +87,59 @@ public sealed class LobbySetup : MonoBehaviour
 
     private async System.Threading.Tasks.Task RunAnonymousSignIn()
     {
+        if (_isSigningIn)
+            return;
+
+        _isSigningIn = true;
+
         try
         {
-            var result = await _accountSetup.SignInAnonymously.Execute();
-            if (result.IsSuccess)
+            for (int attempt = 1; attempt <= MaxAutoSignInAttempts; attempt++)
             {
-                _currentAccountProfile = result.Value;
-                _loginLoadingView.OnLoginSuccess();
+                try
+                {
+                    var result = await _accountSetup.SignInAnonymously.Execute();
+                    if (result.IsSuccess)
+                    {
+                        _currentAccountProfile = result.Value;
+                        await LoadSignedInAccount();
+                        _loginLoadingView.OnLoginSuccess();
+                        return;
+                    }
+
+                    _loginLoadingView.OnLoginFailed(result.Error ?? "Unknown error");
+                }
+
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"[LobbySetup] Anonymous sign-in failed: {ex.Message}");
+                    _loginLoadingView.OnLoginFailed(ex.Message);
+                }
+
+                if (attempt < MaxAutoSignInAttempts)
+                    await System.Threading.Tasks.Task.Delay(1000);
             }
-            else
-            {
-                _loginLoadingView.OnLoginFailed(result.Error ?? "Unknown error");
-                // 재시도는 LoginLoadingView 내부에서 처리
-            }
+        }
+        finally
+        {
+            _isSigningIn = false;
+        }
+    }
+
+    private async System.Threading.Tasks.Task LoadSignedInAccount()
+    {
+        if (_accountSetup?.LoadAccount == null)
+            return;
+
+        try
+        {
+            var accountData = await _accountSetup.LoadAccount.Execute();
+            if (accountData?.Profile != null)
+                _currentAccountProfile = accountData.Profile;
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"[LobbySetup] Anonymous sign-in failed: {ex.Message}");
-            _loginLoadingView.OnLoginFailed(ex.Message);
+            Debug.LogWarning($"[LobbySetup] Account data load failed after sign-in: {ex.Message}");
         }
     }
 
@@ -139,7 +177,8 @@ public sealed class LobbySetup : MonoBehaviour
             {
                 Debug.LogWarning(
                     "[LobbySetup] GarageSetup is assigned but UnitSetup is missing. Garage initialization is skipped.",
-                    this);
+                    this
+                );
             }
             else
             {
@@ -147,7 +186,8 @@ public sealed class LobbySetup : MonoBehaviour
                     _eventBus,
                     _unitSetup.CompositionPort,
                     _unitSetup.Catalog,
-                    _accountSetup?.DataPort);
+                    _accountSetup?.DataPort
+                );
             }
         }
 
@@ -159,7 +199,12 @@ public sealed class LobbySetup : MonoBehaviour
         if (_accountSettingsView == null || _accountSetup == null || _currentAccountProfile == null)
             return;
 
-        _accountSettingsView.Initialize(_accountSetup, _eventBus, OnAccountLogoutRequested, OnAccountDeleted);
+        _accountSettingsView.Initialize(
+            _accountSetup,
+            _eventBus,
+            OnAccountLogoutRequested,
+            OnAccountDeleted
+        );
         _accountSettingsView.Render(_currentAccountProfile);
     }
 

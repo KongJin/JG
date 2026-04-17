@@ -37,10 +37,16 @@ namespace Features.Account.Application
             }
 
             long now = System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            long cooldownEnd = account.createdAtUnixMs + CooldownMs;
+            bool hasDefaultDisplayName = account.displayName == account.DefaultDisplayName;
+            long lastChangedAt = account.lastNicknameChangeUnixMs;
+
+            if (lastChangedAt <= 0 && !hasDefaultDisplayName)
+                lastChangedAt = account.createdAtUnixMs;
+
+            long cooldownEnd = lastChangedAt + CooldownMs;
 
             // 최초 생성 직후에는 변경 가능
-            if (now < cooldownEnd && account.displayName != account.uid.Substring(0, System.Math.Min(8, account.uid.Length)))
+            if (lastChangedAt > 0 && now < cooldownEnd)
             {
                 long remainingMs = cooldownEnd - now;
                 int remainingDays = (int)(remainingMs / (1000 * 60 * 60 * 24)) + 1;
@@ -48,6 +54,7 @@ namespace Features.Account.Application
             }
 
             account.displayName = newName.Trim();
+            account.lastNicknameChangeUnixMs = now;
             await _dataPort.SaveProfile(account, token);
 
             return Result.Success();

@@ -28,6 +28,7 @@ namespace Features.Garage.Presentation
         private GaragePagePresenter _presenter;
         private bool _callbacksHooked;
         private bool _isInitialized;
+        private bool _isInitializingRoster;
 
         public void Initialize(GarageSetup setup, GaragePanelCatalog catalog)
         {
@@ -48,11 +49,9 @@ namespace Features.Garage.Presentation
             }
 
             _isInitialized = true;
-            _state.Initialize(_setup.InitializeGarage.Execute() ?? new GarageRoster());
-
-            _ = SaveRosterAsync(_state.CommittedRoster);
-
+            _state.Initialize(new GarageRoster());
             Render();
+            _ = InitializeRosterAsync();
         }
 
         /// <summary>
@@ -81,6 +80,26 @@ namespace Features.Garage.Presentation
             if (!result.IsSuccess)
                 _state.SetValidationOverride(result.Error);
             Render();
+        }
+
+        private async System.Threading.Tasks.Task InitializeRosterAsync()
+        {
+            if (_isInitializingRoster)
+                return;
+
+            _isInitializingRoster = true;
+
+            try
+            {
+                var roster = await _setup.InitializeGarage.Execute();
+                _state.Initialize(roster ?? new GarageRoster());
+                Render();
+                await SaveRosterAsync(_state.CommittedRoster);
+            }
+            finally
+            {
+                _isInitializingRoster = false;
+            }
         }
 
         private void HookCallbacks()
