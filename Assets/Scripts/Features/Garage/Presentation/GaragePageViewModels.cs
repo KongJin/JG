@@ -6,7 +6,10 @@ namespace Features.Garage.Presentation
             string slotLabel,
             string title,
             string summary,
+            string statusBadgeText,
             bool hasCommittedLoadout,
+            bool hasDraftChanges,
+            bool isEmpty,
             bool isSelected,
             bool showArrow = false,
             string frameId = null,
@@ -16,7 +19,10 @@ namespace Features.Garage.Presentation
             SlotLabel = slotLabel;
             Title = title;
             Summary = summary;
+            StatusBadgeText = statusBadgeText;
             HasCommittedLoadout = hasCommittedLoadout;
+            HasDraftChanges = hasDraftChanges;
+            IsEmpty = isEmpty;
             IsSelected = isSelected;
             ShowArrow = showArrow;
             FrameId = frameId;
@@ -27,7 +33,10 @@ namespace Features.Garage.Presentation
         public string SlotLabel { get; }
         public string Title { get; }
         public string Summary { get; }
+        public string StatusBadgeText { get; }
         public bool HasCommittedLoadout { get; }
+        public bool HasDraftChanges { get; }
+        public bool IsEmpty { get; }
         public bool IsSelected { get; }
         public bool ShowArrow { get; }
         public string FrameId { get; }
@@ -76,17 +85,26 @@ namespace Features.Garage.Presentation
             string rosterStatusText,
             string validationText,
             string statsText,
-            bool isReady = false)
+            bool isReady,
+            bool isDirty,
+            bool canSave,
+            string primaryActionLabel)
         {
             RosterStatusText = rosterStatusText;
             ValidationText = validationText;
             StatsText = statsText;
             IsReady = isReady;
+            IsDirty = isDirty;
+            CanSave = canSave;
+            PrimaryActionLabel = primaryActionLabel;
         }
 
         public string RosterStatusText { get; }
         public string ValidationText { get; }
         public string StatsText { get; }
         public bool IsReady { get; }
+        public bool IsDirty { get; }
+        public bool CanSave { get; }
+        public string PrimaryActionLabel { get; }
     }
 }

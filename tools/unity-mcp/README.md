@@ -6,6 +6,7 @@ Unity MCP in this repo is a `diagnostic + manual automation` bridge.
 - MCP stdio wrapper: `tools/unity-mcp/server.js`
 - Helper module: `tools/unity-mcp/McpHelpers.ps1`
 - Manual Garage smoke: `tools/unity-mcp/Invoke-GarageManualSmoke.ps1`
+- Garage Ready flow smoke: `tools/unity-mcp/Invoke-GarageReadyFlowSmoke.ps1`
 
 `rule-harness` continues to use Unity MCP only for compile/status refresh plus generic diagnostics. Scene-specific runtime smoke stays out of harness scope.
 
@@ -110,12 +111,26 @@ Run the Garage smoke like this:
 powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GarageManualSmoke.ps1
 ```
 
+Run the draft -> save -> ready smoke like this:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GarageReadyFlowSmoke.ps1
+```
+
 Defaults:
 
 - scene: `Assets/Scenes/CodexLobbyScene.unity`
 - tab: `/Canvas/TopTabs/GarageTabButton`
 - root: `/Canvas/GaragePageRoot`
 - screenshot: `artifacts/unity/garage-manual-smoke.png`
+
+Ready-flow smoke highlights:
+
+- creates a room after filling the room-name field
+- auto-fills empty Garage slots until Ready unlocks
+- verifies unsaved draft changes relock Ready
+- verifies Save restores Ready and Ready toggles to `Cancel`
+- captures `artifacts/unity/garage-ready-flow-smoke.png`
 
 ## Notes
 

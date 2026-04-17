@@ -30,6 +30,7 @@ namespace Features.Garage
         private IAccountDataPort _accountDataPort;
         private RosterValidationProvider _rosterValidationProvider;
         private DisposableScope _disposables;
+        private IEventPublisher _eventPublisher;
 
         // Application UseCases
         public InitializeGarageUseCase InitializeGarage { get; private set; }
@@ -38,6 +39,7 @@ namespace Features.Garage
         public SaveRosterUseCase SaveRoster { get; private set; }
         public IGarageNetworkPort NetworkPort => _networkAdapter;
         public IAccountDataPort AccountDataPort => _accountDataPort;
+        public IEventPublisher EventPublisher => _eventPublisher;
 
         public GarageSetup Setup => this;
 
@@ -52,6 +54,7 @@ namespace Features.Garage
             IAccountDataPort accountDataPort = null)
         {
             _accountDataPort = accountDataPort;
+            _eventPublisher = eventBus;
             _rosterValidationProvider = new RosterValidationProvider(unitCatalog);
 
             // Composition root — UseCase 조립

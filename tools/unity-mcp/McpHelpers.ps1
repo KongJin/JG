@@ -44,6 +44,17 @@ function Invoke-McpGetJson {
     return Invoke-RestMethod -Method Get -Uri $uri
 }
 
+function Test-McpTransientConnectionFailure {
+    param([System.Exception]$Exception)
+
+    if ($null -eq $Exception) {
+        return $false
+    }
+
+    $message = $Exception.Message
+    return $message -match "connect|connection|actively refused|forcibly closed|reset by peer|No connection could be made"
+}
+
 function Wait-McpBridgeHealthy {
     param(
         [string]$Root,
@@ -81,6 +92,38 @@ function Wait-McpBridgeHealthy {
     }
 
     throw "Unity MCP bridge did not become healthy within ${TimeoutSec}s. Last error: $lastError"
+}
+
+function Invoke-McpTransitionWait {
+    param(
+        [string]$Root,
+        [string]$SubPath,
+        [int]$TimeoutSec = 60,
+        [double]$PollSec = 0.5
+    )
+
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    $lastError = $null
+
+    while ((Get-Date) -lt $deadline) {
+        try {
+            return Invoke-McpJson -Root $Root -SubPath $SubPath
+        }
+        catch {
+            if (-not (Test-McpTransientConnectionFailure -Exception $_.Exception)) {
+                throw
+            }
+
+            $lastError = $_.Exception.Message
+            Start-Sleep -Seconds $PollSec
+        }
+    }
+
+    if ([string]::IsNullOrWhiteSpace($lastError)) {
+        $lastError = "Unknown transition wait failure."
+    }
+
+    throw "Unity MCP transition wait failed for ${SubPath} within ${TimeoutSec}s. Last error: $lastError"
 }
 
 function Get-McpPlayModeChanging {
@@ -195,7 +238,7 @@ function Invoke-McpPlayStartAndWaitForBridge {
     }
 
     $health = Wait-McpBridgeHealthy -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec
-    $wait = Invoke-McpJson -Root $Root -SubPath "/play/wait-for-play"
+    $wait = Invoke-McpTransitionWait -Root $Root -SubPath "/play/wait-for-play" -TimeoutSec $TimeoutSec -PollSec $PollSec
     $ready = Wait-McpPlayModeReady -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec
     return [PSCustomObject]@{
         Response = $response
@@ -224,7 +267,7 @@ function Invoke-McpPlayStopAndWait {
     }
 
     $bridge = Wait-McpBridgeHealthy -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec
-    $wait = Invoke-McpJson -Root $Root -SubPath "/play/wait-for-stop"
+    $wait = Invoke-McpTransitionWait -Root $Root -SubPath "/play/wait-for-stop" -TimeoutSec $TimeoutSec -PollSec $PollSec
     $stopped = Wait-McpPlayModeStopped -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec
 
     return [PSCustomObject]@{

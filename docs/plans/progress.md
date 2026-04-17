@@ -16,7 +16,7 @@
 | Phase 7: 배치 시스템 완성 | ✅ 완료 | PlacementArea, PlacementAreaView, 드래그 피드백, 영역 검증, MaterialFactory, ErrorView |
 | Phase 8: Energy 재생 증가 곡선 | ✅ 완료 | EnergyRegenCurve (시간 기반 60s→180s, 3→5/s), EnergyRegenCurveConfig, TickRegen wiring |
 | Phase 9: 네트워크 완성 | ✅ 완료 | BattleEntityPhotonController (IPunObservable HP/pos/dead sync), BattleEntityDespawnAdapter, WaveEndView 통계 |
-| Phase 10: 계정 시스템 | 🟨 복구 진행 필요 | Firebase REST API 기반 Account Feature 골격은 있으나 Firestore/Garage 실동작은 미검증이고 일부 경로가 미연결 |
+| Phase 10: 계정 시스템 | 🟨 복구 진행 중 | Firestore/Garage 저장·로드·삭제·재시도 핵심 경로는 연결됐고, 남은 과제는 WebGL 실기 검증과 설정 동기화, 계정 UX 마무리 |
 | Phase 11: Google 로그인 | 🟨 실동작 검증 전 | Google linking 경로 코드는 존재하지만 UID 유지와 WebGL 실기 동작은 아직 검증되지 않음 |
 
 ## 미완료 TODO
@@ -25,32 +25,33 @@
 - Phase 9: 실제 멀티플레이어 smoke 테스트 (late-join, BattleEntity sync, Energy sync)
 - Phase 10: Firebase Console 설정 (API Key, Project ID, Firestore DB 생성)
 - Phase 10: Unity Inspector에 AccountConfig, LoginLoadingView 할당 확인
-- Phase 10: Garage Firestore 저장 연결 (`SaveRosterUseCase.ICloudGaragePort` 실제 구현 연결)
-- Phase 10: Garage Firestore 로드 연결 (Firestore 우선, 로컬 JSON fallback)
-- Phase 10: Firebase Auth `accounts:delete` body를 `idToken` 형식으로 수정
-- Phase 10: 로그인 자동 재시도 실제 동작 복구 (`LoginLoadingView` + `LobbySetup`)
-- Phase 10: 닉네임 cooldown timestamp 저장 (`lastNicknameChangeUnixMs`)
 - Phase 10: 설정 (볼륨, 언어) Firestore 동기화
 - Phase 10: WebGL 빌드 smoke 테스트
 - Phase 10: 계정 삭제 기능 + UI
-- Phase 10: stale Garage 테스트 복구 + Unity Test Runner 연결
+- Phase 10: 계정/Garage save-load-delete 전체 WebGL 실기 확인
+- Phase 10: Garage 수동 저장 UX 2차 폴리시 (슬롯 카드/결과 패널/계정 카드 완성도)
 - Phase 11: WebGL 빌드에서 Google 로그인 실기 테스트
 - Phase 11: 익명→Google 계정 linking 시 UID 유지 확인
 - Phase 11: Google 로그인 WebGL smoke 테스트
 
 ## 다음 작업 메모
 
-- `CodexLobbyScene` Garage UI 2차 리팩터링: `GaragePageController + subview` 구조 compile/runtime 안정화 진행 중
+- `CodexLobbyScene` 로비/Garage 대시보드 리팩터링 2차: 시각 polish와 상호작용 smoke 보강 필요
 - Garage UI 레이아웃 SSOT: [`ui_foundations.md`](../design/ui_foundations.md)
 - Garage UI Figma handoff 계획: [`figma_ui_system_plan.md`](./figma_ui_system_plan.md)
 - Garage UI 상세 계획: [`garage_ui_ux_improvement_plan.md`](./garage_ui_ux_improvement_plan.md)
 - 계정 시스템 상세 계획: [`account_system_plan.md`](./account_system_plan.md)
-- Phase 10 계정 시스템 마무리와 Phase 11 Google 로그인 사용자 플로우 연결을 병행
+- 다음 세션 시작점: WebGL 빌드에서 Garage save-load-delete와 Google linking 실기 검증
 
 ### 최근 변경 사항
 
 ### 2026-04-17
 
+- done: Garage draft -> Save -> Room Ready smoke 자동화 추가 및 실검증
+  - done: `tools/unity-mcp/Invoke-GarageReadyFlowSmoke.ps1` 추가 - room name 입력, 방 생성, 빈 슬롯 자동 채움, draft dirty/save/ready 토글까지 한 번에 검증
+  - done: MCP 실기 기준 `Need 1 more saved unit` -> `Ready` -> `Save Garage Draft` -> `Ready` -> `Cancel` 흐름 확인
+  - done: `tools/unity-mcp/README.md`에 Ready flow smoke 실행법과 기대 결과 반영
+  - note: 현재 계정/Garage core flow는 Editor 플레이모드에서 재현되며, 남은 핵심 리스크는 WebGL 실기와 Google linking 검증
 - done: Account/Garage 실제 코드 리뷰 기반으로 계정 시스템 SSOT 문서 정정
   - done: `account_system_plan.md`를 "기능 추가 계획"에서 "복구 계획 SSOT"로 재작성
   - done: Phase 10/11 상태를 실제 코드 기준으로 낮추고 복구 TODO를 `progress.md`에 반영
@@ -68,6 +69,22 @@
 - blocked: 계정 전환 이후에도 파일 권한/seat/Starter MCP 호출 한도 문제로 Figma 기반 실행 계획 지속 불가
 - done: `figma_ui_system_plan.md` 상태를 `보류`로 전환
 - next: Figma 연결 전제 없이 Garage UI를 코드와 문서 SSOT 기준으로 계속 정리할지 판단
+
+- done: Account/Garage 복구 1차 구현 완료
+  - done: Firestore Garage 저장/로드를 실제 런타임 경로에 연결 (`FirestoreRestPort`, `InitializeGarageUseCase`, `SaveRosterUseCase`, `GarageSetup`)
+  - done: Firebase Auth `accounts:delete`를 `idToken` body 형식으로 수정
+  - done: 익명 로그인 자동 재시도(최대 3회)와 로그인 후 계정 로드 연결 (`LobbySetup`)
+  - done: 닉네임 cooldown timestamp(`lastNicknameChangeUnixMs`) 저장 로직 도입
+  - done: stale Garage 테스트를 현행 API 기준으로 정리하고 Unity Test Runner 진입점 추가
+  - note: 컴파일 기준 핵심 복구 경로는 연결됐지만 WebGL 실기 검증은 아직 남아 있음
+
+- done: Lobby/Garage UX 전면 리팩토링 1차 구현
+  - done: Garage를 `draft + committed roster` 기반 수동 저장 모델로 전환 (`GaragePageState`, `GaragePageController`, `GaragePagePresenter`)
+  - done: 로비와 Garage를 동시에 보이는 분할 대시보드형 레이아웃으로 재구성 (`LobbyView` 런타임 레이아웃 조정)
+  - done: Ready eligibility를 `saved roster + unsaved changes 없음` 기준으로 재연결 (`RoomDetailView`, `GarageDraftStateChangedEvent`)
+  - done: Garage/Lobby README 추가 — 씬 소유권, 저장 계약, 이벤트 흐름 SSOT화
+  - done: MCP smoke 재검증 — compile 0, 플레이모드 Garage 캡처로 새 대시보드 레이아웃 반영 확인
+  - note: 현재 캡처 기준으로 구조는 바뀌었지만 계정 카드와 카드 디테일은 추가 polish가 필요
 
 ### 2026-04-15
 

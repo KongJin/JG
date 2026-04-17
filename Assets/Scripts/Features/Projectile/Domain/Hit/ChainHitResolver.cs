@@ -9,7 +9,7 @@
             _maxChains = maxChains;
         }
 
-        public IHitResult Resolve(Projectile projectile)
+        public IHitResult Resolve(global::Features.Projectile.Domain.Projectile projectile)
         {
             if (projectile.HitCount >= _maxChains)
                 return new DestroyHitResult();
@@ -18,6 +18,7 @@
         }
     }
 }
+
 
 
 

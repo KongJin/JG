@@ -83,7 +83,7 @@ namespace Features.Garage.Presentation
             if (_clearButtonText == null)
                 _clearButtonText = _clearButton.GetComponentInChildren<TMP_Text>();
             if (_clearButtonText != null)
-                _clearButtonText.text = "Clear Slot";
+                _clearButtonText.text = "Clear Draft";
         }
     }
 }

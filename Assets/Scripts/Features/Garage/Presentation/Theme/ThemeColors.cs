@@ -24,6 +24,7 @@ namespace Features.Garage.Presentation.Theme
         // ─── 액센트 ─────────────────────────────────────────
         public static readonly Color AccentBlue          = ParseColor("#3E7AE5");
         public static readonly Color AccentOrange        = ParseColor("#E5573E");
+        public static readonly Color AccentAmber         = ParseColor("#D8A343");
         public static readonly Color AccentGreen         = ParseColor("#3EAF57");
         public static readonly Color AccentRed           = ParseColor("#AF2E2E");
 
@@ -35,8 +36,10 @@ namespace Features.Garage.Presentation.Theme
         // ─── 슬롯 색상 ──────────────────────────────────────
         public static readonly Color SlotSelected        = ParseColor("#3E7AE5");
         public static readonly Color SlotFilled          = ParseColor("#2B3652");
+        public static readonly Color SlotDirty           = ParseColor("#4A3323");
         public static readonly Color SlotEmpty           = new(0.10f, 0.12f, 0.18f, 0.92f);
         public static readonly Color SlotEmptyHover      = new(0.14f, 0.17f, 0.25f, 1f);
+        public static readonly Color PanelOutline        = ParseColor("#2E3B5B");
 
         // ─── 3D 프리뷰 ─────────────────────────────────────
         public static readonly Color PreviewBackground   = new(0.05f, 0.06f, 0.10f, 1f);

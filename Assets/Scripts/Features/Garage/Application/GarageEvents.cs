@@ -71,6 +71,26 @@ namespace Features.Garage.Application
     }
 
     /// <summary>
+    /// 편집 중인 Draft 상태가 바뀌었을 때.
+    /// Ready 가능 여부는 저장된 편성과 unsaved 상태를 함께 반영한다.
+    /// </summary>
+    public readonly struct GarageDraftStateChangedEvent
+    {
+        public int SavedUnitCount { get; }
+        public bool HasUnsavedChanges { get; }
+        public bool ReadyEligible { get; }
+        public string BlockReason { get; }
+
+        public GarageDraftStateChangedEvent(int savedUnitCount, bool hasUnsavedChanges, bool readyEligible, string blockReason)
+        {
+            SavedUnitCount = savedUnitCount;
+            HasUnsavedChanges = hasUnsavedChanges;
+            ReadyEligible = readyEligible;
+            BlockReason = blockReason;
+        }
+    }
+
+    /// <summary>
     /// 편성 유효성 검증 결과.
     /// </summary>
     public readonly struct RosterValidatedEvent

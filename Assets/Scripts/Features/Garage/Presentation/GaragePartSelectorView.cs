@@ -90,7 +90,7 @@ namespace Features.Garage.Presentation
 
         private void ApplyTypography()
         {
-            if (_titleText == null)
+            if (_titleText != null)
             {
                 _titleText.fontSize = _titleFontSize;
                 _titleText.alignment = TextAlignmentOptions.MidlineLeft;

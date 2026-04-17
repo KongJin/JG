@@ -107,7 +107,7 @@ namespace Features.Garage.Presentation
                 _saveButtonText = _saveButton.GetComponentInChildren<TMP_Text>();
 
             if (_saveButtonText != null)
-                _saveButtonText.text = "Save Roster";
+                _saveButtonText.text = "Save Draft";
         }
 
         private void OnEnable()
@@ -257,22 +257,23 @@ namespace Features.Garage.Presentation
             {
                 _rosterStatusText.text = viewModel.RosterStatusText;
                 _rosterStatusText.color = ThemeColors.TextPrimary;
-                _rosterStatusText.fontSize = 14;
+                _rosterStatusText.fontSize = 15;
                 _rosterStatusText.enableAutoSizing = false;
             }
 
             if (_validationText != null)
             {
                 _validationText.text = viewModel.ValidationText;
-                bool hasError =
-                    !string.IsNullOrEmpty(viewModel.ValidationText)
-                    && (
-                        viewModel.ValidationText.Contains("Error")
-                        || viewModel.ValidationText.Contains("실패")
-                    );
+                bool hasError = !string.IsNullOrWhiteSpace(viewModel.ValidationText) &&
+                                (viewModel.ValidationText.Contains("Unknown", System.StringComparison.OrdinalIgnoreCase) ||
+                                 viewModel.ValidationText.Contains("failed", System.StringComparison.OrdinalIgnoreCase) ||
+                                 viewModel.ValidationText.Contains("실패", System.StringComparison.OrdinalIgnoreCase));
+                bool hasWarning = viewModel.IsDirty && !viewModel.CanSave;
                 _validationText.color = hasError
                     ? ThemeColors.AccentRed
-                    : ThemeColors.TextSecondary;
+                    : hasWarning
+                        ? ThemeColors.AccentAmber
+                        : ThemeColors.TextSecondary;
                 _validationText.fontSize = 13;
                 _validationText.enableAutoSizing = false;
             }
@@ -286,30 +287,32 @@ namespace Features.Garage.Presentation
             }
 
             RefreshSaveButtonState();
-        }
 
-        private void RefreshSaveButtonState()
-        {
             if (_saveButtonText != null)
-            {
-                _saveButtonText.text = _isLoading ? "Saving..." : "Save Roster";
-                _saveButtonText.color = ThemeColors.TextPrimary;
-            }
+                _saveButtonText.text = _isLoading ? "Saving..." : viewModel.PrimaryActionLabel;
 
             if (_saveButton != null)
-                _saveButton.interactable = !_isLoading;
+                _saveButton.interactable = !_isLoading && viewModel.CanSave;
 
-            if (_saveButtonImage != null && _saveButton != null)
+            if (_saveButtonImage != null)
             {
-                var targetColor = _isReadyToSave
+                var targetColor = viewModel.CanSave
                     ? ThemeColors.AccentGreen
-                    : ThemeColors.AccentBlue;
+                    : viewModel.IsDirty
+                        ? ThemeColors.AccentOrange
+                        : ThemeColors.StateDisabled;
                 _saveButtonImage.color = targetColor;
 
                 var feedback = _saveButton.GetComponent<ButtonFeedback>();
                 if (feedback != null)
                     feedback.UpdateBaseColor(targetColor);
             }
+        }
+
+        private void RefreshSaveButtonState()
+        {
+            if (_saveButtonText != null)
+                _saveButtonText.color = ThemeColors.TextPrimary;
         }
     }
 }

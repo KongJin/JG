@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using Features.Garage.Application;
 using Features.Garage.Domain;
 using Shared.Attributes;
 using Shared.Kernel;
@@ -37,9 +37,8 @@ namespace Features.Garage.Presentation
             _presenter = new GaragePagePresenter(_catalog);
             _state ??= new GaragePageState();
 
-            // AccountSettingsView를 GaragePageRoot 바깥으로 분리 (레이아웃 겹침 방지)
+            ConfigureWorkbenchLayout();
             SeparateAccountPanel();
-
             HookCallbacks();
 
             if (_isInitialized)
@@ -54,12 +53,41 @@ namespace Features.Garage.Presentation
             _ = InitializeRosterAsync();
         }
 
-        /// <summary>
-        /// AccountSettingsView를 GaragePageRoot에서 분리하여 우측 패널과 겹치지 않게 배치.
-        /// </summary>
+        private void ConfigureWorkbenchLayout()
+        {
+            var header = transform.Find("Summary") as RectTransform;
+            var rosterPane = transform.Find("RosterListPane") as RectTransform;
+            var editorPane = transform.Find("UnitEditorPane") as RectTransform;
+            var resultPane = transform.Find("ResultPane") as RectTransform;
+            var preview = transform.Find("PreviewRawImage") as RectTransform;
+            var accountCard = transform.Find("AccountCard") as RectTransform;
+
+            SetStretch(header, 0.02f, 0.88f, 0.66f, 0.98f);
+            SetStretch(rosterPane, 0.02f, 0.08f, 0.26f, 0.84f);
+            SetStretch(preview, 0.30f, 0.58f, 0.66f, 0.84f);
+            SetStretch(editorPane, 0.30f, 0.08f, 0.66f, 0.54f);
+            SetStretch(resultPane, 0.70f, 0.22f, 0.98f, 0.84f);
+            SetStretch(accountCard, 0.72f, 0.86f, 0.98f, 0.98f);
+        }
+
+        private static void SetStretch(RectTransform rect, float minX, float minY, float maxX, float maxY)
+        {
+            if (rect == null)
+                return;
+
+            rect.anchorMin = new Vector2(minX, minY);
+            rect.anchorMax = new Vector2(maxX, maxY);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = Vector2.zero;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+        }
+
         private void SeparateAccountPanel()
         {
-            if (_accountSettingsView == null) return;
+            if (_accountSettingsView == null)
+                return;
+
             var accountTransform = _accountSettingsView.transform;
 
             if (_accountPanelRoot != null && accountTransform.parent == _accountPanelRoot.transform)
@@ -74,14 +102,6 @@ namespace Features.Garage.Presentation
             }
         }
 
-        private async System.Threading.Tasks.Task SaveRosterAsync(GarageRoster roster)
-        {
-            var result = await _setup.SaveRoster.Execute(roster);
-            if (!result.IsSuccess)
-                _state.SetValidationOverride(result.Error);
-            Render();
-        }
-
         private async System.Threading.Tasks.Task InitializeRosterAsync()
         {
             if (_isInitializingRoster)
@@ -94,7 +114,6 @@ namespace Features.Garage.Presentation
                 var roster = await _setup.InitializeGarage.Execute();
                 _state.Initialize(roster ?? new GarageRoster());
                 Render();
-                await SaveRosterAsync(_state.CommittedRoster);
             }
             finally
             {
@@ -117,24 +136,16 @@ namespace Features.Garage.Presentation
             _unitEditorView.FirepowerCycleRequested += CycleFirepower;
             _unitEditorView.MobilityCycleRequested += CycleMobility;
             _unitEditorView.ClearRequested += ClearSelectedSlot;
-            _resultPanelView.SaveClicked += OnSaveClicked;
-
-            // 부품 비교 툴팁
             _unitEditorView.PartHoverRequested += ShowPartHoverTooltip;
+            _resultPanelView.SaveClicked += OnSaveClicked;
         }
 
-        /// <summary>
-        /// 키보드 단축키 처리.
-        /// A/D 또는 ←/→: 현재 편집 중인 파트 순환
-        /// 1~6: 슬롯 전환
-        /// Ctrl+S: 저장
-        /// </summary>
         private void Update()
         {
             var keyboard = Keyboard.current;
-            if (keyboard == null) return;
+            if (keyboard == null)
+                return;
 
-            // Ctrl+S: 저장
             if (keyboard.leftCtrlKey.isPressed || keyboard.rightCtrlKey.isPressed)
             {
                 if (keyboard.sKey.wasPressedThisFrame)
@@ -144,7 +155,6 @@ namespace Features.Garage.Presentation
                 }
             }
 
-            // 1~6: 슬롯 전환
             if (keyboard.digit1Key.wasPressedThisFrame || keyboard.numpad1Key.wasPressedThisFrame) { SelectSlot(0); return; }
             if (keyboard.digit2Key.wasPressedThisFrame || keyboard.numpad2Key.wasPressedThisFrame) { SelectSlot(1); return; }
             if (keyboard.digit3Key.wasPressedThisFrame || keyboard.numpad3Key.wasPressedThisFrame) { SelectSlot(2); return; }
@@ -152,18 +162,15 @@ namespace Features.Garage.Presentation
             if (keyboard.digit5Key.wasPressedThisFrame || keyboard.numpad5Key.wasPressedThisFrame) { SelectSlot(4); return; }
             if (keyboard.digit6Key.wasPressedThisFrame || keyboard.numpad6Key.wasPressedThisFrame) { SelectSlot(5); return; }
 
-            // A/D 또는 ←/→: 현재 선택된 파트 순환
             int delta = 0;
             if (keyboard.aKey.wasPressedThisFrame || keyboard.leftArrowKey.wasPressedThisFrame) delta = -1;
             else if (keyboard.dKey.wasPressedThisFrame || keyboard.rightArrowKey.wasPressedThisFrame) delta = 1;
 
             if (delta != 0)
             {
-                // 현재 포커스된 파트를 결정 (편집 중인 파트이 있으면 해당 파트, 없으면 Frame 우선)
                 if (!string.IsNullOrEmpty(_state.EditingFrameId)) { CycleFrame(delta); return; }
                 if (!string.IsNullOrEmpty(_state.EditingFirepowerId)) { CycleFirepower(delta); return; }
                 if (!string.IsNullOrEmpty(_state.EditingMobilityId)) { CycleMobility(delta); return; }
-                // 아무것도 편집 중이 아니면 Frame부터 시작
                 CycleFrame(delta);
             }
         }
@@ -177,33 +184,24 @@ namespace Features.Garage.Presentation
         private void CycleFrame(int delta)
         {
             _state.SetEditingFrameId(CycleId(_state.EditingFrameId, _catalog?.Frames, delta, frame => frame.Id));
-            var frameName = _catalog?.FindFrame(_state.EditingFrameId)?.DisplayName ?? _state.EditingFrameId;
-            _resultPanelView.ShowToast($"Frame → {frameName}");
-            TryCommitEditingDraft();
+            _state.ClearValidationOverride();
             Render();
         }
 
         private void CycleFirepower(int delta)
         {
             _state.SetEditingFirepowerId(CycleId(_state.EditingFirepowerId, _catalog?.Firepower, delta, module => module.Id));
-            var wpName = _catalog?.FindFirepower(_state.EditingFirepowerId)?.DisplayName ?? _state.EditingFirepowerId;
-            _resultPanelView.ShowToast($"Firepower → {wpName}");
-            TryCommitEditingDraft();
+            _state.ClearValidationOverride();
             Render();
         }
 
         private void CycleMobility(int delta)
         {
             _state.SetEditingMobilityId(CycleId(_state.EditingMobilityId, _catalog?.Mobility, delta, module => module.Id));
-            var mobName = _catalog?.FindMobility(_state.EditingMobilityId)?.DisplayName ?? _state.EditingMobilityId;
-            _resultPanelView.ShowToast($"Mobility → {mobName}");
-            TryCommitEditingDraft();
+            _state.ClearValidationOverride();
             Render();
         }
 
-        /// <summary>
-        /// 부품 버튼 호버 시 다음 부품 이름 토스트로 표시 (비교 툴팁).
-        /// </summary>
         private void ShowPartHoverTooltip(string partType, int delta)
         {
             string currentId = partType switch
@@ -238,16 +236,33 @@ namespace Features.Garage.Presentation
                 _ => "—"
             };
 
-            _resultPanelView.ShowToast($"{currentName} → {nextName}");
+            _resultPanelView.ShowToast($"{currentName} -> {nextName}");
         }
 
-        private async void ClearSelectedSlot()
+        private void ClearSelectedSlot()
         {
-            var updatedRoster = _state.CommittedRoster.Clone();
-            updatedRoster.ClearSlot(_state.SelectedSlotIndex);
+            _state.ClearSelectedSlotDraft();
+            _state.ClearValidationOverride();
+            Render();
+        }
+
+        private async void OnSaveClicked()
+        {
+            var evaluation = EvaluateDraft();
+            if (!evaluation.CanSave)
+            {
+                var message = !string.IsNullOrWhiteSpace(evaluation.RosterValidationError)
+                    ? evaluation.RosterValidationError
+                    : evaluation.HasDraftChanges
+                        ? "Draft is not ready to save."
+                        : "No unsaved changes.";
+                _state.SetValidationOverride(message);
+                Render();
+                return;
+            }
 
             _resultPanelView.ShowLoading(true);
-            var result = await _setup.SaveRoster.Execute(updatedRoster);
+            var result = await _setup.SaveRoster.Execute(_state.DraftRoster.Clone());
             _resultPanelView.ShowLoading(false);
 
             if (!result.IsSuccess)
@@ -257,59 +272,9 @@ namespace Features.Garage.Presentation
                 return;
             }
 
-            _state.SetCommittedRoster(updatedRoster);
-            _state.ClearSelectedSlotDraft();
-
+            _state.CommitDraft();
+            _resultPanelView.ShowToast("Roster saved!");
             Render();
-        }
-
-        private async void OnSaveClicked()
-        {
-            // 저장 중 버튼 비활성화 + 로딩 표시 — 중복 클릭 방지
-            _resultPanelView.ShowLoading(true);
-
-            var result = await _setup.SaveRoster.Execute(_state.CommittedRoster);
-
-            _resultPanelView.ShowLoading(false);
-
-            if (result.IsSuccess)
-            {
-                _resultPanelView.ShowToast("Roster saved!");
-            }
-            else
-            {
-                _resultPanelView.ShowToast(result.Error, isError: true);
-            }
-        }
-
-        private async void TryCommitEditingDraft()
-        {
-            _state.ClearValidationOverride();
-
-            var evaluation = EvaluateDraft();
-            if (!evaluation.HasCatalogData || !evaluation.HasCompleteDraft)
-                return;
-
-            if (!evaluation.HasComposedUnit)
-            {
-                _state.SetValidationOverride(evaluation.ComposeResult.Error);
-                return;
-            }
-
-            var updatedRoster = _state.CommittedRoster.Clone();
-            updatedRoster.SetSlot(_state.SelectedSlotIndex, new GarageRoster.UnitLoadout(
-                _state.EditingFrameId,
-                _state.EditingFirepowerId,
-                _state.EditingMobilityId));
-
-            var result = await _setup.SaveRoster.Execute(updatedRoster);
-            if (!result.IsSuccess)
-            {
-                _state.SetValidationOverride(result.Error);
-                return;
-            }
-
-            _state.SetCommittedRoster(updatedRoster);
         }
 
         private void Render()
@@ -326,6 +291,39 @@ namespace Features.Garage.Presentation
                 var selectedSlot = slotViewModels[_state.SelectedSlotIndex];
                 _unitPreviewView.Render(selectedSlot, _catalog);
             }
+
+            PublishDraftState();
+        }
+
+        private void PublishDraftState()
+        {
+            string blockReason;
+            bool readyEligible;
+
+            if (_state.HasDraftChanges())
+            {
+                readyEligible = false;
+                blockReason = "Unsaved Garage changes";
+            }
+            else if (!_state.CommittedRoster.IsValid)
+            {
+                readyEligible = false;
+                int missingUnits = Mathf.Max(0, 3 - _state.CommittedRoster.Count);
+                blockReason = missingUnits > 0
+                    ? $"Need {missingUnits} more saved unit{(missingUnits == 1 ? string.Empty : "s")}"
+                    : "Saved roster is not ready";
+            }
+            else
+            {
+                readyEligible = true;
+                blockReason = "Ready available";
+            }
+
+            _setup?.EventPublisher?.Publish(new GarageDraftStateChangedEvent(
+                _state.CommittedRoster.Count,
+                _state.HasDraftChanges(),
+                readyEligible,
+                blockReason));
         }
 
         private GarageDraftEvaluation EvaluateDraft()
@@ -339,18 +337,26 @@ namespace Features.Garage.Presentation
             if (hasCatalogData && _state.HasCompleteDraft())
             {
                 composeResult = _setup.ComposeUnit.Execute(
-                    DomainEntityId.New(),
+                    Shared.Kernel.DomainEntityId.New(),
                     _state.EditingFrameId,
                     _state.EditingFirepowerId,
                     _state.EditingMobilityId);
             }
 
-            return GarageDraftEvaluation.Create(_state, hasCatalogData, composeResult);
+            Result rosterValidation = Result.Success();
+            if (_state.HasDraftChanges())
+            {
+                rosterValidation = _setup.ValidateRoster.Execute(_state.DraftRoster, out string validationError);
+                if (rosterValidation.IsFailure && string.IsNullOrWhiteSpace(rosterValidation.Error) && !string.IsNullOrWhiteSpace(validationError))
+                    rosterValidation = Result.Failure(validationError);
+            }
+
+            return GarageDraftEvaluation.Create(_state, hasCatalogData, composeResult, rosterValidation);
         }
 
         private static string CycleId<T>(
             string currentId,
-            IReadOnlyList<T> items,
+            System.Collections.Generic.IReadOnlyList<T> items,
             int delta,
             System.Func<T, string> getId)
         {
@@ -367,12 +373,10 @@ namespace Features.Garage.Presentation
                 }
             }
 
-            int nextIndex = currentIndex + delta;
-            if (nextIndex < 0)
-                nextIndex = items.Count - 1;
-            if (nextIndex >= items.Count)
-                nextIndex = 0;
+            if (currentIndex < 0)
+                currentIndex = 0;
 
+            int nextIndex = (currentIndex + delta + items.Count) % items.Count;
             return getId(items[nextIndex]);
         }
     }

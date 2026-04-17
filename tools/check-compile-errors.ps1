@@ -1,120 +1,110 @@
-# Unity 컴파일 에러/경고 확인 스크립트
-# Editor.log 파일에서 컴파일 에러와 경고를 추출합니다
-
 param(
-    [string]$LogPath = "$env:LOCALAPPDATA\Unity\Editor\Editor.log",
-    [switch]$IncludeWarnings = $true,
-    [switch]$FullLog = $false
+    [string]$ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path,
+    [string]$ProjectFile = "Assembly-CSharp-Editor.csproj",
+    [switch]$UseEditorLogFallback
 )
 
-# 로그 파일 확인
-if (-not (Test-Path $LogPath)) {
-    Write-Host "Error: Log file not found: $LogPath" -ForegroundColor Red
+$ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+
+function Get-BuildLineMatches {
+    param(
+        [string[]]$Lines,
+        [string]$Pattern
+    )
+
+    return @($Lines | Where-Object { $_ -match $Pattern })
+}
+
+function Invoke-DotnetCompileCheck {
+    param(
+        [string]$Root,
+        [string]$ProjectName
+    )
+
+    $resolvedProject = Join-Path $Root $ProjectName
+    if (-not (Test-Path -LiteralPath $resolvedProject)) {
+        throw "Project file not found: $resolvedProject"
+    }
+
+    $dotnet = Get-Command dotnet -ErrorAction Stop
+    $lines = @(& $dotnet.Source build $resolvedProject -nologo -v minimal 2>&1)
+    $exitCode = $LASTEXITCODE
+
+    $errorLines = @(Get-BuildLineMatches -Lines $lines -Pattern ':\s+error\s+[A-Z]{2,}\d+:')
+    $warningLines = @(Get-BuildLineMatches -Lines $lines -Pattern ':\s+warning\s+[A-Z]{2,}\d+:')
+    $summaryLine = $lines | Where-Object { $_ -match 'Build (FAILED|succeeded)\.' } | Select-Object -Last 1
+
+    [PSCustomObject]@{
+        Mode = "dotnet-build"
+        ProjectFile = $resolvedProject
+        ExitCode = $exitCode
+        Errors = $errorLines.Count
+        Warnings = $warningLines.Count
+        Summary = if ($summaryLine) { $summaryLine.Trim() } else { "" }
+        ErrorLines = $errorLines
+        WarningLines = $warningLines
+        RawLines = $lines
+    }
+}
+
+function Invoke-EditorLogFallbackCheck {
+    $editorLog = Join-Path $env:LOCALAPPDATA "Unity\Editor\Editor.log"
+    if (-not (Test-Path -LiteralPath $editorLog)) {
+        throw "Editor.log not found: $editorLog"
+    }
+
+    $lines = @(Get-Content -LiteralPath $editorLog)
+    $errorLines = @(Get-BuildLineMatches -Lines $lines -Pattern '\berror\b')
+    $warningLines = @(Get-BuildLineMatches -Lines $lines -Pattern '\bwarning\b')
+    $lastWriteUtc = (Get-Item -LiteralPath $editorLog).LastWriteTimeUtc
+
+    [PSCustomObject]@{
+        Mode = "editor-log-fallback"
+        ProjectFile = $editorLog
+        ExitCode = if ($errorLines.Count -gt 0) { 1 } else { 0 }
+        Errors = $errorLines.Count
+        Warnings = $warningLines.Count
+        Summary = "Fallback only. Editor.log may contain stale compile output. LastWriteUtc=$($lastWriteUtc.ToString('u'))"
+        ErrorLines = @($errorLines | Select-Object -Last 20)
+        WarningLines = @($warningLines | Select-Object -Last 20)
+        RawLines = $null
+    }
+}
+
+$result = $null
+try {
+    $result = Invoke-DotnetCompileCheck -Root $ProjectRoot -ProjectName $ProjectFile
+}
+catch {
+    if (-not $UseEditorLogFallback) {
+        throw
+    }
+
+    Write-Warning ("dotnet build check failed, falling back to Editor.log: {0}" -f $_.Exception.Message)
+    $result = Invoke-EditorLogFallbackCheck
+}
+
+Write-Host ("MODE: {0}" -f $result.Mode) -ForegroundColor Cyan
+Write-Host ("TARGET: {0}" -f $result.ProjectFile) -ForegroundColor Cyan
+Write-Host ("ERRORS: {0}" -f $result.Errors) -ForegroundColor Red
+Write-Host ("WARNINGS: {0}" -f $result.Warnings) -ForegroundColor Yellow
+if (-not [string]::IsNullOrWhiteSpace($result.Summary)) {
+    Write-Host ("SUMMARY: {0}" -f $result.Summary) -ForegroundColor Gray
+}
+
+if ($result.ErrorLines.Count -gt 0) {
+    Write-Host ""
+    Write-Host "Recent error lines:" -ForegroundColor Red
+    $result.ErrorLines | Select-Object -Last 20 | ForEach-Object { Write-Host $_ }
+}
+
+if ($result.Warnings -gt 0 -and $result.WarningLines.Count -gt 0) {
+    Write-Host ""
+    Write-Host "Recent warning lines:" -ForegroundColor Yellow
+    $result.WarningLines | Select-Object -Last 20 | ForEach-Object { Write-Host $_ }
+}
+
+if ($result.Errors -gt 0) {
     exit 1
 }
-
-$logContent = Get-Content $LogPath -Raw
-
-# 에러 추출 (Assets\...cs(line,col): error CSxxxx: message)
-$errorPattern = "^(Assets[^\(]+\(\d+,\d+\)): error (CS\d+): (.+)$"
-$errors = [regex]::Matches($logContent, $errorPattern, [System.Text.RegularExpressions.RegexOptions]::Multiline)
-
-# 경고 추출
-$warningPattern = "^(Assets[^\(]+\(\d+,\d+\)): warning (CS\d+): (.+)$"
-$warnings = [regex]::Matches($logContent, $warningPattern, [System.Text.RegularExpressions.RegexOptions]::Multiline)
-
-# 결과 출력
-Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "Unity Compile Errors & Warnings Check" -ForegroundColor Cyan
-Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "Log: $LogPath" -ForegroundColor Gray
-Write-Host ""
-
-# 에러 출력
-$errorCount = $errors.Count
-if ($errorCount -gt 0) {
-    Write-Host "ERRORS ($errorCount):" -ForegroundColor Red
-    Write-Host "----------------------------------------" -ForegroundColor DarkRed
-
-    # 에러별 그룹화 (같은 위치의 에러는 최근 것만 표시)
-    $errorGroups = @{}
-    for ($i = $errors.Count - 1; $i -ge 0; $i--) {
-        $location = $errors[$i].Groups[1].Value
-        $code = $errors[$i].Groups[2].Value
-        $message = $errors[$i].Groups[3].Value
-        $key = "$location|$code"
-
-        if (-not $errorGroups.ContainsKey($key)) {
-            $errorGroups[$key] = @{
-                Location = $location
-                Code = $code
-                Message = $message
-            }
-        }
-    }
-
-    foreach ($key in $errorGroups.Keys) {
-        $e = $errorGroups[$key]
-        Write-Host "  $($e.Location)" -ForegroundColor Yellow
-        Write-Host "    [$($e.Code)] $($e.Message)" -ForegroundColor Red
-    }
-    Write-Host ""
-} else {
-    Write-Host "ERRORS: 0" -ForegroundColor Green
-}
-
-# 경고 출력
-if ($IncludeWarnings) {
-    $warningCount = $warnings.Count
-    if ($warningCount -gt 0) {
-        Write-Host "WARNINGS ($warningCount):" -ForegroundColor Yellow
-        Write-Host "----------------------------------------" -ForegroundColor DarkYellow
-
-        # 경고별 그룹화
-        $warningGroups = @{}
-        for ($i = $warnings.Count - 1; $i -ge 0; $i--) {
-            $location = $warnings[$i].Groups[1].Value
-            $code = $warnings[$i].Groups[2].Value
-            $message = $warnings[$i].Groups[3].Value
-            $key = "$location|$code"
-
-            if (-not $warningGroups.ContainsKey($key)) {
-                $warningGroups[$key] = @{
-                    Location = $location
-                    Code = $code
-                    Message = $message
-                }
-            }
-        }
-
-        # 최대 30개 경고만 표시
-        $showCount = [Math]::Min(30, $warningGroups.Count)
-        $idx = 0
-        foreach ($key in $warningGroups.Keys) {
-            if ($idx -ge $showCount) { break }
-            $w = $warningGroups[$key]
-            Write-Host "  $($w.Location)" -ForegroundColor DarkYellow
-            Write-Host "    [$($w.Code)] $($w.Message)" -ForegroundColor DarkGray
-            $idx++
-        }
-
-        if ($warningGroups.Count -gt 30) {
-            Write-Host "  ... and $($warningGroups.Count - 30) more warnings" -ForegroundColor Gray
-        }
-        Write-Host ""
-    } else {
-        Write-Host "WARNINGS: 0" -ForegroundColor Green
-    }
-}
-
-# 요약
-Write-Host "========================================" -ForegroundColor Cyan
-if ($errorCount -eq 0) {
-    Write-Host "RESULT: SUCCESS - No compilation errors" -ForegroundColor Green
-} else {
-    Write-Host "RESULT: FAILED - $errorCount error(s) found" -ForegroundColor Red
-}
-Write-Host "========================================" -ForegroundColor Cyan
-
-# 종료 코드
-exit $errorCount

@@ -63,6 +63,8 @@ namespace Features.Lobby.Presentation
         private DomainEntityId _localMemberId;
         private bool _localIsReady;
         private bool _garageReadyEligible;
+        private bool _garageHasUnsavedChanges;
+        private string _garageReadyBlockReason;
         private bool _callbacksHooked;
         private readonly List<GameObject> _activeItems = new();
 
@@ -89,6 +91,7 @@ namespace Features.Lobby.Presentation
             _disposables.Add(EventBusSubscription.ForOwner(_eventSubscriber, this));
             _eventSubscriber.Subscribe<GarageInitializedEvent>(this, e => HandleGarageRosterChanged(e.Roster));
             _eventSubscriber.Subscribe<RosterSavedEvent>(this, e => HandleGarageRosterChanged(e.Roster));
+            _eventSubscriber.Subscribe<GarageDraftStateChangedEvent>(this, HandleGarageDraftStateChanged);
         }
 
         public void SetLocalMemberId(DomainEntityId memberId)
@@ -175,7 +178,7 @@ namespace Features.Lobby.Presentation
             {
                 UiErrorResultBridge.PublishBannerIfFailure(
                     _eventPublisher,
-                    Result.Failure("Ready requires at least 3 saved Garage units."),
+                    Result.Failure(_garageReadyBlockReason ?? "Ready requires a saved Garage roster."),
                     "Lobby");
                 return;
             }
@@ -199,7 +202,28 @@ namespace Features.Lobby.Presentation
 
         private void HandleGarageRosterChanged(Features.Garage.Domain.GarageRoster roster)
         {
-            _garageReadyEligible = roster != null && roster.IsValid;
+            _garageReadyEligible = roster != null && roster.IsValid && !_garageHasUnsavedChanges;
+            _garageReadyBlockReason = _garageHasUnsavedChanges
+                ? "Unsaved Garage changes"
+                : _garageReadyEligible
+                    ? "Ready available"
+                    : "Need at least 3 saved units";
+
+            if (!_garageReadyEligible && _localIsReady && HasRoomMemberContext())
+            {
+                var result = _useCases.SetReady(_currentRoomId, _localMemberId, false);
+                UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
+                _localIsReady = false;
+            }
+
+            UpdateReadyButtonState();
+        }
+
+        private void HandleGarageDraftStateChanged(GarageDraftStateChangedEvent e)
+        {
+            _garageHasUnsavedChanges = e.HasUnsavedChanges;
+            _garageReadyEligible = e.ReadyEligible;
+            _garageReadyBlockReason = e.BlockReason;
 
             if (!_garageReadyEligible && _localIsReady && HasRoomMemberContext())
             {
@@ -224,7 +248,11 @@ namespace Features.Lobby.Presentation
 
             if (!_garageReadyEligible && !_localIsReady)
             {
-                _readyButtonText.text = "Need 3 Units";
+                _readyButtonText.text = _garageHasUnsavedChanges
+                    ? "Save Garage Draft"
+                    : string.IsNullOrWhiteSpace(_garageReadyBlockReason)
+                        ? "Need 3 Saved Units"
+                        : _garageReadyBlockReason;
                 return;
             }
 

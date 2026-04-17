@@ -96,7 +96,7 @@ namespace Features.Garage.Presentation
             if (viewModel.IsSelected)
             {
                 if (_borderImage != null)
-                    _borderImage.color = ThemeColors.StateSelected;
+                    _borderImage.color = viewModel.HasDraftChanges ? ThemeColors.AccentOrange : ThemeColors.StateSelected;
 
                 if (_canvasGroup != null)
                     _canvasGroup.alpha = 1f;
@@ -139,6 +139,7 @@ namespace Features.Garage.Presentation
         private Color GetSlotColor(GarageSlotViewModel viewModel)
         {
             if (viewModel.IsSelected) return ThemeColors.SlotSelected;
+            if (viewModel.HasDraftChanges) return ThemeColors.SlotDirty;
             if (viewModel.HasCommittedLoadout) return ThemeColors.SlotFilled;
             return ThemeColors.SlotEmpty;
         }
