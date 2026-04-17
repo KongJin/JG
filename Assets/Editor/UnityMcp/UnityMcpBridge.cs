@@ -880,10 +880,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             {
                 typeof(PlayHandlers),
                 typeof(SceneHandlers),
-                typeof(ConsoleHandlers),
                 typeof(InputHandlers),
-                typeof(UiHandlers),
-                typeof(GameObjectHandlers),
                 typeof(ComponentHandlers),
                 typeof(PrefabHandlers),
                 typeof(BuildHandlers),
@@ -894,11 +891,11 @@ namespace ProjectSD.EditorTools.UnityMcp
                 typeof(EvalHandlers),
                 typeof(SnapshotHandlers),
                 typeof(ExploreHandlers),
-                // 개선된 핸들러 (2026-04-15 개편)
+                // Canonical handlers
                 typeof(ImprovedConsoleHandlers),
                 typeof(ImprovedUiHandlers),
                 typeof(ImprovedGameObjectHandlers),
-                // 완전 자동화 핸들러 (2026-04-15 추가)
+                // Manual automation + diagnostics
                 typeof(AsyncMonitorHandlers),
                 typeof(UiStateMonitorHandlers),
             };
@@ -915,7 +912,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 }
             }
 
-            Debug.Log("[Unity MCP] Registered " + EndpointRegistry.RegistrationCount + " endpoints (including automation handlers).");
+            Debug.Log("[Unity MCP] Registered " + EndpointRegistry.RegistrationCount + " endpoints.");
         }
     }
 }

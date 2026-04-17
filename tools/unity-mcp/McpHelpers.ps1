@@ -184,12 +184,25 @@ function Invoke-McpPlayStartAndWaitForBridge {
         [double]$PollSec = 0.5
     )
 
-    $response = Invoke-McpJson -Root $Root -SubPath "/play/start"
+    $response = $null
+    try {
+        $response = Invoke-McpJson -Root $Root -SubPath "/play/start"
+    }
+    catch {
+        if ($_.Exception.Message -notmatch "connect") {
+            throw
+        }
+    }
+
     $health = Wait-McpBridgeHealthy -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec
+    $wait = Invoke-McpJson -Root $Root -SubPath "/play/wait-for-play"
+    $ready = Wait-McpPlayModeReady -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec
     return [PSCustomObject]@{
         Response = $response
+        Wait = $wait
         Health = $health.State
-        ElapsedMs = $health.ElapsedMs
+        ReadyState = $ready.State
+        ElapsedMs = $health.ElapsedMs + $ready.ElapsedMs
     }
 }
 
@@ -200,12 +213,23 @@ function Invoke-McpPlayStopAndWait {
         [double]$PollSec = 0.5
     )
 
-    $response = Invoke-McpJson -Root $Root -SubPath "/play/stop"
+    $response = $null
+    try {
+        $response = Invoke-McpJson -Root $Root -SubPath "/play/stop"
+    }
+    catch {
+        if ($_.Exception.Message -notmatch "connect") {
+            throw
+        }
+    }
+
     $bridge = Wait-McpBridgeHealthy -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec
+    $wait = Invoke-McpJson -Root $Root -SubPath "/play/wait-for-stop"
     $stopped = Wait-McpPlayModeStopped -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec
 
     return [PSCustomObject]@{
         Response = $response
+        Wait = $wait
         Health = $bridge.State
         StoppedState = $stopped.State
         ElapsedMs = $bridge.ElapsedMs + $stopped.ElapsedMs
@@ -292,4 +316,131 @@ function Write-McpRecentConsole {
     catch {
         Write-Host ("console/errors failed: {0}" -f $_.Exception.Message) -ForegroundColor Red
     }
+}
+
+function Get-McpUiState {
+    param([string]$Root)
+    return Invoke-McpGetJson -Root $Root -SubPath "/ui/state"
+}
+
+function Get-McpUiElementState {
+    param(
+        [string]$Root,
+        [string]$Path
+    )
+
+    return Invoke-McpJson -Root $Root -SubPath "/ui/get-state" -Body @{
+        path = $Path
+    }
+}
+
+function Invoke-McpUiInvoke {
+    param(
+        [string]$Root,
+        [string]$Path,
+        [string]$Method = "click",
+        [string]$CustomMethod,
+        [object[]]$Args
+    )
+
+    $body = @{
+        path = $Path
+        method = $Method
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($CustomMethod)) {
+        $body.customMethod = $CustomMethod
+    }
+
+    if ($null -ne $Args) {
+        $body.args = $Args
+    }
+
+    return Invoke-McpJson -Root $Root -SubPath "/ui/invoke" -Body $body
+}
+
+function Wait-McpUiActive {
+    param(
+        [string]$Root,
+        [string]$Path,
+        [int]$TimeoutMs = 10000,
+        [int]$PollIntervalMs = 100
+    )
+
+    return Invoke-McpJson -Root $Root -SubPath "/ui/wait-for-active" -Body @{
+        path = $Path
+        timeoutMs = $TimeoutMs
+        pollIntervalMs = $PollIntervalMs
+    }
+}
+
+function Wait-McpUiInactive {
+    param(
+        [string]$Root,
+        [string]$Path,
+        [int]$TimeoutMs = 10000,
+        [int]$PollIntervalMs = 100
+    )
+
+    return Invoke-McpJson -Root $Root -SubPath "/ui/wait-for-inactive" -Body @{
+        path = $Path
+        timeoutMs = $TimeoutMs
+        pollIntervalMs = $PollIntervalMs
+    }
+}
+
+function Wait-McpUiText {
+    param(
+        [string]$Root,
+        [string]$ExpectedText,
+        [string]$Path,
+        [bool]$Exact = $false,
+        [int]$TimeoutMs = 10000,
+        [int]$PollIntervalMs = 100
+    )
+
+    return Invoke-McpJson -Root $Root -SubPath "/ui/wait-for-text" -Body @{
+        path = $Path
+        expectedText = $ExpectedText
+        exact = $Exact
+        timeoutMs = $TimeoutMs
+        pollIntervalMs = $PollIntervalMs
+    }
+}
+
+function Wait-McpUiComponent {
+    param(
+        [string]$Root,
+        [string]$Path,
+        [string]$ComponentType,
+        [int]$TimeoutMs = 10000,
+        [int]$PollIntervalMs = 100
+    )
+
+    return Invoke-McpJson -Root $Root -SubPath "/ui/wait-for-component" -Body @{
+        path = $Path
+        componentType = $ComponentType
+        timeoutMs = $TimeoutMs
+        pollIntervalMs = $PollIntervalMs
+    }
+}
+
+function Invoke-McpScreenshotCapture {
+    param(
+        [string]$Root,
+        [string]$OutputPath,
+        [int]$SuperSize = 1,
+        [switch]$Overwrite
+    )
+
+    $body = @{
+        superSize = $SuperSize
+        overwrite = [bool]$Overwrite
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($OutputPath)) {
+        $body.outputPath = $OutputPath
+    }
+
+    return Invoke-McpJson -Root $Root -SubPath "/screenshot/capture" -Body $body
 }

@@ -355,6 +355,16 @@ namespace Features.Account.Infrastructure
 
         private static Task<SendResult> SendRequestSafe(UnityWebRequest request)
         {
+            return SendRequestSafeInternal(request);
+        }
+
+        private static Task SendRequest(UnityWebRequest request)
+        {
+            return SendRequestInternal(request);
+        }
+
+        private static async Task<SendResult> SendRequestSafeInternal(UnityWebRequest request)
+        {
             const int timeoutMs = 30000; // 30초 타임아웃
             var tcs = new TaskCompletionSource<SendResult>();
             var startTime = DateTime.UtcNow;
@@ -369,42 +379,36 @@ namespace Features.Account.Infrastructure
                     if (request.responseCode == 404)
                     {
                         Debug.LogWarning($"[Firestore] Document not found ({elapsedTime}ms): {request.url}");
-                        tcs.SetResult(new SendResult { success = false, notFound = true });
+                        tcs.TrySetResult(new SendResult { success = false, notFound = true });
                         return;
                     }
 
                     var error = request.error ?? "Unknown error";
                     Debug.LogError($"[Firestore] Request failed ({elapsedTime}ms): HTTP {request.responseCode} - {error}\n{request.downloadHandler?.text}");
-                    tcs.SetResult(new SendResult { success = false, error = $"HTTP {request.responseCode}: {error}" });
+                    tcs.TrySetResult(new SendResult { success = false, error = $"HTTP {request.responseCode}: {error}" });
                     return;
                 }
 
                 Debug.Log($"[Firestore] Request succeeded ({elapsedTime}ms): {request.url}");
-                tcs.SetResult(new SendResult { success = true });
+                tcs.TrySetResult(new SendResult { success = true });
             };
 
-            // 타임아웃 감지
-            var timeoutTask = Task.Delay(timeoutMs).ContinueWith(_ =>
-            {
-                if (!operation.isDone)
-                {
-                    request.Abort();
-                    Debug.LogError($"[Firestore] Request timeout after {timeoutMs}ms: {request.url}");
-                    tcs.TrySetResult(new SendResult { success = false, error = $"Timeout after {timeoutMs}ms" });
-                }
-            });
+            using var timeoutCts = new System.Threading.CancellationTokenSource();
+            var timeoutTask = Task.Delay(timeoutMs, timeoutCts.Token);
+            var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
 
-            return Task.WhenAny(tcs.Task, timeoutTask).ContinueWith(_ =>
+            if (completedTask == timeoutTask && !operation.isDone)
             {
-                if (timeoutTask.Status != TaskStatus.RanToCompletion)
-                {
-                    timeoutTask.Dispose();
-                }
-                return tcs.Task.Result;
-            });
+                request.Abort();
+                Debug.LogError($"[Firestore] Request timeout after {timeoutMs}ms: {request.url}");
+                tcs.TrySetResult(new SendResult { success = false, error = $"Timeout after {timeoutMs}ms" });
+            }
+
+            timeoutCts.Cancel();
+            return await tcs.Task;
         }
 
-        private static Task SendRequest(UnityWebRequest request)
+        private static async Task SendRequestInternal(UnityWebRequest request)
         {
             const int timeoutMs = 30000; // 30초 타임아웃
             var tcs = new TaskCompletionSource<bool>();
@@ -419,32 +423,27 @@ namespace Features.Account.Infrastructure
                 {
                     string message = $"HTTP {request.responseCode} {request.error}";
                     Debug.LogError($"[Firestore] Request failed ({elapsedTime}ms): {message}\n{request.downloadHandler?.text}");
-                    tcs.SetException(new Exception($"[{elapsedTime}ms] {message}"));
+                    tcs.TrySetException(new Exception($"[{elapsedTime}ms] {message}"));
                     return;
                 }
 
                 Debug.Log($"[Firestore] Request succeeded ({elapsedTime}ms): {request.url}");
-                tcs.SetResult(true);
+                tcs.TrySetResult(true);
             };
 
-            // 타임아웃 감지
-            var timeoutTask = Task.Delay(timeoutMs).ContinueWith(_ =>
-            {
-                if (!operation.isDone)
-                {
-                    request.Abort();
-                    Debug.LogError($"[Firestore] Request timeout after {timeoutMs}ms: {request.url}");
-                    tcs.TrySetException(new TimeoutException($"Timeout after {timeoutMs}ms: {request.url}"));
-                }
-            });
+            using var timeoutCts = new System.Threading.CancellationTokenSource();
+            var timeoutTask = Task.Delay(timeoutMs, timeoutCts.Token);
+            var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
 
-            return Task.WhenAny(tcs.Task, timeoutTask).ContinueWith(_ =>
+            if (completedTask == timeoutTask && !operation.isDone)
             {
-                if (timeoutTask.Status != TaskStatus.RanToCompletion)
-                {
-                    timeoutTask.Dispose();
-                }
-            });
+                request.Abort();
+                Debug.LogError($"[Firestore] Request timeout after {timeoutMs}ms: {request.url}");
+                tcs.TrySetException(new TimeoutException($"Timeout after {timeoutMs}ms: {request.url}"));
+            }
+
+            timeoutCts.Cancel();
+            await tcs.Task;
         }
 
         private static string EscapeJsonString(string value)

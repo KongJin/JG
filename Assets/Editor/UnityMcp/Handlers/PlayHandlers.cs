@@ -2,11 +2,9 @@
 using System;
 using System.IO;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace ProjectSD.EditorTools.UnityMcp
 {
@@ -59,40 +57,16 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         public static async Task HandleHealthAsync(HttpListenerResponse response)
         {
-            var sceneInfo = await UnityMcpBridge.RunOnMainThreadAsync(() =>
-            {
-                var scene = SceneManager.GetActiveScene();
-                var isPlayModeChanging = UnityMcpBridge.IsPlayModeChanging();
-                return new HealthResponse
-                {
-                    ok = true,
-                    bridgeRunning = UnityMcpBridge.IsRunning,
-                    port =
-                        UnityMcpBridge.ActivePort > 0
-                            ? UnityMcpBridge.ActivePort
-                            : UnityMcpBridge.ResolvePort(),
-                    isPlaying = EditorApplication.isPlaying,
-                    isPlayingOrWillChange = isPlayModeChanging,
-                    isPlayModeChanging = isPlayModeChanging,
-                    rawIsPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode,
-                    isCompiling = EditorApplication.isCompiling,
-                    projectKey = UnityMcpBridge.ProjectKey,
-                    projectRootPath = UnityMcpBridge.ProjectRootPath,
-                    activeScene = scene.name,
-                    activeScenePath = scene.path,
-                    isWaitingForPlayMode = _isWaitingForPlayMode,
-                };
-            });
-
-            await UnityMcpBridge.WriteJsonAsync(response, 200, sceneInfo);
+            var state = await UnityMcpBridge.RunOnMainThreadAsync(McpEditorState.Capture);
+            await UnityMcpBridge.WriteJsonAsync(response, 200, BuildHealthResponse(state));
         }
 
         public static async Task HandleCurrentSceneAsync(HttpListenerResponse response)
         {
             var sceneInfo = await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
-                var scene = SceneManager.GetActiveScene();
-                var isPlayModeChanging = UnityMcpBridge.IsPlayModeChanging();
+                var state = McpEditorState.Capture();
+                var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
                 return new SceneResponse
                 {
                     name = scene.name,
@@ -100,10 +74,10 @@ namespace ProjectSD.EditorTools.UnityMcp
                     buildIndex = scene.buildIndex,
                     isLoaded = scene.isLoaded,
                     isDirty = scene.isDirty,
-                    isPlaying = EditorApplication.isPlaying,
-                    isPlayingOrWillChange = isPlayModeChanging,
-                    isPlayModeChanging = isPlayModeChanging,
-                    rawIsPlayingOrWillChange = EditorApplication.isPlayingOrWillChangePlaymode,
+                    isPlaying = state.isPlaying,
+                    isPlayingOrWillChange = state.isPlayingOrWillChange,
+                    isPlayModeChanging = state.isPlayModeChanging,
+                    rawIsPlayingOrWillChange = state.rawIsPlayingOrWillChange,
                 };
             });
 
@@ -114,50 +88,26 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             try
             {
-                lock (PlayModeLock)
-                {
-                    _isWaitingForPlayMode = true;
-                    _playModeChangeStartTime = DateTime.UtcNow;
-                }
-
-                // Play Mode 시작 요청
-                var result = await PlayModeChangeQueue.EnqueuePlayAsync();
-
-                // Play Mode가 완전히 진입될 때까지 대기
-                await WaitForPlayModeFullyEnteredAsync();
-
-                var isPlayingFinal = await UnityMcpBridge.RunOnMainThreadAsync(() =>
-                    EditorApplication.isPlaying
-                );
-
-                await UnityMcpBridge.WriteJsonAsync(
-                    response,
-                    200,
-                    new
-                    {
-                        action = "start",
-                        isPlaying = isPlayingFinal,
-                        isPlayingOrWillChange = false,
-                        isPlayModeChanging = false,
-                        waitedMs = (int)
-                            (DateTime.UtcNow - _playModeChangeStartTime).TotalMilliseconds,
-                    }
-                );
+                BeginPlayModeTransition();
+                await PlayModeChangeQueue.EnqueuePlayAsync();
+                var waitResult = await WaitForPlayModeStateAsync(targetIsPlaying: true);
+                await UnityMcpBridge.WriteJsonAsync(response, 200, BuildPlayModeResponse("start", waitResult));
             }
             catch (TimeoutException ex)
             {
-                lock (PlayModeLock)
-                    _isWaitingForPlayMode = false;
                 await UnityMcpBridge.WriteJsonAsync(
                     response,
                     504,
-                    new ErrorResponse { error = "Play mode change timeout", detail = ex.Message }
+                    new ErrorResponse
+                    {
+                        error = "Play mode change timeout",
+                        detail = ex.Message,
+                        hint = "Check /health for isCompiling or isPlayModeChanging before retrying.",
+                    }
                 );
             }
             catch (Exception ex)
             {
-                lock (PlayModeLock)
-                    _isWaitingForPlayMode = false;
                 await UnityMcpBridge.WriteJsonAsync(
                     response,
                     500,
@@ -166,6 +116,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                         error = "Play start failed",
                         detail = ex.Message,
                         stackTrace = ex.ToString(),
+                        hint = "Inspect /health and /console/errors to find the blocking editor state.",
                     }
                 );
             }
@@ -180,56 +131,32 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             try
             {
-                lock (PlayModeLock)
-                {
-                    _isWaitingForPlayMode = true;
-                    _playModeChangeStartTime = DateTime.UtcNow;
-                }
+                BeginPlayModeTransition();
 
-                // 자동 씬 저장
                 if (McpConfig.AutoSaveSceneOnPlayStop)
                 {
                     McpConfig.TryAutoSaveScene(out _);
                 }
 
-                // Play Mode 종료 요청
-                var result = await PlayModeChangeQueue.EnqueueStopAsync();
-
-                // Play Mode가 완전히 종료될 때까지 대기
-                await WaitForPlayModeFullyExitedAsync();
-
-                var isPlayingFinal = await UnityMcpBridge.RunOnMainThreadAsync(() =>
-                    EditorApplication.isPlaying
-                );
-
-                await UnityMcpBridge.WriteJsonAsync(
-                    response,
-                    200,
-                    new
-                    {
-                        action = "stop",
-                        isPlaying = isPlayingFinal,
-                        isPlayingOrWillChange = false,
-                        isPlayModeChanging = false,
-                        waitedMs = (int)
-                            (DateTime.UtcNow - _playModeChangeStartTime).TotalMilliseconds,
-                    }
-                );
+                await PlayModeChangeQueue.EnqueueStopAsync();
+                var waitResult = await WaitForPlayModeStateAsync(targetIsPlaying: false);
+                await UnityMcpBridge.WriteJsonAsync(response, 200, BuildPlayModeResponse("stop", waitResult));
             }
             catch (TimeoutException ex)
             {
-                lock (PlayModeLock)
-                    _isWaitingForPlayMode = false;
                 await UnityMcpBridge.WriteJsonAsync(
                     response,
                     504,
-                    new ErrorResponse { error = "Play mode change timeout", detail = ex.Message }
+                    new ErrorResponse
+                    {
+                        error = "Play mode change timeout",
+                        detail = ex.Message,
+                        hint = "Play mode exit is still changing. Check /health and Unity console before retrying.",
+                    }
                 );
             }
             catch (Exception ex)
             {
-                lock (PlayModeLock)
-                    _isWaitingForPlayMode = false;
                 await UnityMcpBridge.WriteJsonAsync(
                     response,
                     500,
@@ -238,6 +165,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                         error = "Play stop failed",
                         detail = ex.Message,
                         stackTrace = ex.ToString(),
+                        hint = "Inspect /health and /console/errors. Do not fall back to menu execution unless you are debugging the bridge itself.",
                     }
                 );
             }
@@ -252,20 +180,8 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             try
             {
-                var waitedMs = await WaitForPlayModeFullyEnteredAsync();
-
-                await UnityMcpBridge.WriteJsonAsync(
-                    response,
-                    200,
-                    new
-                    {
-                        success = true,
-                        isPlaying = EditorApplication.isPlaying,
-                        isPlayingOrWillChange = false,
-                        isPlayModeChanging = false,
-                        waitedMs = waitedMs,
-                    }
-                );
+                var waitResult = await WaitForPlayModeStateAsync(targetIsPlaying: true);
+                await UnityMcpBridge.WriteJsonAsync(response, 200, BuildPlayModeResponse("wait-for-play", waitResult));
             }
             catch (TimeoutException ex)
             {
@@ -281,20 +197,8 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             try
             {
-                var waitedMs = await WaitForPlayModeFullyExitedAsync();
-
-                await UnityMcpBridge.WriteJsonAsync(
-                    response,
-                    200,
-                    new
-                    {
-                        success = true,
-                        isPlaying = EditorApplication.isPlaying,
-                        isPlayingOrWillChange = false,
-                        isPlayModeChanging = false,
-                        waitedMs = waitedMs,
-                    }
-                );
+                var waitResult = await WaitForPlayModeStateAsync(targetIsPlaying: false);
+                await UnityMcpBridge.WriteJsonAsync(response, 200, BuildPlayModeResponse("wait-for-stop", waitResult));
             }
             catch (TimeoutException ex)
             {
@@ -306,74 +210,104 @@ namespace ProjectSD.EditorTools.UnityMcp
             }
         }
 
-        private static async Task<int> WaitForPlayModeFullyEnteredAsync()
+        private static void BeginPlayModeTransition()
         {
-            var deadline = DateTime.UtcNow + TimeSpan.FromMilliseconds(PlayModeTimeoutMs);
-
-            while (DateTime.UtcNow < deadline)
+            lock (PlayModeLock)
             {
-                var (isChanging, isPlaying) = await UnityMcpBridge.RunOnMainThreadAsync(() =>
-                {
-                    return (
-                        EditorApplication.isPlayingOrWillChangePlaymode
-                            && !EditorApplication.isPlaying,
-                        EditorApplication.isPlaying
-                    );
-                });
-
-                if (!isChanging && isPlaying)
-                {
-                    // 추가 안정화 대기 (bridge가 재시작될 때까지)
-                    await Task.Delay(500);
-                    break;
-                }
-
-                await Task.Delay(PlayModePollIntervalMs);
+                _isWaitingForPlayMode = true;
+                _playModeChangeStartTime = DateTime.UtcNow;
             }
-
-            var isFinallyPlaying = await UnityMcpBridge.RunOnMainThreadAsync(() =>
-                EditorApplication.isPlaying
-            );
-
-            if (!isFinallyPlaying)
-            {
-                throw new TimeoutException($"Play mode did not start within {PlayModeTimeoutMs}ms");
-            }
-
-            return (int)(DateTime.UtcNow - _playModeChangeStartTime).TotalMilliseconds;
         }
 
-        private static async Task<int> WaitForPlayModeFullyExitedAsync()
+        private static HealthResponse BuildHealthResponse(McpEditorStateSnapshot state)
+        {
+            return new HealthResponse
+            {
+                ok = true,
+                bridgeRunning = UnityMcpBridge.IsRunning,
+                port = UnityMcpBridge.ActivePort > 0 ? UnityMcpBridge.ActivePort : UnityMcpBridge.ResolvePort(),
+                isPlaying = state.isPlaying,
+                isPlayingOrWillChange = state.isPlayingOrWillChange,
+                isPlayModeChanging = state.isPlayModeChanging,
+                rawIsPlayingOrWillChange = state.rawIsPlayingOrWillChange,
+                isCompiling = state.isCompiling,
+                projectKey = UnityMcpBridge.ProjectKey,
+                projectRootPath = UnityMcpBridge.ProjectRootPath,
+                activeScene = state.activeScene,
+                activeScenePath = state.activeScenePath,
+                isWaitingForPlayMode = _isWaitingForPlayMode,
+            };
+        }
+
+        private static object BuildPlayModeResponse(string action, PlayModeWaitResult waitResult)
+        {
+            return new
+            {
+                success = true,
+                action = action,
+                isPlaying = waitResult.state.isPlaying,
+                isPlayingOrWillChange = waitResult.state.isPlayingOrWillChange,
+                isPlayModeChanging = waitResult.state.isPlayModeChanging,
+                rawIsPlayingOrWillChange = waitResult.state.rawIsPlayingOrWillChange,
+                isCompiling = waitResult.state.isCompiling,
+                activeScene = waitResult.state.activeScene,
+                activeScenePath = waitResult.state.activeScenePath,
+                waitedMs = waitResult.waitedMs,
+            };
+        }
+
+        private static async Task<PlayModeWaitResult> WaitForPlayModeStateAsync(bool targetIsPlaying)
         {
             var deadline = DateTime.UtcNow + TimeSpan.FromMilliseconds(PlayModeTimeoutMs);
+            var startedAt = _isWaitingForPlayMode && _playModeChangeStartTime != DateTime.MinValue
+                ? _playModeChangeStartTime
+                : DateTime.UtcNow;
+            McpEditorStateSnapshot latestState = null;
 
             while (DateTime.UtcNow < deadline)
             {
-                var (isChanging, isPlaying) = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+                latestState = await UnityMcpBridge.RunOnMainThreadAsync(McpEditorState.Capture);
+                if (HasReachedPlayModeState(latestState, targetIsPlaying))
                 {
-                    return (
-                        !EditorApplication.isPlayingOrWillChangePlaymode
-                            && EditorApplication.isPlaying,
-                        EditorApplication.isPlaying
-                    );
-                });
-
-                if (!isChanging && !isPlaying)
-                {
-                    // 추가 안정화 대기
-                    await Task.Delay(500);
-                    break;
+                    await Task.Delay(300);
+                    latestState = await UnityMcpBridge.RunOnMainThreadAsync(McpEditorState.Capture);
+                    if (HasReachedPlayModeState(latestState, targetIsPlaying))
+                    {
+                        return new PlayModeWaitResult
+                        {
+                            state = latestState,
+                            waitedMs = (int)(DateTime.UtcNow - startedAt).TotalMilliseconds,
+                        };
+                    }
                 }
 
                 await Task.Delay(PlayModePollIntervalMs);
             }
 
-            if (EditorApplication.isPlaying)
-            {
-                throw new TimeoutException($"Play mode did not stop within {PlayModeTimeoutMs}ms");
-            }
+            latestState = latestState ?? await UnityMcpBridge.RunOnMainThreadAsync(McpEditorState.Capture);
+            var targetText = targetIsPlaying ? "start" : "stop";
+            throw new TimeoutException(
+                "Play mode did not "
+                    + targetText
+                    + " within "
+                    + PlayModeTimeoutMs
+                    + "ms. "
+                    + "isPlaying="
+                    + latestState.isPlaying
+                    + ", isPlayModeChanging="
+                    + latestState.isPlayModeChanging
+                    + ", isCompiling="
+                    + latestState.isCompiling
+                    + "."
+            );
+        }
 
-            return (int)(DateTime.UtcNow - _playModeChangeStartTime).TotalMilliseconds;
+        private static bool HasReachedPlayModeState(McpEditorStateSnapshot state, bool targetIsPlaying)
+        {
+            return state != null
+                && state.isPlaying == targetIsPlaying
+                && !state.isPlayModeChanging
+                && !state.isCompiling;
         }
 
         public static async Task HandleScreenshotCaptureAsync(
@@ -405,9 +339,31 @@ namespace ProjectSD.EditorTools.UnityMcp
                 );
                 return;
             }
+            catch (InvalidOperationException ex)
+            {
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse { error = "Screenshot unavailable", detail = ex.Message }
+                );
+                return;
+            }
 
             try
             {
+                if (File.Exists(capturePlan.absolutePath))
+                {
+                    if (!(req?.overwrite ?? false))
+                    {
+                        throw new InvalidOperationException(
+                            "Screenshot target already exists. Set overwrite=true or choose a different outputPath: "
+                                + capturePlan.relativePath
+                        );
+                    }
+
+                    File.Delete(capturePlan.absolutePath);
+                }
+
                 await UnityMcpBridge.RunOnMainThreadAsync(() =>
                 {
                     if (!EditorApplication.isPlaying)
@@ -473,6 +429,11 @@ namespace ProjectSD.EditorTools.UnityMcp
                 ? req.outputPath.Replace('\\', '/')
                 : BuildDefaultScreenshotRelativePath();
 
+            if (Path.IsPathRooted(relativePath))
+            {
+                throw new ArgumentException("outputPath must be project-relative, not an absolute path.");
+            }
+
             if (!relativePath.EndsWith(".png", StringComparison.Ordinal))
             {
                 relativePath += ".png";
@@ -533,6 +494,12 @@ namespace ProjectSD.EditorTools.UnityMcp
                 + "/"
                 + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss-fff")
                 + ".png";
+        }
+
+        private sealed class PlayModeWaitResult
+        {
+            public McpEditorStateSnapshot state;
+            public int waitedMs;
         }
     }
 }

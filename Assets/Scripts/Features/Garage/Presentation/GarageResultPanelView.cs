@@ -41,14 +41,28 @@ namespace Features.Garage.Presentation
         [SerializeField]
         private float _toastDuration = 2f;
 
-        // Toast 큐 시스템 — 연속 호출 시 마지막 메시지 소실 방지
-        private readonly Queue<string> _toastQueue = new();
+        // Toast 큐 시스템 — 메시지와 상태를 함께 보존해 연속 호출 시에도 스타일이 유지되게 한다.
+        private readonly Queue<ToastRequest> _toastQueue = new();
         private bool _isShowingToast;
+        private bool _isLoading;
+        private bool _isReadyToSave;
 
         // Loading
         [Header("Loading")]
         [SerializeField]
         private GameObject _loadingIndicator;
+
+        private readonly struct ToastRequest
+        {
+            public ToastRequest(string message, bool isError)
+            {
+                Message = message;
+                IsError = isError;
+            }
+
+            public string Message { get; }
+            public bool IsError { get; }
+        }
 
         public event System.Action SaveClicked;
 
@@ -120,11 +134,10 @@ namespace Features.Garage.Presentation
             if (_toastPanel == null || _toastText == null)
                 return;
 
-            _toastQueue.Enqueue(message);
+            _toastQueue.Enqueue(new ToastRequest(message, isError));
 
             if (!_isShowingToast)
             {
-                // 큐에서 바로 처리 (isError 정보는 첫 메시지에 적용)
                 ShowNextToastFromQueue();
             }
         }
@@ -138,14 +151,10 @@ namespace Features.Garage.Presentation
             }
 
             _isShowingToast = true;
-            var message = _toastQueue.Dequeue();
+            var request = _toastQueue.Dequeue();
 
-            _toastText.text = message;
-
-            // 배경과 텍스트 색상 동시 변경 — 가시성 향상
-            UpdateToastColors(
-                message.Contains("Error") || message.Contains("failed") || message.Contains("오류")
-            );
+            _toastText.text = request.Message;
+            UpdateToastColors(request.IsError);
 
             _toastPanel.SetActive(true);
 
@@ -229,17 +238,20 @@ namespace Features.Garage.Presentation
         // 로딩 표시 — 저장/처리 중 중복 클릭 방지
         public void ShowLoading(bool isLoading)
         {
+            _isLoading = isLoading;
+
             if (_loadingIndicator != null)
                 _loadingIndicator.SetActive(isLoading);
 
-            if (_saveButton != null)
-                _saveButton.interactable = !isLoading;
+            RefreshSaveButtonState();
         }
 
         public void Render(GarageResultViewModel viewModel)
         {
             if (viewModel == null)
                 return;
+
+            _isReadyToSave = viewModel.IsReady;
 
             if (_rosterStatusText != null)
             {
@@ -273,31 +285,30 @@ namespace Features.Garage.Presentation
                 _statsText.enableAutoSizing = false;
             }
 
-            // Save 버튼 — 준비 완료 시 초록색으로 변경
-            if (_saveButtonImage != null && _saveButton != null)
-            {
-                Color targetColor = viewModel.IsReady
-                    ? ThemeColors.AccentGreen
-                    : ThemeColors.AccentBlue;
-                _saveButtonImage.color = targetColor;
+            RefreshSaveButtonState();
+        }
 
-                // ButtonFeedback의 baseColor도 업데이트 (호버 시 올바른 색상 사용)
-                var feedback = _saveButton.GetComponent<ButtonFeedback>();
-                if (feedback != null)
-                    feedback.UpdateBaseColor(targetColor);
-            }
-
+        private void RefreshSaveButtonState()
+        {
             if (_saveButtonText != null)
             {
-                bool isLoading = _loadingIndicator != null && _loadingIndicator.activeSelf;
-                _saveButtonText.text = isLoading ? "Saving..." : "Save Roster";
+                _saveButtonText.text = _isLoading ? "Saving..." : "Save Roster";
                 _saveButtonText.color = ThemeColors.TextPrimary;
             }
 
             if (_saveButton != null)
+                _saveButton.interactable = !_isLoading;
+
+            if (_saveButtonImage != null && _saveButton != null)
             {
-                bool isLoading = _loadingIndicator != null && _loadingIndicator.activeSelf;
-                _saveButton.interactable = !isLoading;
+                var targetColor = _isReadyToSave
+                    ? ThemeColors.AccentGreen
+                    : ThemeColors.AccentBlue;
+                _saveButtonImage.color = targetColor;
+
+                var feedback = _saveButton.GetComponent<ButtonFeedback>();
+                if (feedback != null)
+                    feedback.UpdateBaseColor(targetColor);
             }
         }
     }

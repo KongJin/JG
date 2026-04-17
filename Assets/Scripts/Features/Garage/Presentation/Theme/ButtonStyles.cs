@@ -89,12 +89,6 @@ namespace Features.Garage.Presentation.Theme
                 text.alignment = TextAlignmentOptions.Center;
             }
 
-            // LayoutElement로 최소 크기 보장
-            var layout = button.GetComponent<LayoutElement>();
-            if (layout == null) layout = button.gameObject.AddComponent<LayoutElement>();
-            layout.preferredHeight = preset.MinHeight;
-            layout.minHeight = preset.MinHeight;
-
             // 호버/클릭 시각 피드백 (EventTrigger 기반 — 런타임 전용)
             if (UnityEngine.Application.isPlaying)
             {
@@ -118,6 +112,23 @@ namespace Features.Garage.Presentation.Theme
         public Color DisabledColor;
         public Color BorderColor;
         public float BorderWidth;
+
+        public ButtonPreset Clone()
+        {
+            return new ButtonPreset
+            {
+                BackgroundColor = BackgroundColor,
+                TextColor = TextColor,
+                FontSize = FontSize,
+                MinHeight = MinHeight,
+                CornerRadius = CornerRadius,
+                HoverColor = HoverColor,
+                PressedColor = PressedColor,
+                DisabledColor = DisabledColor,
+                BorderColor = BorderColor,
+                BorderWidth = BorderWidth
+            };
+        }
     }
 
     /// <summary>
@@ -142,7 +153,7 @@ namespace Features.Garage.Presentation.Theme
 
             var feedback = button.gameObject.AddComponent<ButtonFeedback>();
             feedback._image = button.GetComponent<Image>();
-            feedback._preset = preset;
+            feedback._preset = preset.Clone();
             feedback._button = button;
             feedback._baseColor = preset.BackgroundColor;
         }

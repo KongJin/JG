@@ -20,7 +20,6 @@ namespace Features.Garage.Presentation
         [SerializeField] private Image _borderImage;
 
         [Header("Layout")]
-        [SerializeField] private float _preferredHeight = 92f;
         [SerializeField] private float _slotNumberFontSize = 15f; // 13f → 15f (가독성 개선)
         [SerializeField] private float _titleFontSize = 18f;
         [SerializeField] private float _summaryFontSize = 11f;
@@ -29,9 +28,6 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private CanvasGroup _canvasGroup;
 
         public Button Button => _button;
-
-        // OnRectTransformDimensionsChange 과다 호출 방지 — 크기 변경 시에만 레이아웃 갱신
-        private Vector2 _lastSizeDelta;
 
         // 선택 애니메이션 — 부드럽게 전환
         private bool _isTransitioning;
@@ -42,9 +38,7 @@ namespace Features.Garage.Presentation
 
         private void Awake()
         {
-            NormalizeLayout();
-            if (transform is RectTransform rt)
-                _lastSizeDelta = rt.sizeDelta;
+            ApplyTypography();
 
             // CanvasGroup 초기화 (inspector에서 연결됨)
             if (_canvasGroup != null)
@@ -53,19 +47,7 @@ namespace Features.Garage.Presentation
 
         private void OnEnable()
         {
-            NormalizeLayout();
-            if (transform is RectTransform rt)
-                _lastSizeDelta = rt.sizeDelta;
-        }
-
-        private void OnRectTransformDimensionsChange()
-        {
-            // 실제 크기 변경 시에만 NormalizeLayout 호출 — 매 프레임 중복 호출 방지
-            if (transform is RectTransform rt && rt.sizeDelta != _lastSizeDelta)
-            {
-                _lastSizeDelta = rt.sizeDelta;
-                NormalizeLayout();
-            }
+            ApplyTypography();
         }
 
         public void Render(GarageSlotViewModel viewModel)
@@ -178,31 +160,11 @@ namespace Features.Garage.Presentation
             _isTransitioning = false;
         }
 
-        private void NormalizeLayout()
+        private void ApplyTypography()
         {
-            if (TryGetComponent<LayoutElement>(out var layoutElement))
-                layoutElement.preferredHeight = _preferredHeight;
-
-            float slotHeight = 0f;
-            if (transform is RectTransform rootRect)
-                slotHeight = Mathf.Max(rootRect.rect.height, 60f);
-
-            // 비율 기반 레이아웃 — 하드코딩 마진 제거
-            float topInset = Mathf.Clamp(slotHeight * 0.12f, 7f, 9f);
-            float slotNumberHeight = Mathf.Clamp(slotHeight * 0.14f, 9f, 11f);
-            float margin = Mathf.Clamp(slotHeight * 0.05f, 3f, 6f); // 비율 기반 마진
-            float titleTop = topInset + slotNumberHeight + margin;
-            float titleHeight = Mathf.Clamp(slotHeight * 0.26f, 15f, 18f);
-            float summaryBottom = Mathf.Clamp(slotHeight * 0.10f, 6f, 8f);
-            float summaryHeight = Mathf.Clamp(slotHeight * 0.16f, 9f, 11f);
-
-            ConfigureTopStretchRect(_slotNumberText?.rectTransform, topInset, slotNumberHeight, 18f, 18f);
-            ConfigureTopStretchRect(_titleText?.rectTransform, titleTop, titleHeight, 18f, 18f);
-            ConfigureBottomStretchRect(_summaryText?.rectTransform, summaryBottom, summaryHeight, 18f, 18f);
-
-            ConfigureText(_slotNumberText, Mathf.Min(_slotNumberFontSize, slotNumberHeight + 1f), false);
-            ConfigureText(_titleText, Mathf.Min(_titleFontSize, titleHeight + 1f), true);
-            ConfigureText(_summaryText, Mathf.Min(_summaryFontSize, summaryHeight + 0.5f), true);
+            ConfigureText(_slotNumberText, _slotNumberFontSize, false);
+            ConfigureText(_titleText, _titleFontSize, true);
+            ConfigureText(_summaryText, _summaryFontSize, true);
         }
 
         private static void ConfigureText(TMP_Text text, float fontSize, bool enableAutoSizing)
@@ -219,38 +181,5 @@ namespace Features.Garage.Presentation
             text.overflowMode = TextOverflowModes.Ellipsis;
         }
 
-        private static void ConfigureTopStretchRect(
-            RectTransform rectTransform,
-            float top,
-            float height,
-            float left,
-            float right)
-        {
-            if (rectTransform == null)
-                return;
-
-            rectTransform.anchorMin = new Vector2(0f, 1f);
-            rectTransform.anchorMax = new Vector2(1f, 1f);
-            rectTransform.pivot = new Vector2(0.5f, 1f);
-            rectTransform.anchoredPosition = new Vector2(0f, -top);
-            rectTransform.sizeDelta = new Vector2(-(left + right), height);
-        }
-
-        private static void ConfigureBottomStretchRect(
-            RectTransform rectTransform,
-            float bottom,
-            float height,
-            float left,
-            float right)
-        {
-            if (rectTransform == null)
-                return;
-
-            rectTransform.anchorMin = new Vector2(0f, 0f);
-            rectTransform.anchorMax = new Vector2(1f, 0f);
-            rectTransform.pivot = new Vector2(0.5f, 0f);
-            rectTransform.anchoredPosition = new Vector2(0f, bottom);
-            rectTransform.sizeDelta = new Vector2(-(left + right), height);
-        }
     }
 }

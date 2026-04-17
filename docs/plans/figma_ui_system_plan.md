@@ -1,17 +1,29 @@
 # Figma UI System Plan
 
 > 마지막 업데이트: 2026-04-17
-> 상태: 진행 시작
+> 상태: 보류
 
-이 문서는 Garage-first Figma / usfigma 도입의 실행 계획이다.
+이 문서는 Garage-first Figma 도입의 보류 기록이다.
 레이아웃 SSOT는 [`ui_foundations.md`](../design/ui_foundations.md)를 따른다.
+
+현재 대상 Figma 파일:
+
+- `Untitled` — `https://www.figma.com/design/axm5HOzgC9reiuJPY6VBtj/Untitled?node-id=0-1&p=f&t=IRzuWexlmsbtsNSu-0`
 
 ## Summary
 
 - 1차 범위는 `Garage`만 포함한다
 - 목표는 Garage UI 레이아웃을 Figma 기준으로 재정의하고 Unity handoff를 안정화하는 것이다
 - 시각 톤은 현재 메카-차고 방향과 `ThemeColors`를 유지한다
-- `usfigma`는 디자인 SSOT 보조와 handoff 체크리스트 생성까지만 맡는다
+- 현재 상태에서는 이 계획을 실행 계획으로 사용하지 않는다
+- 이유는 Figma MCP 연결, 권한, Starter 호출 한도 때문에 실제 작업 진입이 반복적으로 막혔기 때문이다
+
+## Current Status
+
+- 이 문서는 현재 `보류된 계획 문서`다
+- Figma 기반 실제 작업은 현재 중단 상태다
+- 실행 기준 문서로 쓰지 않고, 왜 중단됐는지 남기는 기록으로만 유지한다
+- Garage UI 작업의 현재 실질 SSOT는 [`ui_foundations.md`](../design/ui_foundations.md)와 코드 구현이다
 
 ## Deliverables
 
@@ -24,16 +36,22 @@
 
 ### Figma Deliverables
 
-Garage 전용 Figma 파일 1개에 아래 페이지를 만든다.
+Garage 전용 Figma 파일 1개에 아래 논리 구조를 만든다.
 
 1. `Foundations`
 2. `Components`
 3. `Garage`
 4. `Handoff`
 
+현재 1차 운영 방식:
+
+- 사용 가능한 Figma 환경은 Starter만 전제한다
+- 따라서 물리 페이지는 `3개`까지만 사용한다
+- `Handoff`는 별도 페이지가 아니라 `Garage` 페이지 내부 섹션과 레포 문서로 운영한다
+- 즉 Starter 환경의 실제 스캐폴드는 `Foundations / Components / Garage` 3페이지다
+
 ### Local Tooling Deliverables
 
-- 로컬 `usfigma` skill
 - Figma MCP 등록 또는 등록 불가 사유 기록
 - Figma MCP가 실제로 막힐 때만 쓰는 수동 handoff 절차
 
@@ -55,6 +73,14 @@ Garage 전용 Figma 파일 1개에 아래 페이지를 만든다.
 - 빈 슬롯/선택 슬롯 상태 차이
 - 개별 View 내부 런타임 레이아웃 보정 의존
 
+현재 Figma 조사 결과:
+
+- 접근 권한 확인 완료
+- 루트 페이지 `Page 1 (0:1)` 접근 확인
+- 첫 조회 시 파일은 사실상 비어 있는 상태로 확인
+- 기존 `4페이지` 스캐폴드 생성 시도는 Starter 제약과 MCP 호출 한도에 막힘
+- 2026-04-17 기준 운영 방식을 `Starter 3페이지 staged`로 전환
+
 ## Implementation Checklist
 
 ### Phase A. Foundations
@@ -62,6 +88,7 @@ Garage 전용 Figma 파일 1개에 아래 페이지를 만든다.
 - [x] Garage-first UI foundations 문서화
 - [x] 공식 검증 해상도 고정: `390x844`, `1440x900`
 - [x] 색상/간격/반지름/버튼 높이/타이포 토큰 이름 고정
+- [ ] Figma `Foundations` 페이지 생성 또는 기존 `Page 1`을 `Foundations`로 정리
 - [ ] Figma 스타일과 변수로 동일 토큰 구성
 - [ ] Title / Section / Body / Caption 텍스트 스타일 생성
 
@@ -124,14 +151,32 @@ Garage 전용 Figma 파일 1개에 아래 페이지를 만든다.
 | `PrimaryButton` | `GarageResultPanelView` 저장 버튼 | loading 포함 |
 | `AccountCard` | `AccountSettingsView` 컨테이너 | Garage 본문과 분리 |
 
-### Phase E. usfigma Workflow
+### Phase E. Figma Workflow
 
-- [x] `usfigma`는 자동 구현 도구가 아니라 handoff 보조로 범위 고정
 - [x] Figma MCP 사용 가능 여부 확인
 - [x] 미등록 상태면 설치/등록 시도
 - [x] Codex 글로벌 MCP에 원격 `figma` 서버 등록 + OAuth 인증 완료
+- [x] 대상 파일 접근 권한 확인 (`node 0:1`, `Page 1`)
+- [x] Starter 제약을 고려해 `3페이지 staged` 운영으로 전환
+- [x] 로컬 `usfigma` skill 제거 후 직접 Figma MCP 프롬프트 기반으로 전환
 - [ ] 연결 성공 상태에서 토큰/컴포넌트 인벤토리 추출
 - [ ] 설치/등록이 실제로 막히면 Figma Inspect + 수동 체크리스트로 대체
+
+### Current Blockers
+
+1. Figma MCP Starter 호출 한도 때문에 읽기/쓰기 모두 안정적으로 진행할 수 없음
+2. 계정 전환 시 파일 권한과 seat 상태가 계속 달라져 재현 가능한 작업 기준을 유지할 수 없음
+3. Starter 환경에서는 문서가 전제한 운영 구조를 안정적으로 검증하기 어려움
+
+### Required Remediation
+
+이 문서를 다시 실행 계획으로 올리려면 아래가 먼저 해결되어야 한다.
+
+1. 동일 계정으로 지속 접근 가능한 Figma 파일 확보
+2. 읽기와 쓰기 모두 가능한 seat/권한 확보
+3. Starter MCP 호출 한도에 막히지 않는 운영 환경 확보
+
+이 세 가지 전에는 이 문서를 다시 활성 계획으로 올리지 않는다.
 
 ## Acceptance Criteria
 
@@ -146,7 +191,8 @@ Garage 전용 Figma 파일 1개에 아래 페이지를 만든다.
 
 - Figma 없는 구현자가 문서만 읽고 레이아웃 계약을 이해할 수 있다
 - Figma 있는 구현자는 컴포넌트와 토큰을 그대로 Unity 대응표에 옮길 수 있다
-- Figma MCP 또는 `usfigma`가 없더라도, 설치/등록 시도 결과와 fallback 절차가 함께 기록된다
+- Figma MCP가 없더라도, 설치/등록 시도 결과와 fallback 절차가 함께 기록된다
+- Starter 제약이 있어도 `3페이지 staged` 운영 규칙으로 같은 설계 계약을 유지할 수 있다
 
 ### Regression Acceptance
 

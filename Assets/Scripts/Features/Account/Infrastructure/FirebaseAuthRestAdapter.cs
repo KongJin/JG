@@ -178,6 +178,11 @@ namespace Features.Account.Infrastructure
 
         private static Task SendRequest(UnityWebRequest request)
         {
+            return SendRequestInternal(request);
+        }
+
+        private static async Task SendRequestInternal(UnityWebRequest request)
+        {
             var tcs = new TaskCompletionSource<bool>();
             const int timeoutMs = 30000; // 30초 타임아웃
             var startTime = DateTime.UtcNow;
@@ -185,39 +190,32 @@ namespace Features.Account.Infrastructure
             var operation = request.SendWebRequest();
             operation.completed += _ =>
             {
+                var elapsedTime = (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
+
                 if (request.result != UnityWebRequest.Result.Success)
                 {
-                    var elapsedTime = (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
                     var error = request.error ?? "Unknown error";
                     Debug.LogError($"[FirebaseAuth] Request failed ({elapsedTime}ms): {error} - {request.url}");
-                    tcs.SetException(new Exception($"[{elapsedTime}ms] {error}"));
+                    tcs.TrySetException(new Exception($"[{elapsedTime}ms] {error}"));
+                    return;
                 }
-                else
-                {
-                    var elapsedTime = (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
-                    Debug.Log($"[FirebaseAuth] Request succeeded ({elapsedTime}ms): {request.url}");
-                    tcs.SetResult(true);
-                }
+
+                Debug.Log($"[FirebaseAuth] Request succeeded ({elapsedTime}ms): {request.url}");
+                tcs.TrySetResult(true);
             };
 
-            // 타임아웃 감지
-            var timeoutTask = Task.Delay(timeoutMs).ContinueWith(_ =>
-            {
-                if (!operation.isDone)
-                {
-                    request.Abort();
-                    tcs.TrySetException(new TimeoutException($"FirebaseAuth request timeout after {timeoutMs}ms: {request.url}"));
-                }
-            });
+            using var timeoutCts = new System.Threading.CancellationTokenSource();
+            var timeoutTask = Task.Delay(timeoutMs, timeoutCts.Token);
+            var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
 
-            return Task.WhenAny(tcs.Task, timeoutTask).ContinueWith(_ =>
+            if (completedTask == timeoutTask && !operation.isDone)
             {
-                // 정리
-                if (timeoutTask.Status != TaskStatus.RanToCompletion)
-                {
-                    timeoutTask.Dispose();
-                }
-            });
+                request.Abort();
+                tcs.TrySetException(new TimeoutException($"FirebaseAuth request timeout after {timeoutMs}ms: {request.url}"));
+            }
+
+            timeoutCts.Cancel();
+            await tcs.Task;
         }
 
         [Serializable]

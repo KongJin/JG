@@ -47,32 +47,48 @@
 
 - done: Garage-first Figma / handoff SSOT 문서 추가
   - done: `docs/design/ui_foundations.md` 추가 — Garage 레이아웃, 토큰, 컴포넌트, Unity 변환 규칙 SSOT
-  - done: `docs/plans/figma_ui_system_plan.md` 추가 — Garage-first Figma / usfigma 실행 체크리스트
+  - done: `docs/plans/figma_ui_system_plan.md` 추가 — Garage-first Figma 실행 체크리스트
   - done: 기존 Garage 계획 문서에서 새 SSOT 문서 참조 추가
-  - done: 로컬 `usfigma` skill 추가 — Figma-first handoff / fallback 워크플로우 정의
 - done: Figma remote MCP 설치 및 OAuth 인증 완료 (`codex mcp add figma --url https://mcp.figma.com/mcp`, `codex mcp login figma`)
-- next: Garage Figma 파일에 `Foundations / Components / Garage / Handoff` 페이지 실제 생성
-- next: `390x844`, `1440x900` 기준으로 Garage 화면 레이아웃 재구성
-- next: Figma MCP 연결 상태에서 Garage 토큰/컴포넌트 인벤토리 추출 및 `usfigma` handoff 보조 흐름 검증
+- done: 대상 Figma 파일 접근 권한 확인 (`Page 1`, node `0:1`)
+- done: Figma 운영 방식을 Starter 기준 `3페이지 staged`로 전환 (`Foundations / Components / Garage`, handoff는 Garage 섹션 + 레포 문서)
+- done: 로컬 `usfigma` skill 제거 — 직접 Figma MCP 프롬프트 기반으로 운영 전환
+- blocked: 스캐폴드 생성 시도 직후 Figma MCP Starter 호출 한도 도달
+- blocked: 최소 범위 재시도 (`Page 1` 조회 및 `Foundations` 이름 변경`)도 동일한 Starter MCP 호출 한도에서 실행 전 차단
+- blocked: 계정 전환 이후에도 파일 권한/seat/Starter MCP 호출 한도 문제로 Figma 기반 실행 계획 지속 불가
+- done: `figma_ui_system_plan.md` 상태를 `보류`로 전환
+- next: Figma 연결 전제 없이 Garage UI를 코드와 문서 SSOT 기준으로 계속 정리할지 판단
 
 ### 2026-04-15
 
-- done: Unity MCP 완전 자동화 - Play Mode 진입/종료 안정화, 비동기 작업 감지, UI 상태 모니터링
-  - done: PlayHandlers.cs 개선 - `/play/wait-for-play`, `/play/wait-for-stop` 엔드포인트 추가
-  - done: PlayMode 진입/종료 완전 대기 로직 구현
+- done: Unity MCP 1차 자동화 경로 추가 - Play wait, UI 상태 모니터링, 비동기 진단 기반 마련
+  - done: `PlayHandlers.cs`에 `/play/wait-for-play`, `/play/wait-for-stop` 추가
+  - done: `UiStateMonitorHandlers.cs` 추가 - UI 활성/비활성 대기, 텍스트 대기, 컴포넌트 대기, 스크린샷 비교
   - done: AsyncMonitorHandlers.cs 추가 - 비동기 작업 추적 및 상태 모니터링
   - done: WebRequestMonitor.cs 추가 - UnityWebRequest 타임아웃 감지
   - done: FirebaseAuthRestAdapter.cs 개선 - 로그 추가, 타임아웃 감지
   - done: FirestoreRestPort.cs 개선 - 로그 추가, 타임아웃 감지
-  - done: UiStateMonitorHandlers.cs 추가 - UI 활성/비활성 대기, 텍스트 대기, 컴포넌트 대기, 스크린샷 비교
   - done: improved UI Handlers - 코드로 바인딩된 핸들러 호출 지원
   - done: improved Console Handlers - 실시간 로그 스트리밍 (SSE), 태그 필터링
   - done: improved GameObject Handlers - 컴포넌트 필드 값, 메서드 정보 포함
-- new: 자동화된 Play Mode 진입/종료
+- note: 이 시점의 "완전 자동화" 표현은 과장으로 판명됨 - 이후 play/stop 메인 스레드 안정화와 route 정리가 추가로 필요
+- new: Play Mode 대기 엔드포인트
 - new: UnityWebRequest 타임아웃 감지 (30초)
 - new: UI 요소 상태 대기 (활성/비활성, 텍스트, 컴포넌트)
 - new: 실시간 로그 스트리밍 (SSE)
 - new: 코드로 바인딩된 버튼 핸들러 직접 호출
+
+### 2026-04-17
+
+- done: Unity MCP를 `진단 + 수동 자동화` 도구로 재정의
+  - done: `PlayHandlers.cs`를 공통 상태 스냅샷 기반으로 정리 - play start/stop/wait polling을 전부 메인 스레드 상태 조회로 통일
+  - done: `screenshot/capture` 덮어쓰기/경로 검증 보강 - 기존 파일 재사용으로 인한 stale 성공을 차단
+  - done: `UnityMcpBridge.cs` 등록부에서 legacy `ConsoleHandlers`, `UiHandlers`, `GameObjectHandlers` 중복 등록 제거
+  - done: `tools/unity-mcp/server.js`에 stable Play/UI/screenshot MCP tools 추가
+  - done: `tools/unity-mcp/McpHelpers.ps1`를 stable route 기준 helper로 정리
+  - done: `tools/unity-mcp/Invoke-GarageManualSmoke.ps1` 추가 - Garage 수동 smoke 캡처 플로우 스크립트화
+  - done: `tools/unity-mcp/README.md`, `docs/plans/mcp_improvement_plan.md`를 stable/manual/experimental 기준으로 갱신
+- next: Unity Editor에서 3회 play start/stop smoke와 Garage smoke를 다시 실행해 새 stable 경로를 실검증
 
 ### 2026-04-14
 

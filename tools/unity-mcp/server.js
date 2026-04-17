@@ -63,6 +63,43 @@ const tools = [
     }
   },
   {
+    name: "unity_play_wait_for_play",
+    description: "Wait until Unity Play Mode is fully entered and stable.",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_play_wait_for_stop",
+    description: "Wait until Unity Play Mode is fully exited and stable.",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_scene_open",
+    description: "Open a Unity scene by asset path.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        scenePath: {
+          type: "string",
+          description: "Asset path to the scene, for example 'Assets/Scenes/CodexLobbyScene.unity'."
+        },
+        saveCurrentSceneIfDirty: {
+          type: "boolean",
+          description: "Save the current scene first when it has unsaved changes. Default true."
+        }
+      },
+      required: ["scenePath"],
+      additionalProperties: false
+    }
+  },
+  {
     name: "unity_console_errors",
     description: "Read recent Unity console errors, exceptions, and asserts (filtered).",
     inputSchema: {
@@ -354,6 +391,143 @@ const tools = [
     }
   },
   {
+    name: "unity_ui_state",
+    description: "Get the current UI snapshot across loaded canvases while the scene is running.",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_ui_get_state",
+    description: "Read the state of a specific UI element by hierarchy path.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: {
+          type: "string",
+          description: "Full hierarchy path to the target UI element."
+        }
+      },
+      required: ["path"],
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_ui_invoke",
+    description: "Invoke a UI element action such as click, submit, value, or a custom method.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: {
+          type: "string",
+          description: "Full hierarchy path to the target UI element."
+        },
+        method: {
+          type: "string",
+          enum: ["click", "submit", "value", "custom"],
+          description: "Invocation mode. Defaults to 'click'."
+        },
+        customMethod: {
+          type: "string",
+          description: "Method name to call when method='custom'."
+        },
+        args: {
+          type: "array",
+          items: {},
+          description: "Optional method arguments."
+        }
+      },
+      required: ["path"],
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_ui_wait_for_active",
+    description: "Wait until a UI element becomes active in hierarchy.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        name: { type: "string" },
+        timeoutMs: { type: "integer", minimum: 100, maximum: 600000 },
+        pollIntervalMs: { type: "integer", minimum: 20, maximum: 5000 }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_ui_wait_for_inactive",
+    description: "Wait until a UI element becomes inactive in hierarchy.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        name: { type: "string" },
+        timeoutMs: { type: "integer", minimum: 100, maximum: 600000 },
+        pollIntervalMs: { type: "integer", minimum: 20, maximum: 5000 }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_ui_wait_for_text",
+    description: "Wait until a UI text element matches or contains expected text.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        name: { type: "string" },
+        expectedText: { type: "string" },
+        exact: { type: "boolean" },
+        timeoutMs: { type: "integer", minimum: 100, maximum: 600000 },
+        pollIntervalMs: { type: "integer", minimum: 20, maximum: 5000 }
+      },
+      required: ["expectedText"],
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_ui_wait_for_component",
+    description: "Wait until a GameObject exposes a specific component type.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: { type: "string" },
+        componentType: { type: "string" },
+        timeoutMs: { type: "integer", minimum: 100, maximum: 600000 },
+        pollIntervalMs: { type: "integer", minimum: 20, maximum: 5000 }
+      },
+      required: ["path", "componentType"],
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_screenshot_capture",
+    description: "Capture the Game view screenshot while Play Mode is running.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        outputPath: {
+          type: "string",
+          description: "Project-relative output path. Defaults to artifacts/unity/screenshots/<timestamp>.png."
+        },
+        superSize: {
+          type: "integer",
+          minimum: 1,
+          maximum: 8,
+          description: "Unity ScreenCapture supersize multiplier. Default 1."
+        },
+        overwrite: {
+          type: "boolean",
+          description: "Overwrite an existing file if it already exists."
+        }
+      },
+      additionalProperties: false
+    }
+  },
+  {
     name: "unity_prefab_save",
     description: "Save a scene GameObject as a prefab asset. Creates the target directory if needed.",
     inputSchema: {
@@ -531,6 +705,15 @@ async function callTool(name, args) {
       return requestUnityJson("POST", "/play/start");
     case "unity_play_stop":
       return requestUnityJson("POST", "/play/stop");
+    case "unity_play_wait_for_play":
+      return requestUnityJson("POST", "/play/wait-for-play");
+    case "unity_play_wait_for_stop":
+      return requestUnityJson("POST", "/play/wait-for-stop");
+    case "unity_scene_open":
+      return requestUnityJsonWithBody("POST", "/scene/open", {
+        scenePath: args.scenePath,
+        saveCurrentSceneIfDirty: args.saveCurrentSceneIfDirty !== false
+      });
     case "unity_console_errors": {
       const limit = parsePositiveInt(args.limit, 20);
       const clamped = Math.max(1, Math.min(100, limit));
@@ -583,6 +766,38 @@ async function callTool(name, args) {
       return requestUnityJsonWithBody("POST", "/component/get", args);
     case "unity_scene_save":
       return requestUnityJsonWithBody("POST", "/scene/save", {});
+    case "unity_ui_state":
+      return requestUnityJson("GET", "/ui/state");
+    case "unity_ui_get_state":
+      return requestUnityJsonWithBody("POST", "/ui/get-state", { path: args.path });
+    case "unity_ui_invoke":
+      return requestUnityJsonWithBody("POST", "/ui/invoke", args);
+    case "unity_ui_wait_for_active":
+      return requestUnityJsonWithBody("POST", "/ui/wait-for-active", buildUiWaitBody(args));
+    case "unity_ui_wait_for_inactive":
+      return requestUnityJsonWithBody("POST", "/ui/wait-for-inactive", buildUiWaitBody(args));
+    case "unity_ui_wait_for_text":
+      return requestUnityJsonWithBody("POST", "/ui/wait-for-text", {
+        path: args.path,
+        name: args.name,
+        expectedText: args.expectedText,
+        exact: Boolean(args.exact),
+        timeoutMs: parsePositiveInt(args.timeoutMs, 10000),
+        pollIntervalMs: parsePositiveInt(args.pollIntervalMs, 100)
+      });
+    case "unity_ui_wait_for_component":
+      return requestUnityJsonWithBody("POST", "/ui/wait-for-component", {
+        path: args.path,
+        componentType: args.componentType,
+        timeoutMs: parsePositiveInt(args.timeoutMs, 10000),
+        pollIntervalMs: parsePositiveInt(args.pollIntervalMs, 100)
+      });
+    case "unity_screenshot_capture":
+      return requestUnityJsonWithBody("POST", "/screenshot/capture", {
+        outputPath: args.outputPath,
+        superSize: parsePositiveInt(args.superSize, 1),
+        overwrite: Boolean(args.overwrite)
+      });
     case "unity_prefab_save":
       return requestUnityJsonWithBody("POST", "/prefab/save", args);
     default:
@@ -802,6 +1017,15 @@ function parsePositiveInt(value, fallbackValue) {
     return parsed;
   }
   return fallbackValue;
+}
+
+function buildUiWaitBody(args) {
+  return {
+    path: args.path,
+    name: args.name,
+    timeoutMs: parsePositiveInt(args.timeoutMs, 10000),
+    pollIntervalMs: parsePositiveInt(args.pollIntervalMs, 100)
+  };
 }
 
 function truncate(value, maxLength) {

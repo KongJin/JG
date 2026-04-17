@@ -13,14 +13,25 @@
 - 문서 SSOT: 이 문서 + [`figma_ui_system_plan.md`](../plans/figma_ui_system_plan.md)
 - 색상 구현 SSOT: [`ThemeColors.cs`](../../Assets/Scripts/Features/Garage/Presentation/Theme/ThemeColors.cs)
 
-Figma 파일 페이지 구조는 아래 네 개로 고정한다.
+Figma 파일의 논리 구조는 아래 네 개로 고정한다.
 
 1. `Foundations`
 2. `Components`
 3. `Garage`
 4. `Handoff`
 
-문서 구조는 Figma와 1:1로 대응한다.
+Starter 플랜 제약이 있는 현재 1차 운영에서는 물리 페이지를 최대 3개만 사용한다.
+
+1. `Foundations`
+2. `Components`
+3. `Garage`
+
+이때 `Handoff`는 별도 페이지 대신 아래 두 위치에 분산해 유지한다.
+
+- 레포 문서: [`figma_ui_system_plan.md`](../plans/figma_ui_system_plan.md)
+- Figma `Garage` 페이지 내부의 handoff 전용 섹션 또는 프레임
+
+문서 구조는 Figma의 논리 구조와 1:1로 대응한다.
 
 - `Foundations` ↔ 이 문서
 - `Garage`, `Handoff` ↔ [`figma_ui_system_plan.md`](../plans/figma_ui_system_plan.md)
@@ -205,7 +216,7 @@ Figma에서 Unity로 옮길 때 아래 규칙을 따른다.
 - `GarageResultPanelView`
 - `GarageUnitEditorView`
 
-## Figma / usfigma Workflow
+## Figma Workflow
 
 ### Access Order
 
@@ -214,12 +225,12 @@ Figma에서 Unity로 옮길 때 아래 규칙을 따른다.
 3. 설치/등록이 현재 환경에서 막히거나 외부 제약으로 불가능할 때만 Figma Inspect / 수동 측정으로 진행한다
 4. 자동 생성 산출물은 SSOT가 아니다
 
-### usfigma Role
+### Current Tooling Role
 
-`usfigma`는 1차에서 아래 두 가지 용도로만 쓴다.
+현재 1차에서는 로컬 전용 Figma 스킬 없이 아래 두 축으로만 진행한다.
 
-- 토큰/컴포넌트 인벤토리 추출
-- Figma 변경점 대비 Unity 반영 체크리스트 생성
+- Figma MCP 직접 호출
+- 문서 SSOT 기반 handoff 체크리스트 유지
 
 자동 코드 생성, Unity 자동 구현, 씬 구조 자동 패치 용도는 1차 범위 밖이다.
 
@@ -231,6 +242,8 @@ Figma에서 Unity로 옮길 때 아래 규칙을 따른다.
 - Figma remote MCP: `https://mcp.figma.com/mcp`
 - 설치 방식: `codex mcp add figma --url https://mcp.figma.com/mcp`
 - 인증 방식: `codex mcp login figma`
+
+또한 2026-04-17 기준 로컬 `usfigma` 스킬은 제거됐다.
 
 즉 이 레포에서 Figma 작업을 시작할 때 기본값은 `Figma MCP 사용`이다.
 수동 handoff는 설치/등록/인증이 실제로 막혔을 때만 fallback으로 사용한다.
