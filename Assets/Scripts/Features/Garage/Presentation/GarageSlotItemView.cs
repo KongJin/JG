@@ -25,13 +25,15 @@ namespace Features.Garage.Presentation
         [SerializeField] private float _titleFontSize = 18f;
         [SerializeField] private float _summaryFontSize = 11f;
 
+        [Header("Animation")]
+        [Required, SerializeField] private CanvasGroup _canvasGroup;
+
         public Button Button => _button;
 
         // OnRectTransformDimensionsChange 과다 호출 방지 — 크기 변경 시에만 레이아웃 갱신
         private Vector2 _lastSizeDelta;
 
         // 선택 애니메이션 — 부드럽게 전환
-        private CanvasGroup _canvasGroup;
         private bool _isTransitioning;
 
         // 호버 상태 — 빈 슬롯 클릭 가능 시각 피드백
@@ -44,12 +46,9 @@ namespace Features.Garage.Presentation
             if (transform is RectTransform rt)
                 _lastSizeDelta = rt.sizeDelta;
 
-            // CanvasGroup 추가 (페이드 애니메이션용)
-            if (!TryGetComponent(out _canvasGroup))
-            {
-                _canvasGroup = gameObject.AddComponent<CanvasGroup>();
+            // CanvasGroup 초기화 (inspector에서 연결됨)
+            if (_canvasGroup != null)
                 _canvasGroup.alpha = 1f;
-            }
         }
 
         private void OnEnable()

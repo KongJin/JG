@@ -1,3 +1,4 @@
+using Shared.Attributes;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,22 +11,20 @@ namespace Features.Unit.Presentation
     public sealed class PlacementErrorView : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private Text _errorText;
+        [Required, SerializeField]
+        private Text _errorText;
+
+        [Header("Animation")]
+        [Required, SerializeField]
+        private CanvasGroup _canvasGroup;
 
         [Header("Settings")]
-        [SerializeField] private float _showDuration = 2f;
-
-        private CanvasGroup _canvasGroup;
+        [SerializeField]
+        private float _showDuration = 2f;
         private Coroutine _hideCoroutine;
 
         private void Awake()
         {
-            _canvasGroup = GetComponent<CanvasGroup>();
-            if (_canvasGroup == null)
-            {
-                _canvasGroup = gameObject.AddComponent<CanvasGroup>();
-            }
-
             // 초기에는 숨김 처리
             HideImmediate();
         }

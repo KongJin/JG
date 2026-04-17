@@ -14,16 +14,3 @@
 
 ---
 
-## 코딩 규칙
-
-| 주제 | 스킬 |
-|---|---|
-| 아키텍처 | rule-architecture |
-| 패턴/예외/로깅 | rule-patterns |
-| 운영 절차 | rule-operations |
-| 기밀 맥락 | rule-context |
-| Unity | rule-unity |
-| 검증 | rule-validation |
-
----
-

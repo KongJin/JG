@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Features.Garage.Presentation.Theme;
+using Shared.Attributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,37 +9,54 @@ namespace Features.Garage.Presentation
 {
     public sealed class GarageResultPanelView : MonoBehaviour
     {
-        [SerializeField] private TMP_Text _rosterStatusText;
-        [SerializeField] private TMP_Text _validationText;
-        [SerializeField] private TMP_Text _statsText;
+        [SerializeField]
+        private TMP_Text _rosterStatusText;
+
+        [SerializeField]
+        private TMP_Text _validationText;
+
+        [SerializeField]
+        private TMP_Text _statsText;
 
         [Header("Save")]
-        [SerializeField] private Button _saveButton;
-        [SerializeField] private TMP_Text _saveButtonText;
-        [SerializeField] private Image _saveButtonImage;
+        [SerializeField]
+        private Button _saveButton;
+
+        [SerializeField]
+        private TMP_Text _saveButtonText;
+
+        [SerializeField]
+        private Image _saveButtonImage;
 
         [Header("Toast")]
-        [SerializeField] private GameObject _toastPanel;
-        [SerializeField] private TMP_Text _toastText;
-        [SerializeField] private float _toastDuration = 2f;
+        [SerializeField]
+        private GameObject _toastPanel;
+
+        [Required, SerializeField]
+        private CanvasGroup _toastCanvasGroup;
+
+        [SerializeField]
+        private TMP_Text _toastText;
+
+        [SerializeField]
+        private float _toastDuration = 2f;
 
         // Toast 큐 시스템 — 연속 호출 시 마지막 메시지 소실 방지
         private readonly Queue<string> _toastQueue = new();
         private bool _isShowingToast;
-        private CanvasGroup _toastCanvasGroup;
 
         // Loading
         [Header("Loading")]
-        [SerializeField] private GameObject _loadingIndicator;
+        [SerializeField]
+        private GameObject _loadingIndicator;
 
         public event System.Action SaveClicked;
 
         private void Awake()
         {
-            // Toast 패널에 CanvasGroup 추가 (페이드 애니메이션용)
-            if (_toastPanel != null && !_toastPanel.TryGetComponent(out _toastCanvasGroup))
+            // Toast CanvasGroup 초기화
+            if (_toastCanvasGroup != null)
             {
-                _toastCanvasGroup = _toastPanel.AddComponent<CanvasGroup>();
                 _toastCanvasGroup.alpha = 0f;
                 _toastCanvasGroup.blocksRaycasts = false;
                 _toastCanvasGroup.interactable = false;
@@ -64,7 +82,8 @@ namespace Features.Garage.Presentation
 
         private void InitializeSaveButton()
         {
-            if (_saveButton == null) return;
+            if (_saveButton == null)
+                return;
 
             // ButtonStyles 적용
             _saveButton.Apply(ButtonStyles.Primary);
@@ -98,7 +117,8 @@ namespace Features.Garage.Presentation
 
         public void ShowToast(string message, bool isError = false)
         {
-            if (_toastPanel == null || _toastText == null) return;
+            if (_toastPanel == null || _toastText == null)
+                return;
 
             _toastQueue.Enqueue(message);
 
@@ -123,7 +143,9 @@ namespace Features.Garage.Presentation
             _toastText.text = message;
 
             // 배경과 텍스트 색상 동시 변경 — 가시성 향상
-            UpdateToastColors(message.Contains("Error") || message.Contains("failed") || message.Contains("오류"));
+            UpdateToastColors(
+                message.Contains("Error") || message.Contains("failed") || message.Contains("오류")
+            );
 
             _toastPanel.SetActive(true);
 
@@ -143,30 +165,33 @@ namespace Features.Garage.Presentation
             // 배경색: 어두운 톤으로 가시성 확보
             if (_toastPanel.TryGetComponent<Image>(out var panelImage))
             {
-                panelImage.color = isError
-                    ? ThemeColors.ToastErrorBg
-                    : ThemeColors.ToastSuccessBg;
+                panelImage.color = isError ? ThemeColors.ToastErrorBg : ThemeColors.ToastSuccessBg;
             }
 
             // 텍스트색: 순색 대신 부드러운 톤
-            _toastText.color = isError
-                ? ThemeColors.ToastErrorText
-                : ThemeColors.ToastSuccessText;
+            _toastText.color = isError ? ThemeColors.ToastErrorText : ThemeColors.ToastSuccessText;
         }
 
         private void HideToast()
         {
-            if (_toastPanel == null) return;
+            if (_toastPanel == null)
+                return;
 
             // 페이드 아웃
             if (_toastCanvasGroup != null)
             {
-                StartCoroutine(FadeTo(0f, 0.15f, () =>
-                {
-                    _toastPanel.SetActive(false);
-                    // 다음 큐 처리
-                    ShowNextToastFromQueue();
-                }));
+                StartCoroutine(
+                    FadeTo(
+                        0f,
+                        0.15f,
+                        () =>
+                        {
+                            _toastPanel.SetActive(false);
+                            // 다음 큐 처리
+                            ShowNextToastFromQueue();
+                        }
+                    )
+                );
             }
             else
             {
@@ -175,7 +200,11 @@ namespace Features.Garage.Presentation
             }
         }
 
-        private System.Collections.IEnumerator FadeTo(float targetAlpha, float duration, System.Action onComplete = null)
+        private System.Collections.IEnumerator FadeTo(
+            float targetAlpha,
+            float duration,
+            System.Action onComplete = null
+        )
         {
             if (_toastCanvasGroup == null)
             {
@@ -223,8 +252,12 @@ namespace Features.Garage.Presentation
             if (_validationText != null)
             {
                 _validationText.text = viewModel.ValidationText;
-                bool hasError = !string.IsNullOrEmpty(viewModel.ValidationText)
-                    && (viewModel.ValidationText.Contains("Error") || viewModel.ValidationText.Contains("실패"));
+                bool hasError =
+                    !string.IsNullOrEmpty(viewModel.ValidationText)
+                    && (
+                        viewModel.ValidationText.Contains("Error")
+                        || viewModel.ValidationText.Contains("실패")
+                    );
                 _validationText.color = hasError
                     ? ThemeColors.AccentRed
                     : ThemeColors.TextSecondary;

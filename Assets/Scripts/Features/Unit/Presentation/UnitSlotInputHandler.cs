@@ -21,6 +21,10 @@ namespace Features.Unit.Presentation
         [Header("Drag")]
         [Tooltip("드래그 고스트 Prefab (RectTransform + Image + CanvasGroup).")]
         [Required, SerializeField] private GameObject _dragGhostPrefab;
+
+        [Header("Animation")]
+        [Tooltip("드래그 고스트 Prefab의 CanvasGroup (Prefab 내부에서 연결됨).")]
+        [Required, SerializeField] private CanvasGroup _ghostCanvasGroup;
         [SerializeField] private Vector2 _dragGhostSize = new Vector2(80f, 80f);
 
         [Header("Placement")]
@@ -36,6 +40,25 @@ namespace Features.Unit.Presentation
 
         private RectTransform _dragGhost;
         private CanvasGroup _canvasGroup;
+
+        /// <summary>
+        /// 드래그 고스트 Prefab에 포함된 CanvasGroup을 검증합니다.
+        /// Awake 또는 Initialize에서 호출되어야 합니다.
+        /// </summary>
+        public void ValidateGhostPrefab()
+        {
+            if (_dragGhostPrefab == null) return;
+
+            var ghostCanvasGroup = _dragGhostPrefab.GetComponent<CanvasGroup>();
+            if (ghostCanvasGroup == null)
+            {
+                Debug.LogError($"[UnitSlotInputHandler] DragGhostPrefab '{_dragGhostPrefab.name}'에 CanvasGroup이 없습니다. Prefab에 CanvasGroup을 추가하세요.");
+            }
+            else
+            {
+                _ghostCanvasGroup = ghostCanvasGroup;
+            }
+        }
         private bool _isDragging;
         private bool _isInPlacementZone;
 
@@ -126,10 +149,13 @@ namespace Features.Unit.Presentation
             _dragGhost = ghostGo.GetComponent<RectTransform>();
             _canvasGroup = ghostGo.GetComponent<CanvasGroup>();
 
+            // Prefab에 CanvasGroup이 필수적으로 포함되어야 함
             if (_canvasGroup == null)
             {
-                _canvasGroup = ghostGo.AddComponent<CanvasGroup>();
+                Debug.LogError($"[UnitSlotInputHandler] DragGhostPrefab '{_dragGhostPrefab.name}'에 CanvasGroup이 없습니다. Prefab에 CanvasGroup을 추가하세요.");
+                return;
             }
+
             _canvasGroup.alpha = 0.7f;
 
             // 슬롯 이미지 스프라이트 복제

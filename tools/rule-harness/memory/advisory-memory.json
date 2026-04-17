@@ -67,6 +67,31 @@
                                                    ]
                     },
                     {
+                        "signature":  "static-scan-failed|static-scan|CLAUDE.md|code_fix|Before=# After=# Resolved=# Expected=# NewHigh=#",
+                        "scopeType":  "global",
+                        "scopePath":  "CLAUDE.md",
+                        "symptoms":  "Before=8 After=7 Resolved=0 Expected=1 NewHigh=0",
+                        "preferredRepairStrategy":  "Amend the owning global rule doc before retrying.",
+                        "validationHints":  [
+                                                "Tests/Projectile/Run-ProjectileValidation.ps1",
+                                                "target_files_exist",
+                                                "expected_findings_resolved",
+                                                "no_new_high_severity_findings",
+                                                "feature_root_contract_present",
+                                                "owner_doc_references_resolve",
+                                                "feature_test_assets_present"
+                                            ],
+                        "confidence":  "medium",
+                        "hitCount":  1,
+                        "distinctCommitCount":  1,
+                        "commitShas":  [
+                                           "985bdeb62e2c4676c86deb3b7b650502f675ac67"
+                                       ],
+                        "lastSeen":  "2026-04-16T05:01:46.7756380Z",
+                        "promotionTarget":  "CLAUDE.md",
+                        "status":  "observed"
+                    },
+                    {
                         "signature":  "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Player Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"网络错误，错误id：#d#c#，请联系客服。\"}}",
                         "scopeType":  "harness",
                         "scopePath":  "tools/rule-harness/README.md",
@@ -97,12 +122,13 @@
                                                 "tools/rule-harness/README.md"
                                             ],
                         "confidence":  "high",
-                        "hitCount":  8,
-                        "distinctCommitCount":  1,
+                        "hitCount":  15,
+                        "distinctCommitCount":  2,
                         "commitShas":  [
-                                           "439f28d16ddf51dac80d5fa73340de4c65d259ba"
+                                           "439f28d16ddf51dac80d5fa73340de4c65d259ba",
+                                           "985bdeb62e2c4676c86deb3b7b650502f675ac67"
                                        ],
-                        "lastSeen":  "2026-04-16T01:59:06.2951033Z",
+                        "lastSeen":  "2026-04-17T06:58:56.0189161Z",
                         "promotionTarget":  "tools/rule-harness/README.md",
                         "status":  "observed"
                     },

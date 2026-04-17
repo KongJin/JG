@@ -1,3 +1,5 @@
+using System;
+
 namespace Features.Status.Domain
 {
     public static class StatusRule
@@ -29,7 +31,7 @@ namespace Features.Status.Domain
                 case StatusType.Extend:
                 case StatusType.Multiply:
                 case StatusType.Count: return UpgradeMaxStacks;
-                default: return 1;
+                default: throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown StatusType");
             }
         }
 
