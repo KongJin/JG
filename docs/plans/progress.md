@@ -1,6 +1,6 @@
 # 진행 상황 (Game Scene Entry)
 
-> **마지막 업데이트**: 2026-04-15
+> **마지막 업데이트**: 2026-04-17
 
 ## Phase 진행률
 
@@ -35,11 +35,25 @@
 ## 다음 작업 메모
 
 - `CodexLobbyScene` Garage UI 2차 리팩터링: `GaragePageController + subview` 구조 compile/runtime 안정화 진행 중
-- Garage UI 상세 계획: [`codex_lobby_garage_ui_refactor_plan.md`](./codex_lobby_garage_ui_refactor_plan.md)
+- Garage UI 레이아웃 SSOT: [`ui_foundations.md`](../design/ui_foundations.md)
+- Garage UI Figma handoff 계획: [`figma_ui_system_plan.md`](./figma_ui_system_plan.md)
+- Garage UI 상세 계획: [`garage_ui_ux_improvement_plan.md`](./garage_ui_ux_improvement_plan.md)
 - 계정 시스템 상세 계획: [`account_system_plan.md`](./account_system_plan.md)
 - Phase 10 계정 시스템 마무리와 Phase 11 Google 로그인 사용자 플로우 연결을 병행
 
 ### 최근 변경 사항
+
+### 2026-04-17
+
+- done: Garage-first Figma / handoff SSOT 문서 추가
+  - done: `docs/design/ui_foundations.md` 추가 — Garage 레이아웃, 토큰, 컴포넌트, Unity 변환 규칙 SSOT
+  - done: `docs/plans/figma_ui_system_plan.md` 추가 — Garage-first Figma / usfigma 실행 체크리스트
+  - done: 기존 Garage 계획 문서에서 새 SSOT 문서 참조 추가
+  - done: 로컬 `usfigma` skill 추가 — Figma-first handoff / fallback 워크플로우 정의
+- done: Figma remote MCP 설치 및 OAuth 인증 완료 (`codex mcp add figma --url https://mcp.figma.com/mcp`, `codex mcp login figma`)
+- next: Garage Figma 파일에 `Foundations / Components / Garage / Handoff` 페이지 실제 생성
+- next: `390x844`, `1440x900` 기준으로 Garage 화면 레이아웃 재구성
+- next: Figma MCP 연결 상태에서 Garage 토큰/컴포넌트 인벤토리 추출 및 `usfigma` handoff 보조 흐름 검증
 
 ### 2026-04-15
 
