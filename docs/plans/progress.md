@@ -25,9 +25,9 @@
 - Phase 9: 실제 멀티플레이어 smoke 테스트 (late-join, BattleEntity sync, Energy sync)
 - Phase 10: Firebase Console 설정 (API Key, Project ID, Firestore DB 생성)
 - Phase 10: Unity Inspector에 AccountConfig, LoginLoadingView 할당 확인
-- Phase 10: 설정 (볼륨, 언어) Firestore 동기화
+- Phase 10: 설정 Firestore 동기화 마무리 (저장 UI, language 소비 경로)
 - Phase 10: WebGL 빌드 smoke 테스트
-- Phase 10: 계정 삭제 기능 + UI
+- Phase 10: 계정 카드 wiring smoke + 계정 삭제 WebGL 실기 확인
 - Phase 10: 계정/Garage save-load-delete 전체 WebGL 실기 확인
 - Phase 10: Garage 수동 저장 UX 2차 폴리시 (슬롯 카드/결과 패널/계정 카드 완성도)
 - Phase 11: WebGL 빌드에서 Google 로그인 실기 테스트
@@ -47,6 +47,29 @@
 
 ### 2026-04-17
 
+- done: Lobby/Garage UI 런타임 탐색 anti-pattern 1차 제거
+  - done: `GaragePageController`, `LobbyView`의 name-based `transform.Find(...)` 레이아웃 탐색 제거
+  - done: `GarageResultPanelView`, `GarageUnitEditorView`, `GaragePartSelectorView`, `AccountSettingsView`의 `GetComponentInChildren<TMP_Text>()` fallback 제거
+  - done: `ButtonStyles`를 명시적 label 주입 방식으로 변경해 공통 헬퍼의 숨은 UI 구조 의존성 제거
+  - done: `CodexLobbyScene`에 새 직렬화 참조와 `CanvasGroup` wiring 반영
+  - note: Unity MCP는 씬 리로드 직후 응답이 멈춰 최종 play-mode smoke는 후속 확인 필요
+- done: Garage `AccountCard` MCP polish 1차
+  - done: `AccountCard` 배경색을 Garage 카드 톤으로 정리해 상단 흰 블록 제거
+  - done: VerticalLayoutGroup padding/spacing/content-size 설정 정리로 카드 높이와 버튼 밀도 안정화
+  - done: MCP 재캡처로 개선 상태 확인 (`artifacts/unity/garage-accountcard-pass1b.png`)
+  - note: `Rooms` 입력부 간격과 중앙 프리뷰 빈 상태는 다음 패스 대상
+- done: Lobby `AccountCard` 최소 상호작용 wiring 1차 복구
+  - done: `CodexLobbyScene`의 `AccountSettingsView`에 display name / logout / delete 버튼 참조 연결
+  - done: `AccountCard`에 `AccountDisplayNameText`, `AccountLogoutButton`, `AccountDeleteButton` 추가
+  - done: 별도 confirm dialog가 없는 현재 씬 구조에 맞춰 delete 버튼 2단계 inline confirm 로직 추가
+  - note: 계정 카드 경로는 이제 씬에서 눌러볼 수 있지만, Editor/WebGL smoke는 아직 남아 있음
+- done: 로그인 후 Firestore `UserSettings` 소비 경로 1차 연결
+  - done: `LobbySetup`이 로그인 직후 로드한 `AccountData.Settings`를 보관하고 Lobby 초기화 시 적용하도록 정리
+  - done: `SoundPlayer`에 `masterVolume` 적용 경로 추가 - 이후 재생되는 사운드가 계정 설정 볼륨을 따르도록 연결
+  - note: 현재는 `masterVolume`만 실제 런타임 소비 중이며, `language`와 설정 저장 UI는 후속 작업이 필요
+- done: `GarageRoster` Unity Test Runner coverage 확대
+  - done: `Assets/Editor/Tests/GarageRosterReflectionTests.cs`에 normalize/clone/get-filled-loadouts 검증 추가
+  - note: repo 루트 `Tests/`와 별도로, 실제 EditMode Test Runner에서 확인 가능한 반사 기반 회귀 방어선을 넓힘
 - done: Garage draft -> Save -> Room Ready smoke 자동화 추가 및 실검증
   - done: `tools/unity-mcp/Invoke-GarageReadyFlowSmoke.ps1` 추가 - room name 입력, 방 생성, 빈 슬롯 자동 채움, draft dirty/save/ready 토글까지 한 번에 검증
   - done: MCP 실기 기준 `Need 1 more saved unit` -> `Ready` -> `Save Garage Draft` -> `Ready` -> `Cancel` 흐름 확인

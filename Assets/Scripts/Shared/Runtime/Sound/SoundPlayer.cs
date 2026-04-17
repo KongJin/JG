@@ -24,6 +24,7 @@ namespace Shared.Runtime.Sound
         private string _localPlayerId;
         private GameObjectPool _pool;
         private DisposableScope _disposables;
+        private float _masterVolume = 1f;
 
         private readonly Dictionary<string, float> _lastPlayTime = new Dictionary<string, float>();
         private readonly Dictionary<GameObject, PooledAudioSource> _cache =
@@ -55,10 +56,16 @@ namespace Shared.Runtime.Sound
             _pool = new GameObjectPool(audioSourcePrefab, transform, initialPoolSize);
         }
 
+        public void SetMasterVolume(float volume)
+        {
+            _masterVolume = Mathf.Clamp01(volume);
+        }
+
         private void ReleasePooledChildrenAndClearState()
         {
             _disposables?.Dispose();
             _disposables = null;
+            _masterVolume = 1f;
 
             var pooledObjects = GetComponentsInChildren<PooledObject>(true);
             for (var i = pooledObjects.Length - 1; i >= 0; i--)
@@ -125,7 +132,7 @@ namespace Shared.Runtime.Sound
 
             var pooled = GetCachedAudioSource(go);
             pooled.AudioSource.clip = entry.Clip;
-            pooled.AudioSource.volume = entry.Volume;
+            pooled.AudioSource.volume = entry.Volume * _masterVolume;
             pooled.AudioSource.spatialBlend = entry.SpatialBlend;
             pooled.AudioSource.Play();
 

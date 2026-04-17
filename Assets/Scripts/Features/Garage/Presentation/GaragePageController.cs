@@ -18,6 +18,13 @@ namespace Features.Garage.Presentation
         [Header("Preview")]
         [SerializeField] private GarageUnitPreviewView _unitPreviewView;
 
+        [Header("Layout")]
+        [Required, SerializeField] private RectTransform _rosterListPaneRect;
+        [Required, SerializeField] private RectTransform _unitEditorPaneRect;
+        [Required, SerializeField] private RectTransform _resultPaneRect;
+        [Required, SerializeField] private RectTransform _previewRect;
+        [SerializeField] private RectTransform _accountCardRect;
+
         [Header("Account (optional — 분리 가능)")]
         [SerializeField] private UnityEngine.Component _accountSettingsView;
         [SerializeField] private GameObject _accountPanelRoot;
@@ -55,19 +62,11 @@ namespace Features.Garage.Presentation
 
         private void ConfigureWorkbenchLayout()
         {
-            var header = transform.Find("Summary") as RectTransform;
-            var rosterPane = transform.Find("RosterListPane") as RectTransform;
-            var editorPane = transform.Find("UnitEditorPane") as RectTransform;
-            var resultPane = transform.Find("ResultPane") as RectTransform;
-            var preview = transform.Find("PreviewRawImage") as RectTransform;
-            var accountCard = transform.Find("AccountCard") as RectTransform;
-
-            SetStretch(header, 0.02f, 0.88f, 0.66f, 0.98f);
-            SetStretch(rosterPane, 0.02f, 0.08f, 0.26f, 0.84f);
-            SetStretch(preview, 0.30f, 0.58f, 0.66f, 0.84f);
-            SetStretch(editorPane, 0.30f, 0.08f, 0.66f, 0.54f);
-            SetStretch(resultPane, 0.70f, 0.22f, 0.98f, 0.84f);
-            SetStretch(accountCard, 0.72f, 0.86f, 0.98f, 0.98f);
+            SetStretch(_rosterListPaneRect, 0.02f, 0.08f, 0.26f, 0.84f);
+            SetStretch(_previewRect, 0.30f, 0.58f, 0.66f, 0.84f);
+            SetStretch(_unitEditorPaneRect, 0.30f, 0.08f, 0.66f, 0.54f);
+            SetStretch(_resultPaneRect, 0.70f, 0.22f, 0.98f, 0.84f);
+            SetStretch(_accountCardRect, 0.72f, 0.86f, 0.98f, 0.98f);
         }
 
         private static void SetStretch(RectTransform rect, float minX, float minY, float maxX, float maxY)

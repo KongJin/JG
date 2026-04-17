@@ -25,7 +25,7 @@ namespace Features.Garage.Presentation
         [SerializeField] private float _summaryFontSize = 11f;
 
         [Header("Animation")]
-        [Required, SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField] private CanvasGroup _canvasGroup;
 
         public Button Button => _button;
 

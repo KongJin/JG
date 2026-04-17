@@ -1,4 +1,5 @@
 using Features.Account;
+using Features.Account.Application;
 using Features.Account.Presentation;
 using Features.Garage;
 using Features.Garage.Application.Ports;
@@ -58,6 +59,7 @@ public sealed class LobbySetup : MonoBehaviour
     private IAnalyticsPort _analytics;
     private float _sessionStartTime;
     private Features.Account.Domain.AccountProfile _currentAccountProfile;
+    private AccountData _loadedAccountData;
     private bool _isSigningIn;
 
     private void Awake()
@@ -134,8 +136,12 @@ public sealed class LobbySetup : MonoBehaviour
         try
         {
             var accountData = await _accountSetup.LoadAccount.Execute();
-            if (accountData?.Profile != null)
-                _currentAccountProfile = accountData.Profile;
+            if (accountData != null)
+            {
+                _loadedAccountData = accountData;
+                if (accountData.Profile != null)
+                    _currentAccountProfile = accountData.Profile;
+            }
         }
         catch (System.Exception ex)
         {
@@ -164,6 +170,7 @@ public sealed class LobbySetup : MonoBehaviour
         var useCases = new LobbyUseCases(repository, network, clock);
 
         _soundPlayer.Initialize(_eventBus, SoundPlayer.LobbyOwnerId);
+        ApplyLoadedAccountSettings();
 
         _view.Initialize(_eventBus, _eventBus, useCases);
         _eventBus.Publish(new LobbyUpdatedEvent(repository.LoadLobby() ?? new DomainLobby()));
@@ -206,6 +213,15 @@ public sealed class LobbySetup : MonoBehaviour
             OnAccountDeleted
         );
         _accountSettingsView.Render(_currentAccountProfile);
+    }
+
+    private void ApplyLoadedAccountSettings()
+    {
+        if (_soundPlayer == null)
+            return;
+
+        float masterVolume = _loadedAccountData?.Settings?.masterVolume ?? 1f;
+        _soundPlayer.SetMasterVolume(masterVolume);
     }
 
     private void OnAccountLogoutRequested()

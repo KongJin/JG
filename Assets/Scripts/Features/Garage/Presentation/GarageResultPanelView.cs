@@ -19,23 +19,23 @@ namespace Features.Garage.Presentation
         private TMP_Text _statsText;
 
         [Header("Save")]
-        [SerializeField]
+        [Required, SerializeField]
         private Button _saveButton;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _saveButtonText;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Image _saveButtonImage;
 
         [Header("Toast")]
-        [SerializeField]
+        [Required, SerializeField]
         private GameObject _toastPanel;
 
         [Required, SerializeField]
         private CanvasGroup _toastCanvasGroup;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _toastText;
 
         [SerializeField]
@@ -100,11 +100,7 @@ namespace Features.Garage.Presentation
                 return;
 
             // ButtonStyles 적용
-            _saveButton.Apply(ButtonStyles.Primary);
-
-            // 저장 버튼 텍스트 초기화
-            if (_saveButtonText == null)
-                _saveButtonText = _saveButton.GetComponentInChildren<TMP_Text>();
+            _saveButton.Apply(ButtonStyles.Primary, _saveButtonText);
 
             if (_saveButtonText != null)
                 _saveButtonText.text = "Save Draft";

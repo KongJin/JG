@@ -20,6 +20,11 @@
 - `GarageResultPanelView`: ready status, validation copy, stats, save CTA.
 - `GarageUnitPreviewView`: lightweight preview support for the selected draft slot.
 
+## Scene Contract
+
+- `GaragePageController` layout targets (`RosterListPane`, `UnitEditorPane`, `ResultPane`, `PreviewRawImage`, `AccountCard`) are inspector-wired `RectTransform` refs.
+- `GarageUnitEditorView`, `GarageResultPanelView`, `GaragePartSelectorView` button/text refs are inspector-wired. Do not restore runtime `transform.Find` or `GetComponentInChildren<TMP_Text>()` fallbacks for scene-owned UI.
+
 ## Event Contract
 
 - `GarageInitializedEvent`: committed roster loaded from storage.

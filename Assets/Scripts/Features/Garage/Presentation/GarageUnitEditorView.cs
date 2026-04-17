@@ -15,7 +15,7 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private GaragePartSelectorView _firepowerSelectorView;
         [Required, SerializeField] private GaragePartSelectorView _mobilitySelectorView;
         [Required, SerializeField] private Button _clearButton;
-        [SerializeField] private TMP_Text _clearButtonText;
+        [Required, SerializeField] private TMP_Text _clearButtonText;
 
         private bool _callbacksHooked;
 
@@ -74,14 +74,9 @@ namespace Features.Garage.Presentation
             _clearButton.interactable = viewModel.IsClearInteractable;
 
             // Clear 버튼 — 파괴적 액션 스타일
-            if (_clearButton.TryGetComponent<Image>(out var btnImage))
-            {
-                _clearButton.Apply(ButtonStyles.Danger);
-            }
+            _clearButton.Apply(ButtonStyles.Danger, _clearButtonText);
 
             // Clear 버튼 텍스트 명시화
-            if (_clearButtonText == null)
-                _clearButtonText = _clearButton.GetComponentInChildren<TMP_Text>();
             if (_clearButtonText != null)
                 _clearButtonText.text = "Clear Draft";
         }

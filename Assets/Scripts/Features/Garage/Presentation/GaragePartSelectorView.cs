@@ -11,9 +11,9 @@ namespace Features.Garage.Presentation
     {
         [Required, SerializeField] private Button _prevButton;
         [Required, SerializeField] private Button _nextButton;
-        [SerializeField] private TMP_Text _titleText;
+        [Required, SerializeField] private TMP_Text _titleText;
         [Required, SerializeField] private TMP_Text _valueText;
-        [SerializeField] private TMP_Text _hintText;
+        [Required, SerializeField] private TMP_Text _hintText;
 
         [Header("Layout")]
         [SerializeField] private float _titleFontSize = 16f;
@@ -29,7 +29,7 @@ namespace Features.Garage.Presentation
 
         private void Awake()
         {
-            CacheOptionalReferences();
+            ApplyTypography();
             ApplyButtonStyles();
         }
 
@@ -82,12 +82,6 @@ namespace Features.Garage.Presentation
             }
         }
 
-        private void CacheOptionalReferences()
-        {
-            _titleText ??= FindTextChild("Title");
-            ApplyTypography();
-        }
-
         private void ApplyTypography()
         {
             if (_titleText != null)
@@ -119,18 +113,6 @@ namespace Features.Garage.Presentation
                 _hintText.textWrappingMode = TextWrappingModes.NoWrap;
                 _hintText.overflowMode = TextOverflowModes.Ellipsis;
             }
-        }
-
-        private TMP_Text FindTextChild(string nameFragment)
-        {
-            var texts = GetComponentsInChildren<TMP_Text>(true);
-            for (int i = 0; i < texts.Length; i++)
-            {
-                if (texts[i] != null && texts[i].name.IndexOf(nameFragment, StringComparison.OrdinalIgnoreCase) >= 0)
-                    return texts[i];
-            }
-
-            return null;
         }
 
         /// <summary>

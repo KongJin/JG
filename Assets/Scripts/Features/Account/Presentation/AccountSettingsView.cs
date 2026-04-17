@@ -28,6 +28,7 @@ namespace Features.Account.Presentation
         [SerializeField] private Button _googleSignInButton;
         [SerializeField] private Button _logoutButton;
         [SerializeField] private Button _deleteAccountButton;
+        [SerializeField] private TMP_Text _deleteAccountButtonText;
         [SerializeField] private TMP_Text _statusMessageText;
 
         [Header("Confirmation Dialog")]
@@ -42,6 +43,7 @@ namespace Features.Account.Presentation
         private System.Action _onDeleteAccount;
         private AccountProfile _currentProfile;
         private bool _buttonsHooked;
+        private bool _deleteConfirmationPending;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
@@ -65,12 +67,14 @@ namespace Features.Account.Presentation
         public void Render(Domain.AccountProfile profile)
         {
             _currentProfile = profile;
+            _deleteConfirmationPending = false;
 
             if (_uidText != null) _uidText.text = $"UID: {profile.uid}";
-            if (_authTypeText != null) _authTypeText.text = profile.authType;
+            if (_authTypeText != null) _authTypeText.text = $"Auth: {profile.authType}";
             if (_displayNameText != null) _displayNameText.text = profile.displayName;
             if (_nicknameInput != null) _nicknameInput.text = profile.displayName;
 
+            RefreshDeleteButtonState();
             RefreshGoogleButtonState();
         }
 
@@ -196,8 +200,23 @@ namespace Features.Account.Presentation
 
         private void OnDeleteAccountClicked()
         {
-            if (_confirmDialog != null) _confirmDialog.SetActive(true);
-            if (_confirmMessage != null) _confirmMessage.text = "Are you sure you want to delete your account?\nAll data will be permanently deleted.";
+            if (_confirmDialog != null)
+            {
+                _confirmDialog.SetActive(true);
+                if (_confirmMessage != null)
+                    _confirmMessage.text = "Are you sure you want to delete your account?\nAll data will be permanently deleted.";
+                return;
+            }
+
+            if (!_deleteConfirmationPending)
+            {
+                _deleteConfirmationPending = true;
+                RefreshDeleteButtonState();
+                SetStatusMessage("Press delete once more to permanently remove this account.");
+                return;
+            }
+
+            OnConfirmYesClicked();
         }
 
         private async void OnConfirmYesClicked()
@@ -207,11 +226,14 @@ namespace Features.Account.Presentation
 
             try
             {
+                SetStatusMessage("Deleting account...");
                 await _setup.DeleteAccount.Execute();
                 _onDeleteAccount?.Invoke();
             }
             catch (System.Exception ex)
             {
+                _deleteConfirmationPending = false;
+                RefreshDeleteButtonState();
                 SetStatusMessage($"Account deletion failed: {ex.Message}");
             }
         }
@@ -219,6 +241,8 @@ namespace Features.Account.Presentation
         private void OnConfirmNoClicked()
         {
             if (_confirmDialog != null) _confirmDialog.SetActive(false);
+            _deleteConfirmationPending = false;
+            RefreshDeleteButtonState();
         }
 
         private void RefreshGoogleButtonState()
@@ -236,6 +260,14 @@ namespace Features.Account.Presentation
             var target = _statusMessageText != null ? _statusMessageText : _nicknameMessage;
             if (target != null)
                 target.text = message;
+        }
+
+        private void RefreshDeleteButtonState()
+        {
+            if (_deleteAccountButton == null || _deleteAccountButtonText == null)
+                return;
+
+            _deleteAccountButtonText.text = _deleteConfirmationPending ? "Confirm Delete" : "Delete Account";
         }
 
         private void OnDestroy()

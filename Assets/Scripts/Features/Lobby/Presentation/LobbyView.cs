@@ -4,6 +4,7 @@ using Features.Lobby.Application.Events;
 using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Lifecycle;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,11 +20,21 @@ namespace Features.Lobby.Presentation
         private GameObject _garagePageRoot;
 
         [Header("Tabs")]
-        [SerializeField]
+        [Required, SerializeField]
         private Button _lobbyTabButton;
 
-        [SerializeField]
+        [Required, SerializeField]
         private Button _garageTabButton;
+
+        [Header("Tab Wiring")]
+        [Required, SerializeField]
+        private RectTransform _topTabsRoot;
+
+        [Required, SerializeField]
+        private TMP_Text _lobbyTabText;
+
+        [Required, SerializeField]
+        private TMP_Text _garageTabText;
 
         [Header("Tab Visuals")]
         [SerializeField]
@@ -51,6 +62,13 @@ namespace Features.Lobby.Presentation
 
         [Required, SerializeField]
         private GameObject _roomDetailPanel;
+
+        [Header("Focus")]
+        [Required, SerializeField]
+        private CanvasGroup _lobbyPageCanvasGroup;
+
+        [Required, SerializeField]
+        private CanvasGroup _garagePageCanvasGroup;
 
         [Header("Views")]
         [Required, SerializeField]
@@ -243,13 +261,9 @@ namespace Features.Lobby.Presentation
             }
 
             // 텍스트 색상
-            foreach (Transform child in tabButton.transform)
-            {
-                if (child.TryGetComponent<TMPro.TMP_Text>(out var tmpText))
-                {
-                    tmpText.color = isActive ? _activeTextColor : _inactiveTextColor;
-                }
-            }
+            var label = tabButton == _lobbyTabButton ? _lobbyTabText : _garageTabText;
+            if (label != null)
+                label.color = isActive ? _activeTextColor : _inactiveTextColor;
         }
 
         private void ConfigureDashboardLayout()
@@ -260,18 +274,14 @@ namespace Features.Lobby.Presentation
             var garageRect = _garagePageRoot != null ? _garagePageRoot.GetComponent<RectTransform>() : null;
             var roomListRect = _roomListPanel != null ? _roomListPanel.GetComponent<RectTransform>() : null;
             var roomDetailRect = _roomDetailPanel != null ? _roomDetailPanel.GetComponent<RectTransform>() : null;
-            var summaryRect = _lobbyPageRoot != null ? _lobbyPageRoot.transform.Find("Summary") as RectTransform : null;
-            var tabsRect = _lobbyTabButton != null ? _lobbyTabButton.transform.parent as RectTransform : null;
-
             SetStretch(lobbyRect, 0.03f, 0.10f, 0.38f, 0.88f);
             SetStretch(garageRect, 0.40f, 0.08f, 0.98f, 0.90f);
-            SetStretch(summaryRect, 0f, 0.78f, 1f, 1f);
             SetStretch(roomListRect, 0f, 0f, 1f, 0.74f);
             SetStretch(roomDetailRect, 0f, 0f, 1f, 0.74f);
 
-            if (tabsRect != null)
+            if (_topTabsRoot != null)
             {
-                SetStretch(tabsRect, 0.74f, 0.90f, 0.95f, 0.96f);
+                SetStretch(_topTabsRoot, 0.74f, 0.90f, 0.95f, 0.96f);
             }
 
             UpdateDashboardFocus();
@@ -287,18 +297,14 @@ namespace Features.Lobby.Presentation
 
         private void UpdateDashboardFocus()
         {
-            ApplyCanvasGroup(_lobbyPageRoot, _garageFocused ? 0.92f : 1f);
-            ApplyCanvasGroup(_garagePageRoot, _garageFocused ? 1f : 0.96f);
+            ApplyCanvasGroup(_lobbyPageCanvasGroup, _garageFocused ? 0.92f : 1f);
+            ApplyCanvasGroup(_garagePageCanvasGroup, _garageFocused ? 1f : 0.96f);
         }
 
-        private static void ApplyCanvasGroup(GameObject target, float alpha)
+        private static void ApplyCanvasGroup(CanvasGroup group, float alpha)
         {
-            if (target == null)
-                return;
-
-            var group = target.GetComponent<CanvasGroup>();
             if (group == null)
-                group = target.AddComponent<CanvasGroup>();
+                return;
 
             group.alpha = alpha;
         }

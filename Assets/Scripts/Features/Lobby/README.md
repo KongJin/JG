@@ -13,6 +13,11 @@
 - `Lobby / Garage` tabs are focus controls only. They should not hide either workspace.
 - `RoomListPanel` and `RoomDetailPanel` still alternate inside the lobby column.
 
+## Scene Contract
+
+- `LobbyView` owns inspector-wired references for `TopTabs`, tab labels/borders, and page `CanvasGroup`s.
+- Do not reintroduce runtime child traversal for tab text/border updates or runtime `CanvasGroup` injection for page focus.
+
 ## Ready Contract
 
 - Ready depends on the saved Garage roster only.

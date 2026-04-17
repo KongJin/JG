@@ -69,9 +69,9 @@ namespace Features.Garage.Presentation.Theme
         // ─── 적용 메서드 ─────────────────────────────────────
 
         /// <summary>
-        /// Button에 프리셋을 적용한다. Image + TMP_Text가 있어야 함.
+        /// Button에 프리셋을 적용한다. 텍스트 참조는 caller가 명시적으로 넘긴다.
         /// </summary>
-        public static void Apply(this Button button, ButtonPreset preset)
+        public static void Apply(this Button button, ButtonPreset preset, TMP_Text text = null)
         {
             if (button == null || preset == null) return;
 
@@ -81,7 +81,6 @@ namespace Features.Garage.Presentation.Theme
                 image.color = preset.BackgroundColor;
             }
 
-            var text = button.GetComponentInChildren<TMP_Text>();
             if (text != null)
             {
                 text.color = preset.TextColor;
