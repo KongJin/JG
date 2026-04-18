@@ -15,7 +15,9 @@
 
 ## Scene Contract
 
-- `LobbyView` owns inspector-wired references for `TopTabs`, tab labels/borders, and page `CanvasGroup`s.
+- `CodexLobbyScene` owns dashboard geometry and tab placement as serialized scene layout.
+- `LobbyView` owns inspector-wired references for tab labels/borders and page `CanvasGroup`s.
+- Do not make `LobbyView` the layout author again. Runtime code must not rewrite scene-owned `RectTransform` anchors, offsets, or sizes for Lobby/Garage dashboard placement.
 - Do not reintroduce runtime child traversal for tab text/border updates or runtime `CanvasGroup` injection for page focus.
 
 ## Ready Contract

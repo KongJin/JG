@@ -32,6 +32,24 @@ namespace Features.Wave.Infrastructure
             room.SetCustomProperties(props);
         }
 
+        public void ResetRoomPropertiesForNewMatch()
+        {
+            if (!PhotonNetwork.IsMasterClient)
+                return;
+
+            var room = PhotonNetwork.CurrentRoom;
+            if (room == null)
+                return;
+
+            var props = new Hashtable
+            {
+                { WaveIndexKey, 0 },
+                { WaveStateKey, 0 },
+                { CountdownEndKey, 0 }
+            };
+            room.SetCustomProperties(props);
+        }
+
         public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
         {
             if (PhotonNetwork.IsMasterClient) return;

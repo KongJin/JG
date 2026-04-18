@@ -65,6 +65,7 @@ namespace Features.Garage
             ComposeUnit = new ComposeUnitUseCase(compositionPort);
             InitializeGarage = new InitializeGarageUseCase(
                 localPersistence,
+                _networkAdapter,
                 accountDataPort as InitializeGarageUseCase.ICloudGarageLoadPort,
                 eventBus);
             ValidateRoster = new ValidateRosterUseCase(_rosterValidationProvider);

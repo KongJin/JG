@@ -1,0 +1,19 @@
+{
+  "name": "jg",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "webgl:smoke:garage": "node ./tools/webgl-smoke/garage-save-load-smoke.cjs",
+    "webgl:smoke:account-delete": "node ./tools/webgl-smoke/account-delete-smoke.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "playwright": "^1.59.1"
+  }
+}

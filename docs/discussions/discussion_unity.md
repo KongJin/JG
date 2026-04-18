@@ -1,3 +1,6 @@
+> 상태: historical
+> 현재 기준: [`../index.md`](../index.md), [`../plans/mcp_improvement_plan.md`](../plans/mcp_improvement_plan.md), [`../plans/tech_debt_reduction_plan.md`](../plans/tech_debt_reduction_plan.md)
+
 실제 코드와 문서, 도구를 비교해 보니 여러 문제점과 한계가 발견되었습니다.                                                                                  
                                                               
   ---                                                                                     

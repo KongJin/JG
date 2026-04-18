@@ -15,7 +15,7 @@ using UnityEngine.UI;
 
 namespace ProjectSD.EditorTools.SceneTools
 {
-    internal static class CodexLobbySceneBuilder
+    public static class CodexLobbySceneBuilder
     {
         private const string ScenePath = "Assets/Scenes/CodexLobbyScene.unity";
         private const string SoundCatalogPath = "Assets/Data/Sound/SoundCatalog.asset";
@@ -23,6 +23,19 @@ namespace ProjectSD.EditorTools.SceneTools
 
         [MenuItem("Tools/Codex/Build Codex Lobby Scene")]
         private static void BuildCodexLobbyScene()
+        {
+            BuildCodexLobbySceneCore();
+        }
+
+        public static void BuildCodexLobbySceneForAutomation()
+        {
+            EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+            BuildCodexLobbySceneCore();
+            AssetDatabase.SaveAssets();
+            EditorSceneManager.SaveOpenScenes();
+        }
+
+        private static void BuildCodexLobbySceneCore()
         {
             var scene = SceneManager.GetActiveScene();
             if (!scene.IsValid() || !string.Equals(scene.path, ScenePath, StringComparison.Ordinal))
@@ -37,6 +50,8 @@ namespace ProjectSD.EditorTools.SceneTools
             var canvas = CreateCanvas();
             CreateBackdrop(canvas.transform);
             var lobbyPageRoot = CreatePageRoot("LobbyPageRoot", canvas.transform);
+            Stretch(lobbyPageRoot.GetComponent<RectTransform>(), new Vector2(0.03f, 0.12f), new Vector2(0.38f, 0.84f), Vector2.zero, Vector2.zero);
+            lobbyPageRoot.AddComponent<CanvasGroup>();
 
             var title = CreateText(
                 "Title",
@@ -117,7 +132,7 @@ namespace ProjectSD.EditorTools.SceneTools
         private static RoomListView BuildRoomListPanel(Transform parent)
         {
             var panel = CreatePanel("RoomListPanel", parent, new Color32(24, 31, 50, 242));
-            Stretch(panel.rectTransform, new Vector2(0.05f, 0.12f), new Vector2(0.47f, 0.82f), Vector2.zero, Vector2.zero);
+            Stretch(panel.rectTransform, Vector2.zero, new Vector2(1f, 0.78f), Vector2.zero, Vector2.zero);
 
             var layout = panel.gameObject.AddComponent<VerticalLayoutGroup>();
             layout.padding = new RectOffset(24, 24, 24, 24);
@@ -180,7 +195,7 @@ namespace ProjectSD.EditorTools.SceneTools
         private static RoomDetailView BuildRoomDetailPanel(Transform parent)
         {
             var panel = CreatePanel("RoomDetailPanel", parent, new Color32(22, 29, 48, 242));
-            Stretch(panel.rectTransform, new Vector2(0.53f, 0.12f), new Vector2(0.95f, 0.82f), Vector2.zero, Vector2.zero);
+            Stretch(panel.rectTransform, Vector2.zero, new Vector2(1f, 0.78f), Vector2.zero, Vector2.zero);
 
             var layout = panel.gameObject.AddComponent<VerticalLayoutGroup>();
             layout.padding = new RectOffset(24, 24, 24, 24);

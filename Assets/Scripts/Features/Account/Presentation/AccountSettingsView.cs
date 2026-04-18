@@ -219,6 +219,23 @@ namespace Features.Account.Presentation
             OnConfirmYesClicked();
         }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        public void WebglSmokeDeleteAccountClick()
+        {
+            OnDeleteAccountClicked();
+        }
+
+        public void WebglSmokeDeleteAccountConfirm()
+        {
+            OnConfirmYesClicked();
+        }
+
+        public void WebglSmokeDeleteAccountCancel()
+        {
+            OnConfirmNoClicked();
+        }
+#endif
+
         private async void OnConfirmYesClicked()
         {
             if (_confirmDialog != null) _confirmDialog.SetActive(false);

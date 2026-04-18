@@ -9,6 +9,7 @@ param(
     [int]$TimeoutSec = 90
 )
 
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force | Out-Null
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
@@ -33,7 +34,16 @@ try {
     $play = Invoke-McpPlayStartAndWaitForBridge -Root $root -TimeoutSec $TimeoutSec
     $startedPlayHere = $true
 
-    $uiStateBefore = Get-McpUiState -Root $root
+    $uiStateBefore = Get-McpUiStateSummary `
+        -Root $root `
+        -PathPrefixes @(
+            "/Canvas/LobbyPageRoot",
+            "/Canvas/GaragePageRoot",
+            "/Canvas/TopTabs",
+            "/Canvas/LoginLoadingOverlay"
+        ) `
+        -ComponentTypes @("Button", "TMP_Text", "TMP_InputField") `
+        -MaxItems 60
     $invoke = Invoke-McpUiInvoke -Root $root -Path $GarageTabPath -Method "click"
     $garageReady = Wait-McpUiActive -Root $root -Path $GarageRootPath -TimeoutMs ($TimeoutSec * 1000)
     $loadingPanelWait = $null

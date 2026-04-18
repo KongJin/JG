@@ -1,6 +1,6 @@
 # 게임 씬 진입 계획 (Game Scene Entry Plan)
 
-> **마지막 업데이트**: 2026-04-11
+> **마지막 업데이트**: 2026-04-18
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
 이 문서는 GameScene 진입 작업의 큰 흐름만 유지한다. 상세 구현 이력과 완료 판단은 `progress.md`를 기준으로 본다.
@@ -22,7 +22,13 @@
 
 ---
 
-## 완료된 Phase 요약
+## 현실 상태
+
+2026-04-18 기준으로 `GameScene` 관련 코드 경로는 많이 남아 있었지만, 실제 `Assets/Scenes/GameScene.unity` 씬 에셋은 삭제된 상태였다. 현재는 새 hand-authored `GameScene.unity`와 최소 `BattleEntity.prefab`을 다시 만들었고 build settings 및 required-field audit까지 복구했다.
+
+아래 Phase 표는 "코드 경로가 존재하는가"를 요약한 것이다. 이것이 곧바로 "로비에서 실제 플레이 가능한 summon PvE가 끝까지 검증되었다"는 뜻은 아니다.
+
+## 코드 경로 상태
 
 | Phase | 상태 | 요약 |
 |---|---|---|
@@ -40,13 +46,14 @@ Phase 0~8의 세부 커밋과 작업 로그는 [`progress.md`](./progress.md)에
 
 ---
 
-## 현재 집중 영역: Phase 9
+## 현재 집중 영역: GameScene Rebuild Milestone
 
-Phase 9는 네트워크 완성 단계다. 현재 활성 TODO는 `progress.md`와 동일하게 아래 세 가지다.
+현재 활성 TODO는 `progress.md`와 동일하게 아래 순서로 본다.
 
-1. 명시적 `[PunRPC]` 기반 BattleEntity remote 사망 동기화 보강
-2. `PlacementAreaView`, `DragGhostPrefab` 등 Inspector 직렬화 참조 최종 검증
-3. 실제 멀티플레이어 smoke 테스트로 late-join, BattleEntity sync, Energy sync 확인
+1. `CodexLobbyScene -> GameScene` 실제 전환 smoke
+2. room roster restore -> unit spec compute -> summon slot render 검증
+3. placement area drag/drop과 wave/core loop 실제 Play Mode 검증
+4. 실제 멀티플레이어 smoke로 late-join, BattleEntity sync, Energy sync 확인
 
 ---
 
@@ -54,4 +61,4 @@ Phase 9는 네트워크 완성 단계다. 현재 활성 TODO는 `progress.md`와
 
 - GameScene 진입 관련 상세 진행률, 최근 커밋, 남은 TODO는 항상 [`progress.md`](./progress.md)에 먼저 반영한다.
 - 이 문서에는 이미 끝난 Phase의 세부 구현 순서나 오래된 “다음 액션” 체크리스트를 다시 복제하지 않는다.
-- 설계 기준은 [`../design/game_design.md`](../design/game_design.md), 전역 구조 규칙은 [`../../agent/architecture.md`](../../agent/architecture.md)를 따른다.
+- 설계 기준은 [`../design/game_design.md`](../design/game_design.md), 전역 진입점은 [`../../CLAUDE.md`](../../CLAUDE.md)를 따른다.

@@ -1,0 +1,1304 @@
+﻿{
+    "roomName":  "CodexDiagnose-20260418184341259",
+    "hierarchy":  {
+                      "sceneName":  "GameScene",
+                      "nodes":  [
+                                    {
+                                        "name":  "EnvironmentRoot",
+                                        "path":  "/EnvironmentRoot",
+                                        "activeSelf":  true,
+                                        "components":  [
+                                                           "Transform"
+                                                       ],
+                                        "childCount":  3,
+                                        "children":  [
+                                                         {
+                                                             "name":  "ArenaGround",
+                                                             "path":  "/EnvironmentRoot/ArenaGround",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "MeshFilter",
+                                                                                "MeshCollider",
+                                                                                "MeshRenderer"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "LaneStripe",
+                                                             "path":  "/EnvironmentRoot/LaneStripe",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "MeshFilter",
+                                                                                "BoxCollider",
+                                                                                "MeshRenderer"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "ObjectiveCore",
+                                                             "path":  "/EnvironmentRoot/ObjectiveCore",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "MeshFilter",
+                                                                                "CapsuleCollider",
+                                                                                "MeshRenderer",
+                                                                                "EntityIdHolder",
+                                                                                "CombatTargetView",
+                                                                                "CoreObjectiveSetup"
+                                                                            ],
+                                                             "childCount":  1,
+                                                             "children":  [
+                                                                              {
+                                                                                  "name":  "PlacementAreaView",
+                                                                                  "path":  "/EnvironmentRoot/ObjectiveCore/PlacementAreaView",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "Transform",
+                                                                                                     "MeshFilter",
+                                                                                                     "MeshRenderer",
+                                                                                                     "PlacementAreaView"
+                                                                                                 ],
+                                                                                  "childCount":  0,
+                                                                                  "children":  [
+
+                                                                                               ]
+                                                                              }
+                                                                          ]
+                                                         }
+                                                     ]
+                                    },
+                                    {
+                                        "name":  "SystemsRoot",
+                                        "path":  "/SystemsRoot",
+                                        "activeSelf":  true,
+                                        "components":  [
+                                                           "Transform"
+                                                       ],
+                                        "childCount":  11,
+                                        "children":  [
+                                                         {
+                                                             "name":  "CombatSetup",
+                                                             "path":  "/SystemsRoot/CombatSetup",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "CombatTargetAdapter",
+                                                                                "CombatSetup"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "ZoneSetup",
+                                                             "path":  "/SystemsRoot/ZoneSetup",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "ZoneEffectAdapter",
+                                                                                "ZoneSetup"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "StatusSetup",
+                                                             "path":  "/SystemsRoot/StatusSetup",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "StatusTickController",
+                                                                                "StatusSetup"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "PlayerSceneRegistry",
+                                                             "path":  "/SystemsRoot/PlayerSceneRegistry",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "PlayerSceneRegistry"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "EnergyRegenTicker",
+                                                             "path":  "/SystemsRoot/EnergyRegenTicker",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "EnergyRegenTicker"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "ProjectileSpawner",
+                                                             "path":  "/SystemsRoot/ProjectileSpawner",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "ProjectileSpawner"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "DamageNumberSpawner",
+                                                             "path":  "/SystemsRoot/DamageNumberSpawner",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "DamageNumberSpawner"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "UnitSetup",
+                                                             "path":  "/SystemsRoot/UnitSetup",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "SummonPhotonAdapter",
+                                                                                "UnitSetup"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "GarageSetup",
+                                                             "path":  "/SystemsRoot/GarageSetup",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "GarageNetworkAdapter",
+                                                                                "GarageSetup"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "WaveSetup",
+                                                             "path":  "/SystemsRoot/WaveSetup",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "EnemySpawnAdapter",
+                                                                                "PlayerPositionQueryAdapter",
+                                                                                "UnitPositionQueryAdapter",
+                                                                                "WaveNetworkAdapter",
+                                                                                "WaveSetup"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "GameSceneRoot",
+                                                             "path":  "/SystemsRoot/GameSceneRoot",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "GameSceneRoot"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         }
+                                                     ]
+                                    },
+                                    {
+                                        "name":  "RuntimeRoot",
+                                        "path":  "/RuntimeRoot",
+                                        "activeSelf":  true,
+                                        "components":  [
+                                                           "Transform"
+                                                       ],
+                                        "childCount":  3,
+                                        "children":  [
+                                                         {
+                                                             "name":  "ProjectileRoot",
+                                                             "path":  "/RuntimeRoot/ProjectileRoot",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "ZoneRoot",
+                                                             "path":  "/RuntimeRoot/ZoneRoot",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "UnitsRoot",
+                                                             "path":  "/RuntimeRoot/UnitsRoot",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         }
+                                                     ]
+                                    },
+                                    {
+                                        "name":  "UiTemplates",
+                                        "path":  "/UiTemplates",
+                                        "activeSelf":  false,
+                                        "components":  [
+                                                           "Transform"
+                                                       ],
+                                        "childCount":  3,
+                                        "children":  [
+                                                         {
+                                                             "name":  "DragGhostTemplate",
+                                                             "path":  "/UiTemplates/DragGhostTemplate",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "RectTransform",
+                                                                                "CanvasRenderer",
+                                                                                "Image",
+                                                                                "CanvasGroup"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "UnitSlotTemplate",
+                                                             "path":  "/UiTemplates/UnitSlotTemplate",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "RectTransform",
+                                                                                "CanvasRenderer",
+                                                                                "Image",
+                                                                                "LayoutElement",
+                                                                                "UnitSlotView"
+                                                                            ],
+                                                             "childCount":  4,
+                                                             "children":  [
+                                                                              {
+                                                                                  "name":  "Icon",
+                                                                                  "path":  "/UiTemplates/UnitSlotTemplate/Icon",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "CanvasRenderer",
+                                                                                                     "Image"
+                                                                                                 ],
+                                                                                  "childCount":  0,
+                                                                                  "children":  [
+
+                                                                                               ]
+                                                                              },
+                                                                              {
+                                                                                  "name":  "NameText",
+                                                                                  "path":  "/UiTemplates/UnitSlotTemplate/NameText",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "CanvasRenderer",
+                                                                                                     "Text"
+                                                                                                 ],
+                                                                                  "childCount":  0,
+                                                                                  "children":  [
+
+                                                                                               ]
+                                                                              },
+                                                                              {
+                                                                                  "name":  "CostText",
+                                                                                  "path":  "/UiTemplates/UnitSlotTemplate/CostText",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "CanvasRenderer",
+                                                                                                     "Text"
+                                                                                                 ],
+                                                                                  "childCount":  0,
+                                                                                  "children":  [
+
+                                                                                               ]
+                                                                              },
+                                                                              {
+                                                                                  "name":  "CannotAffordOverlay",
+                                                                                  "path":  "/UiTemplates/UnitSlotTemplate/CannotAffordOverlay",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "CanvasRenderer",
+                                                                                                     "Image"
+                                                                                                 ],
+                                                                                  "childCount":  1,
+                                                                                  "children":  [
+                                                                                                   {
+                                                                                                       "name":  "OverlayText",
+                                                                                                       "path":  "/UiTemplates/UnitSlotTemplate/CannotAffordOverlay/OverlayText",
+                                                                                                       "activeSelf":  true,
+                                                                                                       "components":  [
+                                                                                                                          "RectTransform",
+                                                                                                                          "CanvasRenderer",
+                                                                                                                          "Text"
+                                                                                                                      ],
+                                                                                                       "childCount":  0,
+                                                                                                       "children":  [
+
+                                                                                                                    ]
+                                                                                                   }
+                                                                                               ]
+                                                                              }
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "UnitSlotInputHandlerTemplate",
+                                                             "path":  "/UiTemplates/UnitSlotInputHandlerTemplate",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "RectTransform",
+                                                                                "UnitSlotInputHandler"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         }
+                                                     ]
+                                    },
+                                    {
+                                        "name":  "Main Camera",
+                                        "path":  "/Main Camera",
+                                        "activeSelf":  true,
+                                        "components":  [
+                                                           "Transform",
+                                                           "Camera",
+                                                           "AudioListener",
+                                                           "CameraFollower"
+                                                       ],
+                                        "childCount":  0,
+                                        "children":  [
+
+                                                     ]
+                                    },
+                                    {
+                                        "name":  "Directional Light",
+                                        "path":  "/Directional Light",
+                                        "activeSelf":  true,
+                                        "components":  [
+                                                           "Transform",
+                                                           "Light",
+                                                           "UniversalAdditionalLightData"
+                                                       ],
+                                        "childCount":  0,
+                                        "children":  [
+
+                                                     ]
+                                    },
+                                    {
+                                        "name":  "EventSystem",
+                                        "path":  "/EventSystem",
+                                        "activeSelf":  true,
+                                        "components":  [
+                                                           "Transform",
+                                                           "EventSystem",
+                                                           "InputSystemUIInputModule"
+                                                       ],
+                                        "childCount":  0,
+                                        "children":  [
+
+                                                     ]
+                                    },
+                                    {
+                                        "name":  "HudCanvas",
+                                        "path":  "/HudCanvas",
+                                        "activeSelf":  true,
+                                        "components":  [
+                                                           "RectTransform",
+                                                           "Canvas",
+                                                           "CanvasScaler",
+                                                           "GraphicRaycaster"
+                                                       ],
+                                        "childCount":  5,
+                                        "children":  [
+                                                         {
+                                                             "name":  "SceneErrorPresenter",
+                                                             "path":  "/HudCanvas/SceneErrorPresenter",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "RectTransform",
+                                                                                "SceneErrorPresenter"
+                                                                            ],
+                                                             "childCount":  2,
+                                                             "children":  [
+                                                                              {
+                                                                                  "name":  "Banner",
+                                                                                  "path":  "/HudCanvas/SceneErrorPresenter/Banner",
+                                                                                  "activeSelf":  false,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "CanvasRenderer",
+                                                                                                     "Image",
+                                                                                                     "CanvasGroup"
+                                                                                                 ],
+                                                                                  "childCount":  1,
+                                                                                  "children":  [
+                                                                                                   {
+                                                                                                       "name":  "BannerMessage",
+                                                                                                       "path":  "/HudCanvas/SceneErrorPresenter/Banner/BannerMessage",
+                                                                                                       "activeSelf":  true,
+                                                                                                       "components":  [
+                                                                                                                          "RectTransform",
+                                                                                                                          "CanvasRenderer",
+                                                                                                                          "TextMeshProUGUI"
+                                                                                                                      ],
+                                                                                                       "childCount":  0,
+                                                                                                       "children":  [
+
+                                                                                                                    ]
+                                                                                                   }
+                                                                                               ]
+                                                                              },
+                                                                              {
+                                                                                  "name":  "Modal",
+                                                                                  "path":  "/HudCanvas/SceneErrorPresenter/Modal",
+                                                                                  "activeSelf":  false,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "CanvasRenderer",
+                                                                                                     "Image",
+                                                                                                     "CanvasGroup"
+                                                                                                 ],
+                                                                                  "childCount":  1,
+                                                                                  "children":  [
+                                                                                                   {
+                                                                                                       "name":  "ModalCard",
+                                                                                                       "path":  "/HudCanvas/SceneErrorPresenter/Modal/ModalCard",
+                                                                                                       "activeSelf":  true,
+                                                                                                       "components":  [
+                                                                                                                          "RectTransform",
+                                                                                                                          "CanvasRenderer",
+                                                                                                                          "Image"
+                                                                                                                      ],
+                                                                                                       "childCount":  2,
+                                                                                                       "children":  [
+                                                                                                                        {
+                                                                                                                            "name":  "ModalMessage",
+                                                                                                                            "path":  "/HudCanvas/SceneErrorPresenter/Modal/ModalCard/ModalMessage",
+                                                                                                                            "activeSelf":  true,
+                                                                                                                            "components":  [
+                                                                                                                                               "RectTransform",
+                                                                                                                                               "CanvasRenderer",
+                                                                                                                                               "TextMeshProUGUI"
+                                                                                                                                           ],
+                                                                                                                            "childCount":  0,
+                                                                                                                            "children":  [
+
+                                                                                                                                         ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "name":  "DismissButton",
+                                                                                                                            "path":  "/HudCanvas/SceneErrorPresenter/Modal/ModalCard/DismissButton",
+                                                                                                                            "activeSelf":  true,
+                                                                                                                            "components":  [
+                                                                                                                                               "RectTransform",
+                                                                                                                                               "CanvasRenderer",
+                                                                                                                                               "Image",
+                                                                                                                                               "Button"
+                                                                                                                                           ],
+                                                                                                                            "childCount":  1,
+                                                                                                                            "children":  [
+
+                                                                                                                                         ]
+                                                                                                                        }
+                                                                                                                    ]
+                                                                                                   }
+                                                                                               ]
+                                                                              }
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "EnergyBar",
+                                                             "path":  "/HudCanvas/EnergyBar",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "RectTransform",
+                                                                                "EnergyBarView"
+                                                                            ],
+                                                             "childCount":  2,
+                                                             "children":  [
+                                                                              {
+                                                                                  "name":  "Slider",
+                                                                                  "path":  "/HudCanvas/EnergyBar/Slider",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "Slider"
+                                                                                                 ],
+                                                                                  "childCount":  2,
+                                                                                  "children":  [
+                                                                                                   {
+                                                                                                       "name":  "Background",
+                                                                                                       "path":  "/HudCanvas/EnergyBar/Slider/Background",
+                                                                                                       "activeSelf":  true,
+                                                                                                       "components":  [
+                                                                                                                          "RectTransform",
+                                                                                                                          "CanvasRenderer",
+                                                                                                                          "Image"
+                                                                                                                      ],
+                                                                                                       "childCount":  0,
+                                                                                                       "children":  [
+
+                                                                                                                    ]
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "name":  "Fill Area",
+                                                                                                       "path":  "/HudCanvas/EnergyBar/Slider/Fill Area",
+                                                                                                       "activeSelf":  true,
+                                                                                                       "components":  [
+                                                                                                                          "RectTransform"
+                                                                                                                      ],
+                                                                                                       "childCount":  1,
+                                                                                                       "children":  [
+                                                                                                                        {
+                                                                                                                            "name":  "Fill",
+                                                                                                                            "path":  "/HudCanvas/EnergyBar/Slider/Fill Area/Fill",
+                                                                                                                            "activeSelf":  true,
+                                                                                                                            "components":  [
+                                                                                                                                               "RectTransform",
+                                                                                                                                               "CanvasRenderer",
+                                                                                                                                               "Image"
+                                                                                                                                           ],
+                                                                                                                            "childCount":  0,
+                                                                                                                            "children":  [
+
+                                                                                                                                         ]
+                                                                                                                        }
+                                                                                                                    ]
+                                                                                                   }
+                                                                                               ]
+                                                                              },
+                                                                              {
+                                                                                  "name":  "Label",
+                                                                                  "path":  "/HudCanvas/EnergyBar/Label",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "CanvasRenderer",
+                                                                                                     "Text"
+                                                                                                 ],
+                                                                                  "childCount":  0,
+                                                                                  "children":  [
+
+                                                                                               ]
+                                                                              }
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "PlacementErrorView",
+                                                             "path":  "/HudCanvas/PlacementErrorView",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "RectTransform",
+                                                                                "CanvasRenderer",
+                                                                                "Image",
+                                                                                "CanvasGroup",
+                                                                                "PlacementErrorView"
+                                                                            ],
+                                                             "childCount":  1,
+                                                             "children":  [
+                                                                              {
+                                                                                  "name":  "Text",
+                                                                                  "path":  "/HudCanvas/PlacementErrorView/Text",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "CanvasRenderer",
+                                                                                                     "Text"
+                                                                                                 ],
+                                                                                  "childCount":  0,
+                                                                                  "children":  [
+
+                                                                                               ]
+                                                                              }
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "UnitSummonUi",
+                                                             "path":  "/HudCanvas/UnitSummonUi",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "RectTransform",
+                                                                                "UnitSlotsContainer"
+                                                                            ],
+                                                             "childCount":  1,
+                                                             "children":  [
+                                                                              {
+                                                                                  "name":  "SlotRow",
+                                                                                  "path":  "/HudCanvas/UnitSummonUi/SlotRow",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "HorizontalLayoutGroup"
+                                                                                                 ],
+                                                                                  "childCount":  0,
+                                                                                  "children":  [
+
+                                                                                               ]
+                                                                              }
+                                                                          ]
+                                                         },
+                                                         {
+                                                             "name":  "WaveUi",
+                                                             "path":  "/HudCanvas/WaveUi",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "RectTransform"
+                                                                            ],
+                                                             "childCount":  4,
+                                                             "children":  [
+                                                                              {
+                                                                                  "name":  "TopBar",
+                                                                                  "path":  "/HudCanvas/WaveUi/TopBar",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "WaveHudView"
+                                                                                                 ],
+                                                                                  "childCount":  4,
+                                                                                  "children":  [
+                                                                                                   {
+                                                                                                       "name":  "WaveText",
+                                                                                                       "path":  "/HudCanvas/WaveUi/TopBar/WaveText",
+                                                                                                       "activeSelf":  true,
+                                                                                                       "components":  [
+                                                                                                                          "RectTransform",
+                                                                                                                          "CanvasRenderer",
+                                                                                                                          "Text"
+                                                                                                                      ],
+                                                                                                       "childCount":  0,
+                                                                                                       "children":  [
+
+                                                                                                                    ]
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "name":  "CountdownText",
+                                                                                                       "path":  "/HudCanvas/WaveUi/TopBar/CountdownText",
+                                                                                                       "activeSelf":  true,
+                                                                                                       "components":  [
+                                                                                                                          "RectTransform",
+                                                                                                                          "CanvasRenderer",
+                                                                                                                          "Text"
+                                                                                                                      ],
+                                                                                                       "childCount":  0,
+                                                                                                       "children":  [
+
+                                                                                                                    ]
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "name":  "StatusText",
+                                                                                                       "path":  "/HudCanvas/WaveUi/TopBar/StatusText",
+                                                                                                       "activeSelf":  true,
+                                                                                                       "components":  [
+                                                                                                                          "RectTransform",
+                                                                                                                          "CanvasRenderer",
+                                                                                                                          "Text"
+                                                                                                                      ],
+                                                                                                       "childCount":  0,
+                                                                                                       "children":  [
+
+                                                                                                                    ]
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "name":  "HintText",
+                                                                                                       "path":  "/HudCanvas/WaveUi/TopBar/HintText",
+                                                                                                       "activeSelf":  true,
+                                                                                                       "components":  [
+                                                                                                                          "RectTransform",
+                                                                                                                          "CanvasRenderer",
+                                                                                                                          "Text"
+                                                                                                                      ],
+                                                                                                       "childCount":  0,
+                                                                                                       "children":  [
+
+                                                                                                                    ]
+                                                                                                   }
+                                                                                               ]
+                                                                              },
+                                                                              {
+                                                                                  "name":  "WaveEndOverlay",
+                                                                                  "path":  "/HudCanvas/WaveUi/WaveEndOverlay",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "WaveEndView"
+                                                                                                 ],
+                                                                                  "childCount":  1,
+                                                                                  "children":  [
+                                                                                                   {
+                                                                                                       "name":  "Panel",
+                                                                                                       "path":  "/HudCanvas/WaveUi/WaveEndOverlay/Panel",
+                                                                                                       "activeSelf":  true,
+                                                                                                       "components":  [
+                                                                                                                          "RectTransform",
+                                                                                                                          "CanvasRenderer",
+                                                                                                                          "Image"
+                                                                                                                      ],
+                                                                                                       "childCount":  3,
+                                                                                                       "children":  [
+                                                                                                                        {
+                                                                                                                            "name":  "ResultText",
+                                                                                                                            "path":  "/HudCanvas/WaveUi/WaveEndOverlay/Panel/ResultText",
+                                                                                                                            "activeSelf":  true,
+                                                                                                                            "components":  [
+                                                                                                                                               "RectTransform",
+                                                                                                                                               "CanvasRenderer",
+                                                                                                                                               "Text"
+                                                                                                                                           ],
+                                                                                                                            "childCount":  0,
+                                                                                                                            "children":  [
+
+                                                                                                                                         ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "name":  "StatsText",
+                                                                                                                            "path":  "/HudCanvas/WaveUi/WaveEndOverlay/Panel/StatsText",
+                                                                                                                            "activeSelf":  true,
+                                                                                                                            "components":  [
+                                                                                                                                               "RectTransform",
+                                                                                                                                               "CanvasRenderer",
+                                                                                                                                               "Text"
+                                                                                                                                           ],
+                                                                                                                            "childCount":  0,
+                                                                                                                            "children":  [
+
+                                                                                                                                         ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "name":  "ReturnToLobbyButton",
+                                                                                                                            "path":  "/HudCanvas/WaveUi/WaveEndOverlay/Panel/ReturnToLobbyButton",
+                                                                                                                            "activeSelf":  true,
+                                                                                                                            "components":  [
+                                                                                                                                               "RectTransform",
+                                                                                                                                               "CanvasRenderer",
+                                                                                                                                               "Image",
+                                                                                                                                               "Button"
+                                                                                                                                           ],
+                                                                                                                            "childCount":  1,
+                                                                                                                            "children":  [
+
+                                                                                                                                         ]
+                                                                                                                        }
+                                                                                                                    ]
+                                                                                                   }
+                                                                                               ]
+                                                                              },
+                                                                              {
+                                                                                  "name":  "WaveFlowController",
+                                                                                  "path":  "/HudCanvas/WaveUi/WaveFlowController",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "Transform",
+                                                                                                     "WaveFlowController"
+                                                                                                 ],
+                                                                                  "childCount":  0,
+                                                                                  "children":  [
+
+                                                                                               ]
+                                                                              },
+                                                                              {
+                                                                                  "name":  "CoreHealthHud",
+                                                                                  "path":  "/HudCanvas/WaveUi/CoreHealthHud",
+                                                                                  "activeSelf":  true,
+                                                                                  "components":  [
+                                                                                                     "RectTransform",
+                                                                                                     "CoreHealthHudView"
+                                                                                                 ],
+                                                                                  "childCount":  2,
+                                                                                  "children":  [
+                                                                                                   {
+                                                                                                       "name":  "Slider",
+                                                                                                       "path":  "/HudCanvas/WaveUi/CoreHealthHud/Slider",
+                                                                                                       "activeSelf":  true,
+                                                                                                       "components":  [
+                                                                                                                          "RectTransform",
+                                                                                                                          "Slider"
+                                                                                                                      ],
+                                                                                                       "childCount":  2,
+                                                                                                       "children":  [
+                                                                                                                        {
+                                                                                                                            "name":  "Background",
+                                                                                                                            "path":  "/HudCanvas/WaveUi/CoreHealthHud/Slider/Background",
+                                                                                                                            "activeSelf":  true,
+                                                                                                                            "components":  [
+                                                                                                                                               "RectTransform",
+                                                                                                                                               "CanvasRenderer",
+                                                                                                                                               "Image"
+                                                                                                                                           ],
+                                                                                                                            "childCount":  0,
+                                                                                                                            "children":  [
+
+                                                                                                                                         ]
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "name":  "Fill Area",
+                                                                                                                            "path":  "/HudCanvas/WaveUi/CoreHealthHud/Slider/Fill Area",
+                                                                                                                            "activeSelf":  true,
+                                                                                                                            "components":  [
+                                                                                                                                               "RectTransform"
+                                                                                                                                           ],
+                                                                                                                            "childCount":  1,
+                                                                                                                            "children":  [
+
+                                                                                                                                         ]
+                                                                                                                        }
+                                                                                                                    ]
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "name":  "HpText",
+                                                                                                       "path":  "/HudCanvas/WaveUi/CoreHealthHud/HpText",
+                                                                                                       "activeSelf":  true,
+                                                                                                       "components":  [
+                                                                                                                          "RectTransform",
+                                                                                                                          "CanvasRenderer",
+                                                                                                                          "Text"
+                                                                                                                      ],
+                                                                                                       "childCount":  0,
+                                                                                                       "children":  [
+
+                                                                                                                    ]
+                                                                                                   }
+                                                                                               ]
+                                                                              }
+                                                                          ]
+                                                         }
+                                                     ]
+                                    },
+                                    {
+                                        "name":  "PlayerCharacter(Clone)",
+                                        "path":  "/PlayerCharacter(Clone)",
+                                        "activeSelf":  true,
+                                        "components":  [
+                                                           "Transform",
+                                                           "PlayerView",
+                                                           "PlayerInputHandler",
+                                                           "PhotonView",
+                                                           "CharacterController",
+                                                           "PlayerMotorAdapter",
+                                                           "PlayerNetworkAdapter",
+                                                           "PlayerSetup",
+                                                           "EntityIdHolder",
+                                                           "StatusNetworkAdapter"
+                                                       ],
+                                        "childCount":  1,
+                                        "children":  [
+                                                         {
+                                                             "name":  "Cube",
+                                                             "path":  "/PlayerCharacter(Clone)/Cube",
+                                                             "activeSelf":  true,
+                                                             "components":  [
+                                                                                "Transform",
+                                                                                "MeshFilter",
+                                                                                "MeshRenderer",
+                                                                                "BoxCollider"
+                                                                            ],
+                                                             "childCount":  0,
+                                                             "children":  [
+
+                                                                          ]
+                                                         }
+                                                     ]
+                                    }
+                                ]
+                  },
+    "playerFind":  {
+                       "found":  true,
+                       "name":  "PlayerCharacter(Clone)",
+                       "path":  "/PlayerCharacter(Clone)",
+                       "activeSelf":  true,
+                       "layer":  "Default",
+                       "tag":  "Untagged",
+                       "components":  [
+                                          {
+                                              "typeName":  "Transform",
+                                              "fullTypeName":  "UnityEngine.Transform",
+                                              "properties":  [
+                                                                 {
+                                                                     "name":  "m_LocalRotation",
+                                                                     "type":  "Quaternion",
+                                                                     "value":  "(Quaternion)"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_LocalPosition",
+                                                                     "type":  "Vector3",
+                                                                     "value":  "(1.24,0.00,-2.02)"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_LocalScale",
+                                                                     "type":  "Vector3",
+                                                                     "value":  "(1.00,1.00,1.00)"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_ConstrainProportionsScale",
+                                                                     "type":  "Boolean",
+                                                                     "value":  "False"
+                                                                 }
+                                                             ]
+                                          },
+                                          {
+                                              "typeName":  "PlayerView",
+                                              "fullTypeName":  "Features.Player.Presentation.PlayerView",
+                                              "properties":  [
+                                                                 {
+                                                                     "name":  "_visualRoot",
+                                                                     "type":  "ObjectReference",
+                                                                     "value":  "/PlayerCharacter(Clone)/Cube"
+                                                                 }
+                                                             ]
+                                          },
+                                          {
+                                              "typeName":  "PlayerInputHandler",
+                                              "fullTypeName":  "Features.Player.Presentation.PlayerInputHandler",
+                                              "properties":  [
+                                                                 {
+                                                                     "name":  "_inputActions",
+                                                                     "type":  "ObjectReference",
+                                                                     "value":  "Assets/InputSystem_Actions.inputactions"
+                                                                 }
+                                                             ]
+                                          },
+                                          {
+                                              "typeName":  "PhotonView",
+                                              "fullTypeName":  "Photon.Pun.PhotonView",
+                                              "properties":  [
+                                                                 {
+                                                                     "name":  "ObservedComponentsFoldoutOpen",
+                                                                     "type":  "Boolean",
+                                                                     "value":  "True"
+                                                                 },
+                                                                 {
+                                                                     "name":  "Group",
+                                                                     "type":  "Integer",
+                                                                     "value":  "0"
+                                                                 },
+                                                                 {
+                                                                     "name":  "prefixField",
+                                                                     "type":  "Integer",
+                                                                     "value":  "0"
+                                                                 },
+                                                                 {
+                                                                     "name":  "Synchronization",
+                                                                     "type":  "Enum",
+                                                                     "value":  "Unreliable On Change"
+                                                                 },
+                                                                 {
+                                                                     "name":  "OwnershipTransfer",
+                                                                     "type":  "Enum",
+                                                                     "value":  "Fixed"
+                                                                 },
+                                                                 {
+                                                                     "name":  "observableSearch",
+                                                                     "type":  "Enum",
+                                                                     "value":  "Auto Find All"
+                                                                 },
+                                                                 {
+                                                                     "name":  "ObservedComponents",
+                                                                     "type":  "Generic",
+                                                                     "value":  "(Generic)"
+                                                                 },
+                                                                 {
+                                                                     "name":  "InstantiationId",
+                                                                     "type":  "Integer",
+                                                                     "value":  "1001"
+                                                                 }
+                                                             ]
+                                          },
+                                          {
+                                              "typeName":  "CharacterController",
+                                              "fullTypeName":  "UnityEngine.CharacterController",
+                                              "properties":  [
+                                                                 {
+                                                                     "name":  "m_Material",
+                                                                     "type":  "ObjectReference",
+                                                                     "value":  "(null)"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_IncludeLayers",
+                                                                     "type":  "LayerMask",
+                                                                     "value":  "(LayerMask)"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_ExcludeLayers",
+                                                                     "type":  "LayerMask",
+                                                                     "value":  "(LayerMask)"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_LayerOverridePriority",
+                                                                     "type":  "Integer",
+                                                                     "value":  "0"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_ProvidesContacts",
+                                                                     "type":  "Boolean",
+                                                                     "value":  "False"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_Height",
+                                                                     "type":  "Float",
+                                                                     "value":  "2.0000"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_Radius",
+                                                                     "type":  "Float",
+                                                                     "value":  "0.5000"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_SlopeLimit",
+                                                                     "type":  "Float",
+                                                                     "value":  "45.0000"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_StepOffset",
+                                                                     "type":  "Float",
+                                                                     "value":  "0.3000"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_SkinWidth",
+                                                                     "type":  "Float",
+                                                                     "value":  "0.0800"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_MinMoveDistance",
+                                                                     "type":  "Float",
+                                                                     "value":  "0.0010"
+                                                                 },
+                                                                 {
+                                                                     "name":  "m_Center",
+                                                                     "type":  "Vector3",
+                                                                     "value":  "(0.00,0.00,0.00)"
+                                                                 }
+                                                             ]
+                                          },
+                                          {
+                                              "typeName":  "PlayerMotorAdapter",
+                                              "fullTypeName":  "Features.Player.Infrastructure.PlayerMotorAdapter",
+                                              "properties":  [
+
+                                                             ]
+                                          },
+                                          {
+                                              "typeName":  "PlayerNetworkAdapter",
+                                              "fullTypeName":  "Features.Player.Infrastructure.PlayerNetworkAdapter",
+                                              "properties":  [
+                                                                 {
+                                                                     "name":  "_lerpSpeed",
+                                                                     "type":  "Float",
+                                                                     "value":  "15.0000"
+                                                                 }
+                                                             ]
+                                          },
+                                          {
+                                              "typeName":  "PlayerSetup",
+                                              "fullTypeName":  "Features.Player.PlayerSetup",
+                                              "properties":  [
+                                                                 {
+                                                                     "name":  "_networkAdapter",
+                                                                     "type":  "ObjectReference",
+                                                                     "value":  "/PlayerCharacter(Clone)::PlayerNetworkAdapter"
+                                                                 },
+                                                                 {
+                                                                     "name":  "_motorAdapter",
+                                                                     "type":  "ObjectReference",
+                                                                     "value":  "/PlayerCharacter(Clone)::PlayerMotorAdapter"
+                                                                 },
+                                                                 {
+                                                                     "name":  "_inputHandler",
+                                                                     "type":  "ObjectReference",
+                                                                     "value":  "/PlayerCharacter(Clone)::PlayerInputHandler"
+                                                                 },
+                                                                 {
+                                                                     "name":  "_view",
+                                                                     "type":  "ObjectReference",
+                                                                     "value":  "/PlayerCharacter(Clone)::PlayerView"
+                                                                 },
+                                                                 {
+                                                                     "name":  "_entityIdHolder",
+                                                                     "type":  "ObjectReference",
+                                                                     "value":  "/PlayerCharacter(Clone)::EntityIdHolder"
+                                                                 },
+                                                                 {
+                                                                     "name":  "_statusNetworkAdapter",
+                                                                     "type":  "ObjectReference",
+                                                                     "value":  "/PlayerCharacter(Clone)::StatusNetworkAdapter"
+                                                                 },
+                                                                 {
+                                                                     "name":  "_regenCurveConfig",
+                                                                     "type":  "Generic",
+                                                                     "value":  "(Generic)"
+                                                                 }
+                                                             ]
+                                          },
+                                          {
+                                              "typeName":  "EntityIdHolder",
+                                              "fullTypeName":  "Shared.Kernel.EntityIdHolder",
+                                              "properties":  [
+
+                                                             ]
+                                          },
+                                          {
+                                              "typeName":  "StatusNetworkAdapter",
+                                              "fullTypeName":  "Features.Status.Infrastructure.StatusNetworkAdapter",
+                                              "properties":  [
+
+                                                             ]
+                                          }
+                                      ]
+                   },
+    "gameSceneRootFields":  {
+                                "gameObjectPath":  "/SystemsRoot/GameSceneRoot",
+                                "componentType":  "GameSceneRoot",
+                                "properties":  [
+                                                   {
+                                                       "name":  "_localPlayerSetup",
+                                                       "type":  "ObjectReference",
+                                                       "value":  "(null)"
+                                                   },
+                                                   {
+                                                       "name":  "_unitSlotsContainer",
+                                                       "type":  "ObjectReference",
+                                                       "value":  "/HudCanvas/UnitSummonUi::UnitSlotsContainer"
+                                                   },
+                                                   {
+                                                       "name":  "_waveSetup",
+                                                       "type":  "ObjectReference",
+                                                       "value":  "/SystemsRoot/WaveSetup::WaveSetup"
+                                                   },
+                                                   {
+                                                       "name":  "_coreObjective",
+                                                       "type":  "ObjectReference",
+                                                       "value":  "/EnvironmentRoot/ObjectiveCore::CoreObjectiveSetup"
+                                                   }
+                                               ]
+                            },
+    "waveSetupFields":  {
+                            "gameObjectPath":  "/SystemsRoot/WaveSetup",
+                            "componentType":  "WaveSetup",
+                            "properties":  [
+                                               {
+                                                   "name":  "_waveTable",
+                                                   "type":  "ObjectReference",
+                                                   "value":  "Assets/Resources/Wave/DefaultWaveTable.asset"
+                                               },
+                                               {
+                                                   "name":  "_spawnAdapter",
+                                                   "type":  "ObjectReference",
+                                                   "value":  "/SystemsRoot/WaveSetup::EnemySpawnAdapter"
+                                               },
+                                               {
+                                                   "name":  "_hudView",
+                                                   "type":  "ObjectReference",
+                                                   "value":  "/HudCanvas/WaveUi/TopBar::WaveHudView"
+                                               },
+                                               {
+                                                   "name":  "_endView",
+                                                   "type":  "ObjectReference",
+                                                   "value":  "/HudCanvas/WaveUi/WaveEndOverlay::WaveEndView"
+                                               },
+                                               {
+                                                   "name":  "_flowController",
+                                                   "type":  "ObjectReference",
+                                                   "value":  "/HudCanvas/WaveUi/WaveFlowController::WaveFlowController"
+                                               },
+                                               {
+                                                   "name":  "_networkAdapter",
+                                                   "type":  "ObjectReference",
+                                                   "value":  "/SystemsRoot/WaveSetup::WaveNetworkAdapter"
+                                               },
+                                               {
+                                                   "name":  "_coreHealthView",
+                                                   "type":  "ObjectReference",
+                                                   "value":  "/HudCanvas/WaveUi/CoreHealthHud::CoreHealthHudView"
+                                               }
+                                           ]
+                        },
+    "waveUi":  {
+                   "resultText":  "",
+                   "countdownText":  "",
+                   "statusText":  ""
+               },
+    "recentLogs":  [
+                       "[Log] [Unity MCP] SceneChangeQueue InitOnLoad called",
+                       "[Log] [FirebaseStub] session_start {}",
+                       "[Log] [FirebaseAuth] RestoreSession uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776508396777.",
+                       "[Log] [FirebaseAuth] Reused persisted anonymous session for uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2.",
+                       "[Log] [Firestore] Request succeeded (421ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [Firestore] Request succeeded (61ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [PhotonConnection] Connecting...",
+                       "[Log] [Unity MCP] Registered 84 endpoints.",
+                       "[Log] [Unity MCP] Registered 84 endpoints.",
+                       "[Log] [Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                       "[Log] [Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                       "[Warning] [Firestore] Document not found (1525ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (1525ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (71ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (71ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (14ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (14ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (49ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (49ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                       "[Warning] PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                       "[Log] [PhotonConnection] Connected to Master. Joining lobby...",
+                       "[Log] [PhotonConnection] Connected to Master. Joining lobby...",
+                       "[Log] [PhotonConnection] Joined lobby. Ready for matchmaking.",
+                       "[Log] [PhotonConnection] Joined lobby. Ready for matchmaking.",
+                       "[Log] [FirebaseStub] game_start {\"match_id\":\"4715f6dea9e240b8b5f8c3577dcf3e0d\"}",
+                       "[Log] [FirebaseStub] game_start {\"match_id\":\"4715f6dea9e240b8b5f8c3577dcf3e0d\"}"
+                   ],
+    "recentErrors":  [
+
+                     ]
+}

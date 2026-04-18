@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CodexLobbyScene.unity
     guid: af780550530be6047a0a09b53fab6393
+  - enabled: 1
+    path: Assets/Scenes/GameScene.unity
+    guid: 1f6597abd187622418e441f027524b56
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 87011026c77287e4abfbe942ce1b2482, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

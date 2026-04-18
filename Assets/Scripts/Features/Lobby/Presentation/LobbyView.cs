@@ -28,9 +28,6 @@ namespace Features.Lobby.Presentation
 
         [Header("Tab Wiring")]
         [Required, SerializeField]
-        private RectTransform _topTabsRoot;
-
-        [Required, SerializeField]
         private TMP_Text _lobbyTabText;
 
         [Required, SerializeField]
@@ -114,7 +111,6 @@ namespace Features.Lobby.Presentation
             _roomListView.Initialize(useCases, eventPublisher);
             _roomDetailView.Initialize(useCases, eventBus, eventPublisher);
             HookTabs();
-            ConfigureDashboardLayout();
 
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, this));
             _eventBus.Subscribe<LobbyUpdatedEvent>(this, e => RenderLobby(e.Lobby));
@@ -266,27 +262,6 @@ namespace Features.Lobby.Presentation
                 label.color = isActive ? _activeTextColor : _inactiveTextColor;
         }
 
-        private void ConfigureDashboardLayout()
-        {
-            EnsureDashboardRootsVisible();
-
-            var lobbyRect = _lobbyPageRoot != null ? _lobbyPageRoot.GetComponent<RectTransform>() : null;
-            var garageRect = _garagePageRoot != null ? _garagePageRoot.GetComponent<RectTransform>() : null;
-            var roomListRect = _roomListPanel != null ? _roomListPanel.GetComponent<RectTransform>() : null;
-            var roomDetailRect = _roomDetailPanel != null ? _roomDetailPanel.GetComponent<RectTransform>() : null;
-            SetStretch(lobbyRect, 0.03f, 0.10f, 0.38f, 0.88f);
-            SetStretch(garageRect, 0.40f, 0.08f, 0.98f, 0.90f);
-            SetStretch(roomListRect, 0f, 0f, 1f, 0.74f);
-            SetStretch(roomDetailRect, 0f, 0f, 1f, 0.74f);
-
-            if (_topTabsRoot != null)
-            {
-                SetStretch(_topTabsRoot, 0.74f, 0.90f, 0.95f, 0.96f);
-            }
-
-            UpdateDashboardFocus();
-        }
-
         private void EnsureDashboardRootsVisible()
         {
             if (_lobbyPageRoot != null)
@@ -307,19 +282,6 @@ namespace Features.Lobby.Presentation
                 return;
 
             group.alpha = alpha;
-        }
-
-        private static void SetStretch(RectTransform rect, float minX, float minY, float maxX, float maxY)
-        {
-            if (rect == null)
-                return;
-
-            rect.anchorMin = new Vector2(minX, minY);
-            rect.anchorMax = new Vector2(maxX, maxY);
-            rect.anchoredPosition = Vector2.zero;
-            rect.sizeDelta = Vector2.zero;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
         }
     }
 }

@@ -40,26 +40,41 @@ namespace Features.Garage.Infrastructure
 
         public GarageRoster GetPlayerRoster(object playerId)
         {
-            if (playerId is int actorNumber && _cachedRosters.TryGetValue(actorNumber, out var roster))
+            if (playerId is int actorNumber)
             {
-                roster.Normalize();
-                return roster;
+                HydratePlayerCache(actorNumber);
+
+                if (_cachedRosters.TryGetValue(actorNumber, out var roster))
+                {
+                    roster.Normalize();
+                    return roster;
+                }
             }
+
             return new GarageRoster();
         }
 
         public bool IsPlayerReady(object playerId)
         {
-            if (playerId is int actorNumber && _cachedReady.TryGetValue(actorNumber, out var ready))
-                return ready;
+            if (playerId is int actorNumber)
+            {
+                HydratePlayerCache(actorNumber);
+
+                if (_cachedReady.TryGetValue(actorNumber, out var ready))
+                    return ready;
+            }
+
             return false;
         }
 
         public Dictionary<object, GarageRoster> GetAllPlayersRosters()
         {
+            HydrateRoomCache();
+
             var result = new Dictionary<object, GarageRoster>();
             foreach (var kvp in _cachedRosters)
             {
+                kvp.Value?.Normalize();
                 result[kvp.Key] = kvp.Value;
             }
             return result;
@@ -79,27 +94,7 @@ namespace Features.Garage.Infrastructure
         public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
         {
             if (targetPlayer == null) return;
-            int actorNumber = targetPlayer.ActorNumber;
-
-            if (changedProps.ContainsKey(KeyGarageRoster) && changedProps[KeyGarageRoster] is string json)
-            {
-                try
-                {
-                    var wrapper = JsonUtility.FromJson<RosterWrapper>(json);
-                    var roster = wrapper?.roster ?? new GarageRoster();
-                    roster.Normalize();
-                    _cachedRosters[actorNumber] = roster;
-                }
-                catch
-                {
-                    _cachedRosters[actorNumber] = new GarageRoster();
-                }
-            }
-
-            if (changedProps.ContainsKey(KeyGarageReady) && changedProps[KeyGarageReady] is bool ready)
-            {
-                _cachedReady[actorNumber] = ready;
-            }
+            CachePlayerProperties(targetPlayer);
         }
 
         public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer)
@@ -109,6 +104,81 @@ namespace Features.Garage.Infrastructure
                 _cachedRosters.Remove(otherPlayer.ActorNumber);
                 _cachedReady.Remove(otherPlayer.ActorNumber);
             }
+        }
+
+        private void HydrateRoomCache()
+        {
+            if (!PhotonNetwork.InRoom || PhotonNetwork.CurrentRoom?.Players == null)
+                return;
+
+            foreach (var player in PhotonNetwork.CurrentRoom.Players.Values)
+            {
+                CachePlayerProperties(player);
+            }
+        }
+
+        private void HydratePlayerCache(int actorNumber)
+        {
+            if (!PhotonNetwork.InRoom || PhotonNetwork.CurrentRoom?.Players == null)
+                return;
+
+            if (PhotonNetwork.CurrentRoom.Players.TryGetValue(actorNumber, out var player))
+            {
+                CachePlayerProperties(player);
+            }
+        }
+
+        private void CachePlayerProperties(Photon.Realtime.Player player)
+        {
+            if (player == null)
+                return;
+
+            int actorNumber = player.ActorNumber;
+            var props = player.CustomProperties;
+            if (props == null)
+                return;
+
+            if (TryReadRoster(props, out var roster))
+            {
+                _cachedRosters[actorNumber] = roster;
+            }
+
+            if (TryReadReady(props, out var ready))
+            {
+                _cachedReady[actorNumber] = ready;
+            }
+        }
+
+        private static bool TryReadRoster(ExitGames.Client.Photon.Hashtable props, out GarageRoster roster)
+        {
+            roster = new GarageRoster();
+
+            if (props == null || !props.ContainsKey(KeyGarageRoster) || props[KeyGarageRoster] is not string json)
+                return false;
+
+            try
+            {
+                var wrapper = JsonUtility.FromJson<RosterWrapper>(json);
+                roster = wrapper?.roster ?? new GarageRoster();
+                roster.Normalize();
+                return true;
+            }
+            catch
+            {
+                roster = new GarageRoster();
+                return true;
+            }
+        }
+
+        private static bool TryReadReady(ExitGames.Client.Photon.Hashtable props, out bool ready)
+        {
+            ready = false;
+
+            if (props == null || !props.ContainsKey(KeyGarageReady) || props[KeyGarageReady] is not bool readyValue)
+                return false;
+
+            ready = readyValue;
+            return true;
         }
 
         [System.Serializable]

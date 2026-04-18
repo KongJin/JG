@@ -152,6 +152,9 @@ namespace Features.Wave
 
             EnemySetup.EnemyArrived += OnEnemyArrived;
 
+            if (PhotonNetwork.IsMasterClient)
+                _networkAdapter.ResetRoomPropertiesForNewMatch();
+
             _networkAdapter.HydrateFromRoomProperties();
 
             _initialized = true;

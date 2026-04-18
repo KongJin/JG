@@ -3,10 +3,14 @@
 > **작성일**: 2026-04-11  
 > **검토 범위**: `Assets/Scripts/Features/`, `Assets/Scripts/Shared/`, `Tests/`  
 > **아키텍처 기준**: Feature-first Clean Architecture (Domain, Application, Presentation, Infrastructure)
+> **상태**: historical
 > **수정일**: 
 > - 2026-04-11 — Critical #1, #2, #3 해결 완료, README 전면 제거
 > - 2026-04-11 — High #5, #6, #7 해결 완료
 > - 2026-04-11 — Low #14 네이밍 불일치: Bootstrap→Setup 전면 통합, 2계층→1계층 통합
+
+현재 우선순위 판단과 완료 기준은 [`docs/plans/tech_debt_reduction_plan.md`](./plans/tech_debt_reduction_plan.md)와
+[`docs/plans/progress.md`](./plans/progress.md)를 우선한다. 이 문서는 당시 리뷰 기록으로만 유지한다.
 
 ---
 

@@ -1,10 +1,12 @@
 # Unity MCP
 
 Unity MCP in this repo is a `diagnostic + manual automation` bridge.
+This file is the canonical runtime-automation usage note for the repo.
 
 - Bridge core: `Assets/Editor/UnityMcp/`
 - MCP stdio wrapper: `tools/unity-mcp/server.js`
 - Helper module: `tools/unity-mcp/McpHelpers.ps1`
+- UI overview capture: `tools/unity-mcp/Invoke-UiOverviewCapture.ps1`
 - Manual Garage smoke: `tools/unity-mcp/Invoke-GarageManualSmoke.ps1`
 - Garage Ready flow smoke: `tools/unity-mcp/Invoke-GarageReadyFlowSmoke.ps1`
 
@@ -71,6 +73,21 @@ For manual runtime automation, use this sequence:
 
 Garage smoke follows exactly this pattern.
 
+## Quick Start
+
+Prefer running scripts with `-ExecutionPolicy Bypass` so PowerShell does not block helper loading:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UiOverviewCapture.ps1
+```
+
+For interactive use, start the shell session like this before dot-sourcing helpers:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+. .\tools\unity-mcp\McpHelpers.ps1
+```
+
 ## PowerShell Helpers
 
 `McpHelpers.ps1` exposes stable helper functions:
@@ -82,7 +99,9 @@ Garage smoke follows exactly this pattern.
 - `Invoke-McpPlayStopAndWait`
 - `Get-McpRecentLogs`
 - `Get-McpRecentErrors`
+- `Get-McpConsoleSummary`
 - `Get-McpUiState`
+- `Get-McpUiStateSummary`
 - `Get-McpUiElementState`
 - `Invoke-McpUiInvoke`
 - `Wait-McpUiActive`
@@ -94,6 +113,7 @@ Garage smoke follows exactly this pattern.
 Example:
 
 ```powershell
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 . .\tools\unity-mcp\McpHelpers.ps1
 $root = Get-UnityMcpBaseUrl
 Invoke-McpPlayStartAndWaitForBridge -Root $root
@@ -104,6 +124,24 @@ Invoke-McpPlayStopAndWait -Root $root
 ```
 
 ## Manual Smoke
+
+Run the UI overview capture like this:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UiOverviewCapture.ps1
+```
+
+Outputs:
+
+- `artifacts/unity/ui-overview-lobby.png`
+- `artifacts/unity/ui-overview-garage.png`
+- `artifacts/unity/ui-overview-report.json`
+
+The report includes:
+
+- stage timings for bridge readiness, Play Mode, login overlay wait, and each capture
+- compact UI summaries instead of the full `/ui/state` dump
+- grouped console warnings/errors with benign known warnings split out
 
 Run the Garage smoke like this:
 
@@ -123,6 +161,8 @@ Defaults:
 - tab: `/Canvas/TopTabs/GarageTabButton`
 - root: `/Canvas/GaragePageRoot`
 - screenshot: `artifacts/unity/garage-manual-smoke.png`
+- UI overview screenshots: `artifacts/unity/ui-overview-lobby.png`, `artifacts/unity/ui-overview-garage.png`
+- UI overview report: `artifacts/unity/ui-overview-report.json`
 
 Ready-flow smoke highlights:
 

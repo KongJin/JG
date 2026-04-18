@@ -65,7 +65,10 @@ namespace Features.Player
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
         {
             if (info.photonView.IsMine)
+            {
+                LocalArrived?.Invoke(this);
                 return;
+            }
 
             RemoteArrived?.Invoke(this);
         }
@@ -119,8 +122,6 @@ namespace Features.Player
             MaxHp = player.MaxHp;
             MaxEnergy = player.MaxEnergy;
             IsInitialized = true;
-
-            LocalArrived?.Invoke(this);
         }
 
         /// <summary>

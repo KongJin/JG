@@ -51,9 +51,12 @@ namespace ProjectSD.EditorTools.SceneTools
             CodexLobbyGarageDataBuilder.SetObject(accountSetup, "_config", accountConfig);
 
             var loginLoadingView = BuildLoginLoadingOverlay(canvas.transform);
+            var accountSettingsView = UnityEngine.Object.FindFirstObjectByType<AccountSettingsView>();
 
             CodexLobbyGarageDataBuilder.SetObject(lobbySetup, "_accountSetup", accountSetup);
             CodexLobbyGarageDataBuilder.SetObject(lobbySetup, "_loginLoadingView", loginLoadingView);
+            if (accountSettingsView != null)
+                CodexLobbyGarageDataBuilder.SetObject(lobbySetup, "_accountSettingsView", accountSettingsView);
         }
 
         private static LoginLoadingView BuildLoginLoadingOverlay(Transform parent)

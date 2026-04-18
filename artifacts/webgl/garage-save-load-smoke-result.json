@@ -1,12 +1,12 @@
 {
   "url": "https://projectsd-51439--qa-362a4g3j.web.app",
-  "uid": "8Bkwj5acimag8gM2K19FiC1uRPM2",
+  "uid": "tauslMZBQoTSpzCPeAlT9Qqq4Xr1",
   "initialGarageGetStatus": 404,
-  "savePatchStatus": null,
-  "reloadGarageGetStatus": null,
-  "saveRequestGarageJson": null,
-  "reloadGarageJson": null,
-  "saveAndReloadMatch": false,
+  "savePatchStatus": 200,
+  "reloadGarageGetStatus": 200,
+  "saveRequestGarageJson": "{\"roster\":{\"loadout\":[{\"frameId\":\"frame_striker\",\"firepowerModuleId\":\"fire_pulse\",\"mobilityModuleId\":\"mob_vector\"},{\"frameId\":\"frame_striker\",\"firepowerModuleId\":\"fire_pulse\",\"mobilityModuleId\":\"mob_vector\"},{\"frameId\":\"frame_striker\",\"firepowerModuleId\":\"fire_pulse\",\"mobilityModuleId\":\"mob_vector\"},{\"frameId\":\"\",\"firepowerModuleId\":\"\",\"mobilityModuleId\":\"\"},{\"frameId\":\"\",\"firepowerModuleId\":\"\",\"mobilityModuleId\":\"\"},{\"frameId\":\"\",\"firepowerModuleId\":\"\",\"mobilityModuleId\":\"\"}]}}",
+  "reloadGarageJson": "{\"roster\":{\"loadout\":[{\"frameId\":\"frame_striker\",\"firepowerModuleId\":\"fire_pulse\",\"mobilityModuleId\":\"mob_vector\"},{\"frameId\":\"frame_striker\",\"firepowerModuleId\":\"fire_pulse\",\"mobilityModuleId\":\"mob_vector\"},{\"frameId\":\"frame_striker\",\"firepowerModuleId\":\"fire_pulse\",\"mobilityModuleId\":\"mob_vector\"},{\"frameId\":\"\",\"firepowerModuleId\":\"\",\"mobilityModuleId\":\"\"},{\"frameId\":\"\",\"firepowerModuleId\":\"\",\"mobilityModuleId\":\"\"},{\"frameId\":\"\",\"firepowerModuleId\":\"\",\"mobilityModuleId\":\"\"}]}}",
+  "saveAndReloadMatch": true,
   "screenshots": {
     "before": "C:\\Users\\SOL\\Documents\\JG\\artifacts\\webgl\\garage-save-load-before.png",
     "afterSave": "C:\\Users\\SOL\\Documents\\JG\\artifacts\\webgl\\garage-save-load-after-save.png",
@@ -15,7 +15,7 @@
   "consoleMessages": [
     {
       "type": "warning",
-      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0402100CC7D0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0402100FC3F0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
     },
     {
       "type": "log",
@@ -235,7 +235,7 @@
     },
     {
       "type": "log",
-      "text": "UnloadTime: 4.000000 ms\n"
+      "text": "UnloadTime: 2.100000 ms\n"
     },
     {
       "type": "log",
@@ -251,39 +251,39 @@
     },
     {
       "type": "warning",
-      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0402100CC7D0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0402100FC3F0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
     },
     {
       "type": "log",
-      "text": "Audio context resumed after 1.030 seconds."
+      "text": "Audio context resumed after 0.890 seconds."
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x13e41dc24000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+      "text": "[.WebGL-0x5cd41e820000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x13e41dc24000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+      "text": "[.WebGL-0x5cd41e820000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x13e41dc24000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+      "text": "[.WebGL-0x5cd41e820000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
     },
     {
       "type": "warning",
-      "text": "[.WebGL-0x13e41dc24000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+      "text": "[.WebGL-0x5cd41e820000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
     },
     {
       "type": "log",
-      "text": "[FirebaseAuth] Request succeeded (2199ms): https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "text": "[FirebaseAuth] Request succeeded (2223ms): https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
       "type": "log",
-      "text": "[FirebaseAuth] PersistSession uid=8Bkwj5acimag8gM2K19FiC1uRPM2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776439892959.\n"
+      "text": "[FirebaseAuth] PersistSession uid=tauslMZBQoTSpzCPeAlT9Qqq4Xr1, hasIdToken=True, hasRefreshToken=True, expiryMs=1776440989723.\n"
     },
     {
       "type": "log",
-      "text": "[FirebaseAuth] Created new anonymous session for uid=8Bkwj5acimag8gM2K19FiC1uRPM2.\n"
+      "text": "[FirebaseAuth] Created new anonymous session for uid=tauslMZBQoTSpzCPeAlT9Qqq4Xr1.\n"
     },
     {
       "type": "log",
@@ -299,15 +299,15 @@
     },
     {
       "type": "warning",
-      "text": "[Firestore] Document not found (1123ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "text": "[Firestore] Document not found (1296ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
       "type": "log",
-      "text": "[Firestore] Request succeeded (539ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "text": "[Firestore] Request succeeded (589ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
       "type": "log",
-      "text": "[Firestore] Request succeeded (557ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "text": "[Firestore] Request succeeded (572ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
       "type": "error",
@@ -315,7 +315,7 @@
     },
     {
       "type": "warning",
-      "text": "[Firestore] Document not found (531ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "text": "[Firestore] Document not found (554ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
       "type": "error",
@@ -323,7 +323,7 @@
     },
     {
       "type": "warning",
-      "text": "[Firestore] Document not found (588ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "text": "[Firestore] Document not found (696ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
       "type": "error",
@@ -331,7 +331,7 @@
     },
     {
       "type": "warning",
-      "text": "[Firestore] Document not found (558ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "text": "[Firestore] Document not found (714ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
       "type": "error",
@@ -339,7 +339,7 @@
     },
     {
       "type": "warning",
-      "text": "[Firestore] Document not found (535ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "text": "[Firestore] Document not found (562ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
       "type": "warning",
@@ -355,7 +355,371 @@
     },
     {
       "type": "warning",
-      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0402100CC7D0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
+      "text": "The character with Unicode value \\uD3B8 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC131 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC720 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2DB was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC218 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB294 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uAE30 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC5EC was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC57C was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD569 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2C8 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2E4 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD604 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC7AC was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uAE30 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD3B8 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC131 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC720 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2DB was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC218 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB294 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uAE30 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC5EC was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC57C was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD569 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2C8 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2E4 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD604 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC7AC was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uAE30 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD3B8 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC131 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC720 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2DB was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC218 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB294 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uAE30 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC5EC was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC57C was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD569 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2C8 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2E4 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD604 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC7AC was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uAE30 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD3B8 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC131 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC720 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2DB was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC218 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB294 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uAE30 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC5EC was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC57C was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD569 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2C8 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2E4 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD604 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC7AC was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uAE30 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD3B8 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC131 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC720 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2DB was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC218 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB294 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uAE30 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC5EC was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC57C was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD569 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2C8 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2E4 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD604 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC7AC was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uAE30 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD3B8 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC131 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC720 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2DB was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC218 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB294 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uAE30 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC5EC was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC57C was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD569 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2C8 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uB2E4 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uD604 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uC7AC was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "warning",
+      "text": "The character with Unicode value \\uAE30 was not found in the [LiberationSans SDF] font asset or any potential fallbacks. It was replaced by Unicode character \\u25A1 in text object [ValidationText].\n"
+    },
+    {
+      "type": "log",
+      "text": "[Firestore] Request succeeded (584ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "warning",
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0402100FC3F0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
     },
     {
       "type": "log",
@@ -575,7 +939,7 @@
     },
     {
       "type": "log",
-      "text": "UnloadTime: 0.300000 ms\n"
+      "text": "UnloadTime: 2.200000 ms\n"
     },
     {
       "type": "log",
@@ -583,23 +947,23 @@
     },
     {
       "type": "log",
-      "text": "[FirebaseAuth] RestoreSession uid=8Bkwj5acimag8gM2K19FiC1uRPM2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776439892959.\n"
+      "text": "[FirebaseAuth] RestoreSession uid=tauslMZBQoTSpzCPeAlT9Qqq4Xr1, hasIdToken=True, hasRefreshToken=True, expiryMs=1776440989723.\n"
     },
     {
       "type": "log",
-      "text": "[FirebaseAuth] Reused persisted anonymous session for uid=8Bkwj5acimag8gM2K19FiC1uRPM2.\n"
+      "text": "[FirebaseAuth] Reused persisted anonymous session for uid=tauslMZBQoTSpzCPeAlT9Qqq4Xr1.\n"
     },
     {
       "type": "warning",
-      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0402100CC7D0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
+      "text": "[GroupMarkerNotSet(crbug.com/242999)!:A0402100FC3F0000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content."
     },
     {
       "type": "log",
-      "text": "Audio context resumed after 0.680 seconds."
+      "text": "Audio context resumed after 0.898 seconds."
     },
     {
       "type": "log",
-      "text": "[Firestore] Request succeeded (2250ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "text": "[Firestore] Request succeeded (2219ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
       "type": "log",
@@ -611,7 +975,7 @@
     },
     {
       "type": "log",
-      "text": "[Firestore] Request succeeded (1315ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "text": "[Firestore] Request succeeded (1380ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
       "type": "error",
@@ -619,7 +983,7 @@
     },
     {
       "type": "warning",
-      "text": "[Firestore] Document not found (685ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "text": "[Firestore] Document not found (741ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
       "type": "error",
@@ -627,23 +991,15 @@
     },
     {
       "type": "warning",
-      "text": "[Firestore] Document not found (758ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "text": "[Firestore] Document not found (710ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
-      "type": "error",
-      "text": "Failed to load resource: the server responded with a status of 404 ()"
+      "type": "log",
+      "text": "[Firestore] Request succeeded (756ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
-      "type": "warning",
-      "text": "[Firestore] Document not found (674ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
-    },
-    {
-      "type": "error",
-      "text": "Failed to load resource: the server responded with a status of 404 ()"
-    },
-    {
-      "type": "warning",
-      "text": "[Firestore] Document not found (515ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+      "type": "log",
+      "text": "[Firestore] Request succeeded (561ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
     },
     {
       "type": "warning",
@@ -662,63 +1018,78 @@
   "garageEvents": [
     {
       "kind": "request",
-      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
       "method": "GET",
       "postData": null,
-      "timestamp": "2026-04-17T14:31:36.597Z"
+      "timestamp": "2026-04-17T14:49:53.813Z"
     },
     {
       "kind": "request",
-      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
       "method": "GET",
       "postData": null,
-      "timestamp": "2026-04-17T14:31:37.163Z"
+      "timestamp": "2026-04-17T14:49:54.479Z"
     },
     {
       "kind": "response",
-      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
       "method": "GET",
       "status": 404,
-      "bodyText": "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"Document \\\"projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster\\\" not found.\",\n    \"status\": \"NOT_FOUND\"\n  }\n}\n",
-      "timestamp": "2026-04-17T14:31:37.168Z"
+      "bodyText": "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"Document \\\"projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster\\\" not found.\",\n    \"status\": \"NOT_FOUND\"\n  }\n}\n",
+      "timestamp": "2026-04-17T14:49:54.482Z"
     },
     {
       "kind": "response",
-      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
       "method": "GET",
       "status": 404,
-      "bodyText": "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"Document \\\"projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster\\\" not found.\",\n    \"status\": \"NOT_FOUND\"\n  }\n}\n",
-      "timestamp": "2026-04-17T14:31:37.733Z"
+      "bodyText": "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"Document \\\"projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster\\\" not found.\",\n    \"status\": \"NOT_FOUND\"\n  }\n}\n",
+      "timestamp": "2026-04-17T14:49:55.050Z"
     },
     {
       "kind": "request",
-      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
-      "method": "GET",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "method": "PATCH",
       "postData": null,
-      "timestamp": "2026-04-17T14:32:36.715Z"
+      "timestamp": "2026-04-17T14:50:11.730Z"
+    },
+    {
+      "kind": "response",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "method": "PATCH",
+      "status": 200,
+      "bodyText": "{\n  \"name\": \"projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster\",\n  \"fields\": {\n    \"json\": {\n      \"stringValue\": \"{\\\"roster\\\":{\\\"loadout\\\":[{\\\"frameId\\\":\\\"frame_striker\\\",\\\"firepowerModuleId\\\":\\\"fire_pulse\\\",\\\"mobilityModuleId\\\":\\\"mob_vector\\\"},{\\\"frameId\\\":\\\"frame_striker\\\",\\\"firepowerModuleId\\\":\\\"fire_pulse\\\",\\\"mobilityModuleId\\\":\\\"mob_vector\\\"},{\\\"frameId\\\":\\\"frame_striker\\\",\\\"firepowerModuleId\\\":\\\"fire_pulse\\\",\\\"mobilityModuleId\\\":\\\"mob_vector\\\"},{\\\"frameId\\\":\\\"\\\",\\\"firepowerModuleId\\\":\\\"\\\",\\\"mobilityModuleId\\\":\\\"\\\"},{\\\"frameId\\\":\\\"\\\",\\\"firepowerModuleId\\\":\\\"\\\",\\\"mobilityModuleId\\\":\\\"\\\"},{\\\"frameId\\\":\\\"\\\",\\\"firepowerModuleId\\\":\\\"\\\",\\\"mobilityModuleId\\\":\\\"\\\"}]}}\"\n    }\n  },\n  \"createTime\": \"2026-04-17T14:50:11.750746Z\",\n  \"updateTime\": \"2026-04-17T14:50:11.750746Z\"\n}\n",
+      "timestamp": "2026-04-17T14:50:12.577Z"
     },
     {
       "kind": "request",
-      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
       "method": "GET",
       "postData": null,
-      "timestamp": "2026-04-17T14:32:37.336Z"
+      "timestamp": "2026-04-17T14:50:28.996Z"
+    },
+    {
+      "kind": "request",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "method": "GET",
+      "postData": null,
+      "timestamp": "2026-04-17T14:50:29.748Z"
     },
     {
       "kind": "response",
-      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
       "method": "GET",
-      "status": 404,
-      "bodyText": "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"Document \\\"projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster\\\" not found.\",\n    \"status\": \"NOT_FOUND\"\n  }\n}\n",
-      "timestamp": "2026-04-17T14:32:37.337Z"
+      "status": 200,
+      "bodyText": "{\n  \"name\": \"projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster\",\n  \"fields\": {\n    \"json\": {\n      \"stringValue\": \"{\\\"roster\\\":{\\\"loadout\\\":[{\\\"frameId\\\":\\\"frame_striker\\\",\\\"firepowerModuleId\\\":\\\"fire_pulse\\\",\\\"mobilityModuleId\\\":\\\"mob_vector\\\"},{\\\"frameId\\\":\\\"frame_striker\\\",\\\"firepowerModuleId\\\":\\\"fire_pulse\\\",\\\"mobilityModuleId\\\":\\\"mob_vector\\\"},{\\\"frameId\\\":\\\"frame_striker\\\",\\\"firepowerModuleId\\\":\\\"fire_pulse\\\",\\\"mobilityModuleId\\\":\\\"mob_vector\\\"},{\\\"frameId\\\":\\\"\\\",\\\"firepowerModuleId\\\":\\\"\\\",\\\"mobilityModuleId\\\":\\\"\\\"},{\\\"frameId\\\":\\\"\\\",\\\"firepowerModuleId\\\":\\\"\\\",\\\"mobilityModuleId\\\":\\\"\\\"},{\\\"frameId\\\":\\\"\\\",\\\"firepowerModuleId\\\":\\\"\\\",\\\"mobilityModuleId\\\":\\\"\\\"}]}}\"\n    }\n  },\n  \"createTime\": \"2026-04-17T14:50:11.750746Z\",\n  \"updateTime\": \"2026-04-17T14:50:11.750746Z\"\n}\n",
+      "timestamp": "2026-04-17T14:50:29.749Z"
     },
     {
       "kind": "response",
-      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+      "url": "https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
       "method": "GET",
-      "status": 404,
-      "bodyText": "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"Document \\\"projects/projectsd-51439/databases/(default)/documents/accounts/8Bkwj5acimag8gM2K19FiC1uRPM2/garage/roster\\\" not found.\",\n    \"status\": \"NOT_FOUND\"\n  }\n}\n",
-      "timestamp": "2026-04-17T14:32:37.874Z"
+      "status": 200,
+      "bodyText": "{\n  \"name\": \"projects/projectsd-51439/databases/(default)/documents/accounts/tauslMZBQoTSpzCPeAlT9Qqq4Xr1/garage/roster\",\n  \"fields\": {\n    \"json\": {\n      \"stringValue\": \"{\\\"roster\\\":{\\\"loadout\\\":[{\\\"frameId\\\":\\\"frame_striker\\\",\\\"firepowerModuleId\\\":\\\"fire_pulse\\\",\\\"mobilityModuleId\\\":\\\"mob_vector\\\"},{\\\"frameId\\\":\\\"frame_striker\\\",\\\"firepowerModuleId\\\":\\\"fire_pulse\\\",\\\"mobilityModuleId\\\":\\\"mob_vector\\\"},{\\\"frameId\\\":\\\"frame_striker\\\",\\\"firepowerModuleId\\\":\\\"fire_pulse\\\",\\\"mobilityModuleId\\\":\\\"mob_vector\\\"},{\\\"frameId\\\":\\\"\\\",\\\"firepowerModuleId\\\":\\\"\\\",\\\"mobilityModuleId\\\":\\\"\\\"},{\\\"frameId\\\":\\\"\\\",\\\"firepowerModuleId\\\":\\\"\\\",\\\"mobilityModuleId\\\":\\\"\\\"},{\\\"frameId\\\":\\\"\\\",\\\"firepowerModuleId\\\":\\\"\\\",\\\"mobilityModuleId\\\":\\\"\\\"}]}}\"\n    }\n  },\n  \"createTime\": \"2026-04-17T14:50:11.750746Z\",\n  \"updateTime\": \"2026-04-17T14:50:11.750746Z\"\n}\n",
+      "timestamp": "2026-04-17T14:50:30.296Z"
     }
   ]
 }

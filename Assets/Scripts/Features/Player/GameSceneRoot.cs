@@ -49,7 +49,8 @@ namespace Features.Player
         [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
         [Required, SerializeField] private EnergyRegenTicker _energyRegenTicker;
         [Required, SerializeField] private EnergyBarView _energyBarView;
-        [Required, SerializeField] private PlayerSetup _localPlayerSetup;
+        // Runtime-spawned by PhotonNetwork.Instantiate and assigned via PlayerSetup.LocalArrived.
+        [SerializeField] private PlayerSetup _localPlayerSetup;
 
         [Header("Unit & Garage")]
         [Required, SerializeField] private UnitSetup _unitSetup;
@@ -57,9 +58,6 @@ namespace Features.Player
 
         [Header("Unit Summon UI")]
         [SerializeField] private UnitSlotsContainer _unitSlotsContainer;
-        [SerializeField] private RectTransform _unitSlotsParent;
-        [SerializeField] private UnitSlotView _unitSlotPrefab;
-
         [Header("Combat Feedback")]
         [SerializeField] private DamageNumberSpawner _damageNumberSpawner;
 
@@ -228,7 +226,10 @@ namespace Features.Player
             }
 
             if (_coreObjective != null)
+            {
                 _coreObjective.RegisterCombatTarget(_combatSetup);
+                _coreObjective.InitializePlacementArea();
+            }
 
             if (_damageNumberSpawner != null)
                 _damageNumberSpawner.Initialize(_eventBus);
@@ -256,7 +257,7 @@ namespace Features.Player
             if (SoundPlayer.Instance == null)
             {
                 Debug.LogError(
-                    "[GameSceneRoot] SoundPlayer.Instance is null. Start from JG_LobbyScene so the DDOL SoundPlayer is created; playing JG_GameScene alone will not load it.");
+                    "[GameSceneRoot] SoundPlayer.Instance is null. Start from CodexLobbyScene so the DDOL SoundPlayer is created; opening GameScene alone will not load it.");
             }
             else
             {
@@ -340,8 +341,8 @@ namespace Features.Player
                 spawnPosition,
                 Quaternion.identity);
 
-            // PlayerSetup.LocalArrived 이벤트는 PlayerSetup.Awake에서 발행됨
-            // CompleteLocalPlayerInitialization()은 OnLocalPlayerArrived에서 호출됨
+            // PlayerSetup.LocalArrived is raised when the local Photon instance arrives.
+            // CompleteLocalPlayerInitialization() runs from OnLocalPlayerArrived.
         }
 
         private void ConnectPlayer(PlayerSetup setup)

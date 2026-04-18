@@ -16,6 +16,7 @@ param(
     [int]$TimeoutSec = 90
 )
 
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force | Out-Null
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 

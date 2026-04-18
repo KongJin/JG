@@ -55,6 +55,34 @@ async function waitFor(predicate, timeoutMs, pollMs = 250) {
   return null;
 }
 
+async function invokeUnity(page, gameObjectName, methodName, value) {
+  await page.evaluate(
+    ({ target, method, argument }) => {
+      if (!window.unityInstance || typeof window.unityInstance.SendMessage !== 'function') {
+        throw new Error('Unity instance is not ready.');
+      }
+
+      window.unityInstance.SendMessage(target, method, argument ?? '');
+    },
+    {
+      target: gameObjectName,
+      method: methodName,
+      argument: value ?? '',
+    }
+  );
+}
+
+async function buildCompleteSlot(page, slotIndex) {
+  await invokeUnity(page, 'GaragePageRoot', 'WebglSmokeSelectSlot', String(slotIndex));
+  await sleep(300);
+  await invokeUnity(page, 'GaragePageRoot', 'WebglSmokeCycleFrame', '1');
+  await sleep(300);
+  await invokeUnity(page, 'GaragePageRoot', 'WebglSmokeCycleFirepower', '1');
+  await sleep(300);
+  await invokeUnity(page, 'GaragePageRoot', 'WebglSmokeCycleMobility', '1');
+  await sleep(500);
+}
+
 async function main() {
   const targetUrl = process.argv[2] || DEFAULT_URL;
   ensureDir(OUTPUT_DIR);
@@ -133,16 +161,10 @@ async function main() {
     15000
   );
 
-  await page.mouse.click(925, 425);
-  await sleep(500);
-  await page.mouse.click(925, 485);
-  await sleep(500);
-  await page.mouse.click(925, 545);
-  await sleep(1000);
-
-  await page.keyboard.down('Control');
-  await page.keyboard.press('KeyS');
-  await page.keyboard.up('Control');
+  await buildCompleteSlot(page, 0);
+  await buildCompleteSlot(page, 1);
+  await buildCompleteSlot(page, 2);
+  await invokeUnity(page, 'GaragePageRoot', 'WebglSmokeSaveDraft', '');
 
   const savePatchResponse = await waitFor(
     () => {
@@ -174,9 +196,18 @@ async function main() {
   await page.screenshot({ path: AFTER_RELOAD_PATH, fullPage: true });
 
   const saveRequest = findLatestGarageEvent(events, 'PATCH', 'request');
+  const savePatch = findLatestGarageEvent(events, 'PATCH', 'response');
   const uidMatch = events
     .map((event) => event.url.match(/\/documents\/accounts\/([^/]+)\//))
     .find(Boolean);
+  const savedGarageJson = saveRequest && saveRequest.postData
+    ? extractGarageJsonFromFirestoreDocument(saveRequest.postData)
+    : savePatch
+      ? extractGarageJsonFromFirestoreDocument(savePatch.bodyText)
+      : null;
+  const reloadedGarageJson = reloadedGarageGet
+    ? extractGarageJsonFromFirestoreDocument(reloadedGarageGet.bodyText)
+    : null;
 
   const result = {
     url: targetUrl,
@@ -184,14 +215,12 @@ async function main() {
     initialGarageGetStatus: initialGarageGet ? initialGarageGet.status : null,
     savePatchStatus: savePatchResponse ? savePatchResponse.status : null,
     reloadGarageGetStatus: reloadedGarageGet ? reloadedGarageGet.status : null,
-    saveRequestGarageJson: saveRequest ? extractGarageJsonFromFirestoreDocument(saveRequest.postData) : null,
-    reloadGarageJson: reloadedGarageGet ? extractGarageJsonFromFirestoreDocument(reloadedGarageGet.bodyText) : null,
+    saveRequestGarageJson: savedGarageJson,
+    reloadGarageJson: reloadedGarageJson,
     saveAndReloadMatch:
-      !!saveRequest &&
-      !!reloadedGarageGet &&
-      extractGarageJsonFromFirestoreDocument(saveRequest.postData) !== null &&
-      extractGarageJsonFromFirestoreDocument(saveRequest.postData) ===
-        extractGarageJsonFromFirestoreDocument(reloadedGarageGet.bodyText),
+      savedGarageJson !== null &&
+      reloadedGarageJson !== null &&
+      savedGarageJson === reloadedGarageJson,
     screenshots: {
       before: BEFORE_PATH,
       afterSave: AFTER_SAVE_PATH,

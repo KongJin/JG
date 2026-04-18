@@ -327,6 +327,115 @@ function Get-McpRecentErrors {
     return Invoke-McpGetJson -Root $Root -SubPath "/console/errors?limit=$Limit"
 }
 
+function Test-McpMessageMatchesPattern {
+    param(
+        [string]$Message,
+        [string[]]$Patterns
+    )
+
+    foreach ($pattern in @($Patterns)) {
+        if (-not [string]::IsNullOrWhiteSpace($pattern) -and $Message -like $pattern) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Convert-McpConsoleItemsToGroupedList {
+    param(
+        [object[]]$Items,
+        [string[]]$BenignMessagePatterns = @()
+    )
+
+    $groups = @{}
+
+    foreach ($item in @($Items)) {
+        if ($null -eq $item) {
+            continue
+        }
+
+        $type = if ($null -ne $item.PSObject.Properties["type"]) { [string]$item.type } else { "Error" }
+        $message = if ($null -ne $item.PSObject.Properties["message"]) { [string]$item.message } else { [string]$item }
+        $timestampUtc = if ($null -ne $item.PSObject.Properties["timestampUtc"]) { [string]$item.timestampUtc } else { $null }
+        $stackTrace = if ($null -ne $item.PSObject.Properties["stackTrace"]) { [string]$item.stackTrace } else { $null }
+        $key = "{0}`n{1}" -f $type, $message
+
+        if (-not $groups.ContainsKey($key)) {
+            $groups[$key] = [ordered]@{
+                type = $type
+                message = $message
+                count = 0
+                latestTimestampUtc = $timestampUtc
+                stackTrace = $stackTrace
+                benign = Test-McpMessageMatchesPattern -Message $message -Patterns $BenignMessagePatterns
+            }
+        }
+
+        $groups[$key].count++
+
+        if (-not [string]::IsNullOrWhiteSpace($timestampUtc)) {
+            $groups[$key].latestTimestampUtc = $timestampUtc
+        }
+
+        if ([string]::IsNullOrWhiteSpace($groups[$key].stackTrace) -and -not [string]::IsNullOrWhiteSpace($stackTrace)) {
+            $groups[$key].stackTrace = $stackTrace
+        }
+    }
+
+    return @(
+        $groups.Values |
+            Sort-Object @{ Expression = "count"; Descending = $true }, @{ Expression = "latestTimestampUtc"; Descending = $true } |
+            ForEach-Object {
+                [PSCustomObject]@{
+                    type = $_.type
+                    message = $_.message
+                    count = $_.count
+                    latestTimestampUtc = $_.latestTimestampUtc
+                    stackTrace = $_.stackTrace
+                    benign = $_.benign
+                }
+            }
+    )
+}
+
+function Get-McpConsoleSummary {
+    param(
+        [string]$Root,
+        [int]$LogLimit = 80,
+        [int]$ErrorLimit = 20,
+        [string[]]$BenignMessagePatterns = @(
+            "[[]Firestore[]] Document not found*",
+            "PUN is in development mode*"
+        )
+    )
+
+    $logs = Get-McpRecentLogs -Root $Root -Limit $LogLimit
+    $errors = Get-McpRecentErrors -Root $Root -Limit $ErrorLimit
+
+    $groupedLogs = Convert-McpConsoleItemsToGroupedList -Items $logs.items -BenignMessagePatterns $BenignMessagePatterns
+    $groupedErrors = Convert-McpConsoleItemsToGroupedList -Items $errors.items -BenignMessagePatterns $BenignMessagePatterns
+
+    $warningGroups = @($groupedLogs | Where-Object { $_.type -eq "Warning" -and -not $_.benign })
+    $infoGroups = @($groupedLogs | Where-Object { $_.type -ne "Warning" -and $_.type -ne "Error" -and -not $_.benign })
+    $benignGroups = @($groupedLogs + $groupedErrors | Where-Object { $_.benign })
+    $errorGroups = @($groupedErrors | Where-Object { -not $_.benign })
+
+    return [PSCustomObject]@{
+        rawLogCount = $logs.count
+        rawErrorCount = $errors.count
+        uniqueLogCount = @($groupedLogs).Count
+        uniqueErrorCount = @($groupedErrors).Count
+        warningCount = @($warningGroups).Count
+        errorCount = @($errorGroups).Count
+        benignCount = @($benignGroups).Count
+        warnings = $warningGroups
+        errors = $errorGroups
+        info = $infoGroups
+        benign = $benignGroups
+    }
+}
+
 function Write-McpRecentConsole {
     param(
         [string]$Root,
@@ -364,6 +473,155 @@ function Write-McpRecentConsole {
 function Get-McpUiState {
     param([string]$Root)
     return Invoke-McpGetJson -Root $Root -SubPath "/ui/state"
+}
+
+function Convert-McpUiNodesToFlatList {
+    param(
+        [object[]]$Nodes,
+        [System.Collections.Generic.List[object]]$Result
+    )
+
+    foreach ($node in @($Nodes)) {
+        if ($null -eq $node) {
+            continue
+        }
+
+        $components = @()
+        if ($null -ne $node.PSObject.Properties["components"]) {
+            if ($node.components -is [string]) {
+                $components = @(
+                    ([string]$node.components).Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries) |
+                        Select-Object -Unique
+                )
+            }
+            else {
+                $components = @($node.components | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique)
+            }
+        }
+
+        $Result.Add([PSCustomObject]@{
+            path = [string]$node.path
+            name = [string]$node.name
+            activeInHierarchy = [bool]$node.activeInHierarchy
+            childCount = if ($null -ne $node.PSObject.Properties["childCount"]) { [int]$node.childCount } else { 0 }
+            components = $components
+        }) | Out-Null
+
+        if ($null -ne $node.PSObject.Properties["children"]) {
+            Convert-McpUiNodesToFlatList -Nodes $node.children -Result $Result
+        }
+    }
+}
+
+function Get-McpUiStateSummary {
+    param(
+        [string]$Root,
+        [string[]]$PathPrefixes = @("/Canvas"),
+        [string[]]$ComponentTypes = @(),
+        [switch]$IncludeInactive,
+        [int]$MaxItems = 80
+    )
+
+    $uiState = Get-McpUiState -Root $Root
+    if ($null -eq $uiState -or $null -eq $uiState.PSObject.Properties["canvases"]) {
+        return [PSCustomObject]([ordered]@{
+            sceneName = if ($null -ne $uiState -and $null -ne $uiState.PSObject.Properties["sceneName"]) { [string]$uiState.sceneName } else { $null }
+            isPlaying = if ($null -ne $uiState -and $null -ne $uiState.PSObject.Properties["isPlaying"]) { [bool]$uiState.isPlaying } else { $false }
+            timestampUtc = if ($null -ne $uiState -and $null -ne $uiState.PSObject.Properties["timestampUtc"]) { [string]$uiState.timestampUtc } else { $null }
+            totalCanvasCount = 0
+            totalNodeCount = 0
+            matchedNodeCount = 0
+            truncated = $false
+            pathPrefixes = @($PathPrefixes)
+            activeRoots = @()
+            nodes = @()
+        })
+    }
+
+    $flatNodes = New-Object 'System.Collections.Generic.List[object]'
+
+    foreach ($canvas in @($uiState.canvases)) {
+        Convert-McpUiNodesToFlatList -Nodes @($canvas) -Result $flatNodes
+    }
+
+    $filteredNodes = @(
+        $flatNodes |
+            Where-Object {
+                $pathMatch = $false
+                foreach ($prefix in @($PathPrefixes)) {
+                    if ([string]::IsNullOrWhiteSpace($prefix) -or $_.path.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+                        $pathMatch = $true
+                        break
+                    }
+                }
+
+                if (-not $pathMatch) {
+                    return $false
+                }
+
+                if (-not $IncludeInactive.IsPresent -and -not $_.activeInHierarchy) {
+                    return $false
+                }
+
+                if (@($ComponentTypes).Count -eq 0) {
+                    return $true
+                }
+
+                foreach ($component in @($ComponentTypes)) {
+                    if ($_.components -contains $component) {
+                        return $true
+                    }
+                }
+
+                return $false
+            }
+    )
+
+    $visibleRoots = @(
+        $flatNodes |
+            Where-Object { $_.activeInHierarchy -and $_.path -in $PathPrefixes } |
+            ForEach-Object { $_.path }
+    )
+
+    $nodeSummaries = @(
+        $filteredNodes |
+            Select-Object -First $MaxItems |
+            ForEach-Object {
+                [PSCustomObject]([ordered]@{
+                    path = $_.path
+                    name = $_.name
+                    activeInHierarchy = $_.activeInHierarchy
+                    childCount = $_.childCount
+                    components = @($_.components)
+                })
+            }
+    )
+
+    $sceneNameValue = [string]$uiState.sceneName
+    $isPlayingValue = [bool]$uiState.isPlaying
+    $timestampValue = [string]$uiState.timestampUtc
+    $totalCanvasCountValue = @($uiState.canvases).Count
+    $totalNodeCountValue = $flatNodes.Count
+    $matchedNodeCountValue = @($filteredNodes).Count
+    $truncatedValue = @($filteredNodes).Count -gt $MaxItems
+    $pathPrefixesValue = @($PathPrefixes)
+    $activeRootsValue = @($visibleRoots)
+    $nodesValue = @($nodeSummaries)
+
+    $summary = [ordered]@{
+        sceneName = $sceneNameValue
+        isPlaying = $isPlayingValue
+        timestampUtc = $timestampValue
+        totalCanvasCount = $totalCanvasCountValue
+        totalNodeCount = $totalNodeCountValue
+        matchedNodeCount = $matchedNodeCountValue
+        truncated = $truncatedValue
+        pathPrefixes = $pathPrefixesValue
+        activeRoots = $activeRootsValue
+        nodes = $nodesValue
+    }
+
+    return [PSCustomObject]$summary
 }
 
 function Get-McpUiElementState {

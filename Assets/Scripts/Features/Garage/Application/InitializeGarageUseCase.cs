@@ -18,14 +18,17 @@ namespace Features.Garage.Application
 
         private readonly ICloudGarageLoadPort _cloudPort;
         private readonly IGaragePersistencePort _persistence;
+        private readonly IGarageNetworkPort _networkPort;
         private readonly IEventPublisher _eventBus;
 
         public InitializeGarageUseCase(
             IGaragePersistencePort persistence,
+            IGarageNetworkPort networkPort,
             ICloudGarageLoadPort cloudPort,
             IEventPublisher eventBus)
         {
             _persistence = persistence;
+            _networkPort = networkPort;
             _cloudPort = cloudPort;
             _eventBus = eventBus;
         }
@@ -59,6 +62,8 @@ namespace Features.Garage.Application
                 roster = _persistence?.Load() ?? new GarageRoster();
 
             roster.Normalize();
+            _networkPort?.SyncRoster(roster);
+            _networkPort?.SyncReady(roster.IsValid);
             _eventBus.Publish(new GarageInitializedEvent(roster));
             return roster;
         }

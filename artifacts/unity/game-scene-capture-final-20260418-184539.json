@@ -1,0 +1,41 @@
+﻿{
+    "success":  true,
+    "roomName":  "CodexFinal-20260418184551512",
+    "screenshot":  {
+                       "success":  true,
+                       "message":  "Screenshot captured.",
+                       "relativePath":  "artifacts/unity/game-scene-capture-final-20260418-184539.png",
+                       "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\game-scene-capture-final-20260418-184539.png",
+                       "fileSizeBytes":  112952
+                   },
+    "recentLogs":  [
+                       "[Log] [PhotonConnection] Connecting...",
+                       "[Log] [Unity MCP] Registered 84 endpoints.",
+                       "[Log] [Unity MCP] Registered 84 endpoints.",
+                       "[Log] [Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                       "[Log] [Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                       "[Warning] [Firestore] Document not found (1443ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (1443ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (67ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (67ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (41ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (41ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (25ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (25ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                       "[Warning] PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                       "[Log] [PhotonConnection] Connected to Master. Joining lobby...",
+                       "[Log] [PhotonConnection] Connected to Master. Joining lobby...",
+                       "[Log] [PhotonConnection] Joined lobby. Ready for matchmaking.",
+                       "[Log] [PhotonConnection] Joined lobby. Ready for matchmaking.",
+                       "[Log] [FirebaseStub] game_start {\"match_id\":\"d299ffc18c114a22807decfc8dc8d010\"}",
+                       "[Log] [FirebaseStub] game_start {\"match_id\":\"d299ffc18c114a22807decfc8dc8d010\"}",
+                       "[Log] [GameSceneRoot] Computed 0 unit specs for player player-1",
+                       "[Log] [GameSceneRoot] Computed 0 unit specs for player player-1",
+                       "[Warning] [GameSceneRoot] No unit specs for player. Summon slots not initialized.",
+                       "[Warning] [GameSceneRoot] No unit specs for player. Summon slots not initialized."
+                   ],
+    "recentErrors":  [
+
+                     ]
+}

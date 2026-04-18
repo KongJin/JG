@@ -1,0 +1,57 @@
+﻿{
+    "success":  true,
+    "roomName":  "CodexCaptureFix-20260418184142551-7858",
+    "autoFilledSlots":  [
+
+                        ],
+    "transition":  {
+                       "name":  "GameScene",
+                       "path":  "Assets/Scenes/GameScene.unity",
+                       "buildIndex":  1,
+                       "isLoaded":  true,
+                       "isDirty":  false,
+                       "isPlaying":  true,
+                       "isPlayingOrWillChange":  false,
+                       "isPlayModeChanging":  false,
+                       "rawIsPlayingOrWillChange":  true
+                   },
+    "screenshot":  {
+                       "success":  true,
+                       "message":  "Screenshot captured.",
+                       "relativePath":  "artifacts/unity/game-scene-capture-after-fix-20260418-184132.png",
+                       "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\game-scene-capture-after-fix-20260418-184132.png",
+                       "fileSizeBytes":  70051
+                   },
+    "recentLogCount":  27,
+    "recentErrorCount":  0,
+    "recentLogs":  [
+                       "[Log] [FirebaseAuth] RestoreSession uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776508396777.",
+                       "[Log] [FirebaseAuth] Reused persisted anonymous session for uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2.",
+                       "[Log] [Firestore] Request succeeded (333ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [Firestore] Request succeeded (48ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [PhotonConnection] Connecting...",
+                       "[Log] [Unity MCP] Registered 84 endpoints.",
+                       "[Log] [Unity MCP] Registered 84 endpoints.",
+                       "[Log] [Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                       "[Log] [Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                       "[Warning] [Firestore] Document not found (1478ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (1478ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (65ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (65ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (39ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (39ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (62ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (62ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                       "[Warning] PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                       "[Log] [PhotonConnection] Connected to Master. Joining lobby...",
+                       "[Log] [PhotonConnection] Connected to Master. Joining lobby...",
+                       "[Log] [PhotonConnection] Joined lobby. Ready for matchmaking.",
+                       "[Log] [PhotonConnection] Joined lobby. Ready for matchmaking.",
+                       "[Log] [FirebaseStub] game_start {\"match_id\":\"7fe021f6a1b942a9a7dddbfe8e944378\"}",
+                       "[Log] [FirebaseStub] game_start {\"match_id\":\"7fe021f6a1b942a9a7dddbfe8e944378\"}"
+                   ],
+    "recentErrors":  [
+
+                     ]
+}

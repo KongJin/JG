@@ -18,17 +18,6 @@ namespace Features.Garage.Presentation
         [Header("Preview")]
         [SerializeField] private GarageUnitPreviewView _unitPreviewView;
 
-        [Header("Layout")]
-        [Required, SerializeField] private RectTransform _rosterListPaneRect;
-        [Required, SerializeField] private RectTransform _unitEditorPaneRect;
-        [Required, SerializeField] private RectTransform _resultPaneRect;
-        [Required, SerializeField] private RectTransform _previewRect;
-        [SerializeField] private RectTransform _accountCardRect;
-
-        [Header("Account (optional — 분리 가능)")]
-        [SerializeField] private UnityEngine.Component _accountSettingsView;
-        [SerializeField] private GameObject _accountPanelRoot;
-
         private GarageSetup _setup;
         private GaragePanelCatalog _catalog;
         private GaragePageState _state;
@@ -44,8 +33,7 @@ namespace Features.Garage.Presentation
             _presenter = new GaragePagePresenter(_catalog);
             _state ??= new GaragePageState();
 
-            ConfigureWorkbenchLayout();
-            SeparateAccountPanel();
+            _unitPreviewView?.Initialize();
             HookCallbacks();
 
             if (_isInitialized)
@@ -58,47 +46,6 @@ namespace Features.Garage.Presentation
             _state.Initialize(new GarageRoster());
             Render();
             _ = InitializeRosterAsync();
-        }
-
-        private void ConfigureWorkbenchLayout()
-        {
-            SetStretch(_rosterListPaneRect, 0.02f, 0.08f, 0.26f, 0.84f);
-            SetStretch(_previewRect, 0.30f, 0.58f, 0.66f, 0.84f);
-            SetStretch(_unitEditorPaneRect, 0.30f, 0.08f, 0.66f, 0.54f);
-            SetStretch(_resultPaneRect, 0.70f, 0.22f, 0.98f, 0.84f);
-            SetStretch(_accountCardRect, 0.72f, 0.86f, 0.98f, 0.98f);
-        }
-
-        private static void SetStretch(RectTransform rect, float minX, float minY, float maxX, float maxY)
-        {
-            if (rect == null)
-                return;
-
-            rect.anchorMin = new Vector2(minX, minY);
-            rect.anchorMax = new Vector2(maxX, maxY);
-            rect.anchoredPosition = Vector2.zero;
-            rect.sizeDelta = Vector2.zero;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-        }
-
-        private void SeparateAccountPanel()
-        {
-            if (_accountSettingsView == null)
-                return;
-
-            var accountTransform = _accountSettingsView.transform;
-
-            if (_accountPanelRoot != null && accountTransform.parent == _accountPanelRoot.transform)
-                return;
-
-            if (_accountPanelRoot != null)
-            {
-                accountTransform.SetParent(_accountPanelRoot.transform, false);
-                accountTransform.localPosition = Vector3.zero;
-                accountTransform.localRotation = Quaternion.identity;
-                accountTransform.localScale = Vector3.one;
-            }
         }
 
         private async System.Threading.Tasks.Task InitializeRosterAsync()
@@ -245,6 +192,57 @@ namespace Features.Garage.Presentation
             Render();
         }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        public void WebglSmokeSelectSlot(string slotIndexText)
+        {
+            if (!TryParseIndex(slotIndexText, out int slotIndex))
+            {
+                Debug.LogWarning($"[GarageSmoke] Invalid slot index: {slotIndexText}");
+                return;
+            }
+
+            SelectSlot(slotIndex);
+        }
+
+        public void WebglSmokeCycleFrame(string deltaText)
+        {
+            if (!TryParseDelta(deltaText, out int delta))
+            {
+                Debug.LogWarning($"[GarageSmoke] Invalid frame delta: {deltaText}");
+                return;
+            }
+
+            CycleFrame(delta);
+        }
+
+        public void WebglSmokeCycleFirepower(string deltaText)
+        {
+            if (!TryParseDelta(deltaText, out int delta))
+            {
+                Debug.LogWarning($"[GarageSmoke] Invalid firepower delta: {deltaText}");
+                return;
+            }
+
+            CycleFirepower(delta);
+        }
+
+        public void WebglSmokeCycleMobility(string deltaText)
+        {
+            if (!TryParseDelta(deltaText, out int delta))
+            {
+                Debug.LogWarning($"[GarageSmoke] Invalid mobility delta: {deltaText}");
+                return;
+            }
+
+            CycleMobility(delta);
+        }
+
+        public void WebglSmokeSaveDraft()
+        {
+            OnSaveClicked();
+        }
+#endif
+
         private async void OnSaveClicked()
         {
             var evaluation = EvaluateDraft();
@@ -377,6 +375,30 @@ namespace Features.Garage.Presentation
 
             int nextIndex = (currentIndex + delta + items.Count) % items.Count;
             return getId(items[nextIndex]);
+        }
+
+        private static bool TryParseIndex(string raw, out int slotIndex)
+        {
+            if (int.TryParse(raw, out int parsed))
+            {
+                slotIndex = Mathf.Clamp(parsed, 0, 5);
+                return true;
+            }
+
+            slotIndex = 0;
+            return false;
+        }
+
+        private static bool TryParseDelta(string raw, out int delta)
+        {
+            if (int.TryParse(raw, out int parsed) && parsed != 0)
+            {
+                delta = parsed;
+                return true;
+            }
+
+            delta = 0;
+            return false;
         }
     }
 }
