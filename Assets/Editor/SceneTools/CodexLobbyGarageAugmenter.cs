@@ -43,9 +43,9 @@ namespace ProjectSD.EditorTools.SceneTools
         {
             var catalog = CodexLobbyGarageDataBuilder.EnsureModuleCatalog();
             var lobbyPageRoot = EnsureLobbyPageRoot(canvas.transform);
+            var garageButton = EnsureLobbyNavigationButton(lobbyPageRoot);
             ConfigureLobbyPanels(lobbyPageRoot);
 
-            DestroyIfExists("TopTabs");
             DestroyIfExists("GaragePageRoot");
             DestroyIfExists("UnitSetup");
             DestroyIfExists("GarageNetworkAdapter");
@@ -55,7 +55,6 @@ namespace ProjectSD.EditorTools.SceneTools
             DestroyIfExists("WeaponCylinder");
             DestroyIfExists("ThrusterCapsule");
 
-            var tabs = CreateTopTabs(canvas.transform);
             var garage = BuildGaragePage(canvas.transform);
 
             var unitSetup = CreateGameObject("UnitSetup").AddComponent<UnitSetup>();
@@ -69,12 +68,12 @@ namespace ProjectSD.EditorTools.SceneTools
 
             CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyPageRoot", lobbyPageRoot.gameObject);
             CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_garagePageRoot", garage.Root.gameObject);
-            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyTabButton", tabs.LobbyButton);
-            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_garageTabButton", tabs.GarageButton);
-            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyTabText", tabs.LobbyLabel);
-            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_garageTabText", tabs.GarageLabel);
-            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyTabBorder", tabs.LobbyBorder);
-            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_garageTabBorder", tabs.GarageBorder);
+            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyTabButton", garage.LobbyNavigation.Button);
+            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_garageTabButton", garageButton.Button);
+            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyTabText", garage.LobbyNavigation.Label);
+            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_garageTabText", garageButton.Label);
+            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyTabBorder", garage.LobbyNavigation.Border);
+            CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_garageTabBorder", garageButton.Border);
             CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_lobbyPageCanvasGroup", EnsureCanvasGroup(lobbyPageRoot.gameObject));
             CodexLobbyGarageDataBuilder.SetObject(lobbyView, "_garagePageCanvasGroup", EnsureCanvasGroup(garage.Root.gameObject));
 
@@ -92,7 +91,7 @@ namespace ProjectSD.EditorTools.SceneTools
                 existing = root.GetComponent<RectTransform>();
             }
 
-            Stretch(existing, new Vector2(0.03f, 0.12f), new Vector2(0.38f, 0.84f), Vector2.zero, Vector2.zero);
+            Stretch(existing, new Vector2(0.03f, 0.12f), new Vector2(0.97f, 0.88f), Vector2.zero, Vector2.zero);
             EnsureCanvasGroup(existing.gameObject);
 
             var roomListPanel = UnityEngine.Object.FindFirstObjectByType<RoomListView>();
@@ -106,6 +105,20 @@ namespace ProjectSD.EditorTools.SceneTools
             return existing;
         }
 
+        private static ButtonWidgets EnsureLobbyNavigationButton(RectTransform lobbyPageRoot)
+        {
+            var existing = lobbyPageRoot.Find("GarageTabButton");
+            if (existing != null)
+                UnityEngine.Object.DestroyImmediate(existing.gameObject);
+
+            var garageButton = CreateTabButton("GarageTabButton", lobbyPageRoot, "Garage", new Color32(73, 118, 255, 255));
+            Stretch(garageButton.Button.GetComponent<RectTransform>(), new Vector2(0.82f, 0.90f), new Vector2(0.98f, 0.985f), Vector2.zero, Vector2.zero);
+            var layout = garageButton.Button.GetComponent<LayoutElement>();
+            if (layout != null)
+                UnityEngine.Object.DestroyImmediate(layout);
+            return garageButton;
+        }
+
         private static void ConfigureLobbyPanels(RectTransform lobbyPageRoot)
         {
             if (lobbyPageRoot == null)
@@ -113,36 +126,18 @@ namespace ProjectSD.EditorTools.SceneTools
 
             var roomListPanel = UnityEngine.Object.FindFirstObjectByType<RoomListView>();
             if (roomListPanel != null)
-                Stretch((RectTransform)roomListPanel.transform, Vector2.zero, new Vector2(1f, 0.78f), Vector2.zero, Vector2.zero);
+                Stretch((RectTransform)roomListPanel.transform, Vector2.zero, new Vector2(1f, 0.84f), Vector2.zero, Vector2.zero);
 
             var roomDetailPanel = UnityEngine.Object.FindFirstObjectByType<RoomDetailView>();
             if (roomDetailPanel != null)
-                Stretch((RectTransform)roomDetailPanel.transform, Vector2.zero, new Vector2(1f, 0.78f), Vector2.zero, Vector2.zero);
-        }
-
-        private static TabWidgets CreateTopTabs(Transform parent)
-        {
-            var bar = CreateGameObject("TopTabs", parent, typeof(RectTransform));
-            Stretch(bar.GetComponent<RectTransform>(), new Vector2(0.66f, 0.91f), new Vector2(0.80f, 0.97f), Vector2.zero, Vector2.zero);
-
-            var layout = bar.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = 14f;
-            layout.childAlignment = TextAnchor.MiddleRight;
-            layout.childControlHeight = true;
-            layout.childControlWidth = true;
-            layout.childForceExpandHeight = true;
-            layout.childForceExpandWidth = true;
-
-            var lobby = CreateTabButton("LobbyTabButton", bar.transform, "Lobby", new Color32(73, 118, 255, 255));
-            var garage = CreateTabButton("GarageTabButton", bar.transform, "Garage", new Color32(22, 164, 143, 255));
-            return new TabWidgets(lobby.Button, garage.Button, lobby.Label, garage.Label, lobby.Border, garage.Border);
+                Stretch((RectTransform)roomDetailPanel.transform, Vector2.zero, new Vector2(1f, 0.84f), Vector2.zero, Vector2.zero);
         }
 
         private static GarageBuildResult BuildGaragePage(Transform parent)
         {
             var rootImage = CreatePanel("GaragePageRoot", parent, new Color32(18, 25, 40, 247));
             var root = rootImage.rectTransform;
-            Stretch(root, new Vector2(0.41f, 0.08f), new Vector2(0.98f, 0.90f), Vector2.zero, Vector2.zero);
+            Stretch(root, new Vector2(0.03f, 0.08f), new Vector2(0.97f, 0.90f), Vector2.zero, Vector2.zero);
 
             EnsureCanvasGroup(root.gameObject);
 
@@ -155,19 +150,47 @@ namespace ProjectSD.EditorTools.SceneTools
             rootLayout.childForceExpandWidth = true;
             rootLayout.childForceExpandHeight = false;
 
-            var title = CreateText("GarageTitle", root, "GARAGE", 28, FontStyles.Bold, TextAlignmentOptions.TopLeft, new Color32(244, 247, 255, 255));
-            title.gameObject.AddComponent<LayoutElement>().preferredHeight = 34f;
+            var headerRow = CreateGameObject("GarageHeaderRow", root, typeof(RectTransform));
+            var headerRowLayout = headerRow.AddComponent<HorizontalLayoutGroup>();
+            headerRowLayout.spacing = 16f;
+            headerRowLayout.childAlignment = TextAnchor.UpperLeft;
+            headerRowLayout.childControlWidth = true;
+            headerRowLayout.childControlHeight = true;
+            headerRowLayout.childForceExpandWidth = false;
+            headerRowLayout.childForceExpandHeight = false;
+            headerRow.AddComponent<LayoutElement>().preferredHeight = 78f;
+
+            var titleStack = CreateGameObject("GarageTitleStack", headerRow.transform, typeof(RectTransform));
+            var titleStackLayout = titleStack.AddComponent<VerticalLayoutGroup>();
+            titleStackLayout.spacing = 6f;
+            titleStackLayout.childAlignment = TextAnchor.UpperLeft;
+            titleStackLayout.childControlWidth = true;
+            titleStackLayout.childControlHeight = true;
+            titleStackLayout.childForceExpandWidth = true;
+            titleStackLayout.childForceExpandHeight = false;
+            titleStack.AddComponent<LayoutElement>().flexibleWidth = 1f;
+
+            var title = CreateText("GarageTitle", titleStack.transform, "GARAGE", 28, FontStyles.Bold, TextAlignmentOptions.TopLeft, new Color32(244, 247, 255, 255));
+            title.gameObject.AddComponent<LayoutElement>().preferredHeight = 32f;
 
             var subtitle = CreateText(
                 "GarageSubtitle",
-                root,
-                "Saved roster stays left, editing stays center, and the right rail keeps account, preview, and save context together.",
-                14,
+                titleStack.transform,
+                "Edit your roster here, then return to the lobby when the loadout is ready.",
+                13,
                 FontStyles.Normal,
                 TextAlignmentOptions.TopLeft,
                 new Color32(143, 164, 201, 255));
             subtitle.textWrappingMode = TextWrappingModes.Normal;
-            subtitle.gameObject.AddComponent<LayoutElement>().preferredHeight = 42f;
+            subtitle.gameObject.AddComponent<LayoutElement>().preferredHeight = 28f;
+
+            var lobbyButton = CreateTabButton("LobbyTabButton", headerRow.transform, "Back To Lobby", new Color32(22, 164, 143, 255));
+            var lobbyButtonLayout = lobbyButton.Button.gameObject.GetComponent<LayoutElement>();
+            if (lobbyButtonLayout != null)
+            {
+                lobbyButtonLayout.preferredWidth = 176f;
+                lobbyButtonLayout.minWidth = 176f;
+            }
 
             var contentRow = CreateGameObject("GarageContentRow", root, typeof(RectTransform));
             var contentRowLayout = contentRow.AddComponent<HorizontalLayoutGroup>();
@@ -183,8 +206,8 @@ namespace ProjectSD.EditorTools.SceneTools
 
             var rosterPane = CreatePanel("RosterListPane", contentRow.transform, new Color32(23, 33, 52, 252));
             var rosterElement = rosterPane.gameObject.AddComponent<LayoutElement>();
-            rosterElement.preferredWidth = 252f;
-            rosterElement.minWidth = 228f;
+            rosterElement.preferredWidth = 284f;
+            rosterElement.minWidth = 256f;
             rosterElement.flexibleHeight = 1f;
             var rosterLayout = rosterPane.gameObject.AddComponent<VerticalLayoutGroup>();
             rosterLayout.padding = new RectOffset(16, 16, 18, 18);
@@ -201,8 +224,8 @@ namespace ProjectSD.EditorTools.SceneTools
 
             var editorPane = CreatePanel("UnitEditorPane", contentRow.transform, new Color32(24, 31, 50, 242));
             var editorElement = editorPane.gameObject.AddComponent<LayoutElement>();
-            editorElement.flexibleWidth = 1.2f;
-            editorElement.minWidth = 420f;
+            editorElement.flexibleWidth = 1.35f;
+            editorElement.minWidth = 456f;
             editorElement.flexibleHeight = 1f;
             var editorLayout = editorPane.gameObject.AddComponent<VerticalLayoutGroup>();
             editorLayout.padding = new RectOffset(20, 20, 20, 20);
@@ -229,8 +252,8 @@ namespace ProjectSD.EditorTools.SceneTools
 
             var rightRail = CreateGameObject("RightRail", contentRow.transform, typeof(RectTransform));
             var rightRailElement = rightRail.AddComponent<LayoutElement>();
-            rightRailElement.preferredWidth = 332f;
-            rightRailElement.minWidth = 304f;
+            rightRailElement.preferredWidth = 320f;
+            rightRailElement.minWidth = 292f;
             rightRailElement.flexibleHeight = 1f;
             var rightRailLayout = rightRail.AddComponent<VerticalLayoutGroup>();
             rightRailLayout.spacing = 16f;
@@ -245,14 +268,22 @@ namespace ProjectSD.EditorTools.SceneTools
             var result = BuildResultPane(rightRail.transform);
 
             var previewViewport = CreateGameObject("UnitPreviewViewport", preview.Card.transform);
+            var previewLightGo = CreateGameObject("PreviewKeyLight", previewViewport.transform, typeof(Light));
+            previewLightGo.transform.localPosition = new Vector3(1.2f, 1.6f, -1.5f);
+            previewLightGo.transform.localRotation = Quaternion.Euler(42f, -28f, 0f);
+            var previewLight = previewLightGo.GetComponent<Light>();
+            previewLight.type = LightType.Directional;
+            previewLight.color = new Color(0.86f, 0.91f, 1f, 1f);
+            previewLight.intensity = 1.25f;
+
             var previewCameraGo = CreateGameObject("PreviewCamera", previewViewport.transform, typeof(Camera));
-            previewCameraGo.transform.localPosition = new Vector3(0f, 0f, -3.5f);
+            previewCameraGo.transform.localPosition = new Vector3(0f, 0.05f, -2.35f);
             var previewCamera = previewCameraGo.GetComponent<Camera>();
             previewCamera.clearFlags = CameraClearFlags.SolidColor;
             previewCamera.backgroundColor = new Color(0.05f, 0.06f, 0.10f, 1f);
             previewCamera.nearClipPlane = 0.1f;
             previewCamera.farClipPlane = 20f;
-            previewCamera.fieldOfView = 32f;
+            previewCamera.fieldOfView = 24f;
 
             var framePrototype = CreatePrimitivePrototype("FrameCube", PrimitiveType.Cube, previewViewport.transform);
             var weaponPrototype = CreatePrimitivePrototype("WeaponCylinder", PrimitiveType.Cylinder, previewViewport.transform);
@@ -305,6 +336,7 @@ namespace ProjectSD.EditorTools.SceneTools
             var previewView = previewViewport.AddComponent<GarageUnitPreviewView>();
             CodexLobbyGarageDataBuilder.SetObject(previewView, "_previewCamera", previewCamera);
             CodexLobbyGarageDataBuilder.SetObject(previewView, "_rawImage", preview.RawImage);
+            CodexLobbyGarageDataBuilder.SetObject(previewView, "_emptyStateText", preview.EmptyStateText);
             CodexLobbyGarageDataBuilder.SetObject(previewView, "_framePrefab", framePrototype);
             CodexLobbyGarageDataBuilder.SetObject(previewView, "_weaponPrefab", weaponPrototype);
             CodexLobbyGarageDataBuilder.SetObject(previewView, "_thrusterPrefab", thrusterPrototype);
@@ -315,15 +347,15 @@ namespace ProjectSD.EditorTools.SceneTools
             CodexLobbyGarageDataBuilder.SetObject(pageController, "_resultPanelView", resultPanelView);
             CodexLobbyGarageDataBuilder.SetObject(pageController, "_unitPreviewView", previewView);
 
-            return new GarageBuildResult(root, pageController, account.View);
+            return new GarageBuildResult(root, pageController, account.View, lobbyButton);
         }
 
         private static GarageSlotItemView BuildGarageSlotItem(Transform parent, int index)
         {
             var slot = CreateGameObject($"GarageSlot{index + 1}", parent, typeof(RectTransform), typeof(Image), typeof(Button), typeof(CanvasGroup));
             var layoutElement = slot.AddComponent<LayoutElement>();
-            layoutElement.preferredHeight = 88f;
-            layoutElement.minHeight = 88f;
+            layoutElement.preferredHeight = 104f;
+            layoutElement.minHeight = 104f;
 
             var image = slot.GetComponent<Image>();
             ApplyDefaultSprite(image);
@@ -334,16 +366,16 @@ namespace ProjectSD.EditorTools.SceneTools
             button.targetGraphic = image;
 
             var slotNumber = CreateText("SlotNumber", slot.transform, $"SLOT {index + 1}", 12, FontStyles.Bold, TextAlignmentOptions.TopLeft, new Color32(143, 164, 201, 255));
-            Stretch(slotNumber.rectTransform, new Vector2(0.08f, 0.72f), new Vector2(0.92f, 0.9f), Vector2.zero, Vector2.zero);
+            Stretch(slotNumber.rectTransform, new Vector2(0.11f, 0.73f), new Vector2(0.92f, 0.9f), Vector2.zero, Vector2.zero);
 
             var title = CreateText("Title", slot.transform, "Empty Slot", 17, FontStyles.Bold, TextAlignmentOptions.TopLeft, new Color32(244, 247, 255, 255));
-            Stretch(title.rectTransform, new Vector2(0.08f, 0.40f), new Vector2(0.92f, 0.72f), Vector2.zero, Vector2.zero);
+            Stretch(title.rectTransform, new Vector2(0.11f, 0.42f), new Vector2(0.92f, 0.68f), Vector2.zero, Vector2.zero);
 
             var summary = CreateText("Summary", slot.transform, "Select frame and modules", 12, FontStyles.Normal, TextAlignmentOptions.TopLeft, new Color32(170, 188, 224, 255));
-            Stretch(summary.rectTransform, new Vector2(0.08f, 0.10f), new Vector2(0.92f, 0.38f), Vector2.zero, Vector2.zero);
+            Stretch(summary.rectTransform, new Vector2(0.11f, 0.11f), new Vector2(0.92f, 0.29f), Vector2.zero, Vector2.zero);
 
             var arrowIndicator = CreateText("ArrowIndicator", slot.transform, ">", 18, FontStyles.Bold, TextAlignmentOptions.Center, Color.white);
-            Stretch(arrowIndicator.rectTransform, new Vector2(0.02f, 0.35f), new Vector2(0.08f, 0.65f), Vector2.zero, Vector2.zero);
+            Stretch(arrowIndicator.rectTransform, new Vector2(0.02f, 0.32f), new Vector2(0.09f, 0.64f), Vector2.zero, Vector2.zero);
             arrowIndicator.gameObject.SetActive(false);
 
             var border = CreateGameObject("Border", slot.transform, typeof(RectTransform), typeof(Image));
@@ -370,13 +402,13 @@ namespace ProjectSD.EditorTools.SceneTools
         private static SelectorWidgets BuildSelectorCard(Transform parent, string title, Color accent)
         {
             var card = CreatePanel(title + "Card", parent, new Color32(31, 39, 61, 255));
-            card.gameObject.AddComponent<LayoutElement>().preferredHeight = 126f;
+            card.gameObject.AddComponent<LayoutElement>().preferredHeight = 132f;
 
             var titleText = CreateText(title + "Title", card.transform, title, 16, FontStyles.Bold, TextAlignmentOptions.TopLeft, accent);
-            Stretch(titleText.rectTransform, new Vector2(0.05f, 0.76f), new Vector2(0.9f, 0.94f), Vector2.zero, Vector2.zero);
+            Stretch(titleText.rectTransform, new Vector2(0.05f, 0.78f), new Vector2(0.9f, 0.93f), Vector2.zero, Vector2.zero);
 
             var valuePanel = CreatePanel(title + "ValuePanel", card.transform, new Color32(18, 24, 39, 255));
-            Stretch(valuePanel.rectTransform, new Vector2(0.05f, 0.34f), new Vector2(0.95f, 0.70f), Vector2.zero, Vector2.zero);
+            Stretch(valuePanel.rectTransform, new Vector2(0.05f, 0.40f), new Vector2(0.95f, 0.68f), Vector2.zero, Vector2.zero);
 
             var prevButton = CreateButton(title + "PrevButton", valuePanel.transform, "<", accent, Color.white);
             Stretch(prevButton.GetComponent<RectTransform>(), new Vector2(0.03f, 0.14f), new Vector2(0.15f, 0.86f), Vector2.zero, Vector2.zero);
@@ -388,7 +420,7 @@ namespace ProjectSD.EditorTools.SceneTools
             Stretch(valueText.rectTransform, new Vector2(0.18f, 0.18f), new Vector2(0.82f, 0.82f), Vector2.zero, Vector2.zero);
 
             var hintText = CreateText(title + "HintText", card.transform, "Choose a part to update this slot.", 12, FontStyles.Normal, TextAlignmentOptions.TopLeft, new Color32(170, 188, 224, 255));
-            Stretch(hintText.rectTransform, new Vector2(0.05f, 0.07f), new Vector2(0.95f, 0.28f), Vector2.zero, Vector2.zero);
+            Stretch(hintText.rectTransform, new Vector2(0.05f, 0.10f), new Vector2(0.95f, 0.29f), Vector2.zero, Vector2.zero);
 
             return new SelectorWidgets(card.rectTransform, prevButton, nextButton, titleText, valueText, hintText);
         }
@@ -444,7 +476,7 @@ namespace ProjectSD.EditorTools.SceneTools
         {
             var card = CreatePanel("PreviewCard", parent, new Color32(20, 28, 45, 242));
             var cardElement = card.gameObject.AddComponent<LayoutElement>();
-            cardElement.preferredHeight = 258f;
+            cardElement.preferredHeight = 268f;
 
             var cardLayout = card.gameObject.AddComponent<VerticalLayoutGroup>();
             cardLayout.padding = new RectOffset(16, 16, 16, 16);
@@ -460,16 +492,27 @@ namespace ProjectSD.EditorTools.SceneTools
 
             var rawImageGo = CreateGameObject("PreviewRawImage", card.transform, typeof(RectTransform), typeof(RawImage));
             var rawImage = rawImageGo.GetComponent<RawImage>();
-            rawImage.color = new Color(0.05f, 0.06f, 0.10f, 1f);
+            rawImage.color = new Color(0.06f, 0.08f, 0.12f, 1f);
             rawImage.raycastTarget = true;
             var rawElement = rawImageGo.AddComponent<LayoutElement>();
             rawElement.preferredHeight = 180f;
             rawElement.flexibleHeight = 1f;
 
+            var emptyState = CreateText(
+                "PreviewEmptyState",
+                rawImageGo.transform,
+                "No preview yet\nSelect a saved unit to inspect the loadout silhouette.",
+                12,
+                FontStyles.Normal,
+                TextAlignmentOptions.Center,
+                new Color32(143, 164, 201, 255));
+            Stretch(emptyState.rectTransform, new Vector2(0.08f, 0.18f), new Vector2(0.92f, 0.82f), Vector2.zero, Vector2.zero);
+            emptyState.textWrappingMode = TextWrappingModes.Normal;
+
             var hint = CreateText("PreviewHint", card.transform, "Selected saved unit appears here.", 12, FontStyles.Normal, TextAlignmentOptions.TopLeft, new Color32(143, 164, 201, 255));
             hint.gameObject.AddComponent<LayoutElement>().preferredHeight = 22f;
 
-            return new PreviewWidgets(card.rectTransform, rawImage);
+            return new PreviewWidgets(card.rectTransform, rawImage, emptyState);
         }
 
         private static ResultWidgets BuildResultPane(Transform parent)
@@ -494,20 +537,20 @@ namespace ProjectSD.EditorTools.SceneTools
 
             var rosterStatus = CreateText("RosterStatus", root, "Roster incomplete: 0/6 saved units. Add 3 more for Ready.", 15, FontStyles.Bold, TextAlignmentOptions.TopLeft, new Color32(232, 238, 252, 255));
             rosterStatus.textWrappingMode = TextWrappingModes.Normal;
-            rosterStatus.gameObject.AddComponent<LayoutElement>().preferredHeight = 52f;
+            rosterStatus.gameObject.AddComponent<LayoutElement>().preferredHeight = 42f;
 
             var validationText = CreateText("ValidationText", root, "Select frame, firepower, and mobility to save this slot.", 13, FontStyles.Normal, TextAlignmentOptions.TopLeft, new Color32(115, 222, 196, 255));
             validationText.textWrappingMode = TextWrappingModes.Normal;
-            validationText.gameObject.AddComponent<LayoutElement>().preferredHeight = 46f;
+            validationText.gameObject.AddComponent<LayoutElement>().preferredHeight = 34f;
 
             var statsText = CreateText("StatsText", root, "Pick all three parts to see composed HP, damage, and summon cost.", 13, FontStyles.Normal, TextAlignmentOptions.TopLeft, new Color32(214, 223, 241, 255));
             statsText.textWrappingMode = TextWrappingModes.Normal;
             var statsElement = statsText.gameObject.AddComponent<LayoutElement>();
-            statsElement.preferredHeight = 84f;
+            statsElement.preferredHeight = 78f;
             statsElement.flexibleHeight = 1f;
 
-            var saveButton = CreateButton("SaveButton", root, "Save Draft", new Color32(51, 102, 230, 255), Color.white);
-            saveButton.gameObject.AddComponent<LayoutElement>().preferredHeight = 48f;
+            var saveButton = CreateButton("SaveButton", root, "Save Roster", new Color32(51, 102, 230, 255), Color.white);
+            saveButton.gameObject.AddComponent<LayoutElement>().preferredHeight = 50f;
 
             var toastPanel = CreatePanel("ToastPanel", root, new Color32(30, 41, 69, 235));
             var toastElement = toastPanel.gameObject.AddComponent<LayoutElement>();
@@ -535,6 +578,19 @@ namespace ProjectSD.EditorTools.SceneTools
             go.name = name;
             go.transform.SetParent(parent, false);
             go.transform.localPosition = Vector3.zero;
+            var renderer = go.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                var shader = Shader.Find("Universal Render Pipeline/Lit")
+                    ?? Shader.Find("Universal Render Pipeline/Simple Lit")
+                    ?? Shader.Find("Standard");
+                if (shader != null)
+                {
+                    var material = new Material(shader);
+                    material.color = new Color(0.82f, 0.88f, 1f, 1f);
+                    renderer.sharedMaterial = material;
+                }
+            }
             go.SetActive(false);
             return go;
         }
@@ -668,36 +724,18 @@ namespace ProjectSD.EditorTools.SceneTools
 
         private readonly struct GarageBuildResult
         {
-            public GarageBuildResult(RectTransform root, GaragePageController pageController, AccountSettingsView accountSettingsView)
+            public GarageBuildResult(RectTransform root, GaragePageController pageController, AccountSettingsView accountSettingsView, ButtonWidgets lobbyNavigation)
             {
                 Root = root;
                 PageController = pageController;
                 AccountSettingsView = accountSettingsView;
+                LobbyNavigation = lobbyNavigation;
             }
 
             public RectTransform Root { get; }
             public GaragePageController PageController { get; }
             public AccountSettingsView AccountSettingsView { get; }
-        }
-
-        private readonly struct TabWidgets
-        {
-            public TabWidgets(Button lobbyButton, Button garageButton, TMP_Text lobbyLabel, TMP_Text garageLabel, Image lobbyBorder, Image garageBorder)
-            {
-                LobbyButton = lobbyButton;
-                GarageButton = garageButton;
-                LobbyLabel = lobbyLabel;
-                GarageLabel = garageLabel;
-                LobbyBorder = lobbyBorder;
-                GarageBorder = garageBorder;
-            }
-
-            public Button LobbyButton { get; }
-            public Button GarageButton { get; }
-            public TMP_Text LobbyLabel { get; }
-            public TMP_Text GarageLabel { get; }
-            public Image LobbyBorder { get; }
-            public Image GarageBorder { get; }
+            public ButtonWidgets LobbyNavigation { get; }
         }
 
         private readonly struct ButtonWidgets
@@ -748,14 +786,16 @@ namespace ProjectSD.EditorTools.SceneTools
 
         private readonly struct PreviewWidgets
         {
-            public PreviewWidgets(RectTransform card, RawImage rawImage)
+            public PreviewWidgets(RectTransform card, RawImage rawImage, TMP_Text emptyStateText)
             {
                 Card = card;
                 RawImage = rawImage;
+                EmptyStateText = emptyStateText;
             }
 
             public RectTransform Card { get; }
             public RawImage RawImage { get; }
+            public TMP_Text EmptyStateText { get; }
         }
 
         private readonly struct ResultWidgets

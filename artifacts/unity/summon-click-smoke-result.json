@@ -1,0 +1,68 @@
+﻿{
+    "success":  true,
+    "roomName":  "CodexClick-20260418190518012",
+    "click":  {
+                  "success":  true,
+                  "message":  "Click dispatched to Game view.",
+                  "x":  1017.5999755859375,
+                  "y":  874.7999877929688,
+                  "button":  0,
+                  "clickCount":  1,
+                  "gameViewWidth":  1920.0,
+                  "gameViewHeight":  1080.0,
+                  "normalized":  true
+              },
+    "battleEntity":  {
+                         "found":  false,
+                         "name":  "",
+                         "path":  "",
+                         "activeSelf":  false,
+                         "layer":  "",
+                         "tag":  "",
+                         "components":  [
+
+                                        ]
+                     },
+    "screenshot":  {
+                       "success":  true,
+                       "message":  "Screenshot captured.",
+                       "relativePath":  "artifacts/unity/summon-click-smoke.png",
+                       "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\summon-click-smoke.png",
+                       "fileSizeBytes":  128526
+                   },
+    "recentLogs":  [
+                       "[Log] [Unity MCP] SceneChangeQueue InitOnLoad called",
+                       "[Log] [FirebaseStub] session_start {}",
+                       "[Log] [FirebaseAuth] RestoreSession uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776508396777.",
+                       "[Log] [FirebaseAuth] Reused persisted anonymous session for uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2.",
+                       "[Log] [Firestore] Request succeeded (239ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [PhotonConnection] Connecting...",
+                       "[Log] [Unity MCP] Registered 84 endpoints.",
+                       "[Log] [Unity MCP] Registered 84 endpoints.",
+                       "[Log] [Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                       "[Log] [Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                       "[Log] [Firestore] Request succeeded (1515ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [Firestore] Request succeeded (1515ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (59ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (59ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (37ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (37ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (34ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (34ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (34ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (34ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                       "[Warning] PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                       "[Log] [PhotonConnection] Connected to Master. Joining lobby...",
+                       "[Log] [PhotonConnection] Connected to Master. Joining lobby...",
+                       "[Log] [PhotonConnection] Joined lobby. Ready for matchmaking.",
+                       "[Log] [PhotonConnection] Joined lobby. Ready for matchmaking.",
+                       "[Log] [FirebaseStub] game_start {\"match_id\":\"16b8d86b5c1e4fffa0160094a4ceadc1\"}",
+                       "[Log] [FirebaseStub] game_start {\"match_id\":\"16b8d86b5c1e4fffa0160094a4ceadc1\"}",
+                       "[Log] [GameSceneRoot] Computed 3 unit specs for player player-1",
+                       "[Log] [GameSceneRoot] Computed 3 unit specs for player player-1"
+                   ],
+    "recentErrors":  [
+
+                     ]
+}

@@ -39,6 +39,13 @@ namespace Features.Lobby.Presentation
         [Required, SerializeField]
         private RoomItemView _roomItemPrefab;
 
+        [Header("Room List - optional")]
+        [SerializeField]
+        private TMP_Text _roomListCountText;
+
+        [SerializeField]
+        private TMP_Text _roomListEmptyStateText;
+
         private LobbyUseCases _useCases;
         private IEventPublisher _eventPublisher;
         private GameObjectPool _roomItemPool;
@@ -52,6 +59,8 @@ namespace Features.Lobby.Presentation
 
             if (_createRoomButton != null)
                 _createRoomButton.onClick.AddListener(HandleCreateRoom);
+
+            UpdateListChrome(0);
         }
 
         public Result CreateRoom(string roomName, int capacity, string ownerDisplayName, int difficultyPresetId = 0) =>
@@ -70,6 +79,8 @@ namespace Features.Lobby.Presentation
                 go.GetComponent<RoomItemView>().Bind(room, OnJoinRoomClicked);
                 _activeItems.Add(go);
             }
+
+            UpdateListChrome(rooms != null ? rooms.Count : 0);
         }
 
         public void Render(IReadOnlyList<RoomListItem> rooms)
@@ -82,6 +93,8 @@ namespace Features.Lobby.Presentation
                 go.GetComponent<RoomItemView>().Bind(room, OnJoinRoomClicked);
                 _activeItems.Add(go);
             }
+
+            UpdateListChrome(rooms != null ? rooms.Count : 0);
         }
 
         private void HandleCreateRoom()
@@ -111,6 +124,15 @@ namespace Features.Lobby.Presentation
             foreach (var go in _activeItems)
                 _roomItemPool.Return(go);
             _activeItems.Clear();
+        }
+
+        private void UpdateListChrome(int roomCount)
+        {
+            if (_roomListCountText != null)
+                _roomListCountText.text = roomCount > 0 ? $"{roomCount} rooms" : "No open rooms";
+
+            if (_roomListEmptyStateText != null)
+                _roomListEmptyStateText.gameObject.SetActive(roomCount <= 0);
         }
     }
 }

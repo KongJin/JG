@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Features.Garage.Domain;
 using Features.Garage.Presentation.Theme;
+using TMPro;
 
 namespace Features.Garage.Presentation
 {
@@ -16,6 +17,7 @@ namespace Features.Garage.Presentation
         [SerializeField] private Camera _previewCamera;
         [SerializeField] private RenderTexture _renderTexture;
         [SerializeField] private RawImage _rawImage;
+        [SerializeField] private TMP_Text _emptyStateText;
 
         [Header("Part Prefabs (Basic Shapes)")]
         [Tooltip("프레임: 직육면체")]
@@ -36,15 +38,7 @@ namespace Features.Garage.Presentation
 
         public void Initialize()
         {
-            if (_renderTexture == null && _previewCamera != null)
-            {
-                _renderTexture = new RenderTexture(256, 256, 16);
-                _renderTexture.antiAliasing = 2;
-                _previewCamera.targetTexture = _renderTexture;
-
-                if (_rawImage != null)
-                    _rawImage.texture = _renderTexture;
-            }
+            EnsureRenderTexture();
 
             if (_previewCamera != null)
             {
@@ -55,23 +49,31 @@ namespace Features.Garage.Presentation
             // RawImage 배경을 어두운 색으로 — 하얀 화면 방지
             if (_rawImage != null)
                 _rawImage.color = ThemeColors.PreviewBackground;
+
+            SetEmptyStateVisible(true);
         }
 
         public void Render(GarageSlotViewModel viewModel, GaragePanelCatalog catalog)
         {
+            EnsureRenderTexture();
             DestroyCurrentPreview();
+            SetEmptyStateVisible(true);
 
             if (viewModel == null || !viewModel.HasCommittedLoadout)
                 return;
 
             CreatePreview(viewModel, catalog);
+            SetEmptyStateVisible(false);
+
+            if (_previewCamera != null && _previewCamera.targetTexture != null)
+                _previewCamera.Render();
         }
 
         private void CreatePreview(GarageSlotViewModel viewModel, GaragePanelCatalog catalog)
         {
             _currentPreviewRoot = new GameObject("PreviewRoot");
             _currentPreviewRoot.transform.SetParent(transform, false);
-            _currentPreviewRoot.transform.localPosition = Vector3.zero;
+            _currentPreviewRoot.transform.localPosition = new Vector3(0f, -0.02f, 0f);
 
             // 프레임 (중심)
             var frameObj = CreateFrame(viewModel.FrameId, catalog);
@@ -81,37 +83,40 @@ namespace Features.Garage.Presentation
             // 무기 (상단)
             var weaponObj = CreateWeapon(viewModel.FirepowerId);
             weaponObj.transform.SetParent(_currentPreviewRoot.transform, false);
-            weaponObj.transform.localPosition = new Vector3(0, 0.55f, 0);
+            weaponObj.transform.localPosition = new Vector3(0, 0.78f, 0);
             weaponObj.transform.localEulerAngles = new Vector3(0, 0, 90);
 
             // 기동 (하단)
             var thrusterObj = CreateThruster(viewModel.MobilityId);
             thrusterObj.transform.SetParent(_currentPreviewRoot.transform, false);
-            thrusterObj.transform.localPosition = new Vector3(0, -0.5f, 0);
+            thrusterObj.transform.localPosition = new Vector3(0, -0.72f, 0);
         }
 
         private GameObject CreateFrame(string frameId, GaragePanelCatalog catalog)
         {
             var obj = Instantiate(_framePrefab);
+            obj.SetActive(true);
             var frame = catalog?.FindFrame(frameId);
             obj.GetComponent<Renderer>().material.color = GetFrameColor(frameId);
-            obj.transform.localScale = new Vector3(0.5f, 0.4f, 0.3f);
+            obj.transform.localScale = new Vector3(0.82f, 0.62f, 0.42f);
             return obj;
         }
 
         private GameObject CreateWeapon(string firepowerId)
         {
             var obj = Instantiate(_weaponPrefab);
+            obj.SetActive(true);
             obj.GetComponent<Renderer>().material.color = GetWeaponColor(firepowerId);
-            obj.transform.localScale = new Vector3(0.12f, 0.35f, 0.12f);
+            obj.transform.localScale = new Vector3(0.18f, 0.58f, 0.18f);
             return obj;
         }
 
         private GameObject CreateThruster(string mobilityId)
         {
             var obj = Instantiate(_thrusterPrefab);
+            obj.SetActive(true);
             obj.GetComponent<Renderer>().material.color = GetThrusterColor(mobilityId);
-            obj.transform.localScale = new Vector3(0.25f, 0.2f, 0.25f);
+            obj.transform.localScale = new Vector3(0.36f, 0.28f, 0.36f);
             obj.transform.localEulerAngles = new Vector3(180, 0, 0);
             return obj;
         }
@@ -153,6 +158,37 @@ namespace Features.Garage.Presentation
         {
             if (_currentPreviewRoot != null)
                 Destroy(_currentPreviewRoot);
+        }
+
+        private void SetEmptyStateVisible(bool isVisible)
+        {
+            if (_emptyStateText == null)
+                return;
+
+            _emptyStateText.gameObject.SetActive(isVisible);
+        }
+
+        private void EnsureRenderTexture()
+        {
+            if (_previewCamera == null)
+                return;
+
+            if (_renderTexture == null)
+            {
+                _renderTexture = new RenderTexture(256, 256, 16)
+                {
+                    antiAliasing = 2,
+                    filterMode = FilterMode.Bilinear,
+                    wrapMode = TextureWrapMode.Clamp
+                };
+                _renderTexture.Create();
+            }
+
+            if (_previewCamera.targetTexture != _renderTexture)
+                _previewCamera.targetTexture = _renderTexture;
+
+            if (_rawImage != null && _rawImage.texture != _renderTexture)
+                _rawImage.texture = _renderTexture;
         }
 
         private void Update()

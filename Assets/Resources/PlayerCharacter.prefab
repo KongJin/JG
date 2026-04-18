@@ -270,6 +270,11 @@ MonoBehaviour:
   _view: {fileID: 5394696662982802112}
   _entityIdHolder: {fileID: 1234567890123456789}
   _statusNetworkAdapter: {fileID: 8800000000000000001}
+  _regenCurveConfig:
+    _baseRegenRate: 3
+    _rampStartTime: 60
+    _rampDuration: 120
+    _maxRegenRate: 5
 --- !u!114 &1234567890123456789
 MonoBehaviour:
   m_ObjectHideFlags: 0

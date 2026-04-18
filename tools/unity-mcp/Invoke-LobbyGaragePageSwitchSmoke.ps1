@@ -6,10 +6,10 @@ param(
     [string]$LobbyRootPath = "/Canvas/LobbyPageRoot",
     [string]$GarageRootPath = "/Canvas/GaragePageRoot",
     [string]$LoginLoadingPanelPath = "/Canvas/LoginLoadingOverlay/LoadingPanel",
-    [string]$LoginErrorPanelPath = "/Canvas/LoginLoadingOverlay/ErrorPanel",
-    [string]$LobbyOutputPath = "artifacts/unity/ui-overview-lobby.png",
-    [string]$GarageOutputPath = "artifacts/unity/ui-overview-garage.png",
-    [string]$ReportOutputPath = "artifacts/unity/ui-overview-report.json",
+    [string]$LobbyOutputPath = "artifacts/unity/lobby-page-smoke-lobby-initial.png",
+    [string]$GarageOutputPath = "artifacts/unity/lobby-page-smoke-garage.png",
+    [string]$ReturnedLobbyOutputPath = "artifacts/unity/lobby-page-smoke-lobby-returned.png",
+    [string]$ResultPath = "artifacts/unity/lobby-garage-page-switch-result.json",
     [int]$TimeoutSec = 90,
     [int]$UiSettleMs = 500
 )
@@ -52,42 +52,9 @@ function Get-PageStateSnapshot {
     }
 }
 
-function Test-UiSummaryContainsPath {
-    param(
-        [object]$Summary,
-        [string]$ExactPath
-    )
-
-    foreach ($node in @($Summary.nodes)) {
-        if ($null -ne $node -and [string]$node.path -eq $ExactPath) {
-            return $true
-        }
-    }
-
-    return $false
-}
-
-function Get-StaleEditorAssemblyHint {
-    param(
-        [object]$UiSummary,
-        [string]$GarageOpenButtonPathValue,
-        [string]$BackToLobbyButtonPathValue
-    )
-
-    $sawLegacyTopTabs = Test-UiSummaryContainsPath -Summary $UiSummary -ExactPath "/Canvas/TopTabs"
-    $sawCurrentGarageButton = Test-UiSummaryContainsPath -Summary $UiSummary -ExactPath $GarageOpenButtonPathValue
-    $sawCurrentBackButton = Test-UiSummaryContainsPath -Summary $UiSummary -ExactPath $BackToLobbyButtonPathValue
-
-    if ($sawLegacyTopTabs -and (-not $sawCurrentGarageButton -or -not $sawCurrentBackButton)) {
-        return "Likely stale editor assembly. Run Assets/Refresh -> Tools/Codex/Build Codex Lobby Scene -> scene/save, then retry the Play Mode capture."
-    }
-
-    return $null
-}
-
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
 $sceneName = [System.IO.Path]::GetFileNameWithoutExtension($ScenePath)
-$reportAbsolutePath = Resolve-AbsolutePath -PathValue $ReportOutputPath
+$resultAbsolutePath = Resolve-AbsolutePath -PathValue $ResultPath
 $startedPlayHere = $false
 
 try {
@@ -123,8 +90,8 @@ try {
     $startedPlayHere = $true
 
     $loadingPanelWait = $null
-    $stepWatch.Restart()
     if (-not [string]::IsNullOrWhiteSpace($LoginLoadingPanelPath)) {
+        $stepWatch.Restart()
         try {
             $loadingPanelWait = Wait-McpUiInactive -Root $root -Path $LoginLoadingPanelPath -TimeoutMs ($TimeoutSec * 1000)
         }
@@ -134,9 +101,9 @@ try {
                 message = $_.Exception.Message
             }
         }
+        $stepWatch.Stop()
+        $timings.loginOverlayWaitMs = $stepWatch.ElapsedMilliseconds
     }
-    $stepWatch.Stop()
-    $timings.loginOverlayWaitMs = $stepWatch.ElapsedMilliseconds
 
     $summaryPrefixes = @(
         $LobbyRootPath,
@@ -146,15 +113,15 @@ try {
     $summaryComponents = @("Button", "TMP_Text", "TMP_InputField")
 
     $uiBefore = Get-McpUiStateSummary -Root $root -PathPrefixes $summaryPrefixes -ComponentTypes $summaryComponents -MaxItems 80 -IncludeInactive
-    $initialPageStates = Get-PageStateSnapshot -RootValue $root -LobbyRootPathValue $LobbyRootPath -GarageRootPathValue $GarageRootPath
+    $initialStates = Get-PageStateSnapshot -RootValue $root -LobbyRootPathValue $LobbyRootPath -GarageRootPathValue $GarageRootPath
 
     $stepWatch.Restart()
     Start-Sleep -Milliseconds $UiSettleMs
     $lobbyCapture = Invoke-McpScreenshotCapture -Root $root -OutputPath $LobbyOutputPath -Overwrite
     $lobbySummary = Get-McpUiStateSummary -Root $root -PathPrefixes $summaryPrefixes -ComponentTypes $summaryComponents -MaxItems 80 -IncludeInactive
-    $lobbyPageStates = Get-PageStateSnapshot -RootValue $root -LobbyRootPathValue $LobbyRootPath -GarageRootPathValue $GarageRootPath
+    $lobbyStates = Get-PageStateSnapshot -RootValue $root -LobbyRootPathValue $LobbyRootPath -GarageRootPathValue $GarageRootPath
     $stepWatch.Stop()
-    $timings.lobbyCaptureMs = $stepWatch.ElapsedMilliseconds
+    $timings.initialLobbyCaptureMs = $stepWatch.ElapsedMilliseconds
 
     $stepWatch.Restart()
     $garageInvoke = Invoke-McpUiInvoke -Root $root -Path $GarageOpenButtonPath -Method "click"
@@ -163,34 +130,22 @@ try {
     Start-Sleep -Milliseconds $UiSettleMs
     $garageCapture = Invoke-McpScreenshotCapture -Root $root -OutputPath $GarageOutputPath -Overwrite
     $garageSummary = Get-McpUiStateSummary -Root $root -PathPrefixes $summaryPrefixes -ComponentTypes $summaryComponents -MaxItems 80 -IncludeInactive
-    $garagePageStates = Get-PageStateSnapshot -RootValue $root -LobbyRootPathValue $LobbyRootPath -GarageRootPathValue $GarageRootPath
+    $garageStates = Get-PageStateSnapshot -RootValue $root -LobbyRootPathValue $LobbyRootPath -GarageRootPathValue $GarageRootPath
     $stepWatch.Stop()
     $timings.garageCaptureMs = $stepWatch.ElapsedMilliseconds
 
+    $stepWatch.Restart()
     $backInvoke = Invoke-McpUiInvoke -Root $root -Path $BackToLobbyButtonPath -Method "click"
     $lobbyReturned = Wait-McpUiActive -Root $root -Path $LobbyRootPath -TimeoutMs ($TimeoutSec * 1000)
     $garageHiddenAfterReturn = Wait-McpUiInactive -Root $root -Path $GarageRootPath -TimeoutMs ($TimeoutSec * 1000)
     Start-Sleep -Milliseconds $UiSettleMs
-    $returnedPageStates = Get-PageStateSnapshot -RootValue $root -LobbyRootPathValue $LobbyRootPath -GarageRootPathValue $GarageRootPath
-
-    $loginErrorState = $null
-    if (-not [string]::IsNullOrWhiteSpace($LoginErrorPanelPath)) {
-        try {
-            $loginErrorState = Get-McpUiElementState -Root $root -Path $LoginErrorPanelPath
-        }
-        catch {
-            $loginErrorState = [PSCustomObject]@{
-                ok = $false
-                message = $_.Exception.Message
-            }
-        }
-    }
+    $returnedLobbyCapture = Invoke-McpScreenshotCapture -Root $root -OutputPath $ReturnedLobbyOutputPath -Overwrite
+    $returnedLobbySummary = Get-McpUiStateSummary -Root $root -PathPrefixes $summaryPrefixes -ComponentTypes $summaryComponents -MaxItems 80 -IncludeInactive
+    $returnedLobbyStates = Get-PageStateSnapshot -RootValue $root -LobbyRootPathValue $LobbyRootPath -GarageRootPathValue $GarageRootPath
+    $stepWatch.Stop()
+    $timings.returnedLobbyCaptureMs = $stepWatch.ElapsedMilliseconds
 
     $consoleSummary = Get-McpConsoleSummary -Root $root -LogLimit 80 -ErrorLimit 20
-    $staleEditorAssemblyHint = Get-StaleEditorAssemblyHint `
-        -UiSummary $uiBefore `
-        -GarageOpenButtonPathValue $GarageOpenButtonPath `
-        -BackToLobbyButtonPathValue $BackToLobbyButtonPath
 
     $report = [PSCustomObject]@{
         success = $true
@@ -198,14 +153,13 @@ try {
         root = $root
         scene = $sceneName
         scenePath = $ScenePath
-        reportPath = $reportAbsolutePath
+        resultPath = $resultAbsolutePath
         uiPaths = [PSCustomObject]@{
             garageOpenButton = $GarageOpenButtonPath
             backToLobbyButton = $BackToLobbyButtonPath
             lobbyRoot = $LobbyRootPath
             garageRoot = $GarageRootPath
             loginLoadingPanel = $LoginLoadingPanelPath
-            loginErrorPanel = $LoginErrorPanelPath
         }
         timingsMs = [PSCustomObject]$timings
         prePlayHealth = $prePlayHealth
@@ -214,62 +168,43 @@ try {
         loadingPanelWait = $loadingPanelWait
         uiBefore = $uiBefore
         pageStates = [PSCustomObject]@{
-            initial = $initialPageStates
-            lobbyCapture = $lobbyPageStates
-            garageCapture = $garagePageStates
-            afterReturn = $returnedPageStates
+            initial = $initialStates
+            lobbyCapture = $lobbyStates
+            garageCapture = $garageStates
+            afterReturn = $returnedLobbyStates
         }
-        lobby = [PSCustomObject]@{
-            summary = $lobbySummary
-            screenshot = $lobbyCapture
-            returned = $lobbyReturned
+        captures = [PSCustomObject]@{
+            lobbyInitial = $lobbyCapture
+            garage = $garageCapture
+            lobbyReturned = $returnedLobbyCapture
         }
-        garage = [PSCustomObject]@{
-            invoke = $garageInvoke
-            ready = $garageReady
-            lobbyHidden = $lobbyHidden
-            summary = $garageSummary
-            screenshot = $garageCapture
+        transitions = [PSCustomObject]@{
+            toGarage = [PSCustomObject]@{
+                invoke = $garageInvoke
+                garageReady = $garageReady
+                lobbyHidden = $lobbyHidden
+                summary = $garageSummary
+            }
+            toLobby = [PSCustomObject]@{
+                invoke = $backInvoke
+                lobbyReturned = $lobbyReturned
+                garageHidden = $garageHiddenAfterReturn
+                summary = $returnedLobbySummary
+            }
         }
-        returnToLobby = [PSCustomObject]@{
-            invoke = $backInvoke
-            garageHidden = $garageHiddenAfterReturn
-        }
-        loginErrorState = $loginErrorState
+        lobbySummary = $lobbySummary
         consoleSummary = $consoleSummary
         debugHints = @(
             [PSCustomObject]@{
-                condition = "Hierarchy or GameView still looks old after builder changes."
-                hint = "Run Assets/Refresh -> Tools/Codex/Build Codex Lobby Scene -> scene/save before retrying Play Mode capture."
-            },
-            [PSCustomObject]@{
-                condition = "UI button paths fail while old TopTabs objects still appear."
-                hint = if ([string]::IsNullOrWhiteSpace($staleEditorAssemblyHint)) {
-                    "Likely stale editor assembly. Refresh/build/save the scene before retrying."
-                }
-                else {
-                    $staleEditorAssemblyHint
-                }
+                condition = "Button path mismatch or old hierarchy keeps appearing."
+                hint = "Run Assets/Refresh -> Tools/Codex/Build Codex Lobby Scene -> scene/save before rerunning this smoke."
             }
         )
     }
 
-    Ensure-ParentDirectory -PathValue $reportAbsolutePath
-    ($report | ConvertTo-Json -Depth 8) | Set-Content -Path $reportAbsolutePath -Encoding UTF8
-
-    [PSCustomObject]@{
-        success = $true
-        scene = $sceneName
-        scenePath = $ScenePath
-        reportPath = $reportAbsolutePath
-        lobbyScreenshot = $lobbyCapture.relativePath
-        garageScreenshot = $garageCapture.relativePath
-        timingsMs = [PSCustomObject]$timings
-        stoppedPreExistingPlay = $stoppedPreExistingPlay
-        warningCount = $consoleSummary.warningCount
-        errorCount = $consoleSummary.errorCount
-        benignCount = $consoleSummary.benignCount
-    } | ConvertTo-Json -Depth 5
+    Ensure-ParentDirectory -PathValue $resultAbsolutePath
+    ($report | ConvertTo-Json -Depth 8) | Set-Content -Path $resultAbsolutePath -Encoding UTF8
+    $report | ConvertTo-Json -Depth 8
 }
 finally {
     if ($startedPlayHere) {
@@ -277,7 +212,7 @@ finally {
             Invoke-McpPlayStopAndWait -Root $root -TimeoutSec $TimeoutSec | Out-Null
         }
         catch {
-            Write-Warning ("Failed to stop Play Mode after UI overview capture: {0}" -f $_.Exception.Message)
+            Write-Warning ("Failed to stop Play Mode after page-switch smoke: {0}" -f $_.Exception.Message)
         }
     }
 }

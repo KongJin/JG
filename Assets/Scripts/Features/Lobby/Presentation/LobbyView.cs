@@ -33,7 +33,7 @@ namespace Features.Lobby.Presentation
         [Required, SerializeField]
         private TMP_Text _garageTabText;
 
-        [Header("Tab Visuals")]
+        [Header("Navigation Visuals")]
         [SerializeField]
         private Color _activeTabColor = new Color(0.286f, 0.463f, 1f, 1f);
 
@@ -193,8 +193,8 @@ namespace Features.Lobby.Presentation
         private void ShowLobbyPage()
         {
             _garageFocused = false;
-            EnsureDashboardRootsVisible();
-            UpdateDashboardFocus();
+            SetPageState(_lobbyPageRoot, _lobbyPageCanvasGroup, true);
+            SetPageState(_garagePageRoot, _garagePageCanvasGroup, false);
 
             if (_showingRoomDetail)
                 ShowRoomDetail();
@@ -207,8 +207,8 @@ namespace Features.Lobby.Presentation
         private void ShowGaragePage()
         {
             _garageFocused = true;
-            EnsureDashboardRootsVisible();
-            UpdateDashboardFocus();
+            SetPageState(_lobbyPageRoot, _lobbyPageCanvasGroup, false);
+            SetPageState(_garagePageRoot, _garagePageCanvasGroup, true);
 
             if (_showingRoomDetail)
                 ShowRoomDetail();
@@ -233,8 +233,10 @@ namespace Features.Lobby.Presentation
             if (_garageTabButton != null)
                 _garageTabButton.interactable = true;
 
-            UpdateTabVisuals(_lobbyTabButton, lobbyActive);
-            UpdateTabVisuals(_garageTabButton, !lobbyActive);
+            // In page-switcher mode only one navigation button is visible on screen at a time,
+            // so both buttons should read as clear actions instead of active/inactive tabs.
+            UpdateTabVisuals(_lobbyTabButton, true);
+            UpdateTabVisuals(_garageTabButton, true);
         }
 
         private void UpdateTabVisuals(Button tabButton, bool isActive)
@@ -262,26 +264,17 @@ namespace Features.Lobby.Presentation
                 label.color = isActive ? _activeTextColor : _inactiveTextColor;
         }
 
-        private void EnsureDashboardRootsVisible()
+        private static void SetPageState(GameObject root, CanvasGroup group, bool isVisible)
         {
-            if (_lobbyPageRoot != null)
-                _lobbyPageRoot.SetActive(true);
-            if (_garagePageRoot != null)
-                _garagePageRoot.SetActive(true);
-        }
+            if (root != null)
+                root.SetActive(isVisible);
 
-        private void UpdateDashboardFocus()
-        {
-            ApplyCanvasGroup(_lobbyPageCanvasGroup, _garageFocused ? 0.92f : 1f);
-            ApplyCanvasGroup(_garagePageCanvasGroup, _garageFocused ? 1f : 0.96f);
-        }
-
-        private static void ApplyCanvasGroup(CanvasGroup group, float alpha)
-        {
-            if (group == null)
-                return;
-
-            group.alpha = alpha;
+            if (group != null)
+            {
+                group.alpha = isVisible ? 1f : 0f;
+                group.interactable = isVisible;
+                group.blocksRaycasts = isVisible;
+            }
         }
     }
 }

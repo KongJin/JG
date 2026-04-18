@@ -87,7 +87,7 @@ namespace Features.Garage.Presentation
             if (_titleText != null)
             {
                 _titleText.fontSize = _titleFontSize;
-                _titleText.alignment = TextAlignmentOptions.MidlineLeft;
+                _titleText.alignment = TextAlignmentOptions.TopLeft;
                 _titleText.textWrappingMode = TextWrappingModes.NoWrap;
                 _titleText.overflowMode = TextOverflowModes.Ellipsis;
             }
@@ -98,7 +98,7 @@ namespace Features.Garage.Presentation
                 _valueText.enableAutoSizing = true;
                 _valueText.fontSizeMin = Mathf.Max(10f, _valueFontSize - 4f);
                 _valueText.fontSizeMax = _valueFontSize;
-                _valueText.alignment = TextAlignmentOptions.Midline;
+                _valueText.alignment = TextAlignmentOptions.Center;
                 _valueText.textWrappingMode = TextWrappingModes.NoWrap;
                 _valueText.overflowMode = TextOverflowModes.Ellipsis;
             }
@@ -106,10 +106,9 @@ namespace Features.Garage.Presentation
             if (_hintText != null)
             {
                 _hintText.fontSize = _hintFontSize;
-                _hintText.enableAutoSizing = true;
-                _hintText.fontSizeMin = Mathf.Max(9f, _hintFontSize - 1f);
+                _hintText.enableAutoSizing = false;
                 _hintText.fontSizeMax = _hintFontSize;
-                _hintText.alignment = TextAlignmentOptions.MidlineLeft;
+                _hintText.alignment = TextAlignmentOptions.TopLeft;
                 _hintText.textWrappingMode = TextWrappingModes.NoWrap;
                 _hintText.overflowMode = TextOverflowModes.Ellipsis;
             }

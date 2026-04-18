@@ -82,6 +82,8 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string projectRootPath;
         public string activeScene;
         public string activeScenePath;
+        public string pendingPlayAction;
+        public int pendingPlayAgeMs;
     }
 
     [Serializable]
@@ -305,6 +307,20 @@ namespace ProjectSD.EditorTools.UnityMcp
         public bool queued;
         public int pendingCount;
         public bool autoSaved;
+    }
+
+    [Serializable]
+    internal sealed class CodexLobbyRebuildResponse
+    {
+        public bool success;
+        public string message;
+        public string scenePath;
+        public string builderMethod;
+        public bool sceneSaved;
+        public string[] verifiedSentinels;
+        public string[] missingSentinels;
+        public string[] verifiedReferences;
+        public string[] missingReferences;
     }
 
     [Serializable]

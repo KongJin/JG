@@ -57,21 +57,21 @@ namespace ProjectSD.EditorTools.SceneTools
                 "Title",
                 canvas.transform,
                 "CODEX LOBBY",
-                38,
+                34,
                 FontStyles.Bold,
                 TextAlignmentOptions.TopLeft,
                 new Color32(242, 245, 255, 255));
-            Stretch(title.rectTransform, new Vector2(0.05f, 0.905f), new Vector2(0.95f, 0.985f), Vector2.zero, Vector2.zero);
+            Stretch(title.rectTransform, new Vector2(0.05f, 0.915f), new Vector2(0.95f, 0.98f), Vector2.zero, Vector2.zero);
 
             var subtitle = CreateText(
                 "Subtitle",
                 canvas.transform,
                 "Photon room flow for room creation, ready checks, and scene handoff.",
-                18,
+                16,
                 FontStyles.Normal,
                 TextAlignmentOptions.TopLeft,
                 new Color32(138, 156, 196, 255));
-            Stretch(subtitle.rectTransform, new Vector2(0.05f, 0.86f), new Vector2(0.95f, 0.925f), Vector2.zero, Vector2.zero);
+            Stretch(subtitle.rectTransform, new Vector2(0.05f, 0.875f), new Vector2(0.95f, 0.92f), Vector2.zero, Vector2.zero);
 
             var roomListView = BuildRoomListPanel(lobbyPageRoot.transform);
             var roomDetailView = BuildRoomDetailPanel(lobbyPageRoot.transform);
@@ -164,12 +164,41 @@ namespace ProjectSD.EditorTools.SceneTools
                 new Color32(248, 251, 255, 255));
             createButton.gameObject.AddComponent<LayoutElement>().preferredHeight = 52f;
 
-            CreateHeaderText(panel.transform, "ListHeader", "Open rooms", 17, new Color32(230, 237, 252, 255), 26f);
+            var listHeaderRow = CreateGameObject("ListHeaderRow", panel.transform, typeof(RectTransform));
+            var listHeaderLayout = listHeaderRow.AddComponent<HorizontalLayoutGroup>();
+            listHeaderLayout.spacing = 10f;
+            listHeaderLayout.childAlignment = TextAnchor.MiddleLeft;
+            listHeaderLayout.childControlHeight = true;
+            listHeaderLayout.childControlWidth = false;
+            listHeaderLayout.childForceExpandHeight = false;
+            listHeaderLayout.childForceExpandWidth = false;
+            listHeaderRow.AddComponent<LayoutElement>().preferredHeight = 34f;
 
-            var contentGo = CreateGameObject("RoomListContent", panel.transform, typeof(RectTransform));
+            var listHeader = CreateHeaderText(listHeaderRow.transform, "ListHeader", "Open rooms", 17, new Color32(230, 237, 252, 255), 26f);
+            listHeader.gameObject.AddComponent<LayoutElement>().flexibleWidth = 1f;
+
+            var roomCountBadge = CreatePanel("RoomCountBadge", listHeaderRow.transform, new Color32(35, 47, 76, 255));
+            roomCountBadge.gameObject.AddComponent<LayoutElement>().preferredWidth = 138f;
+            roomCountBadge.gameObject.GetComponent<LayoutElement>().preferredHeight = 28f;
+            var roomCountText = CreateText(
+                "RoomCountText",
+                roomCountBadge.transform,
+                "No open rooms",
+                13,
+                FontStyles.Bold,
+                TextAlignmentOptions.Center,
+                new Color32(173, 191, 227, 255));
+            Stretch(roomCountText.rectTransform, Vector2.zero, Vector2.one, new Vector2(10f, 2f), new Vector2(-10f, -2f));
+
+            var listSurface = CreatePanel("RoomListSurface", panel.transform, new Color32(18, 24, 39, 255));
+            listSurface.gameObject.AddComponent<LayoutElement>().flexibleHeight = 1f;
+
+            var contentGo = CreateGameObject("RoomListContent", listSurface.transform, typeof(RectTransform));
             var contentRect = contentGo.GetComponent<RectTransform>();
+            Stretch(contentRect, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(16f, 16f), new Vector2(-16f, -16f));
             var contentLayout = contentGo.AddComponent<VerticalLayoutGroup>();
             contentLayout.spacing = 10f;
+            contentLayout.padding = new RectOffset(0, 0, 0, 0);
             contentLayout.childAlignment = TextAnchor.UpperCenter;
             contentLayout.childControlHeight = true;
             contentLayout.childControlWidth = true;
@@ -177,7 +206,16 @@ namespace ProjectSD.EditorTools.SceneTools
             contentLayout.childForceExpandWidth = true;
             var contentFitter = contentGo.AddComponent<ContentSizeFitter>();
             contentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            contentGo.AddComponent<LayoutElement>().flexibleHeight = 1f;
+
+            var emptyStateText = CreateText(
+                "EmptyStateText",
+                listSurface.transform,
+                "No open rooms right now.\nCreate one to become the first squad in the lobby.",
+                18,
+                FontStyles.Normal,
+                TextAlignmentOptions.Center,
+                new Color32(124, 141, 176, 255));
+            Stretch(emptyStateText.rectTransform, new Vector2(0.12f, 0.22f), new Vector2(0.88f, 0.78f), Vector2.zero, Vector2.zero);
 
             var template = BuildRoomItemTemplate(contentGo.transform);
             template.gameObject.SetActive(false);
@@ -189,6 +227,8 @@ namespace ProjectSD.EditorTools.SceneTools
             SetObject(roomListView, "_createRoomButton", createButton);
             SetObject(roomListView, "_roomListContent", contentRect);
             SetObject(roomListView, "_roomItemPrefab", template);
+            SetObject(roomListView, "_roomListCountText", roomCountText);
+            SetObject(roomListView, "_roomListEmptyStateText", emptyStateText);
             return roomListView;
         }
 
@@ -400,13 +440,13 @@ namespace ProjectSD.EditorTools.SceneTools
         private static TMP_InputField CreateInputField(string name, Transform parent, string label, string placeholder)
         {
             var root = CreateGameObject(name, parent, typeof(RectTransform));
-            root.AddComponent<LayoutElement>().preferredHeight = 72f;
+            root.AddComponent<LayoutElement>().preferredHeight = 84f;
 
             var labelText = CreateText("Label", root.transform, label, 13, FontStyles.Bold, TextAlignmentOptions.TopLeft, new Color32(143, 164, 201, 255));
-            Stretch(labelText.rectTransform, new Vector2(0f, 0.62f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
+            Stretch(labelText.rectTransform, new Vector2(0f, 0.7f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
 
             var fieldGo = CreateGameObject("Field", root.transform, typeof(RectTransform), typeof(Image), typeof(TMP_InputField));
-            Stretch(fieldGo.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 0.6f), Vector2.zero, Vector2.zero);
+            Stretch(fieldGo.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 0.58f), Vector2.zero, Vector2.zero);
 
             var fieldImage = fieldGo.GetComponent<Image>();
             ApplyDefaultSprite(fieldImage);
@@ -414,7 +454,7 @@ namespace ProjectSD.EditorTools.SceneTools
             fieldImage.color = new Color32(18, 24, 39, 255);
 
             var textViewport = CreateGameObject("Text Area", fieldGo.transform, typeof(RectTransform), typeof(RectMask2D));
-            Stretch(textViewport.GetComponent<RectTransform>(), Vector2.zero, Vector2.one, new Vector2(14f, 8f), new Vector2(-14f, -8f));
+            Stretch(textViewport.GetComponent<RectTransform>(), Vector2.zero, Vector2.one, new Vector2(16f, 10f), new Vector2(-16f, -10f));
 
             var text = CreateText("Text", textViewport.transform, string.Empty, 18, FontStyles.Normal, TextAlignmentOptions.Left, new Color32(244, 247, 255, 255));
             Stretch(text.rectTransform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);

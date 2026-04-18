@@ -47,3 +47,8 @@
 9. `UnitSlotsContainer`
 
 배치 영역 시각화와 summon UI는 `CoreObjectiveSetup.InitializePlacementArea()` 이후에만 초기화한다.
+
+## Smoke Notes
+
+- Unity MCP smoke can target `/HudCanvas/UnitSummonUi/SlotRow/UnitSlotTemplate(Clone)` with `/ui/invoke` to verify summon flow without relying on fragile GameView pixel dragging.
+- `tools/unity-mcp/Invoke-GameSceneSummonSmoke.ps1` is the baseline lobby-to-game summon smoke for this scene.

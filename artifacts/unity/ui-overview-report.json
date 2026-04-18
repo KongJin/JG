@@ -1,16 +1,41 @@
 ﻿{
     "success":  true,
-    "generatedAt":  "2026-04-18 00:27:33+09:00",
+    "generatedAt":  "2026-04-18 20:22:12+09:00",
     "root":  "http://127.0.0.1:52675",
     "scene":  "CodexLobbyScene",
+    "scenePath":  "Assets/Scenes/CodexLobbyScene.unity",
     "reportPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\ui-overview-report.json",
+    "uiPaths":  {
+                    "garageOpenButton":  "/Canvas/LobbyPageRoot/GarageTabButton",
+                    "backToLobbyButton":  "/Canvas/GaragePageRoot/GarageHeaderRow/LobbyTabButton",
+                    "lobbyRoot":  "/Canvas/LobbyPageRoot",
+                    "garageRoot":  "/Canvas/GaragePageRoot",
+                    "loginLoadingPanel":  "/Canvas/LoginLoadingOverlay/LoadingPanel",
+                    "loginErrorPanel":  "/Canvas/LoginLoadingOverlay/ErrorPanel"
+                },
     "timingsMs":  {
-                      "bridgeHealthyMs":  146,
-                      "playReadyMs":  12984,
-                      "loginOverlayWaitMs":  28,
-                      "lobbyCaptureMs":  701,
-                      "garageCaptureMs":  711
+                      "bridgeHealthyMs":  187,
+                      "playReadyMs":  15009,
+                      "loginOverlayWaitMs":  22,
+                      "lobbyCaptureMs":  665,
+                      "garageCaptureMs":  705
                   },
+    "prePlayHealth":  {
+                          "ok":  true,
+                          "bridgeRunning":  true,
+                          "port":  52675,
+                          "isPlaying":  false,
+                          "isPlayingOrWillChange":  false,
+                          "isPlayModeChanging":  false,
+                          "rawIsPlayingOrWillChange":  false,
+                          "isCompiling":  false,
+                          "isWaitingForPlayMode":  false,
+                          "projectKey":  "0d8ea703",
+                          "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                          "activeScene":  "CodexLobbyScene",
+                          "activeScenePath":  "Assets/Scenes/CodexLobbyScene.unity"
+                      },
+    "stoppedPreExistingPlay":  false,
     "play":  {
                  "Response":  "",
                  "Wait":  {
@@ -23,7 +48,7 @@
                               "isCompiling":  false,
                               "activeScene":  "CodexLobbyScene",
                               "activeScenePath":  "Assets/Scenes/CodexLobbyScene.unity",
-                              "waitedMs":  337
+                              "waitedMs":  317
                           },
                  "Health":  {
                                 "ok":  true,
@@ -55,31 +80,30 @@
                                     "activeScene":  "CodexLobbyScene",
                                     "activeScenePath":  "Assets/Scenes/CodexLobbyScene.unity"
                                 },
-                 "ElapsedMs":  12377
+                 "ElapsedMs":  14370
              },
     "loadingPanelWait":  {
                              "success":  true,
                              "path":  "/Canvas/LoginLoadingOverlay/LoadingPanel",
                              "name":  null,
                              "activeInHierarchy":  false,
-                             "waitedMs":  8
+                             "waitedMs":  3
                          },
     "uiBefore":  {
                      "sceneName":  "CodexLobbyScene",
                      "isPlaying":  true,
-                     "timestampUtc":  "2026-04-17 15:27:31.466",
+                     "timestampUtc":  "2026-04-18 11:22:10.283",
                      "totalCanvasCount":  1,
-                     "totalNodeCount":  61,
-                     "matchedNodeCount":  29,
+                     "totalNodeCount":  30,
+                     "matchedNodeCount":  10,
                      "truncated":  false,
                      "pathPrefixes":  [
                                           "/Canvas/LobbyPageRoot",
                                           "/Canvas/GaragePageRoot",
-                                          "/Canvas/TopTabs",
                                           "/Canvas/LoginLoadingOverlay"
                                       ],
                      "activeRoots":  [
-                                         "/Canvas/GaragePageRoot"
+
                                      ],
                      "nodes":  [
                                    {
@@ -113,9 +137,9 @@
                                                       ]
                                    },
                                    {
-                                       "path":  "/Canvas/LobbyPageRoot/RoomListPanel/ListHeader",
-                                       "name":  "ListHeader",
-                                       "activeInHierarchy":  true,
+                                       "path":  "/Canvas/LobbyPageRoot/RoomDetailPanel/RoomNameText",
+                                       "name":  "RoomNameText",
+                                       "activeInHierarchy":  false,
                                        "childCount":  0,
                                        "components":  [
                                                           "Graphic",
@@ -123,19 +147,9 @@
                                                       ]
                                    },
                                    {
-                                       "path":  "/Canvas/TopTabs/LobbyTabButton",
-                                       "name":  "LobbyTabButton",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "Button"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/TopTabs/LobbyTabButton/Label",
-                                       "name":  "Label",
-                                       "activeInHierarchy":  true,
+                                       "path":  "/Canvas/LobbyPageRoot/RoomDetailPanel/MemberCountText",
+                                       "name":  "MemberCountText",
+                                       "activeInHierarchy":  false,
                                        "childCount":  0,
                                        "components":  [
                                                           "Graphic",
@@ -143,7 +157,27 @@
                                                       ]
                                    },
                                    {
-                                       "path":  "/Canvas/TopTabs/GarageTabButton",
+                                       "path":  "/Canvas/LobbyPageRoot/RoomDetailPanel/DifficultyText",
+                                       "name":  "DifficultyText",
+                                       "activeInHierarchy":  false,
+                                       "childCount":  0,
+                                       "components":  [
+                                                          "Graphic",
+                                                          "TMP_Text"
+                                                      ]
+                                   },
+                                   {
+                                       "path":  "/Canvas/LobbyPageRoot/RoomDetailPanel/MembersHeader",
+                                       "name":  "MembersHeader",
+                                       "activeInHierarchy":  false,
+                                       "childCount":  0,
+                                       "components":  [
+                                                          "Graphic",
+                                                          "TMP_Text"
+                                                      ]
+                                   },
+                                   {
+                                       "path":  "/Canvas/LobbyPageRoot/GarageTabButton",
                                        "name":  "GarageTabButton",
                                        "activeInHierarchy":  true,
                                        "childCount":  0,
@@ -153,7 +187,7 @@
                                                       ]
                                    },
                                    {
-                                       "path":  "/Canvas/TopTabs/GarageTabButton/Label",
+                                       "path":  "/Canvas/LobbyPageRoot/GarageTabButton/Label",
                                        "name":  "Label",
                                        "activeInHierarchy":  true,
                                        "childCount":  0,
@@ -163,242 +197,115 @@
                                                       ]
                                    },
                                    {
-                                       "path":  "/Canvas/GaragePageRoot/GarageTitle",
-                                       "name":  "GarageTitle",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "TMP_Text"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/GarageSubtitle",
-                                       "name":  "GarageSubtitle",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "TMP_Text"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot1",
-                                       "name":  "GarageSlot1",
-                                       "activeInHierarchy":  true,
+                                       "path":  "/Canvas/GaragePageRoot/GarageHeaderRow/LobbyTabButton",
+                                       "name":  "LobbyTabButton",
+                                       "activeInHierarchy":  false,
                                        "childCount":  0,
                                        "components":  [
                                                           "Graphic",
                                                           "Button"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot2",
-                                       "name":  "GarageSlot2",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "Button"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot3",
-                                       "name":  "GarageSlot3",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "Button"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot4",
-                                       "name":  "GarageSlot4",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "Button"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot5",
-                                       "name":  "GarageSlot5",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "Button"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot6",
-                                       "name":  "GarageSlot6",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "Button"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/UnitEditorPane/SelectionTitle",
-                                       "name":  "SelectionTitle",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "TMP_Text"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/UnitEditorPane/SelectionSubtitle",
-                                       "name":  "SelectionSubtitle",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "TMP_Text"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/UnitEditorPane/ClearButton",
-                                       "name":  "ClearButton",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "Button"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/ResultPane/RosterStatus",
-                                       "name":  "RosterStatus",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "TMP_Text"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/ResultPane/ValidationText",
-                                       "name":  "ValidationText",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "TMP_Text"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/ResultPane/StatsText",
-                                       "name":  "StatsText",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "TMP_Text"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/ResultPane/SaveButton",
-                                       "name":  "SaveButton",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "Button"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/AccountCard/AccountDisplayNameText",
-                                       "name":  "AccountDisplayNameText",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "TMP_Text"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/AccountCard/AccountAuthTypeText",
-                                       "name":  "AccountAuthTypeText",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "TMP_Text"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/AccountCard/AccountGoogleSignInButton",
-                                       "name":  "AccountGoogleSignInButton",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "Button"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/AccountCard/AccountLogoutButton",
-                                       "name":  "AccountLogoutButton",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "Button"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/AccountCard/AccountDeleteButton",
-                                       "name":  "AccountDeleteButton",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "Button"
-                                                      ]
-                                   },
-                                   {
-                                       "path":  "/Canvas/GaragePageRoot/AccountCard/AccountStatusText",
-                                       "name":  "AccountStatusText",
-                                       "activeInHierarchy":  true,
-                                       "childCount":  0,
-                                       "components":  [
-                                                          "Graphic",
-                                                          "TMP_Text"
                                                       ]
                                    }
                                ]
                  },
+    "pageStates":  {
+                       "initial":  {
+                                       "lobby":  {
+                                                     "success":  true,
+                                                     "state":  [
+                                                                   "[path, /Canvas/LobbyPageRoot]",
+                                                                   "[name, LobbyPageRoot]",
+                                                                   "[activeSelf, True]",
+                                                                   "[activeInHierarchy, True]"
+                                                               ]
+                                                 },
+                                       "garage":  {
+                                                      "success":  true,
+                                                      "state":  [
+                                                                    "[path, /Canvas/GaragePageRoot]",
+                                                                    "[name, GaragePageRoot]",
+                                                                    "[activeSelf, False]",
+                                                                    "[activeInHierarchy, False]"
+                                                                ]
+                                                  }
+                                   },
+                       "lobbyCapture":  {
+                                            "lobby":  {
+                                                          "success":  true,
+                                                          "state":  [
+                                                                        "[path, /Canvas/LobbyPageRoot]",
+                                                                        "[name, LobbyPageRoot]",
+                                                                        "[activeSelf, True]",
+                                                                        "[activeInHierarchy, True]"
+                                                                    ]
+                                                      },
+                                            "garage":  {
+                                                           "success":  true,
+                                                           "state":  [
+                                                                         "[path, /Canvas/GaragePageRoot]",
+                                                                         "[name, GaragePageRoot]",
+                                                                         "[activeSelf, False]",
+                                                                         "[activeInHierarchy, False]"
+                                                                     ]
+                                                       }
+                                        },
+                       "garageCapture":  {
+                                             "lobby":  {
+                                                           "success":  true,
+                                                           "state":  [
+                                                                         "[path, /Canvas/LobbyPageRoot]",
+                                                                         "[name, LobbyPageRoot]",
+                                                                         "[activeSelf, False]",
+                                                                         "[activeInHierarchy, False]"
+                                                                     ]
+                                                       },
+                                             "garage":  {
+                                                            "success":  true,
+                                                            "state":  [
+                                                                          "[path, /Canvas/GaragePageRoot]",
+                                                                          "[name, GaragePageRoot]",
+                                                                          "[activeSelf, True]",
+                                                                          "[activeInHierarchy, True]"
+                                                                      ]
+                                                        }
+                                         },
+                       "afterReturn":  {
+                                           "lobby":  {
+                                                         "success":  true,
+                                                         "state":  [
+                                                                       "[path, /Canvas/LobbyPageRoot]",
+                                                                       "[name, LobbyPageRoot]",
+                                                                       "[activeSelf, True]",
+                                                                       "[activeInHierarchy, True]"
+                                                                   ]
+                                                     },
+                                           "garage":  {
+                                                          "success":  true,
+                                                          "state":  [
+                                                                        "[path, /Canvas/GaragePageRoot]",
+                                                                        "[name, GaragePageRoot]",
+                                                                        "[activeSelf, False]",
+                                                                        "[activeInHierarchy, False]"
+                                                                    ]
+                                                      }
+                                       }
+                   },
     "lobby":  {
-                  "invoke":  {
-                                 "success":  true,
-                                 "message":  "Invoked Button.onClick and coded handlers",
-                                 "path":  "/Canvas/TopTabs/LobbyTabButton",
-                                 "invokedMethod":  "Button.onClick",
-                                 "result":  "",
-                                 "durationMs":  1.0
-                             },
                   "summary":  {
                                   "sceneName":  "CodexLobbyScene",
                                   "isPlaying":  true,
-                                  "timestampUtc":  "2026-04-17 15:27:32.264",
+                                  "timestampUtc":  "2026-04-18 11:22:11.024",
                                   "totalCanvasCount":  1,
-                                  "totalNodeCount":  61,
-                                  "matchedNodeCount":  29,
+                                  "totalNodeCount":  30,
+                                  "matchedNodeCount":  10,
                                   "truncated":  false,
                                   "pathPrefixes":  [
                                                        "/Canvas/LobbyPageRoot",
                                                        "/Canvas/GaragePageRoot",
-                                                       "/Canvas/TopTabs",
                                                        "/Canvas/LoginLoadingOverlay"
                                                    ],
                                   "activeRoots":  [
-                                                      "/Canvas/GaragePageRoot"
+
                                                   ],
                                   "nodes":  [
                                                 {
@@ -432,9 +339,9 @@
                                                                    ]
                                                 },
                                                 {
-                                                    "path":  "/Canvas/LobbyPageRoot/RoomListPanel/ListHeader",
-                                                    "name":  "ListHeader",
-                                                    "activeInHierarchy":  true,
+                                                    "path":  "/Canvas/LobbyPageRoot/RoomDetailPanel/RoomNameText",
+                                                    "name":  "RoomNameText",
+                                                    "activeInHierarchy":  false,
                                                     "childCount":  0,
                                                     "components":  [
                                                                        "Graphic",
@@ -442,19 +349,9 @@
                                                                    ]
                                                 },
                                                 {
-                                                    "path":  "/Canvas/TopTabs/LobbyTabButton",
-                                                    "name":  "LobbyTabButton",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "Button"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/TopTabs/LobbyTabButton/Label",
-                                                    "name":  "Label",
-                                                    "activeInHierarchy":  true,
+                                                    "path":  "/Canvas/LobbyPageRoot/RoomDetailPanel/MemberCountText",
+                                                    "name":  "MemberCountText",
+                                                    "activeInHierarchy":  false,
                                                     "childCount":  0,
                                                     "components":  [
                                                                        "Graphic",
@@ -462,7 +359,27 @@
                                                                    ]
                                                 },
                                                 {
-                                                    "path":  "/Canvas/TopTabs/GarageTabButton",
+                                                    "path":  "/Canvas/LobbyPageRoot/RoomDetailPanel/DifficultyText",
+                                                    "name":  "DifficultyText",
+                                                    "activeInHierarchy":  false,
+                                                    "childCount":  0,
+                                                    "components":  [
+                                                                       "Graphic",
+                                                                       "TMP_Text"
+                                                                   ]
+                                                },
+                                                {
+                                                    "path":  "/Canvas/LobbyPageRoot/RoomDetailPanel/MembersHeader",
+                                                    "name":  "MembersHeader",
+                                                    "activeInHierarchy":  false,
+                                                    "childCount":  0,
+                                                    "components":  [
+                                                                       "Graphic",
+                                                                       "TMP_Text"
+                                                                   ]
+                                                },
+                                                {
+                                                    "path":  "/Canvas/LobbyPageRoot/GarageTabButton",
                                                     "name":  "GarageTabButton",
                                                     "activeInHierarchy":  true,
                                                     "childCount":  0,
@@ -472,7 +389,7 @@
                                                                    ]
                                                 },
                                                 {
-                                                    "path":  "/Canvas/TopTabs/GarageTabButton/Label",
+                                                    "path":  "/Canvas/LobbyPageRoot/GarageTabButton/Label",
                                                     "name":  "Label",
                                                     "activeInHierarchy":  true,
                                                     "childCount":  0,
@@ -482,213 +399,13 @@
                                                                    ]
                                                 },
                                                 {
-                                                    "path":  "/Canvas/GaragePageRoot/GarageTitle",
-                                                    "name":  "GarageTitle",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "TMP_Text"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/GarageSubtitle",
-                                                    "name":  "GarageSubtitle",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "TMP_Text"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot1",
-                                                    "name":  "GarageSlot1",
-                                                    "activeInHierarchy":  true,
+                                                    "path":  "/Canvas/GaragePageRoot/GarageHeaderRow/LobbyTabButton",
+                                                    "name":  "LobbyTabButton",
+                                                    "activeInHierarchy":  false,
                                                     "childCount":  0,
                                                     "components":  [
                                                                        "Graphic",
                                                                        "Button"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot2",
-                                                    "name":  "GarageSlot2",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "Button"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot3",
-                                                    "name":  "GarageSlot3",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "Button"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot4",
-                                                    "name":  "GarageSlot4",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "Button"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot5",
-                                                    "name":  "GarageSlot5",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "Button"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot6",
-                                                    "name":  "GarageSlot6",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "Button"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/UnitEditorPane/SelectionTitle",
-                                                    "name":  "SelectionTitle",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "TMP_Text"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/UnitEditorPane/SelectionSubtitle",
-                                                    "name":  "SelectionSubtitle",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "TMP_Text"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/UnitEditorPane/ClearButton",
-                                                    "name":  "ClearButton",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "Button"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/ResultPane/RosterStatus",
-                                                    "name":  "RosterStatus",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "TMP_Text"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/ResultPane/ValidationText",
-                                                    "name":  "ValidationText",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "TMP_Text"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/ResultPane/StatsText",
-                                                    "name":  "StatsText",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "TMP_Text"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/ResultPane/SaveButton",
-                                                    "name":  "SaveButton",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "Button"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/AccountCard/AccountDisplayNameText",
-                                                    "name":  "AccountDisplayNameText",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "TMP_Text"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/AccountCard/AccountAuthTypeText",
-                                                    "name":  "AccountAuthTypeText",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "TMP_Text"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/AccountCard/AccountGoogleSignInButton",
-                                                    "name":  "AccountGoogleSignInButton",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "Button"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/AccountCard/AccountLogoutButton",
-                                                    "name":  "AccountLogoutButton",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "Button"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/AccountCard/AccountDeleteButton",
-                                                    "name":  "AccountDeleteButton",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "Button"
-                                                                   ]
-                                                },
-                                                {
-                                                    "path":  "/Canvas/GaragePageRoot/AccountCard/AccountStatusText",
-                                                    "name":  "AccountStatusText",
-                                                    "activeInHierarchy":  true,
-                                                    "childCount":  0,
-                                                    "components":  [
-                                                                       "Graphic",
-                                                                       "TMP_Text"
                                                                    ]
                                                 }
                                             ]
@@ -698,37 +415,50 @@
                                      "message":  "Screenshot captured.",
                                      "relativePath":  "artifacts/unity/ui-overview-lobby.png",
                                      "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\ui-overview-lobby.png",
-                                     "fileSizeBytes":  202266
-                                 }
+                                     "fileSizeBytes":  107489
+                                 },
+                  "returned":  {
+                                   "success":  true,
+                                   "path":  "/Canvas/LobbyPageRoot",
+                                   "name":  null,
+                                   "activeInHierarchy":  true,
+                                   "waitedMs":  11
+                               }
               },
     "garage":  {
                    "invoke":  {
                                   "success":  true,
                                   "message":  "Invoked Button.onClick and coded handlers",
-                                  "path":  "/Canvas/TopTabs/GarageTabButton",
+                                  "path":  "/Canvas/LobbyPageRoot/GarageTabButton",
                                   "invokedMethod":  "Button.onClick",
                                   "result":  "",
-                                  "durationMs":  0.0
+                                  "durationMs":  4.0
                               },
                    "ready":  {
                                  "success":  true,
                                  "path":  "/Canvas/GaragePageRoot",
                                  "name":  null,
                                  "activeInHierarchy":  true,
-                                 "waitedMs":  14
+                                 "waitedMs":  18
                              },
+                   "lobbyHidden":  {
+                                       "success":  true,
+                                       "path":  "/Canvas/LobbyPageRoot",
+                                       "name":  null,
+                                       "activeInHierarchy":  false,
+                                       "waitedMs":  8
+                                   },
                    "summary":  {
                                    "sceneName":  "CodexLobbyScene",
                                    "isPlaying":  true,
-                                   "timestampUtc":  "2026-04-17 15:27:32.956",
+                                   "timestampUtc":  "2026-04-18 11:22:11.725",
                                    "totalCanvasCount":  1,
-                                   "totalNodeCount":  61,
-                                   "matchedNodeCount":  29,
+                                   "totalNodeCount":  30,
+                                   "matchedNodeCount":  10,
                                    "truncated":  false,
                                    "pathPrefixes":  [
                                                         "/Canvas/LobbyPageRoot",
                                                         "/Canvas/GaragePageRoot",
-                                                        "/Canvas/TopTabs",
                                                         "/Canvas/LoginLoadingOverlay"
                                                     ],
                                    "activeRoots":  [
@@ -738,7 +468,7 @@
                                                  {
                                                      "path":  "/Canvas/LobbyPageRoot/RoomListPanel/PanelTitle",
                                                      "name":  "PanelTitle",
-                                                     "activeInHierarchy":  true,
+                                                     "activeInHierarchy":  false,
                                                      "childCount":  0,
                                                      "components":  [
                                                                         "Graphic",
@@ -748,7 +478,7 @@
                                                  {
                                                      "path":  "/Canvas/LobbyPageRoot/RoomListPanel/Hint",
                                                      "name":  "Hint",
-                                                     "activeInHierarchy":  true,
+                                                     "activeInHierarchy":  false,
                                                      "childCount":  0,
                                                      "components":  [
                                                                         "Graphic",
@@ -758,7 +488,7 @@
                                                  {
                                                      "path":  "/Canvas/LobbyPageRoot/RoomListPanel/CreateRoomButton",
                                                      "name":  "CreateRoomButton",
-                                                     "activeInHierarchy":  true,
+                                                     "activeInHierarchy":  false,
                                                      "childCount":  0,
                                                      "components":  [
                                                                         "Graphic",
@@ -766,9 +496,9 @@
                                                                     ]
                                                  },
                                                  {
-                                                     "path":  "/Canvas/LobbyPageRoot/RoomListPanel/ListHeader",
-                                                     "name":  "ListHeader",
-                                                     "activeInHierarchy":  true,
+                                                     "path":  "/Canvas/LobbyPageRoot/RoomDetailPanel/RoomNameText",
+                                                     "name":  "RoomNameText",
+                                                     "activeInHierarchy":  false,
                                                      "childCount":  0,
                                                      "components":  [
                                                                         "Graphic",
@@ -776,7 +506,57 @@
                                                                     ]
                                                  },
                                                  {
-                                                     "path":  "/Canvas/TopTabs/LobbyTabButton",
+                                                     "path":  "/Canvas/LobbyPageRoot/RoomDetailPanel/MemberCountText",
+                                                     "name":  "MemberCountText",
+                                                     "activeInHierarchy":  false,
+                                                     "childCount":  0,
+                                                     "components":  [
+                                                                        "Graphic",
+                                                                        "TMP_Text"
+                                                                    ]
+                                                 },
+                                                 {
+                                                     "path":  "/Canvas/LobbyPageRoot/RoomDetailPanel/DifficultyText",
+                                                     "name":  "DifficultyText",
+                                                     "activeInHierarchy":  false,
+                                                     "childCount":  0,
+                                                     "components":  [
+                                                                        "Graphic",
+                                                                        "TMP_Text"
+                                                                    ]
+                                                 },
+                                                 {
+                                                     "path":  "/Canvas/LobbyPageRoot/RoomDetailPanel/MembersHeader",
+                                                     "name":  "MembersHeader",
+                                                     "activeInHierarchy":  false,
+                                                     "childCount":  0,
+                                                     "components":  [
+                                                                        "Graphic",
+                                                                        "TMP_Text"
+                                                                    ]
+                                                 },
+                                                 {
+                                                     "path":  "/Canvas/LobbyPageRoot/GarageTabButton",
+                                                     "name":  "GarageTabButton",
+                                                     "activeInHierarchy":  false,
+                                                     "childCount":  0,
+                                                     "components":  [
+                                                                        "Graphic",
+                                                                        "Button"
+                                                                    ]
+                                                 },
+                                                 {
+                                                     "path":  "/Canvas/LobbyPageRoot/GarageTabButton/Label",
+                                                     "name":  "Label",
+                                                     "activeInHierarchy":  false,
+                                                     "childCount":  0,
+                                                     "components":  [
+                                                                        "Graphic",
+                                                                        "TMP_Text"
+                                                                    ]
+                                                 },
+                                                 {
+                                                     "path":  "/Canvas/GaragePageRoot/GarageHeaderRow/LobbyTabButton",
                                                      "name":  "LobbyTabButton",
                                                      "activeInHierarchy":  true,
                                                      "childCount":  0,
@@ -784,266 +564,34 @@
                                                                         "Graphic",
                                                                         "Button"
                                                                     ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/TopTabs/LobbyTabButton/Label",
-                                                     "name":  "Label",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "TMP_Text"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/TopTabs/GarageTabButton",
-                                                     "name":  "GarageTabButton",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "Button"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/TopTabs/GarageTabButton/Label",
-                                                     "name":  "Label",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "TMP_Text"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/GarageTitle",
-                                                     "name":  "GarageTitle",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "TMP_Text"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/GarageSubtitle",
-                                                     "name":  "GarageSubtitle",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "TMP_Text"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot1",
-                                                     "name":  "GarageSlot1",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "Button"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot2",
-                                                     "name":  "GarageSlot2",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "Button"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot3",
-                                                     "name":  "GarageSlot3",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "Button"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot4",
-                                                     "name":  "GarageSlot4",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "Button"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot5",
-                                                     "name":  "GarageSlot5",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "Button"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/RosterListPane/GarageSlot6",
-                                                     "name":  "GarageSlot6",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "Button"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/UnitEditorPane/SelectionTitle",
-                                                     "name":  "SelectionTitle",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "TMP_Text"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/UnitEditorPane/SelectionSubtitle",
-                                                     "name":  "SelectionSubtitle",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "TMP_Text"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/UnitEditorPane/ClearButton",
-                                                     "name":  "ClearButton",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "Button"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/ResultPane/RosterStatus",
-                                                     "name":  "RosterStatus",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "TMP_Text"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/ResultPane/ValidationText",
-                                                     "name":  "ValidationText",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "TMP_Text"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/ResultPane/StatsText",
-                                                     "name":  "StatsText",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "TMP_Text"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/ResultPane/SaveButton",
-                                                     "name":  "SaveButton",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "Button"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/AccountCard/AccountDisplayNameText",
-                                                     "name":  "AccountDisplayNameText",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "TMP_Text"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/AccountCard/AccountAuthTypeText",
-                                                     "name":  "AccountAuthTypeText",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "TMP_Text"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/AccountCard/AccountGoogleSignInButton",
-                                                     "name":  "AccountGoogleSignInButton",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "Button"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/AccountCard/AccountLogoutButton",
-                                                     "name":  "AccountLogoutButton",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "Button"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/AccountCard/AccountDeleteButton",
-                                                     "name":  "AccountDeleteButton",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "Button"
-                                                                    ]
-                                                 },
-                                                 {
-                                                     "path":  "/Canvas/GaragePageRoot/AccountCard/AccountStatusText",
-                                                     "name":  "AccountStatusText",
-                                                     "activeInHierarchy":  true,
-                                                     "childCount":  0,
-                                                     "components":  [
-                                                                        "Graphic",
-                                                                        "TMP_Text"
-                                                                    ]
                                                  }
                                              ]
                                },
-                   "state":  {
-                                 "success":  true,
-                                 "state":  [
-                                               "[path, /Canvas/GaragePageRoot]",
-                                               "[name, GaragePageRoot]",
-                                               "[activeSelf, True]",
-                                               "[activeInHierarchy, True]"
-                                           ]
-                             },
                    "screenshot":  {
                                       "success":  true,
                                       "message":  "Screenshot captured.",
                                       "relativePath":  "artifacts/unity/ui-overview-garage.png",
                                       "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\ui-overview-garage.png",
-                                      "fileSizeBytes":  203803
+                                      "fileSizeBytes":  195821
                                   }
                },
+    "returnToLobby":  {
+                          "invoke":  {
+                                         "success":  true,
+                                         "message":  "Invoked Button.onClick and coded handlers",
+                                         "path":  "/Canvas/GaragePageRoot/GarageHeaderRow/LobbyTabButton",
+                                         "invokedMethod":  "Button.onClick",
+                                         "result":  "",
+                                         "durationMs":  2.0
+                                     },
+                          "garageHidden":  {
+                                               "success":  true,
+                                               "path":  "/Canvas/GaragePageRoot",
+                                               "name":  null,
+                                               "activeInHierarchy":  false,
+                                               "waitedMs":  7
+                                           }
+                      },
     "loginErrorState":  {
                             "success":  true,
                             "state":  [
@@ -1054,13 +602,13 @@
                                       ]
                         },
     "consoleSummary":  {
-                           "rawLogCount":  19,
+                           "rawLogCount":  25,
                            "rawErrorCount":  0,
-                           "uniqueLogCount":  13,
+                           "uniqueLogCount":  16,
                            "uniqueErrorCount":  0,
                            "warningCount":  0,
                            "errorCount":  0,
-                           "benignCount":  4,
+                           "benignCount":  5,
                            "warnings":  [
 
                                         ],
@@ -1070,41 +618,73 @@
                            "info":  [
                                         {
                                             "type":  "Log",
-                                            "message":  "[Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
-                                            "count":  2,
-                                            "latestTimestampUtc":  "2026-04-17 15:27:30.636",
-                                            "stackTrace":  "UnityEngine.Debug:Log (object)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:StartBridge (bool) (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:194)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:TryStartBridgeFromSchedule () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:272)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n",
-                                            "benign":  false
-                                        },
-                                        {
-                                            "type":  "Log",
-                                            "message":  "[Firestore] Request succeeded (73ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                            "message":  "[FirebaseAuth] RestoreSession uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776512121787.",
                                             "count":  1,
-                                            "latestTimestampUtc":  "2026-04-17 15:27:29.050",
-                                            "stackTrace":  "UnityEngine.Debug:Log (object)\nFeatures.Account.Infrastructure.FirestoreRestPort/\u003c\u003ec__DisplayClass31_0:\u003cSendRequestSafeInternal\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRestPort.cs:425)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n",
+                                            "latestTimestampUtc":  "2026-04-18 11:22:07.211",
+                                            "stackTrace":  "UnityEngine.Debug:Log (object)\nFeatures.Account.Infrastructure.FirebaseAuthRestAdapter:RestoreSession () (at Assets/Scripts/Features/Account/Infrastructure/FirebaseAuthRestAdapter.cs:239)\nFeatures.Account.Infrastructure.FirebaseAuthRestAdapter:.ctor (string) (at Assets/Scripts/Features/Account/Infrastructure/FirebaseAuthRestAdapter.cs:45)\nFeatures.Account.AccountSetup:Initialize (Shared.EventBus.EventBus) (at Assets/Scripts/Features/Account/AccountSetup.cs:47)\nLobbySetup:Awake () (at Assets/Scripts/Features/Lobby/LobbySetup.cs:79)\n",
                                             "benign":  false
                                         },
                                         {
                                             "type":  "Log",
                                             "message":  "[Unity MCP] Registered 84 endpoints.",
                                             "count":  2,
-                                            "latestTimestampUtc":  "2026-04-17 15:27:30.630",
+                                            "latestTimestampUtc":  "2026-04-18 11:22:09.460",
                                             "stackTrace":  "UnityEngine.Debug:Log (object)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:RegisterAllHandlers () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:915)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:StartBridge (bool) (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:158)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:TryStartBridgeFromSchedule () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:272)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n",
+                                            "benign":  false
+                                        },
+                                        {
+                                            "type":  "Log",
+                                            "message":  "[PhotonConnection] Joined lobby. Ready for matchmaking.",
+                                            "count":  2,
+                                            "latestTimestampUtc":  "2026-04-18 11:22:10.846",
+                                            "stackTrace":  "UnityEngine.Debug:Log (object)\nShared.Network.PhotonConnectionAdapter:OnJoinedLobby () (at Assets/Scripts/Shared/Network/PhotonConnectionAdapter.cs:43)\nPhoton.Realtime.LobbyCallbacksContainer:OnJoinedLobby () (at Assets/FromStore/Photon/PhotonRealtime/Code/LoadBalancingClient.cs:4565)\nPhoton.Realtime.LoadBalancingClient:OnOperationResponse (ExitGames.Client.Photon.OperationResponse) (at Assets/FromStore/Photon/PhotonRealtime/Code/LoadBalancingClient.cs:3070)\nExitGames.Client.Photon.PeerBase:DeserializeMessageAndCallback (ExitGames.Client.Photon.StreamBuffer)\nExitGames.Client.Photon.TPeer:DispatchIncomingCommands ()\nExitGames.Client.Photon.PhotonPeer:DispatchIncomingCommands ()\nPhoton.Pun.PhotonHandler:Dispatch () (at Assets/FromStore/Photon/PhotonUnityNetworking/Code/PhotonHandler.cs:236)\nPhoton.Pun.PhotonHandler:FixedUpdate () (at Assets/FromStore/Photon/PhotonUnityNetworking/Code/PhotonHandler.cs:156)\n",
                                             "benign":  false
                                         },
                                         {
                                             "type":  "Log",
                                             "message":  "[FirebaseAuth] Reused persisted anonymous session for uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2.",
                                             "count":  1,
-                                            "latestTimestampUtc":  "2026-04-17 15:27:28.388",
+                                            "latestTimestampUtc":  "2026-04-18 11:22:07.223",
                                             "stackTrace":  "UnityEngine.Debug:Log (object)\nFeatures.Account.Infrastructure.FirebaseAuthRestAdapter/\u003cSignInAnonymously\u003ed__17:MoveNext () (at Assets/Scripts/Features/Account/Infrastructure/FirebaseAuthRestAdapter.cs:79)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder`1\u003cFeatures.Account.Application.Ports.AuthToken\u003e:Start\u003cFeatures.Account.Infrastructure.FirebaseAuthRestAdapter/\u003cSignInAnonymously\u003ed__17\u003e (Features.Account.Infrastructure.FirebaseAuthRestAdapter/\u003cSignInAnonymously\u003ed__17\u0026)\nFeatures.Account.Infrastructure.FirebaseAuthRestAdapter:SignInAnonymously ()\nFeatures.Account.Application.SignInAnonymouslyUseCase/\u003cExecute\u003ed__3:MoveNext () (at Assets/Scripts/Features/Account/Application/SignInAnonymouslyUseCase.cs:23)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder`1\u003cShared.Kernel.Result`1\u003cFeatures.Account.Domain.AccountProfile\u003e\u003e:Start\u003cFeatures.Account.Application.SignInAnonymouslyUseCase/\u003cExecute\u003ed__3\u003e (Features.Account.Application.SignInAnonymouslyUseCase/\u003cExecute\u003ed__3\u0026)\nFeatures.Account.Application.SignInAnonymouslyUseCase:Execute ()\nLobbySetup/\u003cRunAnonymousSignIn\u003ed__19:MoveNext () (at Assets/Scripts/Features/Lobby/LobbySetup.cs:103)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder:Start\u003cLobbySetup/\u003cRunAnonymousSignIn\u003ed__19\u003e (LobbySetup/\u003cRunAnonymousSignIn\u003ed__19\u0026)\nLobbySetup:RunAnonymousSignIn ()\nLobbySetup:Awake () (at Assets/Scripts/Features/Lobby/LobbySetup.cs:83)\n",
                                             "benign":  false
                                         },
                                         {
                                             "type":  "Log",
-                                            "message":  "[Firestore] Request succeeded (562ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                            "message":  "[Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                                            "count":  2,
+                                            "latestTimestampUtc":  "2026-04-18 11:22:09.466",
+                                            "stackTrace":  "UnityEngine.Debug:Log (object)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:StartBridge (bool) (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:194)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:TryStartBridgeFromSchedule () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:272)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n",
+                                            "benign":  false
+                                        },
+                                        {
+                                            "type":  "Log",
+                                            "message":  "[Firestore] Request succeeded (67ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
                                             "count":  1,
-                                            "latestTimestampUtc":  "2026-04-17 15:27:28.963",
+                                            "latestTimestampUtc":  "2026-04-18 11:22:07.778",
+                                            "stackTrace":  "UnityEngine.Debug:Log (object)\nFeatures.Account.Infrastructure.FirestoreRestPort/\u003c\u003ec__DisplayClass31_0:\u003cSendRequestSafeInternal\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRestPort.cs:425)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n",
+                                            "benign":  false
+                                        },
+                                        {
+                                            "type":  "Log",
+                                            "message":  "[Unity MCP] SceneChangeQueue InitOnLoad called",
+                                            "count":  1,
+                                            "latestTimestampUtc":  "2026-04-18 11:22:02.724",
+                                            "stackTrace":  "UnityEngine.Debug:Log (object)\nProjectSD.EditorTools.UnityMcp.SceneChangeQueue:InitOnLoad () (at Assets/Editor/UnityMcp/SceneChangeQueue.cs:49)\nUnityEditor.EditorAssemblies:ProcessInitializeOnLoadMethodAttributes ()\n",
+                                            "benign":  false
+                                        },
+                                        {
+                                            "type":  "Log",
+                                            "message":  "[PhotonConnection] Connecting...",
+                                            "count":  1,
+                                            "latestTimestampUtc":  "2026-04-18 11:22:07.793",
+                                            "stackTrace":  "UnityEngine.Debug:Log (object)\nShared.Network.PhotonConnectionAdapter:Connect () (at Assets/Scripts/Shared/Network/PhotonConnectionAdapter.cs:32)\nShared.Network.PhotonConnectionAdapter:Start () (at Assets/Scripts/Shared/Network/PhotonConnectionAdapter.cs:19)\n",
+                                            "benign":  false
+                                        },
+                                        {
+                                            "type":  "Log",
+                                            "message":  "[Firestore] Request succeeded (454ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                            "count":  1,
+                                            "latestTimestampUtc":  "2026-04-18 11:22:07.691",
                                             "stackTrace":  "UnityEngine.Debug:Log (object)\nFeatures.Account.Infrastructure.FirestoreRestPort/\u003c\u003ec__DisplayClass31_0:\u003cSendRequestSafeInternal\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRestPort.cs:425)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n",
                                             "benign":  false
                                         },
@@ -1112,68 +692,70 @@
                                             "type":  "Log",
                                             "message":  "[FirebaseStub] session_start {}",
                                             "count":  1,
-                                            "latestTimestampUtc":  "2026-04-17 15:27:28.365",
+                                            "latestTimestampUtc":  "2026-04-18 11:22:07.207",
                                             "stackTrace":  "UnityEngine.Debug:Log (object)\nShared.Analytics.FirebaseAnalyticsAdapter:FirebaseAnalytics_LogEvent (string,string) (at Assets/Scripts/Shared/Analytics/FirebaseAnalyticsAdapter.cs:22)\nShared.Analytics.FirebaseAnalyticsAdapter:LogEvent (string,System.Collections.Generic.IReadOnlyDictionary`2\u003cstring, object\u003e) (at Assets/Scripts/Shared/Analytics/FirebaseAnalyticsAdapter.cs:92)\nShared.Analytics.FirebaseAnalyticsAdapter:LogSessionStart () (at Assets/Scripts/Shared/Analytics/FirebaseAnalyticsAdapter.cs:33)\nLobbySetup:Awake () (at Assets/Scripts/Features/Lobby/LobbySetup.cs:73)\n",
                                             "benign":  false
                                         },
                                         {
                                             "type":  "Log",
-                                            "message":  "[PhotonConnection] Connecting...",
-                                            "count":  1,
-                                            "latestTimestampUtc":  "2026-04-17 15:27:29.068",
-                                            "stackTrace":  "UnityEngine.Debug:Log (object)\nShared.Network.PhotonConnectionAdapter:Connect () (at Assets/Scripts/Shared/Network/PhotonConnectionAdapter.cs:32)\nShared.Network.PhotonConnectionAdapter:Start () (at Assets/Scripts/Shared/Network/PhotonConnectionAdapter.cs:19)\n",
-                                            "benign":  false
-                                        },
-                                        {
-                                            "type":  "Log",
-                                            "message":  "[Unity MCP] SceneChangeQueue InitOnLoad called",
-                                            "count":  1,
-                                            "latestTimestampUtc":  "2026-04-17 15:27:25.098",
-                                            "stackTrace":  "UnityEngine.Debug:Log (object)\nProjectSD.EditorTools.UnityMcp.SceneChangeQueue:InitOnLoad () (at Assets/Editor/UnityMcp/SceneChangeQueue.cs:49)\nUnityEditor.EditorAssemblies:ProcessInitializeOnLoadMethodAttributes ()\n",
-                                            "benign":  false
-                                        },
-                                        {
-                                            "type":  "Log",
-                                            "message":  "[FirebaseAuth] RestoreSession uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776440465063.",
-                                            "count":  1,
-                                            "latestTimestampUtc":  "2026-04-17 15:27:28.374",
-                                            "stackTrace":  "UnityEngine.Debug:Log (object)\nFeatures.Account.Infrastructure.FirebaseAuthRestAdapter:RestoreSession () (at Assets/Scripts/Features/Account/Infrastructure/FirebaseAuthRestAdapter.cs:239)\nFeatures.Account.Infrastructure.FirebaseAuthRestAdapter:.ctor (string) (at Assets/Scripts/Features/Account/Infrastructure/FirebaseAuthRestAdapter.cs:45)\nFeatures.Account.AccountSetup:Initialize (Shared.EventBus.EventBus) (at Assets/Scripts/Features/Account/AccountSetup.cs:47)\nLobbySetup:Awake () (at Assets/Scripts/Features/Lobby/LobbySetup.cs:79)\n",
+                                            "message":  "[PhotonConnection] Connected to Master. Joining lobby...",
+                                            "count":  2,
+                                            "latestTimestampUtc":  "2026-04-18 11:22:10.794",
+                                            "stackTrace":  "UnityEngine.Debug:Log (object)\nShared.Network.PhotonConnectionAdapter:OnConnectedToMaster () (at Assets/Scripts/Shared/Network/PhotonConnectionAdapter.cs:37)\nPhoton.Realtime.ConnectionCallbacksContainer:OnConnectedToMaster () (at Assets/FromStore/Photon/PhotonRealtime/Code/LoadBalancingClient.cs:4343)\nPhoton.Realtime.LoadBalancingClient:OnOperationResponse (ExitGames.Client.Photon.OperationResponse) (at Assets/FromStore/Photon/PhotonRealtime/Code/LoadBalancingClient.cs:2912)\nExitGames.Client.Photon.PeerBase:DeserializeMessageAndCallback (ExitGames.Client.Photon.StreamBuffer)\nExitGames.Client.Photon.TPeer:DispatchIncomingCommands ()\nExitGames.Client.Photon.PhotonPeer:DispatchIncomingCommands ()\nPhoton.Pun.PhotonHandler:Dispatch () (at Assets/FromStore/Photon/PhotonUnityNetworking/Code/PhotonHandler.cs:236)\nPhoton.Pun.PhotonHandler:FixedUpdate () (at Assets/FromStore/Photon/PhotonUnityNetworking/Code/PhotonHandler.cs:156)\n",
                                             "benign":  false
                                         }
                                     ],
                            "benign":  [
                                           {
                                               "type":  "Warning",
-                                              "message":  "[Firestore] Document not found (50ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                              "message":  "[Firestore] Document not found (1786ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
                                               "count":  2,
-                                              "latestTimestampUtc":  "2026-04-17 15:27:31.025",
+                                              "latestTimestampUtc":  "2026-04-18 11:22:09.565",
                                               "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRestPort/\u003c\u003ec__DisplayClass31_0:\u003cSendRequestSafeInternal\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRestPort.cs:414)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n",
                                               "benign":  true
                                           },
                                           {
                                               "type":  "Warning",
-                                              "message":  "[Firestore] Document not found (1725ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                              "message":  "PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
                                               "count":  2,
-                                              "latestTimestampUtc":  "2026-04-17 15:27:30.777",
+                                              "latestTimestampUtc":  "2026-04-18 11:22:10.488",
+                                              "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nPhoton.Pun.PhotonNetwork:OnRegionsPinged (Photon.Realtime.RegionHandler) (at Assets/FromStore/Photon/PhotonUnityNetworking/Code/PhotonNetworkPart.cs:2546)\nPhoton.Realtime.MonoBehaviourEmpty:Update () (at Assets/FromStore/Photon/PhotonRealtime/Code/RegionHandler.cs:884)\n",
+                                              "benign":  true
+                                          },
+                                          {
+                                              "type":  "Warning",
+                                              "message":  "[Firestore] Document not found (67ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                              "count":  2,
+                                              "latestTimestampUtc":  "2026-04-18 11:22:09.633",
                                               "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRestPort/\u003c\u003ec__DisplayClass31_0:\u003cSendRequestSafeInternal\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRestPort.cs:414)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n",
                                               "benign":  true
                                           },
                                           {
                                               "type":  "Warning",
-                                              "message":  "[Firestore] Document not found (85ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                              "message":  "[Firestore] Document not found (44ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
                                               "count":  2,
-                                              "latestTimestampUtc":  "2026-04-17 15:27:30.864",
+                                              "latestTimestampUtc":  "2026-04-18 11:22:09.763",
                                               "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRestPort/\u003c\u003ec__DisplayClass31_0:\u003cSendRequestSafeInternal\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRestPort.cs:414)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n",
                                               "benign":  true
                                           },
                                           {
                                               "type":  "Warning",
-                                              "message":  "[Firestore] Document not found (62ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                              "message":  "[Firestore] Document not found (55ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
                                               "count":  2,
-                                              "latestTimestampUtc":  "2026-04-17 15:27:30.929",
+                                              "latestTimestampUtc":  "2026-04-18 11:22:09.691",
                                               "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRestPort/\u003c\u003ec__DisplayClass31_0:\u003cSendRequestSafeInternal\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRestPort.cs:414)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n",
                                               "benign":  true
                                           }
                                       ]
+                       },
+    "debugHints":  [
+                       {
+                           "condition":  "Hierarchy or GameView still looks old after builder changes.",
+                           "hint":  "Run Assets/Refresh -\u003e Tools/Codex/Build Codex Lobby Scene -\u003e scene/save before retrying Play Mode capture."
+                       },
+                       {
+                           "condition":  "UI button paths fail while old TopTabs objects still appear.",
+                           "hint":  "Likely stale editor assembly. Refresh/build/save the scene before retrying."
                        }
+                   ]
 }

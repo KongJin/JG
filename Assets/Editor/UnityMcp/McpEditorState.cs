@@ -1,9 +1,11 @@
 #if UNITY_EDITOR
+using System;
 using UnityEditor;
 using UnityEngine.SceneManagement;
 
 namespace ProjectSD.EditorTools.UnityMcp
 {
+    [Serializable]
     internal sealed class McpEditorStateSnapshot
     {
         public bool isPlaying;

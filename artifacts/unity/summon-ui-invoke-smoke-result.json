@@ -1,0 +1,211 @@
+﻿{
+    "success":  true,
+    "roomName":  "CodexUiInvoke-20260418190751816",
+    "invoke":  {
+                   "success":  true,
+                   "message":  "Invoked IPointerClickHandler",
+                   "path":  "/HudCanvas/UnitSummonUi/SlotRow/UnitSlotTemplate(Clone)",
+                   "invokedMethod":  "IPointerClickHandler.OnPointerClick",
+                   "result":  "",
+                   "durationMs":  5.0
+               },
+    "battleEntity":  {
+                         "found":  true,
+                         "name":  "BattleEntity(Clone)",
+                         "path":  "/RuntimeRoot/UnitsRoot/BattleEntity(Clone)",
+                         "activeSelf":  true,
+                         "layer":  "Default",
+                         "tag":  "Untagged",
+                         "components":  [
+                                            {
+                                                "typeName":  "Transform",
+                                                "fullTypeName":  "UnityEngine.Transform",
+                                                "properties":  [
+                                                                   {
+                                                                       "name":  "m_LocalRotation",
+                                                                       "type":  "Quaternion",
+                                                                       "value":  "(Quaternion)"
+                                                                   },
+                                                                   {
+                                                                       "name":  "m_LocalPosition",
+                                                                       "type":  "Vector3",
+                                                                       "value":  "(0.00,0.75,4.00)"
+                                                                   },
+                                                                   {
+                                                                       "name":  "m_LocalScale",
+                                                                       "type":  "Vector3",
+                                                                       "value":  "(1.00,1.00,1.00)"
+                                                                   },
+                                                                   {
+                                                                       "name":  "m_ConstrainProportionsScale",
+                                                                       "type":  "Boolean",
+                                                                       "value":  "False"
+                                                                   }
+                                                               ]
+                                            },
+                                            {
+                                                "typeName":  "PhotonView",
+                                                "fullTypeName":  "Photon.Pun.PhotonView",
+                                                "properties":  [
+                                                                   {
+                                                                       "name":  "ObservedComponentsFoldoutOpen",
+                                                                       "type":  "Boolean",
+                                                                       "value":  "True"
+                                                                   },
+                                                                   {
+                                                                       "name":  "Group",
+                                                                       "type":  "Integer",
+                                                                       "value":  "0"
+                                                                   },
+                                                                   {
+                                                                       "name":  "prefixField",
+                                                                       "type":  "Integer",
+                                                                       "value":  "0"
+                                                                   },
+                                                                   {
+                                                                       "name":  "Synchronization",
+                                                                       "type":  "Enum",
+                                                                       "value":  "Unreliable On Change"
+                                                                   },
+                                                                   {
+                                                                       "name":  "OwnershipTransfer",
+                                                                       "type":  "Enum",
+                                                                       "value":  "Fixed"
+                                                                   },
+                                                                   {
+                                                                       "name":  "observableSearch",
+                                                                       "type":  "Enum",
+                                                                       "value":  "Auto Find All"
+                                                                   },
+                                                                   {
+                                                                       "name":  "ObservedComponents",
+                                                                       "type":  "Generic",
+                                                                       "value":  "(Generic)"
+                                                                   },
+                                                                   {
+                                                                       "name":  "InstantiationId",
+                                                                       "type":  "Integer",
+                                                                       "value":  "1002"
+                                                                   }
+                                                               ]
+                                            },
+                                            {
+                                                "typeName":  "EntityIdHolder",
+                                                "fullTypeName":  "Shared.Kernel.EntityIdHolder",
+                                                "properties":  [
+
+                                                               ]
+                                            },
+                                            {
+                                                "typeName":  "BattleEntityPhotonController",
+                                                "fullTypeName":  "Features.Unit.Infrastructure.BattleEntityPhotonController",
+                                                "properties":  [
+                                                                   {
+                                                                       "name":  "_positionSyncInterval",
+                                                                       "type":  "Float",
+                                                                       "value":  "0.1000"
+                                                                   },
+                                                                   {
+                                                                       "name":  "_lerpSpeed",
+                                                                       "type":  "Float",
+                                                                       "value":  "15.0000"
+                                                                   }
+                                                               ]
+                                            },
+                                            {
+                                                "typeName":  "BattleEntityView",
+                                                "fullTypeName":  "Features.Unit.Presentation.BattleEntityView",
+                                                "properties":  [
+                                                                   {
+                                                                       "name":  "_entityIdHolder",
+                                                                       "type":  "ObjectReference",
+                                                                       "value":  "/RuntimeRoot/UnitsRoot/BattleEntity(Clone)::EntityIdHolder"
+                                                                   },
+                                                                   {
+                                                                       "name":  "_bodyRenderer",
+                                                                       "type":  "ObjectReference",
+                                                                       "value":  "/RuntimeRoot/UnitsRoot/BattleEntity(Clone)/Body::MeshRenderer"
+                                                                   },
+                                                                   {
+                                                                       "name":  "_damageFlashMaterial",
+                                                                       "type":  "ObjectReference",
+                                                                       "value":  "(null)"
+                                                                   },
+                                                                   {
+                                                                       "name":  "_flashDuration",
+                                                                       "type":  "Float",
+                                                                       "value":  "0.1500"
+                                                                   },
+                                                                   {
+                                                                       "name":  "_deathEffectPrefab",
+                                                                       "type":  "ObjectReference",
+                                                                       "value":  "(null)"
+                                                                   }
+                                                               ]
+                                            },
+                                            {
+                                                "typeName":  "BattleEntityPrefabSetup",
+                                                "fullTypeName":  "Features.Unit.Infrastructure.BattleEntityPrefabSetup",
+                                                "properties":  [
+                                                                   {
+                                                                       "name":  "_view",
+                                                                       "type":  "ObjectReference",
+                                                                       "value":  "/RuntimeRoot/UnitsRoot/BattleEntity(Clone)::BattleEntityView"
+                                                                   },
+                                                                   {
+                                                                       "name":  "_photonController",
+                                                                       "type":  "ObjectReference",
+                                                                       "value":  "/RuntimeRoot/UnitsRoot/BattleEntity(Clone)::BattleEntityPhotonController"
+                                                                   },
+                                                                   {
+                                                                       "name":  "_entityIdHolder",
+                                                                       "type":  "ObjectReference",
+                                                                       "value":  "/RuntimeRoot/UnitsRoot/BattleEntity(Clone)::EntityIdHolder"
+                                                                   }
+                                                               ]
+                                            }
+                                        ]
+                     },
+    "screenshot":  {
+                       "success":  true,
+                       "message":  "Screenshot captured.",
+                       "relativePath":  "artifacts/unity/summon-ui-invoke-smoke.png",
+                       "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\summon-ui-invoke-smoke.png",
+                       "fileSizeBytes":  124409
+                   },
+    "recentLogs":  [
+                       "[Log] [Unity MCP] SceneChangeQueue InitOnLoad called",
+                       "[Log] [FirebaseStub] session_start {}",
+                       "[Log] [FirebaseAuth] RestoreSession uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776508396777.",
+                       "[Log] [FirebaseAuth] Reused persisted anonymous session for uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2.",
+                       "[Log] [Firestore] Request succeeded (274ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [PhotonConnection] Connecting...",
+                       "[Log] [Unity MCP] Registered 84 endpoints.",
+                       "[Log] [Unity MCP] Registered 84 endpoints.",
+                       "[Log] [Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                       "[Log] [Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                       "[Log] [Firestore] Request succeeded (1625ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [Firestore] Request succeeded (1625ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (79ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (79ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (18ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (18ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (48ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (48ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (41ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (41ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                       "[Warning] PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                       "[Log] [PhotonConnection] Connected to Master. Joining lobby...",
+                       "[Log] [PhotonConnection] Connected to Master. Joining lobby...",
+                       "[Log] [PhotonConnection] Joined lobby. Ready for matchmaking.",
+                       "[Log] [PhotonConnection] Joined lobby. Ready for matchmaking.",
+                       "[Log] [FirebaseStub] game_start {\"match_id\":\"ff1f3e68f9c54bf3bacae07a9998860f\"}",
+                       "[Log] [FirebaseStub] game_start {\"match_id\":\"ff1f3e68f9c54bf3bacae07a9998860f\"}",
+                       "[Log] [GameSceneRoot] Computed 3 unit specs for player player-1",
+                       "[Log] [GameSceneRoot] Computed 3 unit specs for player player-1"
+                   ],
+    "recentErrors":  [
+
+                     ]
+}

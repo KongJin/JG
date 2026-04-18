@@ -103,7 +103,7 @@ namespace Features.Garage.Presentation
             _saveButton.Apply(ButtonStyles.Primary, _saveButtonText);
 
             if (_saveButtonText != null)
-                _saveButtonText.text = "Save Draft";
+                _saveButtonText.text = "Save Roster";
         }
 
         private void OnEnable()

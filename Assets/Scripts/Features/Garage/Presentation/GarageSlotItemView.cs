@@ -20,9 +20,9 @@ namespace Features.Garage.Presentation
         [SerializeField] private Image _borderImage;
 
         [Header("Layout")]
-        [SerializeField] private float _slotNumberFontSize = 15f; // 13f → 15f (가독성 개선)
-        [SerializeField] private float _titleFontSize = 18f;
-        [SerializeField] private float _summaryFontSize = 11f;
+        [SerializeField] private float _slotNumberFontSize = 12f;
+        [SerializeField] private float _titleFontSize = 16f;
+        [SerializeField] private float _summaryFontSize = 10f;
 
         [Header("Animation")]
         [SerializeField] private CanvasGroup _canvasGroup;
@@ -163,12 +163,12 @@ namespace Features.Garage.Presentation
 
         private void ApplyTypography()
         {
-            ConfigureText(_slotNumberText, _slotNumberFontSize, false);
-            ConfigureText(_titleText, _titleFontSize, true);
-            ConfigureText(_summaryText, _summaryFontSize, true);
+            ConfigureText(_slotNumberText, _slotNumberFontSize, false, TextAlignmentOptions.TopLeft);
+            ConfigureText(_titleText, _titleFontSize, true, TextAlignmentOptions.TopLeft);
+            ConfigureText(_summaryText, _summaryFontSize, false, TextAlignmentOptions.BottomLeft);
         }
 
-        private static void ConfigureText(TMP_Text text, float fontSize, bool enableAutoSizing)
+        private static void ConfigureText(TMP_Text text, float fontSize, bool enableAutoSizing, TextAlignmentOptions alignment)
         {
             if (text == null)
                 return;
@@ -177,7 +177,7 @@ namespace Features.Garage.Presentation
             text.enableAutoSizing = enableAutoSizing;
             text.fontSizeMin = Mathf.Max(8f, fontSize - 2f);
             text.fontSizeMax = fontSize;
-            text.alignment = TextAlignmentOptions.MidlineLeft;
+            text.alignment = alignment;
             text.textWrappingMode = TextWrappingModes.NoWrap;
             text.overflowMode = TextOverflowModes.Ellipsis;
         }

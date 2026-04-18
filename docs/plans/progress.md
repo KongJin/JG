@@ -7,7 +7,8 @@
 - 중요: Phase 0~9의 `완료` 표기는 주로 코드 경로 기준이다.
 - 2026-04-18 확인 시 실제 `Assets/Scenes/GameScene.unity` 씬 에셋은 삭제된 상태였고, 플레이 가능한 전투 씬 완성도와 문서 표기가 어긋나 있었다.
 - 현재는 새 hand-authored `GameScene.unity`와 최소 `BattleEntity.prefab`을 다시 만들었고, build settings 등록과 required-field audit까지 복구했다.
-- 아직 `CodexLobbyScene -> GameScene` end-to-end summon PvE smoke는 남아 있다.
+- `CodexLobbyScene -> GameScene` end-to-end summon smoke는 통과했다.
+- 현재 남은 핵심 리스크는 placement drag/drop, wave start, core victory/defeat, 멀티플레이 동기화 smoke다.
 
 ## Phase 진행률
 
@@ -28,8 +29,6 @@
 
 ## 미완료 TODO
 
-- GameScene rebuild: `CodexLobbyScene -> GameScene` 실제 전환 smoke
-- GameScene rebuild: room roster restore -> unit spec compute -> summon slot render 검증
 - GameScene rebuild: placement area drag/drop, wave start, core victory/defeat loop 검증
 - GameScene rebuild: 멀티플레이 smoke로 late-join, BattleEntity sync, Energy sync 확인
 - Phase 9: 실제 멀티플레이어 smoke 테스트 (late-join, BattleEntity sync, Energy sync)
@@ -52,7 +51,7 @@
 - 계정 시스템 상세 계획: [`account_system_plan.md`](./account_system_plan.md)
 - 기술부채 감축 실행 계획: [`tech_debt_reduction_plan.md`](./tech_debt_reduction_plan.md)
 - WebGL 실기 체크리스트: [`webgl_smoke_checklist.md`](./webgl_smoke_checklist.md)
-- 다음 세션 시작점: `CodexLobbyScene -> GameScene` smoke 실행 - room start 이후 roster restore, summon slot, wave/core loop를 우선 검증
+- 다음 세션 시작점: `CodexLobbyScene -> GameScene` summon smoke 통과 상태에서 placement, wave/core loop, multiplayer sync를 이어서 검증
 
 ### 최근 변경 사항
 
@@ -69,6 +68,39 @@
   - done: Unity MCP `Tools/Audit Required Fields In Project` 통과 - `[RequiredAudit] All required fields are assigned across scenes and prefabs.`
   - observed: `GameScene` 단독 Play Mode에서는 expected warning `You are not connected to a room`만 확인됐고, missing reference/null wiring error는 0건
   - note: 아직 실제 room start 기반 summon PvE smoke와 멀티플레이 smoke는 남아 있음
+
+- done: GameScene summon smoke 1차 성공
+  - done: `GarageNetworkAdapter`가 새 씬 진입 시 기존 Photon player custom properties를 hydrate하도록 보강 - room roster handoff 누락으로 `Computed 0 unit specs`가 나오던 문제 복구
+  - done: `InitializeGarageUseCase`가 restore한 committed roster를 Photon custom properties로 다시 sync하도록 보강 - manual save 없이도 room start 이후 GameScene이 같은 roster를 읽을 수 있게 정리
+  - done: `PlayerSetup.LocalArrived` 타이밍을 Photon local instantiation 시점으로 교정 - `GameSceneRoot` local bootstrap이 실제로 실행되도록 복구
+  - done: `WaveNetworkAdapter` match reset + `PlacementAreaMaterialFactory`/`GameSceneBuilder` shader fallback 정리 - pink ground와 이전 매치 wave state 잔재 제거
+  - done: `tools/unity-mcp/Invoke-GameSceneSummonSmoke.ps1` 추가 - lobby join, room create, ready, start game, summon click, battle entity 존재 확인, screenshot/report 생성을 한 번에 수행
+  - observed: MCP summon smoke 실행 성공 - `CodexLobbyScene -> GameScene` 진입 후 `/HudCanvas/UnitSummonUi/SlotRow/UnitSlotTemplate(Clone)`에 `/ui/invoke`를 보내 `BattleEntity(Clone)` 생성 확인
+  - observed: latest smoke 기준 `recentErrorCount = 0`, `[GameSceneRoot] Computed 3 unit specs for player player-1`, spawned unit path `/RuntimeRoot/UnitsRoot/BattleEntity(Clone)`
+  - evidence: `artifacts/unity/game-scene-summon-smoke.png`, `artifacts/unity/game-scene-summon-smoke-result.json`
+  - note: GameView 좌표 기반 `/input/click`, `/input/drag`는 아직 불안정해서 현재 stable automation contract는 `/ui/invoke` 기반 summon smoke다
+
+- done: Lobby/Garage UI polish 1차
+  - done: `CodexLobbySceneBuilder`, `CodexLobbyGarageAugmenter` 기준으로 헤더/탭 밀도, Garage 슬롯 폭/높이, selector card, result CTA 카피를 1차 정리
+  - done: `GaragePagePresenter`, `GarageSlotItemView`, `GaragePartSelectorView`, `GarageResultPanelView`에서 슬롯/결과 문구와 타이포를 더 짧고 읽기 쉽게 조정
+  - done: MCP `Invoke-UiOverviewCapture.ps1` 재검증 통과 - `errorCount = 0`, `warningCount = 0`
+  - evidence: `artifacts/unity/ui-overview-lobby.png`, `artifacts/unity/ui-overview-garage.png`, `artifacts/unity/ui-overview-report.json`
+  - done: `GarageUnitPreviewView` lazy render-texture 보장, runtime camera render, inactive clone 활성화, camera framing/scale 조정으로 preview card 실제 렌더 복구
+  - note: preview는 이제 실제로 보이지만 카드 안에서 더 크게 보이도록 하는 시각 polish는 후속 여지 있음
+  - done: Lobby/Garage 구조를 dual-workspace dashboard에서 page switcher로 전환 - Lobby는 `Garage` 진입 버튼만, Garage는 `Back To Lobby` 복귀 버튼만 노출
+  - evidence: `artifacts/unity/lobby-page-capture.png`, `artifacts/unity/garage-page-capture.png`
+  - done: Unity MCP workflow stabilization 1차 - `Invoke-UiOverviewCapture.ps1`, `Invoke-GarageManualSmoke.ps1` 기본 경로를 page-switcher 구조로 교정하고, `Invoke-LobbyGaragePageSwitchSmoke.ps1`를 추가해 Lobby-only -> Garage-only -> Lobby-only 전환을 한 번에 재현 가능하게 정리
+  - done: `tools/unity-mcp/README.md`에 builder 변경 루틴(`Assets/Refresh -> Build Codex Lobby Scene -> scene/save -> Play Mode smoke`)과 stale editor assembly 진단 힌트를 명시
+  - note: Unity MCP 관련 문서/스크립트에서 `TopTabs` 기본 경로 의존성을 제거해 현재 scene contract와 맞췄음
+  - done: Lobby room-list visibility polish - `RoomListPanel`에 `Open rooms` count badge와 빈 상태 카피를 추가해 방이 없을 때도 목록 영역이 공백으로 보이지 않도록 정리
+  - done: Unity MCP recurrence fix 1차 - `CodexLobbyScene.unity`를 Lobby/Garage UI의 최종 SSOT로 명시하고, `CodexLobbySceneContract`로 sentinel node/serialized ref 검증 경로 추가
+  - done: dedicated verified rebuild route 추가 - `/scene/rebuild-codex-lobby`가 direct builder call + contract verify + scene save 상태를 구조화된 응답으로 돌려주도록 정리
+  - done: `/scene/verify-codex-lobby-contract` 추가 - builder와 scene drift를 machine-readable contract report로 바로 확인 가능하게 정리
+  - done: `/health`에 pending play action, pending age, last asset refresh, last script reload, last dedicated rebuild 상태 노출 추가
+  - done: `play/start`, `play/stop` idempotent 처리와 pending action 힌트 보강 - 불필요한 ambiguous pending failure를 줄이도록 정리
+  - done: `Invoke-CodexLobbyUiWorkflowGate.ps1` 추가 - compile/reload stabilization, verified rebuild, contract verify, page-switch smoke를 직렬 게이트로 묶음
+  - note: 이제 Lobby/Garage UI 작업의 권장 검증 루틴은 generic `menu/execute`가 아니라 verified rebuild route + workflow gate 조합이다
+  - done: MCP trim 1차 - `McpWorkflowState` 실험적 상태 캐시와 rebuild response의 중복 메타(`verified`, `compileStateBefore/After`, `manualOnly`)를 제거하고, gate는 성공 여부만으로 판정하도록 단순화
 
 - done: Account delete WebGL smoke 1차 성공
   - done: `AccountSettingsView`에 development build 전용 `WebglSmokeDeleteAccount*` 엔트리포인트 추가 - browser automation이 `AccountCard`를 직접 두 단계 delete/confirm 호출할 수 있게 정리
@@ -88,7 +120,7 @@
 - done: UI layout ownership reset 1차 구현
   - done: `LobbyView`, `GaragePageController`에서 runtime `RectTransform` anchor/size 보정 로직 제거 - view는 focus/visibility/render만 담당하도록 정리
   - done: `CodexLobbyGarageAugmenter`, `CodexLobbySceneBuilder`, `CodexLobbyAccountAugmenter`를 scene-owned layout 기준으로 재정비 - builder가 tab/button/canvas-group/account/preview/result wiring까지 직접 생성·연결하도록 복구
-  - done: `CodexLobbyScene.unity`의 대시보드 핵심 `RectTransform` 값을 scene SSOT 쪽으로 직접 정렬 - TopTabs, Lobby column, Garage root, roster/editor/right-rail 주요 앵커를 런타임 보정 없이 읽히는 값으로 수정
+  - done: `CodexLobbyScene.unity`의 당시 대시보드 핵심 `RectTransform` 값을 scene SSOT 쪽으로 직접 정렬 - 이후 page-switcher 전환 전 기준으로 lobby/garage 주요 앵커를 런타임 보정 없이 읽히는 값으로 정리
   - done: `Lobby/README`, `Garage/README`, `ui_foundations.md`에 "scene owns layout / runtime geometry mutation 금지" 규칙 명시
   - done: 열린 Unity Editor에서 `Tools/Codex/Build Codex Lobby Scene` 재실행 후 overview capture 재검증 - scene-owned right rail(`Account -> Preview -> Result`)이 실제 Play Mode 캡처에 반영됨
   - done: 재검증 캡처 기준 `errorCount = 0`, `warningCount = 0`, benign warning 5건 유지

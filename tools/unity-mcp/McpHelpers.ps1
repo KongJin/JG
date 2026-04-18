@@ -44,6 +44,71 @@ function Invoke-McpGetJson {
     return Invoke-RestMethod -Method Get -Uri $uri
 }
 
+function Invoke-McpJsonWithTransientRetry {
+    param(
+        [string]$Root,
+        [string]$SubPath,
+        [object]$Body = $null,
+        [int]$TimeoutSec = 60,
+        [double]$PollSec = 0.5
+    )
+
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    $lastError = $null
+
+    while ((Get-Date) -lt $deadline) {
+        try {
+            return Invoke-McpJson -Root $Root -SubPath $SubPath -Body $Body
+        }
+        catch {
+            if (-not (Test-McpTransientConnectionFailure -Exception $_.Exception)) {
+                throw
+            }
+
+            $lastError = $_.Exception.Message
+            Start-Sleep -Seconds $PollSec
+        }
+    }
+
+    if ([string]::IsNullOrWhiteSpace($lastError)) {
+        $lastError = "Unknown transient POST failure."
+    }
+
+    throw "Unity MCP POST ${SubPath} did not recover within ${TimeoutSec}s. Last error: $lastError"
+}
+
+function Invoke-McpGetJsonWithTransientRetry {
+    param(
+        [string]$Root,
+        [string]$SubPath,
+        [int]$TimeoutSec = 60,
+        [double]$PollSec = 0.5
+    )
+
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    $lastError = $null
+
+    while ((Get-Date) -lt $deadline) {
+        try {
+            return Invoke-McpGetJson -Root $Root -SubPath $SubPath
+        }
+        catch {
+            if (-not (Test-McpTransientConnectionFailure -Exception $_.Exception)) {
+                throw
+            }
+
+            $lastError = $_.Exception.Message
+            Start-Sleep -Seconds $PollSec
+        }
+    }
+
+    if ([string]::IsNullOrWhiteSpace($lastError)) {
+        $lastError = "Unknown transient GET failure."
+    }
+
+    throw "Unity MCP GET ${SubPath} did not recover within ${TimeoutSec}s. Last error: $lastError"
+}
+
 function Test-McpTransientConnectionFailure {
     param([System.Exception]$Exception)
 
@@ -218,6 +283,45 @@ function Invoke-McpSceneOpenAndWait {
         Health = $health.State
         ElapsedMs = $health.ElapsedMs
     }
+}
+
+function Invoke-McpCompileRequestAndWait {
+    param(
+        [string]$Root,
+        [switch]$CleanBuildCache,
+        [int]$TimeoutMs = 120000,
+        [int]$PollIntervalMs = 250
+    )
+
+    $request = Invoke-McpJsonWithTransientRetry -Root $Root -SubPath "/compile/request" -Body @{
+        cleanBuildCache = [bool]$CleanBuildCache
+    } -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0))
+
+    Wait-McpBridgeHealthy -Root $Root -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0)) | Out-Null
+
+    $wait = Invoke-McpJsonWithTransientRetry -Root $Root -SubPath "/compile/wait" -Body @{
+        timeoutMs = $TimeoutMs
+        pollIntervalMs = $PollIntervalMs
+        requestFirst = $false
+        cleanBuildCache = $false
+    } -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0))
+
+    return [PSCustomObject]@{
+        Request = $request
+        Wait = $wait
+    }
+}
+
+function Invoke-McpCodexLobbyVerifiedRebuild {
+    param([string]$Root)
+
+    return Invoke-McpJsonWithTransientRetry -Root $Root -SubPath "/scene/rebuild-codex-lobby" -TimeoutSec 120
+}
+
+function Get-McpCodexLobbyContract {
+    param([string]$Root)
+
+    return Invoke-McpGetJsonWithTransientRetry -Root $Root -SubPath "/scene/verify-codex-lobby-contract" -TimeoutSec 60
 }
 
 function Invoke-McpPlayStartAndWaitForBridge {

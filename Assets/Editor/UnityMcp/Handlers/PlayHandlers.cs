@@ -57,8 +57,12 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         public static async Task HandleHealthAsync(HttpListenerResponse response)
         {
-            var state = await UnityMcpBridge.RunOnMainThreadAsync(McpEditorState.Capture);
-            await UnityMcpBridge.WriteJsonAsync(response, 200, BuildHealthResponse(state));
+            var health = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+            {
+                var state = McpEditorState.Capture();
+                return BuildHealthResponse(state);
+            });
+            await UnityMcpBridge.WriteJsonAsync(response, 200, health);
         }
 
         public static async Task HandleCurrentSceneAsync(HttpListenerResponse response)
@@ -88,6 +92,20 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             try
             {
+                var currentState = await UnityMcpBridge.RunOnMainThreadAsync(McpEditorState.Capture);
+                if (HasReachedPlayModeState(currentState, targetIsPlaying: true))
+                {
+                    await UnityMcpBridge.WriteJsonAsync(
+                        response,
+                        200,
+                        BuildPlayModeResponse(
+                            "start",
+                            new PlayModeWaitResult { state = currentState, waitedMs = 0 }
+                        )
+                    );
+                    return;
+                }
+
                 BeginPlayModeTransition();
                 await PlayModeChangeQueue.EnqueuePlayAsync();
                 var waitResult = await WaitForPlayModeStateAsync(targetIsPlaying: true);
@@ -103,6 +121,24 @@ namespace ProjectSD.EditorTools.UnityMcp
                         error = "Play mode change timeout",
                         detail = ex.Message,
                         hint = "Check /health for isCompiling or isPlayModeChanging before retrying.",
+                    }
+                );
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("already pending"))
+            {
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse
+                    {
+                        error = "Play start pending",
+                        detail = ex.Message,
+                        hint =
+                            "Pending action="
+                            + PlayModeChangeQueue.PendingActionName
+                            + ", ageMs="
+                            + PlayModeChangeQueue.PendingActionAgeMs
+                            + ". Wait for the current transition to settle before retrying.",
                     }
                 );
             }
@@ -131,6 +167,20 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             try
             {
+                var currentState = await UnityMcpBridge.RunOnMainThreadAsync(McpEditorState.Capture);
+                if (HasReachedPlayModeState(currentState, targetIsPlaying: false))
+                {
+                    await UnityMcpBridge.WriteJsonAsync(
+                        response,
+                        200,
+                        BuildPlayModeResponse(
+                            "stop",
+                            new PlayModeWaitResult { state = currentState, waitedMs = 0 }
+                        )
+                    );
+                    return;
+                }
+
                 BeginPlayModeTransition();
 
                 if (McpConfig.AutoSaveSceneOnPlayStop)
@@ -152,6 +202,24 @@ namespace ProjectSD.EditorTools.UnityMcp
                         error = "Play mode change timeout",
                         detail = ex.Message,
                         hint = "Play mode exit is still changing. Check /health and Unity console before retrying.",
+                    }
+                );
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("already pending"))
+            {
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse
+                    {
+                        error = "Play stop pending",
+                        detail = ex.Message,
+                        hint =
+                            "Pending action="
+                            + PlayModeChangeQueue.PendingActionName
+                            + ", ageMs="
+                            + PlayModeChangeQueue.PendingActionAgeMs
+                            + ". Wait for the current transition to settle before retrying.",
                     }
                 );
             }
@@ -221,7 +289,7 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         private static HealthResponse BuildHealthResponse(McpEditorStateSnapshot state)
         {
-            return new HealthResponse
+            var response = new HealthResponse
             {
                 ok = true,
                 bridgeRunning = UnityMcpBridge.IsRunning,
@@ -236,7 +304,10 @@ namespace ProjectSD.EditorTools.UnityMcp
                 activeScene = state.activeScene,
                 activeScenePath = state.activeScenePath,
                 isWaitingForPlayMode = _isWaitingForPlayMode,
+                pendingPlayAction = PlayModeChangeQueue.PendingActionName,
+                pendingPlayAgeMs = PlayModeChangeQueue.PendingActionAgeMs,
             };
+            return response;
         }
 
         private static object BuildPlayModeResponse(string action, PlayModeWaitResult waitResult)

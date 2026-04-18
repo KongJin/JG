@@ -35,6 +35,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         private static State _state = State.Idle;
         private static CancellationTokenSource _timeoutCts;
         private static bool _initialized;
+        private static DateTime _pendingQueuedAtUtc = DateTime.MinValue;
 
         /// <summary>
         /// 초기화는 처음 한 번만, 메인 스레드-safe한 시점에 한다.
@@ -53,6 +54,36 @@ namespace ProjectSD.EditorTools.UnityMcp
             get
             {
                 lock (Lock) { return _state == State.Changing; }
+            }
+        }
+
+        public static string PendingActionName
+        {
+            get
+            {
+                lock (Lock)
+                {
+                    return _pending switch
+                    {
+                        PendingAction.Play => "play",
+                        PendingAction.Stop => "stop",
+                        _ => string.Empty,
+                    };
+                }
+            }
+        }
+
+        public static int PendingActionAgeMs
+        {
+            get
+            {
+                lock (Lock)
+                {
+                    if (_pending == PendingAction.None || _pendingQueuedAtUtc == DateTime.MinValue)
+                        return 0;
+
+                    return Math.Max(0, (int)(DateTime.UtcNow - _pendingQueuedAtUtc).TotalMilliseconds);
+                }
             }
         }
 
@@ -83,6 +114,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 _pending = action;
                 _pendingTcs = new TaskCompletionSource<PlayResponse>();
                 _state = State.Idle;
+                _pendingQueuedAtUtc = DateTime.UtcNow;
                 if (_timeoutCts != null)
                 {
                     _timeoutCts.Dispose();
@@ -111,6 +143,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             _pending = PendingAction.None;
             _pendingTcs = null;
+            _pendingQueuedAtUtc = DateTime.MinValue;
             if (_timeoutCts != null)
             {
                 _timeoutCts.Dispose();
