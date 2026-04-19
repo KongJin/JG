@@ -1,10 +1,12 @@
 using Features.Unit.Application;
 using Features.Unit.Application.Ports;
 using Features.Unit.Domain;
+using Features.Player.Application.Events;
 using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Math;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -55,6 +57,7 @@ namespace Features.Unit.Presentation
             _ownerId = ownerId;
             _spawnPosition = spawnPosition;
 
+            _eventBus.Subscribe(this, new System.Action<PlayerEnergyChangedEvent>(OnEnergyChanged));
             UpdateDisplay();
         }
 
@@ -62,11 +65,29 @@ namespace Features.Unit.Presentation
         {
             if (_unitSpec == null) return;
 
-            _nameText.text = _unitSpec.DisplayName;
+            _nameText.text = FormatSlotName(_unitSpec.DisplayName);
             _costText.text = _unitSpec.SummonCost.ToString();
 
             _canAfford = _energyPort.GetCurrentEnergy(_ownerId) >= _unitSpec.SummonCost;
             _cannotAffordOverlay.SetActive(!_canAfford);
+        }
+
+        private static string FormatSlotName(string rawName)
+        {
+            if (string.IsNullOrWhiteSpace(rawName))
+            {
+                return "Unit";
+            }
+
+            var trimmed = rawName.Trim();
+            if (trimmed.StartsWith("frame_", System.StringComparison.OrdinalIgnoreCase))
+            {
+                trimmed = trimmed.Substring("frame_".Length);
+            }
+
+            trimmed = trimmed.Replace('_', ' ').Replace('-', ' ');
+
+            return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(trimmed.ToLowerInvariant());
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -95,6 +116,19 @@ namespace Features.Unit.Presentation
             {
                 UpdateDisplay(); // 에너지 차감 후 상태 갱신
             }
+        }
+
+        private void OnEnergyChanged(PlayerEnergyChangedEvent e)
+        {
+            if (!_ownerId.Equals(e.PlayerId))
+                return;
+
+            UpdateDisplay();
+        }
+
+        private void OnDestroy()
+        {
+            _eventBus?.UnsubscribeAll(this);
         }
     }
 }

@@ -2,6 +2,7 @@ using Features.Garage;
 using Features.Garage.Application;
 using Features.Garage.Domain;
 using Features.Unit;
+using Features.Unit.Application;
 using Photon.Pun;
 using Shared.EventBus;
 using Shared.Kernel;

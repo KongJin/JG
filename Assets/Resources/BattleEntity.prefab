@@ -118,6 +118,8 @@ MonoBehaviour:
   _view: {fileID: 2307048919711533339}
   _photonController: {fileID: 7005732254497697026}
   _entityIdHolder: {fileID: 5853759358518616398}
+  _fallbackAttackIntervalSeconds: 1
+  _fallbackAttackRangePadding: 0.25
 --- !u!1 &8135152946679333782
 GameObject:
   m_ObjectHideFlags: 0

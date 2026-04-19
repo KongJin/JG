@@ -10,6 +10,7 @@ Lobby/Garage layout recovery is done by direct MCP scene/prefab repair against t
 - Workflow gate: `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1`
 - Canonical page-switch smoke: `tools/unity-mcp/Invoke-LobbyGaragePageSwitchSmoke.ps1`
 - Feature smoke: `tools/unity-mcp/Invoke-GameSceneSummonSmoke.ps1`
+- Feature smoke: `tools/unity-mcp/Invoke-GameScenePlacementWaveSmoke.ps1`
 - Optional supervised smoke: `tools/unity-mcp/Invoke-GarageReadyFlowSmoke.ps1`
 
 `rule-harness` continues to use Unity MCP only for compile/status refresh plus generic diagnostics. Scene-specific runtime smoke stays out of harness scope.
@@ -210,12 +211,38 @@ Run the lobby -> game -> summon smoke like this:
 powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameSceneSummonSmoke.ps1
 ```
 
+Run the placement -> wave/core -> outcome smoke like this:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameScenePlacementWaveSmoke.ps1 -PostSummonWaitSec 20 -OutcomeTimeoutSec 180
+```
+
+Outputs:
+
+- `artifacts/unity/game-scene-placement-initial.png`
+- `artifacts/unity/game-scene-placement-after-drag.png`
+- `artifacts/unity/game-scene-placement-final.png`
+- `artifacts/unity/game-scene-placement-wave-result.json`
+
 Feature smoke is for regressions beyond page switching. It does not replace the workflow gate.
 The main retained acceptance path is:
 
 1. workflow gate
 2. canonical page-switch smoke
 3. `GameScene` summon smoke when the change reaches lobby-to-game flow
+
+Use `Invoke-GameScenePlacementWaveSmoke.ps1` when you need to observe more than summon availability:
+
+- attempt placement drag and capture the current automation failure mode
+- fall back to `/ui/invoke` summon
+- poll wave/core HUD plus end overlay until `Victory!` or `Defeat!`
+
+Current interpretation rule:
+
+- `dragDidSummon = false` with `dragPlacementErrorText = "배치 영역 밖입니다!"` means placement drag automation is still unstable
+- `waveEndOverlayActive = true` plus `returnToLobbyButtonActive = true` is the authoritative outcome signal
+- do not treat `ResultText` alone as outcome proof while the overlay is inactive
+- `GameScene` UI/HUD polish도 기본값은 MCP scene/prefab repair이며, code-driven builder/rebuild 경로를 새 authoring 루프로 다시 도입하지 않는다
 
 `Invoke-GarageReadyFlowSmoke.ps1` is no longer a required regression gate.
 Keep it only as an optional supervised script when investigating Ready/Save UX, and prefer EditMode tests for those rules.

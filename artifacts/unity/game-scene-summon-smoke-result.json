@@ -13,7 +13,7 @@
                               "isCompiling":  false,
                               "activeScene":  "CodexLobbyScene",
                               "activeScenePath":  "Assets/Scenes/CodexLobbyScene.unity",
-                              "waitedMs":  312
+                              "waitedMs":  318
                           },
                  "Health":  {
                                 "ok":  true,
@@ -49,16 +49,16 @@
                                     "pendingPlayAction":  "",
                                     "pendingPlayAgeMs":  0
                                 },
-                 "ElapsedMs":  9894
+                 "ElapsedMs":  18058
              },
-    "roomName":  "CodexSummonSmoke-20260418214220747-6377",
+    "roomName":  "CodexSummonSmoke-20260419113512578-9969",
     "invoke":  {
                    "success":  true,
                    "message":  "Invoked IPointerClickHandler",
                    "path":  "/HudCanvas/UnitSummonUi/SlotRow/UnitSlotTemplate(Clone)",
                    "invokedMethod":  "IPointerClickHandler.OnPointerClick",
                    "result":  "",
-                   "durationMs":  5.0
+                   "durationMs":  6.0
                },
     "battleEntity":  {
                          "found":  true,
@@ -222,41 +222,46 @@
                        "message":  "Screenshot captured.",
                        "relativePath":  "artifacts/unity/game-scene-summon-smoke.png",
                        "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\game-scene-summon-smoke.png",
-                       "fileSizeBytes":  131322
+                       "fileSizeBytes":  31642
                    },
-    "recentLogCount":  30,
+    "recentLogCount":  35,
     "recentErrorCount":  0,
     "recentLogs":  [
                        "[Log] [Unity MCP] SceneChangeQueue InitOnLoad called",
                        "[Log] [FirebaseStub] session_start {}",
-                       "[Log] [FirebaseAuth] RestoreSession uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776519717570.",
+                       "[Log] [FirebaseAuth] RestoreSession uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776533028261.",
+                       "[Log] [FirebaseAuth] Request succeeded (386ms): https://securetoken.googleapis.com/v1/token?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [FirebaseAuth] PersistSession uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2, hasIdToken=True, hasRefreshToken=True, expiryMs=1776569702826.",
                        "[Log] [FirebaseAuth] Reused persisted anonymous session for uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2.",
-                       "[Log] [Firestore] Request succeeded (276ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
                        "[Log] [PhotonConnection] Connecting...",
-                       "[Log] [Unity MCP] Registered 86 endpoints.",
-                       "[Log] [Unity MCP] Registered 86 endpoints.",
+                       "[Log] [Unity MCP] Registered 85 endpoints.",
+                       "[Log] [Unity MCP] Registered 85 endpoints.",
                        "[Log] [Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
                        "[Log] [Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
-                       "[Log] [Firestore] Request succeeded (2335ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
-                       "[Log] [Firestore] Request succeeded (2335ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
-                       "[Warning] [Firestore] Document not found (70ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
-                       "[Warning] [Firestore] Document not found (70ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
-                       "[Warning] [Firestore] Document not found (13ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
-                       "[Warning] [Firestore] Document not found (13ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
-                       "[Warning] [Firestore] Document not found (28ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
-                       "[Warning] [Firestore] Document not found (28ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
-                       "[Warning] [Firestore] Document not found (63ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
-                       "[Warning] [Firestore] Document not found (63ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [Firestore] Request succeeded (3770ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [Firestore] Request succeeded (3770ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [Firestore] Request succeeded (72ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [Firestore] Request succeeded (72ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (74ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (74ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (98ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Warning] [Firestore] Document not found (98ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [Firestore] Request succeeded (54ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [Firestore] Request succeeded (54ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [Firestore] Request succeeded (35ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                       "[Log] [Firestore] Request succeeded (35ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
                        "[Warning] PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
                        "[Warning] PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
                        "[Log] [PhotonConnection] Connected to Master. Joining lobby...",
                        "[Log] [PhotonConnection] Connected to Master. Joining lobby...",
                        "[Log] [PhotonConnection] Joined lobby. Ready for matchmaking.",
                        "[Log] [PhotonConnection] Joined lobby. Ready for matchmaking.",
-                       "[Log] [FirebaseStub] game_start {\"match_id\":\"c997d648a95b412985ca59a87e455c67\"}",
-                       "[Log] [FirebaseStub] game_start {\"match_id\":\"c997d648a95b412985ca59a87e455c67\"}",
+                       "[Log] [FirebaseStub] game_start {\"match_id\":\"705189ca3ce841b9ae9137824ddab87e\"}",
+                       "[Log] [FirebaseStub] game_start {\"match_id\":\"705189ca3ce841b9ae9137824ddab87e\"}",
                        "[Log] [GameSceneRoot] Computed 3 unit specs for player player-1",
-                       "[Log] [GameSceneRoot] Computed 3 unit specs for player player-1"
+                       "[Log] [GameSceneRoot] Computed 3 unit specs for player player-1",
+                       "[Log] [CombatTargetView] Target=objective-core, Damage=10, Remaining=1490",
+                       "[Log] [CombatTargetView] Target=objective-core, Damage=10, Remaining=1490"
                    ],
     "recentErrors":  [
 

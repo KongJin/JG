@@ -1,4 +1,5 @@
 using Features.Combat;
+using Features.Combat.Domain;
 using Features.Combat.Application.Events;
 using Features.Unit.Application.Events;
 using Features.Unit.Application.Ports;
@@ -23,6 +24,8 @@ namespace Features.Unit.Infrastructure
         [Required, SerializeField] private MonoBehaviour _view;
         [Required, SerializeField] private BattleEntityPhotonController _photonController;
         [Required, SerializeField] private EntityIdHolder _entityIdHolder;
+        [SerializeField] private float _fallbackAttackIntervalSeconds = 1f;
+        [SerializeField] private float _fallbackAttackRangePadding = 0.25f;
 
         private EventBus _eventBus;
         private CombatSetup _combatSetup;
@@ -30,6 +33,7 @@ namespace Features.Unit.Infrastructure
         private BattleEntity _battleEntity;
         private IBattleEntityViewPort _viewPort;
         private bool _initialized;
+        private float _nextAttackTime;
 
         public DomainEntityId BattleEntityId { get; private set; }
         public bool IsInitialized => _initialized;
@@ -133,6 +137,70 @@ namespace Features.Unit.Infrastructure
             eventBus.Publish(new Application.Events.UnitSummonCompletedEvent(ownerId, battleEntityId, unitSpec));
 
             _initialized = true;
+        }
+
+        private void Update()
+        {
+            if (!_initialized || _battleEntity == null || _combatSetup == null)
+                return;
+
+            if (!_battleEntity.IsAlive || !PhotonNetwork.IsMasterClient)
+                return;
+
+            if (Time.time < _nextAttackTime)
+                return;
+
+            if (!TryGetNearestEnemyInRange(out var targetId))
+                return;
+
+            _combatSetup.ApplyDamage(
+                targetId,
+                _battleEntity.UnitSpec.FinalAttackDamage,
+                DamageType.Physical,
+                _battleEntity.Id);
+
+            var attackSpeed = _battleEntity.UnitSpec.FinalAttackSpeed;
+            var interval = attackSpeed > 0f ? 1f / attackSpeed : _fallbackAttackIntervalSeconds;
+            _nextAttackTime = Time.time + Mathf.Max(0.1f, interval);
+        }
+
+        private bool TryGetNearestEnemyInRange(out DomainEntityId targetId)
+        {
+            targetId = default;
+
+            var attackRange = Mathf.Max(0.5f, _battleEntity.UnitSpec.FinalRange + _fallbackAttackRangePadding);
+            var hits = Physics.OverlapSphere(
+                transform.position,
+                attackRange,
+                ~0,
+                QueryTriggerInteraction.Collide);
+
+            var bestDistanceSq = float.MaxValue;
+            var found = false;
+
+            foreach (var hit in hits)
+            {
+                if (hit == null)
+                    continue;
+
+                var holder = hit.GetComponentInParent<EntityIdHolder>();
+                if (holder == null || !holder.IsInitialized)
+                    continue;
+
+                var candidateId = holder.Id;
+                if (string.IsNullOrWhiteSpace(candidateId.Value) || !candidateId.Value.StartsWith("enemy-"))
+                    continue;
+
+                var distanceSq = (hit.transform.position - transform.position).sqrMagnitude;
+                if (distanceSq >= bestDistanceSq)
+                    continue;
+
+                bestDistanceSq = distanceSq;
+                targetId = candidateId;
+                found = true;
+            }
+
+            return found;
         }
 
         private void OnDestroy()

@@ -8,7 +8,7 @@
 - 2026-04-18 확인 시 실제 `Assets/Scenes/GameScene.unity` 씬 에셋은 삭제된 상태였고, 플레이 가능한 전투 씬 완성도와 문서 표기가 어긋나 있었다.
 - 현재는 새 hand-authored `GameScene.unity`와 최소 `BattleEntity.prefab`을 다시 만들었고, build settings 등록과 required-field audit까지 복구했다.
 - `CodexLobbyScene -> GameScene` end-to-end summon smoke는 통과했다.
-- 현재 남은 핵심 리스크는 placement drag/drop, wave start, core victory/defeat, 멀티플레이 동기화 smoke다.
+- click summon 기준 `GameScene` wave/core/victory loop는 다시 통과했고, 현재 남은 핵심 리스크는 placement drag/drop 자동화와 멀티플레이 동기화 smoke다.
 
 ## Phase 진행률
 
@@ -54,14 +54,21 @@
 - Garage UI Figma handoff 계획: [`figma_ui_system_plan.md`](./figma_ui_system_plan.md)
 - Garage UI 상세 계획: [`garage_ui_ux_improvement_plan.md`](./garage_ui_ux_improvement_plan.md)
 - GameScene 진입 계획: [`game_scene_entry_plan.md`](./game_scene_entry_plan.md)
+- GameScene UI/UX 상세 계획: [`game_scene_ui_ux_improvement_plan.md`](./game_scene_ui_ux_improvement_plan.md)
+- GameScene UI authoring 기본 경로도 `GameScene.unity` / 관련 prefabs 대상 MCP repair를 사용하고, code-driven builder/rebuild는 재도입하지 않기
 - 계정 시스템 상세 계획: [`account_system_plan.md`](./account_system_plan.md)
 - 기술부채 감축 실행 계획: [`tech_debt_reduction_plan.md`](./tech_debt_reduction_plan.md)
 - WebGL 실기 체크리스트: [`webgl_smoke_checklist.md`](./webgl_smoke_checklist.md)
-- 다음 세션 시작점: `CodexLobbyScene -> GameScene` summon smoke 통과 상태에서 placement, wave/core loop, multiplayer sync를 이어서 검증
+- 다음 세션 시작점: `CodexLobbyScene -> GameScene` summon + wave/core victory smoke 통과 상태에서 placement drag/drop automation contract와 multiplayer sync를 이어서 검증하거나, `game_scene_ui_ux_improvement_plan.md` 기준으로 전투 HUD/소환 UX 재설계를 시작
 
 ### 최근 변경 사항
 
 ### 2026-04-19
+
+- done: GameScene builderless authoring route 고정
+  - done: `Assets/Editor/SceneTools/GameSceneBuilder.cs` 제거 - GameScene UI/HUD restyle의 기본 경로를 code-driven rebuild가 아니라 `GameScene.unity` / 관련 prefab 대상 MCP repair로 재고정
+  - done: `game_scene_ui_ux_improvement_plan.md`와 `tools/unity-mcp/README.md`에 같은 원칙을 명시해 GameScene UI 작업도 builderless route로 고정
+  - note: 기존 progress의 builder 관련 항목은 당시 복구 이력으로만 남기고, 이후 authoring 기준으로 재사용하지 않음
 
 - done: CodexLobby mobile-first layout pass 1차
   - done: `CodexLobbyScene` Garage를 mobile host 구조(`GarageMobileStackRoot / MobileBodyHost / MobileSlotGrid / MobileSaveButton`)로 재정리하고, `GaragePageController`가 pre-authored desktop/mobile hosts 사이에서 pane parent 전환과 `Edit / Preview / Summary` 탭 전환만 담당하도록 보강
@@ -92,6 +99,14 @@
   - evidence: `artifacts/unity/game-scene-summon-smoke.png`, `artifacts/unity/game-scene-summon-smoke-result.json`
   - note: GameView 좌표 기반 `/input/click`, `/input/drag`는 아직 불안정해서 현재 stable automation contract는 `/ui/invoke` 기반 summon smoke다
 
+- done: GameScene wave/core outcome smoke 2차 검증
+  - done: `tools/unity-mcp/Invoke-GameScenePlacementWaveSmoke.ps1`를 추가/보강해 placement drag 시도, click summon fallback, wave/core polling, end overlay 관찰, screenshot/report 생성을 한 번에 수행
+  - done: `BattleEntityPrefabSetup`에 master-only fallback auto-attack loop를 추가해 local summon entity가 enemy kill -> wave advance -> victory path를 실제로 밟도록 보강
+  - observed: latest placement smoke 기준 `/input/drag`는 아직 `dragDidSummon = false`, `dragPlacementErrorText = "배치 영역 밖입니다!"`로 실패했고 automation contract 안정화가 남아 있음
+  - observed: 같은 smoke에서 click summon 기준 `Wave 5/5`, `waveEndOverlayActive = true`, `outcomeResultText = "Victory!"`, `returnToLobbyButtonActive = true`, `recentErrorCount = 0` 확인
+  - observed: `coreHpAfterWait = "1454 / 1500"`였고 recent logs에 `[FirebaseStub] game_end {"result":"Victory!"...}`와 `Summons: 2`, `Unit Kills: 27`가 남아 wave/core/end overlay loop가 끝까지 닫히는 것을 재확인
+  - evidence: `artifacts/unity/game-scene-placement-initial.png`, `artifacts/unity/game-scene-placement-after-drag.png`, `artifacts/unity/game-scene-placement-final.png`, `artifacts/unity/game-scene-placement-wave-result.json`
+
 - done: 구조 복잡도 / lifecycle seam 제거 1차
   - done: `AuthTokenProvider` 정적 우회를 제거하고 `FirebaseAuthRestAdapter -> FirestoreRestPort` injected session access로 교체
   - done: `FirestoreRestPort`, `FirebaseAuthRestAdapter`, `GaragePageController`의 helper/transport/mapping 책임을 별도 파일로 분리해 orchestration 위주로 축소
@@ -99,6 +114,18 @@
   - done: 사용처가 없던 `BattleEntityArrived` 정적 seam 제거
   - done: `GameSceneRoot`에서 `SoundPlayer.Instance` 직접 참조를 제거하고 runtime audio host 조회를 `IAudioRuntimePort` 내부로 한정
   - note: `SoundPlayer` 자체는 아직 DDOL host로 남아 있어, scene-owned audio host로 완전 교체하는 후속 패스는 남아 있음
+
+- done: 구조 복잡도 / lifecycle seam 제거 2차
+  - done: `GameSceneRoot` 내부 helper(`garage bootstrap`, `player connector`, `audio bootstrap`)를 별도 파일로 이동해 scene root를 orchestration 중심으로 축소
+  - done: `WaveSetup`의 enemy arrival fallback 배선을 `WaveEnemyArrivalCoordinator`로 분리
+  - done: `SoundPlayerRuntimeConfig` resource asset과 `SoundPlayerRuntimeHostFactory`를 추가해 `GameScene`이 로비 생성 DDOL 없이도 자기 runtime audio host를 직접 올릴 수 있게 정리
+  - note: `SoundPlayer`의 내부 수명주기 구현은 아직 DDOL 기반이므로, 완전한 scene-owned audio lifecycle까지는 후속 정리가 더 필요함
+
+- done: 구조 복잡도 / lifecycle seam 제거 3차
+  - done: `LobbyPhotonAdapter` 안에 함께 붙어 있던 pending state, room mapper, command validator, callback translator를 별도 파일로 분리
+  - done: `LobbySetup` 내부 helper(`LobbyAccountBootstrapFlow`, `LobbySceneInitializationFlow`)를 파일 분리해 setup 본체를 orchestration 중심으로 축소
+  - done: `SoundPlayer`에서 `static Instance`를 제거하고 runtime duplicate 검사를 scene scan 기반으로 변경
+  - note: `SoundPlayer`는 더 이상 전역 인스턴스 프로퍼티를 노출하지 않지만, `DontDestroyOnLoad` 자체는 아직 유지 중이어서 lifecycle debt가 완전히 끝난 것은 아님
 
 - done: Lobby/Garage UI polish 1차
   - done: `CodexLobbySceneBuilder`, `CodexLobbyGarageAugmenter` 기준으로 헤더/탭 밀도, Garage 슬롯 폭/높이, selector card, result CTA 카피를 1차 정리

@@ -1,6 +1,6 @@
 # Docs Index
 
-> 마지막 업데이트: 2026-04-18
+> 마지막 업데이트: 2026-04-19
 
 이 문서는 `docs/` 탐색용 인덱스다. 루트 진입점은 [`../AGENTS.md`](../AGENTS.md), 진행 상황 SSOT는 [`plans/progress.md`](./plans/progress.md)다.
 
@@ -27,6 +27,7 @@
 | Garage UI 레이아웃/토큰/Unity handoff 기준 확인 | [`design/ui_foundations.md`](./design/ui_foundations.md) |
 | 외부 UI 레퍼런스 워크플로우 확인 | [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) |
 | GameScene 진입 큰 흐름 확인 | [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) |
+| GameScene 전투 HUD / 소환 UX 개선 계획 확인 | [`plans/game_scene_ui_ux_improvement_plan.md`](./plans/game_scene_ui_ux_improvement_plan.md) |
 | 계정/차고 복구 상태 확인 | [`plans/account_system_plan.md`](./plans/account_system_plan.md) |
 | Unity MCP 검증 루틴 확인 | [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) |
 | WebGL 실기 절차 확인 | [`plans/webgl_smoke_checklist.md`](./plans/webgl_smoke_checklist.md) |
@@ -49,6 +50,7 @@
 - `active`: [`progress.md`](./plans/progress.md) - 공식 진행률 SSOT
 - `active`: [`account_system_plan.md`](./plans/account_system_plan.md) - 계정/차고 복구 계획
 - `active`: [`game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) - GameScene 진입 상위 흐름
+- `draft`: [`game_scene_ui_ux_improvement_plan.md`](./plans/game_scene_ui_ux_improvement_plan.md) - GameScene 전투 HUD/소환 UX 재설계 계획
 - `active`: [`tech_debt_reduction_plan.md`](./plans/tech_debt_reduction_plan.md) - 현재 기술부채 실행 순서
 - `active`: [`webgl_smoke_checklist.md`](./plans/webgl_smoke_checklist.md) - WebGL 실기 체크리스트
 - `draft`: [`garage_ui_ux_improvement_plan.md`](./plans/garage_ui_ux_improvement_plan.md) - Garage UI backlog

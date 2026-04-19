@@ -140,7 +140,7 @@ namespace Features.Wave.Presentation
 
             firstWaveDeckHintText.gameObject.SetActive(true);
             if (string.IsNullOrEmpty(firstWaveDeckHintText.text))
-                firstWaveDeckHintText.text = "RMB·Q로 스킬 시전. 시전한 슬롯에는 덱에서 다음 스킬이 옵니다.";
+                firstWaveDeckHintText.text = "슬롯을 눌러 즉시 소환하고, 드래그로 정확히 배치하세요.";
         }
 
     }

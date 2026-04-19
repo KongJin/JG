@@ -173,12 +173,13 @@ Phase 10/11의 가장 큰 리스크인 "브라우저에서 진짜 되는가"를 
 - `FirestoreRestPort`, `FirebaseAuthRestAdapter`, `GaragePageController`, `GameSceneRoot`의 helper/mapping/transport 책임을 분리한다.
 - `AuthTokenProvider` 같은 정적 세션 접근을 injected session access로 교체한다.
 - `PlayerSetup.LocalArrived/RemoteArrived`, `EnemySetup.EnemyArrived`, `BattleEntityArrived` 같은 gameplay arrival seam은 scene-local registry 또는 명시적 bootstrap으로 내린다.
-- `SoundPlayer.Instance` 직접 참조는 금지하고, scene에서 찾은 runtime host나 명시적 주입 경로만 허용한다.
+- `SoundPlayer.Instance` 직접 참조는 금지하고, runtime config 기반 host factory나 명시적 주입 경로만 허용한다.
 
 완료 기준:
 - 대형 클래스는 orchestration 위주로 축소되고, helper는 별도 파일로 이동한다.
 - production code에서 scene-crossing 정적 seam이 줄어든다.
 - 문서가 임시 seam을 현재 정답처럼 권장하지 않는다.
+- `SoundPlayer` 같은 런타임 host는 전역 static instance 없이도 찾고 초기화할 수 있어야 한다.
 
 ### Track F. 신뢰도 이후의 UX 폴리시
 

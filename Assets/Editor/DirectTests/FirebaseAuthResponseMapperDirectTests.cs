@@ -9,7 +9,7 @@ namespace Tests.Editor
         [Test]
         public void FromTokenResponse_UsesFallbackUid_AndComputesExpiry()
         {
-            var response = new FirebaseAuthRestAdapter.TokenResponse
+            var response = new TokenResponse
             {
                 id_token = "id-token",
                 refresh_token = "refresh-token",

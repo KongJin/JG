@@ -85,6 +85,7 @@ namespace Features.Unit.Presentation
             if (rosterIndex >= _roster.Length) return;
 
             var slotGo = Instantiate(_slotPrefab.gameObject, _slotsParent, false);
+            slotGo.name = $"UnitSlot-{rosterIndex}";
             var slotView = slotGo.GetComponent<UnitSlotView>();
             slotView.Initialize(
                 _eventBus,
@@ -93,14 +94,6 @@ namespace Features.Unit.Presentation
                 _roster[rosterIndex],
                 _ownerId,
                 spawnPosition);
-
-            // 슬롯의 표시 위치 계산 (가로 배치)
-            if (slotGo.GetComponent<RectTransform>() is RectTransform rt)
-            {
-                var slotIndex = _activeSlots.Count;
-                var spacing = 160f; // 슬롯 간 간격
-                rt.anchoredPosition = new Vector2(slotIndex * spacing, 0f);
-            }
 
             // 드래그 앤 드롭 핸들러 연결 (클릭 + 드래그 모두 이 핸들러가 담당)
             if (_inputHandlerPrefab != null && _canvas != null)
