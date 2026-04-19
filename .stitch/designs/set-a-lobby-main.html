@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Matchmaking Lobby - Tactical Sci-Fi</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=IBM+Plex+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        zinc: {
+                            800: '#27272a',
+                            900: '#18181b',
+                            950: '#09090b',
+                        },
+                        amber: {
+                            500: '#f59e0b',
+                        },
+                        blue: {
+                            400: '#60a5fa',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk", "sans-serif"],
+                        "body": ["IBM Plex Sans", "sans-serif"],
+                        "label": ["IBM Plex Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #111827; /* Hangar Canvas */
+            color: #f3f4f6; /* Light gray text for readability */
+        }
+        /* Mobile-first baseline 390x844 max width container */
+        .app-container {
+            max-width: 390px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #111827;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            padding-top: 3.5rem; /* space for top app bar */
+            padding-bottom: 5rem; /* space for bottom nav */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased font-body selection:bg-amber-500/30 selection:text-amber-500">
+<!-- App Container to enforce mobile dimensions on larger screens -->
+<div class="app-container overflow-hidden flex flex-col">
+<!-- TopAppBar (from JSON) -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-4 h-14 backdrop-blur-md bg-zinc-950/90 border-b-2 border-zinc-800" style="max-width: 390px;">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-zinc-800 overflow-hidden border border-zinc-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-zinc-400 text-xl" data-icon="person">person</span>
+</div>
+<h1 class="font-headline font-mono uppercase tracking-tighter text-lg font-black text-amber-500">COMMAND_CENTER</h1>
+</div>
+<button class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:bg-zinc-800 rounded active:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="settings_input_component">settings_input_component</span>
+</button>
+</header>
+<!-- Main Scrollable Content -->
+<main class="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-5">
+<!-- Section Header: Operation Zones -->
+<div class="flex items-end justify-between border-b border-zinc-800/50 pb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-400 text-sm icon-filled" data-icon="radar">radar</span>
+<h2 class="font-headline text-sm font-bold tracking-wider text-zinc-300">작전 구역</h2>
+</div>
+<span class="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">Scanning...</span>
+</div>
+<!-- Empty State Card (Rooms) -->
+<div class="bg-zinc-900/80 border border-zinc-800/80 rounded flex flex-col items-center justify-center py-10 px-6 text-center space-y-4">
+<div class="w-16 h-16 rounded-full bg-zinc-950 flex items-center justify-center border border-zinc-800 relative">
+<span class="material-symbols-outlined text-zinc-600 text-3xl" data-icon="grid_off">grid_off</span>
+<!-- Decorative scanner line -->
+<div class="absolute inset-0 border-t-2 border-amber-500/20 rounded-full animate-[spin_3s_linear_infinite] opacity-50"></div>
+</div>
+<div class="space-y-1.5">
+<h3 class="font-headline text-base font-semibold text-zinc-200">검색된 방 없음</h3>
+<p class="text-xs text-zinc-500 leading-relaxed font-label max-w-[200px] mx-auto">새로운 작전을 시작하거나 목록을 새로고침하세요.</p>
+</div>
+<button class="mt-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold py-2 px-5 rounded border border-zinc-700 flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="refresh">refresh</span>
+<span>새로고침</span>
+</button>
+</div>
+<!-- Create Room Card -->
+<div class="bg-zinc-900/50 border border-zinc-800/60 rounded p-4 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2 opacity-10">
+<span class="material-symbols-outlined text-4xl" data-icon="add_box">add_box</span>
+</div>
+<div class="flex items-start justify-between relative z-10">
+<div class="space-y-1">
+<div class="flex items-center gap-1.5 mb-2">
+<span class="material-symbols-outlined text-amber-500 text-sm" data-icon="add_circle">add_circle</span>
+<h3 class="font-headline text-sm font-bold text-zinc-200">작전 생성</h3>
+</div>
+<p class="text-[11px] text-zinc-500 font-label">사설 또는 공개 세션을 시작합니다.</p>
+</div>
+<button class="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-[11px] px-3 py-1.5 rounded uppercase tracking-wide transition-colors">
+                        INITIATE
+                    </button>
+</div>
+</div>
+<!-- Garage Summary Card -->
+<div class="mt-8">
+<div class="flex items-end justify-between border-b border-zinc-800/50 pb-2 mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-400 text-sm icon-filled" data-icon="construction">construction</span>
+<h2 class="font-headline text-sm font-bold tracking-wider text-zinc-300">격납고 요약</h2>
+</div>
+</div>
+<div class="bg-zinc-950/60 border border-zinc-800 rounded p-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-zinc-900 border border-zinc-700 rounded flex items-center justify-center overflow-hidden">
+<!-- Placeholder for unit icon/blueprint -->
+<img alt="Mechanical blueprint abstract texture" class="w-full h-full object-cover opacity-40 mix-blend-screen" data-alt="Dark schematic blueprint of a sci-fi mechanical suit or drone part, glowing subtle blue lines on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTFcOnoWOy0gXYs6EmeOvD0jren41Ut93qlSZuOQZurs0NUyAhtOdgt7x5av7ZjWBtB6__N-PPn6ZjZCxIDfJ-BY11P1ULvmONTabIiqyYWRgT_VDAmUSicrPyB5BdIxcetGI83E4dl3rOiJ4Dz1eg7h7nUqQJFhcKwuAfYuCi2TGMbpI9fEF1rpiLAdS_FEJQf32b3VYkJBS5LZ2rp-LVCltXwMnX81UOjrhqmTbG0svyPp8FIThlmjhczSM8GoajGxL3p8Rghs3O"/>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-1.5 py-0.5 bg-blue-900/40 border border-blue-800 text-blue-400 text-[9px] font-mono font-bold rounded uppercase tracking-wider">READY</span>
+</div>
+<div class="font-headline text-sm font-semibold text-zinc-200">MK-IV "Sentinel"</div>
+<div class="text-[10px] text-zinc-500 font-mono">ASLT / TIER 2</div>
+</div>
+</div>
+<button class="w-8 h-8 rounded border border-zinc-700 bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-200 transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+</button>
+</div>
+<button class="w-full mt-2 py-2.5 bg-zinc-900 border border-zinc-800 rounded text-xs text-zinc-400 font-semibold hover:bg-zinc-800 transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
+                    격납고 관리
+                </button>
+</div>
+<!-- Spacing for bottom nav -->
+<div class="h-6"></div>
+</main>
+<!-- BottomNavBar (from JSON) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-safe h-16 bg-zinc-950 border-t-2 border-blue-900/30 shadow-[0_-4px_12px_rgba(0,0,0,0.5)]" style="max-width: 390px; margin: 0 auto; left: 0; right: 0;">
+<!-- Tab 1: 로비 (Active) -->
+<button class="flex flex-col items-center justify-center bg-amber-500/10 text-amber-500 rounded-sm border-t-2 border-amber-500 px-4 py-1 h-full w-full max-w-[80px] active:scale-95 transition-transform hover:text-blue-400">
+<span class="material-symbols-outlined text-xl mb-1 icon-filled" data-icon="grid_view">grid_view</span>
+<span class="text-[10px] font-bold font-mono">로비</span>
+</button>
+<!-- Tab 2: 차고 (Inactive) -->
+<button class="flex flex-col items-center justify-center text-zinc-500 px-4 py-1 h-full w-full max-w-[80px] active:scale-95 transition-transform hover:text-blue-400">
+<span class="material-symbols-outlined text-xl mb-1" data-icon="minor_crash">minor_crash</span>
+<span class="text-[10px] font-bold font-mono">차고</span>
+</button>
+<!-- Tab 3: 병기고 (Inactive) -->
+<button class="flex flex-col items-center justify-center text-zinc-500 px-4 py-1 h-full w-full max-w-[80px] active:scale-95 transition-transform hover:text-blue-400">
+<span class="material-symbols-outlined text-xl mb-1" data-icon="construction">construction</span>
+<span class="text-[10px] font-bold font-mono">병기고</span>
+</button>
+<!-- Tab 4: 통신 (Inactive) -->
+<button class="flex flex-col items-center justify-center text-zinc-500 px-4 py-1 h-full w-full max-w-[80px] active:scale-95 transition-transform hover:text-blue-400">
+<span class="material-symbols-outlined text-xl mb-1" data-icon="hub">hub</span>
+<span class="text-[10px] font-bold font-mono">통신</span>
+</button>
+</nav>
+</div>
+</body></html>

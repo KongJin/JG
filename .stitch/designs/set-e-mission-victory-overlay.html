@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mission Success</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {},
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk", "sans-serif"],
+                        "body": ["IBM Plex Sans", "sans-serif"],
+                        "label": ["IBM Plex Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;family=IBM+Plex+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-zinc-950 text-zinc-300 font-body antialiased min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+<!-- Dimmed Battlefield Background Overlay -->
+<div class="absolute inset-0 z-0 flex items-center justify-center">
+<div class="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm z-10"></div>
+<img alt="Battlefield Context" class="w-full h-full object-cover opacity-30" data-alt="dimmed dark sci-fi battlefield tactical map interface glowing grids" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWEZM70yBgq_zsHZgzRYKsOgcPnB8us_zEGDgfdraWLjAR5SLE9CqI0gJbh3itaPW0hkPBrSb1g7HclnJ0dBhkHKsi0_qRglFaJi6U3nDR2OJcMXYnGO0o3nTgp1_8xgw1ORzEFgtMcz0MscrXt5wpW5VfEo0f7gxuYnk_uYcH_QWbUDaf27z82jpH03JLQED1VcEXKCI9GDi7K5Arb1bIVdjLPPCp1aYHd-UoiKUc1YiBiRQFSM57Olvusi_g98bErkCkV35A9Or3"/>
+</div>
+<!-- Main Content Container -->
+<div class="relative z-10 w-full max-w-[390px] px-4 flex flex-col gap-6">
+<!-- Header -->
+<div class="text-center space-y-2">
+<h1 class="font-headline font-bold text-4xl text-amber-500 tracking-tighter">MISSION_SUCCESS</h1>
+<p class="font-label text-xs text-zinc-500 uppercase tracking-widest">(미션 성공)</p>
+</div>
+<!-- Performance Bento Grid -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Card 1: WAVE_CLEARED -->
+<div class="bg-zinc-900/80 border border-zinc-800 rounded p-4 flex flex-col justify-between items-start col-span-2">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-blue-500 text-sm" data-icon="waves" data-weight="fill" style="font-variation-settings: 'FILL' 1;">waves</span>
+<h2 class="font-label text-[10px] text-zinc-400 font-bold uppercase tracking-widest">WAVE_CLEARED <span class="text-zinc-600">(최종 웨이브)</span></h2>
+</div>
+<div class="text-3xl font-headline font-bold text-zinc-100">15<span class="text-zinc-600 text-xl">/15</span></div>
+</div>
+<!-- Card 2: CORE_INTEGRITY -->
+<div class="bg-zinc-900/80 border border-zinc-800 rounded p-4 flex flex-col justify-between items-start">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-blue-500 text-sm" data-icon="shield" data-weight="fill" style="font-variation-settings: 'FILL' 1;">shield</span>
+<h2 class="font-label text-[10px] text-zinc-400 font-bold uppercase tracking-widest">CORE_INTEGRITY</h2>
+</div>
+<div class="text-2xl font-headline font-bold text-zinc-100">72%</div>
+<p class="font-label text-[8px] text-zinc-600 uppercase tracking-widest mt-1">(코어 무결성)</p>
+</div>
+<!-- Card 3: UNITS_DEPLOYED -->
+<div class="bg-zinc-900/80 border border-zinc-800 rounded p-4 flex flex-col justify-between items-start">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-blue-500 text-sm" data-icon="group" data-weight="fill" style="font-variation-settings: 'FILL' 1;">group</span>
+<h2 class="font-label text-[10px] text-zinc-400 font-bold uppercase tracking-widest">UNITS_DEPLOYED</h2>
+</div>
+<div class="text-2xl font-headline font-bold text-zinc-100">48</div>
+<p class="font-label text-[8px] text-zinc-600 uppercase tracking-widest mt-1">(유닛 배치)</p>
+</div>
+<!-- Card 4: COMMAND_SCORE -->
+<div class="bg-zinc-900/80 border border-zinc-800 rounded p-4 flex flex-col justify-between items-start col-span-2 relative overflow-hidden">
+<div class="absolute right-0 top-0 w-32 h-32 bg-blue-500/5 blur-3xl rounded-full"></div>
+<div class="flex items-center gap-2 mb-2 relative z-10">
+<span class="material-symbols-outlined text-amber-500 text-sm" data-icon="military_tech" data-weight="fill" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+<h2 class="font-label text-[10px] text-amber-500 font-bold uppercase tracking-widest">COMMAND_SCORE <span class="text-amber-500/50">(지휘 점수)</span></h2>
+</div>
+<div class="text-4xl font-headline font-bold text-amber-500 relative z-10">8,450</div>
+</div>
+</div>
+<!-- Primary Action -->
+<button class="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-label font-bold text-sm uppercase tracking-widest py-4 rounded transition-colors flex items-center justify-center gap-2 mt-4 active:scale-95 duration-75">
+<span class="material-symbols-outlined text-sm" data-icon="exit_to_app" data-weight="fill" style="font-variation-settings: 'FILL' 1;">exit_to_app</span>
+            RETURN_TO_LOBBY <span class="text-zinc-800 text-[10px] ml-1">(로비로 귀환)</span>
+</button>
+</div>
+</body></html>

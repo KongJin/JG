@@ -43,6 +43,8 @@ namespace Features.Garage.Presentation
             _previewCamera.backgroundColor = ThemeColors.PreviewBackground;
             _previewCamera.clearFlags = CameraClearFlags.SolidColor;
             _rawImage.color = ThemeColors.PreviewBackground;
+            _emptyStateText.text = "선택한 빌드 미리보기가 여기에 표시됩니다.";
+            _emptyStateText.color = ThemeColors.TextMuted;
 
             SetEmptyStateVisible(true);
         }
@@ -53,7 +55,13 @@ namespace Features.Garage.Presentation
             DestroyCurrentPreview();
             SetEmptyStateVisible(true);
 
-            if (viewModel == null || !viewModel.HasCommittedLoadout)
+            bool hasPreviewLoadout =
+                viewModel != null &&
+                !string.IsNullOrWhiteSpace(viewModel.FrameId) &&
+                !string.IsNullOrWhiteSpace(viewModel.FirepowerId) &&
+                !string.IsNullOrWhiteSpace(viewModel.MobilityId);
+
+            if (!hasPreviewLoadout)
                 return;
 
             CreatePreview(viewModel, catalog);

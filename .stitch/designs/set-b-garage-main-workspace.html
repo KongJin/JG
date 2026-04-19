@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tactical Unit Assembly</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              zinc: {
+                50: '#fafafa',
+                100: '#f4f4f5',
+                200: '#e4e4e7',
+                300: '#d4d4d8',
+                400: '#a1a1aa',
+                500: '#71717a',
+                600: '#52525b',
+                700: '#3f3f46',
+                800: '#27272a',
+                900: '#18181b',
+                950: '#09090b',
+              },
+              amber: {
+                400: '#fbbf24',
+                500: '#f59e0b',
+              },
+              blue: {
+                400: '#60a5fa',
+                500: '#5EB6FF', // Command Blue
+              }
+            },
+            borderRadius: {
+              "DEFAULT": "0.25rem",
+              "lg": "0.5rem",
+              "xl": "0.75rem",
+              "full": "9999px"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk", "sans-serif"],
+              "body": ["IBM Plex Sans", "sans-serif"],
+              "label": ["IBM Plex Sans", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #111827; /* Fallback */
+        }
+        /* Custom scrollbar for horizontal lists */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-900 text-zinc-200 font-body antialiased min-h-screen pb-safe pb-20 selection:bg-amber-500/30 selection:text-amber-500">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-14 backdrop-blur-md bg-zinc-950/90 border-b border-zinc-800">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-zinc-800 flex items-center justify-center border border-zinc-700 overflow-hidden">
+<span class="material-symbols-outlined text-zinc-400 text-sm">stars</span>
+</div>
+<div>
+<h1 class="font-mono uppercase tracking-tighter font-bold text-sm text-amber-500">격납고 관리</h1>
+<p class="text-[10px] text-zinc-500 font-mono">COMMAND_STATUS: ACTIVE | UNITS: 3/4</p>
+</div>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded text-zinc-500 hover:bg-zinc-900 hover:text-amber-400 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-xl">settings</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="pt-16 px-3 space-y-4 max-w-md mx-auto relative pb-24">
+<!-- Slot Selector -->
+<section class="grid grid-cols-4 gap-2">
+<!-- Active Slot -->
+<button class="flex flex-col items-center p-2 rounded bg-blue-500/10 border border-blue-500/50 shadow-[0_0_10px_rgba(94,182,255,0.1)] relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-0.5 bg-blue-500"></div>
+<span class="font-mono text-[10px] text-blue-400 mb-1">UNIT_01</span>
+<div class="w-10 h-10 rounded-sm bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-blue-500">smart_toy</span>
+</div>
+<span class="text-[9px] font-bold text-zinc-300">ASSAULT</span>
+</button>
+<!-- Inactive Slot 1 -->
+<button class="flex flex-col items-center p-2 rounded bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 transition-colors">
+<span class="font-mono text-[10px] text-zinc-500 mb-1">UNIT_02</span>
+<div class="w-10 h-10 rounded-sm bg-zinc-950 border border-zinc-800 flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-zinc-600">security</span>
+</div>
+<span class="text-[9px] font-bold text-zinc-500">DEFENSE</span>
+</button>
+<!-- Inactive Slot 2 -->
+<button class="flex flex-col items-center p-2 rounded bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 transition-colors">
+<span class="font-mono text-[10px] text-zinc-500 mb-1">UNIT_03</span>
+<div class="w-10 h-10 rounded-sm bg-zinc-950 border border-zinc-800 flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-zinc-600">precision_manufacturing</span>
+</div>
+<span class="text-[9px] font-bold text-zinc-500">SUPPORT</span>
+</button>
+<!-- Empty Slot -->
+<button class="flex flex-col items-center p-2 rounded bg-zinc-900/30 border border-zinc-800 border-dashed hover:bg-zinc-900/50 transition-colors">
+<span class="font-mono text-[10px] text-zinc-600 mb-1">UNIT_04</span>
+<div class="w-10 h-10 rounded-sm bg-zinc-950/50 flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-zinc-700">add</span>
+</div>
+<span class="text-[9px] font-bold text-zinc-600">EMPTY</span>
+</button>
+</section>
+<!-- Part Focus Bar -->
+<section class="flex gap-1 border-b border-zinc-800 pb-2">
+<button class="flex-1 py-2 text-xs font-bold font-mono tracking-wider text-zinc-400 hover:text-zinc-200 border-b-2 border-transparent hover:border-zinc-700 transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm">view_in_ar</span>
+                [프레임]
+            </button>
+<button class="flex-1 py-2 text-xs font-bold font-mono tracking-wider text-blue-500 border-b-2 border-blue-500 flex items-center justify-center gap-1 bg-gradient-to-t from-blue-500/10 to-transparent">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">swords</span>
+                [무장]
+            </button>
+<button class="flex-1 py-2 text-xs font-bold font-mono tracking-wider text-zinc-400 hover:text-zinc-200 border-b-2 border-transparent hover:border-zinc-700 transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm">speed</span>
+                [기동]
+            </button>
+</section>
+<!-- Focused Editor Area -->
+<section class="bg-zinc-900 border border-zinc-800 rounded-lg p-3 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 text-[9px] font-mono rounded border border-blue-500/30">주무장</span>
+<h2 class="font-headline font-bold text-sm text-zinc-100">HV-42 레일건</h2>
+</div>
+<p class="text-xs text-zinc-400 leading-tight">고속 관통 탄환을 발사하여 중장갑 목표물 타격에 특화됨.</p>
+</div>
+<div class="w-12 h-12 bg-zinc-950 rounded border border-zinc-700 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-2xl text-zinc-500">radar</span>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 gap-2 pt-2 border-t border-zinc-800/50">
+<div class="bg-zinc-950/50 p-2 rounded flex justify-between items-center border border-zinc-800/50">
+<span class="text-[10px] text-zinc-500 font-mono">공격력 (ATK)</span>
+<span class="text-xs font-mono font-bold text-zinc-200">840</span>
+</div>
+<div class="bg-zinc-950/50 p-2 rounded flex justify-between items-center border border-zinc-800/50">
+<span class="text-[10px] text-zinc-500 font-mono">사거리 (RNG)</span>
+<span class="text-xs font-mono font-bold text-zinc-200">12.5m</span>
+</div>
+<div class="bg-zinc-950/50 p-2 rounded flex justify-between items-center border border-zinc-800/50">
+<span class="text-[10px] text-zinc-500 font-mono">연사력 (RTS)</span>
+<span class="text-xs font-mono font-bold text-amber-500">Low</span>
+</div>
+<div class="bg-zinc-950/50 p-2 rounded flex justify-between items-center border border-zinc-800/50">
+<span class="text-[10px] text-zinc-500 font-mono">전력 소모 (PWR)</span>
+<span class="text-xs font-mono font-bold text-zinc-200">45kW</span>
+</div>
+</div>
+<!-- Modifiers -->
+<div class="pt-2">
+<div class="text-[10px] text-zinc-500 font-mono mb-2 flex justify-between">
+<span>부착물 슬롯</span>
+<span>1/2 사용됨</span>
+</div>
+<div class="flex gap-2 hide-scrollbar overflow-x-auto pb-1">
+<button class="flex items-center gap-2 bg-blue-500/10 border border-blue-500/30 px-2 py-1.5 rounded min-w-[120px] shrink-0">
+<span class="material-symbols-outlined text-blue-400 text-sm">filter_center_focus</span>
+<div class="text-left">
+<div class="text-[10px] font-bold text-blue-100">광학 조준경</div>
+<div class="text-[8px] text-blue-400/70 font-mono">+ 명중률</div>
+</div>
+</button>
+<button class="flex items-center gap-2 bg-zinc-950 border border-zinc-800 border-dashed px-2 py-1.5 rounded min-w-[120px] shrink-0 hover:border-zinc-600 transition-colors">
+<span class="material-symbols-outlined text-zinc-600 text-sm">add</span>
+<span class="text-[10px] text-zinc-500">빈 슬롯</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Preview & Summary -->
+<section class="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden flex flex-col h-48 relative">
+<!-- Blueprint Canvas overlay -->
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-zinc-900 to-zinc-900 z-0 flex items-center justify-center opacity-50">
+<div class="w-full h-full border border-blue-500/10 grid grid-cols-4 grid-rows-4 absolute inset-0 mix-blend-overlay">
+<!-- Grid lines -->
+<div class="col-span-1 row-span-4 border-r border-blue-500/5"></div>
+<div class="col-span-1 row-span-4 border-r border-blue-500/5"></div>
+<div class="col-span-1 row-span-4 border-r border-blue-500/5"></div>
+<div class="col-span-4 row-span-1 border-b border-blue-500/5 absolute top-[25%] w-full h-[1px]"></div>
+<div class="col-span-4 row-span-1 border-b border-blue-500/5 absolute top-[50%] w-full h-[1px]"></div>
+<div class="col-span-4 row-span-1 border-b border-blue-500/5 absolute top-[75%] w-full h-[1px]"></div>
+</div>
+</div>
+<!-- Content -->
+<div class="z-10 p-3 h-full flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Blueprint View</span>
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 bg-zinc-800 text-zinc-300 text-[8px] font-mono rounded">대장갑</span>
+<span class="px-1.5 py-0.5 bg-zinc-800 text-zinc-300 text-[8px] font-mono rounded">장거리</span>
+</div>
+</div>
+<!-- Abstract Unit Representation -->
+<div class="flex-1 flex items-center justify-center relative">
+<div class="w-24 h-24 border border-blue-500/30 rounded-full relative animate-pulse flex items-center justify-center" style="animation-duration: 4s;">
+<span class="material-symbols-outlined text-4xl text-blue-400 opacity-80" style="font-variation-settings: 'FILL' 1;">android</span>
+<!-- Targeting reticles -->
+<div class="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-blue-500/50"></div>
+<div class="absolute -top-2 -right-2 w-4 h-4 border-t-2 border-r-2 border-blue-500/50"></div>
+<div class="absolute -bottom-2 -left-2 w-4 h-4 border-b-2 border-l-2 border-blue-500/50"></div>
+<div class="absolute -bottom-2 -right-2 w-4 h-4 border-b-2 border-r-2 border-blue-500/50"></div>
+</div>
+</div>
+<!-- Status Bar -->
+<div class="w-full bg-zinc-950 rounded p-1 flex gap-2">
+<div class="flex-1 bg-zinc-900 h-1.5 rounded-full overflow-hidden flex">
+<div class="bg-blue-500 w-[70%] h-full"></div>
+</div>
+<span class="text-[8px] font-mono text-blue-500 w-12 text-right">전력 70%</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Persistent Bottom Dock (Action) -->
+<div class="fixed bottom-0 left-0 w-full z-50 px-4 pb-safe pt-2 bg-zinc-950/95 backdrop-blur border-t border-zinc-800 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
+<button class="w-full py-3.5 bg-amber-500 text-zinc-950 font-headline font-bold uppercase tracking-wider rounded flex items-center justify-center gap-2 hover:bg-amber-400 active:scale-[0.98] transition-all mb-4">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">save</span>
+            저장 및 배치
+        </button>
+</div>
+<!-- BottomNavBar (Hidden structurally on this specific view based on prompt focus, but included per JSON if deemed a global destination. Overriding slightly to fit the strict 'Garage Workspace' brief which often hides global nav, but appending as requested by JSON structure if needed. However, the prompt specifically asks for a "Persistent Bottom Dock: A very strong, full-width "SAVE_ROSTER" (저장 및 배치) button". To satisfy both the structural mandate of JSON and the layout requirements, I will layer them or position the global nav below if required, but practically in mobile UX, a persistent action bar replaces or sits above the global nav. I will place the action bar above the global nav.) -->
+<nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-center px-2 pb-safe h-16 bg-zinc-950 border-t border-zinc-800 shadow-[0_-4px_10px_rgba(0,0,0,0.5)] hidden">
+<!-- Hidden to prioritize the requested Save Dock, but code exists to satisfy JSON if toggled -->
+<button class="flex flex-col items-center justify-center bg-amber-500/10 text-amber-500 rounded-lg py-1 px-3 border border-amber-500/20">
+<span class="material-symbols-outlined text-xl mb-0.5">garage</span>
+<span class="font-mono text-[10px] uppercase font-bold">HANGAR</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-500 py-1 px-3 hover:text-blue-400 active:bg-zinc-900 transition-all">
+<span class="material-symbols-outlined text-xl mb-0.5">precision_manufacturing</span>
+<span class="font-mono text-[10px] uppercase font-bold">UNITS</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-500 py-1 px-3 hover:text-blue-400 active:bg-zinc-900 transition-all">
+<span class="material-symbols-outlined text-xl mb-0.5">inventory_2</span>
+<span class="font-mono text-[10px] uppercase font-bold">STORES</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-500 py-1 px-3 hover:text-blue-400 active:bg-zinc-900 transition-all">
+<span class="material-symbols-outlined text-xl mb-0.5">terminal</span>
+<span class="font-mono text-[10px] uppercase font-bold">INTEL</span>
+</button>
+</nav>
+</body></html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>계정 삭제 확인 - COMMAND_CENTER</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&amp;family=IBM+Plex+Sans:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        commandBlue: "#5EB6FF",
+                        dangerRed: "#EF4444",
+                        darkHangar: "#111827",
+                        scrim: "rgba(0, 0, 0, 0.7)"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Space Grotesk", "sans-serif"],
+                        body: ["IBM Plex Sans", "sans-serif"],
+                        label: ["IBM Plex Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-zinc-950 text-zinc-300 font-body antialiased selection:bg-amber-500/30 overflow-hidden min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-14 bg-zinc-950 border-b border-zinc-800">
+<div class="flex items-center gap-3">
+<button aria-label="Menu" class="text-zinc-500 hover:bg-zinc-900 p-2 rounded-md transition-colors">
+<span class="material-symbols-outlined text-zinc-400" data-icon="menu">menu</span>
+</button>
+<h1 class="font-mono uppercase tracking-tighter font-bold text-lg text-amber-500">COMMAND_CENTER</h1>
+</div>
+<div>
+<button aria-label="Pilot Profile" class="flex items-center gap-2 hover:bg-zinc-900 p-1.5 pr-3 rounded-full transition-colors border border-zinc-800">
+<div class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden">
+<img alt="Pilot Avatar" class="w-full h-full object-cover" data-alt="close-up portrait of a serious pilot in sci-fi tactical gear with muted lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-7XdI1fjcGTLTbyK-oJd32wcBZRglsP2aK6ERFm15WllM-CUrHSm3K5CMJslOv3GBADa9QnjbJ1wz19MH5jjICsa-Idg6WYrw_ijxbOzQmgfrAMqXZevqRBbB_zE8qCJg4AYW-wQTYDwGT3T24H0hxIP5VbNZtk46mMhiBvJMJan5ijltZaKGVA9_BKgqkCziWTqSJ8ULMZC5TqHrR3l6_Tur_wjB-0dEBqhIjSAVXzFDulQi-c856u2VJ3uVgLqFErT3hYuqPKvO"/>
+</div>
+<span class="text-xs font-mono text-zinc-400 hidden sm:block">Pilot Profile</span>
+</button>
+</div>
+</header>
+<!-- Background Context (Mock Screen 16 - Settings/Config) -->
+<main class="pt-16 pb-20 px-4 max-w-lg mx-auto h-screen overflow-y-auto filter blur-sm transition-all duration-300 relative z-0">
+<div class="mb-6 flex justify-between items-end border-b border-zinc-800 pb-2">
+<h2 class="font-headline font-bold text-2xl text-zinc-100 tracking-tight">시스템 설정</h2>
+<span class="text-xs font-mono text-zinc-500">CONFIG_SYS_v2.4</span>
+</div>
+<section class="space-y-4">
+<!-- Account Info -->
+<div class="bg-zinc-900/50 border border-zinc-800 rounded p-4 space-y-4">
+<h3 class="font-mono text-xs text-amber-500 uppercase tracking-widest mb-2 border-b border-zinc-800/50 pb-1">Account Data</h3>
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 bg-zinc-800 rounded flex items-center justify-center border border-zinc-700">
+<span class="material-symbols-outlined text-zinc-500 text-3xl" data-icon="person">person</span>
+</div>
+<div>
+<div class="font-headline text-lg text-zinc-200">OP-774-KILO</div>
+<div class="font-mono text-xs text-zinc-500">ID: 99482-11A</div>
+</div>
+</div>
+</div>
+<!-- Danger Zone -->
+<div class="bg-red-950/10 border border-red-900/30 rounded p-4 mt-8">
+<h3 class="font-mono text-xs text-red-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="warning">warning</span> Danger Zone
+                 </h3>
+<p class="text-sm text-zinc-400 mb-4 font-body leading-relaxed">계정을 삭제하면 모든 작전 기록과 데이터가 영구적으로 소멸됩니다.</p>
+<button class="w-full bg-zinc-900 border border-red-900/50 text-red-500 py-3 rounded font-mono text-sm uppercase tracking-wide flex items-center justify-center gap-2" disabled="">
+                     계정 삭제 진행...
+                 </button>
+</div>
+</section>
+</main>
+<!-- Overlay Scrim -->
+<div aria-modal="true" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 flex items-center justify-center px-4" role="dialog">
+<!-- Modal Panel -->
+<div class="bg-darkHangar border border-commandBlue/30 rounded max-w-sm w-full shadow-2xl overflow-hidden animate-fade-in-up">
+<!-- Modal Header -->
+<div class="bg-zinc-900/50 border-b border-zinc-800 px-5 py-4 flex items-start gap-3">
+<div class="mt-0.5 w-8 h-8 rounded bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-red-500 text-lg" data-icon="warning" data-weight="fill" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div>
+<h2 class="font-headline font-bold text-lg text-zinc-100 tracking-tight leading-tight">계정 삭제 확인</h2>
+<p class="font-mono text-[10px] text-red-400 mt-1 uppercase tracking-widest opacity-80">Critical Action Required</p>
+</div>
+</div>
+<!-- Modal Body -->
+<div class="p-5 bg-zinc-950/30">
+<p class="text-sm text-zinc-300 font-body leading-relaxed">
+                    모든 작전 기록, 유닛 데이터 및 아이템이 <span class="text-red-400 font-semibold">영구적으로 삭제</span>됩니다. 이 작업은 취소할 수 없습니다.
+                </p>
+</div>
+<!-- Modal Footer -->
+<div class="px-5 py-4 bg-zinc-900/80 border-t border-zinc-800 flex flex-col sm:flex-row gap-3">
+<button class="w-full sm:w-1/2 py-2.5 px-4 bg-transparent border border-zinc-700 text-zinc-300 text-sm font-mono uppercase tracking-wider rounded hover:bg-zinc-800 hover:text-white hover:border-zinc-500 transition-all text-center" type="button">
+                    취소 및 돌아가기
+                </button>
+<button class="w-full sm:w-1/2 py-2.5 px-4 bg-dangerRed text-white text-sm font-mono uppercase tracking-wider rounded hover:bg-red-600 transition-colors shadow-[0_0_15px_rgba(239,68,68,0.3)] flex items-center justify-center gap-2 border border-red-500" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="delete_forever">delete_forever</span>
+                    계정 영구 삭제
+                </button>
+</div>
+</div>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-zinc-950/95 backdrop-blur-md border-t border-zinc-800 shadow-2xl md:hidden">
+<button aria-label="GARAGE" class="flex flex-col items-center justify-center text-zinc-500 grayscale hover:text-sky-400 transition-colors w-16">
+<span class="material-symbols-outlined mb-1" data-icon="precision_manufacturing">precision_manufacturing</span>
+<span class="text-[10px] font-mono font-bold uppercase tracking-widest">GARAGE</span>
+</button>
+<button aria-label="ARMORY" class="flex flex-col items-center justify-center text-zinc-500 grayscale hover:text-sky-400 transition-colors w-16">
+<span class="material-symbols-outlined mb-1" data-icon="shield">shield</span>
+<span class="text-[10px] font-mono font-bold uppercase tracking-widest">ARMORY</span>
+</button>
+<button aria-label="RADAR" class="flex flex-col items-center justify-center text-zinc-500 grayscale hover:text-sky-400 transition-colors w-16">
+<span class="material-symbols-outlined mb-1" data-icon="radar">radar</span>
+<span class="text-[10px] font-mono font-bold uppercase tracking-widest">RADAR</span>
+</button>
+<button aria-label="CONFIG" class="flex flex-col items-center justify-center bg-amber-500/10 text-amber-500 rounded-lg py-1 px-3 border border-amber-500/20 scale-95 duration-75 w-20">
+<span class="material-symbols-outlined mb-1" data-icon="settings">settings</span>
+<span class="text-[10px] font-mono font-bold uppercase tracking-widest">CONFIG</span>
+</button>
+</nav>
+</body></html>

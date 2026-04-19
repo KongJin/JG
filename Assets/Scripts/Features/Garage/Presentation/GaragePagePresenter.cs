@@ -27,33 +27,33 @@ namespace Features.Garage.Presentation
                     committed.mobilityModuleId != draft.mobilityModuleId;
                 bool isEmpty = !draft.HasAnySelection;
 
-                string title = "Empty Hangar";
-                string summary = "Empty  |  Choose frame, weapon, and mobility";
-                string statusBadgeText = "EMPTY";
+                string title = "대기 슬롯";
+                string summary = "프레임 / 무장 / 기동 선택";
+                string statusBadgeText = "빈 슬롯";
 
                 if (hasDraftLoadout)
                 {
                     title = Catalog?.FindFrame(draft.frameId)?.DisplayName ?? draft.frameId;
                     var firepowerName = CompactPartName(Catalog?.FindFirepower(draft.firepowerModuleId)?.DisplayName ?? draft.firepowerModuleId);
                     var mobilityName = CompactPartName(Catalog?.FindMobility(draft.mobilityModuleId)?.DisplayName ?? draft.mobilityModuleId);
-                    summary = $"Saved  |  {firepowerName} / {mobilityName}";
+                    summary = $"저장됨  |  {firepowerName} / {mobilityName}";
                 }
                 else if (draft.HasAnySelection)
                 {
-                    title = "Draft In Progress";
-                    summary = "Draft  |  Finish all three parts before saving";
+                    title = "조립 중";
+                    summary = "임시안  |  세 파츠 완성 필요";
                 }
 
                 if (hasDraftChanges)
                 {
-                    statusBadgeText = hasDraftLoadout ? "UNSAVED" : "DIRTY";
+                    statusBadgeText = hasDraftLoadout ? "미저장" : "작성중";
                     summary = hasDraftLoadout
-                        ? $"Unsaved  |  {CompactPartName(Catalog?.FindFirepower(draft.firepowerModuleId)?.DisplayName ?? draft.firepowerModuleId)} / {CompactPartName(Catalog?.FindMobility(draft.mobilityModuleId)?.DisplayName ?? draft.mobilityModuleId)}"
-                        : "Draft  |  Finish all three parts before saving";
+                        ? $"미저장  |  {CompactPartName(Catalog?.FindFirepower(draft.firepowerModuleId)?.DisplayName ?? draft.firepowerModuleId)} / {CompactPartName(Catalog?.FindMobility(draft.mobilityModuleId)?.DisplayName ?? draft.mobilityModuleId)}"
+                        : "임시안  |  세 파츠 완성 필요";
                 }
                 else if (hasCommittedLoadout)
                 {
-                    statusBadgeText = "SAVED";
+                    statusBadgeText = "저장됨";
                 }
 
                 slotViewModels.Add(new GarageSlotViewModel(
@@ -84,23 +84,23 @@ namespace Features.Garage.Presentation
 
             if (!hasCommittedUnit && !hasAnyDraftSelection)
             {
-                title = $"Slot {state.SelectedSlotIndex + 1} Hangar";
-                subtitle = "Build a new unit. Choose a frame, weapon, and mobility kit.";
+                title = $"슬롯 {state.SelectedSlotIndex + 1} 조립";
+                subtitle = "이 슬롯의 프레임, 무장, 기동을 선택하세요.";
             }
             else if (hasCommittedUnit && !hasDraftChanges)
             {
-                title = $"Slot {state.SelectedSlotIndex + 1} Saved Loadout";
-                subtitle = "This slot is battle-ready. Change parts to create an unsaved draft.";
+                title = $"슬롯 {state.SelectedSlotIndex + 1} 저장 완료";
+                subtitle = "저장된 편성입니다. 부품을 바꾸면 새 임시안이 됩니다.";
             }
             else if (hasCommittedUnit)
             {
-                title = $"Slot {state.SelectedSlotIndex + 1} Draft Update";
-                subtitle = "Review the draft, then save to replace the current loadout.";
+                title = $"슬롯 {state.SelectedSlotIndex + 1} 수정 중";
+                subtitle = "현재 임시안을 검토하고 저장하면 기존 편성을 교체합니다.";
             }
             else
             {
-                title = $"Slot {state.SelectedSlotIndex + 1} Draft";
-                subtitle = "Finish this draft, then save it into your roster.";
+                title = $"슬롯 {state.SelectedSlotIndex + 1} 임시안";
+                subtitle = "세 파츠를 완성한 뒤 로스터에 저장하세요.";
             }
 
             var frame = Catalog?.FindFrame(state.EditingFrameId);
@@ -110,18 +110,18 @@ namespace Features.Garage.Presentation
             return new GarageEditorViewModel(
                 title,
                 subtitle,
-                frame != null ? frame.DisplayName : "< Select Frame >",
+                frame != null ? frame.DisplayName : "< 프레임 선택 >",
                 frame != null
                     ? $"HP {frame.BaseHp:0}  |  ASPD {frame.BaseAttackSpeed:0.00}"
-                    : "Choose chassis",
-                firepower != null ? firepower.DisplayName : "< Select Firepower >",
+                    : "프레임 차체를 선택하세요",
+                firepower != null ? firepower.DisplayName : "< 무장 선택 >",
                 firepower != null
                     ? $"DMG {firepower.AttackDamage:0}  |  ASPD {firepower.AttackSpeed:0.00}  |  RNG {firepower.Range:0.0}"
-                    : "Choose the main weapon",
-                mobility != null ? mobility.DisplayName : "< Select Mobility >",
+                    : "주 무장을 선택하세요",
+                mobility != null ? mobility.DisplayName : "< 기동 선택 >",
                 mobility != null
                     ? $"HP +{mobility.HpBonus:0}  |  MOV {mobility.MoveRange:0.0}  |  ANC {mobility.AnchorRange:0.0}"
-                    : "Choose the movement kit",
+                    : "기동 키트를 선택하세요",
                 hasCommittedUnit || hasAnyDraftSelection);
         }
 
@@ -132,15 +132,15 @@ namespace Features.Garage.Presentation
             string rosterStatusText;
             if (readyEligible)
             {
-                rosterStatusText = $"Ready unlocked  |  {state.CommittedRoster.Count}/6 saved units synced";
+                rosterStatusText = $"출격 가능  |  저장된 유닛 {state.CommittedRoster.Count}/6";
             }
             else if (evaluation.HasDraftChanges)
             {
-                rosterStatusText = "Unsaved draft active  |  Save this slot to unlock Ready";
+                rosterStatusText = "미저장 임시안 존재  |  저장 후 출격 가능";
             }
             else
             {
-                rosterStatusText = $"Ready locked  |  {missingUnits} more saved unit{(missingUnits == 1 ? string.Empty : "s")} needed";
+                rosterStatusText = $"출격 잠김  |  저장된 유닛 {missingUnits}기 더 필요";
             }
 
             return new GarageResultViewModel(
@@ -161,12 +161,12 @@ namespace Features.Garage.Presentation
             if (!evaluation.HasDraftChanges)
             {
                 return state.CommittedRoster.IsValid
-                    ? "Room panel can Ready now."
-                    : "Save at least 3 units to keep Ready enabled.";
+                    ? "룸 패널에서 바로 출격할 수 있습니다."
+                    : "최소 3기를 저장해야 출격할 수 있습니다.";
             }
 
             if (!evaluation.HasCompleteDraft)
-                return "Finish frame, weapon, and mobility before saving.";
+                return "프레임, 무장, 기동을 모두 완성하세요.";
 
             if (!evaluation.HasCatalogData)
                 return evaluation.ComposeError;
@@ -178,15 +178,15 @@ namespace Features.Garage.Presentation
                 return evaluation.RosterValidationError;
 
             if (evaluation.MatchesCommittedSelection)
-                return "Draft already matches the saved loadout.";
+                return "임시안이 저장된 편성과 같습니다.";
 
-            return "Draft ready. Save to sync this loadout.";
+            return "임시안 준비 완료. 저장하면 동기화됩니다.";
         }
 
         private static string BuildStatsText(GarageDraftEvaluation evaluation)
         {
             if (!evaluation.HasCompleteDraft)
-                return "Pick all three parts to preview combat stats and deployment cost.";
+                return "세 파츠를 모두 선택하면 전투 능력과 비용을 미리 볼 수 있습니다.";
 
             if (!evaluation.HasCatalogData)
                 return evaluation.ComposeError;
@@ -204,12 +204,12 @@ namespace Features.Garage.Presentation
         private static string BuildPrimaryActionLabel(GarageDraftEvaluation evaluation)
         {
             if (evaluation.CanSave)
-                return "Save Roster";
+                return "편성 저장";
 
             if (!evaluation.HasDraftChanges)
-                return "Roster Saved";
+                return "저장됨";
 
-            return "Complete Draft";
+            return "임시안 완성";
         }
 
         private static string CompactPartName(string value)

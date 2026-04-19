@@ -99,7 +99,7 @@ namespace Features.Garage.Presentation
         {
             // ButtonStyles 적용
             _saveButton.Apply(ButtonStyles.Primary, _saveButtonText);
-            _saveButtonText.text = "Save Roster";
+            _saveButtonText.text = "편성 저장";
         }
 
         private void OnEnable()
@@ -218,7 +218,7 @@ namespace Features.Garage.Presentation
             _isReadyToSave = viewModel.IsReady;
             _rosterStatusText.text = viewModel.RosterStatusText;
             _rosterStatusText.color = ThemeColors.TextPrimary;
-            _rosterStatusText.fontSize = 15;
+            _rosterStatusText.fontSize = 16;
             _rosterStatusText.enableAutoSizing = false;
 
             _validationText.text = viewModel.ValidationText;
@@ -232,23 +232,23 @@ namespace Features.Garage.Presentation
                 : hasWarning
                     ? ThemeColors.AccentAmber
                     : ThemeColors.TextSecondary;
-            _validationText.fontSize = 13;
+            _validationText.fontSize = 12;
             _validationText.enableAutoSizing = false;
 
             _statsText.text = viewModel.StatsText;
             _statsText.color = ThemeColors.TextSecondary;
-            _statsText.fontSize = 13;
+            _statsText.fontSize = 12;
             _statsText.enableAutoSizing = false;
 
             RefreshSaveButtonState();
 
-            _saveButtonText.text = _isLoading ? "Saving..." : viewModel.PrimaryActionLabel;
+            _saveButtonText.text = _isLoading ? "저장 중..." : viewModel.PrimaryActionLabel;
             _saveButton.interactable = !_isLoading && viewModel.CanSave;
 
             var targetColor = viewModel.CanSave
-                ? ThemeColors.AccentGreen
+                ? ThemeColors.AccentOrange
                 : viewModel.IsDirty
-                    ? ThemeColors.AccentOrange
+                    ? ThemeColors.AccentAmber
                     : ThemeColors.StateDisabled;
             _saveButtonImage.color = targetColor;
 

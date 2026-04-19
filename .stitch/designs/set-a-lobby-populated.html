@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lobby - Room List</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&amp;family=IBM+Plex+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {},
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk", "sans-serif"],
+                        "body": ["IBM Plex Sans", "sans-serif"],
+                        "label": ["IBM Plex Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background-color: #111827; /* Dark tactical hangar canvas */
+            color: #e5e7eb;
+        }
+        h1, h2, h3, .headline {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-slate-900 text-slate-200 min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-slate-950/80 backdrop-blur-md text-amber-500 font-mono uppercase tracking-widest font-bold border-b-2 border-amber-500/20 shadow-[0_4px_20px_rgba(245,158,11,0.1)] hidden md:flex">
+<div class="flex items-center gap-3 text-amber-400">
+<img alt="Pilot Avatar" class="w-8 h-8 rounded-full border border-amber-500/50" data-alt="profile picture of a sci-fi pilot wearing a futuristic helmet in dark lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDal6lUnXR2X3kR8wY_1KVhGyTv7poGEdTePlA-_sM1834m3chW0ABG3yEXeOmVg4Rox8CZXFz1iC9eiZ9GxAD3XuqLMGet8iauX2IdS3v7KAilM-RrwZVcxupAAf3t8cS4wJ_U4_hhQ5SXPMqMrsDExhn1M1T2R3K8rDZx6i3hcrSwGTXo7MCuwL2-Hugjz62_1c4mbneYm9qb9kL9w6M0d0oVx9emUOCCM2oRWLu-1qpgYXBPsAlx1YLkmEDWnzH-iWQGBYGW3fRh"/>
+<span>COMMAND CENTER</span>
+</div>
+<div class="flex items-center text-xs tracking-widest text-slate-400 animate-pulse">
+            SCANNING...
+        </div>
+<button class="hover:bg-amber-500/10 p-2 rounded text-slate-500 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">settings_input_component</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="pt-4 md:pt-20 px-4 max-w-lg mx-auto flex flex-col gap-4">
+<!-- Mobile Header (if TopAppBar is hidden on mobile, provide context here) -->
+<div class="flex justify-between items-center md:hidden mb-2">
+<div class="flex items-center gap-3">
+<img alt="Pilot Avatar" class="w-10 h-10 rounded-full border-2 border-slate-700" data-alt="profile picture of a sci-fi pilot wearing a futuristic helmet in dark lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRwsPzQpeNr1ZvC-bJmelacCNS6-y9kfjAU2MBZN3MUizsVt-8vysC0Uto05pOEXPdAkVgXdsxSPpSWNaKjg2aoVGc-IPZAWdn5fz3aKBnuA_3v9upoGIpSB8KVsHXhmA-4eDT9PMflXC8_Fit8ALnCVq6Py4Cu0Ah3UYMOjByFkeS6WB44CDu1-sD_rh9NEgavxWEqSEzEYpkTuRifTiLxuaXxivfFX3ErAswstDpbVvWdGEC4S7yECJXWzHCFq7MNpZdsfWDZuXF"/>
+<div>
+<h1 class="headline text-amber-500 font-bold uppercase tracking-widest text-sm">COMMAND CENTER</h1>
+<span class="text-xs text-slate-500 tracking-wider">SCANNING...</span>
+</div>
+</div>
+<button class="text-slate-500 p-2">
+<span class="material-symbols-outlined">settings_input_component</span>
+</button>
+</div>
+<!-- Section: 작전 구역 (Main Rooms Section) -->
+<section class="flex flex-col gap-3">
+<div class="flex justify-between items-end border-b border-slate-800 pb-2">
+<h2 class="headline text-lg font-bold text-slate-100 uppercase tracking-wide">작전 구역 <span class="text-xs text-slate-500 ml-2 normal-case font-body">LOBBY</span></h2>
+<span class="text-xs font-mono text-emerald-400 tracking-widest bg-emerald-400/10 px-2 py-0.5 rounded">4 ACTIVE INSTANCES</span>
+</div>
+<!-- Room List -->
+<div class="flex flex-col gap-2">
+<!-- Room Card 1 (Highlighted) -->
+<div class="bg-slate-800/50 border border-amber-500/30 rounded p-3 flex justify-between items-center relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-500"></div>
+<div class="flex flex-col ml-2">
+<span class="headline text-base font-bold text-amber-100 uppercase tracking-wider">GHOST_LEAD_9</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-[10px] font-mono text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">HARD</span>
+<span class="text-xs text-slate-400 font-mono"><span class="material-symbols-outlined text-[14px] align-middle mr-1">group</span>2/4</span>
+</div>
+</div>
+<button class="bg-[#F59E0B] text-slate-950 font-bold px-4 py-1.5 rounded text-sm uppercase tracking-wider hover:bg-amber-400 active:scale-95 transition-all">JOIN</button>
+</div>
+<!-- Room Card 2 -->
+<div class="bg-slate-800/30 border border-slate-700/50 rounded p-3 flex justify-between items-center relative overflow-hidden hover:bg-slate-800/50 transition-colors">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-slate-600"></div>
+<div class="flex flex-col ml-2">
+<span class="headline text-base font-bold text-slate-200 uppercase tracking-wider">STEEL_REIGN</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-[10px] font-mono text-cyan-400 bg-cyan-400/10 px-1.5 py-0.5 rounded border border-cyan-400/20">NORMAL</span>
+<span class="text-xs text-slate-400 font-mono"><span class="material-symbols-outlined text-[14px] align-middle mr-1">group</span>3/4</span>
+</div>
+</div>
+<button class="bg-transparent border border-[#5EB6FF] text-[#5EB6FF] font-bold px-4 py-1.5 rounded text-sm uppercase tracking-wider hover:bg-[#5EB6FF]/10 active:scale-95 transition-all">JOIN</button>
+</div>
+<!-- Room Card 3 -->
+<div class="bg-slate-800/30 border border-slate-700/50 rounded p-3 flex justify-between items-center relative overflow-hidden hover:bg-slate-800/50 transition-colors">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-slate-600"></div>
+<div class="flex flex-col ml-2">
+<span class="headline text-base font-bold text-slate-200 uppercase tracking-wider">OMEGA_POINT</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-[10px] font-mono text-cyan-400 bg-cyan-400/10 px-1.5 py-0.5 rounded border border-cyan-400/20">NORMAL</span>
+<span class="text-xs text-slate-400 font-mono"><span class="material-symbols-outlined text-[14px] align-middle mr-1">group</span>1/4</span>
+</div>
+</div>
+<button class="bg-transparent border border-[#5EB6FF] text-[#5EB6FF] font-bold px-4 py-1.5 rounded text-sm uppercase tracking-wider hover:bg-[#5EB6FF]/10 active:scale-95 transition-all">JOIN</button>
+</div>
+</div>
+</section>
+<!-- Secondary Create Room Card -->
+<section class="mt-2">
+<button class="w-full flex items-center justify-between bg-slate-800/20 border border-slate-700/50 border-dashed rounded p-3 text-slate-400 hover:bg-slate-800/40 hover:text-slate-300 transition-colors group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined group-hover:text-cyan-400 transition-colors">add_box</span>
+<span class="headline font-bold uppercase tracking-wider text-sm">작전 생성</span>
+</div>
+<span class="text-xs font-mono tracking-widest group-hover:text-cyan-400 transition-colors">INITIATE</span>
+</button>
+</section>
+<!-- Garage Summary Card -->
+<section class="mt-4 bg-slate-800/40 border border-slate-700 rounded-lg p-4 relative overflow-hidden">
+<!-- Subtle background texture/gradient -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-2xl"></div>
+<div class="flex justify-between items-start mb-3 relative z-10">
+<div>
+<h3 class="text-xs font-mono text-slate-500 uppercase tracking-widest mb-1">격납고 요약</h3>
+<div class="headline text-lg font-bold text-slate-200 uppercase">MK-IV "Sentinel"</div>
+<div class="text-xs text-slate-400 font-mono mt-1">READY STATUS: OPTIMAL</div>
+</div>
+<span class="material-symbols-outlined text-slate-600 text-3xl">precision_manufacturing</span>
+</div>
+<div class="relative z-10">
+<button class="text-xs font-mono text-[#5EB6FF] uppercase tracking-widest flex items-center gap-1 hover:text-cyan-300 transition-colors">
+                    OPEN GARAGE <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-6 pt-2 bg-slate-950 border-t-2 border-amber-600/30 rounded-t-xl shadow-[0_-4px_24px_rgba(0,0,0,0.8)] md:hidden">
+<button class="flex flex-col items-center justify-center text-slate-400 py-1 px-3 hover:text-cyan-400 active:translate-y-0.5 transition-all">
+<span class="material-symbols-outlined">radar</span>
+<span class="font-mono text-[10px] font-bold uppercase mt-1">MISSIONS</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-amber-500 text-slate-950 rounded-md py-1 px-3 shadow-[0_0_15px_rgba(245,158,11,0.5)] active:translate-y-0.5 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-mono text-[10px] font-bold uppercase mt-1">LOBBY</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 py-1 px-3 hover:text-cyan-400 active:translate-y-0.5 transition-all">
+<span class="material-symbols-outlined">precision_manufacturing</span>
+<span class="font-mono text-[10px] font-bold uppercase mt-1">GARAGE</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 py-1 px-3 hover:text-cyan-400 active:translate-y-0.5 transition-all">
+<span class="material-symbols-outlined">database</span>
+<span class="font-mono text-[10px] font-bold uppercase mt-1">INTEL</span>
+</button>
+</nav>
+</body></html>

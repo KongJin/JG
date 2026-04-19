@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mission Failed</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&amp;family=IBM+Plex+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {},
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk", "sans-serif"],
+                        "body": ["IBM Plex Sans", "sans-serif"],
+                        "label": ["IBM Plex Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            color: #d4d4d8; /* zinc-300 */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body min-h-screen flex flex-col items-center justify-center bg-black relative overflow-hidden antialiased">
+<!-- Background Context -->
+<div class="absolute inset-0 z-0 opacity-20 bg-cover bg-center bg-no-repeat" data-alt="dimmed tactical battlefield ruins dark sci-fi hangar context moody lighting smoke" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDIDAzDO1sCL0OagGBRDYQdz6HoBPE82U9ggTDkxFpFIFoZiq7Z3-W2E8Ei2ZhB26QuOKFS7DEk6f27q8sfC8gsrDTLY-ENxzmpmeQpJMjED9paD52KAsYM1q3Gr7iTZVhNvNjrwu_S3lFBv2Q2Wl48mbKiw7spqTe9BTE5pguczypdY-x3T8rSv-aptFdfLWSm7uYhUfPFBxF3zyNmwS7XnC-UD1tD600ieo9DwovC14en7bBNxwptb6Q34ZGRuiUlfHPhw6gwiK6s');">
+</div>
+<!-- Subtle dark gradient overlay -->
+<div class="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
+<!-- Main Content Container -->
+<div class="relative z-10 w-full max-w-[390px] px-4 py-8 flex flex-col items-center gap-8">
+<!-- Header Section -->
+<div class="flex flex-col items-center text-center space-y-2">
+<span class="material-symbols-outlined text-red-600 text-5xl mb-2" style="font-variation-settings: 'FILL' 1;">
+                warning
+            </span>
+<h1 class="font-headline font-black text-4xl tracking-tighter text-red-600 uppercase drop-shadow-md">
+                MISSION_FAILED
+            </h1>
+<p class="font-label text-sm font-semibold text-zinc-500 tracking-widest uppercase">
+                (작전 실패)
+            </p>
+</div>
+<!-- Result Cards Container -->
+<div class="w-full grid grid-cols-2 gap-3">
+<!-- Final Wave Card -->
+<div class="bg-zinc-900/80 border border-zinc-800 rounded-lg p-4 flex flex-col justify-between items-start col-span-2 backdrop-blur-sm">
+<div class="flex items-center gap-2 mb-2 text-blue-500">
+<span class="material-symbols-outlined text-sm">waves</span>
+<span class="font-mono text-[10px] uppercase tracking-tighter">FINAL_WAVE</span>
+</div>
+<div class="font-headline font-bold text-3xl text-zinc-100">
+                    09 <span class="text-zinc-600 text-xl">/ 15</span>
+</div>
+</div>
+<!-- Core Integrity Card -->
+<div class="bg-zinc-900/80 border border-red-900/30 rounded-lg p-4 flex flex-col justify-between items-start backdrop-blur-sm">
+<div class="flex items-center gap-2 mb-2 text-red-500">
+<span class="material-symbols-outlined text-sm">memory</span>
+<span class="font-mono text-[10px] uppercase tracking-tighter">CORE_INTEGRITY</span>
+</div>
+<div class="font-headline font-bold text-2xl text-red-500">
+                    0%
+                </div>
+</div>
+<!-- Units Deployed Card -->
+<div class="bg-zinc-900/80 border border-zinc-800 rounded-lg p-4 flex flex-col justify-between items-start backdrop-blur-sm">
+<div class="flex items-center gap-2 mb-2 text-blue-500">
+<span class="material-symbols-outlined text-sm">group</span>
+<span class="font-mono text-[10px] uppercase tracking-tighter">UNITS_DEPLOYED</span>
+</div>
+<div class="font-headline font-bold text-2xl text-zinc-100">
+                    32
+                </div>
+</div>
+<!-- Command Score Card -->
+<div class="bg-zinc-900/80 border border-zinc-800 rounded-lg p-4 flex flex-col justify-between items-start col-span-2 backdrop-blur-sm">
+<div class="flex items-center gap-2 mb-2 text-blue-500">
+<span class="material-symbols-outlined text-sm">military_tech</span>
+<span class="font-mono text-[10px] uppercase tracking-tighter">COMMAND_SCORE</span>
+</div>
+<div class="font-headline font-bold text-3xl text-zinc-100">
+                    2,150
+                </div>
+</div>
+</div>
+<!-- Primary CTA -->
+<button class="w-full mt-4 bg-amber-600 hover:bg-amber-500 text-black font-headline font-bold py-4 rounded-lg uppercase tracking-widest shadow-[0_0_15px_rgba(217,119,6,0.3)] transition-colors flex flex-col items-center justify-center gap-1 active:scale-95">
+<span>RETURN_TO_LOBBY</span>
+<span class="font-label text-[10px] font-semibold text-black/70">(로비로 귀환)</span>
+</button>
+</div>
+</body></html>

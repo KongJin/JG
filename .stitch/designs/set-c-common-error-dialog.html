@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>연결 실패</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Ibm+Plex+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        commandBlue: '#5EB6FF',
+                        darkBg: '#111827',
+                        dangerRed: '#EF4444',
+                        signalOrange: '#F59E0B',
+                        zinc: {
+                            800: '#27272a',
+                            900: '#18181b',
+                            950: '#09090b',
+                        }
+                    },
+                    fontFamily: {
+                        headline: ["Space Grotesk", "sans-serif"],
+                        body: ["Ibm Plex Sans", "sans-serif"],
+                        label: ["Ibm Plex Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .font-body { font-family: 'Ibm Plex Sans', sans-serif; }
+        .font-label { font-family: 'Ibm Plex Sans', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-300 font-body antialiased overflow-hidden select-none">
+<!-- Mock Background (Hangar Lobby) -->
+<div class="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat" data-alt="Dark, industrial hangar interior with subtle orange lighting, metallic surfaces, tactical equipment layout, depth of field" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCCnD9XuFlwlPsu2PlHgLgZuP5g5TiBwPew0my_5ZzxUnfFIOOkAgiee1iwMAG3hnzppHh9VtLf_RHMrZnbp8qZb167CACVO8NcRaTWQWg8fCuH0t5wKQ3aZHHfJ1cyVKIIJfUUvFwSbJUCTKXdhoUZLuKM557mw2VazWOS8jLnyGq9bw7R9Lqd_fhuTy51j3nzN19FZkT2EEi9gu7zA-4tr8MVjF1UJvLyN9T-8oYF6FakPbMGNAljr-V7g4IfCCRZqcGwm7Nhlu-6');"></div>
+<!-- Scrim Overlay -->
+<div class="fixed inset-0 z-10 bg-darkBg/80 backdrop-blur-sm flex items-center justify-center p-4">
+<!-- Error Dialog Panel -->
+<div class="w-full max-w-[320px] bg-zinc-900 border border-zinc-800 rounded-sm overflow-hidden relative shadow-2xl">
+<!-- Tech Accents - Red -->
+<div class="absolute top-0 left-0 w-8 h-[2px] bg-dangerRed"></div>
+<!-- Panel Header -->
+<div class="p-4 border-b border-zinc-800/50 bg-zinc-900/50 flex items-center gap-3">
+<span class="material-symbols-outlined text-dangerRed text-lg" style="font-variation-settings: 'FILL' 1;">
+                        warning
+                    </span>
+<h2 class="font-headline font-bold text-zinc-100 tracking-wide text-base uppercase">
+                        연결 실패
+                    </h2>
+</div>
+<!-- Panel Content -->
+<div class="p-5 space-y-4">
+<p class="text-sm text-zinc-400 leading-relaxed font-body">
+    지휘 채널과의 데이터 링크를 확립할 수 없습니다.<br/>
+    네트워크 상태를 확인하고 다시 시도하십시오.
+</p>
+<div class="pt-4 flex items-center gap-3">
+<button class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-label text-xs uppercase tracking-wider py-2 px-4 rounded-sm transition-colors border border-zinc-700">
+        종료
+    </button>
+<button class="flex-1 bg-signalOrange hover:bg-signalOrange/90 text-zinc-950 font-bold font-label text-xs uppercase tracking-wider py-2 px-4 rounded-sm transition-colors">
+        재시도
+    </button>
+</div>
+</div>
+</div>
+</div>
+</body></html>

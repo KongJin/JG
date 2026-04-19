@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Battle HUD</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=IBM+Plex+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        'signal-orange': '#FF5A00',
+                        'command-blue': '#5EB6FF',
+                        'danger-red': '#FF3B30',
+                        'tactical-dark': '#0B0F19',
+                        'tactical-panel': '#151A26',
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk", "sans-serif"],
+                        "body": ["IBM Plex Sans", "sans-serif"],
+                        "label": ["IBM Plex Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background-color: #0B0F19;
+            color: #ffffff;
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+        h1, h2, h3, h4, h5, h6, .font-headline {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(94, 182, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(94, 182, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center center;
+        }
+        .hud-panel {
+            background: rgba(21, 26, 38, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(94, 182, 255, 0.2);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="relative text-slate-200 antialiased h-screen w-full overflow-hidden flex flex-col">
+<!-- Top Navigation (Generated from JSON) -->
+<header class="flex justify-between items-center w-full px-4 h-12 backdrop-blur-md bg-slate-950/90 border-b-2 border-slate-800 shadow-inner z-50 absolute top-0 left-0 right-0">
+<div class="flex items-center gap-2 text-amber-500 font-mono font-black tracking-tighter uppercase text-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span>04:28 | WAVE 09</span>
+</div>
+<div class="text-amber-500 font-mono font-black tracking-tighter uppercase text-sm">
+            ⚡ 250
+        </div>
+</header>
+<!-- Main Canvas Content -->
+<main class="flex-1 relative w-full h-full pt-12 pb-20">
+<!-- Background Terrain (Simulated with image + grid) -->
+<div class="absolute inset-0 z-0 bg-tactical-dark">
+<div class="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay" data-alt="dark desolate sci-fi battlefield terrain with rocky crags and subtle fog low lighting" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAj-g0UMpXN0MGgL2cEP3ikrOJuZ9o_pip_TsE_D3vzCl0yitr6gRMzoHz_J5eMN5oK587blUMZoroPnJz_MTvuigi5RZ5V4-ieb8oMWy7NvRPZ4AeVBGJiJhZHS6BA2Vn-h1vBAEe-douyNJk1c3AwT4_TvQhowve5QWiVwiGoG98bNWR00w55A0Yj_3YDCtsp4X-5Rlt0hGPWZKbhd-3Daj_xsCMx6vdk7GJYolfvS6oguHSUctxcLK3VUjQi93CLZjXnuV0aaDHh');">
+</div>
+<div class="absolute inset-0 grid-bg z-10 pointer-events-none"></div>
+<!-- Vignette -->
+<div class="absolute inset-0 bg-radial-gradient from-transparent to-tactical-dark/90 z-20 pointer-events-none" style="background: radial-gradient(circle, transparent 30%, #0B0F19 100%);"></div>
+</div>
+<!-- Tactical Overlay UI Elements -->
+<div class="relative z-30 w-full h-full p-4 flex flex-col justify-between pointer-events-none">
+<!-- Top Section: Stats -->
+<div class="flex justify-between items-start gap-4 pointer-events-auto">
+<!-- Left: Wave Info -->
+<div class="hud-panel rounded-lg p-3 flex flex-col min-w-[120px]">
+<span class="text-[10px] text-command-blue font-bold tracking-wider mb-1">웨이브 정보</span>
+<div class="flex flex-col">
+<span class="font-headline text-lg font-bold text-white">WAVE 09 <span class="text-slate-500 text-sm">/ 15</span></span>
+<div class="flex items-center gap-1 mt-1 text-signal-orange">
+<span class="material-symbols-outlined text-[16px]">timer</span>
+<span class="font-mono text-xl font-bold tracking-tighter">04:28</span>
+</div>
+</div>
+</div>
+<!-- Right: Core Integrity -->
+<div class="hud-panel rounded-lg p-3 flex flex-col items-end min-w-[140px]">
+<span class="text-[10px] text-command-blue font-bold tracking-wider mb-1">코어 무결성</span>
+<div class="flex items-end gap-2 mb-1">
+<span class="font-headline text-2xl font-bold text-danger-red leading-none">72%</span>
+</div>
+<!-- HP Bar -->
+<div class="w-full h-3 bg-slate-800 rounded-sm flex gap-[2px] overflow-hidden mt-1 p-[2px]">
+<div class="h-full bg-danger-red w-1/4 rounded-[1px]"></div>
+<div class="h-full bg-danger-red w-1/4 rounded-[1px]"></div>
+<div class="h-full bg-signal-orange w-1/4 rounded-[1px]"></div>
+<div class="h-full bg-transparent w-1/4 rounded-[1px]"></div>
+</div>
+</div>
+</div>
+<!-- Middle Section: Battlefield Placement (Simulated) -->
+<div class="flex-1 flex items-center justify-center relative">
+<!-- Placement Circle -->
+<div class="absolute flex flex-col items-center justify-center transform translate-y-10">
+<div class="w-32 h-16 border-2 border-command-blue rounded-[50%] bg-command-blue/20 flex items-center justify-center relative shadow-[0_0_15px_rgba(94,182,255,0.4)]">
+<div class="w-1 h-1 bg-command-blue rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+<!-- Crosshairs -->
+<div class="absolute -top-2 left-1/2 w-px h-4 bg-command-blue"></div>
+<div class="absolute -bottom-2 left-1/2 w-px h-4 bg-command-blue"></div>
+<div class="absolute top-1/2 -left-2 w-4 h-px bg-command-blue"></div>
+<div class="absolute top-1/2 -right-2 w-4 h-px bg-command-blue"></div>
+</div>
+<!-- Label -->
+<div class="mt-2 bg-command-blue/20 backdrop-blur-sm border border-command-blue/50 px-2 py-0.5 rounded text-[10px] text-command-blue font-bold flex items-center gap-1 shadow-[0_0_10px_rgba(94,182,255,0.2)]">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+                        배치 가능
+                    </div>
+</div>
+</div>
+<!-- Bottom Section: Command Bar Area -->
+<!-- Unit Stats Popup -->
+<div class="flex justify-center w-full mb-2 pointer-events-none">
+<div class="hud-panel w-[280px] rounded-lg p-2.5 flex flex-col gap-2 pointer-events-auto border-command-blue/40">
+<!-- Header: Name & Role -->
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<h3 class="font-headline text-sm font-bold text-white">어썰트 봇</h3>
+<span class="text-[9px] text-command-blue font-bold tracking-tighter">[ASSAULT]</span>
+</div>
+<div class="flex items-center gap-0.5 bg-slate-900/80 px-1.5 py-0.5 rounded border border-signal-orange/30">
+<span class="text-[10px] font-mono font-bold text-signal-orange">250<span class="text-[8px] ml-0.5">E</span></span>
+</div>
+</div>
+<div class="h-px bg-slate-700/50 w-full"></div>
+<!-- Stat Grid -->
+<div class="grid grid-cols-2 gap-x-3 gap-y-1.5">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-slate-500">swords</span>
+<div class="flex flex-col">
+<span class="text-[8px] text-slate-500 leading-none">공격 방식</span>
+<span class="text-[10px] font-medium text-slate-200 leading-tight">근접 연사</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-slate-500">radar</span>
+<div class="flex flex-col">
+<span class="text-[8px] text-slate-500 leading-none">사거리</span>
+<span class="text-[10px] font-medium text-slate-200 leading-tight">단거리</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-slate-500">shield</span>
+<div class="flex flex-col">
+<span class="text-[8px] text-slate-500 leading-none">내구도</span>
+<span class="text-[10px] font-medium text-slate-200 leading-tight">중급</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-slate-500">directions_run</span>
+<div class="flex flex-col">
+<span class="text-[8px] text-slate-500 leading-none">이동 방식</span>
+<span class="text-[10px] font-medium text-slate-200 leading-tight">지상 기동</span>
+</div>
+</div>
+</div>
+</div>
+</div><div class="flex flex-col items-center gap-3 pointer-events-auto pb-4">
+<!-- Energy Display -->
+<div class="flex flex-col items-center">
+<span class="text-[10px] text-command-blue font-bold tracking-widest uppercase mb-0.5">현재 에너지</span>
+<div class="glass-panel px-4 py-1.5 rounded-full flex items-center gap-2 border-command-blue/30 shadow-[0_0_15px_rgba(94,182,255,0.15)] relative overflow-hidden">
+<!-- Simulated pulse effect using absolute div -->
+<div class="absolute inset-0 bg-command-blue/10 w-full h-full"></div>
+<span class="material-symbols-outlined text-command-blue" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-headline text-2xl font-bold text-white tracking-tight z-10">320<span class="text-command-blue text-lg">E</span></span>
+</div>
+</div>
+<!-- Command Slots (Simulating the BottomNavBar content but visually distinct as summon slots) -->
+<div class="flex gap-3 justify-center w-full px-2">
+<!-- Slot 1: Recon (Available) -->
+<div class="flex flex-col gap-1 w-[30%] max-w-[100px]">
+<button class="w-full aspect-square bg-tactical-panel border border-slate-700 rounded-lg flex items-center justify-center text-slate-300 relative hover:border-slate-500 transition-colors">
+<span class="material-symbols-outlined text-3xl opacity-70">precision_manufacturing</span>
+<div class="absolute top-1 right-1 flex items-center gap-0.5 bg-slate-900/80 px-1 rounded text-[9px] font-mono font-bold text-white">
+                                150<span class="text-command-blue">E</span>
+</div>
+</button>
+<span class="text-[10px] text-center font-medium text-slate-400">정찰 드론</span>
+</div>
+<!-- Slot 2: Assault (Selected) -->
+<div class="flex flex-col gap-1 w-[30%] max-w-[100px] relative">
+<!-- Active Indicator Glow -->
+<div class="absolute -inset-1 bg-signal-orange/20 blur-md rounded-lg z-0"></div>
+<button class="w-full aspect-square bg-tactical-panel border-2 border-signal-orange rounded-lg flex items-center justify-center text-signal-orange relative z-10 shadow-[0_0_10px_rgba(255,90,0,0.3)]">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<div class="absolute top-1 right-1 flex items-center gap-0.5 bg-slate-900/90 px-1 rounded text-[9px] font-mono font-bold text-white">
+                                250<span class="text-signal-orange">E</span>
+</div>
+<!-- Selection Corner Accents -->
+<div class="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-white rounded-tl-sm"></div>
+<div class="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-white rounded-tr-sm"></div>
+<div class="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-white rounded-bl-sm"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-white rounded-br-sm"></div>
+</button>
+<span class="text-[10px] text-center font-bold text-signal-orange z-10">어썰트 봇</span>
+</div>
+<!-- Slot 3: Heavy (Insufficient) -->
+<div class="flex flex-col gap-1 w-[30%] max-w-[100px] opacity-50">
+<button class="w-full aspect-square bg-slate-900/80 border border-danger-red/30 rounded-lg flex items-center justify-center text-slate-600 relative">
+<span class="material-symbols-outlined text-3xl">shield_with_heart</span>
+<div class="absolute top-1 right-1 flex items-center gap-0.5 bg-slate-950/90 px-1 rounded text-[9px] font-mono font-bold text-danger-red">
+                                400<span class="text-danger-red">E</span>
+</div>
+<!-- Diagonal slash or lock indicator could go here -->
+</button>
+<span class="text-[10px] text-center font-medium text-slate-500">헤비 거너</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell (Suppressed due to tactical focus, but included structurally per rules if needed, hidden to prioritize canvas) -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-stretch h-20 bg-slate-950 border-t-2 border-slate-800 shadow-2xl md:hidden hidden">
+<!-- Rendered invisible to satisfy logic but keep canvas clean as requested by intent -->
+</nav>
+</body></html>

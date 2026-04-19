@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=390, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Create Operation</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        },
+                        orange: {
+                            500: '#f97316',
+                        },
+                        blue: {
+                            400: '#60a5fa',
+                        }
+                    },
+                    fontFamily: {
+                        headline: ["Space Grotesk", "sans-serif"],
+                        body: ["IBM Plex Sans", "sans-serif"],
+                        label: ["IBM Plex Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-slate-950 text-slate-300 font-body antialiased w-[390px] h-[844px] mx-auto relative overflow-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-[390px] z-20 flex justify-between items-center px-4 h-14 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-500 fill-icon">airplanemode_active</span>
+</div>
+<div class="font-mono uppercase tracking-tighter text-lg font-black text-orange-500 tracking-widest">
+            COMMAND_CENTER
+        </div>
+<div>
+<span class="material-symbols-outlined text-slate-500">settings_input_component</span>
+</div>
+</header>
+<!-- Simulated Background (Lobby Screen Data) -->
+<main class="pt-16 pb-20 px-4 h-full flex flex-col gap-4 overflow-y-auto">
+<!-- Background Lobby Content -->
+<div class="bg-slate-900 border border-slate-800 p-4 rounded flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-headline font-bold text-white uppercase tracking-wider text-sm">Sector 7 Breach</span>
+<span class="text-xs text-slate-500 font-mono mt-1">Host: ALPHA_ACTUAL</span>
+</div>
+<div class="flex gap-2 text-xs font-mono text-slate-400 bg-slate-950 px-2 py-1 border border-slate-800">
+<span class="material-symbols-outlined text-[14px]">groups</span>
+<span>3/4</span>
+</div>
+</div>
+<div class="bg-slate-900 border border-slate-800 p-4 rounded flex items-center justify-between opacity-50">
+<div class="flex flex-col">
+<span class="font-headline font-bold text-white uppercase tracking-wider text-sm">Nightfall Protocol</span>
+<span class="text-xs text-slate-500 font-mono mt-1">Host: BRAVO_LEADER</span>
+</div>
+<div class="flex gap-2 text-xs font-mono text-slate-400 bg-slate-950 px-2 py-1 border border-slate-800">
+<span class="material-symbols-outlined text-[14px]">groups</span>
+<span>4/4</span>
+</div>
+</div>
+</main>
+<!-- Tactical Scrim / Overlay -->
+<div class="absolute inset-0 bg-slate-950/80 z-30 flex items-center justify-center p-4 backdrop-blur-sm">
+<!-- Modal Panel -->
+<div class="w-full bg-slate-900 border border-orange-500/30 rounded-none shadow-2xl flex flex-col relative overflow-hidden">
+<!-- Accents -->
+<div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-orange-500/50"></div>
+<div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-orange-500/50"></div>
+<div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-orange-500/50"></div>
+<div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-orange-500/50"></div>
+<!-- Modal Header -->
+<div class="p-4 border-b border-slate-800 flex items-center gap-3 bg-slate-950/50">
+<span class="material-symbols-outlined text-orange-500 text-xl">add_circle</span>
+<h2 class="font-headline font-bold text-white tracking-widest text-lg uppercase">작전 생성</h2>
+</div>
+<!-- Modal Body (Form) -->
+<div class="p-5 flex flex-col gap-6">
+<!-- Operation Name -->
+<div class="flex flex-col gap-2">
+<label class="font-mono text-[10px] text-slate-500 uppercase tracking-widest flex justify-between">
+<span>작전명</span>
+<span class="text-slate-600">INPUT REQUIRED</span>
+</label>
+<input class="bg-slate-950 border border-slate-700 text-white font-mono text-sm px-3 py-3 w-full focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors placeholder:text-slate-600" placeholder="Enter codename..." type="text" value="Operation Blackout"/>
+</div>
+<!-- Squad Size -->
+<div class="flex flex-col gap-2">
+<label class="font-mono text-[10px] text-slate-500 uppercase tracking-widest">분대 인원</label>
+<div class="grid grid-cols-3 gap-2">
+<button class="bg-slate-950 border border-slate-800 text-slate-400 py-2 font-mono text-sm hover:border-slate-600">2</button>
+<button class="bg-slate-950 border border-slate-800 text-slate-400 py-2 font-mono text-sm hover:border-slate-600">3</button>
+<button class="bg-orange-500/10 border border-orange-500 text-orange-500 py-2 font-mono text-sm font-bold flex items-center justify-center gap-1">
+<span>4</span>
+<span class="material-symbols-outlined text-[14px]">check</span>
+</button>
+</div>
+</div>
+<!-- Access Mode -->
+<div class="flex flex-col gap-2">
+<label class="font-mono text-[10px] text-slate-500 uppercase tracking-widest">공개 설정</label>
+<div class="flex bg-slate-950 border border-slate-800 p-1">
+<button class="flex-1 bg-slate-800 text-white font-mono text-xs py-2 uppercase tracking-wider flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">public</span>
+                            Public
+                        </button>
+<button class="flex-1 text-slate-500 font-mono text-xs py-2 uppercase tracking-wider flex items-center justify-center gap-2 hover:text-slate-300">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+                            Private
+                        </button>
+</div>
+</div>
+</div>
+<!-- Modal Footer (Actions) -->
+<div class="p-4 bg-slate-950 border-t border-slate-800 flex gap-3">
+<button class="flex-1 bg-slate-800 border border-slate-700 text-slate-300 font-headline uppercase tracking-wider py-3 text-sm hover:bg-slate-700 transition-colors">
+                    취소
+                </button>
+<button class="flex-[2] bg-orange-500 text-slate-950 font-headline font-bold uppercase tracking-wider py-3 text-sm hover:bg-orange-400 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px] font-bold">bolt</span>
+                    작전 개시
+                </button>
+</div>
+</div>
+</div>
+<!-- BottomNavBar (Suppressed due to overlay intent, but technically under the scrim in DOM structure for completeness of the screen base, though invisible/inactive) -->
+<nav class="fixed bottom-0 w-[390px] z-10 flex justify-around items-center px-2 pb-2 h-16 bg-slate-950 border-t border-slate-800 opacity-30">
+<div class="flex flex-col items-center justify-center text-slate-500 py-1">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-mono text-[10px] font-bold uppercase">HANGAR</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 py-1">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-mono text-[10px] font-bold uppercase">SQUAD</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 py-1">
+<span class="material-symbols-outlined">radar</span>
+<span class="font-mono text-[10px] font-bold uppercase">INTEL</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-500 py-1">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-mono text-[10px] font-bold uppercase">REQUISITION</span>
+</div>
+</nav>
+</body></html>

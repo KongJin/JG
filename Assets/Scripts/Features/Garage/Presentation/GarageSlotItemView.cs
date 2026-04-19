@@ -20,9 +20,9 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private Image _borderImage;
 
         [Header("Layout")]
-        [SerializeField] private float _slotNumberFontSize = 12f;
-        [SerializeField] private float _titleFontSize = 16f;
-        [SerializeField] private float _summaryFontSize = 10f;
+        [SerializeField] private float _slotNumberFontSize = 11f;
+        [SerializeField] private float _titleFontSize = 17f;
+        [SerializeField] private float _summaryFontSize = 11f;
 
         [Header("Animation")]
         [Required, SerializeField] private CanvasGroup _canvasGroup;
@@ -57,7 +57,9 @@ namespace Features.Garage.Presentation
             _slotNumberText.text = $"{viewModel.SlotLabel}  {viewModel.StatusBadgeText}";
             _slotNumberText.color = GetStatusTextColor(viewModel);
             _titleText.text = viewModel.Title;
+            _titleText.color = viewModel.IsSelected ? ThemeColors.TextPrimary : new Color(0.95f, 0.96f, 0.98f, 0.95f);
             _summaryText.text = viewModel.Summary;
+            _summaryText.color = viewModel.IsSelected ? ThemeColors.TextPrimary : ThemeColors.TextSecondary;
 
             // 배경색 — 페이드 애니메이션 적용
             Color targetColor = GetSlotColor(viewModel);
@@ -89,11 +91,11 @@ namespace Features.Garage.Presentation
                 if (!viewModel.HasCommittedLoadout)
                 {
                     Color c = _isHovered ? ThemeColors.SlotEmptyHover : ThemeColors.SlotEmpty;
-                    _background.color = new Color(c.r, c.g, c.b, 0.6f);
+                    _background.color = new Color(c.r, c.g, c.b, 0.78f);
                 }
 
                 _borderImage.gameObject.SetActive(false);
-                _canvasGroup.alpha = 0.85f;
+                _canvasGroup.alpha = viewModel.HasCommittedLoadout ? 0.94f : 0.90f;
             }
         }
 
@@ -103,7 +105,7 @@ namespace Features.Garage.Presentation
             _isHovered = true;
             if (_currentViewModel != null && !_currentViewModel.HasCommittedLoadout && _background != null)
             {
-                _background.color = new Color(ThemeColors.SlotEmptyHover.r, ThemeColors.SlotEmptyHover.g, ThemeColors.SlotEmptyHover.b, 0.7f);
+                _background.color = new Color(ThemeColors.SlotEmptyHover.r, ThemeColors.SlotEmptyHover.g, ThemeColors.SlotEmptyHover.b, 0.88f);
             }
         }
 
@@ -166,10 +168,10 @@ namespace Features.Garage.Presentation
         {
             text.fontSize = fontSize;
             text.enableAutoSizing = enableAutoSizing;
-            text.fontSizeMin = Mathf.Max(8f, fontSize - 2f);
+            text.fontSizeMin = Mathf.Max(9f, fontSize - 2f);
             text.fontSizeMax = fontSize;
             text.alignment = alignment;
-            text.textWrappingMode = TextWrappingModes.NoWrap;
+            text.textWrappingMode = TextWrappingModes.PreserveWhitespaceNoWrap;
             text.overflowMode = TextOverflowModes.Ellipsis;
         }
     }

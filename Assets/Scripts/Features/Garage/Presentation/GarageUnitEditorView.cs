@@ -80,7 +80,7 @@ namespace Features.Garage.Presentation
             _clearButton.Apply(ButtonStyles.Danger, _clearButtonText);
 
             // Clear 버튼 텍스트 명시화
-            _clearButtonText.text = "Clear Draft";
+            _clearButtonText.text = "임시안 비우기";
         }
 
         public void SetFocusedPart(GarageEditorFocus focusedPart)

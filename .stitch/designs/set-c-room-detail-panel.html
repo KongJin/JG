@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SECTOR_7_HQ - ROOM DETAIL</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {},
+            borderRadius: {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            fontFamily: {
+                    "headline": ["Space Grotesk", "sans-serif"],
+                    "body": ["IBM Plex Sans", "sans-serif"],
+                    "label": ["IBM Plex Sans", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-zinc-950 text-zinc-300 font-body antialiased min-h-screen flex flex-col pt-16 pb-16 selection:bg-orange-500/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-zinc-950/90 backdrop-blur-md border-b border-orange-500/20 shadow-2xl shadow-orange-950/20">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 overflow-hidden shrink-0">
+<img alt="commander_unit_01" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuT6uFVA_L7ToTzxeU9gxsx3hmlbi6nOMcRD_yJZrAK-ywQFTA6Wll5xnWckBczQxLjWt0MSenrtUkWnj97GycbbZwstQdSz2Awmb27PPVgpT8eO_7jwYdy8Ji9FxlfSFuUoRjI1_CKhw2_SUbd__9lmgkYpzaP1EyWpa3sHOC0A2zBMp_XmY5c8Fg5SRSJTutpr8k2gEl2vo5BbMf_FANYqDaFwCaZvnPiMZXAIwsG2cpR6H7mzTrubrFI0w280psQYh5bM7KJzmy"/>
+</div>
+<h1 class="font-headline font-black uppercase tracking-tighter text-lg text-orange-500 tracking-widest">SECTOR_7_HQ</h1>
+</div>
+<button class="text-zinc-500 hover:bg-orange-500/10 hover:text-orange-400 active:scale-95 transition-transform duration-75 p-2 rounded-DEFAULT flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="settings_input_component">settings_input_component</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+<!-- Filters / Tools -->
+<div class="flex items-center justify-between gap-2">
+<div class="flex gap-2">
+<button class="bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-DEFAULT text-xs font-semibold text-zinc-400 flex items-center gap-1 hover:border-zinc-700 transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="filter_list">filter_list</span>
+                    ALL_SECTORS
+                </button>
+<button class="bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-DEFAULT text-xs font-semibold text-zinc-400 flex items-center gap-1 hover:border-zinc-700 transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="shield">shield</span>
+                    DEFENSE
+                </button>
+</div>
+<button class="w-8 h-8 rounded-DEFAULT bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:border-zinc-700 transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="refresh">refresh</span>
+</button>
+</div>
+<!-- Room List Grid -->
+<div class="grid grid-cols-1 gap-3 pb-24">
+<!-- Selected Room Card -->
+<div class="bg-blue-900/10 border border-[#5EB6FF] rounded-lg p-3 relative overflow-hidden ring-1 ring-[#5EB6FF]/30 cursor-pointer">
+<div class="absolute top-0 right-0 p-2">
+<div class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></div>
+</div>
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="text-[10px] font-headline text-[#5EB6FF] font-bold uppercase tracking-wider mb-0.5">SECTOR_7_DEF</div>
+<h2 class="text-sm font-bold text-zinc-100 font-headline uppercase">GHOST_LEAD_9</h2>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-xs font-bold text-red-400 bg-red-400/10 px-1.5 py-0.5 rounded-DEFAULT">HARD</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-3">
+<div class="bg-zinc-900/80 p-2 rounded-DEFAULT border border-[#5EB6FF]/20">
+<div class="text-[10px] text-zinc-500 mb-1">SQUAD</div>
+<div class="text-sm font-bold text-zinc-200">2<span class="text-zinc-600">/4</span></div>
+<div class="flex gap-1 mt-1">
+<div class="w-1.5 h-1.5 rounded-full bg-[#5EB6FF]"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-[#5EB6FF]"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-zinc-800"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-zinc-800"></div>
+</div>
+</div>
+<div class="bg-zinc-900/80 p-2 rounded-DEFAULT border border-[#5EB6FF]/20">
+<div class="text-[10px] text-zinc-500 mb-1">PING</div>
+<div class="text-sm font-bold text-green-400">24<span class="text-xs text-zinc-600 ml-0.5 font-normal">ms</span></div>
+<div class="flex items-center mt-1">
+<span class="material-symbols-outlined text-[12px] text-green-400 mr-1" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+<span class="text-[10px] text-zinc-500">STABLE</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Inactive Room Card 1 -->
+<div class="bg-zinc-900/50 border border-zinc-800 rounded-lg p-3 relative overflow-hidden opacity-50 grayscale">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="text-[10px] font-headline text-zinc-500 font-bold uppercase tracking-wider mb-0.5">RESOURCE_EXT</div>
+<h2 class="text-sm font-bold text-zinc-400 font-headline uppercase">ECHO_TEAM_3</h2>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-xs font-bold text-zinc-400 bg-zinc-800 px-1.5 py-0.5 rounded-DEFAULT">NORMAL</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-3">
+<div class="bg-zinc-950 p-2 rounded-DEFAULT border border-zinc-800/50">
+<div class="text-[10px] text-zinc-600 mb-1">SQUAD</div>
+<div class="text-sm font-bold text-zinc-500">4<span class="text-zinc-700">/4</span></div>
+</div>
+<div class="bg-zinc-950 p-2 rounded-DEFAULT border border-zinc-800/50">
+<div class="text-[10px] text-zinc-600 mb-1">STATUS</div>
+<div class="text-sm font-bold text-zinc-500 text-red-500/50">IN_PROG</div>
+</div>
+</div>
+</div>
+<!-- Inactive Room Card 2 -->
+<div class="bg-zinc-900/50 border border-zinc-800 rounded-lg p-3 relative overflow-hidden opacity-50 grayscale">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="text-[10px] font-headline text-zinc-500 font-bold uppercase tracking-wider mb-0.5">RECON_ALPHA</div>
+<h2 class="text-sm font-bold text-zinc-400 font-headline uppercase">SHADOW_WOLF</h2>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-xs font-bold text-orange-400/50 bg-orange-900/20 px-1.5 py-0.5 rounded-DEFAULT">EXTREME</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-3">
+<div class="bg-zinc-950 p-2 rounded-DEFAULT border border-zinc-800/50">
+<div class="text-[10px] text-zinc-600 mb-1">SQUAD</div>
+<div class="text-sm font-bold text-zinc-500">1<span class="text-zinc-700">/4</span></div>
+</div>
+<div class="bg-zinc-950 p-2 rounded-DEFAULT border border-zinc-800/50">
+<div class="text-[10px] text-zinc-600 mb-1">PING</div>
+<div class="text-sm font-bold text-zinc-500">120<span class="text-xs text-zinc-700 ml-0.5 font-normal">ms</span></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Tactical Room Detail Bottom Sheet Overlay -->
+<div class="fixed inset-0 z-50 flex flex-col justify-end pointer-events-none">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm pointer-events-auto"></div>
+<!-- Bottom Sheet Content -->
+<div class="relative bg-zinc-900 border-t border-[#5EB6FF]/30 w-full max-h-[751px] rounded-t-xl shadow-[0_-10px_40px_-10px_rgba(94,182,255,0.15)] flex flex-col pointer-events-auto">
+<!-- Handle -->
+<div class="w-full flex justify-center pt-3 pb-2">
+<div class="w-12 h-1 bg-zinc-700 rounded-full"></div>
+</div>
+<div class="px-4 pb-6 overflow-y-auto">
+<!-- Header -->
+<div class="flex justify-between items-start mb-4">
+<div>
+<div class="text-[#5EB6FF] text-xs font-headline font-bold mb-1 tracking-wider uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="my_location">my_location</span>
+                            작전 정보
+                        </div>
+<h2 class="text-xl font-headline font-black text-zinc-100 uppercase tracking-tight">GHOST_LEAD_9</h2>
+</div>
+<span class="bg-red-500/10 text-red-400 border border-red-500/30 px-2 py-1 rounded-DEFAULT text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="warning">warning</span>
+                        난이도: HARD
+                    </span>
+</div>
+<!-- Description -->
+<div class="bg-zinc-950/50 border border-zinc-800 p-3 rounded-lg mb-4">
+<p class="text-sm text-zinc-400 leading-relaxed font-body">
+                        섹터 7 중심부 방어 및 자원 추출 지원. 적대 세력의 대규모 공세가 예상됨. 중화기 및 생존 장비 필수 지참 요망.
+                    </p>
+</div>
+<!-- Squad Status -->
+<div class="mb-6">
+<div class="flex justify-between items-end mb-2">
+<h3 class="text-xs font-headline font-bold text-zinc-500 uppercase tracking-wider">분대원: 2/4</h3>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Filled Slot 1 -->
+<div class="bg-zinc-800 border border-[#5EB6FF]/20 rounded-lg p-2 flex items-center gap-3">
+<div class="w-8 h-8 rounded-DEFAULT bg-zinc-900 border border-zinc-700 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-zinc-400 text-[18px]" data-icon="military_tech">military_tech</span>
+</div>
+<div class="flex-1">
+<div class="text-[10px] text-zinc-500 uppercase font-headline">COMMANDER</div>
+<div class="text-sm font-bold text-zinc-200">GHOST_01</div>
+</div>
+<div class="text-[#5EB6FF] text-[10px] font-bold bg-[#5EB6FF]/10 px-2 py-1 rounded-DEFAULT">READY</div>
+</div>
+<!-- Filled Slot 2 -->
+<div class="bg-zinc-800 border border-zinc-700 rounded-lg p-2 flex items-center gap-3">
+<div class="w-8 h-8 rounded-DEFAULT bg-zinc-900 border border-zinc-700 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-zinc-400 text-[18px]" data-icon="engineering">engineering</span>
+</div>
+<div class="flex-1">
+<div class="text-[10px] text-zinc-500 uppercase font-headline">OPERATOR</div>
+<div class="text-sm font-bold text-zinc-200">SPARK_77</div>
+</div>
+<div class="text-green-400 text-[10px] font-bold bg-green-400/10 px-2 py-1 rounded-DEFAULT">READY</div>
+</div>
+<!-- Empty Slot 3 -->
+<div class="bg-zinc-900/50 border border-dashed border-zinc-700 rounded-lg p-2 flex items-center gap-3 opacity-60">
+<div class="w-8 h-8 rounded-DEFAULT bg-zinc-950 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-zinc-600 text-[18px]" data-icon="person_add">person_add</span>
+</div>
+<div class="flex-1">
+<div class="text-[10px] text-zinc-600 uppercase font-headline">SLOT_03</div>
+<div class="text-sm font-bold text-zinc-500 italic">[EMPTY]</div>
+</div>
+</div>
+<!-- Empty Slot 4 -->
+<div class="bg-zinc-900/50 border border-dashed border-zinc-700 rounded-lg p-2 flex items-center gap-3 opacity-60">
+<div class="w-8 h-8 rounded-DEFAULT bg-zinc-950 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-zinc-600 text-[18px]" data-icon="person_add">person_add</span>
+</div>
+<div class="flex-1">
+<div class="text-[10px] text-zinc-600 uppercase font-headline">SLOT_04</div>
+<div class="text-sm font-bold text-zinc-500 italic">[EMPTY]</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex gap-3">
+<button class="flex-1 bg-transparent border border-zinc-600 text-zinc-400 font-headline font-bold py-3 rounded-lg hover:bg-zinc-800 hover:text-zinc-300 transition-colors uppercase tracking-widest text-sm flex items-center justify-center gap-2">
+                        취소
+                    </button>
+<button class="flex-[2] bg-[#F59E0B] text-zinc-950 font-headline font-black py-3 rounded-lg hover:bg-[#F59E0B]/90 transition-colors uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+<span class="material-symbols-outlined text-[18px]" data-icon="login">login</span>
+                        작전 합류
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- BottomNavBar (Hidden but structure maintained for shell rules) -->
+<!-- Suppressed in this context as per shell rules for focus state, but keeping markup commented if needed
+    <nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-center h-16 px-2 pb-safe bg-zinc-950/95 border-t-2 border-zinc-800 md:hidden">
+        ...
+    </nav>
+    -->
+</body></html>

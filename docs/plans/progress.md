@@ -65,6 +65,19 @@
 
 ### 2026-04-19
 
+- done: Stitch tactical UI concept pass + handoff docs 1차 정리
+  - done: 단일 Stitch 마스터 프로젝트 `11729197788183873077`에서 `Lobby / Garage / Overlay / Battle HUD / Result` 기준 시안을 세트별로 생성하고 `.stitch/designs/`와 `.stitch/prompt-briefs/`에 로컬 산출물 저장
+  - done: `.stitch/DESIGN.md`를 tactical hangar mobile 기준 시각 SSOT로 정리하고, `.stitch/handoff/INDEX.md` 및 세트별 handoff 문서로 Unity 번역용 읽기 순서, CTA 우선순위, contract root 매핑 정리
+  - note: Stitch 산출물은 방향 탐색과 handoff 기준이며, runtime layout SSOT는 계속 `CodexLobbyScene.unity`와 `GameScene.unity`가 유지
+  - next: handoff 기준으로 scene-owned layout 구현과 `contract -> smoke` 검증 루프 진행
+
+- verify: Unity MCP baseline re-check after Stitch handoff
+  - verify: `Invoke-LobbyGaragePageSwitchSmoke.ps1` 재실행 성공 (`2026-04-19 17:59 KST`) - `errorCount = 0`, `warningCount = 3`, Lobby/Garage 전환 정상
+  - verify: `Invoke-GameSceneSummonSmoke.ps1` 재실행 성공 (`2026-04-19 23:05 KST`) - `/HudCanvas/UnitSummonUi/SlotRow/UnitSlot-0` 선택과 `ConfirmPlacementAtDefaultPoint` 호출 후 `BattleEntity(Clone)` 생성 확인
+  - blocked: `Invoke-GameScenePlacementWaveSmoke.ps1`는 같은 날짜 재실행에서 `success = false`로 종료 - summon 자체는 됐지만 `Wave 1/5`, `Wave Cleared!`, `waveEndOverlayActive = false`, `outcomeReached = false` 상태로 멈춰 현재 battle outcome loop가 다시 확인 필요
+  - evidence: `artifacts/unity/lobby-garage-page-switch-result.json`, `artifacts/unity/game-scene-summon-smoke-result.json`, `artifacts/unity/game-scene-placement-wave-result.json`
+  - next: battle HUD 시각 구현을 본격 반영하기 전에 wave advance / outcome overlay runtime contract부터 다시 안정화
+
 - done: Garage desktop/mobile 분기 제거
   - done: `GaragePageController`의 breakpoint, responsive controller, desktop host 복원 로직 제거
   - done: Garage shell을 mobile-first 단일 구조로 고정하고, 런타임에서 항상 `GarageMobileStackRoot` + `MobileSaveDock` 기준으로 배치
@@ -100,6 +113,14 @@
   - done: `Assets/Editor/SceneTools/GameSceneBuilder.cs` 제거 - GameScene UI/HUD restyle의 기본 경로를 code-driven rebuild가 아니라 `GameScene.unity` / 관련 prefab 대상 MCP repair로 재고정
   - done: `game_scene_ui_ux_improvement_plan.md`와 `tools/unity-mcp/README.md`에 같은 원칙을 명시해 GameScene UI 작업도 builderless route로 고정
   - note: 기존 progress의 builder 관련 항목은 당시 복구 이력으로만 남기고, 이후 authoring 기준으로 재사용하지 않음
+
+- done: Garage Set B 1차 scene-level polish
+  - done: `GaragePageController` mobile sizing을 Set B handoff 기준으로 조정해 `slot selector -> part focus -> editor -> preview/summary -> save dock` 읽기 순서를 더 분명하게 보정
+  - done: `MobileSaveButton` inactive baseline을 scene/MCP 기준으로 복구해 하단 `편성 저장` dock가 실제 smoke 캡처에 드러나도록 수정
+  - done: 헤더/탭/상태 카피를 tactical workspace 방향으로 정리하고, `TACTICAL ASSEMBLY / PREVIEW / SUMMARY` 정적 헤더와 preview hint까지 smoke 캡처 기준으로 반영
+  - verify: `Invoke-LobbyGaragePageSwitchSmoke.ps1` 재실행 성공 (`2026-04-19 23:59 KST`) - `warningCount = 3`, `errorCount = 0`
+  - evidence: `artifacts/unity/garage-setb-pass1.png`, `artifacts/unity/garage-setb-pass2.png`, `artifacts/unity/garage-setb-pass4.png`, `artifacts/unity/garage-setb-pass5.png`, `artifacts/unity/garage-setb-pass6.png`, `artifacts/unity/lobby-garage-page-switch-result.json`
+  - note: 추가 polish로 slot 카드 typography/alpha, preview/result surface tone, save dock 바탕면을 조정했고, 다음 남은 범위는 slot grid density와 header subtitle tone 같은 미세 시각 조정
 
 - done: CodexLobby mobile-first layout pass 1차
   - done: `CodexLobbyScene` Garage를 mobile host 구조(`GarageMobileStackRoot / MobileBodyHost / MobileSlotGrid / MobileSaveButton`)로 재정리하고, `GaragePageController`가 pre-authored desktop/mobile hosts 사이에서 pane parent 전환과 `Edit / Preview / Summary` 탭 전환만 담당하도록 보강

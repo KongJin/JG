@@ -12,16 +12,16 @@ namespace Features.Garage.Presentation.Theme
     {
         // ─── 프리셋 정의 ─────────────────────────────────────
 
-        /// <summary>저장, 주요 액션 — 파란색 배경 + 흰 텍스트</summary>
+        /// <summary>저장, 주요 액션 — 오렌지 배경 + 밝은 텍스트</summary>
         public static readonly ButtonPreset Primary = new()
         {
-            BackgroundColor = ThemeColors.AccentBlue,
+            BackgroundColor = ThemeColors.AccentOrange,
             TextColor = ThemeColors.TextPrimary,
-            FontSize = 16,
-            MinHeight = 44,
+            FontSize = 17,
+            MinHeight = 46,
             CornerRadius = 8f,
-            HoverColor = ThemeColors.AccentBlue * 1.15f,
-            PressedColor = ThemeColors.AccentBlue * 0.85f,
+            HoverColor = ThemeColors.AccentOrange * 1.10f,
+            PressedColor = ThemeColors.AccentOrange * 0.85f,
             DisabledColor = ThemeColors.StateDisabled
         };
 
@@ -43,7 +43,7 @@ namespace Features.Garage.Presentation.Theme
         {
             BackgroundColor = ThemeColors.BackgroundCard,
             TextColor = ThemeColors.TextPrimary,
-            FontSize = 14,
+            FontSize = 15,
             MinHeight = 36,
             CornerRadius = 6f,
             HoverColor = ThemeColors.StateHover,

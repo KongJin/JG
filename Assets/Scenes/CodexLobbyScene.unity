@@ -473,11 +473,8 @@ MonoBehaviour:
   _unitEditorView: {fileID: 1422260352}
   _resultPanelView: {fileID: 2122363001}
   _unitPreviewView: {fileID: 1649831694}
-  _responsiveRoot: {fileID: 23534118}
-  _desktopContentRoot: {fileID: 1459310388}
   _mobileContentRoot: {fileID: 1013114279}
   _mobileBodyHost: {fileID: 1513130455}
-  _desktopSlotHost: {fileID: 385847659}
   _mobileSlotHost: {fileID: 736932104}
   _rightRailRoot: {fileID: 606468735}
   _previewCard: {fileID: 1740897066}
@@ -499,7 +496,6 @@ MonoBehaviour:
   _mobileSaveButton: {fileID: 2117865344}
   _mobileSaveButtonLabel: {fileID: 711846803}
   _mobileSaveStateText: {fileID: 1854288179}
-  _mobileBreakpointWidth: 700
 --- !u!224 &23534118
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10529,7 +10525,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: GARAGE DECK
+  m_text: TACTICAL ASSEMBLY
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -10687,7 +10683,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: RESULT
+  m_text: SUMMARY
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -11728,7 +11724,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Selected saved unit appears here.
+  m_text: Selected saved loadout silhouette appears here.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -29924,7 +29920,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2117865340
 RectTransform:
   m_ObjectHideFlags: 0

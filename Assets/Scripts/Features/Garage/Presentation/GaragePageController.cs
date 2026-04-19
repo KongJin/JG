@@ -423,11 +423,11 @@ namespace Features.Garage.Presentation
         {
             _settingsOpenButton.Apply(ButtonStyles.Ghost, _settingsOpenButtonLabel);
             _settingsOpenButton.interactable = !_isSettingsOverlayOpen;
-            _settingsOpenButtonLabel.text = "Settings";
+            _settingsOpenButtonLabel.text = "설정";
 
             _settingsCloseButton.Apply(ButtonStyles.Secondary, _settingsCloseButtonLabel);
             _settingsCloseButton.interactable = _isSettingsOverlayOpen;
-            _settingsCloseButtonLabel.text = "Close";
+            _settingsCloseButtonLabel.text = "닫기";
         }
 
         private void RefreshGarageHeaderSummary(GarageResultViewModel resultViewModel)
@@ -437,25 +437,25 @@ namespace Features.Garage.Presentation
 
             if (selectedSlot.IsComplete && _state.SelectedSlotHasDraftChanges())
             {
-                slotSummary = $"Slot {_state.SelectedSlotIndex + 1} draft ready";
+                slotSummary = $"슬롯 {_state.SelectedSlotIndex + 1} 저장 가능";
             }
             else if (_state.SelectedSlotHasCommittedLoadout())
             {
-                slotSummary = $"Slot {_state.SelectedSlotIndex + 1} saved";
+                slotSummary = $"슬롯 {_state.SelectedSlotIndex + 1} 저장 완료";
             }
             else if (selectedSlot.HasAnySelection)
             {
-                slotSummary = $"Slot {_state.SelectedSlotIndex + 1} editing";
+                slotSummary = $"슬롯 {_state.SelectedSlotIndex + 1} 편집 중";
             }
             else
             {
-                slotSummary = $"Slot {_state.SelectedSlotIndex + 1} empty";
+                slotSummary = $"슬롯 {_state.SelectedSlotIndex + 1} 비어 있음";
             }
 
-            string rosterSummary = $"{_state.CommittedRoster.Count}/6 synced";
+            string rosterSummary = $"{_state.CommittedRoster.Count}/6 동기화";
             string readySummary = resultViewModel != null && resultViewModel.IsReady
-                ? "Ready unlocked"
-                : "Ready locked";
+                ? "출격 가능"
+                : "출격 잠김";
 
             _garageHeaderSummaryText.text = $"{slotSummary} | {rosterSummary} | {readySummary}";
             _garageHeaderSummaryText.color = ThemeColors.TextSecondary;
@@ -466,19 +466,19 @@ namespace Features.Garage.Presentation
             ConfigureMobileTabButton(
                 _mobileEditTabButton,
                 _mobileEditTabLabel,
-                "Frame",
+                "프레임",
                 _mobilePartFocus == MobilePartFocus.Frame,
                 true);
             ConfigureMobileTabButton(
                 _mobilePreviewTabButton,
                 _mobilePreviewTabLabel,
-                "Weapon",
+                "무장",
                 _mobilePartFocus == MobilePartFocus.Firepower,
                 true);
             ConfigureMobileTabButton(
                 _mobileSummaryTabButton,
                 _mobileSummaryTabLabel,
-                "Mobility",
+                "기동",
                 _mobilePartFocus == MobilePartFocus.Mobility,
                 true);
         }
@@ -518,21 +518,22 @@ namespace Features.Garage.Presentation
             bool canSave = resultViewModel != null && resultViewModel.CanSave && !_isSaving;
             bool isDirty = resultViewModel != null && resultViewModel.IsDirty;
 
+            SetActive(_mobileSaveButton.gameObject, true);
             _mobileSaveButton.Apply(ButtonStyles.Primary, _mobileSaveButtonLabel);
             _mobileSaveButton.interactable = canSave;
 
             _mobileSaveButtonLabel.text = _isSaving
-                ? "Saving..."
-                : "Save Roster";
+                ? "저장 중..."
+                : "편성 저장";
 
             if (_mobileSaveButton.TryGetComponent<Image>(out var background))
             {
                 background.color = _isSaving
-                    ? ThemeColors.AccentBlue
+                    ? ThemeColors.AccentOrange
                     : canSave
-                        ? ThemeColors.AccentBlue
+                        ? ThemeColors.AccentOrange
                         : isDirty
-                            ? ThemeColors.StateHover
+                            ? ThemeColors.BackgroundCard
                             : ThemeColors.StateDisabled;
 
                 var feedback = _mobileSaveButton.GetComponent<ButtonFeedback>();
@@ -543,9 +544,15 @@ namespace Features.Garage.Presentation
 
         private void RefreshMobileSaveStateText(GarageResultViewModel resultViewModel)
         {
+            _mobileSaveStateText.enableAutoSizing = false;
+            _mobileSaveStateText.fontSize = 13f;
+            _mobileSaveStateText.alignment = TextAlignmentOptions.TopLeft;
+            _mobileSaveStateText.textWrappingMode = TextWrappingModes.Normal;
+            _mobileSaveStateText.overflowMode = TextOverflowModes.Ellipsis;
+
             if (_isSaving)
             {
-                _mobileSaveStateText.text = "Saving roster to cloud...";
+                _mobileSaveStateText.text = "빌드 동기화 중...";
                 _mobileSaveStateText.color = ThemeColors.TextPrimary;
                 return;
             }
@@ -558,7 +565,7 @@ namespace Features.Garage.Presentation
 
             if (resultViewModel.IsDirty && resultViewModel.CanSave)
             {
-                _mobileSaveStateText.text = "Draft ready. Save to sync this slot.";
+                _mobileSaveStateText.text = "임시안 저장 가능";
                 _mobileSaveStateText.color = ThemeColors.AccentAmber;
                 return;
             }
@@ -572,7 +579,7 @@ namespace Features.Garage.Presentation
 
             if (resultViewModel.IsReady)
             {
-                _mobileSaveStateText.text = "Saved roster synced. Ready is unlocked.";
+                _mobileSaveStateText.text = "로스터 동기화 완료. 출격 가능.";
                 _mobileSaveStateText.color = ThemeColors.AccentGreen;
                 return;
             }
@@ -608,14 +615,25 @@ namespace Features.Garage.Presentation
             var resultPaneLayout = _resultPane.GetComponent<LayoutElement>();
             var mobileTabLayout = _mobileTabBar.GetComponent<LayoutElement>();
             var mobileTabGroup = _mobileTabBar.GetComponent<HorizontalLayoutGroup>();
+            var rightRailGroup = _rightRailRoot.GetComponent<VerticalLayoutGroup>();
+            var saveDockRect = _mobileSaveDockRoot.GetComponent<RectTransform>();
+            var saveDockLayout = _mobileSaveDockRoot.GetComponent<LayoutElement>();
 
-            LayoutElementState.Apply(rosterPaneLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: 212f, flexibleWidth: 1f, flexibleHeight: 0f);
-            LayoutElementState.Apply(editorPaneLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: -1f, flexibleWidth: 1f, flexibleHeight: 0f);
+            LayoutElementState.Apply(rosterPaneLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: 176f, flexibleWidth: 1f, flexibleHeight: 0f);
+            LayoutElementState.Apply(editorPaneLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: -1f, flexibleWidth: 1f, flexibleHeight: 1f);
             LayoutElementState.Apply(rightRailLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: -1f, flexibleWidth: 1f, flexibleHeight: 0f);
-            LayoutElementState.Apply(previewCardLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: 248f, flexibleWidth: 1f, flexibleHeight: 0f);
-            LayoutElementState.Apply(resultPaneLayout, minWidth: -1f, minHeight: 220f, preferredWidth: -1f, preferredHeight: -1f, flexibleWidth: 1f, flexibleHeight: 0f);
-            LayoutElementState.Apply(mobileTabLayout, minWidth: -1f, minHeight: 52f, preferredWidth: -1f, preferredHeight: 52f, flexibleWidth: 1f, flexibleHeight: 0f);
-            HorizontalLayoutGroupState.Apply(mobileTabGroup, spacing: 10f, childControlWidth: true, childControlHeight: true, childForceExpandWidth: true, childForceExpandHeight: true);
+            LayoutElementState.Apply(previewCardLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: 180f, flexibleWidth: 1f, flexibleHeight: 0f);
+            LayoutElementState.Apply(resultPaneLayout, minWidth: -1f, minHeight: 156f, preferredWidth: -1f, preferredHeight: 196f, flexibleWidth: 1f, flexibleHeight: 0f);
+            LayoutElementState.Apply(mobileTabLayout, minWidth: -1f, minHeight: 44f, preferredWidth: -1f, preferredHeight: 44f, flexibleWidth: 1f, flexibleHeight: 0f);
+            LayoutElementState.Apply(saveDockLayout, minWidth: -1f, minHeight: 116f, preferredWidth: -1f, preferredHeight: 116f, flexibleWidth: -1f, flexibleHeight: -1f);
+            HorizontalLayoutGroupState.Apply(mobileTabGroup, spacing: 8f, childControlWidth: true, childControlHeight: true, childForceExpandWidth: true, childForceExpandHeight: true);
+            VerticalLayoutGroupState.Apply(rightRailGroup, spacing: 12f, childControlWidth: true, childControlHeight: true, childForceExpandWidth: true, childForceExpandHeight: false);
+
+            if (saveDockRect != null)
+            {
+                saveDockRect.anchoredPosition = new Vector2(saveDockRect.anchoredPosition.x, 20f);
+                saveDockRect.sizeDelta = new Vector2(saveDockRect.sizeDelta.x, 116f);
+            }
         }
 
         private void ScrollMobileBodyToTop()
@@ -663,6 +681,21 @@ namespace Features.Garage.Presentation
         private static class HorizontalLayoutGroupState
         {
             public static void Apply(HorizontalLayoutGroup target, float spacing, bool childControlWidth, bool childControlHeight, bool childForceExpandWidth, bool childForceExpandHeight)
+            {
+                if (target == null)
+                    return;
+
+                target.spacing = spacing;
+                target.childControlWidth = childControlWidth;
+                target.childControlHeight = childControlHeight;
+                target.childForceExpandWidth = childForceExpandWidth;
+                target.childForceExpandHeight = childForceExpandHeight;
+            }
+        }
+
+        private static class VerticalLayoutGroupState
+        {
+            public static void Apply(VerticalLayoutGroup target, float spacing, bool childControlWidth, bool childControlHeight, bool childForceExpandWidth, bool childForceExpandHeight)
             {
                 if (target == null)
                     return;

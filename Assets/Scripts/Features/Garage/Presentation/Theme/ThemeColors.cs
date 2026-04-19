@@ -9,48 +9,48 @@ namespace Features.Garage.Presentation.Theme
     public static class ThemeColors
     {
         // ─── 배경 ───────────────────────────────────────────
-        public static readonly Color BackgroundPrimary   = ParseColor("#0F1220");
-        public static readonly Color BackgroundSecondary = ParseColor("#1A1E2E");
-        public static readonly Color BackgroundCard      = ParseColor("#1E2436");
+        public static readonly Color BackgroundPrimary   = ParseColor("#0C1220");
+        public static readonly Color BackgroundSecondary = ParseColor("#152032");
+        public static readonly Color BackgroundCard      = ParseColor("#243247");
 
         // ─── 텍스트 ─────────────────────────────────────────
         /// <summary>주요 텍스트 — 흰색</summary>
-        public static readonly Color TextPrimary         = ParseColor("#FFFFFF");
-        /// <summary>보조 텍스트 — 연한 회색 (기존 #A8B4C8 대비도 향상)</summary>
-        public static readonly Color TextSecondary       = ParseColor("#A8B4C8");
-        /// <summary>비활성/힌트 텍스트 — 어두운 회색</summary>
-        public static readonly Color TextMuted           = ParseColor("#6B7A94");
+        public static readonly Color TextPrimary         = ParseColor("#E5E7EB");
+        /// <summary>보조 텍스트 — tactical readout용 연한 회색</summary>
+        public static readonly Color TextSecondary       = ParseColor("#A4B3C7");
+        /// <summary>비활성/힌트 텍스트</summary>
+        public static readonly Color TextMuted           = ParseColor("#76839A");
 
         // ─── 액센트 ─────────────────────────────────────────
-        public static readonly Color AccentBlue          = ParseColor("#3E7AE5");
-        public static readonly Color AccentOrange        = ParseColor("#E5573E");
-        public static readonly Color AccentAmber         = ParseColor("#D8A343");
-        public static readonly Color AccentGreen         = ParseColor("#3EAF57");
-        public static readonly Color AccentRed           = ParseColor("#AF2E2E");
+        public static readonly Color AccentBlue          = ParseColor("#67B8FF");
+        public static readonly Color AccentOrange        = ParseColor("#F28A18");
+        public static readonly Color AccentAmber         = ParseColor("#F4B942");
+        public static readonly Color AccentGreen         = ParseColor("#22C55E");
+        public static readonly Color AccentRed           = ParseColor("#EF4444");
 
         // ─── 상태 ───────────────────────────────────────────
-        public static readonly Color StateSelected       = ParseColor("#3E7AE5");
-        public static readonly Color StateHover          = ParseColor("#2A3048");
-        public static readonly Color StateDisabled       = ParseColor("#3D4560");
+        public static readonly Color StateSelected       = ParseColor("#67B8FF");
+        public static readonly Color StateHover          = ParseColor("#334A63");
+        public static readonly Color StateDisabled       = ParseColor("#4B5F79");
 
         // ─── 슬롯 색상 ──────────────────────────────────────
-        public static readonly Color SlotSelected        = ParseColor("#3E7AE5");
-        public static readonly Color SlotFilled          = ParseColor("#2B3652");
-        public static readonly Color SlotDirty           = ParseColor("#4A3323");
-        public static readonly Color SlotEmpty           = new(0.10f, 0.12f, 0.18f, 0.92f);
-        public static readonly Color SlotEmptyHover      = new(0.14f, 0.17f, 0.25f, 1f);
-        public static readonly Color PanelOutline        = ParseColor("#2E3B5B");
+        public static readonly Color SlotSelected        = ParseColor("#395A79");
+        public static readonly Color SlotFilled          = ParseColor("#202E41");
+        public static readonly Color SlotDirty           = ParseColor("#4A3318");
+        public static readonly Color SlotEmpty           = new(0.10f, 0.15f, 0.21f, 0.95f);
+        public static readonly Color SlotEmptyHover      = new(0.16f, 0.23f, 0.32f, 1f);
+        public static readonly Color PanelOutline        = ParseColor("#39536D");
 
         // ─── 3D 프리뷰 ─────────────────────────────────────
-        public static readonly Color PreviewBackground   = new(0.05f, 0.06f, 0.10f, 1f);
+        public static readonly Color PreviewBackground   = ParseColor("#08111E");
         public static readonly Color PreviewFrameStriker = ParseColor("#F28019");
-        public static readonly Color PreviewFrameBastion = ParseColor("#3366E6");
-        public static readonly Color PreviewFrameRelay   = ParseColor("#33CC66");
+        public static readonly Color PreviewFrameBastion = ParseColor("#5EB6FF");
+        public static readonly Color PreviewFrameRelay   = ParseColor("#22C55E");
         public static readonly Color PreviewFireScatter  = ParseColor("#E63333");
         public static readonly Color PreviewFirePulse    = ParseColor("#E6E633");
-        public static readonly Color PreviewFireRail     = ParseColor("#9933E6");
+        public static readonly Color PreviewFireRail     = ParseColor("#5EB6FF");
         public static readonly Color PreviewMobTreads    = ParseColor("#808080");
-        public static readonly Color PreviewMobBurst     = ParseColor("#33CC66");
+        public static readonly Color PreviewMobBurst     = ParseColor("#22C55E");
 
         // ─── 토스트 ─────────────────────────────────────────
         public static readonly Color ToastErrorBg        = new(0.35f, 0.08f, 0.08f, 0.95f);
