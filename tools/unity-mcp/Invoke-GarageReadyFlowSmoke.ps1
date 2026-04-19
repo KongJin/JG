@@ -2,16 +2,15 @@ param(
     [string]$UnityBridgeUrl,
     [string]$ScenePath = "Assets/Scenes/CodexLobbyScene.unity",
     [string]$RoomNamePrefix = "CodexSmoke",
-    [string]$RoomNameInputPath = "/Canvas/LobbyPageRoot/RoomListPanel/RoomNameInput/Field",
-    [string]$CreateRoomButtonPath = "/Canvas/LobbyPageRoot/RoomListPanel/CreateRoomButton",
+    [string]$RoomNameInputPath = "/Canvas/LobbyPageRoot/RoomListPanel/CreateRoomCard/RoomNameInput/Field",
+    [string]$CreateRoomButtonPath = "/Canvas/LobbyPageRoot/RoomListPanel/CreateRoomCard/CreateRoomButton",
     [string]$RoomDetailPanelPath = "/Canvas/LobbyPageRoot/RoomDetailPanel",
     [string]$BannerMessagePath = "/Canvas/SceneErrorPresenter/Banner/BannerMessage",
     [string]$ReadyButtonPath = "/Canvas/LobbyPageRoot/RoomDetailPanel/ActionButtons/ReadyButton",
     [string]$ReadyLabelPath = "/Canvas/LobbyPageRoot/RoomDetailPanel/ActionButtons/ReadyButton/Label",
     [string]$LoginLoadingPanelPath = "/Canvas/LoginLoadingOverlay/LoadingPanel",
-    [string]$SaveButtonPath = "/Canvas/GaragePageRoot/ResultPane/SaveButton",
-    [string]$SaveLabelPath = "/Canvas/GaragePageRoot/ResultPane/SaveButton/Text (TMP)",
-    [string]$RosterStatusPath = "/Canvas/GaragePageRoot/ResultPane/RosterStatus",
+    [string]$SaveButtonPath = "/Canvas/GaragePageRoot/GarageContentRow/RightRail/ResultPane/SaveButton",
+    [string]$RosterStatusPath = "/Canvas/GaragePageRoot/GarageContentRow/RightRail/ResultPane/RosterStatus",
     [string]$OutputPath = "artifacts/unity/garage-ready-flow-smoke.png",
     [int]$TimeoutSec = 90
 )
@@ -23,124 +22,26 @@ $ErrorActionPreference = "Stop"
 . "$PSScriptRoot\McpHelpers.ps1"
 
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
-$sceneName = [System.IO.Path]::GetFileNameWithoutExtension($ScenePath)
 $startedPlayHere = $false
 
-function Convert-McpUiStateEntriesToMap {
-    param([object]$Response)
-
-    $map = @{}
-    foreach ($entry in $Response.state) {
-        if ($entry -match '^\[(.*?),\s?(.*)\]$') {
-            $map[$matches[1]] = $matches[2]
-        }
-    }
-
-    return $map
-}
-
-function Get-McpUiStateMap {
-    param([string]$Path)
-
-    return Convert-McpUiStateEntriesToMap (Get-McpUiElementState -Root $root -Path $Path)
-}
-
-function Get-McpUiTextValue {
-    param([string]$Path)
-
-    $state = Get-McpUiStateMap -Path $Path
-    return [string]$state["text"]
-}
-
-function Get-McpUiButtonInfo {
-    param([string]$Path)
-
-    $state = Get-McpUiStateMap -Path $Path
-
-    return [PSCustomObject]@{
-        path = [string]$state["path"]
-        activeInHierarchy = ([string]$state["activeInHierarchy"]) -eq "True"
-        interactable = ([string]$state["interactable"]) -eq "True"
-    }
-}
-
-function Get-McpUiActiveInHierarchy {
-    param([string]$Path)
-
-    $state = Get-McpUiStateMap -Path $Path
-    return ([string]$state["activeInHierarchy"]) -eq "True"
-}
-
-function Wait-ForCondition {
-    param(
-        [scriptblock]$Condition,
-        [string]$Description,
-        [int]$TimeoutSecValue = 20,
-        [int]$PollMs = 250
-    )
-
-    $deadline = (Get-Date).AddSeconds($TimeoutSecValue)
-    while ((Get-Date) -lt $deadline) {
-        if (& $Condition) {
-            return
-        }
-
-        Start-Sleep -Milliseconds $PollMs
-    }
-
-    throw "Timed out waiting for $Description."
-}
-
-function Wait-ForPhotonLobbyReady {
-    Wait-ForCondition `
-        -Description "Photon lobby join log" `
-        -TimeoutSecValue $TimeoutSec `
-        -Condition {
-            $logs = Get-McpRecentLogs -Root $root -Limit 80
-            foreach ($item in $logs.items) {
-                if ($item.message -like "*Joined lobby. Ready for matchmaking.*") {
-                    return $true
-                }
-            }
-
-            return $false
-        }
-}
-
-function Set-McpInputFieldValue {
-    param(
-        [string]$Path,
-        [string]$Value
-    )
-
-    Invoke-RestMethod `
-        -Method Post `
-        -Uri "$root/ui/set-value" `
-        -ContentType "application/json" `
-        -Body (@{
-            path = $Path
-            value = $Value
-        } | ConvertTo-Json -Compress) | Out-Null
-}
-
 function Save-CurrentGarageDraft {
-    Wait-ForCondition `
+    Wait-McpCondition `
         -Description "Save Draft button to become interactable" `
-        -TimeoutSecValue $TimeoutSec `
-        -Condition { (Get-McpUiButtonInfo -Path $SaveButtonPath).interactable }
+        -TimeoutSec $TimeoutSec `
+        -Condition { (Get-McpUiButtonInfo -Root $root -Path $SaveButtonPath).interactable }
 
     Invoke-McpUiInvoke -Root $root -Path $SaveButtonPath -Method "click" | Out-Null
 
-    Wait-ForCondition `
+    Wait-McpCondition `
         -Description "Save Draft request to finish" `
-        -TimeoutSecValue $TimeoutSec `
-        -Condition { (Get-McpUiTextValue -Path $SaveLabelPath) -ne "Saving..." }
+        -TimeoutSec $TimeoutSec `
+        -Condition { -not (Get-McpUiButtonInfo -Root $root -Path $SaveButtonPath).interactable }
 
     Start-Sleep -Milliseconds 500
 }
 
 function Ensure-RoomCreated {
-    if ((Get-McpUiButtonInfo -Path $ReadyButtonPath).activeInHierarchy) {
+    if ((Get-McpUiButtonInfo -Root $root -Path $ReadyButtonPath).activeInHierarchy) {
         return $null
     }
 
@@ -148,16 +49,16 @@ function Ensure-RoomCreated {
 
     foreach ($attempt in 1..3) {
         $roomName = "{0}-{1}-{2}" -f $RoomNamePrefix, (Get-Date -Format "yyyyMMddHHmmssfff"), (Get-Random -Minimum 1000 -Maximum 9999)
-        Set-McpInputFieldValue -Path $RoomNameInputPath -Value $roomName
+        Invoke-McpSetUiValue -Root $root -Path $RoomNameInputPath -Value $roomName
         Invoke-McpUiInvoke -Root $root -Path $CreateRoomButtonPath -Method "click" | Out-Null
 
         try {
-            Wait-ForCondition `
+            Wait-McpCondition `
                 -Description "room creation result" `
-                -TimeoutSecValue 8 `
+                -TimeoutSec 8 `
                 -Condition {
-                    (Get-McpUiActiveInHierarchy -Path $RoomDetailPanelPath) -or
-                    (Get-McpUiActiveInHierarchy -Path $BannerMessagePath)
+                    (Get-McpUiActiveInHierarchy -Root $root -Path $RoomDetailPanelPath) -or
+                    (Get-McpUiActiveInHierarchy -Root $root -Path $BannerMessagePath)
                 }
         }
         catch {
@@ -165,12 +66,12 @@ function Ensure-RoomCreated {
             continue
         }
 
-        if (Get-McpUiActiveInHierarchy -Path $RoomDetailPanelPath) {
+        if (Get-McpUiActiveInHierarchy -Root $root -Path $RoomDetailPanelPath) {
             return $roomName
         }
 
-        if (Get-McpUiActiveInHierarchy -Path $BannerMessagePath) {
-            $lastBannerText = Get-McpUiTextValue -Path $BannerMessagePath
+        if (Get-McpUiActiveInHierarchy -Root $root -Path $BannerMessagePath) {
+            $lastBannerText = Get-McpUiTextValue -Root $root -Path $BannerMessagePath
         }
 
         Start-Sleep -Seconds 1
@@ -184,7 +85,7 @@ function Ensure-RoomCreated {
 }
 
 function Ensure-ReadyBaseline {
-    $readyLabel = Get-McpUiTextValue -Path $ReadyLabelPath
+    $readyLabel = Get-McpUiTextValue -Root $root -Path $ReadyLabelPath
     if ($readyLabel -in @("Ready", "Cancel")) {
         return
     }
@@ -192,20 +93,20 @@ function Ensure-ReadyBaseline {
     $filledSlotIndexes = New-Object System.Collections.Generic.List[int]
 
     foreach ($slot in 1..6) {
-        $slotTitlePath = "/Canvas/GaragePageRoot/RosterListPane/GarageSlot{0}/Title" -f $slot
-        $slotTitle = Get-McpUiTextValue -Path $slotTitlePath
+        $slotTitlePath = "/Canvas/GaragePageRoot/GarageContentRow/RosterListPane/GarageSlot{0}/Title" -f $slot
+        $slotTitle = Get-McpUiTextValue -Root $root -Path $slotTitlePath
         if ($slotTitle -ne "Empty Hangar") {
             continue
         }
 
-        Invoke-McpUiInvoke -Root $root -Path ("/Canvas/GaragePageRoot/RosterListPane/GarageSlot{0}" -f $slot) -Method "click" | Out-Null
-        Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/UnitEditorPane/FRAMECard/FRAMEValuePanel/FRAMENextButton" -Method "click" | Out-Null
-        Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/UnitEditorPane/FIREPOWERCard/FIREPOWERValuePanel/FIREPOWERNextButton" -Method "click" | Out-Null
-        Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/UnitEditorPane/MOBILITYCard/MOBILITYValuePanel/MOBILITYNextButton" -Method "click" | Out-Null
+        Invoke-McpUiInvoke -Root $root -Path ("/Canvas/GaragePageRoot/GarageContentRow/RosterListPane/GarageSlot{0}" -f $slot) -Method "click" | Out-Null
+        Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/GarageContentRow/UnitEditorPane/FRAMECard/FRAMEValuePanel/FRAMENextButton" -Method "click" | Out-Null
+        Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/GarageContentRow/UnitEditorPane/FIREPOWERCard/FIREPOWERValuePanel/FIREPOWERNextButton" -Method "click" | Out-Null
+        Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/GarageContentRow/UnitEditorPane/MOBILITYCard/MOBILITYValuePanel/MOBILITYNextButton" -Method "click" | Out-Null
         Save-CurrentGarageDraft
         $filledSlotIndexes.Add($slot) | Out-Null
 
-        $readyLabel = Get-McpUiTextValue -Path $ReadyLabelPath
+        $readyLabel = Get-McpUiTextValue -Root $root -Path $ReadyLabelPath
         if ($readyLabel -in @("Ready", "Cancel")) {
             return ,$filledSlotIndexes
         }
@@ -215,76 +116,61 @@ function Ensure-ReadyBaseline {
 }
 
 try {
-    $health = Wait-McpBridgeHealthy -Root $root -TimeoutSec $TimeoutSec
-
-    if ($health.State.isPlaying) {
-        Invoke-McpPlayStopAndWait -Root $root -TimeoutSec $TimeoutSec | Out-Null
-    }
-
-    if ($health.State.activeScenePath -ne $ScenePath) {
-        Invoke-McpSceneOpenAndWait -Root $root -ScenePath $ScenePath -TimeoutSec $TimeoutSec | Out-Null
-        Wait-McpSceneActive -Root $root -SceneName $sceneName -TimeoutSec $TimeoutSec -PollSec 0.5 | Out-Null
-    }
-
-    $play = Invoke-McpPlayStartAndWaitForBridge -Root $root -TimeoutSec $TimeoutSec
+    $session = Invoke-McpPrepareCodexLobbyPlaySession `
+        -Root $root `
+        -ScenePath $ScenePath `
+        -LoginLoadingPanelPath $LoginLoadingPanelPath `
+        -TimeoutSec $TimeoutSec
     $startedPlayHere = $true
 
-    if (-not [string]::IsNullOrWhiteSpace($LoginLoadingPanelPath)) {
-        Wait-McpUiInactive -Root $root -Path $LoginLoadingPanelPath -TimeoutMs ($TimeoutSec * 1000) | Out-Null
-    }
-
-    Wait-ForPhotonLobbyReady
+    Wait-McpPhotonLobbyReady -Root $root -TimeoutSec $TimeoutSec -LogLimit 80
     $roomName = Ensure-RoomCreated
     $filledSlots = Ensure-ReadyBaseline
 
     $before = [PSCustomObject]@{
-        readyLabel = Get-McpUiTextValue -Path $ReadyLabelPath
-        readyButton = Get-McpUiButtonInfo -Path $ReadyButtonPath
-        saveLabel = Get-McpUiTextValue -Path $SaveLabelPath
-        rosterStatus = Get-McpUiTextValue -Path $RosterStatusPath
+        readyLabel = Get-McpUiTextValue -Root $root -Path $ReadyLabelPath
+        readyButton = Get-McpUiButtonInfo -Root $root -Path $ReadyButtonPath
+        rosterStatus = Get-McpUiTextValue -Root $root -Path $RosterStatusPath
     }
 
-    Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/RosterListPane/GarageSlot1" -Method "click" | Out-Null
-    Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/UnitEditorPane/FRAMECard/FRAMEValuePanel/FRAMENextButton" -Method "click" | Out-Null
+    Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/GarageContentRow/RosterListPane/GarageSlot1" -Method "click" | Out-Null
+    Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/GarageContentRow/UnitEditorPane/FRAMECard/FRAMEValuePanel/FRAMENextButton" -Method "click" | Out-Null
 
-    Wait-ForCondition `
+    Wait-McpCondition `
         -Description "Ready to be blocked by an unsaved Garage draft" `
-        -TimeoutSecValue $TimeoutSec `
-        -Condition { (Get-McpUiTextValue -Path $ReadyLabelPath) -eq "Save Garage Draft" }
+        -TimeoutSec $TimeoutSec `
+        -Condition { (Get-McpUiTextValue -Root $root -Path $ReadyLabelPath) -eq "Save Garage Draft" }
 
     $dirty = [PSCustomObject]@{
-        readyLabel = Get-McpUiTextValue -Path $ReadyLabelPath
-        readyButton = Get-McpUiButtonInfo -Path $ReadyButtonPath
-        saveLabel = Get-McpUiTextValue -Path $SaveLabelPath
-        rosterStatus = Get-McpUiTextValue -Path $RosterStatusPath
+        readyLabel = Get-McpUiTextValue -Root $root -Path $ReadyLabelPath
+        readyButton = Get-McpUiButtonInfo -Root $root -Path $ReadyButtonPath
+        rosterStatus = Get-McpUiTextValue -Root $root -Path $RosterStatusPath
     }
 
     Save-CurrentGarageDraft
 
-    Wait-ForCondition `
+    Wait-McpCondition `
         -Description "Ready to return after saving the Garage draft" `
-        -TimeoutSecValue $TimeoutSec `
-        -Condition { (Get-McpUiTextValue -Path $ReadyLabelPath) -eq "Ready" }
+        -TimeoutSec $TimeoutSec `
+        -Condition { (Get-McpUiTextValue -Root $root -Path $ReadyLabelPath) -eq "Ready" }
 
     $afterSave = [PSCustomObject]@{
-        readyLabel = Get-McpUiTextValue -Path $ReadyLabelPath
-        readyButton = Get-McpUiButtonInfo -Path $ReadyButtonPath
-        saveLabel = Get-McpUiTextValue -Path $SaveLabelPath
-        rosterStatus = Get-McpUiTextValue -Path $RosterStatusPath
+        readyLabel = Get-McpUiTextValue -Root $root -Path $ReadyLabelPath
+        readyButton = Get-McpUiButtonInfo -Root $root -Path $ReadyButtonPath
+        rosterStatus = Get-McpUiTextValue -Root $root -Path $RosterStatusPath
     }
 
     Invoke-McpUiInvoke -Root $root -Path $ReadyButtonPath -Method "click" | Out-Null
 
-    Wait-ForCondition `
+    Wait-McpCondition `
         -Description "Ready toggle to switch on" `
-        -TimeoutSecValue $TimeoutSec `
-        -Condition { (Get-McpUiTextValue -Path $ReadyLabelPath) -eq "Cancel" }
+        -TimeoutSec $TimeoutSec `
+        -Condition { (Get-McpUiTextValue -Root $root -Path $ReadyLabelPath) -eq "Cancel" }
 
     $afterReady = [PSCustomObject]@{
-        readyLabel = Get-McpUiTextValue -Path $ReadyLabelPath
-        readyButton = Get-McpUiButtonInfo -Path $ReadyButtonPath
-        saveLabel = Get-McpUiTextValue -Path $SaveLabelPath
-        rosterStatus = Get-McpUiTextValue -Path $RosterStatusPath
+        readyLabel = Get-McpUiTextValue -Root $root -Path $ReadyLabelPath
+        readyButton = Get-McpUiButtonInfo -Root $root -Path $ReadyButtonPath
+        rosterStatus = Get-McpUiTextValue -Root $root -Path $RosterStatusPath
     }
 
     $capture = Invoke-McpScreenshotCapture -Root $root -OutputPath $OutputPath -Overwrite
@@ -292,10 +178,10 @@ try {
     [PSCustomObject]@{
         success = $true
         root = $root
-        scene = $sceneName
+        scene = [System.IO.Path]::GetFileNameWithoutExtension($ScenePath)
         roomName = $roomName
         autoFilledSlots = $filledSlots
-        play = $play
+        play = $session.play
         before = $before
         dirty = $dirty
         afterSave = $afterSave

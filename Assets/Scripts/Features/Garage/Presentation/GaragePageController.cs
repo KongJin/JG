@@ -1,15 +1,25 @@
 using Features.Garage.Application;
 using Features.Garage.Domain;
+using Features.Garage.Presentation.Theme;
 using Shared.Attributes;
 using Shared.Kernel;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using ComposedUnit = Features.Unit.Domain.Unit;
 
 namespace Features.Garage.Presentation
 {
     public sealed class GaragePageController : MonoBehaviour
     {
+        private enum MobileBodySection
+        {
+            Edit,
+            Preview,
+            Summary,
+        }
+
         [Header("Subviews")]
         [Required, SerializeField] private GarageRosterListView _rosterListView;
         [Required, SerializeField] private GarageUnitEditorView _unitEditorView;
@@ -18,6 +28,29 @@ namespace Features.Garage.Presentation
         [Header("Preview")]
         [SerializeField] private GarageUnitPreviewView _unitPreviewView;
 
+        [Header("Responsive Layout")]
+        [SerializeField] private RectTransform _responsiveRoot;
+        [SerializeField] private GameObject _desktopContentRoot;
+        [SerializeField] private GameObject _mobileContentRoot;
+        [SerializeField] private Transform _mobileBodyHost;
+        [SerializeField] private Transform _desktopSlotHost;
+        [SerializeField] private Transform _mobileSlotHost;
+        [SerializeField] private GameObject _rightRailRoot;
+        [SerializeField] private GameObject _accountCard;
+        [SerializeField] private GameObject _previewCard;
+        [SerializeField] private GameObject _resultPane;
+        [SerializeField] private Button _inlineSaveButton;
+        [SerializeField] private GameObject _mobileTabBar;
+        [SerializeField] private Button _mobileEditTabButton;
+        [SerializeField] private TMP_Text _mobileEditTabLabel;
+        [SerializeField] private Button _mobilePreviewTabButton;
+        [SerializeField] private TMP_Text _mobilePreviewTabLabel;
+        [SerializeField] private Button _mobileSummaryTabButton;
+        [SerializeField] private TMP_Text _mobileSummaryTabLabel;
+        [SerializeField] private Button _mobileSaveButton;
+        [SerializeField] private TMP_Text _mobileSaveButtonLabel;
+        [SerializeField] private float _mobileBreakpointWidth = 700f;
+
         private GarageSetup _setup;
         private GaragePanelCatalog _catalog;
         private GaragePageState _state;
@@ -25,6 +58,14 @@ namespace Features.Garage.Presentation
         private bool _callbacksHooked;
         private bool _isInitialized;
         private bool _isInitializingRoster;
+        private bool _isSaving;
+        private bool _isMobileLayout;
+        private float _lastResponsiveWidth = -1f;
+        private MobileBodySection _mobileBodySection = MobileBodySection.Edit;
+        private readonly GarageKeyboardInputHandler _keyboardInputHandler = new();
+        private readonly GarageSaveCommandHandler _saveCommandHandler = new();
+        private readonly GarageDraftStatePublisher _draftStatePublisher = new();
+        private readonly GarageResponsiveLayoutController _responsiveLayoutController = new();
 
         public void Initialize(GarageSetup setup, GaragePanelCatalog catalog)
         {
@@ -35,6 +76,7 @@ namespace Features.Garage.Presentation
 
             _unitPreviewView?.Initialize();
             HookCallbacks();
+            RefreshResponsiveModeIfNeeded();
 
             if (_isInitialized)
             {
@@ -84,46 +126,47 @@ namespace Features.Garage.Presentation
             _unitEditorView.ClearRequested += ClearSelectedSlot;
             _unitEditorView.PartHoverRequested += ShowPartHoverTooltip;
             _resultPanelView.SaveClicked += OnSaveClicked;
+
+            if (_mobileEditTabButton != null)
+                _mobileEditTabButton.onClick.AddListener(() => SwitchMobileSection(MobileBodySection.Edit));
+
+            if (_mobilePreviewTabButton != null)
+                _mobilePreviewTabButton.onClick.AddListener(() => SwitchMobileSection(MobileBodySection.Preview));
+
+            if (_mobileSummaryTabButton != null)
+                _mobileSummaryTabButton.onClick.AddListener(() => SwitchMobileSection(MobileBodySection.Summary));
+
+            if (_mobileSaveButton != null)
+                _mobileSaveButton.onClick.AddListener(OnSaveClicked);
         }
 
         private void Update()
         {
+            if (RefreshResponsiveModeIfNeeded())
+            {
+                if (_isInitialized)
+                    Render();
+                return;
+            }
+
             var keyboard = Keyboard.current;
             if (keyboard == null)
                 return;
 
-            if (keyboard.leftCtrlKey.isPressed || keyboard.rightCtrlKey.isPressed)
-            {
-                if (keyboard.sKey.wasPressedThisFrame)
-                {
-                    OnSaveClicked();
-                    return;
-                }
-            }
-
-            if (keyboard.digit1Key.wasPressedThisFrame || keyboard.numpad1Key.wasPressedThisFrame) { SelectSlot(0); return; }
-            if (keyboard.digit2Key.wasPressedThisFrame || keyboard.numpad2Key.wasPressedThisFrame) { SelectSlot(1); return; }
-            if (keyboard.digit3Key.wasPressedThisFrame || keyboard.numpad3Key.wasPressedThisFrame) { SelectSlot(2); return; }
-            if (keyboard.digit4Key.wasPressedThisFrame || keyboard.numpad4Key.wasPressedThisFrame) { SelectSlot(3); return; }
-            if (keyboard.digit5Key.wasPressedThisFrame || keyboard.numpad5Key.wasPressedThisFrame) { SelectSlot(4); return; }
-            if (keyboard.digit6Key.wasPressedThisFrame || keyboard.numpad6Key.wasPressedThisFrame) { SelectSlot(5); return; }
-
-            int delta = 0;
-            if (keyboard.aKey.wasPressedThisFrame || keyboard.leftArrowKey.wasPressedThisFrame) delta = -1;
-            else if (keyboard.dKey.wasPressedThisFrame || keyboard.rightArrowKey.wasPressedThisFrame) delta = 1;
-
-            if (delta != 0)
-            {
-                if (!string.IsNullOrEmpty(_state.EditingFrameId)) { CycleFrame(delta); return; }
-                if (!string.IsNullOrEmpty(_state.EditingFirepowerId)) { CycleFirepower(delta); return; }
-                if (!string.IsNullOrEmpty(_state.EditingMobilityId)) { CycleMobility(delta); return; }
-                CycleFrame(delta);
-            }
+            _keyboardInputHandler.Process(
+                keyboard,
+                _state,
+                OnSaveClicked,
+                SelectSlot,
+                CycleFrame,
+                CycleFirepower,
+                CycleMobility);
         }
 
         private void SelectSlot(int slotIndex)
         {
             _state.SelectSlot(slotIndex);
+            _mobileBodySection = MobileBodySection.Edit;
             Render();
         }
 
@@ -243,45 +286,49 @@ namespace Features.Garage.Presentation
         }
 #endif
 
-        private async void OnSaveClicked()
+        private void OnSaveClicked()
         {
+            _ = RunSaveAsync();
+        }
+
+        private async System.Threading.Tasks.Task RunSaveAsync()
+        {
+            if (_isSaving)
+                return;
+
             var evaluation = EvaluateDraft();
-            if (!evaluation.CanSave)
-            {
-                var message = !string.IsNullOrWhiteSpace(evaluation.RosterValidationError)
-                    ? evaluation.RosterValidationError
-                    : evaluation.HasDraftChanges
-                        ? "Draft is not ready to save."
-                        : "No unsaved changes.";
-                _state.SetValidationOverride(message);
-                Render();
+            var saveResult = await _saveCommandHandler.ExecuteAsync(
+                _state,
+                evaluation,
+                _setup,
+                _resultPanelView,
+                () =>
+                {
+                    _isSaving = true;
+                    RefreshMobileSaveButton(_presenter.BuildResultViewModel(_state, evaluation));
+                },
+                () =>
+                {
+                    _isSaving = false;
+                });
+
+            if (!saveResult.ShouldRender)
                 return;
-            }
 
-            _resultPanelView.ShowLoading(true);
-            var result = await _setup.SaveRoster.Execute(_state.DraftRoster.Clone());
-            _resultPanelView.ShowLoading(false);
-
-            if (!result.IsSuccess)
-            {
-                _state.SetValidationOverride(result.Error);
-                Render();
-                return;
-            }
-
-            _state.CommitDraft();
-            _resultPanelView.ShowToast("Roster saved!");
             Render();
         }
 
         private void Render()
         {
+            RefreshResponsiveModeIfNeeded();
+
             var evaluation = EvaluateDraft();
             var slotViewModels = _presenter.BuildSlotViewModels(_state);
+            var resultViewModel = _presenter.BuildResultViewModel(_state, evaluation);
 
             _rosterListView.Render(slotViewModels);
             _unitEditorView.Render(_presenter.BuildEditorViewModel(_state));
-            _resultPanelView.Render(_presenter.BuildResultViewModel(_state, evaluation));
+            _resultPanelView.Render(resultViewModel);
 
             if (_unitPreviewView != null && _catalog != null)
             {
@@ -289,38 +336,252 @@ namespace Features.Garage.Presentation
                 _unitPreviewView.Render(selectedSlot, _catalog);
             }
 
+            ApplyResponsiveLayoutState(resultViewModel);
             PublishDraftState();
+        }
+
+        private bool RefreshResponsiveModeIfNeeded()
+        {
+            if (!TryGetResponsiveWidth(out float width))
+                return false;
+
+            var state = _responsiveLayoutController.Evaluate(width, _mobileBreakpointWidth, _lastResponsiveWidth, _isMobileLayout);
+            if (!state.ShouldRefresh)
+                return false;
+
+            _lastResponsiveWidth = width;
+            _isMobileLayout = state.IsMobileLayout;
+            return true;
+        }
+
+        private bool TryGetResponsiveWidth(out float width)
+        {
+            if (Screen.width > 0)
+            {
+                width = Screen.width;
+                return true;
+            }
+
+            var rectTransform = _responsiveRoot != null ? _responsiveRoot : transform as RectTransform;
+            if (rectTransform != null && rectTransform.rect.width > 0f)
+            {
+                width = rectTransform.rect.width;
+                return true;
+            }
+
+            width = 0f;
+            return false;
+        }
+
+        private void SwitchMobileSection(MobileBodySection nextSection)
+        {
+            _mobileBodySection = nextSection;
+            Render();
+        }
+
+        private void ApplyResponsiveLayoutState(GarageResultViewModel resultViewModel)
+        {
+            ApplyResponsiveParenting();
+
+            if (_mobileTabBar != null)
+                _mobileTabBar.SetActive(_isMobileLayout);
+
+            if (_mobileSaveButton != null)
+                _mobileSaveButton.gameObject.SetActive(_isMobileLayout);
+
+            if (_inlineSaveButton != null)
+                _inlineSaveButton.gameObject.SetActive(!_isMobileLayout);
+
+            ApplySectionVisibility();
+            RefreshMobileTabButtonStyles();
+            RefreshMobileSaveButton(resultViewModel);
+        }
+
+        private void ApplyResponsiveParenting()
+        {
+            var rosterPane = _rosterListView != null ? _rosterListView.gameObject : null;
+            var editorPane = _unitEditorView != null ? _unitEditorView.gameObject : null;
+            if (rosterPane == null || editorPane == null || _rightRailRoot == null)
+                return;
+
+            if (_isMobileLayout)
+            {
+                SetActive(_desktopContentRoot, false);
+                SetActive(_mobileContentRoot, true);
+                SetActive(_mobileSlotHost != null ? _mobileSlotHost.gameObject : null, true);
+
+                MoveToParent(rosterPane.transform, _mobileContentRoot != null ? _mobileContentRoot.transform : null, 0);
+                MoveSlotsToHost(_mobileSlotHost);
+                MoveToParent(_mobileTabBar != null ? _mobileTabBar.transform : null, _mobileContentRoot != null ? _mobileContentRoot.transform : null, 1);
+                MoveToParent(editorPane.transform, _mobileBodyHost, 0);
+                MoveToParent(_rightRailRoot.transform, _mobileBodyHost, 1);
+                return;
+            }
+
+            SetActive(_mobileContentRoot, false);
+            SetActive(_desktopContentRoot, true);
+            SetActive(_mobileSlotHost != null ? _mobileSlotHost.gameObject : null, false);
+
+            MoveToParent(rosterPane.transform, _desktopContentRoot != null ? _desktopContentRoot.transform : null, 0);
+            MoveSlotsToHost(_desktopSlotHost);
+            MoveToParent(editorPane.transform, _desktopContentRoot != null ? _desktopContentRoot.transform : null, 1);
+            MoveToParent(_rightRailRoot.transform, _desktopContentRoot != null ? _desktopContentRoot.transform : null, 2);
+        }
+
+        private void MoveSlotsToHost(Transform host)
+        {
+            if (host == null || _rosterListView == null)
+                return;
+
+            var slotViews = _rosterListView.GetComponentsInChildren<GarageSlotItemView>(true);
+            for (int index = 0; index < slotViews.Length; index++)
+            {
+                MoveToParent(slotViews[index].transform, host, index);
+            }
+        }
+
+        private void ApplySectionVisibility()
+        {
+            if (!_isMobileLayout)
+            {
+                SetActive(_unitEditorView != null ? _unitEditorView.gameObject : null, true);
+                SetActive(_rightRailRoot, true);
+                SetActive(_accountCard, true);
+                SetActive(_previewCard, true);
+                SetActive(_resultPane, true);
+                return;
+            }
+
+            bool showEdit = _mobileBodySection == MobileBodySection.Edit;
+            bool showPreview = _mobileBodySection == MobileBodySection.Preview;
+            bool showSummary = _mobileBodySection == MobileBodySection.Summary;
+
+            SetActive(_unitEditorView != null ? _unitEditorView.gameObject : null, showEdit);
+            SetActive(_rightRailRoot, showEdit || showPreview || showSummary);
+            SetActive(_accountCard, showEdit);
+            SetActive(_previewCard, showPreview);
+            SetActive(_resultPane, showSummary);
+        }
+
+        private void RefreshMobileTabButtonStyles()
+        {
+            if (!_isMobileLayout)
+                return;
+
+            ConfigureMobileTabButton(
+                _mobileEditTabButton,
+                _mobileEditTabLabel,
+                "Edit",
+                _mobileBodySection == MobileBodySection.Edit,
+                true);
+            ConfigureMobileTabButton(
+                _mobilePreviewTabButton,
+                _mobilePreviewTabLabel,
+                "Preview",
+                _mobileBodySection == MobileBodySection.Preview,
+                _unitPreviewView != null);
+            ConfigureMobileTabButton(
+                _mobileSummaryTabButton,
+                _mobileSummaryTabLabel,
+                "Summary",
+                _mobileBodySection == MobileBodySection.Summary,
+                _resultPanelView != null);
+        }
+
+        private void ConfigureMobileTabButton(
+            Button button,
+            TMP_Text label,
+            string title,
+            bool isActive,
+            bool isAvailable)
+        {
+            if (button == null)
+                return;
+
+            var preset = isActive ? ButtonStyles.Primary : ButtonStyles.Secondary;
+            button.Apply(preset, label);
+            button.interactable = isAvailable && !isActive;
+
+            if (label != null)
+            {
+                label.text = title;
+                label.color = isAvailable
+                    ? isActive ? ThemeColors.TextPrimary : ThemeColors.TextSecondary
+                    : ThemeColors.TextMuted;
+            }
+
+            if (button.TryGetComponent<Image>(out var background))
+            {
+                background.color = !isAvailable
+                    ? ThemeColors.StateDisabled
+                    : isActive
+                        ? ThemeColors.AccentBlue
+                        : ThemeColors.BackgroundCard;
+
+                var feedback = button.GetComponent<ButtonFeedback>();
+                if (feedback != null)
+                    feedback.UpdateBaseColor(background.color);
+            }
+        }
+
+        private void RefreshMobileSaveButton(GarageResultViewModel resultViewModel)
+        {
+            if (_mobileSaveButton == null)
+                return;
+
+            bool canSave = resultViewModel != null && resultViewModel.CanSave && !_isSaving;
+            bool isDirty = resultViewModel != null && resultViewModel.IsDirty;
+
+            _mobileSaveButton.Apply(ButtonStyles.Primary, _mobileSaveButtonLabel);
+            _mobileSaveButton.interactable = canSave;
+
+            if (_mobileSaveButtonLabel != null)
+                _mobileSaveButtonLabel.text = _isSaving
+                    ? "Saving..."
+                    : resultViewModel?.PrimaryActionLabel ?? "Save Roster";
+
+            if (_mobileSaveButton.TryGetComponent<Image>(out var background))
+            {
+                background.color = _isSaving
+                    ? ThemeColors.AccentBlue
+                    : canSave
+                        ? ThemeColors.AccentGreen
+                        : isDirty
+                            ? ThemeColors.AccentOrange
+                            : ThemeColors.StateDisabled;
+
+                var feedback = _mobileSaveButton.GetComponent<ButtonFeedback>();
+                if (feedback != null)
+                    feedback.UpdateBaseColor(background.color);
+            }
+        }
+
+        private static void SetActive(GameObject target, bool isActive)
+        {
+            if (target != null && target.activeSelf != isActive)
+                target.SetActive(isActive);
+        }
+
+        private static void MoveToParent(Transform child, Transform parent, int siblingIndex)
+        {
+            if (child == null || parent == null)
+                return;
+
+            if (child.parent != parent)
+                child.SetParent(parent, false);
+
+            if (siblingIndex >= 0 && child.GetSiblingIndex() != siblingIndex)
+                child.SetSiblingIndex(siblingIndex);
         }
 
         private void PublishDraftState()
         {
-            string blockReason;
-            bool readyEligible;
-
-            if (_state.HasDraftChanges())
-            {
-                readyEligible = false;
-                blockReason = "Unsaved Garage changes";
-            }
-            else if (!_state.CommittedRoster.IsValid)
-            {
-                readyEligible = false;
-                int missingUnits = Mathf.Max(0, 3 - _state.CommittedRoster.Count);
-                blockReason = missingUnits > 0
-                    ? $"Need {missingUnits} more saved unit{(missingUnits == 1 ? string.Empty : "s")}"
-                    : "Saved roster is not ready";
-            }
-            else
-            {
-                readyEligible = true;
-                blockReason = "Ready available";
-            }
-
+            var draftState = _draftStatePublisher.Build(_state);
             _setup?.EventPublisher?.Publish(new GarageDraftStateChangedEvent(
                 _state.CommittedRoster.Count,
-                _state.HasDraftChanges(),
-                readyEligible,
-                blockReason));
+                draftState.HasUnsavedChanges,
+                draftState.ReadyEligible,
+                draftState.BlockReason));
         }
 
         private GarageDraftEvaluation EvaluateDraft()

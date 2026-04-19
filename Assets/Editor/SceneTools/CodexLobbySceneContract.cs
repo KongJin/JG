@@ -12,23 +12,49 @@ namespace ProjectSD.EditorTools.SceneTools
     internal static class CodexLobbySceneContract
     {
         internal const string ScenePath = "Assets/Scenes/CodexLobbyScene.unity";
-        internal const string BuilderMethodName =
-            "ProjectSD.EditorTools.SceneTools.CodexLobbySceneBuilder.BuildCodexLobbySceneForAutomation";
 
         private static readonly string[] SentinelPaths =
         {
             "/Canvas/LobbyPageRoot",
             "/Canvas/GaragePageRoot",
+            "/Canvas/GaragePageRoot/GarageMobileStackRoot",
+            "/Canvas/GaragePageRoot/GarageMobileStackRoot/GarageMobileTabBar",
+            "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost",
+            "/Canvas/GaragePageRoot/MobileSaveButton",
+            "/Canvas/GaragePageRoot/GarageContentRow/RosterListPane/MobileSlotGrid",
             "/Canvas/LobbyPageRoot/RoomListPanel",
-            "/Canvas/LobbyPageRoot/RoomListPanel/ListHeaderRow",
-            "/Canvas/LobbyPageRoot/RoomListPanel/RoomListSurface",
-            "/Canvas/LobbyPageRoot/RoomListPanel/RoomListSurface/EmptyStateText",
-            "/Canvas/LobbyPageRoot/GarageTabButton",
+            "/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/ListHeaderRow",
+            "/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/RoomListSurface",
+            "/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/RoomListSurface/EmptyStateText",
+            "/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard",
+            "/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard/GarageTabButton",
             "/Canvas/GaragePageRoot/GarageHeaderRow/LobbyTabButton",
         };
 
         private static readonly (string path, Type componentType, string[] fields)[] ReferenceChecks =
         {
+            (
+                "/Canvas/GaragePageRoot",
+                typeof(Features.Garage.Presentation.GaragePageController),
+                new[]
+                {
+                    "_rosterListView",
+                    "_unitEditorView",
+                    "_resultPanelView",
+                    "_responsiveRoot",
+                    "_desktopContentRoot",
+                    "_mobileContentRoot",
+                    "_mobileBodyHost",
+                    "_desktopSlotHost",
+                    "_mobileSlotHost",
+                    "_rightRailRoot",
+                    "_mobileTabBar",
+                    "_mobileEditTabButton",
+                    "_mobilePreviewTabButton",
+                    "_mobileSummaryTabButton",
+                    "_mobileSaveButton",
+                }
+            ),
             (
                 "/LobbyView",
                 typeof(LobbyView),
@@ -40,6 +66,7 @@ namespace ProjectSD.EditorTools.SceneTools
                     "_roomDetailPanel",
                     "_roomListView",
                     "_roomDetailView",
+                    "_garageSummaryView",
                     "_lobbyPageCanvasGroup",
                     "_garagePageCanvasGroup",
                     "_lobbyTabButton",
@@ -55,6 +82,16 @@ namespace ProjectSD.EditorTools.SceneTools
                     "_roomItemPrefab",
                     "_roomListCountText",
                     "_roomListEmptyStateText",
+                }
+            ),
+            (
+                "/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard",
+                typeof(LobbyGarageSummaryView),
+                new[]
+                {
+                    "_statusPillText",
+                    "_headlineText",
+                    "_bodyText",
                 }
             ),
         };

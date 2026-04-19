@@ -31,6 +31,7 @@ namespace Features.Garage
         private RosterValidationProvider _rosterValidationProvider;
         private DisposableScope _disposables;
         private IEventPublisher _eventPublisher;
+        private readonly GaragePanelCatalogFactory _panelCatalogFactory = new();
 
         // Application UseCases
         public InitializeGarageUseCase InitializeGarage { get; private set; }
@@ -89,10 +90,27 @@ namespace Features.Garage
             }
 
             if (_pageController != null)
-                _pageController.Initialize(this, BuildPanelCatalog(unitCatalog));
+                _pageController.Initialize(this, _panelCatalogFactory.Build(unitCatalog));
         }
 
-        private static GaragePanelCatalog BuildPanelCatalog(ModuleCatalog unitCatalog)
+        /// <summary>
+        /// 씬 전환 시 정리.
+        /// </summary>
+        public void Cleanup()
+        {
+            _disposables?.Dispose();
+            _disposables = null;
+        }
+
+        private void OnDestroy()
+        {
+            _disposables?.Dispose();
+        }
+    }
+
+    internal sealed class GaragePanelCatalogFactory
+    {
+        public GaragePanelCatalog Build(ModuleCatalog unitCatalog)
         {
             var frames = new System.Collections.Generic.List<GaragePanelCatalog.FrameOption>();
             for (int i = 0; i < unitCatalog.UnitFrames.Count; i++)
@@ -136,20 +154,6 @@ namespace Features.Garage
             }
 
             return new GaragePanelCatalog(frames, firepower, mobility);
-        }
-
-        /// <summary>
-        /// 씬 전환 시 정리.
-        /// </summary>
-        public void Cleanup()
-        {
-            _disposables?.Dispose();
-            _disposables = null;
-        }
-
-        private void OnDestroy()
-        {
-            _disposables?.Dispose();
         }
     }
 }

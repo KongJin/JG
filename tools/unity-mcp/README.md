@@ -1,250 +1,191 @@
 # Unity MCP
 
 Unity MCP in this repo is a `diagnostic + manual automation` bridge.
-This file is the canonical runtime-automation usage note for the repo.
-
-For Lobby/Garage UI work, `Assets/Scenes/CodexLobbyScene.unity` is the final SSOT.
-`CodexLobbySceneBuilder` exists as a repair/reseed tool, not as the day-to-day source of truth.
+For Lobby/Garage UI work, the runtime SSOT is `Assets/Scenes/CodexLobbyScene.unity`.
+Lobby/Garage layout recovery is done by direct MCP scene/prefab repair against that scene, not by code-driven scene regeneration.
 
 - Bridge core: `Assets/Editor/UnityMcp/`
 - MCP stdio wrapper: `tools/unity-mcp/server.js`
 - Helper module: `tools/unity-mcp/McpHelpers.ps1`
-- UI overview capture: `tools/unity-mcp/Invoke-UiOverviewCapture.ps1`
-- Manual Garage smoke: `tools/unity-mcp/Invoke-GarageManualSmoke.ps1`
-- Lobby/Garage page-switch smoke: `tools/unity-mcp/Invoke-LobbyGaragePageSwitchSmoke.ps1`
-- Verified Lobby/Garage workflow gate: `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1`
-- Garage Ready flow smoke: `tools/unity-mcp/Invoke-GarageReadyFlowSmoke.ps1`
-- Lobby -> GameScene summon smoke: `tools/unity-mcp/Invoke-GameSceneSummonSmoke.ps1`
+- Workflow gate: `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1`
+- Canonical page-switch smoke: `tools/unity-mcp/Invoke-LobbyGaragePageSwitchSmoke.ps1`
+- Feature smoke: `tools/unity-mcp/Invoke-GameSceneSummonSmoke.ps1`
+- Optional supervised smoke: `tools/unity-mcp/Invoke-GarageReadyFlowSmoke.ps1`
 
 `rule-harness` continues to use Unity MCP only for compile/status refresh plus generic diagnostics. Scene-specific runtime smoke stays out of harness scope.
 
-## Route Tiers
+## Core Routes
 
-### Stable
-
-These are the routes we treat as first-class and keep aligned across bridge, wrapper, and scripts.
+These are the routes the current workflow depends on.
 
 - `GET /health`
-- `GET /scene/current`
-- `GET /scene/hierarchy`
 - `POST /scene/open`
 - `POST /scene/save`
 - `POST /play/start`
 - `POST /play/stop`
 - `POST /play/wait-for-play`
 - `POST /play/wait-for-stop`
-- `GET /console/logs`
-- `GET /console/errors`
-- `GET /ui/state`
 - `POST /ui/invoke`
 - `POST /ui/get-state`
 - `POST /ui/wait-for-active`
 - `POST /ui/wait-for-inactive`
-- `POST /ui/wait-for-text`
-- `POST /ui/wait-for-component`
 - `POST /screenshot/capture`
+- `GET /scene/verify-codex-lobby-contract`
 
-### Manual-Only
+`/menu/execute` still exists, but it is manual-only and non-authoritative for Lobby/Garage recovery.
 
-Useful for supervised editor work, but not part of the preferred automation loop.
+## Recommended Workflow
 
-- `/input/*`
-- `/menu/execute`
-- scene mutation helpers such as `/gameobject/*`, `/component/*`, `/prefab/*`, `/ui/create-*`, `/ui/set-rect`
+Use this order for Lobby/Garage UI work:
 
-`/menu/execute` is manual-only and non-authoritative for Lobby/Garage rebuild success.
-Use the dedicated verified rebuild path instead.
+1. `Invoke-CodexLobbyUiWorkflowGate.ps1`
+2. `Invoke-LobbyGaragePageSwitchSmoke.ps1`
+3. feature smoke only when the change reaches scene transition, network/bootstrap, or WebGL flow
 
-### Diagnostic / Experimental
+The rule is:
 
-Helpful for debugging, but not treated as stable automation contracts.
+- verify scene contract first
+- repair the scene directly when contract fails
+- trust the gate and canonical smoke over ad hoc captures
+- keep Ready/Save rule checks in EditMode or domain tests, not in canonical smoke
 
-- `/async/*`
-- `/console/stream*`
-- `/console/logs/filter`
-- `/console/stats`
-- `/ui/compare-screenshots`
-- `/snapshot/*`
-- `/eval/*`
-- `/explore/*`
+## SSOT Guardrails
 
-## Recommended Flow
-
-For manual runtime automation, use this sequence:
-
-1. `GET /health`
-2. `POST /play/start`
-3. `POST /play/wait-for-play`
-4. `GET /ui/state` or `POST /ui/invoke`
-5. `POST /screenshot/capture`
-6. `POST /play/stop`
-7. `POST /play/wait-for-stop`
-
-Garage smoke follows exactly this pattern.
-
-## Scene-Builder Change Routine
-
-When you change a scene builder or other editor automation script, use this exact loop:
-
-1. Edit the builder/editor script.
-2. Run `Assets/Refresh`.
-3. Run the relevant builder menu item, such as `Tools/Codex/Build Codex Lobby Scene`.
-4. Call `scene/save`.
-5. Only then run Play Mode smoke/capture.
-
-Failure symptom:
-
-- If hierarchy or GameView still looks old after code changes, assume stale editor assembly first, not wrong scene code first.
-
-For deterministic Lobby/Garage recovery, prefer the dedicated verified rebuild route instead of manual menu execution.
+- Never overwrite an open `.unity` scene on disk while Unity has that scene loaded.
+- Prefer MCP scene/prefab repair over direct YAML replacement for Lobby/Garage UI work.
+- If a disk-level restore is truly required, switch away from the scene or close Unity first, then restore the file, then reopen it in Unity.
+- The open-scene popup (`The following open scene(s) have been changed on disk`) is treated as a workflow violation, not as a prompt to accept casually.
 
 ## CodexLobbyScene Contract
 
-For Lobby/Garage UI work, the scene serialization is the runtime truth.
+For Lobby/Garage UI work, scene serialization is the runtime truth.
 
 - Runtime SSOT: `Assets/Scenes/CodexLobbyScene.unity`
-- Repair tool: `CodexLobbySceneBuilder.BuildCodexLobbySceneForAutomation()`
-- Verified rebuild route: `POST /scene/rebuild-codex-lobby`
 - Contract audit route: `GET /scene/verify-codex-lobby-contract`
+- Repair path: use MCP to modify the scene or prefabs directly until the contract passes again
 
-Use the verified rebuild route after compile/reload has already stabilized.
-The canonical place for that stabilization is `Invoke-CodexLobbyUiWorkflowGate.ps1`.
-
-Sentinel nodes currently required by the contract:
+Required sentinel nodes:
 
 - `/Canvas/LobbyPageRoot`
 - `/Canvas/GaragePageRoot`
+- `/Canvas/GaragePageRoot/GarageMobileStackRoot`
+- `/Canvas/GaragePageRoot/GarageMobileStackRoot/GarageMobileTabBar`
+- `/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost`
+- `/Canvas/GaragePageRoot/MobileSaveButton`
+- `/Canvas/GaragePageRoot/GarageContentRow/RosterListPane/MobileSlotGrid`
 - `/Canvas/LobbyPageRoot/RoomListPanel`
-- `/Canvas/LobbyPageRoot/RoomListPanel/ListHeaderRow`
-- `/Canvas/LobbyPageRoot/RoomListPanel/RoomListSurface`
-- `/Canvas/LobbyPageRoot/RoomListPanel/RoomListSurface/EmptyStateText`
-- `/Canvas/LobbyPageRoot/GarageTabButton`
+- `/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/ListHeaderRow`
+- `/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/RoomListSurface`
+- `/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/RoomListSurface/EmptyStateText`
+- `/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard`
+- `/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard/GarageTabButton`
 - `/Canvas/GaragePageRoot/GarageHeaderRow/LobbyTabButton`
 
 Representative serialized reference checks:
 
+- `/Canvas/GaragePageRoot::GaragePageController._responsiveRoot`
+- `/Canvas/GaragePageRoot::GaragePageController._desktopContentRoot`
+- `/Canvas/GaragePageRoot::GaragePageController._mobileContentRoot`
+- `/Canvas/GaragePageRoot::GaragePageController._mobileBodyHost`
+- `/Canvas/GaragePageRoot::GaragePageController._desktopSlotHost`
+- `/Canvas/GaragePageRoot::GaragePageController._mobileSlotHost`
+- `/Canvas/GaragePageRoot::GaragePageController._rightRailRoot`
+- `/Canvas/GaragePageRoot::GaragePageController._mobileTabBar`
+- `/Canvas/GaragePageRoot::GaragePageController._mobileEditTabButton`
+- `/Canvas/GaragePageRoot::GaragePageController._mobilePreviewTabButton`
+- `/Canvas/GaragePageRoot::GaragePageController._mobileSummaryTabButton`
+- `/Canvas/GaragePageRoot::GaragePageController._mobileSaveButton`
 - `/LobbyView::LobbyView._lobbyPageRoot`
 - `/LobbyView::LobbyView._garagePageRoot`
 - `/LobbyView::LobbyView._roomListView`
 - `/LobbyView::LobbyView._roomDetailView`
+- `/LobbyView::LobbyView._garageSummaryView`
 - `/Canvas/LobbyPageRoot/RoomListPanel::RoomListView._roomListContent`
 - `/Canvas/LobbyPageRoot/RoomListPanel::RoomListView._roomItemPrefab`
 - `/Canvas/LobbyPageRoot/RoomListPanel::RoomListView._roomListCountText`
 - `/Canvas/LobbyPageRoot/RoomListPanel::RoomListView._roomListEmptyStateText`
+- `/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard::LobbyGarageSummaryView._statusPillText`
+- `/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard::LobbyGarageSummaryView._headlineText`
+- `/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard::LobbyGarageSummaryView._bodyText`
 
-The dedicated rebuild route is authoritative only when it returns:
+Contract 운영 원칙:
+
+- page contract owner는 scene/prefab 쪽에서 유지하고, runtime controller는 상태 렌더와 focus 전환까지만 담당한다.
+- 특정 controller 하나에 serialized ref를 계속 몰아 넣어 scene contract를 대표하게 만들지 않는다.
+- smoke/debug 전용 진입점은 가능하면 별도 bridge component로 분리한다.
+
+The contract route is considered healthy when it returns:
 
 - `success = true`
 - `sceneSaved = true`
 - empty `missingSentinels`
 - empty `missingReferences`
 
-## Quick Start
-
-Prefer running scripts with `-ExecutionPolicy Bypass` so PowerShell does not block helper loading:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UiOverviewCapture.ps1
-```
-
-For interactive use, start the shell session like this before dot-sourcing helpers:
-
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-. .\tools\unity-mcp\McpHelpers.ps1
-```
-
 ## PowerShell Helpers
 
-`McpHelpers.ps1` exposes stable helper functions:
+`McpHelpers.ps1` exposes the helpers the remaining workflow depends on:
 
 - `Get-UnityMcpBaseUrl`
 - `Wait-McpBridgeHealthy`
-- `Invoke-McpSceneOpenAndWait`
+- `Invoke-EditorProjectSync.ps1`
 - `Invoke-McpCompileRequestAndWait`
+- `Invoke-McpSceneOpenAndWait`
 - `Invoke-McpPlayStartAndWaitForBridge`
 - `Invoke-McpPlayStopAndWait`
-- `Invoke-McpCodexLobbyVerifiedRebuild`
+- `Assert-McpNoOpenSceneDiskWrite`
 - `Get-McpCodexLobbyContract`
-- `Get-McpRecentLogs`
-- `Get-McpRecentErrors`
+- `Invoke-McpPrepareCodexLobbyPlaySession`
+- `Get-McpPageStateSnapshot`
+- `Wait-McpPhotonLobbyReady`
 - `Get-McpConsoleSummary`
-- `Get-McpUiState`
-- `Get-McpUiStateSummary`
-- `Get-McpUiElementState`
+- `Get-McpUiTextValue`
+- `Get-McpUiButtonInfo`
+- `Get-McpUiActiveInHierarchy`
+- `Invoke-McpSetUiValue`
 - `Invoke-McpUiInvoke`
 - `Wait-McpUiActive`
 - `Wait-McpUiInactive`
-- `Wait-McpUiText`
-- `Wait-McpUiComponent`
 - `Invoke-McpScreenshotCapture`
 
-Example:
+Use `Assert-McpNoOpenSceneDiskWrite` before any script that would touch a `.unity` file on disk outside the editor bridge.
+If the target matches `health.activeScenePath`, the helper fails fast and tells you to use MCP repair or switch scenes first.
+
+When Unity already has the project open and you need generated `.csproj` files refreshed for editor tests or IDE sync, use:
 
 ```powershell
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-. .\tools\unity-mcp\McpHelpers.ps1
-$root = Get-UnityMcpBaseUrl
-Invoke-McpPlayStartAndWaitForBridge -Root $root
-Invoke-McpUiInvoke -Root $root -Path "/Canvas/LobbyPageRoot/GarageTabButton"
-Wait-McpUiActive -Root $root -Path "/Canvas/GaragePageRoot"
-Invoke-McpScreenshotCapture -Root $root -OutputPath "artifacts/unity/garage.png" -Overwrite
-Invoke-McpPlayStopAndWait -Root $root
+powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-EditorProjectSync.ps1
 ```
 
-## Manual Smoke
+This uses the current editor instance through MCP and performs:
 
-Run the verified Lobby/Garage workflow gate like this:
+1. bridge health check
+2. compile/reload stabilization
+3. `Assets/Open C# Project` menu execution
+
+## Workflow Gate
+
+Run the required Lobby/Garage gate like this:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-CodexLobbyUiWorkflowGate.ps1
 ```
 
-This serial gate performs:
+The gate performs:
 
-1. script reload / compile stabilization
-2. dedicated verified rebuild for `CodexLobbyScene`
-3. scene contract verification
-4. Lobby/Garage page-switch smoke
-5. machine-readable report writeout
+1. compile/reload stabilization
+2. contract verification
+3. canonical page-switch smoke
+4. machine-readable result writeout
 
 Outputs:
 
 - `artifacts/unity/codex-lobby-ui-workflow-result.json`
 - `artifacts/unity/lobby-garage-page-switch-result.json`
-- page-switch screenshots generated by the smoke
 
 Use this as the required gate for Lobby/Garage UI changes.
 Do not run parallel Play Mode smokes against the same editor instance for this workflow.
 
-Run the UI overview capture like this:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UiOverviewCapture.ps1
-```
-
-Outputs:
-
-- `artifacts/unity/ui-overview-lobby.png`
-- `artifacts/unity/ui-overview-garage.png`
-- `artifacts/unity/ui-overview-report.json`
-
-The report includes:
-
-- stage timings for bridge readiness, Play Mode, login overlay wait, and each capture
-- compact UI summaries instead of the full `/ui/state` dump
-- grouped console warnings/errors with benign known warnings split out
-- current scene path, pre-Play health snapshot, and page root active/inactive state snapshots
-- the exact button/root paths used for the page-switch flow
-- refresh/build/save debugging hints for stale editor assembly cases
-
-This script now follows the page-switch flow:
-
-- capture Lobby-only state first
-- open Garage through the Lobby-side `Garage` button
-- capture Garage-only state
-- return to Lobby through `Back To Lobby`
-- verify the page roots swap active/inactive states correctly
+## Canonical Smoke
 
 Run the canonical page-switch smoke like this:
 
@@ -259,19 +200,9 @@ Outputs:
 - `artifacts/unity/lobby-page-smoke-lobby-returned.png`
 - `artifacts/unity/lobby-garage-page-switch-result.json`
 
-This is the preferred verification path for the current Lobby/Garage UI contract.
+This is the default runtime proof for the current Lobby/Garage UI contract.
 
-Run the Garage smoke like this:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GarageManualSmoke.ps1
-```
-
-Run the draft -> save -> ready smoke like this:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GarageReadyFlowSmoke.ps1
-```
+## Feature Smoke
 
 Run the lobby -> game -> summon smoke like this:
 
@@ -279,42 +210,19 @@ Run the lobby -> game -> summon smoke like this:
 powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameSceneSummonSmoke.ps1
 ```
 
-Defaults:
+Feature smoke is for regressions beyond page switching. It does not replace the workflow gate.
+The main retained acceptance path is:
 
-- scene: `Assets/Scenes/CodexLobbyScene.unity`
-- Garage open button: `/Canvas/LobbyPageRoot/GarageTabButton`
-- Back-to-Lobby button: `/Canvas/GaragePageRoot/GarageHeaderRow/LobbyTabButton`
-- root: `/Canvas/GaragePageRoot`
-- screenshot: `artifacts/unity/garage-manual-smoke.png`
-- result: `artifacts/unity/garage-manual-smoke-result.json`
-- UI overview screenshots: `artifacts/unity/ui-overview-lobby.png`, `artifacts/unity/ui-overview-garage.png`
-- UI overview report: `artifacts/unity/ui-overview-report.json`
+1. workflow gate
+2. canonical page-switch smoke
+3. `GameScene` summon smoke when the change reaches lobby-to-game flow
 
-Ready-flow smoke highlights:
-
-- creates a room after filling the room-name field
-- auto-fills empty Garage slots until Ready unlocks
-- verifies unsaved draft changes relock Ready
-- verifies Save restores Ready and Ready toggles to `Cancel`
-- captures `artifacts/unity/garage-ready-flow-smoke.png`
-
-UI change verification note:
-
-- Pair scene hierarchy inspection with a Play Mode capture every time you change Lobby/Garage UI structure.
-- Do not trust old GameView or hierarchy output until you have completed `Assets/Refresh -> Build -> scene/save`.
-- For critical verification, do not stop at menu execution success. Require a successful rebuild response plus a passing scene contract.
-
-GameScene summon smoke highlights:
-
-- creates a room and ensures the Ready baseline from the Garage dashboard
-- starts the match and waits for `GameScene`
-- uses `/ui/invoke` on `/HudCanvas/UnitSummonUi/SlotRow/UnitSlotTemplate(Clone)` as the stable summon trigger
-- verifies `BattleEntity(Clone)` appears under `/RuntimeRoot/UnitsRoot/`
-- captures `artifacts/unity/game-scene-summon-smoke.png` and `artifacts/unity/game-scene-summon-smoke-result.json`
+`Invoke-GarageReadyFlowSmoke.ps1` is no longer a required regression gate.
+Keep it only as an optional supervised script when investigating Ready/Save UX, and prefer EditMode tests for those rules.
 
 ## Notes
 
 - The bridge is editor-only and auto-starts on script reload.
 - Screenshot capture requires Play Mode and a project-relative output path.
 - `ui/button/invoke` remains as a legacy alias, but new consumers should use `ui/invoke`.
-- `server.js` now exposes the stable manual-automation routes directly as MCP tools.
+- `server.js` continues to expose the stable manual-automation routes as MCP tools.

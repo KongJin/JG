@@ -1,0 +1,5 @@
+interface:
+  display_name: "JG Unity Workflow"
+  short_description: "Use JG-specific Unity, MCP, and scene contract rules"
+  default_prompt: "Use $jg-unity-workflow to follow the JG project's Unity, MCP, and scene contract workflow before making changes."
+

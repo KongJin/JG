@@ -485,14 +485,14 @@ function Get-RuleHarnessClaudeReferencedDocs {
         [string]$RepoRoot
     )
 
-    $claude = Join-Path $RepoRoot 'CLAUDE.md'
+    $claude = Join-Path $RepoRoot 'AGENTS.md'
     if (-not (Test-Path -LiteralPath $claude)) {
         return @()
     }
 
     $docs = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     foreach ($target in Get-RuleHarnessMarkdownTargets -Content (Get-Content -Path $claude -Raw)) {
-        $resolved = Resolve-RuleHarnessTargetPath -RepoRoot $RepoRoot -SourcePath 'CLAUDE.md' -Target $target
+        $resolved = Resolve-RuleHarnessTargetPath -RepoRoot $RepoRoot -SourcePath 'AGENTS.md' -Target $target
         if ($null -ne $resolved) {
             [void]$docs.Add($resolved.RelativePath)
         }
@@ -509,10 +509,10 @@ function Get-RuleHarnessPreferredClaudeDoc {
         [string[]]$Keywords
     )
 
-    $claude = Join-Path $RepoRoot 'CLAUDE.md'
+    $claude = Join-Path $RepoRoot 'AGENTS.md'
     $referencedDocs = @(Get-RuleHarnessClaudeReferencedDocs -RepoRoot $RepoRoot)
     if (-not (Test-Path -LiteralPath $claude)) {
-        return 'CLAUDE.md'
+        return 'AGENTS.md'
     }
 
     $keywordPattern = if (@($Keywords).Count -gt 0) {
@@ -542,7 +542,7 @@ function Get-RuleHarnessPreferredClaudeDoc {
         }
 
         foreach ($target in $candidateTargets) {
-            $resolved = Resolve-RuleHarnessTargetPath -RepoRoot $RepoRoot -SourcePath 'CLAUDE.md' -Target $target
+            $resolved = Resolve-RuleHarnessTargetPath -RepoRoot $RepoRoot -SourcePath 'AGENTS.md' -Target $target
             if ($null -ne $resolved -and $resolved.Exists) {
                 return $resolved.RelativePath
             }
@@ -557,7 +557,7 @@ function Get-RuleHarnessPreferredClaudeDoc {
         }
     }
 
-    return 'CLAUDE.md'
+    return 'AGENTS.md'
 }
 
 function Get-RuleHarnessArchitectureOwnerDoc {
@@ -624,7 +624,7 @@ function Test-RuleHarnessGlobalRuleDoc {
     )
 
     $normalized = $RelativePath.Replace('\', '/')
-    if ($normalized -eq 'CLAUDE.md') {
+    if ($normalized -eq 'AGENTS.md') {
         return $true
     }
 
@@ -1509,7 +1509,7 @@ function Get-RuleHarnessCycleRepairPolicySnapshot {
         [string]$RepoRoot
     )
 
-    $claudePath = 'CLAUDE.md'
+    $claudePath = 'AGENTS.md'
     $architectureDoc = Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot
     $antiPatternsDoc = Get-RuleHarnessAntiPatternsOwnerDoc -RepoRoot $RepoRoot
     $eventRulesDoc = Get-RuleHarnessEventRulesOwnerDoc -RepoRoot $RepoRoot
@@ -2712,7 +2712,7 @@ function Invoke-RuleHarnessFeatureDependencyRepair {
                     -Confidence 'high' `
                     -Source 'static' `
                     -RemediationKind 'report_only' `
-                    -Rationale 'Cycle repair follows CLAUDE.md -> owner doc -> code. When the seam is ambiguous or doc constraints do not allow the recipe, the run fails after collecting all unsupported cycles.'
+                    -Rationale 'Cycle repair follows AGENTS.md -> owner doc -> code. When the seam is ambiguous or doc constraints do not allow the recipe, the run fails after collecting all unsupported cycles.'
                 Set-RuleHarnessObjectProperty -Object $finding -Name 'blockedByDocRules' -Value @($primaryFailure.blockedByDocRules)
                 Set-RuleHarnessObjectProperty -Object $finding -Name 'blockedByCodeAmbiguity' -Value @($primaryFailure.blockedByCodeAmbiguity)
                 Set-RuleHarnessObjectProperty -Object $finding -Name 'blockedBySafety' -Value @($primaryFailure.blockedBySafety)
@@ -2780,7 +2780,7 @@ function Invoke-RuleHarnessFeatureDependencyRepair {
                 -Kind 'expand-cycle-repair-recipe' `
                 -Severity 'high' `
                 -Summary 'Extend automatic cycle repair coverage' `
-                -Details ("Rule harness collected {0} unsupported cycle(s) after applying CLAUDE.md -> owner doc -> code policy ordering." -f $unsupportedCycles.Count) `
+                -Details ("Rule harness collected {0} unsupported cycle(s) after applying AGENTS.md -> owner doc -> code policy ordering." -f $unsupportedCycles.Count) `
                 -RelatedPaths @($architectureOwnerDoc, (Get-RuleHarnessFeatureDependencyReportPath -RepoRoot $RepoRoot -Config $Config).relativePath)))
 
             return (New-RuleHarnessFeatureDependencyRepairResult `
@@ -4191,7 +4191,7 @@ function Get-RuleHarnessScopeInfo {
         [string[]]$TargetFiles = @()
     )
 
-    $scopePath = if (-not [string]::IsNullOrWhiteSpace($OwnerDoc)) { [string]$OwnerDoc } elseif (@($TargetFiles).Count -gt 0) { [string]$TargetFiles[0] } else { 'CLAUDE.md' }
+    $scopePath = if (-not [string]::IsNullOrWhiteSpace($OwnerDoc)) { [string]$OwnerDoc } elseif (@($TargetFiles).Count -gt 0) { [string]$TargetFiles[0] } else { 'AGENTS.md' }
     $scopeType = 'global'
     $promotionTarget = $scopePath
     $architectureDoc = if (-not [string]::IsNullOrWhiteSpace($RepoRoot)) { Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot } else { $null }
@@ -4200,17 +4200,17 @@ function Get-RuleHarnessScopeInfo {
 
     if ($scopePath -like 'Assets/Scripts/Features/*' -or $scopePath -like 'Assets/Scripts/Shared/*') {
         $scopeType = 'global'
-        $promotionTarget = if ([string]::IsNullOrWhiteSpace($architectureDoc)) { 'CLAUDE.md' } else { $architectureDoc }
+        $promotionTarget = if ([string]::IsNullOrWhiteSpace($architectureDoc)) { 'AGENTS.md' } else { $architectureDoc }
     }
     elseif ($scopePath -like 'Assets/Editor/UnityMcp/*') {
         $scopeType = 'global'
-        $promotionTarget = if ([string]::IsNullOrWhiteSpace($unityMcpDoc)) { 'CLAUDE.md' } else { $unityMcpDoc }
+        $promotionTarget = if ([string]::IsNullOrWhiteSpace($unityMcpDoc)) { 'AGENTS.md' } else { $unityMcpDoc }
     }
     elseif (-not [string]::IsNullOrWhiteSpace($RepoRoot) -and (Test-RuleHarnessGlobalRuleDoc -RepoRoot $RepoRoot -RelativePath $scopePath)) {
         $scopeType = 'global'
-        if ($scopePath -eq $architectureDoc -or $scopePath -eq 'CLAUDE.md') {
-            if ([string]::IsNullOrWhiteSpace($governanceDoc) -or $governanceDoc -eq 'CLAUDE.md' -or $governanceDoc -eq $scopePath) {
-                $promotionTarget = if ([string]::IsNullOrWhiteSpace($architectureDoc)) { 'CLAUDE.md' } else { $architectureDoc }
+        if ($scopePath -eq $architectureDoc -or $scopePath -eq 'AGENTS.md') {
+            if ([string]::IsNullOrWhiteSpace($governanceDoc) -or $governanceDoc -eq 'AGENTS.md' -or $governanceDoc -eq $scopePath) {
+                $promotionTarget = if ([string]::IsNullOrWhiteSpace($architectureDoc)) { 'AGENTS.md' } else { $architectureDoc }
             }
             else {
                 $promotionTarget = $governanceDoc
@@ -4220,9 +4220,9 @@ function Get-RuleHarnessScopeInfo {
             $promotionTarget = $scopePath
         }
     }
-    elseif ($scopePath -eq 'CLAUDE.md') {
+    elseif ($scopePath -eq 'AGENTS.md') {
         $scopeType = 'global'
-        $promotionTarget = if (-not [string]::IsNullOrWhiteSpace($RepoRoot)) { Get-RuleHarnessGovernanceOwnerDoc -RepoRoot $RepoRoot } else { 'CLAUDE.md' }
+        $promotionTarget = if (-not [string]::IsNullOrWhiteSpace($RepoRoot)) { Get-RuleHarnessGovernanceOwnerDoc -RepoRoot $RepoRoot } else { 'AGENTS.md' }
     }
     elseif ($scopePath -like 'tools/rule-harness/*') {
         $scopeType = 'harness'
@@ -4357,7 +4357,7 @@ function Get-RuleHarnessInferredStructuralChecks {
             name     = 'owner_doc_references_resolve'
             source   = 'inferred'
             runnable = $true
-            details  = 'CLAUDE.md and current global owner docs must keep valid markdown references.'
+            details  = 'AGENTS.md and current global owner docs must keep valid markdown references.'
         })
 
         $featureNames = @(Get-RuleHarnessBatchFeatureNames -Batch $Batch)
@@ -4774,17 +4774,17 @@ function Get-RuleHarnessBatchOwnershipAssessment {
             if (@($ownerDocs | Where-Object { $_ -ne $unityMcpOwnerDoc }).Count -gt 0) {
                 return [pscustomobject]@{
                     status = 'rejected'
-                    reason = "UnityMcp path '$normalized' requires the current Unity MCP rule doc referenced from CLAUDE.md."
+                    reason = "UnityMcp path '$normalized' requires the current Unity MCP rule doc referenced from AGENTS.md."
                 }
             }
             continue
         }
 
-        if ($normalized -eq 'CLAUDE.md') {
+        if ($normalized -eq 'AGENTS.md') {
             if ($Batch.kind -ne 'rule_fix' -or @($Batch.sourceFindingTypes | Where-Object { $_ -notin @('broken_reference', 'doc_drift') }).Count -gt 0) {
                 return [pscustomobject]@{
                     status = 'rejected'
-                    reason = 'CLAUDE.md only allows rule-fix batches backed by broken_reference or doc_drift findings.'
+                    reason = 'AGENTS.md only allows rule-fix batches backed by broken_reference or doc_drift findings.'
                 }
             }
             continue
@@ -4843,10 +4843,10 @@ function Get-RuleHarnessStaticFindings {
                 [void]$findings.Add((New-RuleHarnessFinding `
                     -FindingType 'broken_reference' `
                     -Severity $Config.severityPolicy.missingSsotReference `
-                    -OwnerDoc 'CLAUDE.md' `
+                    -OwnerDoc 'AGENTS.md' `
                     -Title 'Missing SSOT document' `
                     -Message "SSOT scope references a document that does not exist: $doc" `
-                    -Evidence @([pscustomobject]@{ path = 'CLAUDE.md'; line = $null; snippet = $doc }) `
+                    -Evidence @([pscustomobject]@{ path = 'AGENTS.md'; line = $null; snippet = $doc }) `
                     -RemediationKind 'rule_fix' `
                     -Rationale 'The missing path lives in the SSOT scope and should be corrected in documentation.'))
                 continue
@@ -5138,10 +5138,10 @@ function Get-RuleHarnessStaticFindings {
                 [void]$findings.Add((New-RuleHarnessFinding `
                     -FindingType 'broken_reference' `
                     -Severity $Config.severityPolicy.missingSsotReference `
-                    -OwnerDoc 'CLAUDE.md' `
+                    -OwnerDoc 'AGENTS.md' `
                     -Title 'Missing owner document' `
                     -Message "Current feature findings point at an owner doc that does not exist: $doc" `
-                    -Evidence @([pscustomobject]@{ path = 'CLAUDE.md'; line = $null; snippet = $doc }) `
+                    -Evidence @([pscustomobject]@{ path = 'AGENTS.md'; line = $null; snippet = $doc }) `
                     -RemediationKind 'rule_fix' `
                     -Rationale 'The owner doc path referenced from the current SSOT entrypoint is missing.'))
                 continue

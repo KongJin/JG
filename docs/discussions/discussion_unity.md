@@ -58,7 +58,7 @@
   ---
   4. 스킬 구조 문제 🏗️ 
 
-  .claude/skills/
+  .codex/skills/
     ├── rule-unity/SKILL.md          ✅ 있음
     ├── rule-architecture/SKILL.md     ✅ 있음
     ├── rule-operations/SKILL.md      ✅ 있음
@@ -67,7 +67,7 @@
 
   - 문제: 중앙 진입점 없음 - 통합된 규칙 시스템이 아님
   - 각 스킬이 독립적으로 작동하므로 규칙 간 우선순위/충돌 해결이 어려움
-  - CLAUDE.md가 유일한 진입점이지만 그것도 간접적임
+  - 루트 엔트리포인트 문서가 있더라도 규칙 체계가 간접적일 수 있음
 
   ---
   5. 규칙의 모호함 ❓

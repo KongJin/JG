@@ -12,12 +12,12 @@ namespace Features.Projectile.Domain.Hit
 
     public interface IHitResult
     {
-        void Apply(Projectile projectile);
+        void Apply(global::Features.Projectile.Domain.Projectile projectile);
     }
 
     public interface IHitResolver
     {
-        IHitResult Resolve(Projectile projectile);
+        IHitResult Resolve(global::Features.Projectile.Domain.Projectile projectile);
     }
 
     public static class HitResolverFactory
@@ -35,6 +35,7 @@ namespace Features.Projectile.Domain.Hit
         }
     }
 }
+
 
 
 

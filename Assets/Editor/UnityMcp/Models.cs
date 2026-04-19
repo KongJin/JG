@@ -310,12 +310,11 @@ namespace ProjectSD.EditorTools.UnityMcp
     }
 
     [Serializable]
-    internal sealed class CodexLobbyRebuildResponse
+    internal sealed class CodexLobbyContractResponse
     {
         public bool success;
         public string message;
         public string scenePath;
-        public string builderMethod;
         public bool sceneSaved;
         public string[] verifiedSentinels;
         public string[] missingSentinels;

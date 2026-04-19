@@ -1,9 +1,7 @@
 using Features.Account.Application.Ports;
 using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace Features.Account.Infrastructure
 {
@@ -11,37 +9,26 @@ namespace Features.Account.Infrastructure
     /// Firebase Auth REST API 어댑터.
     /// UnityWebRequest 사용 (WebGL 호환).
     /// </summary>
-    public sealed class FirebaseAuthRestAdapter : IAuthPort
+    public sealed class FirebaseAuthRestAdapter : IAuthPort, IAccountSessionAccess
     {
         private const string SignUpUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={0}";
         private const string SignInWithIdpUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key={0}";
         private const string TokenUrl = "https://securetoken.googleapis.com/v1/token?key={0}";
         private const string DeleteUrl = "https://identitytoolkit.googleapis.com/v1/accounts:delete?key={0}";
-        private const string IdTokenKey = "account.auth.idToken";
-        private const string RefreshTokenKey = "account.auth.refreshToken";
-        private const string UidKey = "account.auth.uid";
-        private const string TokenExpiryKey = "account.auth.expiryUnixMs";
 
         private readonly string _apiKey;
+        private readonly FirebaseAuthHttpClient _httpClient;
+        private readonly IAccountSessionStore _sessionStore;
         private string _currentIdToken;
         private string _currentRefreshToken;
         private string _currentUid;
         private long _tokenExpiryTimeMs;
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-        [DllImport("__Internal")]
-        private static extern void AccountStorage_SetItem(string key, string value);
-
-        [DllImport("__Internal")]
-        private static extern string AccountStorage_GetItem(string key);
-
-        [DllImport("__Internal")]
-        private static extern void AccountStorage_RemoveItem(string key);
-#endif
-
         public FirebaseAuthRestAdapter(string apiKey)
         {
             _apiKey = apiKey;
+            _httpClient = new FirebaseAuthHttpClient();
+            _sessionStore = new PlayerPrefsAccountSessionStore();
             RestoreSession();
         }
 
@@ -83,13 +70,8 @@ namespace Features.Account.Infrastructure
             string url = string.Format(SignUpUrl, _apiKey);
             string body = "{\"returnSecureToken\":true}";
 
-            var response = await PostAsync<SignUpResponse>(url, body);
-
-            _currentIdToken = response.idToken;
-            _currentRefreshToken = response.refreshToken;
-            _currentUid = response.localId;
-            _tokenExpiryTimeMs = ComputeExpiryTimeMs(response.expiresIn);
-            PersistSession();
+            var response = await _httpClient.PostJsonAsync<SignUpResponse>(url, body);
+            ApplySnapshot(FirebaseAuthResponseMapper.FromSignUpResponse(response));
             Debug.Log($"[FirebaseAuth] Created new anonymous session for uid={DescribeUid(_currentUid)}.");
 
             return BuildCurrentToken();
@@ -114,13 +96,8 @@ namespace Features.Account.Infrastructure
                 body = $"{{\"postBody\":\"{postBody}\",\"requestUri\":\"http://localhost\",\"idToken\":\"{currentIdToken}\",\"returnSecureToken\":true,\"returnIdpCredential\":true}}";
             }
 
-            var response = await PostAsync<SignInWithIdpResponse>(url, body);
-
-            _currentIdToken = response.idToken;
-            _currentRefreshToken = response.refreshToken;
-            _currentUid = response.localId;
-            _tokenExpiryTimeMs = ComputeExpiryTimeMs(response.expiresIn);
-            PersistSession();
+            var response = await _httpClient.PostJsonAsync<SignInWithIdpResponse>(url, body);
+            ApplySnapshot(FirebaseAuthResponseMapper.FromIdpResponse(response));
 
             return BuildCurrentToken();
         }
@@ -129,18 +106,8 @@ namespace Features.Account.Infrastructure
         {
             string url = string.Format(DeleteUrl, _apiKey);
 
-            using var request = new UnityWebRequest(url, "POST")
-            {
-                timeout = 10
-            };
-            request.SetRequestHeader("Content-Type", "application/json");
-
             string bodyJson = $"{{\"idToken\":\"{idToken}\"}}";
-            byte[] body = System.Text.Encoding.UTF8.GetBytes(bodyJson);
-            request.uploadHandler = new UploadHandlerRaw(body);
-            request.downloadHandler = new DownloadHandlerBuffer();
-
-            await SendRequest(request);
+            await _httpClient.PostJsonAsync(url, bodyJson);
         }
 
         private async Task RefreshToken()
@@ -153,28 +120,8 @@ namespace Features.Account.Infrastructure
             string url = string.Format(TokenUrl, _apiKey);
             string body = $"grant_type=refresh_token&refresh_token={_currentRefreshToken}";
 
-            using var request = new UnityWebRequest(url, "POST")
-            {
-                timeout = 10
-            };
-            request.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-            byte[] bodyBytes = System.Text.Encoding.UTF8.GetBytes(body);
-            request.uploadHandler = new UploadHandlerRaw(bodyBytes);
-            request.downloadHandler = new DownloadHandlerBuffer();
-
-            await SendRequest(request);
-
-            string json = request.downloadHandler.text;
-            var response = JsonUtility.FromJson<TokenResponse>(json);
-
-            _currentIdToken = response.id_token;
-            _currentRefreshToken = response.refresh_token;
-            if (!string.IsNullOrWhiteSpace(response.user_id))
-                _currentUid = response.user_id;
-
-            _tokenExpiryTimeMs = ComputeExpiryTimeMs(response.expires_in);
-            PersistSession();
+            var response = await _httpClient.PostFormAsync<TokenResponse>(url, body);
+            ApplySnapshot(FirebaseAuthResponseMapper.FromTokenResponse(response, _currentUid));
         }
 
         private async Task<bool> TryReusePersistedSession()
@@ -218,23 +165,13 @@ namespace Features.Account.Infrastructure
             };
         }
 
-        private static long ComputeExpiryTimeMs(string expiresInSecondsText)
-        {
-            if (long.TryParse(expiresInSecondsText, out long expiresInSeconds) && expiresInSeconds > 0)
-                return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + (expiresInSeconds * 1000L);
-
-            // Firebase Auth 기본 만료는 보통 1시간이므로 파싱 실패 시 보수적으로 55분 후 재갱신되게 둔다.
-            return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + (55L * 60L * 1000L);
-        }
-
         private void RestoreSession()
         {
-            _currentIdToken = GetPersistedValue(IdTokenKey);
-            _currentRefreshToken = GetPersistedValue(RefreshTokenKey);
-            _currentUid = GetPersistedValue(UidKey);
-
-            string expiryText = GetPersistedValue(TokenExpiryKey);
-            _tokenExpiryTimeMs = long.TryParse(expiryText, out long parsedExpiry) ? parsedExpiry : 0L;
+            var snapshot = _sessionStore.Load();
+            _currentIdToken = snapshot.IdToken;
+            _currentRefreshToken = snapshot.RefreshToken;
+            _currentUid = snapshot.Uid;
+            _tokenExpiryTimeMs = snapshot.ExpiryUnixMs;
 
             Debug.Log(
                 $"[FirebaseAuth] RestoreSession uid={DescribeUid(_currentUid)}, hasIdToken={HasValue(_currentIdToken)}, hasRefreshToken={HasValue(_currentRefreshToken)}, expiryMs={_tokenExpiryTimeMs}.");
@@ -242,75 +179,30 @@ namespace Features.Account.Infrastructure
 
         private void PersistSession()
         {
-            SetPersistedValue(IdTokenKey, _currentIdToken);
-            SetPersistedValue(RefreshTokenKey, _currentRefreshToken);
-            SetPersistedValue(UidKey, _currentUid);
-            SetPersistedValue(TokenExpiryKey, _tokenExpiryTimeMs.ToString());
-            PlayerPrefs.Save();
+            _sessionStore.Save(new AccountSessionSnapshot
+            {
+                IdToken = _currentIdToken,
+                RefreshToken = _currentRefreshToken,
+                Uid = _currentUid,
+                ExpiryUnixMs = _tokenExpiryTimeMs
+            });
 
             Debug.Log(
                 $"[FirebaseAuth] PersistSession uid={DescribeUid(_currentUid)}, hasIdToken={HasValue(_currentIdToken)}, hasRefreshToken={HasValue(_currentRefreshToken)}, expiryMs={_tokenExpiryTimeMs}.");
         }
 
-        private static void ClearPersistedSession()
+        private void ApplySnapshot(AccountSessionSnapshot snapshot)
         {
-            DeletePersistedValue(IdTokenKey);
-            DeletePersistedValue(RefreshTokenKey);
-            DeletePersistedValue(UidKey);
-            DeletePersistedValue(TokenExpiryKey);
-            PlayerPrefs.Save();
+            _currentIdToken = snapshot.IdToken;
+            _currentRefreshToken = snapshot.RefreshToken;
+            _currentUid = snapshot.Uid;
+            _tokenExpiryTimeMs = snapshot.ExpiryUnixMs;
+            PersistSession();
         }
 
-        private static string GetPersistedValue(string key)
+        private void ClearPersistedSession()
         {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            try
-            {
-                string webValue = AccountStorage_GetItem(key);
-                if (!string.IsNullOrEmpty(webValue))
-                    return webValue;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[FirebaseAuth] WebGL storage read failed for key={key}. {ex.Message}");
-            }
-#endif
-
-            return PlayerPrefs.GetString(key, string.Empty);
-        }
-
-        private static void SetPersistedValue(string key, string value)
-        {
-            string safeValue = value ?? string.Empty;
-
-            PlayerPrefs.SetString(key, safeValue);
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-            try
-            {
-                AccountStorage_SetItem(key, safeValue);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[FirebaseAuth] WebGL storage write failed for key={key}. {ex.Message}");
-            }
-#endif
-        }
-
-        private static void DeletePersistedValue(string key)
-        {
-            PlayerPrefs.DeleteKey(key);
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-            try
-            {
-                AccountStorage_RemoveItem(key);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[FirebaseAuth] WebGL storage delete failed for key={key}. {ex.Message}");
-            }
-#endif
+            _sessionStore.Clear();
         }
 
         private static bool HasValue(string value)
@@ -321,97 +213,6 @@ namespace Features.Account.Infrastructure
         private static string DescribeUid(string uid)
         {
             return string.IsNullOrWhiteSpace(uid) ? "<empty>" : uid;
-        }
-
-        private static async Task<T> PostAsync<T>(string url, string body)
-        {
-            using var request = new UnityWebRequest(url, "POST")
-            {
-                timeout = 15
-            };
-            request.SetRequestHeader("Content-Type", "application/json");
-
-            byte[] bodyBytes = System.Text.Encoding.UTF8.GetBytes(body);
-            request.uploadHandler = new UploadHandlerRaw(bodyBytes);
-            request.downloadHandler = new DownloadHandlerBuffer();
-
-            await SendRequest(request);
-
-            string json = request.downloadHandler.text;
-            return JsonUtility.FromJson<T>(json);
-        }
-
-        private static Task SendRequest(UnityWebRequest request)
-        {
-            return SendRequestInternal(request);
-        }
-
-        private static async Task SendRequestInternal(UnityWebRequest request)
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            const int timeoutMs = 30000; // 30초 타임아웃
-            var startTime = DateTime.UtcNow;
-
-            var operation = request.SendWebRequest();
-            operation.completed += _ =>
-            {
-                var elapsedTime = (int)(DateTime.UtcNow - startTime).TotalMilliseconds;
-
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    var error = request.error ?? "Unknown error";
-                    Debug.LogError($"[FirebaseAuth] Request failed ({elapsedTime}ms): {error} - {request.url}");
-                    tcs.TrySetException(new Exception($"[{elapsedTime}ms] {error}"));
-                    return;
-                }
-
-                Debug.Log($"[FirebaseAuth] Request succeeded ({elapsedTime}ms): {request.url}");
-                tcs.TrySetResult(true);
-            };
-
-            using var timeoutCts = new System.Threading.CancellationTokenSource();
-            var timeoutTask = Task.Delay(timeoutMs, timeoutCts.Token);
-            var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
-
-            if (completedTask == timeoutTask && !operation.isDone)
-            {
-                request.Abort();
-                tcs.TrySetException(new TimeoutException($"FirebaseAuth request timeout after {timeoutMs}ms: {request.url}"));
-            }
-
-            timeoutCts.Cancel();
-            await tcs.Task;
-        }
-
-        [Serializable]
-        private class SignUpResponse
-        {
-            public string idToken;
-            public string refreshToken;
-            public string localId;
-            public string expiresIn;
-        }
-
-        [Serializable]
-        private class SignInWithIdpResponse
-        {
-            public string idToken;
-            public string refreshToken;
-            public string localId;
-            public string expiresIn;
-            public string providerId;
-            public string displayName;
-            public bool isNewUser;
-        }
-
-        [Serializable]
-        private class TokenResponse
-        {
-            public string id_token;
-            public string refresh_token;
-            public string expires_in;
-            public string token_type;
-            public string user_id;
         }
     }
 }

@@ -1,19 +1,17 @@
 using Features.Lobby.Application.Ports;
-using UnityEngine.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Features.Lobby.Infrastructure
 {
     public sealed class SceneLoaderAdapter : ISceneLoaderPort
     {
-        private const string GameSceneName = "GameScene";
-
         public void LoadScene(string sceneName)
         {
             if (string.IsNullOrEmpty(sceneName))
             {
-                Debug.LogWarning("[SceneLoader] Scene name is empty, loading default GameScene.");
-                sceneName = GameSceneName;
+                Debug.LogWarning("[SceneLoader] Scene name is empty. Scene load request ignored.");
+                return;
             }
 
             Debug.Log($"[SceneLoader] Loading scene: {sceneName}");

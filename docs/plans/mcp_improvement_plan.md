@@ -1,15 +1,32 @@
 # Unity MCP Refactor Plan
 
-> Last updated: 2026-04-17
-> Status: in progress
+> Last updated: 2026-04-18
+> Status: active reference
 
 Unity MCP is not being retired. In this repo it is now defined as a `diagnostic + manual automation` tool.
+
+이 문서는 "무엇을 더 붙일까"보다 "무엇을 핵심으로 남길까"를 설명하는 운영 기준 문서다.
 
 ## Target Role
 
 - Keep `rule-harness` usage limited to compile/status refresh plus generic diagnostics.
 - Keep scene-specific runtime smoke out of harness scope.
-- Make Play/UI/screenshot flows stable enough for supervised manual automation such as Garage capture.
+- Keep supervised Play/UI/screenshot flows stable enough for repeatable runtime verification.
+- Treat `CodexLobbyScene.unity` as the Lobby/Garage runtime SSOT, not the builder output.
+
+## Current Validation Stack
+
+Lobby/Garage 기준 기본 검증 순서는 아래로 고정한다.
+
+1. contract / required-field audit
+2. EditMode or domain tests
+3. thin smoke
+
+핵심 원칙:
+
+- scene contract는 `wiring / sentinel roots / serialized refs`를 본다.
+- EditMode tests는 `Ready/Save`, roster validation, room rule, 초기 계산 같은 순수 규칙을 본다.
+- smoke는 끝까지 연결되는 핵심 사용자 흐름만 본다.
 
 ## Current Direction
 
@@ -59,7 +76,12 @@ Legacy compatibility:
 
 - `tools/unity-mcp/server.js` should expose stable Play/UI/screenshot routes directly as MCP tools.
 - `tools/unity-mcp/McpHelpers.ps1` should call stable routes and use explicit wait helpers for Play start/stop.
-- `tools/unity-mcp/Invoke-GarageManualSmoke.ps1` is the reference supervised smoke script.
+- `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1` is the required Lobby/Garage entrypoint.
+- `tools/unity-mcp/Invoke-LobbyGaragePageSwitchSmoke.ps1` is the canonical runtime smoke script.
+- `tools/unity-mcp/Invoke-GameSceneSummonSmoke.ps1` is the retained feature smoke for lobby-to-game bootstrap.
+- `Invoke-GarageReadyFlowSmoke.ps1` is optional supervised coverage only and no longer a required regression gate.
+- Lobby/Garage repair is scene-owned: verify contract first, then use MCP scene/prefab edits instead of builder-style full regeneration.
+- Open scene on-disk overwrite is out of policy. If a direct `.unity` restore is unavoidable, switch scenes or close Unity before touching the file.
 
 ### 4. Route Tiers
 
@@ -86,21 +108,14 @@ Diagnostic / experimental:
 
 ## Acceptance Checks
 
-- Play lifecycle succeeds in sequence:
-  - `play/start`
-  - `play/wait-for-play`
-  - `play/stop`
-  - `play/wait-for-stop`
-- Garage manual automation succeeds in sequence:
-  - open `Assets/Scenes/CodexLobbyScene.unity`
-  - enter Play Mode
-  - invoke `GarageTabButton`
-  - wait for `GaragePageRoot`
-  - capture screenshot
-  - exit Play Mode
-- Wrapper, helpers, and docs describe the same stable/manual/experimental split.
+- compile-clean succeeds
+- `GET /scene/verify-codex-lobby-contract` succeeds
+- workflow gate succeeds
+- page-switch smoke succeeds
+- docs, helpers, and remaining smoke scripts describe the same core path
 
 ## Notes
 
 - The goal is not unlimited scene automation.
 - The goal is a reliable supervised workflow for diagnosis and repeatable runtime capture.
+- Decorative UI hierarchy, child label paths, and ad hoc debug snapshots are intentionally out of the canonical smoke contract.

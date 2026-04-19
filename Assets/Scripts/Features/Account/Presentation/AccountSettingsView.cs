@@ -179,7 +179,12 @@ namespace Features.Account.Presentation
             }
         }
 
-        private async void OnNicknameApplyClicked()
+        private void OnNicknameApplyClicked()
+        {
+            _ = RunNicknameApplyAsync();
+        }
+
+        private async System.Threading.Tasks.Task RunNicknameApplyAsync()
         {
             if (_setup == null || _nicknameInput == null) return;
 
@@ -236,7 +241,12 @@ namespace Features.Account.Presentation
         }
 #endif
 
-        private async void OnConfirmYesClicked()
+        private void OnConfirmYesClicked()
+        {
+            _ = RunConfirmYesAsync();
+        }
+
+        private async System.Threading.Tasks.Task RunConfirmYesAsync()
         {
             if (_confirmDialog != null) _confirmDialog.SetActive(false);
             if (_setup == null) return;

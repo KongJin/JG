@@ -61,6 +61,7 @@ namespace Features.Wave
         private WaveLoopUseCase _waveLoop;
         private ICoreObjectiveQuery _coreObjectiveQuery;
         private HostilePositionQuery _hostilePositionQuery;
+        private readonly WaveEnemyArrivalCoordinator _enemyArrivalCoordinator = new();
         private bool _initialized;
         private bool _gameStarted;
 
@@ -150,7 +151,7 @@ namespace Features.Wave
             );
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _coreHealthView));
 
-            EnemySetup.EnemyArrived += OnEnemyArrived;
+            _enemyArrivalCoordinator.Attach(this, OnEnemyArrived);
 
             if (PhotonNetwork.IsMasterClient)
                 _networkAdapter.ResetRoomPropertiesForNewMatch();
@@ -235,7 +236,7 @@ namespace Features.Wave
 
         private void OnDestroy()
         {
-            EnemySetup.EnemyArrived -= OnEnemyArrived;
+            _enemyArrivalCoordinator.Detach(OnEnemyArrived);
             _disposables?.Dispose();
         }
     }

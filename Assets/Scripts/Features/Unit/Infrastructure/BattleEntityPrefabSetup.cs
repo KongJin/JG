@@ -20,8 +20,6 @@ namespace Features.Unit.Infrastructure
     /// </summary>
     public sealed class BattleEntityPrefabSetup : MonoBehaviourPunCallbacks, IPunInstantiateMagicCallback
     {
-        public static event System.Action<BattleEntityPrefabSetup> BattleEntityArrived;
-
         [Required, SerializeField] private MonoBehaviour _view;
         [Required, SerializeField] private BattleEntityPhotonController _photonController;
         [Required, SerializeField] private EntityIdHolder _entityIdHolder;
@@ -53,7 +51,6 @@ namespace Features.Unit.Infrastructure
                 _pendingInitialHp = initialHp;
             }
 
-            BattleEntityArrived?.Invoke(this);
         }
 
         private string _pendingUnitId;

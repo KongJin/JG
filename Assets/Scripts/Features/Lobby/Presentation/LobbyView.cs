@@ -74,6 +74,10 @@ namespace Features.Lobby.Presentation
         [Required, SerializeField]
         private RoomDetailView _roomDetailView;
 
+        [Header("Lobby Summary")]
+        [Required, SerializeField]
+        private LobbyGarageSummaryView _garageSummaryView;
+
         [Header("Game Start")]
         [Required, SerializeField]
         private string _gameSceneName = "GameScene";
@@ -83,7 +87,8 @@ namespace Features.Lobby.Presentation
         private DisposableScope _disposables = new DisposableScope();
         private bool _tabsHooked;
         private bool _showingRoomDetail;
-        private bool _garageFocused;
+        private readonly LobbyPageStateController _pageStateController = new();
+        private readonly LobbySceneLoadCoordinator _sceneLoadCoordinator = new();
 
         public void Initialize(
             IEventSubscriber eventBus,
@@ -110,6 +115,7 @@ namespace Features.Lobby.Presentation
 
             _roomListView.Initialize(useCases, eventPublisher);
             _roomDetailView.Initialize(useCases, eventBus, eventPublisher);
+            _garageSummaryView.Initialize(eventBus);
             HookTabs();
 
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, this));
@@ -153,28 +159,19 @@ namespace Features.Lobby.Presentation
 
         public void RenderStartGame(RoomSnapshot room)
         {
-            Debug.Log($"[Lobby] Start game: {room.Name}");
-            _eventPublisher.Publish(new SceneLoadRequestedEvent(_gameSceneName));
+            _sceneLoadCoordinator.RequestGameSceneLoad(_eventPublisher, _gameSceneName, room.Name);
         }
 
         private void ShowRoomList()
         {
             _showingRoomDetail = false;
-
-            if (_roomListPanel != null)
-                _roomListPanel.SetActive(true);
-            if (_roomDetailPanel != null)
-                _roomDetailPanel.SetActive(false);
+            _pageStateController.ShowRoomList(_roomListPanel, _roomDetailPanel);
         }
 
         private void ShowRoomDetail()
         {
             _showingRoomDetail = true;
-
-            if (_roomListPanel != null)
-                _roomListPanel.SetActive(false);
-            if (_roomDetailPanel != null)
-                _roomDetailPanel.SetActive(true);
+            _pageStateController.ShowRoomDetail(_roomListPanel, _roomDetailPanel);
         }
 
         private void HookTabs()
@@ -192,30 +189,28 @@ namespace Features.Lobby.Presentation
 
         private void ShowLobbyPage()
         {
-            _garageFocused = false;
-            SetPageState(_lobbyPageRoot, _lobbyPageCanvasGroup, true);
-            SetPageState(_garagePageRoot, _garagePageCanvasGroup, false);
-
-            if (_showingRoomDetail)
-                ShowRoomDetail();
-            else
-                ShowRoomList();
-
-            UpdateTabState(true);
+            _pageStateController.ShowLobbyPage(
+                _lobbyPageRoot,
+                _lobbyPageCanvasGroup,
+                _garagePageRoot,
+                _garagePageCanvasGroup,
+                _roomListPanel,
+                _roomDetailPanel,
+                _showingRoomDetail,
+                UpdateTabState);
         }
 
         private void ShowGaragePage()
         {
-            _garageFocused = true;
-            SetPageState(_lobbyPageRoot, _lobbyPageCanvasGroup, false);
-            SetPageState(_garagePageRoot, _garagePageCanvasGroup, true);
-
-            if (_showingRoomDetail)
-                ShowRoomDetail();
-            else
-                ShowRoomList();
-
-            UpdateTabState(false);
+            _pageStateController.ShowGaragePage(
+                _lobbyPageRoot,
+                _lobbyPageCanvasGroup,
+                _garagePageRoot,
+                _garagePageCanvasGroup,
+                _roomListPanel,
+                _roomDetailPanel,
+                _showingRoomDetail,
+                UpdateTabState);
         }
 
         /// <summary>
@@ -228,10 +223,7 @@ namespace Features.Lobby.Presentation
 
         private void UpdateTabState(bool lobbyActive)
         {
-            if (_lobbyTabButton != null)
-                _lobbyTabButton.interactable = true;
-            if (_garageTabButton != null)
-                _garageTabButton.interactable = true;
+            _pageStateController.EnableNavigationButtons(_lobbyTabButton, _garageTabButton);
 
             // In page-switcher mode only one navigation button is visible on screen at a time,
             // so both buttons should read as clear actions instead of active/inactive tabs.
@@ -264,7 +256,7 @@ namespace Features.Lobby.Presentation
                 label.color = isActive ? _activeTextColor : _inactiveTextColor;
         }
 
-        private static void SetPageState(GameObject root, CanvasGroup group, bool isVisible)
+        internal static void SetPageState(GameObject root, CanvasGroup group, bool isVisible)
         {
             if (root != null)
                 root.SetActive(isVisible);
@@ -275,6 +267,77 @@ namespace Features.Lobby.Presentation
                 group.interactable = isVisible;
                 group.blocksRaycasts = isVisible;
             }
+        }
+    }
+
+    internal sealed class LobbyPageStateController
+    {
+        public void ShowLobbyPage(
+            GameObject lobbyRoot,
+            CanvasGroup lobbyGroup,
+            GameObject garageRoot,
+            CanvasGroup garageGroup,
+            GameObject roomListPanel,
+            GameObject roomDetailPanel,
+            bool showingRoomDetail,
+            System.Action<bool> updateTabState)
+        {
+            LobbyView.SetPageState(lobbyRoot, lobbyGroup, true);
+            LobbyView.SetPageState(garageRoot, garageGroup, false);
+            ApplyRoomPanelState(roomListPanel, roomDetailPanel, showingRoomDetail);
+            updateTabState?.Invoke(true);
+        }
+
+        public void ShowGaragePage(
+            GameObject lobbyRoot,
+            CanvasGroup lobbyGroup,
+            GameObject garageRoot,
+            CanvasGroup garageGroup,
+            GameObject roomListPanel,
+            GameObject roomDetailPanel,
+            bool showingRoomDetail,
+            System.Action<bool> updateTabState)
+        {
+            LobbyView.SetPageState(lobbyRoot, lobbyGroup, false);
+            LobbyView.SetPageState(garageRoot, garageGroup, true);
+            ApplyRoomPanelState(roomListPanel, roomDetailPanel, showingRoomDetail);
+            updateTabState?.Invoke(false);
+        }
+
+        public void ShowRoomList(GameObject roomListPanel, GameObject roomDetailPanel)
+        {
+            ApplyRoomPanelState(roomListPanel, roomDetailPanel, false);
+        }
+
+        public void ShowRoomDetail(GameObject roomListPanel, GameObject roomDetailPanel)
+        {
+            ApplyRoomPanelState(roomListPanel, roomDetailPanel, true);
+        }
+
+        public void EnableNavigationButtons(Button lobbyTabButton, Button garageTabButton)
+        {
+            if (lobbyTabButton != null)
+                lobbyTabButton.interactable = true;
+            if (garageTabButton != null)
+                garageTabButton.interactable = true;
+        }
+
+        private static void ApplyRoomPanelState(GameObject roomListPanel, GameObject roomDetailPanel, bool showingRoomDetail)
+        {
+            if (roomListPanel != null)
+                roomListPanel.SetActive(!showingRoomDetail);
+
+            if (roomDetailPanel != null)
+                roomDetailPanel.SetActive(showingRoomDetail);
+        }
+    }
+
+    internal sealed class LobbySceneLoadCoordinator
+    {
+        public void RequestGameSceneLoad(IEventPublisher eventPublisher, string sceneName, string roomName)
+        {
+            Debug.Log($"[Lobby] Start game: {roomName}");
+            eventPublisher?.Publish(new SceneLoadRequestedEvent(sceneName));
         }
     }
 }

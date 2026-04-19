@@ -7,8 +7,32 @@ namespace Features.Player
     public sealed class PlayerSceneRegistry : MonoBehaviour
     {
         private readonly Dictionary<string, PlayerSetup> _players = new();
+        private readonly Queue<PlayerSetup> _pendingArrivals = new();
+
+        public event System.Action<PlayerSetup> PlayerArrived;
 
         public IReadOnlyCollection<PlayerSetup> All => _players.Values;
+
+        public void NotifyArrived(PlayerSetup setup)
+        {
+            if (setup == null)
+            {
+                Debug.LogError("[PlayerSceneRegistry] Arrived PlayerSetup is missing.", this);
+                return;
+            }
+
+            _pendingArrivals.Enqueue(setup);
+            PlayerArrived?.Invoke(setup);
+        }
+
+        public void DrainPendingArrivals(System.Action<PlayerSetup> handler)
+        {
+            if (handler == null)
+                return;
+
+            while (_pendingArrivals.Count > 0)
+                handler(_pendingArrivals.Dequeue());
+        }
 
         public bool TryRegister(PlayerSetup setup)
         {

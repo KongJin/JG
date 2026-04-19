@@ -50,10 +50,11 @@ Phase 0~8의 세부 커밋과 작업 로그는 [`progress.md`](./progress.md)에
 
 현재 활성 TODO는 `progress.md`와 동일하게 아래 순서로 본다.
 
-1. `CodexLobbyScene -> GameScene` 실제 전환 smoke
-2. room roster restore -> unit spec compute -> summon slot render 검증
-3. placement area drag/drop과 wave/core loop 실제 Play Mode 검증
-4. 실제 멀티플레이어 smoke로 late-join, BattleEntity sync, Energy sync 확인
+1. placement area drag/drop과 wave/core loop 실제 Play Mode 검증
+2. 실제 멀티플레이어 smoke로 late-join, BattleEntity sync, Energy sync 확인
+3. GameScene bootstrap의 순수 전제 조건을 테스트 층으로 더 내릴 수 있는지 정리
+
+현재 기준으로 `CodexLobbyScene -> GameScene` 전환과 summon smoke는 이미 통과한 상태다.
 
 ---
 
@@ -61,4 +62,4 @@ Phase 0~8의 세부 커밋과 작업 로그는 [`progress.md`](./progress.md)에
 
 - GameScene 진입 관련 상세 진행률, 최근 커밋, 남은 TODO는 항상 [`progress.md`](./progress.md)에 먼저 반영한다.
 - 이 문서에는 이미 끝난 Phase의 세부 구현 순서나 오래된 “다음 액션” 체크리스트를 다시 복제하지 않는다.
-- 설계 기준은 [`../design/game_design.md`](../design/game_design.md), 전역 진입점은 [`../../CLAUDE.md`](../../CLAUDE.md)를 따른다.
+- 설계 기준은 [`../design/game_design.md`](../design/game_design.md), 루트 진입점은 [`../../AGENTS.md`](../../AGENTS.md)를 따른다.

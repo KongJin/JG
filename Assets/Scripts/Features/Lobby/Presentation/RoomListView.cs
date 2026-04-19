@@ -129,7 +129,12 @@ namespace Features.Lobby.Presentation
         private void UpdateListChrome(int roomCount)
         {
             if (_roomListCountText != null)
-                _roomListCountText.text = roomCount > 0 ? $"{roomCount} rooms" : "No open rooms";
+                _roomListCountText.text = roomCount switch
+                {
+                    <= 0 => "0 open rooms",
+                    1 => "1 open room",
+                    _ => $"{roomCount} open rooms",
+                };
 
             if (_roomListEmptyStateText != null)
                 _roomListEmptyStateText.gameObject.SetActive(roomCount <= 0);

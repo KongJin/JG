@@ -17,7 +17,8 @@
 ## 🚨 치명적 (CRITICAL) — 즉시 해결 필요
 
 ### ~~1. **아키텍처 위반: `GetComponent` 사용~~ ✅ 해결됨
-- **해결**: `PlayerSetup.LocalArrived` static 이벤트 패턴으로 변경. `GameSceneRoot`가 `GetComponent` 없이 `_localPlayerSetup`을 받음.
+- **당시 조치**: `PlayerSetup.LocalArrived` static 이벤트 패턴으로 변경. `GameSceneRoot`가 `GetComponent` 없이 `_localPlayerSetup`을 받음.
+- **후속 재분류**: 이 static arrival seam은 당시 임시 복구였고, 현재 기준 SSOT에서는 scene-local registry / 명시적 bootstrap으로 낮춰서 본다.
 
 ### ~~2. **사망 코드: Mana 시스템 잔존~~ ✅ 해결됨
 - **해결**: `Player.cs`에서 `MaxMana`, `CurrentMana`, `SpendMana`, `RegenMana` 제거. `IPlayerNetworkCommandPort.cs`에서 `SyncMana` 제거. `PlayerNetworkAdapter.cs`에서 `SyncMana` 구현 제거. `ManaRegenTicker.cs` 파일 삭제.

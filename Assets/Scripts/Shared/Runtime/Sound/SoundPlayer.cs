@@ -30,6 +30,8 @@ namespace Shared.Runtime.Sound
         private readonly Dictionary<GameObject, PooledAudioSource> _cache =
             new Dictionary<GameObject, PooledAudioSource>();
 
+        public bool HasRuntimeDependencies => audioSourcePrefab != null && catalog != null;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -42,8 +44,27 @@ namespace Shared.Runtime.Sound
             DontDestroyOnLoad(gameObject);
         }
 
+        public void ApplyRuntimeConfig(SoundPlayerRuntimeConfig config)
+        {
+            if (config == null)
+            {
+                Debug.LogError("[SoundPlayer] Runtime config is missing.", this);
+                return;
+            }
+
+            audioSourcePrefab = config.AudioSourcePrefab;
+            catalog = config.Catalog;
+            initialPoolSize = config.InitialPoolSize;
+        }
+
         public void Initialize(IEventSubscriber eventBus, string localPlayerId)
         {
+            if (!HasRuntimeDependencies)
+            {
+                Debug.LogError("[SoundPlayer] Audio dependencies are missing. Assign serialized references or apply a runtime config before Initialize.", this);
+                return;
+            }
+
             ReleasePooledChildrenAndClearState();
 
             _eventBus = eventBus;

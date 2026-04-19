@@ -1,5 +1,6 @@
 using Features.Account;
 using Features.Account.Application;
+using Features.Account.Application.Ports;
 using Features.Account.Presentation;
 using Features.Garage;
 using Features.Garage.Application.Ports;
@@ -61,6 +62,8 @@ public sealed class LobbySetup : MonoBehaviour
     private Features.Account.Domain.AccountProfile _currentAccountProfile;
     private AccountData _loadedAccountData;
     private bool _isSigningIn;
+    private readonly LobbyAccountBootstrapFlow _accountBootstrapFlow = new();
+    private readonly LobbySceneInitializationFlow _sceneInitializationFlow = new();
 
     private void Awake()
     {
@@ -96,31 +99,19 @@ public sealed class LobbySetup : MonoBehaviour
 
         try
         {
-            for (int attempt = 1; attempt <= MaxAutoSignInAttempts; attempt++)
-            {
-                try
+            var signInResult = await _accountBootstrapFlow.RunAnonymousSignInAsync(
+                _accountSetup,
+                _loginLoadingView,
+                MaxAutoSignInAttempts,
+                async profile =>
                 {
-                    var result = await _accountSetup.SignInAnonymously.Execute();
-                    if (result.IsSuccess)
-                    {
-                        _currentAccountProfile = result.Value;
-                        await LoadSignedInAccount();
-                        _loginLoadingView.OnLoginSuccess();
-                        return;
-                    }
+                    _currentAccountProfile = profile;
+                    await LoadSignedInAccount();
+                    _loginLoadingView.OnLoginSuccess();
+                });
 
-                    _loginLoadingView.OnLoginFailed(result.Error ?? "Unknown error");
-                }
-
-                catch (System.Exception ex)
-                {
-                    Debug.LogError($"[LobbySetup] Anonymous sign-in failed: {ex.Message}");
-                    _loginLoadingView.OnLoginFailed(ex.Message);
-                }
-
-                if (attempt < MaxAutoSignInAttempts)
-                    await System.Threading.Tasks.Task.Delay(1000);
-            }
+            if (signInResult.HasProfile)
+                _currentAccountProfile = signInResult.Profile;
         }
         finally
         {
@@ -161,42 +152,17 @@ public sealed class LobbySetup : MonoBehaviour
 
     private void InitializeLobby()
     {
-        var repository = new LobbyRepository();
-        var network = _photonAdapter;
-        var clock = new ClockAdapter();
+        var initializedScene = _sceneInitializationFlow.Initialize(
+            _eventBus,
+            _view,
+            _photonAdapter,
+            _soundPlayer,
+            _unitSetup,
+            _garageSetup,
+            _accountSetup?.DataPort,
+            ApplyLoadedAccountSettings);
 
-        _syncHandler = new LobbyNetworkEventHandler(repository, _eventBus, network);
-
-        var useCases = new LobbyUseCases(repository, network, clock);
-
-        _soundPlayer.Initialize(_eventBus, SoundPlayer.LobbyOwnerId);
-        ApplyLoadedAccountSettings();
-
-        _view.Initialize(_eventBus, _eventBus, useCases);
-        _eventBus.Publish(new LobbyUpdatedEvent(repository.LoadLobby() ?? new DomainLobby()));
-
-        if (_unitSetup != null)
-            _unitSetup.Initialize(_eventBus);
-
-        if (_garageSetup != null)
-        {
-            if (_unitSetup == null)
-            {
-                Debug.LogWarning(
-                    "[LobbySetup] GarageSetup is assigned but UnitSetup is missing. Garage initialization is skipped.",
-                    this
-                );
-            }
-            else
-            {
-                _garageSetup.Initialize(
-                    _eventBus,
-                    _unitSetup.CompositionPort,
-                    _unitSetup.Catalog,
-                    _accountSetup?.DataPort
-                );
-            }
-        }
+        _syncHandler = initializedScene.SyncHandler;
 
         InitializeAccountSettingsView();
     }
@@ -259,5 +225,112 @@ public sealed class LobbySetup : MonoBehaviour
         _accountSetup?.Cleanup();
         _garageSetup?.Cleanup();
         _unitSetup?.Cleanup();
+    }
+}
+
+internal sealed class LobbyAccountBootstrapFlow
+{
+    public async System.Threading.Tasks.Task<LobbySignInResult> RunAnonymousSignInAsync(
+        AccountSetup accountSetup,
+        LoginLoadingView loginLoadingView,
+        int maxAttempts,
+        System.Func<Features.Account.Domain.AccountProfile, System.Threading.Tasks.Task> onSuccess)
+    {
+        for (int attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            try
+            {
+                var result = await accountSetup.SignInAnonymously.Execute();
+                if (result.IsSuccess)
+                {
+                    await onSuccess(result.Value);
+                    return LobbySignInResult.Success(result.Value);
+                }
+
+                loginLoadingView.OnLoginFailed(result.Error ?? "Unknown error");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[LobbySetup] Anonymous sign-in failed: {ex.Message}");
+                loginLoadingView.OnLoginFailed(ex.Message);
+            }
+
+            if (attempt < maxAttempts)
+                await System.Threading.Tasks.Task.Delay(1000);
+        }
+
+        return LobbySignInResult.None();
+    }
+}
+
+internal readonly struct LobbySignInResult
+{
+    public Features.Account.Domain.AccountProfile Profile { get; }
+    public bool HasProfile { get; }
+
+    private LobbySignInResult(Features.Account.Domain.AccountProfile profile, bool hasProfile)
+    {
+        Profile = profile;
+        HasProfile = hasProfile;
+    }
+
+    public static LobbySignInResult Success(Features.Account.Domain.AccountProfile profile) => new(profile, true);
+    public static LobbySignInResult None() => new(null, false);
+}
+
+internal sealed class LobbySceneInitializationFlow
+{
+    public LobbySceneInitializationResult Initialize(
+        EventBus eventBus,
+        LobbyView view,
+        LobbyPhotonAdapter photonAdapter,
+        SoundPlayer soundPlayer,
+        UnitSetup unitSetup,
+        GarageSetup garageSetup,
+        IAccountDataPort accountDataPort,
+        System.Action applyLoadedAccountSettings)
+    {
+        var repository = new LobbyRepository();
+        var clock = new ClockAdapter();
+        var syncHandler = new LobbyNetworkEventHandler(repository, eventBus, photonAdapter);
+        var useCases = new LobbyUseCases(repository, photonAdapter, clock);
+
+        soundPlayer.Initialize(eventBus, SoundPlayer.LobbyOwnerId);
+        applyLoadedAccountSettings?.Invoke();
+
+        view.Initialize(eventBus, eventBus, useCases);
+        eventBus.Publish(new LobbyUpdatedEvent(repository.LoadLobby() ?? new DomainLobby()));
+
+        if (unitSetup != null)
+            unitSetup.Initialize(eventBus);
+
+        if (garageSetup != null)
+        {
+            if (unitSetup == null)
+            {
+                Debug.LogWarning(
+                    "[LobbySetup] GarageSetup is assigned but UnitSetup is missing. Garage initialization is skipped.");
+            }
+            else
+            {
+                garageSetup.Initialize(
+                    eventBus,
+                    unitSetup.CompositionPort,
+                    unitSetup.Catalog,
+                    accountDataPort);
+            }
+        }
+
+        return new LobbySceneInitializationResult(syncHandler);
+    }
+}
+
+internal readonly struct LobbySceneInitializationResult
+{
+    public LobbyNetworkEventHandler SyncHandler { get; }
+
+    public LobbySceneInitializationResult(LobbyNetworkEventHandler syncHandler)
+    {
+        SyncHandler = syncHandler;
     }
 }

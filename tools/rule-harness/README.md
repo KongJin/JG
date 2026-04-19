@@ -4,8 +4,8 @@
 
 기본 기준 문서:
 
-- `CLAUDE.md`
-- `CLAUDE.md` 가 직접 가리키는 global owner docs
+- `AGENTS.md`
+- `AGENTS.md` 가 직접 가리키는 global owner docs
 - 실제 `Setup` / `Bootstrap` 와 관련 코드 경로
 
 ## 로컬 실행
@@ -36,8 +36,12 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-rule-harness.p
 - `failed`: feature dependency cycle이 있거나 report가 손상됐다.
 - `unsupported`: 현재 repo snapshot에 LayerDependencyValidator 소스가 없어 gate를 적용하지 않았다.
 
+`LayerDependencyAnalyzer` 는 구조 gate다. 즉 layer violation, feature edge, cycle 같은 `static-clean` 문제를 담당한다.
+행동 회귀는 여기서 대체하지 않는다. 정책, mapper, serializer, presenter 로직은 direct EditMode 테스트가 별도로 보호해야 한다.
+이 레포의 editor 테스트는 별도 test `asmdef`를 두지 않고 `Assets/Editor/`의 predefined editor assembly에 둔다.
+
 feature dependency repair는 문서 우선순위를 고정한 채 동작한다.
-- 정책 우선순위: `CLAUDE.md -> owner docs -> code analysis`
+- 정책 우선순위: `AGENTS.md -> owner docs -> code analysis`
 - 문서 역할: `repair hint`, `safety constraint`, `preferred direction`
 - 실제 patch 가능 여부: 코드 분석으로 최종 확정
 - 문서가 모호하면 repair는 더 보수적으로 `unsupported` 로 남긴다.
@@ -140,7 +144,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 
 - code/mixed batch도 별도 runner 없이 repair loop에 들어갈 수 있다.
 - 검증 계획은 이제 하네스 내부 추론만으로 계산된다.
-  1. `CLAUDE.md`, 현재 global owner docs, 실제 `Setup` / `Bootstrap`, 코드 구조에서 inferred check를 만든다.
+  1. `AGENTS.md`, 현재 global owner docs, 실제 `Setup` / `Bootstrap`, 코드 구조에서 inferred check를 만든다.
   2. `Tests/<Feature>/` 아래 기존 test asset 존재 여부를 confidence 신호로만 쓴다.
   3. 하네스 fixture test와 static scan으로 결과를 확인한다.
 - `discoveredValidationPlan` 은 스크립트 목록 대신 아래 정보만 남긴다.
@@ -152,7 +156,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 - code/mixed batch의 기본 confidence는 보수적으로 계산한다. feature test asset이 없거나, UnityMcp/scene/prefab 범위를 건드리거나, cross-feature 범위가 넓으면 `low` 로 내려간다.
 - `low` confidence code/mixed batch는 auto-apply 대신 `manual-validation-required` 로 skip된다.
 - runtime smoke는 자동 하네스 범위 밖으로 공식 분리됐다. 관련 범위는 `manual-validation-required` 와 `docs/playtest/runtime_validation_checklist.md` 기록으로 넘긴다.
-- advisory memory는 `tools/rule-harness/memory/advisory-memory.json` 에 저장되며 SSOT가 아니다. prompt/판단 우선순위는 항상 `CLAUDE.md -> owner docs -> advisory memory -> current failure context` 순서다.
+- advisory memory는 `tools/rule-harness/memory/advisory-memory.json` 에 저장되며 SSOT가 아니다. prompt/판단 우선순위는 항상 `AGENTS.md -> owner docs -> advisory memory -> current failure context` 순서다.
 
 ## 보고서 확인
 

@@ -16,8 +16,6 @@ namespace Features.Enemy
 {
     public sealed class EnemySetup : MonoBehaviour, IPunInstantiateMagicCallback
     {
-        public static event System.Action<EnemySetup> EnemyArrived;
-
         [Required, SerializeField] private EnemyNetworkAdapter _networkAdapter;
         [Required, SerializeField] private EnemyAiAdapter _aiAdapter;
         [Required, SerializeField] private EnemyView _view;
@@ -32,7 +30,14 @@ namespace Features.Enemy
 
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
         {
-            EnemyArrived?.Invoke(this);
+            var registry = UnityEngine.Object.FindFirstObjectByType<EnemySceneRegistry>();
+            if (registry == null)
+            {
+                Debug.LogWarning("[EnemySetup] EnemySceneRegistry not found. Arrival fallback is unavailable.", this);
+                return;
+            }
+
+            registry.NotifyArrived(this);
         }
 
         public void Initialize(

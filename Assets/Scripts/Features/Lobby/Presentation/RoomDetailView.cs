@@ -67,6 +67,7 @@ namespace Features.Lobby.Presentation
         private string _garageReadyBlockReason;
         private bool _callbacksHooked;
         private readonly List<GameObject> _activeItems = new();
+        private readonly LobbyReadyPolicyController _readyPolicy = new();
 
         public void Initialize(LobbyUseCases useCases, IEventSubscriber eventSubscriber, IEventPublisher eventPublisher)
         {
@@ -174,11 +175,11 @@ namespace Features.Lobby.Presentation
             if (!HasRoomMemberContext())
                 return;
 
-            if (!_garageReadyEligible && !_localIsReady)
+            if (!_readyPolicy.CanToggleReady(_garageReadyEligible, _localIsReady))
             {
                 UiErrorResultBridge.PublishBannerIfFailure(
                     _eventPublisher,
-                    Result.Failure(_garageReadyBlockReason ?? "Ready requires a saved Garage roster."),
+                    Result.Failure(_readyPolicy.BuildBlockReason(_garageReadyBlockReason)),
                     "Lobby");
                 return;
             }
@@ -202,19 +203,9 @@ namespace Features.Lobby.Presentation
 
         private void HandleGarageRosterChanged(Features.Garage.Domain.GarageRoster roster)
         {
-            _garageReadyEligible = roster != null && roster.IsValid && !_garageHasUnsavedChanges;
-            _garageReadyBlockReason = _garageHasUnsavedChanges
-                ? "Unsaved Garage changes"
-                : _garageReadyEligible
-                    ? "Ready available"
-                    : "Need at least 3 saved units";
-
-            if (!_garageReadyEligible && _localIsReady && HasRoomMemberContext())
-            {
-                var result = _useCases.SetReady(_currentRoomId, _localMemberId, false);
-                UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
-                _localIsReady = false;
-            }
+            _garageReadyEligible = _readyPolicy.ComputeReadyEligible(roster, _garageHasUnsavedChanges);
+            _garageReadyBlockReason = _readyPolicy.BuildRosterBlockReason(roster, _garageHasUnsavedChanges, _garageReadyEligible);
+            TryRelockReadyIfNeeded();
 
             UpdateReadyButtonState();
         }
@@ -223,14 +214,8 @@ namespace Features.Lobby.Presentation
         {
             _garageHasUnsavedChanges = e.HasUnsavedChanges;
             _garageReadyEligible = e.ReadyEligible;
-            _garageReadyBlockReason = e.BlockReason;
-
-            if (!_garageReadyEligible && _localIsReady && HasRoomMemberContext())
-            {
-                var result = _useCases.SetReady(_currentRoomId, _localMemberId, false);
-                UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
-                _localIsReady = false;
-            }
+            _garageReadyBlockReason = _readyPolicy.BuildDraftBlockReason(e.BlockReason, _garageHasUnsavedChanges, _garageReadyEligible);
+            TryRelockReadyIfNeeded();
 
             UpdateReadyButtonState();
         }
@@ -248,11 +233,9 @@ namespace Features.Lobby.Presentation
 
             if (!_garageReadyEligible && !_localIsReady)
             {
-                _readyButtonText.text = _garageHasUnsavedChanges
-                    ? "Save Garage Draft"
-                    : string.IsNullOrWhiteSpace(_garageReadyBlockReason)
-                        ? "Need 3 Saved Units"
-                        : _garageReadyBlockReason;
+                _readyButtonText.text = _readyPolicy.BuildReadyButtonLabel(
+                    _garageHasUnsavedChanges,
+                    _garageReadyBlockReason);
                 return;
             }
 
@@ -265,9 +248,80 @@ namespace Features.Lobby.Presentation
                    !string.IsNullOrWhiteSpace(_localMemberId.Value);
         }
 
+        private void TryRelockReadyIfNeeded()
+        {
+            if (!_readyPolicy.ShouldForceRelock(_garageReadyEligible, _localIsReady, HasRoomMemberContext()))
+                return;
+
+            var result = _useCases.SetReady(_currentRoomId, _localMemberId, false);
+            UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
+            _localIsReady = false;
+        }
+
         private void OnDestroy()
         {
             _disposables.Dispose();
+        }
+    }
+
+    internal sealed class LobbyReadyPolicyController
+    {
+        public bool ComputeReadyEligible(Features.Garage.Domain.GarageRoster roster, bool hasUnsavedChanges)
+        {
+            return roster != null && roster.IsValid && !hasUnsavedChanges;
+        }
+
+        public bool CanToggleReady(bool readyEligible, bool localIsReady)
+        {
+            return readyEligible || localIsReady;
+        }
+
+        public bool ShouldForceRelock(bool readyEligible, bool localIsReady, bool hasRoomMemberContext)
+        {
+            return !readyEligible && localIsReady && hasRoomMemberContext;
+        }
+
+        public string BuildRosterBlockReason(Features.Garage.Domain.GarageRoster roster, bool hasUnsavedChanges, bool readyEligible)
+        {
+            if (hasUnsavedChanges)
+                return "Unsaved Garage changes";
+
+            if (readyEligible)
+                return "Ready available";
+
+            return roster != null && roster.Count > 0
+                ? "Need at least 3 saved units"
+                : "Need at least 3 saved units";
+        }
+
+        public string BuildDraftBlockReason(string eventBlockReason, bool hasUnsavedChanges, bool readyEligible)
+        {
+            if (hasUnsavedChanges)
+                return "Unsaved Garage changes";
+
+            if (readyEligible)
+                return "Ready available";
+
+            return string.IsNullOrWhiteSpace(eventBlockReason)
+                ? "Need at least 3 saved units"
+                : eventBlockReason;
+        }
+
+        public string BuildBlockReason(string currentReason)
+        {
+            return string.IsNullOrWhiteSpace(currentReason)
+                ? "Ready requires a saved Garage roster."
+                : currentReason;
+        }
+
+        public string BuildReadyButtonLabel(bool hasUnsavedChanges, string currentReason)
+        {
+            if (hasUnsavedChanges)
+                return "Save Garage Draft";
+
+            return string.IsNullOrWhiteSpace(currentReason)
+                ? "Need 3 Saved Units"
+                : currentReason;
         }
     }
 }

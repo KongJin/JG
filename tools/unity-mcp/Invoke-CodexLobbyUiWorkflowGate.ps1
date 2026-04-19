@@ -11,27 +11,8 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot\McpHelpers.ps1"
 
-function Resolve-AbsolutePath {
-    param([string]$PathValue)
-
-    if ([System.IO.Path]::IsPathRooted($PathValue)) {
-        return $PathValue
-    }
-
-    return [System.IO.Path]::GetFullPath((Join-Path (Get-Location) $PathValue))
-}
-
-function Ensure-ParentDirectory {
-    param([string]$PathValue)
-
-    $directory = Split-Path -Parent $PathValue
-    if (-not [string]::IsNullOrWhiteSpace($directory) -and -not (Test-Path -LiteralPath $directory)) {
-        New-Item -ItemType Directory -Path $directory -Force | Out-Null
-    }
-}
-
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
-$resultAbsolutePath = Resolve-AbsolutePath -PathValue $ResultPath
+$resultAbsolutePath = Resolve-McpAbsolutePath -PathValue $ResultPath
 
 $health = Wait-McpBridgeHealthy -Root $root -TimeoutSec $TimeoutSec
 if ($health.State.isPlaying) {
@@ -39,19 +20,13 @@ if ($health.State.isPlaying) {
 }
 
 $compile = Invoke-McpCompileRequestAndWait -Root $root -CleanBuildCache -TimeoutMs ($TimeoutSec * 1000)
-$rebuild = Invoke-McpCodexLobbyVerifiedRebuild -Root $root
-
-if (-not $rebuild.success) {
-    throw ("Verified CodexLobby rebuild failed. Missing sentinels={0}, missing references={1}" -f @($rebuild.missingSentinels).Count, @($rebuild.missingReferences).Count)
-}
-
-if ($rebuild.scenePath -ne $ScenePath) {
-    throw ("Verified rebuild returned unexpected scenePath: {0}" -f $rebuild.scenePath)
-}
-
 $contract = Get-McpCodexLobbyContract -Root $root
 if (-not $contract.success) {
-    throw ("CodexLobby scene contract failed after rebuild. Missing sentinels={0}, missing references={1}" -f @($contract.missingSentinels).Count, @($contract.missingReferences).Count)
+    throw ("CodexLobby scene contract failed. Missing sentinels={0}, missing references={1}" -f @($contract.missingSentinels).Count, @($contract.missingReferences).Count)
+}
+
+if ($contract.scenePath -ne $ScenePath) {
+    throw ("CodexLobby contract returned unexpected scenePath: {0}" -f $contract.scenePath)
 }
 
 $pageSwitchJson = powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Invoke-LobbyGaragePageSwitchSmoke.ps1") -UnityBridgeUrl $root
@@ -67,15 +42,25 @@ if ($null -eq $pageSwitch -or -not $pageSwitch.success) {
 $report = [PSCustomObject]@{
     success = $true
     generatedAt = (Get-Date).ToString("yyyy-MM-dd HH:mm:ssK")
-    root = $root
     scenePath = $ScenePath
     resultPath = $resultAbsolutePath
-    compile = $compile
-    rebuild = $rebuild
-    contract = $contract
-    pageSwitchSmoke = $pageSwitch
+    compile = [PSCustomObject]@{
+        success = [bool]$compile.Wait.ok
+    }
+    contract = [PSCustomObject]@{
+        success = [bool]$contract.success
+        sceneSaved = [bool]$contract.sceneSaved
+        missingSentinelCount = @($contract.missingSentinels).Count
+        missingReferenceCount = @($contract.missingReferences).Count
+    }
+    pageSwitchSmoke = [PSCustomObject]@{
+        success = [bool]$pageSwitch.success
+        resultPath = $pageSwitch.resultPath
+        warningCount = $pageSwitch.warningCount
+        errorCount = $pageSwitch.errorCount
+    }
 }
 
-Ensure-ParentDirectory -PathValue $resultAbsolutePath
+Ensure-McpParentDirectory -PathValue $resultAbsolutePath
 ($report | ConvertTo-Json -Depth 8) | Set-Content -Path $resultAbsolutePath -Encoding UTF8
 $report | ConvertTo-Json -Depth 8

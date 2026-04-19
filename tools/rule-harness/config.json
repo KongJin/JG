@@ -14,13 +14,13 @@
   },
   "ssot": {
     "scopeDocs": [
-      "CLAUDE.md"
+      "AGENTS.md"
     ]
   },
   "docs": {
     "mutationEnabled": true,
     "allowlist": [
-      "CLAUDE.md",
+      "AGENTS.md",
       "agent/*.md"
     ],
     "denylist": [

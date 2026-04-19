@@ -16,7 +16,7 @@
 | 재미 워크숍·페르소나·질문 풀 | [discussion_game_fun_personas.md](../discussions/discussion_game_fun_personas.md) |
 | 플레이 세션 노트 양식 | [playtest_mvp_template.md](../playtest/playtest_mvp_template.md) |
 | Room/Player CustomProperties 키 소유권 | 실제 키를 쓰는 feature code (`Application/**`, `Infrastructure/**`) + [architecture.md](../../agent/architecture.md) + [work_principles.md](../../agent/work_principles.md) |
-| 프로젝트 규칙 | [CLAUDE.md](../../CLAUDE.md), [anti_patterns.md](../../agent/anti_patterns.md), [validation_gates.md](../../agent/validation_gates.md) |
+| 프로젝트 규칙 | [AGENTS.md](../../AGENTS.md), [anti_patterns.md](../../agent/anti_patterns.md), [validation_gates.md](../../agent/validation_gates.md) |
 
 ---
 

@@ -2,13 +2,14 @@
 {
     public sealed class DestroyHitResult : IHitResult
     {
-        public void Apply(Projectile projectile)
+        public void Apply(global::Features.Projectile.Domain.Projectile projectile)
         {
             projectile.RegisterHit();
             projectile.Destroy();
         }
     }
 }
+
 
 
 

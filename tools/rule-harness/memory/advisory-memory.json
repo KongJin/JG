@@ -67,9 +67,9 @@
                                                    ]
                     },
                     {
-                        "signature":  "static-scan-failed|static-scan|CLAUDE.md|code_fix|Before=# After=# Resolved=# Expected=# NewHigh=#",
+                        "signature":  "static-scan-failed|static-scan|AGENTS.md|code_fix|Before=# After=# Resolved=# Expected=# NewHigh=#",
                         "scopeType":  "global",
-                        "scopePath":  "CLAUDE.md",
+                        "scopePath":  "AGENTS.md",
                         "symptoms":  "Before=8 After=7 Resolved=0 Expected=1 NewHigh=0",
                         "preferredRepairStrategy":  "Amend the owning global rule doc before retrying.",
                         "validationHints":  [
@@ -88,7 +88,7 @@
                                            "985bdeb62e2c4676c86deb3b7b650502f675ac67"
                                        ],
                         "lastSeen":  "2026-04-16T05:01:46.7756380Z",
-                        "promotionTarget":  "CLAUDE.md",
+                        "promotionTarget":  "AGENTS.md",
                         "status":  "observed"
                     },
                     {

@@ -18,9 +18,6 @@ namespace Features.Player
 {
     public sealed class PlayerSetup : MonoBehaviour, IPunInstantiateMagicCallback
     {
-        public static event System.Action<PlayerSetup> RemoteArrived;
-        public static event System.Action<PlayerSetup> LocalArrived;
-
         [Required, SerializeField]
         private PlayerNetworkAdapter _networkAdapter;
 
@@ -64,13 +61,14 @@ namespace Features.Player
 
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
         {
-            if (info.photonView.IsMine)
+            var registry = UnityEngine.Object.FindFirstObjectByType<PlayerSceneRegistry>();
+            if (registry == null)
             {
-                LocalArrived?.Invoke(this);
+                Debug.LogWarning("[PlayerSetup] PlayerSceneRegistry not found. Arrival will be ignored.", this);
                 return;
             }
 
-            RemoteArrived?.Invoke(this);
+            registry.NotifyArrived(this);
         }
 
         /// <summary>

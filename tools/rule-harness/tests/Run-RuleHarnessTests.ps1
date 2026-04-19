@@ -111,7 +111,7 @@ function Initialize-RuleHarnessScopeRepo {
 
     New-Item -ItemType Directory -Path (Join-Path $RepoPath 'docs/rules') -Force | Out-Null
     New-Item -ItemType Directory -Path (Join-Path $RepoPath 'Temp') -Force | Out-Null
-    Set-Content -Path (Join-Path $RepoPath 'CLAUDE.md') -Value 'Read `/docs/rules/architecture-rules.md`.' -Encoding UTF8
+    Set-Content -Path (Join-Path $RepoPath 'AGENTS.md') -Value 'Read `/docs/rules/architecture-rules.md`.' -Encoding UTF8
     Set-Content -Path (Join-Path $RepoPath 'docs/rules/architecture-rules.md') -Value $ArchitectureDocContent -Encoding UTF8
 
     foreach ($feature in @($Features)) {
@@ -1221,8 +1221,8 @@ Assert-RuleHarness `
     -Condition (@($featureDependencyFailedReport.findings | Where-Object { $_.title -eq 'Feature dependency cycle' }).Count -eq 1 -and @($featureDependencyFailedReport.actionItems | Where-Object kind -eq 'break-feature-dependency-cycle').Count -eq 1) `
     -Message 'Expected feature dependency cycles to surface a finding and action item.'
 Assert-RuleHarness `
-    -Condition ($featureDependencyPassedReport.PSObject.Properties.Name -contains 'featureDependencyRepairPolicySnapshot' -and [string]$featureDependencyPassedReport.featureDependencyRepairPolicySnapshot.sourceOrder[0] -eq 'CLAUDE.md' -and @($featureDependencyPassedReport.featureDependencyRepairPolicySnapshot.sourceOrder) -contains 'docs/rules/architecture-rules.md') `
-    -Message 'Expected cycle repair reports to expose the CLAUDE.md -> owner doc policy source order.'
+    -Condition ($featureDependencyPassedReport.PSObject.Properties.Name -contains 'featureDependencyRepairPolicySnapshot' -and [string]$featureDependencyPassedReport.featureDependencyRepairPolicySnapshot.sourceOrder[0] -eq 'AGENTS.md' -and @($featureDependencyPassedReport.featureDependencyRepairPolicySnapshot.sourceOrder) -contains 'docs/rules/architecture-rules.md') `
+    -Message 'Expected cycle repair reports to expose the AGENTS.md -> owner doc policy source order.'
 
 $featureDependencyUnsupportedRepo = Join-Path $scratchRoot 'feature-dependency-repair-unsupported'
 Initialize-RuleHarnessScopeRepo -RepoPath $featureDependencyUnsupportedRepo -Features @(

@@ -10,8 +10,6 @@ namespace Features.Player.Infrastructure
     /// </summary>
     public sealed class DefaultPlayerSpecProvider : Application.Ports.IPlayerSpecProvider
     {
-        private const string ConfigResourcePath = "PlayerSpecConfig";
-
         private static readonly PlayerSpec DefaultLocalSpec = new(
             maxHp: 100f,
             defense: 5f,
@@ -28,10 +26,14 @@ namespace Features.Player.Infrastructure
 
         private readonly PlayerSpec _localSpec;
         private readonly PlayerSpec _remoteSpec;
-
         public DefaultPlayerSpecProvider()
+            : this(new ResourcesPlayerSpecConfigPort())
         {
-            var config = Resources.Load<PlayerSpecConfig>(ConfigResourcePath);
+        }
+
+        public DefaultPlayerSpecProvider(IPlayerSpecConfigPort configPort)
+        {
+            var config = configPort.Load();
 
             if (config != null)
             {
@@ -58,5 +60,20 @@ namespace Features.Player.Infrastructure
 
         public PlayerSpec GetLocalPlayerSpec() => _localSpec;
         public PlayerSpec GetRemotePlayerSpec() => _remoteSpec;
+    }
+
+    public interface IPlayerSpecConfigPort
+    {
+        PlayerSpecConfig Load();
+    }
+
+    internal sealed class ResourcesPlayerSpecConfigPort : IPlayerSpecConfigPort
+    {
+        private const string ConfigResourcePath = "PlayerSpecConfig";
+
+        public PlayerSpecConfig Load()
+        {
+            return Resources.Load<PlayerSpecConfig>(ConfigResourcePath);
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 하네스는 runtime UI flow를 자동 스모크하지 않는다. 이 문서는 Lobby/Garage/Game 진입 관련 회귀를 수동으로 확인하고 기록하는 현재 SSOT다.
 
-씬 구조, Inspector wiring, Bootstrap 순서의 SSOT는 계속 각 feature `README.md`, `*Setup.cs`, `*Bootstrap.cs`, 실제 scene/prefab contract가 소유한다. 이 문서는 hierarchy path가 아니라 "행동/결과" 기준으로만 적는다.
+씬 구조, Inspector wiring, Bootstrap 순서의 SSOT는 `*Setup.cs`, `*Bootstrap.cs`, 실제 scene/prefab serialized contract, MCP contract verification route가 소유한다. 이 문서는 hierarchy path가 아니라 "행동/결과" 기준으로만 적는다.
 
 ---
 

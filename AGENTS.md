@@ -1,23 +1,25 @@
 # AGENTS.md
 
-> 마지막 갱신: 2026-04-11
+이 레포의 엔트리포인트입니다. 상위 범위별로 안내합니다.
 
-이 파일은 **세션 메모리 전용**이다. 전역 규칙과 공식 진행률 SSOT는 이 파일에 두지 않는다.
+---
 
-- 전역 규칙 진입점: [CLAUDE.md](./CLAUDE.md)
-- 공식 진행률 SSOT: [docs/plans/progress.md](./docs/plans/progress.md)
-- 이번 세션에서 바뀐 설계 판단은 해당 SSOT 문서에 먼저 반영한다.
+## 먼저 볼 곳
 
-## 이번 세션 요약
+| 찾고 싶은 것 | 위치 |
+|---|---|
+| 문서 전체 지도 | [`/docs/index.md`](docs/index.md) |
+| 코딩 규칙, 아키텍처 | 하위 스킬 참조 (아키텍처, 패턴, 운영, Unity, 검증) |
+| 게임 컨셉, 디자인 | [`/docs/design/game_design.md`](docs/design/game_design.md) |
+| 진행 상황 | [`/docs/plans/progress.md`](docs/plans/progress.md) |
+| Unity MCP 워크플로우 | [`/tools/unity-mcp/README.md`](tools/unity-mcp/README.md) |
 
-- 아직 기록 없음
+---
 
-## 다음 세션 시작점
+## 현재 기준 메모
 
-- 먼저 `CLAUDE.md`에서 전역 SSOT를 고른 뒤 관련 코드/문서로 내려간다.
-- 진행 상태가 필요하면 `docs/plans/progress.md`를 먼저 확인한다.
+- `CodexLobbyScene.unity`는 Lobby/Garage UI의 runtime SSOT다.
+- Lobby/Garage 검증 기본 레이어는 `contract -> EditMode/unit tests -> 얇은 smoke` 순서로 본다.
+- Unity MCP 기본 진입점은 `workflow gate -> page-switch smoke -> feature smoke`다.
 
-## 임시 메모
-
-- 필요 시 짧게만 적고, 장기 보존이 필요한 내용은 레포의 SSOT 문서로 승격한다.
-- 설정/도구/MCP 부재가 보이면 우회안을 기본값으로 두지 말고, 먼저 설치·등록·연결 같은 근본 해결책을 시도한다. fallback은 실제 blocker가 있을 때만 쓴다.
+---

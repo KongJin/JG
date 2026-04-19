@@ -1,7 +1,7 @@
 # 기술부채 감축 실행 계획
 
 > 생성일: 2026-04-17
-> 최종 업데이트: 2026-04-17
+> 최종 업데이트: 2026-04-18
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
 이 문서는 현재 프로젝트의 기술부채를 "무엇이 불편한가" 수준이 아니라, **무엇을 어떤 순서로 줄여야 배포 신뢰도가 올라가는가** 기준으로 정리한 실행 계획이다.
@@ -10,7 +10,7 @@
 
 - 지금 가장 위험한 부채는 코드 스타일보다 **실제 런타임 검증 공백**이다.
 - 우선순위는 새 기능 추가가 아니라 **이미 연결한 경로를 Editor/WebGL에서 재현 가능하게 검증**하는 것이다.
-- `완료` 표시는 코드 존재가 아니라 **smoke 또는 테스트로 재현된 상태**를 기준으로 올린다.
+- `완료` 표시는 코드 존재가 아니라 **contract, 테스트, smoke 중 적절한 층에서 재현된 상태**를 기준으로 올린다.
 
 ---
 
@@ -20,17 +20,18 @@
 
 | 영역 | 점수 | 현재 해석 |
 |---|---:|---|
-| 런타임 검증 / 배포 신뢰도 | 8.8 | WebGL, 계정, 멀티플레이 핵심 경로의 실기 확인이 부족하다 |
-| 테스트 안전망 | 8.3 | 핵심 흐름 대비 회귀 방어선이 얇다 |
-| 씬 / Inspector wiring | 7.6 | 최근 정리는 있었지만 직렬화 계약 검증이 아직 남아 있다 |
-| Account / Firebase / WebGL 통합 | 7.4 | 코드 경로는 있지만 브라우저 실동작 신뢰도가 낮다 |
-| 도구 / 자동화 안정성 | 6.9 | Unity MCP가 도움은 되지만 최종 게이트로 쓰기엔 아직 흔들린다 |
+| 런타임 검증 / 배포 신뢰도 | 7.9 | WebGL, GameScene loop, 멀티플레이 핵심 경로의 실기 확인이 아직 부족하다 |
+| 테스트 안전망 | 7.5 | 최근 EditMode/reflection 테스트는 늘었지만 핵심 흐름 대비 더 보강이 필요하다 |
+| 씬 / Inspector wiring | 6.2 | `CodexLobbySceneContract`와 required-field audit로 안정화가 진행됐다 |
+| Account / Firebase / WebGL 통합 | 6.6 | Garage save/load, account delete는 진척됐지만 Google linking 실기는 남아 있다 |
+| 도구 / 자동화 안정성 | 5.8 | Unity MCP core workflow는 정리됐지만 Play Mode 전환은 간헐적 흔들림이 남는다 |
 | 비동기 UI 수명주기 | 6.2 | `async void` 기반 액션이 예외 추적과 취소를 어렵게 만든다 |
 | 전역 상태 / 싱글톤 | 5.8 | `SoundPlayer` 같은 전역 상태가 씬 경계를 흐릴 수 있다 |
-| 문서 최신성 | 4.7 | 최신 SSOT는 `progress.md`인데 오래된 리뷰 문서와 온도차가 있다 |
+| 구조 복잡도 / lifecycle seam | 6.1 | 대형 controller/adapter에 임시 복구 seam, smoke 훅, mapping, policy가 함께 쌓여 있다 |
+| 문서 최신성 | 3.8 | 핵심 SSOT는 많이 맞춰졌지만 일부 계획 문서는 계속 동기화가 필요하다 |
 | 아키텍처 기반 | 3.9 | feature 분리와 SSOT 문화 자체는 비교적 건강하다 |
 
-요약하면, 지금은 "설계 붕괴"보다 **검증 체계와 플랫폼 실기 확인이 뒤처진 상태**로 보는 게 맞다.
+요약하면, 지금은 "설계 붕괴"보다 **Gameplay/WebGL 실기 검증과 테스트 층 확장이 뒤처진 상태**로 보는 게 맞다.
 
 ---
 
@@ -58,6 +59,7 @@
 
 - 먼저 사용자 여정이 끊기는 경로를 막는다.
 - 런타임 fallback보다 Inspector wiring과 scene contract를 우선한다.
+- 검증은 `contract -> EditMode/unit tests -> 얇은 smoke` 순서로 내린다.
 - Play Mode smoke와 WebGL smoke를 분리해서 기록한다.
 - 도구 성공을 기능 성공으로 간주하지 않는다.
 - 설계 판단이 바뀌면 `progress.md`를 같은 턴에 갱신한다.
@@ -75,17 +77,18 @@ Editor 기준으로 Lobby/Garage 관련 씬 계약을 다시 흔들리지 않는
 - `progress.md`에 남아 있는 Inspector wiring TODO를 전수 점검한다.
 - 최근 제거한 runtime UI grabbing 이후 누락된 직렬화 참조가 없는지 확인한다.
 - `PlacementAreaView`, `DragGhostPrefab`, `AccountConfig`, `LoginLoadingView` 등 TODO 항목을 실제 씬 기준으로 재확인한다.
-- 관련 feature README의 scene contract 문구를 현재 씬 상태와 맞춘다.
+- 관련 scene contract 문구와 운영 문서를 현재 씬 상태와 맞춘다.
 
 완료 기준:
 - Lobby/Garage 핵심 씬에서 missing reference, runtime fallback, name-based lookup이 남지 않는다.
 - Play Mode 진입 시 즉시 터지는 wiring 오류가 없다.
 - `progress.md`의 관련 TODO가 구체적인 남은 항목만 남도록 줄어든다.
+- `CodexLobbySceneContract`와 required-field audit가 canonical structure 검증을 맡고, smoke는 decorative hierarchy에 의존하지 않는다.
 
 예상 순서:
 1. `CodexLobbyScene` wiring 재검증
 2. 필수 직렬화 참조 누락 수정
-3. README / `progress.md` 동기화
+3. contract 문서 / `progress.md` 동기화
 
 ### Track B. WebGL 핵심 계정/차고 smoke
 
@@ -130,6 +133,11 @@ Phase 10/11의 가장 큰 리스크인 "브라우저에서 진짜 되는가"를 
   - 닉네임 cooldown
   - 계정 삭제 순서 관련 순수 로직
   - `UserSettings` 소비 경로
+- Lobby/Garage 규칙은 smoke에서 tests/contract로 계속 내린다.
+  - Ready unlock / relock
+  - save-restores-ready
+  - room name / difficulty validation
+  - initial energy validation
 - 반사 기반 테스트만이 아니라 실제 타입 계약을 직접 검증하는 테스트도 늘린다.
 - Unity Test Runner에 잡히는 경로와 repo 루트 `Tests/` 경로를 분리해서 문서화한다.
 
@@ -149,14 +157,30 @@ Phase 10/11의 가장 큰 리스크인 "브라우저에서 진짜 되는가"를 
 작업:
 - UI 버튼 핸들러의 `async void`를 얇은 wrapper + 내부 `Task` 패턴으로 정리한다.
 - 실패 메시지와 취소/중복 클릭 방지를 명확히 한다.
-- Unity MCP stable route 기준 play/start/stop smoke를 다시 고정한다.
+- Unity MCP stable route 기준 `workflow gate -> page-switch smoke -> feature smoke` 루프를 유지한다.
 - MCP hang 재현 조건과 우회 절차를 `tools/unity-mcp/README.md` 또는 관련 문서에 남긴다.
 
 완료 기준:
 - 계정/저장 UI 경로의 예외 추적이 쉬워진다.
 - MCP 불안정이 있어도 수동 smoke 절차가 끊기지 않는다.
 
-### Track E. 신뢰도 이후의 UX 폴리시
+### Track E. 구조 복잡도 / lifecycle seam 제거
+
+목표:
+큰 클래스 안에 응급 seam처럼 굳은 책임과 scene-crossing 정적 의존을 분리해, `contract -> direct test -> thin smoke` 순서로 다시 검증 가능하게 만든다.
+
+작업:
+- `FirestoreRestPort`, `FirebaseAuthRestAdapter`, `GaragePageController`, `GameSceneRoot`의 helper/mapping/transport 책임을 분리한다.
+- `AuthTokenProvider` 같은 정적 세션 접근을 injected session access로 교체한다.
+- `PlayerSetup.LocalArrived/RemoteArrived`, `EnemySetup.EnemyArrived`, `BattleEntityArrived` 같은 gameplay arrival seam은 scene-local registry 또는 명시적 bootstrap으로 내린다.
+- `SoundPlayer.Instance` 직접 참조는 금지하고, scene에서 찾은 runtime host나 명시적 주입 경로만 허용한다.
+
+완료 기준:
+- 대형 클래스는 orchestration 위주로 축소되고, helper는 별도 파일로 이동한다.
+- production code에서 scene-crossing 정적 seam이 줄어든다.
+- 문서가 임시 seam을 현재 정답처럼 권장하지 않는다.
+
+### Track F. 신뢰도 이후의 UX 폴리시
 
 목표:
 신뢰도 이슈를 막은 뒤 Garage 대시보드의 2차 polish를 진행한다.
@@ -186,6 +210,7 @@ Phase 10/11의 가장 큰 리스크인 "브라우저에서 진짜 되는가"를 
 
 ### 3순위
 
+- Track E의 구조 복잡도 / lifecycle seam 제거
 - Garage / Account 회귀 테스트 확대
 - `async void` 정리와 MCP 안정화 보강
 

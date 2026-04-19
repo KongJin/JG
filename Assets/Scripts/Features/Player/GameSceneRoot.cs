@@ -27,7 +27,6 @@ using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Lifecycle;
 using Shared.Runtime.Sound;
-using Shared.Time;
 using Shared.Ui;
 using UnityEngine;
 
@@ -49,7 +48,7 @@ namespace Features.Player
         [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
         [Required, SerializeField] private EnergyRegenTicker _energyRegenTicker;
         [Required, SerializeField] private EnergyBarView _energyBarView;
-        // Runtime-spawned by PhotonNetwork.Instantiate and assigned via PlayerSetup.LocalArrived.
+        // Runtime-spawned by PhotonNetwork.Instantiate and assigned via PlayerSceneRegistry arrival.
         [SerializeField] private PlayerSetup _localPlayerSetup;
 
         [Header("Unit & Garage")]
@@ -86,58 +85,27 @@ namespace Features.Player
         private Dictionary<DomainEntityId, Unit.Domain.Unit[]> _playerUnitSpecs = new();
         private RestoreGarageRosterUseCase _restoreGarageRosterUseCase;
         private ComputePlayerUnitSpecsUseCase _computePlayerUnitSpecsUseCase;
+        private readonly GameSceneGarageBootstrapFlow _garageBootstrapFlow = new();
+        private readonly GameScenePlayerConnector _playerConnector = new();
+        private readonly GameSceneAudioBootstrapFlow _audioBootstrapFlow = new();
 
         /// <summary>
         /// Unit/Garage Feature 초기화 및 Unit 스펙 계산.
         /// </summary>
         private void InitializeUnitAndGarage(PlayerSetup localPlayerSetup)
         {
-            // 1. Unit Bootstrap 초기화
-            _unitSetup.Initialize(_eventBus);
-
-            // 2. Garage Bootstrap 초기화
-            _garageSetup.Initialize(
+            var bootstrapResult = _garageBootstrapFlow.Initialize(
                 _eventBus,
-                _unitSetup.CompositionPort,
-                _unitSetup.Catalog);
+                _unitSetup,
+                _garageSetup,
+                localPlayerSetup.PlayerId);
 
-            // 3. UseCase들 생성
-            _restoreGarageRosterUseCase = new RestoreGarageRosterUseCase(_garageSetup.Setup.NetworkPort);
-            _computePlayerUnitSpecsUseCase = new ComputePlayerUnitSpecsUseCase(
-                _garageSetup.Setup.ComposeUnit,
-                new ClockAdapter(),
-                _eventBus);
+            _restoreGarageRosterUseCase = bootstrapResult.RestoreGarageRosterUseCase;
+            _computePlayerUnitSpecsUseCase = bootstrapResult.ComputePlayerUnitSpecsUseCase;
+            var units = bootstrapResult.PlayerUnits;
+            _playerUnitSpecs[localPlayerSetup.PlayerId] = units;
 
-            // 4. GarageRoster 복원 (CustomProperties에서 읽기)
-            var loadouts = RestoreGarageRosterFromRoom(localPlayerSetup.PlayerId);
-
-            // 5. Unit 스펙 계산
-            ComputeUnitSpecs(localPlayerSetup.PlayerId, loadouts);
-        }
-
-        /// <summary>
-        /// Room CustomProperties에서 GarageRoster를 복원한다.
-        /// </summary>
-        private GarageRoster.UnitLoadout[] RestoreGarageRosterFromRoom(DomainEntityId playerId)
-        {
-            if (!PhotonNetwork.InRoom)
-            {
-                Debug.LogWarning("[GameSceneRoot] Cannot restore GarageRoster: not in room.");
-                return new GarageRoster.UnitLoadout[0];
-            }
-
-            return _restoreGarageRosterUseCase.Execute();
-        }
-
-        /// <summary>
-        /// 로컬 플레이어의 Unit 스펙을 계산한다.
-        /// </summary>
-        private void ComputeUnitSpecs(DomainEntityId playerId, GarageRoster.UnitLoadout[] loadouts)
-        {
-            var units = _computePlayerUnitSpecsUseCase.Execute(loadouts, playerId);
-            _playerUnitSpecs[playerId] = units;
-
-            Debug.Log($"[GameSceneRoot] Computed {units.Length} unit specs for player {playerId.Value}");
+            Debug.Log($"[GameSceneRoot] Computed {units.Length} unit specs for player {localPlayerSetup.PlayerId.Value}");
         }
 
         /// <summary>
@@ -190,14 +158,8 @@ namespace Features.Player
 
         private void Awake()
         {
-            PlayerSetup.RemoteArrived += OnRemotePlayerArrived;
-            PlayerSetup.LocalArrived += OnLocalPlayerArrived;
-        }
-
-        private void OnLocalPlayerArrived(PlayerSetup setup)
-        {
-            _localPlayerSetup = setup;
-            CompleteLocalPlayerInitialization();
+            _playerSceneRegistry.PlayerArrived += OnPlayerArrived;
+            _playerSceneRegistry.DrainPendingArrivals(OnPlayerArrived);
         }
 
         private void CompleteLocalPlayerInitialization()
@@ -254,15 +216,7 @@ namespace Features.Player
 
             // SoundPlayer is a DDOL singleton created from JG_LobbyScene.
             // Running JG_GameScene directly is allowed, but audio stays unavailable.
-            if (SoundPlayer.Instance == null)
-            {
-                Debug.LogError(
-                    "[GameSceneRoot] SoundPlayer.Instance is null. Start from CodexLobbyScene so the DDOL SoundPlayer is created; opening GameScene alone will not load it.");
-            }
-            else
-            {
-                SoundPlayer.Instance.Initialize(_eventBus, _localPlayerSetup.PlayerId.Value);
-            }
+            _audioBootstrapFlow.InitializeOrReport(_eventBus, _localPlayerSetup.PlayerId.Value);
 
             // ProjectileSpawner, ZoneSetup은 EventBus만 필요
             _projectileSpawner.Initialize(_eventBus, _eventBus);
@@ -341,31 +295,18 @@ namespace Features.Player
                 spawnPosition,
                 Quaternion.identity);
 
-            // PlayerSetup.LocalArrived is raised when the local Photon instance arrives.
-            // CompleteLocalPlayerInitialization() runs from OnLocalPlayerArrived.
+            // PlayerSceneRegistry arrival is raised when the local Photon instance arrives.
+            // CompleteLocalPlayerInitialization() runs from OnPlayerArrived.
         }
 
         private void ConnectPlayer(PlayerSetup setup)
         {
-            if (!setup.IsInitialized)
-            {
-                var specProvider = new DefaultPlayerSpecProvider();
-                if (setup.NetworkAdapter.IsMine)
-                {
-                    setup.InitializeLocal(
-                        _eventBus,
-                        specProvider,
-                        _statusSetup.SpeedModifier,
-                        _playerSceneRegistry,
-                        _playerLookup);
-                }
-                else
-                {
-                    setup.InitializeRemote(_eventBus, specProvider, _playerLookup);
-                }
-            }
-
-            if (!_playerSceneRegistry.TryRegister(setup))
+            if (!_playerConnector.Connect(
+                setup,
+                _eventBus,
+                _statusSetup,
+                _playerSceneRegistry,
+                _playerLookup))
                 return;
 
             var hudGo = Instantiate(_healthHudPrefab, _hudCanvas.transform, false);
@@ -383,19 +324,20 @@ namespace Features.Player
 
             if (_waveSetup != null)
                 _waveSetup.RegisterPlayer(setup.transform);
-
-            // Wire remote player's StatusNetworkAdapter so RPC callbacks reach the shared handler
-            if (!setup.NetworkAdapter.IsMine)
-                _statusSetup.RegisterRemoteCallbackPort(setup.StatusNetworkAdapter);
-
-            // Hydrate remote players from CustomProperties AFTER registry registration
-            // so that IPlayerLookupPort.Resolve() can find the domain player
-            if (!setup.NetworkAdapter.IsMine)
-                setup.NetworkAdapter.HydrateFromProperties();
         }
 
-        private void OnRemotePlayerArrived(PlayerSetup setup)
+        private void OnPlayerArrived(PlayerSetup setup)
         {
+            if (setup == null)
+                return;
+
+            if (setup.NetworkAdapter.IsMine)
+            {
+                _localPlayerSetup = setup;
+                CompleteLocalPlayerInitialization();
+                return;
+            }
+
             if (!_remotePlayerWiringReady)
             {
                 _pendingRemotePlayers.Enqueue(setup);
@@ -425,8 +367,8 @@ namespace Features.Player
 
         private void OnDestroy()
         {
-            PlayerSetup.RemoteArrived -= OnRemotePlayerArrived;
-            PlayerSetup.LocalArrived -= OnLocalPlayerArrived;
+            if (_playerSceneRegistry != null)
+                _playerSceneRegistry.PlayerArrived -= OnPlayerArrived;
 
             var playTime = Time.realtimeSinceStartup - _sceneStartTime;
             if (_analytics != null)

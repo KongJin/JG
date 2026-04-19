@@ -20,6 +20,9 @@ namespace Features.Lobby.Presentation
         [SerializeField]
         private TMP_Text _difficultyText;
 
+        [SerializeField]
+        private TMP_Text _roomMetaText;
+
         [Required, SerializeField]
         private Button _joinButton;
 
@@ -64,6 +67,8 @@ namespace Features.Lobby.Presentation
             _memberCountText.text = $"{playerCount}/{capacity}";
             if (_difficultyText != null)
                 _difficultyText.text = DifficultyPresetFormatter.ToShortLabel(difficultyPresetId);
+            if (_roomMetaText != null)
+                _roomMetaText.text = $"{DifficultyPresetFormatter.ToShortLabel(difficultyPresetId)} · {playerCount}/{capacity} pilots";
 
             _joinButton.onClick.RemoveAllListeners();
             _joinButton.onClick.AddListener(HandleJoinClicked);

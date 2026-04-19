@@ -45,16 +45,10 @@ namespace Features.Account
 
             // Infrastructure
             var authAdapter = new FirebaseAuthRestAdapter(_config.firebaseApiKey);
-            var firestorePort = new FirestoreRestPort(_config.firebaseApiKey, _config.projectId);
+            var firestorePort = new FirestoreRestPort(_config.firebaseApiKey, _config.projectId, authAdapter);
 
             AuthPort = authAdapter;
             DataPort = firestorePort;
-
-            // AuthTokenProvider 설정 (순환 의존성 방지)
-            Infrastructure.AuthTokenProvider.SetProviders(
-                () => AuthPort.GetCurrentUid(),
-                () => AuthPort.GetIdToken()
-            );
 
             // UseCases
             SignInAnonymously = new SignInAnonymouslyUseCase(AuthPort, DataPort);

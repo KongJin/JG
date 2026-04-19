@@ -4,9 +4,7 @@
 > 상태: historical
 
 이 문서는 초기 Garage 패널 구상 기록이다. 현재 구현 기준으로 직접 사용하지 않는다.
-현재 계약은 [`../../Assets/Scripts/Features/Lobby/README.md`](../../Assets/Scripts/Features/Lobby/README.md),
-[`../../Assets/Scripts/Features/Garage/README.md`](../../Assets/Scripts/Features/Garage/README.md),
-[`../design/ui_foundations.md`](../design/ui_foundations.md),
+현재 계약은 [`../design/ui_foundations.md`](../design/ui_foundations.md),
 [`progress.md`](./progress.md)를 우선한다.
 
 이 문서는 `CodexLobbyScene` 안에 `Garage`를 탭 페이지로 붙이는 작업의 구현 계획이다.

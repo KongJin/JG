@@ -20,7 +20,6 @@ namespace ProjectSD.EditorTools.UnityMcp
             "POST".Register("/compile/wait", "Wait for compilation to finish", async (req, res) => await HandleCompileWaitAsync(req, res));
             "POST".Register("/build/webgl", "Build WebGL player", async (req, res) => await HandleBuildWebGLAsync(req, res));
             "POST".Register("/menu/execute", "Execute an Editor menu item", async (req, res) => await HandleMenuExecuteAsync(req, res));
-            "POST".Register("/scene/rebuild-codex-lobby", "Verified rebuild for CodexLobbyScene", async (req, res) => await HandleCodexLobbyRebuildAsync(res));
             "GET".Register("/scene/verify-codex-lobby-contract", "Verify CodexLobbyScene contract sentinel nodes and serialized refs", async (req, res) => await HandleCodexLobbyContractVerifyAsync(res));
             "GET".Register("/config/get", "Get current MCP configuration", async (req, res) => await HandleConfigGetAsync(res));
             "POST".Register("/config/set", "Update MCP configuration", async (req, res) => await HandleConfigSetAsync(req, res));
@@ -60,6 +59,7 @@ namespace ProjectSD.EditorTools.UnityMcp
 
                 if (parsed != null && parsed.cleanBuildCache)
                 {
+                    AssetDatabase.Refresh();
                     EditorUtility.RequestScriptReload();
                     return new CompileRequestResponse { ok = true, cleanBuildCacheRequested = true, isCompiling = false, message = "Script reload requested." };
                 }
@@ -95,6 +95,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 {
                     if (cleanBuildCache)
                     {
+                        AssetDatabase.Refresh();
                         EditorUtility.RequestScriptReload();
                     }
                     else
@@ -203,46 +204,16 @@ namespace ProjectSD.EditorTools.UnityMcp
             await UnityMcpBridge.WriteJsonAsync(response, result.success ? 200 : 500, result);
         }
 
-        public static async Task HandleCodexLobbyRebuildAsync(HttpListenerResponse response)
-        {
-            await WaitForCompileSettledAsync();
-
-            var rebuildResult = await UnityMcpBridge.RunOnMainThreadAsync(() =>
-            {
-                CodexLobbySceneBuilder.BuildCodexLobbySceneForAutomation();
-                var contract = CodexLobbySceneContract.VerifyActiveScene();
-                var activeScene = UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene();
-                var sceneSaved = activeScene.IsValid() && !activeScene.isDirty;
-                var success = contract.ok && sceneSaved;
-
-                return new CodexLobbyRebuildResponse
-                {
-                    success = success,
-                    message = contract.summary,
-                    scenePath = CodexLobbySceneContract.ScenePath,
-                    builderMethod = CodexLobbySceneContract.BuilderMethodName,
-                    sceneSaved = sceneSaved,
-                    verifiedSentinels = contract.verifiedSentinels.ToArray(),
-                    missingSentinels = contract.missingSentinels.ToArray(),
-                    verifiedReferences = contract.verifiedReferences.ToArray(),
-                    missingReferences = contract.missingReferences.ToArray(),
-                };
-            });
-
-            await UnityMcpBridge.WriteJsonAsync(response, rebuildResult.success ? 200 : 409, rebuildResult);
-        }
-
         public static async Task HandleCodexLobbyContractVerifyAsync(HttpListenerResponse response)
         {
             var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
                 var contract = CodexLobbySceneContract.VerifyActiveScene();
-                return new CodexLobbyRebuildResponse
+                return new CodexLobbyContractResponse
                 {
                     success = contract.ok,
                     message = contract.summary,
                     scenePath = contract.scenePath,
-                    builderMethod = CodexLobbySceneContract.BuilderMethodName,
                     sceneSaved = !UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene().isDirty,
                     verifiedSentinels = contract.verifiedSentinels.ToArray(),
                     missingSentinels = contract.missingSentinels.ToArray(),
@@ -292,21 +263,6 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             public bool? autoSaveSceneOnPlayStop;
             public bool? autoSaveSceneOnBuild;
-        }
-
-        private static async Task WaitForCompileSettledAsync(int timeoutMs = 120000, int pollIntervalMs = 100)
-        {
-            var deadline = DateTime.UtcNow.AddMilliseconds(timeoutMs);
-            while (DateTime.UtcNow < deadline)
-            {
-                var isCompiling = await UnityMcpBridge.RunOnMainThreadAsync(() => EditorApplication.isCompiling);
-                if (!isCompiling)
-                    return;
-
-                await Task.Delay(pollIntervalMs);
-            }
-
-            throw new TimeoutException("Compilation did not settle before verified CodexLobby rebuild.");
         }
     }
 }
