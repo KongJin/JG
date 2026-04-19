@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=IBM+Plex+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "text-orange-500",
+                        secondary: "text-blue-400",
+                        surface: "bg-zinc-950",
+                        border: "border-zinc-800"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Space Grotesk"],
+                        body: ["IBM Plex Sans"],
+                        label: ["IBM Plex Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body {
+            background-color: #09090b;
+            color: #fafafa;
+            font-family: 'IBM Plex Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        .hangar-vignette {
+            background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+        }
+        .scanline {
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.3) 51%);
+            background-size: 100% 4px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-zinc-950 min-h-screen pb-24 hangar-vignette">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-4 h-14 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-orange-500">terminal</span>
+<h1 class="text-xl font-black text-orange-500 tracking-widest font-mono uppercase">COMMAND_CENTER</h1>
+</div>
+<div class="w-8 h-8 rounded border border-orange-500/30 overflow-hidden active:scale-95 transition-transform duration-75">
+<img alt="Pilot Profile" class="w-full h-full object-cover" data-alt="Close up portrait of a futuristic pilot wearing high-tech carbon fiber headgear with amber visor in a dimly lit blue hangar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGMaOWWYak8X0AcYg5AU6t2oKrQdEimeMXbq1bVGqNDLMB7wJY4sB65Gt33nmgVMXQgAEPFzfyXnqMQRpcwTKFoaLTaO17_P5G5A2T7Fgvup3nFKmlSXAk-f1NtVqSL8mO2ndM-L5evEYmFFCirRotcNGCDEOrJd1LJhWW3Uxu2yt6Q_UpIp4PNmpH6rSSVUmRaO2bdDHgFfilSqVZTb8JLwrQ306P-wYQXi81lqeM9T03F640WbkTSGD8xjy8wDbdpqqFd1KmyWSm"/>
+</div>
+</header>
+<main class="pt-20 px-4 space-y-6 max-w-md mx-auto">
+<!-- 1. Header Card: Mission Briefing -->
+<section class="relative overflow-hidden rounded-lg bg-zinc-900 border border-zinc-800 p-4">
+<div class="absolute top-0 right-0 p-2">
+<span class="text-[10px] font-mono text-blue-400/50">SEC_LEVEL: ALPHA</span>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+<h2 class="font-headline font-bold text-orange-500 tracking-tight uppercase">CURRENT_OBJECTIVE</h2>
+</div>
+<div class="flex gap-4">
+<div class="flex-1">
+<p class="text-sm font-medium text-zinc-100 leading-tight">Sector 7 Extraction: Hold the perimeter until EVAC arrives.</p>
+<p class="text-[11px] text-zinc-500 mt-1 font-mono uppercase">ETA: 04:20:11</p>
+</div>
+<div class="w-16 h-16 bg-zinc-800 rounded border border-blue-900/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-blue-400 text-3xl">radar</span>
+</div>
+</div>
+</div>
+<div class="mt-4 grid grid-cols-3 gap-2 border-t border-zinc-800 pt-3">
+<div>
+<div class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Threat</div>
+<div class="text-sm font-mono text-orange-500">CRITICAL</div>
+</div>
+<div>
+<div class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Environment</div>
+<div class="text-sm font-mono text-blue-400">VOLCANIC</div>
+</div>
+<div>
+<div class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Reward</div>
+<div class="text-sm font-mono text-zinc-100">8.5k CR</div>
+</div>
+</div>
+</section>
+<!-- 2. Rooms Section -->
+<section class="space-y-3">
+<div class="flex justify-between items-end px-1">
+<h3 class="font-headline font-bold text-zinc-400 text-xs tracking-[0.2em] uppercase">DEPLOYMENT_QUEUE</h3>
+<span class="text-[10px] font-mono text-orange-500/60">6 ACTIVE INSTANCES</span>
+</div>
+<!-- Active Room 1 -->
+<div class="bg-zinc-900/50 border-l-2 border-orange-500 rounded-r-lg p-3 flex items-center justify-between group active:bg-zinc-800 transition-colors">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold tracking-tight text-zinc-100">GHOST_LEAD_9</span>
+<span class="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[9px] font-black border border-blue-500/20 uppercase">HARD</span>
+</div>
+<div class="flex gap-3 mt-1 items-center">
+<div class="flex -space-x-1">
+<div class="w-4 h-4 rounded-full bg-zinc-800 border border-zinc-950 flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-orange-500" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<div class="w-4 h-4 rounded-full bg-zinc-800 border border-zinc-950 flex items-center justify-center text-[10px] text-zinc-500 font-bold">2</div>
+</div>
+<span class="text-[10px] text-zinc-500 font-mono">LAT: 42ms</span>
+</div>
+</div>
+<button class="bg-orange-500 text-zinc-950 px-4 py-2 rounded text-[11px] font-black uppercase tracking-tighter hover:bg-orange-400 transition-colors">
+                    JOIN_LOBBY
+                </button>
+</div>
+<!-- Active Room 2 -->
+<div class="bg-zinc-900/50 border-l-2 border-blue-500/30 rounded-r-lg p-3 flex items-center justify-between active:bg-zinc-800 transition-colors">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold tracking-tight text-zinc-100">STEEL_REIGN</span>
+<span class="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 text-[9px] font-black border border-zinc-700 uppercase">NORMAL</span>
+</div>
+<div class="flex gap-3 mt-1 items-center">
+<div class="flex -space-x-1">
+<div class="w-4 h-4 rounded-full bg-zinc-800 border border-zinc-950 flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-orange-500" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<div class="w-4 h-4 rounded-full bg-zinc-800 border border-zinc-950 flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-orange-500" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<div class="w-4 h-4 rounded-full bg-zinc-800 border border-zinc-950 flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-orange-500" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+</div>
+<span class="text-[10px] text-zinc-500 font-mono">LAT: 12ms</span>
+</div>
+</div>
+<button class="bg-zinc-800 text-zinc-400 border border-zinc-700 px-4 py-2 rounded text-[11px] font-black uppercase tracking-tighter opacity-50 cursor-not-allowed">
+                    LOBBY_FULL
+                </button>
+</div>
+<!-- Empty State Room (Finished/Tactical Look) -->
+<div class="bg-zinc-900/20 border-2 border-dashed border-zinc-800 rounded-lg p-6 flex flex-col items-center justify-center text-center">
+<div class="w-12 h-12 bg-zinc-900 rounded-full flex items-center justify-center mb-3 border border-zinc-800">
+<span class="material-symbols-outlined text-zinc-700 text-2xl">search_off</span>
+</div>
+<h4 class="text-xs font-black text-zinc-600 uppercase tracking-widest">PENDING_LINK_ESTABLISHED</h4>
+<p class="text-[10px] text-zinc-500 max-w-[200px] mt-1 font-mono">No additional fireteams currently requesting backup in this sector.</p>
+</div>
+</section>
+<!-- 3. Create Room Card -->
+<section>
+<button class="w-full bg-zinc-900 border border-zinc-800 p-3 rounded-lg flex items-center justify-between group active:scale-[0.98] transition-transform">
+<div class="flex items-center gap-3">
+<div class="bg-orange-500/10 p-2 rounded">
+<span class="material-symbols-outlined text-orange-500">add_box</span>
+</div>
+<div class="text-left">
+<div class="text-xs font-black text-zinc-100 uppercase tracking-tighter">ESTABLISH_NEW_NODE</div>
+<div class="text-[10px] text-zinc-500 font-mono">Host your own tactical operation</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-zinc-700 group-hover:text-orange-500 transition-colors">chevron_right</span>
+</button>
+</section>
+<!-- 4. Garage Summary Card -->
+<section class="bg-zinc-950 border border-zinc-900 rounded-lg overflow-hidden flex shadow-inner">
+<div class="w-24 h-24 bg-zinc-900 relative">
+<img alt="Vehicle Status" class="w-full h-full object-cover opacity-60" data-alt="Isometric view of a high-tech heavy battle droid with orange mechanical accents and matte black plating in a workshop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3Rf3w8cazLrGhYd4ziYstrmZABa5bT9e6pjJFrxN_eFcraNMfYjSldErCxWU-mS_PWRUyRaKaJ90b0vE7sCH_8_aJql-rwN9k3Q1Xgx9dgfHBbnd9c5AYG4hDb8OhAz30fhlemgL-7MxxEqEsY_iqzpw-aG9G3tYGELYIJuxjsZPZeXOPEokBFnQr9ltZbgOQf5G1-YaT4cvTt6zunCdsWM-amUFgF3nPmWtoQ1XZaE4ZGoktWsVpqlWkx3Mc4Zk_DvFGWMkDkRdy"/>
+<div class="absolute inset-0 scanline opacity-20"></div>
+</div>
+<div class="flex-1 p-3 flex flex-col justify-between">
+<div>
+<h4 class="text-[9px] font-black text-blue-400 uppercase tracking-widest">GARAGE_SUMMARY</h4>
+<div class="text-xs font-bold text-zinc-100 mt-0.5">VINDICATOR-MK4</div>
+</div>
+<div class="flex gap-4">
+<div class="flex flex-col">
+<span class="text-[8px] text-zinc-500 font-mono uppercase">HULL</span>
+<div class="w-12 h-1 bg-zinc-800 rounded-full mt-1 overflow-hidden">
+<div class="bg-orange-500 h-full w-[85%]"></div>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-[8px] text-zinc-500 font-mono uppercase">CORES</span>
+<div class="flex gap-0.5 mt-1">
+<div class="w-1.5 h-1.5 bg-blue-400"></div>
+<div class="w-1.5 h-1.5 bg-blue-400"></div>
+<div class="w-1.5 h-1.5 bg-zinc-700"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-3 flex items-center">
+<span class="material-symbols-outlined text-zinc-700">precision_manufacturing</span>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-safe h-16 bg-zinc-950 border-t border-zinc-800 border-t-2 border-blue-900/20">
+<a class="flex flex-col items-center justify-center text-orange-500 bg-orange-500/10 rounded-lg py-1 px-3 border border-orange-500/20 active:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">grid_view</span>
+<span class="text-[10px] font-black uppercase tracking-tighter mt-1">LOBBY</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 py-1 px-3 hover:text-blue-400 active:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">precision_manufacturing</span>
+<span class="text-[10px] font-black uppercase tracking-tighter mt-1">GARAGE</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 py-1 px-3 hover:text-blue-400 active:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">groups</span>
+<span class="text-[10px] font-black uppercase tracking-tighter mt-1">SQUAD</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 py-1 px-3 hover:text-blue-400 active:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">analytics</span>
+<span class="text-[10px] font-black uppercase tracking-tighter mt-1">INTEL</span>
+</a>
+</nav>
+</body></html>

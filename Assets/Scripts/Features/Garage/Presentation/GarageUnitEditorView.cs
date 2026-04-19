@@ -7,10 +7,17 @@ using UnityEngine.UI;
 
 namespace Features.Garage.Presentation
 {
+    public enum GarageEditorFocus
+    {
+        Frame,
+        Firepower,
+        Mobility,
+    }
+
     public sealed class GarageUnitEditorView : MonoBehaviour
     {
-        [SerializeField] private TMP_Text _selectionTitleText;
-        [SerializeField] private TMP_Text _selectionSubtitleText;
+        [Required, SerializeField] private TMP_Text _selectionTitleText;
+        [Required, SerializeField] private TMP_Text _selectionSubtitleText;
         [Required, SerializeField] private GaragePartSelectorView _frameSelectorView;
         [Required, SerializeField] private GaragePartSelectorView _firepowerSelectorView;
         [Required, SerializeField] private GaragePartSelectorView _mobilitySelectorView;
@@ -18,6 +25,7 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private TMP_Text _clearButtonText;
 
         private bool _callbacksHooked;
+        private GarageEditorFocus _focusedPart = GarageEditorFocus.Frame;
 
         public event Action<int> FrameCycleRequested;
         public event Action<int> FirepowerCycleRequested;
@@ -54,31 +62,42 @@ namespace Features.Garage.Presentation
             if (viewModel == null)
                 return;
 
-            if (_selectionTitleText != null)
-            {
-                _selectionTitleText.text = viewModel.Title;
-                _selectionTitleText.color = ThemeColors.TextPrimary;
-                _selectionTitleText.fontSize = 16;
-            }
+            _selectionTitleText.text = viewModel.Title;
+            _selectionTitleText.color = ThemeColors.TextPrimary;
+            _selectionTitleText.fontSize = 19;
 
-            if (_selectionSubtitleText != null)
-            {
-                _selectionSubtitleText.text = viewModel.Subtitle;
-                _selectionSubtitleText.color = ThemeColors.TextSecondary;
-                _selectionSubtitleText.fontSize = 12;
-            }
+            _selectionSubtitleText.text = viewModel.Subtitle;
+            _selectionSubtitleText.color = ThemeColors.TextSecondary;
+            _selectionSubtitleText.fontSize = 13;
 
             _frameSelectorView.Render(viewModel.FrameValueText, viewModel.FrameHintText);
             _firepowerSelectorView.Render(viewModel.FirepowerValueText, viewModel.FirepowerHintText);
             _mobilitySelectorView.Render(viewModel.MobilityValueText, viewModel.MobilityHintText);
             _clearButton.interactable = viewModel.IsClearInteractable;
+            ApplyFocusedPartState();
 
             // Clear 버튼 — 파괴적 액션 스타일
             _clearButton.Apply(ButtonStyles.Danger, _clearButtonText);
 
             // Clear 버튼 텍스트 명시화
-            if (_clearButtonText != null)
-                _clearButtonText.text = "Clear Draft";
+            _clearButtonText.text = "Clear Draft";
+        }
+
+        public void SetFocusedPart(GarageEditorFocus focusedPart)
+        {
+            _focusedPart = focusedPart;
+
+            _frameSelectorView.ApplyMobileTypography();
+            _firepowerSelectorView.ApplyMobileTypography();
+            _mobilitySelectorView.ApplyMobileTypography();
+            ApplyFocusedPartState();
+        }
+
+        private void ApplyFocusedPartState()
+        {
+            _frameSelectorView.gameObject.SetActive(_focusedPart == GarageEditorFocus.Frame);
+            _firepowerSelectorView.gameObject.SetActive(_focusedPart == GarageEditorFocus.Firepower);
+            _mobilitySelectorView.gameObject.SetActive(_focusedPart == GarageEditorFocus.Mobility);
         }
     }
 }

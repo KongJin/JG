@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Public+Sans:wght@300;400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#690005",
+                        "on-secondary": "#00363d",
+                        "surface-tint": "#ffb778",
+                        "secondary-fixed-dim": "#00daf3",
+                        "on-surface-variant": "#dcc2ae",
+                        "tertiary-fixed-dim": "#ffb3b3",
+                        "surface-container-lowest": "#0c0e10",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#00616d",
+                        "on-tertiary-fixed": "#400009",
+                        "on-tertiary": "#680014",
+                        "surface-dim": "#121416",
+                        "secondary": "#bdf4ff",
+                        "inverse-surface": "#e2e2e5",
+                        "on-surface": "#e2e2e5",
+                        "error-container": "#93000a",
+                        "primary": "#ffb97c",
+                        "primary-container": "#ff9100",
+                        "outline": "#a48c7a",
+                        "on-primary-fixed-variant": "#6c3a00",
+                        "surface-variant": "#333537",
+                        "error": "#ffb4ab",
+                        "surface-bright": "#38393c",
+                        "surface-container-highest": "#333537",
+                        "on-primary": "#4c2700",
+                        "on-primary-container": "#633500",
+                        "secondary-fixed": "#9cf0ff",
+                        "background": "#121416",
+                        "surface-container-low": "#1a1c1e",
+                        "on-tertiary-container": "#87001d",
+                        "tertiary-container": "#ff8b8d",
+                        "primary-fixed-dim": "#ffb778",
+                        "inverse-on-surface": "#2f3133",
+                        "surface-container-high": "#282a2c",
+                        "primary-fixed": "#ffdcc1",
+                        "on-primary-fixed": "#2e1500",
+                        "on-secondary-fixed-variant": "#004f58",
+                        "outline-variant": "#564334",
+                        "surface-container": "#1e2022",
+                        "tertiary": "#ffb5b5",
+                        "inverse-primary": "#8e4e00",
+                        "surface": "#121416",
+                        "tertiary-fixed": "#ffdad9",
+                        "on-tertiary-fixed-variant": "#920021",
+                        "on-secondary-fixed": "#001f24",
+                        "on-background": "#e2e2e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Public Sans"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanline {
+            background: linear-gradient(to top, rgba(255, 185, 124, 0.2) 0%, rgba(255, 145, 0, 0.4) 100%);
+        }
+        .data-grid {
+            background-size: 20px 20px;
+            background-image: linear-gradient(to right, rgba(164, 140, 122, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(164, 140, 122, 0.05) 1px, transparent 1px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-4 h-14 bg-[#121416] border-l-4 border-[#FFB97C] fixed top-0 z-50">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#FFB97C]" data-icon="terminal">terminal</span>
+<h1 class="text-lg font-black text-[#FFB97C] tracking-tighter font-headline">TACTICAL.INTEL.OPS</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex flex-col items-end">
+<span class="font-headline text-[10px] uppercase tracking-widest text-outline">OP_ID: 882-KRAKEN</span>
+<span class="font-headline text-xs font-bold text-secondary">RANK: VANGUARD</span>
+</div>
+<button class="hover:bg-[#333537] transition-colors p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#FFB97C]" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<main class="pt-20 pb-24 px-4 max-w-5xl mx-auto min-h-screen flex flex-col">
+<!-- Player Status Bar (Mobile Visibility) -->
+<div class="md:hidden flex justify-between items-center bg-surface-container-lowest border-l-2 border-secondary mb-6 p-3">
+<div class="flex flex-col">
+<span class="font-label text-[10px] text-outline tracking-[0.1em] uppercase">Current Operative</span>
+<span class="font-headline font-bold text-primary">KRAKEN.EXE</span>
+</div>
+<div class="text-right">
+<span class="font-label text-[10px] text-outline tracking-[0.1em] uppercase">Latency</span>
+<span class="font-headline font-bold text-secondary">24MS</span>
+</div>
+</div>
+<!-- Room List Section -->
+<section class="flex-grow">
+<div class="flex justify-between items-end mb-4 border-b border-outline-variant pb-2">
+<h2 class="font-headline font-bold text-sm tracking-[0.2em] uppercase text-on-surface">Active Operations</h2>
+<span class="font-label text-[10px] text-primary bg-primary/10 px-2 py-0.5">AUTO_REFRESH: ON</span>
+</div>
+<!-- List State: Populated -->
+<div class="space-y-1">
+<!-- Item 1 -->
+<div class="flex items-center justify-between p-3 bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer border-l-2 border-transparent hover:border-primary">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="security_update_good">security_update_good</span>
+</div>
+<div>
+<div class="font-headline font-bold text-sm text-on-surface uppercase tracking-tight">Data Extraction: Sector 7</div>
+<div class="flex gap-3 mt-1">
+<span class="font-label text-[10px] text-outline uppercase">Host: Ghost_Unit</span>
+<span class="font-label text-[10px] text-tertiary uppercase flex items-center gap-1">
+<span class="w-1 h-1 bg-tertiary"></span> Hard
+                                </span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="font-headline font-bold text-sm text-on-surface">2/4</div>
+<div class="font-label text-[10px] text-secondary tracking-tighter uppercase">In Lobby</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest hover:bg-surface-container-high transition-colors group cursor-pointer border-l-2 border-transparent hover:border-primary">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="search">search</span>
+</div>
+<div>
+<div class="font-headline font-bold text-sm text-on-surface uppercase tracking-tight">Reconnaissance: Iron-Ridge</div>
+<div class="flex gap-3 mt-1">
+<span class="font-label text-[10px] text-outline uppercase">Host: Neon_Scythe</span>
+<span class="font-label text-[10px] text-secondary uppercase flex items-center gap-1">
+<span class="w-1 h-1 bg-secondary"></span> Normal
+                                </span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="font-headline font-bold text-sm text-on-surface">3/4</div>
+<div class="font-label text-[10px] text-primary tracking-tighter uppercase">Briefing...</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex items-center justify-between p-3 bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer border-l-2 border-transparent hover:border-primary">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="grid_view">grid_view</span>
+</div>
+<div>
+<div class="font-headline font-bold text-sm text-on-surface uppercase tracking-tight">Terminal Breach: LV-426</div>
+<div class="flex gap-3 mt-1">
+<span class="font-label text-[10px] text-outline uppercase">Host: Commander_X</span>
+<span class="font-label text-[10px] text-tertiary uppercase flex items-center gap-1">
+<span class="w-1 h-1 bg-tertiary"></span> Elite
+                                </span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="font-headline font-bold text-sm text-on-surface">1/4</div>
+<div class="font-label text-[10px] text-secondary tracking-tighter uppercase">In Lobby</div>
+</div>
+</div>
+</div>
+<!-- Empty State Illustration/Readout -->
+<div class="mt-8 relative h-48 w-full border border-outline-variant/20 data-grid flex flex-col items-center justify-center overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent opacity-20"></div>
+<span class="material-symbols-outlined text-outline/30 text-5xl mb-2 animate-pulse" data-icon="radar">radar</span>
+<p class="font-headline text-[10px] tracking-[0.3em] uppercase text-outline/60 text-center">Scanning For Sub-Space Signatures...</p>
+<div class="flex gap-1 mt-4">
+<div class="w-2 h-0.5 bg-primary"></div>
+<div class="w-4 h-0.5 bg-primary/30"></div>
+<div class="w-2 h-0.5 bg-primary"></div>
+</div>
+</div>
+</section>
+<!-- Secondary Actions Area -->
+<div class="mt-10 space-y-4">
+<button class="w-full h-14 bg-primary text-on-primary-fixed font-headline font-black text-sm tracking-[0.2em] uppercase flex items-center justify-center gap-3 active:scale-95 transition-transform scanline">
+<span class="material-symbols-outlined" data-icon="add_box" style="font-variation-settings: 'FILL' 1;">add_box</span>
+                Establish New Link
+            </button>
+<div class="flex justify-center">
+<button class="font-headline text-[10px] tracking-[0.15em] text-outline uppercase flex items-center gap-2 hover:text-secondary transition-colors py-2 border-b border-transparent hover:border-secondary">
+<span class="material-symbols-outlined text-xs" data-icon="filter_list">filter_list</span>
+                    Operation Filters
+                </button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-stretch bg-[#121416] border-t-2 border-[#333537] z-50">
+<a class="flex flex-col items-center justify-center text-[#FFB97C] border-t-2 border-[#FFB97C] pt-2 pb-3 w-full bg-[#1C1E20] transition-transform active:translate-y-0.5" href="#">
+<span class="material-symbols-outlined" data-icon="tactic" style="font-variation-settings: 'FILL' 1;">tactic</span>
+<span class="font-['Space_Grotesk'] uppercase tracking-[0.05em] text-[10px] font-bold">LOBBY</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#A48C7A] pt-2 pb-3 w-full hover:bg-[#0C0E10] transition-transform active:translate-y-0.5" href="#">
+<span class="material-symbols-outlined" data-icon="construction">construction</span>
+<span class="font-['Space_Grotesk'] uppercase tracking-[0.05em] text-[10px] font-bold">GARAGE</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#A48C7A] pt-2 pb-3 w-full hover:bg-[#0C0E10] transition-transform active:translate-y-0.5" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-['Space_Grotesk'] uppercase tracking-[0.05em] text-[10px] font-bold">SQUAD</span>
+</a>
+</nav>
+<!-- Decorative Corner Accents -->
+<div class="fixed top-20 right-4 pointer-events-none opacity-20 hidden lg:block">
+<div class="border-t-2 border-r-2 border-primary w-12 h-12"></div>
+</div>
+<div class="fixed bottom-24 left-4 pointer-events-none opacity-20 hidden lg:block">
+<div class="border-b-2 border-l-2 border-primary w-12 h-12"></div>
+</div>
+</body></html>

@@ -39,11 +39,11 @@ namespace Features.Lobby.Presentation
         [Required, SerializeField]
         private RoomItemView _roomItemPrefab;
 
-        [Header("Room List - optional")]
-        [SerializeField]
+        [Header("Room List")]
+        [Required, SerializeField]
         private TMP_Text _roomListCountText;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _roomListEmptyStateText;
 
         private LobbyUseCases _useCases;
@@ -56,9 +56,7 @@ namespace Features.Lobby.Presentation
             _useCases = useCases;
             _eventPublisher = eventPublisher;
             _roomItemPool = new GameObjectPool(_roomItemPrefab.gameObject, _roomListContent);
-
-            if (_createRoomButton != null)
-                _createRoomButton.onClick.AddListener(HandleCreateRoom);
+            _createRoomButton?.onClick.AddListener(HandleCreateRoom);
 
             UpdateListChrome(0);
         }
@@ -99,9 +97,9 @@ namespace Features.Lobby.Presentation
 
         private void HandleCreateRoom()
         {
-            var roomName = _roomNameInput != null ? _roomNameInput.text : "New Room";
+            var roomName = _roomNameInput != null ? _roomNameInput.text : "Room";
             var capacityText = _capacityInput != null ? _capacityInput.text : "4";
-            var displayName = _displayNameInput != null ? _displayNameInput.text : "Player";
+            var displayName = _displayNameInput != null ? _displayNameInput.text : string.Empty;
 
             if (!int.TryParse(capacityText, out var capacity))
                 capacity = 4;
@@ -114,7 +112,7 @@ namespace Features.Lobby.Presentation
 
         private void OnJoinRoomClicked(DomainEntityId roomId)
         {
-            var displayName = _displayNameInput != null ? _displayNameInput.text : "Player";
+            var displayName = _displayNameInput != null ? _displayNameInput.text : string.Empty;
             var result = _useCases.JoinRoom(roomId, displayName);
             UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
         }
@@ -129,15 +127,24 @@ namespace Features.Lobby.Presentation
         private void UpdateListChrome(int roomCount)
         {
             if (_roomListCountText != null)
+            {
+                var countBadge = _roomListCountText.transform.parent != null
+                    ? _roomListCountText.transform.parent.gameObject
+                    : null;
+                countBadge?.SetActive(roomCount > 0);
+
                 _roomListCountText.text = roomCount switch
                 {
                     <= 0 => "0 open rooms",
                     1 => "1 open room",
                     _ => $"{roomCount} open rooms",
                 };
+            }
 
             if (_roomListEmptyStateText != null)
+            {
                 _roomListEmptyStateText.gameObject.SetActive(roomCount <= 0);
+            }
         }
     }
 }

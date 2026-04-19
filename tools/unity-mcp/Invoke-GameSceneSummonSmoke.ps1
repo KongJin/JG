@@ -16,6 +16,120 @@ $ErrorActionPreference = "Stop"
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
 $startedPlayHere = $false
 
+function Get-FirstSummonSlotPath {
+    param(
+        [string]$Root
+    )
+
+    $hierarchy = Invoke-McpGetJson -Root $Root -SubPath "/scene/hierarchy"
+    $slotRowPrefix = "/HudCanvas/UnitSummonUi/SlotRow/"
+
+    function Find-NodePath {
+        param([object[]]$Nodes)
+
+        foreach ($node in @($Nodes)) {
+            if ($null -eq $node) {
+                continue
+            }
+
+            $path = [string]$node.path
+            if ($path.StartsWith($slotRowPrefix, [System.StringComparison]::Ordinal)) {
+                return $path
+            }
+
+            $children = @($node.children)
+            if ($children.Count -gt 0) {
+                $childResult = Find-NodePath -Nodes $children
+                if (-not [string]::IsNullOrWhiteSpace($childResult)) {
+                    return $childResult
+                }
+            }
+        }
+
+        return $null
+    }
+
+    $slotPath = Find-NodePath -Nodes @($hierarchy.nodes)
+    if ([string]::IsNullOrWhiteSpace($slotPath)) {
+        throw "No summon slot instance found under /HudCanvas/UnitSummonUi/SlotRow."
+    }
+
+    return $slotPath
+}
+
+function Get-UiTextFromGameObject {
+    param(
+        [string]$Root,
+        [string]$Path
+    )
+
+    $response = Invoke-RestMethod `
+        -Method Post `
+        -Uri "$Root/gameobject/find" `
+        -ContentType "application/json" `
+        -Body (@{
+            path = $Path
+            lightweight = $false
+        } | ConvertTo-Json -Compress)
+
+    foreach ($component in @($response.components)) {
+        if ($component.typeName -ne "Text") {
+            continue
+        }
+
+        foreach ($property in @($component.properties)) {
+            if ($property.name -eq "m_Text") {
+                return [string]$property.value
+            }
+        }
+    }
+
+    return ""
+}
+
+function Invoke-PlacementConfirmUntilSummoned {
+    param(
+        [string]$Root,
+        [int]$PauseMs = 2000
+    )
+
+    $placementMethods = @(
+        "ConfirmPlacementAtDefaultPoint",
+        "ConfirmPlacementAtPlacementCenter"
+    )
+
+    foreach ($methodName in $placementMethods) {
+        $tap = Invoke-McpUiInvoke -Root $Root -Path "/HudCanvas/UnitSummonUi" -Method "custom" -CustomMethod $methodName
+
+        Start-Sleep -Milliseconds $PauseMs
+
+        $battleEntity = Invoke-RestMethod `
+            -Method Post `
+            -Uri "$Root/gameobject/find" `
+            -ContentType "application/json" `
+            -Body (@{
+                name = "BattleEntity(Clone)"
+                lightweight = $false
+            } | ConvertTo-Json -Compress)
+
+        if ($battleEntity.found) {
+            return [PSCustomObject]@{
+                summoned = $true
+                tap = $tap
+                tapPoint = $methodName
+                battleEntity = $battleEntity
+            }
+        }
+    }
+
+    return [PSCustomObject]@{
+        summoned = $false
+        tap = $null
+        tapPoint = $null
+        battleEntity = $null
+    }
+}
+
 function Save-CurrentGarageDraft {
     $saveButtonPath = "/Canvas/GaragePageRoot/GarageContentRow/RightRail/ResultPane/SaveButton"
 
@@ -132,29 +246,28 @@ try {
 
     Start-Sleep -Seconds 2
 
-    $invoke = Invoke-McpUiInvoke -Root $root -Path "/HudCanvas/UnitSummonUi/SlotRow/UnitSlotTemplate(Clone)" -Method "click"
-    Start-Sleep -Seconds 2
+    $summonSlotPath = Get-FirstSummonSlotPath -Root $root
+    $slotSelectionInvoke = Invoke-McpUiInvoke -Root $root -Path $summonSlotPath -Method "click"
+    Start-Sleep -Milliseconds 700
 
-    $battleEntity = Invoke-RestMethod `
-        -Method Post `
-        -Uri "$root/gameobject/find" `
-        -ContentType "application/json" `
-        -Body (@{
-            name = "BattleEntity(Clone)"
-            lightweight = $false
-        } | ConvertTo-Json -Compress)
+    $placementAttempt = Invoke-PlacementConfirmUntilSummoned -Root $root
+    $feedbackText = Get-UiTextFromGameObject -Root $root -Path "/HudCanvas/UnitSummonUi/PlacementErrorView/Text"
 
     $capture = Invoke-McpScreenshotCapture -Root $root -OutputPath $OutputPath -Overwrite
     $logs = Get-McpRecentLogs -Root $root -Limit 240
     $errors = Get-McpRecentErrors -Root $root -Limit 80
 
     $result = [PSCustomObject]@{
-        success = $true
+        success = [bool]$placementAttempt.summoned
         root = $root
         play = $session.play
         roomName = $roomName
-        invoke = $invoke
-        battleEntity = $battleEntity
+        summonSlotPath = $summonSlotPath
+        slotSelectionInvoke = $slotSelectionInvoke
+        battlefieldTap = $placementAttempt.tap
+        battlefieldTapPoint = $placementAttempt.tapPoint
+        dockFeedbackText = $feedbackText
+        battleEntity = $placementAttempt.battleEntity
         screenshot = $capture
         recentLogCount = $logs.count
         recentErrorCount = $errors.count

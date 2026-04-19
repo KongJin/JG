@@ -1,6 +1,6 @@
 ﻿{
     "success":  true,
-    "generatedAt":  "2026-04-19 01:28:16+09:00",
+    "generatedAt":  "2026-04-19 17:59:36+09:00",
     "scenePath":  "Assets/Scenes/CodexLobbyScene.unity",
     "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\lobby-garage-page-switch-result.json",
     "uiPaths":  {
@@ -48,22 +48,22 @@
                          "type":  "Warning",
                          "message":  "PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
                          "count":  2,
-                         "latestTimestampUtc":  "2026-04-18 16:28:13.728",
+                         "latestTimestampUtc":  "2026-04-19 08:59:34.610",
                          "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nPhoton.Pun.PhotonNetwork:OnRegionsPinged (Photon.Realtime.RegionHandler) (at Assets/FromStore/Photon/PhotonUnityNetworking/Code/PhotonNetworkPart.cs:2546)\nPhoton.Realtime.MonoBehaviourEmpty:Update () (at Assets/FromStore/Photon/PhotonRealtime/Code/RegionHandler.cs:884)\n"
                      },
                      {
                          "type":  "Warning",
-                         "message":  "[Firestore] Document not found (66ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                         "message":  "[Firestore] Document not found (106ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
                          "count":  2,
-                         "latestTimestampUtc":  "2026-04-18 16:28:12.441",
-                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRestPort/\u003c\u003ec__DisplayClass31_0:\u003cSendRequestSafeInternal\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRestPort.cs:414)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
+                         "latestTimestampUtc":  "2026-04-19 08:59:33.717",
+                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
                      },
                      {
                          "type":  "Warning",
-                         "message":  "[Firestore] Document not found (27ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                         "message":  "[Firestore] Document not found (8205ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
                          "count":  2,
-                         "latestTimestampUtc":  "2026-04-18 16:28:12.470",
-                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRestPort/\u003c\u003ec__DisplayClass31_0:\u003cSendRequestSafeInternal\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRestPort.cs:414)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
+                         "latestTimestampUtc":  "2026-04-19 08:59:33.610",
+                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
                      }
                  ],
     "errors":  [

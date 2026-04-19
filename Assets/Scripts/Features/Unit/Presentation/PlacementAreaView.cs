@@ -20,7 +20,11 @@ namespace Features.Unit.Presentation
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
         private PlacementArea _area;
+        private Material _idleMaterial;
         private Material _activeMaterial;
+        private Material _invalidMaterial;
+        private bool _selectionActive;
+        private Coroutine _invalidFeedbackRoutine;
 
         /// <summary>
         /// 배치 영역을 기반으로 메쉬를 생성하고 Material을 설정한다.
@@ -29,13 +33,19 @@ namespace Features.Unit.Presentation
         {
             _area = area;
             _validMaterial = validMaterial;
-            _activeMaterial = validMaterial;
+            _idleMaterial = validMaterial != null
+                ? validMaterial
+                : PlacementAreaMaterialFactory.CreateIdleMaterial();
+            _activeMaterial = _highlightMaterial != null
+                ? _highlightMaterial
+                : PlacementAreaMaterialFactory.CreateActiveMaterial();
+            _invalidMaterial = PlacementAreaMaterialFactory.CreateInvalidMaterial();
 
             _meshFilter = GetComponent<MeshFilter>();
             _meshRenderer = GetComponent<MeshRenderer>();
 
             BuildQuadMesh();
-            ApplyMaterial(_validMaterial);
+            ApplyMaterial(_idleMaterial);
         }
 
         /// <summary>
@@ -43,20 +53,29 @@ namespace Features.Unit.Presentation
         /// </summary>
         public void SetHighlight(bool isValid)
         {
-            if (_highlightMaterial != null)
+            ApplyMaterial(isValid ? _activeMaterial : _idleMaterial);
+        }
+
+        public void SetSelectionActive(bool active)
+        {
+            _selectionActive = active;
+            ApplyMaterial(active ? _activeMaterial : _idleMaterial);
+        }
+
+        public void ShowInvalidPlacementFeedback()
+        {
+            if (!isActiveAndEnabled)
             {
-                ApplyMaterial(isValid ? _highlightMaterial : _validMaterial);
+                ApplyMaterial(_selectionActive ? _activeMaterial : _idleMaterial);
+                return;
             }
-            else
+
+            if (_invalidFeedbackRoutine != null)
             {
-                // 하이라이트 Material이 없으면 색상으로 피드백
-                if (_meshRenderer != null && _meshRenderer.sharedMaterial != null)
-                {
-                    var mat = _meshRenderer.sharedMaterial;
-                    var baseColor = isValid ? new Color(0f, 1f, 0f, 0.3f) : new Color(1f, 0f, 0f, 0.3f);
-                    mat.color = baseColor;
-                }
+                StopCoroutine(_invalidFeedbackRoutine);
             }
+
+            _invalidFeedbackRoutine = StartCoroutine(ShowInvalidFeedbackRoutine());
         }
 
         /// <summary>
@@ -115,6 +134,14 @@ namespace Features.Unit.Presentation
             {
                 _meshRenderer.sharedMaterial = material;
             }
+        }
+
+        private System.Collections.IEnumerator ShowInvalidFeedbackRoutine()
+        {
+            ApplyMaterial(_invalidMaterial);
+            yield return new WaitForSeconds(0.25f);
+            ApplyMaterial(_selectionActive ? _activeMaterial : _idleMaterial);
+            _invalidFeedbackRoutine = null;
         }
 
         private void OnValidate()

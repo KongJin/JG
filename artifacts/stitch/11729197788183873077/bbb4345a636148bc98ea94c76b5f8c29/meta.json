@@ -1,0 +1,12 @@
+{
+  "fetchedAt": "2026-04-19T10:05:23.450Z",
+  "projectId": "11729197788183873077",
+  "screenId": "bbb4345a636148bc98ea94c76b5f8c29",
+  "screenName": "Lobby",
+  "prompt": "Create a mobile-first tactical sci-fi game lobby screen for a co-op defense game.\n\nPurpose:\n- this is the matchmaking home screen\n- the room list must be the first thing the player reads\n\nRequired hierarchy:\n- header card first\n- rooms section second\n- create room card third\n- garage summary card fourth\n\nBehavior and emphasis:\n- create room is secondary, not hero\n- garage entry is visible but quieter than room actions\n- empty room state must still feel like a finished card, not a blank panel\n- avoid decorative filler panels\n\nStyle:\n- dark tactical sci-fi dashboard\n- compact, readable, bold but practical\n- mobile-first only\n- no desktop/web-only patterns\n- no generic SaaS/admin layout",
+  "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzBiN2ViNzMzMjYzZjRjNmM5N2Q0MjMwN2YyMTFhM2VlEgsSBxC5mdrmrAsYAZIBJAoKcHJvamVjdF9pZBIWQhQxMTcyOTE5Nzc4ODE4Mzg3MzA3Nw&filename=&opi=96797242",
+  "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0uiz9HVy7YBC5NMpBGgw12-36u_jgP3knJk6_80iICojC3HeSAvBq_cQmix-DUZe_i-SCoVW8-6uCslkqhKajvvVGbC0LoEIihcGtZz2JLNYpK18Axj_jAtaYq6uohfAP5bCtZ1oR_sCXjFkeJvO8aL0YQuqAtrL344xcTWthELXQ7wDWFOUDJ7mMd-2Tohsbnz67n2VvJHgccnxGvwXZ1Fa6FtduvZNtPvj5pdH_jJsI3LqADXPRYGg5fV6",
+  "htmlPath": "C:\\Users\\SOL\\Documents\\JG\\artifacts\\stitch\\11729197788183873077\\bbb4345a636148bc98ea94c76b5f8c29\\screen.html",
+  "imagePath": "C:\\Users\\SOL\\Documents\\JG\\artifacts\\stitch\\11729197788183873077\\bbb4345a636148bc98ea94c76b5f8c29\\screen.png",
+  "imageContentType": "image/png"
+}

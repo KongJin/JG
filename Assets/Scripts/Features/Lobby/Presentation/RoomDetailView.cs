@@ -24,7 +24,7 @@ namespace Features.Lobby.Presentation
         [Required, SerializeField]
         private TMP_Text _memberCountText;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _difficultyText;
 
         [Header("Member List")]
@@ -115,19 +115,15 @@ namespace Features.Lobby.Presentation
         {
             _currentRoomId = room.Id;
 
-            if (_roomNameText != null)
-                _roomNameText.text = room.Name;
-            if (_memberCountText != null)
-                _memberCountText.text = $"{room.Members.Count}/{room.Capacity}";
-            if (_difficultyText != null)
-                _difficultyText.text = $"Difficulty: {DifficultyPresetFormatter.ToShortLabel(room.DifficultyPresetId)}";
+            _roomNameText.text = room.Name;
+            _memberCountText.text = $"{room.Members.Count}/{room.Capacity}";
+            _difficultyText.text = $"Difficulty: {DifficultyPresetFormatter.ToShortLabel(room.DifficultyPresetId)}";
 
             RenderMemberList(room.Members);
             UpdateLocalReadyState(room.Members);
             UpdateReadyButtonState();
 
-            if (_startGameButton != null)
-                _startGameButton.interactable = room.OwnerId.Equals(_localMemberId);
+            _startGameButton.interactable = room.OwnerId.Equals(_localMemberId);
         }
 
         private void RenderMemberList(IReadOnlyList<RoomMemberSnapshot> members)

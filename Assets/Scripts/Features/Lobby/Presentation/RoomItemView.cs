@@ -17,10 +17,10 @@ namespace Features.Lobby.Presentation
         [Required, SerializeField]
         private TMP_Text _memberCountText;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _difficultyText;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _roomMetaText;
 
         [Required, SerializeField]
@@ -63,16 +63,26 @@ namespace Features.Lobby.Presentation
             _roomId = roomId;
             _onJoinClicked = onJoinClicked;
 
-            _roomNameText.text = name;
-            _memberCountText.text = $"{playerCount}/{capacity}";
-            if (_difficultyText != null)
-                _difficultyText.text = DifficultyPresetFormatter.ToShortLabel(difficultyPresetId);
-            if (_roomMetaText != null)
-                _roomMetaText.text = $"{DifficultyPresetFormatter.ToShortLabel(difficultyPresetId)} · {playerCount}/{capacity} pilots";
+            var difficultyLabel = DifficultyPresetFormatter.ToShortLabel(difficultyPresetId);
 
-            _joinButton.onClick.RemoveAllListeners();
-            _joinButton.onClick.AddListener(HandleJoinClicked);
-            _joinButton.interactable = playerCount < capacity;
+            if (_roomNameText != null)
+                _roomNameText.text = name;
+
+            if (_memberCountText != null)
+                _memberCountText.text = $"{playerCount}/{capacity}";
+
+            if (_difficultyText != null)
+                _difficultyText.text = difficultyLabel;
+
+            if (_roomMetaText != null)
+                _roomMetaText.text = $"{difficultyLabel} · {playerCount}/{capacity} pilots";
+
+            if (_joinButton != null)
+            {
+                _joinButton.onClick.RemoveAllListeners();
+                _joinButton.onClick.AddListener(HandleJoinClicked);
+                _joinButton.interactable = playerCount < capacity;
+            }
         }
 
         private void HandleJoinClicked()

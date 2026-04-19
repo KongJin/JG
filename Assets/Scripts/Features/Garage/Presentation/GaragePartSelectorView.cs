@@ -29,13 +29,13 @@ namespace Features.Garage.Presentation
 
         private void Awake()
         {
-            ApplyTypography();
+            ApplyMobileTypography();
             ApplyButtonStyles();
         }
 
         private void OnEnable()
         {
-            ApplyTypography();
+            ApplyMobileTypography();
         }
 
         public void Bind()
@@ -63,55 +63,40 @@ namespace Features.Garage.Presentation
 
         public void Render(string valueText, string hintText)
         {
-            if (_valueText != null)
-            {
-                _valueText.text = valueText;
-                bool isEmpty = string.IsNullOrEmpty(valueText) || valueText.StartsWith("< ");
-                _valueText.color = isEmpty ? ThemeColors.TextMuted : ThemeColors.TextPrimary;
-            }
+            _valueText.text = valueText;
+            bool isEmpty = string.IsNullOrEmpty(valueText) || valueText.StartsWith("< ");
+            _valueText.color = isEmpty ? ThemeColors.TextMuted : ThemeColors.TextPrimary;
 
-            if (_hintText != null)
-            {
-                _hintText.text = hintText;
-                _hintText.color = ThemeColors.TextSecondary;
-            }
-
-            if (_titleText != null)
-            {
-                _titleText.color = ThemeColors.TextPrimary;
-            }
+            _hintText.text = hintText;
+            _hintText.color = ThemeColors.TextSecondary;
+            _titleText.color = ThemeColors.TextPrimary;
         }
 
-        private void ApplyTypography()
+        public void ApplyMobileTypography()
         {
-            if (_titleText != null)
-            {
-                _titleText.fontSize = _titleFontSize;
-                _titleText.alignment = TextAlignmentOptions.TopLeft;
-                _titleText.textWrappingMode = TextWrappingModes.NoWrap;
-                _titleText.overflowMode = TextOverflowModes.Ellipsis;
-            }
+            float titleFontSize = _titleFontSize + 2f;
+            float valueFontSize = _valueFontSize + 3f;
+            float hintFontSize = _hintFontSize + 1f;
 
-            if (_valueText != null)
-            {
-                _valueText.fontSize = _valueFontSize;
-                _valueText.enableAutoSizing = true;
-                _valueText.fontSizeMin = Mathf.Max(10f, _valueFontSize - 4f);
-                _valueText.fontSizeMax = _valueFontSize;
-                _valueText.alignment = TextAlignmentOptions.Center;
-                _valueText.textWrappingMode = TextWrappingModes.NoWrap;
-                _valueText.overflowMode = TextOverflowModes.Ellipsis;
-            }
+            _titleText.fontSize = titleFontSize;
+            _titleText.alignment = TextAlignmentOptions.TopLeft;
+            _titleText.textWrappingMode = TextWrappingModes.NoWrap;
+            _titleText.overflowMode = TextOverflowModes.Ellipsis;
 
-            if (_hintText != null)
-            {
-                _hintText.fontSize = _hintFontSize;
-                _hintText.enableAutoSizing = false;
-                _hintText.fontSizeMax = _hintFontSize;
-                _hintText.alignment = TextAlignmentOptions.TopLeft;
-                _hintText.textWrappingMode = TextWrappingModes.NoWrap;
-                _hintText.overflowMode = TextOverflowModes.Ellipsis;
-            }
+            _valueText.fontSize = valueFontSize;
+            _valueText.enableAutoSizing = true;
+            _valueText.fontSizeMin = Mathf.Max(11f, valueFontSize - 4f);
+            _valueText.fontSizeMax = valueFontSize;
+            _valueText.alignment = TextAlignmentOptions.Center;
+            _valueText.textWrappingMode = TextWrappingModes.NoWrap;
+            _valueText.overflowMode = TextOverflowModes.Ellipsis;
+
+            _hintText.fontSize = hintFontSize;
+            _hintText.enableAutoSizing = false;
+            _hintText.fontSizeMax = hintFontSize;
+            _hintText.alignment = TextAlignmentOptions.TopLeft;
+            _hintText.textWrappingMode = TextWrappingModes.NoWrap;
+            _hintText.overflowMode = TextOverflowModes.Ellipsis;
         }
 
         /// <summary>
@@ -119,8 +104,8 @@ namespace Features.Garage.Presentation
         /// </summary>
         private void ApplyButtonStyles()
         {
-            _prevButton?.Apply(ButtonStyles.Secondary);
-            _nextButton?.Apply(ButtonStyles.Secondary);
+            _prevButton.Apply(ButtonStyles.Secondary);
+            _nextButton.Apply(ButtonStyles.Secondary);
         }
     }
 

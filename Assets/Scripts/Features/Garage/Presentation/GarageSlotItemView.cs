@@ -16,8 +16,8 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private TMP_Text _summaryText;
 
         [Header("Selection Feedback")]
-        [SerializeField] private GameObject _arrowIndicator;
-        [SerializeField] private Image _borderImage;
+        [Required, SerializeField] private GameObject _arrowIndicator;
+        [Required, SerializeField] private Image _borderImage;
 
         [Header("Layout")]
         [SerializeField] private float _slotNumberFontSize = 12f;
@@ -25,7 +25,7 @@ namespace Features.Garage.Presentation
         [SerializeField] private float _summaryFontSize = 10f;
 
         [Header("Animation")]
-        [SerializeField] private CanvasGroup _canvasGroup;
+        [Required, SerializeField] private CanvasGroup _canvasGroup;
 
         public Button Button => _button;
 
@@ -39,10 +39,7 @@ namespace Features.Garage.Presentation
         private void Awake()
         {
             ApplyTypography();
-
-            // CanvasGroup 초기화 (inspector에서 연결됨)
-            if (_canvasGroup != null)
-                _canvasGroup.alpha = 1f;
+            _canvasGroup.alpha = 1f;
         }
 
         private void OnEnable()
@@ -57,63 +54,46 @@ namespace Features.Garage.Presentation
 
             _currentViewModel = viewModel;
 
-            if (_slotNumberText != null)
-                _slotNumberText.text = viewModel.SlotLabel;
-
-            if (_titleText != null)
-                _titleText.text = viewModel.Title;
-
-            if (_summaryText != null)
-                _summaryText.text = viewModel.Summary;
+            _slotNumberText.text = $"{viewModel.SlotLabel}  {viewModel.StatusBadgeText}";
+            _slotNumberText.color = GetStatusTextColor(viewModel);
+            _titleText.text = viewModel.Title;
+            _summaryText.text = viewModel.Summary;
 
             // 배경색 — 페이드 애니메이션 적용
             Color targetColor = GetSlotColor(viewModel);
-            if (_background != null)
+            if (!gameObject.activeInHierarchy)
             {
-                if (!gameObject.activeInHierarchy)
-                {
-                    _background.color = targetColor;
-                }
-                else if (_isTransitioning)
-                {
-                    StopAllCoroutines();
-                    _isTransitioning = false;
-                    StartCoroutine(FadeBackgroundColor(targetColor, 0.15f));
-                }
-                else
-                {
-                    StartCoroutine(FadeBackgroundColor(targetColor, 0.15f));
-                }
+                _background.color = targetColor;
             }
-
-            // 선택 상태 시각 피드백
-            if (_arrowIndicator != null)
-                _arrowIndicator.SetActive(viewModel.ShowArrow);
-
-            if (_borderImage != null)
-                _borderImage.gameObject.SetActive(viewModel.IsSelected);
-
-            if (viewModel.IsSelected)
+            else if (_isTransitioning)
             {
-                if (_borderImage != null)
-                    _borderImage.color = viewModel.HasDraftChanges ? ThemeColors.AccentOrange : ThemeColors.StateSelected;
-
-                if (_canvasGroup != null)
-                    _canvasGroup.alpha = 1f;
+                StopAllCoroutines();
+                _isTransitioning = false;
+                StartCoroutine(FadeBackgroundColor(targetColor, 0.15f));
             }
             else
             {
-                // 빈 슬롯은 약간 더 어둡게 (클릭 가능 표시 유지)
-                if (_background != null && !viewModel.HasCommittedLoadout)
+                StartCoroutine(FadeBackgroundColor(targetColor, 0.15f));
+            }
+
+            _arrowIndicator.SetActive(viewModel.ShowArrow);
+            _borderImage.gameObject.SetActive(viewModel.IsSelected);
+
+            if (viewModel.IsSelected)
+            {
+                _borderImage.color = viewModel.HasDraftChanges ? ThemeColors.AccentOrange : ThemeColors.StateSelected;
+                _canvasGroup.alpha = 1f;
+            }
+            else
+            {
+                if (!viewModel.HasCommittedLoadout)
                 {
                     Color c = _isHovered ? ThemeColors.SlotEmptyHover : ThemeColors.SlotEmpty;
                     _background.color = new Color(c.r, c.g, c.b, 0.6f);
                 }
-                if (_borderImage != null)
-                    _borderImage.gameObject.SetActive(false);
 
-                if (_canvasGroup != null)
-                    _canvasGroup.alpha = 0.85f;
+                _borderImage.gameObject.SetActive(false);
+                _canvasGroup.alpha = 0.85f;
             }
         }
 
@@ -144,6 +124,20 @@ namespace Features.Garage.Presentation
             return ThemeColors.SlotEmpty;
         }
 
+        private static Color GetStatusTextColor(GarageSlotViewModel viewModel)
+        {
+            if (viewModel.IsSelected)
+                return ThemeColors.TextPrimary;
+
+            if (viewModel.HasDraftChanges)
+                return ThemeColors.AccentAmber;
+
+            if (viewModel.HasCommittedLoadout)
+                return ThemeColors.AccentGreen;
+
+            return ThemeColors.TextMuted;
+        }
+
         private System.Collections.IEnumerator FadeBackgroundColor(Color target, float duration)
         {
             _isTransitioning = true;
@@ -170,9 +164,6 @@ namespace Features.Garage.Presentation
 
         private static void ConfigureText(TMP_Text text, float fontSize, bool enableAutoSizing, TextAlignmentOptions alignment)
         {
-            if (text == null)
-                return;
-
             text.fontSize = fontSize;
             text.enableAutoSizing = enableAutoSizing;
             text.fontSizeMin = Mathf.Max(8f, fontSize - 2f);
@@ -181,6 +172,5 @@ namespace Features.Garage.Presentation
             text.textWrappingMode = TextWrappingModes.NoWrap;
             text.overflowMode = TextOverflowModes.Ellipsis;
         }
-
     }
 }

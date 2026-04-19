@@ -90,7 +90,9 @@ namespace Features.Garage
             }
 
             if (_pageController != null)
+            {
                 _pageController.Initialize(this, _panelCatalogFactory.Build(unitCatalog));
+            }
         }
 
         /// <summary>

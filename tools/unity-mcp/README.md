@@ -9,6 +9,7 @@ Lobby/Garage layout recovery is done by direct MCP scene/prefab repair against t
 - Helper module: `tools/unity-mcp/McpHelpers.ps1`
 - Workflow gate: `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1`
 - Canonical page-switch smoke: `tools/unity-mcp/Invoke-LobbyGaragePageSwitchSmoke.ps1`
+- Feature smoke: `tools/unity-mcp/Invoke-GarageSettingsOverlaySmoke.ps1`
 - Feature smoke: `tools/unity-mcp/Invoke-GameSceneSummonSmoke.ps1`
 - Feature smoke: `tools/unity-mcp/Invoke-GameScenePlacementWaveSmoke.ps1`
 - Optional supervised smoke: `tools/unity-mcp/Invoke-GarageReadyFlowSmoke.ps1`
@@ -72,7 +73,12 @@ Required sentinel nodes:
 - `/Canvas/GaragePageRoot/GarageMobileStackRoot`
 - `/Canvas/GaragePageRoot/GarageMobileStackRoot/GarageMobileTabBar`
 - `/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost`
-- `/Canvas/GaragePageRoot/MobileSaveButton`
+- `/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent`
+- `/Canvas/GaragePageRoot/GarageHeaderRow/SettingsButton`
+- `/Canvas/GaragePageRoot/GarageSettingsOverlay`
+- `/Canvas/GaragePageRoot/GarageSettingsOverlay/AccountCard`
+- `/Canvas/GaragePageRoot/MobileSaveDock`
+- `/Canvas/GaragePageRoot/MobileSaveDock/MobileSaveButton`
 - `/Canvas/GaragePageRoot/GarageContentRow/RosterListPane/MobileSlotGrid`
 - `/Canvas/LobbyPageRoot/RoomListPanel`
 - `/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/ListHeaderRow`
@@ -84,18 +90,31 @@ Required sentinel nodes:
 
 Representative serialized reference checks:
 
-- `/Canvas/GaragePageRoot::GaragePageController._responsiveRoot`
-- `/Canvas/GaragePageRoot::GaragePageController._desktopContentRoot`
+- `/Canvas/GaragePageRoot::GaragePageController._rosterListView`
+- `/Canvas/GaragePageRoot::GaragePageController._unitEditorView`
+- `/Canvas/GaragePageRoot::GaragePageController._resultPanelView`
+- `/Canvas/GaragePageRoot::GaragePageController._unitPreviewView`
 - `/Canvas/GaragePageRoot::GaragePageController._mobileContentRoot`
 - `/Canvas/GaragePageRoot::GaragePageController._mobileBodyHost`
-- `/Canvas/GaragePageRoot::GaragePageController._desktopSlotHost`
 - `/Canvas/GaragePageRoot::GaragePageController._mobileSlotHost`
 - `/Canvas/GaragePageRoot::GaragePageController._rightRailRoot`
 - `/Canvas/GaragePageRoot::GaragePageController._mobileTabBar`
 - `/Canvas/GaragePageRoot::GaragePageController._mobileEditTabButton`
+- `/Canvas/GaragePageRoot::GaragePageController._mobileEditTabLabel`
 - `/Canvas/GaragePageRoot::GaragePageController._mobilePreviewTabButton`
+- `/Canvas/GaragePageRoot::GaragePageController._mobilePreviewTabLabel`
 - `/Canvas/GaragePageRoot::GaragePageController._mobileSummaryTabButton`
+- `/Canvas/GaragePageRoot::GaragePageController._mobileSummaryTabLabel`
+- `/Canvas/GaragePageRoot::GaragePageController._garageHeaderSummaryText`
+- `/Canvas/GaragePageRoot::GaragePageController._settingsOpenButton`
+- `/Canvas/GaragePageRoot::GaragePageController._settingsOpenButtonLabel`
+- `/Canvas/GaragePageRoot::GaragePageController._settingsOverlayRoot`
+- `/Canvas/GaragePageRoot::GaragePageController._settingsCloseButton`
+- `/Canvas/GaragePageRoot::GaragePageController._settingsCloseButtonLabel`
+- `/Canvas/GaragePageRoot::GaragePageController._mobileSaveDockRoot`
 - `/Canvas/GaragePageRoot::GaragePageController._mobileSaveButton`
+- `/Canvas/GaragePageRoot::GaragePageController._mobileSaveButtonLabel`
+- `/Canvas/GaragePageRoot::GaragePageController._mobileSaveStateText`
 - `/LobbyView::LobbyView._lobbyPageRoot`
 - `/LobbyView::LobbyView._garagePageRoot`
 - `/LobbyView::LobbyView._roomListView`
@@ -114,6 +133,7 @@ Contract 운영 원칙:
 - page contract owner는 scene/prefab 쪽에서 유지하고, runtime controller는 상태 렌더와 focus 전환까지만 담당한다.
 - 특정 controller 하나에 serialized ref를 계속 몰아 넣어 scene contract를 대표하게 만들지 않는다.
 - smoke/debug 전용 진입점은 가능하면 별도 bridge component로 분리한다.
+- 현재 Garage shell은 desktop/mobile 분기 없이 mobile-first 단일 구조를 기준으로 유지한다.
 
 The contract route is considered healthy when it returns:
 
@@ -205,6 +225,19 @@ This is the default runtime proof for the current Lobby/Garage UI contract.
 
 ## Feature Smoke
 
+Run the Garage settings overlay smoke like this:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GarageSettingsOverlaySmoke.ps1
+```
+
+Outputs:
+
+- `artifacts/unity/garage-settings-smoke-before-open.png`
+- `artifacts/unity/garage-settings-smoke-open.png`
+- `artifacts/unity/garage-settings-smoke-closed.png`
+- `artifacts/unity/garage-settings-smoke-result.json`
+
 Run the lobby -> game -> summon smoke like this:
 
 ```powershell
@@ -229,7 +262,8 @@ The main retained acceptance path is:
 
 1. workflow gate
 2. canonical page-switch smoke
-3. `GameScene` summon smoke when the change reaches lobby-to-game flow
+3. Garage settings overlay smoke when the change touches Garage account/settings placement
+4. `GameScene` summon smoke when the change reaches lobby-to-game flow
 
 Use `Invoke-GameScenePlacementWaveSmoke.ps1` when you need to observe more than summon availability:
 

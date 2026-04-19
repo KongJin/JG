@@ -2,12 +2,13 @@
 {
     public sealed class SingleHitResolver : IHitResolver
     {
-        public IHitResult Resolve(Projectile projectile)
+        public IHitResult Resolve(global::Features.Projectile.Domain.Projectile projectile)
         {
             return new DestroyHitResult();
         }
     }
 }
+
 
 
 

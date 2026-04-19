@@ -9,8 +9,7 @@
 
 이 문서는 `CodexLobbyScene` 안에 `Garage`를 탭 페이지로 붙이는 작업의 구현 계획이다.
 공식 진행 상태는 [`progress.md`](./progress.md)에서 관리한다.
-레이아웃/컴포넌트 계약은 [`ui_foundations.md`](../design/ui_foundations.md)와
-[`figma_ui_system_plan.md`](./figma_ui_system_plan.md)를 우선한다.
+레이아웃/컴포넌트 계약은 [`ui_foundations.md`](../design/ui_foundations.md)를 우선한다.
 
 레퍼런스 방향:
 - 상단 슬롯 스트립 + 하단 넓은 편집기 구조를 기본 레이아웃으로 사용한다.

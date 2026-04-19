@@ -1,0 +1,12 @@
+{
+  "fetchedAt": "2026-04-19T10:06:42.095Z",
+  "projectId": "11729197788183873077",
+  "screenId": "1fe9da270421469b8838f1450cbbfc57",
+  "screenName": "Garage",
+  "prompt": "Create a mobile-first tactical sci-fi game garage screen for repeated short play sessions.\n\nPurpose:\n- this is a unit roster editing workspace\n- slot selection must be the first structure the player reads\n\nRequired structure:\n- slot selection first\n- single continuous scroll body\n- focused part editor for the selected part\n- preview and summary should feel like finished cards\n- fixed persistent Save Roster dock\n- settings is only an auxiliary overlay trigger\n\nBehavior and emphasis:\n- the selected slot must be immediately obvious\n- avoid cluttered editors\n- avoid blank preview placeholders\n- save roster must remain the clearest persistent action\n\nStyle:\n- dark hangar atmosphere\n- compact game dashboard\n- bold but practical\n- mobile-first only\n- no desktop/web-only patterns\n- no generic SaaS/admin layout",
+  "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzcyY2MyNmY4YTFiMDQyZWJhNGYwNWZkZTAwN2FlMjczEgsSBxC5mdrmrAsYAZIBJAoKcHJvamVjdF9pZBIWQhQxMTcyOTE5Nzc4ODE4Mzg3MzA3Nw&filename=&opi=96797242",
+  "imageUrl": "https://lh3.googleusercontent.com/aida/ADBb0uhLtB_RLZwOQBW9LgksT7SPAo3U8zKnJ8CP8hJHuRg9RHf-C0R2-5uEW3Zj1r63gG7iSW5H7V1vMt7sgXv2U6SKOjNuxs1IwTjLAWXHdW0AjR_Ol9xoF0BkVlHGhypZaou2S42hZhinHDPBM82uHTxHCBiJyD--0PE58AtOUXFu2GBfdjarAcnwckCpdm02l51XRL1cRfxNINTM-OZV2vu5QAH4I6p4b2EsLMPy2iKuftL5MLLTbdpXi-iA",
+  "htmlPath": "C:\\Users\\SOL\\Documents\\JG\\artifacts\\stitch\\11729197788183873077\\1fe9da270421469b8838f1450cbbfc57\\screen.html",
+  "imagePath": "C:\\Users\\SOL\\Documents\\JG\\artifacts\\stitch\\11729197788183873077\\1fe9da270421469b8838f1450cbbfc57\\screen.png",
+  "imageContentType": "image/png"
+}

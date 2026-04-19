@@ -13,10 +13,10 @@ namespace Features.Lobby.Presentation
     public sealed class LobbyView : MonoBehaviour
     {
         [Header("Pages")]
-        [SerializeField]
+        [Required, SerializeField]
         private GameObject _lobbyPageRoot;
 
-        [SerializeField]
+        [Required, SerializeField]
         private GameObject _garagePageRoot;
 
         [Header("Tabs")]
@@ -96,18 +96,6 @@ namespace Features.Lobby.Presentation
             LobbyUseCases useCases
         )
         {
-            if (_roomListView == null)
-            {
-                Debug.LogError("[LobbyView] _roomListView is not assigned.");
-                return;
-            }
-
-            if (_roomDetailView == null)
-            {
-                Debug.LogError("[LobbyView] _roomDetailView is not assigned.");
-                return;
-            }
-
             _eventBus = eventBus;
             _eventPublisher = eventPublisher;
             _disposables.Dispose();
@@ -135,23 +123,17 @@ namespace Features.Lobby.Presentation
 
         public void RenderLobby(LobbySnapshot lobby)
         {
-            if (_roomListView == null)
-                return;
             _roomListView.Render(lobby.Rooms);
             ShowRoomList();
         }
 
         public void RenderRoomList(RoomListReceivedEvent e)
         {
-            if (_roomListView == null)
-                return;
             _roomListView.Render(e.Rooms);
         }
 
         public void RenderRoom(RoomUpdatedEvent e)
         {
-            if (_roomDetailView == null)
-                return;
             _roomDetailView.SetLocalMemberId(e.LocalMemberId);
             _roomDetailView.Render(e.Room);
             ShowRoomDetail();
@@ -181,10 +163,8 @@ namespace Features.Lobby.Presentation
 
             _tabsHooked = true;
 
-            if (_lobbyTabButton != null)
-                _lobbyTabButton.onClick.AddListener(ShowLobbyPage);
-            if (_garageTabButton != null)
-                _garageTabButton.onClick.AddListener(ShowGaragePage);
+            _lobbyTabButton.onClick.AddListener(ShowLobbyPage);
+            _garageTabButton.onClick.AddListener(ShowGaragePage);
         }
 
         private void ShowLobbyPage()
@@ -233,9 +213,6 @@ namespace Features.Lobby.Presentation
 
         private void UpdateTabVisuals(Button tabButton, bool isActive)
         {
-            if (tabButton == null)
-                return;
-
             // 배경 색상
             if (tabButton.TryGetComponent<Image>(out var bgImage))
             {
@@ -244,16 +221,12 @@ namespace Features.Lobby.Presentation
 
             // 활성 탭 보더 강조 (왼쪽 3px)
             var border = tabButton == _lobbyTabButton ? _lobbyTabBorder : _garageTabBorder;
-            if (border != null)
-            {
-                border.enabled = isActive;
-                border.color = isActive ? ThemeColors.AccentBlue : Color.clear;
-            }
+            border.enabled = isActive;
+            border.color = isActive ? ThemeColors.AccentBlue : Color.clear;
 
             // 텍스트 색상
             var label = tabButton == _lobbyTabButton ? _lobbyTabText : _garageTabText;
-            if (label != null)
-                label.color = isActive ? _activeTextColor : _inactiveTextColor;
+            label.color = isActive ? _activeTextColor : _inactiveTextColor;
         }
 
         internal static void SetPageState(GameObject root, CanvasGroup group, bool isVisible)

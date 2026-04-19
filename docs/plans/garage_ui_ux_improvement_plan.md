@@ -4,8 +4,7 @@
 > 상태: 초안
 > 근거: 2026-04-13 플레이모드 스크린샷 기반 평가
 
-레이아웃/토큰/컴포넌트 SSOT는 [`ui_foundations.md`](../design/ui_foundations.md)와
-[`figma_ui_system_plan.md`](./figma_ui_system_plan.md)를 우선한다.
+레이아웃/토큰/컴포넌트 SSOT는 [`ui_foundations.md`](../design/ui_foundations.md)를 우선한다.
 이 문서는 Garage UI 개선 backlog와 우선순위 메모로 본다.
 
 ## 현재 상태
@@ -372,7 +371,6 @@ Phase 2 완료 후 추가:
 ## 관련 문서
 
 - UI foundations SSOT: `/docs/design/ui_foundations.md`
-- Figma handoff 계획: `/docs/plans/figma_ui_system_plan.md`
 - MCP 개선 계획: `/docs/plans/mcp_improvement_plan.md`
 - 게임 디자인 SSOT: `/docs/design/game_design.md`
 - 아키텍처 규칙: `/agent/architecture.md`

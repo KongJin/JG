@@ -13,11 +13,11 @@ namespace Features.Garage.Presentation
 {
     public sealed class GaragePageController : MonoBehaviour
     {
-        private enum MobileBodySection
+        private enum MobilePartFocus
         {
-            Edit,
-            Preview,
-            Summary,
+            Frame,
+            Firepower,
+            Mobility,
         }
 
         [Header("Subviews")]
@@ -26,30 +26,32 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private GarageResultPanelView _resultPanelView;
 
         [Header("Preview")]
-        [SerializeField] private GarageUnitPreviewView _unitPreviewView;
+        [Required, SerializeField] private GarageUnitPreviewView _unitPreviewView;
 
-        [Header("Responsive Layout")]
-        [SerializeField] private RectTransform _responsiveRoot;
-        [SerializeField] private GameObject _desktopContentRoot;
-        [SerializeField] private GameObject _mobileContentRoot;
-        [SerializeField] private Transform _mobileBodyHost;
-        [SerializeField] private Transform _desktopSlotHost;
-        [SerializeField] private Transform _mobileSlotHost;
-        [SerializeField] private GameObject _rightRailRoot;
-        [SerializeField] private GameObject _accountCard;
-        [SerializeField] private GameObject _previewCard;
-        [SerializeField] private GameObject _resultPane;
-        [SerializeField] private Button _inlineSaveButton;
-        [SerializeField] private GameObject _mobileTabBar;
-        [SerializeField] private Button _mobileEditTabButton;
-        [SerializeField] private TMP_Text _mobileEditTabLabel;
-        [SerializeField] private Button _mobilePreviewTabButton;
-        [SerializeField] private TMP_Text _mobilePreviewTabLabel;
-        [SerializeField] private Button _mobileSummaryTabButton;
-        [SerializeField] private TMP_Text _mobileSummaryTabLabel;
-        [SerializeField] private Button _mobileSaveButton;
-        [SerializeField] private TMP_Text _mobileSaveButtonLabel;
-        [SerializeField] private float _mobileBreakpointWidth = 700f;
+        [Header("Layout")]
+        [Required, SerializeField] private GameObject _mobileContentRoot;
+        [Required, SerializeField] private Transform _mobileBodyHost;
+        [Required, SerializeField] private Transform _mobileSlotHost;
+        [Required, SerializeField] private GameObject _rightRailRoot;
+        [Required, SerializeField] private GameObject _previewCard;
+        [Required, SerializeField] private GameObject _resultPane;
+        [Required, SerializeField] private GameObject _mobileTabBar;
+        [Required, SerializeField] private Button _mobileEditTabButton;
+        [Required, SerializeField] private TMP_Text _mobileEditTabLabel;
+        [Required, SerializeField] private Button _mobilePreviewTabButton;
+        [Required, SerializeField] private TMP_Text _mobilePreviewTabLabel;
+        [Required, SerializeField] private Button _mobileSummaryTabButton;
+        [Required, SerializeField] private TMP_Text _mobileSummaryTabLabel;
+        [Required, SerializeField] private TMP_Text _garageHeaderSummaryText;
+        [Required, SerializeField] private Button _settingsOpenButton;
+        [Required, SerializeField] private TMP_Text _settingsOpenButtonLabel;
+        [Required, SerializeField] private GameObject _settingsOverlayRoot;
+        [Required, SerializeField] private Button _settingsCloseButton;
+        [Required, SerializeField] private TMP_Text _settingsCloseButtonLabel;
+        [Required, SerializeField] private GameObject _mobileSaveDockRoot;
+        [Required, SerializeField] private Button _mobileSaveButton;
+        [Required, SerializeField] private TMP_Text _mobileSaveButtonLabel;
+        [Required, SerializeField] private TMP_Text _mobileSaveStateText;
 
         private GarageSetup _setup;
         private GaragePanelCatalog _catalog;
@@ -59,13 +61,11 @@ namespace Features.Garage.Presentation
         private bool _isInitialized;
         private bool _isInitializingRoster;
         private bool _isSaving;
-        private bool _isMobileLayout;
-        private float _lastResponsiveWidth = -1f;
-        private MobileBodySection _mobileBodySection = MobileBodySection.Edit;
+        private bool _isSettingsOverlayOpen;
+        private MobilePartFocus _mobilePartFocus = MobilePartFocus.Frame;
         private readonly GarageKeyboardInputHandler _keyboardInputHandler = new();
         private readonly GarageSaveCommandHandler _saveCommandHandler = new();
         private readonly GarageDraftStatePublisher _draftStatePublisher = new();
-        private readonly GarageResponsiveLayoutController _responsiveLayoutController = new();
 
         public void Initialize(GarageSetup setup, GaragePanelCatalog catalog)
         {
@@ -74,9 +74,9 @@ namespace Features.Garage.Presentation
             _presenter = new GaragePagePresenter(_catalog);
             _state ??= new GaragePageState();
 
-            _unitPreviewView?.Initialize();
+            _unitPreviewView.Initialize();
             HookCallbacks();
-            RefreshResponsiveModeIfNeeded();
+            ApplyMobileLayout();
 
             if (_isInitialized)
             {
@@ -99,6 +99,7 @@ namespace Features.Garage.Presentation
 
             try
             {
+                EnsureInitialized();
                 var roster = await _setup.InitializeGarage.Execute();
                 _state.Initialize(roster ?? new GarageRoster());
                 Render();
@@ -127,28 +128,23 @@ namespace Features.Garage.Presentation
             _unitEditorView.PartHoverRequested += ShowPartHoverTooltip;
             _resultPanelView.SaveClicked += OnSaveClicked;
 
-            if (_mobileEditTabButton != null)
-                _mobileEditTabButton.onClick.AddListener(() => SwitchMobileSection(MobileBodySection.Edit));
+            _mobileEditTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Frame));
+            _mobilePreviewTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Firepower));
+            _mobileSummaryTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Mobility));
 
-            if (_mobilePreviewTabButton != null)
-                _mobilePreviewTabButton.onClick.AddListener(() => SwitchMobileSection(MobileBodySection.Preview));
+            _settingsOpenButton.onClick.AddListener(ToggleSettingsOverlay);
+            _settingsCloseButton.onClick.AddListener(HideSettingsOverlay);
+            _mobileSaveButton.onClick.AddListener(OnSaveClicked);
+        }
 
-            if (_mobileSummaryTabButton != null)
-                _mobileSummaryTabButton.onClick.AddListener(() => SwitchMobileSection(MobileBodySection.Summary));
-
-            if (_mobileSaveButton != null)
-                _mobileSaveButton.onClick.AddListener(OnSaveClicked);
+        private void OnDisable()
+        {
+            _isSettingsOverlayOpen = false;
+            _settingsOverlayRoot.SetActive(false);
         }
 
         private void Update()
         {
-            if (RefreshResponsiveModeIfNeeded())
-            {
-                if (_isInitialized)
-                    Render();
-                return;
-            }
-
             var keyboard = Keyboard.current;
             if (keyboard == null)
                 return;
@@ -166,33 +162,42 @@ namespace Features.Garage.Presentation
         private void SelectSlot(int slotIndex)
         {
             _state.SelectSlot(slotIndex);
-            _mobileBodySection = MobileBodySection.Edit;
+            _mobilePartFocus = MobilePartFocus.Frame;
             Render();
+            ScrollMobileBodyToTop();
         }
 
         private void CycleFrame(int delta)
         {
-            _state.SetEditingFrameId(CycleId(_state.EditingFrameId, _catalog?.Frames, delta, frame => frame.Id));
+            EnsureInitialized();
+            _mobilePartFocus = MobilePartFocus.Frame;
+            _state.SetEditingFrameId(CycleId(_state.EditingFrameId, _catalog.Frames, delta, frame => frame.Id));
             _state.ClearValidationOverride();
             Render();
         }
 
         private void CycleFirepower(int delta)
         {
-            _state.SetEditingFirepowerId(CycleId(_state.EditingFirepowerId, _catalog?.Firepower, delta, module => module.Id));
+            EnsureInitialized();
+            _mobilePartFocus = MobilePartFocus.Firepower;
+            _state.SetEditingFirepowerId(CycleId(_state.EditingFirepowerId, _catalog.Firepower, delta, module => module.Id));
             _state.ClearValidationOverride();
             Render();
         }
 
         private void CycleMobility(int delta)
         {
-            _state.SetEditingMobilityId(CycleId(_state.EditingMobilityId, _catalog?.Mobility, delta, module => module.Id));
+            EnsureInitialized();
+            _mobilePartFocus = MobilePartFocus.Mobility;
+            _state.SetEditingMobilityId(CycleId(_state.EditingMobilityId, _catalog.Mobility, delta, module => module.Id));
             _state.ClearValidationOverride();
             Render();
         }
 
         private void ShowPartHoverTooltip(string partType, int delta)
         {
+            EnsureInitialized();
+
             string currentId = partType switch
             {
                 "frame" => _state.EditingFrameId,
@@ -203,25 +208,25 @@ namespace Features.Garage.Presentation
 
             string nextId = partType switch
             {
-                "frame" => CycleId(currentId, _catalog?.Frames, delta, m => m.Id),
-                "firepower" => CycleId(currentId, _catalog?.Firepower, delta, m => m.Id),
-                "mobility" => CycleId(currentId, _catalog?.Mobility, delta, m => m.Id),
+                "frame" => CycleId(currentId, _catalog.Frames, delta, m => m.Id),
+                "firepower" => CycleId(currentId, _catalog.Firepower, delta, m => m.Id),
+                "mobility" => CycleId(currentId, _catalog.Mobility, delta, m => m.Id),
                 _ => null
             };
 
             string currentName = partType switch
             {
-                "frame" => _catalog?.FindFrame(currentId)?.DisplayName ?? "—",
-                "firepower" => _catalog?.FindFirepower(currentId)?.DisplayName ?? "—",
-                "mobility" => _catalog?.FindMobility(currentId)?.DisplayName ?? "—",
+                "frame" => _catalog.FindFrame(currentId)?.DisplayName ?? "—",
+                "firepower" => _catalog.FindFirepower(currentId)?.DisplayName ?? "—",
+                "mobility" => _catalog.FindMobility(currentId)?.DisplayName ?? "—",
                 _ => "—"
             };
 
             string nextName = partType switch
             {
-                "frame" => _catalog?.FindFrame(nextId)?.DisplayName ?? "—",
-                "firepower" => _catalog?.FindFirepower(nextId)?.DisplayName ?? "—",
-                "mobility" => _catalog?.FindMobility(nextId)?.DisplayName ?? "—",
+                "frame" => _catalog.FindFrame(nextId)?.DisplayName ?? "—",
+                "firepower" => _catalog.FindFirepower(nextId)?.DisplayName ?? "—",
+                "mobility" => _catalog.FindMobility(nextId)?.DisplayName ?? "—",
                 _ => "—"
             };
 
@@ -296,6 +301,7 @@ namespace Features.Garage.Presentation
             if (_isSaving)
                 return;
 
+            EnsureInitialized();
             var evaluation = EvaluateDraft();
             var saveResult = await _saveCommandHandler.ExecuteAsync(
                 _state,
@@ -316,11 +322,12 @@ namespace Features.Garage.Presentation
                 return;
 
             Render();
+            ScrollMobileBodyToTop();
         }
 
         private void Render()
         {
-            RefreshResponsiveModeIfNeeded();
+            EnsureInitialized();
 
             var evaluation = EvaluateDraft();
             var slotViewModels = _presenter.BuildSlotViewModels(_state);
@@ -328,109 +335,72 @@ namespace Features.Garage.Presentation
 
             _rosterListView.Render(slotViewModels);
             _unitEditorView.Render(_presenter.BuildEditorViewModel(_state));
+            _unitEditorView.SetFocusedPart(ToEditorFocus(_mobilePartFocus));
             _resultPanelView.Render(resultViewModel);
+            _resultPanelView.SetInlineSaveVisible(false);
 
-            if (_unitPreviewView != null && _catalog != null)
-            {
-                var selectedSlot = slotViewModels[_state.SelectedSlotIndex];
-                _unitPreviewView.Render(selectedSlot, _catalog);
-            }
+            var selectedSlot = slotViewModels[_state.SelectedSlotIndex];
+            _unitPreviewView.Render(selectedSlot, _catalog);
 
-            ApplyResponsiveLayoutState(resultViewModel);
+            ApplyMobileLayoutState(resultViewModel);
             PublishDraftState();
         }
 
-        private bool RefreshResponsiveModeIfNeeded()
+        private void SetMobilePartFocus(MobilePartFocus nextFocus)
         {
-            if (!TryGetResponsiveWidth(out float width))
-                return false;
-
-            var state = _responsiveLayoutController.Evaluate(width, _mobileBreakpointWidth, _lastResponsiveWidth, _isMobileLayout);
-            if (!state.ShouldRefresh)
-                return false;
-
-            _lastResponsiveWidth = width;
-            _isMobileLayout = state.IsMobileLayout;
-            return true;
-        }
-
-        private bool TryGetResponsiveWidth(out float width)
-        {
-            if (Screen.width > 0)
-            {
-                width = Screen.width;
-                return true;
-            }
-
-            var rectTransform = _responsiveRoot != null ? _responsiveRoot : transform as RectTransform;
-            if (rectTransform != null && rectTransform.rect.width > 0f)
-            {
-                width = rectTransform.rect.width;
-                return true;
-            }
-
-            width = 0f;
-            return false;
-        }
-
-        private void SwitchMobileSection(MobileBodySection nextSection)
-        {
-            _mobileBodySection = nextSection;
+            _mobilePartFocus = nextFocus;
             Render();
         }
 
-        private void ApplyResponsiveLayoutState(GarageResultViewModel resultViewModel)
+        private void ToggleSettingsOverlay()
         {
-            ApplyResponsiveParenting();
-
-            if (_mobileTabBar != null)
-                _mobileTabBar.SetActive(_isMobileLayout);
-
-            if (_mobileSaveButton != null)
-                _mobileSaveButton.gameObject.SetActive(_isMobileLayout);
-
-            if (_inlineSaveButton != null)
-                _inlineSaveButton.gameObject.SetActive(!_isMobileLayout);
-
+            _isSettingsOverlayOpen = !_isSettingsOverlayOpen;
             ApplySectionVisibility();
-            RefreshMobileTabButtonStyles();
-            RefreshMobileSaveButton(resultViewModel);
+            RefreshSettingsButtonStyles();
         }
 
-        private void ApplyResponsiveParenting()
+        private void HideSettingsOverlay()
         {
-            var rosterPane = _rosterListView != null ? _rosterListView.gameObject : null;
-            var editorPane = _unitEditorView != null ? _unitEditorView.gameObject : null;
-            if (rosterPane == null || editorPane == null || _rightRailRoot == null)
+            if (!_isSettingsOverlayOpen)
                 return;
 
-            if (_isMobileLayout)
-            {
-                SetActive(_desktopContentRoot, false);
-                SetActive(_mobileContentRoot, true);
-                SetActive(_mobileSlotHost != null ? _mobileSlotHost.gameObject : null, true);
+            _isSettingsOverlayOpen = false;
+            ApplySectionVisibility();
+            RefreshSettingsButtonStyles();
+        }
 
-                MoveToParent(rosterPane.transform, _mobileContentRoot != null ? _mobileContentRoot.transform : null, 0);
-                MoveSlotsToHost(_mobileSlotHost);
-                MoveToParent(_mobileTabBar != null ? _mobileTabBar.transform : null, _mobileContentRoot != null ? _mobileContentRoot.transform : null, 1);
-                MoveToParent(editorPane.transform, _mobileBodyHost, 0);
-                MoveToParent(_rightRailRoot.transform, _mobileBodyHost, 1);
-                return;
-            }
+        private void ApplyMobileLayoutState(GarageResultViewModel resultViewModel)
+        {
+            ApplyMobileLayout();
+            ApplySectionVisibility();
+            RefreshMobileTabButtonStyles();
+            RefreshGarageHeaderSummary(resultViewModel);
+            RefreshSettingsButtonStyles();
+            RefreshMobileSaveButton(resultViewModel);
+            RefreshMobileSaveStateText(resultViewModel);
+        }
 
-            SetActive(_mobileContentRoot, false);
-            SetActive(_desktopContentRoot, true);
-            SetActive(_mobileSlotHost != null ? _mobileSlotHost.gameObject : null, false);
+        private void ApplyMobileLayout()
+        {
+            var rosterPane = _rosterListView.gameObject;
+            var editorPane = _unitEditorView.gameObject;
 
-            MoveToParent(rosterPane.transform, _desktopContentRoot != null ? _desktopContentRoot.transform : null, 0);
-            MoveSlotsToHost(_desktopSlotHost);
-            MoveToParent(editorPane.transform, _desktopContentRoot != null ? _desktopContentRoot.transform : null, 1);
-            MoveToParent(_rightRailRoot.transform, _desktopContentRoot != null ? _desktopContentRoot.transform : null, 2);
+            SetActive(_mobileContentRoot, true);
+            SetActive(_mobileSlotHost.gameObject, true);
+            SetActive(_mobileTabBar, true);
+            SetActive(_mobileSaveDockRoot, true);
+
+            MoveToParent(rosterPane.transform, _mobileBodyHost, 0);
+            MoveSlotsToHost(_mobileSlotHost);
+            MoveToParent(_mobileTabBar.transform, _mobileBodyHost, 1);
+            MoveToParent(editorPane.transform, _mobileBodyHost, 2);
+            MoveToParent(_rightRailRoot.transform, _mobileBodyHost, 3);
+            ApplyMobileSizing();
         }
 
         private void MoveSlotsToHost(Transform host)
         {
-            if (host == null || _rosterListView == null)
+            if (host == null)
                 return;
 
             var slotViews = _rosterListView.GetComponentsInChildren<GarageSlotItemView>(true);
@@ -442,50 +412,75 @@ namespace Features.Garage.Presentation
 
         private void ApplySectionVisibility()
         {
-            if (!_isMobileLayout)
+            SetActive(_unitEditorView.gameObject, true);
+            SetActive(_rightRailRoot, true);
+            SetActive(_previewCard, true);
+            SetActive(_resultPane, true);
+            SetActive(_settingsOverlayRoot, _isSettingsOverlayOpen);
+        }
+
+        private void RefreshSettingsButtonStyles()
+        {
+            _settingsOpenButton.Apply(ButtonStyles.Ghost, _settingsOpenButtonLabel);
+            _settingsOpenButton.interactable = !_isSettingsOverlayOpen;
+            _settingsOpenButtonLabel.text = "Settings";
+
+            _settingsCloseButton.Apply(ButtonStyles.Secondary, _settingsCloseButtonLabel);
+            _settingsCloseButton.interactable = _isSettingsOverlayOpen;
+            _settingsCloseButtonLabel.text = "Close";
+        }
+
+        private void RefreshGarageHeaderSummary(GarageResultViewModel resultViewModel)
+        {
+            string slotSummary;
+            var selectedSlot = _state.DraftRoster.GetSlot(_state.SelectedSlotIndex);
+
+            if (selectedSlot.IsComplete && _state.SelectedSlotHasDraftChanges())
             {
-                SetActive(_unitEditorView != null ? _unitEditorView.gameObject : null, true);
-                SetActive(_rightRailRoot, true);
-                SetActive(_accountCard, true);
-                SetActive(_previewCard, true);
-                SetActive(_resultPane, true);
-                return;
+                slotSummary = $"Slot {_state.SelectedSlotIndex + 1} draft ready";
+            }
+            else if (_state.SelectedSlotHasCommittedLoadout())
+            {
+                slotSummary = $"Slot {_state.SelectedSlotIndex + 1} saved";
+            }
+            else if (selectedSlot.HasAnySelection)
+            {
+                slotSummary = $"Slot {_state.SelectedSlotIndex + 1} editing";
+            }
+            else
+            {
+                slotSummary = $"Slot {_state.SelectedSlotIndex + 1} empty";
             }
 
-            bool showEdit = _mobileBodySection == MobileBodySection.Edit;
-            bool showPreview = _mobileBodySection == MobileBodySection.Preview;
-            bool showSummary = _mobileBodySection == MobileBodySection.Summary;
+            string rosterSummary = $"{_state.CommittedRoster.Count}/6 synced";
+            string readySummary = resultViewModel != null && resultViewModel.IsReady
+                ? "Ready unlocked"
+                : "Ready locked";
 
-            SetActive(_unitEditorView != null ? _unitEditorView.gameObject : null, showEdit);
-            SetActive(_rightRailRoot, showEdit || showPreview || showSummary);
-            SetActive(_accountCard, showEdit);
-            SetActive(_previewCard, showPreview);
-            SetActive(_resultPane, showSummary);
+            _garageHeaderSummaryText.text = $"{slotSummary} | {rosterSummary} | {readySummary}";
+            _garageHeaderSummaryText.color = ThemeColors.TextSecondary;
         }
 
         private void RefreshMobileTabButtonStyles()
         {
-            if (!_isMobileLayout)
-                return;
-
             ConfigureMobileTabButton(
                 _mobileEditTabButton,
                 _mobileEditTabLabel,
-                "Edit",
-                _mobileBodySection == MobileBodySection.Edit,
+                "Frame",
+                _mobilePartFocus == MobilePartFocus.Frame,
                 true);
             ConfigureMobileTabButton(
                 _mobilePreviewTabButton,
                 _mobilePreviewTabLabel,
-                "Preview",
-                _mobileBodySection == MobileBodySection.Preview,
-                _unitPreviewView != null);
+                "Weapon",
+                _mobilePartFocus == MobilePartFocus.Firepower,
+                true);
             ConfigureMobileTabButton(
                 _mobileSummaryTabButton,
                 _mobileSummaryTabLabel,
-                "Summary",
-                _mobileBodySection == MobileBodySection.Summary,
-                _resultPanelView != null);
+                "Mobility",
+                _mobilePartFocus == MobilePartFocus.Mobility,
+                true);
         }
 
         private void ConfigureMobileTabButton(
@@ -495,20 +490,14 @@ namespace Features.Garage.Presentation
             bool isActive,
             bool isAvailable)
         {
-            if (button == null)
-                return;
-
             var preset = isActive ? ButtonStyles.Primary : ButtonStyles.Secondary;
             button.Apply(preset, label);
             button.interactable = isAvailable && !isActive;
 
-            if (label != null)
-            {
-                label.text = title;
-                label.color = isAvailable
-                    ? isActive ? ThemeColors.TextPrimary : ThemeColors.TextSecondary
-                    : ThemeColors.TextMuted;
-            }
+            label.text = title;
+            label.color = isAvailable
+                ? isActive ? ThemeColors.TextPrimary : ThemeColors.TextSecondary
+                : ThemeColors.TextMuted;
 
             if (button.TryGetComponent<Image>(out var background))
             {
@@ -526,34 +515,70 @@ namespace Features.Garage.Presentation
 
         private void RefreshMobileSaveButton(GarageResultViewModel resultViewModel)
         {
-            if (_mobileSaveButton == null)
-                return;
-
             bool canSave = resultViewModel != null && resultViewModel.CanSave && !_isSaving;
             bool isDirty = resultViewModel != null && resultViewModel.IsDirty;
 
             _mobileSaveButton.Apply(ButtonStyles.Primary, _mobileSaveButtonLabel);
             _mobileSaveButton.interactable = canSave;
 
-            if (_mobileSaveButtonLabel != null)
-                _mobileSaveButtonLabel.text = _isSaving
-                    ? "Saving..."
-                    : resultViewModel?.PrimaryActionLabel ?? "Save Roster";
+            _mobileSaveButtonLabel.text = _isSaving
+                ? "Saving..."
+                : "Save Roster";
 
             if (_mobileSaveButton.TryGetComponent<Image>(out var background))
             {
                 background.color = _isSaving
                     ? ThemeColors.AccentBlue
                     : canSave
-                        ? ThemeColors.AccentGreen
+                        ? ThemeColors.AccentBlue
                         : isDirty
-                            ? ThemeColors.AccentOrange
+                            ? ThemeColors.StateHover
                             : ThemeColors.StateDisabled;
 
                 var feedback = _mobileSaveButton.GetComponent<ButtonFeedback>();
                 if (feedback != null)
                     feedback.UpdateBaseColor(background.color);
             }
+        }
+
+        private void RefreshMobileSaveStateText(GarageResultViewModel resultViewModel)
+        {
+            if (_isSaving)
+            {
+                _mobileSaveStateText.text = "Saving roster to cloud...";
+                _mobileSaveStateText.color = ThemeColors.TextPrimary;
+                return;
+            }
+
+            if (resultViewModel == null)
+            {
+                _mobileSaveStateText.text = string.Empty;
+                return;
+            }
+
+            if (resultViewModel.IsDirty && resultViewModel.CanSave)
+            {
+                _mobileSaveStateText.text = "Draft ready. Save to sync this slot.";
+                _mobileSaveStateText.color = ThemeColors.AccentAmber;
+                return;
+            }
+
+            if (resultViewModel.IsDirty)
+            {
+                _mobileSaveStateText.text = resultViewModel.ValidationText;
+                _mobileSaveStateText.color = ThemeColors.TextSecondary;
+                return;
+            }
+
+            if (resultViewModel.IsReady)
+            {
+                _mobileSaveStateText.text = "Saved roster synced. Ready is unlocked.";
+                _mobileSaveStateText.color = ThemeColors.AccentGreen;
+                return;
+            }
+
+            _mobileSaveStateText.text = resultViewModel.ValidationText;
+            _mobileSaveStateText.color = ThemeColors.TextSecondary;
         }
 
         private static void SetActive(GameObject target, bool isActive)
@@ -574,10 +599,87 @@ namespace Features.Garage.Presentation
                 child.SetSiblingIndex(siblingIndex);
         }
 
+        private void ApplyMobileSizing()
+        {
+            var rosterPaneLayout = _rosterListView.GetComponent<LayoutElement>();
+            var editorPaneLayout = _unitEditorView.GetComponent<LayoutElement>();
+            var rightRailLayout = _rightRailRoot.GetComponent<LayoutElement>();
+            var previewCardLayout = _previewCard.GetComponent<LayoutElement>();
+            var resultPaneLayout = _resultPane.GetComponent<LayoutElement>();
+            var mobileTabLayout = _mobileTabBar.GetComponent<LayoutElement>();
+            var mobileTabGroup = _mobileTabBar.GetComponent<HorizontalLayoutGroup>();
+
+            LayoutElementState.Apply(rosterPaneLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: 212f, flexibleWidth: 1f, flexibleHeight: 0f);
+            LayoutElementState.Apply(editorPaneLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: -1f, flexibleWidth: 1f, flexibleHeight: 0f);
+            LayoutElementState.Apply(rightRailLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: -1f, flexibleWidth: 1f, flexibleHeight: 0f);
+            LayoutElementState.Apply(previewCardLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: 248f, flexibleWidth: 1f, flexibleHeight: 0f);
+            LayoutElementState.Apply(resultPaneLayout, minWidth: -1f, minHeight: 220f, preferredWidth: -1f, preferredHeight: -1f, flexibleWidth: 1f, flexibleHeight: 0f);
+            LayoutElementState.Apply(mobileTabLayout, minWidth: -1f, minHeight: 52f, preferredWidth: -1f, preferredHeight: 52f, flexibleWidth: 1f, flexibleHeight: 0f);
+            HorizontalLayoutGroupState.Apply(mobileTabGroup, spacing: 10f, childControlWidth: true, childControlHeight: true, childForceExpandWidth: true, childForceExpandHeight: true);
+        }
+
+        private void ScrollMobileBodyToTop()
+        {
+            if (_mobileBodyHost == null)
+                return;
+
+            ScrollRect scrollRect = _mobileBodyHost.GetComponentInParent<ScrollRect>();
+            if (scrollRect == null)
+                return;
+
+            Canvas.ForceUpdateCanvases();
+            if (_mobileContentRoot.TryGetComponent<RectTransform>(out var contentRoot))
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentRoot);
+            scrollRect.StopMovement();
+            scrollRect.verticalNormalizedPosition = 1f;
+        }
+
+        private static GarageEditorFocus ToEditorFocus(MobilePartFocus focus)
+        {
+            return focus switch
+            {
+                MobilePartFocus.Frame => GarageEditorFocus.Frame,
+                MobilePartFocus.Firepower => GarageEditorFocus.Firepower,
+                _ => GarageEditorFocus.Mobility,
+            };
+        }
+
+        private static class LayoutElementState
+        {
+            public static void Apply(LayoutElement target, float minWidth, float minHeight, float preferredWidth, float preferredHeight, float flexibleWidth, float flexibleHeight)
+            {
+                if (target == null)
+                    return;
+
+                target.minWidth = minWidth;
+                target.minHeight = minHeight;
+                target.preferredWidth = preferredWidth;
+                target.preferredHeight = preferredHeight;
+                target.flexibleWidth = flexibleWidth;
+                target.flexibleHeight = flexibleHeight;
+            }
+        }
+
+        private static class HorizontalLayoutGroupState
+        {
+            public static void Apply(HorizontalLayoutGroup target, float spacing, bool childControlWidth, bool childControlHeight, bool childForceExpandWidth, bool childForceExpandHeight)
+            {
+                if (target == null)
+                    return;
+
+                target.spacing = spacing;
+                target.childControlWidth = childControlWidth;
+                target.childControlHeight = childControlHeight;
+                target.childForceExpandWidth = childForceExpandWidth;
+                target.childForceExpandHeight = childForceExpandHeight;
+            }
+        }
+
         private void PublishDraftState()
         {
+            EnsureInitialized();
             var draftState = _draftStatePublisher.Build(_state);
-            _setup?.EventPublisher?.Publish(new GarageDraftStateChangedEvent(
+            _setup.EventPublisher.Publish(new GarageDraftStateChangedEvent(
                 _state.CommittedRoster.Count,
                 draftState.HasUnsavedChanges,
                 draftState.ReadyEligible,
@@ -586,8 +688,8 @@ namespace Features.Garage.Presentation
 
         private GarageDraftEvaluation EvaluateDraft()
         {
-            bool hasCatalogData = _catalog != null &&
-                                  _catalog.Frames.Count > 0 &&
+            EnsureInitialized();
+            bool hasCatalogData = _catalog.Frames.Count > 0 &&
                                   _catalog.Firepower.Count > 0 &&
                                   _catalog.Mobility.Count > 0;
 
@@ -610,6 +712,12 @@ namespace Features.Garage.Presentation
             }
 
             return GarageDraftEvaluation.Create(_state, hasCatalogData, composeResult, rosterValidation);
+        }
+
+        private void EnsureInitialized()
+        {
+            if (_setup == null || _catalog == null || _state == null)
+                throw new System.InvalidOperationException("GaragePageController.Initialize must be called before interaction.");
         }
 
         private static string CycleId<T>(

@@ -1,6 +1,5 @@
 using Features.Unit.Domain;
 using Shared.Attributes;
-using Shared.EventBus;
 using Shared.Math;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,7 +11,7 @@ namespace Features.Unit.Presentation
     /// 유닛 슬롯 입력 처리 (클릭 + 드래그 앤 드롭).
     /// UnitSlotView와 함께 같은 GO에 붙이거나, 별도 컴포넌트로 초기화.
     /// </summary>
-    public sealed class UnitSlotInputHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
+    public sealed class UnitSlotInputHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         [Header("Configuration")]
         [Required, SerializeField] private Camera _worldCamera;
@@ -35,7 +34,6 @@ namespace Features.Unit.Presentation
 
         private UnitSpec _unitSpec;
         private System.Action<UnitSpec, Float3> _onSummonRequested;
-        private System.Action<UnitSpec> _onClickRequested;
         private Canvas _canvas;
 
         private RectTransform _dragGhost;
@@ -64,9 +62,7 @@ namespace Features.Unit.Presentation
 
         public void Initialize(
             UnitSpec unitSpec,
-            IEventSubscriber eventBus,
             System.Action<UnitSpec, Float3> onSummonRequested,
-            System.Action<UnitSpec> onClickRequested,
             Canvas canvas,
             Camera worldCamera,
             PlacementArea placementArea,
@@ -74,17 +70,10 @@ namespace Features.Unit.Presentation
         {
             _unitSpec = unitSpec;
             _onSummonRequested = onSummonRequested;
-            _onClickRequested = onClickRequested;
             _canvas = canvas;
             _worldCamera = worldCamera;
             _placementArea = placementArea;
             _errorView = errorView;
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (_isDragging) return;
-            _onClickRequested?.Invoke(_unitSpec);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -135,7 +124,7 @@ namespace Features.Unit.Presentation
         /// </summary>
         private void OnPlacementFailed()
         {
-            _errorView?.Show("배치 영역 밖입니다!");
+            _errorView?.ShowError("배치 영역 밖");
         }
 
         private void CreateDragGhost()

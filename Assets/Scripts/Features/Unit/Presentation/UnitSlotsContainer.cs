@@ -31,11 +31,13 @@ namespace Features.Unit.Presentation
         [SerializeField] private PlacementArea _placementArea;
         [Tooltip("배치 실패 시 에러 표시 UI View.")]
         [SerializeField] private PlacementErrorView _errorView;
+        [SerializeField] private SummonCommandController _commandController;
 
         private IEventSubscriber _fullEventBus;
         private IEventSubscriber _eventBus;
         private SummonUnitUseCase _summonUseCase;
         private IUnitEnergyPort _energyPort;
+        private PlacementAreaView _placementAreaView;
 
         private UnitSpec[] _roster; // 최대 6개
         private DomainEntityId _ownerId;
@@ -56,8 +58,8 @@ namespace Features.Unit.Presentation
             IUnitEnergyPort energyPort,
             UnitSpec[] roster,
             DomainEntityId ownerId,
-            Vector3 defaultSpawnPosition,
-            PlacementArea placementArea)
+            PlacementArea placementArea,
+            PlacementAreaView placementAreaView)
         {
             _fullEventBus = eventBus;
             _eventBus = eventBus;
@@ -66,6 +68,21 @@ namespace Features.Unit.Presentation
             _roster = roster;
             _ownerId = ownerId;
             _placementArea = placementArea;
+            _placementAreaView = placementAreaView;
+
+            if (_commandController == null)
+            {
+                _commandController = GetComponent<SummonCommandController>();
+            }
+
+            _commandController?.Initialize(
+                _eventBus,
+                _summonUseCase,
+                _ownerId,
+                _placementArea,
+                _placementAreaView,
+                _errorView,
+                _worldCamera);
 
             // UnitSummonCompletedEvent 구독 — 소환 시 슬롯 교체
             _fullEventBus.Subscribe(this, new System.Action<Features.Unit.Application.Events.UnitSummonCompletedEvent>(OnSummonCompleted));
@@ -74,13 +91,14 @@ namespace Features.Unit.Presentation
             var visibleCount = Mathf.Min(3, roster.Length);
             for (var i = 0; i < visibleCount; i++)
             {
-                CreateSlot(i, defaultSpawnPosition);
+                CreateSlot(i, i);
             }
 
             _nextIndex = visibleCount;
+            _commandController?.SetSlotViews(_activeSlots);
         }
 
-        private void CreateSlot(int rosterIndex, Vector3 spawnPosition)
+        private void CreateSlot(int rosterIndex, int insertIndex = -1)
         {
             if (rosterIndex >= _roster.Length) return;
 
@@ -89,46 +107,70 @@ namespace Features.Unit.Presentation
             var slotView = slotGo.GetComponent<UnitSlotView>();
             slotView.Initialize(
                 _eventBus,
-                _summonUseCase,
                 _energyPort,
                 _roster[rosterIndex],
                 _ownerId,
-                spawnPosition);
+                rosterIndex,
+                OnSlotSelectionRequested);
 
-            // 드래그 앤 드롭 핸들러 연결 (클릭 + 드래그 모두 이 핸들러가 담당)
+            if (insertIndex >= 0)
+            {
+                slotGo.transform.SetSiblingIndex(insertIndex);
+                _activeSlots.Insert(insertIndex, slotView);
+            }
+            else
+            {
+                _activeSlots.Add(slotView);
+            }
+
+            // 드래그 앤 드롭 핸들러 연결 (고급 입력 전용)
             if (_inputHandlerPrefab != null && _canvas != null)
             {
                 var inputGo = Instantiate(_inputHandlerPrefab.gameObject, slotGo.transform, false);
                 var inputHandler = inputGo.GetComponent<UnitSlotInputHandler>();
                 inputHandler.Initialize(
                     _roster[rosterIndex],
-                    _fullEventBus,
-                    OnSummonRequested,
-                    _ => OnSlotClicked(slotView),
+                    (_, spawnPosition) => OnSummonRequested(_roster[rosterIndex], rosterIndex, spawnPosition),
                     _canvas,
                     _worldCamera,
                     _placementArea,
                     _errorView);
             }
-
-            _activeSlots.Add(slotView);
         }
 
         /// <summary>
         /// 드래그 앤 드롭으로 소환 요청.
         /// </summary>
-        private void OnSummonRequested(UnitSpec unitSpec, Shared.Math.Float3 spawnPosition)
+        private void OnSummonRequested(UnitSpec unitSpec, int slotIndex, Shared.Math.Float3 spawnPosition)
         {
+            if (_commandController != null)
+            {
+                _commandController.TrySummonImmediate(unitSpec, slotIndex, spawnPosition);
+                return;
+            }
+
             _summonUseCase.Execute(_ownerId, unitSpec, spawnPosition);
         }
 
         /// <summary>
-        /// 슬롯 클릭 시 소환 실행.
+        /// 슬롯 클릭 시 선택 상태 진입.
         /// </summary>
-        private void OnSlotClicked(UnitSlotView slotView)
+        private void OnSlotSelectionRequested(UnitSlotView slotView)
         {
-            if (slotView.UnitSpec == null) return;
-            // 현재 슬롯의 스펙으로 소환 (PlacementArea 중심 위치 사용)
+            if (slotView == null) return;
+
+            if (_commandController != null)
+            {
+                _commandController.TrySelectSlot(slotView);
+                return;
+            }
+
+            if (!slotView.CanAfford)
+            {
+                _errorView?.ShowError("Need Energy");
+                return;
+            }
+
             var spawnPos = _placementArea != null ? _placementArea.Center : Vector3.zero;
             _summonUseCase.Execute(_ownerId, slotView.UnitSpec, new Shared.Math.Float3(spawnPos.x, spawnPos.y, spawnPos.z));
         }
@@ -140,10 +182,14 @@ namespace Features.Unit.Presentation
         {
             if (e.PlayerId != _ownerId) return;
 
-            // 첫 번째 슬롯을 교체 (가장 왼쪽 슬롯)
-            if (_activeSlots.Count > 0)
+            var slotIndex = _activeSlots.FindIndex(slot =>
+                slot != null
+                && slot.UnitSpec != null
+                && slot.UnitSpec.Id == e.UnitSpec.Id);
+
+            if (slotIndex >= 0)
             {
-                OnUnitSummoned(0);
+                OnUnitSummoned(slotIndex);
             }
         }
 
@@ -157,7 +203,6 @@ namespace Features.Unit.Presentation
             // 로테이션: 다음 항목이 있으면 교체, 없으면 슬롯 제거
             if (_nextIndex < _roster.Length)
             {
-                // 기존 슬롯 제거
                 var oldSlot = _activeSlots[slotIndex];
                 if (oldSlot != null)
                 {
@@ -165,9 +210,7 @@ namespace Features.Unit.Presentation
                     Destroy(oldSlot.gameObject);
                 }
 
-                // 새 슬롯 생성 — 소환 위치는 PlacementArea 중심 사용
-                var spawnPos = _placementArea != null ? _placementArea.Center : Vector3.zero;
-                CreateSlot(_nextIndex, spawnPos);
+                CreateSlot(_nextIndex, slotIndex);
                 _nextIndex++;
             }
             else
@@ -180,6 +223,8 @@ namespace Features.Unit.Presentation
                     Destroy(oldSlot.gameObject);
                 }
             }
+
+            _commandController?.SetSlotViews(_activeSlots);
         }
 
         /// <summary>
@@ -215,11 +260,13 @@ namespace Features.Unit.Presentation
 
             // 새 슬롯 생성
             var visibleCount = Mathf.Min(3, _roster.Length - _visibleStart);
-            var spawnPos = _placementArea != null ? _placementArea.Center : Vector3.zero;
             for (var i = 0; i < visibleCount; i++)
             {
-                CreateSlot(_visibleStart + i, spawnPos);
+                CreateSlot(_visibleStart + i, i);
             }
+
+            _nextIndex = _visibleStart + visibleCount;
+            _commandController?.SetSlotViews(_activeSlots);
         }
 
         private void OnDestroy()

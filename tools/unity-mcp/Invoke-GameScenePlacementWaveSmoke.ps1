@@ -164,6 +164,16 @@ function Get-WaveObservation {
     }
 }
 
+function Normalize-CoreHpText {
+    param([string]$Text)
+
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        return ""
+    }
+
+    return (($Text -replace '[^0-9/]', '')).Trim()
+}
+
 function Save-CurrentGarageDraft {
     $saveButtonPath = "/Canvas/GaragePageRoot/GarageContentRow/RightRail/ResultPane/SaveButton"
 
@@ -282,50 +292,58 @@ try {
 
     $initialScreenshot = Invoke-McpScreenshotCapture -Root $root -OutputPath $InitialScreenshotPath -Overwrite
 
-    $dragAttempt = Invoke-RestMethod `
-        -Method Post `
-        -Uri "$root/input/drag" `
-        -ContentType "application/json" `
-        -Body (@{
-            startX = 0.24
-            startY = 0.89
-            endX = 0.27
-            endY = 0.60
-            normalized = $true
-            button = 0
-            steps = 20
-        } | ConvertTo-Json -Compress)
+    $summonSlotPath = Get-FirstSummonSlotPath -Root $root
+    $slotSelectionInvoke = Invoke-McpUiInvoke -Root $root -Path $summonSlotPath -Method "click"
+    Start-Sleep -Milliseconds 700
 
-    Start-Sleep -Seconds 2
+    $placementMethods = @(
+        "ConfirmPlacementAtDefaultPoint",
+        "ConfirmPlacementAtPlacementCenter"
+    )
 
-    $dragUnitState = Invoke-RestMethod `
-        -Method Post `
-        -Uri "$root/gameobject/find" `
-        -ContentType "application/json" `
-        -Body (@{
-            name = "BattleEntity(Clone)"
-            lightweight = $false
-        } | ConvertTo-Json -Compress)
+    $placementTap = $null
+    $tapPoint = $null
+    $tapUnitState = $null
 
-    $dragPlacementError = Get-UiTextFromGameObject -Root $root -Path "/HudCanvas/PlacementErrorView/Text"
+    foreach ($methodName in $placementMethods) {
+        $placementTap = Invoke-McpUiInvoke -Root $root -Path "/HudCanvas/UnitSummonUi" -Method "custom" -CustomMethod $methodName
+
+        Start-Sleep -Milliseconds 2000
+
+        $tapUnitState = Invoke-RestMethod `
+            -Method Post `
+            -Uri "$root/gameobject/find" `
+            -ContentType "application/json" `
+            -Body (@{
+                name = "BattleEntity(Clone)"
+                lightweight = $false
+            } | ConvertTo-Json -Compress)
+
+        $tapPoint = $methodName
+        if ($tapUnitState.found) {
+            break
+        }
+    }
+
+    $commandFeedback = Get-UiTextFromGameObject -Root $root -Path "/HudCanvas/UnitSummonUi/PlacementErrorView/Text"
     $dragScreenshot = Invoke-McpScreenshotCapture -Root $root -OutputPath $DragScreenshotPath -Overwrite
 
-    $summonSlotPath = Get-FirstSummonSlotPath -Root $root
-    $summonInvokes = @()
-    $clickSummon = Invoke-McpUiInvoke -Root $root -Path $summonSlotPath -Method "click"
-    $summonInvokes += $clickSummon
-    Start-Sleep -Seconds 2
-
     if ($AdditionalSummonClicks -gt 0) {
+        $summonInvokes = @($slotSelectionInvoke)
         foreach ($index in 1..$AdditionalSummonClicks) {
             $currentSummonSlotPath = Get-FirstSummonSlotPath -Root $root
             $additionalInvoke = Invoke-McpUiInvoke -Root $root -Path $currentSummonSlotPath -Method "click"
             $summonInvokes += $additionalInvoke
 
+            Invoke-McpUiInvoke -Root $root -Path "/HudCanvas/UnitSummonUi" -Method "custom" -CustomMethod "ConfirmPlacementAtDefaultPoint" | Out-Null
+
             if ($AdditionalSummonClickIntervalSec -gt 0) {
                 Start-Sleep -Seconds $AdditionalSummonClickIntervalSec
             }
         }
+    }
+    else {
+        $summonInvokes = @($slotSelectionInvoke)
     }
 
     $battleEntity = Invoke-RestMethod `
@@ -379,24 +397,25 @@ try {
     $errors = Get-McpRecentErrors -Root $root -Limit 80
 
     $waveLoopAdvanced = $waveText -ne "Wave 1/5" -or $waveEndOverlay.activeSelf
-    $dragDidSummon = [bool]$dragUnitState.found
-    $coreHpChanged = $coreHpText -ne "1500 / 1500"
+    $tapDidSummon = [bool]$tapUnitState.found
+    $coreHpChanged = (Normalize-CoreHpText -Text $coreHpText) -ne "1500/1500"
     $outcomeReached = [bool]$waveEndOverlay.activeSelf
 
     $result = [PSCustomObject]@{
-        success = $dragDidSummon -and ($waveLoopAdvanced -or $coreHpChanged)
+        success = $tapDidSummon -and ($waveLoopAdvanced -or $coreHpChanged -or $outcomeReached)
         root = $root
         play = $session.play
         roomName = $roomName
-        dragAttempt = $dragAttempt
-        dragDidSummon = $dragDidSummon
-        dragPlacementErrorText = $dragPlacementError
         summonSlotPath = $summonSlotPath
-        clickSummon = $clickSummon
+        slotSelectionInvoke = $slotSelectionInvoke
+        placementTap = $placementTap
+        placementTapPoint = $tapPoint
+        placementTapDidSummon = $tapDidSummon
+        commandFeedbackText = $commandFeedback
         summonInvokes = $summonInvokes
-        battleEntityFoundAfterClick = [bool]$battleEntity.found
-        battleEntityPositionAfterClick = $battleEntityPosition
-        enemyPositionAfterClick = $postClickEnemyPosition
+        battleEntityFoundAfterPlacement = [bool]$battleEntity.found
+        battleEntityPositionAfterPlacement = $battleEntityPosition
+        enemyPositionAfterPlacement = $postClickEnemyPosition
         waveTextAfterWait = $waveText
         countdownTextAfterWait = $countdownText
         statusTextAfterWait = $statusText

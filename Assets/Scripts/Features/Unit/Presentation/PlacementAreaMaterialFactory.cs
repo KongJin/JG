@@ -15,7 +15,17 @@ namespace Features.Unit.Presentation
         /// </summary>
         public static Material CreateValidMaterial()
         {
-            return CreateTransparentMaterial(new Color(0f, 1f, 0f, 0.25f));
+            return CreateIdleMaterial();
+        }
+
+        public static Material CreateIdleMaterial()
+        {
+            return CreateTransparentMaterial(new Color(0.22f, 0.52f, 0.60f, 0.18f));
+        }
+
+        public static Material CreateActiveMaterial()
+        {
+            return CreateTransparentMaterial(new Color(0.20f, 0.79f, 0.96f, 0.34f));
         }
 
         /// <summary>
@@ -31,7 +41,7 @@ namespace Features.Unit.Presentation
         /// </summary>
         public static Material CreateHighlightMaterial()
         {
-            return CreateTransparentMaterial(new Color(1f, 1f, 0f, 0.35f));
+            return CreateActiveMaterial();
         }
 
         private static Material CreateTransparentMaterial(Color color)

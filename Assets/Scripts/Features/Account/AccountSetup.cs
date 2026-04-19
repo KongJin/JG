@@ -1,6 +1,7 @@
 using Features.Account.Application;
 using Features.Account.Application.Ports;
 using Features.Account.Infrastructure;
+using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Lifecycle;
 using UnityEngine;
@@ -12,14 +13,14 @@ namespace Features.Account
     /// </summary>
     public sealed class AccountSetup : MonoBehaviour
     {
-        [SerializeField] private AccountConfig _config;
+        [Required, SerializeField] private AccountConfig _config;
 
         private DisposableScope _disposables;
 
         // Ports
         public IAuthPort AuthPort { get; private set; }
         public IAccountDataPort DataPort { get; private set; }
-        public string GoogleWebClientId => _config != null ? _config.googleWebClientId : string.Empty;
+        public string GoogleWebClientId => _config.googleWebClientId;
 
         // UseCases
         public SignInAnonymouslyUseCase SignInAnonymously { get; private set; }
@@ -34,12 +35,6 @@ namespace Features.Account
         /// </summary>
         public void Initialize(EventBus eventBus)
         {
-            if (_config == null)
-            {
-                Debug.LogError("[AccountSetup] AccountConfig not assigned. Assign in Inspector.");
-                return;
-            }
-
             _disposables?.Dispose();
             _disposables = new DisposableScope();
 

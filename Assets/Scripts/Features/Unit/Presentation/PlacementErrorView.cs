@@ -17,14 +17,21 @@ namespace Features.Unit.Presentation
         [Header("Animation")]
         [Required, SerializeField]
         private CanvasGroup _canvasGroup;
+        [SerializeField] private Image _backgroundImage;
 
         [Header("Settings")]
         [SerializeField]
-        private float _showDuration = 2f;
+        private float _errorDuration = 1.75f;
+        [SerializeField] private float _infoDuration = 1.35f;
+        [SerializeField] private Color _errorBackgroundColor = new(0.57f, 0.13f, 0.15f, 0.92f);
+        [SerializeField] private Color _infoBackgroundColor = new(0.08f, 0.22f, 0.33f, 0.92f);
+        [SerializeField] private Color _errorTextColor = Color.white;
+        [SerializeField] private Color _infoTextColor = new(0.86f, 0.94f, 1f, 1f);
         private Coroutine _hideCoroutine;
 
         private void Awake()
         {
+            ApplyPresentationDefaults();
             // 초기에는 숨김 처리
             HideImmediate();
         }
@@ -34,24 +41,17 @@ namespace Features.Unit.Presentation
         /// </summary>
         public void Show(string message = "배치 영역 밖입니다!")
         {
-            if (_errorText != null)
-            {
-                _errorText.text = message;
-            }
+            ShowError(message);
+        }
 
-            // 이미 표시 중인 타이머 취소
-            if (_hideCoroutine != null)
-            {
-                StopCoroutine(_hideCoroutine);
-                _hideCoroutine = null;
-            }
+        public void ShowError(string message)
+        {
+            ShowInternal(message, _errorBackgroundColor, _errorTextColor, _errorDuration);
+        }
 
-            // 표시
-            _canvasGroup.alpha = 1f;
-            _canvasGroup.blocksRaycasts = true;
-
-            // 일정 시간 후 숨김
-            _hideCoroutine = StartCoroutine(HideAfterDelay());
+        public void ShowInfo(string message)
+        {
+            ShowInternal(message, _infoBackgroundColor, _infoTextColor, _infoDuration);
         }
 
         /// <summary>
@@ -74,10 +74,75 @@ namespace Features.Unit.Presentation
             _canvasGroup.blocksRaycasts = false;
         }
 
-        private System.Collections.IEnumerator HideAfterDelay()
+        private void ShowInternal(string message, Color backgroundColor, Color textColor, float duration)
         {
-            yield return new WaitForSeconds(_showDuration);
+            if (_errorText != null)
+            {
+                _errorText.text = message;
+                _errorText.color = textColor;
+            }
+
+            var background = ResolveBackgroundImage();
+            if (background != null)
+            {
+                background.color = backgroundColor;
+            }
+
+            if (_hideCoroutine != null)
+            {
+                StopCoroutine(_hideCoroutine);
+                _hideCoroutine = null;
+            }
+
+            _canvasGroup.alpha = 1f;
+            _canvasGroup.blocksRaycasts = false;
+            _hideCoroutine = StartCoroutine(HideAfterDelay(duration));
+        }
+
+        private Image ResolveBackgroundImage()
+        {
+            if (_backgroundImage != null)
+                return _backgroundImage;
+
+            _backgroundImage = GetComponent<Image>();
+            return _backgroundImage;
+        }
+
+        private System.Collections.IEnumerator HideAfterDelay(float duration)
+        {
+            yield return new WaitForSeconds(duration);
             HideImmediate();
+        }
+
+        private void ApplyPresentationDefaults()
+        {
+            var rect = transform as RectTransform;
+            if (rect != null)
+            {
+                rect.anchorMin = new Vector2(0.04f, 0.27f);
+                rect.anchorMax = new Vector2(0.96f, 0.41f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = Vector2.zero;
+                rect.sizeDelta = Vector2.zero;
+            }
+
+            if (_errorText != null)
+            {
+                var textRect = _errorText.rectTransform;
+                textRect.anchorMin = Vector2.zero;
+                textRect.anchorMax = Vector2.one;
+                textRect.offsetMin = new Vector2(18f, 4f);
+                textRect.offsetMax = new Vector2(-18f, -4f);
+                _errorText.alignment = TextAnchor.MiddleLeft;
+                _errorText.fontStyle = FontStyle.Bold;
+                _errorText.fontSize = 18;
+            }
+
+            var background = ResolveBackgroundImage();
+            if (background != null)
+            {
+                background.raycastTarget = false;
+            }
         }
     }
 }

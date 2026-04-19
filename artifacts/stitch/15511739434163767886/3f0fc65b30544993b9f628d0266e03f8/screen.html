@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tactical Intel Ops - Garage</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#690005",
+                        "on-secondary": "#00363d",
+                        "surface-tint": "#ffb778",
+                        "secondary-fixed-dim": "#00daf3",
+                        "on-surface-variant": "#dcc2ae",
+                        "tertiary-fixed-dim": "#ffb3b3",
+                        "surface-container-lowest": "#0c0e10",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#00616d",
+                        "on-tertiary-fixed": "#400009",
+                        "on-tertiary": "#680014",
+                        "surface-dim": "#121416",
+                        "secondary": "#bdf4ff",
+                        "inverse-surface": "#e2e2e5",
+                        "on-surface": "#e2e2e5",
+                        "error-container": "#93000a",
+                        "primary": "#ffb97c",
+                        "primary-container": "#ff9100",
+                        "outline": "#a48c7a",
+                        "on-primary-fixed-variant": "#6c3a00",
+                        "surface-variant": "#333537",
+                        "error": "#ffb4ab",
+                        "surface-bright": "#38393c",
+                        "surface-container-highest": "#333537",
+                        "on-primary": "#4c2700",
+                        "on-primary-container": "#633500",
+                        "secondary-fixed": "#9cf0ff",
+                        "background": "#121416",
+                        "surface-container-low": "#1a1c1e",
+                        "on-tertiary-container": "#87001d",
+                        "tertiary-container": "#ff8b8d",
+                        "primary-fixed-dim": "#ffb778",
+                        "inverse-on-surface": "#2f3133",
+                        "surface-container-high": "#282a2c",
+                        "primary-fixed": "#ffdcc1",
+                        "on-primary-fixed": "#2e1500",
+                        "on-secondary-fixed-variant": "#004f58",
+                        "outline-variant": "#564334",
+                        "surface-container": "#1e2022",
+                        "tertiary": "#ffb5b5",
+                        "inverse-primary": "#8e4e00",
+                        "surface": "#121416",
+                        "tertiary-fixed": "#ffdad9",
+                        "on-tertiary-fixed-variant": "#920021",
+                        "on-secondary-fixed": "#001f24",
+                        "on-background": "#e2e2e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Public Sans"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanline-cta {
+            background: linear-gradient(0deg, #ffb97c 0%, #ff9100 100%);
+        }
+        .glass-hud {
+            backdrop-filter: blur(20px);
+            background-color: rgba(51, 53, 55, 0.8);
+        }
+        .bracket-input {
+            border-left: 1px solid #a48c7a;
+            border-right: 1px solid #a48c7a;
+            border-top: none;
+            border-bottom: none;
+        }
+        .bracket-input:focus {
+            border-left: 1px solid #bdf4ff;
+            border-right: 1px solid #bdf4ff;
+            outline: none;
+            box-shadow: 0 0 10px rgba(189, 244, 255, 0.2);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="bg-[#121416] border-l-4 border-[#FFB97C] flex justify-between items-center w-full px-4 h-14 fixed top-0 z-50">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#FFB97C]" data-icon="terminal">terminal</span>
+<h1 class="font-['Space_Grotesk'] uppercase tracking-[0.05em] text-sm font-bold text-[#FFB97C] text-lg font-black tracking-tighter">TACTICAL.INTEL.OPS</h1>
+</div>
+<button class="text-[#FFB97C] hover:bg-[#333537] transition-colors p-2">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</header>
+<main class="pt-14 pb-32 min-h-screen max-w-2xl mx-auto px-4">
+<!-- Slot Selection Section -->
+<section class="mt-6 mb-8">
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-headline font-bold uppercase tracking-[0.1em] text-xs text-outline">Active Loadout / Selection</h2>
+<span class="font-label text-[10px] text-secondary">ID: GARAGE_771_B</span>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- Primary Weapon Card -->
+<div class="bg-surface-container-low border-l-2 border-primary p-4 relative overflow-hidden flex items-center justify-between">
+<div class="z-10">
+<p class="font-headline text-[10px] uppercase text-outline mb-1">Slot 01: Primary</p>
+<h3 class="font-headline font-bold text-lg text-primary tracking-tight">MK-IV CARBINE</h3>
+<p class="font-label text-[10px] text-secondary-fixed-dim uppercase">Status: Calibrated</p>
+</div>
+<img class="absolute right-0 top-0 h-full w-1/3 object-cover opacity-40 grayscale" data-alt="futuristic tactical assault rifle with polymer casing and integrated optic sitting on a workbench" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCj0AaLwyIJ6lm6S0MCwK7oO7XyaQjnx4R7WRIISapZDEsk6P3bxmTRchyZ16lp0AZF-T-2r4p7ohSWuQf3_FFCzxHsELTM41SamdzsGL6-KzR0iyWhzqokvdbwH3JhPPHk0e2BrR_Q5d9RQsAuDKoa9_Wqv_AjZn7RDNWDEoPXkqxy0Iq4vy2s3VX3Ox2ywsjQR6vddoVyEai6yZb-5NUaePtqivEDJFRS06bOleAhY7WTkMhIJqRe2_l8o1-5Cwa3kI0xjg_dZ68o"/>
+</div>
+<!-- Support Card -->
+<div class="bg-surface-container-low border-l-2 border-secondary p-4 relative overflow-hidden flex items-center justify-between">
+<div class="z-10">
+<p class="font-headline text-[10px] uppercase text-outline mb-1">Slot 02: Support</p>
+<h3 class="font-headline font-bold text-lg text-on-surface tracking-tight">PLASMA BREACHER</h3>
+<p class="font-label text-[10px] text-tertiary uppercase">Status: Charging</p>
+</div>
+<img class="absolute right-0 top-0 h-full w-1/3 object-cover opacity-40 grayscale" data-alt="industrial heavy duty laser equipment with glowing orange elements and heavy cables" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuWelC1k65lK4-PQsyJQl9O9UL558eZuF2t3D1VcPil5z9mESy7nDP0vqSFwSHqBeA7lgwTm__XX_n4Zsf3UnMM5vnjW66Os-K5u2GKb1rjbJAEfDJCQIwNou7zO3ew74Hu1RXlvDHvyczPg5RyU4IjvNxYR4lKHiaNxNTSCIluaFLqMJlRC0SlUw31KXwbuxPKurIgYqaiSqYG7ub_ShLacmG5cW3Kgl_j5cqKWR65Z3MLNc3kSGfGVh51SrTvMEi94Wtl-cB_aUG"/>
+</div>
+<!-- Utility Card (Empty/Selection state) -->
+<div class="bg-surface-container-lowest border-l-2 border-outline-variant p-4 flex items-center justify-between">
+<div>
+<p class="font-headline text-[10px] uppercase text-outline-variant mb-1">Slot 03: Utility</p>
+<h3 class="font-headline font-bold text-lg text-outline-variant tracking-tight italic">[ EMPTY SLOT ]</h3>
+</div>
+<button class="bg-surface-container-highest p-3 border border-outline-variant">
+<span class="material-symbols-outlined text-primary" data-icon="add">add</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Mid Section: Detailed Item Preview -->
+<section class="mb-10">
+<div class="bg-surface-container border-t-2 border-outline-variant p-5">
+<div class="flex items-start justify-between mb-6">
+<div>
+<h4 class="font-headline font-bold text-xl text-primary tracking-tighter">DATA ANALYTICS</h4>
+<p class="font-body text-xs text-on-surface-variant max-w-[200px]">MK-IV Tactical Interface and Ballistics telemetry readout.</p>
+</div>
+<div class="text-right">
+<div class="bg-primary/10 px-2 py-1 border border-primary/20">
+<span class="font-headline font-bold text-sm text-primary">LVL 45</span>
+</div>
+</div>
+</div>
+<!-- Technical Stats Grid -->
+<div class="grid grid-cols-2 gap-px bg-outline-variant/20 mb-6">
+<div class="bg-surface-container-low p-3">
+<p class="font-headline text-[10px] text-outline uppercase">Damage</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline font-bold text-lg text-on-surface">88</span>
+<div class="h-1 flex-1 bg-surface-container-highest relative">
+<div class="absolute inset-y-0 left-0 bg-primary w-[88%]"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-3">
+<p class="font-headline text-[10px] text-outline uppercase">Stability</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline font-bold text-lg text-on-surface">62</span>
+<div class="h-1 flex-1 bg-surface-container-highest relative">
+<div class="absolute inset-y-0 left-0 bg-secondary w-[62%]"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-3">
+<p class="font-headline text-[10px] text-outline uppercase">Fire Rate</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline font-bold text-lg text-on-surface">120</span>
+<span class="font-label text-[10px] text-outline">RPM</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-3">
+<p class="font-headline text-[10px] text-outline uppercase">Capacity</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline font-bold text-lg text-on-surface">30</span>
+<span class="font-label text-[10px] text-outline">RNDS</span>
+</div>
+</div>
+</div>
+<!-- Field Notes / Body Text -->
+<div class="border-l-2 border-primary/40 pl-4 py-2 mb-6">
+<p class="font-body text-xs text-on-surface leading-relaxed">
+                        Optimized for close-quarters engagement. Hardened casing ensures zero malfunction in subterranean environments. Augmented with a neural-link rail for faster target acquisition.
+                    </p>
+</div>
+<!-- Modification Brackets -->
+<div class="space-y-3">
+<div class="flex items-center gap-3">
+<span class="font-headline text-[10px] text-outline w-16">OPTIC</span>
+<div class="flex-1 bracket-input px-3 py-2 text-xs font-label text-secondary flex justify-between items-center bg-surface-container-lowest">
+<span>RECON_SCOPE_X2</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-headline text-[10px] text-outline w-16">MUZZLE</span>
+<div class="flex-1 bracket-input px-3 py-2 text-xs font-label text-on-surface-variant flex justify-between items-center bg-surface-container-lowest">
+<span>NONE</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Action Area -->
+<div class="fixed bottom-0 left-0 w-full z-50">
+<!-- Persistent Primary CTA -->
+<div class="px-4 pb-6 pt-2 bg-gradient-to-t from-background via-background to-transparent">
+<button class="w-full h-14 scanline-cta flex items-center justify-center gap-2 group active:opacity-80 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-on-primary-fixed font-bold" data-icon="save" style="font-variation-settings: 'FILL' 1;">save</span>
+<span class="font-['Space_Grotesk'] font-black uppercase tracking-[0.2em] text-on-primary-fixed">SAVE ROSTER</span>
+</button>
+</div>
+<!-- BottomNavBar -->
+<nav class="bg-[#121416] border-t-2 border-[#333537] flex justify-around items-stretch w-full">
+<a class="flex flex-col items-center justify-center text-[#A48C7A] pt-2 pb-3 w-full hover:bg-[#0C0E10]" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="tactic">tactic</span>
+<span class="font-['Space_Grotesk'] uppercase tracking-[0.05em] text-[10px] font-bold">LOBBY</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#FFB97C] border-t-2 border-[#FFB97C] pt-2 pb-3 w-full bg-[#1C1E20] translate-y-0.5" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="construction">construction</span>
+<span class="font-['Space_Grotesk'] uppercase tracking-[0.05em] text-[10px] font-bold">GARAGE</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#A48C7A] pt-2 pb-3 w-full hover:bg-[#0C0E10]" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="groups">groups</span>
+<span class="font-['Space_Grotesk'] uppercase tracking-[0.05em] text-[10px] font-bold">SQUAD</span>
+</a>
+</nav>
+</div>
+</body></html>

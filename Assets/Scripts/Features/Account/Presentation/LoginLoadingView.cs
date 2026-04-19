@@ -31,22 +31,22 @@ namespace Features.Account.Presentation
 
         public void Show()
         {
-            if (_loadingPanel != null) _loadingPanel.SetActive(true);
-            if (_errorPanel != null) _errorPanel.SetActive(false);
-            if (_statusText != null) _statusText.text = "Signing in...";
+            _loadingPanel.SetActive(true);
+            _errorPanel.SetActive(false);
+            _statusText.text = "Signing in...";
             _retryCount = 0;
         }
 
         public void Hide()
         {
-            if (_loadingPanel != null) _loadingPanel.SetActive(false);
+            _loadingPanel.SetActive(false);
         }
 
         public void ShowError(string message)
         {
-            if (_loadingPanel != null) _loadingPanel.SetActive(false);
-            if (_errorPanel != null) _errorPanel.SetActive(true);
-            if (_errorText != null) _errorText.text = message;
+            _loadingPanel.SetActive(false);
+            _errorPanel.SetActive(true);
+            _errorText.text = message;
         }
 
         public void SetOnLoginSuccess(System.Action callback)
@@ -74,8 +74,7 @@ namespace Features.Account.Presentation
             }
             else
             {
-                if (_statusText != null)
-                    _statusText.text = $"Sign-in failed ({_retryCount}/{MaxRetries})\nRetrying...";
+                _statusText.text = $"Sign-in failed ({_retryCount}/{MaxRetries})\nRetrying...";
             }
         }
 
@@ -84,6 +83,11 @@ namespace Features.Account.Presentation
             _retryCount = 0;
             Show();
             _onRetryRequested?.Invoke();
+        }
+
+        private void OnDestroy()
+        {
+            _retryButton.onClick.RemoveListener(OnRetryClicked);
         }
     }
 }

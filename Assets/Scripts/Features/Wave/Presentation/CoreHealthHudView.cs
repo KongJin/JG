@@ -13,6 +13,8 @@ namespace Features.Wave.Presentation
         [Required, SerializeField] private Slider healthSlider;
         [Required, SerializeField] private Image fillImage;
         [Required, SerializeField] private Text hpText;
+        [SerializeField] private Image panelImage;
+        [SerializeField] private Image sliderBackgroundImage;
         [SerializeField] private Color normalColor = new Color(0.2f, 0.6f, 1f);
         [SerializeField] private Color dangerColor = Color.red;
         [SerializeField] private float dangerThreshold = 0.3f;
@@ -21,11 +23,17 @@ namespace Features.Wave.Presentation
         private DomainEntityId _coreId;
         private float _maxHp;
 
+        private void Awake()
+        {
+            ApplyPresentationDefaults();
+        }
+
         public void Initialize(IEventSubscriber eventBus, DomainEntityId coreId, float maxHp)
         {
             _eventBus = eventBus;
             _coreId = coreId;
             _maxHp = maxHp;
+            ApplyPresentationDefaults();
 
             healthSlider.maxValue = maxHp;
             healthSlider.value = maxHp;
@@ -47,7 +55,65 @@ namespace Features.Wave.Presentation
             var ratio = _maxHp > 0f ? currentHp / _maxHp : 0f;
             fillImage.color = ratio <= dangerThreshold ? dangerColor : normalColor;
 
-            hpText.text = $"{Mathf.CeilToInt(currentHp)} / {Mathf.CeilToInt(_maxHp)}";
+            hpText.text = $"CORE HP\n{Mathf.CeilToInt(currentHp)} / {Mathf.CeilToInt(_maxHp)}";
+        }
+
+        private void ApplyPresentationDefaults()
+        {
+            if (panelImage == null)
+            {
+                panelImage = GetComponent<Image>();
+            }
+
+            if (sliderBackgroundImage == null && healthSlider != null)
+            {
+                var background = healthSlider.transform.Find("Background");
+                sliderBackgroundImage = background != null ? background.GetComponent<Image>() : null;
+            }
+
+            var rootRect = transform as RectTransform;
+            if (rootRect != null)
+            {
+                rootRect.anchorMin = new Vector2(0.69f, 0.905f);
+                rootRect.anchorMax = new Vector2(0.97f, 0.985f);
+                rootRect.pivot = new Vector2(1f, 1f);
+                rootRect.anchoredPosition = Vector2.zero;
+                rootRect.sizeDelta = Vector2.zero;
+            }
+
+            if (panelImage != null)
+            {
+                panelImage.color = new Color(0.10f, 0.14f, 0.19f, 0.94f);
+                panelImage.raycastTarget = false;
+            }
+
+            if (hpText != null)
+            {
+                var textRect = hpText.rectTransform;
+                textRect.anchorMin = new Vector2(0.08f, 0.42f);
+                textRect.anchorMax = new Vector2(0.92f, 0.95f);
+                textRect.offsetMin = Vector2.zero;
+                textRect.offsetMax = Vector2.zero;
+                hpText.fontSize = 22;
+                hpText.fontStyle = FontStyle.Bold;
+                hpText.alignment = TextAnchor.UpperLeft;
+                hpText.color = new Color(0.92f, 0.95f, 1f, 1f);
+                hpText.raycastTarget = false;
+            }
+
+            var sliderRect = healthSlider != null ? healthSlider.transform as RectTransform : null;
+            if (sliderRect != null)
+            {
+                sliderRect.anchorMin = new Vector2(0.08f, 0.12f);
+                sliderRect.anchorMax = new Vector2(0.92f, 0.28f);
+                sliderRect.offsetMin = Vector2.zero;
+                sliderRect.offsetMax = Vector2.zero;
+            }
+
+            if (sliderBackgroundImage != null)
+            {
+                sliderBackgroundImage.color = new Color(0.18f, 0.09f, 0.11f, 0.92f);
+            }
         }
 
         private void OnDestroy()

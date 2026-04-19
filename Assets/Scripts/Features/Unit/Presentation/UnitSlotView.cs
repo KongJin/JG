@@ -1,11 +1,9 @@
-using Features.Unit.Application;
 using Features.Unit.Application.Ports;
 using Features.Unit.Domain;
 using Features.Player.Application.Events;
 using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
-using Shared.Math;
 using System.Globalization;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -26,37 +24,45 @@ namespace Features.Unit.Presentation
         [Required, SerializeField] private Text _nameText;
         [Required, SerializeField] private Text _costText;
         [Required, SerializeField] private GameObject _cannotAffordOverlay;
+        [SerializeField] private Image _backgroundImage;
+        [SerializeField] private LayoutElement _layoutElement;
 
-        [Header("Summon Settings")]
-        [SerializeField] private Transform _spawnParent;
+        [Header("Visual State")]
+        [SerializeField] private Color _idleColor = new(0.08f, 0.14f, 0.21f, 0.96f);
+        [SerializeField] private Color _selectedColor = new(0.19f, 0.42f, 0.67f, 1f);
+        [SerializeField] private Color _disabledColor = new(0.05f, 0.08f, 0.12f, 0.92f);
 
         private IEventSubscriber _eventBus;
-        private SummonUnitUseCase _summonUseCase;
         private IUnitEnergyPort _energyPort;
+        private System.Action<UnitSlotView> _selectionRequested;
 
         private UnitSpec _unitSpec;
         private DomainEntityId _ownerId;
-        private Vector3 _spawnPosition;
+        private int _slotIndex;
         private bool _canAfford;
+        private bool _isSelected;
 
         /// <summary>현재 슬롯의 유닛 스펙.</summary>
         public UnitSpec UnitSpec => _unitSpec;
+        public int SlotIndex => _slotIndex;
+        public bool CanAfford => _canAfford;
 
         public void Initialize(
             IEventSubscriber eventBus,
-            SummonUnitUseCase summonUseCase,
             IUnitEnergyPort energyPort,
             UnitSpec unitSpec,
             DomainEntityId ownerId,
-            Vector3 spawnPosition)
+            int slotIndex,
+            System.Action<UnitSlotView> selectionRequested)
         {
             _eventBus = eventBus;
-            _summonUseCase = summonUseCase;
             _energyPort = energyPort;
             _unitSpec = unitSpec;
             _ownerId = ownerId;
-            _spawnPosition = spawnPosition;
+            _slotIndex = slotIndex;
+            _selectionRequested = selectionRequested;
 
+            ApplyPresentationDefaults();
             _eventBus.Subscribe(this, new System.Action<PlayerEnergyChangedEvent>(OnEnergyChanged));
             UpdateDisplay();
         }
@@ -69,7 +75,7 @@ namespace Features.Unit.Presentation
             _costText.text = _unitSpec.SummonCost.ToString();
 
             _canAfford = _energyPort.GetCurrentEnergy(_ownerId) >= _unitSpec.SummonCost;
-            _cannotAffordOverlay.SetActive(!_canAfford);
+            RefreshVisualState();
         }
 
         private static string FormatSlotName(string rawName)
@@ -92,30 +98,19 @@ namespace Features.Unit.Presentation
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (!_canAfford) return;
             OnClicked();
         }
 
-        /// <summary>슬롯 클릭 시 소환 실행 (InputHandler에서도 호출 가능).</summary>
+        /// <summary>슬롯 클릭 시 선택 요청 (InputHandler에서도 호출 가능).</summary>
         public void OnClicked()
         {
-            if (!_canAfford) return;
-            Summon();
+            _selectionRequested?.Invoke(this);
         }
 
-        private void Summon()
+        public void SetSelected(bool isSelected)
         {
-            if (_unitSpec == null) return;
-
-            var success = _summonUseCase.Execute(
-                _ownerId,
-                _unitSpec,
-                new Float3(_spawnPosition.x, _spawnPosition.y, _spawnPosition.z));
-
-            if (success)
-            {
-                UpdateDisplay(); // 에너지 차감 후 상태 갱신
-            }
+            _isSelected = isSelected;
+            RefreshVisualState();
         }
 
         private void OnEnergyChanged(PlayerEnergyChangedEvent e)
@@ -124,6 +119,100 @@ namespace Features.Unit.Presentation
                 return;
 
             UpdateDisplay();
+        }
+
+        private void RefreshVisualState()
+        {
+            _cannotAffordOverlay.SetActive(!_canAfford);
+
+            var background = ResolveBackgroundImage();
+            if (background == null)
+                return;
+
+            if (!_canAfford)
+            {
+                background.color = _disabledColor;
+                return;
+            }
+
+            background.color = _isSelected ? _selectedColor : _idleColor;
+        }
+
+        private Image ResolveBackgroundImage()
+        {
+            if (_backgroundImage != null)
+                return _backgroundImage;
+
+            _backgroundImage = GetComponent<Image>();
+            return _backgroundImage;
+        }
+
+        private void ApplyPresentationDefaults()
+        {
+            if (_layoutElement == null)
+            {
+                _layoutElement = GetComponent<LayoutElement>();
+            }
+
+            if (_layoutElement != null)
+            {
+                _layoutElement.minWidth = 144f;
+                _layoutElement.preferredWidth = 168f;
+                _layoutElement.minHeight = 88f;
+                _layoutElement.preferredHeight = 96f;
+                _layoutElement.flexibleWidth = 0f;
+                _layoutElement.flexibleHeight = 0f;
+            }
+
+            if (_nameText != null)
+            {
+                _nameText.fontSize = 15;
+                _nameText.fontStyle = FontStyle.Bold;
+                _nameText.alignment = TextAnchor.UpperLeft;
+                _nameText.color = new Color(0.88f, 0.94f, 1f, 1f);
+
+                var rect = _nameText.rectTransform;
+                rect.anchorMin = new Vector2(0.18f, 0.48f);
+                rect.anchorMax = new Vector2(0.72f, 0.86f);
+                rect.offsetMin = Vector2.zero;
+                rect.offsetMax = Vector2.zero;
+            }
+
+            if (_costText != null)
+            {
+                _costText.fontSize = 22;
+                _costText.fontStyle = FontStyle.Bold;
+                _costText.alignment = TextAnchor.MiddleRight;
+                _costText.color = Color.white;
+
+                var rect = _costText.rectTransform;
+                rect.anchorMin = new Vector2(0.72f, 0.18f);
+                rect.anchorMax = new Vector2(0.92f, 0.82f);
+                rect.offsetMin = Vector2.zero;
+                rect.offsetMax = Vector2.zero;
+            }
+
+            if (_iconImage != null)
+            {
+                var rect = _iconImage.rectTransform;
+                rect.anchorMin = new Vector2(0.05f, 0.22f);
+                rect.anchorMax = new Vector2(0.16f, 0.78f);
+                rect.offsetMin = Vector2.zero;
+                rect.offsetMax = Vector2.zero;
+                _iconImage.color = new Color(0.63f, 0.86f, 1f, 1f);
+            }
+
+            if (_cannotAffordOverlay != null)
+            {
+                var overlayRect = _cannotAffordOverlay.transform as RectTransform;
+                if (overlayRect != null)
+                {
+                    overlayRect.anchorMin = Vector2.zero;
+                    overlayRect.anchorMax = Vector2.one;
+                    overlayRect.offsetMin = Vector2.zero;
+                    overlayRect.offsetMax = Vector2.zero;
+                }
+            }
         }
 
         private void OnDestroy()

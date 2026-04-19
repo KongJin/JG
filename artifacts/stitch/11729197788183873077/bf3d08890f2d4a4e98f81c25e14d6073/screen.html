@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tactical HUD - Sector 04</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;family=IBM+Plex+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#f59e0b", // amber-500
+                        secondary: "#0ea5e9", // sky-500
+                        danger: "#ef4444", // red-500
+                        surface: "#020617", // slate-950
+                    },
+                    fontFamily: {
+                        headline: ["Space Grotesk"],
+                        body: ["Ibm Plex Sans"],
+                        label: ["Ibm Plex Sans"],
+                        mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .grid-pattern {
+            background-image: linear-gradient(rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .scanner-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #0ea5e9, transparent);
+            width: 100%;
+            position: absolute;
+            top: 0;
+            opacity: 0.3;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-slate-950 text-slate-200 font-body selection:bg-amber-500/30 overflow-hidden h-screen flex flex-col">
+<!-- TopAppBar from JSON Logic -->
+<header class="bg-slate-950/80 backdrop-blur-md text-amber-500 font-mono tracking-widest font-bold uppercase text-xs docked full-width top-0 border-b-2 border-amber-900/50 shadow-[0_0_20px_rgba(245,158,11,0.15)] flex justify-between items-center w-full px-4 h-12 z-50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-500" data-icon="security">security</span>
+<span class="text-amber-500 font-black tracking-tighter border-l-4 border-amber-500 pl-2">SECTOR-04 STATUS: ACTIVE</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-amber-500/80">12:00:41</span>
+</div>
+</header>
+<!-- Tactical Overlay: Main Viewport -->
+<main class="flex-grow relative overflow-hidden bg-slate-950">
+<!-- Simulated Battlefield Grid -->
+<div class="absolute inset-0 grid-pattern pointer-events-none opacity-40"></div>
+<div class="scanner-line"></div>
+<!-- Top-Level Tactical Data Layer -->
+<div class="absolute inset-0 p-4 pointer-events-none flex flex-col justify-between">
+<!-- Top HUD Row -->
+<div class="flex justify-between items-start w-full">
+<!-- Left: Mission Status -->
+<div class="space-y-1">
+<div class="bg-slate-900/80 border-l-2 border-amber-500 p-2 backdrop-blur-sm shadow-lg pointer-events-auto">
+<div class="flex items-center gap-2">
+<span class="text-[10px] text-amber-500/70 font-mono">CURRENT_OBJECTIVE</span>
+</div>
+<div class="text-xl font-headline font-bold text-slate-100">WAVE 04/12</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-xs text-secondary" data-icon="timer">timer</span>
+<span class="text-lg font-mono font-bold text-secondary">00:45</span>
+</div>
+<div class="text-[10px] text-emerald-400 font-mono flex items-center gap-1 mt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            LINK_STABLE
+                        </div>
+</div>
+</div>
+<!-- Right: Core HP -->
+<div class="w-48 bg-slate-900/80 border-r-2 border-danger p-2 backdrop-blur-sm shadow-lg pointer-events-auto">
+<div class="flex justify-between items-end mb-1">
+<span class="text-[10px] text-danger font-mono font-bold">CORE_INTEGRITY</span>
+<span class="text-xs font-mono font-bold text-slate-100">82%</span>
+</div>
+<div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-danger w-[82%]"></div>
+</div>
+<div class="mt-2 flex justify-between text-[8px] text-slate-500 font-mono">
+<span>SYS_THREAT: LOW</span>
+<span>POS: 42.08.1</span>
+</div>
+</div>
+</div>
+<!-- Central Battlefield (Mocked as low-poly visual style via background) -->
+<div class="absolute inset-0 -z-10 flex items-center justify-center opacity-20">
+<div class="w-full h-full" style="background-image: radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.1) 0%, transparent 70%);"></div>
+<img class="w-full h-full object-cover mix-blend-overlay grayscale contrast-125" data-alt="Stylized top-down tactical wireframe view of a desert outpost with glowing blue paths and orange unit markers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcV-aMVmAdjNVAR7k86be0y2KLTIQ-wDroxSiA1ofusLMRbgkuCj93jVm7kWZPBs5iWhEF_5JY6VEyzou4H2MGaPn9SEJGnO08D-dHLN7xpFQjJ2rU1SklD9SDpBKB0OIkeE_198TeibK1KxsBBvJhE9XJythTTNFh7ViVzDM4HqFT_Y5PolPCDdMFSKj7VLPvtDue7KtDvstxFl3bVUwjil6_kt8KDZnz7hjrMnQuSnYnVFikL0_YK6SbF40sDYhnP9ilTbHo827h"/>
+</div>
+<!-- Dynamic Tactical Markers (Floating elements) -->
+<div class="absolute top-1/2 left-1/4 -translate-y-1/2 -translate-x-1/2 pointer-events-auto">
+<div class="flex flex-col items-center">
+<div class="w-4 h-4 border border-amber-500 rotate-45 flex items-center justify-center">
+<div class="w-1.5 h-1.5 bg-amber-500"></div>
+</div>
+<span class="text-[8px] font-mono text-amber-500 mt-1">ENEMY_01</span>
+</div>
+</div>
+<!-- Interaction Zone: Unit Summon Bar (Above Bottom Nav) -->
+<div class="pointer-events-auto mb-20 w-full max-w-md mx-auto">
+<div class="grid grid-cols-3 gap-2 px-2">
+<!-- Unit 1: STRIKER -->
+<button class="relative bg-slate-900/90 border border-sky-900/50 p-2 group active:scale-95 transition-all">
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-sky-400 group-hover:text-primary transition-colors" data-icon="rocket_launch">rocket_launch</span>
+<span class="text-[10px] font-mono font-bold tracking-tighter text-slate-300">STRIKER</span>
+</div>
+<div class="absolute bottom-0 left-0 h-0.5 bg-sky-500 w-full opacity-50"></div>
+<div class="mt-1 text-center text-[9px] font-mono text-sky-500">200E</div>
+</button>
+<!-- Unit 2: DEFENDER (Active Selection State) -->
+<button class="relative bg-amber-500/20 border-2 border-amber-500 p-2 active:scale-95 transition-all">
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-amber-500" data-icon="shield">shield</span>
+<span class="text-[10px] font-mono font-bold tracking-tighter text-amber-500">DEFENDER</span>
+</div>
+<div class="mt-1 text-center text-[9px] font-mono text-amber-500">350E</div>
+</button>
+<!-- Unit 3: REPAIR_DRONE (Error State) -->
+<button class="relative bg-slate-900/90 border border-slate-800 p-2 opacity-60 overflow-hidden cursor-not-allowed">
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-slate-500" data-icon="healing">healing</span>
+<span class="text-[10px] font-mono font-bold tracking-tighter text-slate-500">DRONE</span>
+</div>
+<div class="mt-1 text-center text-[9px] font-mono text-slate-600">500E</div>
+<!-- Error Overlay -->
+<div class="absolute inset-0 bg-red-950/40 flex items-center justify-center backdrop-blur-[1px]">
+<span class="text-[8px] font-black text-danger uppercase leading-none text-center px-1 font-mono tracking-tighter">INSUFFICIENT_ENERGY</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar from JSON Logic -->
+<nav class="bg-slate-950/90 border-t-2 border-sky-900/50 shadow-[0_-5px_25px_rgba(14,165,233,0.1)] fixed bottom-0 w-full z-50 h-20">
+<div class="grid grid-cols-4 w-full h-full divide-x divide-sky-900/30">
+<!-- Navigation Item: INFANTRY -->
+<a class="flex flex-col items-center justify-center bg-amber-500/20 text-amber-500 border-t-4 border-amber-500 p-2 active:scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-mono text-[10px] uppercase font-bold tracking-tighter">INFANTRY</span>
+</a>
+<!-- Navigation Item: ARMOR -->
+<a class="flex flex-col items-center justify-center text-sky-700/60 p-2 hover:bg-sky-500/10 active:scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="military_tech">military_tech</span>
+<span class="font-mono text-[10px] uppercase font-bold tracking-tighter">ARMOR</span>
+</a>
+<!-- Navigation Item: AERIAL -->
+<a class="flex flex-col items-center justify-center text-sky-700/60 p-2 hover:bg-sky-500/10 active:scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="airplanemode_active">airplanemode_active</span>
+<span class="font-mono text-[10px] uppercase font-bold tracking-tighter">AERIAL</span>
+</a>
+<!-- Navigation Item: REPAIR -->
+<a class="flex flex-col items-center justify-center text-sky-700/60 p-2 hover:bg-sky-500/10 active:scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="build">build</span>
+<span class="font-mono text-[10px] uppercase font-bold tracking-tighter">REPAIR</span>
+</a>
+</div>
+</nav>
+<!-- Static Background Pattern (Scanlines) -->
+<div class="fixed inset-0 pointer-events-none z-[100] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.01),rgba(0,255,0,0.005),rgba(0,0,255,0.01))] bg-[length:100%_2px,3px_100%]"></div>
+</body></html>

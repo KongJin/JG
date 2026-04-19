@@ -13,6 +13,7 @@ namespace Features.Wave.Presentation
         [Required, SerializeField] private Text waveText;
         [Required, SerializeField] private Text countdownText;
         [Required, SerializeField] private Text statusText;
+        [SerializeField] private Image backgroundImage;
 
         [Tooltip("선택. 웨이브1 카운트다운 시 덱 순환 안내 한 줄 (MVP ①·리텐션). 비우면 표시 안 함.")]
         [SerializeField]
@@ -24,8 +25,14 @@ namespace Features.Wave.Presentation
         private float _countdownRemaining;
         private bool _isCountingDown;
 
+        private void Awake()
+        {
+            ApplyPresentationDefaults();
+        }
+
         public void Initialize(IEventSubscriber subscriber)
         {
+            ApplyPresentationDefaults();
             subscriber.Subscribe(this, new Action<WaveCountdownStartedEvent>(OnCountdownStarted));
             subscriber.Subscribe(this, new Action<WaveStartedEvent>(OnWaveStarted));
             subscriber.Subscribe(this, new Action<WaveClearedEvent>(OnWaveCleared));
@@ -140,7 +147,54 @@ namespace Features.Wave.Presentation
 
             firstWaveDeckHintText.gameObject.SetActive(true);
             if (string.IsNullOrEmpty(firstWaveDeckHintText.text))
-                firstWaveDeckHintText.text = "슬롯을 눌러 즉시 소환하고, 드래그로 정확히 배치하세요.";
+                firstWaveDeckHintText.text = "슬롯 선택 후 전장을 탭해 배치하세요.";
+        }
+
+        private void ApplyPresentationDefaults()
+        {
+            if (backgroundImage == null)
+            {
+                backgroundImage = GetComponent<Image>();
+            }
+
+            var rootRect = transform as RectTransform;
+            if (rootRect != null)
+            {
+                rootRect.anchorMin = new Vector2(0.03f, 0.905f);
+                rootRect.anchorMax = new Vector2(0.57f, 0.985f);
+                rootRect.pivot = new Vector2(0f, 1f);
+                rootRect.anchoredPosition = Vector2.zero;
+                rootRect.sizeDelta = Vector2.zero;
+            }
+
+            if (backgroundImage != null)
+            {
+                backgroundImage.color = new Color(0.05f, 0.09f, 0.14f, 0.9f);
+                backgroundImage.raycastTarget = false;
+            }
+
+            ConfigureText(waveText, new Vector2(0.05f, 0.46f), new Vector2(0.60f, 0.96f), 30, FontStyle.Bold, TextAnchor.UpperLeft, new Color(0.95f, 0.97f, 1f, 1f));
+            ConfigureText(countdownText, new Vector2(0.73f, 0.24f), new Vector2(0.94f, 0.9f), 28, FontStyle.Bold, TextAnchor.MiddleCenter, new Color(0.5f, 0.85f, 1f, 1f));
+            ConfigureText(statusText, new Vector2(0.05f, 0.08f), new Vector2(0.68f, 0.44f), 18, FontStyle.Bold, TextAnchor.MiddleLeft, new Color(0.73f, 0.83f, 0.94f, 1f));
+            ConfigureText(firstWaveDeckHintText, new Vector2(0.05f, -0.28f), new Vector2(0.95f, 0.04f), 16, FontStyle.Normal, TextAnchor.MiddleLeft, new Color(0.77f, 0.88f, 1f, 0.95f));
+        }
+
+        private static void ConfigureText(Text text, Vector2 anchorMin, Vector2 anchorMax, int fontSize, FontStyle fontStyle, TextAnchor alignment, Color color)
+        {
+            if (text == null)
+                return;
+
+            var rect = text.rectTransform;
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            text.fontSize = fontSize;
+            text.fontStyle = fontStyle;
+            text.alignment = alignment;
+            text.color = color;
+            text.raycastTarget = false;
         }
 
     }

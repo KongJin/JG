@@ -152,8 +152,8 @@ namespace Features.Player
                 energyPort,
                 specs,
                 playerId,
-                placementArea?.Center ?? transform.position,
-                placementArea);
+                placementArea,
+                _coreObjective?.PlacementAreaView);
         }
 
         private void Awake()

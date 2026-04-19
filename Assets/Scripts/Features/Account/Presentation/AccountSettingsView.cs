@@ -15,9 +15,8 @@ namespace Features.Account.Presentation
     public sealed class AccountSettingsView : MonoBehaviour
     {
         [Header("Account Info")]
-        [SerializeField] private TMP_Text _uidText;
-        [SerializeField] private TMP_Text _authTypeText;
-        [SerializeField] private TMP_Text _displayNameText;
+        [Required, SerializeField] private TMP_Text _authTypeText;
+        [Required, SerializeField] private TMP_Text _displayNameText;
 
         [Header("Nickname Change")]
         [SerializeField] private TMP_InputField _nicknameInput;
@@ -25,11 +24,11 @@ namespace Features.Account.Presentation
         [SerializeField] private TMP_Text _nicknameMessage;
 
         [Header("Actions")]
-        [SerializeField] private Button _googleSignInButton;
-        [SerializeField] private Button _logoutButton;
-        [SerializeField] private Button _deleteAccountButton;
-        [SerializeField] private TMP_Text _deleteAccountButtonText;
-        [SerializeField] private TMP_Text _statusMessageText;
+        [Required, SerializeField] private Button _googleSignInButton;
+        [Required, SerializeField] private Button _logoutButton;
+        [Required, SerializeField] private Button _deleteAccountButton;
+        [Required, SerializeField] private TMP_Text _deleteAccountButtonText;
+        [Required, SerializeField] private TMP_Text _statusMessageText;
 
         [Header("Confirmation Dialog")]
         [SerializeField] private GameObject _confirmDialog;
@@ -69,11 +68,13 @@ namespace Features.Account.Presentation
             _currentProfile = profile;
             _deleteConfirmationPending = false;
 
-            if (_uidText != null) _uidText.text = $"UID: {profile.uid}";
-            if (_authTypeText != null) _authTypeText.text = $"Auth: {profile.authType}";
-            if (_displayNameText != null) _displayNameText.text = profile.displayName;
-            if (_nicknameInput != null) _nicknameInput.text = profile.displayName;
+            _authTypeText.text = BuildAuthStatusText(profile);
+            _displayNameText.text = BuildDisplayNameText(profile);
 
+            if (HasNicknameSection)
+                _nicknameInput.text = profile.displayName;
+
+            SetStatusMessage(BuildDefaultStatusMessage(profile));
             RefreshDeleteButtonState();
             RefreshGoogleButtonState();
         }
@@ -85,32 +86,23 @@ namespace Features.Account.Presentation
 
             _buttonsHooked = true;
 
-            if (_googleSignInButton != null)
-                _googleSignInButton.onClick.AddListener(OnGoogleSignInClicked);
+            _googleSignInButton.onClick.AddListener(OnGoogleSignInClicked);
+            _logoutButton.onClick.AddListener(OnLogoutClicked);
+            _deleteAccountButton.onClick.AddListener(OnDeleteAccountClicked);
 
-            if (_nicknameApplyButton != null)
+            if (HasNicknameSection)
                 _nicknameApplyButton.onClick.AddListener(OnNicknameApplyClicked);
 
-            if (_logoutButton != null)
-                _logoutButton.onClick.AddListener(OnLogoutClicked);
-
-            if (_deleteAccountButton != null)
-                _deleteAccountButton.onClick.AddListener(OnDeleteAccountClicked);
-
-            if (_confirmYesButton != null)
+            if (HasConfirmDialog)
+            {
                 _confirmYesButton.onClick.AddListener(OnConfirmYesClicked);
-
-            if (_confirmNoButton != null)
                 _confirmNoButton.onClick.AddListener(OnConfirmNoClicked);
+            }
         }
 
         private void OnGoogleSignInClicked()
         {
-            if (_setup == null)
-            {
-                SetStatusMessage("AccountSetup is not connected.");
-                return;
-            }
+            EnsureInitialized();
 
             if (_currentProfile != null && _currentProfile.authType == "google")
             {
@@ -126,9 +118,7 @@ namespace Features.Account.Presentation
             }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-            if (_googleSignInButton != null)
-                _googleSignInButton.interactable = false;
-
+            _googleSignInButton.interactable = false;
             SetStatusMessage("Opening Google sign-in...");
             AccountGoogleSignIn_RequestIdToken(
                 _setup.GoogleWebClientId,
@@ -186,15 +176,17 @@ namespace Features.Account.Presentation
 
         private async System.Threading.Tasks.Task RunNicknameApplyAsync()
         {
-            if (_setup == null || _nicknameInput == null) return;
+            EnsureInitialized();
+
+            if (!HasNicknameSection)
+                return;
 
             string newName = _nicknameInput.text;
             var result = await _setup.ChangeDisplayName.Execute(newName);
 
-            if (_nicknameMessage != null)
-                _nicknameMessage.text = result.IsSuccess ? "Nickname changed." : result.Error;
+            SetNicknameMessage(result.IsSuccess ? "Nickname changed." : result.Error);
 
-            if (result.IsSuccess && _displayNameText != null)
+            if (result.IsSuccess)
                 _displayNameText.text = newName;
         }
 
@@ -205,11 +197,10 @@ namespace Features.Account.Presentation
 
         private void OnDeleteAccountClicked()
         {
-            if (_confirmDialog != null)
+            if (HasConfirmDialog)
             {
                 _confirmDialog.SetActive(true);
-                if (_confirmMessage != null)
-                    _confirmMessage.text = "Are you sure you want to delete your account?\nAll data will be permanently deleted.";
+                _confirmMessage.text = "Are you sure you want to delete your account?\nAll data will be permanently deleted.";
                 return;
             }
 
@@ -248,8 +239,10 @@ namespace Features.Account.Presentation
 
         private async System.Threading.Tasks.Task RunConfirmYesAsync()
         {
-            if (_confirmDialog != null) _confirmDialog.SetActive(false);
-            if (_setup == null) return;
+            if (HasConfirmDialog)
+                _confirmDialog.SetActive(false);
+
+            EnsureInitialized();
 
             try
             {
@@ -267,16 +260,14 @@ namespace Features.Account.Presentation
 
         private void OnConfirmNoClicked()
         {
-            if (_confirmDialog != null) _confirmDialog.SetActive(false);
+            if (HasConfirmDialog)
+                _confirmDialog.SetActive(false);
             _deleteConfirmationPending = false;
             RefreshDeleteButtonState();
         }
 
         private void RefreshGoogleButtonState()
         {
-            if (_googleSignInButton == null)
-                return;
-
             bool isGoogleLinked = _currentProfile != null && _currentProfile.authType == "google";
             _googleSignInButton.gameObject.SetActive(!isGoogleLinked);
             _googleSignInButton.interactable = !isGoogleLinked;
@@ -284,27 +275,82 @@ namespace Features.Account.Presentation
 
         private void SetStatusMessage(string message)
         {
-            var target = _statusMessageText != null ? _statusMessageText : _nicknameMessage;
-            if (target != null)
-                target.text = message;
+            _statusMessageText.text = message;
+            SetNicknameMessage(message);
         }
 
         private void RefreshDeleteButtonState()
         {
-            if (_deleteAccountButton == null || _deleteAccountButtonText == null)
+            _deleteAccountButtonText.text = _deleteConfirmationPending ? "Confirm Delete" : "Delete Account";
+        }
+
+        private static string BuildDisplayNameText(AccountProfile profile)
+        {
+            if (profile == null || string.IsNullOrWhiteSpace(profile.displayName))
+                return "Pilot profile";
+
+            return profile.displayName;
+        }
+
+        private static string BuildAuthStatusText(AccountProfile profile)
+        {
+            if (profile == null)
+                return "Anonymous account";
+
+            return profile.authType == "google"
+                ? "Google linked"
+                : "Anonymous account";
+        }
+
+        private static string BuildDefaultStatusMessage(AccountProfile profile)
+        {
+            if (profile == null)
+                return string.Empty;
+
+            return profile.authType == "google"
+                ? "Linked and ready. Sign out keeps the linked account available."
+                : "Link Google to keep this roster across devices.";
+        }
+
+        private bool HasNicknameSection =>
+            _nicknameInput != null &&
+            _nicknameApplyButton != null &&
+            _nicknameMessage != null;
+
+        private bool HasConfirmDialog =>
+            _confirmDialog != null &&
+            _confirmMessage != null &&
+            _confirmYesButton != null &&
+            _confirmNoButton != null;
+
+        private void EnsureInitialized()
+        {
+            if (_setup == null)
+                throw new System.InvalidOperationException("AccountSettingsView.Initialize must be called before interaction.");
+        }
+
+        private void SetNicknameMessage(string message)
+        {
+            if (!HasNicknameSection)
                 return;
 
-            _deleteAccountButtonText.text = _deleteConfirmationPending ? "Confirm Delete" : "Delete Account";
+            _nicknameMessage.text = message;
         }
 
         private void OnDestroy()
         {
-            if (_googleSignInButton != null) _googleSignInButton.onClick.RemoveAllListeners();
-            if (_nicknameApplyButton != null) _nicknameApplyButton.onClick.RemoveAllListeners();
-            if (_logoutButton != null) _logoutButton.onClick.RemoveAllListeners();
-            if (_deleteAccountButton != null) _deleteAccountButton.onClick.RemoveAllListeners();
-            if (_confirmYesButton != null) _confirmYesButton.onClick.RemoveAllListeners();
-            if (_confirmNoButton != null) _confirmNoButton.onClick.RemoveAllListeners();
+            _googleSignInButton.onClick.RemoveAllListeners();
+            _logoutButton.onClick.RemoveAllListeners();
+            _deleteAccountButton.onClick.RemoveAllListeners();
+
+            if (HasNicknameSection)
+                _nicknameApplyButton.onClick.RemoveAllListeners();
+
+            if (HasConfirmDialog)
+            {
+                _confirmYesButton.onClick.RemoveAllListeners();
+                _confirmNoButton.onClick.RemoveAllListeners();
+            }
         }
     }
 }

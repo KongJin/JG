@@ -44,14 +44,14 @@
 ## 다음 작업 메모
 
 - `CodexLobbyScene` 로비/Garage 대시보드 리팩터링 2차: 시각 polish와 상호작용 smoke 보강 필요
-- `CodexLobbyScene` Lobby shell은 `LobbyHeaderCard -> RoomsSectionCard -> CreateRoomCard -> GarageSummaryCard` 구조로 재정리했고, 다음 polish는 Garage `Preview / Summary` 탭 상태별 시각 밀도와 1440 desktop sanity 튜닝 중심으로 이어가기
+- `CodexLobbyScene` mobile polish 2차: `Open Rooms` empty-state hierarchy와 Garage save dock first-screen visibility는 계속 sanity check 대상
+- `CodexLobbyScene` Lobby shell은 `LobbyHeaderCard -> RoomsSectionCard -> CreateRoomCard -> GarageSummaryCard` 구조로 재정리했고, 다음 polish는 mobile-first Garage 단일 구조의 시각 밀도 튜닝 중심으로 이어가기
 - Lobby/Garage UI layout SSOT는 `CodexLobbyScene.unity`와 관련 prefabs만 유지하고, 코드-driven builder/rebuild 경로는 재도입하지 않기
 - 열린 `CodexLobbyScene.unity` 디스크 덮어쓰기는 금지하고, 복구는 기본값으로 MCP repair를 사용하기
 - Lobby/Garage 검증 레이어 재배치 기준: `contract -> EditMode/unit tests -> 얇은 smoke`
 - `GarageReadyFlow`는 필수 회귀 gate가 아니라 optional supervised smoke로 유지하고, Ready/Save 규칙은 EditMode 테스트로 계속 이동
-- 외부 레퍼런스 도입 기준: `Mobbin + Relume`를 디자인 감각 보강용 기본 조합으로 두고, 실제 반영은 Unity MCP와 scene contract 기준으로 번역
+- 외부 디자인 시안 도입 기준: `Stitch`를 기본 생성 도구로 두고, 실제 반영은 Unity MCP와 scene contract 기준으로 번역
 - Garage UI 레이아웃 SSOT: [`ui_foundations.md`](../design/ui_foundations.md)
-- Garage UI Figma handoff 계획: [`figma_ui_system_plan.md`](./figma_ui_system_plan.md)
 - Garage UI 상세 계획: [`garage_ui_ux_improvement_plan.md`](./garage_ui_ux_improvement_plan.md)
 - GameScene 진입 계획: [`game_scene_entry_plan.md`](./game_scene_entry_plan.md)
 - GameScene UI/UX 상세 계획: [`game_scene_ui_ux_improvement_plan.md`](./game_scene_ui_ux_improvement_plan.md)
@@ -64,6 +64,37 @@
 ### 최근 변경 사항
 
 ### 2026-04-19
+
+- done: Garage desktop/mobile 분기 제거
+  - done: `GaragePageController`의 breakpoint, responsive controller, desktop host 복원 로직 제거
+  - done: Garage shell을 mobile-first 단일 구조로 고정하고, 런타임에서 항상 `GarageMobileStackRoot` + `MobileSaveDock` 기준으로 배치
+  - done: `GarageUnitEditorView`, `GaragePartSelectorView`의 responsive typography/state를 mobile 기본값으로 단순화
+  - done: contract/docs에서 `_responsiveRoot`, `_desktopContentRoot`, `_desktopSlotHost`, desktop/mobile 이중 레이아웃 설명 제거
+
+- done: mobile Garage redesign implementation 시작점 반영
+  - done: `GaragePageController` 모바일 흐름을 `Edit/Preview/Summary` 탭 전환에서 `slot first -> single scroll body -> fixed save dock` 구조로 전환
+  - done: 모바일 탭 바를 `Frame / Weapon / Mobility` 포커스 바로 재사용하고, 모바일에서는 선택한 부위 selector 하나만 크게 노출하도록 `GarageUnitEditorView`/`GaragePartSelectorView` responsive state 추가
+  - done: 저장 완료 후 모바일 scroll body를 상단으로 복귀시키고, inline save는 모바일에서 숨기고 `MobileSaveDock`만 메인 CTA로 유지
+  - done: `GarageSlotItemView` 상태 라벨 가시성 강화, `CodexLobbySceneContract` sentinel에 `MobileBodyScrollContent` 추가, `ui_foundations.md` 모바일 Garage 계약 갱신
+  - verify: `scene/verify-codex-lobby-contract` success, canonical page-switch smoke success (`warningCount = 3`, `errorCount = 0`), settings overlay smoke success (`errorCount = 0`)
+  - evidence: `artifacts/unity/lobby-garage-page-switch-result.json`, `artifacts/unity/garage-settings-smoke-result.json`
+  - note: 자동 smoke 캡처는 현재 desktop GameView 기준이라 모바일 390x844 시각 검증은 후속 전용 캡처가 필요
+
+- note: mobile Garage redesign implementation brief를 외부 메모로 정리했고 현재 저장 위치는 `C:\Users\SOL\Downloads\PLAN.md`
+- note: session compact handoff - 다음 구현은 `mobile Garage only` 범위로 진행
+  - current: Lobby 상단 `TopGlow`와 `LobbyHeaderCard`는 제거했고, `CodexLobbyScene` contract와 page-switch smoke는 최근 기준 통과 상태
+  - decision: 모바일 Garage는 `slot first -> single scroll body -> fixed save dock` 구조로 재설계하고, 기존 mobile `Edit / Preview / Summary` 탭 기본 흐름은 폐기
+  - decision: 첫 화면은 슬롯 섹션 우선 노출, 스크롤 시 슬롯은 위로 사라져도 됨, 저장 후에는 자동으로 상단 슬롯 영역으로 복귀
+  - decision: 본문은 `부위 선택 -> 상위 3~5개 파츠 카드 -> 전체보기 bottom sheet -> dual preview(편집 부위 / 최종 유닛)` 순서로 번역
+  - next: `GaragePageController` 모바일 분기와 `CodexLobbyScene` mobile hierarchy를 위 계약 기준으로 함께 수정하고, 새 mobile refs/sentinels가 생기면 `CodexLobbySceneContract`와 `ui_foundations.md`까지 동기화
+  - verify: `contract verify -> page-switch smoke -> mobile first-screen / save-dock / save-return-to-top` 순서로 재검증
+
+- done: CodexLobby mobile contract cleanup 2차
+  - done: `Garage Settings overlay`를 별도 smoke(`Invoke-GarageSettingsOverlaySmoke.ps1`) 대상으로 분리하고, README/ui foundations에 auxiliary panel contract를 반영
+  - done: `GaragePageController`, `RoomListView`, `RoomDetailView`, `RoomItemView`, `GarageSlotItemView`, `GarageUnitPreviewView`, `AccountSettingsView` 등 UI presentation 레이어 전반에서 `serialized self-member null-check`를 줄이고 `Required + capability helper` 기준으로 재정렬
+  - done: `CodexLobbySceneContract` reference checks를 새 mobile contract(`SettingsButton`, `GarageSettingsOverlay`, `MobileSaveDock`, mobile tab/save labels`) 기준으로 보강
+  - observed: canonical page-switch smoke 재통과 - `warningCount = 3`, `errorCount = 0`
+  - evidence: `artifacts/unity/lobby-page-smoke-lobby-initial.png`, `artifacts/unity/lobby-page-smoke-garage.png`, `artifacts/unity/lobby-garage-page-switch-result.json`
 
 - done: GameScene builderless authoring route 고정
   - done: `Assets/Editor/SceneTools/GameSceneBuilder.cs` 제거 - GameScene UI/HUD restyle의 기본 경로를 code-driven rebuild가 아니라 `GameScene.unity` / 관련 prefab 대상 MCP repair로 재고정
@@ -151,7 +182,7 @@
   - done: MCP trim 2차 - Lobby/Garage 기준 스크립트를 `workflow gate -> page-switch smoke -> feature smoke` 구조로 축소하고, overview/manual smoke 제거, helper 공용화, JSON 리포트 최소화
   - done: MCP validation ownership 재배치 - `CodexLobbySceneContract`와 required-field audit가 wiring/structure를 맡고, canonical smoke는 page activation과 scene transition만 보도록 기준 정리
   - done: `GarageReadyFlow`를 필수 regression gate에서 제외하고, Ready/Save 세부 판정은 EditMode reflection tests로 이동 시작
-  - done: 외부 UI 레퍼런스 도입 1차 - `Mobbin + Relume`를 무료 참고 도구 조합으로 채택하고, `docs/design/ui_reference_workflow.md`에 JG Lobby/Garage quick test 브리프를 기록
+- done: 외부 UI 시안 워크플로우 2차 - `Stitch`를 기본 생성 도구로 재정의하고, `docs/design/ui_reference_workflow.md`를 Stitch-first 기준으로 갱신
   - done: `CodexLobby` builderless 전환 1차 - `CodexLobbySceneBuilder`와 `/scene/rebuild-codex-lobby` 의존을 제거하고, 공식 루프를 `contract verify -> workflow gate -> page-switch smoke`로 재고정
   - done: Unity MCP 기준을 scene/prefab direct repair로 통일 - Lobby/Garage layout 복구는 builder가 아니라 MCP scene/prefab 수정으로 수행
 - done: open-scene disk-write guard 추가 - `Assert-McpNoOpenSceneDiskWrite` helper와 문서 규칙으로 열린 `CodexLobbyScene.unity` 외부 덮어쓰기를 SSOT 위반으로 명시
@@ -268,17 +299,7 @@
   - note: 현재 계정 시스템은 골격 구현 상태이며 Garage Firestore 저장/복원, 삭제 REST 형식, 자동 재시도, 닉네임 cooldown, stale 테스트 복구가 남아 있음
 - done: Garage-first Figma / handoff SSOT 문서 추가
   - done: `docs/design/ui_foundations.md` 추가 — Garage 레이아웃, 토큰, 컴포넌트, Unity 변환 규칙 SSOT
-  - done: `docs/plans/figma_ui_system_plan.md` 추가 — Garage-first Figma 실행 체크리스트
   - done: 기존 Garage 계획 문서에서 새 SSOT 문서 참조 추가
-- done: Figma remote MCP 설치 및 OAuth 인증 완료 (`codex mcp add figma --url https://mcp.figma.com/mcp`, `codex mcp login figma`)
-- done: 대상 Figma 파일 접근 권한 확인 (`Page 1`, node `0:1`)
-- done: Figma 운영 방식을 Starter 기준 `3페이지 staged`로 전환 (`Foundations / Components / Garage`, handoff는 Garage 섹션 + 레포 문서)
-- done: 로컬 `usfigma` skill 제거 — 직접 Figma MCP 프롬프트 기반으로 운영 전환
-- blocked: 스캐폴드 생성 시도 직후 Figma MCP Starter 호출 한도 도달
-- blocked: 최소 범위 재시도 (`Page 1` 조회 및 `Foundations` 이름 변경`)도 동일한 Starter MCP 호출 한도에서 실행 전 차단
-- blocked: 계정 전환 이후에도 파일 권한/seat/Starter MCP 호출 한도 문제로 Figma 기반 실행 계획 지속 불가
-- done: `figma_ui_system_plan.md` 상태를 `보류`로 전환
-- next: Figma 연결 전제 없이 Garage UI를 코드와 문서 SSOT 기준으로 계속 정리할지 판단
 
 - done: Account/Garage 복구 1차 구현 완료
   - done: Firestore Garage 저장/로드를 실제 런타임 경로에 연결 (`FirestoreRestPort`, `InitializeGarageUseCase`, `SaveRosterUseCase`, `GarageSetup`)

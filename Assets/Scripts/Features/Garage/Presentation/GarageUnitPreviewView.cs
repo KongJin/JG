@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Features.Garage.Domain;
 using Features.Garage.Presentation.Theme;
+using Shared.Attributes;
 using TMPro;
 
 namespace Features.Garage.Presentation
@@ -14,18 +15,18 @@ namespace Features.Garage.Presentation
     public sealed class GarageUnitPreviewView : MonoBehaviour
     {
         [Header("Viewport")]
-        [SerializeField] private Camera _previewCamera;
+        [Required, SerializeField] private Camera _previewCamera;
         [SerializeField] private RenderTexture _renderTexture;
-        [SerializeField] private RawImage _rawImage;
-        [SerializeField] private TMP_Text _emptyStateText;
+        [Required, SerializeField] private RawImage _rawImage;
+        [Required, SerializeField] private TMP_Text _emptyStateText;
 
         [Header("Part Prefabs (Basic Shapes)")]
         [Tooltip("프레임: 직육면체")]
-        [SerializeField] private GameObject _framePrefab;
+        [Required, SerializeField] private GameObject _framePrefab;
         [Tooltip("무기: 원기둥")]
-        [SerializeField] private GameObject _weaponPrefab;
+        [Required, SerializeField] private GameObject _weaponPrefab;
         [Tooltip("기동: 원뿔")]
-        [SerializeField] private GameObject _thrusterPrefab;
+        [Required, SerializeField] private GameObject _thrusterPrefab;
 
         [Header("Rotation")]
         [SerializeField] private float _autoRotationSpeed = 20f;
@@ -39,16 +40,9 @@ namespace Features.Garage.Presentation
         public void Initialize()
         {
             EnsureRenderTexture();
-
-            if (_previewCamera != null)
-            {
-                _previewCamera.backgroundColor = ThemeColors.PreviewBackground;
-                _previewCamera.clearFlags = CameraClearFlags.SolidColor;
-            }
-
-            // RawImage 배경을 어두운 색으로 — 하얀 화면 방지
-            if (_rawImage != null)
-                _rawImage.color = ThemeColors.PreviewBackground;
+            _previewCamera.backgroundColor = ThemeColors.PreviewBackground;
+            _previewCamera.clearFlags = CameraClearFlags.SolidColor;
+            _rawImage.color = ThemeColors.PreviewBackground;
 
             SetEmptyStateVisible(true);
         }
@@ -65,7 +59,7 @@ namespace Features.Garage.Presentation
             CreatePreview(viewModel, catalog);
             SetEmptyStateVisible(false);
 
-            if (_previewCamera != null && _previewCamera.targetTexture != null)
+            if (_previewCamera.targetTexture != null)
                 _previewCamera.Render();
         }
 
@@ -76,7 +70,7 @@ namespace Features.Garage.Presentation
             _currentPreviewRoot.transform.localPosition = new Vector3(0f, -0.02f, 0f);
 
             // 프레임 (중심)
-            var frameObj = CreateFrame(viewModel.FrameId, catalog);
+            var frameObj = CreateFrame(viewModel.FrameId);
             frameObj.transform.SetParent(_currentPreviewRoot.transform, false);
             frameObj.transform.localPosition = Vector3.zero;
 
@@ -92,11 +86,10 @@ namespace Features.Garage.Presentation
             thrusterObj.transform.localPosition = new Vector3(0, -0.72f, 0);
         }
 
-        private GameObject CreateFrame(string frameId, GaragePanelCatalog catalog)
+        private GameObject CreateFrame(string frameId)
         {
             var obj = Instantiate(_framePrefab);
             obj.SetActive(true);
-            var frame = catalog?.FindFrame(frameId);
             obj.GetComponent<Renderer>().material.color = GetFrameColor(frameId);
             obj.transform.localScale = new Vector3(0.82f, 0.62f, 0.42f);
             return obj;
@@ -162,17 +155,11 @@ namespace Features.Garage.Presentation
 
         private void SetEmptyStateVisible(bool isVisible)
         {
-            if (_emptyStateText == null)
-                return;
-
             _emptyStateText.gameObject.SetActive(isVisible);
         }
 
         private void EnsureRenderTexture()
         {
-            if (_previewCamera == null)
-                return;
-
             if (_renderTexture == null)
             {
                 _renderTexture = new RenderTexture(256, 256, 16)
@@ -187,7 +174,7 @@ namespace Features.Garage.Presentation
             if (_previewCamera.targetTexture != _renderTexture)
                 _previewCamera.targetTexture = _renderTexture;
 
-            if (_rawImage != null && _rawImage.texture != _renderTexture)
+            if (_rawImage.texture != _renderTexture)
                 _rawImage.texture = _renderTexture;
         }
 

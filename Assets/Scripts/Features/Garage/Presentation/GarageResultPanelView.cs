@@ -9,13 +9,13 @@ namespace Features.Garage.Presentation
 {
     public sealed class GarageResultPanelView : MonoBehaviour
     {
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _rosterStatusText;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _validationText;
 
-        [SerializeField]
+        [Required, SerializeField]
         private TMP_Text _statsText;
 
         [Header("Save")]
@@ -66,29 +66,30 @@ namespace Features.Garage.Presentation
 
         public event System.Action SaveClicked;
 
+        public void SetInlineSaveVisible(bool isVisible)
+        {
+            if (_saveButton != null)
+                _saveButton.gameObject.SetActive(isVisible);
+        }
+
         private void Awake()
         {
             // Toast CanvasGroup 초기화
-            if (_toastCanvasGroup != null)
-            {
-                _toastCanvasGroup.alpha = 0f;
-                _toastCanvasGroup.blocksRaycasts = false;
-                _toastCanvasGroup.interactable = false;
-            }
+            _toastCanvasGroup.alpha = 0f;
+            _toastCanvasGroup.blocksRaycasts = false;
+            _toastCanvasGroup.interactable = false;
 
             // ToastPanel Image 배경을 완전히 투명하게 — 하얀 사각형 방지
-            if (_toastPanel != null && _toastPanel.TryGetComponent<Image>(out var toastImage))
+            if (_toastPanel.TryGetComponent<Image>(out var toastImage))
             {
                 toastImage.color = Color.clear;
             }
 
             // 초기 상태: 토스트 숨김
-            if (_toastPanel != null)
-                _toastPanel.SetActive(false);
+            _toastPanel.SetActive(false);
 
             // 로딩 인디케이터 초기 상태 확인
-            if (_loadingIndicator != null)
-                _loadingIndicator.SetActive(false);
+            SetLoadingIndicatorVisible(false);
 
             // 저장 버튼 초기화 — ThemeColors 기반 Primary 스타일
             InitializeSaveButton();
@@ -96,40 +97,29 @@ namespace Features.Garage.Presentation
 
         private void InitializeSaveButton()
         {
-            if (_saveButton == null)
-                return;
-
             // ButtonStyles 적용
             _saveButton.Apply(ButtonStyles.Primary, _saveButtonText);
-
-            if (_saveButtonText != null)
-                _saveButtonText.text = "Save Roster";
+            _saveButtonText.text = "Save Roster";
         }
 
         private void OnEnable()
         {
-            if (_saveButton != null)
-                _saveButton.onClick.AddListener(() => SaveClicked?.Invoke());
+            _saveButton.onClick.AddListener(() => SaveClicked?.Invoke());
         }
 
         private void OnDisable()
         {
-            if (_saveButton != null)
-                _saveButton.onClick.RemoveAllListeners();
+            _saveButton.onClick.RemoveAllListeners();
 
             // 생명주기 안전성: 비활성화 시 토스트 정리
             CancelInvoke(nameof(HideToast));
             _toastQueue.Clear();
             _isShowingToast = false;
-            if (_toastPanel != null)
-                _toastPanel.SetActive(false);
+            _toastPanel.SetActive(false);
         }
 
         public void ShowToast(string message, bool isError = false)
         {
-            if (_toastPanel == null || _toastText == null)
-                return;
-
             _toastQueue.Enqueue(new ToastRequest(message, isError));
 
             if (!_isShowingToast)
@@ -155,11 +145,8 @@ namespace Features.Garage.Presentation
             _toastPanel.SetActive(true);
 
             // 페이드 인
-            if (_toastCanvasGroup != null)
-            {
-                _toastCanvasGroup.alpha = 0f;
-                StartCoroutine(FadeTo(1f, 0.15f));
-            }
+            _toastCanvasGroup.alpha = 0f;
+            StartCoroutine(FadeTo(1f, 0.15f));
 
             CancelInvoke(nameof(HideToast));
             Invoke(nameof(HideToast), _toastDuration);
@@ -179,30 +166,18 @@ namespace Features.Garage.Presentation
 
         private void HideToast()
         {
-            if (_toastPanel == null)
-                return;
-
             // 페이드 아웃
-            if (_toastCanvasGroup != null)
-            {
-                StartCoroutine(
-                    FadeTo(
-                        0f,
-                        0.15f,
-                        () =>
-                        {
-                            _toastPanel.SetActive(false);
-                            // 다음 큐 처리
-                            ShowNextToastFromQueue();
-                        }
-                    )
-                );
-            }
-            else
-            {
-                _toastPanel.SetActive(false);
-                ShowNextToastFromQueue();
-            }
+            StartCoroutine(
+                FadeTo(
+                    0f,
+                    0.15f,
+                    () =>
+                    {
+                        _toastPanel.SetActive(false);
+                        ShowNextToastFromQueue();
+                    }
+                )
+            );
         }
 
         private System.Collections.IEnumerator FadeTo(
@@ -211,12 +186,6 @@ namespace Features.Garage.Presentation
             System.Action onComplete = null
         )
         {
-            if (_toastCanvasGroup == null)
-            {
-                onComplete?.Invoke();
-                yield break;
-            }
-
             float startAlpha = _toastCanvasGroup.alpha;
             float elapsed = 0f;
 
@@ -236,8 +205,7 @@ namespace Features.Garage.Presentation
         {
             _isLoading = isLoading;
 
-            if (_loadingIndicator != null)
-                _loadingIndicator.SetActive(isLoading);
+            SetLoadingIndicatorVisible(isLoading);
 
             RefreshSaveButtonState();
         }
@@ -248,67 +216,58 @@ namespace Features.Garage.Presentation
                 return;
 
             _isReadyToSave = viewModel.IsReady;
+            _rosterStatusText.text = viewModel.RosterStatusText;
+            _rosterStatusText.color = ThemeColors.TextPrimary;
+            _rosterStatusText.fontSize = 15;
+            _rosterStatusText.enableAutoSizing = false;
 
-            if (_rosterStatusText != null)
-            {
-                _rosterStatusText.text = viewModel.RosterStatusText;
-                _rosterStatusText.color = ThemeColors.TextPrimary;
-                _rosterStatusText.fontSize = 15;
-                _rosterStatusText.enableAutoSizing = false;
-            }
+            _validationText.text = viewModel.ValidationText;
+            bool hasError = !string.IsNullOrWhiteSpace(viewModel.ValidationText) &&
+                            (viewModel.ValidationText.Contains("Unknown", System.StringComparison.OrdinalIgnoreCase) ||
+                             viewModel.ValidationText.Contains("failed", System.StringComparison.OrdinalIgnoreCase) ||
+                             viewModel.ValidationText.Contains("실패", System.StringComparison.OrdinalIgnoreCase));
+            bool hasWarning = viewModel.IsDirty && !viewModel.CanSave;
+            _validationText.color = hasError
+                ? ThemeColors.AccentRed
+                : hasWarning
+                    ? ThemeColors.AccentAmber
+                    : ThemeColors.TextSecondary;
+            _validationText.fontSize = 13;
+            _validationText.enableAutoSizing = false;
 
-            if (_validationText != null)
-            {
-                _validationText.text = viewModel.ValidationText;
-                bool hasError = !string.IsNullOrWhiteSpace(viewModel.ValidationText) &&
-                                (viewModel.ValidationText.Contains("Unknown", System.StringComparison.OrdinalIgnoreCase) ||
-                                 viewModel.ValidationText.Contains("failed", System.StringComparison.OrdinalIgnoreCase) ||
-                                 viewModel.ValidationText.Contains("실패", System.StringComparison.OrdinalIgnoreCase));
-                bool hasWarning = viewModel.IsDirty && !viewModel.CanSave;
-                _validationText.color = hasError
-                    ? ThemeColors.AccentRed
-                    : hasWarning
-                        ? ThemeColors.AccentAmber
-                        : ThemeColors.TextSecondary;
-                _validationText.fontSize = 13;
-                _validationText.enableAutoSizing = false;
-            }
-
-            if (_statsText != null)
-            {
-                _statsText.text = viewModel.StatsText;
-                _statsText.color = ThemeColors.TextSecondary;
-                _statsText.fontSize = 13;
-                _statsText.enableAutoSizing = false;
-            }
+            _statsText.text = viewModel.StatsText;
+            _statsText.color = ThemeColors.TextSecondary;
+            _statsText.fontSize = 13;
+            _statsText.enableAutoSizing = false;
 
             RefreshSaveButtonState();
 
-            if (_saveButtonText != null)
-                _saveButtonText.text = _isLoading ? "Saving..." : viewModel.PrimaryActionLabel;
+            _saveButtonText.text = _isLoading ? "Saving..." : viewModel.PrimaryActionLabel;
+            _saveButton.interactable = !_isLoading && viewModel.CanSave;
 
-            if (_saveButton != null)
-                _saveButton.interactable = !_isLoading && viewModel.CanSave;
+            var targetColor = viewModel.CanSave
+                ? ThemeColors.AccentGreen
+                : viewModel.IsDirty
+                    ? ThemeColors.AccentOrange
+                    : ThemeColors.StateDisabled;
+            _saveButtonImage.color = targetColor;
 
-            if (_saveButtonImage != null)
-            {
-                var targetColor = viewModel.CanSave
-                    ? ThemeColors.AccentGreen
-                    : viewModel.IsDirty
-                        ? ThemeColors.AccentOrange
-                        : ThemeColors.StateDisabled;
-                _saveButtonImage.color = targetColor;
-
-                var feedback = _saveButton.GetComponent<ButtonFeedback>();
-                if (feedback != null)
-                    feedback.UpdateBaseColor(targetColor);
-            }
+            var feedback = _saveButton.GetComponent<ButtonFeedback>();
+            if (feedback != null)
+                feedback.UpdateBaseColor(targetColor);
         }
 
         private void RefreshSaveButtonState()
         {
-            if (_saveButtonText != null)
-                _saveButtonText.color = ThemeColors.TextPrimary;
+            _saveButtonText.color = ThemeColors.TextPrimary;
+        }
+
+        private void SetLoadingIndicatorVisible(bool isVisible)
+        {
+            if (_loadingIndicator == null)
+                return;
+
+            _loadingIndicator.SetActive(isVisible);
         }
     }
 }
