@@ -6,6 +6,7 @@
     "doc": "docs"
   },
   "scripts": {
+    "docs:lint": "node ./tools/docs-lint/docs-lint.mjs",
     "stitch:help": "node ./tools/stitch/stitch-inspect.mjs help",
     "stitch:list:projects": "node ./tools/stitch/stitch-inspect.mjs list-projects",
     "stitch:create:project": "node ./tools/stitch/stitch-inspect.mjs create-project",

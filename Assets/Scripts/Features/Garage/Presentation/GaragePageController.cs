@@ -409,7 +409,7 @@ namespace Features.Garage.Presentation
             SetActive(_unitEditorView.gameObject, true);
             SetActive(_rightRailRoot, true);
             SetActive(_previewCard, true);
-            SetActive(_resultPane, false);
+            SetActive(_resultPane, true);
             SetActive(_settingsOverlayRoot, _isSettingsOverlayOpen);
         }
 
@@ -428,10 +428,12 @@ namespace Features.Garage.Presentation
         {
             string readySummary = resultViewModel != null && resultViewModel.IsReady
                 ? "출격 가능"
-                : "대기";
+                : resultViewModel != null && resultViewModel.IsDirty
+                    ? "저장 필요"
+                    : "대기";
 
             _garageHeaderSummaryText.text =
-                $"슬롯 {_state.SelectedSlotIndex + 1} | {_state.CommittedRoster.Count}/6 | {readySummary}";
+                $"활성 {_state.CommittedRoster.Count}/6  |  UNIT {_state.SelectedSlotIndex + 1:00}  |  {readySummary}";
             _garageHeaderSummaryText.color = ThemeColors.TextSecondary;
         }
 
@@ -503,6 +505,7 @@ namespace Features.Garage.Presentation
 
             if (_mobileSaveButton.TryGetComponent<Image>(out var background))
             {
+                Color readyBaseline = Color.Lerp(ThemeColors.AccentOrange, ThemeColors.BackgroundCard, 0.32f);
                 background.color = _isSaving
                     ? ThemeColors.AccentOrange
                     : canSave
@@ -510,7 +513,7 @@ namespace Features.Garage.Presentation
                         : isDirty
                             ? ThemeColors.BackgroundCard
                             : isReady
-                                ? ThemeColors.BackgroundSecondary
+                                ? readyBaseline
                                 : ThemeColors.StateDisabled;
 
                 var feedback = _mobileSaveButton.GetComponent<ButtonFeedback>();
@@ -556,7 +559,7 @@ namespace Features.Garage.Presentation
 
             if (resultViewModel.IsReady)
             {
-                _mobileSaveStateText.text = "로스터 동기화 완료. 출격 가능.";
+                _mobileSaveStateText.text = "저장본 동기화 완료 | 출격 가능";
                 _mobileSaveStateText.color = ThemeColors.AccentGreen;
                 return;
             }

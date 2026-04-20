@@ -44,6 +44,15 @@ namespace ProjectSD.EditorTools.Validation
             new(
                 "runtime-layout-repair-set-sibling-index",
                 new Regex(@"\.\s*SetSiblingIndex\s*\(", RegexOptions.Compiled)),
+            new(
+                "transform-spatial-write",
+                new Regex(@"\.\s*(localScale|localPosition|localEulerAngles|localRotation|position|rotation)\s*=", RegexOptions.Compiled)),
+            new(
+                "renderer-material-write",
+                new Regex(@"\.\s*(material|sharedMaterial)\s*=", RegexOptions.Compiled)),
+            new(
+                "renderer-material-color-write",
+                new Regex(@"\.\s*(material|sharedMaterial)\s*\.\s*color\s*=", RegexOptions.Compiled)),
         };
 
         [MenuItem("Tools/Validate Presentation Layout Ownership")]

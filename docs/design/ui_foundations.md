@@ -1,7 +1,12 @@
 # UI Foundations
 
-> 마지막 업데이트: 2026-04-19
-> 상태: Lobby + Garage Shell SSOT
+> 마지막 업데이트: 2026-04-20
+> 상태: active
+> doc_id: design.ui-foundations
+> role: ssot
+> owner_scope: Lobby와 Garage UI 레이아웃, 토큰, Unity 변환 규칙
+> upstream: design.game-design, ops.unity-ui-authoring-workflow, design.ui-reference-workflow
+> artifacts: `Assets/Scenes/CodexLobbyScene.unity`, `Assets/Prefabs/CodexLobby/`
 
 이 문서는 **Lobby/Garage UI 레이아웃과 Unity 변환 규칙의 단일 기준**이다.
 현재 범위는 `CodexLobbyScene`의 `LobbyPageRoot`와 `GaragePageRoot`까지 포함한다.
@@ -12,11 +17,15 @@
 - 문서 SSOT: 이 문서
 - 런타임 레이아웃 SSOT: `CodexLobbyScene.unity`와 관련 scene contract
 - 색상 구현 SSOT: [`ThemeColors.cs`](../../Assets/Scripts/Features/Garage/Presentation/Theme/ThemeColors.cs)
-- 외부 레퍼런스 참고 루틴: [`ui_reference_workflow.md`](./ui_reference_workflow.md)
+- 외부 레퍼런스 참고 원칙 owner: `design.ui-reference-workflow` (`docs/index.md`에서 현재 경로 확인)
 
 ## Validation Frames
 
 공식 레이아웃 검증 해상도는 `390x844` 하나로 고정한다.
+
+`CodexLobbyScene`의 `CanvasScaler` baseline도 같은 `390x844`를 사용한다.
+현재 canonical `page-switch smoke` 산출물은 editor의 현재 GameView 크기를 그대로 보관하지 않고,
+항상 `390x844` 고정 프레임 PNG로 정규화한다.
 
 이 해상도에서 아래 조건을 만족해야 한다.
 

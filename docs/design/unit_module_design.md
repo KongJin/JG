@@ -1,5 +1,13 @@
 # Unit Module Design
 
+> 마지막 업데이트: 2026-04-20
+> 상태: active
+> doc_id: design.unit-module-design
+> role: ssot
+> owner_scope: 유닛 스탯과 모듈 조합 구조의 설계 기준
+> upstream: design.game-design, design.module-data-structure
+> artifacts: `Assets/Scripts/Features/Unit/`, `Assets/Scripts/Features/Garage/`
+
 이 문서는 유닛 스탯과 모듈 조합 구조를 정의한다.
 게임 디자인 SSOT(`./game_design.md`)의 하위 문서이며, 유닛 구현 기준의 SSOT다.
 

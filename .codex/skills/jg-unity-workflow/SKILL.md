@@ -5,16 +5,27 @@ description: Project-specific Unity workflow for the JG repo. Use when Codex wor
 
 # JG Unity Workflow
 
+> 마지막 업데이트: 2026-04-20
+> 상태: active
+> doc_id: skill.jg-unity-workflow
+> role: skill-entry
+> owner_scope: JG Unity lane read order, owner doc routing, MCP and validation entrypoint
+> upstream: repo.agents, docs.index, ops.unity-ui-authoring-workflow
+> artifacts: `tools/unity-mcp/`, `artifacts/unity/`, `Assets/Scenes/`, `Assets/Prefabs/`
+
 Use this skill for JG-specific Unity execution order and sources of truth.
 Keep generic Unity serialization, MCP/CLI theory, and broad engine rules in `rule-unity`.
+If a document name moved, resolve the current path through `docs/index.md` first and then follow the owner doc by `doc_id`.
 
 ## Read First
 
 1. Read `AGENTS.md`.
-2. If the task touches Unity MCP, Play Mode automation, scene repair, or runtime smoke, read `tools/unity-mcp/README.md`.
-3. If you need faster doc routing, read `references/jg-doc-map.md`.
-4. If the task depends on current project priorities or recent recovery work, skim the relevant plan in `docs/plans/`.
-5. If a task clearly needs extra architecture or initialization docs and they exist, read them. Do not stop if they are absent.
+2. Read `docs/index.md` when you need the current doc routes.
+3. If the task touches Unity UI or UX authoring, read owner doc `ops.unity-ui-authoring-workflow` before any implementation.
+4. If the task depends on Stitch handoff or `.stitch` artifacts, read owner doc `ops.stitch-data-workflow` before translating them into Unity work.
+5. If the task touches Unity MCP, Play Mode automation, scene repair, or runtime smoke, read `tools/unity-mcp/README.md` as execution reference.
+6. If the task depends on current project priorities or recent recovery work, skim the relevant plan in `docs/plans/`.
+7. If a task clearly needs extra architecture or initialization docs and they exist, read them. Do not stop if they are absent.
 
 ## JG Defaults
 
@@ -23,6 +34,7 @@ Keep generic Unity serialization, MCP/CLI theory, and broad engine rules in `rul
 - Do not reintroduce code-driven builder or rebuild loops when the repo already expects MCP scene or prefab repair.
 - Never overwrite an open scene on disk. If Unity already has the scene loaded, keep the work inside MCP or switch scenes first.
 - Stop play mode before script edits that need recompilation, then wait for compile to settle before testing again.
+- Run `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1` before closeout when the task changes Unity UI authoring surfaces.
 
 ## Task Routing
 
@@ -59,6 +71,13 @@ Keep generic Unity serialization, MCP/CLI theory, and broad engine rules in `rul
 - For GameScene UI and HUD work, default to MCP scene or prefab repair, not builder regeneration.
 - If a smoke script depends on stale UI paths or fragile runtime clone names, repair the automation contract instead of forcing the scene back to match the old path.
 
+## Fast Search
+
+- Scene hierarchy or object names: `rg -n "GameSceneBootstrap|JG_GameScene|ObjectiveCore|WaveSystems|StatusSystems|PlayerSceneTickers" Assets/Scenes Assets/Scripts`
+- Scene or runtime contract hints: `rg -n "씬 의존성|씬 계약|initialization|late-join|Runtime Lookup|Setup|Bootstrap|Root" Assets/Scripts/Features/<Name> Assets/Scripts/Shared`
+- Unity MCP entrypoints and API usage: `rg -n "UnityMcp|Invoke-|/scene/|/component/" Assets/Editor tools/unity-mcp tools`
+- GameScene lanes often needed together: `Assets/Scripts/Features/Player/`, `Assets/Scripts/Features/Wave/`, `Assets/Scripts/Features/Skill/`, plus scene-facing contracts under `Combat/` and `Enemy/`
+
 ## Validation Order
 
 Use this stack unless the task clearly needs more:
@@ -72,6 +91,8 @@ Do not rely on reflection or smoke as the primary safety net when direct editor 
 ## References
 
 - `AGENTS.md`
+- `docs/index.md`
+- `ops.stitch-data-workflow`
+- `ops.unity-ui-authoring-workflow`
 - `tools/unity-mcp/README.md`
 - `docs/plans/progress.md`
-- `references/jg-doc-map.md`

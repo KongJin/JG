@@ -36,7 +36,6 @@ namespace Features.Skill.Presentation
             }
 
             _originalColor = _defaultColor;
-            _renderer.material.color = _flashColor;
             _elapsed = 0f;
             _isFlashing = true;
         }
@@ -48,9 +47,6 @@ namespace Features.Skill.Presentation
             _elapsed += Time.deltaTime;
             if (_elapsed >= _duration)
             {
-                if (_renderer != null)
-                    _renderer.material.color = _originalColor;
-
                 _isFlashing = false;
                 ReleaseSelf();
             }
@@ -62,18 +58,12 @@ namespace Features.Skill.Presentation
             _isFlashing = false;
             _renderer ??= GetComponentInChildren<Renderer>();
             _pooledObject ??= GetComponent<PooledObject>();
-
-            if (_renderer != null)
-                _renderer.material.color = _defaultColor;
         }
 
         public void OnReturnToPool()
         {
             _elapsed = 0f;
             _isFlashing = false;
-
-            if (_renderer != null)
-                _renderer.material.color = _defaultColor;
         }
 
         private void ReleaseSelf()

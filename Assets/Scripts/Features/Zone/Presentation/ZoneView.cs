@@ -17,7 +17,6 @@ namespace Features.Zone.Presentation
             _duration = duration;
             _elapsed = 0f;
             _scale = new Vector3(radius * 2f, 0.1f, radius * 2f);
-            transform.localScale = _scale;
 
             _renderer = GetComponentInChildren<Renderer>();
             _pooledObject ??= GetComponent<PooledObject>();
@@ -26,8 +25,6 @@ namespace Features.Zone.Presentation
         public void SetColor(Color color)
         {
             _baseColor = color;
-            if (_renderer != null)
-                _renderer.material.color = _baseColor;
         }
 
         private void Update()
@@ -39,7 +36,6 @@ namespace Features.Zone.Presentation
                 var alpha = _duration > 0f ? Mathf.Lerp(1f, 0f, _elapsed / _duration) : 0f;
                 var color = _baseColor;
                 color.a = alpha;
-                _renderer.material.color = color;
             }
 
             if (_elapsed >= _duration)
@@ -49,13 +45,9 @@ namespace Features.Zone.Presentation
         public void OnRentFromPool()
         {
             _elapsed = 0f;
-            transform.localScale = _scale;
 
             if (_renderer == null)
                 _renderer = GetComponentInChildren<Renderer>();
-
-            if (_renderer != null)
-                _renderer.material.color = _baseColor;
         }
 
         public void OnReturnToPool()

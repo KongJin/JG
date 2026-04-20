@@ -12,15 +12,6 @@ namespace Features.Projectile.Presentation
 
         public void SetColor(Color color)
         {
-            var renderer = GetComponentInChildren<Renderer>();
-            if (renderer != null)
-                renderer.material.color = color;
-
-            if (_trail != null)
-            {
-                _trail.startColor = color;
-                _trail.endColor = new Color(color.r, color.g, color.b, 0f);
-            }
         }
 
         public void OnRentFromPool()

@@ -1,6 +1,12 @@
 # 제외/폐기 기능 근거 메모
 
-> 마지막 기록: 2026-04-11
+> 마지막 업데이트: 2026-04-11
+> 상태: reference
+> doc_id: discussions.removed-features-rationale
+> role: reference
+> owner_scope: MVP 범위 밖 기능의 제외 근거 메모
+> upstream: design.game-design
+> artifacts: none
 
 이 문서는 현재 MVP 범위에서 **제외된 기능의 근거**만 짧게 남긴다. 제품 판단의 SSOT는 [`game_design.md`](../design/game_design.md) 이다.
 

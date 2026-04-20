@@ -1,8 +1,13 @@
 ﻿{
     "success":  true,
-    "generatedAt":  "2026-04-20 01:34:25+09:00",
+    "generatedAt":  "2026-04-20 13:41:28+09:00",
     "scenePath":  "Assets/Scenes/CodexLobbyScene.unity",
     "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\lobby-garage-page-switch-result.json",
+    "captureFrame":  {
+                         "width":  390,
+                         "height":  844,
+                         "contract":  "center-crop-and-resize"
+                     },
     "uiPaths":  {
                     "garageOpenButton":  "/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard/GarageTabButton",
                     "backToLobbyButton":  "/Canvas/GaragePageRoot/GarageHeaderRow/LobbyTabButton",
@@ -15,6 +20,44 @@
                      "garage":  "artifacts/unity/lobby-page-smoke-garage.png",
                      "lobbyReturned":  "artifacts/unity/lobby-page-smoke-lobby-returned.png"
                  },
+    "captureDetails":  {
+                           "lobbyInitial":  {
+                                                "relativePath":  "artifacts/unity/lobby-page-smoke-lobby-initial.png",
+                                                "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\lobby-page-smoke-lobby-initial.png",
+                                                "sourceWidth":  780,
+                                                "sourceHeight":  1688,
+                                                "outputWidth":  390,
+                                                "outputHeight":  844,
+                                                "cropX":  0,
+                                                "cropY":  0,
+                                                "cropWidth":  780,
+                                                "cropHeight":  1688
+                                            },
+                           "garage":  {
+                                          "relativePath":  "artifacts/unity/lobby-page-smoke-garage.png",
+                                          "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\lobby-page-smoke-garage.png",
+                                          "sourceWidth":  780,
+                                          "sourceHeight":  1688,
+                                          "outputWidth":  390,
+                                          "outputHeight":  844,
+                                          "cropX":  0,
+                                          "cropY":  0,
+                                          "cropWidth":  780,
+                                          "cropHeight":  1688
+                                      },
+                           "lobbyReturned":  {
+                                                 "relativePath":  "artifacts/unity/lobby-page-smoke-lobby-returned.png",
+                                                 "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\lobby-page-smoke-lobby-returned.png",
+                                                 "sourceWidth":  780,
+                                                 "sourceHeight":  1688,
+                                                 "outputWidth":  390,
+                                                 "outputHeight":  844,
+                                                 "cropX":  0,
+                                                 "cropY":  0,
+                                                 "cropWidth":  780,
+                                                 "cropHeight":  1688
+                                             }
+                       },
     "pageStates":  {
                        "lobbyInitial":  {
                                             "lobbyActive":  true,
@@ -41,29 +84,22 @@
                                         "garageHidden":  true
                                     }
                     },
-    "warningCount":  3,
+    "warningCount":  2,
     "errorCount":  0,
     "warnings":  [
                      {
                          "type":  "Warning",
-                         "message":  "[Firestore] Document not found (71ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                         "message":  "[Firestore] Document not found (75ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
                          "count":  2,
-                         "latestTimestampUtc":  "2026-04-19 16:34:22.569",
+                         "latestTimestampUtc":  "2026-04-20 04:41:25.667",
                          "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
                      },
                      {
                          "type":  "Warning",
-                         "message":  "[Firestore] Document not found (1396ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                         "message":  "[Firestore] Document not found (126ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
                          "count":  2,
-                         "latestTimestampUtc":  "2026-04-19 16:34:22.498",
+                         "latestTimestampUtc":  "2026-04-20 04:41:25.591",
                          "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
-                     },
-                     {
-                         "type":  "Warning",
-                         "message":  "PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
-                         "count":  2,
-                         "latestTimestampUtc":  "2026-04-19 16:34:23.373",
-                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nPhoton.Pun.PhotonNetwork:OnRegionsPinged (Photon.Realtime.RegionHandler) (at Assets/FromStore/Photon/PhotonUnityNetworking/Code/PhotonNetworkPart.cs:2546)\nPhoton.Realtime.MonoBehaviourEmpty:Update () (at Assets/FromStore/Photon/PhotonRealtime/Code/RegionHandler.cs:884)\n"
                      }
                  ],
     "errors":  [

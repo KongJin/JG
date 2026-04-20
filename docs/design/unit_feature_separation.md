@@ -1,7 +1,15 @@
 # Unit Feature 분리 설계
 
+> 마지막 업데이트: 2026-04-20
+> 상태: reference
+> doc_id: design.unit-feature-separation
+> role: reference
+> owner_scope: Unit feature 분리 배경과 경계 설계 메모
+> upstream: design.game-design, `agent/architecture.md`
+> artifacts: none
+
 이 문서는 `Garage` Feature에 있는 `Unit` 도메인을 독립적인 `Unit` Feature로 분리하는 설계안이다.
-피처 경계의 최종 판단은 [architecture.md](../../agent/architecture.md)를 따른다.
+피처 경계의 최종 판단은 현재 아키텍처 owner 문서를 따른다. 경로는 [AGENTS.md](../../AGENTS.md)와 [docs/index.md](../index.md)에서 찾는다.
 게임 디자인 SSOT는 [`game_design.md`](./game_design.md)이며, 본 문서는 거기서 정의된 소환 흐름을 아키텍처로 풀어낸다.
 
 ---
@@ -792,5 +800,5 @@ Combat → Unit.Domain (Unit 스펙 읽기 전용)
 - 게임 디자인 SSOT: [`game_design.md`](./game_design.md) — "유닛 소환 생명주기" 섹션
 - 기존 유닛/모듈 설계: [`unit_module_design.md`](./unit_module_design.md)
 - 데이터 구조 정의: [`module_data_structure.md`](./module_data_structure.md)
-- 전역 아키텍처: [architecture.md](../../agent/architecture.md)
-- 안티패턴: [anti_patterns.md](../../agent/anti_patterns.md)
+- 아키텍처 owner path: [AGENTS.md](../../AGENTS.md), [docs/index.md](../index.md)
+- 프로젝트 규칙 진입점: [AGENTS.md](../../AGENTS.md)

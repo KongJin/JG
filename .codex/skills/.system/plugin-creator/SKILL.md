@@ -1,6 +1,6 @@
 ---
 name: plugin-creator
-description: Create and scaffold plugin directories for Codex with a required `.codex-plugin/plugin.json`, optional plugin folders/files, and baseline placeholders you can edit before publishing or testing. Use when Codex needs to create a new local plugin, add optional plugin structure, or generate or update repo-root `.agents/plugins/marketplace.json` entries for plugin ordering and availability metadata.
+description: Create and scaffold plugin directories for Codex with a required `.codex-plugin/plugin.json`, optional plugin folders/files, and baseline placeholders you can edit before publishing or testing. Use when Codex needs to create a new local plugin, add optional plugin structure, or generate or update plugin marketplace entries for plugin ordering and availability metadata.
 ---
 
 # Plugin Creator
@@ -12,9 +12,9 @@ description: Create and scaffold plugin directories for Codex with a required `.
 ```bash
   # Plugin names are normalized to lower-case hyphen-case and must be <= 64 chars.
   # The generated folder and plugin.json name are always the same.
-# Run from repo root (or replace .agents/... with the absolute path to this SKILL).
+# Run from this skill directory, or replace scripts/... with the absolute path to this skill.
 # By default creates in <repo_root>/plugins/<plugin-name>.
-python3 .agents/skills/plugin-creator/scripts/create_basic_plugin.py <plugin-name>
+python3 scripts/create_basic_plugin.py <plugin-name>
 ```
 
 2. Open `<plugin-path>/.codex-plugin/plugin.json` and replace `[TODO: ...]` placeholders.
@@ -22,23 +22,23 @@ python3 .agents/skills/plugin-creator/scripts/create_basic_plugin.py <plugin-nam
 3. Generate or update the repo marketplace entry when the plugin should appear in Codex UI ordering:
 
 ```bash
-# marketplace.json always lives at <repo-root>/.agents/plugins/marketplace.json
-python3 .agents/skills/plugin-creator/scripts/create_basic_plugin.py my-plugin --with-marketplace
+# Pass an explicit marketplace path when the plugin should appear in Codex UI ordering.
+python3 scripts/create_basic_plugin.py my-plugin --with-marketplace --marketplace-path <repo-root-relative-marketplace-path>
 ```
 
 For a home-local plugin, treat `<home>` as the root and use:
 
 ```bash
-python3 .agents/skills/plugin-creator/scripts/create_basic_plugin.py my-plugin \
+python3 scripts/create_basic_plugin.py my-plugin \
   --path ~/plugins \
-  --marketplace-path ~/.agents/plugins/marketplace.json \
+  --marketplace-path <home-relative-marketplace-path> \
   --with-marketplace
 ```
 
 4. Generate/adjust optional companion folders as needed:
 
 ```bash
-python3 .agents/skills/plugin-creator/scripts/create_basic_plugin.py my-plugin --path <parent-plugin-directory> \
+python3 scripts/create_basic_plugin.py my-plugin --path <parent-plugin-directory> \
   --with-skills --with-hooks --with-scripts --with-assets --with-mcp --with-apps --with-marketplace
 ```
 
@@ -50,9 +50,9 @@ python3 .agents/skills/plugin-creator/scripts/create_basic_plugin.py my-plugin -
 - Creates plugin root at `/<parent-plugin-directory>/<plugin-name>/`.
 - Always creates `/<parent-plugin-directory>/<plugin-name>/.codex-plugin/plugin.json`.
 - Fills the manifest with the full schema shape, placeholder values, and the complete `interface` section.
-- Creates or updates `<repo-root>/.agents/plugins/marketplace.json` when `--with-marketplace` is set.
+- Creates or updates the explicit `--marketplace-path` target when `--with-marketplace` is set.
   - If the marketplace file does not exist yet, seed top-level `name` plus `interface.displayName` placeholders before adding the first plugin entry.
-- `<plugin-name>` is normalized using skill-creator naming rules:
+- `<plugin-name>` normalization rules are owned by this skill:
   - `My Plugin` → `my-plugin`
   - `My--Plugin` → `my-plugin`
   - underscores, spaces, and punctuation are converted to `-`
@@ -67,9 +67,8 @@ python3 .agents/skills/plugin-creator/scripts/create_basic_plugin.py my-plugin -
 
 ## Marketplace workflow
 
-- `marketplace.json` always lives at `<repo-root>/.agents/plugins/marketplace.json`.
-- For a home-local plugin, use the same convention with `<home>` as the root:
-  `~/.agents/plugins/marketplace.json` plus `./plugins/<plugin-name>`.
+- Pass `--marketplace-path` explicitly whenever the target marketplace location matters for the current Codex install.
+- For a home-local plugin, treat the marketplace path and `./plugins/<plugin-name>` source as a matched pair rooted at `<home>`.
 - Marketplace root metadata supports top-level `name` plus optional `interface.displayName`.
 - Treat plugin order in `plugins[]` as render order in Codex. Append new entries unless a user explicitly asks to reorder the list.
 - `displayName` belongs inside the marketplace `interface` object, not individual `plugins[]` entries.
@@ -107,7 +106,7 @@ python3 .agents/skills/plugin-creator/scripts/create_basic_plugin.py my-plugin -
 ```
 
 - Use `--force` only when intentionally replacing an existing marketplace entry for the same plugin name.
-- If `<repo-root>/.agents/plugins/marketplace.json` does not exist yet, create it with top-level `"name"`, an `"interface"` object containing `"displayName"`, and a `plugins` array, then add the new entry.
+- If the target marketplace file does not exist yet, create it with top-level `"name"`, an `"interface"` object containing `"displayName"`, and a `plugins` array, then add the new entry.
 
 - For a brand-new marketplace file, the root object should look like:
 
@@ -156,5 +155,5 @@ For the exact canonical sample JSON for both plugin manifests and marketplace en
 After editing `SKILL.md`, run:
 
 ```bash
-python3 <path-to-skill-creator>/scripts/quick_validate.py .agents/skills/plugin-creator
+python3 ../skill-creator/scripts/quick_validate.py .
 ```

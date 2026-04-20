@@ -1,7 +1,12 @@
 # CodexLobbyScene Garage 패널 구현 계획
 
-> 마지막 정리: 2026-04-11
+> 마지막 업데이트: 2026-04-11
 > 상태: historical
+> doc_id: plans.codex-lobby-garage-panel
+> role: historical
+> owner_scope: 초기 Garage 패널 구상 기록
+> upstream: design.ui-foundations, plans.progress
+> artifacts: none
 
 이 문서는 초기 Garage 패널 구상 기록이다. 현재 구현 기준으로 직접 사용하지 않는다.
 현재 계약은 [`../design/ui_foundations.md`](../design/ui_foundations.md),

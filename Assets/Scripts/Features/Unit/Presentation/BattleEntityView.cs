@@ -78,9 +78,7 @@ namespace Features.Unit.Presentation
         private System.Collections.IEnumerator FlashDamage()
         {
             _isFlashing = true;
-            _bodyRenderer.material = _damageFlashMaterial;
             yield return new WaitForSeconds(_flashDuration);
-            _bodyRenderer.material = _originalMaterial;
             _isFlashing = false;
         }
     }

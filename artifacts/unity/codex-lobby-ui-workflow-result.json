@@ -1,11 +1,16 @@
 ﻿{
     "success":  true,
-    "generatedAt":  "2026-04-19 23:25:01+09:00",
+    "generatedAt":  "2026-04-20 10:45:54+09:00",
     "scenePath":  "Assets/Scenes/CodexLobbyScene.unity",
     "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\codex-lobby-ui-workflow-result.json",
     "compile":  {
                     "success":  true
                 },
+    "presentationLayoutOwnership":  {
+                                        "success":  true,
+                                        "reportPath":  "Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json",
+                                        "violationCount":  0
+                                    },
     "contract":  {
                      "success":  true,
                      "sceneSaved":  true,

@@ -24,17 +24,11 @@ namespace Features.Skill.Presentation
         public void Play()
         {
             _elapsed = 0f;
-
-            if (_renderer != null)
-                _renderer.material.color = _effectColor;
         }
 
         private void Update()
         {
             _elapsed += Time.deltaTime;
-
-            var scale = Mathf.Lerp(1f, 1.5f, _elapsed / _duration);
-            transform.localScale = _initialScale * scale;
 
             if (_elapsed >= _duration)
                 ReleaseSelf();
@@ -43,16 +37,11 @@ namespace Features.Skill.Presentation
         public void OnRentFromPool()
         {
             _elapsed = 0f;
-            transform.localScale = _initialScale;
-
-            if (_renderer != null)
-                _renderer.material.color = _effectColor;
         }
 
         public void OnReturnToPool()
         {
             _elapsed = 0f;
-            transform.localScale = _initialScale;
         }
 
         private void ReleaseSelf()

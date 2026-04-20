@@ -1,7 +1,14 @@
 # WebGL Smoke Checklist
 
+> 마지막 업데이트: 2026-04-17
+> 상태: active
+> doc_id: plans.webgl-smoke-checklist
+> role: reference
+> owner_scope: WebGL 수동 smoke 절차와 기대 결과
+> upstream: plans.progress, plans.account-system
+> artifacts: `Build/WebGL`, `artifacts/webgl/`
+>
 > 생성일: 2026-04-17
-> 최종 업데이트: 2026-04-17
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
 이 문서는 Phase 10/11의 WebGL 실기 검증을 위한 **수동 smoke 체크리스트**다.

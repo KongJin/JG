@@ -1,7 +1,12 @@
 # Unity MCP Refactor Plan
 
-> Last updated: 2026-04-18
-> Status: active reference
+> 마지막 업데이트: 2026-04-18
+> 상태: active
+> doc_id: plans.mcp-improvement
+> role: plan
+> owner_scope: Unity MCP 역할 재정의와 개선 우선순위
+> upstream: plans.progress, ops.unity-ui-authoring-workflow
+> artifacts: `tools/unity-mcp/`, `Assets/Editor/UnityMcp/`
 
 Unity MCP is not being retired. In this repo it is now defined as a `diagnostic + manual automation` tool.
 

@@ -52,8 +52,6 @@ namespace Features.Combat.Presentation
         public void ResetVisual()
         {
             _flashRemaining = 0f;
-            if (_renderer != null && _hasBaseColor)
-                _renderer.material.color = _baseColor;
         }
 
         private void Update()
@@ -62,8 +60,6 @@ namespace Features.Combat.Presentation
                 return;
 
             _flashRemaining -= Time.deltaTime;
-            if (_flashRemaining <= 0f && _renderer != null)
-                _renderer.material.color = _baseColor;
         }
 
         private void OnDestroy()
@@ -79,11 +75,7 @@ namespace Features.Combat.Presentation
             if (!_entityIdHolder.Id.Equals(e.TargetId))
                 return;
 
-            if (_renderer != null)
-            {
-                _renderer.material.color = e.IsDead ? _deadColor : _damageFlashColor;
-                _flashRemaining = e.IsDead ? 0f : _flashDuration;
-            }
+            _flashRemaining = e.IsDead ? 0f : _flashDuration;
 
             Debug.Log(
                 $"[CombatTargetView] Target={e.TargetId.Value}, Damage={e.Damage}, Remaining={e.RemainingHealth}"

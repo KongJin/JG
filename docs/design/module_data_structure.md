@@ -1,5 +1,13 @@
 # Module Data Structure
 
+> 마지막 업데이트: 2026-04-20
+> 상태: active
+> doc_id: design.module-data-structure
+> role: ssot
+> owner_scope: 유닛과 모듈 데이터의 실제 Unity C# 구조 기준
+> upstream: design.unit-module-design, design.game-design
+> artifacts: `Assets/Scripts/Features/Unit/`, `Assets/Scripts/Features/Garage/`
+
 이 문서는 유닛/모듈 데이터의 Unity C# 구조를 정의한다.
 `unit_module_design.md`의 하위 문서이며, 실제 구현 기준의 SSOT다.
 

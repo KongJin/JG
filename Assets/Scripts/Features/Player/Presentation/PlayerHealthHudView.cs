@@ -1,5 +1,6 @@
 using Shared.Attributes;
 using Features.Player.Application.Events;
+using Features.Player.Runtime;
 using Shared.EventBus;
 using Shared.Kernel;
 using UnityEngine;
@@ -29,17 +30,6 @@ namespace Features.Player.Presentation
 
         private IEventSubscriber _eventBus;
         private DomainEntityId _playerId;
-        private bool _isLocalPlayer;
-        private Transform _target;
-        private Camera _worldCamera;
-        private Canvas _hudCanvas;
-        private RectTransform _rectTransform;
-        private RectTransform _hudCanvasRectTransform;
-
-        private void Awake()
-        {
-            _rectTransform = transform as RectTransform;
-        }
 
         public void Initialize(
             IEventSubscriber eventBus,
@@ -77,48 +67,24 @@ namespace Features.Player.Presentation
 
             _eventBus = eventBus;
             _playerId = playerId;
-            _isLocalPlayer = isLocalPlayer;
-            _target = target;
-            _worldCamera = worldCamera;
-            _hudCanvas = hudCanvas;
-            _hudCanvasRectTransform = hudCanvas.transform as RectTransform;
 
             _healthSlider.maxValue = maxHealth;
             _healthSlider.value = maxHealth;
             UpdateFillColor(1f);
 
+            var follower = gameObject.GetComponent<PlayerHealthHudFollower>();
+            if (follower == null)
+                follower = gameObject.AddComponent<PlayerHealthHudFollower>();
+
+            follower.Initialize(target, worldCamera, hudCanvas, _headOffset);
+
             _eventBus.Subscribe(this, new System.Action<PlayerHealthChangedEvent>(OnHealthChanged));
             _eventBus.Subscribe(this, new System.Action<PlayerRespawnedEvent>(OnRespawned));
         }
 
-        private void LateUpdate()
-        {
-            if (_target == null)
-                return;
-
-            var screenPoint = _worldCamera.WorldToScreenPoint(_target.position + _headOffset);
-            if (screenPoint.z <= 0f)
-            {
-                _rectTransform.anchoredPosition = new Vector2(100000f, 100000f);
-                return;
-            }
-
-            var uiCamera = _hudCanvas.renderMode == RenderMode.ScreenSpaceOverlay
-                ? null
-                : _hudCanvas.worldCamera;
-
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _hudCanvasRectTransform,
-                screenPoint,
-                uiCamera,
-                out var anchoredPosition
-            );
-            _rectTransform.anchoredPosition = anchoredPosition;
-        }
-
         private void OnDestroy()
         {
-            _eventBus.UnsubscribeAll(this);
+            _eventBus?.UnsubscribeAll(this);
         }
 
         private void OnHealthChanged(PlayerHealthChangedEvent e)

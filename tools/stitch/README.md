@@ -1,6 +1,15 @@
 # Stitch SDK Helpers
 
+> 마지막 업데이트: 2026-04-20
+> 상태: active
+> doc_id: tools.stitch-readme
+> role: reference
+> owner_scope: Stitch SDK helper command reference와 artifact export 안내
+> upstream: repo.agents, docs.index, ops.stitch-data-workflow, design.ui-reference-workflow
+> artifacts: `tools/stitch/`, `artifacts/stitch/`
+
 JG uses the official `@google/stitch-sdk` package for lightweight Stitch access from the repo.
+Stitch owner 문서의 current path는 `docs/index.md`에서 찾고, 이 문서는 SDK 명령 실행 reference로만 유지한다.
 
 ## What This Is For
 

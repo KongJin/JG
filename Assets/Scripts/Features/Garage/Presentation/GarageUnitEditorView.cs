@@ -64,11 +64,11 @@ namespace Features.Garage.Presentation
 
             _selectionTitleText.text = viewModel.Title;
             _selectionTitleText.color = ThemeColors.TextPrimary;
-            _selectionTitleText.fontSize = 15;
+            _selectionTitleText.fontSize = 13.5f;
 
             _selectionSubtitleText.text = viewModel.Subtitle;
             _selectionSubtitleText.color = ThemeColors.TextSecondary;
-            _selectionSubtitleText.fontSize = 10.5f;
+            _selectionSubtitleText.fontSize = 9.5f;
 
             _frameSelectorView.Render(viewModel.FrameValueText, viewModel.FrameHintText);
             _firepowerSelectorView.Render(viewModel.FirepowerValueText, viewModel.FirepowerHintText);
@@ -77,10 +77,9 @@ namespace Features.Garage.Presentation
             ApplyFocusedPartState();
 
             // Clear 버튼 — 파괴적 액션 스타일
-            _clearButton.Apply(ButtonStyles.Danger, _clearButtonText);
+            _clearButton.Apply(ButtonStyles.Secondary, _clearButtonText);
 
-            // Clear 버튼 텍스트 명시화
-            _clearButtonText.text = "비우기";
+            _clearButtonText.text = "초기화";
         }
 
         public void SetFocusedPart(GarageEditorFocus focusedPart)

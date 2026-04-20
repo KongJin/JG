@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace ProjectSD.EditorTools.UnityMcp
@@ -18,6 +19,9 @@ namespace ProjectSD.EditorTools.UnityMcp
             "POST".Register("/prefab/get", "Get prefab asset info", async (req, res) => await HandlePrefabGetAsync(req, res));
             "POST".Register("/prefab/set", "Set prefab component property", async (req, res) => await HandlePrefabSetAsync(req, res));
             "POST".Register("/prefab/add-component", "Add component to prefab asset", async (req, res) => await HandlePrefabAddComponentAsync(req, res));
+            "POST".Register("/prefab/open-stage", "Open prefab asset in Prefab Mode", async (req, res) => await HandlePrefabOpenStageAsync(req, res));
+            "GET".Register("/prefab/current-stage", "Get current Prefab Mode stage info", async (req, res) => await HandlePrefabCurrentStageAsync(res));
+            "POST".Register("/prefab/close-stage", "Close current Prefab Mode stage", async (req, res) => await HandlePrefabCloseStageAsync(res));
         }
 
         public static async Task HandlePrefabSaveAsync(HttpListenerRequest request, HttpListenerResponse response)
@@ -28,15 +32,26 @@ namespace ProjectSD.EditorTools.UnityMcp
             {
                 if (string.IsNullOrEmpty(req.gameObjectPath)) throw new Exception("gameObjectPath is required");
                 if (string.IsNullOrEmpty(req.savePath)) throw new Exception("savePath is required");
+                if (req.destroySceneObject && req.connectSceneObject) throw new Exception("destroySceneObject and connectSceneObject cannot both be true");
                 var go = McpSharedHelpers.FindGameObjectByPath(req.gameObjectPath);
                 if (go == null) go = GameObject.Find(req.gameObjectPath);
                 if (go == null) throw new Exception("GameObject not found: " + req.gameObjectPath);
                 var directory = Path.GetDirectoryName(req.savePath);
                 if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory)) Directory.CreateDirectory(directory);
-                var prefab = PrefabUtility.SaveAsPrefabAsset(go, req.savePath, out var success);
+                GameObject prefab;
+                bool success;
+                if (req.connectSceneObject)
+                {
+                    prefab = PrefabUtility.SaveAsPrefabAssetAndConnect(go, req.savePath, InteractionMode.AutomatedAction, out success);
+                }
+                else
+                {
+                    prefab = PrefabUtility.SaveAsPrefabAsset(go, req.savePath, out success);
+                }
                 if (!success || prefab == null) throw new Exception("Failed to save prefab at: " + req.savePath);
                 if (req.destroySceneObject) Undo.DestroyObjectImmediate(go);
-                return new GenericResponse { success = true, message = "Prefab saved: " + req.savePath };
+                var modeLabel = req.connectSceneObject ? "Prefab saved and connected: " : "Prefab saved: ";
+                return new GenericResponse { success = true, message = modeLabel + req.savePath };
             });
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }
@@ -110,6 +125,115 @@ namespace ProjectSD.EditorTools.UnityMcp
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }
 
+        public static async Task HandlePrefabOpenStageAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<PrefabStageOpenRequest>(body);
+            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+            {
+                if (string.IsNullOrWhiteSpace(req?.assetPath))
+                {
+                    return new PrefabStageStatusResponse
+                    {
+                        success = false,
+                        isOpen = false,
+                        message = "assetPath is required."
+                    };
+                }
+
+                var prefabRoot = AssetDatabase.LoadAssetAtPath<GameObject>(req.assetPath);
+                if (prefabRoot == null)
+                {
+                    return new PrefabStageStatusResponse
+                    {
+                        success = false,
+                        isOpen = false,
+                        assetPath = req.assetPath,
+                        message = "Prefab not found at assetPath."
+                    };
+                }
+
+                PrefabStageUtility.OpenPrefab(req.assetPath);
+                var stage = PrefabStageUtility.GetCurrentPrefabStage();
+                if (stage == null)
+                {
+                    return new PrefabStageStatusResponse
+                    {
+                        success = false,
+                        isOpen = false,
+                        assetPath = req.assetPath,
+                        message = "Prefab Mode did not open."
+                    };
+                }
+
+                return BuildPrefabStageStatus(stage, "Prefab Mode opened.");
+            });
+
+            await UnityMcpBridge.WriteJsonAsync(response, result.success ? 200 : 400, result);
+        }
+
+        public static async Task HandlePrefabCurrentStageAsync(HttpListenerResponse response)
+        {
+            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+            {
+                var stage = PrefabStageUtility.GetCurrentPrefabStage();
+                if (stage == null)
+                {
+                    return new PrefabStageStatusResponse
+                    {
+                        success = true,
+                        isOpen = false,
+                        message = "No prefab stage is currently open."
+                    };
+                }
+
+                return BuildPrefabStageStatus(stage, "Prefab stage is open.");
+            });
+
+            await UnityMcpBridge.WriteJsonAsync(response, 200, result);
+        }
+
+        public static async Task HandlePrefabCloseStageAsync(HttpListenerResponse response)
+        {
+            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+            {
+                var stage = PrefabStageUtility.GetCurrentPrefabStage();
+                if (stage == null)
+                {
+                    return new PrefabStageStatusResponse
+                    {
+                        success = true,
+                        isOpen = false,
+                        message = "No prefab stage was open."
+                    };
+                }
+
+                StageUtility.GoToMainStage();
+                var closedStage = PrefabStageUtility.GetCurrentPrefabStage();
+                if (closedStage != null)
+                {
+                    return new PrefabStageStatusResponse
+                    {
+                        success = false,
+                        isOpen = true,
+                        assetPath = closedStage.assetPath,
+                        prefabContentsRootPath = McpSharedHelpers.GetTransformPath(closedStage.prefabContentsRoot.transform),
+                        stageScenePath = closedStage.scene.path,
+                        message = "Failed to close prefab stage."
+                    };
+                }
+
+                return new PrefabStageStatusResponse
+                {
+                    success = true,
+                    isOpen = false,
+                    message = "Prefab stage closed."
+                };
+            });
+
+            await UnityMcpBridge.WriteJsonAsync(response, result.success ? 200 : 409, result);
+        }
+
         // =====================================================================
         // Helper Methods
         // =====================================================================
@@ -145,6 +269,21 @@ namespace ProjectSD.EditorTools.UnityMcp
                 found = true, name = go.name, path = McpSharedHelpers.GetTransformPath(go.transform),
                 activeSelf = go.activeSelf, layer = LayerMask.LayerToName(go.layer),
                 tag = go.tag, components = compInfos.ToArray()
+            };
+        }
+
+        private static PrefabStageStatusResponse BuildPrefabStageStatus(PrefabStage stage, string message)
+        {
+            return new PrefabStageStatusResponse
+            {
+                success = true,
+                isOpen = true,
+                assetPath = stage.assetPath,
+                prefabContentsRootPath = stage.prefabContentsRoot != null
+                    ? McpSharedHelpers.GetTransformPath(stage.prefabContentsRoot.transform)
+                    : null,
+                stageScenePath = stage.scene.path,
+                message = message
             };
         }
     }

@@ -1,7 +1,14 @@
 # 기술부채 감축 실행 계획
 
+> 마지막 업데이트: 2026-04-18
+> 상태: active
+> doc_id: plans.tech-debt-reduction
+> role: plan
+> owner_scope: 기술부채 감축 우선순위와 실행 순서
+> upstream: plans.progress, historical.tech-debt-review
+> artifacts: `docs/tech_debt_review.md`
+>
 > 생성일: 2026-04-17
-> 최종 업데이트: 2026-04-18
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
 이 문서는 현재 프로젝트의 기술부채를 "무엇이 불편한가" 수준이 아니라, **무엇을 어떤 순서로 줄여야 배포 신뢰도가 올라가는가** 기준으로 정리한 실행 계획이다.

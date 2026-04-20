@@ -17,7 +17,7 @@ namespace Features.Garage.Presentation
             CommittedRoster.Normalize();
             DraftRoster = CommittedRoster.Clone();
             DraftRoster.Normalize();
-            SelectSlot(0);
+            SelectSlot(FindInitialSelectedSlot());
         }
 
         public void SelectSlot(int slotIndex)
@@ -73,6 +73,7 @@ namespace Features.Garage.Presentation
             CommittedRoster.Normalize();
             DraftRoster = CommittedRoster.Clone();
             DraftRoster.Normalize();
+            SelectSlot(FindInitialSelectedSlot());
         }
 
         public void ClearSelectedSlotDraft()
@@ -156,6 +157,23 @@ namespace Features.Garage.Presentation
             return left.frameId == right.frameId &&
                    left.firepowerModuleId == right.firepowerModuleId &&
                    left.mobilityModuleId == right.mobilityModuleId;
+        }
+
+        private int FindInitialSelectedSlot()
+        {
+            for (int i = 0; i < GarageRoster.MaxSlots; i++)
+            {
+                if (CommittedRoster.GetSlot(i).IsComplete)
+                    return i;
+            }
+
+            for (int i = 0; i < GarageRoster.MaxSlots; i++)
+            {
+                if (DraftRoster.GetSlot(i).HasAnySelection)
+                    return i;
+            }
+
+            return 0;
         }
     }
 }

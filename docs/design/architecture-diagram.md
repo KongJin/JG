@@ -1,6 +1,14 @@
 # Architecture Diagram
 
-구조·의존·레이어의 **단일 기준**은 [`/agent/architecture.md`](../../agent/architecture.md)이다. 이 파일은 레이어/포트 구조만 그림으로 요약한다.
+> 마지막 업데이트: 2026-04-20
+> 상태: reference
+> doc_id: design.architecture-diagram
+> role: reference
+> owner_scope: 포트 소유권과 레이어 구조의 시각 요약
+> upstream: `agent/architecture.md`
+> artifacts: none
+
+구조·의존·레이어의 **단일 기준**은 현재 owner 문서 기준으로 해석하며, 경로는 [AGENTS.md](../../AGENTS.md)와 [docs/index.md](../index.md)에서 찾는다. 이 파일은 레이어/포트 구조만 그림으로 요약한다.
 
 ```mermaid
 graph TB

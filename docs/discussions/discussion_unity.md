@@ -1,4 +1,12 @@
+# Unity Discussion Notes
+
+> 마지막 업데이트: 2026-04-20
 > 상태: historical
+> doc_id: discussions.unity
+> role: historical
+> owner_scope: 과거 Unity 규칙과 도구 한계 검토 기록
+> upstream: docs.index, plans.mcp-improvement, plans.tech-debt-reduction
+> artifacts: none
 > 현재 기준: [`../index.md`](../index.md), [`../plans/mcp_improvement_plan.md`](../plans/mcp_improvement_plan.md), [`../plans/tech_debt_reduction_plan.md`](../plans/tech_debt_reduction_plan.md)
 
 실제 코드와 문서, 도구를 비교해 보니 여러 문제점과 한계가 발견되었습니다.                                                                                  

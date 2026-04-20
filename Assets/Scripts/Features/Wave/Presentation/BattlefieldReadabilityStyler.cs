@@ -36,7 +36,6 @@ namespace Features.Wave.Presentation
 
             if (_coreVisual != null)
             {
-                _coreVisual.localScale = _coreScale;
             }
         }
 
@@ -76,24 +75,6 @@ namespace Features.Wave.Presentation
 
         private static void ApplyColor(Renderer targetRenderer, Color color)
         {
-            if (targetRenderer == null || targetRenderer.sharedMaterial == null)
-                return;
-
-            var styledMaterial = new Material(targetRenderer.sharedMaterial);
-            var colorPropertyId = Shader.PropertyToID("_Color");
-            var baseColorPropertyId = Shader.PropertyToID("_BaseColor");
-
-            if (styledMaterial.HasProperty(baseColorPropertyId))
-            {
-                styledMaterial.SetColor(baseColorPropertyId, color);
-            }
-
-            if (styledMaterial.HasProperty(colorPropertyId))
-            {
-                styledMaterial.SetColor(colorPropertyId, color);
-            }
-
-            targetRenderer.sharedMaterial = styledMaterial;
         }
     }
 }

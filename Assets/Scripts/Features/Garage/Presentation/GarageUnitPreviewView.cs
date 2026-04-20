@@ -43,8 +43,8 @@ namespace Features.Garage.Presentation
             EnsureRenderTexture();
             _previewCamera.backgroundColor = ThemeColors.PreviewBackground;
             _previewCamera.clearFlags = CameraClearFlags.SolidColor;
-            _rawImage.color = ThemeColors.PreviewBackground;
-            _emptyStateText.text = "블루프린트가 여기에 표시됩니다.";
+            _rawImage.color = Color.Lerp(ThemeColors.PreviewBackground, ThemeColors.BackgroundCard, 0.18f);
+            _emptyStateText.text = "저장 유닛 실루엣";
             _emptyStateText.color = ThemeColors.TextMuted;
 
             SetEmptyStateVisible(true);
@@ -63,10 +63,14 @@ namespace Features.Garage.Presentation
                 !string.IsNullOrWhiteSpace(viewModel.MobilityId);
 
             if (!hasPreviewLoadout)
+            {
+                _rawImage.color = Color.Lerp(ThemeColors.PreviewBackground, ThemeColors.BackgroundCard, 0.18f);
                 return;
+            }
 
             CreatePreview(viewModel, catalog);
             SetEmptyStateVisible(false);
+            _rawImage.color = ThemeColors.PreviewBackground;
 
             if (_previewCamera.targetTexture != null)
                 _previewCamera.Render();
@@ -75,7 +79,7 @@ namespace Features.Garage.Presentation
         private void CreatePreview(GarageSlotViewModel viewModel, GaragePanelCatalog catalog)
         {
             _currentPreviewRoot = new GameObject("PreviewRoot");
-            GaragePreviewAssembler.Attach(_currentPreviewRoot, transform, new Vector3(0f, -0.02f, 0f), Vector3.zero);
+            GaragePreviewAssembler.Attach(_currentPreviewRoot, transform, new Vector3(0f, -0.04f, 0f), Vector3.zero);
 
             // 프레임 (중심)
             var frameObj = CreateFrame(viewModel.FrameId);
@@ -83,19 +87,17 @@ namespace Features.Garage.Presentation
 
             // 무기 (상단)
             var weaponObj = CreateWeapon(viewModel.FirepowerId);
-            GaragePreviewAssembler.Attach(weaponObj, _currentPreviewRoot.transform, new Vector3(0f, 0.78f, 0f), new Vector3(0f, 0f, 90f));
+            GaragePreviewAssembler.Attach(weaponObj, _currentPreviewRoot.transform, new Vector3(0f, 0.62f, 0f), new Vector3(0f, 0f, 90f));
 
             // 기동 (하단)
             var thrusterObj = CreateThruster(viewModel.MobilityId);
-            GaragePreviewAssembler.Attach(thrusterObj, _currentPreviewRoot.transform, new Vector3(0f, -0.72f, 0f), Vector3.zero);
+            GaragePreviewAssembler.Attach(thrusterObj, _currentPreviewRoot.transform, new Vector3(0f, -0.58f, 0f), Vector3.zero);
         }
 
         private GameObject CreateFrame(string frameId)
         {
             var obj = Instantiate(_framePrefab);
             obj.SetActive(true);
-            obj.GetComponent<Renderer>().material.color = GetFrameColor(frameId);
-            obj.transform.localScale = new Vector3(0.82f, 0.62f, 0.42f);
             return obj;
         }
 
@@ -103,8 +105,6 @@ namespace Features.Garage.Presentation
         {
             var obj = Instantiate(_weaponPrefab);
             obj.SetActive(true);
-            obj.GetComponent<Renderer>().material.color = GetWeaponColor(firepowerId);
-            obj.transform.localScale = new Vector3(0.18f, 0.58f, 0.18f);
             return obj;
         }
 
@@ -112,9 +112,6 @@ namespace Features.Garage.Presentation
         {
             var obj = Instantiate(_thrusterPrefab);
             obj.SetActive(true);
-            obj.GetComponent<Renderer>().material.color = GetThrusterColor(mobilityId);
-            obj.transform.localScale = new Vector3(0.36f, 0.28f, 0.36f);
-            obj.transform.localEulerAngles = new Vector3(180, 0, 0);
             return obj;
         }
 
@@ -185,57 +182,6 @@ namespace Features.Garage.Presentation
         private void Update()
         {
             if (_currentPreviewRoot == null) return;
-
-            // 마우스 드래그 감지 — Input System과 구버전 Input 모두 지원
-            var mouseDown = false;
-            var mouseUp = false;
-            var mousePos = Vector2.zero;
-
-#if ENABLE_INPUT_SYSTEM
-            // Input System 패키지를 사용하는 경우
-            var mouse = UnityEngine.InputSystem.Mouse.current;
-            if (mouse != null)
-            {
-                mouseDown = mouse.leftButton.wasPressedThisFrame;
-                mouseUp = mouse.leftButton.wasReleasedThisFrame;
-                mousePos = mouse.position.ReadValue();
-            }
-#else
-            // 구버전 Input 시스템
-            mouseDown = UnityEngine.Input.GetMouseButtonDown(0);
-            mouseUp = UnityEngine.Input.GetMouseButtonUp(0);
-            mousePos = UnityEngine.Input.mousePosition;
-#endif
-
-            if (mouseDown)
-            {
-                var ray = _previewCamera.ScreenPointToRay(mousePos);
-                if (Physics.Raycast(ray, out var hit))
-                {
-                    if (hit.transform.IsChildOf(_currentPreviewRoot.transform))
-                    {
-                        _isDragging = true;
-                        _lastMousePosition = mousePos;
-                    }
-                }
-            }
-
-            if (mouseUp)
-                _isDragging = false;
-
-            // 회전 처리
-            if (_isDragging)
-            {
-                Vector2 delta = mousePos - _lastMousePosition;
-                _manualRotationY += delta.x * _dragRotationMultiplier * Time.deltaTime;
-                _lastMousePosition = mousePos;
-            }
-            else
-            {
-                _manualRotationY += _autoRotationSpeed * Time.deltaTime;
-            }
-
-            _currentPreviewRoot.transform.localEulerAngles = new Vector3(0, _manualRotationY, 0);
         }
 
         private void OnDestroy()

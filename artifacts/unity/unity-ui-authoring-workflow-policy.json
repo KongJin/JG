@@ -1,0 +1,159 @@
+﻿{
+    "success":  false,
+    "generatedAt":  "2026-04-20 11:30:51+09:00",
+    "route":  "mixed",
+    "changedFiles":  [
+                         ".codex/skills/jg-unity-workflow/SKILL.md",
+                         ".codex/skills/rule-operations/work_principles.md",
+                         "AGENTS.md",
+                         "artifacts/unity/codex-lobby-ui-workflow-result.json",
+                         "artifacts/unity/lobby-garage-page-switch-result.json",
+                         "artifacts/unity/lobby-page-smoke-garage.png",
+                         "artifacts/unity/lobby-page-smoke-lobby-initial.png",
+                         "artifacts/unity/lobby-page-smoke-lobby-returned.png",
+                         "Assets/Editor/SceneTools/CodexLobbySceneContract.cs",
+                         "Assets/Editor/UnityMcp/Handlers/BuildHandlers.cs",
+                         "Assets/Editor/Validation/PresentationLayoutOwnershipValidator.cs",
+                         "Assets/Scenes/CodexLobbyScene.unity",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePageController.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePagePresenter.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePageState.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePartSelectorView.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageSlotItemView.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageUnitEditorView.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageUnitPreviewView.cs",
+                         "Assets/Scripts/Features/Player/Presentation/PlayerHealthHudView.cs",
+                         "Assets/Scripts/Features/Player/Runtime.meta",
+                         "Assets/Scripts/Features/Player/Runtime/PlayerHealthHudFollower.cs",
+                         "Assets/Scripts/Features/Player/Runtime/PlayerHealthHudFollower.cs.meta",
+                         "Assets/TextMesh Pro/Resources/Fonts \u0026 Materials/NotoSansKR Dynamic.asset",
+                         "docs/design/ui_foundations.md",
+                         "docs/index.md",
+                         "docs/ops/unity_ui_authoring_workflow.md",
+                         "docs/plans/progress.md",
+                         "docs/plans/stitch_ui_ux_overhaul_plan.md",
+                         "tools/unity-mcp/Invoke-LobbyGaragePageSwitchSmoke.ps1",
+                         "tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1",
+                         "tools/unity-mcp/README.md"
+                     ],
+    "unityUiRelevantFiles":  [
+                                 "Assets/Scenes/CodexLobbyScene.unity",
+                                 "Assets/Scripts/Features/Garage/Presentation/GaragePageController.cs",
+                                 "Assets/Scripts/Features/Garage/Presentation/GaragePagePresenter.cs",
+                                 "Assets/Scripts/Features/Garage/Presentation/GaragePageState.cs",
+                                 "Assets/Scripts/Features/Garage/Presentation/GaragePartSelectorView.cs",
+                                 "Assets/Scripts/Features/Garage/Presentation/GarageSlotItemView.cs",
+                                 "Assets/Scripts/Features/Garage/Presentation/GarageUnitEditorView.cs",
+                                 "Assets/Scripts/Features/Garage/Presentation/GarageUnitPreviewView.cs",
+                                 "Assets/Scripts/Features/Player/Presentation/PlayerHealthHudView.cs"
+                             ],
+    "requiredEvidence":  [
+                             {
+                                 "name":  "compile-reload",
+                                 "path":  null,
+                                 "message":  "Compile and script reload must settle before Unity UI workflow evidence is trusted."
+                             },
+                             {
+                                 "name":  "presentation-layout-ownership",
+                                 "path":  "Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json",
+                                 "message":  "Presentation code must not author geometry or materials. Move the authoring to scene/prefab or runtime non-presentation layer."
+                             },
+                             {
+                                 "name":  "codex-lobby-workflow-gate",
+                                 "path":  "artifacts/unity/codex-lobby-ui-workflow-result.json",
+                                 "message":  "CodexLobby UI changes require a fresh workflow gate result newer than the latest modified source file."
+                             },
+                             {
+                                 "name":  "codex-lobby-canonical-smoke",
+                                 "path":  "artifacts/unity/lobby-garage-page-switch-result.json",
+                                 "message":  "CodexLobby UI changes require a fresh canonical smoke result newer than the latest modified source file."
+                             },
+                             {
+                                 "name":  "game-scene-summon-smoke",
+                                 "path":  "artifacts/unity/game-scene-summon-smoke-result.json",
+                                 "message":  "GameScene UI changes require existing smoke evidence to stay fresh when the artifact is already present."
+                             },
+                             {
+                                 "name":  "game-scene-placement-wave-smoke",
+                                 "path":  "artifacts/unity/game-scene-placement-wave-result.json",
+                                 "message":  "GameScene UI changes require existing smoke evidence to stay fresh when the artifact is already present."
+                             }
+                         ],
+    "missingEvidence":  [
+
+                        ],
+    "staleEvidence":  [
+                          {
+                              "name":  "codex-lobby-workflow-gate",
+                              "path":  "artifacts/unity/codex-lobby-ui-workflow-result.json",
+                              "message":  "CodexLobby UI changes require a fresh workflow gate result newer than the latest modified source file.",
+                              "evidenceLastWriteUtc":  "2026-04-20T01:45:54.9916308Z",
+                              "latestSourceWriteUtc":  "2026-04-20T01:52:26.6161706Z"
+                          },
+                          {
+                              "name":  "codex-lobby-canonical-smoke",
+                              "path":  "artifacts/unity/lobby-garage-page-switch-result.json",
+                              "message":  "CodexLobby UI changes require a fresh canonical smoke result newer than the latest modified source file.",
+                              "evidenceLastWriteUtc":  "2026-04-20T01:45:53.4132357Z",
+                              "latestSourceWriteUtc":  "2026-04-20T01:52:26.6161706Z"
+                          },
+                          {
+                              "name":  "game-scene-summon-smoke",
+                              "path":  "artifacts/unity/game-scene-summon-smoke-result.json",
+                              "message":  "GameScene UI changes require existing smoke evidence to be newer than the latest modified source file.",
+                              "evidenceLastWriteUtc":  "2026-04-19T14:05:11.7048368Z",
+                              "latestSourceWriteUtc":  "2026-04-20T00:30:58.7324510Z"
+                          },
+                          {
+                              "name":  "game-scene-placement-wave-smoke",
+                              "path":  "artifacts/unity/game-scene-placement-wave-result.json",
+                              "message":  "GameScene UI changes require existing smoke evidence to be newer than the latest modified source file.",
+                              "evidenceLastWriteUtc":  "2026-04-19T14:05:52.1394908Z",
+                              "latestSourceWriteUtc":  "2026-04-20T00:30:58.7324510Z"
+                          }
+                      ],
+    "policyViolations":  [
+                             {
+                                 "code":  "presentation-layout-ownership-failed",
+                                 "message":  "Presentation code must not author geometry or materials. Move the authoring to scene/prefab or runtime non-presentation layer."
+                             },
+                             {
+                                 "code":  "stale-evidence",
+                                 "message":  "CodexLobby UI changes require a fresh workflow gate result newer than the latest modified source file."
+                             },
+                             {
+                                 "code":  "stale-evidence",
+                                 "message":  "CodexLobby UI changes require a fresh canonical smoke result newer than the latest modified source file."
+                             },
+                             {
+                                 "code":  "stale-evidence",
+                                 "message":  "GameScene UI changes require existing smoke evidence to be newer than the latest modified source file."
+                             },
+                             {
+                                 "code":  "stale-evidence",
+                                 "message":  "GameScene UI changes require existing smoke evidence to be newer than the latest modified source file."
+                             }
+                         ],
+    "compile":  {
+                    "success":  true,
+                    "request":  {
+                                    "ok":  true,
+                                    "cleanBuildCacheRequested":  false,
+                                    "isCompiling":  false,
+                                    "message":  "Asset refresh triggered."
+                                },
+                    "wait":  {
+                                 "ok":  true,
+                                 "timedOut":  false,
+                                 "requestedCompilation":  false,
+                                 "waitedMs":  120000,
+                                 "isCompiling":  false
+                             }
+                },
+    "presentationLayoutOwnership":  {
+                                        "success":  false,
+                                        "reportPath":  "Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json",
+                                        "violationCount":  34
+                                    },
+    "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\unity-ui-authoring-workflow-policy.json"
+}

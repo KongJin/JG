@@ -1,5 +1,13 @@
 # Game Design — Nova 1492 x Clash Royale 코옵 PvE
 
+> 마지막 업데이트: 2026-04-20
+> 상태: active
+> doc_id: design.game-design
+> role: ssot
+> owner_scope: 게임 방향, MVP 범위, 핵심 재미, 제품 판단 기준
+> upstream: none
+> artifacts: none
+
 이 문서는 현재 게임 방향의 SSOT다.
 기존 구현에는 구형 액션/스킬/웨이브 구조가 일부 남아 있을 수 있지만, 제품 판단과 신규 작업 기준은 이 문서를 따른다.
 

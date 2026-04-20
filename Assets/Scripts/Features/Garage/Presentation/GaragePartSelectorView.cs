@@ -16,9 +16,9 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private TMP_Text _hintText;
 
         [Header("Layout")]
-        [SerializeField] private float _titleFontSize = 13f;
-        [SerializeField] private float _valueFontSize = 14f;
-        [SerializeField] private float _hintFontSize = 9f;
+        [SerializeField] private float _titleFontSize = 12f;
+        [SerializeField] private float _valueFontSize = 13f;
+        [SerializeField] private float _hintFontSize = 8f;
 
         private bool _callbacksHooked;
 

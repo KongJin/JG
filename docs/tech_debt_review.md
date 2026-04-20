@@ -1,9 +1,16 @@
 # 기술 부채 심각도 리뷰 (20년차 개발자 시점)
 
+> 마지막 업데이트: 2026-04-11
+> 상태: historical
+> doc_id: historical.tech-debt-review
+> role: historical
+> owner_scope: 당시 기술부채 심각도 평가 스냅샷
+> upstream: plans.tech-debt-reduction, plans.progress
+> artifacts: none
+>
 > **작성일**: 2026-04-11  
 > **검토 범위**: `Assets/Scripts/Features/`, `Assets/Scripts/Shared/`, `Tests/`  
 > **아키텍처 기준**: Feature-first Clean Architecture (Domain, Application, Presentation, Infrastructure)
-> **상태**: historical
 > **수정일**: 
 > - 2026-04-11 — Critical #1, #2, #3 해결 완료, README 전면 제거
 > - 2026-04-11 — High #5, #6, #7 해결 완료

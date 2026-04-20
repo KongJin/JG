@@ -8,6 +8,7 @@ metadata:
 # Skill Creator
 
 This skill provides guidance for creating effective skills.
+Use `plugin-creator` instead when the task is to scaffold Codex plugins or marketplace entries rather than author or revise a skill.
 
 ## About Skills
 

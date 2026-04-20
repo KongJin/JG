@@ -16,7 +16,6 @@ namespace Features.Player.Presentation
         private void LateUpdate()
         {
             if (_target == null) return;
-            transform.position = _target.position + _offset;
         }
     }
 }

@@ -1,5 +1,13 @@
 # 재미 vs 리스크 — 4인 전문가 페르소나 토의
 
+> 마지막 업데이트: 2026-04-20
+> 상태: reference
+> doc_id: discussions.game-fun-personas
+> role: reference
+> owner_scope: 재미 검토용 질문 프레임과 토의 관점
+> upstream: design.game-design
+> artifacts: none
+
 워크숍·에이전트 롤플레이용 보조 문서다. **게임 컨셉·수치·MVP 정의의 SSOT는 [game_design.md](../design/game_design.md)** 만 따른다. 여기서는 질문·입장 초안·토의 기록만 정리한다.
 
 **근거 요약:** MVP는 2~4인, 약 5분, 웨이브 생존, 프렌들리 파이어, 슬롯 2 + 덱 순환, 웨이브 종료마다 3지선다, 다운 후 구조.

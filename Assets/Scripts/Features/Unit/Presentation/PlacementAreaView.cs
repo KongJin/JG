@@ -130,10 +130,6 @@ namespace Features.Unit.Presentation
 
         private void ApplyMaterial(Material material)
         {
-            if (_meshRenderer != null && material != null)
-            {
-                _meshRenderer.sharedMaterial = material;
-            }
         }
 
         private System.Collections.IEnumerator ShowInvalidFeedbackRoutine()

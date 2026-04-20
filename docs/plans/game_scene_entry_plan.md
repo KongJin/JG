@@ -1,6 +1,13 @@
 # 게임 씬 진입 계획 (Game Scene Entry Plan)
 
-> **마지막 업데이트**: 2026-04-18
+> 마지막 업데이트: 2026-04-18
+> 상태: active
+> doc_id: plans.game-scene-entry
+> role: plan
+> owner_scope: GameScene 진입 작업의 상위 흐름과 단계 구분
+> upstream: plans.progress, design.game-design
+> artifacts: `Assets/Scenes/GameScene.unity`
+>
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
 이 문서는 GameScene 진입 작업의 큰 흐름만 유지한다. 상세 구현 이력과 완료 판단은 `progress.md`를 기준으로 본다.

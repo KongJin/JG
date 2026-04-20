@@ -2,9 +2,15 @@
 
 > 마지막 업데이트: 2026-04-19
 > 상태: active
+> doc_id: design.ui-reference-workflow
+> role: ssot
+> owner_scope: Stitch를 JG에서 어떤 철학과 판단 기준으로 사용할지에 대한 원칙
+> upstream: design.ui-foundations, design.game-design, ops.stitch-data-workflow
+> artifacts: none
 
 이 문서는 JG UI/UX 작업에서 `Stitch`를 어떻게 활용할지 정리한 실무용 메모다.
 목표는 빠르게 시안을 만들고, 그것을 JG 문맥에 맞게 scene-owned layout으로 번역하는 것이다.
+저장 위치, prompt brief 수명, handoff 운영 같은 작업 절차는 `ops.stitch-data-workflow`가 소유한다.
 
 ## 채택 도구
 
@@ -26,15 +32,16 @@
 
 - Stitch 산출물은 `최종 SSOT`가 아니라 `시안`이다.
 - JG의 runtime SSOT는 항상 `CodexLobbyScene.unity`와 executable scene contract다.
-- 시각 판단은 `ui_foundations.md`를 우선한다.
+- 시각 판단은 `design.ui-foundations`를 우선한다.
 - Stitch 결과를 그대로 복제하지 말고, JG의 실제 flow와 serialized contract로 번역한다.
 - 실제 반영과 검증은 Unity MCP와 scene contract 기준으로 한다.
+- `.stitch` 자산의 저장 위치와 handoff 운영 규칙은 `ops.stitch-data-workflow`를 따른다.
 
 ## 추천 사용 순서
 
 1. Stitch에 현재 화면 목표를 짧고 강하게 넣는다.
 2. 나온 시안 중 정보 위계가 가장 선명한 한 방향만 고른다.
-3. `ui_foundations.md` 계약에 맞게 블록 순서와 CTA 역할을 다시 적는다.
+3. `design.ui-foundations` 계약에 맞게 블록 순서와 CTA 역할을 다시 적는다.
 4. Unity MCP로 씬을 수정한다.
 5. gate/smoke로 검증한다.
 
@@ -88,6 +95,7 @@ Style:
 
 - Stitch: 시안 생성과 방향 탐색
 - Unity MCP: 실제 씬 수정과 검증
+- repo 기준 진입점은 `jg-stitch-workflow`와 `jg-unity-workflow`만 사용한다.
 
 한 줄로 정리하면:
 

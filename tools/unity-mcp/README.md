@@ -1,12 +1,22 @@
 # Unity MCP
 
+> 마지막 업데이트: 2026-04-20
+> 상태: active
+> doc_id: tools.unity-mcp-readme
+> role: reference
+> owner_scope: Unity MCP 실행 reference, helper route, smoke command guide
+> upstream: repo.agents, docs.index, ops.unity-ui-authoring-workflow, plans.mcp-improvement
+> artifacts: `tools/unity-mcp/`, `Assets/Editor/UnityMcp/`, `artifacts/unity/`
+
 Unity MCP in this repo is a `diagnostic + manual automation` bridge.
 For Lobby/Garage UI work, the runtime SSOT is `Assets/Scenes/CodexLobbyScene.unity`.
 Lobby/Garage layout recovery is done by direct MCP scene/prefab repair against that scene, not by code-driven scene regeneration.
+Unity UI/UX authoring policy 본문 owner는 `ops.unity-ui-authoring-workflow`이고, current path는 `docs/index.md`에서 해석한다. 이 문서는 실행 reference만 담당한다.
 
 - Bridge core: `Assets/Editor/UnityMcp/`
 - MCP stdio wrapper: `tools/unity-mcp/server.js`
 - Helper module: `tools/unity-mcp/McpHelpers.ps1`
+- Workflow policy check: `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
 - Workflow gate: `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1`
 - Canonical page-switch smoke: `tools/unity-mcp/Invoke-LobbyGaragePageSwitchSmoke.ps1`
 - Feature smoke: `tools/unity-mcp/Invoke-GarageSettingsOverlaySmoke.ps1`
@@ -23,6 +33,9 @@ These are the routes the current workflow depends on.
 - `GET /health`
 - `POST /scene/open`
 - `POST /scene/save`
+- `POST /prefab/open-stage`
+- `GET /prefab/current-stage`
+- `POST /prefab/close-stage`
 - `POST /play/start`
 - `POST /play/stop`
 - `POST /play/wait-for-play`
@@ -32,6 +45,7 @@ These are the routes the current workflow depends on.
 - `POST /ui/wait-for-active`
 - `POST /ui/wait-for-inactive`
 - `POST /screenshot/capture`
+- `POST /sceneview/capture`
 - `GET /validation/verify-presentation-layout-ownership`
 - `GET /scene/verify-codex-lobby-contract`
 
@@ -55,9 +69,10 @@ This order assumes compile-clean state and completed script reload.
 
 Use this order for Lobby/Garage UI work:
 
-1. `Invoke-CodexLobbyUiWorkflowGate.ps1`
-2. `Invoke-LobbyGaragePageSwitchSmoke.ps1`
-3. feature smoke only when the change reaches scene transition, network/bootstrap, or WebGL flow
+1. `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
+2. `Invoke-CodexLobbyUiWorkflowGate.ps1`
+3. `Invoke-LobbyGaragePageSwitchSmoke.ps1`
+4. feature smoke only when the change reaches scene transition, network/bootstrap, or WebGL flow
 
 The rule is:
 
@@ -187,6 +202,15 @@ The contract route is considered healthy when it returns:
 Use `Assert-McpNoOpenSceneDiskWrite` before any script that would touch a `.unity` file on disk outside the editor bridge.
 If the target matches `health.activeScenePath`, the helper fails fast and tells you to use MCP repair or switch scenes first.
 
+Prefab Mode can now be opened through MCP as well:
+
+- `POST /prefab/open-stage` with `assetPath`
+- `GET /prefab/current-stage`
+- `POST /prefab/close-stage`
+- `POST /sceneview/capture` to save the current SceneView, including Prefab Mode context when open
+
+Use this when prefab-authoring work benefits from an explicit Prefab Mode stage instead of editing only through asset read/write routes.
+
 When Unity already has the project open and you need generated `.csproj` files refreshed for editor tests or IDE sync, use:
 
 ```powershell
@@ -198,6 +222,28 @@ This uses the current editor instance through MCP and performs:
 1. bridge health check
 2. compile/reload stabilization
 3. `Assets/Open C# Project` menu execution
+
+## Workflow Policy Check
+
+Run the workflow policy check like this:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1
+```
+
+Outputs:
+
+- `artifacts/unity/unity-ui-authoring-workflow-policy.json`
+
+The policy check reads the current changed files from git and enforces:
+
+- route classification for `scene/prefab authoring`, `presentation-code`, `mixed`, `codex-lobby-ui`, `game-scene-ui`
+- no new UI prefab creation by default
+- presentation validator requirements when presentation code changed
+- fresh `CodexLobby` workflow evidence for Lobby/Garage source changes
+
+It does not replace the workflow SSOT.
+Keep the policy body in owner doc `ops.unity-ui-authoring-workflow` and use this README as the execution reference. Resolve the current file path through `docs/index.md`.
 
 ## Workflow Gate
 
@@ -243,6 +289,8 @@ Outputs:
 - `artifacts/unity/lobby-garage-page-switch-result.json`
 
 This is the default runtime proof for the current Lobby/Garage UI contract.
+The canonical output contract is `390x844`.
+The script now normalizes each screenshot to that exact frame with a centered crop/resize pass, so the artifact does not depend on the currently open GameView size.
 
 ## Feature Smoke
 

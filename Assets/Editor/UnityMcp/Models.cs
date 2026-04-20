@@ -268,6 +268,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string gameObjectPath;
         public string savePath;
         public bool destroySceneObject;
+        public bool connectSceneObject;
     }
 
     [Serializable]
@@ -297,6 +298,23 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string assetPath;
         public string childPath;
         public string componentType;
+    }
+
+    [Serializable]
+    internal sealed class PrefabStageOpenRequest
+    {
+        public string assetPath;
+    }
+
+    [Serializable]
+    internal sealed class PrefabStageStatusResponse
+    {
+        public bool success;
+        public bool isOpen;
+        public string assetPath;
+        public string prefabContentsRootPath;
+        public string stageScenePath;
+        public string message;
     }
 
     [Serializable]
@@ -338,6 +356,10 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string relativePath;
         public string absolutePath;
         public long fileSizeBytes;
+        public string sourceView;
+        public int width;
+        public int height;
+        public string prefabStageAssetPath;
     }
 
     internal sealed class ScreenshotCapturePlan

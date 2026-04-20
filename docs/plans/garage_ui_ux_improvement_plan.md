@@ -1,7 +1,14 @@
 # Garage UI/UX 장기 개선 계획
 
+> 마지막 업데이트: 2026-04-13
+> 상태: draft
+> doc_id: plans.garage-ui-ux-improvement
+> role: plan
+> owner_scope: Garage UI backlog와 장기 개선 우선순위
+> upstream: plans.progress, design.ui-foundations, ops.unity-ui-authoring-workflow
+> artifacts: `Assets/Scenes/CodexLobbyScene.unity`, `Assets/Prefabs/CodexLobby/`
+>
 > 생성일: 2026-04-13
-> 상태: 초안
 > 근거: 2026-04-13 플레이모드 스크린샷 기반 평가
 
 레이아웃/토큰/컴포넌트 SSOT는 [`ui_foundations.md`](../design/ui_foundations.md)를 우선한다.

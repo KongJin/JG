@@ -87,7 +87,6 @@ namespace Features.Unit.Presentation
         public void OnDrag(PointerEventData eventData)
         {
             if (!_isDragging || _dragGhost == null) return;
-            _dragGhost.position = eventData.position;
 
             // 배치 영역 유효성 체크
             var worldPos = ScreenToWorldPosition(eventData.position);
@@ -172,19 +171,6 @@ namespace Features.Unit.Presentation
 
         private void UpdateDragGhostColor(bool isValid)
         {
-            if (_dragGhost == null) return;
-
-            if (_dragGhost.TryGetComponent<UnityEngine.UI.Image>(out var image))
-            {
-                if (isValid)
-                {
-                    image.color = new Color(0f, 1f, 0f, 0.8f); // 녹색
-                }
-                else
-                {
-                    image.color = new Color(1f, 0f, 0f, 0.8f); // 빨간색
-                }
-            }
         }
 
         private Vector3 ScreenToWorldPosition(Vector2 screenPosition)

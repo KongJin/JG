@@ -1,6 +1,12 @@
 # 진행 상황 (Game Scene Entry)
 
-> **마지막 업데이트**: 2026-04-19
+> 마지막 업데이트: 2026-04-20
+> 상태: active
+> doc_id: plans.progress
+> role: plan
+> owner_scope: 레포 전체 현재 상태, 다음 작업, 최근 변경 이력
+> upstream: docs.index
+> artifacts: `artifacts/unity/`, `artifacts/webgl/`
 
 ## 상태 주석
 
@@ -43,6 +49,8 @@
 
 ## 다음 작업 메모
 
+- 현재 owner 문서 경로는 `docs/index.md`에서 찾고, 아래 메모는 role/doc_id 기준으로 읽는다
+- Unity UI/UX 작업은 시작 전에 owner doc `ops.unity-ui-authoring-workflow`를 먼저 읽고, 종료 전 `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`로 route/evidence freshness를 확인하기
 - `CodexLobbyScene` 로비/Garage 대시보드 리팩터링 2차: 시각 polish와 상호작용 smoke 보강 필요
 - `CodexLobbyScene` mobile polish 2차: `Open Rooms` empty-state hierarchy와 Garage save dock first-screen visibility는 계속 sanity check 대상
 - `CodexLobbyScene` Lobby shell은 `LobbyHeaderCard -> RoomsSectionCard -> CreateRoomCard -> GarageSummaryCard` 구조로 재정리했고, 다음 polish는 mobile-first Garage 단일 구조의 시각 밀도 튜닝 중심으로 이어가기
@@ -51,17 +59,47 @@
 - Lobby/Garage 검증 레이어 재배치 기준: `contract -> EditMode/unit tests -> 얇은 smoke`
 - `GarageReadyFlow`는 필수 회귀 gate가 아니라 optional supervised smoke로 유지하고, Ready/Save 규칙은 EditMode 테스트로 계속 이동
 - 외부 디자인 시안 도입 기준: `Stitch`를 기본 생성 도구로 두고, 실제 반영은 Unity MCP와 scene contract 기준으로 번역
-- Garage UI 레이아웃 SSOT: [`ui_foundations.md`](../design/ui_foundations.md)
-- Garage UI 상세 계획: [`garage_ui_ux_improvement_plan.md`](./garage_ui_ux_improvement_plan.md)
-- GameScene 진입 계획: [`game_scene_entry_plan.md`](./game_scene_entry_plan.md)
-- GameScene UI/UX 상세 계획: [`game_scene_ui_ux_improvement_plan.md`](./game_scene_ui_ux_improvement_plan.md)
+- Garage UI 레이아웃 SSOT: owner doc `design.ui-foundations`
+- Garage UI 상세 계획: `docs/index.md`에서 Garage UI backlog plan을 찾기
+- GameScene 진입 계획: `docs/index.md`에서 current GameScene entry plan을 찾기
+- GameScene UI/UX 상세 계획: `docs/index.md`에서 current GameScene UI/UX plan을 찾기
 - GameScene UI authoring 기본 경로도 `GameScene.unity` / 관련 prefabs 대상 MCP repair를 사용하고, code-driven builder/rebuild는 재도입하지 않기
-- 계정 시스템 상세 계획: [`account_system_plan.md`](./account_system_plan.md)
-- 기술부채 감축 실행 계획: [`tech_debt_reduction_plan.md`](./tech_debt_reduction_plan.md)
-- WebGL 실기 체크리스트: [`webgl_smoke_checklist.md`](./webgl_smoke_checklist.md)
-- 다음 세션 시작점: `CodexLobbyScene -> GameScene` summon + wave/core victory smoke 통과 상태에서 placement drag/drop automation contract와 multiplayer sync를 이어서 검증하거나, `game_scene_ui_ux_improvement_plan.md` 기준으로 전투 HUD/소환 UX 재설계를 시작
+- 계정 시스템 상세 계획: `docs/index.md`에서 account system recovery plan을 찾기
+- 기술부채 감축 실행 계획: `docs/index.md`에서 tech debt reduction plan을 찾기
+- WebGL 실기 체크리스트: `docs/index.md`에서 WebGL smoke checklist를 찾기
+- 다음 세션 시작점: `CodexLobbyScene -> GameScene` summon + wave/core victory smoke 통과 상태에서 placement drag/drop automation contract와 multiplayer sync를 이어서 검증하거나, `docs/index.md`에서 current GameScene UI/UX plan을 찾아 전투 HUD/소환 UX 재설계를 시작
 
 ### 최근 변경 사항
+
+### 2026-04-20
+
+- done: Garage Set B MCP authoring pass 1차
+  - done: `CodexLobbyScene.unity` Garage shell을 MCP `component/set + scene/save`로 직접 조정해 header/slot strip/right rail/save dock 비율을 Set B 기준으로 재압축
+  - done: `GarageHeaderRow`, `RosterListPane`, `GarageMobileTabBar`, `ResultPane`, `PreviewCard`, `MobileSaveDock` layout element와 spacing을 scene-owned serialized layout 기준으로 재조정
+  - done: `GarageTitle`, `ResultHeader`, `PreviewHeader`, `MobileSaveButton/Label` 타이포를 MCP로 직접 보정해 compact command-bar 느낌과 summary/header readability를 개선
+  - verify: `Get-McpCodexLobbyContract` success, `Invoke-LobbyGaragePageSwitchSmoke.ps1` success (`390x844`, `errorCount = 0`, `warningCount = 2`)
+  - evidence: `artifacts/unity/lobby-page-smoke-garage.png`, `artifacts/unity/lobby-garage-page-switch-result.json`
+  - note: 이번 패스는 MCP scene authoring만 사용했고, layout/code builder 경로는 다시 쓰지 않았다
+
+- done: `GaragePageRoot` prefab 추출
+  - done: scene root `/Canvas/GaragePageRoot`를 MCP `/prefab/save`로 [`Assets/Prefabs/CodexLobby/GaragePageRoot.prefab`](../../Assets/Prefabs/CodexLobby/GaragePageRoot.prefab) 에 저장
+  - done: Unity MCP `prefab/save` 확장으로 `connectSceneObject`를 추가하고, `/Canvas/GaragePageRoot`를 같은 prefab asset에 `saved and connected` 상태로 전환
+  - done: 이후 Garage shell 타이포 미세 보정은 `prefab/set`으로 [`Assets/Prefabs/CodexLobby/GaragePageRoot.prefab`](../../Assets/Prefabs/CodexLobby/GaragePageRoot.prefab) 에 직접 적용
+  - verify: canonical page-switch smoke 재통과 (`390x844`, `errorCount = 0`)
+  - note: 이제 Garage authoring 대상은 snapshot이 아니라 connected prefab asset + scene instance 조합이다
+
+- doing: Garage Set B prefab-authoring pass
+  - done: `GaragePageRoot.prefab` 기준으로 `header subtitle/button`, `slot grid`, `UnitEditorPane` padding, `ResultPane/PreviewCard` padding을 `prefab/set`으로 직접 조정
+  - verify: connected scene instance 기준 canonical smoke 재통과 (`390x844`, `errorCount = 0`)
+  - evidence: `artifacts/unity/lobby-page-smoke-garage.png`
+  - next: focused editor 내부 위계와 preview surface 완성도를 prefab 기준으로 계속 올리기
+
+- done: Agent-first Unity UI workflow SSOT + policy check 추가
+  - done: `docs/ops/unity_ui_authoring_workflow.md` 추가 - Unity UI/UX 작업의 단일 정책 본문 SSOT를 문서 한 곳으로 고정
+  - done: `AGENTS.md`, `docs/index.md`, `.codex/skills/jg-unity-workflow/SKILL.md`, `.codex/skills/rule-operations/work_principles.md`를 새 SSOT로 수렴하도록 갱신
+  - done: `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1` 추가 - git 변경 파일 기준 route 판정, compile/reload, validator, artifact freshness, new prefab 금지 규칙 검사
+  - done: `tools/unity-mcp/README.md`를 정책 본문이 아니라 실행 reference 역할로 축소하고 새 policy check 실행 경로 연결
+  - note: `PresentationLayoutOwnershipValidator`는 계속 hard-stop gate로 유지하고, workflow policy check는 route/evidence/freshness 강제 역할로 분리
 
 ### 2026-04-19
 
@@ -75,9 +113,12 @@
   - done: `GarageUnitPreviewView` non-UI preview parenting을 `Features.Garage.Runtime.GaragePreviewAssembler`로 분리해 `Presentation` validator 범위에서 제거
   - done: `UnitSlotsContainer` slot replacement를 `SetSiblingIndex` 대신 visible-slot rebuild 방식으로 교체
   - verify: compile baseline 재확인 - `tools/check-compile-errors.ps1` 기준 `ERRORS: 0`
-  - verify: validator baseline `100 -> 39 -> 7 -> 2`로 감소
-  - note: 현재 남은 validator 위반은 `PlayerHealthHudView`의 screen-space follow용 `anchoredPosition` 2건뿐이며, 이는 prefab-level/world-space ownership 재설계가 필요한 마지막 migration 항목
-  - next: `PlayerHealthHudView.prefab`와 `GameSceneRoot.ConnectPlayer()`를 world-space 또는 scene-authored follow contract 기준으로 재설계해 validator 0건 마감
+  - done: `PlayerHealthHudView` screen follow 책임을 `Features.Player.Runtime.PlayerHealthHudFollower`로 분리해 `Presentation` validator 범위에서 제거
+  - verify: validator baseline `100 -> 39 -> 7 -> 2 -> 0`로 감소
+  - verify: `Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json` 기준 `violationCount = 0`
+  - done: `CodexLobbySceneContract` sentinel stale path 2건을 현재 mobile hierarchy 기준으로 정정
+  - verify: `Invoke-CodexLobbyUiWorkflowGate.ps1` 재통과 - `presentationLayoutOwnership.success = true`, `contract.success = true`, `pageSwitchSmoke.errorCount = 0`
+  - next: validator 0 baseline을 유지한 상태로, 이후 새 HUD/UI 작업은 scene/prefab ownership 기준으로만 진행
 
 - done: Stitch tactical UI concept pass + handoff docs 1차 정리
   - done: 단일 Stitch 마스터 프로젝트 `11729197788183873077`에서 `Lobby / Garage / Overlay / Battle HUD / Result` 기준 시안을 세트별로 생성하고 `.stitch/designs/`와 `.stitch/prompt-briefs/`에 로컬 산출물 저장
@@ -105,9 +146,9 @@
   - done: `GarageSlotItemView` 상태 라벨 가시성 강화, `CodexLobbySceneContract` sentinel에 `MobileBodyScrollContent` 추가, `ui_foundations.md` 모바일 Garage 계약 갱신
   - verify: `scene/verify-codex-lobby-contract` success, canonical page-switch smoke success (`warningCount = 3`, `errorCount = 0`), settings overlay smoke success (`errorCount = 0`)
   - evidence: `artifacts/unity/lobby-garage-page-switch-result.json`, `artifacts/unity/garage-settings-smoke-result.json`
-  - note: 자동 smoke 캡처는 현재 desktop GameView 기준이라 모바일 390x844 시각 검증은 후속 전용 캡처가 필요
+- note: 이 시점의 자동 smoke 캡처는 desktop GameView 기준이었고, 현재 canonical frame contract는 2026-04-20 pass에서 `390x844` 고정 산출물로 대체됐다
 
-- note: mobile Garage redesign implementation brief를 외부 메모로 정리했고 현재 저장 위치는 `C:\Users\SOL\Downloads\PLAN.md`
+- note: Stitch 전면 개편 실행 기준은 [`stitch_ui_ux_overhaul_plan.md`](./stitch_ui_ux_overhaul_plan.md)로 repo 안에 승격했고, 외부 메모는 참고본으로만 취급한다
 - note: session compact handoff - 다음 구현은 `mobile Garage only` 범위로 진행
   - current: Lobby 상단 `TopGlow`와 `LobbyHeaderCard`는 제거했고, `CodexLobbyScene` contract와 page-switch smoke는 최근 기준 통과 상태
   - decision: 모바일 Garage는 `slot first -> single scroll body -> fixed save dock` 구조로 재설계하고, 기존 mobile `Edit / Preview / Summary` 탭 기본 흐름은 폐기
@@ -142,6 +183,17 @@
   - verify: `Invoke-LobbyGaragePageSwitchSmoke.ps1` 재실행 성공 (`2026-04-20 00:43 KST`) - `warningCount = 2`, `errorCount = 0`
   - evidence: `artifacts/unity/garage-setb-pass10.png`, `artifacts/unity/garage-setb-pass11.png`, `artifacts/unity/garage-setb-pass12.png`
   - note: 현재도 `TACTICAL ASSEMBLY` 헤더 비율과 하단 large surface가 Stitch baseline과 완전히 같지는 않아서, 다음 패스는 그 runtime owner를 더 정확히 찾아 scene-level로 줄이는 작업이 필요함
+  - done: Set B squeeze pass 3차로 `ResultPane` hidden baseline을 제거해 `summary + preview + save dock` 흐름을 다시 복구하고, header/slot grid/save dock layout element를 MCP scene repair로 압축
+  - done: `GaragePagePresenter`, `GarageUnitEditorView`, `GarageSlotItemView`, `GaragePartSelectorView`, `GarageUnitPreviewView` copy/typography를 더 짧고 조밀한 tactical readout 쪽으로 보정
+  - verify: `Invoke-CodexLobbyUiWorkflowGate.ps1` 재실행 성공 (`2026-04-20 10:02 KST`) - `presentationLayoutOwnership.success = true`, `contract.success = true`, `pageSwitchSmoke.errorCount = 0`
+  - evidence: `artifacts/unity/lobby-page-smoke-garage.png`
+  - done: Stitch frame alignment pass로 `CanvasScaler` baseline을 `390x844`로 교체하고, `LobbyPageRoot` / `GaragePageRoot`를 고정 픽셀 마진 shell로 재정렬
+  - done: `MobileBodyScrollContent` 폭 고정을 제거하고 `MobileSaveDock`을 실제 하단 고정 dock처럼 재배치해 frame contract와 first-screen 위계를 재정비
+  - done: `Invoke-LobbyGaragePageSwitchSmoke.ps1`에 `390x844` centered crop/resize 정규화 단계를 추가해 canonical artifact가 현재 GameView 크기에 의존하지 않도록 변경
+  - done: Garage 1차 압축 재패스로 slot grid, tab bar, focused editor, summary/preview stack 높이를 줄여 first-screen에서 `summary -> preview header -> save dock`이 더 빨리 읽히도록 보정
+  - verify: `Invoke-CodexLobbyUiWorkflowGate.ps1` 재실행 성공 (`2026-04-20 10:45 KST`) - `presentationLayoutOwnership.success = true`, `contract.success = true`, `pageSwitchSmoke.errorCount = 0`
+  - evidence: `artifacts/unity/lobby-page-smoke-lobby-initial.png`, `artifacts/unity/lobby-page-smoke-garage.png`, `artifacts/unity/lobby-page-smoke-lobby-returned.png`, `artifacts/unity/lobby-garage-page-switch-result.json`
+  - note: 현재 남은 범위는 선택 슬롯 카드 텍스트 밀도와 preview 실루엣 surface 완성도 같은 Set B 미세 polish이며, frame baseline 자체는 이제 `390x844 runtime + 390x844 artifact`로 고정됐다
 
 - done: CodexLobby mobile-first layout pass 1차
   - done: `CodexLobbyScene` Garage를 mobile host 구조(`GarageMobileStackRoot / MobileBodyHost / MobileSlotGrid / MobileSaveButton`)로 재정리하고, `GaragePageController`가 pre-authored desktop/mobile hosts 사이에서 pane parent 전환과 `Edit / Preview / Summary` 탭 전환만 담당하도록 보강

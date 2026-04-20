@@ -1,7 +1,12 @@
 # GameScene UI/UX 개선 계획
 
 > 마지막 업데이트: 2026-04-19
-> 상태: 초안
+> 상태: draft
+> doc_id: plans.game-scene-ui-ux-improvement
+> role: plan
+> owner_scope: GameScene 전투 UI/UX 재설계 방향과 실행 순서
+> upstream: plans.progress, design.game-design, ops.unity-ui-authoring-workflow
+> artifacts: `Assets/Scenes/GameScene.unity`, `Assets/Prefabs/`
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
 이 문서는 `GameScene` 전투 화면의 UI/UX 재설계 방향과 작업 순서를 유지하는 draft 계획 문서다.

@@ -1,7 +1,14 @@
 # 계정 시스템 복구 계획
 
+> 마지막 업데이트: 2026-04-18
+> 상태: active
+> doc_id: plans.account-system
+> role: plan
+> owner_scope: 계정과 차고 복구 작업의 현재 범위와 우선순위
+> upstream: plans.progress, design.game-design
+> artifacts: `Assets/Scripts/Features/Account/`, `Assets/Scripts/Features/Garage/`
+>
 > 생성일: 2026-04-11
-> 최종 업데이트: 2026-04-18
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
 이 문서는 Account Feature의 "기능 추가 계획"이 아니라, 이미 들어간 계정/차고 연동 코드와 실제 동작 사이의 간극을 메우는 **복구 SSOT**다.

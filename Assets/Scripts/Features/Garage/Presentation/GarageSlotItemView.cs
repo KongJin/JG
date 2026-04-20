@@ -20,9 +20,9 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private Image _borderImage;
 
         [Header("Layout")]
-        [SerializeField] private float _slotNumberFontSize = 8f;
-        [SerializeField] private float _titleFontSize = 12f;
-        [SerializeField] private float _summaryFontSize = 8f;
+        [SerializeField] private float _slotNumberFontSize = 6.5f;
+        [SerializeField] private float _titleFontSize = 9.5f;
+        [SerializeField] private float _summaryFontSize = 6.5f;
 
         [Header("Animation")]
         [Required, SerializeField] private CanvasGroup _canvasGroup;
@@ -54,12 +54,21 @@ namespace Features.Garage.Presentation
 
             _currentViewModel = viewModel;
 
-            _slotNumberText.text = $"{viewModel.SlotLabel}  {viewModel.StatusBadgeText}";
+            _slotNumberText.text = viewModel.SlotLabel;
             _slotNumberText.color = GetStatusTextColor(viewModel);
-            _titleText.text = viewModel.Title;
-            _titleText.color = viewModel.IsSelected ? ThemeColors.TextPrimary : new Color(0.95f, 0.96f, 0.98f, 0.92f);
-            _summaryText.text = viewModel.Summary;
+            _titleText.text = viewModel.IsEmpty ? "+" : viewModel.Title;
+            _titleText.color = viewModel.IsEmpty && !viewModel.IsSelected
+                ? ThemeColors.TextSecondary
+                : viewModel.IsSelected
+                    ? ThemeColors.TextPrimary
+                    : new Color(0.95f, 0.96f, 0.98f, 0.92f);
+
+            _summaryText.text = viewModel.IsEmpty ? viewModel.StatusBadgeText : viewModel.Summary;
             _summaryText.color = viewModel.IsSelected ? ThemeColors.TextPrimary : ThemeColors.TextSecondary;
+
+            _titleText.fontSize = viewModel.IsEmpty ? _titleFontSize + 4f : _titleFontSize;
+            _titleText.alignment = viewModel.IsEmpty ? TextAlignmentOptions.Center : TextAlignmentOptions.TopLeft;
+            _summaryText.alignment = viewModel.IsEmpty ? TextAlignmentOptions.BottomRight : TextAlignmentOptions.BottomLeft;
 
             // 배경색 — 페이드 애니메이션 적용
             Color targetColor = GetSlotColor(viewModel);

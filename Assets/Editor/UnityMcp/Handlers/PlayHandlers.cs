@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace ProjectSD.EditorTools.UnityMcp
@@ -52,6 +53,11 @@ namespace ProjectSD.EditorTools.UnityMcp
                 "/screenshot/capture",
                 "Capture game screenshot",
                 async (req, res) => await HandleScreenshotCaptureAsync(req, res)
+            );
+            "POST".Register(
+                "/sceneview/capture",
+                "Capture current SceneView screenshot, including Prefab Mode",
+                async (req, res) => await HandleSceneViewCaptureAsync(req, res)
             );
         }
 
@@ -474,6 +480,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                         relativePath = capturePlan.relativePath,
                         absolutePath = capturePlan.absolutePath,
                         fileSizeBytes = fileSizeBytes,
+                        sourceView = "GameView",
                     }
                 );
             }
@@ -483,6 +490,156 @@ namespace ProjectSD.EditorTools.UnityMcp
                     response,
                     504,
                     new ErrorResponse { error = "Screenshot timeout", detail = ex.Message }
+                );
+            }
+        }
+
+        public static async Task HandleSceneViewCaptureAsync(
+            HttpListenerRequest request,
+            HttpListenerResponse response
+        )
+        {
+            ScreenshotCaptureRequest req = null;
+            if (request.HasEntityBody)
+            {
+                var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    req = JsonUtility.FromJson<ScreenshotCaptureRequest>(body);
+                }
+            }
+
+            ScreenshotCapturePlan capturePlan;
+            try
+            {
+                capturePlan = BuildScreenshotCapturePlan(req);
+            }
+            catch (ArgumentException ex)
+            {
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse { error = "Invalid scene view capture request", detail = ex.Message }
+                );
+                return;
+            }
+            catch (InvalidOperationException ex)
+            {
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse { error = "Scene view capture unavailable", detail = ex.Message }
+                );
+                return;
+            }
+
+            try
+            {
+                if (File.Exists(capturePlan.absolutePath))
+                {
+                    if (!(req?.overwrite ?? false))
+                    {
+                        throw new InvalidOperationException(
+                            "SceneView capture target already exists. Set overwrite=true or choose a different outputPath: "
+                                + capturePlan.relativePath
+                        );
+                    }
+
+                    File.Delete(capturePlan.absolutePath);
+                }
+
+                var captureResult = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+                {
+                    var sceneView = ResolveSceneViewWindow();
+                    if (sceneView == null)
+                    {
+                        throw new InvalidOperationException("No SceneView window is available to capture.");
+                    }
+
+                    sceneView.Show();
+                    sceneView.Focus();
+                    sceneView.Repaint();
+
+                    var superSize = capturePlan.superSize > 0 ? capturePlan.superSize : 1;
+                    var width = Mathf.Max(1, Mathf.RoundToInt(sceneView.position.width * superSize));
+                    var height = Mathf.Max(1, Mathf.RoundToInt(sceneView.position.height * superSize));
+
+                    var renderTexture = RenderTexture.GetTemporary(width, height, 24, RenderTextureFormat.ARGB32);
+                    var previousActive = RenderTexture.active;
+                    var sceneCamera = sceneView.camera;
+                    var previousTarget = sceneCamera != null ? sceneCamera.targetTexture : null;
+                    Texture2D texture = null;
+
+                    try
+                    {
+                        if (sceneCamera == null)
+                        {
+                            throw new InvalidOperationException("SceneView camera is unavailable.");
+                        }
+
+                        texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+                        sceneCamera.targetTexture = renderTexture;
+                        RenderTexture.active = renderTexture;
+                        GL.Clear(true, true, sceneCamera.backgroundColor);
+                        sceneCamera.Render();
+                        texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+                        texture.Apply(false, false);
+
+                        var pngBytes = texture.EncodeToPNG();
+                        File.WriteAllBytes(capturePlan.absolutePath, pngBytes);
+
+                        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+                        return new ScreenshotCaptureResponse
+                        {
+                            success = true,
+                            message = "SceneView screenshot captured.",
+                            relativePath = capturePlan.relativePath,
+                            absolutePath = capturePlan.absolutePath,
+                            fileSizeBytes = pngBytes.LongLength,
+                            sourceView = "SceneView",
+                            width = width,
+                            height = height,
+                            prefabStageAssetPath = prefabStage != null ? prefabStage.assetPath : null,
+                        };
+                    }
+                    finally
+                    {
+                        if (sceneCamera != null)
+                        {
+                            sceneCamera.targetTexture = previousTarget;
+                        }
+
+                        RenderTexture.active = previousActive;
+                        RenderTexture.ReleaseTemporary(renderTexture);
+
+                        if (texture != null)
+                        {
+                            UnityEngine.Object.DestroyImmediate(texture);
+                        }
+                    }
+                });
+
+                await UnityMcpBridge.WriteJsonAsync(response, 200, captureResult);
+            }
+            catch (InvalidOperationException ex)
+            {
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    409,
+                    new ErrorResponse { error = "Scene view capture unavailable", detail = ex.Message }
+                );
+            }
+            catch (Exception ex)
+            {
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    500,
+                    new ErrorResponse
+                    {
+                        error = "Scene view capture failed",
+                        detail = ex.Message,
+                        stackTrace = ex.ToString(),
+                    }
                 );
             }
         }
@@ -565,6 +722,21 @@ namespace ProjectSD.EditorTools.UnityMcp
                 + "/"
                 + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss-fff")
                 + ".png";
+        }
+
+        private static SceneView ResolveSceneViewWindow()
+        {
+            if (SceneView.lastActiveSceneView != null)
+            {
+                return SceneView.lastActiveSceneView;
+            }
+
+            if (SceneView.sceneViews != null && SceneView.sceneViews.Count > 0)
+            {
+                return SceneView.sceneViews[0] as SceneView;
+            }
+
+            return EditorWindow.GetWindow<SceneView>();
         }
 
         private sealed class PlayModeWaitResult

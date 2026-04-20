@@ -1,6 +1,12 @@
 # MVP 재미 검증 — 구현 계획 (압축본)
 
-> 마지막 검토: 2026-04-11
+> 마지막 업데이트: 2026-04-11
+> 상태: reference
+> doc_id: plans.mvp-fun-implementation
+> role: reference
+> owner_scope: MVP 재미 검증용 압축 실행 체크리스트
+> upstream: design.game-design, plans.progress
+> artifacts: none
 
 이 문서는 MVP 재미 검증 작업의 **실행 체크리스트**만 남긴 압축본이다. 수치, 통과 기준, MVP 문장 자체는 SSOT 문서에서만 바꾼다.
 
@@ -15,8 +21,8 @@
 | 수치·통과 기준·MVP 문장·웨이브 시간표 | [game_design.md](../design/game_design.md) |
 | 재미 워크숍·페르소나·질문 풀 | [discussion_game_fun_personas.md](../discussions/discussion_game_fun_personas.md) |
 | 플레이 세션 노트 양식 | [playtest_mvp_template.md](../playtest/playtest_mvp_template.md) |
-| Room/Player CustomProperties 키 소유권 | 실제 키를 쓰는 feature code (`Application/**`, `Infrastructure/**`) + [architecture.md](../../agent/architecture.md) + [work_principles.md](../../agent/work_principles.md) |
-| 프로젝트 규칙 | [AGENTS.md](../../AGENTS.md), [anti_patterns.md](../../agent/anti_patterns.md), [validation_gates.md](../../agent/validation_gates.md) |
+| Room/Player CustomProperties 키 소유권 | 실제 키를 쓰는 feature code (`Application/**`, `Infrastructure/**`) + [AGENTS.md](../../AGENTS.md) + [docs/index.md](../index.md) |
+| 프로젝트 규칙 | [AGENTS.md](../../AGENTS.md), [docs/index.md](../index.md) |
 
 ---
 
