@@ -37,10 +37,9 @@ def main():
     
     print(f"Current scene: {current_scene}")
     
-    # Define safe scenes or target scene
-    # If we are in CodexLobbyScene, we must switch
-    if 'CodexLobbyScene' in current_scene:
-        print("Target scene is open. Switching to safe scene...")
+    # If we are in a historical lobby authoring scene, switch away before touching files on disk.
+    if current_scene.endswith('/LobbyScene.unity') or current_scene.endswith('/CodexLobbyScene.unity'):
+        print("Historical lobby authoring scene is open. Switching to safe scene...")
         
         safe_scene = "Assets/FromStore/Plugins/Demigiant/DOTweenPro Examples/DOTweenAnimation_Basics.unity"
         
@@ -56,7 +55,7 @@ def main():
             print(f"Failed to switch: {result}", file=sys.stderr)
             sys.exit(1)
     else:
-        print("Safe scene already active or unknown scene.")
+        print("Safe scene already active or no historical lobby scene is open.")
         print("ALREADY_SAFE")
 
 if __name__ == "__main__":

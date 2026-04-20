@@ -6,16 +6,16 @@
 > role: ssot
 > owner_scope: Lobby와 Garage UI 레이아웃, 토큰, Unity 변환 규칙
 > upstream: design.game-design, ops.unity-ui-authoring-workflow, design.ui-reference-workflow
-> artifacts: `Assets/Scenes/CodexLobbyScene.unity`, `Assets/Prefabs/CodexLobby/`
+> artifacts: `.stitch/handoff/`, `Assets/Prefabs/`, `Assets/Scripts/Features/Garage/Presentation/`, `Assets/Scripts/Features/Lobby/Presentation/`
 
 이 문서는 **Lobby/Garage UI 레이아웃과 Unity 변환 규칙의 단일 기준**이다.
-현재 범위는 `CodexLobbyScene`의 `LobbyPageRoot`와 `GaragePageRoot`까지 포함한다.
+현재 범위는 폐기된 legacy scene이 아니라, 새로 다시 세울 `LobbyPageRoot`와 `GaragePageRoot` baseline contract를 포함한다.
 `Game HUD`는 현재 범위 밖이다.
 
 ## Source Of Truth
 
 - 문서 SSOT: 이 문서
-- 런타임 레이아웃 SSOT: `CodexLobbyScene.unity`와 관련 scene contract
+- reset 진행 중 layout SSOT: accepted Stitch handoff + presentation script contract + 새로 세울 baseline prefab contract
 - 색상 구현 SSOT: [`ThemeColors.cs`](../../Assets/Scripts/Features/Garage/Presentation/Theme/ThemeColors.cs)
 - 외부 레퍼런스 참고 원칙 owner: `design.ui-reference-workflow` (`docs/index.md`에서 현재 경로 확인)
 
@@ -23,9 +23,8 @@
 
 공식 레이아웃 검증 해상도는 `390x844` 하나로 고정한다.
 
-`CodexLobbyScene`의 `CanvasScaler` baseline도 같은 `390x844`를 사용한다.
-현재 canonical `page-switch smoke` 산출물은 editor의 현재 GameView 크기를 그대로 보관하지 않고,
-항상 `390x844` 고정 프레임 PNG로 정규화한다.
+새 baseline prefab과 이후 새 scene의 `CanvasScaler`도 같은 `390x844`를 기준으로 맞춘다.
+다만 reset 중에는 과거 canonical `page-switch smoke` 산출물을 acceptance proof로 재사용하지 않는다.
 
 이 해상도에서 아래 조건을 만족해야 한다.
 
@@ -40,9 +39,9 @@
 
 ### Scene Ownership
 
-- `CodexLobbyScene.unity` is the final layout SSOT for Lobby/Garage shell work.
+- reset 중에는 legacy scene이 아니라 baseline prefab과 serialized reference contract가 Layout SSOT 역할을 먼저 맡는다.
 - `LobbyView`와 `GaragePageController`는 layout author가 아니다.
-- scene-owned geometry는 MCP scene/prefab edits로 수정하고, runtime code는 상태 렌더와 page focus만 담당한다.
+- geometry는 MCP prefab/scene authoring으로 수정하고, runtime code는 상태 렌더와 page focus만 담당한다.
 - decorative hierarchy naming은 contract 대상이 아니지만, section root와 serialized refs는 contract에 남긴다.
 - `GaragePageController`는 smoke host가 아니다.
 - WebGL/dev smoke 전용 엔트리포인트가 필요할 때도 production controller에 계속 누적하지 말고, 별도 bridge/driver로 분리하는 것을 원칙으로 한다.

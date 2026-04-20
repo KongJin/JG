@@ -4,8 +4,8 @@
 
 ## Accepted Screens
 
-- Victory result: `Mission Victory Summary` (`895e6c337c2d47da92a8e28d01ea2376`)
-- Defeat result: `Mission Defeat Summary` (`83c5d82066184ef4acb7676e3e823db8`)
+- Victory result: `Mission Victory Summary` (`895e6c337c2d47da92a8e28d01ea2376`) -> `set-e-mission-victory-overlay.{html,png}`
+- Defeat result: `Mission Defeat Summary` (`83c5d82066184ef4acb7676e3e823db8`) -> `set-e-mission-defeat-overlay.{html,png}`
 
 ## Intent
 
@@ -18,6 +18,32 @@ They should feel connected to the battle HUD language, not like a separate rewar
 2. Short mission summary
 3. Key result stats
 4. Return / next action
+
+## Screen Block Map
+
+- `Outcome title`
+  - Purpose: declare victory or defeat immediately
+  - Must survive in Unity as the first unmistakable read
+- `Short mission summary`
+  - Purpose: explain the battle result in one tactical sentence
+  - Must survive in Unity as a short bridge between emotion and action
+- `Key result stats`
+  - Purpose: support the outcome with a few scannable numbers
+  - Must survive in Unity as a compact proof block, not a report sheet
+- `Return / next action`
+  - Purpose: close the loop and send the player back to the next safe context
+  - Must survive in Unity as the strongest and calmest action region
+
+## CTA Priority Matrix
+
+- Primary CTA: `Return To Lobby`
+- Secondary CTA: optional review action only if it does not challenge the return path
+- No equal-priority CTA pair in the baseline result card
+
+Priority rules:
+
+- The result screen should answer "what happened?" before "what can I press?"
+- Once the player reads the result, the return path should become the only obvious next move.
 
 ## CTA Priority
 
@@ -45,6 +71,7 @@ The result CTA should be singular and calming.
 - Victory can use stronger uplift, but still within the same tactical palette discipline.
 - Defeat should emphasize recovery and clarity, not punishment or red-saturated overload.
 - Stats should stay short and scannable rather than turning into a report wall.
+- If future actions are added, demote them into quiet secondary affordances rather than widening the main card into a menu.
 
 ## Validation Focus
 
@@ -56,3 +83,4 @@ The result CTA should be singular and calming.
 ## Assumptions
 
 - No rewards chest, loot carousel, or progression summary is included in the baseline result flow for this pass.
+- The result overlay succeeds when players feel closure, not when it offers more things to compare.

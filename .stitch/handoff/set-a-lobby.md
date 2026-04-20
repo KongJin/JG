@@ -4,9 +4,14 @@
 
 ## Accepted Screens
 
-- Main baseline: `Tactical Hangar Lobby - Populated` (`be28b236edb64094878f680f2e4f5f42`)
-- Supporting empty state: `Tactical Hangar Lobby` (`3b2f3bca917b42dea3fa7485f6e207ff`)
-- Supporting overlay: `Create Operation Modal Overlay` (`07ca2d1148804194947b71557745d41b`)
+- Main baseline: `Tactical Hangar Lobby - Populated` (`be28b236edb64094878f680f2e4f5f42`) -> `set-a-lobby-populated.{html,png}`
+- Supporting empty state: `Tactical Hangar Lobby` (`3b2f3bca917b42dea3fa7485f6e207ff`) -> `set-a-lobby-main.{html,png}`
+- Supporting overlay: `Create Operation Modal Overlay` (`07ca2d1148804194947b71557745d41b`) -> `set-a-create-room-modal.{html,png}`
+- Non-baseline project screen: `Matchmaking Lobby` (`bbb4345a636148bc98ea94c76b5f8c29`) remains a project-side legacy candidate only and should not be used as the current Lobby baseline or Unity translation source
+
+Baseline labeling note:
+`set-a-lobby-main` is a local export filename for the supporting empty-state screen, not the implementation baseline.
+For implementation decisions, follow the role labels above first.
 
 ## Intent
 
@@ -19,6 +24,34 @@ The player should first understand what rooms are open, then whether to create a
 2. `RoomsSectionCard`
 3. `CreateRoomCard`
 4. `GarageSummaryCard`
+
+## Screen Block Map
+
+- `LobbyHeaderCard`
+  - Purpose: establish scene identity and current matchmaking posture
+  - Must survive in Unity as a short orientation block, not as a hero banner
+- `RoomsSectionCard`
+  - Purpose: main work surface for scanning available rooms and choosing where to enter
+  - Must survive in Unity as the visually dominant card and the first clearly readable block
+- `CreateRoomCard`
+  - Purpose: fallback action when no good room exists, plus direct create flow entry
+  - Must survive in Unity as a compact action card below the room list
+- `GarageSummaryCard`
+  - Purpose: roster readiness summary and route into Garage
+  - Must survive in Unity as a quiet summary footer, never as a peer workspace
+
+## CTA Priority Matrix
+
+- Primary default CTA: `Join` on the strongest highlighted room row
+- Primary fallback CTA: `Create Room` when there are no joinable room rows
+- Secondary CTA: `Join` on non-highlighted room rows
+- Tertiary CTA: `Open Garage`
+
+Priority rules:
+
+- `RoomsSectionCard` owns the first actionable read.
+- `Create Room` is allowed to feel available, but never more urgent than joining an existing room.
+- `Open Garage` is a route action, not the main conversion target of the Lobby screen.
 
 ## CTA Priority
 
@@ -55,6 +88,7 @@ The player should first understand what rooms are open, then whether to create a
 - Room rows should read as compact tactical operation cards, not as a table.
 - The highlighted join candidate can be expressed through one stronger accent row, but the section itself still owns the strongest visual weight.
 - Garage summary remains summary-only: status pill, short save state, and `Open Garage`.
+- If space becomes tight on mobile, preserve `RoomsSectionCard` and reduce decorative header weight before shrinking room-row readability.
 
 ## Validation Focus
 
@@ -68,3 +102,4 @@ The player should first understand what rooms are open, then whether to create a
 
 - The populated Lobby variant is the baseline for day-to-day implementation because it carries the clearest matchmaking hierarchy.
 - The empty-state Lobby remains a required fallback state, not a discarded concept.
+- The Lobby succeeds when the player can answer "which room should I join?" before noticing Garage entry.

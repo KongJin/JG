@@ -1,6 +1,6 @@
 param(
     [string]$UnityBridgeUrl,
-    [string]$ScenePath = "Assets/Scenes/CodexLobbyScene.unity",
+    [string]$ScenePath = "Assets/Scenes/LobbyScene.unity",
     [string]$RoomNamePrefix = "CodexSummonSmoke",
     [string]$OutputPath = "artifacts/unity/game-scene-summon-smoke.png",
     [string]$ResultPath = "artifacts/unity/game-scene-summon-smoke-result.json",
@@ -12,6 +12,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot\McpHelpers.ps1"
+
+Assert-McpSceneAssetExistsForWorkflow -ScenePath $ScenePath -WorkflowName "Invoke-GameSceneSummonSmoke.ps1"
 
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
 $startedPlayHere = $false
@@ -242,7 +244,7 @@ function Ensure-ReadyBaseline {
 }
 
 try {
-    $session = Invoke-McpPrepareCodexLobbyPlaySession `
+    $session = Invoke-McpPrepareLobbyPlaySession `
         -Root $root `
         -ScenePath $ScenePath `
         -LoginLoadingPanelPath "/Canvas/LoginLoadingOverlay/LoadingPanel" `

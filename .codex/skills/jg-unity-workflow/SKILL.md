@@ -23,7 +23,7 @@ If a document name moved, resolve the current path through `docs/index.md` first
 2. Read `docs/index.md` when you need the current doc routes.
 3. If the task touches Unity UI or UX authoring, read owner doc `ops.unity-ui-authoring-workflow` before any implementation.
 4. If the task depends on Stitch handoff or `.stitch` artifacts, read owner doc `ops.stitch-data-workflow` before translating them into Unity work.
-5. If the task touches Unity MCP, Play Mode automation, scene repair, or runtime smoke, read `tools/unity-mcp/README.md` as execution reference.
+5. If the task touches Unity MCP, Play Mode automation, prefab-first reset, or runtime smoke, read `tools/unity-mcp/README.md` as execution reference.
 6. If the task depends on current project priorities or recent recovery work, skim the relevant plan in `docs/plans/`.
 7. If a task clearly needs extra architecture or initialization docs and they exist, read them. Do not stop if they are absent.
 
@@ -31,7 +31,7 @@ If a document name moved, resolve the current path through `docs/index.md` first
 
 - Prefer Unity MCP and in-editor changes over direct `.unity` or `.prefab` YAML edits.
 - Treat serialized scene and prefab state as runtime truth for scene-owned wiring.
-- Do not reintroduce code-driven builder or rebuild loops when the repo already expects MCP scene or prefab repair.
+- Do not reintroduce code-driven builder or rebuild loops when the repo expects MCP prefab or scene authoring.
 - Never overwrite an open scene on disk. If Unity already has the scene loaded, keep the work inside MCP or switch scenes first.
 - Stop play mode before script edits that need recompilation, then wait for compile to settle before testing again.
 - Run `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1` before closeout when the task changes Unity UI authoring surfaces.
@@ -39,6 +39,7 @@ If a document name moved, resolve the current path through `docs/index.md` first
 ## Task Routing
 
 - `scene/prefab authoring`: use MCP first, inspect current hierarchy and serialized refs, then mutate the smallest possible surface.
+- `prefab-first reset`: when a legacy scene or prefab route was intentionally discarded, rebuild baseline prefabs from handoff and presentation contracts before assembling a new scene.
 - `code-only`: edit scripts normally, then refresh compile state before Play Mode validation.
 - `mixed`: inspect the scene contract first, then keep scene edits and script edits easy to localize.
 
@@ -67,8 +68,8 @@ If a document name moved, resolve the current path through `docs/index.md` first
 ## JG Workflow Rules
 
 - Use the existing PowerShell helpers under `tools/unity-mcp` when a defined workflow already exists.
-- For Lobby and Garage work, follow the repo's authored flow: contract or workflow gate first, then canonical smoke, then feature smoke only when needed.
-- For GameScene UI and HUD work, default to MCP scene or prefab repair, not builder regeneration.
+- For Lobby and Garage work, if the prior authoring scene was discarded, use `prefab-first reset` instead of reviving the historical workflow gate/page-switch route.
+- For GameScene UI and HUD work, default to MCP prefab or scene authoring, not builder regeneration.
 - If a smoke script depends on stale UI paths or fragile runtime clone names, repair the automation contract instead of forcing the scene back to match the old path.
 
 ## Fast Search

@@ -88,7 +88,7 @@ const tools = [
       properties: {
         scenePath: {
           type: "string",
-          description: "Asset path to the scene, for example 'Assets/Scenes/CodexLobbyScene.unity'."
+          description: "Asset path to the scene, for example 'Assets/Scenes/LobbyScene.unity'."
         },
         saveCurrentSceneIfDirty: {
           type: "boolean",

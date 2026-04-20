@@ -22,7 +22,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             "POST".Register("/build/webgl", "Build WebGL player", async (req, res) => await HandleBuildWebGLAsync(req, res));
             "POST".Register("/menu/execute", "Execute an Editor menu item", async (req, res) => await HandleMenuExecuteAsync(req, res));
             "GET".Register("/validation/verify-presentation-layout-ownership", "Verify Features.*.Presentation does not author runtime geometry or visual presentation state", async (req, res) => await HandlePresentationLayoutOwnershipVerifyAsync(res));
-            "GET".Register("/scene/verify-codex-lobby-contract", "Verify CodexLobbyScene contract sentinel nodes and serialized refs", async (req, res) => await HandleCodexLobbyContractVerifyAsync(res));
+            "GET".Register("/scene/verify-lobby-contract", "Verify LobbyScene contract sentinel nodes and serialized refs", async (req, res) => await HandleLobbyContractVerifyAsync(res));
             "GET".Register("/config/get", "Get current MCP configuration", async (req, res) => await HandleConfigGetAsync(res));
             "POST".Register("/config/set", "Update MCP configuration", async (req, res) => await HandleConfigSetAsync(req, res));
         }
@@ -206,12 +206,12 @@ namespace ProjectSD.EditorTools.UnityMcp
             await UnityMcpBridge.WriteJsonAsync(response, result.success ? 200 : 500, result);
         }
 
-        public static async Task HandleCodexLobbyContractVerifyAsync(HttpListenerResponse response)
+        public static async Task HandleLobbyContractVerifyAsync(HttpListenerResponse response)
         {
             var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
-                var contract = CodexLobbySceneContract.VerifyActiveScene();
-                return new CodexLobbyContractResponse
+                var contract = LobbySceneContract.VerifyActiveScene();
+                return new LobbyContractResponse
                 {
                     success = contract.ok,
                     message = contract.summary,

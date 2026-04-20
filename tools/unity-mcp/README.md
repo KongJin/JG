@@ -9,16 +9,18 @@
 > artifacts: `tools/unity-mcp/`, `Assets/Editor/UnityMcp/`, `artifacts/unity/`
 
 Unity MCP in this repo is a `diagnostic + manual automation` bridge.
-For Lobby/Garage UI work, the runtime SSOT is `Assets/Scenes/CodexLobbyScene.unity`.
-Lobby/Garage layout recovery is done by direct MCP scene/prefab repair against that scene, not by code-driven scene regeneration.
+The prior Lobby/Garage `LobbyScene.unity` workflow is now a historical route.
+While the repo is rebuilding UI from scratch, default to `prefab-first reset`:
+accepted Stitch handoff -> presentation contract review -> baseline prefab wiring -> new scene assembly -> fresh contract/smoke.
 Unity UI/UX authoring policy 본문 owner는 `ops.unity-ui-authoring-workflow`이고, current path는 `docs/index.md`에서 해석한다. 이 문서는 실행 reference만 담당한다.
 
 - Bridge core: `Assets/Editor/UnityMcp/`
 - MCP stdio wrapper: `tools/unity-mcp/server.js`
 - Helper module: `tools/unity-mcp/McpHelpers.ps1`
+- Prefab-pack helper module: `tools/unity-mcp/McpPrefabPackHelpers.ps1`
 - Workflow policy check: `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
-- Workflow gate: `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1`
-- Canonical page-switch smoke: `tools/unity-mcp/Invoke-LobbyGaragePageSwitchSmoke.ps1`
+- Workflow gate: `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1` - legacy scene route only
+- Canonical page-switch smoke: `tools/unity-mcp/Invoke-LobbyGaragePageSwitchSmoke.ps1` - legacy scene route only
 - Feature smoke: `tools/unity-mcp/Invoke-GarageSettingsOverlaySmoke.ps1`
 - Feature smoke: `tools/unity-mcp/Invoke-GameSceneSummonSmoke.ps1`
 - Feature smoke: `tools/unity-mcp/Invoke-GameScenePlacementWaveSmoke.ps1`
@@ -47,19 +49,19 @@ These are the routes the current workflow depends on.
 - `POST /screenshot/capture`
 - `POST /sceneview/capture`
 - `GET /validation/verify-presentation-layout-ownership`
-- `GET /scene/verify-codex-lobby-contract`
+- `GET /scene/verify-lobby-contract`
 
 `/menu/execute` still exists, but it is manual-only and non-authoritative for Lobby/Garage recovery.
 
 ## MCP Preflight
 
-Before using Unity MCP for scene repair, Play Mode automation, screenshots, or smoke:
+Before using Unity MCP for prefab authoring, scene assembly, Play Mode automation, screenshots, or smoke:
 
 1. Run `powershell -ExecutionPolicy Bypass -File .\tools\check-compile-errors.ps1`
 2. If there are compile errors, fix them before entering any Unity MCP workflow
 3. After the fix, wait for compile and script reload to settle with `Invoke-McpCompileRequestAndWait` or `Invoke-EditorProjectSync.ps1`
 4. Confirm `/health` reports `isCompiling = false`
-5. Only then continue with `workflow gate -> page-switch smoke -> feature smoke`
+5. For reset work, continue with `prefab wiring review -> new scene assembly -> fresh contract/smoke`
 
 If compile errors remain, `play/start`, the workflow gate, and smoke scripts can fail with misleading timeout symptoms. Treat that as a compile-clean failure first, not as an MCP failure.
 
@@ -67,20 +69,18 @@ If compile errors remain, `play/start`, the workflow gate, and smoke scripts can
 
 This order assumes compile-clean state and completed script reload.
 
-Use this order for Lobby/Garage UI work:
+Use this order for current Lobby/Garage reset work:
 
 1. `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
-2. `Invoke-CodexLobbyUiWorkflowGate.ps1`
-3. `Invoke-LobbyGaragePageSwitchSmoke.ps1`
-4. feature smoke only when the change reaches scene transition, network/bootstrap, or WebGL flow
+2. confirm accepted handoff + required presentation refs
+3. rebuild baseline prefab wiring first
+4. assemble a new scene
+5. run fresh contract/smoke only after the new scene exists
 
-The rule is:
+Historical note:
 
-- verify presentation layout ownership before scene contract
-- verify scene contract first
-- repair the scene directly when contract fails
-- trust the gate and canonical smoke over ad hoc captures
-- keep Ready/Save rule checks in EditMode or domain tests, not in canonical smoke
+- `Invoke-CodexLobbyUiWorkflowGate.ps1` and `Invoke-LobbyGaragePageSwitchSmoke.ps1` are not the default route while `Assets/Scenes/LobbyScene.unity` is absent.
+- If you intentionally revive a concrete Lobby/Garage authoring scene later, those scripts can become active again.
 
 ## SSOT Guardrails
 
@@ -89,12 +89,15 @@ The rule is:
 - If a disk-level restore is truly required, switch away from the scene or close Unity first, then restore the file, then reopen it in Unity.
 - The open-scene popup (`The following open scene(s) have been changed on disk`) is treated as a workflow violation, not as a prompt to accept casually.
 
-## CodexLobbyScene Contract
+## LobbyScene Contract
+
+This section describes the historical Lobby/Garage scene route.
+Use it only after a concrete `Assets/Scenes/LobbyScene.unity` authoring scene exists again.
 
 For Lobby/Garage UI work, scene serialization is the runtime truth.
 
-- Runtime SSOT: `Assets/Scenes/CodexLobbyScene.unity`
-- Contract audit route: `GET /scene/verify-codex-lobby-contract`
+- Runtime SSOT: `Assets/Scenes/LobbyScene.unity`
+- Contract audit route: `GET /scene/verify-lobby-contract`
 - Repair path: use MCP to modify the scene or prefabs directly until the contract passes again
 
 Required sentinel nodes:
@@ -185,8 +188,8 @@ The contract route is considered healthy when it returns:
 - `Invoke-McpPlayStartAndWaitForBridge`
 - `Invoke-McpPlayStopAndWait`
 - `Assert-McpNoOpenSceneDiskWrite`
-- `Get-McpCodexLobbyContract`
-- `Invoke-McpPrepareCodexLobbyPlaySession`
+- `Get-McpLobbyContract`
+- `Invoke-McpPrepareLobbyPlaySession`
 - `Get-McpPageStateSnapshot`
 - `Wait-McpPhotonLobbyReady`
 - `Get-McpConsoleSummary`
@@ -198,6 +201,14 @@ The contract route is considered healthy when it returns:
 - `Wait-McpUiActive`
 - `Wait-McpUiInactive`
 - `Invoke-McpScreenshotCapture`
+
+`McpPrefabPackHelpers.ps1` centralizes the reusable prefab-pack authoring loop:
+
+- common MCP UI authoring helpers for scratch prefab composition
+- `New-McpScratchCanvas`
+- `Invoke-McpPrefabPackGeneration`
+
+Use this for repeated Stitch-to-Unity prefab imports so feature scripts only keep the set-specific seed builders and prefab map definitions.
 
 Use `Assert-McpNoOpenSceneDiskWrite` before any script that would touch a `.unity` file on disk outside the editor bridge.
 If the target matches `health.activeScenePath`, the helper fails fast and tells you to use MCP repair or switch scenes first.
@@ -237,7 +248,7 @@ Outputs:
 
 The policy check reads the current changed files from git and enforces:
 
-- route classification for `scene/prefab authoring`, `presentation-code`, `mixed`, `codex-lobby-ui`, `game-scene-ui`
+- route classification for `scene/prefab authoring`, `presentation-code`, `mixed`, `lobby-ui`, `game-scene-ui`
 - no new UI prefab creation by default
 - presentation validator requirements when presentation code changed
 - fresh `CodexLobby` workflow evidence for Lobby/Garage source changes
@@ -263,7 +274,7 @@ The gate performs:
 
 Outputs:
 
-- `artifacts/unity/codex-lobby-ui-workflow-result.json`
+- `artifacts/unity/lobby-ui-workflow-result.json`
 - `artifacts/unity/lobby-garage-page-switch-result.json`
 - `Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json`
 

@@ -11,6 +11,7 @@
 이 문서는 JG에서 `Stitch` 산출물을 어떻게 읽고, 어디에 저장하고, 언제 Unity handoff로 넘길지 정하는 단일 운영 기준이다.
 시각 탐색 원칙은 `design.ui-reference-workflow`, 실행 상태와 세트별 우선순위는 `plans.stitch-ui-ux-overhaul`가 소유한다.
 여기서는 그 둘 사이의 **데이터 흐름과 파일 소유권**만 고정한다.
+handoff completeness 판정은 `ops.stitch-handoff-completeness-checklist`를 사용한다.
 
 ## 목적
 
@@ -121,6 +122,7 @@ screen이 채택되면 html/png를 `.stitch/designs/`에 저장한다.
 ### 5. Handoff로 번역한다
 
 채택된 Stitch 결과는 반드시 `.stitch/handoff/*.md`로 요약한다.
+작성과 검토는 `ops.stitch-handoff-completeness-checklist`를 함께 본다.
 
 handoff에는 최소한 아래가 있어야 한다.
 
@@ -131,6 +133,9 @@ handoff에는 최소한 아래가 있어야 한다.
 - 버릴 장식 요소
 - Unity에서 scene-owned layout으로 바꿀 때 주의할 serialized contract
 
+handoff에서 baseline / supporting state / overlay 역할이 헷갈릴 여지가 있으면
+파일명보다 역할 라벨을 먼저 적고, 로컬 export 이름은 뒤에 붙인다.
+
 ### 6. Unity 구현으로 넘긴다
 
 Unity 반영 단계부터는 `jg-unity-workflow`와 `unity_ui_authoring_workflow`를 따른다.
@@ -140,13 +145,48 @@ Unity 반영 단계부터는 `jg-unity-workflow`와 `unity_ui_authoring_workflow
 - scene hierarchy와 prefab contract에 맞게 다시 구성한다
 - smoke와 gate는 Unity 쪽에서 증명한다
 
+## Reset / Reimport Route
+
+runtime scene 또는 UI prefab을 의도적으로 폐기했거나, 기존 결과물을 버리고 다시 가져와야 하는 경우에는
+이전의 `scene repair` 흐름을 기본값으로 쓰지 않는다.
+
+이 경우의 기준은 아래와 같다.
+
+1. `accepted Stitch handoff`를 유지한다.
+2. 기존 Unity smoke 캡처와 scene polish 이력은 참고 자료로만 본다.
+3. Unity 반영은 `scene-first`가 아니라 `prefab-first`로 다시 시작한다.
+4. prefab baseline이 서기 전에는 scene gate를 acceptance proof로 쓰지 않는다.
+
+권장 순서:
+
+1. set handoff에서 block order, CTA 우선순위, Unity translation target을 다시 확정한다.
+2. presentation script가 요구하는 required reference와 view ownership을 읽는다.
+3. surface별 baseline prefab을 다시 세운다.
+4. prefab 단위에서 serialized ref와 hierarchy를 먼저 안정화한다.
+5. 마지막에 새 scene에 조립하고 scene contract / smoke를 다시 붙인다.
+
+현재 JG에서 우선 고려할 surface baseline 예시는 아래다.
+
+- Lobby shell: `LobbyPageRoot`
+- Garage shell: `GaragePageRoot`
+- Overlay set: `RoomDetailPanel`, loading/error/confirm surfaces
+- Battle HUD root
+- Result overlay root
+
+한 줄 기준:
+
+`scene를 고치는 대신, handoff를 prefab baseline으로 먼저 번역하고 scene은 마지막 조립 단계에서만 다시 만든다.`
+
 ## 금지 규칙
 
 - `.stitch/*`를 runtime SSOT처럼 취급하지 않는다.
 - Stitch screenshot만 보고 layout 결정을 확정하지 않는다.
 - 동일 screen에 대한 prompt brief를 새 파일로 계속 복제하지 않는다.
 - handoff 없이 바로 Unity에 반영하지 않는다.
+- baseline과 supporting state를 파일명만으로 추측하게 두지 않는다.
+- handoff에서 absolute-position clone이나 presentation layout repair를 구현 기본값처럼 지시하지 않는다.
 - JG 밖의 generic Stitch helper skill 이름을 repo workflow 기준처럼 남겨두지 않는다.
+- runtime scene이 이미 폐기된 상태에서 과거 smoke artifact를 현재 acceptance proof처럼 재사용하지 않는다.
 
 ## Repo 기준 Skill Route
 
@@ -160,5 +200,6 @@ Unity 반영 단계부터는 `jg-unity-workflow`와 `unity_ui_authoring_workflow
 
 - `.stitch` 산출물이 최신 brief와 일치하는가
 - handoff가 최신 design export를 반영하는가
+- handoff가 `ops.stitch-handoff-completeness-checklist` 기준으로 baseline, CTA, Unity target, validation focus를 모두 갖췄는가
 - 관련 plan 또는 design SSOT에 남겨야 할 장기 판단이 있으면 repo 문서로 승격했는가
 - Unity 반영까지 했다면 Unity evidence가 Stitch 결과보다 최신인가

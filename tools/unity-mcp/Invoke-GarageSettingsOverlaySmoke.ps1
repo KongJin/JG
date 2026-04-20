@@ -1,6 +1,6 @@
 param(
     [string]$UnityBridgeUrl,
-    [string]$ScenePath = "Assets/Scenes/CodexLobbyScene.unity",
+    [string]$ScenePath = "Assets/Scenes/LobbyScene.unity",
     [string]$GarageOpenButtonPath = "/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard/GarageTabButton",
     [string]$GarageRootPath = "/Canvas/GaragePageRoot",
     [string]$SettingsButtonPath = "/Canvas/GaragePageRoot/GarageHeaderRow/SettingsButton",
@@ -21,12 +21,14 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot\McpHelpers.ps1"
 
+Assert-McpSceneAssetExistsForWorkflow -ScenePath $ScenePath -WorkflowName "Invoke-GarageSettingsOverlaySmoke.ps1"
+
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
 $resultAbsolutePath = Resolve-McpAbsolutePath -PathValue $ResultPath
 $startedPlayHere = $false
 
 try {
-    $session = Invoke-McpPrepareCodexLobbyPlaySession `
+    $session = Invoke-McpPrepareLobbyPlaySession `
         -Root $root `
         -ScenePath $ScenePath `
         -LoginLoadingPanelPath $LoginLoadingPanelPath `

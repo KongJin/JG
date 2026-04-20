@@ -4,7 +4,8 @@
 
 ## Accepted Screen
 
-- Main baseline: `Tactical Unit Assembly Workspace` (`d440ad9223a24c0d8e746c7236f7ef27`)
+- Main baseline: `Tactical Unit Assembly Workspace` (`d440ad9223a24c0d8e746c7236f7ef27`) -> `set-b-garage-main-workspace.{html,png}`
+- Non-baseline project screen: `Garage / Unit Editor` (`1fe9da270421469b8838f1450cbbfc57`) remains a project-side candidate only and should not be used as the current Garage baseline or Unity translation source
 
 ## Intent
 
@@ -18,6 +19,38 @@ The player should first lock onto roster slots, then edit the selected part, the
 3. `Focused Editor`
 4. `Preview + Summary`
 5. `Save Dock`
+
+## Screen Block Map
+
+- `Current Slot Summary + Slot Selector`
+  - Purpose: tell the player which roster slot is active and where to switch next
+  - Must survive in Unity as the first-screen anchor and roster context reset point
+- `Part Focus Bar`
+  - Purpose: switch editing mode between `Frame`, `Weapon`, and `Mobility`
+  - Must survive in Unity as a fast mode selector, not as a tab shell for multiple pages
+- `Focused Editor`
+  - Purpose: main work area for choosing and understanding the active part options
+  - Must survive in Unity as the largest vertical block in the scroll body
+- `Preview + Summary`
+  - Purpose: confirm what the build currently becomes and whether the slot feels battle-ready
+  - Must survive in Unity as an evaluative block, even when preview content is sparse
+- `Save Dock`
+  - Purpose: keep commit state and save action permanently obvious
+  - Must survive in Unity as the clearest persistent action surface
+
+## CTA Priority Matrix
+
+- Primary persistent CTA: `Save`
+- Secondary CTA: slot switch
+- Secondary CTA: part focus change
+- Tertiary CTA: part card selection inside the focused editor
+- Tertiary CTA: settings / account access
+
+Priority rules:
+
+- The Garage screen should always answer "what slot am I editing?" before "which option should I tap?"
+- `Save` must visually outrank any single part card or selector chip.
+- Settings and account actions are auxiliary and must not compete with assembly flow.
 
 ## CTA Priority
 
@@ -55,6 +88,7 @@ The save action must remain clearer than any single editor action.
 - The focused editor should dominate vertical space after slot selection.
 - Preview and summary should feel evaluative and complete even when no flashy model content is available.
 - Auxiliary account and settings surfaces stay visually quieter than the main assembly workspace.
+- If vertical space becomes contested, preserve `Save Dock` persistence and `Focused Editor` clarity before adding more preview ornament.
 
 ## Validation Focus
 
@@ -68,3 +102,4 @@ The save action must remain clearer than any single editor action.
 
 - This handoff stays within the current mobile-only Garage policy.
 - Weapon-pick overlay, comparison view, and cost breakdown remain follow-up variants, not baseline requirements for this pass.
+- The Garage succeeds when the player can read `active slot -> active part focus -> save readiness` without hunting through the scroll body.

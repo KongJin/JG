@@ -1,7 +1,7 @@
 param(
     [string]$UnityBridgeUrl,
-    [string]$ScenePath = "Assets/Scenes/CodexLobbyScene.unity",
-    [string]$ResultPath = "artifacts/unity/codex-lobby-ui-workflow-result.json",
+    [string]$ScenePath = "Assets/Scenes/LobbyScene.unity",
+    [string]$ResultPath = "artifacts/unity/lobby-ui-workflow-result.json",
     [int]$TimeoutSec = 120
 )
 
@@ -10,6 +10,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot\McpHelpers.ps1"
+
+Assert-McpSceneAssetExistsForWorkflow -ScenePath $ScenePath -WorkflowName "Invoke-CodexLobbyUiWorkflowGate.ps1"
 
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
 $resultAbsolutePath = Resolve-McpAbsolutePath -PathValue $ResultPath
@@ -20,6 +22,7 @@ if ($health.State.isPlaying) {
 }
 
 $compile = Invoke-McpCompileRequestAndWait -Root $root -CleanBuildCache -TimeoutMs ($TimeoutSec * 1000)
+$compileSuccess = Test-McpResponseSuccess -Response $compile.Wait
 $layoutOwnership = Get-McpPresentationLayoutOwnership -Root $root
 if (-not $layoutOwnership.success) {
     $violationPreview = @(
@@ -31,13 +34,13 @@ if (-not $layoutOwnership.success) {
     throw ("Presentation layout ownership validator failed. violationCount={0}. {1}" -f @($layoutOwnership.violations).Count, $violationPreview)
 }
 
-$contract = Get-McpCodexLobbyContract -Root $root
+$contract = Get-McpLobbyContract -Root $root
 if (-not $contract.success) {
-    throw ("CodexLobby scene contract failed. Missing sentinels={0}, missing references={1}" -f @($contract.missingSentinels).Count, @($contract.missingReferences).Count)
+    throw ("Lobby scene contract failed. Missing sentinels={0}, missing references={1}" -f @($contract.missingSentinels).Count, @($contract.missingReferences).Count)
 }
 
 if ($contract.scenePath -ne $ScenePath) {
-    throw ("CodexLobby contract returned unexpected scenePath: {0}" -f $contract.scenePath)
+    throw ("Lobby contract returned unexpected scenePath: {0}" -f $contract.scenePath)
 }
 
 $pageSwitchJson = powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Invoke-LobbyGaragePageSwitchSmoke.ps1") -UnityBridgeUrl $root
@@ -56,7 +59,8 @@ $report = [PSCustomObject]@{
     scenePath = $ScenePath
     resultPath = $resultAbsolutePath
     compile = [PSCustomObject]@{
-        success = [bool]$compile.Wait.ok
+        success = $compileSuccess
+        healthAfterWait = $compile.HealthAfterWait
     }
     presentationLayoutOwnership = [PSCustomObject]@{
         success = [bool]$layoutOwnership.success

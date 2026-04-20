@@ -1,0 +1,128 @@
+﻿{
+    "generatedAt":  "2026-04-21T01:41:37.5957274+09:00",
+    "baseUrl":  "http://127.0.0.1:52676",
+    "compile":  {
+                    "Request":  {
+                                    "ok":  true,
+                                    "cleanBuildCacheRequested":  false,
+                                    "isCompiling":  false,
+                                    "message":  "Asset refresh triggered."
+                                },
+                    "Wait":  {
+                                 "ok":  true,
+                                 "timedOut":  false,
+                                 "requestedCompilation":  false,
+                                 "waitedMs":  120000,
+                                 "isCompiling":  false
+                             },
+                    "HealthAfterWait":  {
+                                            "ok":  true,
+                                            "bridgeRunning":  true,
+                                            "port":  52676,
+                                            "isPlaying":  false,
+                                            "isPlayingOrWillChange":  false,
+                                            "isPlayModeChanging":  false,
+                                            "rawIsPlayingOrWillChange":  false,
+                                            "isCompiling":  false,
+                                            "isWaitingForPlayMode":  false,
+                                            "projectKey":  "0d8ea703",
+                                            "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                            "activeScene":  "TempScene",
+                                            "activeScenePath":  "Assets/Scenes/TempScene.unity",
+                                            "pendingPlayAction":  "",
+                                            "pendingPlayAgeMs":  0
+                                        }
+                },
+    "prefabs":  [
+                    {
+                        "name":  "LobbyPageRoot",
+                        "assetPath":  "Assets/Prefabs/CodexLobby/LobbyPageRoot.prefab",
+                        "rootFound":  true,
+                        "rootPath":  "/LobbyPageRoot",
+                        "verifyChildPath":  "RoomListPanel",
+                        "verifyChildFound":  true,
+                        "verifyChildResolvedPath":  "/LobbyPageRoot/RoomListPanel"
+                    },
+                    {
+                        "name":  "LobbyHeaderCard",
+                        "assetPath":  "Assets/Prefabs/CodexLobby/LobbyHeaderCard.prefab",
+                        "rootFound":  true,
+                        "rootPath":  "/LobbyHeaderCard",
+                        "verifyChildPath":  "LobbyHeaderText",
+                        "verifyChildFound":  true,
+                        "verifyChildResolvedPath":  "/LobbyHeaderCard/LobbyHeaderText"
+                    },
+                    {
+                        "name":  "LobbyRoomsSectionCard",
+                        "assetPath":  "Assets/Prefabs/CodexLobby/LobbyRoomsSectionCard.prefab",
+                        "rootFound":  true,
+                        "rootPath":  "/LobbyRoomsSectionCard",
+                        "verifyChildPath":  "RoomListSurface",
+                        "verifyChildFound":  true,
+                        "verifyChildResolvedPath":  "/LobbyRoomsSectionCard/RoomListSurface"
+                    },
+                    {
+                        "name":  "LobbyCreateRoomCard",
+                        "assetPath":  "Assets/Prefabs/CodexLobby/LobbyCreateRoomCard.prefab",
+                        "rootFound":  true,
+                        "rootPath":  "/LobbyCreateRoomCard",
+                        "verifyChildPath":  "RoomNameInput/Field",
+                        "verifyChildFound":  true,
+                        "verifyChildResolvedPath":  "/LobbyCreateRoomCard/RoomNameInput/Field"
+                    },
+                    {
+                        "name":  "LobbyGarageSummaryCard",
+                        "assetPath":  "Assets/Prefabs/CodexLobby/LobbyGarageSummaryCard.prefab",
+                        "rootFound":  true,
+                        "rootPath":  "/LobbyGarageSummaryCard",
+                        "verifyChildPath":  "GarageTabButton",
+                        "verifyChildFound":  true,
+                        "verifyChildResolvedPath":  "/LobbyGarageSummaryCard/GarageTabButton"
+                    },
+                    {
+                        "name":  "LobbyRoomItem",
+                        "assetPath":  "Assets/Prefabs/CodexLobby/LobbyRoomItem.prefab",
+                        "rootFound":  true,
+                        "rootPath":  "/LobbyRoomItem",
+                        "verifyChildPath":  "JoinButton",
+                        "verifyChildFound":  true,
+                        "verifyChildResolvedPath":  "/LobbyRoomItem/JoinButton"
+                    },
+                    {
+                        "name":  "LobbyRoomDetailPanel",
+                        "assetPath":  "Assets/Prefabs/CodexLobby/LobbyRoomDetailPanel.prefab",
+                        "rootFound":  true,
+                        "rootPath":  "/LobbyRoomDetailPanel",
+                        "verifyChildPath":  "ActionButtons/ReadyButton",
+                        "verifyChildFound":  true,
+                        "verifyChildResolvedPath":  "/LobbyRoomDetailPanel/ActionButtons/ReadyButton"
+                    },
+                    {
+                        "name":  "LobbyMemberItem",
+                        "assetPath":  "Assets/Prefabs/CodexLobby/LobbyMemberItem.prefab",
+                        "rootFound":  true,
+                        "rootPath":  "/LobbyMemberItem",
+                        "verifyChildPath":  "ReadyIcon",
+                        "verifyChildFound":  true,
+                        "verifyChildResolvedPath":  "/LobbyMemberItem/ReadyIcon"
+                    },
+                    {
+                        "name":  "LoginLoadingOverlay",
+                        "assetPath":  "Assets/Prefabs/CodexLobby/LoginLoadingOverlay.prefab",
+                        "rootFound":  true,
+                        "rootPath":  "/LoginLoadingOverlay",
+                        "verifyChildPath":  "LoadingPanel",
+                        "verifyChildFound":  true,
+                        "verifyChildResolvedPath":  "/LoginLoadingOverlay/LoadingPanel"
+                    },
+                    {
+                        "name":  "LobbySceneErrorPresenter",
+                        "assetPath":  "Assets/Prefabs/CodexLobby/LobbySceneErrorPresenter.prefab",
+                        "rootFound":  true,
+                        "rootPath":  "/LobbySceneErrorPresenter",
+                        "verifyChildPath":  "Modal/ModalCard/DismissButton",
+                        "verifyChildFound":  true,
+                        "verifyChildResolvedPath":  "/LobbySceneErrorPresenter/Modal/ModalCard/DismissButton"
+                    }
+                ]
+}

@@ -6,7 +6,7 @@
 [CmdletBinding()]
 param(
     [string]$BaseUrl,
-    [string]$TargetScene = "Assets/Scenes/GameScene.unity",
+    [string]$TargetScene = "Assets/Scenes/BattleScene.unity",
     [string]$RootPath = "/UIRoot",
     [int]$MaxDepth = 12,
     [int]$PlayModeReadyTimeoutSec = 120,

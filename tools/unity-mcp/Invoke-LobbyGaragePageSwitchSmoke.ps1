@@ -1,6 +1,6 @@
 param(
     [string]$UnityBridgeUrl,
-    [string]$ScenePath = "Assets/Scenes/CodexLobbyScene.unity",
+    [string]$ScenePath = "Assets/Scenes/LobbyScene.unity",
     [string]$GarageOpenButtonPath = "/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard/GarageTabButton",
     [string]$BackToLobbyButtonPath = "/Canvas/GaragePageRoot/GarageHeaderRow/LobbyTabButton",
     [string]$LobbyRootPath = "/Canvas/LobbyPageRoot",
@@ -21,6 +21,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot\McpHelpers.ps1"
+
+Assert-McpSceneAssetExistsForWorkflow -ScenePath $ScenePath -WorkflowName "Invoke-LobbyGaragePageSwitchSmoke.ps1"
 
 Add-Type -AssemblyName System.Drawing
 
@@ -110,7 +112,7 @@ $resultAbsolutePath = Resolve-McpAbsolutePath -PathValue $ResultPath
 $startedPlayHere = $false
 
 try {
-    $session = Invoke-McpPrepareCodexLobbyPlaySession `
+    $session = Invoke-McpPrepareLobbyPlaySession `
         -Root $root `
         -ScenePath $ScenePath `
         -LoginLoadingPanelPath $LoginLoadingPanelPath `

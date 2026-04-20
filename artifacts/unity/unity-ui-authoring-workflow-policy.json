@@ -1,51 +1,139 @@
 ﻿{
     "success":  false,
-    "generatedAt":  "2026-04-20 11:30:51+09:00",
+    "generatedAt":  "2026-04-21 01:28:30+09:00",
     "route":  "mixed",
     "changedFiles":  [
+                         ".codex/skills/jg-stitch-workflow/SKILL.md",
                          ".codex/skills/jg-unity-workflow/SKILL.md",
-                         ".codex/skills/rule-operations/work_principles.md",
+                         ".stitch/handoff/INDEX.md",
+                         ".stitch/handoff/set-a-lobby.md",
+                         ".stitch/handoff/set-b-garage.md",
+                         ".stitch/handoff/set-c-overlays.md",
+                         ".stitch/handoff/set-d-battle-hud.md",
+                         ".stitch/handoff/set-e-results.md",
+                         ".stitch/prompt-briefs/set-a-lobby-main.md",
+                         ".stitch/prompt-briefs/set-b-garage-main-workspace.md",
+                         ".stitch/prompt-briefs/set-d-battle-hud-baseline.md",
                          "AGENTS.md",
                          "artifacts/unity/codex-lobby-ui-workflow-result.json",
+                         "artifacts/unity/garage-density-pass-check.png",
+                         "artifacts/unity/garage-prefab-pack-summary.json",
                          "artifacts/unity/lobby-garage-page-switch-result.json",
+                         "artifacts/unity/lobby-page-root-prefab-stage.png",
                          "artifacts/unity/lobby-page-smoke-garage.png",
-                         "artifacts/unity/lobby-page-smoke-lobby-initial.png",
-                         "artifacts/unity/lobby-page-smoke-lobby-returned.png",
+                         "artifacts/unity/lobby-prefab-pack-summary.json",
+                         "artifacts/unity/unity-ui-authoring-workflow-policy.json",
+                         "Assets/_Recovery/0 (1).unity",
+                         "Assets/_Recovery/0 (1).unity.meta",
+                         "Assets/_Recovery/0 (2).unity",
+                         "Assets/_Recovery/0 (2).unity.meta",
+                         "Assets/_Recovery/0 (3).unity",
+                         "Assets/_Recovery/0 (3).unity.meta",
+                         "Assets/_Recovery/0.unity",
+                         "Assets/_Recovery/0.unity.meta",
+                         "Assets/Editor/CliCommands.cs",
                          "Assets/Editor/SceneTools/CodexLobbySceneContract.cs",
+                         "Assets/Editor/SceneTools/CodexLobbySceneContract.cs.meta",
+                         "Assets/Editor/SceneTools/CodexLobbySceneFileTool.cs",
+                         "Assets/Editor/SceneTools/CodexLobbySceneFileTool.cs.meta",
+                         "Assets/Editor/SceneTools/LobbySceneContract.cs",
+                         "Assets/Editor/SceneTools/LobbySceneContract.cs.meta",
+                         "Assets/Editor/SceneTools/LobbySceneFileTool.cs",
+                         "Assets/Editor/SceneTools/LobbySceneFileTool.cs.meta",
                          "Assets/Editor/UnityMcp/Handlers/BuildHandlers.cs",
-                         "Assets/Editor/Validation/PresentationLayoutOwnershipValidator.cs",
+                         "Assets/Editor/UnityMcp/Models.cs",
+                         "Assets/Prefabs/CodexLobby.meta",
+                         "Assets/Prefabs/CodexLobby/GaragePageRoot.prefab",
+                         "Assets/Prefabs/CodexLobby/GaragePageRoot.prefab.meta",
+                         "Assets/Prefabs/Features.meta",
+                         "Assets/Prefabs/Features/Garage.meta",
+                         "Assets/Prefabs/Features/Garage/GaragePageRoot.prefab",
+                         "Assets/Prefabs/Features/Garage/GaragePageRoot.prefab.meta",
+                         "Assets/Prefabs/Features/Garage/GaragePartSelector.prefab",
+                         "Assets/Prefabs/Features/Garage/GaragePartSelector.prefab.meta",
+                         "Assets/Prefabs/Features/Garage/GarageSaveDock.prefab",
+                         "Assets/Prefabs/Features/Garage/GarageSaveDock.prefab.meta",
+                         "Assets/Prefabs/Features/Garage/GarageSettingsOverlay.prefab",
+                         "Assets/Prefabs/Features/Garage/GarageSettingsOverlay.prefab.meta",
+                         "Assets/Prefabs/Features/Garage/GarageSlotItem.prefab",
+                         "Assets/Prefabs/Features/Garage/GarageSlotItem.prefab.meta",
+                         "Assets/Prefabs/Features/Lobby.meta",
+                         "Assets/Prefabs/Features/Lobby/LobbyMemberItem.prefab",
+                         "Assets/Prefabs/Features/Lobby/LobbyMemberItem.prefab.meta",
+                         "Assets/Prefabs/Features/Lobby/LobbyPageRoot.prefab",
+                         "Assets/Prefabs/Features/Lobby/LobbyPageRoot.prefab.meta",
+                         "Assets/Prefabs/Features/Lobby/LobbyRoomDetailPanel.prefab",
+                         "Assets/Prefabs/Features/Lobby/LobbyRoomDetailPanel.prefab.meta",
+                         "Assets/Prefabs/Features/Lobby/LobbyRoomItem.prefab",
+                         "Assets/Prefabs/Features/Lobby/LobbyRoomItem.prefab.meta",
+                         "Assets/Prefabs/Shared.meta",
+                         "Assets/Prefabs/Shared/Sound.meta",
+                         "Assets/Prefabs/Shared/Sound/PooledAudioSource.prefab",
+                         "Assets/Prefabs/Shared/Sound/PooledAudioSource.prefab.meta",
+                         "Assets/Prefabs/Shared/Ui.meta",
+                         "Assets/Prefabs/Shared/Ui/LobbySceneErrorPresenter.prefab",
+                         "Assets/Prefabs/Shared/Ui/LobbySceneErrorPresenter.prefab.meta",
+                         "Assets/Prefabs/Shared/Ui/LoginLoadingOverlay.prefab",
+                         "Assets/Prefabs/Shared/Ui/LoginLoadingOverlay.prefab.meta",
+                         "Assets/Prefabs/Sound/PooledAudioSource.prefab",
+                         "Assets/Prefabs/Sound/PooledAudioSource.prefab.meta",
                          "Assets/Scenes/CodexLobbyScene.unity",
+                         "Assets/Scenes/CodexLobbyScene.unity.meta",
+                         "Assets/Scenes/GameScene.unity",
+                         "Assets/Scenes/GameScene.unity.meta",
+                         "Assets/Scenes/TempScene.unity",
                          "Assets/Scripts/Features/Garage/Presentation/GaragePageController.cs",
                          "Assets/Scripts/Features/Garage/Presentation/GaragePagePresenter.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GaragePageState.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GaragePartSelectorView.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GarageSlotItemView.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GarageUnitEditorView.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GarageUnitPreviewView.cs",
-                         "Assets/Scripts/Features/Player/Presentation/PlayerHealthHudView.cs",
-                         "Assets/Scripts/Features/Player/Runtime.meta",
-                         "Assets/Scripts/Features/Player/Runtime/PlayerHealthHudFollower.cs",
-                         "Assets/Scripts/Features/Player/Runtime/PlayerHealthHudFollower.cs.meta",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageRosterListView.cs",
+                         "Assets/Scripts/Features/Player/GameSceneRoot.cs",
+                         "Assets/TextMesh Pro/Resources/Fonts \u0026 Materials/LiberationSans SDF - Fallback.asset",
                          "Assets/TextMesh Pro/Resources/Fonts \u0026 Materials/NotoSansKR Dynamic.asset",
+                         "docs/design/stitch_test_brief.md",
                          "docs/design/ui_foundations.md",
+                         "docs/design/ui_reference_workflow.md",
                          "docs/index.md",
+                         "docs/ops/stitch_data_workflow.md",
+                         "docs/ops/stitch_handoff_completeness_checklist.md",
                          "docs/ops/unity_ui_authoring_workflow.md",
                          "docs/plans/progress.md",
                          "docs/plans/stitch_ui_ux_overhaul_plan.md",
+                         "ProjectSettings/EditorBuildSettings.asset",
+                         "tools/ensure_safe_scene.py",
+                         "tools/mcp-hierarchy-diag.ps1",
+                         "tools/unity-mcp/Create-GaragePrefabPack.ps1",
+                         "tools/unity-mcp/Create-LobbyPrefabPack.ps1",
+                         "tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1",
+                         "tools/unity-mcp/Invoke-GameScenePlacementWaveSmoke.ps1",
+                         "tools/unity-mcp/Invoke-GameSceneSummonSmoke.ps1",
+                         "tools/unity-mcp/Invoke-GarageReadyFlowSmoke.ps1",
+                         "tools/unity-mcp/Invoke-GarageSettingsOverlaySmoke.ps1",
                          "tools/unity-mcp/Invoke-LobbyGaragePageSwitchSmoke.ps1",
                          "tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1",
-                         "tools/unity-mcp/README.md"
+                         "tools/unity-mcp/McpHelpers.ps1",
+                         "tools/unity-mcp/README.md",
+                         "tools/unity-mcp/server.js"
                      ],
     "unityUiRelevantFiles":  [
+                                 "Assets/Prefabs/CodexLobby/GaragePageRoot.prefab",
+                                 "Assets/Prefabs/Features/Garage/GaragePageRoot.prefab",
+                                 "Assets/Prefabs/Features/Garage/GaragePartSelector.prefab",
+                                 "Assets/Prefabs/Features/Garage/GarageSaveDock.prefab",
+                                 "Assets/Prefabs/Features/Garage/GarageSettingsOverlay.prefab",
+                                 "Assets/Prefabs/Features/Garage/GarageSlotItem.prefab",
+                                 "Assets/Prefabs/Features/Lobby/LobbyMemberItem.prefab",
+                                 "Assets/Prefabs/Features/Lobby/LobbyPageRoot.prefab",
+                                 "Assets/Prefabs/Features/Lobby/LobbyRoomDetailPanel.prefab",
+                                 "Assets/Prefabs/Features/Lobby/LobbyRoomItem.prefab",
+                                 "Assets/Prefabs/Shared/Sound/PooledAudioSource.prefab",
+                                 "Assets/Prefabs/Shared/Ui/LobbySceneErrorPresenter.prefab",
+                                 "Assets/Prefabs/Shared/Ui/LoginLoadingOverlay.prefab",
+                                 "Assets/Prefabs/Sound/PooledAudioSource.prefab",
                                  "Assets/Scenes/CodexLobbyScene.unity",
+                                 "Assets/Scenes/GameScene.unity",
+                                 "Assets/Scenes/TempScene.unity",
                                  "Assets/Scripts/Features/Garage/Presentation/GaragePageController.cs",
                                  "Assets/Scripts/Features/Garage/Presentation/GaragePagePresenter.cs",
-                                 "Assets/Scripts/Features/Garage/Presentation/GaragePageState.cs",
-                                 "Assets/Scripts/Features/Garage/Presentation/GaragePartSelectorView.cs",
-                                 "Assets/Scripts/Features/Garage/Presentation/GarageSlotItemView.cs",
-                                 "Assets/Scripts/Features/Garage/Presentation/GarageUnitEditorView.cs",
-                                 "Assets/Scripts/Features/Garage/Presentation/GarageUnitPreviewView.cs",
-                                 "Assets/Scripts/Features/Player/Presentation/PlayerHealthHudView.cs"
+                                 "Assets/Scripts/Features/Garage/Presentation/GarageRosterListView.cs"
                              ],
     "requiredEvidence":  [
                              {
@@ -59,14 +147,9 @@
                                  "message":  "Presentation code must not author geometry or materials. Move the authoring to scene/prefab or runtime non-presentation layer."
                              },
                              {
-                                 "name":  "codex-lobby-workflow-gate",
-                                 "path":  "artifacts/unity/codex-lobby-ui-workflow-result.json",
-                                 "message":  "CodexLobby UI changes require a fresh workflow gate result newer than the latest modified source file."
-                             },
-                             {
-                                 "name":  "codex-lobby-canonical-smoke",
-                                 "path":  "artifacts/unity/lobby-garage-page-switch-result.json",
-                                 "message":  "CodexLobby UI changes require a fresh canonical smoke result newer than the latest modified source file."
+                                 "name":  "prefab-first-reset",
+                                 "path":  null,
+                                 "message":  "Lobby/Garage changes are currently in prefab-first reset mode because Assets/Scenes/LobbyScene.unity does not exist."
                              },
                              {
                                  "name":  "game-scene-summon-smoke",
@@ -84,46 +167,68 @@
                         ],
     "staleEvidence":  [
                           {
-                              "name":  "codex-lobby-workflow-gate",
-                              "path":  "artifacts/unity/codex-lobby-ui-workflow-result.json",
-                              "message":  "CodexLobby UI changes require a fresh workflow gate result newer than the latest modified source file.",
-                              "evidenceLastWriteUtc":  "2026-04-20T01:45:54.9916308Z",
-                              "latestSourceWriteUtc":  "2026-04-20T01:52:26.6161706Z"
-                          },
-                          {
-                              "name":  "codex-lobby-canonical-smoke",
-                              "path":  "artifacts/unity/lobby-garage-page-switch-result.json",
-                              "message":  "CodexLobby UI changes require a fresh canonical smoke result newer than the latest modified source file.",
-                              "evidenceLastWriteUtc":  "2026-04-20T01:45:53.4132357Z",
-                              "latestSourceWriteUtc":  "2026-04-20T01:52:26.6161706Z"
-                          },
-                          {
                               "name":  "game-scene-summon-smoke",
                               "path":  "artifacts/unity/game-scene-summon-smoke-result.json",
                               "message":  "GameScene UI changes require existing smoke evidence to be newer than the latest modified source file.",
                               "evidenceLastWriteUtc":  "2026-04-19T14:05:11.7048368Z",
-                              "latestSourceWriteUtc":  "2026-04-20T00:30:58.7324510Z"
+                              "latestSourceWriteUtc":  "2026-04-20T12:53:16.7772955Z"
                           },
                           {
                               "name":  "game-scene-placement-wave-smoke",
                               "path":  "artifacts/unity/game-scene-placement-wave-result.json",
                               "message":  "GameScene UI changes require existing smoke evidence to be newer than the latest modified source file.",
                               "evidenceLastWriteUtc":  "2026-04-19T14:05:52.1394908Z",
-                              "latestSourceWriteUtc":  "2026-04-20T00:30:58.7324510Z"
+                              "latestSourceWriteUtc":  "2026-04-20T12:53:16.7772955Z"
                           }
                       ],
     "policyViolations":  [
                              {
-                                 "code":  "presentation-layout-ownership-failed",
-                                 "message":  "Presentation code must not author geometry or materials. Move the authoring to scene/prefab or runtime non-presentation layer."
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Prefabs/Features/Garage/GaragePageRoot.prefab"
                              },
                              {
-                                 "code":  "stale-evidence",
-                                 "message":  "CodexLobby UI changes require a fresh workflow gate result newer than the latest modified source file."
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Prefabs/Features/Garage/GaragePartSelector.prefab"
                              },
                              {
-                                 "code":  "stale-evidence",
-                                 "message":  "CodexLobby UI changes require a fresh canonical smoke result newer than the latest modified source file."
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Prefabs/Features/Garage/GarageSaveDock.prefab"
+                             },
+                             {
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Prefabs/Features/Garage/GarageSettingsOverlay.prefab"
+                             },
+                             {
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Prefabs/Features/Garage/GarageSlotItem.prefab"
+                             },
+                             {
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Prefabs/Features/Lobby/LobbyMemberItem.prefab"
+                             },
+                             {
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Prefabs/Features/Lobby/LobbyPageRoot.prefab"
+                             },
+                             {
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Prefabs/Features/Lobby/LobbyRoomDetailPanel.prefab"
+                             },
+                             {
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Prefabs/Features/Lobby/LobbyRoomItem.prefab"
+                             },
+                             {
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Prefabs/Shared/Sound/PooledAudioSource.prefab"
+                             },
+                             {
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Prefabs/Shared/Ui/LobbySceneErrorPresenter.prefab"
+                             },
+                             {
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Prefabs/Shared/Ui/LoginLoadingOverlay.prefab"
                              },
                              {
                                  "code":  "stale-evidence",
@@ -148,12 +253,29 @@
                                  "requestedCompilation":  false,
                                  "waitedMs":  120000,
                                  "isCompiling":  false
-                             }
+                             },
+                    "healthAfterWait":  {
+                                            "ok":  true,
+                                            "bridgeRunning":  true,
+                                            "port":  52676,
+                                            "isPlaying":  false,
+                                            "isPlayingOrWillChange":  false,
+                                            "isPlayModeChanging":  false,
+                                            "rawIsPlayingOrWillChange":  false,
+                                            "isCompiling":  false,
+                                            "isWaitingForPlayMode":  false,
+                                            "projectKey":  "0d8ea703",
+                                            "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                            "activeScene":  "TempScene",
+                                            "activeScenePath":  "Assets/Scenes/TempScene.unity",
+                                            "pendingPlayAction":  "",
+                                            "pendingPlayAgeMs":  0
+                                        }
                 },
     "presentationLayoutOwnership":  {
-                                        "success":  false,
+                                        "success":  true,
                                         "reportPath":  "Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json",
-                                        "violationCount":  34
+                                        "violationCount":  0
                                     },
     "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\unity-ui-authoring-workflow-policy.json"
 }

@@ -306,16 +306,19 @@ function Invoke-McpCompileRequestAndWait {
         cleanBuildCache = $false
     } -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0))
 
+    $postCompileHealth = Wait-McpBridgeHealthy -Root $Root -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0))
+
     return [PSCustomObject]@{
         Request = $request
         Wait = $wait
+        HealthAfterWait = $postCompileHealth.State
     }
 }
 
-function Get-McpCodexLobbyContract {
+function Get-McpLobbyContract {
     param([string]$Root)
 
-    return Invoke-McpGetJsonWithTransientRetry -Root $Root -SubPath "/scene/verify-codex-lobby-contract" -TimeoutSec 60
+    return Invoke-McpGetJsonWithTransientRetry -Root $Root -SubPath "/scene/verify-lobby-contract" -TimeoutSec 60
 }
 
 function Get-McpPresentationLayoutOwnership {
@@ -555,6 +558,26 @@ function Resolve-McpAbsolutePath {
     return [System.IO.Path]::GetFullPath((Join-Path (Get-Location) $PathValue))
 }
 
+function Assert-McpSceneAssetExistsForWorkflow {
+    param(
+        [string]$ScenePath,
+        [string]$WorkflowName,
+        [string]$FallbackRoute = "prefab-first reset"
+    )
+
+    if ([string]::IsNullOrWhiteSpace($ScenePath)) {
+        throw "$WorkflowName requires a concrete scene path."
+    }
+
+    $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
+    $absoluteScenePath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $ScenePath))
+    if (Test-Path -LiteralPath $absoluteScenePath) {
+        return
+    }
+
+    throw ("{0} is a historical scene workflow and cannot run because '{1}' does not exist. Use the {2} route and rebuild baseline prefabs before generating fresh scene evidence." -f $WorkflowName, $ScenePath, $FallbackRoute)
+}
+
 function Ensure-McpParentDirectory {
     param([string]$PathValue)
 
@@ -734,14 +757,16 @@ function Get-McpPageStateSnapshot {
     }
 }
 
-function Invoke-McpPrepareCodexLobbyPlaySession {
+function Invoke-McpPrepareLobbyPlaySession {
     param(
         [string]$Root,
-        [string]$ScenePath = "Assets/Scenes/CodexLobbyScene.unity",
+        [string]$ScenePath = "Assets/Scenes/LobbyScene.unity",
         [string]$LoginLoadingPanelPath = "/Canvas/LoginLoadingOverlay/LoadingPanel",
         [int]$TimeoutSec = 90,
         [double]$PollSec = 0.5
     )
+
+    Assert-McpSceneAssetExistsForWorkflow -ScenePath $ScenePath -WorkflowName "Invoke-McpPrepareLobbyPlaySession"
 
     $sceneName = [System.IO.Path]::GetFileNameWithoutExtension($ScenePath)
     $health = Wait-McpBridgeHealthy -Root $Root -TimeoutSec $TimeoutSec -PollSec $PollSec

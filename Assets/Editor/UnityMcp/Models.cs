@@ -328,7 +328,7 @@ namespace ProjectSD.EditorTools.UnityMcp
     }
 
     [Serializable]
-    internal sealed class CodexLobbyContractResponse
+    internal sealed class LobbyContractResponse
     {
         public bool success;
         public string message;

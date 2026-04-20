@@ -31,7 +31,8 @@
 ## 기본 원칙
 
 - Stitch 산출물은 `최종 SSOT`가 아니라 `시안`이다.
-- JG의 runtime SSOT는 항상 `CodexLobbyScene.unity`와 executable scene contract다.
+- JG의 runtime SSOT는 Stitch 산출물이 아니라 Unity의 serialized prefab/scene contract다.
+- legacy scene route를 폐기한 reset 상태에서는 accepted handoff와 presentation contract를 기준으로 baseline prefab을 먼저 다시 세운다.
 - 시각 판단은 `design.ui-foundations`를 우선한다.
 - Stitch 결과를 그대로 복제하지 말고, JG의 실제 flow와 serialized contract로 번역한다.
 - 실제 반영과 검증은 Unity MCP와 scene contract 기준으로 한다.
@@ -42,8 +43,8 @@
 1. Stitch에 현재 화면 목표를 짧고 강하게 넣는다.
 2. 나온 시안 중 정보 위계가 가장 선명한 한 방향만 고른다.
 3. `design.ui-foundations` 계약에 맞게 블록 순서와 CTA 역할을 다시 적는다.
-4. Unity MCP로 씬을 수정한다.
-5. gate/smoke로 검증한다.
+4. Unity MCP로 baseline prefab을 먼저 재구성한다.
+5. 새 scene을 조립한 뒤 fresh contract/smoke로 검증한다.
 
 ## JG Quick Test
 
@@ -94,9 +95,9 @@ Style:
 ## 현재 JG에 가장 잘 맞는 사용법
 
 - Stitch: 시안 생성과 방향 탐색
-- Unity MCP: 실제 씬 수정과 검증
+- Unity MCP: baseline prefab 재구성과 이후 새 scene 검증
 - repo 기준 진입점은 `jg-stitch-workflow`와 `jg-unity-workflow`만 사용한다.
 
 한 줄로 정리하면:
 
-`Stitch로 시안을 만들고, Unity MCP로 구현한다.`
+`Stitch로 방향을 잡고, Unity는 prefab-first reset route로 다시 구현한다.`

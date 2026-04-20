@@ -7,7 +7,7 @@ namespace Features.Garage.Presentation
 {
     public sealed class GarageRosterListView : MonoBehaviour
     {
-        [Required, SerializeField] private GarageSlotItemView[] _slotViews;
+        [Required, SerializeField] private GarageSlotItemView[] _slotViews = new GarageSlotItemView[6];
 
         private bool _callbacksHooked;
 

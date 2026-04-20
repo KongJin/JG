@@ -427,13 +427,16 @@ namespace Features.Garage.Presentation
         private void RefreshGarageHeaderSummary(GarageResultViewModel resultViewModel)
         {
             string readySummary = resultViewModel != null && resultViewModel.IsReady
-                ? "출격 가능"
+                ? "저장본 최신"
                 : resultViewModel != null && resultViewModel.IsDirty
-                    ? "저장 필요"
-                    : "대기";
+                    ? resultViewModel.CanSave
+                        ? "저장 가능"
+                        : "조립 진행 중"
+                    : $"활성 {_state.CommittedRoster.Count}/6";
+            string focusSummary = GetMobilePartFocusLabel(_mobilePartFocus);
 
             _garageHeaderSummaryText.text =
-                $"활성 {_state.CommittedRoster.Count}/6  |  UNIT {_state.SelectedSlotIndex + 1:00}  |  {readySummary}";
+                $"UNIT {_state.SelectedSlotIndex + 1:00}  |  {focusSummary}  |  {readySummary}";
             _garageHeaderSummaryText.color = ThemeColors.TextSecondary;
         }
 
@@ -545,7 +548,7 @@ namespace Features.Garage.Presentation
 
             if (resultViewModel.IsDirty && resultViewModel.CanSave)
             {
-                _mobileSaveStateText.text = "임시안 저장 가능";
+                _mobileSaveStateText.text = "현재 조합을 저장해 출격 편성에 반영";
                 _mobileSaveStateText.color = ThemeColors.AccentAmber;
                 return;
             }
@@ -559,7 +562,7 @@ namespace Features.Garage.Presentation
 
             if (resultViewModel.IsReady)
             {
-                _mobileSaveStateText.text = "저장본 동기화 완료 | 출격 가능";
+                _mobileSaveStateText.text = "저장본이 최신입니다 | 룸 패널에서 바로 출격 가능";
                 _mobileSaveStateText.color = ThemeColors.AccentGreen;
                 return;
             }
@@ -602,6 +605,16 @@ namespace Features.Garage.Presentation
                 MobilePartFocus.Frame => GarageEditorFocus.Frame,
                 MobilePartFocus.Firepower => GarageEditorFocus.Firepower,
                 _ => GarageEditorFocus.Mobility,
+            };
+        }
+
+        private static string GetMobilePartFocusLabel(MobilePartFocus focus)
+        {
+            return focus switch
+            {
+                MobilePartFocus.Frame => "프레임 포커스",
+                MobilePartFocus.Firepower => "무장 포커스",
+                _ => "기동 포커스",
             };
         }
 

@@ -69,7 +69,7 @@ namespace Features.Player
         [SerializeField] private CoreObjectiveSetup _coreObjective;
 
         [Header("Scene Transition")]
-        [SerializeField] private string _lobbySceneName = "CodexLobbyScene";
+        [SerializeField] private string _lobbySceneName = "LobbyScene";
 
         private EventBus _eventBus;
         private DisposableScope _disposables;
@@ -214,8 +214,8 @@ namespace Features.Player
             _energyRegenTicker.Initialize(_localPlayerSetup.EnergyAdapterInstance);
             _energyBarView.Initialize(_eventBus, _localPlayerSetup.PlayerId, _localPlayerSetup.MaxEnergy);
 
-            // SoundPlayer is a DDOL singleton created from JG_LobbyScene.
-            // Running JG_GameScene directly is allowed, but audio stays unavailable.
+            // SoundPlayer is a DDOL singleton typically created from LobbyScene.
+            // Running BattleScene directly is allowed, but audio stays unavailable.
             _audioBootstrapFlow.InitializeOrReport(_eventBus, _localPlayerSetup.PlayerId.Value);
 
             // ProjectileSpawner, ZoneSetup은 EventBus만 필요

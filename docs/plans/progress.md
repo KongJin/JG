@@ -73,6 +73,27 @@
 
 ### 2026-04-20
 
+- done: `LobbyPageRoot` baseline prefab reset seed
+  - done: accepted Stitch Set A handoff 기준으로 [`Assets/Prefabs/CodexLobby/LobbyPageRoot.prefab`](../../Assets/Prefabs/CodexLobby/LobbyPageRoot.prefab) 를 TempScene MCP authoring -> `prefab/save` 경로로 새로 생성
+  - done: `LobbyHeaderCard -> RoomsSectionCard -> CreateRoomCard -> GarageSummaryCard` mobile-first stack와 `390x844` root frame을 prefab asset에 고정
+  - done: `RoomListView`, `LobbyGarageSummaryView`, `RoomItemView` serialized refs를 prefab 내부 hierarchy 기준으로 wiring하고, `RoomItemTemplate`는 inactive template 상태로 저장
+  - verify: handoff target paths readback success - `RoomListPanel`, `RoomsSectionCard/ListHeaderRow`, `RoomListSurface/EmptyStateText`, `CreateRoomCard/RoomNameInput/Field`, `CreateRoomButton`, `GarageSummaryCard`, `GarageTabButton`
+  - evidence: `artifacts/unity/lobby-page-root-prefab-stage.png`
+  - note: Prefab Mode stage persistence가 이 브리지에서 불안정해 이번 패스는 `Canvas/LobbyPageRoot` 임시 authoring 후 asset save 방식으로 처리했고, 새 scene assembly/contract/smoke는 다음 단계로 남긴다
+
+- done: Stitch handoff completeness entry 추가
+  - done: [`docs/ops/stitch_handoff_completeness_checklist.md`](../ops/stitch_handoff_completeness_checklist.md) 추가 - baseline/supporting labeling, Unity target, 금지 항목, 완료 판정 rubric를 공통 checklist로 고정
+  - done: [`docs/index.md`](../index.md), [`docs/ops/stitch_data_workflow.md`](../ops/stitch_data_workflow.md), [`.codex/skills/jg-stitch-workflow/SKILL.md`](../../.codex/skills/jg-stitch-workflow/SKILL.md) 를 checklist 진입 경로로 연결
+  - done: [`/.stitch/handoff/INDEX.md`](../../.stitch/handoff/INDEX.md) 와 [`set-a-lobby.md`](../../.stitch/handoff/set-a-lobby.md) 에 baseline role-first labeling 규칙과 Set A export naming 혼동 방지 메모 반영
+  - note: 이번 패스는 handoff completeness와 entry/read-order만 다뤘고, handoff 전 set 구조 일괄 정렬이나 policy/script 변경은 아직 하지 않았다
+
+- done: Lobby prefab pack baseline 생성
+  - done: TempScene MCP authoring으로 Lobby 공용 prefab pack을 일괄 생성했고, 이후 재사용 가능한 helper만 남기고 feature wrapper는 제거
+  - done: [`Assets/Prefabs/CodexLobby/LobbyHeaderCard.prefab`](../../Assets/Prefabs/CodexLobby/LobbyHeaderCard.prefab), [`LobbyRoomsSectionCard.prefab`](../../Assets/Prefabs/CodexLobby/LobbyRoomsSectionCard.prefab), [`LobbyCreateRoomCard.prefab`](../../Assets/Prefabs/CodexLobby/LobbyCreateRoomCard.prefab), [`LobbyGarageSummaryCard.prefab`](../../Assets/Prefabs/CodexLobby/LobbyGarageSummaryCard.prefab), [`LobbyRoomItem.prefab`](../../Assets/Prefabs/CodexLobby/LobbyRoomItem.prefab), [`LobbyRoomDetailPanel.prefab`](../../Assets/Prefabs/CodexLobby/LobbyRoomDetailPanel.prefab), [`LobbyMemberItem.prefab`](../../Assets/Prefabs/CodexLobby/LobbyMemberItem.prefab), [`LoginLoadingOverlay.prefab`](../../Assets/Prefabs/CodexLobby/LoginLoadingOverlay.prefab), [`LobbySceneErrorPresenter.prefab`](../../Assets/Prefabs/CodexLobby/LobbySceneErrorPresenter.prefab) 저장
+  - verify: `RoomListView`, `LobbyGarageSummaryView`, `RoomItemView`, `MemberItemView`, `RoomDetailView`, `LoginLoadingView`, `SceneErrorPresenter` serialized refs를 `prefab/get` readback으로 확인
+  - verify: `artifacts/unity/lobby-prefab-pack-summary.json` 생성, MCP compile/reload settled
+  - note: `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`는 이번 작업이 명시적으로 새 prefab 생성 과업이어서 `new-prefab-blocked` 경고를 냈고, 별도로 기존 `GameScene` smoke evidence stale 경고가 함께 남아 있다
+
 - done: Garage Set B MCP authoring pass 1차
   - done: `CodexLobbyScene.unity` Garage shell을 MCP `component/set + scene/save`로 직접 조정해 header/slot strip/right rail/save dock 비율을 Set B 기준으로 재압축
   - done: `GarageHeaderRow`, `RosterListPane`, `GarageMobileTabBar`, `ResultPane`, `PreviewCard`, `MobileSaveDock` layout element와 spacing을 scene-owned serialized layout 기준으로 재조정

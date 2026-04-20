@@ -64,13 +64,13 @@
 
 - 범위: `Lobby main`, `Room list empty/list`, `Create room`, `Garage summary`
 - handoff: [`../../.stitch/handoff/set-a-lobby.md`](../../.stitch/handoff/set-a-lobby.md)
-- 현재 상태: concept/handoff 완료, runtime 반영은 기본 구조까지 진행됨
+- 현재 상태: concept/handoff 완료, accepted baseline은 populated/empty-state split으로 고정했고 `Matchmaking Lobby`는 프로젝트 내부 legacy 후보안으로만 남긴다. runtime 반영은 기본 구조까지 진행됨
 
 ### Set B - Garage
 
 - 범위: `Garage main workspace`, `slot selector`, `focused editor`, `preview`, `summary`, `save dock`, `Garage settings overlay`, `Account card`
 - handoff: [`../../.stitch/handoff/set-b-garage.md`](../../.stitch/handoff/set-b-garage.md)
-- 현재 상태: mobile-only 구조와 1차 polish 반영 완료, 다음 패스는 handoff 대비 남은 scene-level 밀도 조정
+- 현재 상태: mobile-only 구조와 1차 polish 반영 완료, accepted baseline은 `Tactical Unit Assembly Workspace`로 고정했고 `Garage / Unit Editor`는 프로젝트 내부 후보안으로만 남긴다. 다음 패스는 handoff 대비 남은 scene-level 밀도 조정
 
 ### Set C - Overlay
 
@@ -82,7 +82,7 @@
 
 - 범위: `HUD`, `Unit summon bar`, `Core HP`, `Wave HUD`, `Placement feedback`, `Cannot afford overlay`
 - handoff: [`../../.stitch/handoff/set-d-battle-hud.md`](../../.stitch/handoff/set-d-battle-hud.md)
-- 현재 상태: concept/handoff 완료, visual 반영 전 runtime contract 안정화가 선행 과제
+- 현재 상태: concept/handoff 완료, accepted baseline은 `Refined Battle HUD - Tactical Command`로 고정했고 `Battle HUD - Tactical View`는 프로젝트 내부 pre-refinement 후보안으로만 남긴다. visual 반영 전 runtime contract 안정화가 선행 과제
 
 ### Set E - Result / Feedback
 

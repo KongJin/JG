@@ -23,9 +23,10 @@ If a document name moved, resolve the current path through `docs/index.md` first
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` to resolve the current owner paths.
 3. Read owner doc `ops.stitch-data-workflow`.
-4. Read owner doc `design.ui-reference-workflow` when the task needs Stitch visual principles or reference usage rules.
-5. Read owner doc `plans.stitch-ui-ux-overhaul` when the task touches set-level planning or `.stitch` inventory.
-6. Read the relevant handoff file under `.stitch/handoff/` before regenerating or translating a screen.
+4. Read reference doc `ops.stitch-handoff-completeness-checklist` when the task writes, reviews, or translates a handoff.
+5. Read owner doc `design.ui-reference-workflow` when the task needs Stitch visual principles or reference usage rules.
+6. Read owner doc `plans.stitch-ui-ux-overhaul` when the task touches set-level planning or `.stitch` inventory.
+7. Read the relevant handoff file under `.stitch/handoff/` before regenerating or translating a screen.
 
 ## JG Defaults
 
@@ -47,6 +48,7 @@ If a document name moved, resolve the current path through `docs/index.md` first
 - In JG, this skill routes prompt-brief refinement, `.stitch/DESIGN.md` upkeep guidance, design export organization, and handoff preparation through the owner docs and active `.stitch` artifacts.
 - Prefer updating existing `.stitch` artifacts in place over producing `v2` or duplicate files.
 - Keep set naming stable: `set-a-*`, `set-b-*`, and so on.
+- In handoff docs, role labels such as `baseline`, `supporting state`, and `supporting overlay` must be clearer than local export filenames.
 - If a visual decision needs to live longer than one session, promote it into repo docs, not chat history.
 - Final runtime layout authority always returns to Unity scenes and prefabs, and that implementation lane starts in `jg-unity-workflow`.
 
@@ -55,12 +57,14 @@ If a document name moved, resolve the current path through `docs/index.md` first
 1. The relevant prompt brief matches the current intent.
 2. The chosen html/png export exists under `.stitch/designs/`.
 3. The handoff reflects the accepted export, not an older draft.
-4. If Unity implementation happened, the Unity evidence path is newer than the Stitch artifact it implements.
+4. The handoff passes `ops.stitch-handoff-completeness-checklist` for baseline labeling, CTA hierarchy, Unity targets, and validation focus.
+5. If Unity implementation happened, the Unity evidence path is newer than the Stitch artifact it implements.
 
 ## References
 
 - `docs/index.md`
 - `ops.stitch-data-workflow`
+- `ops.stitch-handoff-completeness-checklist`
 - `design.ui-reference-workflow`
 - `plans.stitch-ui-ux-overhaul`
 - `.stitch/DESIGN.md`

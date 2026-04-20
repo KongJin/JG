@@ -90,30 +90,30 @@ namespace Features.Garage.Presentation
             {
                 title = frame.DisplayName;
                 subtitle = hasCommittedUnit && !hasDraftChanges
-                    ? "저장본 기준"
+                    ? "저장본 검토 중"
                     : hasCommittedUnit
-                        ? "저장 시 즉시 교체"
-                        : "프레임부터 조립";
+                        ? "저장 시 현재 슬롯 갱신"
+                        : "프레임부터 조립 시작";
             }
             else if (!hasCommittedUnit && !hasAnyDraftSelection)
             {
                 title = $"UNIT {state.SelectedSlotIndex + 1:00}";
-                subtitle = "프레임부터 조립";
+                subtitle = "프레임부터 조립 시작";
             }
             else if (hasCommittedUnit && !hasDraftChanges)
             {
                 title = $"UNIT {state.SelectedSlotIndex + 1:00}";
-                subtitle = "저장본 기준";
+                subtitle = "저장본 검토 중";
             }
             else if (hasCommittedUnit)
             {
                 title = $"UNIT {state.SelectedSlotIndex + 1:00}";
-                subtitle = "저장 시 즉시 교체";
+                subtitle = "저장 시 현재 슬롯 갱신";
             }
             else
             {
                 title = $"UNIT {state.SelectedSlotIndex + 1:00}";
-                subtitle = "세 파츠 완성 후 저장";
+                subtitle = "세 파츠를 완성하면 저장 가능";
             }
 
             return new GarageEditorViewModel(
@@ -141,15 +141,17 @@ namespace Features.Garage.Presentation
             string rosterStatusText;
             if (readyEligible)
             {
-                rosterStatusText = $"ACTIVE {state.CommittedRoster.Count}/6  |  READY";
+                rosterStatusText = $"SYNCED ROSTER  |  ACTIVE {state.CommittedRoster.Count}/6";
             }
             else if (evaluation.HasDraftChanges)
             {
-                rosterStatusText = "DRAFT  |  SAVE";
+                rosterStatusText = evaluation.CanSave
+                    ? "SAVE REQUIRED  |  SLOT UPDATE READY"
+                    : "DRAFT LOADOUT  |  SAVE BLOCKED";
             }
             else
             {
-                rosterStatusText = $"ACTIVE {state.CommittedRoster.Count}/6  |  +{missingUnits}";
+                rosterStatusText = $"ACTIVE {state.CommittedRoster.Count}/6  |  NEED +{missingUnits}";
             }
 
             return new GarageResultViewModel(
@@ -170,8 +172,8 @@ namespace Features.Garage.Presentation
             if (!evaluation.HasDraftChanges)
             {
                 return state.CommittedRoster.IsValid
-                    ? "룸 패널에서 바로 출격"
-                    : "최소 3기 저장";
+                    ? "저장본이 최신입니다. 룸 패널에서 바로 준비할 수 있습니다."
+                    : "최소 3기 이상 저장하면 준비 가능합니다.";
             }
 
             if (!evaluation.HasCompleteDraft)
@@ -187,9 +189,9 @@ namespace Features.Garage.Presentation
                 return evaluation.RosterValidationError;
 
             if (evaluation.MatchesCommittedSelection)
-                return "현재 저장본과 동일";
+                return "현재 저장본과 동일합니다.";
 
-            return "저장 시 로스터에 즉시 반영";
+            return "저장 시 선택 슬롯과 전체 편성이 동시에 갱신됩니다.";
         }
 
         private static string BuildStatsText(GarageDraftEvaluation evaluation)

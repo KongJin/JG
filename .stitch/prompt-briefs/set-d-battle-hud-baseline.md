@@ -1,14 +1,16 @@
 # Set D Prompt Brief — Battle HUD Baseline
 
 **Project ID:** `11729197788183873077`
-**Target Screen:** `Battle HUD - Tactical View`
-**Screen ID:** `bf3d08890f2d4a4e98f81c25e14d6073`
+**Target Screen:** `Refined Battle HUD - Tactical Command`
+**Screen ID:** `03af04196bfa4615b06d4284c66cf1f8`
 **Date:** `2026-04-19`
 
 ## Goal
 
 Refine the battle HUD into a clear **mobile tactical command screen** where the player immediately understands `select -> place -> summon`.
 The first read should be the unit command area, current energy, core pressure, and wave state, not decorative combat noise.
+
+This brief maps to the accepted Set D baseline screen and the local export `set-d-battle-hud-baseline.{html,png}`.
 
 ## Required Reading Order
 
@@ -33,7 +35,7 @@ The first read should be the unit command area, current energy, core pressure, a
 ## Target Edit Prompt
 
 ```md
-Refine this existing Battle HUD into a stronger tactical command HUD for a mobile co-op PvE build defense game.
+Refine this existing Refined Battle HUD - Tactical Command screen into a stronger tactical command HUD for a mobile co-op PvE build defense game.
 
 DESIGN SYSTEM (REQUIRED):
 - Platform: Mobile-first, 390x844 baseline

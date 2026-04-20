@@ -28,9 +28,9 @@
 
 ## 현재 기준 메모
 
-- `CodexLobbyScene.unity`는 Lobby/Garage UI의 runtime SSOT다.
+- Lobby/Garage는 기존 scene-owned SSOT를 폐기하고 `prefab-first reset` 기준으로 다시 가져오는 중이다.
 - Unity UI/UX 작업은 먼저 [`docs/index.md`](docs/index.md)에서 current owner path를 확인한 뒤 `ops.unity-ui-authoring-workflow` owner 문서를 읽고 시작한다.
 - Lobby/Garage 검증 기본 레이어는 `contract -> EditMode/unit tests -> 얇은 smoke` 순서로 본다.
-- Unity MCP 기본 진입점은 `workflow gate -> page-switch smoke -> feature smoke`다.
+- reset 동안 Unity MCP 기본 진입점은 `handoff 확인 -> presentation contract 확인 -> baseline prefab wiring -> 새 scene 조립 후 fresh contract/smoke`다.
 
 ---

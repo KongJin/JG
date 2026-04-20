@@ -1,14 +1,16 @@
 # Set B Prompt Brief — Garage Main Workspace
 
 **Project ID:** `11729197788183873077`
-**Target Screen:** `Garage / Unit Editor`
-**Screen ID:** `1fe9da270421469b8838f1450cbbfc57`
+**Target Screen:** `Tactical Unit Assembly Workspace`
+**Screen ID:** `d440ad9223a24c0d8e746c7236f7ef27`
 **Date:** `2026-04-19`
 
 ## Goal
 
 Refine the Garage screen into a stronger **mobile-first unit assembly workspace**.
 The player should first read the current roster slots, then the focused editor, then preview and summary, while the save dock remains the clearest persistent action.
+
+This brief maps to the accepted Set B baseline in Stitch and the local export `set-b-garage-main-workspace.{html,png}`.
 
 ## Required Reading Order
 
@@ -36,7 +38,7 @@ The player should first read the current roster slots, then the focused editor, 
 ## Target Edit Prompt
 
 ```md
-Refine this existing mobile Garage / Unit Editor screen into a stronger tactical unit assembly workspace for a co-op PvE build defense game.
+Refine this existing mobile Tactical Unit Assembly Workspace screen into a stronger tactical unit assembly workspace for a co-op PvE build defense game.
 
 DESIGN SYSTEM (REQUIRED):
 - Platform: Mobile-first, 390x844 baseline

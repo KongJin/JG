@@ -1,6 +1,6 @@
 param(
     [string]$UnityBridgeUrl,
-    [string]$ScenePath = "Assets/Scenes/CodexLobbyScene.unity",
+    [string]$ScenePath = "Assets/Scenes/LobbyScene.unity",
     [string]$RoomNamePrefix = "CodexSmoke",
     [string]$RoomNameInputPath = "/Canvas/LobbyPageRoot/RoomListPanel/CreateRoomCard/RoomNameInput/Field",
     [string]$CreateRoomButtonPath = "/Canvas/LobbyPageRoot/RoomListPanel/CreateRoomCard/CreateRoomButton",
@@ -20,6 +20,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot\McpHelpers.ps1"
+
+Assert-McpSceneAssetExistsForWorkflow -ScenePath $ScenePath -WorkflowName "Invoke-GarageReadyFlowSmoke.ps1"
 
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
 $startedPlayHere = $false
@@ -150,7 +152,7 @@ function Ensure-ReadyBaseline {
 }
 
 try {
-    $session = Invoke-McpPrepareCodexLobbyPlaySession `
+    $session = Invoke-McpPrepareLobbyPlaySession `
         -Root $root `
         -ScenePath $ScenePath `
         -LoginLoadingPanelPath $LoginLoadingPanelPath `

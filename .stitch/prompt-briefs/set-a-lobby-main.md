@@ -1,14 +1,16 @@
 # Set A Prompt Brief — Lobby Main
 
 **Project ID:** `11729197788183873077`
-**Target Screen:** `Matchmaking Lobby`
-**Screen ID:** `bbb4345a636148bc98ea94c76b5f8c29`
+**Target Screen:** `Tactical Hangar Lobby`
+**Screen ID:** `3b2f3bca917b42dea3fa7485f6e207ff`
 **Date:** `2026-04-19`
 
 ## Goal
 
 Refine the Lobby main screen so it reads as a **mobile-first tactical matchmaking surface**.
 The room list must dominate the first read, create room stays secondary, and the garage entry remains visible without overpowering room actions.
+
+This brief maps to the accepted Set A supporting empty-state screen and the local export `set-a-lobby-main.{html,png}`.
 
 ## Required Reading Order
 
@@ -35,7 +37,7 @@ The room list must dominate the first read, create room stays secondary, and the
 ## Target Edit Prompt
 
 ```md
-Refine this existing mobile game matchmaking lobby screen into a stronger tactical hangar lobby for a co-op PvE build defense game.
+Refine this existing mobile Tactical Hangar Lobby screen into a stronger tactical hangar lobby for a co-op PvE build defense game.
 
 DESIGN SYSTEM (REQUIRED):
 - Platform: Mobile-first, 390x844 baseline

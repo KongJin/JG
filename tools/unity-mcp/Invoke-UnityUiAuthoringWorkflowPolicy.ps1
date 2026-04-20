@@ -173,6 +173,7 @@ function Test-EvidenceFreshness {
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
 $resultAbsolutePath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $ResultPath))
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
+$lobbySceneExists = Test-Path -LiteralPath ([System.IO.Path]::GetFullPath((Join-Path $repoRoot "Assets/Scenes/LobbyScene.unity")))
 
 $changedTracked = Get-GitCommandLines -RepoRoot $repoRoot -Arguments @("diff", "--name-only", "HEAD")
 $changedUntracked = Get-GitCommandLines -RepoRoot $repoRoot -Arguments @("ls-files", "--others", "--exclude-standard")
@@ -188,14 +189,14 @@ $scenePrefabPatterns = @(
 $presentationCodePatterns = @(
     '^Assets/Scripts/Features/.+/Presentation/.+\.cs$'
 )
-$codexLobbyPatterns = @(
-    '^Assets/Scenes/CodexLobbyScene\.unity$',
-    '^Assets/Editor/SceneTools/CodexLobbySceneContract\.cs$',
+$lobbyPatterns = @(
+    '^Assets/Scenes/LobbyScene\.unity$',
+    '^Assets/Editor/SceneTools/LobbySceneContract\.cs$',
     '^Assets/Scripts/Features/Garage/',
     '^Assets/Scripts/Features/Lobby/'
 )
 $gameScenePatterns = @(
-    '^Assets/Scenes/GameScene\.unity$',
+    '^Assets/Scenes/BattleScene\.unity$',
     '^Assets/Resources/BattleEntity\.prefab$',
     '^Assets/Scripts/Features/(Player|Summon|Wave|Core|Battle|Combat|Placement)/'
 )
@@ -207,22 +208,22 @@ $unityUiRelevantPatterns = @(
 
 $scenePrefabFiles = Get-PathsMatching -Paths $changedFiles -Patterns $scenePrefabPatterns
 $presentationFiles = Get-PathsMatching -Paths $changedFiles -Patterns $presentationCodePatterns
-$codexLobbyFiles = Get-PathsMatching -Paths $changedFiles -Patterns $codexLobbyPatterns
+$lobbyFiles = Get-PathsMatching -Paths $changedFiles -Patterns $lobbyPatterns
 $gameSceneFiles = Get-PathsMatching -Paths $changedFiles -Patterns $gameScenePatterns
 $unityUiRelevantFiles = Get-PathsMatching -Paths $changedFiles -Patterns $unityUiRelevantPatterns
 $newPrefabFiles = Get-PathsMatching -Paths $addedFiles -Patterns @('^Assets/.+\.prefab$')
 
 $hasScenePrefab = @($scenePrefabFiles).Count -gt 0
 $hasPresentationCode = @($presentationFiles).Count -gt 0
-$hasCodexLobby = @($codexLobbyFiles).Count -gt 0
+$hasLobby = @($lobbyFiles).Count -gt 0
 $hasGameScene = @($gameSceneFiles).Count -gt 0
 
 $route = "no-unity-ui-workflow"
-if ($hasCodexLobby -and $hasGameScene) {
+if ($hasLobby -and $hasGameScene) {
     $route = "mixed"
 }
-elseif ($hasCodexLobby) {
-    $route = "codex-lobby-ui"
+elseif ($hasLobby) {
+    $route = if ($lobbySceneExists) { "lobby-ui" } else { "prefab-first reset" }
 }
 elseif ($hasGameScene) {
     $route = "game-scene-ui"
@@ -258,13 +259,15 @@ if ($route -ne "no-unity-ui-workflow") {
         }
 
         $compile = Invoke-McpCompileRequestAndWait -Root $root -TimeoutMs ($TimeoutSec * 1000)
+        $compileSuccess = Test-McpResponseSuccess -Response $compile.Wait
         $compileSummary = [PSCustomObject]@{
-            success = [bool]$compile.Wait.ok
+            success = $compileSuccess
             request = $compile.Request
             wait = $compile.Wait
+            healthAfterWait = $compile.HealthAfterWait
         }
 
-        if (-not $compile.Wait.ok) {
+        if (-not $compileSuccess) {
             $policyViolations += [PSCustomObject]@{
                 code = "compile-reload-failed"
                 message = "Compile or reload did not settle cleanly. Fix compile errors and rerun the workflow before acceptance."
@@ -326,25 +329,25 @@ if ($route -ne "no-unity-ui-workflow") {
         }
     }
 
-    if ($hasCodexLobby) {
+    if ($hasLobby -and $lobbySceneExists) {
         $requiredEvidence += [PSCustomObject]@{
-            name = "codex-lobby-workflow-gate"
-            path = "artifacts/unity/codex-lobby-ui-workflow-result.json"
-            message = "CodexLobby UI changes require a fresh workflow gate result newer than the latest modified source file."
+            name = "lobby-workflow-gate"
+            path = "artifacts/unity/lobby-ui-workflow-result.json"
+            message = "Lobby UI changes require a fresh workflow gate result newer than the latest modified source file."
         }
         $requiredEvidence += [PSCustomObject]@{
-            name = "codex-lobby-canonical-smoke"
+            name = "lobby-canonical-smoke"
             path = "artifacts/unity/lobby-garage-page-switch-result.json"
-            message = "CodexLobby UI changes require a fresh canonical smoke result newer than the latest modified source file."
+            message = "Lobby UI changes require a fresh canonical smoke result newer than the latest modified source file."
         }
 
         $workflowGateCheck = Test-EvidenceFreshness `
             -RepoRoot $repoRoot `
-            -EvidencePath "artifacts/unity/codex-lobby-ui-workflow-result.json" `
-            -SourcePaths $codexLobbyFiles `
-            -EvidenceName "codex-lobby-workflow-gate" `
-            -MissingMessage "CodexLobby UI changes require a fresh workflow gate result newer than the latest modified source file." `
-            -StaleMessage "CodexLobby UI changes require a fresh workflow gate result newer than the latest modified source file."
+            -EvidencePath "artifacts/unity/lobby-ui-workflow-result.json" `
+            -SourcePaths $lobbyFiles `
+            -EvidenceName "lobby-workflow-gate" `
+            -MissingMessage "Lobby UI changes require a fresh workflow gate result newer than the latest modified source file." `
+            -StaleMessage "Lobby UI changes require a fresh workflow gate result newer than the latest modified source file."
         if ($workflowGateCheck.status -eq "missing") {
             $missingEvidence += $workflowGateCheck.record
         }
@@ -355,15 +358,22 @@ if ($route -ne "no-unity-ui-workflow") {
         $canonicalSmokeCheck = Test-EvidenceFreshness `
             -RepoRoot $repoRoot `
             -EvidencePath "artifacts/unity/lobby-garage-page-switch-result.json" `
-            -SourcePaths $codexLobbyFiles `
-            -EvidenceName "codex-lobby-canonical-smoke" `
-            -MissingMessage "CodexLobby UI changes require a fresh canonical smoke result newer than the latest modified source file." `
-            -StaleMessage "CodexLobby UI changes require a fresh canonical smoke result newer than the latest modified source file."
+            -SourcePaths $lobbyFiles `
+            -EvidenceName "lobby-canonical-smoke" `
+            -MissingMessage "Lobby UI changes require a fresh canonical smoke result newer than the latest modified source file." `
+            -StaleMessage "Lobby UI changes require a fresh canonical smoke result newer than the latest modified source file."
         if ($canonicalSmokeCheck.status -eq "missing") {
             $missingEvidence += $canonicalSmokeCheck.record
         }
         elseif ($canonicalSmokeCheck.status -eq "stale") {
             $staleEvidence += $canonicalSmokeCheck.record
+        }
+    }
+    elseif ($hasLobby -and -not $lobbySceneExists) {
+        $requiredEvidence += [PSCustomObject]@{
+            name = "prefab-first-reset"
+            path = $null
+            message = "Lobby/Garage changes are currently in prefab-first reset mode because Assets/Scenes/LobbyScene.unity does not exist."
         }
     }
 
