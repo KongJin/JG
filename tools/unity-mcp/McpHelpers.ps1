@@ -318,6 +318,12 @@ function Get-McpCodexLobbyContract {
     return Invoke-McpGetJsonWithTransientRetry -Root $Root -SubPath "/scene/verify-codex-lobby-contract" -TimeoutSec 60
 }
 
+function Get-McpPresentationLayoutOwnership {
+    param([string]$Root)
+
+    return Invoke-McpGetJsonWithTransientRetry -Root $Root -SubPath "/validation/verify-presentation-layout-ownership" -TimeoutSec 60
+}
+
 function Invoke-McpPlayStartAndWaitForBridge {
     param(
         [string]$Root,

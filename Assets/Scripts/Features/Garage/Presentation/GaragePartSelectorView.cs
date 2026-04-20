@@ -16,9 +16,9 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private TMP_Text _hintText;
 
         [Header("Layout")]
-        [SerializeField] private float _titleFontSize = 16f;
-        [SerializeField] private float _valueFontSize = 17f;
-        [SerializeField] private float _hintFontSize = 11f;
+        [SerializeField] private float _titleFontSize = 13f;
+        [SerializeField] private float _valueFontSize = 14f;
+        [SerializeField] private float _hintFontSize = 9f;
 
         private bool _callbacksHooked;
 
@@ -74,9 +74,9 @@ namespace Features.Garage.Presentation
 
         public void ApplyMobileTypography()
         {
-            float titleFontSize = _titleFontSize + 2f;
-            float valueFontSize = _valueFontSize + 3f;
-            float hintFontSize = _hintFontSize + 1f;
+            float titleFontSize = _titleFontSize;
+            float valueFontSize = _valueFontSize + 1f;
+            float hintFontSize = _hintFontSize;
 
             _titleText.fontSize = titleFontSize;
             _titleText.alignment = TextAlignmentOptions.TopLeft;
@@ -87,7 +87,7 @@ namespace Features.Garage.Presentation
             _valueText.enableAutoSizing = true;
             _valueText.fontSizeMin = Mathf.Max(11f, valueFontSize - 4f);
             _valueText.fontSizeMax = valueFontSize;
-            _valueText.alignment = TextAlignmentOptions.Center;
+            _valueText.alignment = TextAlignmentOptions.TopLeft;
             _valueText.textWrappingMode = TextWrappingModes.NoWrap;
             _valueText.overflowMode = TextOverflowModes.Ellipsis;
 

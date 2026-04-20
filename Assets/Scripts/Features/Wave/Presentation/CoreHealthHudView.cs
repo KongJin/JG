@@ -71,16 +71,6 @@ namespace Features.Wave.Presentation
                 sliderBackgroundImage = background != null ? background.GetComponent<Image>() : null;
             }
 
-            var rootRect = transform as RectTransform;
-            if (rootRect != null)
-            {
-                rootRect.anchorMin = new Vector2(0.69f, 0.905f);
-                rootRect.anchorMax = new Vector2(0.97f, 0.985f);
-                rootRect.pivot = new Vector2(1f, 1f);
-                rootRect.anchoredPosition = Vector2.zero;
-                rootRect.sizeDelta = Vector2.zero;
-            }
-
             if (panelImage != null)
             {
                 panelImage.color = new Color(0.10f, 0.14f, 0.19f, 0.94f);
@@ -89,25 +79,11 @@ namespace Features.Wave.Presentation
 
             if (hpText != null)
             {
-                var textRect = hpText.rectTransform;
-                textRect.anchorMin = new Vector2(0.08f, 0.42f);
-                textRect.anchorMax = new Vector2(0.92f, 0.95f);
-                textRect.offsetMin = Vector2.zero;
-                textRect.offsetMax = Vector2.zero;
                 hpText.fontSize = 22;
                 hpText.fontStyle = FontStyle.Bold;
                 hpText.alignment = TextAnchor.UpperLeft;
                 hpText.color = new Color(0.92f, 0.95f, 1f, 1f);
                 hpText.raycastTarget = false;
-            }
-
-            var sliderRect = healthSlider != null ? healthSlider.transform as RectTransform : null;
-            if (sliderRect != null)
-            {
-                sliderRect.anchorMin = new Vector2(0.08f, 0.12f);
-                sliderRect.anchorMax = new Vector2(0.92f, 0.28f);
-                sliderRect.offsetMin = Vector2.zero;
-                sliderRect.offsetMax = Vector2.zero;
             }
 
             if (sliderBackgroundImage != null)

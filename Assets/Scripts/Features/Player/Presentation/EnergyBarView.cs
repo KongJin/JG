@@ -63,36 +63,12 @@ namespace Features.Player.Presentation
         {
             AutoBindIfNeeded();
 
-            var rect = transform as RectTransform;
-            if (rect != null)
-            {
-                rect.anchorMin = new Vector2(0.04f, 0.06f);
-                rect.anchorMax = new Vector2(0.96f, 0.24f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = Vector2.zero;
-                rect.sizeDelta = Vector2.zero;
-            }
-
             if (_energyText != null)
             {
-                var labelRect = _energyText.rectTransform;
-                labelRect.anchorMin = new Vector2(0f, 0.55f);
-                labelRect.anchorMax = new Vector2(1f, 1f);
-                labelRect.offsetMin = Vector2.zero;
-                labelRect.offsetMax = Vector2.zero;
                 _energyText.fontSize = 18;
                 _energyText.fontStyle = FontStyle.Bold;
                 _energyText.alignment = TextAnchor.UpperLeft;
                 _energyText.color = new Color(0.87f, 0.94f, 1f, 1f);
-            }
-
-            var sliderRect = _energySlider != null ? _energySlider.transform as RectTransform : null;
-            if (sliderRect != null)
-            {
-                sliderRect.anchorMin = new Vector2(0f, 0f);
-                sliderRect.anchorMax = new Vector2(1f, 0.46f);
-                sliderRect.offsetMin = Vector2.zero;
-                sliderRect.offsetMax = Vector2.zero;
             }
 
             if (_sliderBackgroundImage != null)

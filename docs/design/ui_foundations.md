@@ -171,7 +171,7 @@ Garage는 mobile-first 단일 구조로 정의한다.
 - Preview와 Summary는 같은 세로 흐름 안에 함께 노출할 수 있다
 - `Settings overlay`는 Garage main flow 밖의 auxiliary panel로 둔다
 - 저장 완료 후 본문 스크롤은 상단으로 복귀해 슬롯 상태를 다시 확인할 수 있어야 한다
-- scene hierarchy 기준 contract roots는 `GarageMobileStackRoot -> MobileBodyHost -> MobileBodyScrollContent`, `GarageMobileTabBar`, `RosterListPane/MobileSlotGrid`, `MobileSaveDock`, `GarageSettingsOverlay`다
+- scene hierarchy 기준 contract roots는 `GarageMobileStackRoot -> MobileBodyHost -> MobileBodyScrollContent`, `GarageMobileTabBar`, `GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/MobileSlotGrid`, `MobileSaveDock`, `GarageSettingsOverlay`다
 
 ## Lobby Layout Contract
 

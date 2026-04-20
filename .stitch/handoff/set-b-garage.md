@@ -42,7 +42,7 @@ The save action must remain clearer than any single editor action.
 - Focus bar anchor: `/Canvas/GaragePageRoot/GarageMobileStackRoot/GarageMobileTabBar`
 - Scroll body host: `/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost`
 - Scroll body content: `/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent`
-- Slot grid root: `/Canvas/GaragePageRoot/GarageContentRow/RosterListPane/MobileSlotGrid`
+- Slot grid root: `/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/MobileSlotGrid`
 - Save dock root: `/Canvas/GaragePageRoot/MobileSaveDock`
 - Save button: `/Canvas/GaragePageRoot/MobileSaveDock/MobileSaveButton`
 - Settings overlay root: `/Canvas/GaragePageRoot/GarageSettingsOverlay`

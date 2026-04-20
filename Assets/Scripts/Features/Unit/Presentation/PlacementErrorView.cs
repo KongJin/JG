@@ -116,23 +116,8 @@ namespace Features.Unit.Presentation
 
         private void ApplyPresentationDefaults()
         {
-            var rect = transform as RectTransform;
-            if (rect != null)
-            {
-                rect.anchorMin = new Vector2(0.04f, 0.27f);
-                rect.anchorMax = new Vector2(0.96f, 0.41f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = Vector2.zero;
-                rect.sizeDelta = Vector2.zero;
-            }
-
             if (_errorText != null)
             {
-                var textRect = _errorText.rectTransform;
-                textRect.anchorMin = Vector2.zero;
-                textRect.anchorMax = Vector2.one;
-                textRect.offsetMin = new Vector2(18f, 4f);
-                textRect.offsetMax = new Vector2(-18f, -4f);
                 _errorText.alignment = TextAnchor.MiddleLeft;
                 _errorText.fontStyle = FontStyle.Bold;
                 _errorText.fontSize = 18;

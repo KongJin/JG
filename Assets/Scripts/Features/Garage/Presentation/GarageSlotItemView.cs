@@ -20,9 +20,9 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private Image _borderImage;
 
         [Header("Layout")]
-        [SerializeField] private float _slotNumberFontSize = 11f;
-        [SerializeField] private float _titleFontSize = 17f;
-        [SerializeField] private float _summaryFontSize = 11f;
+        [SerializeField] private float _slotNumberFontSize = 8f;
+        [SerializeField] private float _titleFontSize = 12f;
+        [SerializeField] private float _summaryFontSize = 8f;
 
         [Header("Animation")]
         [Required, SerializeField] private CanvasGroup _canvasGroup;
@@ -57,7 +57,7 @@ namespace Features.Garage.Presentation
             _slotNumberText.text = $"{viewModel.SlotLabel}  {viewModel.StatusBadgeText}";
             _slotNumberText.color = GetStatusTextColor(viewModel);
             _titleText.text = viewModel.Title;
-            _titleText.color = viewModel.IsSelected ? ThemeColors.TextPrimary : new Color(0.95f, 0.96f, 0.98f, 0.95f);
+            _titleText.color = viewModel.IsSelected ? ThemeColors.TextPrimary : new Color(0.95f, 0.96f, 0.98f, 0.92f);
             _summaryText.text = viewModel.Summary;
             _summaryText.color = viewModel.IsSelected ? ThemeColors.TextPrimary : ThemeColors.TextSecondary;
 
@@ -160,7 +160,7 @@ namespace Features.Garage.Presentation
         private void ApplyTypography()
         {
             ConfigureText(_slotNumberText, _slotNumberFontSize, false, TextAlignmentOptions.TopLeft);
-            ConfigureText(_titleText, _titleFontSize, true, TextAlignmentOptions.TopLeft);
+            ConfigureText(_titleText, _titleFontSize, false, TextAlignmentOptions.TopLeft);
             ConfigureText(_summaryText, _summaryFontSize, false, TextAlignmentOptions.BottomLeft);
         }
 
@@ -168,7 +168,7 @@ namespace Features.Garage.Presentation
         {
             text.fontSize = fontSize;
             text.enableAutoSizing = enableAutoSizing;
-            text.fontSizeMin = Mathf.Max(9f, fontSize - 2f);
+            text.fontSizeMin = Mathf.Max(7f, fontSize - 2f);
             text.fontSizeMax = fontSize;
             text.alignment = alignment;
             text.textWrappingMode = TextWrappingModes.PreserveWhitespaceNoWrap;

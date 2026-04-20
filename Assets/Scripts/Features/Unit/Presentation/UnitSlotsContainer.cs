@@ -113,15 +113,7 @@ namespace Features.Unit.Presentation
                 rosterIndex,
                 OnSlotSelectionRequested);
 
-            if (insertIndex >= 0)
-            {
-                slotGo.transform.SetSiblingIndex(insertIndex);
-                _activeSlots.Insert(insertIndex, slotView);
-            }
-            else
-            {
-                _activeSlots.Add(slotView);
-            }
+            _activeSlots.Add(slotView);
 
             // 드래그 앤 드롭 핸들러 연결 (고급 입력 전용)
             if (_inputHandlerPrefab != null && _canvas != null)
@@ -200,30 +192,24 @@ namespace Features.Unit.Presentation
         {
             if (slotIndex < 0 || slotIndex >= _activeSlots.Count) return;
 
-            // 로테이션: 다음 항목이 있으면 교체, 없으면 슬롯 제거
+            var nextVisibleIndices = new List<int>();
+            for (var i = 0; i < _activeSlots.Count; i++)
+            {
+                if (i == slotIndex)
+                    continue;
+
+                var slot = _activeSlots[i];
+                if (slot != null)
+                    nextVisibleIndices.Add(slot.SlotIndex);
+            }
+
             if (_nextIndex < _roster.Length)
             {
-                var oldSlot = _activeSlots[slotIndex];
-                if (oldSlot != null)
-                {
-                    _activeSlots.RemoveAt(slotIndex);
-                    Destroy(oldSlot.gameObject);
-                }
-
-                CreateSlot(_nextIndex, slotIndex);
+                nextVisibleIndices.Insert(slotIndex, _nextIndex);
                 _nextIndex++;
             }
-            else
-            {
-                // 로스터 모두 소모 — 슬롯만 비활성화
-                var oldSlot = _activeSlots[slotIndex];
-                if (oldSlot != null)
-                {
-                    _activeSlots.RemoveAt(slotIndex);
-                    Destroy(oldSlot.gameObject);
-                }
-            }
 
+            RebuildVisibleSlots(nextVisibleIndices);
             _commandController?.SetSlotViews(_activeSlots);
         }
 
@@ -251,22 +237,35 @@ namespace Features.Unit.Presentation
 
         private void RebuildSlots()
         {
-            // 기존 슬롯 제거
-            foreach (var slot in _activeSlots)
-            {
-                if (slot != null) Destroy(slot.gameObject);
-            }
-            _activeSlots.Clear();
-
-            // 새 슬롯 생성
             var visibleCount = Mathf.Min(3, _roster.Length - _visibleStart);
+            var visibleRosterIndices = new List<int>(visibleCount);
             for (var i = 0; i < visibleCount; i++)
             {
-                CreateSlot(_visibleStart + i, i);
+                visibleRosterIndices.Add(_visibleStart + i);
             }
 
+            RebuildVisibleSlots(visibleRosterIndices);
             _nextIndex = _visibleStart + visibleCount;
             _commandController?.SetSlotViews(_activeSlots);
+        }
+
+        private void RebuildVisibleSlots(IReadOnlyList<int> visibleRosterIndices)
+        {
+            foreach (var slot in _activeSlots)
+            {
+                if (slot != null)
+                    Destroy(slot.gameObject);
+            }
+
+            _activeSlots.Clear();
+
+            if (visibleRosterIndices == null)
+                return;
+
+            for (var i = 0; i < visibleRosterIndices.Count; i++)
+            {
+                CreateSlot(visibleRosterIndices[i]);
+            }
         }
 
         private void OnDestroy()

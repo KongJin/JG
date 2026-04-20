@@ -20,6 +20,17 @@ if ($health.State.isPlaying) {
 }
 
 $compile = Invoke-McpCompileRequestAndWait -Root $root -CleanBuildCache -TimeoutMs ($TimeoutSec * 1000)
+$layoutOwnership = Get-McpPresentationLayoutOwnership -Root $root
+if (-not $layoutOwnership.success) {
+    $violationPreview = @(
+        @($layoutOwnership.violations) |
+            Select-Object -First 3 |
+            ForEach-Object { "{0}:{1} [{2}]" -f $_.path, $_.line, $_.rule }
+    ) -join "; "
+
+    throw ("Presentation layout ownership validator failed. violationCount={0}. {1}" -f @($layoutOwnership.violations).Count, $violationPreview)
+}
+
 $contract = Get-McpCodexLobbyContract -Root $root
 if (-not $contract.success) {
     throw ("CodexLobby scene contract failed. Missing sentinels={0}, missing references={1}" -f @($contract.missingSentinels).Count, @($contract.missingReferences).Count)
@@ -46,6 +57,11 @@ $report = [PSCustomObject]@{
     resultPath = $resultAbsolutePath
     compile = [PSCustomObject]@{
         success = [bool]$compile.Wait.ok
+    }
+    presentationLayoutOwnership = [PSCustomObject]@{
+        success = [bool]$layoutOwnership.success
+        reportPath = $layoutOwnership.reportPath
+        violationCount = @($layoutOwnership.violations).Count
     }
     contract = [PSCustomObject]@{
         success = [bool]$contract.success

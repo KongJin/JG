@@ -15,6 +15,40 @@ $ErrorActionPreference = "Stop"
 
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
 $startedPlayHere = $false
+$garageContentRoot = "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent"
+$garageSlotGridRoot = "$garageContentRoot/RosterListPane/MobileSlotGrid"
+$garageTabBarRoot = "$garageContentRoot/GarageMobileTabBar"
+$garageEditorRoot = "$garageContentRoot/UnitEditorPane"
+
+function Get-GarageSlotPath {
+    param([int]$Slot)
+
+    return "$garageSlotGridRoot/GarageSlot$Slot"
+}
+
+function Get-GarageSlotTitlePath {
+    param([int]$Slot)
+
+    return "{0}/Title" -f (Get-GarageSlotPath -Slot $Slot)
+}
+
+function Invoke-GaragePartCycle {
+    param(
+        [ValidateSet("frame", "firepower", "mobility")]
+        [string]$Part
+    )
+
+    $tabPath, $buttonPath = switch ($Part) {
+        "frame" { "$garageTabBarRoot/EditTabButton", "$garageEditorRoot/FRAMECard/FRAMEValuePanel/FRAMENextButton" }
+        "firepower" { "$garageTabBarRoot/PreviewTabButton", "$garageEditorRoot/FIREPOWERCard/FIREPOWERValuePanel/FIREPOWERNextButton" }
+        "mobility" { "$garageTabBarRoot/SummaryTabButton", "$garageEditorRoot/MOBILITYCard/MOBILITYValuePanel/MOBILITYNextButton" }
+    }
+
+    Invoke-McpUiInvoke -Root $root -Path $tabPath -Method "click" | Out-Null
+    Start-Sleep -Milliseconds 150
+    Invoke-McpUiInvoke -Root $root -Path $buttonPath -Method "click" | Out-Null
+    Start-Sleep -Milliseconds 150
+}
 
 function Get-FirstSummonSlotPath {
     param(
@@ -131,7 +165,7 @@ function Invoke-PlacementConfirmUntilSummoned {
 }
 
 function Save-CurrentGarageDraft {
-    $saveButtonPath = "/Canvas/GaragePageRoot/GarageContentRow/RightRail/ResultPane/SaveButton"
+    $saveButtonPath = "/Canvas/GaragePageRoot/MobileSaveDock/MobileSaveButton"
 
     Wait-McpCondition `
         -Description "Save Draft button to become interactable" `
@@ -186,16 +220,16 @@ function Ensure-ReadyBaseline {
     }
 
     foreach ($slot in 1..6) {
-        $slotTitlePath = "/Canvas/GaragePageRoot/GarageContentRow/RosterListPane/GarageSlot{0}/Title" -f $slot
+        $slotTitlePath = Get-GarageSlotTitlePath -Slot $slot
         $slotTitle = Get-McpUiTextValue -Root $root -Path $slotTitlePath
-        if ($slotTitle -ne "Empty Hangar") {
+        if ($slotTitle -notin @("EMPTY", "Empty Hangar")) {
             continue
         }
 
-        Invoke-McpUiInvoke -Root $root -Path ("/Canvas/GaragePageRoot/GarageContentRow/RosterListPane/GarageSlot{0}" -f $slot) -Method "click" | Out-Null
-        Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/GarageContentRow/UnitEditorPane/FRAMECard/FRAMEValuePanel/FRAMENextButton" -Method "click" | Out-Null
-        Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/GarageContentRow/UnitEditorPane/FIREPOWERCard/FIREPOWERValuePanel/FIREPOWERNextButton" -Method "click" | Out-Null
-        Invoke-McpUiInvoke -Root $root -Path "/Canvas/GaragePageRoot/GarageContentRow/UnitEditorPane/MOBILITYCard/MOBILITYValuePanel/MOBILITYNextButton" -Method "click" | Out-Null
+        Invoke-McpUiInvoke -Root $root -Path (Get-GarageSlotPath -Slot $slot) -Method "click" | Out-Null
+        Invoke-GaragePartCycle -Part frame
+        Invoke-GaragePartCycle -Part firepower
+        Invoke-GaragePartCycle -Part mobility
         Save-CurrentGarageDraft
 
         $readyLabel = Get-McpUiTextValue -Root $root -Path $readyLabelPath

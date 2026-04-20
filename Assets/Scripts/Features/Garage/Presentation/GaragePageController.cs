@@ -143,6 +143,17 @@ namespace Features.Garage.Presentation
             _settingsOverlayRoot.SetActive(false);
         }
 
+        private void OnEnable()
+        {
+            SetActive(_mobileContentRoot, true);
+            SetActive(GetLegacyContentRowRoot(), false);
+            SetActive(_mobileTabBar, true);
+            SetActive(_mobileSaveDockRoot, true);
+
+            if (_mobileSlotHost != null)
+                SetActive(_mobileSlotHost.gameObject, true);
+        }
+
         private void Update()
         {
             var keyboard = Keyboard.current;
@@ -382,40 +393,23 @@ namespace Features.Garage.Presentation
 
         private void ApplyMobileLayout()
         {
-            var rosterPane = _rosterListView.gameObject;
-            var editorPane = _unitEditorView.gameObject;
+            var legacyContentRowRoot = GetLegacyContentRowRoot();
 
             SetActive(_mobileContentRoot, true);
+            SetActive(legacyContentRowRoot, false);
             SetActive(_mobileSlotHost.gameObject, true);
             SetActive(_mobileTabBar, true);
             SetActive(_mobileSaveDockRoot, true);
-
-            MoveToParent(rosterPane.transform, _mobileBodyHost, 0);
-            MoveSlotsToHost(_mobileSlotHost);
-            MoveToParent(_mobileTabBar.transform, _mobileBodyHost, 1);
-            MoveToParent(editorPane.transform, _mobileBodyHost, 2);
-            MoveToParent(_rightRailRoot.transform, _mobileBodyHost, 3);
-            ApplyMobileSizing();
-        }
-
-        private void MoveSlotsToHost(Transform host)
-        {
-            if (host == null)
-                return;
-
-            var slotViews = _rosterListView.GetComponentsInChildren<GarageSlotItemView>(true);
-            for (int index = 0; index < slotViews.Length; index++)
-            {
-                MoveToParent(slotViews[index].transform, host, index);
-            }
         }
 
         private void ApplySectionVisibility()
         {
+            SetActive(_mobileContentRoot, true);
+            SetActive(GetLegacyContentRowRoot(), false);
             SetActive(_unitEditorView.gameObject, true);
             SetActive(_rightRailRoot, true);
             SetActive(_previewCard, true);
-            SetActive(_resultPane, true);
+            SetActive(_resultPane, false);
             SetActive(_settingsOverlayRoot, _isSettingsOverlayOpen);
         }
 
@@ -432,32 +426,12 @@ namespace Features.Garage.Presentation
 
         private void RefreshGarageHeaderSummary(GarageResultViewModel resultViewModel)
         {
-            string slotSummary;
-            var selectedSlot = _state.DraftRoster.GetSlot(_state.SelectedSlotIndex);
-
-            if (selectedSlot.IsComplete && _state.SelectedSlotHasDraftChanges())
-            {
-                slotSummary = $"슬롯 {_state.SelectedSlotIndex + 1} 저장 가능";
-            }
-            else if (_state.SelectedSlotHasCommittedLoadout())
-            {
-                slotSummary = $"슬롯 {_state.SelectedSlotIndex + 1} 저장 완료";
-            }
-            else if (selectedSlot.HasAnySelection)
-            {
-                slotSummary = $"슬롯 {_state.SelectedSlotIndex + 1} 편집 중";
-            }
-            else
-            {
-                slotSummary = $"슬롯 {_state.SelectedSlotIndex + 1} 비어 있음";
-            }
-
-            string rosterSummary = $"{_state.CommittedRoster.Count}/6 동기화";
             string readySummary = resultViewModel != null && resultViewModel.IsReady
                 ? "출격 가능"
-                : "출격 잠김";
+                : "대기";
 
-            _garageHeaderSummaryText.text = $"{slotSummary} | {rosterSummary} | {readySummary}";
+            _garageHeaderSummaryText.text =
+                $"슬롯 {_state.SelectedSlotIndex + 1} | {_state.CommittedRoster.Count}/6 | {readySummary}";
             _garageHeaderSummaryText.color = ThemeColors.TextSecondary;
         }
 
@@ -517,6 +491,7 @@ namespace Features.Garage.Presentation
         {
             bool canSave = resultViewModel != null && resultViewModel.CanSave && !_isSaving;
             bool isDirty = resultViewModel != null && resultViewModel.IsDirty;
+            bool isReady = resultViewModel != null && resultViewModel.IsReady;
 
             SetActive(_mobileSaveButton.gameObject, true);
             _mobileSaveButton.Apply(ButtonStyles.Primary, _mobileSaveButtonLabel);
@@ -534,7 +509,9 @@ namespace Features.Garage.Presentation
                         ? ThemeColors.AccentOrange
                         : isDirty
                             ? ThemeColors.BackgroundCard
-                            : ThemeColors.StateDisabled;
+                            : isReady
+                                ? ThemeColors.BackgroundSecondary
+                                : ThemeColors.StateDisabled;
 
                 var feedback = _mobileSaveButton.GetComponent<ButtonFeedback>();
                 if (feedback != null)
@@ -594,46 +571,9 @@ namespace Features.Garage.Presentation
                 target.SetActive(isActive);
         }
 
-        private static void MoveToParent(Transform child, Transform parent, int siblingIndex)
+        private GameObject GetLegacyContentRowRoot()
         {
-            if (child == null || parent == null)
-                return;
-
-            if (child.parent != parent)
-                child.SetParent(parent, false);
-
-            if (siblingIndex >= 0 && child.GetSiblingIndex() != siblingIndex)
-                child.SetSiblingIndex(siblingIndex);
-        }
-
-        private void ApplyMobileSizing()
-        {
-            var rosterPaneLayout = _rosterListView.GetComponent<LayoutElement>();
-            var editorPaneLayout = _unitEditorView.GetComponent<LayoutElement>();
-            var rightRailLayout = _rightRailRoot.GetComponent<LayoutElement>();
-            var previewCardLayout = _previewCard.GetComponent<LayoutElement>();
-            var resultPaneLayout = _resultPane.GetComponent<LayoutElement>();
-            var mobileTabLayout = _mobileTabBar.GetComponent<LayoutElement>();
-            var mobileTabGroup = _mobileTabBar.GetComponent<HorizontalLayoutGroup>();
-            var rightRailGroup = _rightRailRoot.GetComponent<VerticalLayoutGroup>();
-            var saveDockRect = _mobileSaveDockRoot.GetComponent<RectTransform>();
-            var saveDockLayout = _mobileSaveDockRoot.GetComponent<LayoutElement>();
-
-            LayoutElementState.Apply(rosterPaneLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: 176f, flexibleWidth: 1f, flexibleHeight: 0f);
-            LayoutElementState.Apply(editorPaneLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: -1f, flexibleWidth: 1f, flexibleHeight: 1f);
-            LayoutElementState.Apply(rightRailLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: -1f, flexibleWidth: 1f, flexibleHeight: 0f);
-            LayoutElementState.Apply(previewCardLayout, minWidth: -1f, minHeight: -1f, preferredWidth: -1f, preferredHeight: 180f, flexibleWidth: 1f, flexibleHeight: 0f);
-            LayoutElementState.Apply(resultPaneLayout, minWidth: -1f, minHeight: 156f, preferredWidth: -1f, preferredHeight: 196f, flexibleWidth: 1f, flexibleHeight: 0f);
-            LayoutElementState.Apply(mobileTabLayout, minWidth: -1f, minHeight: 44f, preferredWidth: -1f, preferredHeight: 44f, flexibleWidth: 1f, flexibleHeight: 0f);
-            LayoutElementState.Apply(saveDockLayout, minWidth: -1f, minHeight: 116f, preferredWidth: -1f, preferredHeight: 116f, flexibleWidth: -1f, flexibleHeight: -1f);
-            HorizontalLayoutGroupState.Apply(mobileTabGroup, spacing: 8f, childControlWidth: true, childControlHeight: true, childForceExpandWidth: true, childForceExpandHeight: true);
-            VerticalLayoutGroupState.Apply(rightRailGroup, spacing: 12f, childControlWidth: true, childControlHeight: true, childForceExpandWidth: true, childForceExpandHeight: false);
-
-            if (saveDockRect != null)
-            {
-                saveDockRect.anchoredPosition = new Vector2(saveDockRect.anchoredPosition.x, 20f);
-                saveDockRect.sizeDelta = new Vector2(saveDockRect.sizeDelta.x, 116f);
-            }
+            return transform.Find("GarageContentRow")?.gameObject;
         }
 
         private void ScrollMobileBodyToTop()
@@ -646,7 +586,7 @@ namespace Features.Garage.Presentation
                 return;
 
             Canvas.ForceUpdateCanvases();
-            if (_mobileContentRoot.TryGetComponent<RectTransform>(out var contentRoot))
+            if (_mobileBodyHost.TryGetComponent<RectTransform>(out var contentRoot))
                 LayoutRebuilder.ForceRebuildLayoutImmediate(contentRoot);
             scrollRect.StopMovement();
             scrollRect.verticalNormalizedPosition = 1f;
@@ -660,52 +600,6 @@ namespace Features.Garage.Presentation
                 MobilePartFocus.Firepower => GarageEditorFocus.Firepower,
                 _ => GarageEditorFocus.Mobility,
             };
-        }
-
-        private static class LayoutElementState
-        {
-            public static void Apply(LayoutElement target, float minWidth, float minHeight, float preferredWidth, float preferredHeight, float flexibleWidth, float flexibleHeight)
-            {
-                if (target == null)
-                    return;
-
-                target.minWidth = minWidth;
-                target.minHeight = minHeight;
-                target.preferredWidth = preferredWidth;
-                target.preferredHeight = preferredHeight;
-                target.flexibleWidth = flexibleWidth;
-                target.flexibleHeight = flexibleHeight;
-            }
-        }
-
-        private static class HorizontalLayoutGroupState
-        {
-            public static void Apply(HorizontalLayoutGroup target, float spacing, bool childControlWidth, bool childControlHeight, bool childForceExpandWidth, bool childForceExpandHeight)
-            {
-                if (target == null)
-                    return;
-
-                target.spacing = spacing;
-                target.childControlWidth = childControlWidth;
-                target.childControlHeight = childControlHeight;
-                target.childForceExpandWidth = childForceExpandWidth;
-                target.childForceExpandHeight = childForceExpandHeight;
-            }
-        }
-
-        private static class VerticalLayoutGroupState
-        {
-            public static void Apply(VerticalLayoutGroup target, float spacing, bool childControlWidth, bool childControlHeight, bool childForceExpandWidth, bool childForceExpandHeight)
-            {
-                if (target == null)
-                    return;
-
-                target.spacing = spacing;
-                target.childControlWidth = childControlWidth;
-                target.childControlHeight = childControlHeight;
-                target.childForceExpandWidth = childForceExpandWidth;
-                target.childForceExpandHeight = childForceExpandHeight;
-            }
         }
 
         private void PublishDraftState()

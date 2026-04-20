@@ -156,7 +156,6 @@ namespace Features.Unit.Presentation
 
             if (_dragGhost != null)
             {
-                _dragGhost.sizeDelta = _dragGhostSize;
                 _dragGhost.SetAsLastSibling();
             }
         }

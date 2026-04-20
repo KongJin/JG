@@ -157,16 +157,6 @@ namespace Features.Wave.Presentation
                 backgroundImage = GetComponent<Image>();
             }
 
-            var rootRect = transform as RectTransform;
-            if (rootRect != null)
-            {
-                rootRect.anchorMin = new Vector2(0.03f, 0.905f);
-                rootRect.anchorMax = new Vector2(0.57f, 0.985f);
-                rootRect.pivot = new Vector2(0f, 1f);
-                rootRect.anchoredPosition = Vector2.zero;
-                rootRect.sizeDelta = Vector2.zero;
-            }
-
             if (backgroundImage != null)
             {
                 backgroundImage.color = new Color(0.05f, 0.09f, 0.14f, 0.9f);
@@ -183,12 +173,6 @@ namespace Features.Wave.Presentation
         {
             if (text == null)
                 return;
-
-            var rect = text.rectTransform;
-            rect.anchorMin = anchorMin;
-            rect.anchorMax = anchorMax;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
 
             text.fontSize = fontSize;
             text.fontStyle = fontStyle;

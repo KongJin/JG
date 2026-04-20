@@ -65,6 +65,20 @@
 
 ### 2026-04-19
 
+- doing: Presentation layout ownership migration 시작
+  - done: `Features.*.Presentation` source-scan validator 초안 추가 - `Assets/Editor/Validation/PresentationLayoutOwnershipValidator.cs`
+  - done: Unity MCP route `GET /validation/verify-presentation-layout-ownership` 추가
+  - done: `Invoke-CodexLobbyUiWorkflowGate.ps1`에 validator를 contract/smoke 앞에 연결
+  - done: `tools/unity-mcp/README.md`에 새 validator route와 gate 순서 반영
+  - done: `GaragePageController`에서 runtime `LayoutElementState.Apply`, layout group mutation, `RectTransform` sizing/reparenting 보정 제거 시작
+  - done: baseline 상위 위반 정리 - `SummonCommandController`, `UnitSlotView`, `EnergyBarView`, `WaveHudView`, `CoreHealthHudView`, `PlacementErrorView`, `UnitSlotInputHandler`의 runtime geometry/layout write 제거
+  - done: `GarageUnitPreviewView` non-UI preview parenting을 `Features.Garage.Runtime.GaragePreviewAssembler`로 분리해 `Presentation` validator 범위에서 제거
+  - done: `UnitSlotsContainer` slot replacement를 `SetSiblingIndex` 대신 visible-slot rebuild 방식으로 교체
+  - verify: compile baseline 재확인 - `tools/check-compile-errors.ps1` 기준 `ERRORS: 0`
+  - verify: validator baseline `100 -> 39 -> 7 -> 2`로 감소
+  - note: 현재 남은 validator 위반은 `PlayerHealthHudView`의 screen-space follow용 `anchoredPosition` 2건뿐이며, 이는 prefab-level/world-space ownership 재설계가 필요한 마지막 migration 항목
+  - next: `PlayerHealthHudView.prefab`와 `GameSceneRoot.ConnectPlayer()`를 world-space 또는 scene-authored follow contract 기준으로 재설계해 validator 0건 마감
+
 - done: Stitch tactical UI concept pass + handoff docs 1차 정리
   - done: 단일 Stitch 마스터 프로젝트 `11729197788183873077`에서 `Lobby / Garage / Overlay / Battle HUD / Result` 기준 시안을 세트별로 생성하고 `.stitch/designs/`와 `.stitch/prompt-briefs/`에 로컬 산출물 저장
   - done: `.stitch/DESIGN.md`를 tactical hangar mobile 기준 시각 SSOT로 정리하고, `.stitch/handoff/INDEX.md` 및 세트별 handoff 문서로 Unity 번역용 읽기 순서, CTA 우선순위, contract root 매핑 정리
@@ -119,8 +133,15 @@
   - done: `MobileSaveButton` inactive baseline을 scene/MCP 기준으로 복구해 하단 `편성 저장` dock가 실제 smoke 캡처에 드러나도록 수정
   - done: 헤더/탭/상태 카피를 tactical workspace 방향으로 정리하고, `TACTICAL ASSEMBLY / PREVIEW / SUMMARY` 정적 헤더와 preview hint까지 smoke 캡처 기준으로 반영
   - verify: `Invoke-LobbyGaragePageSwitchSmoke.ps1` 재실행 성공 (`2026-04-19 23:59 KST`) - `warningCount = 3`, `errorCount = 0`
-  - evidence: `artifacts/unity/garage-setb-pass1.png`, `artifacts/unity/garage-setb-pass2.png`, `artifacts/unity/garage-setb-pass4.png`, `artifacts/unity/garage-setb-pass5.png`, `artifacts/unity/garage-setb-pass6.png`, `artifacts/unity/lobby-garage-page-switch-result.json`
-  - note: 추가 polish로 slot 카드 typography/alpha, preview/result surface tone, save dock 바탕면을 조정했고, 다음 남은 범위는 slot grid density와 header subtitle tone 같은 미세 시각 조정
+  - done: 추가 polish로 header subtitle을 짧은 tactical copy로 재정리하고, preview/result surface tone을 더 분리했으며, saved-ready 상태의 하단 `편성 저장` dock이 완전히 죽지 않도록 비활성 배경 톤을 보정
+  - verify: `Invoke-LobbyGaragePageSwitchSmoke.ps1` 재실행 성공 (`2026-04-20 00:20 KST`) - `warningCount = 3`, `errorCount = 0`
+  - evidence: `artifacts/unity/garage-setb-pass1.png`, `artifacts/unity/garage-setb-pass2.png`, `artifacts/unity/garage-setb-pass4.png`, `artifacts/unity/garage-setb-pass5.png`, `artifacts/unity/garage-setb-pass6.png`, `artifacts/unity/garage-setb-pass7.png`, `artifacts/unity/garage-setb-pass8.png`, `artifacts/unity/garage-setb-pass9.png`, `artifacts/unity/lobby-garage-page-switch-result.json`
+  - note: 현재 남은 범위는 header subtitle runtime overlap 정리와 preview silhouette 주변 장식 같은 미세 시각 조정
+  - done: 구조 보정 2차로 slot/status/editor copy를 더 압축하고, `UNIT_XX / ACTIVE / DRAFT` 식 label 문법과 `Bastion` 중심 editor title로 전환해 Stitch Set B의 tactical workspace 밀도에 더 가깝게 조정
+  - done: `GaragePageController` sizing과 `ResultPane` scene layout element를 재조정해 `editor -> preview -> summary -> save dock` 스택이 이전보다 짧고 조밀하게 읽히도록 보정
+  - verify: `Invoke-LobbyGaragePageSwitchSmoke.ps1` 재실행 성공 (`2026-04-20 00:43 KST`) - `warningCount = 2`, `errorCount = 0`
+  - evidence: `artifacts/unity/garage-setb-pass10.png`, `artifacts/unity/garage-setb-pass11.png`, `artifacts/unity/garage-setb-pass12.png`
+  - note: 현재도 `TACTICAL ASSEMBLY` 헤더 비율과 하단 large surface가 Stitch baseline과 완전히 같지는 않아서, 다음 패스는 그 runtime owner를 더 정확히 찾아 scene-level로 줄이는 작업이 필요함
 
 - done: CodexLobby mobile-first layout pass 1차
   - done: `CodexLobbyScene` Garage를 mobile host 구조(`GarageMobileStackRoot / MobileBodyHost / MobileSlotGrid / MobileSaveButton`)로 재정리하고, `GaragePageController`가 pre-authored desktop/mobile hosts 사이에서 pane parent 전환과 `Edit / Preview / Summary` 탭 전환만 담당하도록 보강
@@ -171,6 +192,12 @@
   - done: `GameSceneRoot` 내부 helper(`garage bootstrap`, `player connector`, `audio bootstrap`)를 별도 파일로 이동해 scene root를 orchestration 중심으로 축소
   - done: `WaveSetup`의 enemy arrival fallback 배선을 `WaveEnemyArrivalCoordinator`로 분리
   - done: `SoundPlayerRuntimeConfig` resource asset과 `SoundPlayerRuntimeHostFactory`를 추가해 `GameScene`이 로비 생성 DDOL 없이도 자기 runtime audio host를 직접 올릴 수 있게 정리
+
+- doing: Garage mobile SSOT consolidation + Set B alignment
+  - done: `CodexLobbyScene` Garage authored hierarchy를 `GarageMobileStackRoot/MobileBodyScrollContent` 기준으로 재부모화하고, `GarageContentRow`는 비활성 legacy residue로 내림
+  - done: `Invoke-GarageReadyFlowSmoke.ps1`, `Invoke-GameSceneSummonSmoke.ps1`, `Invoke-GameScenePlacementWaveSmoke.ps1`를 mobile Garage contract 기준으로 갱신하고 저장 CTA를 `MobileSaveDock`로 통일
+  - done: `tools/unity-mcp/README.md`, `.stitch/handoff/set-b-garage.md`, `docs/design/ui_foundations.md`의 slot-grid contract를 mobile SSOT 경로로 정정
+  - next: `GaragePageController`에서 pane parent switching을 걷어내고, canonical smoke/feature smoke로 Set B baseline first-screen을 다시 검증
   - note: `SoundPlayer`의 내부 수명주기 구현은 아직 DDOL 기반이므로, 완전한 scene-owned audio lifecycle까지는 후속 정리가 더 필요함
 
 - done: 구조 복잡도 / lifecycle seam 제거 3차

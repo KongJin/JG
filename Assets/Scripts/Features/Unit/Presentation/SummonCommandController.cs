@@ -346,60 +346,10 @@ namespace Features.Unit.Presentation
         {
             AutoBindLayoutReferences();
 
-            if (_dockRoot != null)
-            {
-                _dockRoot.anchorMin = new Vector2(0.03f, 0.02f);
-                _dockRoot.anchorMax = new Vector2(0.97f, 0.19f);
-                _dockRoot.pivot = new Vector2(0.5f, 0f);
-                _dockRoot.anchoredPosition = Vector2.zero;
-                _dockRoot.sizeDelta = Vector2.zero;
-            }
-
             if (_dockBackgroundImage != null)
             {
                 _dockBackgroundImage.color = _dockBackgroundColor;
                 _dockBackgroundImage.raycastTarget = false;
-            }
-
-            if (_slotRowRect != null)
-            {
-                _slotRowRect.anchorMin = new Vector2(0.04f, 0.42f);
-                _slotRowRect.anchorMax = new Vector2(0.96f, 0.94f);
-                _slotRowRect.pivot = new Vector2(0.5f, 0.5f);
-                _slotRowRect.anchoredPosition = Vector2.zero;
-                _slotRowRect.sizeDelta = Vector2.zero;
-            }
-
-            if (_slotRowLayout != null)
-            {
-                _slotRowLayout.padding.left = 12;
-                _slotRowLayout.padding.right = 12;
-                _slotRowLayout.padding.top = 4;
-                _slotRowLayout.padding.bottom = 4;
-                _slotRowLayout.spacing = 12f;
-                _slotRowLayout.childAlignment = TextAnchor.MiddleCenter;
-                _slotRowLayout.childControlWidth = false;
-                _slotRowLayout.childControlHeight = true;
-                _slotRowLayout.childForceExpandWidth = false;
-                _slotRowLayout.childForceExpandHeight = false;
-            }
-
-            if (_feedbackRect != null)
-            {
-                _feedbackRect.anchorMin = new Vector2(0.04f, 0.27f);
-                _feedbackRect.anchorMax = new Vector2(0.96f, 0.41f);
-                _feedbackRect.pivot = new Vector2(0.5f, 0.5f);
-                _feedbackRect.anchoredPosition = Vector2.zero;
-                _feedbackRect.sizeDelta = Vector2.zero;
-            }
-
-            if (_energyBarRect != null)
-            {
-                _energyBarRect.anchorMin = new Vector2(0.04f, 0.06f);
-                _energyBarRect.anchorMax = new Vector2(0.96f, 0.24f);
-                _energyBarRect.pivot = new Vector2(0.5f, 0.5f);
-                _energyBarRect.anchoredPosition = Vector2.zero;
-                _energyBarRect.sizeDelta = Vector2.zero;
             }
         }
 

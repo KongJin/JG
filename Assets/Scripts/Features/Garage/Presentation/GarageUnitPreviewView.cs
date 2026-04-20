@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Features.Garage.Domain;
+using Features.Garage.Runtime;
 using Features.Garage.Presentation.Theme;
 using Shared.Attributes;
 using TMPro;
@@ -43,7 +44,7 @@ namespace Features.Garage.Presentation
             _previewCamera.backgroundColor = ThemeColors.PreviewBackground;
             _previewCamera.clearFlags = CameraClearFlags.SolidColor;
             _rawImage.color = ThemeColors.PreviewBackground;
-            _emptyStateText.text = "선택한 빌드 미리보기가 여기에 표시됩니다.";
+            _emptyStateText.text = "블루프린트가 여기에 표시됩니다.";
             _emptyStateText.color = ThemeColors.TextMuted;
 
             SetEmptyStateVisible(true);
@@ -74,24 +75,19 @@ namespace Features.Garage.Presentation
         private void CreatePreview(GarageSlotViewModel viewModel, GaragePanelCatalog catalog)
         {
             _currentPreviewRoot = new GameObject("PreviewRoot");
-            _currentPreviewRoot.transform.SetParent(transform, false);
-            _currentPreviewRoot.transform.localPosition = new Vector3(0f, -0.02f, 0f);
+            GaragePreviewAssembler.Attach(_currentPreviewRoot, transform, new Vector3(0f, -0.02f, 0f), Vector3.zero);
 
             // 프레임 (중심)
             var frameObj = CreateFrame(viewModel.FrameId);
-            frameObj.transform.SetParent(_currentPreviewRoot.transform, false);
-            frameObj.transform.localPosition = Vector3.zero;
+            GaragePreviewAssembler.Attach(frameObj, _currentPreviewRoot.transform, Vector3.zero, Vector3.zero);
 
             // 무기 (상단)
             var weaponObj = CreateWeapon(viewModel.FirepowerId);
-            weaponObj.transform.SetParent(_currentPreviewRoot.transform, false);
-            weaponObj.transform.localPosition = new Vector3(0, 0.78f, 0);
-            weaponObj.transform.localEulerAngles = new Vector3(0, 0, 90);
+            GaragePreviewAssembler.Attach(weaponObj, _currentPreviewRoot.transform, new Vector3(0f, 0.78f, 0f), new Vector3(0f, 0f, 90f));
 
             // 기동 (하단)
             var thrusterObj = CreateThruster(viewModel.MobilityId);
-            thrusterObj.transform.SetParent(_currentPreviewRoot.transform, false);
-            thrusterObj.transform.localPosition = new Vector3(0, -0.72f, 0);
+            GaragePreviewAssembler.Attach(thrusterObj, _currentPreviewRoot.transform, new Vector3(0f, -0.72f, 0f), Vector3.zero);
         }
 
         private GameObject CreateFrame(string frameId)

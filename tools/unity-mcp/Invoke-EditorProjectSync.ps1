@@ -24,8 +24,10 @@ $compile = Invoke-McpJsonWithTransientRetry -Root $root -SubPath "/compile/wait"
     cleanBuildCache = $false
 } -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0))
 
-if (-not $compile.ok) {
-    throw ("Compile wait failed. timedOut={0} isCompiling={1}" -f $compile.timedOut, $compile.isCompiling)
+if (-not (Test-McpResponseSuccess -Response $compile)) {
+    $timedOut = if ($null -ne $compile.PSObject.Properties["timedOut"]) { $compile.timedOut } else { $null }
+    $isCompiling = if ($null -ne $compile.PSObject.Properties["isCompiling"]) { $compile.isCompiling } else { $null }
+    throw ("Compile wait failed. timedOut={0} isCompiling={1}" -f $timedOut, $isCompiling)
 }
 
 $menu = Invoke-McpJsonWithTransientRetry -Root $root -SubPath "/menu/execute" -Body @{

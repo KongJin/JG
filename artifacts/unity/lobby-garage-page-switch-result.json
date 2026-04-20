@@ -1,6 +1,6 @@
 ﻿{
     "success":  true,
-    "generatedAt":  "2026-04-20 00:06:57+09:00",
+    "generatedAt":  "2026-04-20 01:34:25+09:00",
     "scenePath":  "Assets/Scenes/CodexLobbyScene.unity",
     "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\lobby-garage-page-switch-result.json",
     "uiPaths":  {
@@ -46,24 +46,24 @@
     "warnings":  [
                      {
                          "type":  "Warning",
+                         "message":  "[Firestore] Document not found (71ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                         "count":  2,
+                         "latestTimestampUtc":  "2026-04-19 16:34:22.569",
+                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
+                     },
+                     {
+                         "type":  "Warning",
+                         "message":  "[Firestore] Document not found (1396ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                         "count":  2,
+                         "latestTimestampUtc":  "2026-04-19 16:34:22.498",
+                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
+                     },
+                     {
+                         "type":  "Warning",
                          "message":  "PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
                          "count":  2,
-                         "latestTimestampUtc":  "2026-04-19 15:06:55.523",
+                         "latestTimestampUtc":  "2026-04-19 16:34:23.373",
                          "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nPhoton.Pun.PhotonNetwork:OnRegionsPinged (Photon.Realtime.RegionHandler) (at Assets/FromStore/Photon/PhotonUnityNetworking/Code/PhotonNetworkPart.cs:2546)\nPhoton.Realtime.MonoBehaviourEmpty:Update () (at Assets/FromStore/Photon/PhotonRealtime/Code/RegionHandler.cs:884)\n"
-                     },
-                     {
-                         "type":  "Warning",
-                         "message":  "[Firestore] Document not found (31ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
-                         "count":  2,
-                         "latestTimestampUtc":  "2026-04-19 15:06:54.717",
-                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
-                     },
-                     {
-                         "type":  "Warning",
-                         "message":  "[Firestore] Document not found (30ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
-                         "count":  2,
-                         "latestTimestampUtc":  "2026-04-19 15:06:54.749",
-                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
                      }
                  ],
     "errors":  [

@@ -32,11 +32,26 @@ These are the routes the current workflow depends on.
 - `POST /ui/wait-for-active`
 - `POST /ui/wait-for-inactive`
 - `POST /screenshot/capture`
+- `GET /validation/verify-presentation-layout-ownership`
 - `GET /scene/verify-codex-lobby-contract`
 
 `/menu/execute` still exists, but it is manual-only and non-authoritative for Lobby/Garage recovery.
 
+## MCP Preflight
+
+Before using Unity MCP for scene repair, Play Mode automation, screenshots, or smoke:
+
+1. Run `powershell -ExecutionPolicy Bypass -File .\tools\check-compile-errors.ps1`
+2. If there are compile errors, fix them before entering any Unity MCP workflow
+3. After the fix, wait for compile and script reload to settle with `Invoke-McpCompileRequestAndWait` or `Invoke-EditorProjectSync.ps1`
+4. Confirm `/health` reports `isCompiling = false`
+5. Only then continue with `workflow gate -> page-switch smoke -> feature smoke`
+
+If compile errors remain, `play/start`, the workflow gate, and smoke scripts can fail with misleading timeout symptoms. Treat that as a compile-clean failure first, not as an MCP failure.
+
 ## Recommended Workflow
+
+This order assumes compile-clean state and completed script reload.
 
 Use this order for Lobby/Garage UI work:
 
@@ -46,6 +61,7 @@ Use this order for Lobby/Garage UI work:
 
 The rule is:
 
+- verify presentation layout ownership before scene contract
 - verify scene contract first
 - repair the scene directly when contract fails
 - trust the gate and canonical smoke over ad hoc captures
@@ -79,7 +95,7 @@ Required sentinel nodes:
 - `/Canvas/GaragePageRoot/GarageSettingsOverlay/AccountCard`
 - `/Canvas/GaragePageRoot/MobileSaveDock`
 - `/Canvas/GaragePageRoot/MobileSaveDock/MobileSaveButton`
-- `/Canvas/GaragePageRoot/GarageContentRow/RosterListPane/MobileSlotGrid`
+- `/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/MobileSlotGrid`
 - `/Canvas/LobbyPageRoot/RoomListPanel`
 - `/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/ListHeaderRow`
 - `/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/RoomListSurface`
@@ -194,14 +210,19 @@ powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-CodexLobbyUiWo
 The gate performs:
 
 1. compile/reload stabilization
-2. contract verification
-3. canonical page-switch smoke
-4. machine-readable result writeout
+2. presentation layout ownership verification
+3. contract verification
+4. canonical page-switch smoke
+5. machine-readable result writeout
 
 Outputs:
 
 - `artifacts/unity/codex-lobby-ui-workflow-result.json`
 - `artifacts/unity/lobby-garage-page-switch-result.json`
+- `Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json`
+
+The workflow gate is a `compile-clean after reload` validation step. It is not the recovery path for unresolved compile errors.
+The workflow gate is also not an exemption path for runtime layout authoring inside `Features.*.Presentation`; those violations fail before contract and smoke.
 
 Use this as the required gate for Lobby/Garage UI changes.
 Do not run parallel Play Mode smokes against the same editor instance for this workflow.

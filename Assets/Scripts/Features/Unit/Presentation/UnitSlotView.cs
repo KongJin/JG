@@ -154,28 +154,12 @@ namespace Features.Unit.Presentation
                 _layoutElement = GetComponent<LayoutElement>();
             }
 
-            if (_layoutElement != null)
-            {
-                _layoutElement.minWidth = 144f;
-                _layoutElement.preferredWidth = 168f;
-                _layoutElement.minHeight = 88f;
-                _layoutElement.preferredHeight = 96f;
-                _layoutElement.flexibleWidth = 0f;
-                _layoutElement.flexibleHeight = 0f;
-            }
-
             if (_nameText != null)
             {
                 _nameText.fontSize = 15;
                 _nameText.fontStyle = FontStyle.Bold;
                 _nameText.alignment = TextAnchor.UpperLeft;
                 _nameText.color = new Color(0.88f, 0.94f, 1f, 1f);
-
-                var rect = _nameText.rectTransform;
-                rect.anchorMin = new Vector2(0.18f, 0.48f);
-                rect.anchorMax = new Vector2(0.72f, 0.86f);
-                rect.offsetMin = Vector2.zero;
-                rect.offsetMax = Vector2.zero;
             }
 
             if (_costText != null)
@@ -184,34 +168,11 @@ namespace Features.Unit.Presentation
                 _costText.fontStyle = FontStyle.Bold;
                 _costText.alignment = TextAnchor.MiddleRight;
                 _costText.color = Color.white;
-
-                var rect = _costText.rectTransform;
-                rect.anchorMin = new Vector2(0.72f, 0.18f);
-                rect.anchorMax = new Vector2(0.92f, 0.82f);
-                rect.offsetMin = Vector2.zero;
-                rect.offsetMax = Vector2.zero;
             }
 
             if (_iconImage != null)
             {
-                var rect = _iconImage.rectTransform;
-                rect.anchorMin = new Vector2(0.05f, 0.22f);
-                rect.anchorMax = new Vector2(0.16f, 0.78f);
-                rect.offsetMin = Vector2.zero;
-                rect.offsetMax = Vector2.zero;
                 _iconImage.color = new Color(0.63f, 0.86f, 1f, 1f);
-            }
-
-            if (_cannotAffordOverlay != null)
-            {
-                var overlayRect = _cannotAffordOverlay.transform as RectTransform;
-                if (overlayRect != null)
-                {
-                    overlayRect.anchorMin = Vector2.zero;
-                    overlayRect.anchorMax = Vector2.one;
-                    overlayRect.offsetMin = Vector2.zero;
-                    overlayRect.offsetMax = Vector2.zero;
-                }
             }
         }
 
