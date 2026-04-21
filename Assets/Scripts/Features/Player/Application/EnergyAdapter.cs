@@ -8,7 +8,7 @@ namespace Features.Player.Application
     /// <summary>
     /// Energy 리소스 어댑터. 유닛 소환 전용 자원의 차감/재생/네트워크 동기화를 담당.
     /// </summary>
-    public sealed class EnergyAdapter : IEnergyPort
+    public sealed class EnergyAdapter : IEnergyPort, IEnergyRegenPort
     {
         private readonly Domain.Player _player;
         private readonly IPlayerNetworkCommandPort _network;

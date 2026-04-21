@@ -1,0 +1,230 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "screen-intake",
+  "setId": "set-c",
+  "surfaceId": "common-error-dialog",
+  "surfaceRole": "independent",
+  "status": "accepted",
+  "source": {
+    "tool": "stitch",
+    "screenName": "common-error-dialog",
+    "sourceRef": "set-c-common-error-dialog",
+    "variantLabel": "accepted error state"
+  },
+  "familyHints": {
+    "suggestedBlueprintId": "overlay-modal",
+    "suggestedFeatureArea": "shared",
+    "likelyOverlay": true,
+    "likelyScrollRoot": false,
+    "repeatedBlockIds": []
+  },
+  "blocks": [
+    {
+      "blockId": "overlay-root",
+      "role": "overlay",
+      "sourceName": "SystemErrorScrim",
+      "layout": {
+        "axis": "overlay",
+        "padding": 16,
+        "gap": 16,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": true,
+        "scroll": false
+      },
+      "children": [
+        "overlay-card"
+      ],
+      "required": true,
+      "repeat": false,
+      "notes": [
+        "Modal stays clearly separate from the underlying flow."
+      ]
+    },
+    {
+      "blockId": "overlay-card",
+      "role": "content",
+      "sourceName": "ErrorDialogCard",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 12,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [
+        "error-summary",
+        "error-reason",
+        "action-row"
+      ],
+      "required": true,
+      "repeat": false,
+      "notes": [
+        "Reusable tactical error dialog with restrained danger red accents only.",
+        "Do not use full-surface red treatment."
+      ]
+    },
+    {
+      "blockId": "error-summary",
+      "role": "status",
+      "sourceName": "FailureHeadline",
+      "layout": {
+        "axis": "vertical",
+        "padding": 0,
+        "gap": 0,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [],
+      "required": true,
+      "repeat": false,
+      "notes": [
+        "Failure state is explicit at first read."
+      ]
+    },
+    {
+      "blockId": "error-reason",
+      "role": "content",
+      "sourceName": "FailureReasonCopy",
+      "layout": {
+        "axis": "vertical",
+        "padding": 0,
+        "gap": 0,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [],
+      "required": true,
+      "repeat": false,
+      "notes": [
+        "Short failure reason stays readable without overflowing into a long support article."
+      ]
+    },
+    {
+      "blockId": "action-row",
+      "role": "section",
+      "sourceName": "ErrorDialogActions",
+      "layout": {
+        "axis": "horizontal",
+        "padding": 0,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [
+        "retry-action",
+        "dismiss-action"
+      ],
+      "required": true,
+      "repeat": false,
+      "notes": [
+        "Retry remains visually louder than dismiss."
+      ]
+    },
+    {
+      "blockId": "retry-action",
+      "role": "cta",
+      "sourceName": "RetryAction",
+      "layout": {
+        "axis": "horizontal",
+        "padding": 0,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [],
+      "required": true,
+      "repeat": false,
+      "notes": [
+        "Primary recovery action."
+      ]
+    },
+    {
+      "blockId": "dismiss-action",
+      "role": "cta",
+      "sourceName": "DismissAction",
+      "layout": {
+        "axis": "horizontal",
+        "padding": 0,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [],
+      "required": true,
+      "repeat": false,
+      "notes": [
+        "Secondary dismissal action."
+      ]
+    }
+  ],
+  "ctaPriority": [
+    {
+      "id": "retry",
+      "priority": "primary",
+      "label": "Retry",
+      "outcome": "retry failed operation",
+      "placement": "footer",
+      "notes": [
+        "Primary recovery action stays clearer than dismiss."
+      ]
+    },
+    {
+      "id": "dismiss",
+      "priority": "secondary",
+      "label": "Dismiss",
+      "outcome": "close error dialog",
+      "placement": "footer",
+      "notes": [
+        "Secondary escape action."
+      ]
+    }
+  ],
+  "states": {
+    "default": true,
+    "empty": false,
+    "loading": false,
+    "error": true,
+    "selected": false,
+    "disabled": false
+  },
+  "validation": {
+    "frame": "390x844",
+    "firstReadOrder": [
+      "overlay-card",
+      "error-summary",
+      "error-reason",
+      "retry-action",
+      "dismiss-action"
+    ],
+    "requiredChecks": [
+      "short failure reason visible",
+      "primary retry action clearer than dismiss",
+      "restrained danger accents only"
+    ]
+  },
+  "notes": [
+    "Reusable system failure and retry pattern.",
+    "Do not use full-surface red treatment."
+  ],
+  "openQuestions": []
+}

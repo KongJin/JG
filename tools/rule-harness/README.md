@@ -1,6 +1,6 @@
 # Rule Harness
 
-> 마지막 업데이트: 2026-04-20
+> 마지막 업데이트: 2026-04-21
 > 상태: active
 > doc_id: tools.rule-harness-readme
 > role: reference
@@ -65,6 +65,8 @@ runtime 검증 운영 모델은 아래로 고정한다.
 - 하네스는 scene-specific runtime smoke를 자동 실행하지 않는다.
 - Unity MCP는 compile/status refresh와 generic console/hierarchy 진단에만 사용한다.
 - runtime 확인이 필요한 변경은 `manual-validation-required` 또는 `docs/playtest/runtime_validation_checklist.md` 기록으로 남긴다.
+- scope가 `AGENTS.md`, `docs/*`, `.codex/skills/jg-*`, `.githooks/*`, `tools/docs-lint/*`, `tools/rule-harness/*`로 시작하면 하네스는 이를 `rules-only scope`로 취급한다.
+- `rules-only scope`에서 feature code, scene/prefab, generated `.csproj` 같은 비규칙 target이 batch에 섞이면 `rules-scope-mutation-violation`으로 즉시 stop한다.
 - 정적 스캔은 `tools/`, `.github/workflows/`, `tools/rule-harness/` 아래에서 hardcoded MCP UI smoke 재유입을 차단한다.
   - 차단 예: `/ui/button/invoke`, `/input/click`, `/input/drag`, `/input/key`, `/input/text`, `Get-McpUiPath`, `Invoke-McpButton`
   - 예외: `tools/mcp-test-compile.ps1`, `tools/mcp-diagnose-scene-hierarchy.ps1`, `tools/mcp-hierarchy-diag.ps1`, `tools/unity-mcp/`, `tools/rule-harness/tests/`
@@ -163,6 +165,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
   - `featureTestAssets`: feature test asset 존재 신호
 - code/mixed batch의 기본 confidence는 보수적으로 계산한다. feature test asset이 없거나, UnityMcp/scene/prefab 범위를 건드리거나, cross-feature 범위가 넓으면 `low` 로 내려간다.
 - `low` confidence code/mixed batch는 auto-apply 대신 `manual-validation-required` 로 skip된다.
+- `rules-only scope`가 비규칙 target을 건드리려 하면 confidence와 무관하게 `rules-scope-mutation-violation`으로 stop되고, action item에는 owner docs만 수정하거나 user intent를 다시 잠그라는 안내가 남는다.
 - runtime smoke는 자동 하네스 범위 밖으로 공식 분리됐다. 관련 범위는 `manual-validation-required` 와 `docs/playtest/runtime_validation_checklist.md` 기록으로 넘긴다.
 - advisory memory는 `tools/rule-harness/memory/advisory-memory.json` 에 저장되며 SSOT가 아니다. prompt/판단 우선순위는 항상 `AGENTS.md -> docs/index.md -> owner docs -> advisory memory -> current failure context` 순서다.
 

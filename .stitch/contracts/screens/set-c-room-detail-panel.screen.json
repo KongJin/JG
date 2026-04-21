@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "screen-manifest",
+  "setId": "set-c",
+  "surfaceId": "room-detail-panel",
+  "surfaceRole": "independent",
+  "status": "accepted",
+  "extends": "overlay-modal",
+  "targets": {
+    "prefabPath": "Assets/Prefabs/Features/Lobby/Independent/LobbyRoomDetailPanel.prefab",
+    "sceneRoots": [
+      "/Canvas/LobbyRoomDetailPanel"
+    ],
+    "primaryContractPaths": [
+      "/Canvas/LobbyRoomDetailPanel",
+      "/Canvas/LobbyRoomDetailPanel/OverlayCard"
+    ],
+    "serializedOwners": [
+      "/Canvas/LobbyRoomDetailPanel::RoomDetailView"
+    ]
+  },
+  "ctaPriority": [
+    {
+      "id": "join-or-ready",
+      "priority": "primary",
+      "unityTargetPath": "/Canvas/LobbyRoomDetailPanel/OverlayCard/PrimaryActionButton",
+      "outcome": "join or ready selected room"
+    },
+    {
+      "id": "close-room-detail",
+      "priority": "secondary",
+      "unityTargetPath": "/Canvas/LobbyRoomDetailPanel/OverlayCard/SecondaryActionButton",
+      "outcome": "close room detail panel"
+    }
+  ],
+  "states": {
+    "default": true,
+    "empty": false,
+    "loading": false,
+    "error": false,
+    "selected": true,
+    "disabled": false
+  },
+  "validation": {
+    "frame": "390x844",
+    "firstReadOrder": [
+      "overlay-card",
+      "primary-cta"
+    ],
+    "requiredChecks": [
+      "contract",
+      "selected room context obvious",
+      "room detail panel compact and in-room flow specific"
+    ],
+    "smokeScripts": []
+  },
+  "blockOverrides": {
+    "overlay-card": {
+      "notes": [
+        "Bottom-sheet or panel linked to selected room with name, occupancy, mission or difficulty, readiness, and short tactical description."
+      ]
+    }
+  },
+  "appendBlocks": [],
+  "notes": [
+    "In-room flow panel, not a lobby home replacement."
+  ]
+}

@@ -98,7 +98,7 @@ namespace Features.Lobby.Presentation
                 _statusPillText.text = "DRAFT";
                 _statusPillText.color = _draftColor;
                 _headlineText.text = "Draft changes pending";
-                _bodyText.text = "Open Garage and save before entering a room.";
+                _bodyText.text = "Switch to Garage and save before entering a room.";
                 return;
             }
 
@@ -126,7 +126,7 @@ namespace Features.Lobby.Presentation
 
             int missingUnits = Mathf.Max(0, 3 - savedUnitCount);
             return missingUnits <= 0
-                ? "Open Garage to review the synced roster."
+                ? "Switch to Garage to review the synced roster."
                 : $"Save {missingUnits} more unit{(missingUnits == 1 ? string.Empty : "s")} to unlock Ready.";
         }
     }

@@ -1,29 +1,29 @@
-using Features.Player.Application;
+using Features.Player.Application.Ports;
 using UnityEngine;
 
 namespace Features.Player.Presentation
 {
     public sealed class EnergyRegenTicker : MonoBehaviour
     {
-        private EnergyAdapter _energyAdapter;
+        private IEnergyRegenPort _energyRegenPort;
         private bool _initialized;
 
-        public void Initialize(EnergyAdapter energyAdapter)
+        public void Initialize(IEnergyRegenPort energyRegenPort)
         {
-            if (energyAdapter == null)
+            if (energyRegenPort == null)
             {
-                Debug.LogError("[EnergyRegenTicker] EnergyAdapter is not provided.", this);
+                Debug.LogError("[EnergyRegenTicker] Energy regen port is not provided.", this);
                 return;
             }
 
-            _energyAdapter = energyAdapter;
+            _energyRegenPort = energyRegenPort;
             _initialized = true;
         }
 
         private void Update()
         {
             if (!_initialized) return;
-            _energyAdapter.TickRegen(Time.deltaTime, Time.time);
+            _energyRegenPort.TickRegen(Time.deltaTime, Time.time);
         }
     }
 }

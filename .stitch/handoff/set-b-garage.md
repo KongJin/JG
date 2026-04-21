@@ -71,11 +71,13 @@ The save action must remain clearer than any single editor action.
 ## Unity Translation Targets
 
 - Garage root: `/Canvas/GaragePageRoot`
+- Shared nav root: `/Canvas/LobbyGarageNavBar`
+- Shared nav Lobby tab: `/Canvas/LobbyGarageNavBar/LobbyTabButton`
 - Mobile workspace root: `/Canvas/GaragePageRoot/GarageMobileStackRoot`
 - Focus bar anchor: `/Canvas/GaragePageRoot/GarageMobileStackRoot/GarageMobileTabBar`
 - Scroll body host: `/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost`
 - Scroll body content: `/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent`
-- Slot grid root: `/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/MobileSlotGrid`
+- Slot strip root: `/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow`
 - Save dock root: `/Canvas/GaragePageRoot/MobileSaveDock`
 - Save button: `/Canvas/GaragePageRoot/MobileSaveDock/MobileSaveButton`
 - Settings overlay root: `/Canvas/GaragePageRoot/GarageSettingsOverlay`
@@ -84,6 +86,7 @@ The save action must remain clearer than any single editor action.
 ## Translation Rules
 
 - Preserve the existing `slot first -> single scroll body -> fixed save dock` contract.
+- Treat `/Canvas/LobbyGarageNavBar` as the page nav shell and `GarageMobileTabBar` as the part focus bar.
 - Use the Stitch workspace as a density and hierarchy target, not as a request to add a separate right rail or desktop split.
 - The focused editor should dominate vertical space after slot selection.
 - Preview and summary should feel evaluative and complete even when no flashy model content is available.

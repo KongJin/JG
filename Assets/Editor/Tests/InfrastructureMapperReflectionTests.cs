@@ -10,7 +10,7 @@ namespace Tests.Editor
         private static readonly Type FirestoreFieldReaderType = Type.GetType("Features.Account.Infrastructure.FirestoreFieldReader, Assembly-CSharp");
         private static readonly Type FirebaseAuthResponseMapperType = Type.GetType("Features.Account.Infrastructure.FirebaseAuthResponseMapper, Assembly-CSharp");
         private static readonly Type TokenResponseType = Type.GetType("Features.Account.Infrastructure.FirebaseAuthRestAdapter+TokenResponse, Assembly-CSharp");
-        private static readonly Type LobbyReadyPolicyType = Type.GetType("Features.Lobby.Presentation.LobbyReadyPolicyController, Assembly-CSharp");
+        private static readonly Type LobbyReadyPolicyType = Type.GetType("Features.Lobby.Application.LobbyReadyPolicy, Assembly-CSharp");
         private static readonly Type GarageRosterType = Type.GetType("Features.Garage.Domain.GarageRoster, Assembly-CSharp");
         private static readonly Type GarageUnitLoadoutType = Type.GetType("Features.Garage.Domain.GarageRoster+UnitLoadout, Assembly-CSharp");
 

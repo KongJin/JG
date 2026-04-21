@@ -5,7 +5,7 @@ description: Project-specific Unity workflow for the JG repo. Use when Codex wor
 
 # JG Unity Workflow
 
-> 마지막 업데이트: 2026-04-20
+> 마지막 업데이트: 2026-04-22
 > 상태: active
 > doc_id: skill.jg-unity-workflow
 > role: skill-entry
@@ -16,6 +16,7 @@ description: Project-specific Unity workflow for the JG repo. Use when Codex wor
 Use this skill for JG-specific Unity execution order and sources of truth.
 Keep generic Unity serialization, MCP/CLI theory, and broad engine rules in `rule-unity`.
 If a document name moved, resolve the current path through `docs/index.md` first and then follow the owner doc by `doc_id`.
+If the current collaboration mode is `Plan Mode`, use this skill for inspection/reference only. Do not mutate scenes, prefabs, or runtime evidence from this lane.
 
 ## Read First
 
@@ -30,11 +31,14 @@ If a document name moved, resolve the current path through `docs/index.md` first
 ## JG Defaults
 
 - Prefer Unity MCP and in-editor changes over direct `.unity` or `.prefab` YAML edits.
+- In `Plan Mode`, inspect Unity paths and compile truth only. Do not run mutation flows through MCP, scene/prefab edits, or smoke scripts that rewrite evidence.
 - Treat serialized scene and prefab state as runtime truth for scene-owned wiring.
+- In `prefab-first reset`, verify the actual prefab asset path and current child names from the repo before trusting helper scripts, import boards, or summary artifacts.
 - Do not reintroduce code-driven builder or rebuild loops when the repo expects MCP prefab or scene authoring.
 - Never overwrite an open scene on disk. If Unity already has the scene loaded, keep the work inside MCP or switch scenes first.
 - Stop play mode before script edits that need recompilation, then wait for compile to settle before testing again.
 - Run `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1` before closeout when the task changes Unity UI authoring surfaces.
+- If a generated `.csproj` looks stale, confirm Unity/Bee compile truth and Unity Test Runner inclusion first. Do not patch the generated `.csproj` file directly.
 
 ## Task Routing
 
@@ -71,6 +75,55 @@ If a document name moved, resolve the current path through `docs/index.md` first
 - For Lobby and Garage work, if the prior authoring scene was discarded, use `prefab-first reset` instead of reviving the historical workflow gate/page-switch route.
 - For GameScene UI and HUD work, default to MCP prefab or scene authoring, not builder regeneration.
 - If a smoke script depends on stale UI paths or fragile runtime clone names, repair the automation contract instead of forcing the scene back to match the old path.
+- When a reset renames a hierarchy node, keep translators and smoke helpers compatible with both legacy and current paths until every caller and contract document has migrated.
+
+## Stitch Translation Loop
+
+When Unity work implements an accepted Stitch screen, use this loop:
+
+1. Read the relevant intake and screen manifest first.
+2. Open the accepted Stitch `png` alongside the Unity surface when practical.
+3. Read presentation contracts before touching hierarchy so Required refs are known up front.
+4. Build or repair the smallest prefab baseline that can carry the contract.
+5. Compare Unity output against the source screen before calling the pass done.
+
+## Fidelity Checks
+
+For Stitch-driven UI translation, verify more than hierarchy:
+
+- `structure fidelity`: block order and direction still match the source
+- `emphasis fidelity`: first read, selected state, and focused work area still dominate
+- `completion fidelity`: preview / summary / empty states do not look like placeholders
+- `CTA fidelity`: primary save or commit action keeps its intended weight and persistence
+
+If structure is technically valid but one of the checks above clearly regressed, keep the pass open.
+
+## Layout Cautions
+
+Root-surface translation often fails on layout math rather than missing refs.
+Watch for these first:
+
+- stretch anchors mixed with fixed height `sizeDelta` on layout-group children
+- scroll content missing `ContentSizeFitter` or preferred-height behavior
+- a source `strip` or `row` accidentally translated into a vertical list
+- a sticky dock accidentally translated into an inline button block
+
+## Architecture Guardrails
+
+- `*Setup` and `*Root` classes are wiring-only entry points.
+- `async void` is forbidden; use thin wrappers that delegate to `Task` methods.
+- `Resources.Load`, `transform.Find`, and runtime child traversal are restricted to approved seams only.
+- `scene registry` objects are scene-owned contract components, not runtime repair targets.
+- `FindFirstObjectByType<*SceneRegistry>` is forbidden.
+- `AddComponent<*SceneRegistry>` is forbidden.
+- Runtime-spawned object arrival must use explicit bootstrap registration or a scene-local registrar, never global registry lookup fallback.
+
+## Refactor Checklist
+
+- If a change needs a registry, add it to the scene or prefab contract and wire it through serialized references.
+- If a runtime-spawned object must announce arrival, route it through explicit bootstrap registration or a scene-local registrar.
+- Do not restore hidden scene repair paths just to make a smoke or temporary flow pass.
+- If a generated `.csproj` looks stale, treat Unity/Bee compile inputs and Unity Test Runner inclusion as the canonical execution source of truth.
 
 ## Fast Search
 

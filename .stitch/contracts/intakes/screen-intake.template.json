@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "screen-intake",
+  "setId": "<set-id>",
+  "surfaceId": "<surface-id>",
+  "surfaceRole": "root",
+  "status": "draft",
+  "source": {
+    "tool": "stitch",
+    "screenName": "<stitch-screen-name>",
+    "sourceRef": "<stitch-screen-ref>",
+    "variantLabel": "<optional-variant>"
+  },
+  "familyHints": {
+    "suggestedBlueprintId": "<blueprint-id>",
+    "suggestedFeatureArea": "<lobby|garage|shared|battle>",
+    "likelyOverlay": false,
+    "likelyScrollRoot": false,
+    "repeatedBlockIds": []
+  },
+  "blocks": [
+    {
+      "blockId": "root",
+      "role": "root",
+      "sourceName": "<source-root-name>",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 16,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [],
+      "required": true,
+      "repeat": false,
+      "notes": []
+    }
+  ],
+  "ctaPriority": [
+    {
+      "id": "<primary-cta>",
+      "priority": "primary",
+      "label": "<button-label>",
+      "outcome": "<expected-outcome>",
+      "placement": "footer",
+      "notes": []
+    }
+  ],
+  "states": {
+    "default": true,
+    "empty": false,
+    "loading": false,
+    "error": false,
+    "selected": false,
+    "disabled": false
+  },
+  "validation": {
+    "frame": "390x844",
+    "firstReadOrder": [
+      "root"
+    ],
+    "requiredChecks": [
+      "contract"
+    ]
+  },
+  "notes": [],
+  "openQuestions": []
+}

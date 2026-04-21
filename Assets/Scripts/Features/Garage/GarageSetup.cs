@@ -40,9 +40,6 @@ namespace Features.Garage
         public SaveRosterUseCase SaveRoster { get; private set; }
         public IGarageNetworkPort NetworkPort => _networkAdapter;
         public IAccountDataPort AccountDataPort => _accountDataPort;
-        public IEventPublisher EventPublisher => _eventPublisher;
-
-        public GarageSetup Setup => this;
 
         /// <summary>
         /// Garage Feature 초기화.
@@ -91,7 +88,13 @@ namespace Features.Garage
 
             if (_pageController != null)
             {
-                _pageController.Initialize(this, _panelCatalogFactory.Build(unitCatalog));
+                _pageController.Initialize(
+                    InitializeGarage,
+                    ComposeUnit,
+                    ValidateRoster,
+                    SaveRoster,
+                    _eventPublisher,
+                    _panelCatalogFactory.Build(unitCatalog));
             }
         }
 

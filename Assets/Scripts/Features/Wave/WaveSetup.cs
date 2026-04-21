@@ -49,6 +49,9 @@ namespace Features.Wave
         [Required, SerializeField]
         private CoreHealthHudView _coreHealthView;
 
+        [Required, SerializeField]
+        private EnemySceneRegistry _enemySceneRegistry;
+
         [Tooltip(
             "선택. 연결 시 스폰 배율을 이 컴포넌트에서만 조회한다. 비우면 Initialize 시 Room에서 직접 읽는다."
         )]
@@ -135,13 +138,11 @@ namespace Features.Wave
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, gameEndBridge));
 
             _flowController.Initialize(
-                waveLoop,
-                (IWaveTablePort)_waveTable,
-                (IWaveSpawnPort)_spawnAdapter,
-                eventBus,
-                eventBus,
-                localPlayerId
-            );
+                new WaveFlowDriver(
+                    waveLoop,
+                    (IWaveTablePort)_waveTable,
+                    (IWaveSpawnPort)_spawnAdapter),
+                eventBus);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _flowController));
 
             _coreHealthView.Initialize(
@@ -151,7 +152,7 @@ namespace Features.Wave
             );
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, _coreHealthView));
 
-            _enemyArrivalCoordinator.Attach(this, OnEnemyArrived);
+            _enemyArrivalCoordinator.Attach(_enemySceneRegistry, OnEnemyArrived);
 
             if (PhotonNetwork.IsMasterClient)
                 _networkAdapter.ResetRoomPropertiesForNewMatch();

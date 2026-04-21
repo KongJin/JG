@@ -1,6 +1,6 @@
 # Stitch SDK Helpers
 
-> 마지막 업데이트: 2026-04-20
+> 마지막 업데이트: 2026-04-21
 > 상태: active
 > doc_id: tools.stitch-readme
 > role: reference
@@ -19,6 +19,8 @@ Stitch owner 문서의 current path는 `docs/index.md`에서 찾고, 이 문서�
 - list accessible Stitch projects
 - list screens in a Stitch project
 - fetch one Stitch screen's HTML and screenshot into `artifacts/stitch/`
+- generate overlay-family draft manifests from `screen-intake` JSON
+- compare generated draft manifests against accepted screen manifests
 
 This keeps Stitch as a design-input tool while Unity scene contracts remain the runtime SSOT.
 
@@ -92,6 +94,18 @@ Fetch one screen from explicit IDs:
 npm run stitch:fetch:screen -- --project 15511739434163767886 --screen 2225f2733de747d298f1e0c445fbb47c
 ```
 
+Generate one overlay-family draft manifest preview from a `screen-intake`:
+
+```bash
+npm run stitch:generate:overlay-draft -- --input .stitch/contracts/intakes/set-c-common-error-dialog.intake.json
+```
+
+Generate and compare against the current accepted manifest:
+
+```bash
+npm run stitch:generate:overlay-draft -- --input .stitch/contracts/intakes/set-c-common-error-dialog.intake.json --compare .stitch/contracts/screens/set-c-common-error-dialog.screen.json
+```
+
 ## Output
 
 Each fetched screen is saved under:
@@ -109,6 +123,17 @@ With:
 The JG bootstrap flow also writes:
 
 - `artifacts/stitch/<projectId>/jg-bootstrap-summary.json`
+
+Overlay-family draft generation writes:
+
+- `artifacts/stitch/generated-drafts/*.generated-draft.screen.json`
+
+The current generator is intentionally narrow:
+
+- supports only `overlay-modal` family intake files
+- writes `draft` preview manifests only
+- does not mutate accepted `.stitch/contracts/screens/*.json`
+- stops instead of guessing when `openQuestions` remain
 
 ## Known Gotchas
 
@@ -188,3 +213,13 @@ Before continuing a later session, identify:
 
 For JG, storing the exported files under `artifacts/stitch/<projectId>/<screenId>/`
 is the safest way to preserve a usable handoff even if Stitch project listing is inconsistent.
+
+### 6. `screen-intake -> draft manifest` generation is intentionally conservative
+
+Repo helper note:
+
+- `tools/stitch/generate-overlay-draft-manifest.mjs` only supports `overlay-modal`
+- it requires a resolved `screen-intake` JSON under `.stitch/contracts/intakes/`
+- it writes preview output under `artifacts/stitch/generated-drafts/`
+- if `openQuestions` remain, generation fails on purpose instead of inventing CTA or target data
+- `--compare` prints a small diff summary against an accepted screen manifest so contract review is faster

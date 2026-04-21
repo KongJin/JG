@@ -1,4 +1,5 @@
 using Shared.Attributes;
+using Features.Zone.Application;
 using Features.Zone.Application.Events;
 using Features.Zone.Application.Ports;
 using Features.Zone.Domain;
@@ -22,7 +23,7 @@ namespace Features.Zone
         [Required, SerializeField]
         private Color _zoneColor = new Color(0.5f, 0.8f, 1f, 0.6f);
         private GameObjectPool _zonePool;
-        private IEventPublisher _eventPublisher;
+        private HandleZoneContactUseCase _zoneContactUseCase;
 
         private void Awake()
         {
@@ -37,7 +38,7 @@ namespace Features.Zone
 
         public void Initialize(IEventPublisher eventPublisher)
         {
-            _eventPublisher = eventPublisher;
+            _zoneContactUseCase = new HandleZoneContactUseCase(eventPublisher);
         }
 
         public void SpawnZone(
@@ -61,7 +62,7 @@ namespace Features.Zone
             view.Initialize(radius, duration);
             view.SetColor(_zoneColor);
             view.name = $"{_zonePrefab.name}_{Time.time}";
-            detector.Initialize(zoneId, casterId, baseDamage, statusPayload, _eventPublisher, allyDamageScale);
+            detector.Initialize(zoneId, casterId, baseDamage, statusPayload, _zoneContactUseCase, allyDamageScale);
         }
     }
 }

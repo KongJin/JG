@@ -61,14 +61,8 @@ namespace Features.Player
 
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
         {
-            var registry = UnityEngine.Object.FindFirstObjectByType<PlayerSceneRegistry>();
-            if (registry == null)
-            {
-                Debug.LogWarning("[PlayerSetup] PlayerSceneRegistry not found. Arrival will be ignored.", this);
-                return;
-            }
-
-            registry.NotifyArrived(this);
+            // Arrival fallback was intentionally removed so player wiring depends on
+            // explicit scene contract / bootstrap registration paths instead of runtime global lookup.
         }
 
         /// <summary>

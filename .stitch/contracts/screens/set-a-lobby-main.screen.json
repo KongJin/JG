@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "screen-manifest",
+  "setId": "set-a",
+  "surfaceId": "lobby-main-empty",
+  "surfaceRole": "root",
+  "status": "accepted",
+  "extends": "lobby-root",
+  "targets": {
+    "prefabPath": "Assets/Prefabs/Features/Lobby/Root/LobbyPageRoot.prefab",
+    "sceneRoots": [
+      "/Canvas/LobbyPageRoot"
+    ],
+    "primaryContractPaths": [
+      "/Canvas/LobbyPageRoot",
+      "/Canvas/LobbyPageRoot/RoomListPanel",
+      "/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/RoomListSurface",
+      "/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard"
+    ],
+    "serializedOwners": [
+      "/Canvas/LobbyPageRoot/LobbyView::LobbyView",
+      "/Canvas/LobbyPageRoot/RoomListPanel::RoomListView",
+      "/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard::LobbyGarageSummaryView"
+    ]
+  },
+  "ctaPriority": [
+    {
+      "id": "create-room",
+      "priority": "primary",
+      "unityTargetPath": "/Canvas/LobbyPageRoot/CreateRoomCard/CreateRoomButton",
+      "outcome": "open create room flow"
+    },
+    {
+      "id": "open-garage",
+      "priority": "secondary",
+      "unityTargetPath": "/Canvas/LobbyGarageNavBar/GarageTabButton",
+      "outcome": "switch to garage page"
+    }
+  ],
+  "states": {
+    "default": true,
+    "empty": true,
+    "loading": false,
+    "error": false,
+    "selected": false,
+    "disabled": false
+  },
+  "validation": {
+    "frame": "390x844",
+    "firstReadOrder": [
+      "lobby-header-card",
+      "rooms-section-card",
+      "create-room-card",
+      "garage-summary-card"
+    ],
+    "requiredChecks": [
+      "contract",
+      "room list first read order",
+      "empty room state finished",
+      "garage summary tertiary"
+    ],
+    "smokeScripts": [
+      "Invoke-LobbyGaragePageSwitchSmoke.ps1"
+    ]
+  },
+  "blockOverrides": {
+    "room-list-surface": {
+      "notes": [
+        "Use polished empty-state treatment with short Korean title, one helper line, and one actionable create or refresh affordance."
+      ]
+    },
+    "create-room-card": {
+      "notes": [
+        "Keep create room secondary and quieter than the rooms section."
+      ]
+    },
+    "garage-summary-card": {
+      "notes": [
+        "Compact summary only. No deep garage editor controls."
+      ]
+    }
+  },
+  "appendBlocks": [],
+  "notes": [
+    "Accepted empty-state baseline for Lobby main.",
+    "Room list remains the dominant surface even when empty."
+  ]
+}

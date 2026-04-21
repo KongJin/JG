@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -21,6 +22,14 @@ namespace Tests.Editor
             NormalizeRelativePath("Assets/Scripts/Features/Combat/CombatSetup.cs"),
             NormalizeRelativePath("Assets/Scripts/Shared/Runtime/Sound/SoundPlayer.cs"),
         };
+
+        private static readonly Regex SceneRegistryFindRegex = new(
+            @"FindFirstObjectByType<\s*(?:[\w]+\.)*\w*SceneRegistry\s*>",
+            RegexOptions.Compiled);
+
+        private static readonly Regex SceneRegistryAddComponentRegex = new(
+            @"AddComponent<\s*(?:[\w]+\.)*\w*SceneRegistry\s*>",
+            RegexOptions.Compiled);
 
         [Test]
         public void SetupAndRootFiles_DoNotDeclareUpdateMethods()
@@ -101,6 +110,46 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void SceneRegistries_AreNotFoundViaRuntimeGlobalLookup()
+        {
+            var offenders = EnumerateScriptFiles()
+                .Select(path => new
+                {
+                    RelativePath = ToRepoRelativePath(path),
+                    Text = File.ReadAllText(path),
+                })
+                .Where(entry => SceneRegistryFindRegex.IsMatch(entry.Text))
+                .Select(entry => entry.RelativePath)
+                .OrderBy(path => path)
+                .ToArray();
+
+            Assert.That(
+                offenders,
+                Is.Empty,
+                BuildFailureMessage("scene registry는 scene contract 또는 explicit bootstrap registration만 허용한다. FindFirstObjectByType<*SceneRegistry>는 금지된다.", offenders));
+        }
+
+        [Test]
+        public void SceneRegistries_AreNotCreatedViaRuntimeAddComponent()
+        {
+            var offenders = EnumerateScriptFiles()
+                .Select(path => new
+                {
+                    RelativePath = ToRepoRelativePath(path),
+                    Text = File.ReadAllText(path),
+                })
+                .Where(entry => SceneRegistryAddComponentRegex.IsMatch(entry.Text))
+                .Select(entry => entry.RelativePath)
+                .OrderBy(path => path)
+                .ToArray();
+
+            Assert.That(
+                offenders,
+                Is.Empty,
+                BuildFailureMessage("scene registry는 scene contract 또는 explicit bootstrap registration만 허용한다. AddComponent<*SceneRegistry>는 금지된다.", offenders));
+        }
+
+        [Test]
         public void UnityWorkflowSkill_ContainsArchitectureGuardrails()
         {
             string skillPath = Path.Combine(GetRepoRoot(), ".codex", "skills", "jg-unity-workflow", "SKILL.md");
@@ -112,6 +161,8 @@ namespace Tests.Editor
             StringAssert.Contains("`*Setup` and `*Root` classes are wiring-only entry points.", text);
             StringAssert.Contains("`async void` is forbidden", text);
             StringAssert.Contains("`Resources.Load`, `transform.Find`, and runtime child traversal", text);
+            StringAssert.Contains("`FindFirstObjectByType<*SceneRegistry>` is forbidden", text);
+            StringAssert.Contains("`AddComponent<*SceneRegistry>` is forbidden", text);
             StringAssert.Contains("Refactor Checklist", text);
         }
 

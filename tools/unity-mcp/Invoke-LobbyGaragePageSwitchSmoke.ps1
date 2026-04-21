@@ -1,8 +1,8 @@
 param(
     [string]$UnityBridgeUrl,
     [string]$ScenePath = "Assets/Scenes/LobbyScene.unity",
-    [string]$GarageOpenButtonPath = "/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard/GarageTabButton",
-    [string]$BackToLobbyButtonPath = "/Canvas/GaragePageRoot/GarageHeaderRow/LobbyTabButton",
+    [string]$GarageTabButtonPath = "/Canvas/LobbyGarageNavBar/GarageTabButton",
+    [string]$LobbyTabButtonPath = "/Canvas/LobbyGarageNavBar/LobbyTabButton",
     [string]$LobbyRootPath = "/Canvas/LobbyPageRoot",
     [string]$GarageRootPath = "/Canvas/GaragePageRoot",
     [string]$LoginLoadingPanelPath = "/Canvas/LoginLoadingOverlay/LoadingPanel",
@@ -123,7 +123,7 @@ try {
     $lobbyCaptureFrame = Convert-McpCaptureToFixedFrame -RelativePath $lobbyCapture.relativePath -Width $TargetWidth -Height $TargetHeight
     $lobbyStates = Get-McpPageStateSnapshot -Root $root -LobbyRootPath $LobbyRootPath -GarageRootPath $GarageRootPath
 
-    $garageInvoke = Invoke-McpUiInvoke -Root $root -Path $GarageOpenButtonPath -Method "click"
+    $garageInvoke = Invoke-McpUiInvoke -Root $root -Path $GarageTabButtonPath -Method "click"
     $garageReady = Wait-McpUiActive -Root $root -Path $GarageRootPath -TimeoutMs ($TimeoutSec * 1000)
     $lobbyHidden = Wait-McpUiInactive -Root $root -Path $LobbyRootPath -TimeoutMs ($TimeoutSec * 1000)
     Start-Sleep -Milliseconds $UiSettleMs
@@ -131,7 +131,7 @@ try {
     $garageCaptureFrame = Convert-McpCaptureToFixedFrame -RelativePath $garageCapture.relativePath -Width $TargetWidth -Height $TargetHeight
     $garageStates = Get-McpPageStateSnapshot -Root $root -LobbyRootPath $LobbyRootPath -GarageRootPath $GarageRootPath
 
-    $backInvoke = Invoke-McpUiInvoke -Root $root -Path $BackToLobbyButtonPath -Method "click"
+    $backInvoke = Invoke-McpUiInvoke -Root $root -Path $LobbyTabButtonPath -Method "click"
     $lobbyReturned = Wait-McpUiActive -Root $root -Path $LobbyRootPath -TimeoutMs ($TimeoutSec * 1000)
     $garageHiddenAfterReturn = Wait-McpUiInactive -Root $root -Path $GarageRootPath -TimeoutMs ($TimeoutSec * 1000)
     Start-Sleep -Milliseconds $UiSettleMs
@@ -152,8 +152,8 @@ try {
             contract = "center-crop-and-resize"
         }
         uiPaths = [PSCustomObject]@{
-            garageOpenButton = $GarageOpenButtonPath
-            backToLobbyButton = $BackToLobbyButtonPath
+            garageTabButton = $GarageTabButtonPath
+            lobbyTabButton = $LobbyTabButtonPath
             lobbyRoot = $LobbyRootPath
             garageRoot = $GarageRootPath
         }

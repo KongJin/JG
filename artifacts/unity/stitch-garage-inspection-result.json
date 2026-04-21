@@ -1,0 +1,342 @@
+﻿{
+    "schemaVersion":  "1.0.0",
+    "surfaceId":  "garage-main-workspace",
+    "mapPath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\mappings\\garage-main-workspace.unity-map.json",
+    "target":  {
+                   "kind":  "prefab",
+                   "assetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
+               },
+    "translationStrategy":  "unity-mcp-garage-manifest-v1",
+    "contractRefs":  {
+                         "manifestPath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\screens\\set-b-garage-main-workspace.screen.json",
+                         "intakePath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\intakes\\set-b-garage-main-workspace.intake.json",
+                         "blueprintPath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\blueprints\\garage-workspace.blueprint.json"
+                     },
+    "blocks":  [
+                   {
+                       "blockId":  "slot-selector",
+                       "hostPath":  "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow",
+                       "candidatePaths":  [
+                                              "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow",
+                                              "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/MobileSlotGrid"
+                                          ],
+                       "found":  true,
+                       "resolvedPath":  "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow",
+                       "resolvedBy":  "hostPath",
+                       "componentTypes":  [
+                                              "RectTransform",
+                                              "ContentSizeFitter",
+                                              "LayoutElement",
+                                              "HorizontalLayoutGroup"
+                                          ],
+                       "missingComponents":  [
+
+                                             ],
+                       "expectedLayout":  {
+                                              "axis":  "horizontal",
+                                              "preferredHeight":  118,
+                                              "spacing":  8
+                                          },
+                       "actualLayout":  {
+                                            "axis":  "horizontal",
+                                            "preferredWidth":  -1,
+                                            "preferredHeight":  118,
+                                            "minWidth":  -1,
+                                            "minHeight":  -1,
+                                            "spacing":  8,
+                                            "verticalSpacing":  null,
+                                            "sizeDelta":  "(0.00,0.00)",
+                                            "sizeDeltaWidth":  0,
+                                            "sizeDeltaHeight":  0,
+                                            "anchorMin":  "(0.00,1.00)",
+                                            "anchorMax":  "(1.00,1.00)",
+                                            "pivot":  "(0.50,1.00)",
+                                            "color":  null
+                                        },
+                       "verificationTags":  [
+                                                "first-read",
+                                                "horizontal-strip"
+                                            ],
+                       "notes":  [
+
+                                 ]
+                   },
+                   {
+                       "blockId":  "focus-bar",
+                       "hostPath":  "GarageMobileStackRoot/GarageMobileTabBar",
+                       "candidatePaths":  [
+                                              "GarageMobileStackRoot/GarageMobileTabBar"
+                                          ],
+                       "found":  true,
+                       "resolvedPath":  "GarageMobileStackRoot/GarageMobileTabBar",
+                       "resolvedBy":  "hostPath",
+                       "componentTypes":  [
+                                              "RectTransform",
+                                              "CanvasRenderer",
+                                              "Image",
+                                              "HorizontalLayoutGroup"
+                                          ],
+                       "missingComponents":  [
+
+                                             ],
+                       "expectedLayout":  {
+                                              "axis":  "horizontal",
+                                              "preferredHeight":  52,
+                                              "spacing":  8
+                                          },
+                       "actualLayout":  {
+                                            "axis":  "horizontal",
+                                            "preferredWidth":  null,
+                                            "preferredHeight":  null,
+                                            "minWidth":  null,
+                                            "minHeight":  null,
+                                            "spacing":  8,
+                                            "verticalSpacing":  null,
+                                            "sizeDelta":  "(-32.00,52.00)",
+                                            "sizeDeltaWidth":  -32,
+                                            "sizeDeltaHeight":  52,
+                                            "anchorMin":  "(0.00,1.00)",
+                                            "anchorMax":  "(1.00,1.00)",
+                                            "pivot":  "(0.50,1.00)",
+                                            "color":  "(0.07,0.10,0.14,1.00)"
+                                        },
+                       "verificationTags":  [
+                                                "compact",
+                                                "focus-switch"
+                                            ],
+                       "notes":  [
+
+                                 ]
+                   },
+                   {
+                       "blockId":  "focused-editor",
+                       "hostPath":  "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/UnitEditorPane",
+                       "candidatePaths":  [
+                                              "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/UnitEditorPane"
+                                          ],
+                       "found":  true,
+                       "resolvedPath":  "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/UnitEditorPane",
+                       "resolvedBy":  "hostPath",
+                       "componentTypes":  [
+                                              "RectTransform",
+                                              "CanvasRenderer",
+                                              "Image",
+                                              "GarageUnitEditorView",
+                                              "VerticalLayoutGroup",
+                                              "LayoutElement"
+                                          ],
+                       "missingComponents":  [
+
+                                             ],
+                       "expectedLayout":  {
+                                              "axis":  "vertical",
+                                              "preferredHeight":  452,
+                                              "spacing":  12
+                                          },
+                       "actualLayout":  {
+                                            "axis":  "vertical",
+                                            "preferredWidth":  -1,
+                                            "preferredHeight":  452,
+                                            "minWidth":  -1,
+                                            "minHeight":  -1,
+                                            "spacing":  null,
+                                            "verticalSpacing":  12,
+                                            "sizeDelta":  "(0.00,0.00)",
+                                            "sizeDeltaWidth":  0,
+                                            "sizeDeltaHeight":  0,
+                                            "anchorMin":  "(0.00,0.00)",
+                                            "anchorMax":  "(0.00,0.00)",
+                                            "pivot":  "(0.50,1.00)",
+                                            "color":  "(0.07,0.11,0.15,1.00)"
+                                        },
+                       "verificationTags":  [
+                                                "dominant-block"
+                                            ],
+                       "notes":  [
+
+                                 ]
+                   },
+                   {
+                       "blockId":  "preview-card",
+                       "hostPath":  "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/PreviewCard",
+                       "candidatePaths":  [
+                                              "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/PreviewCard"
+                                          ],
+                       "found":  true,
+                       "resolvedPath":  "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/PreviewCard",
+                       "resolvedBy":  "hostPath",
+                       "componentTypes":  [
+                                              "RectTransform",
+                                              "CanvasRenderer",
+                                              "Image",
+                                              "GarageUnitPreviewView",
+                                              "LayoutElement"
+                                          ],
+                       "missingComponents":  [
+
+                                             ],
+                       "expectedLayout":  {
+                                              "preferredHeight":  296
+                                          },
+                       "actualLayout":  {
+                                            "axis":  "none",
+                                            "preferredWidth":  -1,
+                                            "preferredHeight":  296,
+                                            "minWidth":  -1,
+                                            "minHeight":  -1,
+                                            "spacing":  null,
+                                            "verticalSpacing":  null,
+                                            "sizeDelta":  "(0.00,0.00)",
+                                            "sizeDeltaWidth":  0,
+                                            "sizeDeltaHeight":  0,
+                                            "anchorMin":  "(0.00,0.00)",
+                                            "anchorMax":  "(0.00,0.00)",
+                                            "pivot":  "(0.50,1.00)",
+                                            "color":  "(0.07,0.10,0.14,1.00)"
+                                        },
+                       "verificationTags":  [
+                                                "evaluative"
+                                            ],
+                       "notes":  [
+
+                                 ]
+                   },
+                   {
+                       "blockId":  "summary-card",
+                       "hostPath":  "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/ResultPane",
+                       "candidatePaths":  [
+                                              "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/ResultPane"
+                                          ],
+                       "found":  true,
+                       "resolvedPath":  "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/ResultPane",
+                       "resolvedBy":  "hostPath",
+                       "componentTypes":  [
+                                              "RectTransform",
+                                              "CanvasRenderer",
+                                              "Image",
+                                              "GarageResultPanelView",
+                                              "LayoutElement"
+                                          ],
+                       "missingComponents":  [
+
+                                             ],
+                       "expectedLayout":  {
+                                              "preferredHeight":  248
+                                          },
+                       "actualLayout":  {
+                                            "axis":  "none",
+                                            "preferredWidth":  -1,
+                                            "preferredHeight":  248,
+                                            "minWidth":  -1,
+                                            "minHeight":  -1,
+                                            "spacing":  null,
+                                            "verticalSpacing":  null,
+                                            "sizeDelta":  "(0.00,0.00)",
+                                            "sizeDeltaWidth":  0,
+                                            "sizeDeltaHeight":  0,
+                                            "anchorMin":  "(0.00,0.00)",
+                                            "anchorMax":  "(0.00,0.00)",
+                                            "pivot":  "(0.50,1.00)",
+                                            "color":  "(0.08,0.12,0.16,1.00)"
+                                        },
+                       "verificationTags":  [
+                                                "evaluative",
+                                                "result-summary"
+                                            ],
+                       "notes":  [
+
+                                 ]
+                   },
+                   {
+                       "blockId":  "primary-cta",
+                       "hostPath":  "MobileSaveDock/MobileSaveButton",
+                       "candidatePaths":  [
+                                              "MobileSaveDock/MobileSaveButton"
+                                          ],
+                       "found":  true,
+                       "resolvedPath":  "MobileSaveDock/MobileSaveButton",
+                       "resolvedBy":  "hostPath",
+                       "componentTypes":  [
+                                              "RectTransform",
+                                              "CanvasRenderer",
+                                              "Image",
+                                              "Button"
+                                          ],
+                       "missingComponents":  [
+
+                                             ],
+                       "expectedLayout":  {
+                                              "sticky":  true
+                                          },
+                       "actualLayout":  {
+                                            "axis":  "none",
+                                            "preferredWidth":  null,
+                                            "preferredHeight":  null,
+                                            "minWidth":  null,
+                                            "minHeight":  null,
+                                            "spacing":  null,
+                                            "verticalSpacing":  null,
+                                            "sizeDelta":  "(-24.00,-24.00)",
+                                            "sizeDeltaWidth":  -24,
+                                            "sizeDeltaHeight":  -24,
+                                            "anchorMin":  "(0.00,0.00)",
+                                            "anchorMax":  "(1.00,1.00)",
+                                            "pivot":  "(0.50,0.50)",
+                                            "color":  "(0.83,0.43,0.17,1.00)"
+                                        },
+                       "verificationTags":  [
+                                                "persistent",
+                                                "primary-emphasis"
+                                            ],
+                       "notes":  [
+
+                                 ]
+                   },
+                   {
+                       "blockId":  "aux-settings",
+                       "hostPath":  "GarageHeaderRow/SettingsButton",
+                       "candidatePaths":  [
+                                              "GarageHeaderRow/SettingsButton"
+                                          ],
+                       "found":  true,
+                       "resolvedPath":  "GarageHeaderRow/SettingsButton",
+                       "resolvedBy":  "hostPath",
+                       "componentTypes":  [
+                                              "RectTransform",
+                                              "CanvasRenderer",
+                                              "Image",
+                                              "Button"
+                                          ],
+                       "missingComponents":  [
+
+                                             ],
+                       "expectedLayout":  null,
+                       "actualLayout":  {
+                                            "axis":  "none",
+                                            "preferredWidth":  null,
+                                            "preferredHeight":  null,
+                                            "minWidth":  null,
+                                            "minHeight":  null,
+                                            "spacing":  null,
+                                            "verticalSpacing":  null,
+                                            "sizeDelta":  "(92.00,38.00)",
+                                            "sizeDeltaWidth":  92,
+                                            "sizeDeltaHeight":  38,
+                                            "anchorMin":  "(1.00,0.50)",
+                                            "anchorMax":  "(1.00,0.50)",
+                                            "pivot":  "(1.00,0.50)",
+                                            "color":  "(0.12,0.17,0.22,1.00)"
+                                        },
+                       "verificationTags":  [
+                                                "auxiliary-action"
+                                            ],
+                       "notes":  [
+
+                                 ]
+                   }
+               ],
+    "missingBlocks":  [
+
+                      ],
+    "generatedAt":  "2026-04-22T00:54:05.1630701+09:00"
+}

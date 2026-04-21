@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$repo_root"
+
+if ! command -v npm >/dev/null 2>&1; then
+  echo "pre-commit: npm was not found, so rules lint could not run." >&2
+  exit 1
+fi
+
+echo "pre-commit: running rules lint"
+npm run --silent rules:lint

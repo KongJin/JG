@@ -25,8 +25,8 @@ Assert-McpSceneAssetExistsForWorkflow -ScenePath $ScenePath -WorkflowName "Invok
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
 $startedPlayHere = $false
 $garageContentRoot = "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent"
-$garageSlotGridRoot = "$garageContentRoot/RosterListPane/MobileSlotGrid"
-$garageTabBarRoot = "$garageContentRoot/GarageMobileTabBar"
+$garageSlotGridRoot = "$garageContentRoot/RosterListPane/SlotStripRow"
+$garageTabBarRoot = "/Canvas/GaragePageRoot/GarageMobileStackRoot/GarageMobileTabBar"
 $garageEditorRoot = "$garageContentRoot/UnitEditorPane"
 
 function Get-GarageSlotPath {

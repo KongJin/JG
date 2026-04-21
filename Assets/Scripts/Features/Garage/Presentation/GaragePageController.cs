@@ -1,7 +1,9 @@
 using Features.Garage.Application;
 using Features.Garage.Domain;
 using Features.Garage.Presentation.Theme;
+using Features.Unit.Application;
 using Shared.Attributes;
+using Shared.EventBus;
 using Shared.Kernel;
 using TMPro;
 using UnityEngine;
@@ -53,7 +55,11 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private TMP_Text _mobileSaveButtonLabel;
         [Required, SerializeField] private TMP_Text _mobileSaveStateText;
 
-        private GarageSetup _setup;
+        private InitializeGarageUseCase _initializeGarage;
+        private ComposeUnitUseCase _composeUnit;
+        private ValidateRosterUseCase _validateRoster;
+        private SaveRosterUseCase _saveRoster;
+        private IEventPublisher _eventPublisher;
         private GaragePanelCatalog _catalog;
         private GaragePageState _state;
         private GaragePagePresenter _presenter;
@@ -64,12 +70,21 @@ namespace Features.Garage.Presentation
         private bool _isSettingsOverlayOpen;
         private MobilePartFocus _mobilePartFocus = MobilePartFocus.Frame;
         private readonly GarageKeyboardInputHandler _keyboardInputHandler = new();
-        private readonly GarageSaveCommandHandler _saveCommandHandler = new();
-        private readonly GarageDraftStatePublisher _draftStatePublisher = new();
+        private readonly PublishGarageDraftStateUseCase _draftStatePublisher = new();
 
-        public void Initialize(GarageSetup setup, GaragePanelCatalog catalog)
+        public void Initialize(
+            InitializeGarageUseCase initializeGarage,
+            ComposeUnitUseCase composeUnit,
+            ValidateRosterUseCase validateRoster,
+            SaveRosterUseCase saveRoster,
+            IEventPublisher eventPublisher,
+            GaragePanelCatalog catalog)
         {
-            _setup = setup;
+            _initializeGarage = initializeGarage;
+            _composeUnit = composeUnit;
+            _validateRoster = validateRoster;
+            _saveRoster = saveRoster;
+            _eventPublisher = eventPublisher;
             _catalog = catalog;
             _presenter = new GaragePagePresenter(_catalog);
             _state ??= new GaragePageState();
@@ -100,7 +115,7 @@ namespace Features.Garage.Presentation
             try
             {
                 EnsureInitialized();
-                var roster = await _setup.InitializeGarage.Execute();
+                var roster = await _initializeGarage.Execute();
                 _state.Initialize(roster ?? new GarageRoster());
                 Render();
             }
@@ -314,24 +329,36 @@ namespace Features.Garage.Presentation
 
             EnsureInitialized();
             var evaluation = EvaluateDraft();
-            var saveResult = await _saveCommandHandler.ExecuteAsync(
-                _state,
-                evaluation,
-                _setup,
-                _resultPanelView,
-                () =>
-                {
-                    _isSaving = true;
-                    RefreshMobileSaveButton(_presenter.BuildResultViewModel(_state, evaluation));
-                },
-                () =>
-                {
-                    _isSaving = false;
-                });
-
-            if (!saveResult.ShouldRender)
+            if (!evaluation.CanSave)
+            {
+                string message = !string.IsNullOrWhiteSpace(evaluation.RosterValidationError)
+                    ? evaluation.RosterValidationError
+                    : evaluation.HasDraftChanges
+                        ? "Draft is not ready to save."
+                        : "No unsaved changes.";
+                _state.SetValidationOverride(message);
+                Render();
                 return;
+            }
 
+            _isSaving = true;
+            RefreshMobileSaveButton(_presenter.BuildResultViewModel(_state, evaluation));
+            _resultPanelView.ShowLoading(true);
+
+            var result = await _saveRoster.Execute(_state.DraftRoster.Clone());
+
+            _isSaving = false;
+            _resultPanelView.ShowLoading(false);
+
+            if (!result.IsSuccess)
+            {
+                _state.SetValidationOverride(result.Error);
+                Render();
+                return;
+            }
+
+            _state.CommitDraft();
+            _resultPanelView.ShowToast("Roster saved!");
             Render();
             ScrollMobileBodyToTop();
         }
@@ -528,7 +555,7 @@ namespace Features.Garage.Presentation
         private void RefreshMobileSaveStateText(GarageResultViewModel resultViewModel)
         {
             _mobileSaveStateText.enableAutoSizing = false;
-            _mobileSaveStateText.fontSize = 13f;
+            _mobileSaveStateText.fontSize = 14f;
             _mobileSaveStateText.alignment = TextAlignmentOptions.TopLeft;
             _mobileSaveStateText.textWrappingMode = TextWrappingModes.Normal;
             _mobileSaveStateText.overflowMode = TextOverflowModes.Ellipsis;
@@ -621,8 +648,8 @@ namespace Features.Garage.Presentation
         private void PublishDraftState()
         {
             EnsureInitialized();
-            var draftState = _draftStatePublisher.Build(_state);
-            _setup.EventPublisher.Publish(new GarageDraftStateChangedEvent(
+            var draftState = _draftStatePublisher.Build(_state.CommittedRoster, _state.HasDraftChanges());
+            _eventPublisher.Publish(new GarageDraftStateChangedEvent(
                 _state.CommittedRoster.Count,
                 draftState.HasUnsavedChanges,
                 draftState.ReadyEligible,
@@ -639,7 +666,7 @@ namespace Features.Garage.Presentation
             Result<ComposedUnit> composeResult = Result<ComposedUnit>.Failure("Draft composition was not evaluated.");
             if (hasCatalogData && _state.HasCompleteDraft())
             {
-                composeResult = _setup.ComposeUnit.Execute(
+                composeResult = _composeUnit.Execute(
                     Shared.Kernel.DomainEntityId.New(),
                     _state.EditingFrameId,
                     _state.EditingFirepowerId,
@@ -649,7 +676,7 @@ namespace Features.Garage.Presentation
             Result rosterValidation = Result.Success();
             if (_state.HasDraftChanges())
             {
-                rosterValidation = _setup.ValidateRoster.Execute(_state.DraftRoster, out string validationError);
+                rosterValidation = _validateRoster.Execute(_state.DraftRoster, out string validationError);
                 if (rosterValidation.IsFailure && string.IsNullOrWhiteSpace(rosterValidation.Error) && !string.IsNullOrWhiteSpace(validationError))
                     rosterValidation = Result.Failure(validationError);
             }
@@ -659,7 +686,13 @@ namespace Features.Garage.Presentation
 
         private void EnsureInitialized()
         {
-            if (_setup == null || _catalog == null || _state == null)
+            if (_initializeGarage == null ||
+                _composeUnit == null ||
+                _validateRoster == null ||
+                _saveRoster == null ||
+                _eventPublisher == null ||
+                _catalog == null ||
+                _state == null)
                 throw new System.InvalidOperationException("GaragePageController.Initialize must be called before interaction.");
         }
 

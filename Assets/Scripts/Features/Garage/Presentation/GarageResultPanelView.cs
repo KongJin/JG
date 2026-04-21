@@ -218,7 +218,7 @@ namespace Features.Garage.Presentation
             _isReadyToSave = viewModel.IsReady;
             _rosterStatusText.text = viewModel.RosterStatusText;
             _rosterStatusText.color = ThemeColors.TextPrimary;
-            _rosterStatusText.fontSize = 15;
+            _rosterStatusText.fontSize = 17;
             _rosterStatusText.enableAutoSizing = false;
 
             _validationText.text = viewModel.ValidationText;
@@ -232,12 +232,12 @@ namespace Features.Garage.Presentation
                 : hasWarning
                     ? ThemeColors.AccentAmber
                     : ThemeColors.TextSecondary;
-            _validationText.fontSize = 11;
+            _validationText.fontSize = 12;
             _validationText.enableAutoSizing = false;
 
             _statsText.text = viewModel.StatsText;
             _statsText.color = ThemeColors.TextSecondary;
-            _statsText.fontSize = 11;
+            _statsText.fontSize = 12.5f;
             _statsText.enableAutoSizing = false;
 
             RefreshSaveButtonState();

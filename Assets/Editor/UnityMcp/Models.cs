@@ -301,6 +301,48 @@ namespace ProjectSD.EditorTools.UnityMcp
     }
 
     [Serializable]
+    internal sealed class PrefabCreateRequest
+    {
+        public string assetPath;
+        public string parentPath;
+        public string name;
+        public string[] components;
+    }
+
+    [Serializable]
+    internal sealed class PrefabDestroyRequest
+    {
+        public string assetPath;
+        public string childPath;
+    }
+
+    [Serializable]
+    internal sealed class PrefabSetParentRequest
+    {
+        public string assetPath;
+        public string childPath;
+        public string parentPath;
+    }
+
+    [Serializable]
+    internal sealed class PrefabSetSiblingRequest
+    {
+        public string assetPath;
+        public string childPath;
+        public int siblingIndex;
+    }
+
+    [Serializable]
+    internal sealed class PrefabHierarchyResponse
+    {
+        public bool success;
+        public string message;
+        public string childPath;
+        public string parentPath;
+        public int siblingIndex;
+    }
+
+    [Serializable]
     internal sealed class PrefabStageOpenRequest
     {
         public string assetPath;

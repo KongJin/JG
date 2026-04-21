@@ -1,6 +1,6 @@
 # Document Management Workflow
 
-> 마지막 업데이트: 2026-04-20
+> 마지막 업데이트: 2026-04-21
 > 상태: active
 > doc_id: ops.document-management-workflow
 > role: ssot
@@ -268,6 +268,14 @@ system/global skill은 이 레포 거버넌스 범위에 포함하지 않는다.
 3. 이 링크가 없어도 `docs/index.md`를 통해 찾을 수 있는가?
 4. 이 참조가 문서 순환을 만들지 않는가?
 5. skill 문서가 규칙 본문을 다시 말하고 있지 않은가?
+
+## 자동 검증
+
+- 문서 관리 변경 후 기본 lint는 `npm run rules:lint`로 확인한다.
+- `rules:lint`는 `docs:lint`와 repo-local 운영 policy lint를 함께 실행해 메타, 링크, routing, skill-entry inspection 규칙을 같이 점검한다.
+- 현재 clone에서 로컬 git hook을 쓰려면 `git config core.hooksPath .githooks`로 repo-tracked hook 경로를 활성화한다.
+- 활성화된 `pre-commit` hook은 커밋 전에 `rules:lint`를 실행해 메타 누락, 상대 링크 오류, `doc_id` 중복, `docs/index.md` 상태 라벨 불일치, repo-local skill의 deprecated historical path 재서술, active 문서의 historical Stitch 링크, 존재하지 않는 concrete contract artifact 참조, Plan Mode routing 누락을 막는다.
+- 원격 기준 검증은 `.github/workflows/docs-lint.yml`의 PR lint와 함께 유지한다.
 
 ## 현재 JG에 바로 적용할 기본 원칙
 

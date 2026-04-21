@@ -1,0 +1,184 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "blueprint",
+  "blueprintId": "garage-workspace",
+  "surfaceRole": "root",
+  "description": "Mobile-first garage workspace with a top slot strip, single scroll body, and fixed save dock.",
+  "blocks": [
+    {
+      "blockId": "garage-root",
+      "role": "root",
+      "sourceName": "GaragePageRoot",
+      "unityTargetPath": "GaragePageRoot",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 16,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [
+        "garage-header-row",
+        "slot-selector",
+        "focus-bar",
+        "focused-editor",
+        "preview-card",
+        "summary-card",
+        "save-dock"
+      ]
+    },
+    {
+      "blockId": "garage-header-row",
+      "role": "section",
+      "sourceName": "GarageHeaderRow",
+      "unityTargetPath": "GarageHeaderRow",
+      "layout": {
+        "axis": "horizontal",
+        "padding": 0,
+        "gap": 12,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": []
+    },
+    {
+      "blockId": "slot-selector",
+      "role": "section",
+      "sourceName": "RosterListPane",
+      "unityTargetPath": "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane",
+      "layout": {
+        "axis": "horizontal",
+        "padding": 0,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": []
+    },
+    {
+      "blockId": "focus-bar",
+      "role": "section",
+      "sourceName": "GarageMobileTabBar",
+      "unityTargetPath": "GarageMobileStackRoot/GarageMobileTabBar",
+      "layout": {
+        "axis": "horizontal",
+        "padding": 0,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": []
+    },
+    {
+      "blockId": "focused-editor",
+      "role": "content",
+      "sourceName": "FocusedEditor",
+      "unityTargetPath": "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/FocusedEditor",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 12,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": []
+    },
+    {
+      "blockId": "preview-card",
+      "role": "content",
+      "sourceName": "PreviewCard",
+      "unityTargetPath": "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/PreviewCard",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": []
+    },
+    {
+      "blockId": "summary-card",
+      "role": "status",
+      "sourceName": "ResultPane",
+      "unityTargetPath": "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/ResultPane",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": []
+    },
+    {
+      "blockId": "save-dock",
+      "role": "cta",
+      "sourceName": "MobileSaveDock",
+      "unityTargetPath": "MobileSaveDock",
+      "layout": {
+        "axis": "horizontal",
+        "padding": 12,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": true,
+        "scroll": false
+      },
+      "children": []
+    }
+  ],
+  "defaults": {
+    "states": {
+      "default": true,
+      "selected": true,
+      "loading": true,
+      "error": true,
+      "disabled": true
+    },
+    "validation": {
+      "frame": "390x844",
+      "firstReadOrder": [
+        "slot-selector",
+        "focused-editor",
+        "preview-card",
+        "summary-card",
+        "save-dock"
+      ],
+      "requiredChecks": [
+        "contract",
+        "save dock visible",
+        "slot first single scroll body",
+        "top slot strip remains horizontal and visible before the editor body"
+      ],
+      "smokeScripts": [
+        "Invoke-LobbyGaragePageSwitchSmoke.ps1"
+      ]
+    }
+  },
+  "notes": [
+    "Use this for Garage workspace surfaces that preserve a top slot strip, slot-first scroll flow, and fixed save dock."
+  ]
+}

@@ -17,8 +17,11 @@ namespace ProjectSD.EditorTools.SceneTools
         {
             "/Canvas/LobbyPageRoot",
             "/Canvas/GaragePageRoot",
+            "/Canvas/LobbyGarageNavBar",
+            "/Canvas/LobbyGarageNavBar/LobbyTabButton",
+            "/Canvas/LobbyGarageNavBar/GarageTabButton",
             "/Canvas/GaragePageRoot/GarageMobileStackRoot",
-            "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/GarageMobileTabBar",
+            "/Canvas/GaragePageRoot/GarageMobileStackRoot/GarageMobileTabBar",
             "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost",
             "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent",
             "/Canvas/GaragePageRoot/GarageHeaderRow/SettingsButton",
@@ -26,14 +29,12 @@ namespace ProjectSD.EditorTools.SceneTools
             "/Canvas/GaragePageRoot/GarageSettingsOverlay/AccountCard",
             "/Canvas/GaragePageRoot/MobileSaveDock",
             "/Canvas/GaragePageRoot/MobileSaveDock/MobileSaveButton",
-            "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/MobileSlotGrid",
+            "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow",
             "/Canvas/LobbyPageRoot/RoomListPanel",
             "/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/ListHeaderRow",
             "/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/RoomListSurface",
             "/Canvas/LobbyPageRoot/RoomListPanel/RoomsSectionCard/RoomListSurface/EmptyStateText",
             "/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard",
-            "/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard/GarageTabButton",
-            "/Canvas/GaragePageRoot/GarageHeaderRow/LobbyTabButton",
         };
 
         private static readonly (string path, Type componentType, string[] fields)[] ReferenceChecks =
@@ -84,8 +85,20 @@ namespace ProjectSD.EditorTools.SceneTools
                     "_garageSummaryView",
                     "_lobbyPageCanvasGroup",
                     "_garagePageCanvasGroup",
+                    "_navigationBar",
+                }
+            ),
+            (
+                "/Canvas/LobbyGarageNavBar",
+                typeof(LobbyGarageNavBarView),
+                new[]
+                {
                     "_lobbyTabButton",
                     "_garageTabButton",
+                    "_lobbyTabText",
+                    "_garageTabText",
+                    "_lobbyTabBorder",
+                    "_garageTabBorder",
                 }
             ),
             (

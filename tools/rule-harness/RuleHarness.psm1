@@ -330,6 +330,14 @@ function Get-RuleHarnessActionItemForSkippedBatch {
     }
 
     switch ($reasonCode) {
+        'rules-scope-mutation-violation' {
+            return New-RuleHarnessActionItem `
+                -Kind 'rules-scope-mutation-violation' `
+                -Severity 'high' `
+                -Summary ("Rules-only scope blocked batch {0}" -f [string]$SkippedBatch.id) `
+                -Details ([string]$SkippedBatch.reason) `
+                -RelatedPaths (Get-RuleHarnessCombinedPaths -Primary $targetFiles -Secondary @($SkippedBatch.targets))
+        }
         'manual-validation-required' {
             return New-RuleHarnessActionItem `
                 -Kind 'manual-validation-required' `
@@ -4237,7 +4245,63 @@ function Get-RuleHarnessScopeInfo {
         scopeType       = $scopeType
         scopePath       = $scopePath
         promotionTarget = $promotionTarget
+        scopeGuard      = if (Test-RuleHarnessRulesOnlyScope -ScopePath $scopePath -TargetFiles @($TargetFiles)) { 'rules-only' } else { 'default' }
     }
+}
+
+function Test-RuleHarnessRulesOnlyPath {
+    param(
+        [string]$RelativePath
+    )
+
+    if ([string]::IsNullOrWhiteSpace($RelativePath)) {
+        return $false
+    }
+
+    $normalized = ([string]$RelativePath).Replace('\', '/').Trim()
+    if ([string]::IsNullOrWhiteSpace($normalized)) {
+        return $false
+    }
+
+    return $normalized -eq 'AGENTS.md' -or
+        $normalized -like 'docs/*' -or
+        $normalized -like '.codex/skills/jg-*/*' -or
+        $normalized -like '.githooks/*' -or
+        $normalized -like 'tools/docs-lint/*' -or
+        $normalized -like 'tools/rule-harness/*'
+}
+
+function Test-RuleHarnessRulesOnlyScope {
+    param(
+        [string]$ScopePath,
+        [string[]]$TargetFiles = @()
+    )
+
+    $normalizedTargets = @($TargetFiles | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+    if ($normalizedTargets.Count -gt 0) {
+        foreach ($targetPath in @($normalizedTargets)) {
+            if (-not (Test-RuleHarnessRulesOnlyPath -RelativePath ([string]$targetPath))) {
+                return $false
+            }
+        }
+
+        return $true
+    }
+
+    return (Test-RuleHarnessRulesOnlyPath -RelativePath $ScopePath)
+}
+
+function Get-RuleHarnessRulesOnlyViolationTargets {
+    param(
+        [string[]]$TargetFiles = @()
+    )
+
+    @(
+        @($TargetFiles) |
+            Where-Object { -not (Test-RuleHarnessRulesOnlyPath -RelativePath ([string]$_)) } |
+            ForEach-Object { ([string]$_).Replace('\', '/') } |
+            Sort-Object -Unique
+    )
 }
 
 function Get-RuleHarnessLearningSettings {
@@ -7159,6 +7223,7 @@ function Invoke-RuleHarnessMutationPlan {
         [object]$Config,
         [Parameter(Mandatory)]
         [object]$MutationState,
+        [object]$ScopeInfo = $null,
         [string]$StaticScanScopeId,
         [switch]$RelaxScopeGuards,
         [switch]$DryRun
@@ -7170,6 +7235,7 @@ function Invoke-RuleHarnessMutationPlan {
         -RepoRoot $RepoRoot `
         -Config $Config `
         -MutationState $MutationState `
+        -ScopeInfo $ScopeInfo `
         -StaticScanScopeId $StaticScanScopeId `
         -RelaxScopeGuards:$RelaxScopeGuards `
         -DryRun:$DryRun
@@ -7272,6 +7338,7 @@ function Invoke-RuleHarnessMutationPlanCore {
         [object]$Config,
         [Parameter(Mandatory)]
         [object]$MutationState,
+        [object]$ScopeInfo = $null,
         [string]$StaticScanScopeId,
         [switch]$RelaxScopeGuards,
         [switch]$DryRun
@@ -7422,6 +7489,29 @@ function Invoke-RuleHarnessMutationPlanCore {
     foreach ($batch in @($PlannedBatches | Select-Object -First ([int]$Config.mutation.maxBatchesPerRun))) {
         $fingerprint = [string]$batch.fingerprint
         $historyEntry = Get-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint
+
+        if ($null -ne $ScopeInfo -and [string]$ScopeInfo.scopeGuard -eq 'rules-only') {
+            $violatingTargets = @(Get-RuleHarnessRulesOnlyViolationTargets -TargetFiles @($batch.targetFiles))
+            if ($violatingTargets.Count -gt 0) {
+                $historyEntry = Set-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint -Status 'skipped' -Reason 'rules-scope-mutation-violation'
+                Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'skipped'
+                $skippedBatch = [pscustomobject]@{
+                    id           = $batch.id
+                    kind         = $batch.kind
+                    reason       = ("Rules-only scope '{0}' may only mutate AGENTS/docs/repo-local skill entries/hooks/docs-lint/rule-harness. Blocked targets: {1}. If this is a real code task, lock user intent again before mutating." -f [string]$ScopeInfo.scopePath, ($violatingTargets -join ', '))
+                    reasonCode   = 'rules-scope-mutation-violation'
+                    status       = 'skipped'
+                    targets      = @($violatingTargets)
+                    fingerprint  = $fingerprint
+                    attemptCount = [int]$historyEntry.attemptCount
+                }
+                [void]$skippedBatches.Add($skippedBatch)
+                [void]$actionItems.Add((Get-RuleHarnessActionItemForSkippedBatch -SkippedBatch $skippedBatch -PlannedBatch $batch -Config $Config))
+                $failureTriggered = $true
+                $failureReasonCode = 'rules-scope-mutation-violation'
+                break
+            }
+        }
 
         if ($MutationState.mode -eq 'doc_only' -and $batch.kind -ne 'rule_fix') {
             Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'skipped'
@@ -7669,7 +7759,7 @@ function Invoke-RuleHarnessMutationPlanCore {
         -Stage 'mutation' `
         -Status $(if ($failureTriggered) { 'failed' } elseif (@($appliedBatches).Count -gt 0) { 'passed' } elseif (@($skippedBatches).Count -gt 0) { 'skipped' } else { 'passed' }) `
         -Attempted $true `
-        -Summary $(if ($failureTriggered) { 'Mutation stage failed and rolled back touched files.' } elseif (@($appliedBatches).Count -gt 0) { "Applied $(@($appliedBatches).Count) batch(es)." } elseif (@($skippedBatches).Count -gt 0) { "No batch was applied. Skipped $(@($skippedBatches).Count) batch(es)." } else { 'Mutation stage completed without workspace changes.' }) `
+        -Summary $(if ($failureReasonCode -eq 'rules-scope-mutation-violation') { 'Mutation stage stopped because a rules-only scope attempted to mutate non-rule targets.' } elseif ($failureTriggered) { 'Mutation stage failed and rolled back touched files.' } elseif (@($appliedBatches).Count -gt 0) { "Applied $(@($appliedBatches).Count) batch(es)." } elseif (@($skippedBatches).Count -gt 0) { "No batch was applied. Skipped $(@($skippedBatches).Count) batch(es)." } else { 'Mutation stage completed without workspace changes.' }) `
         -Details ([pscustomobject]@{
             appliedBatchCount = @($appliedBatches).Count
             skippedBatchCount = @($skippedBatches).Count
@@ -7949,6 +8039,7 @@ function Invoke-RuleHarness {
     $staticFindingCount = 0
     $plannedBatchCount = 0
     $docProposals = [System.Collections.Generic.List[object]]::new()
+    $scopeInfo = $null
     $stoppedScope = $null
     $plannedBatches = @()
     $unplannedScopeFindings = @()
@@ -8061,6 +8152,14 @@ function Invoke-RuleHarness {
         $plannedBatches = @(Get-RuleHarnessPlannedBatches -ReviewedFindings @($scopeErrors) -DocEdits @() -RepoRoot $RepoRoot)
         $plannedBatchCount = @($plannedBatches).Count
         $unplannedScopeFindings = @(Get-RuleHarnessUnplannedFindings -ReviewedFindings @($scopeErrors) -PlannedBatches @($plannedBatches))
+        $scopeOwnerDoc = @(
+            @($scopeErrors | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_.ownerDoc) } | Select-Object -ExpandProperty ownerDoc) |
+                Select-Object -First 1
+        )
+        $scopeInfo = Get-RuleHarnessScopeInfo `
+            -RepoRoot $RepoRoot `
+            -OwnerDoc $(if ($scopeOwnerDoc.Count -gt 0) { [string]$scopeOwnerDoc[0] } else { $null }) `
+            -TargetFiles @($plannedBatches | ForEach-Object { @($_.targetFiles) } | Sort-Object -Unique)
         foreach ($unplannedFinding in @($unplannedScopeFindings)) {
             [void]$preMutationActionItems.Add((Get-RuleHarnessActionItemForUnplannedFinding -Finding $unplannedFinding))
         }
@@ -8073,6 +8172,7 @@ function Invoke-RuleHarness {
             -RepoRoot $RepoRoot `
             -Config $config `
             -MutationState $mutationState `
+            -ScopeInfo $scopeInfo `
             -StaticScanScopeId ([string]$scope.scopeId) `
             -RelaxScopeGuards `
             -DryRun:$DryRun
@@ -8196,6 +8296,7 @@ function Invoke-RuleHarness {
         -Details ([pscustomobject]@{
             plannedBatchCount = $plannedBatchCount
             unplannedFindingCount = @($unplannedScopeFindings).Count
+            scopeGuard = if ($null -ne $scopeInfo) { [string]$scopeInfo.scopeGuard } else { 'default' }
             stoppedScope = if ($null -ne $stoppedScope) { [string]$stoppedScope.scopeId } else { $null }
         })))
 

@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "screen-manifest",
+  "setId": "set-b",
+  "surfaceId": "garage-main-workspace",
+  "surfaceRole": "root",
+  "status": "accepted",
+  "extends": "garage-workspace",
+  "targets": {
+    "prefabPath": "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab",
+    "sceneRoots": [
+      "/Canvas/GaragePageRoot"
+    ],
+    "primaryContractPaths": [
+      "/Canvas/GaragePageRoot",
+      "/Canvas/GaragePageRoot/GarageHeaderRow",
+      "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane",
+      "/Canvas/GaragePageRoot/GarageMobileStackRoot/GarageMobileTabBar",
+      "/Canvas/GaragePageRoot/MobileSaveDock"
+    ],
+    "serializedOwners": [
+      "/Canvas/GaragePageRoot::GaragePageController",
+      "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane::GarageRosterListView",
+      "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/ResultPane::GarageResultPanelView"
+    ]
+  },
+  "ctaPriority": [
+    {
+      "id": "save-roster",
+      "priority": "primary",
+      "unityTargetPath": "/Canvas/GaragePageRoot/MobileSaveDock/MobileSaveButton",
+      "outcome": "save roster"
+    },
+    {
+      "id": "open-settings",
+      "priority": "secondary",
+      "unityTargetPath": "/Canvas/GaragePageRoot/GarageHeaderRow/SettingsButton",
+      "outcome": "open garage settings overlay"
+    }
+  ],
+  "states": {
+    "default": true,
+    "empty": true,
+    "loading": false,
+    "error": true,
+    "selected": true,
+    "disabled": true
+  },
+  "validation": {
+    "frame": "390x844",
+    "firstReadOrder": [
+      "slot-selector",
+      "focus-bar",
+      "focused-editor",
+      "preview-card",
+      "summary-card",
+      "save-dock"
+    ],
+    "requiredChecks": [
+      "contract",
+      "slot selector stays a horizontal four-card strip",
+      "selected slot card visually outranks empty cards",
+      "focus bar stays a compact three-chip row below the slot strip",
+      "focused editor first-screen card stays dominant",
+      "preview and summary read as finished evaluative cards",
+      "save dock remains a full-width Signal Orange persistent CTA",
+      "settings stays a quiet gear action"
+    ],
+    "smokeScripts": [
+      "Invoke-LobbyGaragePageSwitchSmoke.ps1"
+    ]
+  },
+  "blockOverrides": {
+    "garage-header-row": {
+      "notes": [
+        "Top area stays compact: title, current roster context, settings access only.",
+        "Settings stays a quiet gear action in the top-right corner, not a large secondary button."
+      ]
+    },
+    "slot-selector": {
+      "layout": {
+        "axis": "horizontal",
+        "padding": 0,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "notes": [
+        "Render this as a horizontal four-card strip, not a vertical roster list.",
+        "The selected slot card must visually outrank the empty cards before the editor body starts."
+      ]
+    },
+    "focus-bar": {
+      "notes": [
+        "Three compact chips sit directly under the slot strip and keep the active focus clearly highlighted."
+      ]
+    },
+    "focused-editor": {
+      "notes": [
+        "Current active work area for frame, weapon, or mobility focus.",
+        "The first-screen editor card should already look finished: selected part title, strong primary stat, supporting stat row, and quiet auxiliary action."
+      ]
+    },
+    "preview-card": {
+      "notes": [
+        "Preview must look finished, not placeholder-like.",
+        "Use a framed blueprint viewer with a visible bottom meter so the surface still reads as evaluative even when model detail is sparse."
+      ]
+    },
+    "summary-card": {
+      "notes": [
+        "Summarize role, attack style, range, durability, and mobility outcome in short Korean labels.",
+        "Use compact stat rows or chips rather than loose placeholder copy."
+      ]
+    },
+    "save-dock": {
+      "notes": [
+        "Persistent primary CTA using Signal Orange.",
+        "Save dock is a full-width orange bottom bar with a lock icon and Korean label, stronger than any inline editor action."
+      ]
+    }
+  },
+  "appendBlocks": [],
+  "notes": [
+    "Accepted Set B baseline.",
+    "Single scroll workspace, not fragmented dashboard panels.",
+    "Do not translate this screen into a vertical roster list plus small footer button."
+  ]
+}

@@ -1,0 +1,89 @@
+﻿{
+    "success":  true,
+    "surfaceId":  "garage-main-workspace",
+    "mapPath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\mappings\\garage-main-workspace.unity-map.json",
+    "translationStrategy":  "unity-mcp-garage-manifest-v1",
+    "target":  {
+                   "kind":  "prefab",
+                   "assetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
+               },
+    "contractRefs":  {
+                         "manifestPath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\screens\\set-b-garage-main-workspace.screen.json",
+                         "intakePath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\intakes\\set-b-garage-main-workspace.intake.json",
+                         "blueprintPath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\blueprints\\garage-workspace.blueprint.json"
+                     },
+    "artifacts":  {
+                      "translationResult":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\stitch-garage-translation-result.json",
+                      "inspectionResult":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\stitch-garage-inspection-result.json",
+                      "verificationResult":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\stitch-garage-verification-result.json",
+                      "pipelineResult":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\stitch-garage-pipeline-result.json"
+                  },
+    "translation":  {
+                        "success":  true,
+                        "partial":  true,
+                        "manifestPath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\screens\\set-b-garage-main-workspace.screen.json",
+                        "intakePath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\intakes\\set-b-garage-main-workspace.intake.json",
+                        "blueprintPath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\blueprints\\garage-workspace.blueprint.json",
+                        "surfaceId":  "garage-main-workspace",
+                        "extends":  "garage-workspace",
+                        "prefabPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab",
+                        "compileSucceeded":  true,
+                        "bridgeHealth":  {
+                                             "ok":  true,
+                                             "bridgeRunning":  true,
+                                             "port":  52676,
+                                             "isPlaying":  false,
+                                             "isPlayingOrWillChange":  false,
+                                             "isPlayModeChanging":  false,
+                                             "rawIsPlayingOrWillChange":  false,
+                                             "isCompiling":  false,
+                                             "isWaitingForPlayMode":  false,
+                                             "projectKey":  "0d8ea703",
+                                             "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                             "activeScene":  "TempScene",
+                                             "activeScenePath":  "Assets/Scenes/TempScene.unity",
+                                             "pendingPlayAction":  "",
+                                             "pendingPlayAgeMs":  0
+                                         },
+                        "verifiedChildPaths":  [
+                                                   "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow",
+                                                   "MobileSaveDock",
+                                                   "MobileSaveDock/MobileSaveButton"
+                                               ],
+                        "prefabChecks":  {
+                                             "rootFound":  true,
+                                             "slotStripFound":  true,
+                                             "saveButtonFound":  true
+                                         },
+                        "slotStripResult":  {
+                                                "changed":  false,
+                                                "rowPath":  "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow",
+                                                "itemPaths":  [
+                                                                  "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow/GarageSlot1",
+                                                                  "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow/GarageSlot2",
+                                                                  "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow/GarageSlot3",
+                                                                  "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow/GarageSlot4",
+                                                                  "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow/GarageSlot5",
+                                                                  "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow/GarageSlot6"
+                                                              ],
+                                                "reason":  "slot-selector axis is horizontal"
+                                            },
+                        "appliedContract":  {
+                                                "slotSelectorAxis":  "horizontal",
+                                                "saveDockSticky":  true,
+                                                "saveLabel":  "저장 및 배치",
+                                                "settingsLabel":  "설정"
+                                            }
+                    },
+    "inspectionSummary":  {
+                              "missingBlocks":  [
+
+                                                ],
+                              "blockCount":  7
+                          },
+    "verificationSummary":  {
+                                "ok":  true,
+                                "errorCount":  0,
+                                "warningCount":  0
+                            }
+}

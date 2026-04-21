@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "screen-intake",
+  "setId": "set-c",
+  "surfaceId": "login-loading-overlay",
+  "surfaceRole": "independent",
+  "status": "accepted",
+  "source": {
+    "tool": "stitch",
+    "screenName": "login-loading-overlay",
+    "sourceRef": "set-c-login-loading-overlay",
+    "variantLabel": "accepted loading state"
+  },
+  "familyHints": {
+    "suggestedBlueprintId": "overlay-modal",
+    "suggestedFeatureArea": "lobby",
+    "likelyOverlay": true,
+    "likelyScrollRoot": false,
+    "repeatedBlockIds": []
+  },
+  "blocks": [
+    {
+      "blockId": "overlay-root",
+      "role": "overlay",
+      "sourceName": "DimmedLobbyScrim",
+      "layout": {
+        "axis": "overlay",
+        "padding": 16,
+        "gap": 16,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": true,
+        "scroll": false
+      },
+      "children": [
+        "overlay-card"
+      ],
+      "required": true,
+      "repeat": false,
+      "notes": [
+        "Accepted screen keeps the lobby context visible behind the scrim."
+      ]
+    },
+    {
+      "blockId": "overlay-card",
+      "role": "content",
+      "sourceName": "StatusOverlayCard",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 12,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [
+        "status-copy",
+        "status-subcopy"
+      ],
+      "required": true,
+      "repeat": false,
+      "notes": [
+        "System-like loading panel for authentication, profile sync, or room data load.",
+        "Avoid generic spinner-only modal."
+      ]
+    },
+    {
+      "blockId": "status-copy",
+      "role": "status",
+      "sourceName": "StatusHeadline",
+      "layout": {
+        "axis": "vertical",
+        "padding": 0,
+        "gap": 0,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [],
+      "required": true,
+      "repeat": false,
+      "notes": [
+        "Primary system state line is short and immediately readable."
+      ]
+    },
+    {
+      "blockId": "status-subcopy",
+      "role": "content",
+      "sourceName": "StatusSupportCopy",
+      "layout": {
+        "axis": "vertical",
+        "padding": 0,
+        "gap": 0,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [],
+      "required": true,
+      "repeat": false,
+      "notes": [
+        "Accepted screen expects 2 to 3 short support lines instead of a single spinner."
+      ]
+    }
+  ],
+  "ctaPriority": [],
+  "states": {
+    "default": true,
+    "empty": false,
+    "loading": true,
+    "error": false,
+    "selected": false,
+    "disabled": true
+  },
+  "validation": {
+    "frame": "390x844",
+    "firstReadOrder": [
+      "overlay-card",
+      "status-copy",
+      "status-subcopy"
+    ],
+    "requiredChecks": [
+      "dimmed lobby visible behind scrim",
+      "2 to 3 short system status lines",
+      "tactical progress treatment",
+      "no loud primary action in steady loading state"
+    ]
+  },
+  "notes": [
+    "Global login or connection loading overlay integrated with the lobby context."
+  ],
+  "openQuestions": []
+}

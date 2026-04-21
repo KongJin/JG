@@ -19,6 +19,10 @@ namespace ProjectSD.EditorTools.UnityMcp
             "POST".Register("/prefab/get", "Get prefab asset info", async (req, res) => await HandlePrefabGetAsync(req, res));
             "POST".Register("/prefab/set", "Set prefab component property", async (req, res) => await HandlePrefabSetAsync(req, res));
             "POST".Register("/prefab/add-component", "Add component to prefab asset", async (req, res) => await HandlePrefabAddComponentAsync(req, res));
+            "POST".Register("/prefab/create", "Create child GameObject inside prefab asset", async (req, res) => await HandlePrefabCreateAsync(req, res));
+            "POST".Register("/prefab/destroy", "Destroy child GameObject inside prefab asset", async (req, res) => await HandlePrefabDestroyAsync(req, res));
+            "POST".Register("/prefab/set-parent", "Change parent of a prefab child GameObject", async (req, res) => await HandlePrefabSetParentAsync(req, res));
+            "POST".Register("/prefab/set-sibling", "Set sibling order of a prefab child GameObject", async (req, res) => await HandlePrefabSetSiblingAsync(req, res));
             "POST".Register("/prefab/open-stage", "Open prefab asset in Prefab Mode", async (req, res) => await HandlePrefabOpenStageAsync(req, res));
             "GET".Register("/prefab/current-stage", "Get current Prefab Mode stage info", async (req, res) => await HandlePrefabCurrentStageAsync(res));
             "POST".Register("/prefab/close-stage", "Close current Prefab Mode stage", async (req, res) => await HandlePrefabCloseStageAsync(res));
@@ -122,6 +126,114 @@ namespace ProjectSD.EditorTools.UnityMcp
                 AssetDatabase.SaveAssets();
                 return new GenericResponse { success = true, message = "Added " + req.componentType + " to prefab " + req.assetPath };
             });
+            await UnityMcpBridge.WriteJsonAsync(response, 200, result);
+        }
+
+        public static async Task HandlePrefabCreateAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<PrefabCreateRequest>(body);
+            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+                EditPrefabContents(req.assetPath, prefabRoot =>
+                {
+                    var parent = ResolvePrefabTarget(prefabRoot, req.parentPath).transform;
+                    var created = new GameObject(string.IsNullOrWhiteSpace(req.name) ? "New GameObject" : req.name);
+                    created.transform.SetParent(parent, false);
+
+                    if (req.components != null)
+                    {
+                        foreach (var componentName in req.components)
+                        {
+                            if (string.IsNullOrWhiteSpace(componentName)) continue;
+                            McpSharedHelpers.AddComponentByName(created, componentName);
+                        }
+                    }
+
+                    return new PrefabHierarchyResponse
+                    {
+                        success = true,
+                        message = "Created prefab child: " + created.name,
+                        childPath = GetPrefabChildPath(prefabRoot.transform, created.transform),
+                        parentPath = GetPrefabChildPath(prefabRoot.transform, parent),
+                        siblingIndex = created.transform.GetSiblingIndex()
+                    };
+                }));
+
+            await UnityMcpBridge.WriteJsonAsync(response, 200, result);
+        }
+
+        public static async Task HandlePrefabDestroyAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<PrefabDestroyRequest>(body);
+            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+                EditPrefabContents(req.assetPath, prefabRoot =>
+                {
+                    var target = ResolvePrefabTarget(prefabRoot, req.childPath);
+                    if (target == prefabRoot)
+                    {
+                        throw new Exception("Cannot destroy the prefab root.");
+                    }
+
+                    var childPath = GetPrefabChildPath(prefabRoot.transform, target.transform);
+                    UnityEngine.Object.DestroyImmediate(target);
+                    return new PrefabHierarchyResponse
+                    {
+                        success = true,
+                        message = "Destroyed prefab child: " + childPath,
+                        childPath = childPath
+                    };
+                }));
+
+            await UnityMcpBridge.WriteJsonAsync(response, 200, result);
+        }
+
+        public static async Task HandlePrefabSetParentAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<PrefabSetParentRequest>(body);
+            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+                EditPrefabContents(req.assetPath, prefabRoot =>
+                {
+                    var target = ResolvePrefabTarget(prefabRoot, req.childPath);
+                    var parent = ResolvePrefabTarget(prefabRoot, req.parentPath);
+                    target.transform.SetParent(parent.transform, false);
+
+                    return new PrefabHierarchyResponse
+                    {
+                        success = true,
+                        message = "Set prefab parent: " + req.childPath + " -> " + req.parentPath,
+                        childPath = GetPrefabChildPath(prefabRoot.transform, target.transform),
+                        parentPath = GetPrefabChildPath(prefabRoot.transform, parent.transform),
+                        siblingIndex = target.transform.GetSiblingIndex()
+                    };
+                }));
+
+            await UnityMcpBridge.WriteJsonAsync(response, 200, result);
+        }
+
+        public static async Task HandlePrefabSetSiblingAsync(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
+            var req = JsonUtility.FromJson<PrefabSetSiblingRequest>(body);
+            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+                EditPrefabContents(req.assetPath, prefabRoot =>
+                {
+                    var target = ResolvePrefabTarget(prefabRoot, req.childPath);
+                    target.transform.SetSiblingIndex(req.siblingIndex);
+
+                    return new PrefabHierarchyResponse
+                    {
+                        success = true,
+                        message = "Set prefab sibling: " + req.childPath,
+                        childPath = GetPrefabChildPath(prefabRoot.transform, target.transform),
+                        parentPath = target.transform.parent != null
+                            ? GetPrefabChildPath(prefabRoot.transform, target.transform.parent)
+                            : string.Empty,
+                        siblingIndex = target.transform.GetSiblingIndex()
+                    };
+                }));
+
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }
 
@@ -243,10 +355,50 @@ namespace ProjectSD.EditorTools.UnityMcp
             if (string.IsNullOrEmpty(assetPath)) throw new Exception("assetPath is required");
             var prefabRoot = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
             if (prefabRoot == null) throw new Exception("Prefab not found at: " + assetPath);
+            return ResolvePrefabTarget(prefabRoot, childPath);
+        }
+
+        private static GameObject ResolvePrefabTarget(GameObject prefabRoot, string childPath)
+        {
             if (string.IsNullOrEmpty(childPath)) return prefabRoot;
             var childTransform = prefabRoot.transform.Find(childPath);
-            if (childTransform == null) throw new Exception("Child not found in prefab: " + childPath + " (prefab: " + assetPath + ")");
+            if (childTransform == null) throw new Exception("Child not found in prefab: " + childPath);
             return childTransform.gameObject;
+        }
+
+        private static T EditPrefabContents<T>(string assetPath, Func<GameObject, T> edit)
+        {
+            if (string.IsNullOrWhiteSpace(assetPath)) throw new Exception("assetPath is required");
+
+            var prefabRoot = PrefabUtility.LoadPrefabContents(assetPath);
+            if (prefabRoot == null) throw new Exception("Prefab not found at: " + assetPath);
+
+            try
+            {
+                var result = edit(prefabRoot);
+                EditorUtility.SetDirty(prefabRoot);
+                PrefabUtility.SaveAsPrefabAsset(prefabRoot, assetPath);
+                AssetDatabase.SaveAssets();
+                return result;
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(prefabRoot);
+            }
+        }
+
+        private static string GetPrefabChildPath(Transform prefabRoot, Transform target)
+        {
+            if (target == prefabRoot) return string.Empty;
+
+            var rootPath = McpSharedHelpers.GetTransformPath(prefabRoot);
+            var targetPath = McpSharedHelpers.GetTransformPath(target);
+            if (!targetPath.StartsWith(rootPath, StringComparison.OrdinalIgnoreCase))
+            {
+                return targetPath.Trim('/');
+            }
+
+            return targetPath.Substring(rootPath.Length).Trim('/');
         }
 
         private static GameObjectResponse BuildGameObjectResponse(GameObject go, bool lightweight, string[] componentFilter)

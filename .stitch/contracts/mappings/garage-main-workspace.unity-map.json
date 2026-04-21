@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractKind": "unity-surface-map",
+  "surfaceId": "garage-main-workspace",
+  "target": {
+    "kind": "prefab",
+    "assetPath": "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
+  },
+  "contractRefs": {
+    "manifestPath": ".stitch/contracts/screens/set-b-garage-main-workspace.screen.json",
+    "intakePath": ".stitch/contracts/intakes/set-b-garage-main-workspace.intake.json",
+    "blueprintPath": ".stitch/contracts/blueprints/garage-workspace.blueprint.json"
+  },
+  "translationStrategy": "unity-mcp-garage-manifest-v1",
+  "artifactPaths": {
+    "translationResult": "artifacts/unity/stitch-garage-translation-result.json",
+    "inspectionResult": "artifacts/unity/stitch-garage-inspection-result.json",
+    "verificationResult": "artifacts/unity/stitch-garage-verification-result.json",
+    "pipelineResult": "artifacts/unity/stitch-garage-pipeline-result.json"
+  },
+  "blocks": {
+    "slot-selector": {
+      "hostPath": "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow",
+      "aliases": [
+        "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/MobileSlotGrid"
+      ],
+      "requiredComponents": [
+        "HorizontalLayoutGroup",
+        "LayoutElement"
+      ],
+      "expectedLayout": {
+        "axis": "horizontal",
+        "preferredHeight": 118,
+        "spacing": 8
+      },
+      "verificationTags": [
+        "first-read",
+        "horizontal-strip"
+      ]
+    },
+    "focus-bar": {
+      "hostPath": "GarageMobileStackRoot/GarageMobileTabBar",
+      "requiredComponents": [
+        "HorizontalLayoutGroup"
+      ],
+      "expectedLayout": {
+        "axis": "horizontal",
+        "preferredHeight": 52,
+        "spacing": 8
+      },
+      "verificationTags": [
+        "compact",
+        "focus-switch"
+      ]
+    },
+    "focused-editor": {
+      "hostPath": "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/UnitEditorPane",
+      "requiredComponents": [
+        "VerticalLayoutGroup",
+        "LayoutElement"
+      ],
+      "expectedLayout": {
+        "axis": "vertical",
+        "preferredHeight": 452,
+        "spacing": 12
+      },
+      "verificationTags": [
+        "dominant-block"
+      ]
+    },
+    "preview-card": {
+      "hostPath": "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/PreviewCard",
+      "requiredComponents": [
+        "LayoutElement"
+      ],
+      "expectedLayout": {
+        "preferredHeight": 296
+      },
+      "verificationTags": [
+        "evaluative"
+      ]
+    },
+    "summary-card": {
+      "hostPath": "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/ResultPane",
+      "requiredComponents": [
+        "LayoutElement"
+      ],
+      "expectedLayout": {
+        "preferredHeight": 248
+      },
+      "verificationTags": [
+        "evaluative",
+        "result-summary"
+      ]
+    },
+    "primary-cta": {
+      "hostPath": "MobileSaveDock/MobileSaveButton",
+      "requiredComponents": [
+        "Button",
+        "Image"
+      ],
+      "expectedLayout": {
+        "sticky": true
+      },
+      "verificationTags": [
+        "persistent",
+        "primary-emphasis"
+      ]
+    },
+    "aux-settings": {
+      "hostPath": "GarageHeaderRow/SettingsButton",
+      "requiredComponents": [
+        "Button"
+      ],
+      "verificationTags": [
+        "auxiliary-action"
+      ]
+    }
+  },
+  "verification": {
+    "requiredBlocks": [
+      "slot-selector",
+      "focus-bar",
+      "focused-editor",
+      "preview-card",
+      "summary-card",
+      "primary-cta"
+    ],
+    "firstReadOrder": [
+      "slot-selector",
+      "focus-bar",
+      "focused-editor",
+      "preview-card",
+      "summary-card",
+      "primary-cta"
+    ],
+    "primaryCtas": [
+      "primary-cta"
+    ]
+  },
+  "notes": [
+    "First generic Stitch-to-Unity surface map.",
+    "Garage is the first adopter and still dispatches to the existing garage translator strategy."
+  ]
+}

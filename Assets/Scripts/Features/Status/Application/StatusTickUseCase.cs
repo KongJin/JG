@@ -7,7 +7,7 @@ using Shared.Kernel;
 
 namespace Features.Status.Application
 {
-    public sealed class StatusTickUseCase
+    public sealed class StatusTickUseCase : IStatusTickPort
     {
         private readonly StatusContainerRegistry _registry;
         private readonly IEventPublisher _eventBus;

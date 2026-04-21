@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0.0",
+  "setId": "<set-id>",
+  "surfaceId": "<surface-id>",
+  "surfaceRole": "root",
+  "status": "draft",
+  "targets": {
+    "prefabPath": "Assets/Prefabs/<feature>/<surface>.prefab",
+    "sceneRoots": [
+      "/Canvas/<SurfaceRoot>"
+    ],
+    "primaryContractPaths": [
+      "/Canvas/<SurfaceRoot>"
+    ],
+    "serializedOwners": [
+      "/Canvas/<SurfaceRoot>::<ViewType>"
+    ]
+  },
+  "blocks": [
+    {
+      "blockId": "root",
+      "role": "root",
+      "sourceName": "<source-root-name>",
+      "unityTargetPath": "/Canvas/<SurfaceRoot>",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 16,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": []
+    }
+  ],
+  "ctaPriority": [
+    {
+      "id": "<primary-cta>",
+      "priority": "primary",
+      "unityTargetPath": "/Canvas/<SurfaceRoot>/<PrimaryButton>",
+      "outcome": "<primary-outcome>"
+    }
+  ],
+  "states": {
+    "default": true,
+    "empty": false,
+    "loading": false,
+    "error": false,
+    "selected": false,
+    "disabled": false
+  },
+  "validation": {
+    "frame": "390x844",
+    "firstReadOrder": [
+      "<first-block>"
+    ],
+    "requiredChecks": [
+      "contract"
+    ],
+    "smokeScripts": []
+  },
+  "notes": []
+}

@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "blueprint",
+  "blueprintId": "lobby-root",
+  "surfaceRole": "root",
+  "description": "Lobby main workspace with room list first, create room second, garage summary tertiary.",
+  "blocks": [
+    {
+      "blockId": "lobby-root",
+      "role": "root",
+      "sourceName": "LobbyPageRoot",
+      "unityTargetPath": "LobbyPageRoot",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 16,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": true
+      },
+      "children": [
+        "lobby-header-card",
+        "rooms-section-card",
+        "create-room-card",
+        "garage-summary-card"
+      ]
+    },
+    {
+      "blockId": "lobby-header-card",
+      "role": "section",
+      "sourceName": "LobbyHeaderCard",
+      "unityTargetPath": "LobbyHeaderCard",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": []
+    },
+    {
+      "blockId": "rooms-section-card",
+      "role": "section",
+      "sourceName": "RoomsSectionCard",
+      "unityTargetPath": "RoomListPanel/RoomsSectionCard",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 12,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [
+        "room-list-surface"
+      ]
+    },
+    {
+      "blockId": "room-list-surface",
+      "role": "content",
+      "sourceName": "RoomListSurface",
+      "unityTargetPath": "RoomListPanel/RoomsSectionCard/RoomListSurface",
+      "layout": {
+        "axis": "vertical",
+        "padding": 12,
+        "gap": 12,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": []
+    },
+    {
+      "blockId": "create-room-card",
+      "role": "cta",
+      "sourceName": "CreateRoomCard",
+      "unityTargetPath": "CreateRoomCard",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 12,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": []
+    },
+    {
+      "blockId": "garage-summary-card",
+      "role": "status",
+      "sourceName": "GarageSummaryCard",
+      "unityTargetPath": "RoomListPanel/GarageSummaryCard",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": []
+    }
+  ],
+  "defaults": {
+    "states": {
+      "default": true,
+      "empty": true,
+      "loading": true,
+      "error": true
+    },
+    "validation": {
+      "frame": "390x844",
+      "firstReadOrder": [
+        "lobby-header-card",
+        "rooms-section-card",
+        "create-room-card",
+        "garage-summary-card"
+      ],
+      "requiredChecks": [
+        "contract",
+        "room list first read order",
+        "garage summary tertiary"
+      ],
+      "smokeScripts": [
+        "Invoke-LobbyGaragePageSwitchSmoke.ps1"
+      ]
+    }
+  },
+  "notes": [
+    "Use this for Lobby main surfaces that keep room list first and garage summary tertiary."
+  ]
+}

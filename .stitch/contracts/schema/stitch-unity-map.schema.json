@@ -1,0 +1,254 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jg.local/stitch-unity-map.schema.json",
+  "title": "Stitch Unity Surface Map",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "contractKind",
+    "surfaceId",
+    "target",
+    "contractRefs",
+    "translationStrategy",
+    "blocks"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "contractKind": {
+      "type": "string",
+      "const": "unity-surface-map"
+    },
+    "surfaceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "assetPath"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "prefab",
+            "scene"
+          ]
+        },
+        "assetPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sceneRootPath": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "contractRefs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifestPath",
+        "blueprintPath"
+      ],
+      "properties": {
+        "manifestPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "intakePath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "blueprintPath": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "translationStrategy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifactPaths": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "translationResult": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inspectionResult": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verificationResult": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pipelineResult": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "blocks": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/blockMapping"
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requiredBlocks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "firstReadOrder": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "primaryCtas": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "blockMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hostPath"
+      ],
+      "properties": {
+        "hostPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "requiredComponents": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "expectedLayout": {
+          "$ref": "#/$defs/layoutExpectation"
+        },
+        "verificationTags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "stateBindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/stateBinding"
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "layoutExpectation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "axis": {
+          "type": "string",
+          "enum": [
+            "horizontal",
+            "vertical",
+            "overlay",
+            "none"
+          ]
+        },
+        "preferredWidth": {
+          "type": "number"
+        },
+        "preferredHeight": {
+          "type": "number"
+        },
+        "minWidth": {
+          "type": "number"
+        },
+        "minHeight": {
+          "type": "number"
+        },
+        "spacing": {
+          "type": "number"
+        },
+        "sticky": {
+          "type": "boolean"
+        }
+      }
+    },
+    "stateBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "default",
+            "selected",
+            "empty",
+            "loading",
+            "error",
+            "disabled"
+          ]
+        },
+        "targetPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

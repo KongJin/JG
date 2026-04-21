@@ -5,7 +5,6 @@ using Features.Account.Presentation;
 using Features.Garage;
 using Features.Garage.Application.Ports;
 using Features.Lobby.Application;
-using Features.Lobby.Application.Events;
 using Features.Lobby.Infrastructure;
 using Features.Lobby.Infrastructure.Persistence;
 using Features.Lobby.Infrastructure.Photon;
@@ -69,7 +68,6 @@ public sealed class LobbySetup : MonoBehaviour
     {
         _sceneLoader = new SceneLoaderAdapter();
         _sceneErrorPresenter.Initialize(_eventBus);
-        _eventBus.Subscribe(this, new System.Action<SceneLoadRequestedEvent>(OnSceneLoadRequested));
 
         _analytics = new FirebaseAnalyticsAdapter();
         _sessionStartTime = Time.realtimeSinceStartup;
@@ -155,12 +153,14 @@ public sealed class LobbySetup : MonoBehaviour
         var initializedScene = _sceneInitializationFlow.Initialize(
             _eventBus,
             _view,
-            _photonAdapter,
-            _soundPlayer,
-            _unitSetup,
-            _garageSetup,
-            _accountSetup?.DataPort,
-            ApplyLoadedAccountSettings);
+                _photonAdapter,
+                _soundPlayer,
+                _unitSetup,
+                _garageSetup,
+                _sceneLoader,
+                "GameScene",
+                _accountSetup?.DataPort,
+                ApplyLoadedAccountSettings);
 
         _syncHandler = initializedScene.SyncHandler;
 
@@ -173,8 +173,10 @@ public sealed class LobbySetup : MonoBehaviour
             return;
 
         _accountSettingsView.Initialize(
-            _accountSetup,
-            _eventBus,
+            _accountSetup.SignInWithGoogle,
+            _accountSetup.ChangeDisplayName,
+            _accountSetup.DeleteAccount,
+            _accountSetup.GoogleWebClientId,
             OnAccountLogoutRequested,
             OnAccountDeleted
         );
@@ -213,11 +215,6 @@ public sealed class LobbySetup : MonoBehaviour
         var elapsed = Time.realtimeSinceStartup - _sessionStartTime;
         _analytics?.LogSessionEnd(elapsed);
         _analytics?.LogDropOff("lobby", elapsed);
-    }
-
-    private void OnSceneLoadRequested(SceneLoadRequestedEvent e)
-    {
-        _sceneLoader.LoadScene(e.SceneName);
     }
 
     private void OnDestroy()

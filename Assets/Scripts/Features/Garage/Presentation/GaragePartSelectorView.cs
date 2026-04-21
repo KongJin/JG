@@ -16,9 +16,9 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private TMP_Text _hintText;
 
         [Header("Layout")]
-        [SerializeField] private float _titleFontSize = 12f;
-        [SerializeField] private float _valueFontSize = 13f;
-        [SerializeField] private float _hintFontSize = 8f;
+        [SerializeField] private float _titleFontSize = 13f;
+        [SerializeField] private float _valueFontSize = 15f;
+        [SerializeField] private float _hintFontSize = 9f;
 
         private bool _callbacksHooked;
 
@@ -75,7 +75,7 @@ namespace Features.Garage.Presentation
         public void ApplyMobileTypography()
         {
             float titleFontSize = _titleFontSize;
-            float valueFontSize = _valueFontSize + 1f;
+            float valueFontSize = _valueFontSize;
             float hintFontSize = _hintFontSize;
 
             _titleText.fontSize = titleFontSize;
@@ -85,7 +85,7 @@ namespace Features.Garage.Presentation
 
             _valueText.fontSize = valueFontSize;
             _valueText.enableAutoSizing = true;
-            _valueText.fontSizeMin = Mathf.Max(11f, valueFontSize - 4f);
+            _valueText.fontSizeMin = Mathf.Max(12f, valueFontSize - 4f);
             _valueText.fontSizeMax = valueFontSize;
             _valueText.alignment = TextAlignmentOptions.TopLeft;
             _valueText.textWrappingMode = TextWrappingModes.NoWrap;

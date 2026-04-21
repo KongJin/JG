@@ -17,25 +17,21 @@ namespace ProjectSD.EditorTools.SceneTools
 
         private static readonly PrefabSpec[] RootPrefabs =
         {
-            new("LobbyPageRoot", "Assets/Prefabs/Features/Lobby/LobbyPageRoot.prefab", new Vector2(-430f, 0f), Vector3.one * 0.42f),
-            new("GaragePageRoot", "Assets/Prefabs/Features/Garage/GaragePageRoot.prefab", new Vector2(0f, 0f), Vector3.one * 0.36f),
+            new("GaragePageRoot", "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab", new Vector2(-120f, 0f), Vector3.one * 0.36f),
         };
 
         private static readonly PrefabSpec[] RepeatPrefabs =
         {
-            new("LobbyRoomItem", "Assets/Prefabs/Features/Lobby/LobbyRoomItem.prefab", new Vector2(470f, 260f), Vector3.one * 0.85f),
-            new("LobbyMemberItem", "Assets/Prefabs/Features/Lobby/LobbyMemberItem.prefab", new Vector2(470f, 70f), Vector3.one * 0.85f),
-            new("GarageSlotItem", "Assets/Prefabs/Features/Garage/GarageSlotItem.prefab", new Vector2(470f, -140f), Vector3.one * 0.85f),
+        };
+
+        private static readonly PrefabSpec[] SharedPrefabs =
+        {
+            new("LobbyGarageNavBar", "Assets/Prefabs/Shared/Ui/Navigation/LobbyGarageNavBar.prefab", new Vector2(560f, 260f), Vector3.one * 0.9f),
         };
 
         private static readonly PrefabSpec[] IndependentPrefabs =
         {
-            new("LobbyRoomDetailPanel", "Assets/Prefabs/Features/Lobby/LobbyRoomDetailPanel.prefab", new Vector2(930f, 260f), Vector3.one * 0.58f),
-            new("LoginLoadingOverlay", "Assets/Prefabs/Shared/Ui/LoginLoadingOverlay.prefab", new Vector2(930f, 20f), Vector3.one * 0.58f),
-            new("LobbySceneErrorPresenter", "Assets/Prefabs/Shared/Ui/LobbySceneErrorPresenter.prefab", new Vector2(930f, -250f), Vector3.one * 0.58f),
-            new("GarageSettingsOverlay", "Assets/Prefabs/Features/Garage/GarageSettingsOverlay.prefab", new Vector2(1350f, 170f), Vector3.one * 0.75f),
-            new("GarageSaveDock", "Assets/Prefabs/Features/Garage/GarageSaveDock.prefab", new Vector2(1350f, -70f), Vector3.one),
-            new("GaragePartSelector", "Assets/Prefabs/Features/Garage/GaragePartSelector.prefab", new Vector2(1350f, -300f), Vector3.one * 0.82f),
+            new("LoginLoadingOverlay", "Assets/Prefabs/Features/Lobby/Independent/LoginLoadingOverlay.prefab", new Vector2(560f, 20f), Vector3.one * 0.58f),
         };
 
         [MenuItem(MenuPath)]
@@ -46,12 +42,12 @@ namespace ProjectSD.EditorTools.SceneTools
             var canvasRoot = ResetCanvasRoot();
             var reviewRoot = CreateChildRect(canvasRoot.transform, ReviewRootName, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.one * 0.5f, Vector2.zero, new Vector2(1800f, 1200f));
 
-            CreateSectionHeader(reviewRoot, "Root Prefabs", new Vector2(-430f, 510f));
-            CreateSectionHeader(reviewRoot, "Repeat Prefabs", new Vector2(470f, 510f));
-            CreateSectionHeader(reviewRoot, "Independent Prefabs", new Vector2(1130f, 510f));
+            CreateSectionHeader(reviewRoot, "Root Prefabs", new Vector2(-120f, 510f));
+            CreateSectionHeader(reviewRoot, "Shared Prefabs", new Vector2(560f, 510f));
+            CreateSectionHeader(reviewRoot, "Independent Prefabs", new Vector2(1240f, 510f));
 
             ImportSection(reviewRoot, RootPrefabs);
-            ImportSection(reviewRoot, RepeatPrefabs);
+            ImportSection(reviewRoot, SharedPrefabs);
             ImportSection(reviewRoot, IndependentPrefabs);
 
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());

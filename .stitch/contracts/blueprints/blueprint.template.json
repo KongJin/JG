@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "blueprint",
+  "blueprintId": "<blueprint-id>",
+  "surfaceRole": "root",
+  "description": "<reusable-surface-family>",
+  "blocks": [
+    {
+      "blockId": "root",
+      "role": "root",
+      "sourceName": "<source-root-name>",
+      "unityTargetPath": "<root-block-path>",
+      "layout": {
+        "axis": "vertical",
+        "padding": 16,
+        "gap": 16,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": []
+    }
+  ],
+  "defaults": {
+    "states": {
+      "default": true
+    },
+    "validation": {
+      "frame": "390x844",
+      "firstReadOrder": [
+        "root"
+      ],
+      "requiredChecks": [
+        "contract"
+      ],
+      "smokeScripts": []
+    }
+  },
+  "notes": []
+}

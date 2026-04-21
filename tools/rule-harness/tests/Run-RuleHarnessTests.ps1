@@ -1178,6 +1178,129 @@ Assert-RuleHarness `
     -Condition ([string]$compileFailedReport.execution.compileGateStatus -eq 'failed' -and [bool]$compileFailedReport.failed -and @($compileFailedReport.actionItems | Where-Object kind -eq 'fix-compile-errors').Count -eq 1) `
     -Message 'Expected actual Unity compile errors to remain a hard failure.'
 
+$rulesOnlyScopeRepo = Join-Path $scratchRoot 'rules-only-scope'
+Initialize-RuleHarnessScopeRepo -RepoPath $rulesOnlyScopeRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+$rulesOnlyMutationState = [pscustomobject]@{
+    enabled = $true
+    mode    = 'code_and_rules'
+}
+$rulesOnlyScopeInfo = [pscustomobject]@{
+    scopePath  = 'AGENTS.md'
+    scopeGuard = 'rules-only'
+}
+$rulesOnlyFeatureBatch = [pscustomobject]@{
+    id                       = 'batch-rules-feature'
+    kind                     = 'code_fix'
+    targetFiles              = @('Assets/Scripts/Features/Clean/Application/CleanService.cs')
+    reason                   = 'Fixture feature mutation under rules-only scope.'
+    validation               = @('rule_harness_tests')
+    expectedFindingsResolved = @()
+    status                   = 'planned'
+    featureNames             = @('Clean')
+    ownerDocs                = @('AGENTS.md')
+    sourceFindingTypes       = @('doc_drift')
+    fingerprint              = $null
+    riskScore                = $null
+    riskLabel                = $null
+    ownershipStatus          = 'pending'
+    operations               = @([pscustomobject]@{
+        type        = 'replace_text'
+        targetPath  = 'Assets/Scripts/Features/Clean/Application/CleanService.cs'
+        searchText  = 'CleanService'
+        replaceText = 'CleanService'
+    })
+}
+$rulesOnlyFeatureMutation = Invoke-RuleHarnessMutationPlan `
+    -PlannedBatches @($rulesOnlyFeatureBatch) `
+    -InitialStaticFindings @() `
+    -RepoRoot $rulesOnlyScopeRepo `
+    -Config $config `
+    -MutationState $rulesOnlyMutationState `
+    -ScopeInfo $rulesOnlyScopeInfo `
+    -DryRun
+$rulesOnlyFeatureStage = @($rulesOnlyFeatureMutation.stageResults | Where-Object stage -eq 'mutation' | Select-Object -First 1)[0]
+Assert-RuleHarness `
+    -Condition ($rulesOnlyFeatureMutation.failed -and @($rulesOnlyFeatureMutation.skippedBatches | Where-Object reasonCode -eq 'rules-scope-mutation-violation').Count -eq 1) `
+    -Message 'Expected rules-only scope to stop feature code batches with rules-scope-mutation-violation.'
+Assert-RuleHarness `
+    -Condition ($null -ne $rulesOnlyFeatureStage -and [string]$rulesOnlyFeatureStage.details.failureReason -eq 'rules-scope-mutation-violation') `
+    -Message 'Expected mutation stage details to expose the rules-scope-mutation-violation failure reason.'
+Assert-RuleHarness `
+    -Condition (@($rulesOnlyFeatureMutation.actionItems | Where-Object kind -eq 'rules-scope-mutation-violation').Count -eq 1) `
+    -Message 'Expected rules-only scope violations to surface a dedicated action item.'
+
+$rulesOnlyDocBatch = [pscustomobject]@{
+    id                       = 'batch-rules-doc'
+    kind                     = 'rule_fix'
+    targetFiles              = @('AGENTS.md')
+    reason                   = 'Fixture rules-only doc mutation.'
+    validation               = @('rule_harness_tests')
+    expectedFindingsResolved = @()
+    status                   = 'planned'
+    featureNames             = @()
+    ownerDocs                = @('AGENTS.md')
+    sourceFindingTypes       = @('doc_drift')
+    fingerprint              = $null
+    riskScore                = $null
+    riskLabel                = $null
+    ownershipStatus          = 'pending'
+    operations               = @([pscustomobject]@{
+        type = 'doc_edit'
+        edits = @([pscustomobject]@{
+            targetPath  = 'AGENTS.md'
+            searchText  = 'Read `/docs/rules/architecture-rules.md`.'
+            replaceText = 'Read `/docs/rules/architecture-rules.md`.'
+        })
+    })
+}
+$rulesOnlyDocMutation = Invoke-RuleHarnessMutationPlan `
+    -PlannedBatches @($rulesOnlyDocBatch) `
+    -InitialStaticFindings @() `
+    -RepoRoot $rulesOnlyScopeRepo `
+    -Config $config `
+    -MutationState $rulesOnlyMutationState `
+    -ScopeInfo $rulesOnlyScopeInfo `
+    -DryRun
+Assert-RuleHarness `
+    -Condition ((-not $rulesOnlyDocMutation.failed) -and @($rulesOnlyDocMutation.skippedBatches | Where-Object reasonCode -eq 'rules-scope-mutation-violation').Count -eq 0) `
+    -Message 'Expected rules-only scope to allow AGENTS.md rule-fix batches.'
+
+$rulesOnlyCsprojBatch = [pscustomobject]@{
+    id                       = 'batch-rules-csproj'
+    kind                     = 'code_fix'
+    targetFiles              = @('Assembly-CSharp.csproj')
+    reason                   = 'Fixture generated project mutation under rules-only scope.'
+    validation               = @('rule_harness_tests')
+    expectedFindingsResolved = @()
+    status                   = 'planned'
+    featureNames             = @()
+    ownerDocs                = @('AGENTS.md')
+    sourceFindingTypes       = @('doc_drift')
+    fingerprint              = $null
+    riskScore                = $null
+    riskLabel                = $null
+    ownershipStatus          = 'pending'
+    operations               = @([pscustomobject]@{
+        type        = 'replace_text'
+        targetPath  = 'Assembly-CSharp.csproj'
+        searchText  = '<Project>'
+        replaceText = '<Project>'
+    })
+}
+$rulesOnlyCsprojMutation = Invoke-RuleHarnessMutationPlan `
+    -PlannedBatches @($rulesOnlyCsprojBatch) `
+    -InitialStaticFindings @() `
+    -RepoRoot $rulesOnlyScopeRepo `
+    -Config $config `
+    -MutationState $rulesOnlyMutationState `
+    -ScopeInfo $rulesOnlyScopeInfo `
+    -DryRun
+Assert-RuleHarness `
+    -Condition (@($rulesOnlyCsprojMutation.skippedBatches | Where-Object reasonCode -eq 'rules-scope-mutation-violation').Count -eq 1) `
+    -Message 'Expected rules-only scope to block generated .csproj mutation batches.'
+
 $featureDependencyPassedRepo = Join-Path $scratchRoot 'feature-dependency-gate-passed'
 Initialize-RuleHarnessScopeRepo -RepoPath $featureDependencyPassedRepo -Features @(
     [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }

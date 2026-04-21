@@ -30,14 +30,8 @@ namespace Features.Enemy
 
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
         {
-            var registry = UnityEngine.Object.FindFirstObjectByType<EnemySceneRegistry>();
-            if (registry == null)
-            {
-                Debug.LogWarning("[EnemySetup] EnemySceneRegistry not found. Arrival fallback is unavailable.", this);
-                return;
-            }
-
-            registry.NotifyArrived(this);
+            // Arrival fallback was intentionally removed so enemy wiring depends on
+            // explicit scene contract / bootstrap paths instead of runtime global lookup.
         }
 
         public void Initialize(

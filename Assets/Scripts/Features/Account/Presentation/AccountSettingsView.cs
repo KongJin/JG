@@ -2,7 +2,6 @@ using System.Runtime.InteropServices;
 using Features.Account.Application;
 using Features.Account.Domain;
 using Shared.Attributes;
-using Shared.EventBus;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,8 +35,10 @@ namespace Features.Account.Presentation
         [SerializeField] private Button _confirmYesButton;
         [SerializeField] private Button _confirmNoButton;
 
-        private AccountSetup _setup;
-        private EventBus _eventBus;
+        private SignInWithGoogleUseCase _signInWithGoogle;
+        private ChangeDisplayNameUseCase _changeDisplayName;
+        private DeleteAccountUseCase _deleteAccount;
+        private string _googleWebClientId;
         private System.Action _onLogout;
         private System.Action _onDeleteAccount;
         private AccountProfile _currentProfile;
@@ -53,10 +54,18 @@ namespace Features.Account.Presentation
             string errorMethodName);
 #endif
 
-        public void Initialize(AccountSetup setup, EventBus eventBus, System.Action onLogout, System.Action onDeleteAccount)
+        public void Initialize(
+            SignInWithGoogleUseCase signInWithGoogle,
+            ChangeDisplayNameUseCase changeDisplayName,
+            DeleteAccountUseCase deleteAccount,
+            string googleWebClientId,
+            System.Action onLogout,
+            System.Action onDeleteAccount)
         {
-            _setup = setup;
-            _eventBus = eventBus;
+            _signInWithGoogle = signInWithGoogle;
+            _changeDisplayName = changeDisplayName;
+            _deleteAccount = deleteAccount;
+            _googleWebClientId = googleWebClientId;
             _onLogout = onLogout;
             _onDeleteAccount = onDeleteAccount;
 
@@ -111,7 +120,7 @@ namespace Features.Account.Presentation
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(_setup.GoogleWebClientId))
+            if (string.IsNullOrWhiteSpace(_googleWebClientId))
             {
                 SetStatusMessage("googleWebClientId is empty.");
                 return;
@@ -121,7 +130,7 @@ namespace Features.Account.Presentation
             _googleSignInButton.interactable = false;
             SetStatusMessage("Opening Google sign-in...");
             AccountGoogleSignIn_RequestIdToken(
-                _setup.GoogleWebClientId,
+                _googleWebClientId,
                 gameObject.name,
                 nameof(OnGoogleIdTokenReceived),
                 nameof(OnGoogleIdTokenFailed));
@@ -149,7 +158,7 @@ namespace Features.Account.Presentation
             {
                 SetStatusMessage("Linking Google account...");
 
-                var result = await _setup.SignInWithGoogle.Execute(googleIdToken);
+                var result = await _signInWithGoogle.Execute(googleIdToken);
                 if (result.IsFailure)
                 {
                     SetStatusMessage(result.Error);
@@ -182,7 +191,7 @@ namespace Features.Account.Presentation
                 return;
 
             string newName = _nicknameInput.text;
-            var result = await _setup.ChangeDisplayName.Execute(newName);
+            var result = await _changeDisplayName.Execute(newName);
 
             SetNicknameMessage(result.IsSuccess ? "Nickname changed." : result.Error);
 
@@ -247,7 +256,7 @@ namespace Features.Account.Presentation
             try
             {
                 SetStatusMessage("Deleting account...");
-                await _setup.DeleteAccount.Execute();
+                await _deleteAccount.Execute();
                 _onDeleteAccount?.Invoke();
             }
             catch (System.Exception ex)
@@ -325,7 +334,7 @@ namespace Features.Account.Presentation
 
         private void EnsureInitialized()
         {
-            if (_setup == null)
+            if (_signInWithGoogle == null || _changeDisplayName == null || _deleteAccount == null)
                 throw new System.InvalidOperationException("AccountSettingsView.Initialize must be called before interaction.");
         }
 

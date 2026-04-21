@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "screen-manifest",
+  "setId": "set-c",
+  "surfaceId": "login-loading-overlay",
+  "surfaceRole": "independent",
+  "status": "draft",
+  "extends": "overlay-modal",
+  "targets": {
+    "prefabPath": "Assets/Prefabs/Features/Lobby/Independent/LoginLoadingOverlay.prefab",
+    "sceneRoots": [
+      "/Canvas/LoginLoadingOverlay"
+    ],
+    "primaryContractPaths": [
+      "/Canvas/LoginLoadingOverlay",
+      "/Canvas/LoginLoadingOverlay/OverlayCard"
+    ],
+    "serializedOwners": [
+      "/Canvas/LoginLoadingOverlay::LoginLoadingView"
+    ]
+  },
+  "ctaPriority": [],
+  "states": {
+    "default": true,
+    "empty": false,
+    "loading": true,
+    "error": false,
+    "selected": false,
+    "disabled": true
+  },
+  "validation": {
+    "frame": "390x844",
+    "firstReadOrder": [
+      "overlay-card"
+    ],
+    "requiredChecks": [
+      "contract",
+      "dimmed lobby visible behind scrim",
+      "2 to 3 short system status lines",
+      "tactical progress treatment",
+      "no loud primary action in steady loading state"
+    ],
+    "smokeScripts": []
+  },
+  "blockOverrides": {
+    "overlay-card": {
+      "notes": [
+        "System-like loading panel for authentication, profile sync, or room data load.",
+        "Avoid generic spinner-only modal."
+      ]
+    },
+    "primary-cta": {
+      "enabled": false,
+      "notes": [
+        "Intake did not confirm a visible primary action for this accepted screen.",
+        "Do not invent a CTA until the accepted screen or repo mapping proves one."
+      ]
+    }
+  },
+  "appendBlocks": [],
+  "notes": [
+    "Generated from screen-intake with repo mapping attached.",
+    "Global login or connection loading overlay integrated with the lobby context."
+  ]
+}

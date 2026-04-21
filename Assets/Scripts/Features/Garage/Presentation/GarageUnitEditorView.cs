@@ -64,11 +64,11 @@ namespace Features.Garage.Presentation
 
             _selectionTitleText.text = viewModel.Title;
             _selectionTitleText.color = ThemeColors.TextPrimary;
-            _selectionTitleText.fontSize = 13.5f;
+            _selectionTitleText.fontSize = 16f;
 
             _selectionSubtitleText.text = viewModel.Subtitle;
             _selectionSubtitleText.color = ThemeColors.TextSecondary;
-            _selectionSubtitleText.fontSize = 9.5f;
+            _selectionSubtitleText.fontSize = 11f;
 
             _frameSelectorView.Render(viewModel.FrameValueText, viewModel.FrameHintText);
             _firepowerSelectorView.Render(viewModel.FirepowerValueText, viewModel.FirepowerHintText);

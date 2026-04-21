@@ -7,15 +7,12 @@ namespace Features.Wave
     {
         private EnemySceneRegistry _enemySceneRegistry;
 
-        public void Attach(MonoBehaviour owner, System.Action<EnemySetup> onEnemyArrived)
+        public void Attach(EnemySceneRegistry enemySceneRegistry, System.Action<EnemySetup> onEnemyArrived)
         {
-            if (owner == null || onEnemyArrived == null)
+            if (enemySceneRegistry == null || onEnemyArrived == null)
                 return;
 
-            _enemySceneRegistry = owner.GetComponent<EnemySceneRegistry>();
-            if (_enemySceneRegistry == null)
-                _enemySceneRegistry = owner.gameObject.AddComponent<EnemySceneRegistry>();
-
+            _enemySceneRegistry = enemySceneRegistry;
             _enemySceneRegistry.EnemyArrived += onEnemyArrived;
             _enemySceneRegistry.DrainPendingArrivals(onEnemyArrived);
         }

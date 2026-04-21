@@ -20,9 +20,9 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private Image _borderImage;
 
         [Header("Layout")]
-        [SerializeField] private float _slotNumberFontSize = 6.5f;
-        [SerializeField] private float _titleFontSize = 9.5f;
-        [SerializeField] private float _summaryFontSize = 6.5f;
+        [SerializeField] private float _slotNumberFontSize = 7.5f;
+        [SerializeField] private float _titleFontSize = 11f;
+        [SerializeField] private float _summaryFontSize = 7.25f;
 
         [Header("Animation")]
         [Required, SerializeField] private CanvasGroup _canvasGroup;

@@ -40,6 +40,31 @@
                         "status":  "observed"
                     },
                     {
+                        "signature":  "static-scan-failed|static-scan|AGENTS.md|code_fix|Before=# After=# Resolved=# Expected=# NewHigh=#",
+                        "scopeType":  "global",
+                        "scopePath":  "AGENTS.md",
+                        "symptoms":  "Before=8 After=7 Resolved=0 Expected=1 NewHigh=0",
+                        "preferredRepairStrategy":  "Amend the owning global rule doc before retrying.",
+                        "validationHints":  [
+                                                "Tests/Projectile/Run-ProjectileValidation.ps1",
+                                                "target_files_exist",
+                                                "expected_findings_resolved",
+                                                "no_new_high_severity_findings",
+                                                "feature_root_contract_present",
+                                                "owner_doc_references_resolve",
+                                                "feature_test_assets_present"
+                                            ],
+                        "confidence":  "medium",
+                        "hitCount":  1,
+                        "distinctCommitCount":  1,
+                        "commitShas":  [
+                                           "985bdeb62e2c4676c86deb3b7b650502f675ac67"
+                                       ],
+                        "lastSeen":  "2026-04-16T05:01:46.7756380Z",
+                        "promotionTarget":  "AGENTS.md",
+                        "status":  "observed"
+                    },
+                    {
                         "signature":  "feature-cycle-unsupported|Account-\u003eGarage",
                         "scopeType":  "feature",
                         "scopePath":  "Assets/Scripts/Features/Account",
@@ -67,28 +92,23 @@
                                                    ]
                     },
                     {
-                        "signature":  "static-scan-failed|static-scan|AGENTS.md|code_fix|Before=# After=# Resolved=# Expected=# NewHigh=#",
-                        "scopeType":  "global",
-                        "scopePath":  "AGENTS.md",
-                        "symptoms":  "Before=8 After=7 Resolved=0 Expected=1 NewHigh=0",
-                        "preferredRepairStrategy":  "Amend the owning global rule doc before retrying.",
+                        "signature":  "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Garage Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
+                        "scopeType":  "harness",
+                        "scopePath":  "tools/rule-harness/README.md",
+                        "symptoms":  "Scope=Garage Stage=diagnose TimeoutSec=120 HTTP request failed. Status=429 Body={\"error\":{\"code\":\"1113\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
+                        "preferredRepairStrategy":  "Improve harness prompts, config, tests, or docs before retrying.",
                         "validationHints":  [
-                                                "Tests/Projectile/Run-ProjectileValidation.ps1",
-                                                "target_files_exist",
-                                                "expected_findings_resolved",
-                                                "no_new_high_severity_findings",
-                                                "feature_root_contract_present",
-                                                "owner_doc_references_resolve",
-                                                "feature_test_assets_present"
+                                                "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+                                                "tools/rule-harness/README.md"
                                             ],
-                        "confidence":  "medium",
-                        "hitCount":  1,
+                        "confidence":  "high",
+                        "hitCount":  5,
                         "distinctCommitCount":  1,
                         "commitShas":  [
-                                           "985bdeb62e2c4676c86deb3b7b650502f675ac67"
+                                           "e29481e41f7eaccf721822c371c6fc104b051ca8"
                                        ],
-                        "lastSeen":  "2026-04-16T05:01:46.7756380Z",
-                        "promotionTarget":  "AGENTS.md",
+                        "lastSeen":  "2026-04-21T14:59:00.0483677Z",
+                        "promotionTarget":  "tools/rule-harness/README.md",
                         "status":  "observed"
                     },
                     {

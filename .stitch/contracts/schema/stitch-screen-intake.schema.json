@@ -1,0 +1,277 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jg.local/stitch-screen-intake.schema.json",
+  "title": "Stitch Screen Intake",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "contractKind",
+    "setId",
+    "surfaceId",
+    "surfaceRole",
+    "status",
+    "source",
+    "blocks",
+    "ctaPriority",
+    "states",
+    "validation"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.1.0"
+    },
+    "contractKind": {
+      "type": "string",
+      "const": "screen-intake"
+    },
+    "setId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "surfaceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "surfaceRole": {
+      "type": "string",
+      "enum": ["root", "repeat", "independent", "shared"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "accepted", "historical"]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool", "screenName"],
+      "properties": {
+        "tool": {
+          "type": "string",
+          "const": "stitch"
+        },
+        "screenName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "variantLabel": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "familyHints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "suggestedBlueprintId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "suggestedFeatureArea": {
+          "type": "string",
+          "minLength": 1
+        },
+        "likelyOverlay": {
+          "type": "boolean"
+        },
+        "likelyScrollRoot": {
+          "type": "boolean"
+        },
+        "repeatedBlockIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "blocks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/block"
+      }
+    },
+    "ctaPriority": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "priority", "label", "outcome"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["primary", "secondary", "tertiary"]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "outcome": {
+            "type": "string",
+            "minLength": 1
+          },
+          "placement": {
+            "type": "string",
+            "enum": ["header", "body", "footer", "floating", "inline"]
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "states": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "required": ["default"]
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["frame", "firstReadOrder", "requiredChecks"],
+      "properties": {
+        "frame": {
+          "type": "string",
+          "minLength": 1
+        },
+        "firstReadOrder": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "requiredChecks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "openQuestions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blockId",
+        "role",
+        "sourceName",
+        "layout",
+        "children"
+      ],
+      "properties": {
+        "blockId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "root",
+            "section",
+            "repeat-item",
+            "overlay",
+            "cta",
+            "content",
+            "status",
+            "shared-chrome"
+          ]
+        },
+        "sourceName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "layout": {
+          "$ref": "#/$defs/layout"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "repeat": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis", "padding", "gap", "alignment", "sticky", "scroll"],
+      "properties": {
+        "axis": {
+          "type": "string",
+          "enum": ["vertical", "horizontal", "overlay", "free"]
+        },
+        "padding": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gap": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minHeight": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minWidth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "alignment": {
+          "type": "string",
+          "enum": ["start", "center", "end", "stretch"]
+        },
+        "sticky": {
+          "type": "boolean"
+        },
+        "scroll": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # Unity UI Authoring Workflow
 
-> 마지막 업데이트: 2026-04-20
+> 마지막 업데이트: 2026-04-22
 > 상태: active
 > doc_id: ops.unity-ui-authoring-workflow
 > role: ssot
@@ -36,6 +36,7 @@
 - Unity가 열어 둔 scene의 디스크 파일 직접 overwrite 금지
 - code-driven builder 또는 rebuild route를 UI authoring 기본 경로로 재도입 금지
 - smoke나 capture를 layout authoring의 대체 수단으로 사용 금지
+- scene registry를 `FindFirstObjectByType<*SceneRegistry>` 또는 `AddComponent<*SceneRegistry>` 같은 runtime repair 경로로 복구하는 것 금지
 
 ## 허용 작업
 
@@ -44,6 +45,7 @@
 - scene contract owner는 serialized scene/prefab 상태로 유지
 - visual handoff는 `Stitch`를 참고하되, runtime SSOT는 Unity scene/prefab으로 유지
 - runtime scene이 이미 폐기된 경우에는 `prefab-first reset` route를 선택하고, surface baseline prefab을 다시 세운 뒤 scene contract를 재조립한다
+- scene registry 같은 runtime wiring dependency는 scene/prefab contract로만 유지하고, 숨은 runtime lookup/add-component fallback은 재도입하지 않는다
 
 ## Route별 필수 증거
 
@@ -76,6 +78,11 @@ reset 상태에서는 historical reference로만 본다.
 - `Invoke-UnityUiAuthoringWorkflowPolicy.ps1` 결과
 - prefab 단위 required reference / hierarchy 점검
 - 새 scene이 생긴 뒤 fresh contract와 smoke 재생성
+
+추가 규칙:
+
+- reset 중에는 helper script, prefab-pack summary artifact, 과거 prefab path 메모를 곧바로 신뢰하지 말고 실제 repo 파일 트리와 현재 prefab hierarchy를 먼저 대조한다.
+- hierarchy 이름이 교체되는 과도기에는 translation helper와 smoke가 legacy path와 current path를 모두 처리하도록 유지하고, 모든 호출자가 옮겨간 뒤에만 구형 path를 제거한다.
 
 ## 작업 종료 순서
 

@@ -1,7 +1,7 @@
 param(
     [string]$UnityBridgeUrl,
     [string]$ScenePath = "Assets/Scenes/LobbyScene.unity",
-    [string]$GarageOpenButtonPath = "/Canvas/LobbyPageRoot/RoomListPanel/GarageSummaryCard/GarageTabButton",
+    [string]$GarageTabButtonPath = "/Canvas/LobbyGarageNavBar/GarageTabButton",
     [string]$GarageRootPath = "/Canvas/GaragePageRoot",
     [string]$SettingsButtonPath = "/Canvas/GaragePageRoot/GarageHeaderRow/SettingsButton",
     [string]$SettingsOverlayPath = "/Canvas/GaragePageRoot/GarageSettingsOverlay",
@@ -35,7 +35,7 @@ try {
         -TimeoutSec $TimeoutSec
     $startedPlayHere = $true
 
-    Invoke-McpUiInvoke -Root $root -Path $GarageOpenButtonPath -Method "click" | Out-Null
+    Invoke-McpUiInvoke -Root $root -Path $GarageTabButtonPath -Method "click" | Out-Null
     Wait-McpUiActive -Root $root -Path $GarageRootPath -TimeoutMs ($TimeoutSec * 1000) | Out-Null
     Start-Sleep -Milliseconds $UiSettleMs
 
@@ -59,7 +59,7 @@ try {
         scenePath = $ScenePath
         resultPath = $resultAbsolutePath
         uiPaths = [PSCustomObject]@{
-            garageOpenButton = $GarageOpenButtonPath
+            garageTabButton = $GarageTabButtonPath
             settingsButton = $SettingsButtonPath
             settingsOverlay = $SettingsOverlayPath
             settingsCloseButton = $SettingsCloseButtonPath

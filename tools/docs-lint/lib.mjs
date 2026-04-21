@@ -59,8 +59,31 @@ const SKILL_LOCAL_PREFIXES = [
   ".mcp.json",
   ".app.json",
 ];
+const DEPRECATED_REPO_SKILL_INLINE_PREFIXES = [
+  ".stitch/designs/",
+  ".stitch/handoff/",
+];
+const PLAN_MODE_PATTERNS = [/\bPlan Mode\b/u, /Plan 모드/u];
+const RULE_OPERATIONS_PATTERNS = [/\brule-operations\b/u];
+const MUTATION_FORBIDDEN_PATTERNS = [
+  /mutation\s*금지/u,
+  /mutation을\s*금지/u,
+  /Do not mutate/u,
+  /must not mutate/u,
+];
+const INSPECTION_REFERENCE_PATTERNS = [
+  /inspection\/reference/u,
+  /inspection only/u,
+  /reference only/u,
+];
+const MUTATING_REPO_SKILL_ENTRIES = new Set([
+  ".codex/skills/jg-unity-workflow/SKILL.md",
+  ".codex/skills/jg-stitch-workflow/SKILL.md",
+]);
 
-export async function lintRepository(repoRoot) {
+export async function lintRepository(repoRoot, options = {}) {
+  const includeGeneralChecks = options.includeGeneralChecks ?? true;
+  const includePolicyChecks = options.includePolicyChecks ?? true;
   const managedDocPaths = await discoverManagedDocs(repoRoot);
   const documents = [];
   const errors = [];
@@ -76,13 +99,23 @@ export async function lintRepository(repoRoot) {
     };
 
     documents.push(document);
-    errors.push(...validateMetadata(document));
-    errors.push(...(await validateLinks(document)));
-    errors.push(...(await validateSkillInlinePaths(document, repoRoot)));
+    if (includeGeneralChecks) {
+      errors.push(...validateMetadata(document));
+      errors.push(...(await validateLinks(document)));
+      errors.push(...(await validateSkillInlinePaths(document, repoRoot)));
+      errors.push(...(await validateContractArtifactReferences(document, repoRoot)));
+      errors.push(...validateActiveDocHistoricalLinks(document));
+      errors.push(...validateRepoSkillHistoricalMentions(document));
+    }
+    if (includePolicyChecks) {
+      errors.push(...validatePlanModeRouting(document));
+    }
   }
 
-  errors.push(...validateUniqueDocIds(documents));
-  errors.push(...validateIndexStatusLabels(documents, repoRoot));
+  if (includeGeneralChecks) {
+    errors.push(...validateUniqueDocIds(documents));
+    errors.push(...validateIndexStatusLabels(documents, repoRoot));
+  }
 
   return {
     managedDocPaths: managedDocPaths.map((absolutePath) =>
@@ -323,6 +356,21 @@ async function validateSkillInlinePaths(document, repoRoot) {
         continue;
       }
 
+      if (
+        documentKind === "repo-skill" &&
+        DEPRECATED_REPO_SKILL_INLINE_PREFIXES.some((prefix) => token.startsWith(prefix))
+      ) {
+        errors.push(
+          createError(
+            "deprecated-skill-inline-path",
+            document.repoRelativePath,
+            `Repo-local skill must not reference deprecated historical path \`${token}\`. Route through active owner docs and \`.stitch/contracts/*.json\` instead.`,
+            index + 1,
+          ),
+        );
+        continue;
+      }
+
       const resolved = resolveInlinePathToken(token, document, repoRoot);
       if (!resolved) {
         continue;
@@ -342,6 +390,154 @@ async function validateSkillInlinePaths(document, repoRoot) {
   }
 
   return errors;
+}
+
+async function validateContractArtifactReferences(document, repoRoot) {
+  const errors = [];
+  const lines = stripFencedCodeBlocks(document.content).split(/\r?\n/);
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+
+    for (const target of extractRelativeMarkdownTargets(line)) {
+      const normalizedTarget = target.replace(/\\/g, "/");
+      if (!isConcreteContractArtifactPath(normalizedTarget)) {
+        continue;
+      }
+
+      const resolvedPath = path.resolve(path.dirname(document.absolutePath), normalizedTarget);
+      if (!(await pathExists(resolvedPath))) {
+        errors.push(
+          createError(
+            "missing-contract-artifact",
+            document.repoRelativePath,
+            `Concrete contract artifact \`${normalizedTarget}\` does not exist.`,
+            index + 1,
+          ),
+        );
+      }
+    }
+
+    for (const token of extractInlineCodeTokens(line)) {
+      const normalizedToken = token.replace(/\\/g, "/");
+      if (!isConcreteContractArtifactPath(normalizedToken)) {
+        continue;
+      }
+
+      const resolved = resolveInlinePathToken(normalizedToken, document, repoRoot);
+      if (!resolved || !(await pathExists(resolved.absolutePath))) {
+        errors.push(
+          createError(
+            "missing-contract-artifact",
+            document.repoRelativePath,
+            `Concrete contract artifact \`${normalizedToken}\` does not exist.`,
+            index + 1,
+          ),
+        );
+      }
+    }
+  }
+
+  return errors;
+}
+
+function validateActiveDocHistoricalLinks(document) {
+  const status = document.metadata.get("상태");
+  if (status !== "active") {
+    return [];
+  }
+
+  const errors = [];
+  const lines = stripFencedCodeBlocks(document.content).split(/\r?\n/);
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    for (const target of extractRelativeMarkdownTargets(line)) {
+      const normalizedTarget = target.replace(/\\/g, "/");
+      if (
+        normalizedTarget.includes(".stitch/handoff/") ||
+        normalizedTarget.includes(".stitch/designs/")
+      ) {
+        errors.push(
+          createError(
+            "historical-link-in-active-doc",
+            document.repoRelativePath,
+            `Active document must not link directly to historical Stitch artifact \`${normalizedTarget}\`. Route through active owner docs or \`.stitch/contracts/*.json\` instead.`,
+            index + 1,
+          ),
+        );
+      }
+    }
+  }
+
+  return errors;
+}
+
+function validateRepoSkillHistoricalMentions(document) {
+  if (getDocumentKind(document.repoRelativePath) !== "repo-skill") {
+    return [];
+  }
+
+  const errors = [];
+  const lines = stripFencedCodeBlocks(document.content).split(/\r?\n/);
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (line.includes(".stitch/designs/") || line.includes(".stitch/handoff/")) {
+      errors.push(
+        createError(
+          "deprecated-skill-path-mention",
+          document.repoRelativePath,
+          "Repo-local skill must not restate deprecated historical Stitch paths. Keep those details in owner docs only.",
+          index + 1,
+        ),
+      );
+    }
+  }
+
+  return errors;
+}
+
+function validatePlanModeRouting(document) {
+  if (document.repoRelativePath === "AGENTS.md") {
+    return validateDocumentContainsAll(
+      document,
+      [
+        { patterns: PLAN_MODE_PATTERNS, label: "Plan Mode wording" },
+        { patterns: RULE_OPERATIONS_PATTERNS, label: "`rule-operations` routing" },
+        { patterns: MUTATION_FORBIDDEN_PATTERNS, label: "explicit mutation prohibition" },
+      ],
+      "missing-plan-mode-routing",
+      "AGENTS.md must route Plan Mode or Codex operations through `docs/index.md` and `rule-operations`, and explicitly forbid mutation in that lane.",
+    );
+  }
+
+  if (document.repoRelativePath === "docs/index.md") {
+    return validateDocumentContainsAll(
+      document,
+      [
+        { patterns: PLAN_MODE_PATTERNS, label: "Plan Mode wording" },
+        { patterns: RULE_OPERATIONS_PATTERNS, label: "`rule-operations` owner route" },
+      ],
+      "missing-plan-mode-owner-route",
+      "docs/index.md must expose a current route for Plan Mode or Codex operations through the `rule-operations` owner docs.",
+    );
+  }
+
+  if (MUTATING_REPO_SKILL_ENTRIES.has(document.repoRelativePath)) {
+    return validateDocumentContainsAll(
+      document,
+      [
+        { patterns: PLAN_MODE_PATTERNS, label: "Plan Mode wording" },
+        { patterns: INSPECTION_REFERENCE_PATTERNS, label: "inspection/reference clause" },
+        { patterns: MUTATION_FORBIDDEN_PATTERNS, label: "explicit mutation prohibition" },
+      ],
+      "missing-skill-inspection-clause",
+      "Repo-local mutating skill-entry must state that Plan Mode is inspection/reference only and mutation is forbidden from that lane.",
+    );
+  }
+
+  return [];
 }
 
 function validateUniqueDocIds(documents) {
@@ -518,6 +714,11 @@ function isRepoLocalSkillEntry(repoRelativePath) {
   return /^\.codex\/skills\/jg-[^/]+\/SKILL\.md$/.test(repoRelativePath);
 }
 
+function isConcreteContractArtifactPath(target) {
+  return /^(\.\.\/|\.\/)?\.stitch\/contracts\/.+\.json$/u.test(target)
+    || /^\.stitch\/contracts\/.+\.json$/u.test(target);
+}
+
 function getDocumentKind(repoRelativePath) {
   if (/^\.codex\/skills\/jg-[^/]+\/SKILL\.md$/.test(repoRelativePath)) {
     return "repo-skill";
@@ -572,6 +773,28 @@ function createError(code, repoRelativePath, message, line = null) {
     message,
     path: repoRelativePath,
   };
+}
+
+function validateDocumentContainsAll(document, requirements, errorCode, message) {
+  const missingLabels = requirements
+    .filter((requirement) => !documentHasAnyPattern(document.content, requirement.patterns))
+    .map((requirement) => requirement.label);
+
+  if (missingLabels.length === 0) {
+    return [];
+  }
+
+  return [
+    createError(
+      errorCode,
+      document.repoRelativePath,
+      `${message} Missing: ${missingLabels.join(", ")}.`,
+    ),
+  ];
+}
+
+function documentHasAnyPattern(content, patterns) {
+  return patterns.some((pattern) => pattern.test(content));
 }
 
 function sortErrors(errors) {

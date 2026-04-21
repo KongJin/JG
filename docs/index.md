@@ -1,6 +1,6 @@
 # Docs Index
 
-> 마지막 업데이트: 2026-04-20
+> 마지막 업데이트: 2026-04-21
 > 상태: active
 > doc_id: docs.index
 > role: entry
@@ -18,6 +18,14 @@
 3. `tools/unity-mcp/README.md`
 4. relevant contract/test code
 
+## Quick Start
+
+- Unity UI / prefab / scene 작업: [`plans/progress.md`](./plans/progress.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant contract/prefab
+- Stitch / handoff 작업: [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) -> relevant `.stitch/contracts/screens/*.json` + `.stitch/contracts/blueprints/*.json`
+- Stitch -> Unity 한 장씩 번역: [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) -> relevant `.stitch/contracts/intakes/*.json` -> relevant `.stitch/contracts/screens/*.json` -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)
+- 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> `docs/index.md` -> relevant owner doc
+- GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
+
 ## 상태 규칙
 
 - `active`: 현재 작업 기준으로 직접 참고하는 문서
@@ -31,12 +39,15 @@
 | 상황 | 먼저 볼 문서 |
 |---|---|
 | 지금 뭐가 진행 중인지 확인 | [`plans/progress.md`](./plans/progress.md) |
+| Plan Mode / Codex 운영 규칙 확인 | `rule-operations` owner 문서 (`docs/index.md`로 current path를 해석한 뒤 읽기) |
 | Unity UI/UX 작업 시작 규칙 확인 | [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) |
 | 게임 방향과 MVP 기준 확인 | [`design/game_design.md`](./design/game_design.md) |
 | Garage UI 레이아웃/토큰/Unity handoff 기준 확인 | [`design/ui_foundations.md`](./design/ui_foundations.md) |
 | Stitch UI 시안 워크플로우 확인 | [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) |
 | Stitch 데이터 저장/갱신/Unity handoff 흐름 확인 | [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) |
-| Stitch handoff 완성도 점검 기준 확인 | [`ops/stitch_handoff_completeness_checklist.md`](./ops/stitch_handoff_completeness_checklist.md) |
+| Stitch JSON handoff contract 구조 확인 | [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) |
+| Stitch screen을 Unity로 한 장씩 옮기는 실무 가이드 확인 | [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) |
+| Stitch handoff contract 완성도 점검 기준 확인 | [`ops/stitch_handoff_completeness_checklist.md`](./ops/stitch_handoff_completeness_checklist.md) |
 | Stitch 전면 개편 실행 계획 확인 | [`plans/stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) |
 | Stitch 테스트 프롬프트 확인 | [`design/stitch_test_brief.md`](./design/stitch_test_brief.md) |
 | GameScene 진입 큰 흐름 확인 | [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) |
@@ -63,6 +74,7 @@
 ### `plans/`
 
 - `active`: [`progress.md`](./plans/progress.md) - 공식 진행률 SSOT
+- `reference`: [`progress_changelog.md`](./plans/progress_changelog.md) - 진행 상황에서 분리한 dated change log
 - `active`: [`account_system_plan.md`](./plans/account_system_plan.md) - 계정/차고 복구 계획
 - `active`: [`game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) - GameScene 진입 상위 흐름
 - `active`: [`stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) - Stitch concept pass 이후 set별 구현 루프 기준
@@ -82,7 +94,9 @@
 
 - `active`: [`unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) - Unity UI/UX 작업 진입 SSOT
 - `active`: [`stitch_data_workflow.md`](./ops/stitch_data_workflow.md) - Stitch working data와 Unity handoff 운영 기준
-- `active`: [`stitch_handoff_completeness_checklist.md`](./ops/stitch_handoff_completeness_checklist.md) - Stitch handoff가 decision-complete한지 점검하는 공통 checklist
+- `active`: [`stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) - Stitch 산출물을 JSON 번역 계약으로 고정하는 구조 SSOT
+- `reference`: [`stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) - accepted Stitch screen을 Unity prefab/scene contract로 옮기는 실무 가이드
+- `active`: [`stitch_handoff_completeness_checklist.md`](./ops/stitch_handoff_completeness_checklist.md) - Stitch handoff contract가 decision-complete한지 점검하는 공통 checklist
 - `active`: [`document_management_workflow.md`](./ops/document_management_workflow.md) - 문서 역할/참조/리네임/삭제 관리 기준
 - `reference`: [`firebase_hosting.md`](./ops/firebase_hosting.md) - Firebase hosting 배포 절차
 
@@ -95,6 +109,7 @@
 ## 코드와 문서의 경계
 
 - 전역 진입점과 상위 링크는 [`../AGENTS.md`](../AGENTS.md)에서 시작한다.
+- Plan Mode 또는 규칙/운영/Codex 절차 작업은 `rule-operations` owner 문서를 먼저 보고, 그 lane에서는 mutation 없이 inspection/reference만 수행한다.
 - Unity UI/UX authoring 정책 본문은 [`./ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)에만 둔다.
 - Unity MCP 실행 루틴과 canonical smoke 기준은 [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md)를 reference로 본다.
 - 세션 메모는 루트 [`../AGENTS.md`](../AGENTS.md)에 짧게만 남기고, 장기 기준은 `docs/` 쪽 SSOT로 승격한다.

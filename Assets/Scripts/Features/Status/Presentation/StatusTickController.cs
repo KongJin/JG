@@ -1,20 +1,21 @@
 using Features.Status.Application;
+using Features.Status.Application.Ports;
 using UnityEngine;
 
 namespace Features.Status.Presentation
 {
     public sealed class StatusTickController : MonoBehaviour
     {
-        private StatusTickUseCase _tickUseCase;
+        private IStatusTickPort _tickPort;
 
-        public void Initialize(StatusTickUseCase tickUseCase)
+        public void Initialize(IStatusTickPort tickPort)
         {
-            _tickUseCase = tickUseCase;
+            _tickPort = tickPort;
         }
 
         private void Update()
         {
-            _tickUseCase?.Tick(Time.deltaTime);
+            _tickPort?.Tick(Time.deltaTime);
         }
     }
 }

@@ -22,9 +22,9 @@ namespace Features.Player
             unitSetup.Initialize(eventBus);
             garageSetup.Initialize(eventBus, unitSetup.CompositionPort, unitSetup.Catalog);
 
-            var restoreGarageRosterUseCase = new RestoreGarageRosterUseCase(garageSetup.Setup.NetworkPort);
+            var restoreGarageRosterUseCase = new RestoreGarageRosterUseCase(garageSetup.NetworkPort);
             var computePlayerUnitSpecsUseCase = new ComputePlayerUnitSpecsUseCase(
-                garageSetup.Setup.ComposeUnit,
+                garageSetup.ComposeUnit,
                 new ClockAdapter(),
                 eventBus);
 

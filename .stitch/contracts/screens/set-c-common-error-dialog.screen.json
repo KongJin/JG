@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "screen-manifest",
+  "setId": "set-c",
+  "surfaceId": "common-error-dialog",
+  "surfaceRole": "independent",
+  "status": "accepted",
+  "extends": "overlay-modal",
+  "targets": {
+    "prefabPath": "Assets/Prefabs/Features/Shared/Ui/Independent/CommonErrorDialog.prefab",
+    "sceneRoots": [
+      "/Canvas/CommonErrorDialog"
+    ],
+    "primaryContractPaths": [
+      "/Canvas/CommonErrorDialog",
+      "/Canvas/CommonErrorDialog/OverlayCard"
+    ],
+    "serializedOwners": [
+      "/Canvas/CommonErrorDialog::SceneErrorPresenter"
+    ]
+  },
+  "ctaPriority": [
+    {
+      "id": "retry",
+      "priority": "primary",
+      "unityTargetPath": "/Canvas/CommonErrorDialog/OverlayCard/RetryButton",
+      "outcome": "retry failed operation"
+    },
+    {
+      "id": "dismiss",
+      "priority": "secondary",
+      "unityTargetPath": "/Canvas/CommonErrorDialog/OverlayCard/DismissButton",
+      "outcome": "close error dialog"
+    }
+  ],
+  "states": {
+    "default": true,
+    "empty": false,
+    "loading": false,
+    "error": true,
+    "selected": false,
+    "disabled": false
+  },
+  "validation": {
+    "frame": "390x844",
+    "firstReadOrder": [
+      "overlay-card",
+      "primary-cta"
+    ],
+    "requiredChecks": [
+      "contract",
+      "short failure reason visible",
+      "primary retry action clearer than dismiss",
+      "restrained danger accents only"
+    ],
+    "smokeScripts": []
+  },
+  "blockOverrides": {
+    "overlay-card": {
+      "notes": [
+        "Reusable tactical error dialog with restrained danger red accents only."
+      ]
+    },
+    "primary-cta": {
+      "unityTargetPath": "/Canvas/CommonErrorDialog/OverlayCard/RetryButton"
+    }
+  },
+  "appendBlocks": [],
+  "notes": [
+    "Reusable system failure and retry pattern.",
+    "Do not use full-surface red treatment."
+  ]
+}

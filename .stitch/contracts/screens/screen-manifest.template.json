@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "screen-manifest",
+  "setId": "<set-id>",
+  "surfaceId": "<surface-id>",
+  "surfaceRole": "root",
+  "status": "draft",
+  "extends": "<blueprint-id>",
+  "targets": {
+    "prefabPath": "Assets/Prefabs/<feature>/<surface>.prefab",
+    "sceneRoots": [
+      "/Canvas/<SurfaceRoot>"
+    ],
+    "primaryContractPaths": [
+      "/Canvas/<SurfaceRoot>"
+    ],
+    "serializedOwners": [
+      "/Canvas/<SurfaceRoot>::<ViewType>"
+    ]
+  },
+  "ctaPriority": [
+    {
+      "id": "<primary-cta>",
+      "priority": "primary",
+      "unityTargetPath": "/Canvas/<SurfaceRoot>/<PrimaryButton>",
+      "outcome": "<primary-outcome>"
+    }
+  ],
+  "states": {
+    "default": true,
+    "empty": false,
+    "loading": false,
+    "error": false,
+    "selected": false,
+    "disabled": false
+  },
+  "validation": {
+    "frame": "390x844",
+    "firstReadOrder": [
+      "<first-block>"
+    ],
+    "requiredChecks": [
+      "contract"
+    ],
+    "smokeScripts": []
+  },
+  "blockOverrides": {},
+  "appendBlocks": [],
+  "notes": []
+}

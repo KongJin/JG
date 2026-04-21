@@ -1,5 +1,5 @@
 using Features.Garage.Domain;
-using Features.Lobby.Presentation;
+using Features.Lobby.Application;
 using NUnit.Framework;
 
 namespace Tests.Editor
@@ -9,7 +9,7 @@ namespace Tests.Editor
         [Test]
         public void ComputeReadyEligible_RequiresValidSavedRoster()
         {
-            var policy = new LobbyReadyPolicyController();
+            var policy = new LobbyReadyPolicy();
             var roster = CreateValidRoster();
 
             Assert.IsTrue(policy.ComputeReadyEligible(roster, false));
@@ -20,7 +20,7 @@ namespace Tests.Editor
         [Test]
         public void ShouldForceRelock_WhenSavedRosterBecomesIneligible()
         {
-            var policy = new LobbyReadyPolicyController();
+            var policy = new LobbyReadyPolicy();
 
             Assert.IsTrue(policy.ShouldForceRelock(false, true, true));
             Assert.IsFalse(policy.ShouldForceRelock(true, true, true));
@@ -31,7 +31,7 @@ namespace Tests.Editor
         [Test]
         public void BuildReadyButtonLabel_ReflectsDraftAndRosterState()
         {
-            var policy = new LobbyReadyPolicyController();
+            var policy = new LobbyReadyPolicy();
 
             Assert.AreEqual("Save Garage Draft", policy.BuildReadyButtonLabel(true, "ignored"));
             Assert.AreEqual("Need 3 Saved Units", policy.BuildReadyButtonLabel(false, string.Empty));
