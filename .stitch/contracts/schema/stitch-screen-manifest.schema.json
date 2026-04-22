@@ -11,10 +11,10 @@
     "surfaceId",
     "surfaceRole",
     "status",
-    "extends",
     "targets",
     "ctaPriority",
     "states",
+    "blocks",
     "validation"
   ],
   "properties": {
@@ -41,10 +41,6 @@
     "status": {
       "type": "string",
       "enum": ["draft", "accepted", "historical"]
-    },
-    "extends": {
-      "type": "string",
-      "minLength": 1
     },
     "targets": {
       "type": "object",
@@ -111,6 +107,12 @@
       },
       "required": ["default"]
     },
+    "blocks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/block"
+      }
+    },
     "validation": {
       "type": "object",
       "additionalProperties": false,
@@ -141,46 +143,6 @@
             "minLength": 1
           }
         }
-      }
-    },
-    "blockOverrides": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
-          "sourceName": {
-            "type": "string"
-          },
-          "unityTargetPath": {
-            "type": "string"
-          },
-          "layout": {
-            "$ref": "#/$defs/layout"
-          },
-          "children": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "notes": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "appendBlocks": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/block"
       }
     },
     "notes": {
@@ -236,6 +198,12 @@
           "items": {
             "type": "string",
             "minLength": 1
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

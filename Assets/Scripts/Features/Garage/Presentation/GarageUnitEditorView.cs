@@ -64,11 +64,9 @@ namespace Features.Garage.Presentation
 
             _selectionTitleText.text = viewModel.Title;
             _selectionTitleText.color = ThemeColors.TextPrimary;
-            _selectionTitleText.fontSize = 16f;
 
             _selectionSubtitleText.text = viewModel.Subtitle;
             _selectionSubtitleText.color = ThemeColors.TextSecondary;
-            _selectionSubtitleText.fontSize = 11f;
 
             _frameSelectorView.Render(viewModel.FrameValueText, viewModel.FrameHintText);
             _firepowerSelectorView.Render(viewModel.FirepowerValueText, viewModel.FirepowerHintText);
@@ -85,10 +83,6 @@ namespace Features.Garage.Presentation
         public void SetFocusedPart(GarageEditorFocus focusedPart)
         {
             _focusedPart = focusedPart;
-
-            _frameSelectorView.ApplyMobileTypography();
-            _firepowerSelectorView.ApplyMobileTypography();
-            _mobilitySelectorView.ApplyMobileTypography();
             ApplyFocusedPartState();
         }
 

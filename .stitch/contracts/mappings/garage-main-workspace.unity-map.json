@@ -7,13 +7,13 @@
     "assetPath": "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
   },
   "contractRefs": {
-    "manifestPath": ".stitch/contracts/screens/set-b-garage-main-workspace.screen.json",
-    "intakePath": ".stitch/contracts/intakes/set-b-garage-main-workspace.intake.json",
-    "blueprintPath": ".stitch/contracts/blueprints/garage-workspace.blueprint.json"
+    "manifestPath": ".stitch/contracts/screens/set-b-garage-main-workspace.screen.json"
   },
-  "translationStrategy": "unity-mcp-garage-manifest-v1",
+  "translationStrategy": "unity-mcp-surface-generator-v1",
+  "strategyMode": "generate-or-patch",
   "artifactPaths": {
     "translationResult": "artifacts/unity/stitch-garage-translation-result.json",
+    "preflightResult": "artifacts/unity/stitch-garage-preflight-result.json",
     "inspectionResult": "artifacts/unity/stitch-garage-inspection-result.json",
     "verificationResult": "artifacts/unity/stitch-garage-verification-result.json",
     "pipelineResult": "artifacts/unity/stitch-garage-pipeline-result.json"
@@ -28,11 +28,6 @@
         "HorizontalLayoutGroup",
         "LayoutElement"
       ],
-      "expectedLayout": {
-        "axis": "horizontal",
-        "preferredHeight": 118,
-        "spacing": 8
-      },
       "verificationTags": [
         "first-read",
         "horizontal-strip"
@@ -43,27 +38,17 @@
       "requiredComponents": [
         "HorizontalLayoutGroup"
       ],
-      "expectedLayout": {
-        "axis": "horizontal",
-        "preferredHeight": 52,
-        "spacing": 8
-      },
       "verificationTags": [
         "compact",
         "focus-switch"
       ]
     },
-    "focused-editor": {
+    "editor-panel": {
       "hostPath": "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/UnitEditorPane",
       "requiredComponents": [
         "VerticalLayoutGroup",
         "LayoutElement"
       ],
-      "expectedLayout": {
-        "axis": "vertical",
-        "preferredHeight": 452,
-        "spacing": 12
-      },
       "verificationTags": [
         "dominant-block"
       ]
@@ -73,9 +58,6 @@
       "requiredComponents": [
         "LayoutElement"
       ],
-      "expectedLayout": {
-        "preferredHeight": 296
-      },
       "verificationTags": [
         "evaluative"
       ]
@@ -85,9 +67,6 @@
       "requiredComponents": [
         "LayoutElement"
       ],
-      "expectedLayout": {
-        "preferredHeight": 248
-      },
       "verificationTags": [
         "evaluative",
         "result-summary"
@@ -99,15 +78,12 @@
         "Button",
         "Image"
       ],
-      "expectedLayout": {
-        "sticky": true
-      },
       "verificationTags": [
         "persistent",
         "primary-emphasis"
       ]
     },
-    "aux-settings": {
+    "aux-action": {
       "hostPath": "GarageHeaderRow/SettingsButton",
       "requiredComponents": [
         "Button"
@@ -121,7 +97,7 @@
     "requiredBlocks": [
       "slot-selector",
       "focus-bar",
-      "focused-editor",
+        "editor-panel",
       "preview-card",
       "summary-card",
       "primary-cta"
@@ -129,7 +105,7 @@
     "firstReadOrder": [
       "slot-selector",
       "focus-bar",
-      "focused-editor",
+        "editor-panel",
       "preview-card",
       "summary-card",
       "primary-cta"
@@ -140,6 +116,6 @@
   },
   "notes": [
     "First generic Stitch-to-Unity surface map.",
-    "Garage is the first adopter and still dispatches to the existing garage translator strategy."
+    "Garage is the first adopter of the shared surface generator entry."
   ]
 }

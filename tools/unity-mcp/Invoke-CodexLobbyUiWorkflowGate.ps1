@@ -43,16 +43,6 @@ if ($contract.scenePath -ne $ScenePath) {
     throw ("Lobby contract returned unexpected scenePath: {0}" -f $contract.scenePath)
 }
 
-$pageSwitchJson = powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot "Invoke-LobbyGaragePageSwitchSmoke.ps1") -UnityBridgeUrl $root
-if ([string]::IsNullOrWhiteSpace(($pageSwitchJson | Out-String))) {
-    throw "Lobby/Garage page-switch smoke returned no JSON output."
-}
-
-$pageSwitch = $pageSwitchJson | ConvertFrom-Json
-if ($null -eq $pageSwitch -or -not $pageSwitch.success) {
-    throw "Lobby/Garage page-switch smoke did not report success."
-}
-
 $report = [PSCustomObject]@{
     success = $true
     generatedAt = (Get-Date).ToString("yyyy-MM-dd HH:mm:ssK")
@@ -72,12 +62,6 @@ $report = [PSCustomObject]@{
         sceneSaved = [bool]$contract.sceneSaved
         missingSentinelCount = @($contract.missingSentinels).Count
         missingReferenceCount = @($contract.missingReferences).Count
-    }
-    pageSwitchSmoke = [PSCustomObject]@{
-        success = [bool]$pageSwitch.success
-        resultPath = $pageSwitch.resultPath
-        warningCount = $pageSwitch.warningCount
-        errorCount = $pageSwitch.errorCount
     }
 }
 

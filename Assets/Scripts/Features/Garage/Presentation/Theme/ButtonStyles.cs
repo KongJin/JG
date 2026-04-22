@@ -17,7 +17,6 @@ namespace Features.Garage.Presentation.Theme
         {
             BackgroundColor = ThemeColors.AccentOrange,
             TextColor = ThemeColors.TextPrimary,
-            FontSize = 17,
             MinHeight = 46,
             CornerRadius = 8f,
             HoverColor = ThemeColors.AccentOrange * 1.10f,
@@ -30,7 +29,6 @@ namespace Features.Garage.Presentation.Theme
         {
             BackgroundColor = ThemeColors.AccentRed,
             TextColor = ThemeColors.TextPrimary,
-            FontSize = 14,
             MinHeight = 40,
             CornerRadius = 8f,
             HoverColor = ThemeColors.AccentRed * 1.15f,
@@ -43,7 +41,6 @@ namespace Features.Garage.Presentation.Theme
         {
             BackgroundColor = ThemeColors.BackgroundCard,
             TextColor = ThemeColors.TextPrimary,
-            FontSize = 15,
             MinHeight = 36,
             CornerRadius = 6f,
             HoverColor = ThemeColors.StateHover,
@@ -56,7 +53,6 @@ namespace Features.Garage.Presentation.Theme
         {
             BackgroundColor = Color.clear,
             TextColor = ThemeColors.TextSecondary,
-            FontSize = 14,
             MinHeight = 40,
             CornerRadius = 8f,
             HoverColor = ThemeColors.StateHover,
@@ -84,8 +80,6 @@ namespace Features.Garage.Presentation.Theme
             if (text != null)
             {
                 text.color = preset.TextColor;
-                text.fontSize = preset.FontSize;
-                text.alignment = TextAlignmentOptions.Center;
             }
 
             // 호버/클릭 시각 피드백 (EventTrigger 기반 — 런타임 전용)
@@ -103,7 +97,6 @@ namespace Features.Garage.Presentation.Theme
     {
         public Color BackgroundColor;
         public Color TextColor;
-        public int FontSize;
         public float MinHeight;
         public float CornerRadius;
         public Color HoverColor;
@@ -118,7 +111,6 @@ namespace Features.Garage.Presentation.Theme
             {
                 BackgroundColor = BackgroundColor,
                 TextColor = TextColor,
-                FontSize = FontSize,
                 MinHeight = MinHeight,
                 CornerRadius = CornerRadius,
                 HoverColor = HoverColor,

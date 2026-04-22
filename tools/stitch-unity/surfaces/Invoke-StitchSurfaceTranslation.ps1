@@ -10,39 +10,36 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot\..\engine\StitchUnityCommon.ps1"
 
-$mapResult = Get-StitchUnityMapObject -SurfaceId $SurfaceId -MapPath $MapPath
-$map = $mapResult.Map
-$contracts = Get-StitchUnityContractBundle -Map $map
+$context = Get-StitchUnitySurfaceContext -SurfaceId $SurfaceId -MapPath $MapPath
+$mapResult = $context.MapResult
+$map = $context.Map
+$contracts = $context.Contracts
 
-$translationArtifactPath = Get-StitchUnityArtifactPath -Map $map -Name "translationResult"
-$inspectionArtifactPath = Get-StitchUnityArtifactPath -Map $map -Name "inspectionResult"
-$verificationArtifactPath = Get-StitchUnityArtifactPath -Map $map -Name "verificationResult"
-$pipelineArtifactPath = $ArtifactPath
-if ([string]::IsNullOrWhiteSpace($pipelineArtifactPath)) {
-    $pipelineArtifactPath = Get-StitchUnityArtifactPath -Map $map -Name "pipelineResult"
+$translationArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $map -ArtifactName "translationResult"
+$preflightArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $map -ArtifactName "preflightResult"
+$inspectionArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $map -ArtifactName "inspectionResult"
+$verificationArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $map -ArtifactName "verificationResult"
+$pipelineArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $map -ArtifactName "pipelineResult" -ArtifactPath $ArtifactPath
+
+$preflight = Get-StitchUnityPreflightObject -Map $map -ContractBundle $contracts
+if (-not [string]::IsNullOrWhiteSpace($preflightArtifactPath)) {
+    Write-StitchUnityArtifact -PathValue $preflightArtifactPath -InputObject $preflight
+}
+
+if (-not $preflight.ready) {
+    throw "Surface preflight failed. strategyMode='$($preflight.strategyMode)' targetExists='$($preflight.targetExists)'."
 }
 
 $translationStrategy = [string]$map.translationStrategy
 $translationResult = $null
+$dependencyResults = @()
+$root = Get-StitchUnityMcpRoot -UnityBridgeUrl $UnityBridgeUrl
+Wait-McpBridgeHealthy -Root $root -TimeoutSec 30 | Out-Null
+$dependencyResults = @(Invoke-StitchUnityDependencies -Root $root -Map $map)
 
 switch ($translationStrategy) {
-    "unity-mcp-garage-manifest-v1" {
-        $translatorPath = Resolve-StitchUnityRepoPath -PathValue "tools/unity-mcp/Invoke-StitchGarageManifestTranslation.ps1"
-        $translationRaw = & $translatorPath `
-            -ScreenManifestPath $contracts.manifestPath `
-            -ScreenIntakePath $contracts.intakePath `
-            -UnityBridgeUrl $UnityBridgeUrl `
-            -ArtifactPath $translationArtifactPath
-
-        $translationResult = if ($translationRaw -is [string]) {
-            $translationRaw | ConvertFrom-Json
-        }
-        else {
-            $translationRaw
-        }
-    }
-    "unity-mcp-overlay-manifest-v1" {
-        $translatorPath = Resolve-StitchUnityRepoPath -PathValue "tools/unity-mcp/Invoke-StitchOverlayManifestTranslation.ps1"
+    "unity-mcp-surface-generator-v1" {
+        $translatorPath = Resolve-StitchUnityRepoPath -PathValue "tools/stitch-unity/surfaces/Invoke-GenerateSurfaceFromManifest.ps1"
         $translationRaw = & $translatorPath `
             -ScreenManifestPath $contracts.manifestPath `
             -UnityBridgeUrl $UnityBridgeUrl `
@@ -60,7 +57,6 @@ switch ($translationStrategy) {
     }
 }
 
-$root = Get-StitchUnityMcpRoot -UnityBridgeUrl $UnityBridgeUrl
 Wait-McpBridgeHealthy -Root $root -TimeoutSec 30 | Out-Null
 
 $inspection = Get-StitchUnitySurfaceInspectionObject -Root $root -Map $map -ContractBundle $contracts
@@ -80,17 +76,16 @@ $result = [PSCustomObject]@{
     mapPath = $mapResult.Path
     translationStrategy = $translationStrategy
     target = $map.target
-    contractRefs = [PSCustomObject]@{
-        manifestPath = $contracts.manifestPath
-        intakePath = $contracts.intakePath
-        blueprintPath = $contracts.blueprintPath
-    }
+    contractRefs = $context.ContractRefs
     artifacts = [PSCustomObject]@{
         translationResult = $translationArtifactPath
+        preflightResult = $preflightArtifactPath
         inspectionResult = $inspectionArtifactPath
         verificationResult = $verificationArtifactPath
         pipelineResult = $pipelineArtifactPath
     }
+    preflight = $preflight
+    dependencies = $dependencyResults
     translation = $translationResult
     inspectionSummary = [PSCustomObject]@{
         missingBlocks = @($inspection.missingBlocks)

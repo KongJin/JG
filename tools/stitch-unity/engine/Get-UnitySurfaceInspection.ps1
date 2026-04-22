@@ -11,18 +11,14 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot/StitchUnityCommon.ps1"
 
-$mapResult = Get-StitchUnityMapObject -SurfaceId $SurfaceId -MapPath $MapPath
-$contracts = Get-StitchUnityContractBundle -Map $mapResult.Map
+$context = Get-StitchUnitySurfaceContext -SurfaceId $SurfaceId -MapPath $MapPath
 $root = Get-StitchUnityMcpRoot -UnityBridgeUrl $UnityBridgeUrl
 Wait-McpBridgeHealthy -Root $root -TimeoutSec 30 | Out-Null
 
-$inspection = Get-StitchUnitySurfaceInspectionObject -Root $root -Map $mapResult.Map -ContractBundle $contracts
-$inspection.mapPath = $mapResult.Path
+$inspection = Get-StitchUnitySurfaceInspectionObject -Root $root -Map $context.Map -ContractBundle $context.Contracts
+$inspection.mapPath = $context.MapResult.Path
 
-$resolvedArtifactPath = $ArtifactPath
-if ([string]::IsNullOrWhiteSpace($resolvedArtifactPath)) {
-    $resolvedArtifactPath = Get-StitchUnityArtifactPath -Map $mapResult.Map -Name "inspectionResult"
-}
+$resolvedArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $context.Map -ArtifactName "inspectionResult" -ArtifactPath $ArtifactPath
 
 if (-not [string]::IsNullOrWhiteSpace($resolvedArtifactPath)) {
     Write-StitchUnityArtifact -PathValue $resolvedArtifactPath -InputObject $inspection

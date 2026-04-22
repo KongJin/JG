@@ -55,19 +55,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "manifestPath",
-        "blueprintPath"
+        "manifestPath"
       ],
       "properties": {
         "manifestPath": {
-          "type": "string",
-          "minLength": 1
-        },
-        "intakePath": {
-          "type": "string",
-          "minLength": 1
-        },
-        "blueprintPath": {
           "type": "string",
           "minLength": 1
         }
@@ -77,11 +68,23 @@
       "type": "string",
       "minLength": 1
     },
+    "strategyMode": {
+      "type": "string",
+      "enum": [
+        "patch",
+        "generate",
+        "generate-or-patch"
+      ]
+    },
     "artifactPaths": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "translationResult": {
+          "type": "string",
+          "minLength": 1
+        },
+        "preflightResult": {
           "type": "string",
           "minLength": 1
         },
@@ -97,6 +100,12 @@
           "type": "string",
           "minLength": 1
         }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/dependencyDefinition"
       }
     },
     "blocks": {
@@ -166,9 +175,6 @@
             "minLength": 1
           }
         },
-        "expectedLayout": {
-          "$ref": "#/$defs/layoutExpectation"
-        },
         "verificationTags": {
           "type": "array",
           "items": {
@@ -187,39 +193,6 @@
           "items": {
             "type": "string"
           }
-        }
-      }
-    },
-    "layoutExpectation": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "axis": {
-          "type": "string",
-          "enum": [
-            "horizontal",
-            "vertical",
-            "overlay",
-            "none"
-          ]
-        },
-        "preferredWidth": {
-          "type": "number"
-        },
-        "preferredHeight": {
-          "type": "number"
-        },
-        "minWidth": {
-          "type": "number"
-        },
-        "minHeight": {
-          "type": "number"
-        },
-        "spacing": {
-          "type": "number"
-        },
-        "sticky": {
-          "type": "boolean"
         }
       }
     },
@@ -247,6 +220,39 @@
         },
         "notes": {
           "type": "string"
+        }
+      }
+    },
+    "dependencyDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "menu"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "menuPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }

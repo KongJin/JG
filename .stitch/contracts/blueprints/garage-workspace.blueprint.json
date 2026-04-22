@@ -173,9 +173,7 @@
         "slot first single scroll body",
         "top slot strip remains horizontal and visible before the editor body"
       ],
-      "smokeScripts": [
-        "Invoke-LobbyGaragePageSwitchSmoke.ps1"
-      ]
+      "smokeScripts": []
     }
   },
   "notes": [

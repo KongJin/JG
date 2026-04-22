@@ -25,7 +25,7 @@
   - 마스터 프로젝트 `11729197788183873077` 확정
   - `.stitch/DESIGN.md` 초안 작성 완료
 - 세트 A~E의 concept pass와 handoff 정리 1차는 완료됐다.
-- active handoff artifact는 `.stitch/contracts/blueprints/*.json`, `.stitch/contracts/screens/*.json`, 필요 시 full fallback `.stitch/contracts/*.json`만 허용한다.
+- active handoff artifact는 `.stitch/contracts/screens/*.json`, `.stitch/contracts/mappings/*.json`만 허용한다.
 - set별 md/png 기반 자산은 historical reference로만 남는다.
 - 현재 단계는 `concept generation`이 아니라 `scene-owned layout implementation + contract/smoke verification`이다.
 
@@ -36,7 +36,7 @@
 - Stitch 활용 원칙: `design.ui-reference-workflow`
 - Stitch visual system artifact: `.stitch/DESIGN.md`
 - Stitch 세트별 번역 기준 artifact: `.stitch/contracts/screens/*.json`
-- Stitch reusable family skeleton artifact: `.stitch/contracts/blueprints/*.json`
+- Stitch Unity binding artifact: `.stitch/contracts/mappings/*.json`
 - 진행 상태 SSOT: `plans.progress`
 
 규칙:
@@ -65,31 +65,31 @@
 ### Set A - Lobby
 
 - 범위: `Lobby main`, `Room list empty/list`, `Create room`, `Garage summary`
-- contract: `set-a Lobby manifests under .stitch/contracts/screens/`, reusable family under `.stitch/contracts/blueprints/`
+- contract: `set-a Lobby manifests under .stitch/contracts/screens/`, Unity binding under `.stitch/contracts/mappings/`
 - 현재 상태: concept/handoff 완료, accepted baseline은 populated/empty-state split으로 고정했고 `Matchmaking Lobby`는 프로젝트 내부 legacy 후보안으로만 남긴다. runtime 반영은 기본 구조까지 진행됨
 
 ### Set B - Garage
 
 - 범위: `Garage main workspace`, `slot selector`, `focused editor`, `preview`, `summary`, `save dock`, `Garage settings overlay`, `Account card`
-- contract: `set-b Garage manifests under .stitch/contracts/screens/`, reusable family under `.stitch/contracts/blueprints/`
+- contract: `set-b Garage manifests under .stitch/contracts/screens/`, Unity binding under `.stitch/contracts/mappings/`
 - 현재 상태: mobile-only 구조와 1차 polish 반영 완료, accepted baseline은 `Tactical Unit Assembly Workspace`로 고정했고 `Garage / Unit Editor`는 프로젝트 내부 후보안으로만 남긴다. 다음 패스는 handoff 대비 남은 scene-level 밀도 조정
 
 ### Set C - Overlay
 
 - 범위: `Room detail panel`, `Login loading overlay`, `Account delete confirm`, `Common modal/error dialog`
-- contract: `set-c overlay manifests under .stitch/contracts/screens/`, reusable family under `.stitch/contracts/blueprints/`
+- contract: `set-c overlay manifests under .stitch/contracts/screens/`, Unity binding under `.stitch/contracts/mappings/`
 - 현재 상태: concept/handoff 완료, auxiliary panel 문법 유지가 핵심
 
 ### Set D - Battle HUD
 
 - 범위: `HUD`, `Unit summon bar`, `Core HP`, `Wave HUD`, `Placement feedback`, `Cannot afford overlay`
-- contract: `set-d Battle HUD manifests under .stitch/contracts/screens/`, reusable family under `.stitch/contracts/blueprints/`
+- contract: `set-d Battle HUD manifests under .stitch/contracts/screens/`, Unity binding under `.stitch/contracts/mappings/`
 - 현재 상태: concept/handoff 완료, accepted baseline은 `Refined Battle HUD - Tactical Command`로 고정했고 `Battle HUD - Tactical View`는 프로젝트 내부 pre-refinement 후보안으로만 남긴다. visual 반영 전 runtime contract 안정화가 선행 과제
 
 ### Set E - Result / Feedback
 
 - 범위: `Wave end / result overlay`, `toast`, `banner`, `feedback`
-- contract: `set-e result/feedback manifests under .stitch/contracts/screens/`, reusable family under `.stitch/contracts/blueprints/`
+- contract: `set-e result/feedback manifests under .stitch/contracts/screens/`, Unity binding under `.stitch/contracts/mappings/`
 - 현재 상태: concept/handoff 완료, Set D와 같은 battle runtime contract 위에서 이어서 반영
 
 ## Standard Execution Loop
@@ -99,7 +99,7 @@
 1. 현재 scene contract와 관련 SSOT 문서를 읽고 surface 목적, 읽기 순서, CTA 우선순위를 다시 적는다.
 2. 필요하면 `jg-stitch-workflow` 기준으로 prompt brief를 갱신한다.
 3. `Stitch`에서는 한 세트당 1개의 baseline만 유지하고, 기각안은 이유만 남긴다.
-4. accepted 판단은 기본값으로 `blueprint + screen manifest` 조합으로 구조화한다.
+4. accepted 판단은 기본값으로 `screen manifest.blocks[] + unity-map`으로 구조화한다.
 5. Unity 반영은 scene-owned layout 기준으로 수행한다.
 6. 세트 종료 시 structured contract와 repo 문서를 함께 동기화한다.
 7. 검증은 더 싼 레이어부터 통과시킨다.
@@ -138,7 +138,7 @@
 
 - `.stitch/DESIGN.md`
 - `.stitch/prompt-briefs/*.md`
-- `.stitch/contracts/blueprints/*.json`
+- `.stitch/contracts/mappings/*.json`
 - `.stitch/contracts/screens/*.json`
 - 필요 시 `.stitch/contracts/*.json`
 - 관련 `docs/design/*` 또는 `docs/plans/*` SSOT

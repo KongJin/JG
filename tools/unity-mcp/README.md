@@ -4,14 +4,14 @@
 > 상태: active
 > doc_id: tools.unity-mcp-readme
 > role: reference
-> owner_scope: Unity MCP 실행 reference, helper route, smoke command guide
+> owner_scope: Unity MCP 실행 reference, helper route, verification command guide
 > upstream: repo.agents, docs.index, ops.unity-ui-authoring-workflow, plans.mcp-improvement
 > artifacts: `tools/unity-mcp/`, `Assets/Editor/UnityMcp/`, `artifacts/unity/`
 
 Unity MCP in this repo is a `diagnostic + manual automation` bridge.
 The prior Lobby/Garage `LobbyScene.unity` workflow is now a historical route.
 While the repo is rebuilding UI from scratch, default to `prefab-first reset`:
-accepted Stitch handoff -> presentation contract review -> baseline prefab wiring -> new scene assembly -> fresh contract/smoke.
+accepted Stitch handoff -> presentation contract review -> baseline prefab wiring -> new scene assembly -> fresh contract/inspection/verification.
 Unity UI/UX authoring policy 본문 owner는 `ops.unity-ui-authoring-workflow`이고, current path는 `docs/index.md`에서 해석한다. 이 문서는 실행 reference만 담당한다.
 
 - Bridge core: `Assets/Editor/UnityMcp/`
@@ -20,12 +20,7 @@ Unity UI/UX authoring policy 본문 owner는 `ops.unity-ui-authoring-workflow`�
 - Prefab-pack helper module: `tools/unity-mcp/McpPrefabPackHelpers.ps1`
 - Workflow policy check: `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
 - Workflow gate: `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1` - legacy scene route only
-- Canonical page-switch smoke: `tools/unity-mcp/Invoke-LobbyGaragePageSwitchSmoke.ps1` - legacy scene route only
-- Feature smoke: `tools/unity-mcp/Invoke-GarageSettingsOverlaySmoke.ps1`
-- Feature smoke: `tools/unity-mcp/Invoke-GameSceneSummonSmoke.ps1`
-- Feature smoke: `tools/unity-mcp/Invoke-GameScenePlacementWaveSmoke.ps1`
-- Translation helper: `tools/unity-mcp/Invoke-StitchGarageManifestTranslation.ps1` - contract-driven `garage-workspace` / `set-b-garage-main-workspace` translator
-- Optional supervised smoke: `tools/unity-mcp/Invoke-GarageReadyFlowSmoke.ps1`
+- Shared surface generator entry: `tools/stitch-unity/surfaces/Invoke-GenerateSurfaceFromManifest.ps1`
 
 `rule-harness` continues to use Unity MCP only for compile/status refresh plus generic diagnostics. Scene-specific runtime smoke stays out of harness scope.
 
@@ -62,9 +57,9 @@ Before using Unity MCP for prefab authoring, scene assembly, Play Mode automatio
 2. If there are compile errors, fix them before entering any Unity MCP workflow
 3. After the fix, wait for compile and script reload to settle with `Invoke-McpCompileRequestAndWait` or `Invoke-EditorProjectSync.ps1`
 4. Confirm `/health` reports `isCompiling = false`
-5. For reset work, continue with `prefab wiring review -> new scene assembly -> fresh contract/smoke`
+5. For reset work, continue with `prefab wiring review -> new scene assembly -> fresh contract/inspection/verification`
 
-If compile errors remain, `play/start`, the workflow gate, and smoke scripts can fail with misleading timeout symptoms. Treat that as a compile-clean failure first, not as an MCP failure.
+If compile errors remain, `play/start`, the workflow gate, and verification helpers can fail with misleading timeout symptoms. Treat that as a compile-clean failure first, not as an MCP failure.
 
 ## Recommended Workflow
 
@@ -76,12 +71,12 @@ Use this order for current Lobby/Garage reset work:
 2. confirm accepted handoff + required presentation refs
 3. rebuild baseline prefab wiring first
 4. assemble a new scene
-5. run fresh contract/smoke only after the new scene exists
+5. run fresh contract/inspection/verification only after the new scene exists
 
 Historical note:
 
-- `Invoke-CodexLobbyUiWorkflowGate.ps1` and `Invoke-LobbyGaragePageSwitchSmoke.ps1` are not the default route while `Assets/Scenes/LobbyScene.unity` is absent.
-- If you intentionally revive a concrete Lobby/Garage authoring scene later, those scripts can become active again.
+- `Invoke-CodexLobbyUiWorkflowGate.ps1` is not the default route while `Assets/Scenes/LobbyScene.unity` is absent.
+- If you intentionally revive a concrete Lobby/Garage authoring scene later, add a dedicated runtime proof on top of the gate instead of reviving the old smoke scripts.
 - Keep the historical route summary in [HISTORICAL_LOBBY_SCENE_ROUTE.md](./HISTORICAL_LOBBY_SCENE_ROUTE.md).
 
 ## SSOT Guardrails
@@ -96,7 +91,7 @@ Historical note:
 This route is historical while `Assets/Scenes/LobbyScene.unity` is absent.
 If a concrete Lobby/Garage authoring scene is intentionally revived later:
 
-- use `GET /scene/verify-lobby-contract` and the legacy gate/smoke scripts again
+- use `GET /scene/verify-lobby-contract` and the legacy gate again
 - keep scene serialization as the runtime truth for that route
 - re-check the historical route note in [HISTORICAL_LOBBY_SCENE_ROUTE.md](./HISTORICAL_LOBBY_SCENE_ROUTE.md) before reviving old acceptance proofs
 
@@ -132,16 +127,14 @@ If a concrete Lobby/Garage authoring scene is intentionally revived later:
 - `New-McpScratchCanvas`
 - `Invoke-McpPrefabPackGeneration`
 
-Use this for repeated Stitch-to-Unity prefab imports so feature scripts only keep the set-specific seed builders and prefab map definitions.
+Use this for repeated Stitch-to-Unity prefab imports so surface generation stays behind the shared generator entry and reusable prefab-pack helpers.
 
-Current first-pass translators:
+Current generator entry:
 
-- `Invoke-StitchOverlayManifestTranslation.ps1`
-  - supports `overlay-modal` / `login-loading-overlay`
-- `Invoke-StitchGarageManifestTranslation.ps1`
-  - supports `garage-workspace` / `set-b-garage-main-workspace`
-  - reads accepted intake + manifest + blueprint before mutating the prefab asset
-  - applies source-derived slot-strip, save dock, and label posture through prefab asset routes instead of inventing layout in script
+- `tools/stitch-unity/surfaces/Invoke-GenerateSurfaceFromManifest.ps1`
+  - shared public entry for accepted Stitch surface generation
+  - currently supports `garage-workspace` / `set-b-garage-main-workspace`
+  - reads the accepted manifest and source artifacts before mutating the prefab asset
 
 Use `Assert-McpNoOpenSceneDiskWrite` before any script that would touch a `.unity` file on disk outside the editor bridge.
 If the target matches `health.activeScenePath`, the helper fails fast and tells you to use MCP repair or switch scenes first.
@@ -184,7 +177,7 @@ The policy check reads the current changed files from git and enforces:
 - route classification for `scene/prefab authoring`, `presentation-code`, `mixed`, `lobby-ui`, `game-scene-ui`
 - no new UI prefab creation by default
 - presentation validator requirements when presentation code changed
-- fresh `CodexLobby` workflow evidence for Lobby/Garage source changes
+- fresh `CodexLobby` workflow gate evidence for Lobby/Garage source changes when the legacy scene route is active
 
 It does not replace the workflow SSOT.
 Keep the policy body in owner doc `ops.unity-ui-authoring-workflow` and use this README as the execution reference. Resolve the current file path through `docs/index.md`.
@@ -202,97 +195,29 @@ The gate performs:
 1. compile/reload stabilization
 2. presentation layout ownership verification
 3. contract verification
-4. canonical page-switch smoke
-5. machine-readable result writeout
+4. machine-readable result writeout
 
 Outputs:
 
 - `artifacts/unity/lobby-ui-workflow-result.json`
-- `artifacts/unity/lobby-garage-page-switch-result.json`
 - `Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json`
 
 The workflow gate is a `compile-clean after reload` validation step. It is not the recovery path for unresolved compile errors.
-The workflow gate is also not an exemption path for runtime layout authoring inside `Features.*.Presentation`; those violations fail before contract and smoke.
+The workflow gate is also not an exemption path for runtime layout authoring inside `Features.*.Presentation`; those violations fail before contract review.
 
-Use this as the required gate for Lobby/Garage UI changes.
-Do not run parallel Play Mode smokes against the same editor instance for this workflow.
+Use this as the required gate for Lobby/Garage UI changes only when the legacy scene route is intentionally active.
 
-## Canonical Smoke
+## Runtime Verification
 
-Run the canonical page-switch smoke like this:
+Legacy runtime smoke scripts were removed from the active toolset.
+Current runtime proof should be surface-specific and generated from the active contract or generator pipeline instead of relying on old scene-route smoke scripts.
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-LobbyGaragePageSwitchSmoke.ps1
-```
+Recommended runtime proof order:
 
-Outputs:
-
-- `artifacts/unity/lobby-page-smoke-lobby-initial.png`
-- `artifacts/unity/lobby-page-smoke-garage.png`
-- `artifacts/unity/lobby-page-smoke-lobby-returned.png`
-- `artifacts/unity/lobby-garage-page-switch-result.json`
-
-This is the default runtime proof for the current Lobby/Garage UI contract.
-The canonical output contract is `390x844`.
-The script now normalizes each screenshot to that exact frame with a centered crop/resize pass, so the artifact does not depend on the currently open GameView size.
-
-## Feature Smoke
-
-Run the Garage settings overlay smoke like this:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GarageSettingsOverlaySmoke.ps1
-```
-
-Outputs:
-
-- `artifacts/unity/garage-settings-smoke-before-open.png`
-- `artifacts/unity/garage-settings-smoke-open.png`
-- `artifacts/unity/garage-settings-smoke-closed.png`
-- `artifacts/unity/garage-settings-smoke-result.json`
-
-Run the lobby -> game -> summon smoke like this:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameSceneSummonSmoke.ps1
-```
-
-Run the placement -> wave/core -> outcome smoke like this:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameScenePlacementWaveSmoke.ps1 -PostSummonWaitSec 20 -OutcomeTimeoutSec 180
-```
-
-Outputs:
-
-- `artifacts/unity/game-scene-placement-initial.png`
-- `artifacts/unity/game-scene-placement-after-drag.png`
-- `artifacts/unity/game-scene-placement-final.png`
-- `artifacts/unity/game-scene-placement-wave-result.json`
-
-Feature smoke is for regressions beyond page switching. It does not replace the workflow gate.
-The main retained acceptance path is:
-
-1. workflow gate
-2. canonical page-switch smoke
-3. Garage settings overlay smoke when the change touches Garage account/settings placement
-4. `GameScene` summon smoke when the change reaches lobby-to-game flow
-
-Use `Invoke-GameScenePlacementWaveSmoke.ps1` when you need to observe more than summon availability:
-
-- attempt placement drag and capture the current automation failure mode
-- fall back to `/ui/invoke` summon
-- poll wave/core HUD plus end overlay until `Victory!` or `Defeat!`
-
-Current interpretation rule:
-
-- `dragDidSummon = false` with `dragPlacementErrorText = "배치 영역 밖입니다!"` means placement drag automation is still unstable
-- `waveEndOverlayActive = true` plus `returnToLobbyButtonActive = true` is the authoritative outcome signal
-- do not treat `ResultText` alone as outcome proof while the overlay is inactive
-- `GameScene` UI/HUD polish도 기본값은 MCP scene/prefab repair이며, code-driven builder/rebuild 경로를 새 authoring 루프로 다시 도입하지 않는다
-
-`Invoke-GarageReadyFlowSmoke.ps1` is no longer a required regression gate.
-Keep it only as an optional supervised script when investigating Ready/Save UX, and prefer EditMode tests for those rules.
+1. workflow gate when a legacy authoring scene is truly active
+2. surface contract verification
+3. inspection artifact review
+4. generator or translation pipeline result review
 
 ## Notes
 

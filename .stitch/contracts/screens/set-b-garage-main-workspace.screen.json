@@ -5,7 +5,15 @@
   "surfaceId": "garage-main-workspace",
   "surfaceRole": "root",
   "status": "accepted",
-  "extends": "garage-workspace",
+  "source": {
+    "tool": "stitch",
+    "screenName": "Tactical Unit Assembly Workspace",
+    "sourceRef": "set-b-garage-main-workspace",
+    "variantLabel": "accepted baseline workspace",
+    "projectId": "11729197788183873077",
+    "screenId": "d440ad9223a24c0d8e746c7236f7ef27",
+    "url": "https://stitch.withgoogle.com/projects/11729197788183873077?node-id=d440ad9223a24c0d8e746c7236f7ef27"
+  },
   "targets": {
     "prefabPath": "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab",
     "sceneRoots": [
@@ -28,12 +36,14 @@
     {
       "id": "save-roster",
       "priority": "primary",
+      "label": "저장 및 배치",
       "unityTargetPath": "/Canvas/GaragePageRoot/MobileSaveDock/MobileSaveButton",
       "outcome": "save roster"
     },
     {
       "id": "open-settings",
       "priority": "secondary",
+      "label": "⚙",
       "unityTargetPath": "/Canvas/GaragePageRoot/GarageHeaderRow/SettingsButton",
       "outcome": "open garage settings overlay"
     }
@@ -46,12 +56,208 @@
     "selected": true,
     "disabled": true
   },
+  "blocks": [
+    {
+      "blockId": "header-chrome",
+      "role": "shared-chrome",
+      "sourceName": "header",
+      "unityTargetPath": "/Canvas/GaragePageRoot/GarageHeaderRow",
+      "layout": {
+        "axis": "horizontal",
+        "padding": 16,
+        "gap": 12,
+        "minHeight": 56,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [
+        "aux-action"
+      ],
+      "notes": [
+        "Top area stays compact: title, current roster context, settings access only.",
+        "Settings stays a quiet gear action in the top-right corner, not a large secondary button."
+      ]
+    },
+    {
+      "blockId": "slot-selector",
+      "role": "section",
+      "sourceName": "slot-selector",
+      "unityTargetPath": "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/RosterListPane/SlotStripRow",
+      "layout": {
+        "axis": "horizontal",
+        "padding": 0,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [],
+      "notes": [
+        "Render this as a horizontal four-card strip, not a vertical roster list.",
+        "The selected slot card must visually outrank the empty cards before the editor body starts."
+      ]
+    },
+    {
+      "blockId": "focus-bar",
+      "role": "section",
+      "sourceName": "focus-bar",
+      "unityTargetPath": "/Canvas/GaragePageRoot/GarageMobileStackRoot/GarageMobileTabBar",
+      "layout": {
+        "axis": "horizontal",
+        "padding": 12,
+        "gap": 4,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [],
+      "notes": [
+        "Three compact chips sit directly under the slot strip and keep the active focus clearly highlighted."
+      ]
+    },
+    {
+      "blockId": "editor-panel",
+      "role": "content",
+      "sourceName": "focused-editor-area",
+      "unityTargetPath": "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/UnitEditorPane",
+      "layout": {
+        "axis": "vertical",
+        "padding": 12,
+        "gap": 16,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [],
+      "notes": [
+        "Current active work area for frame, weapon, or mobility focus.",
+        "The first-screen editor card should already look finished: selected part title, strong primary stat, supporting stat row, and quiet auxiliary action."
+      ]
+    },
+    {
+      "blockId": "preview-card",
+      "role": "content",
+      "sourceName": "preview-summary.preview",
+      "unityTargetPath": "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/PreviewCard",
+      "layout": {
+        "axis": "free",
+        "padding": 12,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [],
+      "notes": [
+        "Preview must look finished, not placeholder-like.",
+        "Use a framed blueprint viewer with a visible bottom meter so the surface still reads as evaluative even when model detail is sparse."
+      ]
+    },
+    {
+      "blockId": "summary-card",
+      "role": "status",
+      "sourceName": "preview-summary.summary",
+      "unityTargetPath": "/Canvas/GaragePageRoot/GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/ResultPane",
+      "layout": {
+        "axis": "vertical",
+        "padding": 12,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [
+        "primary-cta"
+      ],
+      "notes": [
+        "Summarize role, attack style, range, durability, and mobility outcome in short Korean labels.",
+        "Use compact stat rows or chips rather than loose placeholder copy."
+      ]
+    },
+    {
+      "blockId": "save-dock",
+      "role": "shared-chrome",
+      "sourceName": "persistent-bottom-dock",
+      "unityTargetPath": "/Canvas/GaragePageRoot/MobileSaveDock",
+      "layout": {
+        "axis": "overlay",
+        "padding": 16,
+        "gap": 8,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": true,
+        "scroll": false
+      },
+      "children": [
+        "primary-cta"
+      ],
+      "notes": [
+        "Persistent primary CTA using Signal Orange.",
+        "Save dock is a full-width orange bottom bar with a lock icon and Korean label, stronger than any inline editor action."
+      ]
+    },
+    {
+      "blockId": "primary-cta",
+      "role": "cta",
+      "sourceName": "save-roster",
+      "unityTargetPath": "/Canvas/GaragePageRoot/MobileSaveDock/MobileSaveButton",
+      "layout": {
+        "axis": "free",
+        "padding": 0,
+        "gap": 0,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "stretch",
+        "sticky": true,
+        "scroll": false
+      },
+      "children": [],
+      "notes": [
+        "Primary CTA stays inside the persistent save dock.",
+        "Use the Stitch-derived save label without presentation-side typography overrides."
+      ]
+    },
+    {
+      "blockId": "aux-action",
+      "role": "cta",
+      "sourceName": "open-settings",
+      "unityTargetPath": "/Canvas/GaragePageRoot/GarageHeaderRow/SettingsButton",
+      "layout": {
+        "axis": "free",
+        "padding": 0,
+        "gap": 0,
+        "minHeight": 0,
+        "minWidth": 0,
+        "alignment": "end",
+        "sticky": false,
+        "scroll": false
+      },
+      "children": [],
+      "notes": [
+        "Quiet gear action in the header.",
+        "Auxiliary only; never outranks the save dock."
+      ]
+    }
+  ],
   "validation": {
     "frame": "390x844",
     "firstReadOrder": [
       "slot-selector",
       "focus-bar",
-      "focused-editor",
+      "editor-panel",
       "preview-card",
       "summary-card",
       "save-dock"
@@ -66,64 +272,8 @@
       "save dock remains a full-width Signal Orange persistent CTA",
       "settings stays a quiet gear action"
     ],
-    "smokeScripts": [
-      "Invoke-LobbyGaragePageSwitchSmoke.ps1"
-    ]
+    "smokeScripts": []
   },
-  "blockOverrides": {
-    "garage-header-row": {
-      "notes": [
-        "Top area stays compact: title, current roster context, settings access only.",
-        "Settings stays a quiet gear action in the top-right corner, not a large secondary button."
-      ]
-    },
-    "slot-selector": {
-      "layout": {
-        "axis": "horizontal",
-        "padding": 0,
-        "gap": 8,
-        "minHeight": 0,
-        "minWidth": 0,
-        "alignment": "stretch",
-        "sticky": false,
-        "scroll": false
-      },
-      "notes": [
-        "Render this as a horizontal four-card strip, not a vertical roster list.",
-        "The selected slot card must visually outrank the empty cards before the editor body starts."
-      ]
-    },
-    "focus-bar": {
-      "notes": [
-        "Three compact chips sit directly under the slot strip and keep the active focus clearly highlighted."
-      ]
-    },
-    "focused-editor": {
-      "notes": [
-        "Current active work area for frame, weapon, or mobility focus.",
-        "The first-screen editor card should already look finished: selected part title, strong primary stat, supporting stat row, and quiet auxiliary action."
-      ]
-    },
-    "preview-card": {
-      "notes": [
-        "Preview must look finished, not placeholder-like.",
-        "Use a framed blueprint viewer with a visible bottom meter so the surface still reads as evaluative even when model detail is sparse."
-      ]
-    },
-    "summary-card": {
-      "notes": [
-        "Summarize role, attack style, range, durability, and mobility outcome in short Korean labels.",
-        "Use compact stat rows or chips rather than loose placeholder copy."
-      ]
-    },
-    "save-dock": {
-      "notes": [
-        "Persistent primary CTA using Signal Orange.",
-        "Save dock is a full-width orange bottom bar with a lock icon and Korean label, stronger than any inline editor action."
-      ]
-    }
-  },
-  "appendBlocks": [],
   "notes": [
     "Accepted Set B baseline.",
     "Single scroll workspace, not fragmented dashboard panels.",

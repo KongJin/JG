@@ -19,11 +19,6 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private GameObject _arrowIndicator;
         [Required, SerializeField] private Image _borderImage;
 
-        [Header("Layout")]
-        [SerializeField] private float _slotNumberFontSize = 7.5f;
-        [SerializeField] private float _titleFontSize = 11f;
-        [SerializeField] private float _summaryFontSize = 7.25f;
-
         [Header("Animation")]
         [Required, SerializeField] private CanvasGroup _canvasGroup;
 
@@ -38,13 +33,7 @@ namespace Features.Garage.Presentation
 
         private void Awake()
         {
-            ApplyTypography();
             _canvasGroup.alpha = 1f;
-        }
-
-        private void OnEnable()
-        {
-            ApplyTypography();
         }
 
         public void Render(GarageSlotViewModel viewModel)
@@ -65,10 +54,6 @@ namespace Features.Garage.Presentation
 
             _summaryText.text = viewModel.IsEmpty ? viewModel.StatusBadgeText : viewModel.Summary;
             _summaryText.color = viewModel.IsSelected ? ThemeColors.TextPrimary : ThemeColors.TextSecondary;
-
-            _titleText.fontSize = viewModel.IsEmpty ? _titleFontSize + 4f : _titleFontSize;
-            _titleText.alignment = viewModel.IsEmpty ? TextAlignmentOptions.Center : TextAlignmentOptions.TopLeft;
-            _summaryText.alignment = viewModel.IsEmpty ? TextAlignmentOptions.BottomRight : TextAlignmentOptions.BottomLeft;
 
             // 배경색 — 페이드 애니메이션 적용
             Color targetColor = GetSlotColor(viewModel);
@@ -164,24 +149,6 @@ namespace Features.Garage.Presentation
 
             _background.color = target;
             _isTransitioning = false;
-        }
-
-        private void ApplyTypography()
-        {
-            ConfigureText(_slotNumberText, _slotNumberFontSize, false, TextAlignmentOptions.TopLeft);
-            ConfigureText(_titleText, _titleFontSize, false, TextAlignmentOptions.TopLeft);
-            ConfigureText(_summaryText, _summaryFontSize, false, TextAlignmentOptions.BottomLeft);
-        }
-
-        private static void ConfigureText(TMP_Text text, float fontSize, bool enableAutoSizing, TextAlignmentOptions alignment)
-        {
-            text.fontSize = fontSize;
-            text.enableAutoSizing = enableAutoSizing;
-            text.fontSizeMin = Mathf.Max(7f, fontSize - 2f);
-            text.fontSizeMax = fontSize;
-            text.alignment = alignment;
-            text.textWrappingMode = TextWrappingModes.PreserveWhitespaceNoWrap;
-            text.overflowMode = TextOverflowModes.Ellipsis;
         }
     }
 }

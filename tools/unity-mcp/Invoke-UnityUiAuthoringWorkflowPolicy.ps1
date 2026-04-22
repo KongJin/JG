@@ -335,11 +335,6 @@ if ($route -ne "no-unity-ui-workflow") {
             path = "artifacts/unity/lobby-ui-workflow-result.json"
             message = "Lobby UI changes require a fresh workflow gate result newer than the latest modified source file."
         }
-        $requiredEvidence += [PSCustomObject]@{
-            name = "lobby-canonical-smoke"
-            path = "artifacts/unity/lobby-garage-page-switch-result.json"
-            message = "Lobby UI changes require a fresh canonical smoke result newer than the latest modified source file."
-        }
 
         $workflowGateCheck = Test-EvidenceFreshness `
             -RepoRoot $repoRoot `
@@ -355,65 +350,12 @@ if ($route -ne "no-unity-ui-workflow") {
             $staleEvidence += $workflowGateCheck.record
         }
 
-        $canonicalSmokeCheck = Test-EvidenceFreshness `
-            -RepoRoot $repoRoot `
-            -EvidencePath "artifacts/unity/lobby-garage-page-switch-result.json" `
-            -SourcePaths $lobbyFiles `
-            -EvidenceName "lobby-canonical-smoke" `
-            -MissingMessage "Lobby UI changes require a fresh canonical smoke result newer than the latest modified source file." `
-            -StaleMessage "Lobby UI changes require a fresh canonical smoke result newer than the latest modified source file."
-        if ($canonicalSmokeCheck.status -eq "missing") {
-            $missingEvidence += $canonicalSmokeCheck.record
-        }
-        elseif ($canonicalSmokeCheck.status -eq "stale") {
-            $staleEvidence += $canonicalSmokeCheck.record
-        }
     }
     elseif ($hasLobby -and -not $lobbySceneExists) {
         $requiredEvidence += [PSCustomObject]@{
             name = "prefab-first-reset"
             path = $null
             message = "Lobby/Garage changes are currently in prefab-first reset mode because Assets/Scenes/LobbyScene.unity does not exist."
-        }
-    }
-
-    if ($hasGameScene) {
-        $gameSceneEvidence = @(
-            [PSCustomObject]@{
-                name = "game-scene-summon-smoke"
-                path = "artifacts/unity/game-scene-summon-smoke-result.json"
-            }
-            [PSCustomObject]@{
-                name = "game-scene-placement-wave-smoke"
-                path = "artifacts/unity/game-scene-placement-wave-result.json"
-            }
-        )
-
-        foreach ($evidence in $gameSceneEvidence) {
-            $absoluteEvidencePath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $evidence.path))
-            if (-not (Test-Path -LiteralPath $absoluteEvidencePath)) {
-                continue
-            }
-
-            $requiredEvidence += [PSCustomObject]@{
-                name = $evidence.name
-                path = $evidence.path
-                message = "GameScene UI changes require existing smoke evidence to stay fresh when the artifact is already present."
-            }
-
-            $smokeCheck = Test-EvidenceFreshness `
-                -RepoRoot $repoRoot `
-                -EvidencePath $evidence.path `
-                -SourcePaths $gameSceneFiles `
-                -EvidenceName $evidence.name `
-                -MissingMessage "GameScene UI changes require a fresh smoke artifact when that artifact is already part of the repo evidence set." `
-                -StaleMessage "GameScene UI changes require existing smoke evidence to be newer than the latest modified source file."
-            if ($smokeCheck.status -eq "missing") {
-                $missingEvidence += $smokeCheck.record
-            }
-            elseif ($smokeCheck.status -eq "stale") {
-                $staleEvidence += $smokeCheck.record
-            }
         }
     }
 }

@@ -16,7 +16,6 @@ $blocks = foreach ($entry in @(Get-StitchUnityBlockEntries -Map $mapResult.Map))
         hostPath = [string](Get-StitchUnityOptionalPropertyValue -InputObject $entry.mapping -Name "hostPath" -Default "")
         candidatePaths = @(Get-StitchUnityCandidatePaths -BlockMapping $entry.mapping)
         requiredComponents = @(Get-StitchUnityOptionalArray -InputObject $entry.mapping -Name "requiredComponents")
-        expectedLayout = Get-StitchUnityOptionalPropertyValue -InputObject $entry.mapping -Name "expectedLayout"
         verificationTags = @(Get-StitchUnityOptionalArray -InputObject $entry.mapping -Name "verificationTags")
         stateBindings = @(Get-StitchUnityOptionalArray -InputObject $entry.mapping -Name "stateBindings")
         notes = @(Get-StitchUnityOptionalArray -InputObject $entry.mapping -Name "notes")

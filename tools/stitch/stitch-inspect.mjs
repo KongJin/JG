@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { createHash } from "node:crypto";
 
 import { StitchToolClient, stitch } from "@google/stitch-sdk";
 
@@ -128,6 +129,7 @@ Usage:
   npm run stitch:list:screens -- --project <projectId>
   npm run stitch:fetch:screen -- --url <stitchUrl>
   npm run stitch:fetch:screen -- --project <projectId> --screen <screenId>
+  npm run stitch:fetch:screen -- --project <projectId> --screen <screenId> [--skip-assets]
 
 Environment:
   STITCH_API_KEY=<your-api-key>
@@ -165,6 +167,10 @@ function getArg(flag) {
   return process.argv[index + 1];
 }
 
+function hasFlag(flag) {
+  return process.argv.includes(flag);
+}
+
 function sanitize(value) {
   return String(value).replace(/[^a-zA-Z0-9._-]+/g, "_");
 }
@@ -196,6 +202,197 @@ async function downloadToFile(url, filePath) {
   const buffer = Buffer.from(await response.arrayBuffer());
   await fs.writeFile(filePath, buffer);
   return response.headers.get("content-type") || "application/octet-stream";
+}
+
+function getExtensionFromContentType(contentType) {
+  const normalized = String(contentType || "").toLowerCase().split(";")[0].trim();
+  switch (normalized) {
+    case "image/png":
+      return ".png";
+    case "image/jpeg":
+      return ".jpg";
+    case "image/webp":
+      return ".webp";
+    case "image/gif":
+      return ".gif";
+    case "image/svg+xml":
+      return ".svg";
+    case "image/avif":
+      return ".avif";
+    default:
+      return "";
+  }
+}
+
+function getExtensionFromUrl(urlString) {
+  try {
+    const url = new URL(urlString);
+    const ext = path.extname(url.pathname || "");
+    return ext || "";
+  } catch {
+    return "";
+  }
+}
+
+function getAssetFileStem(urlString, index) {
+  let baseName = "asset";
+  try {
+    const url = new URL(urlString);
+    baseName = path.basename(url.pathname || "") || "asset";
+  } catch {
+  }
+
+  const stem = sanitize(path.parse(baseName).name || "asset").slice(0, 24) || "asset";
+  const hash = createHash("sha1").update(String(urlString)).digest("hex").slice(0, 10);
+  return `${String(index + 1).padStart(2, "0")}-${stem}-${hash}`;
+}
+
+function normalizeAssetUrl(urlString) {
+  if (!urlString || urlString.startsWith("data:")) {
+    return null;
+  }
+
+  try {
+    const url = new URL(urlString);
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return null;
+    }
+
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+function extractSrcsetUrls(srcset) {
+  return String(srcset || "")
+    .split(",")
+    .map((entry) => entry.trim().split(/\s+/)[0])
+    .map(normalizeAssetUrl)
+    .filter(Boolean);
+}
+
+function extractImageAssetUrlsFromHtml(html) {
+  const urls = new Set();
+  const text = String(html || "");
+
+  const srcMatches = text.matchAll(/<img\b[^>]*\ssrc=["'](?<url>[^"']+)["'][^>]*>/gi);
+  for (const match of srcMatches) {
+    const normalized = normalizeAssetUrl(match.groups?.url || "");
+    if (normalized) {
+      urls.add(normalized);
+    }
+  }
+
+  const srcsetMatches = text.matchAll(/<(?:img|source)\b[^>]*\ssrcset=["'](?<value>[^"']+)["'][^>]*>/gi);
+  for (const match of srcsetMatches) {
+    for (const url of extractSrcsetUrls(match.groups?.value || "")) {
+      urls.add(url);
+    }
+  }
+
+  const cssUrlMatches = text.matchAll(/url\((?<quote>["']?)(?<url>https?:\/\/[^)"']+)\k<quote>\)/gi);
+  for (const match of cssUrlMatches) {
+    const normalized = normalizeAssetUrl(match.groups?.url || "");
+    if (normalized) {
+      urls.add(normalized);
+    }
+  }
+
+  return Array.from(urls);
+}
+
+async function downloadScreenAssets(htmlPath, outDir, options = {}) {
+  const html = await fs.readFile(htmlPath, "utf8");
+  const allUrls = extractImageAssetUrlsFromHtml(html);
+  const excludeUrls = new Set((options.excludeUrls || []).filter(Boolean));
+  const imageUrls = allUrls.filter((url) => !excludeUrls.has(url));
+
+  const assetsDir = path.join(outDir, "assets");
+  await fs.rm(assetsDir, { recursive: true, force: true });
+  await ensureDir(assetsDir);
+
+  const assets = [];
+  for (let index = 0; index < imageUrls.length; index += 1) {
+    const url = imageUrls[index];
+    const provisionalPath = path.join(assetsDir, getAssetFileStem(url, index));
+    const contentType = await downloadToFile(url, provisionalPath);
+    const extension = getExtensionFromContentType(contentType) || getExtensionFromUrl(url) || ".bin";
+    const finalPath = provisionalPath.endsWith(extension) ? provisionalPath : `${provisionalPath}${extension}`;
+
+    if (finalPath !== provisionalPath) {
+      await fs.rename(provisionalPath, finalPath);
+    }
+
+    assets.push({
+      index: index + 1,
+      url,
+      contentType,
+      path: finalPath,
+    });
+  }
+
+  const assetManifestPath = path.join(outDir, "asset-manifest.json");
+  const assetManifest = {
+    extractedAt: new Date().toISOString(),
+    assetCount: assets.length,
+    assets,
+  };
+
+  await fs.writeFile(assetManifestPath, `${JSON.stringify(assetManifest, null, 2)}\n`, "utf8");
+
+  return {
+    assetCount: assets.length,
+    assetManifestPath,
+    assetsDirectory: assetsDir,
+    assets,
+  };
+}
+
+async function saveScreenArtifacts({ projectId, screenId, screenName = "", prompt = "", htmlUrl, imageUrl, outDir, includeAssets = true }) {
+  await ensureDir(outDir);
+
+  const htmlPath = path.join(outDir, "screen.html");
+  const imagePath = path.join(outDir, "screen.png");
+  const metaPath = path.join(outDir, "meta.json");
+
+  await downloadToFile(htmlUrl, htmlPath);
+  const imageContentType = await downloadToFile(imageUrl, imagePath);
+  const assetResult = includeAssets
+    ? await downloadScreenAssets(htmlPath, outDir, { excludeUrls: [imageUrl] })
+    : {
+        assetCount: 0,
+        assetManifestPath: "",
+        assetsDirectory: "",
+        assets: [],
+      };
+
+  const metadata = {
+    fetchedAt: new Date().toISOString(),
+    projectId,
+    screenId,
+    screenName,
+    prompt,
+    htmlUrl,
+    imageUrl,
+    htmlPath,
+    imagePath,
+    imageContentType,
+    assetCount: assetResult.assetCount,
+    assetManifestPath: assetResult.assetManifestPath,
+    assetsDirectory: assetResult.assetsDirectory,
+  };
+
+  await fs.writeFile(metaPath, `${JSON.stringify(metadata, null, 2)}\n`, "utf8");
+
+  return {
+    outDir,
+    htmlPath,
+    imagePath,
+    metaPath,
+    imageContentType,
+    assetResult,
+  };
 }
 
 function extractGeneratedScreen(raw) {
@@ -353,34 +550,26 @@ async function fetchScreen() {
   const screen = await project.getScreen(screenId);
   const htmlUrl = await screen.getHtml();
   const imageUrl = await screen.getImage();
+  const includeAssets = !hasFlag("--skip-assets");
 
   const outDir = path.resolve("artifacts", "stitch", sanitize(projectId), sanitize(screenId));
-  await ensureDir(outDir);
-
-  const htmlPath = path.join(outDir, "screen.html");
-  const imagePath = path.join(outDir, "screen.png");
-  const metaPath = path.join(outDir, "meta.json");
-
-  await downloadToFile(htmlUrl, htmlPath);
-  const imageContentType = await downloadToFile(imageUrl, imagePath);
-
-  const metadata = {
-    fetchedAt: new Date().toISOString(),
+  const result = await saveScreenArtifacts({
     projectId,
     screenId,
     htmlUrl,
     imageUrl,
-    htmlPath,
-    imagePath,
-    imageContentType,
-  };
-
-  await fs.writeFile(metaPath, `${JSON.stringify(metadata, null, 2)}\n`, "utf8");
+    outDir,
+    includeAssets,
+  });
 
   console.log(`Saved Stitch screen to ${outDir}`);
-  console.log(`- HTML: ${htmlPath}`);
-  console.log(`- Image: ${imagePath}`);
-  console.log(`- Meta: ${metaPath}`);
+  console.log(`- HTML: ${result.htmlPath}`);
+  console.log(`- Image: ${result.imagePath}`);
+  console.log(`- Assets: ${result.assetResult.assetCount}`);
+  if (includeAssets) {
+    console.log(`- Asset manifest: ${result.assetResult.assetManifestPath}`);
+  }
+  console.log(`- Meta: ${result.metaPath}`);
 }
 
 async function bootstrapJg() {
@@ -409,36 +598,25 @@ async function bootstrapJg() {
     const imageUrl = await screen.getImage();
 
     const outDir = path.resolve("artifacts", "stitch", sanitize(project.projectId), sanitize(screen.screenId));
-    await ensureDir(outDir);
-
-    const htmlPath = path.join(outDir, "screen.html");
-    const imagePath = path.join(outDir, "screen.png");
-    const metaPath = path.join(outDir, "meta.json");
-
-    await downloadToFile(htmlUrl, htmlPath);
-    const imageContentType = await downloadToFile(imageUrl, imagePath);
-
-    const metadata = {
-      fetchedAt: new Date().toISOString(),
+    const result = await saveScreenArtifacts({
       projectId: project.projectId,
       screenId,
       screenName: spec.name,
       prompt: spec.prompt,
       htmlUrl,
       imageUrl,
-      htmlPath,
-      imagePath,
-      imageContentType,
-    };
-
-    await fs.writeFile(metaPath, `${JSON.stringify(metadata, null, 2)}\n`, "utf8");
+      outDir,
+      includeAssets: true,
+    });
 
     summary.screens.push({
       name: spec.name,
       screenId,
-      htmlPath,
-      imagePath,
-      metaPath,
+      htmlPath: result.htmlPath,
+      imagePath: result.imagePath,
+      metaPath: result.metaPath,
+      assetCount: result.assetResult.assetCount,
+      assetManifestPath: result.assetResult.assetManifestPath,
     });
   }
 

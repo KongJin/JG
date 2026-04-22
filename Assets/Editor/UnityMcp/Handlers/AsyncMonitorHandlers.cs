@@ -5,9 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEditor;
-using UnityEngine;
-using UnityEngine.Networking;
 
 namespace ProjectSD.EditorTools.UnityMcp
 {
@@ -22,10 +19,26 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         static AsyncMonitorHandlers()
         {
-            "GET".Register("/async/list", "List all active async operations", async (req, res) => await HandleListOperationsAsync(res));
-            "GET".Register("/async/status/{id}", "Get async operation status", async (req, res) => await HandleGetOperationStatusAsync(req, res));
-            "POST".Register("/async/wait/{id}", "Wait for async operation completion", async (req, res) => await HandleWaitForOperationAsync(req, res));
-            "POST".Register("/async/cancel/{id}", "Cancel async operation", async (req, res) => await HandleCancelOperationAsync(req, res));
+            "GET".Register(
+                "/async/list",
+                "List all active async operations",
+                async (req, res) => await HandleListOperationsAsync(res)
+            );
+            "GET".Register(
+                "/async/status/{id}",
+                "Get async operation status",
+                async (req, res) => await HandleGetOperationStatusAsync(req, res)
+            );
+            "POST".Register(
+                "/async/wait/{id}",
+                "Wait for async operation completion",
+                async (req, res) => await HandleWaitForOperationAsync(req, res)
+            );
+            "POST".Register(
+                "/async/cancel/{id}",
+                "Cancel async operation",
+                async (req, res) => await HandleCancelOperationAsync(req, res)
+            );
         }
 
         // =====================================================================
@@ -42,7 +55,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 description = description,
                 status = "running",
                 startTimeUtc = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff"),
-                startTimeMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                startTimeMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
             };
 
             ActiveOperations.TryAdd(id, info);
@@ -109,7 +122,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                     completed = ops.Count(o => o.status == "completed"),
                     failed = ops.Count(o => o.status == "failed"),
                     timeout = ops.Count(o => o.status == "timeout"),
-                    operations = ops
+                    operations = ops,
                 };
                 return responseObj;
             });
@@ -117,18 +130,29 @@ namespace ProjectSD.EditorTools.UnityMcp
             await UnityMcpBridge.WriteJsonAsync(response, 200, operations);
         }
 
-        public static async Task HandleGetOperationStatusAsync(HttpListenerRequest request, HttpListenerResponse response)
+        public static async Task HandleGetOperationStatusAsync(
+            HttpListenerRequest request,
+            HttpListenerResponse response
+        )
         {
             var pathParts = request.Url.AbsolutePath.Split('/');
             if (pathParts.Length < 5)
             {
-                await UnityMcpBridge.WriteJsonAsync(response, 400, new ErrorResponse { error = "Invalid operation ID" });
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse { error = "Invalid operation ID" }
+                );
                 return;
             }
 
             if (!int.TryParse(pathParts[4], out var operationId))
             {
-                await UnityMcpBridge.WriteJsonAsync(response, 400, new ErrorResponse { error = "Invalid operation ID format" });
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse { error = "Invalid operation ID format" }
+                );
                 return;
             }
 
@@ -143,31 +167,52 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             if (operation == null)
             {
-                await UnityMcpBridge.WriteJsonAsync(response, 404, new ErrorResponse { error = "Operation not found", detail = $"ID: {operationId}" });
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    404,
+                    new ErrorResponse
+                    {
+                        error = "Operation not found",
+                        detail = $"ID: {operationId}",
+                    }
+                );
                 return;
             }
 
             await UnityMcpBridge.WriteJsonAsync(response, 200, operation);
         }
 
-        public static async Task HandleWaitForOperationAsync(HttpListenerRequest request, HttpListenerResponse response)
+        public static async Task HandleWaitForOperationAsync(
+            HttpListenerRequest request,
+            HttpListenerResponse response
+        )
         {
             var pathParts = request.Url.AbsolutePath.Split('/');
             if (pathParts.Length < 5)
             {
-                await UnityMcpBridge.WriteJsonAsync(response, 400, new ErrorResponse { error = "Invalid operation ID" });
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse { error = "Invalid operation ID" }
+                );
                 return;
             }
 
             if (!int.TryParse(pathParts[4], out var operationId))
             {
-                await UnityMcpBridge.WriteJsonAsync(response, 400, new ErrorResponse { error = "Invalid operation ID format" });
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse { error = "Invalid operation ID format" }
+                );
                 return;
             }
 
             var timeoutMs = 30000; // 기본 30초
             var timeoutRaw = request.QueryString["timeout"];
-            if (!string.IsNullOrEmpty(timeoutRaw) && int.TryParse(timeoutRaw, out var parsedTimeout))
+            if (
+                !string.IsNullOrEmpty(timeoutRaw) && int.TryParse(timeoutRaw, out var parsedTimeout)
+            )
             {
                 timeoutMs = Math.Min(parsedTimeout, 300000); // 최대 5분
             }
@@ -181,31 +226,46 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             try
             {
-                var result = await WaitForOperationCompletionAsync(operationId, timeoutMs, pollIntervalMs);
+                var result = await WaitForOperationCompletionAsync(
+                    operationId,
+                    timeoutMs,
+                    pollIntervalMs
+                );
                 await UnityMcpBridge.WriteJsonAsync(response, 200, result);
             }
             catch (TimeoutException ex)
             {
-                await UnityMcpBridge.WriteJsonAsync(response, 504, new ErrorResponse
-                {
-                    error = "Operation wait timeout",
-                    detail = ex.Message
-                });
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    504,
+                    new ErrorResponse { error = "Operation wait timeout", detail = ex.Message }
+                );
             }
         }
 
-        public static async Task HandleCancelOperationAsync(HttpListenerRequest request, HttpListenerResponse response)
+        public static async Task HandleCancelOperationAsync(
+            HttpListenerRequest request,
+            HttpListenerResponse response
+        )
         {
             var pathParts = request.Url.AbsolutePath.Split('/');
             if (pathParts.Length < 5)
             {
-                await UnityMcpBridge.WriteJsonAsync(response, 400, new ErrorResponse { error = "Invalid operation ID" });
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse { error = "Invalid operation ID" }
+                );
                 return;
             }
 
             if (!int.TryParse(pathParts[4], out var operationId))
             {
-                await UnityMcpBridge.WriteJsonAsync(response, 400, new ErrorResponse { error = "Invalid operation ID format" });
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    400,
+                    new ErrorResponse { error = "Invalid operation ID format" }
+                );
                 return;
             }
 
@@ -224,18 +284,28 @@ namespace ProjectSD.EditorTools.UnityMcp
                 return false;
             });
 
-            await UnityMcpBridge.WriteJsonAsync(response, 200, new
-            {
-                success = cancelled,
-                message = cancelled ? $"Operation {operationId} cancelled" : $"Operation {operationId} already completed or not found"
-            });
+            await UnityMcpBridge.WriteJsonAsync(
+                response,
+                200,
+                new
+                {
+                    success = cancelled,
+                    message = cancelled
+                        ? $"Operation {operationId} cancelled"
+                        : $"Operation {operationId} already completed or not found",
+                }
+            );
         }
 
         // =====================================================================
         // Helper Methods
         // =====================================================================
 
-        private static async Task<AsyncOperationInfo> WaitForOperationCompletionAsync(int operationId, int timeoutMs, int pollIntervalMs)
+        private static async Task<AsyncOperationInfo> WaitForOperationCompletionAsync(
+            int operationId,
+            int timeoutMs,
+            int pollIntervalMs
+        )
         {
             var deadline = DateTime.UtcNow + TimeSpan.FromMilliseconds(timeoutMs);
 
@@ -256,7 +326,9 @@ namespace ProjectSD.EditorTools.UnityMcp
                 await Task.Delay(pollIntervalMs);
             }
 
-            throw new TimeoutException($"Operation {operationId} did not complete within {timeoutMs}ms");
+            throw new TimeoutException(
+                $"Operation {operationId} did not complete within {timeoutMs}ms"
+            );
         }
     }
 

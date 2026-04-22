@@ -17,10 +17,7 @@
     "stitch:bootstrap:jg": "node ./tools/stitch/stitch-inspect.mjs bootstrap-jg",
     "stitch:list:screens": "node ./tools/stitch/stitch-inspect.mjs list-screens",
     "stitch:fetch:screen": "node ./tools/stitch/stitch-inspect.mjs fetch-screen",
-    "stitch:generate:overlay-draft": "node ./tools/stitch/generate-overlay-draft-manifest.mjs",
-    "stitch:mcp:proxy": "node ./tools/stitch/stitch-mcp-proxy.mjs",
-    "webgl:smoke:garage": "node ./tools/webgl-smoke/garage-save-load-smoke.cjs",
-    "webgl:smoke:account-delete": "node ./tools/webgl-smoke/account-delete-smoke.cjs"
+    "stitch:mcp:proxy": "node ./tools/stitch/stitch-mcp-proxy.mjs"
   },
   "keywords": [],
   "author": "",

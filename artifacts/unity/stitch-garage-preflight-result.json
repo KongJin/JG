@@ -1,0 +1,28 @@
+﻿{
+    "schemaVersion":  "1.0.0",
+    "surfaceId":  "garage-main-workspace",
+    "translationStrategy":  "unity-mcp-surface-generator-v1",
+    "strategyMode":  "generate-or-patch",
+    "target":  {
+                   "kind":  "prefab",
+                   "assetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
+               },
+    "targetExists":  true,
+    "targetState":  {
+                        "kind":  "prefab",
+                        "assetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab",
+                        "resolvedAssetPath":  "C:\\Users\\SOL\\Documents\\JG\\Assets\\Prefabs\\Features\\Garage\\Root\\GaragePageRoot.prefab",
+                        "exists":  true
+                    },
+    "dependencies":  [
+
+                     ],
+    "contractRefs":  {
+                         "manifestPath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\screens\\set-b-garage-main-workspace.screen.json"
+                     },
+    "ready":  true,
+    "roughEdges":  [
+
+                   ],
+    "generatedAt":  "2026-04-22T23:27:56.5818663+09:00"
+}

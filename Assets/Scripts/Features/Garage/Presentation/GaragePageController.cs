@@ -444,7 +444,7 @@ namespace Features.Garage.Presentation
         {
             _settingsOpenButton.Apply(ButtonStyles.Ghost, _settingsOpenButtonLabel);
             _settingsOpenButton.interactable = !_isSettingsOverlayOpen;
-            _settingsOpenButtonLabel.text = "설정";
+            _settingsOpenButtonLabel.text = "⚙";
 
             _settingsCloseButton.Apply(ButtonStyles.Secondary, _settingsCloseButtonLabel);
             _settingsCloseButton.interactable = _isSettingsOverlayOpen;
@@ -472,19 +472,19 @@ namespace Features.Garage.Presentation
             ConfigureMobileTabButton(
                 _mobileEditTabButton,
                 _mobileEditTabLabel,
-                "프레임",
+                "[프레임]",
                 _mobilePartFocus == MobilePartFocus.Frame,
                 true);
             ConfigureMobileTabButton(
                 _mobilePreviewTabButton,
                 _mobilePreviewTabLabel,
-                "무장",
+                "[무장]",
                 _mobilePartFocus == MobilePartFocus.Firepower,
                 true);
             ConfigureMobileTabButton(
                 _mobileSummaryTabButton,
                 _mobileSummaryTabLabel,
-                "기동",
+                "[기동]",
                 _mobilePartFocus == MobilePartFocus.Mobility,
                 true);
         }
@@ -531,7 +531,7 @@ namespace Features.Garage.Presentation
 
             _mobileSaveButtonLabel.text = _isSaving
                 ? "저장 중..."
-                : "편성 저장";
+                : "저장 및 배치";
 
             if (_mobileSaveButton.TryGetComponent<Image>(out var background))
             {
@@ -554,12 +554,6 @@ namespace Features.Garage.Presentation
 
         private void RefreshMobileSaveStateText(GarageResultViewModel resultViewModel)
         {
-            _mobileSaveStateText.enableAutoSizing = false;
-            _mobileSaveStateText.fontSize = 14f;
-            _mobileSaveStateText.alignment = TextAlignmentOptions.TopLeft;
-            _mobileSaveStateText.textWrappingMode = TextWrappingModes.Normal;
-            _mobileSaveStateText.overflowMode = TextOverflowModes.Ellipsis;
-
             if (_isSaving)
             {
                 _mobileSaveStateText.text = "빌드 동기화 중...";

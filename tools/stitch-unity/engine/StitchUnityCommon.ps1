@@ -116,19 +116,37 @@ function Get-StitchUnityContractBundle {
 
     $contractRefs = Get-StitchUnityRequiredProperty -InputObject $Map -Name "contractRefs"
     $manifestPath = Resolve-StitchUnityRepoPath -PathValue ([string](Get-StitchUnityRequiredProperty -InputObject $contractRefs -Name "manifestPath"))
-    $blueprintPath = Resolve-StitchUnityRepoPath -PathValue ([string](Get-StitchUnityRequiredProperty -InputObject $contractRefs -Name "blueprintPath"))
-    $intakePath = ""
-    if ($null -ne $contractRefs.PSObject.Properties["intakePath"] -and -not [string]::IsNullOrWhiteSpace([string]$contractRefs.intakePath)) {
-        $intakePath = Resolve-StitchUnityRepoPath -PathValue ([string]$contractRefs.intakePath)
-    }
 
     return [PSCustomObject]@{
         manifestPath = $manifestPath
-        intakePath = $intakePath
-        blueprintPath = $blueprintPath
         manifest = Read-StitchUnityJsonFile -PathValue $manifestPath
-        intake = if ([string]::IsNullOrWhiteSpace($intakePath)) { $null } else { Read-StitchUnityJsonFile -PathValue $intakePath }
-        blueprint = Read-StitchUnityJsonFile -PathValue $blueprintPath
+    }
+}
+
+function Get-StitchUnityContractRefObject {
+    param([Parameter(Mandatory = $true)][object]$ContractBundle)
+
+    $refs = [ordered]@{
+        manifestPath = $ContractBundle.manifestPath
+    }
+
+    return [PSCustomObject]$refs
+}
+
+function Get-StitchUnitySurfaceContext {
+    param(
+        [string]$SurfaceId,
+        [string]$MapPath
+    )
+
+    $mapResult = Get-StitchUnityMapObject -SurfaceId $SurfaceId -MapPath $MapPath
+    $contracts = Get-StitchUnityContractBundle -Map $mapResult.Map
+
+    return [PSCustomObject]@{
+        MapResult = $mapResult
+        Map = $mapResult.Map
+        Contracts = $contracts
+        ContractRefs = Get-StitchUnityContractRefObject -ContractBundle $contracts
     }
 }
 
@@ -192,10 +210,159 @@ function Get-StitchUnityArtifactPath {
     return Resolve-StitchUnityRepoPath -PathValue $pathValue
 }
 
+function Resolve-StitchUnityArtifactOutputPath {
+    param(
+        [Parameter(Mandatory = $true)][object]$Map,
+        [Parameter(Mandatory = $true)][string]$ArtifactName,
+        [string]$ArtifactPath = ""
+    )
+
+    if (-not [string]::IsNullOrWhiteSpace($ArtifactPath)) {
+        return Resolve-StitchUnityRepoPath -PathValue $ArtifactPath
+    }
+
+    return Get-StitchUnityArtifactPath -Map $Map -Name $ArtifactName
+}
+
+function Test-StitchUnityTargetAssetExists {
+    param([Parameter(Mandatory = $true)][object]$Target)
+
+    $kind = [string](Get-StitchUnityRequiredProperty -InputObject $Target -Name "kind")
+    $assetPath = [string](Get-StitchUnityRequiredProperty -InputObject $Target -Name "assetPath")
+    $resolvedAssetPath = Resolve-StitchUnityRepoPath -PathValue $assetPath
+
+    return [PSCustomObject]@{
+        kind = $kind
+        assetPath = $assetPath
+        resolvedAssetPath = $resolvedAssetPath
+        exists = (Test-Path -LiteralPath $resolvedAssetPath)
+    }
+}
+
+function Get-StitchUnityStrategyMode {
+    param([Parameter(Mandatory = $true)][object]$Map)
+
+    $mode = [string](Get-StitchUnityOptionalPropertyValue -InputObject $Map -Name "strategyMode" -Default "")
+    if ([string]::IsNullOrWhiteSpace($mode)) {
+        return "patch"
+    }
+
+    return $mode
+}
+
+function Get-StitchUnityDependencies {
+    param([Parameter(Mandatory = $true)][object]$Map)
+
+    return @(Get-StitchUnityOptionalArray -InputObject $Map -Name "dependencies")
+}
+
 function Get-StitchUnityMcpRoot {
     param([string]$UnityBridgeUrl)
 
     return Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
+}
+
+function Invoke-StitchUnityDependencies {
+    param(
+        [Parameter(Mandatory = $true)][string]$Root,
+        [Parameter(Mandatory = $true)][object]$Map
+    )
+
+    $results = @()
+    foreach ($dependency in @(Get-StitchUnityDependencies -Map $Map)) {
+        $kind = [string](Get-StitchUnityRequiredProperty -InputObject $dependency -Name "kind")
+        $id = [string](Get-StitchUnityRequiredProperty -InputObject $dependency -Name "id")
+        $required = [bool](Get-StitchUnityOptionalPropertyValue -InputObject $dependency -Name "required" -Default $true)
+
+        switch ($kind) {
+            "menu" {
+                $menuPath = [string](Get-StitchUnityRequiredProperty -InputObject $dependency -Name "menuPath")
+                try {
+                    $response = Invoke-McpJsonWithTransientRetry -Root $Root -SubPath "/menu/execute" -Body @{
+                        menuPath = $menuPath
+                    } -TimeoutSec 90
+
+                    $results += [PSCustomObject]@{
+                        id = $id
+                        kind = $kind
+                        required = $required
+                        ok = [bool]$response.success
+                        menuPath = $menuPath
+                        message = [string]$response.message
+                    }
+                }
+                catch {
+                    if ($required) {
+                        throw
+                    }
+
+                    $results += [PSCustomObject]@{
+                        id = $id
+                        kind = $kind
+                        required = $required
+                        ok = $false
+                        menuPath = $menuPath
+                        message = $_.Exception.Message
+                    }
+                }
+            }
+            default {
+                throw "Unsupported dependency kind '$kind'."
+            }
+        }
+    }
+
+    return $results
+}
+
+function Get-StitchUnityPreflightObject {
+    param(
+        [Parameter(Mandatory = $true)][object]$Map,
+        [Parameter(Mandatory = $true)][object]$ContractBundle
+    )
+
+    $targetState = Test-StitchUnityTargetAssetExists -Target $Map.target
+    $strategyMode = Get-StitchUnityStrategyMode -Map $Map
+    $dependencies = @(Get-StitchUnityDependencies -Map $Map)
+    $roughEdges = @()
+
+    if (-not $targetState.exists -and $strategyMode -eq "patch") {
+        $roughEdges += [PSCustomObject]@{
+            code = "missing-target-for-patch-mode"
+            message = "Target asset is missing but strategyMode is patch. Surface generation would fail without an existing asset."
+        }
+    }
+
+    if (-not $targetState.exists -and $strategyMode -eq "generate-or-patch") {
+        $roughEdges += [PSCustomObject]@{
+            code = "missing-target-generate-fallback"
+            message = "Target asset is missing. The generator path must create the asset from contract instead of patching."
+        }
+    }
+
+    if ($dependencies.Count -gt 0) {
+        foreach ($dependency in $dependencies) {
+            $roughEdges += [PSCustomObject]@{
+                code = "dependency-declared"
+                message = "Surface declares dependency '$([string]$dependency.id)' of kind '$([string]$dependency.kind)'."
+            }
+        }
+    }
+
+    return [PSCustomObject]@{
+        schemaVersion = "1.0.0"
+        surfaceId = [string]$Map.surfaceId
+        translationStrategy = [string]$Map.translationStrategy
+        strategyMode = $strategyMode
+        target = $Map.target
+        targetExists = $targetState.exists
+        targetState = $targetState
+        dependencies = $dependencies
+        contractRefs = Get-StitchUnityContractRefObject -ContractBundle $ContractBundle
+        ready = ($strategyMode -ne "patch" -or $targetState.exists)
+        roughEdges = $roughEdges
+        generatedAt = (Get-Date).ToString("o")
+    }
 }
 
 function Invoke-StitchUnityTargetLookup {
@@ -400,7 +567,6 @@ function Get-StitchUnitySurfaceInspectionObject {
             resolvedBy = $resolved.resolvedBy
             componentTypes = $componentTypes
             missingComponents = $missingComponents
-            expectedLayout = Get-StitchUnityOptionalPropertyValue -InputObject $blockMapping -Name "expectedLayout"
             actualLayout = $layout
             verificationTags = @(Get-StitchUnityOptionalArray -InputObject $blockMapping -Name "verificationTags")
             notes = @(Get-StitchUnityOptionalArray -InputObject $blockMapping -Name "notes")
@@ -414,11 +580,7 @@ function Get-StitchUnitySurfaceInspectionObject {
         mapPath = ""
         target = $Map.target
         translationStrategy = [string]$Map.translationStrategy
-        contractRefs = [PSCustomObject]@{
-            manifestPath = $ContractBundle.manifestPath
-            intakePath = $ContractBundle.intakePath
-            blueprintPath = $ContractBundle.blueprintPath
-        }
+        contractRefs = Get-StitchUnityContractRefObject -ContractBundle $ContractBundle
         blocks = $blockResults
         missingBlocks = $missingBlocks
         generatedAt = (Get-Date).ToString("o")
@@ -464,80 +626,6 @@ function Get-StitchUnitySurfaceVerificationObject {
                 code = "missing-component"
                 blockId = $block.blockId
                 message = "Block '$($block.blockId)' is missing required component '$componentName'."
-            }
-        }
-
-        if ($null -ne $block.expectedLayout) {
-            $expectedAxis = ""
-            if ($null -ne $block.expectedLayout.PSObject.Properties["axis"]) {
-                $expectedAxis = [string]$block.expectedLayout.axis
-            }
-
-            if (-not [string]::IsNullOrWhiteSpace($expectedAxis) -and $expectedAxis -ne "none") {
-                $actualAxis = ""
-                if ($null -ne $block.actualLayout) {
-                    $actualAxis = [string]$block.actualLayout.axis
-                }
-
-                if (-not [string]::IsNullOrWhiteSpace($actualAxis) -and $actualAxis -ne $expectedAxis) {
-                    $errors += [PSCustomObject]@{
-                        code = "layout-axis-mismatch"
-                        blockId = $block.blockId
-                        message = "Block '$($block.blockId)' expected axis '$expectedAxis' but found '$actualAxis'."
-                    }
-                }
-            }
-
-            if ($null -ne $block.expectedLayout.PSObject.Properties["preferredHeight"]) {
-                $expectedHeight = [double]$block.expectedLayout.preferredHeight
-                $actualHeight = $null
-                if ($null -ne $block.actualLayout) {
-                    $actualHeight = $block.actualLayout.preferredHeight
-                    if ($null -eq $actualHeight -and $null -ne $block.actualLayout.PSObject.Properties["sizeDeltaHeight"]) {
-                        $sizeDeltaHeight = $block.actualLayout.sizeDeltaHeight
-                        if ($null -ne $sizeDeltaHeight -and [Math]::Abs([double]$sizeDeltaHeight) -gt 0.5) {
-                            $actualHeight = [double]$sizeDeltaHeight
-                        }
-                    }
-                }
-
-                if ($null -eq $actualHeight) {
-                    $warnings += [PSCustomObject]@{
-                        code = "missing-preferred-height"
-                        blockId = $block.blockId
-                        message = "Block '$($block.blockId)' expected preferredHeight '$expectedHeight' but no LayoutElement preferred height was found."
-                    }
-                }
-                elseif ([Math]::Abs([double]$actualHeight - $expectedHeight) -gt 0.5) {
-                    $warnings += [PSCustomObject]@{
-                        code = "preferred-height-mismatch"
-                        blockId = $block.blockId
-                        message = "Block '$($block.blockId)' expected preferredHeight '$expectedHeight' but found '$actualHeight'."
-                    }
-                }
-            }
-
-            if ($null -ne $block.expectedLayout.PSObject.Properties["spacing"]) {
-                $expectedSpacing = [double]$block.expectedLayout.spacing
-                $actualSpacing = $null
-                if ($null -ne $block.actualLayout) {
-                    $actualSpacing = if ($null -ne $block.actualLayout.spacing) { $block.actualLayout.spacing } else { $block.actualLayout.verticalSpacing }
-                }
-
-                if ($null -eq $actualSpacing) {
-                    $warnings += [PSCustomObject]@{
-                        code = "missing-spacing"
-                        blockId = $block.blockId
-                        message = "Block '$($block.blockId)' expected spacing '$expectedSpacing' but no layout group spacing was found."
-                    }
-                }
-                elseif ([Math]::Abs([double]$actualSpacing - $expectedSpacing) -gt 0.5) {
-                    $warnings += [PSCustomObject]@{
-                        code = "spacing-mismatch"
-                        blockId = $block.blockId
-                        message = "Block '$($block.blockId)' expected spacing '$expectedSpacing' but found '$actualSpacing'."
-                    }
-                }
             }
         }
 

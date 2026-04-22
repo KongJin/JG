@@ -15,11 +15,6 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private TMP_Text _valueText;
         [Required, SerializeField] private TMP_Text _hintText;
 
-        [Header("Layout")]
-        [SerializeField] private float _titleFontSize = 13f;
-        [SerializeField] private float _valueFontSize = 15f;
-        [SerializeField] private float _hintFontSize = 9f;
-
         private bool _callbacksHooked;
 
         public event Action<int> CycleRequested;
@@ -29,13 +24,7 @@ namespace Features.Garage.Presentation
 
         private void Awake()
         {
-            ApplyMobileTypography();
             ApplyButtonStyles();
-        }
-
-        private void OnEnable()
-        {
-            ApplyMobileTypography();
         }
 
         public void Bind()
@@ -70,33 +59,6 @@ namespace Features.Garage.Presentation
             _hintText.text = hintText;
             _hintText.color = ThemeColors.TextSecondary;
             _titleText.color = ThemeColors.TextPrimary;
-        }
-
-        public void ApplyMobileTypography()
-        {
-            float titleFontSize = _titleFontSize;
-            float valueFontSize = _valueFontSize;
-            float hintFontSize = _hintFontSize;
-
-            _titleText.fontSize = titleFontSize;
-            _titleText.alignment = TextAlignmentOptions.TopLeft;
-            _titleText.textWrappingMode = TextWrappingModes.NoWrap;
-            _titleText.overflowMode = TextOverflowModes.Ellipsis;
-
-            _valueText.fontSize = valueFontSize;
-            _valueText.enableAutoSizing = true;
-            _valueText.fontSizeMin = Mathf.Max(12f, valueFontSize - 4f);
-            _valueText.fontSizeMax = valueFontSize;
-            _valueText.alignment = TextAlignmentOptions.TopLeft;
-            _valueText.textWrappingMode = TextWrappingModes.NoWrap;
-            _valueText.overflowMode = TextOverflowModes.Ellipsis;
-
-            _hintText.fontSize = hintFontSize;
-            _hintText.enableAutoSizing = false;
-            _hintText.fontSizeMax = hintFontSize;
-            _hintText.alignment = TextAlignmentOptions.TopLeft;
-            _hintText.textWrappingMode = TextWrappingModes.NoWrap;
-            _hintText.overflowMode = TextOverflowModes.Ellipsis;
         }
 
         /// <summary>

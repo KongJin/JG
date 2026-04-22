@@ -25,13 +25,13 @@ Lobby/Garage 기준 기본 검증 순서는 아래로 고정한다.
 
 1. contract / required-field audit
 2. EditMode or domain tests
-3. thin smoke
+3. thin runtime verification
 
 핵심 원칙:
 
 - scene contract는 `wiring / sentinel roots / serialized refs`를 본다.
 - EditMode tests는 `Ready/Save`, roster validation, room rule, 초기 계산 같은 순수 규칙을 본다.
-- smoke는 끝까지 연결되는 핵심 사용자 흐름만 본다.
+- runtime verification은 끝까지 연결되는 핵심 사용자 흐름만 본다.
 
 ## Current Direction
 
@@ -81,10 +81,8 @@ Legacy compatibility:
 
 - `tools/unity-mcp/server.js` should expose stable Play/UI/screenshot routes directly as MCP tools.
 - `tools/unity-mcp/McpHelpers.ps1` should call stable routes and use explicit wait helpers for Play start/stop.
-- `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1` is the required Lobby/Garage entrypoint.
-- `tools/unity-mcp/Invoke-LobbyGaragePageSwitchSmoke.ps1` is the canonical runtime smoke script.
-- `tools/unity-mcp/Invoke-GameSceneSummonSmoke.ps1` is the retained feature smoke for lobby-to-game bootstrap.
-- `Invoke-GarageReadyFlowSmoke.ps1` is optional supervised coverage only and no longer a required regression gate.
+- `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1` is the legacy Lobby/Garage entrypoint when a real authoring scene exists.
+- Legacy scene-route smoke scripts are removed from the active toolset.
 - Lobby/Garage repair is scene-owned: verify contract first, then use MCP scene/prefab edits instead of builder-style full regeneration.
 - Open scene on-disk overwrite is out of policy. If a direct `.unity` restore is unavoidable, switch scenes or close Unity before touching the file.
 
@@ -116,11 +114,11 @@ Diagnostic / experimental:
 - compile-clean succeeds
 - `GET /scene/verify-codex-lobby-contract` succeeds
 - workflow gate succeeds
-- page-switch smoke succeeds
-- docs, helpers, and remaining smoke scripts describe the same core path
+- route-specific runtime verification succeeds
+- docs and helpers describe the same core path
 
 ## Notes
 
 - The goal is not unlimited scene automation.
 - The goal is a reliable supervised workflow for diagnosis and repeatable runtime capture.
-- Decorative UI hierarchy, child label paths, and ad hoc debug snapshots are intentionally out of the canonical smoke contract.
+- Decorative UI hierarchy, child label paths, and ad hoc debug snapshots are intentionally out of the canonical verification contract.

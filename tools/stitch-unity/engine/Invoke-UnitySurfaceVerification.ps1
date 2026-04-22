@@ -12,7 +12,7 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot/StitchUnityCommon.ps1"
 
-$mapResult = Get-StitchUnityMapObject -SurfaceId $SurfaceId -MapPath $MapPath
+$context = Get-StitchUnitySurfaceContext -SurfaceId $SurfaceId -MapPath $MapPath
 
 $inspection = $null
 if (-not [string]::IsNullOrWhiteSpace($InspectionPath)) {
@@ -21,17 +21,13 @@ if (-not [string]::IsNullOrWhiteSpace($InspectionPath)) {
 else {
     $root = Get-StitchUnityMcpRoot -UnityBridgeUrl $UnityBridgeUrl
     Wait-McpBridgeHealthy -Root $root -TimeoutSec 30 | Out-Null
-    $contracts = Get-StitchUnityContractBundle -Map $mapResult.Map
-    $inspection = Get-StitchUnitySurfaceInspectionObject -Root $root -Map $mapResult.Map -ContractBundle $contracts
-    $inspection.mapPath = $mapResult.Path
+    $inspection = Get-StitchUnitySurfaceInspectionObject -Root $root -Map $context.Map -ContractBundle $context.Contracts
+    $inspection.mapPath = $context.MapResult.Path
 }
 
-$verification = Get-StitchUnitySurfaceVerificationObject -Map $mapResult.Map -Inspection $inspection
+$verification = Get-StitchUnitySurfaceVerificationObject -Map $context.Map -Inspection $inspection
 
-$resolvedArtifactPath = $ArtifactPath
-if ([string]::IsNullOrWhiteSpace($resolvedArtifactPath)) {
-    $resolvedArtifactPath = Get-StitchUnityArtifactPath -Map $mapResult.Map -Name "verificationResult"
-}
+$resolvedArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $context.Map -ArtifactName "verificationResult" -ArtifactPath $ArtifactPath
 
 if (-not [string]::IsNullOrWhiteSpace($resolvedArtifactPath)) {
     Write-StitchUnityArtifact -PathValue $resolvedArtifactPath -InputObject $verification

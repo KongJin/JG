@@ -5,7 +5,6 @@
   "surfaceId": "<surface-id>",
   "surfaceRole": "root",
   "status": "draft",
-  "extends": "<blueprint-id>",
   "targets": {
     "prefabPath": "Assets/Prefabs/<feature>/<surface>.prefab",
     "sceneRoots": [
@@ -34,6 +33,7 @@
     "selected": false,
     "disabled": false
   },
+  "blocks": [],
   "validation": {
     "frame": "390x844",
     "firstReadOrder": [
@@ -44,7 +44,5 @@
     ],
     "smokeScripts": []
   },
-  "blockOverrides": {},
-  "appendBlocks": [],
   "notes": []
 }

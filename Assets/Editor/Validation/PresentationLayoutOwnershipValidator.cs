@@ -27,6 +27,10 @@ namespace ProjectSD.EditorTools.Validation
             @"^Features\.[A-Za-z_][A-Za-z0-9_]*\.Presentation(?:\.|$)",
             RegexOptions.Compiled);
 
+        private static readonly Regex GaragePresentationNamespaceRegex = new Regex(
+            @"^Features\.Garage\.Presentation(?:\.|$)",
+            RegexOptions.Compiled);
+
         private static readonly DetectionRule[] Rules =
         {
             new(
@@ -53,6 +57,10 @@ namespace ProjectSD.EditorTools.Validation
             new(
                 "renderer-material-color-write",
                 new Regex(@"\.\s*(material|sharedMaterial)\s*\.\s*color\s*=", RegexOptions.Compiled)),
+            new(
+                "garage-presentation-typography-write",
+                new Regex(@"\.\s*(fontSize|enableAutoSizing|fontSizeMin|fontSizeMax|alignment|textWrappingMode|overflowMode)\s*=", RegexOptions.Compiled),
+                GaragePresentationNamespaceRegex),
         };
 
         [MenuItem("Tools/Validate Presentation Layout Ownership")]
@@ -121,6 +129,9 @@ namespace ProjectSD.EditorTools.Validation
 
                     foreach (var rule in Rules)
                     {
+                        if (rule.NamespaceFilter != null && !rule.NamespaceFilter.IsMatch(namespaceName))
+                            continue;
+
                         var match = rule.Pattern.Match(line);
                         if (!match.Success)
                             continue;
@@ -203,14 +214,16 @@ namespace ProjectSD.EditorTools.Validation
 
         private readonly struct DetectionRule
         {
-            internal DetectionRule(string name, Regex pattern)
+            internal DetectionRule(string name, Regex pattern, Regex namespaceFilter = null)
             {
                 Name = name;
                 Pattern = pattern;
+                NamespaceFilter = namespaceFilter;
             }
 
             internal string Name { get; }
             internal Regex Pattern { get; }
+            internal Regex NamespaceFilter { get; }
         }
     }
 

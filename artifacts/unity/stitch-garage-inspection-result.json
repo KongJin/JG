@@ -6,11 +6,9 @@
                    "kind":  "prefab",
                    "assetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
                },
-    "translationStrategy":  "unity-mcp-garage-manifest-v1",
+    "translationStrategy":  "unity-mcp-surface-generator-v1",
     "contractRefs":  {
-                         "manifestPath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\screens\\set-b-garage-main-workspace.screen.json",
-                         "intakePath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\intakes\\set-b-garage-main-workspace.intake.json",
-                         "blueprintPath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\blueprints\\garage-workspace.blueprint.json"
+                         "manifestPath":  "C:\\Users\\SOL\\Documents\\JG\\.stitch\\contracts\\screens\\set-b-garage-main-workspace.screen.json"
                      },
     "blocks":  [
                    {
@@ -25,22 +23,19 @@
                        "resolvedBy":  "hostPath",
                        "componentTypes":  [
                                               "RectTransform",
+                                              "CanvasRenderer",
+                                              "Image",
+                                              "HorizontalLayoutGroup",
                                               "ContentSizeFitter",
-                                              "LayoutElement",
-                                              "HorizontalLayoutGroup"
+                                              "LayoutElement"
                                           ],
                        "missingComponents":  [
 
                                              ],
-                       "expectedLayout":  {
-                                              "axis":  "horizontal",
-                                              "preferredHeight":  118,
-                                              "spacing":  8
-                                          },
                        "actualLayout":  {
                                             "axis":  "horizontal",
                                             "preferredWidth":  -1,
-                                            "preferredHeight":  118,
+                                            "preferredHeight":  83,
                                             "minWidth":  -1,
                                             "minHeight":  -1,
                                             "spacing":  8,
@@ -51,7 +46,7 @@
                                             "anchorMin":  "(0.00,1.00)",
                                             "anchorMax":  "(1.00,1.00)",
                                             "pivot":  "(0.50,1.00)",
-                                            "color":  null
+                                            "color":  "(0.10,0.10,0.15,0.90)"
                                         },
                        "verificationTags":  [
                                                 "first-read",
@@ -79,26 +74,21 @@
                        "missingComponents":  [
 
                                              ],
-                       "expectedLayout":  {
-                                              "axis":  "horizontal",
-                                              "preferredHeight":  52,
-                                              "spacing":  8
-                                          },
                        "actualLayout":  {
                                             "axis":  "horizontal",
                                             "preferredWidth":  null,
                                             "preferredHeight":  null,
                                             "minWidth":  null,
                                             "minHeight":  null,
-                                            "spacing":  8,
+                                            "spacing":  4,
                                             "verticalSpacing":  null,
-                                            "sizeDelta":  "(-32.00,52.00)",
-                                            "sizeDeltaWidth":  -32,
-                                            "sizeDeltaHeight":  52,
+                                            "sizeDelta":  "(0.00,36.00)",
+                                            "sizeDeltaWidth":  0,
+                                            "sizeDeltaHeight":  36,
                                             "anchorMin":  "(0.00,1.00)",
                                             "anchorMax":  "(1.00,1.00)",
                                             "pivot":  "(0.50,1.00)",
-                                            "color":  "(0.07,0.10,0.14,1.00)"
+                                            "color":  "(0.00,0.00,0.00,0.00)"
                                         },
                        "verificationTags":  [
                                                 "compact",
@@ -109,7 +99,7 @@
                                  ]
                    },
                    {
-                       "blockId":  "focused-editor",
+                       "blockId":  "editor-panel",
                        "hostPath":  "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/UnitEditorPane",
                        "candidatePaths":  [
                                               "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/UnitEditorPane"
@@ -128,26 +118,21 @@
                        "missingComponents":  [
 
                                              ],
-                       "expectedLayout":  {
-                                              "axis":  "vertical",
-                                              "preferredHeight":  452,
-                                              "spacing":  12
-                                          },
                        "actualLayout":  {
                                             "axis":  "vertical",
                                             "preferredWidth":  -1,
-                                            "preferredHeight":  452,
+                                            "preferredHeight":  478,
                                             "minWidth":  -1,
                                             "minHeight":  -1,
                                             "spacing":  null,
-                                            "verticalSpacing":  12,
+                                            "verticalSpacing":  16,
                                             "sizeDelta":  "(0.00,0.00)",
                                             "sizeDeltaWidth":  0,
                                             "sizeDeltaHeight":  0,
                                             "anchorMin":  "(0.00,0.00)",
                                             "anchorMax":  "(0.00,0.00)",
-                                            "pivot":  "(0.50,1.00)",
-                                            "color":  "(0.07,0.11,0.15,1.00)"
+                                            "pivot":  "(0.50,0.50)",
+                                            "color":  "(0.09,0.09,0.11,1.00)"
                                         },
                        "verificationTags":  [
                                                 "dominant-block"
@@ -175,13 +160,10 @@
                        "missingComponents":  [
 
                                              ],
-                       "expectedLayout":  {
-                                              "preferredHeight":  296
-                                          },
                        "actualLayout":  {
                                             "axis":  "none",
                                             "preferredWidth":  -1,
-                                            "preferredHeight":  296,
+                                            "preferredHeight":  192,
                                             "minWidth":  -1,
                                             "minHeight":  -1,
                                             "spacing":  null,
@@ -191,8 +173,8 @@
                                             "sizeDeltaHeight":  0,
                                             "anchorMin":  "(0.00,0.00)",
                                             "anchorMax":  "(0.00,0.00)",
-                                            "pivot":  "(0.50,1.00)",
-                                            "color":  "(0.07,0.10,0.14,1.00)"
+                                            "pivot":  "(0.50,0.50)",
+                                            "color":  "(0.09,0.09,0.11,1.00)"
                                         },
                        "verificationTags":  [
                                                 "evaluative"
@@ -220,13 +202,10 @@
                        "missingComponents":  [
 
                                              ],
-                       "expectedLayout":  {
-                                              "preferredHeight":  248
-                                          },
                        "actualLayout":  {
                                             "axis":  "none",
                                             "preferredWidth":  -1,
-                                            "preferredHeight":  248,
+                                            "preferredHeight":  172,
                                             "minWidth":  -1,
                                             "minHeight":  -1,
                                             "spacing":  null,
@@ -236,7 +215,7 @@
                                             "sizeDeltaHeight":  0,
                                             "anchorMin":  "(0.00,0.00)",
                                             "anchorMax":  "(0.00,0.00)",
-                                            "pivot":  "(0.50,1.00)",
+                                            "pivot":  "(0.50,0.50)",
                                             "color":  "(0.08,0.12,0.16,1.00)"
                                         },
                        "verificationTags":  [
@@ -265,9 +244,6 @@
                        "missingComponents":  [
 
                                              ],
-                       "expectedLayout":  {
-                                              "sticky":  true
-                                          },
                        "actualLayout":  {
                                             "axis":  "none",
                                             "preferredWidth":  null,
@@ -276,13 +252,13 @@
                                             "minHeight":  null,
                                             "spacing":  null,
                                             "verticalSpacing":  null,
-                                            "sizeDelta":  "(-24.00,-24.00)",
-                                            "sizeDeltaWidth":  -24,
+                                            "sizeDelta":  "(-32.00,-24.00)",
+                                            "sizeDeltaWidth":  -32,
                                             "sizeDeltaHeight":  -24,
                                             "anchorMin":  "(0.00,0.00)",
                                             "anchorMax":  "(1.00,1.00)",
                                             "pivot":  "(0.50,0.50)",
-                                            "color":  "(0.83,0.43,0.17,1.00)"
+                                            "color":  "(0.96,0.62,0.04,1.00)"
                                         },
                        "verificationTags":  [
                                                 "persistent",
@@ -293,7 +269,7 @@
                                  ]
                    },
                    {
-                       "blockId":  "aux-settings",
+                       "blockId":  "aux-action",
                        "hostPath":  "GarageHeaderRow/SettingsButton",
                        "candidatePaths":  [
                                               "GarageHeaderRow/SettingsButton"
@@ -310,7 +286,6 @@
                        "missingComponents":  [
 
                                              ],
-                       "expectedLayout":  null,
                        "actualLayout":  {
                                             "axis":  "none",
                                             "preferredWidth":  null,
@@ -319,13 +294,13 @@
                                             "minHeight":  null,
                                             "spacing":  null,
                                             "verticalSpacing":  null,
-                                            "sizeDelta":  "(92.00,38.00)",
-                                            "sizeDeltaWidth":  92,
-                                            "sizeDeltaHeight":  38,
+                                            "sizeDelta":  "(32.00,32.00)",
+                                            "sizeDeltaWidth":  32,
+                                            "sizeDeltaHeight":  32,
                                             "anchorMin":  "(1.00,0.50)",
                                             "anchorMax":  "(1.00,0.50)",
                                             "pivot":  "(1.00,0.50)",
-                                            "color":  "(0.12,0.17,0.22,1.00)"
+                                            "color":  "(0.00,0.00,0.00,0.00)"
                                         },
                        "verificationTags":  [
                                                 "auxiliary-action"
@@ -338,5 +313,5 @@
     "missingBlocks":  [
 
                       ],
-    "generatedAt":  "2026-04-22T00:54:05.1630701+09:00"
+    "generatedAt":  "2026-04-22T23:29:55.9554257+09:00"
 }
