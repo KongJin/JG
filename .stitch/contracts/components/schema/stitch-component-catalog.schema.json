@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jg.local/stitch-component-catalog.schema.json",
+  "title": "Stitch Shared UI Component Catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "contractKind",
+    "catalogId",
+    "status",
+    "tokenSource",
+    "components"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "contractKind": {
+      "type": "string",
+      "const": "component-catalog"
+    },
+    "catalogId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "accepted",
+        "historical"
+      ]
+    },
+    "tokenSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "docsPath",
+        "codePaths"
+      ],
+      "properties": {
+        "docsPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "codePaths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/component"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "componentId",
+        "level",
+        "role",
+        "states",
+        "slots",
+        "childComponents",
+        "tokenRefs",
+        "unityBasePrefab",
+        "intendedUses"
+      ],
+      "properties": {
+        "componentId": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "atom",
+            "molecule"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "action",
+            "navigation",
+            "selection",
+            "content",
+            "container",
+            "status",
+            "identity",
+            "feedback",
+            "display"
+          ]
+        },
+        "states": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "default",
+              "hover",
+              "selected",
+              "disabled",
+              "loading",
+              "empty",
+              "error",
+              "success"
+            ]
+          }
+        },
+        "slots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slot"
+          }
+        },
+        "childComponents": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "tokenRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z]+/[a-z0-9-]+$"
+          }
+        },
+        "unityBasePrefab": {
+          "type": "string",
+          "minLength": 1
+        },
+        "intendedUses": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "slot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slotId",
+        "accepts",
+        "required"
+      ],
+      "properties": {
+        "slotId": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "accepts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

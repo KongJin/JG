@@ -36,8 +36,10 @@ namespace Features.Unit.Presentation
         private PlacementErrorView _feedbackView;
         private IReadOnlyList<UnitSlotView> _slotViews = System.Array.Empty<UnitSlotView>();
         private int _selectionActivatedFrame = -1;
-
-        public SummonSelectionState SelectionState { get; } = new();
+        private bool _isSelectionActive;
+        private UnitSpec _selectedUnit;
+        private DomainEntityId _selectionOwnerId;
+        private int _selectedSlotIndex = -1;
         public string CurrentFeedbackMessage { get; private set; } = string.Empty;
 
         private void Awake()
@@ -63,8 +65,8 @@ namespace Features.Unit.Presentation
             _feedbackView = feedbackView;
             _worldCamera = worldCamera;
 
-            SelectionState.SetOwner(ownerId);
-            SelectionState.Clear();
+            _selectionOwnerId = ownerId;
+            ClearSelectionState();
             ApplyDockLayout();
 
             _eventBus.Subscribe(this, new System.Action<UnitSummonCompletedEvent>(OnSummonCompleted));
@@ -98,7 +100,7 @@ namespace Features.Unit.Presentation
             if (unitSpec == null)
                 return false;
 
-            if (SelectionState.IsActive && SelectionState.SelectedSlotIndex == slotIndex)
+            if (_isSelectionActive && _selectedSlotIndex == slotIndex)
             {
                 CancelSelection();
                 return false;
@@ -110,7 +112,7 @@ namespace Features.Unit.Presentation
                 return false;
             }
 
-            SelectionState.Activate(SelectionState.OwnerId, unitSpec, slotIndex);
+            ActivateSelection(unitSpec, slotIndex);
             _selectionActivatedFrame = Time.frameCount;
             CurrentFeedbackMessage = "배치 구역을 탭하세요";
 
@@ -125,7 +127,7 @@ namespace Features.Unit.Presentation
             if (unitSpec == null)
                 return false;
 
-            var success = _summonUseCase.Execute(SelectionState.OwnerId, unitSpec, spawnPosition);
+            var success = _summonUseCase.Execute(_selectionOwnerId, unitSpec, spawnPosition);
             if (success)
             {
                 ClearSelectionVisuals();
@@ -140,7 +142,7 @@ namespace Features.Unit.Presentation
 
         public bool TryConfirmPlacementWorld(Vector3 worldPosition)
         {
-            if (!SelectionState.IsActive || SelectionState.SelectedUnit == null)
+            if (!_isSelectionActive || _selectedUnit == null)
                 return false;
 
             if (_placementArea != null && !_placementArea.Contains(worldPosition))
@@ -155,8 +157,8 @@ namespace Features.Unit.Presentation
                 : worldPosition;
 
             var success = _summonUseCase.Execute(
-                SelectionState.OwnerId,
-                SelectionState.SelectedUnit,
+                _selectionOwnerId,
+                _selectedUnit,
                 new Float3(summonPosition.x, summonPosition.y, summonPosition.z));
 
             if (success)
@@ -171,7 +173,7 @@ namespace Features.Unit.Presentation
         // do not reliably surface through UnityEngine.Input in the editor.
         public void ConfirmPlacementAtDefaultPoint()
         {
-            if (!SelectionState.IsActive)
+            if (!_isSelectionActive)
                 return;
 
             TryConfirmPlacementWorld(ResolveDefaultPlacementPoint());
@@ -179,7 +181,7 @@ namespace Features.Unit.Presentation
 
         public void ConfirmPlacementAtPlacementCenter()
         {
-            if (!SelectionState.IsActive)
+            if (!_isSelectionActive)
                 return;
 
             TryConfirmPlacementWorld(_placementArea != null ? _placementArea.Center : ResolveDefaultPlacementPoint());
@@ -192,7 +194,7 @@ namespace Features.Unit.Presentation
 
         private void Update()
         {
-            if (!SelectionState.IsActive || _worldCamera == null)
+            if (!_isSelectionActive || _worldCamera == null)
                 return;
 
             if (Time.frameCount == _selectionActivatedFrame)
@@ -219,7 +221,7 @@ namespace Features.Unit.Presentation
 
         private void OnSummonCompleted(UnitSummonCompletedEvent e)
         {
-            if (SelectionState.OwnerId != e.PlayerId)
+            if (!_selectionOwnerId.Equals(e.PlayerId))
                 return;
 
             ClearSelectionVisuals();
@@ -227,7 +229,7 @@ namespace Features.Unit.Presentation
 
         private void OnSummonFailed(UnitSummonFailedEvent e)
         {
-            if (SelectionState.OwnerId != e.PlayerId)
+            if (!_selectionOwnerId.Equals(e.PlayerId))
                 return;
 
             ShowError(TranslateFailureReason(e.Reason));
@@ -236,7 +238,7 @@ namespace Features.Unit.Presentation
 
         private void OnEnergyChanged(PlayerEnergyChangedEvent e)
         {
-            if (SelectionState.IsActive && !SelectionState.OwnerId.Equals(e.PlayerId))
+            if (_isSelectionActive && !_selectionOwnerId.Equals(e.PlayerId))
                 return;
 
             RefreshSlotSelection();
@@ -244,7 +246,7 @@ namespace Features.Unit.Presentation
 
         private void ClearSelectionVisuals()
         {
-            SelectionState.Clear();
+            ClearSelectionState();
             _selectionActivatedFrame = -1;
             CurrentFeedbackMessage = string.Empty;
 
@@ -260,8 +262,22 @@ namespace Features.Unit.Presentation
                 if (slot == null)
                     continue;
 
-                slot.SetSelected(SelectionState.IsActive && slot.SlotIndex == SelectionState.SelectedSlotIndex);
+                slot.SetSelected(_isSelectionActive && slot.SlotIndex == _selectedSlotIndex);
             }
+        }
+
+        private void ActivateSelection(UnitSpec unitSpec, int slotIndex)
+        {
+            _selectedUnit = unitSpec;
+            _selectedSlotIndex = slotIndex;
+            _isSelectionActive = unitSpec != null;
+        }
+
+        private void ClearSelectionState()
+        {
+            _selectedUnit = null;
+            _selectedSlotIndex = -1;
+            _isSelectionActive = false;
         }
 
         private void ShowError(string message)

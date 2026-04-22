@@ -1,6 +1,6 @@
 # Stitch UI/UX Overhaul Plan
 
-> 마지막 업데이트: 2026-04-21
+> 마지막 업데이트: 2026-04-22
 > 상태: active
 > doc_id: plans.stitch-ui-ux-overhaul
 > role: plan
@@ -26,6 +26,7 @@
   - `.stitch/DESIGN.md` 초안 작성 완료
 - 세트 A~E의 concept pass와 handoff 정리 1차는 완료됐다.
 - active handoff artifact는 `.stitch/contracts/screens/*.json`, `.stitch/contracts/mappings/*.json`만 허용한다.
+- `.stitch/contracts/components/shared-ui.component-catalog.json`은 shared UI vocabulary용 companion contract로 유지하고, active generator input으로 올리지 않는다.
 - set별 md/png 기반 자산은 historical reference로만 남는다.
 - 현재 단계는 `concept generation`이 아니라 `scene-owned layout implementation + contract/smoke verification`이다.
 
@@ -37,11 +38,13 @@
 - Stitch visual system artifact: `.stitch/DESIGN.md`
 - Stitch 세트별 번역 기준 artifact: `.stitch/contracts/screens/*.json`
 - Stitch Unity binding artifact: `.stitch/contracts/mappings/*.json`
+- Stitch shared vocabulary artifact: `.stitch/contracts/components/shared-ui.component-catalog.json`
 - 진행 상태 SSOT: `plans.progress`
 
 규칙:
 
 - `Stitch` 산출물은 시안과 structured contract 기준이다.
+- shared component catalog는 세트 공통 vocabulary를 고정하는 reference lane이다.
 - Lobby/Garage runtime layout SSOT는 `CodexLobbyScene.unity`다.
 - Battle HUD / Result runtime layout SSOT는 `GameScene.unity`다.
 - 시안 복제 대신, scene hierarchy와 serialized contract에 맞는 block 재구성으로 번역한다.
@@ -100,9 +103,10 @@
 2. 필요하면 `jg-stitch-workflow` 기준으로 prompt brief를 갱신한다.
 3. `Stitch`에서는 한 세트당 1개의 baseline만 유지하고, 기각안은 이유만 남긴다.
 4. accepted 판단은 기본값으로 `screen manifest.blocks[] + unity-map`으로 구조화한다.
-5. Unity 반영은 scene-owned layout 기준으로 수행한다.
-6. 세트 종료 시 structured contract와 repo 문서를 함께 동기화한다.
-7. 검증은 더 싼 레이어부터 통과시킨다.
+5. prefab authoring 전에는 `block -> shared component` 대응을 shared catalog vocabulary로 먼저 점검한다.
+6. Unity 반영은 scene-owned layout 기준으로 수행한다.
+7. 세트 종료 시 structured contract와 repo 문서를 함께 동기화한다.
+8. 검증은 더 싼 레이어부터 통과시킨다.
 
 ## Validation Order
 

@@ -9,7 +9,7 @@
   "contractRefs": {
     "manifestPath": ".stitch/contracts/screens/set-b-garage-main-workspace.screen.json"
   },
-  "translationStrategy": "unity-mcp-surface-generator-v1",
+  "translationStrategy": "contract-complete-translator-v1",
   "strategyMode": "generate-or-patch",
   "artifactPaths": {
     "translationResult": "artifacts/unity/stitch-garage-translation-result.json",

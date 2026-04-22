@@ -46,7 +46,6 @@ namespace Features.Player
         [Required, SerializeField] private ZoneSetup _zoneSetup;
         [Required, SerializeField] private SceneErrorPresenter _sceneErrorPresenter;
         [Required, SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
-        [Required, SerializeField] private EnergyRegenTicker _energyRegenTicker;
         [Required, SerializeField] private EnergyBarView _energyBarView;
         // Runtime-spawned by PhotonNetwork.Instantiate and assigned via PlayerSceneRegistry arrival.
         [SerializeField] private PlayerSetup _localPlayerSetup;
@@ -80,6 +79,7 @@ namespace Features.Player
         private bool _dropOffLogged;
         private readonly Queue<PlayerSetup> _pendingRemotePlayers = new();
         private bool _remotePlayerWiringReady;
+        private IEnergyRegenPort _energyRegenPort;
 
         // Unit specs per player (computed from GarageRoster)
         private Dictionary<DomainEntityId, Unit.Domain.Unit[]> _playerUnitSpecs = new();
@@ -211,7 +211,7 @@ namespace Features.Player
             ConnectPlayer(_localPlayerSetup);
 
             // Energy (Mana renamed to Energy)
-            _energyRegenTicker.Initialize(_localPlayerSetup.EnergyAdapterInstance);
+            _energyRegenPort = _localPlayerSetup.EnergyAdapterInstance;
             _energyBarView.Initialize(_eventBus, _localPlayerSetup.PlayerId, _localPlayerSetup.MaxEnergy);
 
             // SoundPlayer is a DDOL singleton typically created from LobbyScene.
@@ -375,6 +375,11 @@ namespace Features.Player
                 _analytics.LogGameEnd(_matchId, playTime, RoundCounter.Current);
 
             _disposables?.Dispose();
+        }
+
+        private void Update()
+        {
+            _energyRegenPort?.TickRegen(Time.deltaTime, Time.time);
         }
 
         public override void OnDisconnected(Photon.Realtime.DisconnectCause cause)

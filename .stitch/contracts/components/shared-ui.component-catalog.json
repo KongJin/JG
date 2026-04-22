@@ -1,0 +1,507 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractKind": "component-catalog",
+  "catalogId": "shared-ui-v1",
+  "status": "accepted",
+  "tokenSource": {
+    "docsPath": "docs/design/ui_foundations.md",
+    "codePaths": [
+      "Assets/Scripts/Features/Garage/Presentation/Theme/ThemeColors.cs"
+    ]
+  },
+  "components": [
+    {
+      "componentId": "primary-button",
+      "level": "atom",
+      "role": "action",
+      "states": [
+        "default",
+        "hover",
+        "disabled",
+        "loading"
+      ],
+      "slots": [
+        {
+          "slotId": "label",
+          "accepts": [
+            "text"
+          ],
+          "required": true
+        },
+        {
+          "slotId": "leading-icon",
+          "accepts": [
+            "icon"
+          ],
+          "required": false
+        }
+      ],
+      "childComponents": [],
+      "tokenRefs": [
+        "accent/blue",
+        "text/primary",
+        "state/hover",
+        "state/disabled"
+      ],
+      "unityBasePrefab": "Assets/Prefabs/Shared/UI/Atoms/PrimaryButton.prefab",
+      "intendedUses": [
+        "persistent save CTA",
+        "section-level confirm action"
+      ],
+      "notes": [
+        "Use this for the dominant action inside a block or dock, not for quiet utility actions."
+      ]
+    },
+    {
+      "componentId": "tab-button",
+      "level": "atom",
+      "role": "navigation",
+      "states": [
+        "default",
+        "hover",
+        "selected",
+        "disabled"
+      ],
+      "slots": [
+        {
+          "slotId": "label",
+          "accepts": [
+            "text"
+          ],
+          "required": true
+        },
+        {
+          "slotId": "icon",
+          "accepts": [
+            "icon"
+          ],
+          "required": false
+        }
+      ],
+      "childComponents": [],
+      "tokenRefs": [
+        "text/primary",
+        "text/secondary",
+        "accent/blue",
+        "state/selected",
+        "state/hover",
+        "state/disabled"
+      ],
+      "unityBasePrefab": "Assets/Prefabs/Shared/UI/Atoms/TabButton.prefab",
+      "intendedUses": [
+        "focus bar selection",
+        "page or section switcher"
+      ],
+      "notes": [
+        "Selected state must read immediately without needing extra explanatory text."
+      ]
+    },
+    {
+      "componentId": "icon-button",
+      "level": "atom",
+      "role": "action",
+      "states": [
+        "default",
+        "hover",
+        "disabled"
+      ],
+      "slots": [
+        {
+          "slotId": "icon",
+          "accepts": [
+            "icon"
+          ],
+          "required": true
+        }
+      ],
+      "childComponents": [],
+      "tokenRefs": [
+        "bg/card",
+        "text/secondary",
+        "state/hover",
+        "state/disabled"
+      ],
+      "unityBasePrefab": "Assets/Prefabs/Shared/UI/Atoms/IconButton.prefab",
+      "intendedUses": [
+        "settings gear",
+        "dismiss or quiet utility action"
+      ],
+      "notes": [
+        "Auxiliary only; should not outrank a primary-button."
+      ]
+    },
+    {
+      "componentId": "status-text",
+      "level": "atom",
+      "role": "status",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "success"
+      ],
+      "slots": [],
+      "childComponents": [],
+      "tokenRefs": [
+        "text/primary",
+        "text/secondary",
+        "text/muted"
+      ],
+      "unityBasePrefab": "Assets/Prefabs/Shared/UI/Atoms/StatusText.prefab",
+      "intendedUses": [
+        "validation summary",
+        "empty or loading helper copy",
+        "save state feedback"
+      ]
+    },
+    {
+      "componentId": "stat-chip",
+      "level": "atom",
+      "role": "display",
+      "states": [
+        "default",
+        "selected"
+      ],
+      "slots": [
+        {
+          "slotId": "label",
+          "accepts": [
+            "text"
+          ],
+          "required": true
+        },
+        {
+          "slotId": "value",
+          "accepts": [
+            "text",
+            "icon"
+          ],
+          "required": true
+        }
+      ],
+      "childComponents": [],
+      "tokenRefs": [
+        "bg/card",
+        "text/primary",
+        "text/secondary",
+        "accent/blue",
+        "accent/orange",
+        "accent/green",
+        "accent/red"
+      ],
+      "unityBasePrefab": "Assets/Prefabs/Shared/UI/Atoms/StatChip.prefab",
+      "intendedUses": [
+        "compact outcome stat",
+        "attribute emphasis inside a card"
+      ]
+    },
+    {
+      "componentId": "slot-card",
+      "level": "molecule",
+      "role": "selection",
+      "states": [
+        "default",
+        "hover",
+        "selected",
+        "disabled",
+        "empty"
+      ],
+      "slots": [
+        {
+          "slotId": "title",
+          "accepts": [
+            "text"
+          ],
+          "required": true
+        },
+        {
+          "slotId": "status",
+          "accepts": [
+            "status-text",
+            "stat-chip"
+          ],
+          "required": false
+        },
+        {
+          "slotId": "meta",
+          "accepts": [
+            "text",
+            "stat-chip"
+          ],
+          "required": false
+        }
+      ],
+      "childComponents": [
+        "status-text",
+        "stat-chip"
+      ],
+      "tokenRefs": [
+        "slot/selected",
+        "slot/filled",
+        "slot/empty",
+        "slot/empty-hover",
+        "text/primary",
+        "text/secondary",
+        "text/muted"
+      ],
+      "unityBasePrefab": "Assets/Prefabs/Shared/UI/Molecules/SlotCard.prefab",
+      "intendedUses": [
+        "garage roster slot",
+        "selectable card strip item"
+      ],
+      "notes": [
+        "Use for slot-level state changes only, not for whole editor blocks."
+      ]
+    },
+    {
+      "componentId": "section-card",
+      "level": "molecule",
+      "role": "container",
+      "states": [
+        "default",
+        "disabled"
+      ],
+      "slots": [
+        {
+          "slotId": "header",
+          "accepts": [
+            "text",
+            "status-text",
+            "icon-button"
+          ],
+          "required": true
+        },
+        {
+          "slotId": "body",
+          "accepts": [
+            "status-text",
+            "stat-chip",
+            "part-selector",
+            "stats-block"
+          ],
+          "required": true
+        },
+        {
+          "slotId": "actions",
+          "accepts": [
+            "primary-button",
+            "icon-button"
+          ],
+          "required": false
+        }
+      ],
+      "childComponents": [
+        "status-text",
+        "icon-button",
+        "primary-button"
+      ],
+      "tokenRefs": [
+        "bg/card",
+        "text/primary",
+        "text/secondary",
+        "state/disabled"
+      ],
+      "unityBasePrefab": "Assets/Prefabs/Shared/UI/Molecules/SectionCard.prefab",
+      "intendedUses": [
+        "editor section shell",
+        "preview card shell",
+        "summary card shell"
+      ]
+    },
+    {
+      "componentId": "part-selector",
+      "level": "molecule",
+      "role": "selection",
+      "states": [
+        "default",
+        "hover",
+        "selected",
+        "disabled"
+      ],
+      "slots": [
+        {
+          "slotId": "title",
+          "accepts": [
+            "text"
+          ],
+          "required": true
+        },
+        {
+          "slotId": "options",
+          "accepts": [
+            "tab-button",
+            "stat-chip"
+          ],
+          "required": true
+        },
+        {
+          "slotId": "aux-action",
+          "accepts": [
+            "icon-button"
+          ],
+          "required": false
+        }
+      ],
+      "childComponents": [
+        "tab-button",
+        "stat-chip",
+        "icon-button"
+      ],
+      "tokenRefs": [
+        "bg/secondary",
+        "text/primary",
+        "text/secondary",
+        "state/selected",
+        "state/hover",
+        "state/disabled"
+      ],
+      "unityBasePrefab": "Assets/Prefabs/Shared/UI/Molecules/PartSelector.prefab",
+      "intendedUses": [
+        "focused part option chooser",
+        "compact multi-option selector"
+      ]
+    },
+    {
+      "componentId": "stats-block",
+      "level": "molecule",
+      "role": "content",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "slots": [
+        {
+          "slotId": "headline",
+          "accepts": [
+            "status-text"
+          ],
+          "required": false
+        },
+        {
+          "slotId": "stats",
+          "accepts": [
+            "stat-chip"
+          ],
+          "required": true
+        },
+        {
+          "slotId": "summary",
+          "accepts": [
+            "status-text"
+          ],
+          "required": false
+        }
+      ],
+      "childComponents": [
+        "status-text",
+        "stat-chip"
+      ],
+      "tokenRefs": [
+        "bg/card",
+        "text/primary",
+        "text/secondary",
+        "text/muted",
+        "accent/blue",
+        "accent/orange",
+        "accent/green",
+        "accent/red"
+      ],
+      "unityBasePrefab": "Assets/Prefabs/Shared/UI/Molecules/StatsBlock.prefab",
+      "intendedUses": [
+        "summary card stat layout",
+        "editor outcome snapshot"
+      ]
+    },
+    {
+      "componentId": "account-card",
+      "level": "molecule",
+      "role": "identity",
+      "states": [
+        "default",
+        "loading",
+        "error"
+      ],
+      "slots": [
+        {
+          "slotId": "identity",
+          "accepts": [
+            "status-text"
+          ],
+          "required": true
+        },
+        {
+          "slotId": "actions",
+          "accepts": [
+            "primary-button",
+            "icon-button"
+          ],
+          "required": false
+        }
+      ],
+      "childComponents": [
+        "status-text",
+        "primary-button",
+        "icon-button"
+      ],
+      "tokenRefs": [
+        "bg/card",
+        "text/primary",
+        "text/secondary",
+        "accent/blue",
+        "state/disabled"
+      ],
+      "unityBasePrefab": "Assets/Prefabs/Shared/UI/Molecules/AccountCard.prefab",
+      "intendedUses": [
+        "garage settings identity panel",
+        "account state summary"
+      ]
+    },
+    {
+      "componentId": "toast",
+      "level": "molecule",
+      "role": "feedback",
+      "states": [
+        "default",
+        "success",
+        "error"
+      ],
+      "slots": [
+        {
+          "slotId": "message",
+          "accepts": [
+            "status-text"
+          ],
+          "required": true
+        },
+        {
+          "slotId": "dismiss",
+          "accepts": [
+            "icon-button"
+          ],
+          "required": false
+        }
+      ],
+      "childComponents": [
+        "status-text",
+        "icon-button"
+      ],
+      "tokenRefs": [
+        "toast/success-bg",
+        "toast/error-bg",
+        "text/primary",
+        "text/secondary"
+      ],
+      "unityBasePrefab": "Assets/Prefabs/Shared/UI/Molecules/Toast.prefab",
+      "intendedUses": [
+        "save result feedback",
+        "brief error or success surface"
+      ]
+    }
+  ],
+  "notes": [
+    "Docs-first shared component catalog for Stitch and Unity handoff vocabulary.",
+    "This file is a reference companion contract in v1 and does not replace screen manifest or unity-map as generator inputs.",
+    "Catalog entries are intentionally limited to atoms and molecules; block or surface sized shapes stay in screen-manifest.blocks[]."
+  ]
+}

@@ -1,6 +1,6 @@
 # Stitch To Unity Translation Guide
 
-> 마지막 업데이트: 2026-04-22
+> 마지막 업데이트: 2026-04-23
 > 상태: reference
 > doc_id: ops.stitch-to-unity-translation-guide
 > role: reference
@@ -14,22 +14,41 @@
 
 ## 번역 완료의 정의
 
-아래 네 가지가 모두 닫혀야 `번역 완료`다.
+아래 다섯 가지가 모두 닫혀야 `번역 완료`다.
 
 1. semantic block 순서가 source와 같게 읽힌다.
-2. required serialized ref가 실제 prefab에 연결돼 있다.
-3. primary CTA, selected state, completion posture가 source와 같은 등급으로 읽힌다.
-4. inspection / verification / workflow policy evidence가 남아 있다.
+2. block이 shared component vocabulary로 무리 없이 설명된다.
+3. required serialized ref가 실제 prefab에 연결돼 있다.
+4. primary CTA, selected state, completion posture가 source와 같은 등급으로 읽힌다.
+5. inspection / verification / workflow policy evidence가 남아 있다.
 
 ## 번역 전에 보는 것
 
 - `screen manifest.blocks[]`
+- `.stitch/contracts/components/shared-ui.component-catalog.json`
 - `screen manifest.ctaPriority[]`
 - `screen manifest.validation`
 - `unity-map.blocks`
 - 관련 `*PageController`, `*View`의 required ref
 
-이 다섯 가지로 surface 의미와 wiring을 설명할 수 없으면 아직 번역 시작 상태가 아니다.
+이 여섯 가지로 surface 의미와 wiring을 설명할 수 없으면 아직 번역 시작 상태가 아니다.
+
+## Component Mapping
+
+prefab authoring을 시작하기 전에 `block -> shared component` 대응을 먼저 닫는다.
+
+- active generator input은 계속 `manifest + map`뿐이다.
+- shared component catalog는 작은 재사용 primitive를 고르는 vocabulary reference다.
+- block 자체를 catalog로 치환하지 않는다.
+
+Garage baseline quick mapping:
+
+- `slot-selector -> slot-card`
+- `focus-bar -> tab-button`
+- `editor-panel -> section-card + part-selector + stats-block`
+- `preview-card -> section-card + status-text + stat-chip`
+- `summary-card -> section-card + stats-block + toast`
+- `save-dock -> primary-button + status-text`
 
 ## Fidelity Check
 
@@ -59,10 +78,11 @@
 
 ## Wiring Check
 
-- `manifest.targets.serializedOwners`가 실제 owner와 맞아야 한다.
+- `unity-map.target.assetPath`가 실제 target asset과 맞아야 한다.
 - `unity-map.blocks.<blockId>.hostPath`가 실제 hierarchy에 존재해야 한다.
 - required component가 빠지면 시각적으로 비슷해도 실패다.
 - presentation code가 geometry나 typography를 다시 덮어쓰면 실패다.
+- translator가 missing value를 script-side fallback으로 메우면 실패다.
 
 ## Evidence
 
@@ -77,4 +97,4 @@
 
 한 줄 기준:
 
-`manifest와 map만으로 prefab이 생성되고, source와 같은 읽기 순서와 강조가 살아 있으면 번역이 닫힌다.`
+`manifest와 map이 active input으로 유지되고, block이 shared component vocabulary로도 설명되면 번역이 닫힌다.`

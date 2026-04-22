@@ -13,7 +13,7 @@ $mapResult = Get-StitchUnityMapObject -SurfaceId $SurfaceId -MapPath $MapPath
 $blocks = foreach ($entry in @(Get-StitchUnityBlockEntries -Map $mapResult.Map)) {
     [PSCustomObject]@{
         blockId = $entry.blockId
-        hostPath = [string](Get-StitchUnityOptionalPropertyValue -InputObject $entry.mapping -Name "hostPath" -Default "")
+        hostPath = [string](Get-StitchUnityRequiredProperty -InputObject $entry.mapping -Name "hostPath")
         candidatePaths = @(Get-StitchUnityCandidatePaths -BlockMapping $entry.mapping)
         requiredComponents = @(Get-StitchUnityOptionalArray -InputObject $entry.mapping -Name "requiredComponents")
         verificationTags = @(Get-StitchUnityOptionalArray -InputObject $entry.mapping -Name "verificationTags")

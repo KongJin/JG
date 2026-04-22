@@ -244,6 +244,7 @@ $staleEvidence = @()
 $policyViolations = @()
 $compileSummary = $null
 $layoutOwnershipSummary = $null
+$presentationResponsibilitySummary = $null
 
 if ($route -ne "no-unity-ui-workflow") {
     $requiredEvidence += [PSCustomObject]@{
@@ -320,6 +321,49 @@ if ($route -ne "no-unity-ui-workflow") {
         }
     }
 
+    if ($hasPresentationCode) {
+        $requiredEvidence += [PSCustomObject]@{
+            name = "presentation-responsibility"
+            path = "npm run --silent presentation:policy:lint"
+            message = "Presentation PageController classes must stay thin. Smoke entrypoints, chrome styling, and oversized orchestration fail the workflow."
+        }
+
+        try {
+            $presentationLintPath = Join-Path $repoRoot "tools\presentation-lint\lint-presentation-responsibility.mjs"
+            Push-Location $repoRoot
+            try {
+                $presentationLintOutput = & node $presentationLintPath 2>&1
+                $presentationLintExitCode = $LASTEXITCODE
+            }
+            finally {
+                Pop-Location
+            }
+
+            $presentationResponsibilitySummary = [PSCustomObject]@{
+                success = ($presentationLintExitCode -eq 0)
+                command = "node ./tools/presentation-lint/lint-presentation-responsibility.mjs"
+                output = @($presentationLintOutput)
+            }
+
+            if ($presentationLintExitCode -ne 0) {
+                $policyViolations += [PSCustomObject]@{
+                    code = "presentation-responsibility-lint-failed"
+                    message = "Presentation responsibility lint failed. Split smoke, chrome, or oversized orchestration out of the page controller before acceptance."
+                }
+            }
+        }
+        catch {
+            $presentationResponsibilitySummary = [PSCustomObject]@{
+                success = $false
+                error = $_.Exception.Message
+            }
+            $policyViolations += [PSCustomObject]@{
+                code = "presentation-responsibility-lint-failed"
+                message = ("Presentation responsibility lint could not be verified. Fix the lint route and rerun the workflow. Details: {0}" -f $_.Exception.Message)
+            }
+        }
+    }
+
     if (@($newPrefabFiles).Count -gt 0) {
         foreach ($path in @($newPrefabFiles)) {
             $policyViolations += [PSCustomObject]@{
@@ -386,6 +430,7 @@ $report = [PSCustomObject]@{
     policyViolations = $policyViolations
     compile = $compileSummary
     presentationLayoutOwnership = $layoutOwnershipSummary
+    presentationResponsibility = $presentationResponsibilitySummary
     resultPath = $resultAbsolutePath
 }
 

@@ -46,17 +46,16 @@ function Get-StitchUnityRequiredProperty {
 function Get-StitchUnityOptionalPropertyValue {
     param(
         [Parameter(Mandatory = $true)][object]$InputObject,
-        [Parameter(Mandatory = $true)][string]$Name,
-        [object]$Default = $null
+        [Parameter(Mandatory = $true)][string]$Name
     )
 
     if ($null -eq $InputObject) {
-        return $Default
+        return $null
     }
 
     $property = $InputObject.PSObject.Properties[$Name]
     if ($null -eq $property) {
-        return $Default
+        return $null
     }
 
     return $property.Value
@@ -169,7 +168,7 @@ function Get-StitchUnityCandidatePaths {
 
     $paths = New-Object System.Collections.Generic.List[string]
 
-    $hostPath = [string](Get-StitchUnityOptionalPropertyValue -InputObject $BlockMapping -Name "hostPath" -Default "")
+    $hostPath = [string](Get-StitchUnityRequiredProperty -InputObject $BlockMapping -Name "hostPath")
     if (-not [string]::IsNullOrWhiteSpace($hostPath)) {
         $paths.Add($hostPath)
     }
@@ -242,12 +241,7 @@ function Test-StitchUnityTargetAssetExists {
 function Get-StitchUnityStrategyMode {
     param([Parameter(Mandatory = $true)][object]$Map)
 
-    $mode = [string](Get-StitchUnityOptionalPropertyValue -InputObject $Map -Name "strategyMode" -Default "")
-    if ([string]::IsNullOrWhiteSpace($mode)) {
-        return "patch"
-    }
-
-    return $mode
+    return [string](Get-StitchUnityRequiredProperty -InputObject $Map -Name "strategyMode")
 }
 
 function Get-StitchUnityDependencies {
@@ -272,7 +266,7 @@ function Invoke-StitchUnityDependencies {
     foreach ($dependency in @(Get-StitchUnityDependencies -Map $Map)) {
         $kind = [string](Get-StitchUnityRequiredProperty -InputObject $dependency -Name "kind")
         $id = [string](Get-StitchUnityRequiredProperty -InputObject $dependency -Name "id")
-        $required = [bool](Get-StitchUnityOptionalPropertyValue -InputObject $dependency -Name "required" -Default $true)
+        $required = [bool](Get-StitchUnityRequiredProperty -InputObject $dependency -Name "required")
 
         switch ($kind) {
             "menu" {
@@ -335,7 +329,7 @@ function Get-StitchUnityPreflightObject {
 
     if (-not $targetState.exists -and $strategyMode -eq "generate-or-patch") {
         $roughEdges += [PSCustomObject]@{
-            code = "missing-target-generate-fallback"
+            code = "missing-target-generate-path"
             message = "Target asset is missing. The generator path must create the asset from contract instead of patching."
         }
     }
@@ -560,7 +554,7 @@ function Get-StitchUnitySurfaceInspectionObject {
 
         $blockResults += [PSCustomObject]@{
             blockId = $entry.blockId
-            hostPath = [string](Get-StitchUnityOptionalPropertyValue -InputObject $blockMapping -Name "hostPath" -Default "")
+            hostPath = [string](Get-StitchUnityRequiredProperty -InputObject $blockMapping -Name "hostPath")
             candidatePaths = @(Get-StitchUnityCandidatePaths -BlockMapping $blockMapping)
             found = $resolved.found
             resolvedPath = $resolved.resolvedPath

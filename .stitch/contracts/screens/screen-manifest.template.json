@@ -5,23 +5,17 @@
   "surfaceId": "<surface-id>",
   "surfaceRole": "root",
   "status": "draft",
-  "targets": {
-    "prefabPath": "Assets/Prefabs/<feature>/<surface>.prefab",
-    "sceneRoots": [
-      "/Canvas/<SurfaceRoot>"
-    ],
-    "primaryContractPaths": [
-      "/Canvas/<SurfaceRoot>"
-    ],
-    "serializedOwners": [
-      "/Canvas/<SurfaceRoot>::<ViewType>"
-    ]
+  "source": {
+    "tool": "stitch",
+    "sourceRef": "<source-ref>",
+    "projectId": "<project-id>",
+    "screenId": "<screen-id>",
+    "url": "<screen-url>"
   },
   "ctaPriority": [
     {
       "id": "<primary-cta>",
       "priority": "primary",
-      "unityTargetPath": "/Canvas/<SurfaceRoot>/<PrimaryButton>",
       "outcome": "<primary-outcome>"
     }
   ],
@@ -35,14 +29,12 @@
   },
   "blocks": [],
   "validation": {
-    "frame": "390x844",
     "firstReadOrder": [
-      "<first-block>"
+      "first-block"
     ],
     "requiredChecks": [
       "contract"
-    ],
-    "smokeScripts": []
+    ]
   },
   "notes": []
 }

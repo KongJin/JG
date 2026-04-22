@@ -1,6 +1,6 @@
 # Unity MCP
 
-> 마지막 업데이트: 2026-04-20
+> 마지막 업데이트: 2026-04-23
 > 상태: active
 > doc_id: tools.unity-mcp-readme
 > role: reference
@@ -20,7 +20,7 @@ Unity UI/UX authoring policy 본문 owner는 `ops.unity-ui-authoring-workflow`�
 - Prefab-pack helper module: `tools/unity-mcp/McpPrefabPackHelpers.ps1`
 - Workflow policy check: `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
 - Workflow gate: `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1` - legacy scene route only
-- Shared surface generator entry: `tools/stitch-unity/surfaces/Invoke-GenerateSurfaceFromManifest.ps1`
+- Shared surface translation entry: `tools/stitch-unity/surfaces/Invoke-StitchSurfaceTranslation.ps1`
 
 `rule-harness` continues to use Unity MCP only for compile/status refresh plus generic diagnostics. Scene-specific runtime smoke stays out of harness scope.
 
@@ -129,12 +129,12 @@ If a concrete Lobby/Garage authoring scene is intentionally revived later:
 
 Use this for repeated Stitch-to-Unity prefab imports so surface generation stays behind the shared generator entry and reusable prefab-pack helpers.
 
-Current generator entry:
+Current translation entry:
 
-- `tools/stitch-unity/surfaces/Invoke-GenerateSurfaceFromManifest.ps1`
-  - shared public entry for accepted Stitch surface generation
-  - currently supports `garage-workspace` / `set-b-garage-main-workspace`
-  - reads the accepted manifest and source artifacts before mutating the prefab asset
+- `tools/stitch-unity/surfaces/Invoke-StitchSurfaceTranslation.ps1`
+  - shared public entry for accepted Stitch surface translation
+  - current policy disables the prior constant-owned surface generator route
+  - only contract-complete translators should be reintroduced under a new strategy id
 
 Use `Assert-McpNoOpenSceneDiskWrite` before any script that would touch a `.unity` file on disk outside the editor bridge.
 If the target matches `health.activeScenePath`, the helper fails fast and tells you to use MCP repair or switch scenes first.
@@ -177,6 +177,7 @@ The policy check reads the current changed files from git and enforces:
 - route classification for `scene/prefab authoring`, `presentation-code`, `mixed`, `lobby-ui`, `game-scene-ui`
 - no new UI prefab creation by default
 - presentation validator requirements when presentation code changed
+- presentation responsibility lint when `*PageController` classes changed
 - fresh `CodexLobby` workflow gate evidence for Lobby/Garage source changes when the legacy scene route is active
 
 It does not replace the workflow SSOT.

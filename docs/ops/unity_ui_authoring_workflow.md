@@ -1,6 +1,6 @@
 # Unity UI Authoring Workflow
 
-> 마지막 업데이트: 2026-04-22
+> 마지막 업데이트: 2026-04-23
 > 상태: active
 > doc_id: ops.unity-ui-authoring-workflow
 > role: ssot
@@ -32,6 +32,7 @@
 ## 금지 작업
 
 - `Features.*.Presentation`에서 geometry, transform, material 같은 visual authoring 수행 금지
+- `Features.*.Presentation/*PageController.cs`에서 smoke entrypoint, theme/style literal 처리, page-sized chrome orchestration 누적 금지
 - 새 UI prefab 생성 기본 금지
 - Unity가 열어 둔 scene의 디스크 파일 직접 overwrite 금지
 - code-driven builder 또는 rebuild route를 UI authoring 기본 경로로 재도입 금지
@@ -42,10 +43,12 @@
 
 - scene/prefab authoring은 Unity MCP repair로 수행
 - 코드는 상태 렌더, 이벤트, 데이터 연결, thin orchestration만 담당
+- page chrome styling, smoke bridge, oversized save/input helper는 production `*PageController` 바깥의 dedicated collaborator로 분리한다
 - scene contract owner는 serialized scene/prefab 상태로 유지
 - visual handoff는 `Stitch`를 참고하되, runtime SSOT는 Unity scene/prefab으로 유지
 - runtime scene이 이미 폐기된 경우에는 `prefab-first reset` route를 선택하고, surface baseline prefab을 다시 세운 뒤 scene contract를 재조립한다
 - scene registry 같은 runtime wiring dependency는 scene/prefab contract로만 유지하고, 숨은 runtime lookup/add-component fallback은 재도입하지 않는다
+- `presentation-code` route는 값 하드코딩이나 fallback으로 contract 빈칸을 메우지 않는다. 값 owner는 token, serialized contract, 또는 scene/prefab SSOT다
 
 ## Route별 필수 증거
 
@@ -100,9 +103,11 @@ reset 상태에서는 historical reference로만 본다.
 
 - `PresentationLayoutOwnershipValidator`
   - `Features.*.Presentation`의 runtime geometry/visual authoring을 hard-stop으로 차단한다.
+- `presentation responsibility lint`
+  - `*PageController`의 line/method/serialized-field 규모와 smoke/style ownership을 검사한다.
 - `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
   - 현재 변경 파일을 읽고 route를 판정한다.
-  - 필요한 validator, artifact freshness, prefab 금지 규칙을 검사한다.
+  - 필요한 validator, presentation responsibility lint, artifact freshness, prefab 금지 규칙을 검사한다.
 - `Invoke-CodexLobbyUiWorkflowGate.ps1`
   - `CodexLobbyScene` acceptance proof를 생성한다.
 

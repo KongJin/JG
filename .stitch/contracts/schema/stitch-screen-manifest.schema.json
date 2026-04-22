@@ -11,7 +11,7 @@
     "surfaceId",
     "surfaceRole",
     "status",
-    "targets",
+    "source",
     "ctaPriority",
     "states",
     "blocks",
@@ -42,35 +42,38 @@
       "type": "string",
       "enum": ["draft", "accepted", "historical"]
     },
-    "targets": {
+    "source": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["prefabPath", "sceneRoots", "primaryContractPaths", "serializedOwners"],
+      "required": ["tool", "sourceRef", "projectId", "screenId", "url"],
       "properties": {
-        "prefabPath": {
+        "tool": {
           "type": "string",
           "minLength": 1
         },
-        "sceneRoots": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1
         },
-        "primaryContractPaths": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
+        "projectId": {
+          "type": "string",
+          "minLength": 1
         },
-        "serializedOwners": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
+        "screenId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "screenName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "variantLabel": {
+          "type": "string",
+          "minLength": 1
         }
       }
     },
@@ -79,7 +82,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "priority", "unityTargetPath", "outcome"],
+        "required": ["id", "priority", "outcome"],
         "properties": {
           "id": {
             "type": "string",
@@ -88,10 +91,6 @@
           "priority": {
             "type": "string",
             "enum": ["primary", "secondary", "tertiary"]
-          },
-          "unityTargetPath": {
-            "type": "string",
-            "minLength": 1
           },
           "outcome": {
             "type": "string",
@@ -116,31 +115,20 @@
     "validation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["frame", "firstReadOrder", "requiredChecks", "smokeScripts"],
+      "required": ["firstReadOrder", "requiredChecks"],
       "properties": {
-        "frame": {
-          "type": "string",
-          "minLength": 1
-        },
         "firstReadOrder": {
           "type": "array",
           "items": {
             "type": "string",
-            "minLength": 1
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
           }
         },
         "requiredChecks": {
           "type": "array",
           "items": {
             "type": "string",
-            "minLength": 1
-          }
-        },
-        "smokeScripts": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
           }
         }
       }
@@ -160,8 +148,6 @@
         "blockId",
         "role",
         "sourceName",
-        "unityTargetPath",
-        "layout",
         "children"
       ],
       "properties": {
@@ -186,18 +172,17 @@
           "type": "string",
           "minLength": 1
         },
-        "unityTargetPath": {
-          "type": "string",
-          "minLength": 1
-        },
-        "layout": {
-          "$ref": "#/$defs/layout"
-        },
         "children": {
           "type": "array",
           "items": {
             "type": "string",
             "minLength": 1
+          }
+        },
+        "componentComposition": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/componentCompositionItem"
           }
         },
         "notes": {
@@ -208,40 +193,37 @@
         }
       }
     },
-    "layout": {
+    "componentCompositionItem": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["axis", "padding", "gap", "alignment", "sticky", "scroll"],
+      "required": [
+        "componentId",
+        "slot"
+      ],
       "properties": {
-        "axis": {
+        "componentId": {
           "type": "string",
-          "enum": ["vertical", "horizontal", "overlay", "free"]
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
         },
-        "padding": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "gap": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "minHeight": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "minWidth": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "alignment": {
+        "slot": {
           "type": "string",
-          "enum": ["start", "center", "end", "stretch"]
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
         },
-        "sticky": {
-          "type": "boolean"
+        "variant": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
         },
-        "scroll": {
-          "type": "boolean"
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/componentCompositionItem"
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }

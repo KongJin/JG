@@ -38,19 +38,8 @@ Wait-McpBridgeHealthy -Root $root -TimeoutSec 30 | Out-Null
 $dependencyResults = @(Invoke-StitchUnityDependencies -Root $root -Map $map)
 
 switch ($translationStrategy) {
-    "unity-mcp-surface-generator-v1" {
-        $translatorPath = Resolve-StitchUnityRepoPath -PathValue "tools/stitch-unity/surfaces/Invoke-GenerateSurfaceFromManifest.ps1"
-        $translationRaw = & $translatorPath `
-            -ScreenManifestPath $contracts.manifestPath `
-            -UnityBridgeUrl $UnityBridgeUrl `
-            -ArtifactPath $translationArtifactPath
-
-        $translationResult = if ($translationRaw -is [string]) {
-            $translationRaw | ConvertFrom-Json
-        }
-        else {
-            $translationRaw
-        }
+    "contract-complete-translator-v1" {
+        throw "translationStrategy 'contract-complete-translator-v1' is reserved for a contract-complete translator. The prior constant-owned surface generator was removed, and this new translator is not implemented yet."
     }
     default {
         throw "Unsupported translationStrategy '$translationStrategy'."

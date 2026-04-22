@@ -1,6 +1,6 @@
 # Stitch Data Workflow
 
-> 마지막 업데이트: 2026-04-22
+> 마지막 업데이트: 2026-04-23
 > 상태: active
 > doc_id: ops.stitch-data-workflow
 > role: ssot
@@ -80,14 +80,14 @@ accepted Stitch screen 하나를 고정한다.
 
 - 식별 정보
 - source 정보
-- targets
 - ctaPriority
 - states
 - `blocks[]`
 - validation
 
 핵심은 `blocks[]`다.
-여기에는 semantic block만 적고, old override 문법은 쓰지 않는다.
+여기에는 semantic block, CTA 의미, component composition, validation id만 적고, old override 문법은 쓰지 않는다.
+경로, layout 숫자, label literal은 manifest에 적지 않는다.
 
 ### 3. Unity Map 작성
 
@@ -113,9 +113,16 @@ map은 경로 binding만 가진다.
 generator는:
 
 1. manifest semantic block 순서를 읽고
-2. 공통 block builder를 조립하고
-3. controller wiring을 연결하고
-4. prefab을 저장한다
+2. contract completeness를 먼저 검증하고
+3. contract에 적힌 값만 적용해 prefab을 생성하고
+4. controller wiring을 연결하고
+5. prefab을 저장한다
+
+추가 규칙:
+
+- Stitch-driven script는 layout/style/text 상수나 fallback을 소유하지 않는다.
+- 계약에 필요한 값이 없으면 script가 기본값으로 메우지 않고 즉시 실패한다.
+- `source-derived implementation`처럼 script가 시각 결정을 대신하는 경로는 활성 기준이 아니다.
 
 ### 5. Verification 남기기
 
@@ -151,6 +158,7 @@ target prefab이 없어도 정상 케이스다.
 - handoff md를 실행 계약처럼 쓰는 것
 - html/png를 직접 구현 입력처럼 쓰는 것
 - legacy override 문법을 새 기준으로 계속 쓰는 것
+- script-side constants나 fallback으로 contract 누락을 보정하는 것
 
 ## 읽기 순서
 

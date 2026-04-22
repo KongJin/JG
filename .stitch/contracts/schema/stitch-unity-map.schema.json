@@ -11,6 +11,7 @@
     "target",
     "contractRefs",
     "translationStrategy",
+    "strategyMode",
     "blocks"
   ],
   "properties": {
@@ -228,7 +229,8 @@
       "additionalProperties": false,
       "required": [
         "kind",
-        "id"
+        "id",
+        "required"
       ],
       "properties": {
         "kind": {

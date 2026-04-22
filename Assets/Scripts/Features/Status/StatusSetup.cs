@@ -2,7 +2,6 @@ using Features.Player.Application.Ports;
 using Features.Skill.Application.Ports;
 using Features.Status.Application;
 using Features.Status.Application.Ports;
-using Features.Status.Presentation;
 using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Lifecycle;
@@ -12,12 +11,11 @@ namespace Features.Status
 {
     public sealed class StatusSetup : MonoBehaviour
     {
-        [Required, SerializeField] private StatusTickController _tickController;
-
         private StatusContainerRegistry _registry;
         private StatusUseCases _useCases;
         private StatusNetworkEventHandler _networkEventHandler;
         private DisposableScope _disposables;
+        private IStatusTickPort _tickPort;
 
         public ISpeedModifierPort SpeedModifier { get; private set; }
         public IStatusQueryPort StatusQuery { get; private set; }
@@ -40,8 +38,7 @@ namespace Features.Status
 
             _networkEventHandler = new StatusNetworkEventHandler(_useCases, callbackPort);
 
-            var tickUseCase = new StatusTickUseCase(_registry, eventBus, commandPort, isMaster);
-            _tickController.Initialize(tickUseCase);
+            _tickPort = new StatusTickUseCase(_registry, eventBus, commandPort, isMaster);
 
             SpeedModifier = new SpeedModifierAdapter(_registry);
             var queryAdapter = new StatusQueryAdapter(_registry);
@@ -56,6 +53,11 @@ namespace Features.Status
         private void OnDestroy()
         {
             _disposables?.Dispose();
+        }
+
+        private void Update()
+        {
+            _tickPort?.Tick(Time.deltaTime);
         }
     }
 }

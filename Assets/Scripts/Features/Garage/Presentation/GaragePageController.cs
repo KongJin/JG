@@ -1,6 +1,5 @@
 using Features.Garage.Application;
 using Features.Garage.Domain;
-using Features.Garage.Presentation.Theme;
 using Features.Unit.Application;
 using Shared.Attributes;
 using Shared.EventBus;
@@ -69,8 +68,9 @@ namespace Features.Garage.Presentation
         private bool _isSaving;
         private bool _isSettingsOverlayOpen;
         private MobilePartFocus _mobilePartFocus = MobilePartFocus.Frame;
-        private readonly GarageKeyboardInputHandler _keyboardInputHandler = new();
         private readonly PublishGarageDraftStateUseCase _draftStatePublisher = new();
+        private readonly GaragePageScrollController _scrollController = new();
+        private GaragePageChromeController _chromeController;
 
         public void Initialize(
             InitializeGarageUseCase initializeGarage,
@@ -88,10 +88,11 @@ namespace Features.Garage.Presentation
             _catalog = catalog;
             _presenter = new GaragePagePresenter(_catalog);
             _state ??= new GaragePageState();
+            _chromeController ??= CreateChromeController();
 
             _unitPreviewView.Initialize();
             HookCallbacks();
-            ApplyMobileLayout();
+            SyncChrome(null);
 
             if (_isInitialized)
             {
@@ -141,32 +142,38 @@ namespace Features.Garage.Presentation
             _unitEditorView.MobilityCycleRequested += CycleMobility;
             _unitEditorView.ClearRequested += ClearSelectedSlot;
             _unitEditorView.PartHoverRequested += ShowPartHoverTooltip;
-            _resultPanelView.SaveClicked += OnSaveClicked;
+            _resultPanelView.SaveClicked += () => _ = RunSaveAsync();
 
             _mobileEditTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Frame));
             _mobilePreviewTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Firepower));
             _mobileSummaryTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Mobility));
 
-            _settingsOpenButton.onClick.AddListener(ToggleSettingsOverlay);
-            _settingsCloseButton.onClick.AddListener(HideSettingsOverlay);
-            _mobileSaveButton.onClick.AddListener(OnSaveClicked);
+            _settingsOpenButton.onClick.AddListener(() =>
+            {
+                _isSettingsOverlayOpen = !_isSettingsOverlayOpen;
+                SyncChrome(null);
+            });
+            _settingsCloseButton.onClick.AddListener(() =>
+            {
+                if (_isSettingsOverlayOpen)
+                {
+                    _isSettingsOverlayOpen = false;
+                    SyncChrome(null);
+                }
+            });
+            _mobileSaveButton.onClick.AddListener(() => _ = RunSaveAsync());
         }
 
         private void OnDisable()
         {
             _isSettingsOverlayOpen = false;
-            _settingsOverlayRoot.SetActive(false);
+            _chromeController?.HideSettingsOverlay();
         }
 
         private void OnEnable()
         {
-            SetActive(_mobileContentRoot, true);
-            SetActive(GetLegacyContentRowRoot(), false);
-            SetActive(_mobileTabBar, true);
-            SetActive(_mobileSaveDockRoot, true);
-
-            if (_mobileSlotHost != null)
-                SetActive(_mobileSlotHost.gameObject, true);
+            _chromeController ??= CreateChromeController();
+            SyncChrome(null);
         }
 
         private void Update()
@@ -175,14 +182,7 @@ namespace Features.Garage.Presentation
             if (keyboard == null)
                 return;
 
-            _keyboardInputHandler.Process(
-                keyboard,
-                _state,
-                OnSaveClicked,
-                SelectSlot,
-                CycleFrame,
-                CycleFirepower,
-                CycleMobility);
+            HandleKeyboardInput(keyboard);
         }
 
         private void SelectSlot(int slotIndex)
@@ -190,7 +190,7 @@ namespace Features.Garage.Presentation
             _state.SelectSlot(slotIndex);
             _mobilePartFocus = MobilePartFocus.Frame;
             Render();
-            ScrollMobileBodyToTop();
+            _scrollController.ScrollBodyToTop(_mobileBodyHost);
         }
 
         private void CycleFrame(int delta)
@@ -266,62 +266,6 @@ namespace Features.Garage.Presentation
             Render();
         }
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        public void WebglSmokeSelectSlot(string slotIndexText)
-        {
-            if (!TryParseIndex(slotIndexText, out int slotIndex))
-            {
-                Debug.LogWarning($"[GarageSmoke] Invalid slot index: {slotIndexText}");
-                return;
-            }
-
-            SelectSlot(slotIndex);
-        }
-
-        public void WebglSmokeCycleFrame(string deltaText)
-        {
-            if (!TryParseDelta(deltaText, out int delta))
-            {
-                Debug.LogWarning($"[GarageSmoke] Invalid frame delta: {deltaText}");
-                return;
-            }
-
-            CycleFrame(delta);
-        }
-
-        public void WebglSmokeCycleFirepower(string deltaText)
-        {
-            if (!TryParseDelta(deltaText, out int delta))
-            {
-                Debug.LogWarning($"[GarageSmoke] Invalid firepower delta: {deltaText}");
-                return;
-            }
-
-            CycleFirepower(delta);
-        }
-
-        public void WebglSmokeCycleMobility(string deltaText)
-        {
-            if (!TryParseDelta(deltaText, out int delta))
-            {
-                Debug.LogWarning($"[GarageSmoke] Invalid mobility delta: {deltaText}");
-                return;
-            }
-
-            CycleMobility(delta);
-        }
-
-        public void WebglSmokeSaveDraft()
-        {
-            OnSaveClicked();
-        }
-#endif
-
-        private void OnSaveClicked()
-        {
-            _ = RunSaveAsync();
-        }
-
         private async System.Threading.Tasks.Task RunSaveAsync()
         {
             if (_isSaving)
@@ -342,7 +286,7 @@ namespace Features.Garage.Presentation
             }
 
             _isSaving = true;
-            RefreshMobileSaveButton(_presenter.BuildResultViewModel(_state, evaluation));
+            SyncChrome(_presenter.BuildResultViewModel(_state, evaluation));
             _resultPanelView.ShowLoading(true);
 
             var result = await _saveRoster.Execute(_state.DraftRoster.Clone());
@@ -360,7 +304,7 @@ namespace Features.Garage.Presentation
             _state.CommitDraft();
             _resultPanelView.ShowToast("Roster saved!");
             Render();
-            ScrollMobileBodyToTop();
+            _scrollController.ScrollBodyToTop(_mobileBodyHost);
         }
 
         private void Render()
@@ -380,7 +324,7 @@ namespace Features.Garage.Presentation
             var selectedSlot = slotViewModels[_state.SelectedSlotIndex];
             _unitPreviewView.Render(selectedSlot, _catalog);
 
-            ApplyMobileLayoutState(resultViewModel);
+            SyncChrome(resultViewModel);
             PublishDraftState();
         }
 
@@ -390,233 +334,19 @@ namespace Features.Garage.Presentation
             Render();
         }
 
-        private void ToggleSettingsOverlay()
+        private void SyncChrome(GarageResultViewModel resultViewModel)
         {
-            _isSettingsOverlayOpen = !_isSettingsOverlayOpen;
-            ApplySectionVisibility();
-            RefreshSettingsButtonStyles();
-        }
-
-        private void HideSettingsOverlay()
-        {
-            if (!_isSettingsOverlayOpen)
-                return;
-
-            _isSettingsOverlayOpen = false;
-            ApplySectionVisibility();
-            RefreshSettingsButtonStyles();
-        }
-
-        private void ApplyMobileLayoutState(GarageResultViewModel resultViewModel)
-        {
-            ApplyMobileLayout();
-            ApplySectionVisibility();
-            RefreshMobileTabButtonStyles();
-            RefreshGarageHeaderSummary(resultViewModel);
-            RefreshSettingsButtonStyles();
-            RefreshMobileSaveButton(resultViewModel);
-            RefreshMobileSaveStateText(resultViewModel);
-        }
-
-        private void ApplyMobileLayout()
-        {
-            var legacyContentRowRoot = GetLegacyContentRowRoot();
-
-            SetActive(_mobileContentRoot, true);
-            SetActive(legacyContentRowRoot, false);
-            SetActive(_mobileSlotHost.gameObject, true);
-            SetActive(_mobileTabBar, true);
-            SetActive(_mobileSaveDockRoot, true);
-        }
-
-        private void ApplySectionVisibility()
-        {
-            SetActive(_mobileContentRoot, true);
-            SetActive(GetLegacyContentRowRoot(), false);
-            SetActive(_unitEditorView.gameObject, true);
-            SetActive(_rightRailRoot, true);
-            SetActive(_previewCard, true);
-            SetActive(_resultPane, true);
-            SetActive(_settingsOverlayRoot, _isSettingsOverlayOpen);
-        }
-
-        private void RefreshSettingsButtonStyles()
-        {
-            _settingsOpenButton.Apply(ButtonStyles.Ghost, _settingsOpenButtonLabel);
-            _settingsOpenButton.interactable = !_isSettingsOverlayOpen;
-            _settingsOpenButtonLabel.text = "⚙";
-
-            _settingsCloseButton.Apply(ButtonStyles.Secondary, _settingsCloseButtonLabel);
-            _settingsCloseButton.interactable = _isSettingsOverlayOpen;
-            _settingsCloseButtonLabel.text = "닫기";
-        }
-
-        private void RefreshGarageHeaderSummary(GarageResultViewModel resultViewModel)
-        {
-            string readySummary = resultViewModel != null && resultViewModel.IsReady
-                ? "저장본 최신"
-                : resultViewModel != null && resultViewModel.IsDirty
-                    ? resultViewModel.CanSave
-                        ? "저장 가능"
-                        : "조립 진행 중"
-                    : $"활성 {_state.CommittedRoster.Count}/6";
-            string focusSummary = GetMobilePartFocusLabel(_mobilePartFocus);
-
-            _garageHeaderSummaryText.text =
-                $"UNIT {_state.SelectedSlotIndex + 1:00}  |  {focusSummary}  |  {readySummary}";
-            _garageHeaderSummaryText.color = ThemeColors.TextSecondary;
-        }
-
-        private void RefreshMobileTabButtonStyles()
-        {
-            ConfigureMobileTabButton(
-                _mobileEditTabButton,
-                _mobileEditTabLabel,
-                "[프레임]",
+            _chromeController ??= CreateChromeController();
+            _chromeController.ApplyState(
+                transform,
+                _isSettingsOverlayOpen,
+                _isSaving,
                 _mobilePartFocus == MobilePartFocus.Frame,
-                true);
-            ConfigureMobileTabButton(
-                _mobilePreviewTabButton,
-                _mobilePreviewTabLabel,
-                "[무장]",
                 _mobilePartFocus == MobilePartFocus.Firepower,
-                true);
-            ConfigureMobileTabButton(
-                _mobileSummaryTabButton,
-                _mobileSummaryTabLabel,
-                "[기동]",
                 _mobilePartFocus == MobilePartFocus.Mobility,
-                true);
-        }
-
-        private void ConfigureMobileTabButton(
-            Button button,
-            TMP_Text label,
-            string title,
-            bool isActive,
-            bool isAvailable)
-        {
-            var preset = isActive ? ButtonStyles.Primary : ButtonStyles.Secondary;
-            button.Apply(preset, label);
-            button.interactable = isAvailable && !isActive;
-
-            label.text = title;
-            label.color = isAvailable
-                ? isActive ? ThemeColors.TextPrimary : ThemeColors.TextSecondary
-                : ThemeColors.TextMuted;
-
-            if (button.TryGetComponent<Image>(out var background))
-            {
-                background.color = !isAvailable
-                    ? ThemeColors.StateDisabled
-                    : isActive
-                        ? ThemeColors.AccentBlue
-                        : ThemeColors.BackgroundCard;
-
-                var feedback = button.GetComponent<ButtonFeedback>();
-                if (feedback != null)
-                    feedback.UpdateBaseColor(background.color);
-            }
-        }
-
-        private void RefreshMobileSaveButton(GarageResultViewModel resultViewModel)
-        {
-            bool canSave = resultViewModel != null && resultViewModel.CanSave && !_isSaving;
-            bool isDirty = resultViewModel != null && resultViewModel.IsDirty;
-            bool isReady = resultViewModel != null && resultViewModel.IsReady;
-
-            SetActive(_mobileSaveButton.gameObject, true);
-            _mobileSaveButton.Apply(ButtonStyles.Primary, _mobileSaveButtonLabel);
-            _mobileSaveButton.interactable = canSave;
-
-            _mobileSaveButtonLabel.text = _isSaving
-                ? "저장 중..."
-                : "저장 및 배치";
-
-            if (_mobileSaveButton.TryGetComponent<Image>(out var background))
-            {
-                Color readyBaseline = Color.Lerp(ThemeColors.AccentOrange, ThemeColors.BackgroundCard, 0.32f);
-                background.color = _isSaving
-                    ? ThemeColors.AccentOrange
-                    : canSave
-                        ? ThemeColors.AccentOrange
-                        : isDirty
-                            ? ThemeColors.BackgroundCard
-                            : isReady
-                                ? readyBaseline
-                                : ThemeColors.StateDisabled;
-
-                var feedback = _mobileSaveButton.GetComponent<ButtonFeedback>();
-                if (feedback != null)
-                    feedback.UpdateBaseColor(background.color);
-            }
-        }
-
-        private void RefreshMobileSaveStateText(GarageResultViewModel resultViewModel)
-        {
-            if (_isSaving)
-            {
-                _mobileSaveStateText.text = "빌드 동기화 중...";
-                _mobileSaveStateText.color = ThemeColors.TextPrimary;
-                return;
-            }
-
-            if (resultViewModel == null)
-            {
-                _mobileSaveStateText.text = string.Empty;
-                return;
-            }
-
-            if (resultViewModel.IsDirty && resultViewModel.CanSave)
-            {
-                _mobileSaveStateText.text = "현재 조합을 저장해 출격 편성에 반영";
-                _mobileSaveStateText.color = ThemeColors.AccentAmber;
-                return;
-            }
-
-            if (resultViewModel.IsDirty)
-            {
-                _mobileSaveStateText.text = resultViewModel.ValidationText;
-                _mobileSaveStateText.color = ThemeColors.TextSecondary;
-                return;
-            }
-
-            if (resultViewModel.IsReady)
-            {
-                _mobileSaveStateText.text = "저장본이 최신입니다 | 룸 패널에서 바로 출격 가능";
-                _mobileSaveStateText.color = ThemeColors.AccentGreen;
-                return;
-            }
-
-            _mobileSaveStateText.text = resultViewModel.ValidationText;
-            _mobileSaveStateText.color = ThemeColors.TextSecondary;
-        }
-
-        private static void SetActive(GameObject target, bool isActive)
-        {
-            if (target != null && target.activeSelf != isActive)
-                target.SetActive(isActive);
-        }
-
-        private GameObject GetLegacyContentRowRoot()
-        {
-            return transform.Find("GarageContentRow")?.gameObject;
-        }
-
-        private void ScrollMobileBodyToTop()
-        {
-            if (_mobileBodyHost == null)
-                return;
-
-            ScrollRect scrollRect = _mobileBodyHost.GetComponentInParent<ScrollRect>();
-            if (scrollRect == null)
-                return;
-
-            Canvas.ForceUpdateCanvases();
-            if (_mobileBodyHost.TryGetComponent<RectTransform>(out var contentRoot))
-                LayoutRebuilder.ForceRebuildLayoutImmediate(contentRoot);
-            scrollRect.StopMovement();
-            scrollRect.verticalNormalizedPosition = 1f;
+                _state.SelectedSlotIndex,
+                _state.CommittedRoster.Count,
+                resultViewModel);
         }
 
         private static GarageEditorFocus ToEditorFocus(MobilePartFocus focus)
@@ -629,14 +359,35 @@ namespace Features.Garage.Presentation
             };
         }
 
-        private static string GetMobilePartFocusLabel(MobilePartFocus focus)
+        private void HandleKeyboardInput(Keyboard keyboard)
         {
-            return focus switch
+            if (keyboard.leftCtrlKey.isPressed || keyboard.rightCtrlKey.isPressed)
             {
-                MobilePartFocus.Frame => "프레임 포커스",
-                MobilePartFocus.Firepower => "무장 포커스",
-                _ => "기동 포커스",
-            };
+                if (keyboard.sKey.wasPressedThisFrame)
+                {
+                    _ = RunSaveAsync();
+                    return;
+                }
+            }
+
+            if (keyboard.digit1Key.wasPressedThisFrame || keyboard.numpad1Key.wasPressedThisFrame) { SelectSlot(0); return; }
+            if (keyboard.digit2Key.wasPressedThisFrame || keyboard.numpad2Key.wasPressedThisFrame) { SelectSlot(1); return; }
+            if (keyboard.digit3Key.wasPressedThisFrame || keyboard.numpad3Key.wasPressedThisFrame) { SelectSlot(2); return; }
+            if (keyboard.digit4Key.wasPressedThisFrame || keyboard.numpad4Key.wasPressedThisFrame) { SelectSlot(3); return; }
+            if (keyboard.digit5Key.wasPressedThisFrame || keyboard.numpad5Key.wasPressedThisFrame) { SelectSlot(4); return; }
+            if (keyboard.digit6Key.wasPressedThisFrame || keyboard.numpad6Key.wasPressedThisFrame) { SelectSlot(5); return; }
+
+            int delta = 0;
+            if (keyboard.aKey.wasPressedThisFrame || keyboard.leftArrowKey.wasPressedThisFrame) delta = -1;
+            else if (keyboard.dKey.wasPressedThisFrame || keyboard.rightArrowKey.wasPressedThisFrame) delta = 1;
+
+            if (delta == 0)
+                return;
+
+            if (!string.IsNullOrEmpty(_state.EditingFrameId)) { CycleFrame(delta); return; }
+            if (!string.IsNullOrEmpty(_state.EditingFirepowerId)) { CycleFirepower(delta); return; }
+            if (!string.IsNullOrEmpty(_state.EditingMobilityId)) { CycleMobility(delta); return; }
+            CycleFrame(delta);
         }
 
         private void PublishDraftState()
@@ -716,28 +467,31 @@ namespace Features.Garage.Presentation
             return getId(items[nextIndex]);
         }
 
-        private static bool TryParseIndex(string raw, out int slotIndex)
+        private GaragePageChromeController CreateChromeController()
         {
-            if (int.TryParse(raw, out int parsed))
-            {
-                slotIndex = Mathf.Clamp(parsed, 0, 5);
-                return true;
-            }
-
-            slotIndex = 0;
-            return false;
-        }
-
-        private static bool TryParseDelta(string raw, out int delta)
-        {
-            if (int.TryParse(raw, out int parsed) && parsed != 0)
-            {
-                delta = parsed;
-                return true;
-            }
-
-            delta = 0;
-            return false;
+            return new GaragePageChromeController(
+                _mobileContentRoot,
+                _mobileSlotHost,
+                _rightRailRoot,
+                _previewCard,
+                _resultPane,
+                _mobileTabBar,
+                _mobileEditTabButton,
+                _mobileEditTabLabel,
+                _mobilePreviewTabButton,
+                _mobilePreviewTabLabel,
+                _mobileSummaryTabButton,
+                _mobileSummaryTabLabel,
+                _garageHeaderSummaryText,
+                _settingsOpenButton,
+                _settingsOpenButtonLabel,
+                _settingsOverlayRoot,
+                _settingsCloseButton,
+                _settingsCloseButtonLabel,
+                _mobileSaveDockRoot,
+                _mobileSaveButton,
+                _mobileSaveButtonLabel,
+                _mobileSaveStateText);
         }
     }
 }

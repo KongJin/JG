@@ -1,6 +1,6 @@
 # UI Foundations
 
-> 마지막 업데이트: 2026-04-21
+> 마지막 업데이트: 2026-04-23
 > 상태: active
 > doc_id: design.ui-foundations
 > role: ssot
@@ -45,6 +45,8 @@
 - decorative hierarchy naming은 contract 대상이 아니지만, section root와 serialized refs는 contract에 남긴다.
 - `GaragePageController`는 smoke host가 아니다.
 - WebGL/dev smoke 전용 엔트리포인트가 필요할 때도 production controller에 계속 누적하지 말고, 별도 bridge/driver로 분리하는 것을 원칙으로 한다.
+- production `*PageController`는 thin orchestration만 맡는다. page chrome styling, header/save dock skinning, button preset 선택 같은 시각 책임은 dedicated view/controller로 분리한다.
+- 이 lane에서는 값 하드코딩과 fallback 보정을 정답으로 문서화하지 않는다. 숫자, 토큰, 상태 기본값의 owner는 token SSOT, serialized contract, 또는 scene/prefab contract다.
 
 ### Serialized Reference Policy
 
@@ -227,22 +229,53 @@ Lobby main은 아래 읽기 순서를 유지한다.
 
 ## Component Contract
 
-1차 Figma/Unity 공통 컴포넌트 표준:
+1차 공통 vocabulary는 loose list가 아니라 shared component catalog로 고정한다.
 
-1. `TabButton`
-2. `SlotCard`
-3. `PartSelector`
-4. `SectionCard`
-5. `StatsBlock`
-6. `PrimaryButton`
-7. `AccountCard`
-8. `Toast`
+- contract path: `.stitch/contracts/components/shared-ui.component-catalog.json`
+- schema path: `.stitch/contracts/components/schema/stitch-component-catalog.schema.json`
+- 이 catalog는 `supporting design/reference lane`이다.
+- active generator input은 계속 `screen manifest + unity-map`뿐이다.
+
+owner boundary:
+
+- token SSOT는 계속 이 문서와 `ThemeColors.cs`가 가진다.
+- shared component catalog는 재사용 가능한 `atom / molecule` vocabulary만 가진다.
+- `screen-manifest.blocks[]`는 surface 의미와 읽기 순서를 계속 소유한다.
+- `unity-map`은 host path binding만 계속 소유한다.
+
+v1 atom vocabulary:
+
+1. `primary-button`
+2. `tab-button`
+3. `icon-button`
+4. `status-text`
+5. `stat-chip`
+
+v1 molecule vocabulary:
+
+1. `slot-card`
+2. `section-card`
+3. `part-selector`
+4. `stats-block`
+5. `account-card`
+6. `toast`
 
 상태 규칙:
 
-- 필요한 상태만 만든다: `default / hover / selected / disabled / loading`
-- 같은 상태 의미는 Figma와 Unity에서 동일해야 한다
+- 필요한 상태만 만든다: `default / hover / selected / disabled / loading / empty / error / success`
+- 같은 상태 의미는 Stitch와 Unity에서 동일해야 한다
 - 임시 장식용 variation을 늘리지 않는다
+- v1 catalog에는 `organism / block / surface` 레벨 entry를 넣지 않는다
+
+Garage worked example:
+
+- `slot-selector -> slot-card`
+- `focus-bar -> tab-button`
+- `editor-panel -> section-card + part-selector + stats-block`
+- `preview-card -> section-card + status-text + stat-chip`
+- `summary-card -> section-card + stats-block + toast`
+- `save-dock -> primary-button + status-text`
+- `header-chrome -> status-text + icon-button`
 
 ## Unity Translation Rules
 
@@ -264,7 +297,8 @@ Figma에서 Unity로 옮길 때 아래 규칙을 따른다.
 
 - Garage 전용 토큰은 계속 Garage 피처 내부에 둔다
 - Shared로 승격하지 않는다
-- 새 UI를 만들 때 먼저 Figma 컴포넌트 대응표를 작성한 뒤 구현한다
+- 새 UI를 만들 때 먼저 `block -> shared component` 대응표를 작성한 뒤 구현한다
+- shared component catalog는 vocabulary reference일 뿐이고, runtime prefab authoring 입력은 계속 `screen manifest + unity-map`이다
 
 ## Current Mapping Targets
 

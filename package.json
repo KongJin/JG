@@ -7,7 +7,9 @@
   },
   "scripts": {
     "docs:lint": "node ./tools/docs-lint/docs-lint.mjs",
-    "policy:lint": "node ./tools/docs-lint/policy-lint.mjs",
+    "presentation:policy:lint": "node ./tools/presentation-lint/lint-presentation-responsibility.mjs",
+    "stitch:policy:lint": "node ./tools/stitch-unity/lint-stitch-driven-policy.mjs",
+    "policy:lint": "node ./tools/docs-lint/policy-lint.mjs && npm run --silent presentation:policy:lint && npm run --silent stitch:policy:lint",
     "rules:lint": "npm run --silent docs:lint && npm run --silent policy:lint",
     "stitch:help": "node ./tools/stitch/stitch-inspect.mjs help",
     "stitch:list:projects": "node ./tools/stitch/stitch-inspect.mjs list-projects",

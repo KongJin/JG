@@ -1,6 +1,6 @@
 # Stitch Unity Surface Generator
 
-> 마지막 업데이트: 2026-04-22
+> 마지막 업데이트: 2026-04-23
 > 상태: active
 > doc_id: tools.stitch-unity-readme
 > role: reference
@@ -17,7 +17,8 @@
 - `screen manifest + unity-map` 기준으로 surface를 실행한다.
 - target prefab이 없어도 preflight와 generator strategy로 surface를 다시 만든다.
 - translation 뒤에 inspection / verification artifact를 남긴다.
-- generator는 semantic block 순서를 읽고 공통 block builder를 조립한 뒤 wiring을 연결한다.
+- generator는 계약을 읽고 검증하고 적용만 한다.
+- Stitch-driven script는 UI 상수나 fallback 값을 소유하지 않는다.
 
 ## 핵심 파일
 
@@ -39,11 +40,13 @@
 
 `unity-map`은 경로 매핑 레이어다.
 여기서는 `block -> hostPath`, alias, required component, strategy 같은 연결 정보만 소유한다.
-레이아웃 숫자나 시각 수치는 source-derived generator implementation이 판단하고, `unity-map`에 다시 하드코딩하지 않는다.
+레이아웃 숫자나 시각 수치는 script가 판단하지 않는다.
+필요한 값은 contract에 명시돼 있어야 하고, 누락 시 translator는 생성 대신 실패해야 한다.
 기본 실행 단위는 `screen manifest + unity-map`이다.
 
 `screen manifest`는 semantic block 계약 레이어다.
 여기서는 `blocks[]`, `ctaPriority`, `states`, `validation`만 보고 surface 의미를 읽어야 한다.
+manifest는 path/layout/label literal을 소유하지 않는다.
 
 `strategyMode` 의미:
 
@@ -76,13 +79,29 @@ powershell -ExecutionPolicy Bypass -File .\tools\stitch-unity\surfaces\Invoke-St
   -SurfaceId garage-main-workspace
 ```
 
+Stitch-driven policy lint:
+
+```powershell
+npm run --silent stitch:policy:lint
+```
+
 ## 준비되지 않은 플로우의 신호
 
 - target prefab이 없는데 strategy가 `patch`뿐이다
 - dependency 준비가 runtime 실패로만 드러난다
-- translator가 existing prefab hierarchy를 전제로 한다
+- translator가 contract 대신 script-side constants나 fallback에 의존한다
 - inspection은 성공해도 verification이 layout/semantic mismatch를 설명하지 못한다
+
+## Policy Guardrail
+
+이 lane에서 prior generator가 상수와 fallback을 소유하게 된 원인은 `source-derived generator implementation`이 script 내부 판단을 허용했기 때문이다.
+현재는 이 경로를 금지한다.
+
+- Stitch-driven script는 색상, 크기, padding, fontSize, text, RectTransform 값을 하드코딩하지 않는다.
+- `Get-OptionalProperty ... -Default ...` 같은 script-side fallback을 두지 않는다.
+- 계약이 불완전하면 translator는 보정하지 않고 실패해야 한다.
+- `npm run --silent stitch:policy:lint`가 위 패턴을 repo-local guardrail로 검사한다.
 
 한 줄 기준:
 
-`surface generator`는 계약만 있으면 새 prefab을 만들 수 있어야 하고, inspection/verification으로 그 결과를 다시 읽어낼 수 있어야 한다.
+`surface generator`는 계약만 읽고 실행해야 하며, script가 UI 결정을 대신하면 실패로 본다.

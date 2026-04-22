@@ -1,6 +1,6 @@
 # 기술부채 감축 실행 계획
 
-> 마지막 업데이트: 2026-04-18
+> 마지막 업데이트: 2026-04-23
 > 상태: active
 > doc_id: plans.tech-debt-reduction
 > role: plan
@@ -201,6 +201,23 @@ Phase 10/11의 가장 큰 리스크인 "브라우저에서 진짜 되는가"를 
 완료 기준:
 - 주요 카드가 "동작은 하지만 거칠다" 상태를 벗어난다.
 - 시각 polish가 기능 검증을 가리지 않는 순서로 진행된다.
+
+### Track G. 값 하드코딩 / 책임 하드코딩 재발 방지
+
+목표:
+값 하드코딩과 책임 하드코딩이 코드나 문서에 다시 스며들어도, merge 전에 lint와 owner doc에서 바로 걸리게 만든다.
+
+작업:
+- `stitch-driven policy lint`를 유지하고, script-side constant/fallback 금지 범위를 active translator와 manifest lane에서 계속 강화한다.
+- `presentation responsibility lint`를 workflow policy와 `policy:lint`에 묶어, production `*PageController`의 smoke/style/god-object 재발을 막는다.
+- owner 문서에는 `정답 문구`도 제한한다. 문서가 production controller의 smoke host화, layout authoring, fallback 보정을 권장하지 못하게 SSOT를 명시한다.
+- 남은 hotspot을 줄인 뒤 lint 임계값을 단계적으로 더 낮춘다. 초기엔 `GaragePageController`를 통과 가능한 수준으로 두고, 이후 feature별 분리 후 더 엄격하게 조인다.
+- 중장기적으로는 suffix별 책임 lint를 확장한다. 예: `*Setup`, `*Root`, `*Adapter`, `*SmokeBridge`, `*Translator`.
+
+완료 기준:
+- `policy:lint`와 `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`가 둘 다 presentation 책임 위반을 같은 기준으로 실패시킨다.
+- active owner 문서가 값 하드코딩/fallback, production controller의 smoke/style ownership을 정답처럼 서술하지 않는다.
+- 남은 대형 클래스와 constant-owned translator는 `progress.md` 또는 관련 plan에 명시적으로 등록되어, "모르는 부채"가 아니라 "추적 중인 부채" 상태가 된다.
 
 ---
 
