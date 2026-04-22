@@ -47,6 +47,14 @@ test("reports docs/index status label mismatches", async () => {
   );
 });
 
+test("reports docs/index entries that are missing from the registry", async () => {
+  const result = await lintRepository(getFixturePath("index-missing-entry"), {
+    includeGeneralChecks: true,
+    includePolicyChecks: false,
+  });
+  assert.ok(result.errors.some((error) => error.code === "index-missing-entry"));
+});
+
 test("ignores excluded .system skill files", async () => {
   const result = await lintRepository(getFixturePath("excluded-system-skill-ignored"), {
     includeGeneralChecks: true,
@@ -119,6 +127,16 @@ test("reports deleted skill references still mentioned from SKILL.md", async () 
   assert.ok(result.errors.some((error) => error.code === "missing-inline-path"));
 });
 
+test("reports inline owner doc_id references that do not resolve", async () => {
+  const result = await lintRepository(getFixturePath("missing-doc-id-reference"), {
+    includeGeneralChecks: true,
+    includePolicyChecks: false,
+  });
+  assert.ok(
+    result.errors.some((error) => error.code === "missing-doc-id-reference"),
+  );
+});
+
 test("ignores valid search-pattern inline code", async () => {
   const result = await lintRepository(getFixturePath("valid-search-pattern-ignored"), {
     includeGeneralChecks: true,
@@ -154,5 +172,15 @@ test("reports missing inspection-only clause in mutating repo-local skill", asyn
   });
   assert.ok(
     result.errors.some((error) => error.code === "missing-skill-inspection-clause"),
+  );
+});
+
+test("reports missing cohesion/coupling owner route in repo-local skill", async () => {
+  const result = await lintRepository(getFixturePath("missing-skill-owner-route"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+  });
+  assert.ok(
+    result.errors.some((error) => error.code === "missing-skill-owner-route"),
   );
 });

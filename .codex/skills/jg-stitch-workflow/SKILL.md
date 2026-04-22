@@ -5,12 +5,12 @@ description: Project-specific Stitch workflow for the JG repo. Use whenever Code
 
 # JG Stitch Workflow
 
-> 마지막 업데이트: 2026-04-21
+> 마지막 업데이트: 2026-04-23
 > 상태: active
 > doc_id: skill.jg-stitch-workflow
 > role: skill-entry
 > owner_scope: JG Stitch lane read order, owner doc routing, artifact entrypoint
-> upstream: repo.agents, docs.index, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract
+> upstream: repo.agents, docs.index, ops.cohesion-coupling-policy, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract
 > artifacts: `.stitch/DESIGN.md`, `.stitch/prompt-briefs/`, `.stitch/contracts/`
 
 Use this skill only as a router for the JG Stitch lane.
@@ -22,12 +22,13 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` to resolve the current owner paths.
-3. Read owner doc `ops.stitch-data-workflow`.
-4. Read owner doc `ops.stitch-structured-handoff-contract` when the task writes, reviews, or translates a contract.
-5. Read reference doc `ops.stitch-handoff-completeness-checklist` when the task validates contract completeness.
-6. Read owner doc `design.ui-reference-workflow` when the task needs Stitch visual principles or reference usage rules.
-7. Read owner doc `plans.stitch-ui-ux-overhaul` when the task touches set-level planning or `.stitch` inventory.
-8. Read the relevant `.stitch/contracts/screens/*.json` file and, when present, its `.stitch/contracts/blueprints/*.json` base before regenerating or translating a surface.
+3. Read owner doc `ops.cohesion-coupling-policy` when the task needs owner boundaries, cohesion/coupling judgment, or responsibility splitting.
+4. Read owner doc `ops.stitch-data-workflow`.
+5. Read owner doc `ops.stitch-structured-handoff-contract` when the task writes, reviews, or translates a contract.
+6. Read reference doc `ops.stitch-handoff-completeness-checklist` when the task validates contract completeness.
+7. Read owner doc `design.ui-reference-workflow` when the task needs Stitch visual principles or reference usage rules.
+8. Read owner doc `plans.stitch-ui-ux-overhaul` when the task touches set-level planning or `.stitch` inventory.
+9. Read the relevant `.stitch/contracts/screens/*.json` file and, when present, its `.stitch/contracts/blueprints/*.json` base before regenerating or translating a surface.
 
 ## Active Artifacts
 
@@ -77,6 +78,7 @@ If the screen clearly communicates one of these and the intake/manifest does not
 ## References
 
 - `docs/index.md`
+- `ops.cohesion-coupling-policy`
 - `ops.stitch-data-workflow`
 - `ops.stitch-structured-handoff-contract`
 - `ops.stitch-handoff-completeness-checklist`

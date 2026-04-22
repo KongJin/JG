@@ -1,6 +1,6 @@
 # Docs Index
 
-> 마지막 업데이트: 2026-04-21
+> 마지막 업데이트: 2026-04-23
 > 상태: active
 > doc_id: docs.index
 > role: entry
@@ -23,7 +23,7 @@
 - Unity UI / prefab / scene 작업: [`plans/progress.md`](./plans/progress.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant contract/prefab
 - Stitch / handoff 작업: [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) -> relevant `.stitch/contracts/screens/*.json` + `.stitch/contracts/mappings/*.json`
 - Stitch -> Unity 한 장씩 번역: [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) -> relevant `.stitch/contracts/screens/*.json` -> relevant `.stitch/contracts/mappings/*.json` -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)
-- 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> `docs/index.md` -> relevant owner doc
+- 문서 / workflow 정리: [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> `docs/index.md` -> relevant owner doc
 - GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
 
 ## 상태 규칙
@@ -39,6 +39,7 @@
 | 상황 | 먼저 볼 문서 |
 |---|---|
 | 지금 뭐가 진행 중인지 확인 | [`plans/progress.md`](./plans/progress.md) |
+| 응집도/결합도 상위 기준 확인 | [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) |
 | Plan Mode / Codex 운영 규칙 확인 | `rule-operations` owner 문서 (`docs/index.md`로 current path를 해석한 뒤 읽기) |
 | Unity UI/UX 작업 시작 규칙 확인 | [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) |
 | 게임 방향과 MVP 기준 확인 | [`design/game_design.md`](./design/game_design.md) |
@@ -82,6 +83,7 @@
 - `active`: [`webgl_smoke_checklist.md`](./plans/webgl_smoke_checklist.md) - WebGL 실기 체크리스트
 - `draft`: [`garage_ui_ux_improvement_plan.md`](./plans/garage_ui_ux_improvement_plan.md) - Garage UI backlog
 - `active`: [`mcp_improvement_plan.md`](./plans/mcp_improvement_plan.md) - Unity MCP 역할/검증 레이어 정리
+- `reference`: [`implementation_plan_mvp_fun.md`](./plans/implementation_plan_mvp_fun.md) - MVP 재미 검증 압축 실행 체크리스트
 - `historical`: [`codex_lobby_garage_panel_plan.md`](./plans/codex_lobby_garage_panel_plan.md) - 초창기 Garage 패널 계획
 
 ### `playtest/`
@@ -91,10 +93,12 @@
 
 ### `ops/`
 
+- `active`: [`cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) - 문서/코드/씬/프리팹/자동화 공통 응집도/결합도 상위 기준
 - `active`: [`unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) - Unity UI/UX 작업 진입 SSOT
 - `active`: [`stitch_data_workflow.md`](./ops/stitch_data_workflow.md) - Stitch working data와 Unity handoff 운영 기준
 - `active`: [`stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) - Stitch 산출물을 JSON 번역 계약으로 고정하는 구조 SSOT
 - `reference`: [`stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) - accepted Stitch screen을 Unity prefab/scene contract로 옮기는 실무 가이드
+- `reference`: [`stitch_handoff_completeness_checklist.md`](./ops/stitch_handoff_completeness_checklist.md) - Stitch handoff completeness 빠른 점검표
 - `active`: [`document_management_workflow.md`](./ops/document_management_workflow.md) - 문서 역할/참조/리네임/삭제 관리 기준
 - `reference`: [`firebase_hosting.md`](./ops/firebase_hosting.md) - Firebase hosting 배포 절차
 
@@ -104,9 +108,14 @@
 - `reference`: [`discussion_game_fun_personas.md`](./discussions/discussion_game_fun_personas.md) - 재미 토론 보조 문서
 - `historical`: [`discussion_unity.md`](./discussions/discussion_unity.md) - 규칙/도구 한계 검토 기록
 
+### root `docs/`
+
+- `historical`: [`tech_debt_review.md`](./tech_debt_review.md) - 당시 기술부채 심각도 평가 기록
+
 ## 코드와 문서의 경계
 
 - 전역 진입점과 상위 링크는 [`../AGENTS.md`](../AGENTS.md)에서 시작한다.
+- 응집도/결합도 정의와 hard-fail/review 경계는 [`./ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md)를 상위 owner로 본다.
 - Plan Mode 또는 규칙/운영/Codex 절차 작업은 `rule-operations` owner 문서를 먼저 보고, 그 lane에서는 mutation 없이 inspection/reference만 수행한다.
 - Unity UI/UX authoring 정책 본문은 [`./ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)에만 둔다.
 - Unity MCP 실행 루틴과 canonical smoke 기준은 [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md)를 reference로 본다.

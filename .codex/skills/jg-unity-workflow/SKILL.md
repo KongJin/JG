@@ -5,12 +5,12 @@ description: Project-specific Unity workflow for the JG repo. Use when Codex wor
 
 # JG Unity Workflow
 
-> 마지막 업데이트: 2026-04-22
+> 마지막 업데이트: 2026-04-23
 > 상태: active
 > doc_id: skill.jg-unity-workflow
 > role: skill-entry
 > owner_scope: JG Unity lane read order, owner doc routing, MCP and validation entrypoint
-> upstream: repo.agents, docs.index, ops.unity-ui-authoring-workflow
+> upstream: repo.agents, docs.index, ops.cohesion-coupling-policy, ops.unity-ui-authoring-workflow
 > artifacts: `tools/unity-mcp/`, `artifacts/unity/`, `Assets/Scenes/`, `Assets/Prefabs/`
 
 Use this skill for JG-specific Unity execution order and sources of truth.
@@ -22,11 +22,12 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` when you need the current doc routes.
-3. If the task touches Unity UI or UX authoring, read owner doc `ops.unity-ui-authoring-workflow` before any implementation.
-4. If the task depends on Stitch handoff or `.stitch` artifacts, read owner doc `ops.stitch-data-workflow` before translating them into Unity work.
-5. If the task touches Unity MCP, Play Mode automation, prefab-first reset, or runtime smoke, read `tools/unity-mcp/README.md` as execution reference.
-6. If the task depends on current project priorities or recent recovery work, skim the relevant plan in `docs/plans/`.
-7. If a task clearly needs extra architecture or initialization docs and they exist, read them. Do not stop if they are absent.
+3. Read owner doc `ops.cohesion-coupling-policy` when the task needs owner boundaries, cohesion/coupling judgment, or responsibility splitting.
+4. If the task touches Unity UI or UX authoring, read owner doc `ops.unity-ui-authoring-workflow` before any implementation.
+5. If the task depends on Stitch handoff or `.stitch` artifacts, read owner doc `ops.stitch-data-workflow` before translating them into Unity work.
+6. If the task touches Unity MCP, Play Mode automation, prefab-first reset, or runtime smoke, read `tools/unity-mcp/README.md` as execution reference.
+7. If the task depends on current project priorities or recent recovery work, skim the relevant plan in `docs/plans/`.
+8. If a task clearly needs extra architecture or initialization docs and they exist, read them. Do not stop if they are absent.
 
 ## JG Defaults
 
@@ -146,6 +147,7 @@ Do not rely on reflection or smoke as the primary safety net when direct editor 
 
 - `AGENTS.md`
 - `docs/index.md`
+- `ops.cohesion-coupling-policy`
 - `ops.stitch-data-workflow`
 - `ops.unity-ui-authoring-workflow`
 - `tools/unity-mcp/README.md`

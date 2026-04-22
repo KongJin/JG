@@ -11,6 +11,8 @@
 이 문서는 **Lobby/Garage UI 레이아웃과 Unity 변환 규칙의 단일 기준**이다.
 현재 범위는 폐기된 legacy scene이 아니라, 새로 다시 세울 `LobbyPageRoot`와 `GaragePageRoot` baseline contract를 포함한다.
 `Game HUD`는 현재 범위 밖이다.
+응집도와 결합도의 상위 정의, 예외, hard-fail/review 경계는 `ops.cohesion-coupling-policy`를 따른다.
+이 문서는 Lobby/Garage UI 설계 lane의 레이아웃, 토큰, Unity 변환 파생 규칙만 소유한다.
 
 ## Source Of Truth
 

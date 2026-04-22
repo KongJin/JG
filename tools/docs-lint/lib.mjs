@@ -63,8 +63,11 @@ const DEPRECATED_REPO_SKILL_INLINE_PREFIXES = [
   ".stitch/designs/",
   ".stitch/handoff/",
 ];
+const DOC_ID_REFERENCE_PATTERN =
+  /^(repo|docs|ops|design|plans|playtest|discussions|tools|skill|historical)\.[a-z0-9]+(?:[-.][a-z0-9]+)*$/;
 const PLAN_MODE_PATTERNS = [/\bPlan Mode\b/u, /Plan 모드/u];
 const RULE_OPERATIONS_PATTERNS = [/\brule-operations\b/u];
+const COHESION_COUPLING_OWNER_PATTERNS = [/\bops\.cohesion-coupling-policy\b/u];
 const MUTATION_FORBIDDEN_PATTERNS = [
   /mutation\s*금지/u,
   /mutation을\s*금지/u,
@@ -114,6 +117,8 @@ export async function lintRepository(repoRoot, options = {}) {
 
   if (includeGeneralChecks) {
     errors.push(...validateUniqueDocIds(documents));
+    errors.push(...validateKnownDocIdReferences(documents));
+    errors.push(...validateIndexCoverage(documents, repoRoot));
     errors.push(...validateIndexStatusLabels(documents, repoRoot));
   }
 
@@ -180,22 +185,6 @@ async function discoverManagedDocs(repoRoot) {
         }
       }
 
-      if (entry.isDirectory() && entry.name === ".system") {
-        const systemEntries = await fs.readdir(path.join(skillsDir, entry.name), {
-          withFileTypes: true,
-        });
-
-        for (const systemEntry of systemEntries) {
-          if (!systemEntry.isDirectory()) {
-            continue;
-          }
-
-          await addIfExists(
-            discovered,
-            path.join(skillsDir, entry.name, systemEntry.name, "SKILL.md"),
-          );
-        }
-      }
     }
   }
 
@@ -334,7 +323,7 @@ async function validateLinks(document) {
 
 async function validateSkillInlinePaths(document, repoRoot) {
   const documentKind = getDocumentKind(document.repoRelativePath);
-  if (documentKind !== "repo-skill" && documentKind !== "system-skill") {
+  if (documentKind !== "repo-skill") {
     return [];
   }
 
@@ -525,7 +514,19 @@ function validatePlanModeRouting(document) {
   }
 
   if (MUTATING_REPO_SKILL_ENTRIES.has(document.repoRelativePath)) {
-    return validateDocumentContainsAll(
+    return [
+      ...validateDocumentContainsAll(
+        document,
+        [
+          {
+            patterns: COHESION_COUPLING_OWNER_PATTERNS,
+            label: "`ops.cohesion-coupling-policy` owner route",
+          },
+        ],
+        "missing-skill-owner-route",
+        "Repo-local skill-entry must route responsibility, cohesion, and coupling judgments through `ops.cohesion-coupling-policy` before lane-specific owner docs.",
+      ),
+      ...validateDocumentContainsAll(
       document,
       [
         { patterns: PLAN_MODE_PATTERNS, label: "Plan Mode wording" },
@@ -534,7 +535,8 @@ function validatePlanModeRouting(document) {
       ],
       "missing-skill-inspection-clause",
       "Repo-local mutating skill-entry must state that Plan Mode is inspection/reference only and mutation is forbidden from that lane.",
-    );
+      ),
+    ];
   }
 
   return [];
@@ -564,6 +566,88 @@ function validateUniqueDocIds(documents) {
     for (const owner of owners) {
       errors.push(createError("duplicate-doc-id", owner, message));
     }
+  }
+
+  return errors;
+}
+
+function validateKnownDocIdReferences(documents) {
+  const knownDocIds = new Set(
+    documents
+      .map((document) => document.metadata.get("doc_id"))
+      .filter((docId) => Boolean(docId)),
+  );
+  const errors = [];
+
+  for (const document of documents) {
+    const lines = stripFencedCodeBlocks(document.content).split(/\r?\n/);
+    for (let index = 0; index < lines.length; index += 1) {
+      const line = lines[index];
+      for (const token of extractInlineCodeTokens(line)) {
+        if (!DOC_ID_REFERENCE_PATTERN.test(token) || knownDocIds.has(token)) {
+          continue;
+        }
+
+        errors.push(
+          createError(
+            "missing-doc-id-reference",
+            document.repoRelativePath,
+            `Inline owner doc_id reference \`${token}\` does not match any managed document.`,
+            index + 1,
+          ),
+        );
+      }
+    }
+  }
+
+  return errors;
+}
+
+function validateIndexCoverage(documents, repoRoot) {
+  const indexDocument = documents.find(
+    (document) => document.repoRelativePath === "docs/index.md",
+  );
+  if (!indexDocument) {
+    return [];
+  }
+
+  const indexedDocPaths = new Set();
+  const lines = indexDocument.content.split(/\r?\n/);
+  for (const line of lines) {
+    const match = line.match(INDEX_STATUS_LINE_PATTERN);
+    if (!match) {
+      continue;
+    }
+
+    const target = normalizeMarkdownTarget(match[2]);
+    if (!target || !isRelativeTarget(target)) {
+      continue;
+    }
+
+    const resolvedPath = path.resolve(path.dirname(indexDocument.absolutePath), target);
+    indexedDocPaths.add(toRepoRelative(repoRoot, resolvedPath));
+  }
+
+  const errors = [];
+  for (const document of documents) {
+    if (
+      !document.repoRelativePath.startsWith("docs/") ||
+      document.repoRelativePath === "docs/index.md"
+    ) {
+      continue;
+    }
+
+    if (indexedDocPaths.has(document.repoRelativePath)) {
+      continue;
+    }
+
+    errors.push(
+      createError(
+        "index-missing-entry",
+        "docs/index.md",
+        `docs/index.md must register \`${document.repoRelativePath}\` with a status label entry.`,
+      ),
+    );
   }
 
   return errors;

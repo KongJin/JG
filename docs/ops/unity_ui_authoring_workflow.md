@@ -11,6 +11,8 @@
 이 문서는 이 레포에서 Unity UI/UX 작업을 시작할 때 에이전트가 가장 먼저 따라야 하는 단일 기준이다.
 정책 본문은 여기 한 곳에만 둔다.
 `AGENTS.md`, `docs/index.md`, skill 문서, `tools/unity-mcp/README.md`는 이 문서를 가리키는 엔트리 또는 실행 reference로만 유지한다.
+응집도와 결합도의 상위 정의, 예외, hard-fail/review 경계는 `ops.cohesion-coupling-policy`를 따른다.
+이 문서는 Unity UI authoring lane의 파생 규칙과 evidence gate만 소유한다.
 
 ## 목적
 
