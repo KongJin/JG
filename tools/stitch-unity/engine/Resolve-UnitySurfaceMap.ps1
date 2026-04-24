@@ -16,7 +16,6 @@ $blocks = foreach ($entry in @(Get-StitchUnityBlockEntries -Map $mapResult.Map))
         hostPath = [string](Get-StitchUnityRequiredProperty -InputObject $entry.mapping -Name "hostPath")
         candidatePaths = @(Get-StitchUnityCandidatePaths -BlockMapping $entry.mapping)
         requiredComponents = @(Get-StitchUnityOptionalArray -InputObject $entry.mapping -Name "requiredComponents")
-        verificationTags = @(Get-StitchUnityOptionalArray -InputObject $entry.mapping -Name "verificationTags")
         stateBindings = @(Get-StitchUnityOptionalArray -InputObject $entry.mapping -Name "stateBindings")
         notes = @(Get-StitchUnityOptionalArray -InputObject $entry.mapping -Name "notes")
     }
@@ -28,7 +27,6 @@ $result = [PSCustomObject]@{
     target = $mapResult.Map.target
     translationStrategy = [string]$mapResult.Map.translationStrategy
     blocks = $blocks
-    verification = $mapResult.Map.verification
 }
 
 if ($AsJson) {

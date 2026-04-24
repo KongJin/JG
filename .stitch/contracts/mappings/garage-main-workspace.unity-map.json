@@ -14,8 +14,6 @@
   "artifactPaths": {
     "translationResult": "artifacts/unity/stitch-garage-translation-result.json",
     "preflightResult": "artifacts/unity/stitch-garage-preflight-result.json",
-    "inspectionResult": "artifacts/unity/stitch-garage-inspection-result.json",
-    "verificationResult": "artifacts/unity/stitch-garage-verification-result.json",
     "pipelineResult": "artifacts/unity/stitch-garage-pipeline-result.json"
   },
   "blocks": {
@@ -27,20 +25,12 @@
       "requiredComponents": [
         "HorizontalLayoutGroup",
         "LayoutElement"
-      ],
-      "verificationTags": [
-        "first-read",
-        "horizontal-strip"
       ]
     },
     "focus-bar": {
       "hostPath": "GarageMobileStackRoot/GarageMobileTabBar",
       "requiredComponents": [
         "HorizontalLayoutGroup"
-      ],
-      "verificationTags": [
-        "compact",
-        "focus-switch"
       ]
     },
     "editor-panel": {
@@ -48,28 +38,18 @@
       "requiredComponents": [
         "VerticalLayoutGroup",
         "LayoutElement"
-      ],
-      "verificationTags": [
-        "dominant-block"
       ]
     },
     "preview-card": {
       "hostPath": "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/PreviewCard",
       "requiredComponents": [
         "LayoutElement"
-      ],
-      "verificationTags": [
-        "evaluative"
       ]
     },
     "summary-card": {
       "hostPath": "GarageMobileStackRoot/MobileBodyHost/MobileBodyScrollContent/ResultPane",
       "requiredComponents": [
         "LayoutElement"
-      ],
-      "verificationTags": [
-        "evaluative",
-        "result-summary"
       ]
     },
     "primary-cta": {
@@ -77,42 +57,14 @@
       "requiredComponents": [
         "Button",
         "Image"
-      ],
-      "verificationTags": [
-        "persistent",
-        "primary-emphasis"
       ]
     },
     "aux-action": {
       "hostPath": "GarageHeaderRow/SettingsButton",
       "requiredComponents": [
         "Button"
-      ],
-      "verificationTags": [
-        "auxiliary-action"
       ]
     }
-  },
-  "verification": {
-    "requiredBlocks": [
-      "slot-selector",
-      "focus-bar",
-        "editor-panel",
-      "preview-card",
-      "summary-card",
-      "primary-cta"
-    ],
-    "firstReadOrder": [
-      "slot-selector",
-      "focus-bar",
-        "editor-panel",
-      "preview-card",
-      "summary-card",
-      "primary-cta"
-    ],
-    "primaryCtas": [
-      "primary-cta"
-    ]
   },
   "notes": [
     "First generic Stitch-to-Unity surface map.",

@@ -20,7 +20,7 @@
 2. block이 shared component vocabulary로 무리 없이 설명된다.
 3. required serialized ref가 실제 prefab에 연결돼 있다.
 4. primary CTA, selected state, completion posture가 source와 같은 등급으로 읽힌다.
-5. inspection / verification / workflow policy evidence가 남아 있다.
+5. preflight / translation / pipeline / workflow policy evidence가 남아 있다.
 
 ## 번역 전에 보는 것
 
@@ -91,9 +91,8 @@ Garage baseline quick mapping:
 1. compile/reload
 2. preflight
 3. translation
-4. inspection
-5. verification
-6. workflow policy
+4. pipeline
+5. workflow policy
 
 한 줄 기준:
 

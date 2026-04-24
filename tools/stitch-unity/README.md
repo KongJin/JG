@@ -10,22 +10,20 @@
 
 이 문서는 `tools/stitch-unity` 실행 reference다.
 데이터 ownership은 [`docs/ops/stitch_data_workflow.md`](../../docs/ops/stitch_data_workflow.md), fidelity 판단은 [`docs/ops/stitch_to_unity_translation_guide.md`](../../docs/ops/stitch_to_unity_translation_guide.md)가 소유한다.
-여기서는 `manifest.blocks[] + unity-map`을 어떤 명령으로 생성/검증하는가만 다룬다.
+여기서는 `manifest.blocks[] + unity-map`을 어떤 명령으로 생성/실행하는가만 다룬다.
 
 ## 목적
 
 - `screen manifest + unity-map` 기준으로 surface를 실행한다.
 - target prefab이 없어도 preflight와 generator strategy로 surface를 다시 만든다.
-- translation 뒤에 inspection / verification artifact를 남긴다.
-- generator는 계약을 읽고 검증하고 적용만 한다.
+- translation 뒤에 preflight / translation / pipeline artifact를 남긴다.
+- generator는 계약을 읽고 적용만 한다.
 - Stitch-driven script는 UI 상수나 fallback 값을 소유하지 않는다.
 
 ## 핵심 파일
 
 - `engine/Test-StitchSurfaceGenerationPreflight.ps1`
 - `engine/Resolve-UnitySurfaceMap.ps1`
-- `engine/Get-UnitySurfaceInspection.ps1`
-- `engine/Invoke-UnitySurfaceVerification.ps1`
 - `surfaces/Invoke-StitchSurfaceTranslation.ps1`
 
 ## Map 규칙
@@ -59,8 +57,7 @@ manifest는 path/layout/label literal을 소유하지 않는다.
 1. preflight
 2. dependency execution
 3. translation
-4. inspection
-5. verification
+4. pipeline result write
 
 ## 명령 예시
 
@@ -90,7 +87,7 @@ npm run --silent stitch:policy:lint
 - target prefab이 없는데 strategy가 `patch`뿐이다
 - dependency 준비가 runtime 실패로만 드러난다
 - translator가 contract 대신 script-side constants나 fallback에 의존한다
-- inspection은 성공해도 verification이 layout/semantic mismatch를 설명하지 못한다
+- pipeline artifact가 번역 실패 원인을 설명하지 못하는데도 성공처럼 보인다
 
 ## Policy Guardrail
 

@@ -19,7 +19,7 @@
 
 ## 현재 기본값
 
-- Lobby/Garage UI는 scene-first repair 대신 `accepted Stitch contract -> baseline prefab wiring -> new scene assembly -> fresh contract/inspection/verification` 순서를 따른다.
+- Lobby/Garage UI는 scene-first repair 대신 `accepted Stitch contract -> baseline prefab wiring -> new scene assembly -> fresh contract/translation pipeline` 순서를 따른다.
 - historical gate는 active acceptance proof가 아니고, 예전 smoke 스크립트는 active repo에서 제거됐다.
 
 ## historical route가 다시 필요하면 확인할 것

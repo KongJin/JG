@@ -89,14 +89,6 @@
           "type": "string",
           "minLength": 1
         },
-        "inspectionResult": {
-          "type": "string",
-          "minLength": 1
-        },
-        "verificationResult": {
-          "type": "string",
-          "minLength": 1
-        },
         "pipelineResult": {
           "type": "string",
           "minLength": 1
@@ -114,33 +106,6 @@
       "minProperties": 1,
       "additionalProperties": {
         "$ref": "#/$defs/blockMapping"
-      }
-    },
-    "verification": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "requiredBlocks": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "firstReadOrder": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "primaryCtas": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
-        }
       }
     },
     "notes": {
@@ -170,13 +135,6 @@
           }
         },
         "requiredComponents": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "verificationTags": {
           "type": "array",
           "items": {
             "type": "string",

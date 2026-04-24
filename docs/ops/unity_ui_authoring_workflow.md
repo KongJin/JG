@@ -29,7 +29,7 @@
 | `mixed` | scene/prefab과 presentation code를 함께 건드릴 때 | scene contract를 먼저 읽고, scene/prefab authoring을 주인으로 유지 | compile/reload + workflow policy check + 필요한 scene-specific evidence |
 | `codex-lobby-ui` | legacy Lobby/Garage scene가 아직 실제 authoring 대상일 때만 | historical route. scene가 실제 존재할 때만 MCP repair 사용 | fresh workflow gate |
 | `game-scene-ui` | legacy battle scene가 아직 실제 authoring 대상일 때만 | scene가 실제 존재할 때만 MCP repair로 직접 정리 | compile/reload + workflow policy check + route-specific verification |
-| `prefab-first reset` | scene/prefab 결과물을 의도적으로 폐기하고 Stitch handoff에서 다시 가져올 때 | scene repair 대신 surface별 baseline prefab을 먼저 재구성하고, scene은 마지막에 새로 조립 | compile/reload + workflow policy check + prefab wiring review + scene 생성 후 fresh contract/inspection/verification |
+| `prefab-first reset` | scene/prefab 결과물을 의도적으로 폐기하고 Stitch handoff에서 다시 가져올 때 | scene repair 대신 surface별 baseline prefab을 먼저 재구성하고, scene은 마지막에 새로 조립 | compile/reload + workflow policy check + prefab wiring review + scene 생성 후 fresh contract/translation pipeline |
 
 ## 금지 작업
 
@@ -78,7 +78,7 @@ reset 상태에서는 historical reference로만 본다.
 - compile/reload 안정화
 - `Invoke-UnityUiAuthoringWorkflowPolicy.ps1` 결과
 - prefab 단위 required reference / hierarchy 점검
-- 새 scene이 생긴 뒤 fresh contract, inspection, verification 재생성
+- 새 scene이 생긴 뒤 fresh contract, translation pipeline 재생성
 
 추가 규칙:
 
@@ -98,7 +98,7 @@ reset 상태에서는 historical reference로만 본다.
 1. compile/reload를 안정화한다.
 2. workflow policy check를 실행한다.
 3. prefab baseline hierarchy와 required reference를 먼저 점검한다.
-4. 새 scene을 조립한 뒤 contract, inspection, verification을 fresh artifact로 다시 만든다.
+4. 새 scene을 조립한 뒤 contract와 translation pipeline artifact를 fresh 상태로 다시 만든다.
 5. reset 이전 artifact는 historical reference로만 남긴다.
 
 ## 강제 장치

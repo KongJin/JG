@@ -135,7 +135,6 @@ manifest는 semantic block을 순서대로 선언해야 하고, generator는 이
 - `hostPath`
 - optional `aliases`
 - optional `requiredComponents`
-- optional `verificationTags`
 - optional `notes`
 
 한 줄 기준:
@@ -187,9 +186,9 @@ generator는 아래만 수행한다.
 1. manifest를 읽고 semantic block 순서를 확정한다.
 2. contract completeness를 검증한다.
 3. contract에 적힌 값만 적용한다.
-3. unity-map을 읽고 verification/wiring 경로를 확인한다.
-4. controller/view serialized reference를 연결한다.
-5. inspection / verification artifact를 남긴다.
+4. unity-map을 읽고 wiring 경로를 확인한다.
+5. controller/view serialized reference를 연결한다.
+6. preflight / translation / pipeline artifact를 남긴다.
 
 generator가 legacy skeleton이나 override 문법을 다시 해석하는 경로는 활성 기준이 아니다.
 v1에서 generator가 `component-catalog`를 읽는 경로도 아직 활성 기준이 아니다.

@@ -30,7 +30,7 @@
 - runtime hierarchy
 - serialized reference
 - 실제 prefab/scene 저장
-- inspection / verification evidence
+- preflight / translation / pipeline evidence
 
 한 줄 기준:
 
@@ -124,14 +124,12 @@ generator는:
 - 계약에 필요한 값이 없으면 script가 기본값으로 메우지 않고 즉시 실패한다.
 - `source-derived implementation`처럼 script가 시각 결정을 대신하는 경로는 활성 기준이 아니다.
 
-### 5. Verification 남기기
+### 5. Translation Evidence 남기기
 
 translation 뒤에는 아래 artifact를 남긴다.
 
 - preflight
 - translation
-- inspection
-- verification
 - pipeline
 
 ## Reset / Reimport 기준
@@ -146,7 +144,7 @@ target prefab이 없어도 정상 케이스다.
 3. unity-map 확인
 4. presentation contract 확인
 5. generator 실행
-6. inspection / verification 확인
+6. preflight / translation / pipeline 확인
 
 한 줄 기준:
 

@@ -11,7 +11,7 @@
 Unity MCP in this repo is a `diagnostic + manual automation` bridge.
 The prior Lobby/Garage `LobbyScene.unity` workflow is now a historical route.
 While the repo is rebuilding UI from scratch, default to `prefab-first reset`:
-accepted Stitch handoff -> presentation contract review -> baseline prefab wiring -> new scene assembly -> fresh contract/inspection/verification.
+accepted Stitch handoff -> presentation contract review -> baseline prefab wiring -> new scene assembly -> fresh contract/translation pipeline.
 Unity UI/UX authoring policy 본문 owner는 `ops.unity-ui-authoring-workflow`이고, current path는 `docs/index.md`에서 해석한다. 이 문서는 실행 reference만 담당한다.
 
 - Bridge core: `Assets/Editor/UnityMcp/`
@@ -57,7 +57,7 @@ Before using Unity MCP for prefab authoring, scene assembly, Play Mode automatio
 2. If there are compile errors, fix them before entering any Unity MCP workflow
 3. After the fix, wait for compile and script reload to settle with `Invoke-McpCompileRequestAndWait` or `Invoke-EditorProjectSync.ps1`
 4. Confirm `/health` reports `isCompiling = false`
-5. For reset work, continue with `prefab wiring review -> new scene assembly -> fresh contract/inspection/verification`
+5. For reset work, continue with `prefab wiring review -> new scene assembly -> fresh contract/translation pipeline`
 
 If compile errors remain, `play/start`, the workflow gate, and verification helpers can fail with misleading timeout symptoms. Treat that as a compile-clean failure first, not as an MCP failure.
 
@@ -71,7 +71,7 @@ Use this order for current Lobby/Garage reset work:
 2. confirm accepted handoff + required presentation refs
 3. rebuild baseline prefab wiring first
 4. assemble a new scene
-5. run fresh contract/inspection/verification only after the new scene exists
+5. run fresh contract/translation pipeline only after the new scene exists
 
 Historical note:
 
@@ -208,17 +208,17 @@ The workflow gate is also not an exemption path for runtime layout authoring ins
 
 Use this as the required gate for Lobby/Garage UI changes only when the legacy scene route is intentionally active.
 
-## Runtime Verification
+## Runtime Proof
 
 Legacy runtime smoke scripts were removed from the active toolset.
-Current runtime proof should be surface-specific and generated from the active contract or generator pipeline instead of relying on old scene-route smoke scripts.
+Current runtime proof should be surface-specific and generated from the active contract or translation pipeline instead of relying on old scene-route smoke scripts.
 
 Recommended runtime proof order:
 
 1. workflow gate when a legacy authoring scene is truly active
-2. surface contract verification
-3. inspection artifact review
-4. generator or translation pipeline result review
+2. surface contract review
+3. translation artifact review
+4. pipeline result review
 
 ## Notes
 
