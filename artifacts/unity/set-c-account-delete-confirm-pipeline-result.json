@@ -4,6 +4,8 @@
     "surfaceId":  "account-delete-confirm",
     "strategyMode":  "generate-or-patch",
     "translationStrategy":  "contract-complete-translator-v1",
+    "terminalVerdict":  "",
+    "blockedReason":  "",
     "summary":  {
                     "preflightReady":  true,
                     "dependencyCount":  0,
@@ -19,14 +21,14 @@
                         "preflight":  "passed",
                         "dependencies":  "passed",
                         "translation":  "passed",
-                        "reviewCapture":  "passed",
+                        "reviewCapture":  "warning",
                         "pipeline":  "written"
                     },
     "inputs":  {
                    "sourceKind":  "compiled-family",
-                   "mapPath":  "in-memory://compiled/account-delete-confirm.unity-map.json",
-                   "manifestPath":  "in-memory://compiled/account-delete-confirm.screen-manifest.json",
-                   "presentationPath":  ".stitch/contracts/presentations/account-delete-confirm.presentation.json",
+                   "mapPath":  "in-memory://compiled/account-delete-confirm/unity-map",
+                   "manifestPath":  "in-memory://compiled/account-delete-confirm/screen-manifest",
+                   "presentationPath":  "in-memory://compiled/account-delete-confirm/presentation-contract",
                    "target":  {
                                   "kind":  "prefab",
                                   "assetPath":  "Assets/Prefabs/Features/Account/Independent/AccountDeleteConfirmDialogRoot.prefab"
@@ -59,11 +61,11 @@
                            "sourceRefs":  {
                                               "htmlPath":  ".stitch/designs/set-c-account-delete-confirm.html",
                                               "imagePath":  ".stitch/designs/set-c-account-delete-confirm.png",
-                                              "presentationPath":  ".stitch/contracts/presentations/account-delete-confirm.presentation.json"
+                                              "presentationPath":  "in-memory://compiled/account-delete-confirm/presentation-contract"
                                           },
                            "compiledContractSummary":  {
-                                                           "mapPath":  "in-memory://compiled/account-delete-confirm.unity-map.json",
-                                                           "manifestPath":  "in-memory://compiled/account-delete-confirm.screen-manifest.json",
+                                                           "mapPath":  "in-memory://compiled/account-delete-confirm/unity-map",
+                                                           "manifestPath":  "in-memory://compiled/account-delete-confirm/screen-manifest",
                                                            "blockIds":  [
                                                                             "warning-header",
                                                                             "confirmation-copy",
@@ -88,8 +90,8 @@
                         "targetCreated":  false,
                         "targetRootName":  "AccountDeleteConfirmDialogRoot",
                         "contractRefs":  {
-                                             "manifestPath":  "in-memory://compiled/account-delete-confirm.screen-manifest.json",
-                                             "presentationPath":  ".stitch/contracts/presentations/account-delete-confirm.presentation.json"
+                                             "manifestPath":  "in-memory://compiled/account-delete-confirm/screen-manifest",
+                                             "presentationPath":  "in-memory://compiled/account-delete-confirm/presentation-contract"
                                          },
                         "createdPaths":  [
 
@@ -540,21 +542,22 @@
                                                           ],
                                              "reason":  "applied"
                                          },
-                        "generatedAt":  "2026-04-24T23:01:09.0399252+09:00"
+                        "generatedAt":  "2026-04-25T02:46:47.4936819+09:00"
                     },
     "reviewCapture":  {
                           "attempted":  true,
                           "supported":  true,
-                          "status":  "passed",
+                          "status":  "warning",
                           "surfaceId":  "account-delete-confirm",
                           "routeKind":  "temp-scene-sceneview",
-                          "menuPath":  "Tools/Scene/Prepare Set C Overlay Runtime Review/Account Delete Confirm",
+                          "menuPath":  "Tools/Scene/Prepare Stitch Runtime Review/Overlay Family",
                           "artifactPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-c-account-delete-confirm-scene-capture.png",
                           "relativeArtifactPath":  "artifacts/unity/set-c-account-delete-confirm-scene-capture.png",
                           "reason":  "",
+                          "requestPath":  "Temp/StitchRuntimeReview/request.json",
                           "menu":  {
                                        "success":  true,
-                                       "message":  "Executed menu: Tools/Scene/Prepare Set C Overlay Runtime Review/Account Delete Confirm",
+                                       "message":  "Executed menu: Tools/Scene/Prepare Stitch Runtime Review/Overlay Family",
                                        "queued":  false,
                                        "pendingCount":  0,
                                        "autoSaved":  false
@@ -564,18 +567,77 @@
                                           "message":  "SceneView screenshot captured.",
                                           "relativePath":  "artifacts/unity/set-c-account-delete-confirm-scene-capture.png",
                                           "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-c-account-delete-confirm-scene-capture.png",
-                                          "fileSizeBytes":  67017,
+                                          "fileSizeBytes":  67795,
                                           "sourceView":  "SceneView",
                                           "width":  248,
                                           "height":  658,
                                           "prefabStageAssetPath":  ""
                                       },
                           "consoleErrors":  {
-                                                "count":  0,
+                                                "count":  10,
                                                 "items":  [
-
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:30.770",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:30.770",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:33.414",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:33.414",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:36.626",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:36.626",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:43.529",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:43.529",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:47.458",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:47.458",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              }
                                                           ]
                                             },
-                          "generatedAt":  "2026-04-24T23:01:09.7662742+09:00"
+                          "generatedAt":  "2026-04-25T02:46:48.0170030+09:00"
                       }
 }

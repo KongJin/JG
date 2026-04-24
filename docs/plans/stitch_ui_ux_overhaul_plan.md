@@ -1,6 +1,6 @@
 # Stitch UI/UX Overhaul Plan
 
-> 마지막 업데이트: 2026-04-24
+> 마지막 업데이트: 2026-04-25
 > 상태: active
 > doc_id: plans.stitch-ui-ux-overhaul
 > role: plan
@@ -24,8 +24,11 @@
   - Stitch 인증/프로젝트 접근 성공
   - 마스터 프로젝트 `11729197788183873077` 확정
   - `.stitch/DESIGN.md` 초안 작성 완료
-- set inventory 자체는 남아 있지만, 현재 committed repo truth에서 active surface로 바로 읽을 수 있는 handoff는 `Set B Garage main workspace` 하나다.
-- active handoff artifact는 `.stitch/contracts/screens/*.json`, `.stitch/contracts/mappings/*.json`만 허용한다.
+- set inventory 자체는 남아 있지만, 현재 committed repo truth에서 active handoff가 직접 닫힌 surface는 `Set B Garage main workspace`, `Set C account-delete-confirm`, `Set C common-error-dialog` 정도다. 나머지 inventory는 아직 reference lane이다.
+- active handoff artifact는 accepted source freeze와 in-memory execution contract만 허용한다.
+- per-surface `screen/map/presentation` JSON file은 active route에서 제거했다.
+- set별 전용 SceneTool과 set별 전용 review prep menu는 active route에서 제거했다.
+- 하지만 새 surface translation이 완전히 generic한 상태는 아니다. 현재 병목은 source discovery보다 family detection / generic parser coverage다.
 - `.stitch/contracts/components/shared-ui.component-catalog.json`은 shared UI vocabulary용 companion contract로 유지하고, active generator input으로 올리지 않는다.
 - set별 md/png 기반 자산은 historical reference로만 남는다.
 - `.stitch/handoff/*.md`와 set별 캡처/pass 산출물은 historical/reference lane으로만 남긴다.
@@ -37,8 +40,8 @@
 - Lobby/Garage layout 기준: `design.ui-foundations`
 - Stitch 활용 원칙: `design.ui-reference-workflow`
 - Stitch visual system artifact: `.stitch/DESIGN.md`
-- Stitch 세트별 번역 기준 artifact: `.stitch/contracts/screens/*.json`
-- Stitch Unity binding artifact: `.stitch/contracts/mappings/*.json`
+- Stitch 세트별 번역 기준 artifact: in-memory `screen manifest`
+- Stitch Unity binding artifact: in-memory `unity-map`
 - Stitch shared vocabulary artifact: `.stitch/contracts/components/shared-ui.component-catalog.json`
 - 진행 상태 SSOT: `plans.progress`
 
@@ -69,32 +72,32 @@
 ### Set A - Lobby
 
 - 범위: `Lobby main`, `Room list empty/list`, `Create room`, `Garage summary`
-- contract: `set-a Lobby manifests under .stitch/contracts/screens/`, Unity binding under `.stitch/contracts/mappings/`
+- contract: `set-a Lobby` in-memory execution contract lane
 - 현재 상태: set inventory에는 남아 있지만 active structured contract가 현재 repo에 닫혀 있지 않다. `Set B` recovery가 닫히기 전까지 reference lane으로 유지한다.
 
 ### Set B - Garage
 
 - 범위: `Garage main workspace`, `slot selector`, `focused editor`, `preview`, `summary`, `save dock`, `Garage settings overlay`, `Account card`
-- contract: `set-b Garage manifests under .stitch/contracts/screens/`, Unity binding under `.stitch/contracts/mappings/`
-- 현재 상태: 현재 committed repo에서 실제 active handoff가 닫힌 유일한 surface다. 다음 패스는 시각 polish가 아니라 `manifest -> unity-map -> committed prefab target -> fresh translation evidence`를 다시 한 줄로 닫는 것이다.
+- contract: `set-b Garage` in-memory execution contract lane
+- 현재 상태: 현재 committed repo에서 실제 active handoff가 닫힌 유일한 surface다. 다음 패스는 시각 polish가 아니라 `compiled manifest -> compiled unity-map -> committed prefab target -> fresh translation evidence`를 다시 한 줄로 닫는 것이다.
 
 ### Set C - Overlay
 
 - 범위: `Room detail panel`, `Login loading overlay`, `Account delete confirm`, `Common modal/error dialog`
-- contract: `set-c overlay manifests under .stitch/contracts/screens/`, Unity binding under `.stitch/contracts/mappings/`
+- contract: `set-c overlay` in-memory execution contract lane
 - 현재 상태: `account-delete-confirm`는 active execution contracts, committed prefab baseline, translation artifact, SceneView capture evidence까지 닫혔다. 남은 이슈는 `warning icon glyph` asset과 runtime/mobile framing fidelity이고, 나머지 Set C surface는 계속 reference lane이다.
 - 현재 상태: `common-error-dialog`도 같은 loop로 닫혔다. execution contracts, translation artifact, SceneView capture evidence가 모두 있고, translation에서 `presentation.applied = true`를 유지한다.
 
 ### Set D - Battle HUD
 
 - 범위: `HUD`, `Unit summon bar`, `Core HP`, `Wave HUD`, `Placement feedback`, `Cannot afford overlay`
-- contract: `set-d Battle HUD manifests under .stitch/contracts/screens/`, Unity binding under `.stitch/contracts/mappings/`
+- contract: `set-d Battle HUD` in-memory execution contract lane
 - 현재 상태: set inventory와 source artifact는 남아 있지만, current repo truth에서 concrete runtime scene과 active handoff가 함께 닫혀 있지 않다. `Set B` recovery 이후에 다시 연다.
 
 ### Set E - Result / Feedback
 
 - 범위: `Wave end / result overlay`, `toast`, `banner`, `feedback`
-- contract: `set-e result/feedback manifests under .stitch/contracts/screens/`, Unity binding under `.stitch/contracts/mappings/`
+- contract: `set-e result/feedback` in-memory execution contract lane
 - 현재 상태: 일부 brief와 source artifact만 남아 있다. `Set D`와 함께 reference lane으로 유지한다.
 
 ## Standard Execution Loop
@@ -109,6 +112,67 @@
 6. Unity 반영은 `prefab-first reset` 기준으로 수행한다.
 7. 세트 종료 시 structured contract와 repo 문서를 함께 동기화한다.
 8. 검증은 더 싼 레이어부터 통과시킨다.
+
+## Generic Onboarding Plan
+
+목표는 `Set B/C/D/E`와 이후 다시 여는 inventory set을 같은 route로 태우되, 새 set이나 새 surface를 추가할 때 per-surface script edit가 필요하지 않게 만드는 것이다.
+
+적용 범위:
+
+- accepted Stitch source freeze가 있는 surface
+- `workspace`, `overlay`, 이후 추가 family로 분류 가능한 surface
+- `source freeze -> in-memory execution contract -> translation output` route를 따르는 handoff
+
+제외 범위:
+
+- Unity target prefab/scene 자체가 아직 없는 lane
+- visual fidelity final judgment와 runtime correctness closeout
+- family-level generator capability 자체가 아직 정의되지 않은 완전히 새로운 UI grammar
+
+핵심 기준:
+
+- 새 per-surface JSON file을 만들지 않는다.
+- 새 per-surface switch/case나 hardcoded source path를 기본 onboarding 수단으로 쓰지 않는다.
+- 실패 시 script fallback 대신 `blockedReason`으로 멈춘다.
+
+### Workstream 1. Generic Source Discovery
+
+- 목표: surface id를 코드에 등록하지 않고 accepted source freeze에서 `screen.html/png`를 찾는다.
+- 방법: active source inventory 또는 source freeze metadata를 generic lookup으로 읽고, `projectId/screenId/url/html/png`를 같은 구조로 반환한다.
+- 완료 조건: 새 source freeze를 추가해도 `Get-SupportedSurfaceSourceMetadata` 같은 per-surface table 편집 없이 source를 찾을 수 있다.
+
+### Workstream 2. Family Detection From Source
+
+- 목표: `garage-main-workspace`, `account-delete-confirm` 같은 이름 분기 대신 html/source pattern으로 `workspace`, `overlay` family를 판별한다.
+- 방법: first-read order, block composition, CTA posture, dialog viewport 같은 source signal을 읽어 family를 정한다.
+- 완료 조건: 새 surface가 기존 family 중 하나에 속하면 family 판별을 위해 per-surface script edit가 필요 없다.
+
+### Workstream 3. Generic Manifest / Unity Map Compile
+
+- 목표: per-surface block table를 코드에 직접 늘리지 않고 family-level rule로 in-memory `screen manifest`와 `unity-map`을 만든다.
+- 방법: family별 required block set, block role mapping, target binding 규칙만 남기고 surface별 차이는 source-derived semantic block으로 흡수한다.
+- 완료 조건: 새 surface는 source freeze와 target binding만 있으면 manifest/map compile이 같은 script route로 닫힌다.
+
+### Workstream 4. Generic Review Route
+
+- 목표: review capture route를 surface별 switch가 아니라 family/target rule로 준비한다.
+- 방법: `workspace`는 workspace staging route, `overlay`는 overlay staging route처럼 route kind를 줄이고, request file을 읽는 generic review tool만 사용한다. 없는 경우에는 translation과 분리된 warning으로만 남긴다.
+- 완료 조건: 새 surface 때문에 set별 review prep menu나 set별 SceneTool을 다시 만들지 않는다.
+
+### Workstream 5. Failure And Acceptance Guard
+
+- 목표: generic화 과정에서도 조용한 우회 실행을 막는다.
+- 방법: source discovery 실패, family 판별 실패, required block 누락, target binding 불가를 전부 explicit blocked로 남긴다.
+- 완료 조건: 새 surface가 supported family에 속하지 않으면 성공처럼 지나가지 않고 `blockedReason`으로 종료된다.
+
+## Acceptance For Generic Onboarding
+
+- 새 surface onboarding 때 per-surface PowerShell edit가 없다.
+- 새 per-surface `screen/map/presentation` JSON file이 생기지 않는다.
+- 같은 script route로 `workspace`와 `overlay` family가 모두 돈다.
+- `Set B`와 `Set C` current surface를 generic route로 다시 통과시킨다.
+- 그 다음 `Set D`, `Set E`, 또는 이후 다시 여는 inventory set 중 최소 1개 surface를 코드 수정 없이 source freeze 추가만으로 translation까지 태운다.
+- 실패 surface는 `blockedReason`을 남기고 멈추며, fallback success를 만들지 않는다.
 
 ## Validation Order
 
@@ -131,9 +195,16 @@
 
 현재 기본 우선순위는 아래 셋이다.
 
-1. `Set B Garage`만 active surface로 고정한다.
-2. `Set B Garage`의 committed prefab target과 fresh translation evidence를 다시 맞춘다.
-3. `Set C account-delete-confirm`에서 source 기반 execution contract 준비 흐름을 안정화하고, 나머지 `Set A/C/D/E`는 active handoff가 다시 닫힐 때까지 reference lane으로 유지한다.
+1. `Set B`와 `Set C` current surface를 기준 샘플로 삼아 generic onboarding route를 먼저 닫는다.
+2. source discovery, family detection, review route의 per-surface hardcode를 family/generic rule로 줄인다.
+3. generic route로 `Set B Garage`와 `Set C overlay`를 다시 통과시킨다.
+4. 그 다음 `Set D/E` 또는 이후 다시 여는 inventory set 중 하나를 코드 수정 없이 source freeze만 추가해 태운다.
+5. visual fidelity final judgment와 shared runtime correctness는 각 lane owner 계획에서 계속 별도로 닫는다.
+
+현재 truth 메모:
+
+- set별 전용 SceneTool은 제거했고, review route는 generic family tool만 남긴 상태다.
+- 이제 남은 핵심은 `Set A/D/E`를 위한 새 전용 도구 추가가 아니라, 공통 parser가 해당 source structure를 읽도록 넓히는 것이다.
 
 보조 원칙:
 
@@ -145,9 +216,6 @@
 ## Artifacts To Keep Updated
 
 - `.stitch/DESIGN.md`
-- `.stitch/contracts/mappings/*.json`
-- `.stitch/contracts/presentations/*.json`
-- `.stitch/contracts/screens/*.json`
 - 관련 `docs/design/*` 또는 `docs/plans/*` SSOT
 - active surface의 `preflight / translation / pipeline` artifact
 

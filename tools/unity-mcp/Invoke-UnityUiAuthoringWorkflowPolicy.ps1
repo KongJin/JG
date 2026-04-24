@@ -468,6 +468,8 @@ foreach ($record in @($staleEvidence)) {
 
 $report = [PSCustomObject]@{
     success = (@($policyViolations).Count -eq 0)
+    terminalVerdict = if (@($policyViolations).Count -eq 0) { "" } else { "blocked" }
+    blockedReason = if (@($policyViolations).Count -eq 0) { "" } else { [string](@($policyViolations | ForEach-Object { [string]$_.message }) -join " | ") }
     generatedAt = (Get-Date).ToString("yyyy-MM-dd HH:mm:ssK")
     route = $route
     changedFiles = $changedFiles

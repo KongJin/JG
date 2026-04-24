@@ -1,0 +1,729 @@
+﻿{
+    "schemaVersion":  "1.0.0",
+    "success":  true,
+    "surfaceId":  "garage-main-workspace",
+    "strategyMode":  "generate-or-patch",
+    "translationStrategy":  "contract-complete-translator-v1",
+    "terminalVerdict":  "",
+    "blockedReason":  "",
+    "summary":  {
+                    "preflightReady":  true,
+                    "dependencyCount":  0,
+                    "requiredDependencyFailureCount":  0,
+                    "optionalDependencyFailureCount":  0,
+                    "translationProducedResult":  true,
+                    "reviewCaptureAttempted":  true,
+                    "reviewCaptureSupported":  true,
+                    "targetKind":  "prefab",
+                    "targetAssetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
+                },
+    "stageStatus":  {
+                        "preflight":  "passed",
+                        "dependencies":  "passed",
+                        "translation":  "passed",
+                        "reviewCapture":  "warning",
+                        "pipeline":  "written"
+                    },
+    "inputs":  {
+                   "sourceKind":  "compiled-family",
+                   "mapPath":  "in-memory://compiled/garage-main-workspace/unity-map",
+                   "manifestPath":  "in-memory://compiled/garage-main-workspace/screen-manifest",
+                   "presentationPath":  "in-memory://compiled/garage-main-workspace/presentation-contract",
+                   "target":  {
+                                  "kind":  "prefab",
+                                  "assetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
+                              }
+               },
+    "artifacts":  {
+                      "translationResult":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-translation-result.json",
+                      "preflightResult":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-preflight-result.json",
+                      "reviewCapture":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-scene-capture.png",
+                      "pipelineResult":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-pipeline-result.json"
+                  },
+    "dependencies":  {
+                         "requiredFailures":  [
+
+                                              ],
+                         "optionalFailures":  [
+
+                                              ],
+                         "results":  [
+
+                                     ]
+                     },
+    "contractSource":  {
+                           "sourceKind":  "compiled-family",
+                           "generatedFromFamily":  true,
+                           "familyId":  "workspace-screen-v1",
+                           "profileGenerated":  true,
+                           "profilePath":  "",
+                           "sharedUiCatalogPath":  ".stitch/contracts/components/shared-ui.component-catalog.json",
+                           "sourceRefs":  {
+                                              "htmlPath":  ".stitch/designs/set-b-garage-main-workspace.html",
+                                              "imagePath":  ".stitch/designs/set-b-garage-main-workspace.png",
+                                              "presentationPath":  "in-memory://compiled/garage-main-workspace/presentation-contract"
+                                          },
+                           "compiledContractSummary":  {
+                                                           "mapPath":  "in-memory://compiled/garage-main-workspace/unity-map",
+                                                           "manifestPath":  "in-memory://compiled/garage-main-workspace/screen-manifest",
+                                                           "blockIds":  [
+                                                                            "header-chrome",
+                                                                            "slot-selector",
+                                                                            "focus-bar",
+                                                                            "editor-panel",
+                                                                            "preview-card",
+                                                                            "summary-card",
+                                                                            "save-dock",
+                                                                            "primary-cta",
+                                                                            "aux-action"
+                                                                        ],
+                                                           "targetAssetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab",
+                                                           "translationStrategy":  "contract-complete-translator-v1",
+                                                           "strategyMode":  "generate-or-patch"
+                                                       }
+                       },
+    "translation":  {
+                        "schemaVersion":  "1.0.0",
+                        "success":  true,
+                        "surfaceId":  "garage-main-workspace",
+                        "translationStrategy":  "contract-complete-translator-v1",
+                        "target":  {
+                                       "kind":  "prefab",
+                                       "assetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
+                                   },
+                        "targetCreated":  false,
+                        "targetRootName":  "GaragePageRoot",
+                        "contractRefs":  {
+                                             "manifestPath":  "in-memory://compiled/garage-main-workspace/screen-manifest",
+                                             "presentationPath":  "in-memory://compiled/garage-main-workspace/presentation-contract"
+                                         },
+                        "createdPaths":  [
+
+                                         ],
+                        "addedComponents":  [
+
+                                            ],
+                        "blocks":  [
+                                       {
+                                           "blockId":  "header-chrome",
+                                           "manifestOrder":  0,
+                                           "hostPath":  "HeaderChrome",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "HorizontalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "slot-selector",
+                                           "manifestOrder":  1,
+                                           "hostPath":  "MainScroll/Content/SlotSelector",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "HorizontalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "focus-bar",
+                                           "manifestOrder":  2,
+                                           "hostPath":  "MainScroll/Content/FocusBar",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "HorizontalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "editor-panel",
+                                           "manifestOrder":  3,
+                                           "hostPath":  "MainScroll/Content/EditorPanel",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "VerticalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "preview-card",
+                                           "manifestOrder":  4,
+                                           "hostPath":  "MainScroll/Content/PreviewCard",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "summary-card",
+                                           "manifestOrder":  5,
+                                           "hostPath":  "MainScroll/Content/PreviewCard/SummaryBar",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "HorizontalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "save-dock",
+                                           "manifestOrder":  6,
+                                           "hostPath":  "SaveDock",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "HorizontalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "primary-cta",
+                                           "manifestOrder":  7,
+                                           "hostPath":  "SaveDock/PrimaryButton",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "Button",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "aux-action",
+                                           "manifestOrder":  8,
+                                           "hostPath":  "HeaderChrome/SettingsButton",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "Button",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "LayoutElement"
+                                                               ]
+                                       }
+                                   ],
+                        "presentation":  {
+                                             "applied":  true,
+                                             "extractionStatus":  "resolved",
+                                             "elementCount":  17,
+                                             "createdPaths":  [
+
+                                                              ],
+                                             "addedComponents":  [
+
+                                                                 ],
+                                             "appliedProperties":  [
+                                                                       "Image.m_Color",
+                                                                       "HeaderChrome::Image.m_Color",
+                                                                       "HeaderChrome::HorizontalLayoutGroup.m_Spacing",
+                                                                       "HeaderChrome::HorizontalLayoutGroup.m_Padding.m_Left",
+                                                                       "HeaderChrome::HorizontalLayoutGroup.m_Padding.m_Right",
+                                                                       "HeaderChrome::LayoutElement.m_PreferredHeight",
+                                                                       "HeaderChrome/TitleGroup::VerticalLayoutGroup.m_Spacing",
+                                                                       "HeaderChrome/TitleGroup::VerticalLayoutGroup.m_ChildControlWidth",
+                                                                       "HeaderChrome/TitleGroup::VerticalLayoutGroup.m_ChildControlHeight",
+                                                                       "HeaderChrome/TitleGroup/TitleText::TextMeshProUGUI.m_text",
+                                                                       "HeaderChrome/TitleGroup/TitleText::TextMeshProUGUI.m_fontSize",
+                                                                       "HeaderChrome/TitleGroup/TitleText::TextMeshProUGUI.m_fontColor",
+                                                                       "HeaderChrome/TitleGroup/TitleText::TextMeshProUGUI.m_fontAsset",
+                                                                       "HeaderChrome/TitleGroup/SubtitleText::TextMeshProUGUI.m_text",
+                                                                       "HeaderChrome/TitleGroup/SubtitleText::TextMeshProUGUI.m_fontSize",
+                                                                       "HeaderChrome/TitleGroup/SubtitleText::TextMeshProUGUI.m_fontColor",
+                                                                       "HeaderChrome/TitleGroup/SubtitleText::TextMeshProUGUI.m_fontAsset",
+                                                                       "HeaderChrome/SettingsButton::Image.m_Color",
+                                                                       "HeaderChrome/SettingsButton::LayoutElement.m_PreferredWidth",
+                                                                       "HeaderChrome/SettingsButton::LayoutElement.m_PreferredHeight",
+                                                                       "MainScroll/Content/SlotSelector::Image.m_Color",
+                                                                       "MainScroll/Content/SlotSelector::HorizontalLayoutGroup.m_Spacing",
+                                                                       "MainScroll/Content/SlotSelector::LayoutElement.m_PreferredHeight",
+                                                                       "MainScroll/Content/FocusBar::HorizontalLayoutGroup.m_Spacing",
+                                                                       "MainScroll/Content/FocusBar::LayoutElement.m_PreferredHeight",
+                                                                       "MainScroll/Content/EditorPanel::Image.m_Color",
+                                                                       "MainScroll/Content/EditorPanel::VerticalLayoutGroup.m_Spacing",
+                                                                       "MainScroll/Content/EditorPanel::VerticalLayoutGroup.m_Padding.m_Left",
+                                                                       "MainScroll/Content/EditorPanel::VerticalLayoutGroup.m_Padding.m_Right",
+                                                                       "MainScroll/Content/EditorPanel::VerticalLayoutGroup.m_Padding.m_Top",
+                                                                       "MainScroll/Content/EditorPanel::VerticalLayoutGroup.m_Padding.m_Bottom",
+                                                                       "MainScroll/Content/EditorPanel::LayoutElement.m_PreferredHeight",
+                                                                       "MainScroll/Content/PreviewCard::Image.m_Color",
+                                                                       "MainScroll/Content/PreviewCard::LayoutElement.m_PreferredHeight",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar::Image.m_Color",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar::HorizontalLayoutGroup.m_Spacing",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar::HorizontalLayoutGroup.m_Padding.m_Left",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar::HorizontalLayoutGroup.m_Padding.m_Right",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar::HorizontalLayoutGroup.m_Padding.m_Top",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar::HorizontalLayoutGroup.m_Padding.m_Bottom",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar::HorizontalLayoutGroup.m_ChildForceExpandWidth",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar::LayoutElement.m_PreferredHeight",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack::Image.m_Color",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack::LayoutElement.m_FlexibleWidth",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack::LayoutElement.m_PreferredHeight",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack/GaugeFill::Image.m_Color",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar/SummaryText::TextMeshProUGUI.m_text",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar/SummaryText::TextMeshProUGUI.m_fontSize",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar/SummaryText::TextMeshProUGUI.m_fontColor",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar/SummaryText::TextMeshProUGUI.m_fontAsset",
+                                                                       "MainScroll/Content/PreviewCard/SummaryBar/SummaryText::LayoutElement.m_PreferredWidth",
+                                                                       "SaveDock::Image.m_Color",
+                                                                       "SaveDock::HorizontalLayoutGroup.m_Padding.m_Left",
+                                                                       "SaveDock::HorizontalLayoutGroup.m_Padding.m_Right",
+                                                                       "SaveDock::HorizontalLayoutGroup.m_Padding.m_Top",
+                                                                       "SaveDock::LayoutElement.m_PreferredHeight",
+                                                                       "SaveDock/PrimaryButton::Image.m_Color",
+                                                                       "SaveDock/PrimaryButton::LayoutElement.m_PreferredHeight",
+                                                                       "SaveDock/PrimaryButton/Label::TextMeshProUGUI.m_text",
+                                                                       "SaveDock/PrimaryButton/Label::TextMeshProUGUI.m_fontSize",
+                                                                       "SaveDock/PrimaryButton/Label::TextMeshProUGUI.m_fontColor",
+                                                                       "SaveDock/PrimaryButton/Label::TextMeshProUGUI.m_fontAsset"
+                                                                   ],
+                                             "elements":  [
+                                                              {
+                                                                  "path":  "",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  1,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "HeaderChrome",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  5,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "HorizontalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "HeaderChrome/TitleGroup",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "VerticalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "HeaderChrome/TitleGroup/TitleText",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  4,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "TextMeshProUGUI"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "HeaderChrome/TitleGroup/SubtitleText",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  4,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "TextMeshProUGUI"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "HeaderChrome/SettingsButton",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "Button",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "MainScroll/Content/SlotSelector",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "HorizontalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "MainScroll/Content/FocusBar",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  2,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "HorizontalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "MainScroll/Content/EditorPanel",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  7,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "VerticalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "MainScroll/Content/PreviewCard",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  2,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "MainScroll/Content/PreviewCard/SummaryBar",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  8,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "HorizontalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack/GaugeFill",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  1,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "MainScroll/Content/PreviewCard/SummaryBar/SummaryText",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  5,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "TextMeshProUGUI",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "SaveDock",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  5,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "HorizontalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "SaveDock/PrimaryButton",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  2,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "Button",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "SaveDock/PrimaryButton/Label",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  4,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "TextMeshProUGUI"
+                                                                                      ]
+                                                              }
+                                                          ],
+                                             "reason":  "applied"
+                                         },
+                        "generatedAt":  "2026-04-25T02:46:44.7570565+09:00"
+                    },
+    "reviewCapture":  {
+                          "attempted":  true,
+                          "supported":  true,
+                          "status":  "warning",
+                          "surfaceId":  "garage-main-workspace",
+                          "routeKind":  "temp-scene-sceneview",
+                          "menuPath":  "Tools/Scene/Prepare Stitch Runtime Review/Workspace Family",
+                          "artifactPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-scene-capture.png",
+                          "relativeArtifactPath":  "artifacts/unity/set-b-garage-main-workspace-scene-capture.png",
+                          "reason":  "",
+                          "requestPath":  "Temp/StitchRuntimeReview/request.json",
+                          "menu":  {
+                                       "success":  true,
+                                       "message":  "Executed menu: Tools/Scene/Prepare Stitch Runtime Review/Workspace Family",
+                                       "queued":  false,
+                                       "pendingCount":  0,
+                                       "autoSaved":  false
+                                   },
+                          "capture":  {
+                                          "success":  true,
+                                          "message":  "SceneView screenshot captured.",
+                                          "relativePath":  "artifacts/unity/set-b-garage-main-workspace-scene-capture.png",
+                                          "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-scene-capture.png",
+                                          "fileSizeBytes":  65901,
+                                          "sourceView":  "SceneView",
+                                          "width":  248,
+                                          "height":  658,
+                                          "prefabStageAssetPath":  ""
+                                      },
+                          "consoleErrors":  {
+                                                "count":  8,
+                                                "items":  [
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:30.770",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:30.770",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:33.414",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:33.414",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:36.626",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:36.626",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:43.529",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              },
+                                                              {
+                                                                  "timestampUtc":  "2026-04-24 17:46:43.529",
+                                                                  "type":  "Error",
+                                                                  "message":  "enum index is out of range",
+                                                                  "stackTrace":  "UnityEditor.SerializedProperty:set_enumValueIndex (int)\nProjectSD.EditorTools.UnityMcp.McpSharedHelpers:SetSerializedPropertyValue (UnityEditor.SerializedProperty,string,string) (at Assets/Editor/UnityMcp/McpSharedHelpers.cs:239)\nProjectSD.EditorTools.UnityMcp.PrefabHandlers/\u003c\u003ec__DisplayClass3_0:\u003cHandlePrefabSetAsync\u003eb__0 () (at Assets/Editor/UnityMcp/Handlers/PrefabHandlers.cs:122)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge/\u003c\u003ec__DisplayClass80_0`1\u003cProjectSD.EditorTools.UnityMcp.GenericResponse\u003e:\u003cRunOnMainThreadAsync\u003eb__0 () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:720)\nProjectSD.EditorTools.UnityMcp.UnityMcpBridge:DrainMainThreadActions () (at Assets/Editor/UnityMcp/UnityMcpBridge.cs:741)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()\n"
+                                                              }
+                                                          ]
+                                            },
+                          "generatedAt":  "2026-04-25T02:46:45.4016703+09:00"
+                      }
+}

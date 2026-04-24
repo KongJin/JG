@@ -1,6 +1,6 @@
 # 진행 상황 (Game Scene Entry)
 
-> 마지막 업데이트: 2026-04-24
+> 마지막 업데이트: 2026-04-25
 > 상태: active
 > doc_id: plans.progress
 > role: plan
@@ -22,16 +22,23 @@
 - 최신 translation artifact 기준 `presentation.applied = true`이고, source에서 바로 execution contract를 준비해 translation으로 이어지는 상태다. 최신 review capture는 `artifacts/unity/set-c-account-delete-confirm-scene-capture.png`다.
 - `Set C common-error-dialog`도 같은 루프로 닫혔고, 최신 translation artifact 기준 `presentation.applied = true`를 유지한다.
 - 최신 `common-error-dialog` review capture는 `artifacts/unity/set-c-common-error-dialog-scene-capture.png`다.
+- `Set B Garage`는 `source freeze -> execution contracts -> prefab target -> fresh translation/review evidence` current route를 다시 맞췄고, compiled contract에도 `summary-card` meaning block이 복구됐다.
+- 현재 Set B lane의 직접 남은 일은 dedicated runtime smoke 부재가 아니라 visual fidelity final judgment이다.
+- Garage save/load WebGL, settings interaction, shared runtime correctness는 Set B prefab lane이 아니라 shared `Account/Garage` validation lane에서 계속 관리한다.
 - 현재 남은 Set C 핵심 리스크는 `warning icon glyph` asset 미해결과 `Prefab Mode SceneView capture != runtime/mobile framing` 차이다.
+- set별 전용 Stitch review/prefab SceneTool은 제거했고, 현재 review route는 family-level generic tool만 남겨뒀다.
+- `Set A` source lookup은 이미 잡히지만, 현재 blocker는 source를 못 찾는 게 아니라 generic parser가 lobby/form modal structure를 아직 못 읽는 점이다.
 
 ## 현재 포커스
 
 - Stitch-to-Unity lane의 stale layer와 stale evidence를 줄인다.
-- `Set B Garage`를 active recovery surface로 고정하고 current route와 artifact truth를 다시 맞춘다.
+- Stitch-to-Unity lane에서 per-surface script onboarding을 줄이고 generic source-to-contract route를 닫는다.
+- set-specific SceneTool을 다시 늘리지 않고 generic parser coverage를 넓힌다.
+- `Set B Garage` visual fidelity final judgment을 닫는다.
 - `Set C account-delete-confirm` overlay의 icon/runtime framing fidelity 보정을 이어간다.
 - `GameScene` placement drag/drop automation contract와 multiplayer sync smoke 마감
-- 계정/Garage WebGL 실기 검증과 설정 동기화 마감
-- Lobby/Garage 시각 polish와 상호작용 smoke 보강
+- shared `Account/Garage` validation, WebGL 실기 검증, 설정 동기화 마감
+- Lobby/Garage 시각 polish와 공용 validation 보강
 - Stitch contract-first -> prefab-first reset 루프 정착
 
 ## Phase 진행률
@@ -60,7 +67,8 @@
 - Phase 10: 설정 Firestore 동기화 마무리 (저장 UI, language 소비 경로)
 - Phase 10: WebGL 빌드 smoke 테스트
 - Phase 10: Garage save/load WebGL 실기 확인 후속 1회 더 재현
-- Phase 10: Garage 수동 저장 UX 2차 폴리시 (슬롯 카드/결과 패널/계정 카드 완성도)
+- Phase 10: Garage save action 접근성 / settings interaction을 shared `Account/Garage` validation으로 재확인
+- Phase 10: Set B Garage visual fidelity final judgment closeout
 - Phase 11: WebGL 빌드에서 Google 로그인 실기 테스트
 - Phase 11: 익명->Google 계정 linking 시 UID 유지 확인
 - Phase 11: Google 로그인 WebGL smoke 테스트
@@ -70,8 +78,9 @@
 - `docs/index.md`에서 현재 owner 경로를 해석한 뒤 lane별 SSOT를 읽는다.
 - Unity UI/UX 작업은 시작 전에 owner doc `ops.unity-ui-authoring-workflow`를 먼저 읽고, 종료 전 `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`로 route/evidence freshness를 확인한다.
 - `GameScene` 쪽은 placement drag/drop automation contract와 multiplayer sync smoke를 우선 마감한다.
-- Lobby/Garage 쪽은 mobile-first Garage 단일 구조의 시각 밀도와 Garage save dock first-screen visibility를 계속 sanity check 한다.
-- Set C overlay 쪽은 source 기반 execution contract 준비 흐름을 다른 화면 구조에도 확장할 수 있게 정리한다.
+- Lobby/Garage 쪽은 mobile-first Garage 단일 구조의 시각 밀도와 review evidence 기준 visual fidelity를 계속 sanity check 한다.
+- shared `Account/Garage` lane에서는 Garage save/load WebGL, settings interaction, save action 접근성을 계속 추적한다.
+- Stitch lane 쪽은 `Set B/C`를 generic onboarding 기준 샘플로 삼아, `Set D/E`와 이후 다시 여는 inventory set을 per-surface script edit 없이 태울 수 있게 source discovery/family detection/review route를 일반화한다.
 - 외부 디자인 시안은 `Stitch`를 기본 생성 도구로 두고, 실제 반영은 Unity MCP와 scene/prefab contract 기준으로 번역한다.
 
 ## 상세 이력

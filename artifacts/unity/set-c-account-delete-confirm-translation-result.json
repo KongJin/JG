@@ -10,8 +10,8 @@
     "targetCreated":  false,
     "targetRootName":  "AccountDeleteConfirmDialogRoot",
     "contractRefs":  {
-                         "manifestPath":  "in-memory://compiled/account-delete-confirm.screen-manifest.json",
-                         "presentationPath":  ".stitch/contracts/presentations/account-delete-confirm.presentation.json"
+                         "manifestPath":  "in-memory://compiled/account-delete-confirm/screen-manifest",
+                         "presentationPath":  "in-memory://compiled/account-delete-confirm/presentation-contract"
                      },
     "createdPaths":  [
 
@@ -462,5 +462,5 @@
                                       ],
                          "reason":  "applied"
                      },
-    "generatedAt":  "2026-04-24T23:01:09.0399252+09:00"
+    "generatedAt":  "2026-04-25T02:46:47.4936819+09:00"
 }

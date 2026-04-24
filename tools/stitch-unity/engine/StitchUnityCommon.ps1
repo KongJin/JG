@@ -42,6 +42,29 @@ function Read-StitchUnityJsonFile {
     return Get-Content -LiteralPath $resolvedPath -Raw | ConvertFrom-Json
 }
 
+function Write-StitchUnityJsonFile {
+    param(
+        [Parameter(Mandatory = $true)][string]$PathValue,
+        [Parameter(Mandatory = $true)][object]$InputObject
+    )
+
+    $resolvedPath = Resolve-StitchUnityRepoPath -PathValue $PathValue
+    $directoryPath = Split-Path -Parent $resolvedPath
+    if (-not [string]::IsNullOrWhiteSpace($directoryPath) -and -not (Test-Path -LiteralPath $directoryPath)) {
+        New-Item -ItemType Directory -Path $directoryPath -Force | Out-Null
+    }
+
+    $json = $InputObject | ConvertTo-Json -Depth 30
+    [System.IO.File]::WriteAllText($resolvedPath, $json + [Environment]::NewLine, [System.Text.UTF8Encoding]::new($false))
+    return $resolvedPath
+}
+
+function Test-StitchUnityInMemoryPath {
+    param([string]$PathValue)
+
+    return (-not [string]::IsNullOrWhiteSpace($PathValue)) -and $PathValue.StartsWith("in-memory://", [System.StringComparison]::OrdinalIgnoreCase)
+}
+
 function Get-StitchUnityRequiredProperty {
     param(
         [Parameter(Mandatory = $true)][object]$InputObject,
@@ -97,11 +120,7 @@ function Get-StitchUnityMapPath {
         return Resolve-StitchUnityRepoPath -PathValue $MapPath
     }
 
-    if ([string]::IsNullOrWhiteSpace($SurfaceId)) {
-        throw "SurfaceId or MapPath is required."
-    }
-
-    return Resolve-StitchUnityRepoPath -PathValue ".stitch/contracts/mappings/$SurfaceId.unity-map.json"
+    throw "Stored per-surface unity-map files are not an active default route anymore. Pass -MapPath only for explicit historical/manual inspection."
 }
 
 function Get-StitchUnityComponentCatalogPath {
@@ -110,6 +129,10 @@ function Get-StitchUnityComponentCatalogPath {
 
 function Get-StitchUnityProfileGeneratorScriptPath {
     return Resolve-StitchUnityRepoPath -PathValue "tools/stitch-unity/presentations/Generate-StitchPresentationProfile.ps1"
+}
+
+function Get-StitchUnityPresentationResolverScriptPath {
+    return Resolve-StitchUnityRepoPath -PathValue "tools/stitch-unity/presentations/Resolve-StitchPresentationContract.ps1"
 }
 
 function Get-StitchUnityProfileGeneratorProbe {
@@ -148,6 +171,42 @@ function Get-StitchUnityGeneratedProfile {
     }
 
     return $result.profile
+}
+
+function Ensure-StitchUnityPresentationContract {
+    param(
+        [Parameter(Mandatory = $true)][string]$SurfaceId,
+        [Parameter(Mandatory = $true)][string]$OutputPath
+    )
+
+    if (-not (Test-StitchUnityInMemoryPath -PathValue $OutputPath)) {
+        $resolvedOutputPath = Resolve-StitchUnityRepoPath -PathValue $OutputPath
+        if (Test-Path -LiteralPath $resolvedOutputPath) {
+            return Read-StitchUnityJsonFile -PathValue $resolvedOutputPath
+        }
+    }
+
+    $resolverPath = Get-StitchUnityPresentationResolverScriptPath
+    if (-not (Test-Path -LiteralPath $resolverPath)) {
+        throw "Presentation resolver script not found: $resolverPath"
+    }
+
+    $invocationArgs = @(
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-File", $resolverPath,
+        "-SurfaceId", $SurfaceId
+    )
+    if (-not [string]::IsNullOrWhiteSpace($OutputPath)) {
+        $invocationArgs += @("-OutputPath", $OutputPath)
+    }
+
+    $json = & powershell @invocationArgs 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw "Presentation contract generation failed for '$SurfaceId': $json"
+    }
+
+    return ($json | Out-String | ConvertFrom-Json)
 }
 
 function Get-StitchUnityOptionalJsonFile {
@@ -258,10 +317,16 @@ function Compile-StitchUnityContracts {
     $manifestBlockDefinitions = @(Get-StitchUnityRequiredProperty -InputObject $manifestDefinition -Name "blocks")
     $mapBlockDefinitions = @(Get-StitchUnityRequiredProperty -InputObject $mapDefinition -Name "blocks")
 
-    $manifestPath = "in-memory://compiled/{0}.screen-manifest.json" -f $surfaceId
-    $mapPath = "in-memory://compiled/{0}.unity-map.json" -f $surfaceId
-    $presentationAbsolutePath = Resolve-StitchUnityRepoPath -PathValue ([string](Get-StitchUnityRequiredProperty -InputObject $defaults -Name "outputPath"))
-    $presentationPath = Convert-StitchUnityRepoRelativePath -AbsolutePath $presentationAbsolutePath
+    $manifestPath = "in-memory://compiled/{0}/screen-manifest" -f $surfaceId
+    $mapPath = "in-memory://compiled/{0}/unity-map" -f $surfaceId
+    $presentationPathValue = [string](Get-StitchUnityRequiredProperty -InputObject $defaults -Name "outputPath")
+    $presentationPath = if (Test-StitchUnityInMemoryPath -PathValue $presentationPathValue) {
+        $presentationPathValue
+    }
+    else {
+        $presentationAbsolutePath = Resolve-StitchUnityRepoPath -PathValue $presentationPathValue
+        Convert-StitchUnityRepoRelativePath -AbsolutePath $presentationAbsolutePath
+    }
 
     $manifestBlocks = @()
     $mapBlocks = [ordered]@{}
@@ -322,6 +387,7 @@ function Compile-StitchUnityContracts {
         schemaVersion = "1.0.0"
         contractKind = "unity-surface-map"
         surfaceId = $surfaceId
+        reviewRouteFamily = [string]$Definition.familyId
         target = $target
         contractRefs = [PSCustomObject][ordered]@{
             manifestPath = $manifestPath
@@ -334,6 +400,8 @@ function Compile-StitchUnityContracts {
         notes = @($mapNotes)
     }
 
+    $presentation = Ensure-StitchUnityPresentationContract -SurfaceId $surfaceId -OutputPath $presentationPath
+
     return [PSCustomObject]@{
         manifest = $manifest
         map = $map
@@ -341,7 +409,7 @@ function Compile-StitchUnityContracts {
             manifestPath = $manifestPath
             manifest = $manifest
             presentationPath = $presentationPath
-            presentation = Get-StitchUnityOptionalJsonFile -PathValue $presentationPath
+            presentation = $presentation
         }
         contractSource = [PSCustomObject]@{
             sourceKind = "compiled-family"
@@ -454,6 +522,8 @@ function Get-StitchUnitySurfaceContext {
                 ContractSource = $compiled.contractSource
             }
         }
+
+        throw "Surface '$SurfaceId' does not support 'source freeze -> execution contracts -> prefab/output' yet. Do not start from stored manifest/map by SurfaceId. Add source-derived execution contract preparation first, or pass -MapPath only for explicit manual inspection/reference."
     }
 
     $mapResult = Get-StitchUnityMapObject -SurfaceId $SurfaceId -MapPath $MapPath
@@ -666,21 +736,24 @@ function Get-StitchUnityReviewCaptureRouteConfig {
     param([Parameter(Mandatory = $true)][object]$Map)
 
     $surfaceId = [string](Get-StitchUnityRequiredProperty -InputObject $Map -Name "surfaceId")
+    $reviewRouteFamily = [string](Get-StitchUnityOptionalPropertyValue -InputObject $Map -Name "reviewRouteFamily")
 
-    switch ($surfaceId) {
-        "account-delete-confirm" {
+    switch ($reviewRouteFamily) {
+        "workspace-screen-v1" {
             return [PSCustomObject]@{
                 supported = $true
                 surfaceId = $surfaceId
-                menuPath = "Tools/Scene/Prepare Set C Overlay Runtime Review/Account Delete Confirm"
+                familyId = $reviewRouteFamily
+                menuPath = "Tools/Scene/Prepare Stitch Runtime Review/Workspace Family"
                 routeKind = "temp-scene-sceneview"
             }
         }
-        "common-error-dialog" {
+        "overlay-dialog-v1" {
             return [PSCustomObject]@{
                 supported = $true
                 surfaceId = $surfaceId
-                menuPath = "Tools/Scene/Prepare Set C Overlay Runtime Review/Common Error Dialog"
+                familyId = $reviewRouteFamily
+                menuPath = "Tools/Scene/Prepare Stitch Runtime Review/Overlay Family"
                 routeKind = "temp-scene-sceneview"
             }
         }
@@ -688,12 +761,41 @@ function Get-StitchUnityReviewCaptureRouteConfig {
             return [PSCustomObject]@{
                 supported = $false
                 surfaceId = $surfaceId
+                familyId = $reviewRouteFamily
                 menuPath = ""
                 routeKind = ""
                 reason = "no-temp-scene-review-route"
             }
         }
     }
+}
+
+function Get-StitchUnityReviewRequestPath {
+    return Resolve-StitchUnityRepoPath -PathValue "Temp/StitchRuntimeReview/request.json"
+}
+
+function Write-StitchUnityReviewCaptureRequest {
+    param(
+        [Parameter(Mandatory = $true)][object]$Map,
+        [Parameter(Mandatory = $true)][object]$Route
+    )
+
+    $target = Get-StitchUnityRequiredProperty -InputObject $Map -Name "target"
+    $assetPath = [string](Get-StitchUnityRequiredProperty -InputObject $target -Name "assetPath")
+    $assetName = [System.IO.Path]::GetFileNameWithoutExtension($assetPath)
+    $familyId = [string]$Route.familyId
+    if ([string]::IsNullOrWhiteSpace($familyId)) {
+        return ""
+    }
+
+    $request = [PSCustomObject]@{
+        familyId = $familyId
+        surfaceId = [string](Get-StitchUnityRequiredProperty -InputObject $Map -Name "surfaceId")
+        displayName = $assetName
+        prefabPath = $assetPath
+    }
+
+    return Write-StitchUnityJsonFile -PathValue (Get-StitchUnityReviewRequestPath) -InputObject $request
 }
 
 function Get-StitchUnityDefaultReviewCaptureArtifactPath {
@@ -742,6 +844,7 @@ function Invoke-StitchUnityReviewCapture {
     $relativeArtifactPath = Convert-StitchUnityRepoRelativePath -AbsolutePath $captureArtifactPath
 
     Wait-McpBridgeHealthy -Root $Root -TimeoutSec 30 | Out-Null
+    $requestPath = Write-StitchUnityReviewCaptureRequest -Map $Map -Route $route
     $menuResult = Invoke-McpJsonWithTransientRetry -Root $Root -SubPath "/menu/execute" -Body @{
         menuPath = [string]$route.menuPath
     } -TimeoutSec 90
@@ -770,6 +873,7 @@ function Invoke-StitchUnityReviewCapture {
         artifactPath = $captureArtifactPath
         relativeArtifactPath = $relativeArtifactPath
         reason = ""
+        requestPath = if ([string]::IsNullOrWhiteSpace($requestPath)) { "" } else { Convert-StitchUnityRepoRelativePath -AbsolutePath $requestPath }
         menu = $menuResult
         capture = $captureResult
         consoleErrors = $consoleErrors
@@ -1528,6 +1632,11 @@ function Get-StitchUnityPreflightObject {
         }
     }
 
+    $blockedReason = ""
+    if (@($blockingIssues).Count -gt 0) {
+        $blockedReason = [string](@($blockingIssues | ForEach-Object { [string]$_.message }) -join " | ")
+    }
+
     return [PSCustomObject]@{
         schemaVersion = "1.0.0"
         surfaceId = [string]$Map.surfaceId
@@ -1561,6 +1670,7 @@ function Get-StitchUnityPreflightObject {
             unresolvedDerivedFields = @($presentationState.unresolvedDerivedFields)
         }
         blockingIssues = @($blockingIssues)
+        blockedReason = $blockedReason
         ready = (($strategyMode -ne "patch" -or $targetState.exists) -and @($blockingIssues).Count -eq 0)
         roughEdges = $roughEdges
         generatedAt = (Get-Date).ToString("o")

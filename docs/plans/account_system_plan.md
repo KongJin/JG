@@ -1,6 +1,6 @@
 # 계정 시스템 복구 계획
 
-> 마지막 업데이트: 2026-04-18
+> 마지막 업데이트: 2026-04-25
 > 상태: active
 > doc_id: plans.account-system
 > role: plan
@@ -34,6 +34,11 @@
 
 ### 4. 테스트/문서 기준선이 구현 속도를 따라가야 한다
 - Account/Garage 규칙은 smoke만으로 충분하지 않아서, EditMode 테스트와 WebGL 체크리스트를 계속 같이 키워야 한다.
+
+### 5. Set B Garage 이후 shared validation ownership 정리
+- `Set B Garage` prefab lane은 `source freeze -> execution contracts -> prefab target -> fresh review evidence`까지를 직접 닫는다.
+- 그 이후 Garage 저장 접근성, settings overlay interaction, Garage save/load WebGL validation은 이 문서가 소유하는 shared `Account/Garage` validation lane으로 계속 관리한다.
+- 이 항목들은 `Garage-only smoke`를 새로 만드는 것이 아니라, 기존 Account/Garage validation backlog의 일부로 본다.
 
 ---
 
@@ -94,6 +99,7 @@
 ### Garage 초기화 경로
 - `InitializeGarageUseCase`는 Firestore 우선 복원과 committed roster 재동기화를 담당한다.
 - 새 씬 인스턴스는 기존 Photon player properties에서 roster/ready cache를 hydrate할 수 있어야 한다.
+- 현재 active host scene 부재 때문에 Set B prefab lane에서 Garage 전용 runtime smoke를 따로 만들지는 않는다.
 
 ### 로컬 JSON 처리
 - `GarageJsonPersistence`는 즉시 삭제하지 않는다.
@@ -123,6 +129,10 @@
 ### 테스트 정리
 - `Tests/`와 Unity Test Runner 경로는 계속 구분해서 관리한다.
 - Account/Garage 규칙은 smoke만이 아니라 EditMode/Test Runner로도 늘려 간다.
+- Set B 이후 shared validation 최소 항목은 아래로 본다.
+  - Garage save action이 실제 사용자 흐름에서 도달 가능함
+  - Garage settings overlay open -> close가 유지됨
+  - Garage save/load WebGL validation이 current Set B UI 기준으로 계속 유효함
 
 ### 기본값과 가정
 - 이번 복구는 기능 확장이 아니라 미연결 경로 복구다.
@@ -130,6 +140,7 @@
 - WebGL 실기 테스트는 여전히 최종 게이트다.
 - 문서에는 "코드 존재"와 "실동작 검증 완료"를 명확히 구분해 쓴다.
 - 순환 의존 회피를 이유로 gameplay/runtime 경로에 정적 토큰 제공자를 다시 도입하지 않는다.
+- Garage 전용 runtime host, Garage 전용 smoke entry, Garage 전용 result artifact는 이번 recovery 기준으로 추가하지 않는다.
 
 ---
 
@@ -143,6 +154,7 @@
 | 익명 로그인 3회 연속 실패 | 에러 패널 + 수동 재시도 버튼 노출 |
 | Garage 저장 | Firestore 문서 + Photon `CustomProperties` 동시 갱신 |
 | 앱 재시작 | Firestore 우선 복원, Firestore 실패 시 로컬 JSON fallback |
+| Garage settings interaction | settings overlay open -> close가 current Set B UI 기준으로 유지 |
 | Google linking | UID 유지 + `authType == "google"` 반영 |
 | 계정 삭제 | Firestore 문서 삭제 후 Firebase Auth 삭제 성공 |
 | 닉네임 변경 | 변경 직후 재변경 차단, cooldown 이후 재허용 |
@@ -152,6 +164,7 @@
 - 로컬 컴파일 성공만으로 완료 판정을 하지 않는다.
 - WebGL 실기 테스트 전에는 "코드 경로 존재" 상태로만 표시한다.
 - Phase 10/11 완료 표기는 문서가 아니라 smoke 결과를 기준으로 올린다.
+- Set B prefab lane의 direct success와 shared `Account/Garage` validation 미완료는 같은 상태로 뭉뚱그려 보고하지 않는다.
 
 ---
 

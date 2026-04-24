@@ -110,6 +110,7 @@ reset 상태에서는 historical reference로만 본다.
 - `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
   - 현재 변경 파일을 읽고 route를 판정한다.
   - 필요한 validator, presentation responsibility lint, artifact freshness, prefab 금지 규칙을 검사한다.
+  - policy가 blocked면 결과 artifact에 `blockedReason`을 남긴다.
 - `Invoke-CodexLobbyUiWorkflowGate.ps1`
   - `CodexLobbyScene` acceptance proof를 생성한다.
 

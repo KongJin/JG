@@ -1,0 +1,90 @@
+﻿{
+    "schemaVersion":  "1.0.0",
+    "surfaceId":  "garage-main-workspace",
+    "translationStrategy":  "contract-complete-translator-v1",
+    "strategyMode":  "generate-or-patch",
+    "target":  {
+                   "kind":  "prefab",
+                   "assetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
+               },
+    "targetExists":  true,
+    "targetState":  {
+                        "kind":  "prefab",
+                        "assetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab",
+                        "resolvedAssetPath":  "C:\\Users\\SOL\\Documents\\JG\\Assets\\Prefabs\\Features\\Garage\\Root\\GaragePageRoot.prefab",
+                        "exists":  true
+                    },
+    "dependencies":  [
+
+                     ],
+    "contractRefs":  {
+                         "manifestPath":  "in-memory://compiled/garage-main-workspace/screen-manifest",
+                         "presentationPath":  "in-memory://compiled/garage-main-workspace/presentation-contract"
+                     },
+    "contractSource":  {
+                           "sourceKind":  "compiled-family",
+                           "generatedFromFamily":  true,
+                           "familyId":  "workspace-screen-v1",
+                           "profileGenerated":  true,
+                           "profilePath":  "",
+                           "sharedUiCatalogPath":  ".stitch/contracts/components/shared-ui.component-catalog.json",
+                           "sourceRefs":  {
+                                              "htmlPath":  ".stitch/designs/set-b-garage-main-workspace.html",
+                                              "imagePath":  ".stitch/designs/set-b-garage-main-workspace.png",
+                                              "presentationPath":  "in-memory://compiled/garage-main-workspace/presentation-contract"
+                                          },
+                           "compiledContractSummary":  {
+                                                           "mapPath":  "in-memory://compiled/garage-main-workspace/unity-map",
+                                                           "manifestPath":  "in-memory://compiled/garage-main-workspace/screen-manifest",
+                                                           "blockIds":  [
+                                                                            "header-chrome",
+                                                                            "slot-selector",
+                                                                            "focus-bar",
+                                                                            "editor-panel",
+                                                                            "preview-card",
+                                                                            "summary-card",
+                                                                            "save-dock",
+                                                                            "primary-cta",
+                                                                            "aux-action"
+                                                                        ],
+                                                           "targetAssetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab",
+                                                           "translationStrategy":  "contract-complete-translator-v1",
+                                                           "strategyMode":  "generate-or-patch"
+                                                       }
+                       },
+    "contract":  {
+                     "manifestBlockCount":  9,
+                     "orderedBlockIds":  [
+                                             "header-chrome",
+                                             "slot-selector",
+                                             "focus-bar",
+                                             "editor-panel",
+                                             "preview-card",
+                                             "summary-card",
+                                             "save-dock",
+                                             "primary-cta",
+                                             "aux-action"
+                                         ],
+                     "missingMapBlocks":  [
+
+                                          ],
+                     "extraMapBlocks":  [
+
+                                        ],
+                     "presentationRequired":  true,
+                     "presentationExists":  true,
+                     "presentationExtractionStatus":  "resolved",
+                     "unresolvedDerivedFields":  [
+
+                                                 ]
+                 },
+    "blockingIssues":  [
+
+                       ],
+    "blockedReason":  "",
+    "ready":  true,
+    "roughEdges":  [
+
+                   ],
+    "generatedAt":  "2026-04-25T02:46:15.5769928+09:00"
+}

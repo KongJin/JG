@@ -37,6 +37,12 @@ function Read-JsonObject {
     return Read-AllText -PathValue $PathValue | ConvertFrom-Json
 }
 
+function Test-InMemoryPath {
+    param([string]$PathValue)
+
+    return (-not [string]::IsNullOrWhiteSpace($PathValue)) -and $PathValue.StartsWith("in-memory://", [System.StringComparison]::OrdinalIgnoreCase)
+}
+
 function Get-RequiredValue {
     param(
         [Parameter(Mandatory = $true)][object]$InputObject,
@@ -106,18 +112,24 @@ function Get-TailwindPalette {
     return @{
         "black" = "#000000"
         "white" = "#FFFFFF"
+        "gray-900" = "#111827"
         "zinc-950" = "#09090B"
         "zinc-900" = "#18181B"
         "zinc-800" = "#27272A"
+        "zinc-600" = "#52525B"
         "zinc-700" = "#3F3F46"
         "zinc-500" = "#71717A"
         "zinc-400" = "#A1A1AA"
         "zinc-300" = "#D4D4D8"
+        "zinc-200" = "#E4E4E7"
         "zinc-100" = "#F4F4F5"
         "red-600" = "#DC2626"
         "red-500" = "#EF4444"
         "red-400" = "#F87171"
+        "amber-400" = "#FBBF24"
         "amber-500" = "#F59E0B"
+        "blue-400" = "#60A5FA"
+        "blue-500" = "#5EB6FF"
     }
 }
 
@@ -338,12 +350,7 @@ function Get-GeneratedPresentationProfile {
 function Get-PresentationProfile {
     param([Parameter(Mandatory = $true)][string]$SurfaceId)
 
-    $profile = Get-GeneratedPresentationProfile -SurfaceId $SurfaceId
-    if ([string](Get-RequiredValue -InputObject $profile -Name "family") -ne "overlay-dialog-v1") {
-        throw "Unsupported presentation profile family for '$SurfaceId'."
-    }
-
-    return $profile
+    return (Get-GeneratedPresentationProfile -SurfaceId $SurfaceId)
 }
 
 function New-OverlayDialogPresentationContract {
@@ -828,6 +835,401 @@ function New-OverlayDialogPresentationContract {
     }
 }
 
+function New-WorkspacePresentationContract {
+    param(
+        [Parameter(Mandatory = $true)][object]$Profile,
+        [Parameter(Mandatory = $true)][hashtable]$CustomColors,
+        [Parameter(Mandatory = $true)][string]$HtmlPath,
+        [Parameter(Mandatory = $true)][string]$ImagePath,
+        [Parameter(Mandatory = $true)][string]$FontAssetPath
+    )
+
+    $viewport = Get-RequiredValue -InputObject $Profile -Name "viewport"
+    $workspace = Get-RequiredValue -InputObject $Profile -Name "workspace"
+    $colors = Get-RequiredValue -InputObject $Profile -Name "colors"
+
+    $headerColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "header")) -CustomColors $CustomColors
+    $titleColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "title")) -CustomColors $CustomColors
+    $subtitleColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "subtitle")) -CustomColors $CustomColors
+    $slotColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "slot")) -CustomColors $CustomColors
+    $editorColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "editor")) -CustomColors $CustomColors
+    $previewColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "preview")) -CustomColors $CustomColors
+    $summaryBarColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "summaryBar")) -CustomColors $CustomColors
+    $summaryTrackColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "summaryTrack")) -CustomColors $CustomColors
+    $summaryFillColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "summaryFill")) -CustomColors $CustomColors
+    $summaryTextColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "summaryText")) -CustomColors $CustomColors
+    $saveDockColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "saveDock")) -CustomColors $CustomColors
+    $primaryButtonColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "primaryButton")) -CustomColors $CustomColors
+    $primaryTextColor = Resolve-ConfiguredColor -Token ([string](Get-OptionalValue -InputObject $colors -Name "primaryText")) -CustomColors $CustomColors
+
+    $headerHeightPx = [int](Get-RequiredValue -InputObject $workspace -Name "headerHeightPx")
+    $headerPaddingX = [int](Get-RequiredValue -InputObject $workspace -Name "headerPaddingX")
+    $mainPaddingX = [int](Get-RequiredValue -InputObject $workspace -Name "mainPaddingX")
+    $mainGap = [int](Get-RequiredValue -InputObject $workspace -Name "mainGap")
+    $slotGap = [int](Get-RequiredValue -InputObject $workspace -Name "slotGap")
+    $focusGap = [int](Get-RequiredValue -InputObject $workspace -Name "focusGap")
+    $editorPadding = [int](Get-RequiredValue -InputObject $workspace -Name "editorPadding")
+    $previewHeightPx = [int](Get-RequiredValue -InputObject $workspace -Name "previewHeightPx")
+    $summaryBarHeightPx = [int](Get-OptionalValue -InputObject $workspace -Name "summaryBarHeightPx")
+    $summaryTrackHeightPx = [int](Get-OptionalValue -InputObject $workspace -Name "summaryTrackHeightPx")
+    $summaryFillPercent = [int](Get-OptionalValue -InputObject $workspace -Name "summaryFillPercent")
+    $summaryText = [string](Get-OptionalValue -InputObject $workspace -Name "summaryText")
+    $summaryTextFontPx = [int](Get-OptionalValue -InputObject $workspace -Name "summaryTextFontPx")
+    $summaryTextWidthPx = [int](Get-OptionalValue -InputObject $workspace -Name "summaryTextWidthPx")
+    $saveButtonHeightPx = [int](Get-RequiredValue -InputObject $workspace -Name "saveButtonHeightPx")
+    $saveDockPaddingX = [int](Get-RequiredValue -InputObject $workspace -Name "saveDockPaddingX")
+    $saveDockPaddingTop = [int](Get-RequiredValue -InputObject $workspace -Name "saveDockPaddingTop")
+    $titleText = [string](Get-RequiredValue -InputObject $workspace -Name "titleText")
+    $subtitleText = [string](Get-OptionalValue -InputObject $workspace -Name "subtitleText")
+    $saveButtonText = [string](Get-RequiredValue -InputObject $workspace -Name "saveButtonText")
+    $summaryFillAnchorMaxX = [Math]::Max(0.0, [Math]::Min(1.0, ($summaryFillPercent / 100.0)))
+    $summaryFillAnchorMaxXText = [string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0:0.##}", $summaryFillAnchorMaxX)
+
+    $elements = New-Object System.Collections.Generic.List[object]
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = ""
+        rect = [ordered]@{
+            anchorMin = "(0,0)"
+            anchorMax = "(1,1)"
+            pivot = "(0.5,0.5)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(0,0)"
+        }
+        properties = @(
+            (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value "#00000000")
+        )
+    })
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "HeaderChrome"
+        role = "header-chrome"
+        components = @("Image", "HorizontalLayoutGroup", "LayoutElement")
+        rect = [ordered]@{
+            anchorMin = "(0,1)"
+            anchorMax = "(1,1)"
+            pivot = "(0.5,1)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(0,$headerHeightPx)"
+        }
+        properties = @(
+            (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $headerColor),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Spacing" -Value "12"),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Left" -Value ([string]$headerPaddingX)),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Right" -Value ([string]$headerPaddingX)),
+            (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value ([string]$headerHeightPx))
+        )
+    })
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "HeaderChrome/TitleGroup"
+        role = "header-title-group"
+        components = @("VerticalLayoutGroup", "LayoutElement")
+        rect = [ordered]@{
+            anchorMin = "(0,0)"
+            anchorMax = "(1,1)"
+            pivot = "(0.5,0.5)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(0,0)"
+        }
+        properties = @(
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Spacing" -Value "2"),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildControlWidth" -Value "true"),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildControlHeight" -Value "false")
+        )
+    })
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "HeaderChrome/TitleGroup/TitleText"
+        role = "header-title"
+        components = @("TextMeshProUGUI")
+        rect = [ordered]@{
+            anchorMin = "(0,0)"
+            anchorMax = "(1,1)"
+            pivot = "(0.5,0.5)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(0,0)"
+        }
+        properties = @(
+            (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value $titleText),
+            (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "16"),
+            (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $titleColor),
+            (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath)
+        )
+    })
+
+    if (-not [string]::IsNullOrWhiteSpace($subtitleText)) {
+        $elements.Add([PSCustomObject][ordered]@{
+            path = "HeaderChrome/TitleGroup/SubtitleText"
+            role = "header-subtitle"
+            components = @("TextMeshProUGUI")
+            rect = [ordered]@{
+                anchorMin = "(0,0)"
+                anchorMax = "(1,1)"
+                pivot = "(0.5,0.5)"
+                anchoredPosition = "(0,0)"
+                sizeDelta = "(0,0)"
+            }
+            properties = @(
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value $subtitleText),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "10"),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $subtitleColor),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath)
+            )
+        })
+    }
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "HeaderChrome/SettingsButton"
+        role = "aux-action"
+        components = @("Button", "Image", "LayoutElement")
+        rect = [ordered]@{
+            anchorMin = "(1,0.5)"
+            anchorMax = "(1,0.5)"
+            pivot = "(1,0.5)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(32,32)"
+        }
+        properties = @(
+            (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value "#00000000"),
+            (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredWidth" -Value "32"),
+            (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "32")
+        )
+    })
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "MainScroll/Content/SlotSelector"
+        role = "slot-selector"
+        components = @("Image", "HorizontalLayoutGroup", "LayoutElement")
+        rect = [ordered]@{
+            anchorMin = "(0,1)"
+            anchorMax = "(1,1)"
+            pivot = "(0.5,1)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(0,88)"
+        }
+        properties = @(
+            (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $(if ([string]::IsNullOrWhiteSpace($slotColor)) { "#00000000" } else { $slotColor })),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Spacing" -Value ([string]$slotGap)),
+            (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "88")
+        )
+    })
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "MainScroll/Content/FocusBar"
+        role = "focus-bar"
+        components = @("HorizontalLayoutGroup", "LayoutElement")
+        rect = [ordered]@{
+            anchorMin = "(0,1)"
+            anchorMax = "(1,1)"
+            pivot = "(0.5,1)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(0,36)"
+        }
+        properties = @(
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Spacing" -Value ([string]$focusGap)),
+            (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "36")
+        )
+    })
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "MainScroll/Content/EditorPanel"
+        role = "editor-panel"
+        components = @("Image", "VerticalLayoutGroup", "LayoutElement")
+        rect = [ordered]@{
+            anchorMin = "(0,1)"
+            anchorMax = "(1,1)"
+            pivot = "(0.5,1)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(0,320)"
+        }
+        properties = @(
+            (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $(if ([string]::IsNullOrWhiteSpace($editorColor)) { "#18181B" } else { $editorColor })),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Spacing" -Value ([string]$editorPadding)),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Left" -Value ([string]$editorPadding)),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Right" -Value ([string]$editorPadding)),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Top" -Value ([string]$editorPadding)),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Bottom" -Value ([string]$editorPadding)),
+            (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "320")
+        )
+    })
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "MainScroll/Content/PreviewCard"
+        role = "preview-card"
+        components = @("Image", "LayoutElement")
+        rect = [ordered]@{
+            anchorMin = "(0,1)"
+            anchorMax = "(1,1)"
+            pivot = "(0.5,1)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(0,$previewHeightPx)"
+        }
+        properties = @(
+            (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $(if ([string]::IsNullOrWhiteSpace($previewColor)) { "#18181B" } else { $previewColor })),
+            (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value ([string]$previewHeightPx))
+        )
+    })
+
+    if (-not [string]::IsNullOrWhiteSpace($summaryText)) {
+        $elements.Add([PSCustomObject][ordered]@{
+            path = "MainScroll/Content/PreviewCard/SummaryBar"
+            role = "summary-card"
+            components = @("Image", "HorizontalLayoutGroup", "LayoutElement")
+            rect = [ordered]@{
+                anchorMin = "(0,0)"
+                anchorMax = "(1,0)"
+                pivot = "(0.5,0)"
+                anchoredPosition = "(0,12)"
+                sizeDelta = "(0,$summaryBarHeightPx)"
+            }
+            properties = @(
+                (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $(if ([string]::IsNullOrWhiteSpace($summaryBarColor)) { "#09090BE6" } else { $summaryBarColor })),
+                (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Spacing" -Value "8"),
+                (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Left" -Value "4"),
+                (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Right" -Value "4"),
+                (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Top" -Value "4"),
+                (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Bottom" -Value "4"),
+                (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_ChildForceExpandWidth" -Value "false"),
+                (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value ([string]$summaryBarHeightPx))
+            )
+        })
+
+        $elements.Add([PSCustomObject][ordered]@{
+            path = "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack"
+            role = "summary-gauge-track"
+            components = @("Image", "LayoutElement")
+            rect = [ordered]@{
+                anchorMin = "(0,0.5)"
+                anchorMax = "(1,0.5)"
+                pivot = "(0.5,0.5)"
+                anchoredPosition = "(0,0)"
+                sizeDelta = "(0,$summaryTrackHeightPx)"
+            }
+            properties = @(
+                (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $(if ([string]::IsNullOrWhiteSpace($summaryTrackColor)) { "#18181B" } else { $summaryTrackColor })),
+                (New-Property -ComponentType "LayoutElement" -PropertyName "m_FlexibleWidth" -Value "1"),
+                (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value ([string]$summaryTrackHeightPx))
+            )
+        })
+
+        $elements.Add([PSCustomObject][ordered]@{
+            path = "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack/GaugeFill"
+            role = "summary-gauge-fill"
+            components = @("Image")
+            rect = [ordered]@{
+                anchorMin = "(0,0)"
+                anchorMax = "($summaryFillAnchorMaxXText,1)"
+                pivot = "(0,0.5)"
+                anchoredPosition = "(0,0)"
+                sizeDelta = "(0,0)"
+            }
+            properties = @(
+                (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $(if ([string]::IsNullOrWhiteSpace($summaryFillColor)) { "#5EB6FF" } else { $summaryFillColor }))
+            )
+        })
+
+        $elements.Add([PSCustomObject][ordered]@{
+            path = "MainScroll/Content/PreviewCard/SummaryBar/SummaryText"
+            role = "summary-text"
+            components = @("TextMeshProUGUI", "LayoutElement")
+            rect = [ordered]@{
+                anchorMin = "(1,0.5)"
+                anchorMax = "(1,0.5)"
+                pivot = "(1,0.5)"
+                anchoredPosition = "(0,0)"
+                sizeDelta = "($summaryTextWidthPx,0)"
+            }
+            properties = @(
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value $summaryText),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value ([string]$summaryTextFontPx)),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $(if ([string]::IsNullOrWhiteSpace($summaryTextColor)) { "#5EB6FF" } else { $summaryTextColor })),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath),
+                (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredWidth" -Value ([string]$summaryTextWidthPx))
+            )
+        })
+    }
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "SaveDock"
+        role = "save-dock"
+        components = @("Image", "HorizontalLayoutGroup", "LayoutElement")
+        rect = [ordered]@{
+            anchorMin = "(0,0)"
+            anchorMax = "(1,0)"
+            pivot = "(0.5,0)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(0,76)"
+        }
+        properties = @(
+            (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $(if ([string]::IsNullOrWhiteSpace($saveDockColor)) { "#18181B" } else { $saveDockColor })),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Left" -Value ([string]$saveDockPaddingX)),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Right" -Value ([string]$saveDockPaddingX)),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Top" -Value ([string]$saveDockPaddingTop)),
+            (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "76")
+        )
+    })
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "SaveDock/PrimaryButton"
+        role = "primary-cta"
+        components = @("Button", "Image", "LayoutElement")
+        rect = [ordered]@{
+            anchorMin = "(0,0.5)"
+            anchorMax = "(1,0.5)"
+            pivot = "(0.5,0.5)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(0,$saveButtonHeightPx)"
+        }
+        properties = @(
+            (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $primaryButtonColor),
+            (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value ([string]$saveButtonHeightPx))
+        )
+    })
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "SaveDock/PrimaryButton/Label"
+        role = "primary-cta-label"
+        components = @("TextMeshProUGUI")
+        rect = [ordered]@{
+            anchorMin = "(0,0)"
+            anchorMax = "(1,1)"
+            pivot = "(0.5,0.5)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(0,0)"
+        }
+        properties = @(
+            (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value $saveButtonText),
+            (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "14"),
+            (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $primaryTextColor),
+            (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath)
+        )
+    })
+
+    return [ordered]@{
+        schemaVersion = "1.0.0"
+        contractKind = "presentation-contract"
+        surfaceId = [string](Get-RequiredValue -InputObject $Profile -Name "surfaceId")
+        surfaceRole = "root"
+        extractionStatus = "resolved"
+        sourceRefs = [ordered]@{
+            imagePath = $ImagePath
+            htmlPath = $HtmlPath
+        }
+        derivedFrom = [ordered]@{
+            viewport = [string](Get-RequiredValue -InputObject $viewport -Name "label")
+            headerTitle = $titleText
+            primaryAction = $saveButtonText
+        }
+        unresolvedDerivedFields = @([string[]](Get-RequiredValue -InputObject $Profile -Name "unresolvedDerivedFields"))
+        elements = @($elements.ToArray())
+        notes = @(
+            ("Generated from {0} source freeze." -f [System.IO.Path]::GetFileName($HtmlPath)),
+            "Values in this file are source-derived from source freeze and common workspace rules."
+        )
+    }
+}
+
 $profile = Get-PresentationProfile -SurfaceId $SurfaceId
 $defaults = Get-RequiredValue -InputObject $profile -Name "defaults"
 
@@ -846,19 +1248,38 @@ if ([string]::IsNullOrWhiteSpace($OutputPath)) {
 $html = Read-AllText -PathValue $HtmlPath
 $customColors = Get-CustomColors -Html $html
 $fontAssetPath = "Assets/TextMesh Pro/Resources/Fonts & Materials/NotoSansKR Dynamic.asset"
-$contract = New-OverlayDialogPresentationContract `
-    -Profile $profile `
-    -Html $html `
-    -CustomColors $customColors `
-    -HtmlPath $HtmlPath `
-    -ImagePath $ImagePath `
-    -FontAssetPath $fontAssetPath
-
-$resolvedOutputPath = Resolve-RepoPath -PathValue $OutputPath
-$outputDirectory = Split-Path -Parent $resolvedOutputPath
-if (-not (Test-Path -LiteralPath $outputDirectory)) {
-    New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
+$family = [string](Get-RequiredValue -InputObject $profile -Name "family")
+switch ($family) {
+    "overlay-dialog-v1" {
+        $contract = New-OverlayDialogPresentationContract `
+            -Profile $profile `
+            -Html $html `
+            -CustomColors $customColors `
+            -HtmlPath $HtmlPath `
+            -ImagePath $ImagePath `
+            -FontAssetPath $fontAssetPath
+    }
+    "workspace-screen-v1" {
+        $contract = New-WorkspacePresentationContract `
+            -Profile $profile `
+            -CustomColors $customColors `
+            -HtmlPath $HtmlPath `
+            -ImagePath $ImagePath `
+            -FontAssetPath $fontAssetPath
+    }
+    default {
+        throw "Unsupported presentation profile family '$family' for '$SurfaceId'."
+    }
 }
 
-$contract | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $resolvedOutputPath -Encoding utf8
+if (-not [string]::IsNullOrWhiteSpace($OutputPath) -and -not (Test-InMemoryPath -PathValue $OutputPath)) {
+    $resolvedOutputPath = Resolve-RepoPath -PathValue $OutputPath
+    $outputDirectory = Split-Path -Parent $resolvedOutputPath
+    if (-not (Test-Path -LiteralPath $outputDirectory)) {
+        New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
+    }
+
+    $contract | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $resolvedOutputPath -Encoding utf8
+}
+
 $contract | ConvertTo-Json -Depth 20

@@ -36,6 +36,42 @@ if (-not $preflight.ready) {
         "."
     }
 
+    if (-not [string]::IsNullOrWhiteSpace($pipelineArtifactPath)) {
+        $blockedResult = [PSCustomObject]@{
+            schemaVersion = "1.0.0"
+            success = $false
+            surfaceId = [string]$map.surfaceId
+            strategyMode = [string]$map.strategyMode
+            translationStrategy = [string]$map.translationStrategy
+            terminalVerdict = "blocked"
+            blockedReason = [string]$preflight.blockedReason
+            stageStatus = [PSCustomObject]@{
+                preflight = "blocked"
+                dependencies = "not-run"
+                translation = "not-run"
+                reviewCapture = "not-run"
+                pipeline = "written"
+            }
+            inputs = [PSCustomObject]@{
+                sourceKind = [string]$context.ContractSource.sourceKind
+                mapPath = $mapResult.Path
+                manifestPath = [string]$context.ContractRefs.manifestPath
+                presentationPath = [string]$context.ContractRefs.presentationPath
+                target = $map.target
+            }
+            artifacts = [PSCustomObject]@{
+                translationResult = $translationArtifactPath
+                preflightResult = $preflightArtifactPath
+                reviewCapture = ""
+                pipelineResult = $pipelineArtifactPath
+            }
+            preflight = $preflight
+            contractSource = $context.ContractSource
+        }
+
+        Write-StitchUnityArtifact -PathValue $pipelineArtifactPath -InputObject $blockedResult
+    }
+
     throw "Surface preflight failed. strategyMode='$($preflight.strategyMode)' targetExists='$($preflight.targetExists)'.$blockingSummary"
 }
 
@@ -61,18 +97,64 @@ $reviewCaptureResult = [PSCustomObject]@{
     consoleErrors = $null
 }
 
-switch ($translationStrategy) {
-    "contract-complete-translator-v1" {
-        $translationResult = Invoke-StitchUnityContractCompleteTranslation -Root $root -Map $map -ContractBundle $contracts
+try {
+    switch ($translationStrategy) {
+        "contract-complete-translator-v1" {
+            $translationResult = Invoke-StitchUnityContractCompleteTranslation -Root $root -Map $map -ContractBundle $contracts
+        }
+        default {
+            throw "Unsupported translationStrategy '$translationStrategy'."
+        }
     }
-    default {
-        throw "Unsupported translationStrategy '$translationStrategy'."
+
+    Wait-McpBridgeHealthy -Root $root -TimeoutSec 30 | Out-Null
+    if (-not $SkipReviewCapture) {
+        $reviewCaptureResult = Invoke-StitchUnityReviewCapture -Root $root -Map $map -ArtifactPath $ReviewCaptureArtifactPath
     }
 }
+catch {
+    if (-not [string]::IsNullOrWhiteSpace($pipelineArtifactPath)) {
+        $blockedResult = [PSCustomObject]@{
+            schemaVersion = "1.0.0"
+            success = $false
+            surfaceId = [string]$map.surfaceId
+            strategyMode = [string]$map.strategyMode
+            translationStrategy = $translationStrategy
+            terminalVerdict = "blocked"
+            blockedReason = $_.Exception.Message
+            stageStatus = [PSCustomObject]@{
+                preflight = if ($preflight.ready) { "passed" } else { "blocked" }
+                dependencies = if (@($requiredDependencyFailures).Count -gt 0) { "failed" } elseif (@($optionalDependencyFailures).Count -gt 0) { "warning" } else { "passed" }
+                translation = if ($null -ne $translationResult) { "partial" } else { "blocked" }
+                reviewCapture = [string]$reviewCaptureResult.status
+                pipeline = "written"
+            }
+            inputs = [PSCustomObject]@{
+                sourceKind = [string]$context.ContractSource.sourceKind
+                mapPath = $mapResult.Path
+                manifestPath = [string]$context.ContractRefs.manifestPath
+                presentationPath = [string]$context.ContractRefs.presentationPath
+                target = $map.target
+            }
+            artifacts = [PSCustomObject]@{
+                translationResult = $translationArtifactPath
+                preflightResult = $preflightArtifactPath
+                reviewCapture = [string]$reviewCaptureResult.artifactPath
+                pipelineResult = $pipelineArtifactPath
+            }
+            dependencies = [PSCustomObject]@{
+                requiredFailures = @($requiredDependencyFailures)
+                optionalFailures = @($optionalDependencyFailures)
+                results = @($dependencyResults)
+            }
+            preflight = $preflight
+            contractSource = $context.ContractSource
+        }
 
-Wait-McpBridgeHealthy -Root $root -TimeoutSec 30 | Out-Null
-if (-not $SkipReviewCapture) {
-    $reviewCaptureResult = Invoke-StitchUnityReviewCapture -Root $root -Map $map -ArtifactPath $ReviewCaptureArtifactPath
+        Write-StitchUnityArtifact -PathValue $pipelineArtifactPath -InputObject $blockedResult
+    }
+
+    throw
 }
 
 $result = [PSCustomObject]@{
@@ -81,6 +163,8 @@ $result = [PSCustomObject]@{
     surfaceId = [string]$map.surfaceId
     strategyMode = [string]$map.strategyMode
     translationStrategy = $translationStrategy
+    terminalVerdict = ""
+    blockedReason = ""
     summary = [PSCustomObject]@{
         preflightReady = [bool]$preflight.ready
         dependencyCount = @($dependencyResults).Count

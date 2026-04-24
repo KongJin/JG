@@ -1,19 +1,21 @@
 # Stitch Data Workflow
 
-> 마지막 업데이트: 2026-04-24
+> 마지막 업데이트: 2026-04-25
 > 상태: active
 > doc_id: ops.stitch-data-workflow
 > role: ssot
 > owner_scope: Stitch working data ownership, source freeze, Unity handoff 운영
 > upstream: design.ui-reference-workflow, plans.stitch-ui-ux-overhaul, ops.unity-ui-authoring-workflow
-> artifacts: `.stitch/contracts/screens/`, `.stitch/contracts/mappings/`, `.stitch/contracts/presentations/`, `artifacts/stitch/`
+> artifacts: `artifacts/stitch/`, `artifacts/unity/`, `in-memory://compiled/*`
 
 이 문서는 JG에서 `Stitch` 산출물을 어떻게 저장하고 Unity handoff로 넘길지 정하는 단일 운영 기준이다.
 현재 활성 흐름은 `Stitch source freeze -> execution contracts -> Unity translation`이다.
 
-현재 기본 실행은 source를 다시 읽어 필요한 execution contract를 준비한 뒤 translation까지 이어지는 흐름이다.
-지원되는 화면 구조에서는 저장된 manifest/map를 실행 주인으로 보지 않고 parity/debug reference로만 남길 수 있다.
-새 surface onboarding은 예전 저장 파일을 늘리는 방식이 아니라 source에서 바로 execution contract를 준비하는 쪽으로 닫는다.
+현재 기본 실행은 source를 다시 읽어 필요한 execution contract를 메모리에서 준비한 뒤 translation까지 이어지는 흐름이다.
+지원되는 화면 구조에서는 screen별 `manifest/map/presentation` JSON file을 실행 주인으로 두지 않는다.
+새 surface onboarding은 저장 파일을 늘리는 방식이 아니라 source에서 바로 execution contract를 준비하는 쪽으로 닫는다.
+set별 전용 SceneTool, set별 전용 review prep menu, set별 전용 prefab pack generator는 active route에서 제거한다.
+지원되는 review route는 family-level generic tool만 사용하고, surface-specific execution helper를 새로 늘리지 않는다.
 조용한 우회 실행은 허용하지 않는다.
 
 ## 목적
@@ -41,16 +43,16 @@
 
 `Stitch는 의미 계약을 주고, Unity는 실행 결과를 만든다.`
 
-## 활성 파일 소유권
+## 활성 소유권
 
 - `artifacts/stitch/<project>/<screen>/screen.html`
 - `artifacts/stitch/<project>/<screen>/screen.png`
   - source freeze artifact
-- `.stitch/contracts/screens/*.json`
+- `in-memory://compiled/<surface>/screen-manifest`
   - semantic block 계약
-- `.stitch/contracts/mappings/*.json`
+- `in-memory://compiled/<surface>/unity-map`
   - Unity binding
-- `.stitch/contracts/presentations/*.json`
+- `in-memory://compiled/<surface>/presentation-contract`
   - source-derived presentation 계약
 - `.stitch/contracts/schema/*.json`
   - 활성 schema
@@ -58,12 +60,15 @@
 
 아래는 활성 handoff 입력이 아니다.
 
+- per-surface contract files under `.stitch/contracts/screens/`
+- per-surface contract files under `.stitch/contracts/mappings/`
+- per-surface contract files under `.stitch/contracts/presentations/`
 - legacy contract files under `.stitch/contracts/`
 - historical design exports under `.stitch/designs/`
 - historical handoff notes under `.stitch/handoff/`
 - prompt materials under `.stitch/prompt-briefs/`
 
-남아 있는 파일은 historical reference로만 취급한다.
+남아 있는 파일은 historical reference로만 취급하거나 제거한다.
 
 ## 기본 작업 루프
 
@@ -80,9 +85,9 @@ accepted Stitch screen 하나를 고정한다.
 
 여러 후보안을 섞지 않는다.
 
-### 2. Screen Manifest 작성
+### 2. Screen Manifest 준비
 
-`.stitch/contracts/screens/<surface>.screen.json`에 아래를 적는다.
+execution contract 안의 `screen manifest`는 아래를 가진다.
 
 - 식별 정보
 - source 정보
@@ -95,12 +100,12 @@ accepted Stitch screen 하나를 고정한다.
 여기에는 semantic block, CTA 의미, component composition, validation id만 적고, old override 문법은 쓰지 않는다.
 경로, layout 숫자, label literal은 manifest에 적지 않는다.
 
-지원되는 화면 구조에서는 manifest file이 기본 실행 입력이 아니다.
-이 경우 file artifact는 parity/debug reference로만 남고, 실제 실행은 source에서 다시 준비된 contract가 소유한다.
+지원되는 화면 구조에서는 manifest file을 repo에 남기지 않는다.
+실제 실행은 source에서 다시 준비된 in-memory contract가 소유한다.
 
-### 3. Unity Map 작성
+### 3. Unity Map 준비
 
-`.stitch/contracts/mappings/<surface>.unity-map.json`에 아래를 적는다.
+execution contract 안의 `unity-map`은 아래를 가진다.
 
 - target
 - contractRefs.manifestPath
@@ -112,12 +117,12 @@ accepted Stitch screen 하나를 고정한다.
 map은 경로 binding만 가진다.
 시각 수치와 스타일 값은 map에 적지 않는다.
 
-지원되는 화면 구조에서는 unity-map file도 기본 실행 입력이 아니다.
-이 경우 file artifact는 parity/debug reference로만 남고, 실제 실행은 source에서 다시 준비된 contract가 소유한다.
+지원되는 화면 구조에서는 unity-map file도 repo에 남기지 않는다.
+실제 실행은 source에서 다시 준비된 in-memory contract가 소유한다.
 
 ### 4. Presentation Contract 생성
 
-`.stitch/contracts/presentations/<surface>.presentation.json`에 아래를 적는다.
+execution contract 안의 `presentation-contract`는 아래를 가진다.
 
 - `surfaceId`
 - `surfaceRole`
@@ -145,13 +150,13 @@ resolved가 아니면 skeleton/debug baseline까지만 허용하고, active tran
 
 ### 5. Unity Translation 실행
 
-실행 입력은 최종적으로 아래 세 개뿐이다.
+실행 입력은 논리적으로 아래 세 개뿐이다.
 
 - `screen manifest`
 - `unity-map`
 - `source-derived presentation contract`
 
-지원되는 화면 구조에서는 이 manifest/map와 presentation contract가 실행 직전에 source에서 메모리로 다시 준비된다.
+지원되는 화면 구조에서는 이 manifest/map와 presentation contract가 실행 직전에 source에서 메모리로 다시 준비되고, screen별 file로 남기지 않는다.
 
 translator는:
 
@@ -177,8 +182,15 @@ translation 뒤에는 아래 artifact를 남긴다.
 - `TempScene + SceneView capture` when review route exists
 - pipeline
 
+review route 규칙:
+
+- review prep은 family-level generic tool만 허용한다.
+- review route가 없으면 translation과 분리된 `warning/not-configured`로만 남긴다.
+- set별 전용 TempScene prep tool을 새 active route로 복구하지 않는다.
+
 `pipeline`은 stage status, 입력 경로, artifact path만 남기는 얇은 요약이다.
 세부 내용은 `preflight`와 `translation` artifact가 각각 소유한다.
+translation이 blocked로 멈추면 `preflight` 또는 `pipeline` artifact에 `blockedReason`이 남아야 한다.
 
 ## Reset / Reimport 기준
 
@@ -188,9 +200,9 @@ target prefab이 없어도 정상 케이스다.
 권장 순서:
 
 1. source freeze 확인
-2. manifest 확인
-3. unity-map 확인
-4. presentation contract 확인
+2. in-memory manifest 준비 확인
+3. in-memory unity-map 준비 확인
+4. in-memory presentation contract 확인
 5. `extractionStatus = resolved` 확인
 6. translator 실행
 7. review route가 있으면 `TempScene + SceneView capture` 확인
@@ -203,6 +215,7 @@ target prefab이 없어도 정상 케이스다.
 ## 금지사항
 
 - handoff md를 실행 계약처럼 쓰는 것
+- per-surface manifest/map/presentation file을 새 active 입력처럼 남기는 것
 - html/png를 직접 구현 입력처럼 쓰는 것
 - script-side constants나 fallback으로 contract 누락을 보정하는 것
 - hand-authored literal을 source-derived presentation contract처럼 위장하는 것
@@ -214,7 +227,6 @@ target prefab이 없어도 정상 케이스다.
 
 1. `docs/index.md`
 2. `docs/ops/stitch-structured-handoff-contract.md`
-3. 관련 `screen manifest`
-4. 관련 `unity-map`
-5. 관련 `presentation contract`
-6. `docs/ops/stitch-to-unity-translation-guide.md`
+3. 관련 execution contract 구조
+4. 관련 translation artifact
+5. `docs/ops/stitch-to-unity-translation-guide.md`

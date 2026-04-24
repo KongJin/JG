@@ -109,7 +109,7 @@ npm run stitch:generate:overlay-draft -- --input .stitch/contracts/intakes/<over
 Generate and compare against the current accepted manifest:
 
 ```bash
-npm run stitch:generate:overlay-draft -- --input .stitch/contracts/intakes/<overlay-intake>.intake.json --compare .stitch/contracts/screens/<overlay-surface>.screen.json
+npm run stitch:generate:overlay-draft -- --input .stitch/contracts/intakes/<overlay-intake>.intake.json
 ```
 
 ## Output
@@ -136,7 +136,7 @@ The current generator is intentionally narrow:
 
 - supports only `overlay-modal` family intake files
 - writes `draft` preview manifests only
-- does not mutate accepted `.stitch/contracts/screens/*.json`
+- does not mint or require accepted per-surface `screen manifest` files
 - stops instead of guessing when `openQuestions` remain
 
 ## Known Gotchas

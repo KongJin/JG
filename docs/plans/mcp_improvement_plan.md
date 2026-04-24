@@ -17,7 +17,7 @@ Unity MCP is not being retired. In this repo it is now defined as a `diagnostic 
 - Keep `rule-harness` usage limited to compile/status refresh plus generic diagnostics.
 - Keep scene-specific runtime smoke out of harness scope.
 - Keep supervised Play/UI/screenshot flows stable enough for repeatable runtime verification.
-- In reset mode, treat `accepted contract + unity-map + committed prefab target + fresh evidence` as the Lobby/Garage committed SSOT before any concrete authoring scene is revived.
+- In reset mode, treat `accepted source freeze + execution contracts + committed prefab target + fresh evidence` as the Lobby/Garage committed SSOT before any concrete authoring scene is revived.
 
 ## Current Validation Stack
 

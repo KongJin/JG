@@ -10,7 +10,7 @@ description: Project-specific Unity workflow for the JG repo. Use when Codex wor
 > doc_id: skill.jg-unity-workflow
 > role: skill-entry
 > owner_scope: JG Unity lane read order, owner doc routing, MCP and validation entrypoint
-> upstream: repo.agents, docs.index, ops.cohesion-coupling-policy, ops.unity-ui-authoring-workflow
+> upstream: repo.agents, docs.index, ops.cohesion-coupling-policy, ops.plan-authoring-review-workflow, ops.acceptance-reporting-guardrails, ops.unity-ui-authoring-workflow
 > artifacts: `tools/unity-mcp/`, `artifacts/unity/`, `Assets/Scenes/`, `Assets/Prefabs/`
 
 Use this skill for JG-specific Unity execution order and sources of truth.
@@ -26,8 +26,10 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 4. If the task touches Unity UI or UX authoring, read owner doc `ops.unity-ui-authoring-workflow` before any implementation.
 5. If the task depends on Stitch handoff or `.stitch` artifacts, read owner doc `ops.stitch-data-workflow` before translating them into Unity work.
 6. If the task touches Unity MCP, Play Mode automation, prefab-first reset, or runtime smoke, read `tools/unity-mcp/README.md` as execution reference.
-7. If the task depends on current project priorities or recent recovery work, skim the relevant plan in `docs/plans/`.
-8. If a task clearly needs extra architecture or initialization docs and they exist, read them. Do not stop if they are absent.
+7. If the task creates or substantially rewrites a plan doc, read owner doc `ops.plan-authoring-review-workflow` before editing the plan.
+8. If the task needs acceptance, blocked/mismatch wording, or closeout judgment, read owner doc `ops.acceptance-reporting-guardrails`.
+9. If the task depends on current project priorities or recent recovery work, skim the relevant plan in `docs/plans/`.
+10. If a task clearly needs extra architecture or initialization docs and they exist, read them. Do not stop if they are absent.
 
 ## JG Defaults
 
@@ -47,6 +49,8 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 - `prefab-first reset`: when a legacy scene or prefab route was intentionally discarded, rebuild baseline prefabs from handoff and presentation contracts before assembling a new scene.
 - `code-only`: edit scripts normally, then refresh compile state before Play Mode validation.
 - `mixed`: inspect the scene contract first, then keep scene edits and script edits easy to localize.
+- `plan authoring`: after drafting or substantial plan edits, run the repeat re-review loop from `ops.plan-authoring-review-workflow` before closeout.
+- `acceptance closeout`: use `ops.acceptance-reporting-guardrails` for mechanical vs acceptance separation and blocked/mismatch judgment.
 
 ## MCP Loop
 
@@ -82,11 +86,11 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 When Unity work implements an accepted Stitch screen, use this loop:
 
-1. Read the relevant intake and screen manifest first.
-2. Open the accepted Stitch `png` alongside the Unity surface when practical.
-3. If the current screen structure is supported, expect the source-derived preparation step to run from html/png before extraction or translation.
-4. Read the `unity-map` and confirm the real target asset path before touching hierarchy.
-5. Read presentation contracts before touching hierarchy so required refs and source-derived presentation values are known up front.
+1. Lock the accepted source freeze first.
+2. Open the accepted Stitch `png/html` alongside the Unity surface when practical.
+3. Confirm the execution contracts were derived from that source freeze.
+4. Confirm the real target asset path before touching hierarchy.
+5. Read the execution contracts before touching hierarchy so required refs and source-derived presentation values are known up front.
 6. Build or repair the smallest prefab baseline that can carry the contract.
 7. Compare Unity output against the source screen before calling the pass done.
 

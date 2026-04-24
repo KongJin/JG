@@ -66,7 +66,25 @@ namespace ProjectSD.EditorTools.UnityMcp
             var req = JsonUtility.FromJson<PrefabGetRequest>(body);
             var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
             {
-                var target = ResolvePrefabTarget(req.assetPath, req.childPath);
+                GameObject target;
+                try
+                {
+                    target = ResolvePrefabTarget(req.assetPath, req.childPath);
+                }
+                catch (Exception ex) when (!string.IsNullOrEmpty(req.childPath) && ex.Message.StartsWith("Child not found in prefab:", StringComparison.Ordinal))
+                {
+                    return new GameObjectResponse
+                    {
+                        found = false,
+                        name = string.Empty,
+                        path = req.childPath,
+                        activeSelf = false,
+                        tag = string.Empty,
+                        layer = string.Empty,
+                        components = Array.Empty<ComponentInfo>()
+                    };
+                }
+
                 return BuildGameObjectResponse(target, req.lightweight, req.componentFilter);
             });
             await UnityMcpBridge.WriteJsonAsync(response, 200, result);

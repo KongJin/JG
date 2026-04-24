@@ -32,18 +32,19 @@
 
 - Stitch 산출물은 `최종 SSOT`가 아니라 `시안`이다.
 - JG의 runtime SSOT는 Stitch 산출물이 아니라 Unity의 serialized prefab/scene contract다.
-- legacy scene route를 폐기한 reset 상태에서는 accepted structured contract와 presentation contract를 기준으로 baseline prefab을 먼저 다시 세운다.
+- legacy scene route를 폐기한 reset 상태에서는 accepted source freeze에서 execution contract를 다시 준비한 뒤 baseline prefab을 세운다.
 - 시각 판단은 `design.ui-foundations`를 우선한다.
 - Stitch 결과를 그대로 복제하지 말고, JG의 실제 flow와 serialized contract로 번역한다.
 - 실제 반영과 검증은 Unity MCP와 scene contract 기준으로 한다.
 - `.stitch` 자산의 저장 위치와 handoff 운영 규칙은 `ops.stitch-data-workflow`를 따른다.
-- Unity 번역 입력은 `png/html`이나 set별 handoff md가 아니라 기본값으로 `.stitch/contracts/screens/*.json` + `.stitch/contracts/mappings/*.json` 조합을 사용한다.
+- Unity 번역은 항상 `source freeze -> execution contracts -> prefab/output` 순서를 따른다.
+- stored `.stitch/contracts/*.json`은 source freeze를 건너뛰는 시작점이 되면 안 된다.
 
 ## 추천 사용 순서
 
 1. Stitch에 현재 화면 목표를 짧고 강하게 넣는다.
 2. 나온 시안 중 정보 위계가 가장 선명한 한 방향만 고른다.
-3. `design.ui-foundations` 계약에 맞게 블록 순서와 CTA 역할을 다시 적고, `screen manifest.blocks[] + unity-map`으로 구조화한다.
+3. `design.ui-foundations` 계약에 맞게 source에서 execution contract를 준비한다.
 4. Unity MCP로 baseline prefab을 먼저 재구성한다.
 5. 새 scene을 조립한 뒤 fresh contract/smoke로 검증한다.
 

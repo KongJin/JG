@@ -25,7 +25,7 @@
   기준 흐름은 `source freeze -> execution contracts -> translation output`이다.
 - Stitch -> Unity 한 장씩 번역: [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)
   실행 전에는 source에서 execution contract가 다시 준비되는지 먼저 본다.
-- 문서 / workflow 정리: [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> `docs/index.md` -> relevant owner doc
+- 문서 / workflow 정리: [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/plan_authoring_review_workflow.md`](./ops/plan_authoring_review_workflow.md) -> [`ops/acceptance_reporting_guardrails.md`](./ops/acceptance_reporting_guardrails.md) -> `docs/index.md` -> relevant owner doc
 - GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
 
 ## 상태 규칙
@@ -43,6 +43,8 @@
 | 지금 뭐가 진행 중인지 확인 | [`plans/progress.md`](./plans/progress.md) |
 | 응집도/결합도 상위 기준 확인 | [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) |
 | Plan Mode / Codex 운영 규칙 확인 | `rule-operations` owner 문서 (`docs/index.md`로 current path를 해석한 뒤 읽기) |
+| 계획 문서 작성/재리뷰 기준 확인 | [`ops/plan_authoring_review_workflow.md`](./ops/plan_authoring_review_workflow.md) |
+| acceptance / reporting 기준 확인 | [`ops/acceptance_reporting_guardrails.md`](./ops/acceptance_reporting_guardrails.md) |
 | Unity UI/UX 작업 시작 규칙 확인 | [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) |
 | 게임 방향과 MVP 기준 확인 | [`design/game_design.md`](./design/game_design.md) |
 | Garage UI 레이아웃/토큰/Unity handoff 기준 확인 | [`design/ui_foundations.md`](./design/ui_foundations.md) |
@@ -103,6 +105,8 @@
 - `reference`: [`stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) - accepted Stitch screen을 Unity prefab/scene contract로 옮기는 실무 가이드
 - `reference`: [`stitch_handoff_completeness_checklist.md`](./ops/stitch_handoff_completeness_checklist.md) - Stitch handoff completeness 빠른 점검표
 - `active`: [`document_management_workflow.md`](./ops/document_management_workflow.md) - 문서 역할/참조/리네임/삭제 관리 기준
+- `active`: [`plan_authoring_review_workflow.md`](./ops/plan_authoring_review_workflow.md) - 계획 문서 작성 후 반복 재리뷰와 closeout 기준
+- `active`: [`acceptance_reporting_guardrails.md`](./ops/acceptance_reporting_guardrails.md) - acceptance lock, blocked/mismatch/success 판정, reporting guardrail 기준
 - `reference`: [`firebase_hosting.md`](./ops/firebase_hosting.md) - Firebase hosting 배포 절차
 
 ### `discussions/`
@@ -120,6 +124,8 @@
 - 전역 진입점과 상위 링크는 [`../AGENTS.md`](../AGENTS.md)에서 시작한다.
 - 응집도/결합도 정의와 hard-fail/review 경계는 [`./ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md)를 상위 owner로 본다.
 - Plan Mode 또는 규칙/운영/Codex 절차 작업은 `rule-operations` owner 문서를 먼저 보고, 그 lane에서는 mutation 없이 inspection/reference만 수행한다.
+- 계획 문서 작성 후 반복 재리뷰와 clean closeout 기준은 [`./ops/plan_authoring_review_workflow.md`](./ops/plan_authoring_review_workflow.md)에만 둔다.
+- acceptance 입력 우선순위와 closeout/reporting guardrail 기준은 [`./ops/acceptance_reporting_guardrails.md`](./ops/acceptance_reporting_guardrails.md)에만 둔다.
 - Unity UI/UX authoring 정책 본문은 [`./ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)에만 둔다.
 - Unity MCP 실행 루틴과 canonical smoke 기준은 [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md)를 reference로 본다.
 - 세션 메모는 루트 [`../AGENTS.md`](../AGENTS.md)에 짧게만 남기고, 장기 기준은 `docs/` 쪽 SSOT로 승격한다.

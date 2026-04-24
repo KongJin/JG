@@ -27,6 +27,17 @@ function Resolve-RepoPath {
     return [System.IO.Path]::GetFullPath((Join-Path (Get-RepoRoot) $PathValue))
 }
 
+function Read-JsonFile {
+    param([Parameter(Mandatory = $true)][string]$PathValue)
+
+    $resolvedPath = Resolve-RepoPath -PathValue $PathValue
+    if (-not (Test-Path -LiteralPath $resolvedPath)) {
+        throw "File not found: $resolvedPath"
+    }
+
+    return Get-Content -LiteralPath $resolvedPath -Raw | ConvertFrom-Json
+}
+
 function Convert-ToRepoRelativePath {
     param([Parameter(Mandatory = $true)][string]$AbsolutePath)
 
@@ -67,6 +78,108 @@ function Write-JsonFile {
     return $resolvedPath
 }
 
+function Convert-ToSurfaceSlug {
+    param([string]$Value)
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        return ""
+    }
+
+    $expandedValue = [regex]::Replace($Value.Trim(), '(?<=[a-z0-9])([A-Z])', '-$1')
+    $lowerValue = $expandedValue.ToLowerInvariant()
+    $normalized = [regex]::Replace($lowerValue, '[^a-z0-9]+', '-')
+    $collapsed = [regex]::Replace($normalized, '-{2,}', '-')
+    return $collapsed.Trim('-')
+}
+
+function Get-ArtifactSourceMetadata {
+    param([Parameter(Mandatory = $true)][string]$SurfaceId)
+
+    $normalizedSurfaceId = Convert-ToSurfaceSlug -Value $SurfaceId
+    $artifactRoot = Resolve-RepoPath -PathValue "artifacts/stitch"
+    if (-not (Test-Path -LiteralPath $artifactRoot)) {
+        return $null
+    }
+
+    foreach ($metaFile in Get-ChildItem -LiteralPath $artifactRoot -Filter "meta.json" -Recurse -File) {
+        $meta = Get-Content -LiteralPath $metaFile.FullName -Raw | ConvertFrom-Json
+        $screenNameProperty = $meta.PSObject.Properties["screenName"]
+        if ($null -eq $screenNameProperty) {
+            continue
+        }
+
+        $screenNameSlug = Convert-ToSurfaceSlug -Value ([string]$screenNameProperty.Value)
+        if ([string]::IsNullOrWhiteSpace($screenNameSlug) -or $screenNameSlug -ne $normalizedSurfaceId) {
+            continue
+        }
+
+        $screenDirectory = Split-Path -Parent $metaFile.FullName
+        $htmlPath = Join-Path $screenDirectory "screen.html"
+        $imagePath = Join-Path $screenDirectory "screen.png"
+        if (-not (Test-Path -LiteralPath $htmlPath) -or -not (Test-Path -LiteralPath $imagePath)) {
+            continue
+        }
+
+        return [PSCustomObject]@{
+            sourceRef = $normalizedSurfaceId
+            projectId = if ($null -ne $meta.PSObject.Properties["projectId"]) { [string]$meta.projectId } else { "" }
+            screenId = if ($null -ne $meta.PSObject.Properties["screenId"]) { [string]$meta.screenId } else { "" }
+            url = if ($null -ne $meta.PSObject.Properties["htmlUrl"] -and -not [string]::IsNullOrWhiteSpace([string]$meta.htmlUrl)) { [string]$meta.htmlUrl } elseif ($null -ne $meta.PSObject.Properties["imageUrl"]) { [string]$meta.imageUrl } else { "" }
+            htmlPath = Convert-ToRepoRelativePath -AbsolutePath $htmlPath
+            imagePath = Convert-ToRepoRelativePath -AbsolutePath $imagePath
+        }
+    }
+
+    return $null
+}
+
+function Get-DesignSourceMetadata {
+    param([Parameter(Mandatory = $true)][string]$SurfaceId)
+
+    $designRoot = Resolve-RepoPath -PathValue ".stitch/designs"
+    if (-not (Test-Path -LiteralPath $designRoot)) {
+        return $null
+    }
+
+    $candidateFiles = @(Get-ChildItem -LiteralPath $designRoot -Filter "*.html" -File | Where-Object {
+        $_.BaseName.Equals($SurfaceId, [System.StringComparison]::OrdinalIgnoreCase) -or
+        $_.BaseName.EndsWith("-$SurfaceId", [System.StringComparison]::OrdinalIgnoreCase)
+    } | Sort-Object {
+        if ($_.BaseName.Equals($SurfaceId, [System.StringComparison]::OrdinalIgnoreCase)) { 0 } else { 1 }
+    }, FullName)
+
+    foreach ($candidate in $candidateFiles) {
+        $pairedImagePath = Join-Path $candidate.DirectoryName ($candidate.BaseName + ".png")
+        if (-not (Test-Path -LiteralPath $pairedImagePath)) {
+            continue
+        }
+
+        $relativeHtmlPath = Convert-ToRepoRelativePath -AbsolutePath $candidate.FullName
+        $relativeImagePath = Convert-ToRepoRelativePath -AbsolutePath $pairedImagePath
+        return [PSCustomObject]@{
+            sourceRef = [string]$candidate.BaseName
+            projectId = ""
+            screenId = [string]$candidate.BaseName
+            url = $relativeImagePath
+            htmlPath = $relativeHtmlPath
+            imagePath = $relativeImagePath
+        }
+    }
+
+    return $null
+}
+
+function Get-ActiveSourceFreezePaths {
+    param([Parameter(Mandatory = $true)][string]$SurfaceId)
+
+    $artifactMetadata = Get-ArtifactSourceMetadata -SurfaceId $SurfaceId
+    if ($null -ne $artifactMetadata) {
+        return $artifactMetadata
+    }
+
+    return Get-DesignSourceMetadata -SurfaceId $SurfaceId
+}
+
 function Get-OptionalMatch {
     param(
         [Parameter(Mandatory = $true)][string]$InputText,
@@ -94,7 +207,8 @@ function Get-RequiredMatch {
 function Clean-InnerText {
     param([Parameter(Mandatory = $true)][string]$Value)
 
-    $withoutTags = [regex]::Replace($Value, '<[^>]+>', ' ')
+    $withoutIcons = [regex]::Replace($Value, '<span[^>]*material-symbols-outlined[^>]*>.*?</span>', ' ', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    $withoutTags = [regex]::Replace($withoutIcons, '<[^>]+>', ' ')
     $decoded = [System.Net.WebUtility]::HtmlDecode($withoutTags)
     return ([regex]::Replace($decoded, '\s+', ' ')).Trim()
 }
@@ -129,6 +243,23 @@ function Get-SpacingScaleValue {
         "9" = 36
         "10" = 40
         "12" = 48
+        "14" = 56
+        "16" = 64
+        "20" = 80
+        "24" = 96
+        "28" = 112
+        "32" = 128
+        "36" = 144
+        "40" = 160
+        "44" = 176
+        "48" = 192
+        "52" = 208
+        "56" = 224
+        "60" = 240
+        "64" = 256
+        "72" = 288
+        "80" = 320
+        "96" = 384
     }
 
     if (-not $scale.ContainsKey($Token)) {
@@ -219,11 +350,43 @@ function Get-MaxWidthPx {
     return 320
 }
 
+function Get-TailwindPalette {
+    return @{
+        "black" = "#000000"
+        "white" = "#FFFFFF"
+        "gray-900" = "#111827"
+        "zinc-950" = "#09090B"
+        "zinc-900" = "#18181B"
+        "zinc-800" = "#27272A"
+        "zinc-700" = "#3F3F46"
+        "zinc-600" = "#52525B"
+        "zinc-500" = "#71717A"
+        "zinc-400" = "#A1A1AA"
+        "zinc-300" = "#D4D4D8"
+        "zinc-200" = "#E4E4E7"
+        "zinc-100" = "#F4F4F5"
+        "amber-400" = "#FBBF24"
+        "amber-500" = "#F59E0B"
+        "blue-400" = "#60A5FA"
+        "blue-500" = "#5EB6FF"
+    }
+}
+
 function Get-SurfaceSourcePath {
     param(
         [Parameter(Mandatory = $true)][string]$SurfaceId,
         [Parameter(Mandatory = $true)][string]$Extension
     )
+
+    $activeSourceFreeze = Get-ActiveSourceFreezePaths -SurfaceId $SurfaceId
+    if ($null -ne $activeSourceFreeze) {
+        $propertyName = if ($Extension -eq "html") { "htmlPath" } else { "imagePath" }
+        $activePathProperty = $activeSourceFreeze.PSObject.Properties[$propertyName]
+        $activePath = if ($null -ne $activePathProperty) { [string]$activePathProperty.Value } else { "" }
+        if (-not [string]::IsNullOrWhiteSpace($activePath)) {
+            return $activePath
+        }
+    }
 
     $designRoot = Resolve-RepoPath -PathValue ".stitch/designs"
     $candidate = Get-ChildItem -LiteralPath $designRoot -File | Where-Object { $_.Name -like "*$SurfaceId.$Extension" } | Select-Object -First 1
@@ -386,11 +549,19 @@ function Get-OverlaySemanticSpec {
 }
 
 function Get-SetIdFromPath {
-    param([Parameter(Mandatory = $true)][string]$PathValue)
+    param(
+        [Parameter(Mandatory = $true)][string]$PathValue,
+        [string]$SourceRef = ""
+    )
 
-    $name = [System.IO.Path]::GetFileNameWithoutExtension($PathValue)
-    if ($name -match '^(?<set>set-[a-z])\-') {
-        return $Matches["set"]
+    foreach ($candidate in @($SourceRef, [System.IO.Path]::GetFileNameWithoutExtension($PathValue))) {
+        if ([string]::IsNullOrWhiteSpace($candidate)) {
+            continue
+        }
+
+        if ($candidate -match '^(?<set>set-[a-z])\-') {
+            return $Matches["set"]
+        }
     }
 
     return "set-unknown"
@@ -489,6 +660,89 @@ function Get-DialogContext {
     }
 }
 
+function Get-WorkspaceContext {
+    param([Parameter(Mandatory = $true)][string]$Html)
+
+    if ($Html -notmatch '<main[^>]*>' -or $Html -notmatch '<header[^>]*>' -or $Html -notmatch '저장') {
+        throw "Could not detect workspace screen structure from source HTML."
+    }
+
+    $headerMatch = Get-RequiredMatch `
+        -InputText $Html `
+        -Pattern '<header class="(?<classes>[^"]+)">(?<inner>.*?)</header>' `
+        -ErrorMessage "Could not find workspace header."
+    $mainMatch = Get-RequiredMatch `
+        -InputText $Html `
+        -Pattern '<main class="(?<classes>[^"]+)">(?<inner>.*?)</main>' `
+        -ErrorMessage "Could not find workspace main body."
+    $saveDockMatch = Get-RequiredMatch `
+        -InputText $Html `
+        -Pattern '<div class="(?<classes>[^"]*fixed[^"]*bottom-0[^"]*)">\s*<button class="(?<buttonClasses>[^"]+)"[^>]*>(?<buttonInner>.*?)</button>' `
+        -ErrorMessage "Could not find persistent save dock."
+
+    $titleMatch = Get-RequiredMatch `
+        -InputText ([string]$headerMatch.Groups["inner"].Value) `
+        -Pattern '<h1 class="(?<classes>[^"]+)">\s*(?<text>.*?)\s*</h1>' `
+        -ErrorMessage "Could not find workspace header title."
+    $subtitleMatch = Get-OptionalMatch `
+        -InputText ([string]$headerMatch.Groups["inner"].Value) `
+        -Pattern '<p class="(?<classes>[^"]+)">\s*(?<text>.*?)\s*</p>'
+
+    $mainInner = [string]$mainMatch.Groups["inner"].Value
+    $sections = [regex]::Matches($mainInner, '<section class="(?<classes>[^"]+)">(?<inner>.*?)</section>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    if ($sections.Count -lt 3) {
+        throw "Workspace screen requires at least three main sections."
+    }
+
+    $slotSection = $sections[0]
+    $focusSection = $sections[1]
+    $editorSection = $sections[2]
+    $previewSection = if ($sections.Count -ge 4) { $sections[3] } else { $sections[$sections.Count - 1] }
+    $previewInner = [string]$previewSection.Groups["inner"].Value
+    $summaryBarMatch = Get-OptionalMatch `
+        -InputText $previewInner `
+        -Pattern '<div class="(?<barClasses>[^"]*p-1[^"]*flex[^"]*gap-2[^"]*)">\s*<div class="(?<trackClasses>[^"]+)">\s*<div class="(?<fillClasses>[^"]+)"></div>\s*</div>\s*<span class="(?<textClasses>[^"]+)">\s*(?<text>.*?)\s*</span>'
+    $summaryFillPercent = 0
+    if ($summaryBarMatch.Success) {
+        $fillWidthMatch = Get-OptionalMatch -InputText ([string]$summaryBarMatch.Groups["fillClasses"].Value) -Pattern 'w-\[(?<pct>\d+)%\]'
+        if ($fillWidthMatch.Success) {
+            $summaryFillPercent = [int]$fillWidthMatch.Groups["pct"].Value
+        }
+    }
+
+    $settingsButtonMatch = Get-OptionalMatch `
+        -InputText ([string]$headerMatch.Groups["inner"].Value) `
+        -Pattern '<button class="(?<classes>[^"]+)"[^>]*>\s*<span class="material-symbols-outlined[^"]*">(?<icon>.*?)</span>'
+
+    $saveText = Clean-InnerText -Value ([string]$saveDockMatch.Groups["buttonInner"].Value)
+    $saveButtonText = if ([string]::IsNullOrWhiteSpace($saveText)) { "저장" } else { $saveText }
+
+    return [PSCustomObject]@{
+        headerClasses = [string]$headerMatch.Groups["classes"].Value
+        headerInner = [string]$headerMatch.Groups["inner"].Value
+        mainClasses = [string]$mainMatch.Groups["classes"].Value
+        titleClasses = [string]$titleMatch.Groups["classes"].Value
+        titleText = Clean-InnerText -Value ([string]$titleMatch.Groups["text"].Value)
+        subtitleClasses = if ($subtitleMatch.Success) { [string]$subtitleMatch.Groups["classes"].Value } else { "" }
+        subtitleText = if ($subtitleMatch.Success) { Clean-InnerText -Value ([string]$subtitleMatch.Groups["text"].Value) } else { "" }
+        settingsButtonClasses = if ($settingsButtonMatch.Success) { [string]$settingsButtonMatch.Groups["classes"].Value } else { "" }
+        settingsIconText = if ($settingsButtonMatch.Success) { Clean-InnerText -Value ([string]$settingsButtonMatch.Groups["icon"].Value) } else { "settings" }
+        slotSectionClasses = [string]$slotSection.Groups["classes"].Value
+        focusSectionClasses = [string]$focusSection.Groups["classes"].Value
+        editorSectionClasses = [string]$editorSection.Groups["classes"].Value
+        previewSectionClasses = [string]$previewSection.Groups["classes"].Value
+        summaryBarClasses = if ($summaryBarMatch.Success) { [string]$summaryBarMatch.Groups["barClasses"].Value } else { "" }
+        summaryTrackClasses = if ($summaryBarMatch.Success) { [string]$summaryBarMatch.Groups["trackClasses"].Value } else { "" }
+        summaryFillClasses = if ($summaryBarMatch.Success) { [string]$summaryBarMatch.Groups["fillClasses"].Value } else { "" }
+        summaryTextClasses = if ($summaryBarMatch.Success) { [string]$summaryBarMatch.Groups["textClasses"].Value } else { "" }
+        summaryText = if ($summaryBarMatch.Success) { Clean-InnerText -Value ([string]$summaryBarMatch.Groups["text"].Value) } else { "" }
+        summaryFillPercent = $summaryFillPercent
+        saveDockClasses = [string]$saveDockMatch.Groups["classes"].Value
+        saveButtonClasses = [string]$saveDockMatch.Groups["buttonClasses"].Value
+        saveButtonText = $saveButtonText
+    }
+}
+
 function New-OverlayDialogProfile {
     param(
         [Parameter(Mandatory = $true)][string]$SurfaceId,
@@ -496,11 +750,17 @@ function New-OverlayDialogProfile {
         [Parameter(Mandatory = $true)][string]$ImagePath,
         [Parameter(Mandatory = $true)][string]$PresentationOutputPath,
         [Parameter(Mandatory = $true)][string]$TargetAssetPath,
-        [Parameter(Mandatory = $true)][object]$Context
+        [Parameter(Mandatory = $true)][object]$Context,
+        [object]$SourceMetadata = $null
     )
 
-    $setId = Get-SetIdFromPath -PathValue $HtmlPath
-    $sourceRef = [System.IO.Path]::GetFileNameWithoutExtension($ImagePath)
+    $sourceRef = if ($null -ne $SourceMetadata -and -not [string]::IsNullOrWhiteSpace([string]$SourceMetadata.sourceRef)) {
+        [string]$SourceMetadata.sourceRef
+    }
+    else {
+        [System.IO.Path]::GetFileNameWithoutExtension($ImagePath)
+    }
+    $setId = Get-SetIdFromPath -PathValue $HtmlPath -SourceRef $sourceRef
     $dialogWidthPx = Get-MaxWidthPx -Classes ([string]$Context.panelClasses)
     $headerLayout = if (-not [string]::IsNullOrWhiteSpace([string]$Context.summaryText)) { "stacked" } else { "inline" }
     $footerLayout = if (([string]$Context.footerClasses) -match '\bflex-col\b') { "vertical" } else { "horizontal" }
@@ -653,9 +913,9 @@ function New-OverlayDialogProfile {
                 source = [ordered]@{
                     tool = "stitch"
                     sourceRef = $sourceRef
-                    projectId = ""
-                    screenId = $sourceRef
-                    url = $ImagePath
+                    projectId = if ($null -ne $SourceMetadata) { [string]$SourceMetadata.projectId } else { "" }
+                    screenId = if ($null -ne $SourceMetadata -and -not [string]::IsNullOrWhiteSpace([string]$SourceMetadata.screenId)) { [string]$SourceMetadata.screenId } else { $sourceRef }
+                    url = if ($null -ne $SourceMetadata -and -not [string]::IsNullOrWhiteSpace([string]$SourceMetadata.url)) { [string]$SourceMetadata.url } else { $ImagePath }
                 }
                 ctaPriority = @(
                     [ordered]@{
@@ -833,11 +1093,203 @@ function New-OverlayDialogProfile {
     return [PSCustomObject]$profile
 }
 
+function Get-WorkspaceTargetAssetPath {
+    param([Parameter(Mandatory = $true)][string]$SurfaceId)
+
+    $featureName = Get-FeatureName -SurfaceId $SurfaceId
+    return "Assets/Prefabs/Features/$featureName/Root/$featureName`PageRoot.prefab"
+}
+
+function New-WorkspaceProfile {
+    param(
+        [Parameter(Mandatory = $true)][string]$SurfaceId,
+        [Parameter(Mandatory = $true)][string]$HtmlPath,
+        [Parameter(Mandatory = $true)][string]$ImagePath,
+        [Parameter(Mandatory = $true)][string]$PresentationOutputPath,
+        [Parameter(Mandatory = $true)][string]$TargetAssetPath,
+        [Parameter(Mandatory = $true)][object]$Context,
+        [object]$SourceMetadata = $null
+    )
+
+    $sourceRef = if ($null -ne $SourceMetadata -and -not [string]::IsNullOrWhiteSpace([string]$SourceMetadata.sourceRef)) {
+        [string]$SourceMetadata.sourceRef
+    }
+    else {
+        [System.IO.Path]::GetFileNameWithoutExtension($ImagePath)
+    }
+    $setId = Get-SetIdFromPath -PathValue $HtmlPath -SourceRef $sourceRef
+
+    $headerHeightPx = Get-ClassValuePx -Classes ([string]$Context.headerClasses) -Prefixes @("h") -DefaultValue 56
+    $headerPaddingX = Get-ClassValuePx -Classes ([string]$Context.headerClasses) -Prefixes @("px") -DefaultValue 16
+    $mainPaddingX = Get-ClassValuePx -Classes ([string]$Context.mainClasses) -Prefixes @("px") -DefaultValue 12
+    $mainGap = Get-ClassValuePx -Classes ([string]$Context.mainClasses) -Prefixes @("space-y") -DefaultValue 16
+    $slotGap = Get-ClassValuePx -Classes ([string]$Context.slotSectionClasses) -Prefixes @("gap") -DefaultValue 8
+    $focusGap = Get-ClassValuePx -Classes ([string]$Context.focusSectionClasses) -Prefixes @("gap") -DefaultValue 4
+    $editorPadding = Get-ClassValuePx -Classes ([string]$Context.editorSectionClasses) -Prefixes @("p") -DefaultValue 12
+    $previewHeight = Get-ClassValuePx -Classes ([string]$Context.previewSectionClasses) -Prefixes @("h") -DefaultValue 192
+    $summaryTrackHeight = if (-not [string]::IsNullOrWhiteSpace([string]$Context.summaryTrackClasses)) { Get-ClassValuePx -Classes ([string]$Context.summaryTrackClasses) -Prefixes @("h") -DefaultValue 6 } else { 6 }
+    $summaryTextWidth = if (-not [string]::IsNullOrWhiteSpace([string]$Context.summaryTextClasses)) { Get-ClassValuePx -Classes ([string]$Context.summaryTextClasses) -Prefixes @("w") -DefaultValue 48 } else { 48 }
+    $summaryTextFontPx = if (-not [string]::IsNullOrWhiteSpace([string]$Context.summaryTextClasses)) { Get-TextSizePx -Classes ([string]$Context.summaryTextClasses) } else { 8 }
+    $summaryBarHeight = if (-not [string]::IsNullOrWhiteSpace([string]$Context.summaryBarClasses)) { [Math]::Max(20, $summaryTrackHeight + 10) } else { 20 }
+    $saveButtonHeight = if (([string]$Context.saveButtonClasses) -match '\bpy-3\.5\b') { 52 } else { 44 }
+    $saveDockPaddingX = Get-ClassValuePx -Classes ([string]$Context.saveDockClasses) -Prefixes @("px") -DefaultValue 16
+    $saveDockPaddingTop = Get-ClassValuePx -Classes ([string]$Context.saveDockClasses) -Prefixes @("pt") -DefaultValue 8
+
+    $profile = [ordered]@{
+        surfaceId = $SurfaceId
+        family = "workspace-screen-v1"
+        defaults = [ordered]@{
+            htmlPath = $HtmlPath
+            imagePath = $ImagePath
+            outputPath = $PresentationOutputPath
+        }
+        viewport = [ordered]@{
+            label = "390x844 mobile-first"
+        }
+        colors = [ordered]@{
+            header = Get-ColorTokenFromClasses -Classes ([string]$Context.headerClasses) -Prefix "bg"
+            title = Get-ColorTokenFromClasses -Classes ([string]$Context.titleClasses) -Prefix "text"
+            subtitle = if (-not [string]::IsNullOrWhiteSpace([string]$Context.subtitleClasses)) { Get-ColorTokenFromClasses -Classes ([string]$Context.subtitleClasses) -Prefix "text" } else { "zinc-500" }
+            slot = Get-ColorTokenFromClasses -Classes ([string]$Context.slotSectionClasses) -Prefix "bg"
+            editor = Get-ColorTokenFromClasses -Classes ([string]$Context.editorSectionClasses) -Prefix "bg"
+            preview = Get-ColorTokenFromClasses -Classes ([string]$Context.previewSectionClasses) -Prefix "bg"
+            summaryBar = Get-ColorTokenFromClasses -Classes ([string]$Context.summaryBarClasses) -Prefix "bg"
+            summaryTrack = Get-ColorTokenFromClasses -Classes ([string]$Context.summaryTrackClasses) -Prefix "bg"
+            summaryFill = Get-ColorTokenFromClasses -Classes ([string]$Context.summaryFillClasses) -Prefix "bg"
+            summaryText = Get-ColorTokenFromClasses -Classes ([string]$Context.summaryTextClasses) -Prefix "text"
+            saveDock = Get-ColorTokenFromClasses -Classes ([string]$Context.saveDockClasses) -Prefix "bg"
+            primaryButton = Get-ColorTokenFromClasses -Classes ([string]$Context.saveButtonClasses) -Prefix "bg"
+            primaryText = Get-ColorTokenFromClasses -Classes ([string]$Context.saveButtonClasses) -Prefix "text"
+        }
+        workspace = [ordered]@{
+            headerHeightPx = $headerHeightPx
+            headerPaddingX = $headerPaddingX
+            mainPaddingX = $mainPaddingX
+            mainGap = $mainGap
+            slotGap = $slotGap
+            focusGap = $focusGap
+            editorPadding = $editorPadding
+            previewHeightPx = $previewHeight
+            summaryBarHeightPx = $summaryBarHeight
+            summaryTrackHeightPx = $summaryTrackHeight
+            summaryFillPercent = [int]$Context.summaryFillPercent
+            summaryText = [string]$Context.summaryText
+            summaryTextFontPx = $summaryTextFontPx
+            summaryTextWidthPx = $summaryTextWidth
+            saveButtonHeightPx = $saveButtonHeight
+            saveDockPaddingX = $saveDockPaddingX
+            saveDockPaddingTop = $saveDockPaddingTop
+            titleText = [string]$Context.titleText
+            subtitleText = [string]$Context.subtitleText
+            saveButtonText = [string]$Context.saveButtonText
+            settingsIconText = [string]$Context.settingsIconText
+        }
+        compiler = [ordered]@{
+            manifest = [ordered]@{
+                setId = $setId
+                surfaceRole = "root"
+                status = "accepted"
+                source = [ordered]@{
+                    tool = "stitch"
+                    sourceRef = $sourceRef
+                    projectId = if ($null -ne $SourceMetadata) { [string]$SourceMetadata.projectId } else { "" }
+                    screenId = if ($null -ne $SourceMetadata -and -not [string]::IsNullOrWhiteSpace([string]$SourceMetadata.screenId)) { [string]$SourceMetadata.screenId } else { $sourceRef }
+                    url = if ($null -ne $SourceMetadata -and -not [string]::IsNullOrWhiteSpace([string]$SourceMetadata.url)) { [string]$SourceMetadata.url } else { $ImagePath }
+                }
+                ctaPriority = @(
+                    [ordered]@{
+                        id = "save-roster"
+                        priority = "primary"
+                        outcome = "save-roster"
+                    },
+                    [ordered]@{
+                        id = "open-settings"
+                        priority = "secondary"
+                        outcome = "open-settings"
+                    }
+                )
+                states = [ordered]@{
+                    default = $true
+                    empty = $true
+                    loading = $false
+                    error = $false
+                    selected = $true
+                    disabled = $true
+                }
+                validation = [ordered]@{
+                    firstReadOrder = @(
+                        "slot-selector",
+                        "focus-bar",
+                        "editor-panel",
+                        "preview-card",
+                        "summary-card",
+                        "save-dock"
+                    )
+                    requiredChecks = @(
+                        "slot-strip-horizontal",
+                        "focus-bar-compact-row",
+                        "editor-dominant-first-screen",
+                        "evaluative-summary-retained",
+                        "persistent-primary-save-dock"
+                    )
+                }
+                blocks = @(
+                    [ordered]@{ blockId = "header-chrome"; role = "shared-chrome"; sourceName = "top-app-bar"; children = @("aux-action") },
+                    [ordered]@{ blockId = "slot-selector"; role = "section"; sourceName = "slot-selector"; children = @() },
+                    [ordered]@{ blockId = "focus-bar"; role = "section"; sourceName = "focus-bar"; children = @() },
+                    [ordered]@{ blockId = "editor-panel"; role = "content"; sourceName = "editor-panel"; children = @() },
+                    [ordered]@{ blockId = "preview-card"; role = "content"; sourceName = "preview-card"; children = @("summary-card") },
+                    [ordered]@{ blockId = "summary-card"; role = "status"; sourceName = "preview-summary.summary"; children = @() },
+                    [ordered]@{ blockId = "save-dock"; role = "cta"; sourceName = "persistent-save-dock"; children = @("primary-cta") },
+                    [ordered]@{ blockId = "primary-cta"; role = "cta"; sourceName = "save-roster"; children = @() },
+                    [ordered]@{ blockId = "aux-action"; role = "cta"; sourceName = "open-settings"; children = @() }
+                )
+            }
+            map = [ordered]@{
+                target = [ordered]@{
+                    kind = "prefab"
+                    assetPath = $TargetAssetPath
+                }
+                translationStrategy = "contract-complete-translator-v1"
+                strategyMode = "generate-or-patch"
+                artifactPaths = [ordered]@{
+                    translationResult = "artifacts/unity/$sourceRef-translation-result.json"
+                    preflightResult = "artifacts/unity/$sourceRef-preflight-result.json"
+                    pipelineResult = "artifacts/unity/$sourceRef-pipeline-result.json"
+                }
+                blocks = @(
+                    [ordered]@{ blockId = "header-chrome"; hostPath = "HeaderChrome"; requiredComponents = @("Image", "HorizontalLayoutGroup", "LayoutElement") },
+                    [ordered]@{ blockId = "slot-selector"; hostPath = "MainScroll/Content/SlotSelector"; requiredComponents = @("Image", "HorizontalLayoutGroup", "LayoutElement") },
+                    [ordered]@{ blockId = "focus-bar"; hostPath = "MainScroll/Content/FocusBar"; requiredComponents = @("HorizontalLayoutGroup", "LayoutElement") },
+                    [ordered]@{ blockId = "editor-panel"; hostPath = "MainScroll/Content/EditorPanel"; requiredComponents = @("Image", "VerticalLayoutGroup", "LayoutElement") },
+                    [ordered]@{ blockId = "preview-card"; hostPath = "MainScroll/Content/PreviewCard"; requiredComponents = @("Image", "LayoutElement") },
+                    [ordered]@{ blockId = "summary-card"; hostPath = "MainScroll/Content/PreviewCard/SummaryBar"; requiredComponents = @("Image", "HorizontalLayoutGroup", "LayoutElement") },
+                    [ordered]@{ blockId = "save-dock"; hostPath = "SaveDock"; requiredComponents = @("Image", "HorizontalLayoutGroup", "LayoutElement") },
+                    [ordered]@{ blockId = "primary-cta"; hostPath = "SaveDock/PrimaryButton"; requiredComponents = @("Button", "Image", "LayoutElement") },
+                    [ordered]@{ blockId = "aux-action"; hostPath = "HeaderChrome/SettingsButton"; requiredComponents = @("Button", "Image", "LayoutElement") }
+                )
+            }
+        }
+        unresolvedDerivedFields = @()
+    }
+
+    return [PSCustomObject]$profile
+}
+
+$sourceMetadata = Get-ActiveSourceFreezePaths -SurfaceId $SurfaceId
 $resolvedHtmlPath = if ([string]::IsNullOrWhiteSpace($HtmlPath)) { Get-SurfaceSourcePath -SurfaceId $SurfaceId -Extension "html" } else { Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $HtmlPath) }
 $resolvedImagePath = if ([string]::IsNullOrWhiteSpace($ImagePath)) { Get-SurfaceSourcePath -SurfaceId $SurfaceId -Extension "png" } else { Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $ImagePath) }
-$resolvedProfileArtifactPath = if ([string]::IsNullOrWhiteSpace($ProfileArtifactPath)) { "tools/stitch-unity/presentations/profiles/$SurfaceId.profile.json" } else { Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $ProfileArtifactPath) }
-$resolvedPresentationOutputPath = if ([string]::IsNullOrWhiteSpace($PresentationOutputPath)) { ".stitch/contracts/presentations/$SurfaceId.presentation.json" } else { Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $PresentationOutputPath) }
-$resolvedTargetAssetPath = if ([string]::IsNullOrWhiteSpace($TargetAssetPath)) { Get-DefaultTargetAssetPath -SurfaceId $SurfaceId } else { $TargetAssetPath }
+$resolvedProfileArtifactPath = if ([string]::IsNullOrWhiteSpace($ProfileArtifactPath)) { "artifacts/stitch/debug/$SurfaceId.profile.json" } else { Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $ProfileArtifactPath) }
+$resolvedPresentationOutputPath = if ([string]::IsNullOrWhiteSpace($PresentationOutputPath)) {
+    "in-memory://compiled/$SurfaceId/presentation-contract"
+}
+elseif ($PresentationOutputPath.StartsWith("in-memory://", [System.StringComparison]::OrdinalIgnoreCase)) {
+    $PresentationOutputPath
+}
+else {
+    Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $PresentationOutputPath)
+}
+$resolvedTargetAssetPath = if ([string]::IsNullOrWhiteSpace($TargetAssetPath)) { "" } else { $TargetAssetPath }
 
 $resolvedProfileAbsolutePath = Resolve-RepoPath -PathValue $resolvedProfileArtifactPath
 if ($WriteProfileArtifact -and (Test-Path -LiteralPath $resolvedProfileAbsolutePath) -and -not $Force -and -not $CanGenerateOnly) {
@@ -845,11 +1297,50 @@ if ($WriteProfileArtifact -and (Test-Path -LiteralPath $resolvedProfileAbsoluteP
 }
 
 $html = Read-AllText -PathValue $resolvedHtmlPath
-$context = $null
+$profile = $null
+$reason = ""
+
 try {
     $context = Get-DialogContext -Html $html
+    if ([string]::IsNullOrWhiteSpace($resolvedTargetAssetPath)) {
+        $resolvedTargetAssetPath = Get-DefaultTargetAssetPath -SurfaceId $SurfaceId
+    }
+    $profile = New-OverlayDialogProfile `
+        -SurfaceId $SurfaceId `
+        -HtmlPath $resolvedHtmlPath `
+        -ImagePath $resolvedImagePath `
+        -PresentationOutputPath $resolvedPresentationOutputPath `
+        -TargetAssetPath $resolvedTargetAssetPath `
+        -Context $context `
+        -SourceMetadata $sourceMetadata
 }
 catch {
+    $reason = $_.Exception.Message
+}
+
+if ($null -eq $profile) {
+    try {
+        $workspaceContext = Get-WorkspaceContext -Html $html
+        if ([string]::IsNullOrWhiteSpace($resolvedTargetAssetPath)) {
+            $resolvedTargetAssetPath = Get-WorkspaceTargetAssetPath -SurfaceId $SurfaceId
+        }
+        $profile = New-WorkspaceProfile `
+            -SurfaceId $SurfaceId `
+            -HtmlPath $resolvedHtmlPath `
+            -ImagePath $resolvedImagePath `
+            -PresentationOutputPath $resolvedPresentationOutputPath `
+            -TargetAssetPath $resolvedTargetAssetPath `
+            -Context $workspaceContext `
+            -SourceMetadata $sourceMetadata
+    }
+    catch {
+        if (-not [string]::IsNullOrWhiteSpace($_.Exception.Message)) {
+            $reason = $_.Exception.Message
+        }
+    }
+}
+
+if ($null -eq $profile) {
     if ($CanGenerateOnly) {
         [PSCustomObject]@{
             success = $true
@@ -861,13 +1352,13 @@ catch {
             profileArtifactPath = ""
             presentationOutputPath = $resolvedPresentationOutputPath
             targetAssetPath = $resolvedTargetAssetPath
-            reason = $_.Exception.Message
+            reason = $reason
             checkedAt = (Get-Date).ToString("o")
         } | ConvertTo-Json -Depth 20
         exit 0
     }
 
-    throw
+    throw $reason
 }
 
 if ($CanGenerateOnly) {
@@ -885,14 +1376,6 @@ if ($CanGenerateOnly) {
     } | ConvertTo-Json -Depth 20
     exit 0
 }
-
-$profile = New-OverlayDialogProfile `
-    -SurfaceId $SurfaceId `
-    -HtmlPath $resolvedHtmlPath `
-    -ImagePath $resolvedImagePath `
-    -PresentationOutputPath $resolvedPresentationOutputPath `
-    -TargetAssetPath $resolvedTargetAssetPath `
-    -Context $context
 
 $writtenPath = ""
 if ($WriteProfileArtifact) {

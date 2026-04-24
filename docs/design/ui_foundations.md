@@ -236,7 +236,7 @@ Lobby main은 아래 읽기 순서를 유지한다.
 - contract path: `.stitch/contracts/components/shared-ui.component-catalog.json`
 - schema path: `.stitch/contracts/components/schema/stitch-component-catalog.schema.json`
 - 이 catalog는 `supporting design/reference lane`이다.
-- active generator input은 계속 `screen manifest + unity-map`뿐이다.
+- active generator input은 source freeze에서 다시 준비된 execution contracts다.
 
 owner boundary:
 
@@ -300,7 +300,7 @@ Figma에서 Unity로 옮길 때 아래 규칙을 따른다.
 - Garage 전용 토큰은 계속 Garage 피처 내부에 둔다
 - Shared로 승격하지 않는다
 - 새 UI를 만들 때 먼저 `block -> shared component` 대응표를 작성한 뒤 구현한다
-- shared component catalog는 vocabulary reference일 뿐이고, runtime prefab authoring 입력은 계속 `screen manifest + unity-map`이다
+- shared component catalog는 vocabulary reference일 뿐이고, runtime prefab authoring 입력은 source freeze에서 다시 준비된 execution contracts다.
 
 ## Current Mapping Targets
 

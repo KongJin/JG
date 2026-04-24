@@ -1,12 +1,12 @@
 # Stitch Handoff Completeness Checklist
 
-> 마지막 업데이트: 2026-04-23
+> 마지막 업데이트: 2026-04-25
 > 상태: reference
 > doc_id: ops.stitch-handoff-completeness-checklist
 > role: reference
 > owner_scope: Stitch contract handoff completeness quick check
 > upstream: docs.index, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract
-> artifacts: `.stitch/contracts/screens/*.json`, `.stitch/contracts/blueprints/*.json`, `.stitch/contracts/mappings/*.json`
+> artifacts: `artifacts/stitch/`, `artifacts/unity/`, `in-memory://compiled/*`
 
 이 문서는 Stitch handoff가 Unity translation에 들어가기 전에 빠르게 completeness를 확인하는 reference checklist다.
 데이터 ownership은 `ops.stitch-data-workflow`, JSON 구조 기준은 `ops.stitch-structured-handoff-contract`가 소유한다.
@@ -26,7 +26,7 @@
 - `blocks[]`만 읽어도 first read order와 주요 UI 덩어리가 따라간다.
 - `ctaPriority[]`만 읽어도 primary/secondary CTA posture가 따라간다.
 - `states`, `requiredChecks`, `firstReadOrder`가 검증 초점을 설명한다.
-- Unity host 연결은 `.stitch/contracts/mappings/*.json` 또는 active `unity-map`으로 바로 추적된다.
+- Unity host 연결은 active execution contract의 `unity-map` binding으로 바로 추적된다.
 - contract가 빠진 값을 script-side constants나 fallback으로 대신하지 않는다.
 
 ## 드래프트로 남겨야 하는 신호
