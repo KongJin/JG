@@ -1,0 +1,278 @@
+{
+    "surfaceId":  "account-delete-confirm",
+    "family":  "overlay-dialog-v1",
+    "defaults":  {
+                     "htmlPath":  ".stitch/designs/set-c-account-delete-confirm.html",
+                     "imagePath":  ".stitch/designs/set-c-account-delete-confirm.png",
+                     "outputPath":  ".stitch/contracts/presentations/account-delete-confirm.presentation.json"
+                 },
+    "viewport":  {
+                     "label":  "390x844 mobile-first"
+                 },
+    "patterns":  {
+                     "titlePattern":  "\u003ch2 class=\"(?\u003cclasses\u003e[^\"]+)\"\u003e\\s*(?\u003ctext\u003e.*?)\\s*\u003c/h2\u003e",
+                     "summaryPattern":  "\u003ch2[^\u003e]*\u003e.*?\u003c/h2\u003e\\s*\u003cp class=\"(?\u003cclasses\u003e[^\"]+)\"\u003e\\s*(?\u003ctext\u003e.*?)\\s*\u003c/p\u003e",
+                     "bodyPattern":  "(?:\u003c!-- Modal Body --\u003e|\u003c!-- Panel Content --\u003e).*?\u003cp class=\"(?\u003cclasses\u003e[^\"]+)\"\u003e\\s*(?\u003ctext\u003e.*?)\\s*\u003c/p\u003e",
+                     "buttonPattern":  "\u003cbutton class=\"(?\u003cclasses\u003e[^\"]+)\"[^\u003e]*\u003e\\s*(?\u003ccontent\u003e.*?)\\s*\u003c/button\u003e"
+                 },
+    "colors":  {
+                   "scrim":  "black/80",
+                   "panel":  "darkHangar",
+                   "header":  "zinc-900/50",
+                   "icon":  "red-500/10",
+                   "title":  "zinc-100",
+                   "summary":  "red-400",
+                   "bodyBackground":  "zinc-950/30",
+                   "bodyText":  "zinc-300",
+                   "footerBackground":  "zinc-900/80",
+                   "secondaryButton":  "transparent",
+                   "secondaryText":  "zinc-300",
+                   "primaryButton":  "dangerRed",
+                   "primaryText":  "white"
+               },
+    "layout":  {
+                   "dialogWidthPx":  358,
+                   "headerHeightPx":  64,
+                   "bodyHeightPx":  82,
+                   "footerHeightPx":  108,
+                   "headerPaddingX":  20,
+                   "headerPaddingY":  16,
+                   "bodyPadding":  20,
+                   "footerPaddingX":  20,
+                   "footerPaddingTop":  16,
+                   "footerPaddingBottom":  16,
+                   "footerGap":  12,
+                   "titleGap":  12,
+                   "titleFontPx":  18,
+                   "bodyFontPx":  14,
+                   "buttonFontPx":  14,
+                   "buttonHeightPx":  40,
+                   "headerLayout":  "stacked",
+                   "footerLayout":  "vertical",
+                   "titleStackWidthPx":  274,
+                   "summaryFontPx":  10
+               },
+    "header":  {
+                   "path":  "DialogPanel/HeaderRow",
+                   "iconKind":  "badge",
+                   "iconPath":  "DialogPanel/HeaderRow/WarningBadge",
+                   "iconSizePx":  32,
+                   "titlePath":  "DialogPanel/HeaderRow/TitleStack/TitleText",
+                   "titleStackPath":  "DialogPanel/HeaderRow/TitleStack",
+                   "summaryPath":  "DialogPanel/HeaderRow/TitleStack/SummaryText"
+               },
+    "body":  {
+                 "path":  "DialogPanel/BodyBlock",
+                 "textPath":  "DialogPanel/BodyBlock/BodyText"
+             },
+    "footer":  {
+                   "path":  "DialogPanel/FooterRow",
+                   "secondaryPath":  "DialogPanel/FooterRow/CancelButton",
+                   "secondaryLabelPath":  "DialogPanel/FooterRow/CancelButton/Label",
+                   "primaryPath":  "DialogPanel/FooterRow/DeleteButton",
+                   "primaryLabelPath":  "DialogPanel/FooterRow/DeleteButton/Label"
+               },
+    "compiler":  {
+                     "manifest":  {
+                                      "setId":  "set-c",
+                                      "surfaceRole":  "overlay",
+                                      "status":  "accepted",
+                                      "source":  {
+                                                     "tool":  "stitch",
+                                                     "sourceRef":  "set-c-account-delete-confirm",
+                                                     "projectId":  "",
+                                                     "screenId":  "set-c-account-delete-confirm",
+                                                     "url":  ".stitch/designs/set-c-account-delete-confirm.png"
+                                                 },
+                                      "ctaPriority":  [
+                                                          {
+                                                              "id":  "delete-cta",
+                                                              "priority":  "primary",
+                                                              "outcome":  "delete-account"
+                                                          },
+                                                          {
+                                                              "id":  "cancel-cta",
+                                                              "priority":  "secondary",
+                                                              "outcome":  "dismiss-delete-confirm"
+                                                          }
+                                                      ],
+                                      "states":  {
+                                                     "default":  true,
+                                                     "empty":  false,
+                                                     "loading":  false,
+                                                     "error":  false,
+                                                     "selected":  false,
+                                                     "disabled":  true
+                                                 },
+                                      "validation":  {
+                                                         "firstReadOrder":  [
+                                                                                "warning-header",
+                                                                                "confirmation-copy",
+                                                                                "footer-actions"
+                                                                            ],
+                                                         "requiredChecks":  [
+                                                                                "destructive-header-dominant",
+                                                                                "critical-copy-readable",
+                                                                                "cancel-secondary-weight",
+                                                                                "delete-cta-dominant",
+                                                                                "overlay-scrim-focus-isolation"
+                                                                            ]
+                                                     },
+                                      "notes":  [
+                                                    "Auto-generated overlay dialog manifest from source HTML.",
+                                                    "Source-driven compiler data should be preferred over hand-authored screen-specific profile edits."
+                                                ],
+                                      "blocks":  [
+                                                     {
+                                                         "blockId":  "warning-header",
+                                                         "role":  "shared-chrome",
+                                                         "sourceName":  "dialog-header",
+                                                         "children":  [
+
+                                                                      ],
+                                                         "componentComposition":  [
+                                                                                      {
+                                                                                          "componentId":  "status-text",
+                                                                                          "slot":  "title",
+                                                                                          "variant":  "danger-title"
+                                                                                      },
+                                                                                      {
+                                                                                          "componentId":  "status-text",
+                                                                                          "slot":  "summary",
+                                                                                          "variant":  "critical-action-required"
+                                                                                      },
+                                                                                      {
+                                                                                          "componentId":  "icon-button",
+                                                                                          "slot":  "leading",
+                                                                                          "variant":  "warning-badge"
+                                                                                      }
+                                                                                  ]
+                                                     },
+                                                     {
+                                                         "blockId":  "confirmation-copy",
+                                                         "role":  "content",
+                                                         "sourceName":  "dialog-body",
+                                                         "children":  [
+
+                                                                      ],
+                                                         "componentComposition":  [
+                                                                                      {
+                                                                                          "componentId":  "section-card",
+                                                                                          "slot":  "shell",
+                                                                                          "variant":  "danger-copy"
+                                                                                      }
+                                                                                  ]
+                                                     },
+                                                     {
+                                                         "blockId":  "footer-actions",
+                                                         "role":  "shared-chrome",
+                                                         "sourceName":  "dialog-footer",
+                                                         "children":  [
+                                                                          "cancel-cta",
+                                                                          "delete-cta"
+                                                                      ],
+                                                         "componentComposition":  [
+                                                                                      {
+                                                                                          "componentId":  "section-card",
+                                                                                          "slot":  "shell",
+                                                                                          "variant":  "stacked-actions"
+                                                                                      }
+                                                                                  ]
+                                                     },
+                                                     {
+                                                         "blockId":  "cancel-cta",
+                                                         "role":  "cta",
+                                                         "sourceName":  "secondary-action",
+                                                         "children":  [
+
+                                                                      ],
+                                                         "componentComposition":  [
+                                                                                      {
+                                                                                          "componentId":  "secondary-button",
+                                                                                          "slot":  "self",
+                                                                                          "variant":  "dismiss"
+                                                                                      }
+                                                                                  ]
+                                                     },
+                                                     {
+                                                         "blockId":  "delete-cta",
+                                                         "role":  "cta",
+                                                         "sourceName":  "primary-action",
+                                                         "children":  [
+
+                                                                      ],
+                                                         "componentComposition":  [
+                                                                                      {
+                                                                                          "componentId":  "primary-button",
+                                                                                          "slot":  "self",
+                                                                                          "variant":  "destructive-confirm"
+                                                                                      }
+                                                                                  ]
+                                                     }
+                                                 ]
+                                  },
+                     "map":  {
+                                 "target":  {
+                                                "kind":  "prefab",
+                                                "assetPath":  "Assets/Prefabs/Features/Account/Independent/AccountDeleteConfirmDialogRoot.prefab"
+                                            },
+                                 "translationStrategy":  "contract-complete-translator-v1",
+                                 "strategyMode":  "generate-or-patch",
+                                 "artifactPaths":  {
+                                                       "translationResult":  "artifacts/unity/set-c-account-delete-confirm-translation-result.json",
+                                                       "preflightResult":  "artifacts/unity/set-c-account-delete-confirm-preflight-result.json",
+                                                       "pipelineResult":  "artifacts/unity/set-c-account-delete-confirm-pipeline-result.json"
+                                                   },
+                                 "notes":  [
+                                               "Auto-generated overlay dialog map from source HTML.",
+                                               "Host paths follow the current canonical overlay prefab structure."
+                                           ],
+                                 "blocks":  [
+                                                {
+                                                    "blockId":  "warning-header",
+                                                    "hostPath":  "DialogPanel/HeaderRow",
+                                                    "requiredComponents":  [
+                                                                               "Image",
+                                                                               "HorizontalLayoutGroup"
+                                                                           ]
+                                                },
+                                                {
+                                                    "blockId":  "confirmation-copy",
+                                                    "hostPath":  "DialogPanel/BodyBlock",
+                                                    "requiredComponents":  [
+                                                                               "Image",
+                                                                               "LayoutElement"
+                                                                           ]
+                                                },
+                                                {
+                                                    "blockId":  "footer-actions",
+                                                    "hostPath":  "DialogPanel/FooterRow",
+                                                    "requiredComponents":  [
+                                                                               "Image",
+                                                                               "VerticalLayoutGroup",
+                                                                               "LayoutElement"
+                                                                           ]
+                                                },
+                                                {
+                                                    "blockId":  "cancel-cta",
+                                                    "hostPath":  "DialogPanel/FooterRow/CancelButton",
+                                                    "requiredComponents":  [
+                                                                               "Button",
+                                                                               "Image"
+                                                                           ]
+                                                },
+                                                {
+                                                    "blockId":  "delete-cta",
+                                                    "hostPath":  "DialogPanel/FooterRow/DeleteButton",
+                                                    "requiredComponents":  [
+                                                                               "Button",
+                                                                               "Image"
+                                                                           ]
+                                                }
+                                            ]
+                             }
+                 },
+    "unresolvedDerivedFields":  [
+                                    "warning-icon-glyph-font"
+                                ]
+}

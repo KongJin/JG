@@ -1,6 +1,6 @@
 # Unity MCP Refactor Plan
 
-> 마지막 업데이트: 2026-04-18
+> 마지막 업데이트: 2026-04-24
 > 상태: active
 > doc_id: plans.mcp-improvement
 > role: plan
@@ -17,7 +17,7 @@ Unity MCP is not being retired. In this repo it is now defined as a `diagnostic 
 - Keep `rule-harness` usage limited to compile/status refresh plus generic diagnostics.
 - Keep scene-specific runtime smoke out of harness scope.
 - Keep supervised Play/UI/screenshot flows stable enough for repeatable runtime verification.
-- Treat `CodexLobbyScene.unity` as the Lobby/Garage runtime SSOT, not the builder output.
+- In reset mode, treat `accepted contract + unity-map + committed prefab target + fresh evidence` as the Lobby/Garage committed SSOT before any concrete authoring scene is revived.
 
 ## Current Validation Stack
 

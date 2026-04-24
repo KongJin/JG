@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "screen-manifest",
+  "setId": "set-c",
+  "surfaceId": "common-error-dialog",
+  "surfaceRole": "overlay",
+  "status": "accepted",
+  "source": {
+    "tool": "stitch",
+    "sourceRef": "set-c-common-error-dialog",
+    "projectId": "11729197788183873077",
+    "screenId": "set-c-common-error-dialog",
+    "url": ".stitch/designs/set-c-common-error-dialog.png"
+  },
+  "ctaPriority": [
+    {
+      "id": "retry-cta",
+      "priority": "primary",
+      "outcome": "retry-network-link"
+    },
+    {
+      "id": "dismiss-cta",
+      "priority": "secondary",
+      "outcome": "dismiss-error-dialog"
+    }
+  ],
+  "states": {
+    "default": true,
+    "empty": false,
+    "loading": false,
+    "error": true,
+    "selected": false,
+    "disabled": false
+  },
+  "blocks": [
+    {
+      "blockId": "error-header",
+      "role": "shared-chrome",
+      "sourceName": "dialog-header",
+      "children": [],
+      "componentComposition": [
+        {
+          "componentId": "status-text",
+          "slot": "title",
+          "variant": "error-title"
+        },
+        {
+          "componentId": "status-text",
+          "slot": "leading-icon",
+          "variant": "warning-signal"
+        }
+      ]
+    },
+    {
+      "blockId": "error-copy",
+      "role": "content",
+      "sourceName": "dialog-body",
+      "children": [],
+      "componentComposition": [
+        {
+          "componentId": "section-card",
+          "slot": "shell",
+          "variant": "error-copy"
+        }
+      ]
+    },
+    {
+      "blockId": "footer-actions",
+      "role": "shared-chrome",
+      "sourceName": "dialog-footer",
+      "children": [
+        "dismiss-cta",
+        "retry-cta"
+      ],
+      "componentComposition": [
+        {
+          "componentId": "section-card",
+          "slot": "shell",
+          "variant": "dual-actions"
+        }
+      ]
+    },
+    {
+      "blockId": "dismiss-cta",
+      "role": "cta",
+      "sourceName": "exit-button",
+      "children": [],
+      "componentComposition": [
+        {
+          "componentId": "secondary-button",
+          "slot": "self",
+          "variant": "dismiss"
+        }
+      ]
+    },
+    {
+      "blockId": "retry-cta",
+      "role": "cta",
+      "sourceName": "retry-button",
+      "children": [],
+      "componentComposition": [
+        {
+          "componentId": "primary-button",
+          "slot": "self",
+          "variant": "signal-orange"
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "firstReadOrder": [
+      "error-header",
+      "error-copy",
+      "footer-actions"
+    ],
+    "requiredChecks": [
+      "error-title-dominant",
+      "retry-cta-dominant",
+      "dismiss-secondary-weight",
+      "overlay-scrim-focus-isolation",
+      "network-copy-readable"
+    ]
+  },
+  "notes": [
+    "This overlay is an independent dialog and does not own the hangar background context.",
+    "Retry remains the primary CTA while exit stays secondary."
+  ]
+}

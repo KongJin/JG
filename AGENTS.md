@@ -1,6 +1,6 @@
 # AGENTS.md
 
-> 마지막 업데이트: 2026-04-21
+> 마지막 업데이트: 2026-04-24
 > 상태: active
 > doc_id: repo.agents
 > role: entry
@@ -24,6 +24,7 @@
 | 진행 상황 | [`/docs/plans/progress.md`](docs/plans/progress.md) |
 | Unity UI/UX authoring workflow SSOT | [`/docs/ops/unity_ui_authoring_workflow.md`](docs/ops/unity_ui_authoring_workflow.md) |
 | Unity MCP 실행 reference | [`/tools/unity-mcp/README.md`](tools/unity-mcp/README.md) |
+| Stitch surface 실행 reference | [`/tools/stitch-unity/README.md`](tools/stitch-unity/README.md) |
 
 ---
 
@@ -32,7 +33,8 @@
 - Lobby/Garage는 기존 scene-owned SSOT를 폐기하고 `prefab-first reset` 기준으로 다시 가져오는 중이다.
 - 규칙/운영/Codex 절차 작업이거나 현재 collaboration mode가 `Plan Mode`면 먼저 [`docs/index.md`](docs/index.md)에서 current owner path를 확인하고 `rule-operations` owner 문서를 읽는다. 이 lane에서는 mutation을 금지한다.
 - Unity UI/UX 작업은 먼저 [`docs/index.md`](docs/index.md)에서 current owner path를 확인한 뒤 `ops.unity-ui-authoring-workflow` owner 문서를 읽고 시작한다.
+- Stitch/Unity 현재 활성 레이어는 `source freeze -> execution contracts -> translation output`이다.
 - Lobby/Garage 검증 기본 레이어는 `contract -> EditMode/unit tests -> 얇은 smoke` 순서로 본다.
-- reset 동안 Unity MCP 기본 진입점은 `handoff 확인 -> presentation contract 확인 -> baseline prefab wiring -> 새 scene 조립 후 fresh contract/smoke`다.
+- reset 동안 Stitch/Unity 기본 진입점은 `source freeze 확인 -> execution contract 확인 -> baseline prefab wiring -> fresh translation/review capture`다.
 
 ---

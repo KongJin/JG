@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "1.1.0",
+  "contractKind": "screen-manifest",
+  "setId": "set-c",
+  "surfaceId": "account-delete-confirm",
+  "surfaceRole": "overlay",
+  "status": "accepted",
+  "source": {
+    "tool": "stitch",
+    "sourceRef": "set-c-account-delete-confirm",
+    "projectId": "11729197788183873077",
+    "screenId": "set-c-account-delete-confirm",
+    "url": ".stitch/designs/set-c-account-delete-confirm.png"
+  },
+  "ctaPriority": [
+    {
+      "id": "delete-cta",
+      "priority": "primary",
+      "outcome": "delete-account"
+    },
+    {
+      "id": "cancel-cta",
+      "priority": "secondary",
+      "outcome": "dismiss-delete-confirm"
+    }
+  ],
+  "states": {
+    "default": true,
+    "empty": false,
+    "loading": false,
+    "error": false,
+    "selected": false,
+    "disabled": true
+  },
+  "blocks": [
+    {
+      "blockId": "warning-header",
+      "role": "shared-chrome",
+      "sourceName": "modal-header",
+      "children": [],
+      "componentComposition": [
+        {
+          "componentId": "status-text",
+          "slot": "title",
+          "variant": "danger-title"
+        },
+        {
+          "componentId": "status-text",
+          "slot": "summary",
+          "variant": "critical-action-required"
+        },
+        {
+          "componentId": "icon-button",
+          "slot": "leading",
+          "variant": "warning-badge"
+        }
+      ]
+    },
+    {
+      "blockId": "confirmation-copy",
+      "role": "content",
+      "sourceName": "modal-body",
+      "children": [],
+      "componentComposition": [
+        {
+          "componentId": "section-card",
+          "slot": "shell",
+          "variant": "danger-copy",
+          "children": [
+            {
+              "componentId": "status-text",
+              "slot": "body",
+              "variant": "destructive-confirmation-copy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "blockId": "footer-actions",
+      "role": "shared-chrome",
+      "sourceName": "modal-footer",
+      "children": [
+        "cancel-cta",
+        "delete-cta"
+      ],
+      "componentComposition": [
+        {
+          "componentId": "section-card",
+          "slot": "shell",
+          "variant": "stacked-actions"
+        }
+      ]
+    },
+    {
+      "blockId": "cancel-cta",
+      "role": "cta",
+      "sourceName": "cancel-and-return",
+      "children": [],
+      "componentComposition": [
+        {
+          "componentId": "secondary-button",
+          "slot": "self",
+          "variant": "dismiss"
+        }
+      ]
+    },
+    {
+      "blockId": "delete-cta",
+      "role": "cta",
+      "sourceName": "delete-account",
+      "children": [],
+      "componentComposition": [
+        {
+          "componentId": "primary-button",
+          "slot": "self",
+          "variant": "destructive-confirm"
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "firstReadOrder": [
+      "warning-header",
+      "confirmation-copy",
+      "footer-actions"
+    ],
+    "requiredChecks": [
+      "destructive-header-dominant",
+      "critical-copy-readable",
+      "cancel-secondary-weight",
+      "delete-cta-dominant",
+      "overlay-scrim-focus-isolation"
+    ]
+  },
+  "notes": [
+    "This surface is an independent overlay, not a full settings page replacement.",
+    "The blurred settings page and bottom navigation are context only and stay outside the prefab target."
+  ]
+}

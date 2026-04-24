@@ -5,7 +5,7 @@ description: Project-specific Stitch workflow for the JG repo. Use whenever Code
 
 # JG Stitch Workflow
 
-> 마지막 업데이트: 2026-04-23
+> 마지막 업데이트: 2026-04-24
 > 상태: active
 > doc_id: skill.jg-stitch-workflow
 > role: skill-entry
@@ -36,13 +36,14 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 - `.stitch/prompt-briefs/*.md`
 - `.stitch/contracts/blueprints/*.json`
 - `.stitch/contracts/screens/*.json`
-- legacy/full fallback `.stitch/contracts/*.json`
+- `.stitch/contracts/mappings/*.json`
+- `.stitch/contracts/presentations/*.json`
 
 ## Task Routing
 
 - `brief update`: refine an existing prompt brief
 - `screen generation/edit`: update Stitch output as needed, then reflect the decision in blueprint + screen manifest JSON
-- `contract translation`: create or update `.stitch/contracts/screens/*.json` and, when reuse matters, `.stitch/contracts/blueprints/*.json`
+- `contract translation`: update accepted source and execution contracts. When source에서 바로 준비되는 구조라면 stored `screens/mappings` 파일은 review/reference artifact로만 다룬다.
 - `unity handoff`: stop after the contract is precise enough, then switch to `jg-unity-workflow`
 - In `Plan Mode`, stop at routing, inspection, and contract review. Do not rewrite `.stitch/contracts/*.json`, prompt briefs, or handoff artifacts.
 
@@ -71,9 +72,10 @@ If the screen clearly communicates one of these and the intake/manifest does not
 ## Closeout
 
 1. The relevant prompt brief matches the current intent.
-2. The active structured contract under `.stitch/contracts/screens/*.json` and its referenced blueprint are updated when needed.
+2. The active execution contract and its relevant references are updated when needed.
 3. The contract passes `ops.stitch-handoff-completeness-checklist`.
 4. If Unity implementation happened, the Unity evidence path is newer than the contract it implements.
+5. If the surface has a review route, the latest SceneView capture is newer than the contract it implements.
 
 ## References
 

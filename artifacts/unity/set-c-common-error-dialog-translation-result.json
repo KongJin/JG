@@ -1,0 +1,417 @@
+﻿{
+    "schemaVersion":  "1.0.0",
+    "success":  true,
+    "surfaceId":  "common-error-dialog",
+    "translationStrategy":  "contract-complete-translator-v1",
+    "target":  {
+                   "kind":  "prefab",
+                   "assetPath":  "Assets/Prefabs/Features/Common/Independent/CommonErrorDialogRoot.prefab"
+               },
+    "targetCreated":  false,
+    "targetRootName":  "CommonErrorDialogRoot",
+    "contractRefs":  {
+                         "manifestPath":  "in-memory://compiled/common-error-dialog.screen-manifest.json",
+                         "presentationPath":  ".stitch/contracts/presentations/common-error-dialog.presentation.json"
+                     },
+    "createdPaths":  [
+
+                     ],
+    "addedComponents":  [
+
+                        ],
+    "blocks":  [
+                   {
+                       "blockId":  "error-header",
+                       "manifestOrder":  0,
+                       "hostPath":  "DialogPanel/HeaderRow",
+                       "createdPaths":  [
+
+                                        ],
+                       "addedComponents":  [
+
+                                           ],
+                       "finalNodeFound":  true,
+                       "finalComponents":  [
+                                               "RectTransform",
+                                               "CanvasRenderer",
+                                               "Image",
+                                               "HorizontalLayoutGroup",
+                                               "LayoutElement"
+                                           ]
+                   },
+                   {
+                       "blockId":  "error-copy",
+                       "manifestOrder":  1,
+                       "hostPath":  "DialogPanel/BodyBlock",
+                       "createdPaths":  [
+
+                                        ],
+                       "addedComponents":  [
+
+                                           ],
+                       "finalNodeFound":  true,
+                       "finalComponents":  [
+                                               "RectTransform",
+                                               "LayoutElement"
+                                           ]
+                   },
+                   {
+                       "blockId":  "footer-actions",
+                       "manifestOrder":  2,
+                       "hostPath":  "DialogPanel/FooterRow",
+                       "createdPaths":  [
+
+                                        ],
+                       "addedComponents":  [
+
+                                           ],
+                       "finalNodeFound":  true,
+                       "finalComponents":  [
+                                               "RectTransform",
+                                               "HorizontalLayoutGroup",
+                                               "LayoutElement"
+                                           ]
+                   },
+                   {
+                       "blockId":  "dismiss-cta",
+                       "manifestOrder":  3,
+                       "hostPath":  "DialogPanel/FooterRow/DismissButton",
+                       "createdPaths":  [
+
+                                        ],
+                       "addedComponents":  [
+
+                                           ],
+                       "finalNodeFound":  true,
+                       "finalComponents":  [
+                                               "RectTransform",
+                                               "Button",
+                                               "CanvasRenderer",
+                                               "Image",
+                                               "LayoutElement"
+                                           ]
+                   },
+                   {
+                       "blockId":  "retry-cta",
+                       "manifestOrder":  4,
+                       "hostPath":  "DialogPanel/FooterRow/RetryButton",
+                       "createdPaths":  [
+
+                                        ],
+                       "addedComponents":  [
+
+                                           ],
+                       "finalNodeFound":  true,
+                       "finalComponents":  [
+                                               "RectTransform",
+                                               "Button",
+                                               "CanvasRenderer",
+                                               "Image",
+                                               "LayoutElement"
+                                           ]
+                   }
+               ],
+    "presentation":  {
+                         "applied":  true,
+                         "extractionStatus":  "resolved",
+                         "elementCount":  13,
+                         "createdPaths":  [
+
+                                          ],
+                         "addedComponents":  [
+
+                                             ],
+                         "appliedProperties":  [
+                                                   "Image.m_Color",
+                                                   "Scrim::Image.m_Color",
+                                                   "DialogPanel::Image.m_Color",
+                                                   "DialogPanel::VerticalLayoutGroup.m_Spacing",
+                                                   "DialogPanel::VerticalLayoutGroup.m_ChildControlWidth",
+                                                   "DialogPanel::VerticalLayoutGroup.m_ChildControlHeight",
+                                                   "DialogPanel::VerticalLayoutGroup.m_ChildForceExpandWidth",
+                                                   "DialogPanel::VerticalLayoutGroup.m_ChildForceExpandHeight",
+                                                   "DialogPanel/HeaderRow::Image.m_Color",
+                                                   "DialogPanel/HeaderRow::HorizontalLayoutGroup.m_Spacing",
+                                                   "DialogPanel/HeaderRow::HorizontalLayoutGroup.m_ChildControlWidth",
+                                                   "DialogPanel/HeaderRow::HorizontalLayoutGroup.m_ChildControlHeight",
+                                                   "DialogPanel/HeaderRow::HorizontalLayoutGroup.m_ChildForceExpandWidth",
+                                                   "DialogPanel/HeaderRow::HorizontalLayoutGroup.m_ChildForceExpandHeight",
+                                                   "DialogPanel/HeaderRow::HorizontalLayoutGroup.m_Padding.m_Left",
+                                                   "DialogPanel/HeaderRow::HorizontalLayoutGroup.m_Padding.m_Right",
+                                                   "DialogPanel/HeaderRow::HorizontalLayoutGroup.m_Padding.m_Top",
+                                                   "DialogPanel/HeaderRow::HorizontalLayoutGroup.m_Padding.m_Bottom",
+                                                   "DialogPanel/HeaderRow::LayoutElement.m_PreferredHeight",
+                                                   "DialogPanel/HeaderRow/WarningIcon::TextMeshProUGUI.m_text",
+                                                   "DialogPanel/HeaderRow/WarningIcon::TextMeshProUGUI.m_fontSize",
+                                                   "DialogPanel/HeaderRow/WarningIcon::TextMeshProUGUI.m_fontColor",
+                                                   "DialogPanel/HeaderRow/WarningIcon::TextMeshProUGUI.m_fontAsset",
+                                                   "DialogPanel/HeaderRow/WarningIcon::TextMeshProUGUI.m_HorizontalAlignment",
+                                                   "DialogPanel/HeaderRow/WarningIcon::TextMeshProUGUI.m_VerticalAlignment",
+                                                   "DialogPanel/HeaderRow/WarningIcon::LayoutElement.m_PreferredWidth",
+                                                   "DialogPanel/HeaderRow/WarningIcon::LayoutElement.m_PreferredHeight",
+                                                   "DialogPanel/HeaderRow/TitleText::TextMeshProUGUI.m_text",
+                                                   "DialogPanel/HeaderRow/TitleText::TextMeshProUGUI.m_fontSize",
+                                                   "DialogPanel/HeaderRow/TitleText::TextMeshProUGUI.m_fontColor",
+                                                   "DialogPanel/HeaderRow/TitleText::TextMeshProUGUI.m_fontAsset",
+                                                   "DialogPanel/HeaderRow/TitleText::TextMeshProUGUI.m_HorizontalAlignment",
+                                                   "DialogPanel/HeaderRow/TitleText::TextMeshProUGUI.m_VerticalAlignment",
+                                                   "DialogPanel/HeaderRow/TitleText::LayoutElement.m_PreferredWidth",
+                                                   "DialogPanel/BodyBlock::LayoutElement.m_PreferredHeight",
+                                                   "DialogPanel/BodyBlock/BodyText::TextMeshProUGUI.m_text",
+                                                   "DialogPanel/BodyBlock/BodyText::TextMeshProUGUI.m_fontSize",
+                                                   "DialogPanel/BodyBlock/BodyText::TextMeshProUGUI.m_fontColor",
+                                                   "DialogPanel/BodyBlock/BodyText::TextMeshProUGUI.m_fontAsset",
+                                                   "DialogPanel/BodyBlock/BodyText::TextMeshProUGUI.m_HorizontalAlignment",
+                                                   "DialogPanel/BodyBlock/BodyText::TextMeshProUGUI.m_VerticalAlignment",
+                                                   "DialogPanel/BodyBlock/BodyText::TextMeshProUGUI.m_margin",
+                                                   "DialogPanel/FooterRow::HorizontalLayoutGroup.m_Spacing",
+                                                   "DialogPanel/FooterRow::HorizontalLayoutGroup.m_ChildControlWidth",
+                                                   "DialogPanel/FooterRow::HorizontalLayoutGroup.m_ChildControlHeight",
+                                                   "DialogPanel/FooterRow::HorizontalLayoutGroup.m_ChildForceExpandWidth",
+                                                   "DialogPanel/FooterRow::HorizontalLayoutGroup.m_ChildForceExpandHeight",
+                                                   "DialogPanel/FooterRow::HorizontalLayoutGroup.m_Padding.m_Left",
+                                                   "DialogPanel/FooterRow::HorizontalLayoutGroup.m_Padding.m_Right",
+                                                   "DialogPanel/FooterRow::HorizontalLayoutGroup.m_Padding.m_Top",
+                                                   "DialogPanel/FooterRow::HorizontalLayoutGroup.m_Padding.m_Bottom",
+                                                   "DialogPanel/FooterRow::LayoutElement.m_PreferredHeight",
+                                                   "DialogPanel/FooterRow/DismissButton::Image.m_Color",
+                                                   "DialogPanel/FooterRow/DismissButton::LayoutElement.m_PreferredWidth",
+                                                   "DialogPanel/FooterRow/DismissButton::LayoutElement.m_PreferredHeight",
+                                                   "DialogPanel/FooterRow/DismissButton/Label::TextMeshProUGUI.m_text",
+                                                   "DialogPanel/FooterRow/DismissButton/Label::TextMeshProUGUI.m_fontSize",
+                                                   "DialogPanel/FooterRow/DismissButton/Label::TextMeshProUGUI.m_fontColor",
+                                                   "DialogPanel/FooterRow/DismissButton/Label::TextMeshProUGUI.m_fontAsset",
+                                                   "DialogPanel/FooterRow/DismissButton/Label::TextMeshProUGUI.m_HorizontalAlignment",
+                                                   "DialogPanel/FooterRow/DismissButton/Label::TextMeshProUGUI.m_VerticalAlignment",
+                                                   "DialogPanel/FooterRow/RetryButton::Image.m_Color",
+                                                   "DialogPanel/FooterRow/RetryButton::LayoutElement.m_PreferredWidth",
+                                                   "DialogPanel/FooterRow/RetryButton::LayoutElement.m_PreferredHeight",
+                                                   "DialogPanel/FooterRow/RetryButton/Label::TextMeshProUGUI.m_text",
+                                                   "DialogPanel/FooterRow/RetryButton/Label::TextMeshProUGUI.m_fontSize",
+                                                   "DialogPanel/FooterRow/RetryButton/Label::TextMeshProUGUI.m_fontColor",
+                                                   "DialogPanel/FooterRow/RetryButton/Label::TextMeshProUGUI.m_fontAsset",
+                                                   "DialogPanel/FooterRow/RetryButton/Label::TextMeshProUGUI.m_HorizontalAlignment",
+                                                   "DialogPanel/FooterRow/RetryButton/Label::TextMeshProUGUI.m_VerticalAlignment"
+                                               ],
+                         "elements":  [
+                                          {
+                                              "path":  "",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  1,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "CanvasRenderer",
+                                                                      "Image"
+                                                                  ]
+                                          },
+                                          {
+                                              "path":  "Scrim",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  1,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "CanvasRenderer",
+                                                                      "Image"
+                                                                  ]
+                                          },
+                                          {
+                                              "path":  "DialogPanel",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  6,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "CanvasRenderer",
+                                                                      "Image",
+                                                                      "VerticalLayoutGroup"
+                                                                  ]
+                                          },
+                                          {
+                                              "path":  "DialogPanel/HeaderRow",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  11,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "CanvasRenderer",
+                                                                      "Image",
+                                                                      "HorizontalLayoutGroup",
+                                                                      "LayoutElement"
+                                                                  ]
+                                          },
+                                          {
+                                              "path":  "DialogPanel/HeaderRow/WarningIcon",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  8,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "CanvasRenderer",
+                                                                      "TextMeshProUGUI",
+                                                                      "LayoutElement"
+                                                                  ]
+                                          },
+                                          {
+                                              "path":  "DialogPanel/HeaderRow/TitleText",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  7,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "CanvasRenderer",
+                                                                      "TextMeshProUGUI",
+                                                                      "LayoutElement"
+                                                                  ]
+                                          },
+                                          {
+                                              "path":  "DialogPanel/BodyBlock",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  1,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "LayoutElement"
+                                                                  ]
+                                          },
+                                          {
+                                              "path":  "DialogPanel/BodyBlock/BodyText",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  7,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "CanvasRenderer",
+                                                                      "TextMeshProUGUI"
+                                                                  ]
+                                          },
+                                          {
+                                              "path":  "DialogPanel/FooterRow",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  10,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "HorizontalLayoutGroup",
+                                                                      "LayoutElement"
+                                                                  ]
+                                          },
+                                          {
+                                              "path":  "DialogPanel/FooterRow/DismissButton",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  3,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "Button",
+                                                                      "CanvasRenderer",
+                                                                      "Image",
+                                                                      "LayoutElement"
+                                                                  ]
+                                          },
+                                          {
+                                              "path":  "DialogPanel/FooterRow/DismissButton/Label",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  6,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "CanvasRenderer",
+                                                                      "TextMeshProUGUI"
+                                                                  ]
+                                          },
+                                          {
+                                              "path":  "DialogPanel/FooterRow/RetryButton",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  3,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "Button",
+                                                                      "CanvasRenderer",
+                                                                      "Image",
+                                                                      "LayoutElement"
+                                                                  ]
+                                          },
+                                          {
+                                              "path":  "DialogPanel/FooterRow/RetryButton/Label",
+                                              "createdPaths":  [
+
+                                                               ],
+                                              "addedComponents":  [
+
+                                                                  ],
+                                              "propertyCount":  6,
+                                              "finalNodeFound":  true,
+                                              "finalComponents":  [
+                                                                      "RectTransform",
+                                                                      "CanvasRenderer",
+                                                                      "TextMeshProUGUI"
+                                                                  ]
+                                          }
+                                      ],
+                         "reason":  "applied"
+                     },
+    "generatedAt":  "2026-04-24T23:02:46.9560006+09:00"
+}

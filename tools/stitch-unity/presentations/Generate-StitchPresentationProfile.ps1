@@ -1,0 +1,915 @@
+param(
+    [Parameter(Mandatory = $true)][string]$SurfaceId,
+    [string]$HtmlPath = "",
+    [string]$ImagePath = "",
+    [string]$ProfileArtifactPath = "",
+    [string]$PresentationOutputPath = "",
+    [string]$TargetAssetPath = "",
+    [switch]$Force,
+    [switch]$CanGenerateOnly,
+    [switch]$WriteProfileArtifact
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+function Get-RepoRoot {
+    return [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\..\.."))
+}
+
+function Resolve-RepoPath {
+    param([Parameter(Mandatory = $true)][string]$PathValue)
+
+    if ([System.IO.Path]::IsPathRooted($PathValue)) {
+        return [System.IO.Path]::GetFullPath($PathValue)
+    }
+
+    return [System.IO.Path]::GetFullPath((Join-Path (Get-RepoRoot) $PathValue))
+}
+
+function Convert-ToRepoRelativePath {
+    param([Parameter(Mandatory = $true)][string]$AbsolutePath)
+
+    $repoRoot = (Get-RepoRoot).TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
+    $fullPath = [System.IO.Path]::GetFullPath($AbsolutePath)
+    if ($fullPath.StartsWith($repoRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $fullPath.Substring($repoRoot.Length).Replace('\', '/')
+    }
+
+    return $fullPath.Replace('\', '/')
+}
+
+function Read-AllText {
+    param([Parameter(Mandatory = $true)][string]$PathValue)
+
+    $resolvedPath = Resolve-RepoPath -PathValue $PathValue
+    if (-not (Test-Path -LiteralPath $resolvedPath)) {
+        throw "File not found: $resolvedPath"
+    }
+
+    return Get-Content -LiteralPath $resolvedPath -Raw
+}
+
+function Write-JsonFile {
+    param(
+        [Parameter(Mandatory = $true)][string]$PathValue,
+        [Parameter(Mandatory = $true)][object]$InputObject
+    )
+
+    $resolvedPath = Resolve-RepoPath -PathValue $PathValue
+    $directoryPath = Split-Path -Parent $resolvedPath
+    if (-not [string]::IsNullOrWhiteSpace($directoryPath) -and -not (Test-Path -LiteralPath $directoryPath)) {
+        New-Item -ItemType Directory -Path $directoryPath -Force | Out-Null
+    }
+
+    $json = $InputObject | ConvertTo-Json -Depth 30
+    [System.IO.File]::WriteAllText($resolvedPath, $json + [Environment]::NewLine, [System.Text.UTF8Encoding]::new($false))
+    return $resolvedPath
+}
+
+function Get-OptionalMatch {
+    param(
+        [Parameter(Mandatory = $true)][string]$InputText,
+        [Parameter(Mandatory = $true)][string]$Pattern
+    )
+
+    return [regex]::Match($InputText, $Pattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)
+}
+
+function Get-RequiredMatch {
+    param(
+        [Parameter(Mandatory = $true)][string]$InputText,
+        [Parameter(Mandatory = $true)][string]$Pattern,
+        [Parameter(Mandatory = $true)][string]$ErrorMessage
+    )
+
+    $match = Get-OptionalMatch -InputText $InputText -Pattern $Pattern
+    if (-not $match.Success) {
+        throw $ErrorMessage
+    }
+
+    return $match
+}
+
+function Clean-InnerText {
+    param([Parameter(Mandatory = $true)][string]$Value)
+
+    $withoutTags = [regex]::Replace($Value, '<[^>]+>', ' ')
+    $decoded = [System.Net.WebUtility]::HtmlDecode($withoutTags)
+    return ([regex]::Replace($decoded, '\s+', ' ')).Trim()
+}
+
+function Split-ClassTokens {
+    param([string]$Classes)
+
+    if ([string]::IsNullOrWhiteSpace($Classes)) {
+        return @()
+    }
+
+    return @($Classes -split '\s+' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+}
+
+function Get-SpacingScaleValue {
+    param([Parameter(Mandatory = $true)][string]$Token)
+
+    $scale = @{
+        "0" = 0
+        "0.5" = 2
+        "1" = 4
+        "1.5" = 6
+        "2" = 8
+        "2.5" = 10
+        "3" = 12
+        "3.5" = 14
+        "4" = 16
+        "5" = 20
+        "6" = 24
+        "7" = 28
+        "8" = 32
+        "9" = 36
+        "10" = 40
+        "12" = 48
+    }
+
+    if (-not $scale.ContainsKey($Token)) {
+        throw "Unsupported spacing token '$Token'."
+    }
+
+    return [int]$scale[$Token]
+}
+
+function Get-TextSizePx {
+    param([Parameter(Mandatory = $true)][string]$Classes)
+
+    foreach ($token in Split-ClassTokens -Classes $Classes) {
+        if ($token -match '^text-\[(?<px>\d+)px\]$') {
+            return [int]$Matches["px"]
+        }
+
+        switch ($token) {
+            "text-xs" { return 12 }
+            "text-sm" { return 14 }
+            "text-base" { return 16 }
+            "text-lg" { return 18 }
+            "text-xl" { return 20 }
+        }
+    }
+
+    return 14
+}
+
+function Get-ClassValuePx {
+    param(
+        [Parameter(Mandatory = $true)][string]$Classes,
+        [Parameter(Mandatory = $true)][string[]]$Prefixes,
+        [int]$DefaultValue = 0
+    )
+
+    foreach ($token in Split-ClassTokens -Classes $Classes) {
+        foreach ($prefix in $Prefixes) {
+            if ($token -match ('^{0}-(?<value>[0-9.]+)$' -f [regex]::Escape($prefix))) {
+                return Get-SpacingScaleValue -Token $Matches["value"]
+            }
+
+            if ($token -match ('^{0}-\[(?<px>\d+)px\]$' -f [regex]::Escape($prefix))) {
+                return [int]$Matches["px"]
+            }
+        }
+    }
+
+    return $DefaultValue
+}
+
+function Get-ColorTokenFromClasses {
+    param(
+        [Parameter(Mandatory = $true)][string]$Classes,
+        [Parameter(Mandatory = $true)][string]$Prefix
+    )
+
+    foreach ($token in Split-ClassTokens -Classes $Classes) {
+        if (-not $token.StartsWith("$Prefix-", [System.StringComparison]::Ordinal)) {
+            continue
+        }
+
+        $value = $token.Substring($Prefix.Length + 1)
+        if ($Prefix -eq "text" -and ($value -match '^(xs|sm|base|lg|xl|\[[0-9]+px\])$')) {
+            continue
+        }
+
+        return $value
+    }
+
+    return ""
+}
+
+function Get-MaxWidthPx {
+    param([Parameter(Mandatory = $true)][string]$Classes)
+
+    foreach ($token in Split-ClassTokens -Classes $Classes) {
+        if ($token -match '^max-w-\[(?<px>\d+)px\]$') {
+            return [int]$Matches["px"]
+        }
+
+        switch ($token) {
+            "max-w-sm" { return 358 }
+            "max-w-xs" { return 320 }
+        }
+    }
+
+    return 320
+}
+
+function Get-SurfaceSourcePath {
+    param(
+        [Parameter(Mandatory = $true)][string]$SurfaceId,
+        [Parameter(Mandatory = $true)][string]$Extension
+    )
+
+    $designRoot = Resolve-RepoPath -PathValue ".stitch/designs"
+    $candidate = Get-ChildItem -LiteralPath $designRoot -File | Where-Object { $_.Name -like "*$SurfaceId.$Extension" } | Select-Object -First 1
+    if ($null -eq $candidate) {
+        throw "Could not resolve '.$Extension' source for surface '$SurfaceId' under '$designRoot'."
+    }
+
+    return Convert-ToRepoRelativePath -AbsolutePath $candidate.FullName
+}
+
+function Convert-ToPascalCase {
+    param([Parameter(Mandatory = $true)][string]$Value)
+
+    return ((($Value -split '[-_ ]+') | Where-Object { $_ } | ForEach-Object {
+        if ($_.Length -eq 1) {
+            $_.ToUpperInvariant()
+        }
+        else {
+            $_.Substring(0, 1).ToUpperInvariant() + $_.Substring(1)
+        }
+    }) -join '')
+}
+
+function Get-FeatureName {
+    param([Parameter(Mandatory = $true)][string]$SurfaceId)
+
+    $firstToken = ($SurfaceId -split '-')[0]
+    return Convert-ToPascalCase -Value $firstToken
+}
+
+function Get-DefaultTargetAssetPath {
+    param([Parameter(Mandatory = $true)][string]$SurfaceId)
+
+    $featureName = Get-FeatureName -SurfaceId $SurfaceId
+    $baseName = Convert-ToPascalCase -Value $SurfaceId
+    $assetRootName = if ($baseName.EndsWith("Dialog", [System.StringComparison]::Ordinal)) {
+        "{0}Root" -f $baseName
+    }
+    else {
+        "{0}DialogRoot" -f $baseName
+    }
+    $assetName = "$assetRootName.prefab"
+    return "Assets/Prefabs/Features/$featureName/Independent/$assetName"
+}
+
+function Get-ActionSpec {
+    param(
+        [Parameter(Mandatory = $true)][string]$Text,
+        [Parameter(Mandatory = $true)][string]$Position
+    )
+
+    if ($Text -match '삭제') {
+        return [PSCustomObject]@{
+            id = "delete-cta"
+            outcome = "delete-account"
+            hostName = "DeleteButton"
+            variant = "destructive-confirm"
+        }
+    }
+
+    if ($Text -match '재시도') {
+        return [PSCustomObject]@{
+            id = "retry-cta"
+            outcome = "retry-network-link"
+            hostName = "RetryButton"
+            variant = "signal-orange"
+        }
+    }
+
+    if ($Text -match '취소') {
+        return [PSCustomObject]@{
+            id = "cancel-cta"
+            outcome = "dismiss-delete-confirm"
+            hostName = "CancelButton"
+            variant = "dismiss"
+        }
+    }
+
+    if ($Text -match '종료') {
+        return [PSCustomObject]@{
+            id = "dismiss-cta"
+            outcome = "dismiss-error-dialog"
+            hostName = "DismissButton"
+            variant = "dismiss"
+        }
+    }
+
+    if ($Position -eq "primary") {
+        return [PSCustomObject]@{
+            id = "primary-cta"
+            outcome = "primary-action"
+            hostName = "PrimaryActionButton"
+            variant = "primary"
+        }
+    }
+
+    return [PSCustomObject]@{
+        id = "secondary-cta"
+        outcome = "secondary-action"
+        hostName = "SecondaryActionButton"
+        variant = "dismiss"
+    }
+}
+
+function Get-OverlaySemanticSpec {
+    param(
+        [Parameter(Mandatory = $true)][string]$PrimaryText,
+        [Parameter(Mandatory = $true)][bool]$HasSummary
+    )
+
+    if ($PrimaryText -match '삭제') {
+        return [PSCustomObject]@{
+            headerBlockId = "warning-header"
+            bodyBlockId = "confirmation-copy"
+            titleVariant = "danger-title"
+            summaryVariant = "critical-action-required"
+            bodyVariant = "danger-copy"
+            footerVariant = "stacked-actions"
+            requiredChecks = @(
+                "destructive-header-dominant",
+                "critical-copy-readable",
+                "cancel-secondary-weight",
+                "delete-cta-dominant",
+                "overlay-scrim-focus-isolation"
+            )
+        }
+    }
+
+    if ($PrimaryText -match '재시도') {
+        return [PSCustomObject]@{
+            headerBlockId = "error-header"
+            bodyBlockId = "error-copy"
+            titleVariant = "error-title"
+            summaryVariant = ""
+            bodyVariant = "error-copy"
+            footerVariant = "dual-actions"
+            requiredChecks = @(
+                "error-title-dominant",
+                "retry-cta-dominant",
+                "dismiss-secondary-weight",
+                "overlay-scrim-focus-isolation",
+                "network-copy-readable"
+            )
+        }
+    }
+
+    return [PSCustomObject]@{
+        headerBlockId = "dialog-header"
+        bodyBlockId = "dialog-copy"
+        titleVariant = "dialog-title"
+        summaryVariant = $(if ($HasSummary) { "dialog-summary" } else { "" })
+        bodyVariant = "dialog-copy"
+        footerVariant = "dialog-actions"
+        requiredChecks = @(
+            "dialog-title-readable",
+            "primary-cta-dominant",
+            "overlay-scrim-focus-isolation"
+        )
+    }
+}
+
+function Get-SetIdFromPath {
+    param([Parameter(Mandatory = $true)][string]$PathValue)
+
+    $name = [System.IO.Path]::GetFileNameWithoutExtension($PathValue)
+    if ($name -match '^(?<set>set-[a-z])\-') {
+        return $Matches["set"]
+    }
+
+    return "set-unknown"
+}
+
+function Get-DialogContext {
+    param([Parameter(Mandatory = $true)][string]$Html)
+
+    if ($Html -notmatch '(role="dialog"|Overlay Scrim|Scrim Overlay)') {
+        throw "Could not detect overlay dialog structure from source HTML."
+    }
+
+    $scrimMatch = Get-OptionalMatch `
+        -InputText $Html `
+        -Pattern '(?:<!--\s*Overlay Scrim\s*-->|<!--\s*Scrim Overlay\s*-->)\s*<div[^>]*class="(?<classes>[^"]+)"'
+    $panelMatch = Get-RequiredMatch `
+        -InputText $Html `
+        -Pattern '(?:<!--\s*Modal Panel\s*-->|<!--\s*Error Dialog Panel\s*-->)\s*<div class="(?<classes>[^"]+)"' `
+        -ErrorMessage "Could not find overlay panel classes."
+    $headerMatch = Get-RequiredMatch `
+        -InputText $Html `
+        -Pattern '(?:<!--\s*Modal Header\s*-->|<!--\s*Panel Header\s*-->)\s*<div class="(?<classes>[^"]+)">(?<inner>.*?)</div>\s*(?:<!--\s*Modal Body\s*-->|<!--\s*Panel Content\s*-->)' `
+        -ErrorMessage "Could not find overlay header section."
+    $bodyMatch = Get-RequiredMatch `
+        -InputText $Html `
+        -Pattern '(?:<!--\s*Modal Body\s*-->|<!--\s*Panel Content\s*-->)\s*<div class="(?<classes>[^"]+)">(?<inner>.*?)</div>' `
+        -ErrorMessage "Could not find overlay body section."
+    $footerMatch = Get-OptionalMatch `
+        -InputText $Html `
+        -Pattern '(?:<!--\s*Modal Footer\s*-->)\s*<div class="(?<classes>[^"]+)">(?<inner>.*?)</div>'
+
+    $bodyInner = [string]$bodyMatch.Groups["inner"].Value
+    $titleMatch = Get-RequiredMatch `
+        -InputText ([string]$headerMatch.Groups["inner"].Value) `
+        -Pattern '<h2 class="(?<classes>[^"]+)">\s*(?<text>.*?)\s*</h2>' `
+        -ErrorMessage "Could not find dialog title."
+    $summaryMatch = Get-OptionalMatch `
+        -InputText ([string]$headerMatch.Groups["inner"].Value) `
+        -Pattern '<p class="(?<classes>[^"]+)">\s*(?<text>.*?)\s*</p>'
+    $bodyTextMatch = Get-RequiredMatch `
+        -InputText $bodyInner `
+        -Pattern '<p class="(?<classes>[^"]+)">\s*(?<text>.*?)\s*</p>' `
+        -ErrorMessage "Could not find dialog body copy."
+
+    $footerSectionHtml = if ($footerMatch.Success) { [string]$footerMatch.Groups["inner"].Value } else { $bodyInner }
+    $footerClasses = if ($footerMatch.Success) {
+        [string]$footerMatch.Groups["classes"].Value
+    }
+    else {
+        (Get-RequiredMatch `
+            -InputText $bodyInner `
+            -Pattern '<div class="(?<classes>[^"]*flex[^"]*gap-[^"]*)">\s*<button' `
+            -ErrorMessage "Could not find dialog footer action row.").Groups["classes"].Value
+    }
+
+    $buttonMatches = [regex]::Matches($footerSectionHtml, '<button class="(?<classes>[^"]+)"[^>]*>\s*(?<content>.*?)\s*</button>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    if ($buttonMatches.Count -lt 2) {
+        throw "Expected at least two dialog footer buttons."
+    }
+
+    $iconBadgeMatch = Get-OptionalMatch `
+        -InputText ([string]$headerMatch.Groups["inner"].Value) `
+        -Pattern '<div class="(?<classes>[^"]*w-[^"]*h-[^"]*bg-[^"]*)">\s*<span class="material-symbols-outlined[^"]*"[^>]*>(?<text>.*?)</span>'
+    $iconTextMatch = Get-OptionalMatch `
+        -InputText ([string]$headerMatch.Groups["inner"].Value) `
+        -Pattern '<span class="material-symbols-outlined (?<classes>[^"]+)"[^>]*>\s*(?<text>.*?)\s*</span>'
+
+    $iconKind = if ($iconBadgeMatch.Success) { "badge" } else { "text" }
+    $iconClasses = if ($iconBadgeMatch.Success) { [string]$iconBadgeMatch.Groups["classes"].Value } else { [string]$iconTextMatch.Groups["classes"].Value }
+    $iconText = if ($iconBadgeMatch.Success) {
+        Clean-InnerText -Value ([string]$iconBadgeMatch.Groups["text"].Value)
+    }
+    else {
+        Clean-InnerText -Value ([string]$iconTextMatch.Groups["text"].Value)
+    }
+
+    return [PSCustomObject]@{
+        scrimClasses = $(if ($scrimMatch.Success) { [string]$scrimMatch.Groups["classes"].Value } else { "" })
+        panelClasses = [string]$panelMatch.Groups["classes"].Value
+        headerClasses = [string]$headerMatch.Groups["classes"].Value
+        bodyClasses = [string]$bodyMatch.Groups["classes"].Value
+        footerClasses = [string]$footerClasses
+        titleClasses = [string]$titleMatch.Groups["classes"].Value
+        titleText = Clean-InnerText -Value ([string]$titleMatch.Groups["text"].Value)
+        summaryClasses = $(if ($summaryMatch.Success) { [string]$summaryMatch.Groups["classes"].Value } else { "" })
+        summaryText = $(if ($summaryMatch.Success) { Clean-InnerText -Value ([string]$summaryMatch.Groups["text"].Value) } else { "" })
+        bodyTextClasses = [string]$bodyTextMatch.Groups["classes"].Value
+        bodyText = Clean-InnerText -Value ([string]$bodyTextMatch.Groups["text"].Value)
+        secondaryButtonClasses = [string]$buttonMatches[0].Groups["classes"].Value
+        secondaryButtonText = Clean-InnerText -Value ([string]$buttonMatches[0].Groups["content"].Value)
+        primaryButtonClasses = [string]$buttonMatches[1].Groups["classes"].Value
+        primaryButtonText = Clean-InnerText -Value ([string]$buttonMatches[1].Groups["content"].Value)
+        iconKind = $iconKind
+        iconClasses = $iconClasses
+        iconText = $iconText
+    }
+}
+
+function New-OverlayDialogProfile {
+    param(
+        [Parameter(Mandatory = $true)][string]$SurfaceId,
+        [Parameter(Mandatory = $true)][string]$HtmlPath,
+        [Parameter(Mandatory = $true)][string]$ImagePath,
+        [Parameter(Mandatory = $true)][string]$PresentationOutputPath,
+        [Parameter(Mandatory = $true)][string]$TargetAssetPath,
+        [Parameter(Mandatory = $true)][object]$Context
+    )
+
+    $setId = Get-SetIdFromPath -PathValue $HtmlPath
+    $sourceRef = [System.IO.Path]::GetFileNameWithoutExtension($ImagePath)
+    $dialogWidthPx = Get-MaxWidthPx -Classes ([string]$Context.panelClasses)
+    $headerLayout = if (-not [string]::IsNullOrWhiteSpace([string]$Context.summaryText)) { "stacked" } else { "inline" }
+    $footerLayout = if (([string]$Context.footerClasses) -match '\bflex-col\b') { "vertical" } else { "horizontal" }
+    $headerHeightPx = if ($headerLayout -eq "stacked") { 64 } else { 56 }
+    $bodyHeightPx = if ($footerLayout -eq "vertical") { 82 } else { 112 }
+    $footerHeightPx = if ($footerLayout -eq "vertical") { 108 } else { 52 }
+    $headerPaddingX = Get-ClassValuePx -Classes ([string]$Context.headerClasses) -Prefixes @("px") -DefaultValue 16
+    $headerPaddingY = Get-ClassValuePx -Classes ([string]$Context.headerClasses) -Prefixes @("py") -DefaultValue 16
+    $bodyPadding = Get-ClassValuePx -Classes ([string]$Context.bodyClasses) -Prefixes @("p") -DefaultValue 20
+    $footerPaddingX = Get-ClassValuePx -Classes ([string]$Context.footerClasses) -Prefixes @("px") -DefaultValue 20
+    $footerPaddingTop = Get-ClassValuePx -Classes ([string]$Context.footerClasses) -Prefixes @("pt", "py") -DefaultValue 0
+    $footerPaddingBottom = Get-ClassValuePx -Classes ([string]$Context.footerClasses) -Prefixes @("pb", "py") -DefaultValue 20
+    $footerGap = Get-ClassValuePx -Classes ([string]$Context.footerClasses) -Prefixes @("gap") -DefaultValue 12
+    $titleGap = Get-ClassValuePx -Classes ([string]$Context.headerClasses) -Prefixes @("gap") -DefaultValue 12
+    $titleFontPx = Get-TextSizePx -Classes ([string]$Context.titleClasses)
+    $summaryFontPx = if (-not [string]::IsNullOrWhiteSpace([string]$Context.summaryClasses)) { Get-TextSizePx -Classes ([string]$Context.summaryClasses) } else { 0 }
+    $bodyFontPx = Get-TextSizePx -Classes ([string]$Context.bodyTextClasses)
+    $buttonFontPx = Get-TextSizePx -Classes ([string]$Context.primaryButtonClasses)
+    $buttonHeightPx = if (([string]$Context.primaryButtonClasses) -match '\bpy-2\.5\b') { 40 } else { 32 }
+    $iconSizePx = if ($Context.iconKind -eq "badge") {
+        Get-ClassValuePx -Classes ([string]$Context.iconClasses) -Prefixes @("w", "h") -DefaultValue 32
+    }
+    else {
+        Get-TextSizePx -Classes ([string]$Context.iconClasses)
+    }
+
+    $titleStackWidthPx = if ($headerLayout -eq "stacked") {
+        $dialogWidthPx - ($headerPaddingX * 2) - $iconSizePx - $titleGap
+    }
+    else {
+        0
+    }
+    $titleWidthPx = if ($headerLayout -eq "inline") {
+        $dialogWidthPx - ($headerPaddingX * 2) - $iconSizePx - $titleGap
+    }
+    else {
+        0
+    }
+
+    $secondarySpec = Get-ActionSpec -Text ([string]$Context.secondaryButtonText) -Position "secondary"
+    $primarySpec = Get-ActionSpec -Text ([string]$Context.primaryButtonText) -Position "primary"
+    $semanticSpec = Get-OverlaySemanticSpec -PrimaryText ([string]$Context.primaryButtonText) -HasSummary (-not [string]::IsNullOrWhiteSpace([string]$Context.summaryText))
+
+    $headerHasImage = -not [string]::IsNullOrWhiteSpace((Get-ColorTokenFromClasses -Classes ([string]$Context.headerClasses) -Prefix "bg"))
+    $bodyHasImage = -not [string]::IsNullOrWhiteSpace((Get-ColorTokenFromClasses -Classes ([string]$Context.bodyClasses) -Prefix "bg"))
+    $footerHasImage = -not [string]::IsNullOrWhiteSpace((Get-ColorTokenFromClasses -Classes ([string]$Context.footerClasses) -Prefix "bg"))
+
+    $headerRequiredComponents = @("HorizontalLayoutGroup")
+    if ($headerHasImage) { $headerRequiredComponents = @("Image") + $headerRequiredComponents }
+
+    $bodyRequiredComponents = @("LayoutElement")
+    if ($bodyHasImage) { $bodyRequiredComponents = @("Image") + $bodyRequiredComponents }
+
+    $footerRequiredComponents = @($(if ($footerLayout -eq "vertical") { "VerticalLayoutGroup" } else { "HorizontalLayoutGroup" }), "LayoutElement")
+    if ($footerHasImage) { $footerRequiredComponents = @("Image") + $footerRequiredComponents }
+
+    $secondaryRequiredComponents = @("Button", "Image")
+    if ($footerLayout -eq "horizontal") { $secondaryRequiredComponents += "LayoutElement" }
+    $primaryRequiredComponents = @("Button", "Image")
+    if ($footerLayout -eq "horizontal") { $primaryRequiredComponents += "LayoutElement" }
+
+    $headerPath = "DialogPanel/HeaderRow"
+    $bodyPath = "DialogPanel/BodyBlock"
+    $footerPath = "DialogPanel/FooterRow"
+    $secondaryPath = "$footerPath/$($secondarySpec.hostName)"
+    $primaryPath = "$footerPath/$($primarySpec.hostName)"
+    $secondaryLabelPath = "$secondaryPath/Label"
+    $primaryLabelPath = "$primaryPath/Label"
+    $titlePath = if ($headerLayout -eq "stacked") { "$headerPath/TitleStack/TitleText" } else { "$headerPath/TitleText" }
+
+    $profile = [ordered]@{
+        surfaceId = $SurfaceId
+        family = "overlay-dialog-v1"
+        defaults = [ordered]@{
+            htmlPath = $HtmlPath
+            imagePath = $ImagePath
+            outputPath = $PresentationOutputPath
+        }
+        viewport = [ordered]@{
+            label = "390x844 mobile-first"
+        }
+        patterns = [ordered]@{
+            titlePattern = "<h2 class=`"(?<classes>[^`"]+)`">\s*(?<text>.*?)\s*</h2>"
+            summaryPattern = "<h2[^>]*>.*?</h2>\s*<p class=`"(?<classes>[^`"]+)`">\s*(?<text>.*?)\s*</p>"
+            bodyPattern = "(?:<!-- Modal Body -->|<!-- Panel Content -->).*?<p class=`"(?<classes>[^`"]+)`">\s*(?<text>.*?)\s*</p>"
+            buttonPattern = "<button class=`"(?<classes>[^`"]+)`"[^>]*>\s*(?<content>.*?)\s*</button>"
+        }
+        colors = [ordered]@{
+            scrim = Get-ColorTokenFromClasses -Classes ([string]$Context.scrimClasses) -Prefix "bg"
+            panel = Get-ColorTokenFromClasses -Classes ([string]$Context.panelClasses) -Prefix "bg"
+            header = Get-ColorTokenFromClasses -Classes ([string]$Context.headerClasses) -Prefix "bg"
+            icon = $(if ($Context.iconKind -eq "badge") {
+                Get-ColorTokenFromClasses -Classes ([string]$Context.iconClasses) -Prefix "bg"
+            } else {
+                Get-ColorTokenFromClasses -Classes ([string]$Context.iconClasses) -Prefix "text"
+            })
+            title = Get-ColorTokenFromClasses -Classes ([string]$Context.titleClasses) -Prefix "text"
+            summary = $(if (-not [string]::IsNullOrWhiteSpace([string]$Context.summaryClasses)) { Get-ColorTokenFromClasses -Classes ([string]$Context.summaryClasses) -Prefix "text" } else { "" })
+            bodyBackground = Get-ColorTokenFromClasses -Classes ([string]$Context.bodyClasses) -Prefix "bg"
+            bodyText = Get-ColorTokenFromClasses -Classes ([string]$Context.bodyTextClasses) -Prefix "text"
+            footerBackground = Get-ColorTokenFromClasses -Classes ([string]$Context.footerClasses) -Prefix "bg"
+            secondaryButton = Get-ColorTokenFromClasses -Classes ([string]$Context.secondaryButtonClasses) -Prefix "bg"
+            secondaryText = Get-ColorTokenFromClasses -Classes ([string]$Context.secondaryButtonClasses) -Prefix "text"
+            primaryButton = Get-ColorTokenFromClasses -Classes ([string]$Context.primaryButtonClasses) -Prefix "bg"
+            primaryText = Get-ColorTokenFromClasses -Classes ([string]$Context.primaryButtonClasses) -Prefix "text"
+        }
+        layout = [ordered]@{
+            dialogWidthPx = $dialogWidthPx
+            headerHeightPx = $headerHeightPx
+            bodyHeightPx = $bodyHeightPx
+            footerHeightPx = $footerHeightPx
+            headerPaddingX = $headerPaddingX
+            headerPaddingY = $headerPaddingY
+            bodyPadding = $bodyPadding
+            footerPaddingX = $footerPaddingX
+            footerPaddingTop = $footerPaddingTop
+            footerPaddingBottom = $footerPaddingBottom
+            footerGap = $footerGap
+            titleGap = $titleGap
+            titleFontPx = $titleFontPx
+            bodyFontPx = $bodyFontPx
+            buttonFontPx = $buttonFontPx
+            buttonHeightPx = $buttonHeightPx
+            headerLayout = $headerLayout
+            footerLayout = $footerLayout
+        }
+        header = [ordered]@{
+            path = $headerPath
+            iconKind = $Context.iconKind
+            iconPath = $(if ($Context.iconKind -eq "badge") { "$headerPath/WarningBadge" } else { "$headerPath/WarningIcon" })
+            iconSizePx = $iconSizePx
+            titlePath = $titlePath
+        }
+        body = [ordered]@{
+            path = $bodyPath
+            textPath = "$bodyPath/BodyText"
+        }
+        footer = [ordered]@{
+            path = $footerPath
+            secondaryPath = $secondaryPath
+            secondaryLabelPath = $secondaryLabelPath
+            primaryPath = $primaryPath
+            primaryLabelPath = $primaryLabelPath
+        }
+        compiler = [ordered]@{
+            manifest = [ordered]@{
+                setId = $setId
+                surfaceRole = "overlay"
+                status = "accepted"
+                source = [ordered]@{
+                    tool = "stitch"
+                    sourceRef = $sourceRef
+                    projectId = ""
+                    screenId = $sourceRef
+                    url = $ImagePath
+                }
+                ctaPriority = @(
+                    [ordered]@{
+                        id = $primarySpec.id
+                        priority = "primary"
+                        outcome = $primarySpec.outcome
+                    },
+                    [ordered]@{
+                        id = $secondarySpec.id
+                        priority = "secondary"
+                        outcome = $secondarySpec.outcome
+                    }
+                )
+                states = [ordered]@{
+                    default = $true
+                    empty = $false
+                    loading = $false
+                    error = ($primarySpec.id -eq "retry-cta")
+                    selected = $false
+                    disabled = ($primarySpec.id -eq "delete-cta")
+                }
+                validation = [ordered]@{
+                    firstReadOrder = @(
+                        $semanticSpec.headerBlockId,
+                        $semanticSpec.bodyBlockId,
+                        "footer-actions"
+                    )
+                    requiredChecks = @($semanticSpec.requiredChecks)
+                }
+                notes = @(
+                    "Auto-generated overlay dialog manifest from source HTML.",
+                    "Source-driven compiler data should be preferred over hand-authored screen-specific profile edits."
+                )
+                blocks = @(
+                    [ordered]@{
+                        blockId = $semanticSpec.headerBlockId
+                        role = "shared-chrome"
+                        sourceName = "dialog-header"
+                        children = @()
+                        componentComposition = @(
+                            [ordered]@{
+                                componentId = "status-text"
+                                slot = "title"
+                                variant = $semanticSpec.titleVariant
+                            }
+                        ) + $(if (-not [string]::IsNullOrWhiteSpace([string]$Context.summaryText)) {
+                            @([ordered]@{
+                                componentId = "status-text"
+                                slot = "summary"
+                                variant = $semanticSpec.summaryVariant
+                            })
+                        } else { @() }) + @(
+                            [ordered]@{
+                                componentId = $(if ($Context.iconKind -eq "badge") { "icon-button" } else { "status-text" })
+                                slot = $(if ($Context.iconKind -eq "badge") { "leading" } else { "leading-icon" })
+                                variant = $(if ($primarySpec.id -eq "delete-cta") { "warning-badge" } else { "warning-signal" })
+                            }
+                        )
+                    },
+                    [ordered]@{
+                        blockId = $semanticSpec.bodyBlockId
+                        role = "content"
+                        sourceName = "dialog-body"
+                        children = @()
+                        componentComposition = @(
+                            [ordered]@{
+                                componentId = "section-card"
+                                slot = "shell"
+                                variant = $semanticSpec.bodyVariant
+                            }
+                        )
+                    },
+                    [ordered]@{
+                        blockId = "footer-actions"
+                        role = "shared-chrome"
+                        sourceName = "dialog-footer"
+                        children = @($secondarySpec.id, $primarySpec.id)
+                        componentComposition = @(
+                            [ordered]@{
+                                componentId = "section-card"
+                                slot = "shell"
+                                variant = $semanticSpec.footerVariant
+                            }
+                        )
+                    },
+                    [ordered]@{
+                        blockId = $secondarySpec.id
+                        role = "cta"
+                        sourceName = "secondary-action"
+                        children = @()
+                        componentComposition = @(
+                            [ordered]@{
+                                componentId = "secondary-button"
+                                slot = "self"
+                                variant = $secondarySpec.variant
+                            }
+                        )
+                    },
+                    [ordered]@{
+                        blockId = $primarySpec.id
+                        role = "cta"
+                        sourceName = "primary-action"
+                        children = @()
+                        componentComposition = @(
+                            [ordered]@{
+                                componentId = "primary-button"
+                                slot = "self"
+                                variant = $primarySpec.variant
+                            }
+                        )
+                    }
+                )
+            }
+            map = [ordered]@{
+                target = [ordered]@{
+                    kind = "prefab"
+                    assetPath = $TargetAssetPath
+                }
+                translationStrategy = "contract-complete-translator-v1"
+                strategyMode = "generate-or-patch"
+                artifactPaths = [ordered]@{
+                    translationResult = "artifacts/unity/$sourceRef-translation-result.json"
+                    preflightResult = "artifacts/unity/$sourceRef-preflight-result.json"
+                    pipelineResult = "artifacts/unity/$sourceRef-pipeline-result.json"
+                }
+                notes = @(
+                    "Auto-generated overlay dialog map from source HTML.",
+                    "Host paths follow the current canonical overlay prefab structure."
+                )
+                blocks = @(
+                    [ordered]@{
+                        blockId = $semanticSpec.headerBlockId
+                        hostPath = $headerPath
+                        requiredComponents = @($headerRequiredComponents)
+                    },
+                    [ordered]@{
+                        blockId = $semanticSpec.bodyBlockId
+                        hostPath = $bodyPath
+                        requiredComponents = @($bodyRequiredComponents)
+                    },
+                    [ordered]@{
+                        blockId = "footer-actions"
+                        hostPath = $footerPath
+                        requiredComponents = @($footerRequiredComponents)
+                    },
+                    [ordered]@{
+                        blockId = $secondarySpec.id
+                        hostPath = $secondaryPath
+                        requiredComponents = @($secondaryRequiredComponents)
+                    },
+                    [ordered]@{
+                        blockId = $primarySpec.id
+                        hostPath = $primaryPath
+                        requiredComponents = @($primaryRequiredComponents)
+                    }
+                )
+            }
+        }
+        unresolvedDerivedFields = @(
+            "warning-icon-glyph-font"
+        )
+    }
+
+    if ($headerLayout -eq "stacked") {
+        $profile.layout.titleStackWidthPx = $titleStackWidthPx
+        $profile.layout.summaryFontPx = $summaryFontPx
+        $profile.header.titleStackPath = "$headerPath/TitleStack"
+        $profile.header.summaryPath = "$headerPath/TitleStack/SummaryText"
+    }
+    else {
+        $profile.layout.titleWidthPx = $titleWidthPx
+        $profile.header.iconText = $Context.iconText
+    }
+
+    return [PSCustomObject]$profile
+}
+
+$resolvedHtmlPath = if ([string]::IsNullOrWhiteSpace($HtmlPath)) { Get-SurfaceSourcePath -SurfaceId $SurfaceId -Extension "html" } else { Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $HtmlPath) }
+$resolvedImagePath = if ([string]::IsNullOrWhiteSpace($ImagePath)) { Get-SurfaceSourcePath -SurfaceId $SurfaceId -Extension "png" } else { Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $ImagePath) }
+$resolvedProfileArtifactPath = if ([string]::IsNullOrWhiteSpace($ProfileArtifactPath)) { "tools/stitch-unity/presentations/profiles/$SurfaceId.profile.json" } else { Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $ProfileArtifactPath) }
+$resolvedPresentationOutputPath = if ([string]::IsNullOrWhiteSpace($PresentationOutputPath)) { ".stitch/contracts/presentations/$SurfaceId.presentation.json" } else { Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $PresentationOutputPath) }
+$resolvedTargetAssetPath = if ([string]::IsNullOrWhiteSpace($TargetAssetPath)) { Get-DefaultTargetAssetPath -SurfaceId $SurfaceId } else { $TargetAssetPath }
+
+$resolvedProfileAbsolutePath = Resolve-RepoPath -PathValue $resolvedProfileArtifactPath
+if ($WriteProfileArtifact -and (Test-Path -LiteralPath $resolvedProfileAbsolutePath) -and -not $Force -and -not $CanGenerateOnly) {
+    throw "Profile artifact already exists: $resolvedProfileAbsolutePath. Use -Force to overwrite."
+}
+
+$html = Read-AllText -PathValue $resolvedHtmlPath
+$context = $null
+try {
+    $context = Get-DialogContext -Html $html
+}
+catch {
+    if ($CanGenerateOnly) {
+        [PSCustomObject]@{
+            success = $true
+            supported = $false
+            surfaceId = $SurfaceId
+            htmlPath = $resolvedHtmlPath
+            imagePath = $resolvedImagePath
+            profileStorage = "in-memory"
+            profileArtifactPath = ""
+            presentationOutputPath = $resolvedPresentationOutputPath
+            targetAssetPath = $resolvedTargetAssetPath
+            reason = $_.Exception.Message
+            checkedAt = (Get-Date).ToString("o")
+        } | ConvertTo-Json -Depth 20
+        exit 0
+    }
+
+    throw
+}
+
+if ($CanGenerateOnly) {
+    [PSCustomObject]@{
+        success = $true
+        supported = $true
+        surfaceId = $SurfaceId
+        htmlPath = $resolvedHtmlPath
+        imagePath = $resolvedImagePath
+        profileStorage = "in-memory"
+        profileArtifactPath = ""
+        presentationOutputPath = $resolvedPresentationOutputPath
+        targetAssetPath = $resolvedTargetAssetPath
+        checkedAt = (Get-Date).ToString("o")
+    } | ConvertTo-Json -Depth 20
+    exit 0
+}
+
+$profile = New-OverlayDialogProfile `
+    -SurfaceId $SurfaceId `
+    -HtmlPath $resolvedHtmlPath `
+    -ImagePath $resolvedImagePath `
+    -PresentationOutputPath $resolvedPresentationOutputPath `
+    -TargetAssetPath $resolvedTargetAssetPath `
+    -Context $context
+
+$writtenPath = ""
+if ($WriteProfileArtifact) {
+    $writtenPath = Write-JsonFile -PathValue $resolvedProfileArtifactPath -InputObject $profile
+}
+
+[PSCustomObject]@{
+    success = $true
+    supported = $true
+    surfaceId = $SurfaceId
+    family = [string]$profile.family
+    htmlPath = $resolvedHtmlPath
+    imagePath = $resolvedImagePath
+    profileStorage = "in-memory"
+    profileArtifactPath = if ([string]::IsNullOrWhiteSpace($writtenPath)) { "" } else { Convert-ToRepoRelativePath -AbsolutePath $writtenPath }
+    presentationOutputPath = $resolvedPresentationOutputPath
+    targetAssetPath = $resolvedTargetAssetPath
+    profile = $profile
+    generatedAt = (Get-Date).ToString("o")
+} | ConvertTo-Json -Depth 20

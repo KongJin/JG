@@ -1,0 +1,649 @@
+﻿{
+    "schemaVersion":  "1.0.0",
+    "contractKind":  "presentation-contract",
+    "surfaceId":  "account-delete-confirm",
+    "surfaceRole":  "overlay",
+    "extractionStatus":  "resolved",
+    "sourceRefs":  {
+                       "imagePath":  ".stitch/designs/set-c-account-delete-confirm.png",
+                       "htmlPath":  ".stitch/designs/set-c-account-delete-confirm.html"
+                   },
+    "derivedFrom":  {
+                        "dialogViewport":  "390x844 mobile-first",
+                        "htmlTitle":  "시스템 설정",
+                        "footerButtons":  [
+                                              "계정 삭제 진행...",
+                                              "취소 및 돌아가기"
+                                          ]
+                    },
+    "unresolvedDerivedFields":  [
+                                    "warning-icon-glyph-font"
+                                ],
+    "elements":  [
+                     {
+                         "path":  "",
+                         "rect":  {
+                                      "anchorMin":  "(0,0)",
+                                      "anchorMax":  "(1,1)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(0,0)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "Image",
+                                                "propertyName":  "m_Color",
+                                                "value":  "#00000000"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "Scrim",
+                         "role":  "overlay-scrim",
+                         "components":  [
+                                            "Image"
+                                        ],
+                         "siblingIndex":  0,
+                         "rect":  {
+                                      "anchorMin":  "(0,0)",
+                                      "anchorMax":  "(1,1)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(0,0)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "Image",
+                                                "propertyName":  "m_Color",
+                                                "value":  "#000000CC"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel",
+                         "role":  "dialog-shell",
+                         "components":  [
+                                            "Image",
+                                            "VerticalLayoutGroup"
+                                        ],
+                         "siblingIndex":  1,
+                         "rect":  {
+                                      "anchorMin":  "(0.5,0.5)",
+                                      "anchorMax":  "(0.5,0.5)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(358,254)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "Image",
+                                                "propertyName":  "m_Color",
+                                                "value":  "#111827"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_Spacing",
+                                                "value":  "0"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_ChildControlWidth",
+                                                "value":  "true"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_ChildControlHeight",
+                                                "value":  "false"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_ChildForceExpandWidth",
+                                                "value":  "true"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_ChildForceExpandHeight",
+                                                "value":  "false"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel/HeaderRow",
+                         "role":  "dialog-header",
+                         "components":  [
+                                            "LayoutElement"
+                                        ],
+                         "rect":  {
+                                      "anchorMin":  "(0.5,0.5)",
+                                      "anchorMax":  "(0.5,0.5)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(358,64)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "Image",
+                                                "propertyName":  "m_Color",
+                                                "value":  "#18181B80"
+                                            },
+                                            {
+                                                "componentType":  "HorizontalLayoutGroup",
+                                                "propertyName":  "m_Spacing",
+                                                "value":  "12"
+                                            },
+                                            {
+                                                "componentType":  "HorizontalLayoutGroup",
+                                                "propertyName":  "m_ChildControlWidth",
+                                                "value":  "false"
+                                            },
+                                            {
+                                                "componentType":  "HorizontalLayoutGroup",
+                                                "propertyName":  "m_ChildControlHeight",
+                                                "value":  "false"
+                                            },
+                                            {
+                                                "componentType":  "HorizontalLayoutGroup",
+                                                "propertyName":  "m_ChildForceExpandWidth",
+                                                "value":  "false"
+                                            },
+                                            {
+                                                "componentType":  "HorizontalLayoutGroup",
+                                                "propertyName":  "m_ChildForceExpandHeight",
+                                                "value":  "false"
+                                            },
+                                            {
+                                                "componentType":  "HorizontalLayoutGroup",
+                                                "propertyName":  "m_Padding.m_Left",
+                                                "value":  "20"
+                                            },
+                                            {
+                                                "componentType":  "HorizontalLayoutGroup",
+                                                "propertyName":  "m_Padding.m_Right",
+                                                "value":  "20"
+                                            },
+                                            {
+                                                "componentType":  "HorizontalLayoutGroup",
+                                                "propertyName":  "m_Padding.m_Top",
+                                                "value":  "16"
+                                            },
+                                            {
+                                                "componentType":  "HorizontalLayoutGroup",
+                                                "propertyName":  "m_Padding.m_Bottom",
+                                                "value":  "16"
+                                            },
+                                            {
+                                                "componentType":  "LayoutElement",
+                                                "propertyName":  "m_PreferredHeight",
+                                                "value":  "64"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel/HeaderRow/WarningBadge",
+                         "role":  "warning-badge-shell",
+                         "components":  [
+                                            "Image",
+                                            "LayoutElement"
+                                        ],
+                         "rect":  {
+                                      "anchorMin":  "(0.5,0.5)",
+                                      "anchorMax":  "(0.5,0.5)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(32,32)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "Image",
+                                                "propertyName":  "m_Color",
+                                                "value":  "#EF44441A"
+                                            },
+                                            {
+                                                "componentType":  "LayoutElement",
+                                                "propertyName":  "m_PreferredWidth",
+                                                "value":  "32"
+                                            },
+                                            {
+                                                "componentType":  "LayoutElement",
+                                                "propertyName":  "m_PreferredHeight",
+                                                "value":  "32"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel/HeaderRow/TitleStack",
+                         "role":  "header-copy-stack",
+                         "components":  [
+                                            "VerticalLayoutGroup",
+                                            "LayoutElement"
+                                        ],
+                         "rect":  {
+                                      "anchorMin":  "(0.5,0.5)",
+                                      "anchorMax":  "(0.5,0.5)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(274,32)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_Spacing",
+                                                "value":  "4"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_ChildControlWidth",
+                                                "value":  "true"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_ChildControlHeight",
+                                                "value":  "false"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_ChildForceExpandWidth",
+                                                "value":  "true"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_ChildForceExpandHeight",
+                                                "value":  "false"
+                                            },
+                                            {
+                                                "componentType":  "LayoutElement",
+                                                "propertyName":  "m_PreferredWidth",
+                                                "value":  "274"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel/HeaderRow/TitleStack/TitleText",
+                         "role":  "header-title",
+                         "components":  [
+                                            "TextMeshProUGUI",
+                                            "LayoutElement"
+                                        ],
+                         "rect":  {
+                                      "anchorMin":  "(0,0)",
+                                      "anchorMax":  "(1,1)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(0,0)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_text",
+                                                "value":  "시스템 설정"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontSize",
+                                                "value":  "18"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontColor",
+                                                "value":  "#F4F4F5"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontAsset",
+                                                "assetReferencePath":  "Assets/TextMesh Pro/Resources/Fonts \u0026 Materials/NotoSansKR Dynamic.asset"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_HorizontalAlignment",
+                                                "value":  "1"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_VerticalAlignment",
+                                                "value":  "512"
+                                            },
+                                            {
+                                                "componentType":  "LayoutElement",
+                                                "propertyName":  "m_PreferredHeight",
+                                                "value":  "24"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel/HeaderRow/TitleStack/SummaryText",
+                         "role":  "header-summary",
+                         "components":  [
+                                            "TextMeshProUGUI",
+                                            "LayoutElement"
+                                        ],
+                         "rect":  {
+                                      "anchorMin":  "(0,0)",
+                                      "anchorMax":  "(1,1)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(0,0)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_text",
+                                                "value":  "Critical Action Required"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontSize",
+                                                "value":  "10"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontColor",
+                                                "value":  "#F87171"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontAsset",
+                                                "assetReferencePath":  "Assets/TextMesh Pro/Resources/Fonts \u0026 Materials/NotoSansKR Dynamic.asset"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_HorizontalAlignment",
+                                                "value":  "1"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_VerticalAlignment",
+                                                "value":  "512"
+                                            },
+                                            {
+                                                "componentType":  "LayoutElement",
+                                                "propertyName":  "m_PreferredHeight",
+                                                "value":  "14"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel/BodyBlock",
+                         "role":  "dialog-body",
+                         "rect":  {
+                                      "anchorMin":  "(0.5,0.5)",
+                                      "anchorMax":  "(0.5,0.5)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(358,82)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "Image",
+                                                "propertyName":  "m_Color",
+                                                "value":  "#09090B4C"
+                                            },
+                                            {
+                                                "componentType":  "LayoutElement",
+                                                "propertyName":  "m_PreferredHeight",
+                                                "value":  "82"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel/BodyBlock/BodyText",
+                         "role":  "body-copy",
+                         "components":  [
+                                            "TextMeshProUGUI"
+                                        ],
+                         "rect":  {
+                                      "anchorMin":  "(0,0)",
+                                      "anchorMax":  "(1,1)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(-40,-40)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_text",
+                                                "value":  "모든 작전 기록, 유닛 데이터 및 아이템이 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다."
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontSize",
+                                                "value":  "14"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontColor",
+                                                "value":  "#D4D4D8"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontAsset",
+                                                "assetReferencePath":  "Assets/TextMesh Pro/Resources/Fonts \u0026 Materials/NotoSansKR Dynamic.asset"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_HorizontalAlignment",
+                                                "value":  "1"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_VerticalAlignment",
+                                                "value":  "256"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_margin",
+                                                "value":  "(20,20,20,20)"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel/FooterRow",
+                         "role":  "dialog-footer",
+                         "rect":  {
+                                      "anchorMin":  "(0.5,0.5)",
+                                      "anchorMax":  "(0.5,0.5)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(358,108)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "Image",
+                                                "propertyName":  "m_Color",
+                                                "value":  "#18181BCC"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_Spacing",
+                                                "value":  "12"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_ChildControlWidth",
+                                                "value":  "false"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_ChildControlHeight",
+                                                "value":  "false"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_ChildForceExpandWidth",
+                                                "value":  "false"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_ChildForceExpandHeight",
+                                                "value":  "false"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_Padding.m_Left",
+                                                "value":  "20"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_Padding.m_Right",
+                                                "value":  "20"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_Padding.m_Top",
+                                                "value":  "16"
+                                            },
+                                            {
+                                                "componentType":  "VerticalLayoutGroup",
+                                                "propertyName":  "m_Padding.m_Bottom",
+                                                "value":  "16"
+                                            },
+                                            {
+                                                "componentType":  "LayoutElement",
+                                                "propertyName":  "m_PreferredHeight",
+                                                "value":  "108"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel/FooterRow/CancelButton",
+                         "role":  "secondary-cta",
+                         "rect":  {
+                                      "anchorMin":  "(0.5,0.5)",
+                                      "anchorMax":  "(0.5,0.5)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(318,40)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "Image",
+                                                "propertyName":  "m_Color",
+                                                "value":  "#00000000"
+                                            },
+                                            {
+                                                "componentType":  "LayoutElement",
+                                                "propertyName":  "m_PreferredHeight",
+                                                "value":  "40"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel/FooterRow/CancelButton/Label",
+                         "role":  "secondary-cta-label",
+                         "components":  [
+                                            "TextMeshProUGUI"
+                                        ],
+                         "rect":  {
+                                      "anchorMin":  "(0,0)",
+                                      "anchorMax":  "(1,1)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(0,0)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_text",
+                                                "value":  "계정 삭제 진행..."
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontSize",
+                                                "value":  "14"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontColor",
+                                                "value":  "#D4D4D8"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontAsset",
+                                                "assetReferencePath":  "Assets/TextMesh Pro/Resources/Fonts \u0026 Materials/NotoSansKR Dynamic.asset"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_HorizontalAlignment",
+                                                "value":  "2"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_VerticalAlignment",
+                                                "value":  "512"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel/FooterRow/DeleteButton",
+                         "role":  "primary-cta",
+                         "rect":  {
+                                      "anchorMin":  "(0.5,0.5)",
+                                      "anchorMax":  "(0.5,0.5)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(318,40)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "Image",
+                                                "propertyName":  "m_Color",
+                                                "value":  "#EF4444"
+                                            },
+                                            {
+                                                "componentType":  "LayoutElement",
+                                                "propertyName":  "m_PreferredHeight",
+                                                "value":  "40"
+                                            }
+                                        ]
+                     },
+                     {
+                         "path":  "DialogPanel/FooterRow/DeleteButton/Label",
+                         "role":  "primary-cta-label",
+                         "components":  [
+                                            "TextMeshProUGUI"
+                                        ],
+                         "rect":  {
+                                      "anchorMin":  "(0,0)",
+                                      "anchorMax":  "(1,1)",
+                                      "pivot":  "(0.5,0.5)",
+                                      "anchoredPosition":  "(0,0)",
+                                      "sizeDelta":  "(0,0)"
+                                  },
+                         "properties":  [
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_text",
+                                                "value":  "취소 및 돌아가기"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontSize",
+                                                "value":  "14"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontColor",
+                                                "value":  "#FFFFFF"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_fontAsset",
+                                                "assetReferencePath":  "Assets/TextMesh Pro/Resources/Fonts \u0026 Materials/NotoSansKR Dynamic.asset"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_HorizontalAlignment",
+                                                "value":  "2"
+                                            },
+                                            {
+                                                "componentType":  "TextMeshProUGUI",
+                                                "propertyName":  "m_VerticalAlignment",
+                                                "value":  "512"
+                                            }
+                                        ]
+                     }
+                 ],
+    "notes":  [
+                  "Generated from set-c-account-delete-confirm.html source freeze.",
+                  "Values in this file are source-derived from Tailwind classes and inline content, not hand-authored UI constants."
+              ]
+}

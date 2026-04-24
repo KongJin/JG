@@ -1,6 +1,6 @@
 # Docs Index
 
-> 마지막 업데이트: 2026-04-23
+> 마지막 업데이트: 2026-04-24
 > 상태: active
 > doc_id: docs.index
 > role: entry
@@ -21,8 +21,10 @@
 ## Quick Start
 
 - Unity UI / prefab / scene 작업: [`plans/progress.md`](./plans/progress.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant contract/prefab
-- Stitch / handoff 작업: [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) -> relevant `.stitch/contracts/screens/*.json` + `.stitch/contracts/mappings/*.json`
-- Stitch -> Unity 한 장씩 번역: [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) -> relevant `.stitch/contracts/screens/*.json` -> relevant `.stitch/contracts/mappings/*.json` -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)
+- Stitch / handoff 작업: [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md)
+  기준 흐름은 `source freeze -> execution contracts -> translation output`이다.
+- Stitch -> Unity 한 장씩 번역: [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)
+  실행 전에는 source에서 execution contract가 다시 준비되는지 먼저 본다.
 - 문서 / workflow 정리: [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> `docs/index.md` -> relevant owner doc
 - GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
 
@@ -48,6 +50,7 @@
 | Stitch 데이터 저장/갱신/Unity handoff 흐름 확인 | [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) |
 | Stitch JSON handoff contract 구조 확인 | [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) |
 | Stitch screen을 Unity로 한 장씩 옮기는 실무 가이드 확인 | [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) |
+| Stitch surface 실행 명령과 review capture 루프 확인 | [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) |
 | Stitch 전면 개편 실행 계획 확인 | [`plans/stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) |
 | Stitch 테스트 프롬프트 확인 | [`design/stitch_test_brief.md`](./design/stitch_test_brief.md) |
 | GameScene 진입 큰 흐름 확인 | [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) |
@@ -77,11 +80,11 @@
 - `reference`: [`progress_changelog.md`](./plans/progress_changelog.md) - 진행 상황에서 분리한 dated change log
 - `active`: [`account_system_plan.md`](./plans/account_system_plan.md) - 계정/차고 복구 계획
 - `active`: [`game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) - GameScene 진입 상위 흐름
-- `active`: [`stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) - Stitch concept pass 이후 set별 구현 루프 기준
+- `active`: [`stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) - active surface와 reset 우선순위 기준
 - `draft`: [`game_scene_ui_ux_improvement_plan.md`](./plans/game_scene_ui_ux_improvement_plan.md) - GameScene 전투 HUD/소환 UX 재설계 계획
 - `active`: [`tech_debt_reduction_plan.md`](./plans/tech_debt_reduction_plan.md) - 현재 기술부채 실행 순서
 - `active`: [`webgl_smoke_checklist.md`](./plans/webgl_smoke_checklist.md) - WebGL 실기 체크리스트
-- `draft`: [`garage_ui_ux_improvement_plan.md`](./plans/garage_ui_ux_improvement_plan.md) - Garage UI backlog
+- `draft`: [`garage_ui_ux_improvement_plan.md`](./plans/garage_ui_ux_improvement_plan.md) - Garage Stitch-to-Unity recovery plan
 - `active`: [`mcp_improvement_plan.md`](./plans/mcp_improvement_plan.md) - Unity MCP 역할/검증 레이어 정리
 - `reference`: [`implementation_plan_mvp_fun.md`](./plans/implementation_plan_mvp_fun.md) - MVP 재미 검증 압축 실행 체크리스트
 - `historical`: [`codex_lobby_garage_panel_plan.md`](./plans/codex_lobby_garage_panel_plan.md) - 초창기 Garage 패널 계획

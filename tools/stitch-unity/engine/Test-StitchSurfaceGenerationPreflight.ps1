@@ -2,6 +2,7 @@ param(
     [string]$SurfaceId = "",
     [string]$MapPath = "",
     [string]$ArtifactPath = "",
+    [string]$CompiledContractDebugPath = "",
     [switch]$AsJson
 )
 
@@ -10,8 +11,8 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot/StitchUnityCommon.ps1"
 
-$context = Get-StitchUnitySurfaceContext -SurfaceId $SurfaceId -MapPath $MapPath
-$preflight = Get-StitchUnityPreflightObject -Map $context.Map -ContractBundle $context.Contracts
+$context = Get-StitchUnitySurfaceContext -SurfaceId $SurfaceId -MapPath $MapPath -CompiledContractDebugPath $CompiledContractDebugPath
+$preflight = Get-StitchUnityPreflightObject -Map $context.Map -ContractBundle $context.Contracts -ContractSource $context.ContractSource
 
 $resolvedArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $context.Map -ArtifactName "preflightResult" -ArtifactPath $ArtifactPath
 

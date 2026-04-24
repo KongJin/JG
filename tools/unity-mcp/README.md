@@ -1,6 +1,6 @@
 # Unity MCP
 
-> 마지막 업데이트: 2026-04-23
+> 마지막 업데이트: 2026-04-24
 > 상태: active
 > doc_id: tools.unity-mcp-readme
 > role: reference
@@ -42,7 +42,6 @@ These are the routes the current workflow depends on.
 - `POST /ui/get-state`
 - `POST /ui/wait-for-active`
 - `POST /ui/wait-for-inactive`
-- `POST /screenshot/capture`
 - `POST /sceneview/capture`
 - `GET /validation/verify-presentation-layout-ownership`
 - `GET /scene/verify-lobby-contract`
@@ -119,7 +118,6 @@ If a concrete Lobby/Garage authoring scene is intentionally revived later:
 - `Invoke-McpUiInvoke`
 - `Wait-McpUiActive`
 - `Wait-McpUiInactive`
-- `Invoke-McpScreenshotCapture`
 
 `McpPrefabPackHelpers.ps1` centralizes the reusable prefab-pack authoring loop:
 
@@ -135,6 +133,8 @@ Current translation entry:
   - shared public entry for accepted Stitch surface translation
   - current policy disables the prior constant-owned surface generator route
   - only contract-complete translators should be reintroduced under a new strategy id
+- accepted Stitch prefab review는 `TempScene review prep -> POST /sceneview/capture`를 기본 route로 본다
+- `POST /screenshot/capture`는 현재 Stitch prefab review 표준 경로가 아니다. 일반 수동 점검용 route로만 본다.
 
 Use `Assert-McpNoOpenSceneDiskWrite` before any script that would touch a `.unity` file on disk outside the editor bridge.
 If the target matches `health.activeScenePath`, the helper fails fast and tells you to use MCP repair or switch scenes first.
@@ -147,6 +147,26 @@ Prefab Mode can now be opened through MCP as well:
 - `POST /sceneview/capture` to save the current SceneView, including Prefab Mode context when open
 
 Use this when prefab-authoring work benefits from an explicit Prefab Mode stage instead of editing only through asset read/write routes.
+
+## Prefab Authoring Caveats
+
+이번 reset lane에서 확인된 caveat는 아래와 같다.
+
+- `GET /prefab/get`
+  - missing child path에서 조용히 `found=false`를 주지 않고 500으로 실패할 수 있다.
+  - 따라서 existence check helper는 500을 missing-path로 흡수해야 한다.
+- `POST /prefab/set`
+  - target component가 실제로 붙어 있지 않으면 바로 실패한다.
+  - property apply 전에 required component를 먼저 ensure 해야 한다.
+- `/console/logs`와 `/console/errors`
+  - stale error가 남아 있을 수 있으니 timestamp로 현재 실패와 과거 실패를 구분해야 한다.
+- `POST /sceneview/capture`
+  - current Stitch prefab review 기본 capture route다.
+  - Prefab Mode SceneView capture는 runtime/mobile framing과 동일하지 않으므로 staging proof로만 본다.
+
+한 줄 기준:
+
+`prefab/get`은 missing-path safe wrapper가 필요하고, `prefab/set`은 ensure-component 이후에만 호출하는 것이 기본이다.
 
 When Unity already has the project open and you need generated `.csproj` files refreshed for editor tests or IDE sync, use:
 

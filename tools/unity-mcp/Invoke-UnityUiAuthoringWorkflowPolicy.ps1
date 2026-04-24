@@ -110,6 +110,49 @@ function Get-LatestExistingWriteTimeUtc {
     return $latest
 }
 
+function Get-DeclaredResetPrefabTargets {
+    param(
+        [string]$RepoRoot
+    )
+
+    $mappingRoot = Join-Path $RepoRoot ".stitch/contracts/mappings"
+    if (-not (Test-Path -LiteralPath $mappingRoot)) {
+        return @()
+    }
+
+    $targets = @()
+    foreach ($file in Get-ChildItem -LiteralPath $mappingRoot -Filter *.json -File) {
+        try {
+            $json = Get-Content -LiteralPath $file.FullName -Raw | ConvertFrom-Json
+            if ($null -eq $json) {
+                continue
+            }
+
+            if ($json.contractKind -ne "unity-surface-map") {
+                continue
+            }
+
+            if ($null -eq $json.target) {
+                continue
+            }
+
+            if ($json.target.kind -ne "prefab") {
+                continue
+            }
+
+            $assetPath = [string]$json.target.assetPath
+            if (-not [string]::IsNullOrWhiteSpace($assetPath)) {
+                $targets += $assetPath
+            }
+        }
+        catch {
+            continue
+        }
+    }
+
+    return @($targets | Sort-Object -Unique)
+}
+
 function New-EvidenceRecord {
     param(
         [string]$Name,
@@ -212,6 +255,7 @@ $lobbyFiles = Get-PathsMatching -Paths $changedFiles -Patterns $lobbyPatterns
 $gameSceneFiles = Get-PathsMatching -Paths $changedFiles -Patterns $gameScenePatterns
 $unityUiRelevantFiles = Get-PathsMatching -Paths $changedFiles -Patterns $unityUiRelevantPatterns
 $newPrefabFiles = Get-PathsMatching -Paths $addedFiles -Patterns @('^Assets/.+\.prefab$')
+$declaredResetPrefabTargets = Get-DeclaredResetPrefabTargets -RepoRoot $repoRoot
 
 $hasScenePrefab = @($scenePrefabFiles).Count -gt 0
 $hasPresentationCode = @($presentationFiles).Count -gt 0
@@ -366,6 +410,10 @@ if ($route -ne "no-unity-ui-workflow") {
 
     if (@($newPrefabFiles).Count -gt 0) {
         foreach ($path in @($newPrefabFiles)) {
+            if ($declaredResetPrefabTargets -contains $path) {
+                continue
+            }
+
             $policyViolations += [PSCustomObject]@{
                 code = "new-prefab-blocked"
                 message = ("New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path={0}" -f $path)

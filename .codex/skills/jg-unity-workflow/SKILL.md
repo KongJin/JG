@@ -5,7 +5,7 @@ description: Project-specific Unity workflow for the JG repo. Use when Codex wor
 
 # JG Unity Workflow
 
-> 마지막 업데이트: 2026-04-23
+> 마지막 업데이트: 2026-04-24
 > 상태: active
 > doc_id: skill.jg-unity-workflow
 > role: skill-entry
@@ -84,9 +84,46 @@ When Unity work implements an accepted Stitch screen, use this loop:
 
 1. Read the relevant intake and screen manifest first.
 2. Open the accepted Stitch `png` alongside the Unity surface when practical.
-3. Read presentation contracts before touching hierarchy so Required refs are known up front.
-4. Build or repair the smallest prefab baseline that can carry the contract.
-5. Compare Unity output against the source screen before calling the pass done.
+3. If the current screen structure is supported, expect the source-derived preparation step to run from html/png before extraction or translation.
+4. Read the `unity-map` and confirm the real target asset path before touching hierarchy.
+5. Read presentation contracts before touching hierarchy so required refs and source-derived presentation values are known up front.
+6. Build or repair the smallest prefab baseline that can carry the contract.
+7. Compare Unity output against the source screen before calling the pass done.
+
+Semantic contract alone is not enough for overlay recovery.
+If the surface depends on scrim, dialog bounds, typography weight, CTA labels, or emphasis hierarchy, close the source-derived presentation contract first.
+Otherwise the translator usually only recreates a skeleton surface.
+
+## Presentation Contract Rules
+
+- Treat `screen manifest` as semantic meaning only.
+- Treat `unity-map` as binding only.
+- Treat `presentation-contract` as source-derived presentation only.
+- Do not hand-author literal presentation values and then label them as source-derived truth.
+- If `extractionStatus != resolved`, do not call the translation pass done.
+- `pending-source-derivation` is a valid intermediate state, not a translation-ready success state.
+
+## Troubleshooting
+
+- `missing child path`
+  - `/prefab/get` may throw 500 instead of returning a clean miss. Use a missing-path-safe wrapper and verify the actual hierarchy again.
+- `missing component on prefab/set`
+  - `/prefab/set` fails if the target component is absent. Ensure the component before applying the property.
+- `stale console errors`
+  - Compare console timestamps so old failures do not get mistaken for the latest translation run.
+- `Prefab Mode capture vs runtime view`
+  - `sceneview/capture` in Prefab Mode is good for structure and presentation sanity checks, but it is not the same as runtime/mobile framing.
+- `source re-read`
+  - In supported Stitch screen structures, `Resolve-StitchPresentationContract.ps1` and `Invoke-StitchSurfaceTranslation.ps1` rebuild the execution inputs from html/png before they continue. Do not treat optional profile dumps as hand-maintained owner files.
+- `skeleton-only translation`
+  - When semantic contract + map succeed but the UI still looks like a placeholder, the missing layer is usually source-derived presentation extraction.
+
+## Guardrails From Recent Reset Work
+
+- In `prefab-first reset`, do not promote a temporary contract into an execution contract just because it unblocks one pass.
+- New intermediate layers must record their status explicitly instead of silently becoming runtime truth.
+- If a presentation field is still uncertain, keep it in `unresolvedDerivedFields` and leave the contract in `pending-source-derivation`.
+- Do not use translator-side constants or fallback to paper over missing presentation data.
 
 ## Fidelity Checks
 

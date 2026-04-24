@@ -1,0 +1,87 @@
+﻿{
+    "schemaVersion":  "1.0.0",
+    "surfaceId":  "account-delete-confirm",
+    "translationStrategy":  "contract-complete-translator-v1",
+    "strategyMode":  "generate-or-patch",
+    "target":  {
+                   "kind":  "prefab",
+                   "assetPath":  "Assets/Prefabs/Features/Account/Independent/AccountDeleteConfirmDialogRoot.prefab"
+               },
+    "targetExists":  true,
+    "targetState":  {
+                        "kind":  "prefab",
+                        "assetPath":  "Assets/Prefabs/Features/Account/Independent/AccountDeleteConfirmDialogRoot.prefab",
+                        "resolvedAssetPath":  "C:\\Users\\SOL\\Documents\\JG\\Assets\\Prefabs\\Features\\Account\\Independent\\AccountDeleteConfirmDialogRoot.prefab",
+                        "exists":  true
+                    },
+    "dependencies":  [
+
+                     ],
+    "contractRefs":  {
+                         "manifestPath":  "in-memory://compiled/account-delete-confirm.screen-manifest.json",
+                         "presentationPath":  ".stitch/contracts/presentations/account-delete-confirm.presentation.json"
+                     },
+    "contractSource":  {
+                           "sourceKind":  "compiled-family",
+                           "generatedFromFamily":  true,
+                           "familyId":  "overlay-dialog-v1",
+                           "profileGenerated":  true,
+                           "profilePath":  "",
+                           "sharedUiCatalogPath":  ".stitch/contracts/components/shared-ui.component-catalog.json",
+                           "sourceRefs":  {
+                                              "htmlPath":  ".stitch/designs/set-c-account-delete-confirm.html",
+                                              "imagePath":  ".stitch/designs/set-c-account-delete-confirm.png",
+                                              "presentationPath":  ".stitch/contracts/presentations/account-delete-confirm.presentation.json"
+                                          },
+                           "compiledContractSummary":  {
+                                                           "mapPath":  "in-memory://compiled/account-delete-confirm.unity-map.json",
+                                                           "manifestPath":  "in-memory://compiled/account-delete-confirm.screen-manifest.json",
+                                                           "blockIds":  [
+                                                                            "warning-header",
+                                                                            "confirmation-copy",
+                                                                            "footer-actions",
+                                                                            "cancel-cta",
+                                                                            "delete-cta"
+                                                                        ],
+                                                           "targetAssetPath":  "Assets/Prefabs/Features/Account/Independent/AccountDeleteConfirmDialogRoot.prefab",
+                                                           "translationStrategy":  "contract-complete-translator-v1",
+                                                           "strategyMode":  "generate-or-patch"
+                                                       }
+                       },
+    "contract":  {
+                     "manifestBlockCount":  5,
+                     "orderedBlockIds":  [
+                                             "warning-header",
+                                             "confirmation-copy",
+                                             "footer-actions",
+                                             "cancel-cta",
+                                             "delete-cta"
+                                         ],
+                     "missingMapBlocks":  [
+
+                                          ],
+                     "extraMapBlocks":  [
+
+                                        ],
+                     "presentationRequired":  true,
+                     "presentationExists":  true,
+                     "presentationExtractionStatus":  "resolved",
+                     "unresolvedDerivedFields":  [
+                                                     "warning-icon-glyph-font"
+                                                 ]
+                 },
+    "blockingIssues":  [
+
+                       ],
+    "ready":  true,
+    "roughEdges":  [
+                       {
+                           "code":  "presentation-contract-has-unresolved-derived-fields",
+                           "message":  "Presentation contract still tracks unresolved derived fields: warning-icon-glyph-font.",
+                           "fieldIds":  [
+                                            "warning-icon-glyph-font"
+                                        ]
+                       }
+                   ],
+    "generatedAt":  "2026-04-24T23:00:28.5384201+09:00"
+}

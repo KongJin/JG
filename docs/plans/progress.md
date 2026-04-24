@@ -1,6 +1,6 @@
 # 진행 상황 (Game Scene Entry)
 
-> 마지막 업데이트: 2026-04-21
+> 마지막 업데이트: 2026-04-24
 > 상태: active
 > doc_id: plans.progress
 > role: plan
@@ -15,9 +15,20 @@
 - 현재는 새 hand-authored `GameScene.unity`와 최소 `BattleEntity.prefab`을 다시 만들었고, build settings 등록과 required-field audit까지 복구했다.
 - `CodexLobbyScene -> GameScene` end-to-end summon smoke는 통과했다.
 - click summon 기준 `GameScene` wave/core/victory loop는 다시 통과했고, 현재 남은 핵심 리스크는 placement drag/drop 자동화와 멀티플레이 동기화 smoke다.
+- 2026-04-24 repo audit 기준, 현재 committed repo에는 `Assets/Scenes/GameScene.unity`, `Assets/Scenes/CodexLobbyScene.unity`, build settings scene entry가 존재하지 않는다.
+- 따라서 2026-04-18 전후의 scene/smoke artifact는 historical recovery evidence로만 보고, reset 중의 current committed SSOT와 분리해서 읽는다.
+- Lobby/Garage UI lane의 현재 active recovery surface는 `Set B Garage`이고, Set C는 `account-delete-confirm` overlay translation lane을 별도로 복구 중이다.
+- `Set C account-delete-confirm`는 `source html/png -> execution contracts -> translation evidence`까지 연결됐다.
+- 최신 translation artifact 기준 `presentation.applied = true`이고, source에서 바로 execution contract를 준비해 translation으로 이어지는 상태다. 최신 review capture는 `artifacts/unity/set-c-account-delete-confirm-scene-capture.png`다.
+- `Set C common-error-dialog`도 같은 루프로 닫혔고, 최신 translation artifact 기준 `presentation.applied = true`를 유지한다.
+- 최신 `common-error-dialog` review capture는 `artifacts/unity/set-c-common-error-dialog-scene-capture.png`다.
+- 현재 남은 Set C 핵심 리스크는 `warning icon glyph` asset 미해결과 `Prefab Mode SceneView capture != runtime/mobile framing` 차이다.
 
 ## 현재 포커스
 
+- Stitch-to-Unity lane의 stale layer와 stale evidence를 줄인다.
+- `Set B Garage`를 active recovery surface로 고정하고 current route와 artifact truth를 다시 맞춘다.
+- `Set C account-delete-confirm` overlay의 icon/runtime framing fidelity 보정을 이어간다.
 - `GameScene` placement drag/drop automation contract와 multiplayer sync smoke 마감
 - 계정/Garage WebGL 실기 검증과 설정 동기화 마감
 - Lobby/Garage 시각 polish와 상호작용 smoke 보강
@@ -60,6 +71,7 @@
 - Unity UI/UX 작업은 시작 전에 owner doc `ops.unity-ui-authoring-workflow`를 먼저 읽고, 종료 전 `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`로 route/evidence freshness를 확인한다.
 - `GameScene` 쪽은 placement drag/drop automation contract와 multiplayer sync smoke를 우선 마감한다.
 - Lobby/Garage 쪽은 mobile-first Garage 단일 구조의 시각 밀도와 Garage save dock first-screen visibility를 계속 sanity check 한다.
+- Set C overlay 쪽은 source 기반 execution contract 준비 흐름을 다른 화면 구조에도 확장할 수 있게 정리한다.
 - 외부 디자인 시안은 `Stitch`를 기본 생성 도구로 두고, 실제 반영은 Unity MCP와 scene/prefab contract 기준으로 번역한다.
 
 ## 상세 이력

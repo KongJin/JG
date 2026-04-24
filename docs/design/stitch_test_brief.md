@@ -1,6 +1,6 @@
 # Stitch Test Brief
 
-> 마지막 업데이트: 2026-04-19
+> 마지막 업데이트: 2026-04-24
 > 상태: active
 > doc_id: design.stitch-test-brief
 > role: reference
@@ -9,7 +9,7 @@
 > artifacts: `.stitch/prompt-briefs/`
 
 이 문서는 JG에서 `Stitch`를 빠르게 시험할 때 바로 붙여넣어 쓸 수 있는 실전 브리프다.
-목표는 예쁜 목업을 많이 만드는 것이 아니라, 현재 presentation contract와 새 baseline prefab으로 번역 가능한 시안을 빠르게 찾는 것이다.
+목표는 예쁜 목업을 많이 만드는 것이 아니라, 현재 execution contracts와 새 baseline prefab으로 번역 가능한 시안을 빠르게 찾는 것이다.
 
 ## Test Goal
 

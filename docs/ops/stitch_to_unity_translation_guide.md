@@ -1,6 +1,6 @@
 # Stitch To Unity Translation Guide
 
-> 마지막 업데이트: 2026-04-23
+> 마지막 업데이트: 2026-04-24
 > 상태: reference
 > doc_id: ops.stitch-to-unity-translation-guide
 > role: reference
@@ -24,6 +24,8 @@
 
 ## 번역 전에 보는 것
 
+- source html/png가 현재 accepted freeze인지
+- 지원되는 화면 구조라면 source에서 현재 execution contract가 다시 준비되는지
 - `screen manifest.blocks[]`
 - `.stitch/contracts/components/shared-ui.component-catalog.json`
 - `screen manifest.ctaPriority[]`
@@ -31,7 +33,7 @@
 - `unity-map.blocks`
 - 관련 `*PageController`, `*View`의 required ref
 
-이 여섯 가지로 surface 의미와 wiring을 설명할 수 없으면 아직 번역 시작 상태가 아니다.
+이 기준으로 surface 의미와 wiring을 설명할 수 없으면 아직 번역 시작 상태가 아니다.
 
 ## Component Mapping
 
@@ -91,9 +93,12 @@ Garage baseline quick mapping:
 1. compile/reload
 2. preflight
 3. translation
-4. pipeline
-5. workflow policy
+4. `TempScene + SceneView capture` when review route exists
+5. pipeline
+6. workflow policy
+
+여기서 `pipeline`은 세부 검증 dump가 아니라, 어떤 입력으로 어떤 artifact가 생성됐는지와 각 stage 상태를 빠르게 읽는 요약본이다.
 
 한 줄 기준:
 
-`manifest와 map이 active input으로 유지되고, block이 shared component vocabulary로도 설명되면 번역이 닫힌다.`
+`source에서 manifest/map/presentation 준비가 다시 닫히고, SceneView capture까지 source와 비교 가능해야 번역이 닫힌다.`
