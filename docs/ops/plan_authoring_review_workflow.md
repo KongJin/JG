@@ -28,7 +28,7 @@ plan은 규칙 본문을 새로 만드는 곳이 아니라, 실행 순서와 현
 ## 핵심 루프
 
 1. 초안 작성 또는 실질 수정
-2. 변경 이유, primary owner, secondary owner, 제외 범위를 확인
+2. 작은 수정은 owner/scope를 확인하고, 큰 문서 작업이나 여러 owner 작업이면 변경 이유, primary/secondary owner, 제외 범위를 확인
 3. 과한점/부족한점 재리뷰
 4. 문제가 있으면 수정
 5. 수정 후 한 번 더 재리뷰
@@ -42,18 +42,21 @@ plan은 규칙 본문을 새로 만드는 곳이 아니라, 실행 순서와 현
 - entry, ssot, plan, reference 역할을 섞지 않는가
 - 새 hard-fail, 새 field, 새 artifact를 필요 이상으로 늘리지 않는가
 - 같은 사실을 여러 문서에 중복 유지하게 만들지 않는가
-- blocked 또는 unsupported를 같은 계획 안의 공통 capability/policy 변경으로 success 처리하려 하지 않는가
 
 부족한점:
 
-- owner, scope, 제외 범위가 보이는가
-- primary owner와 secondary owner가 구분되는가
+- owner와 scope가 보이는가
+- 큰 문서 작업이나 여러 owner 작업이면 primary owner, secondary owner, 제외 범위가 구분되는가
 - 큰 문서 작업이면 active/reference/historical/delete 후보 확인이 보이는가
 - acceptance와 closeout 조건이 있는가
 - 실행 순서와 검증 방법이 있는가
 - unresolved risk나 residual handling이 있는가
-- capability expansion이 필요한 지점에서 별도 lane 재선언과 blocked 처리 기준이 보이는가
 - 사용자 지시가 기존 규칙과 충돌하거나, 범위가 과하거나 부족할 때 질문 또는 대안 제안이 closeout 전에 처리되는가
+
+복잡하거나 blocked/capability 작업이면 추가로 본다:
+
+- blocked 또는 unsupported를 같은 계획 안의 공통 capability/policy 변경으로 success 처리하려 하지 않는가
+- capability expansion이 필요한 지점에서 별도 lane 재선언과 blocked 처리 기준이 보이는가
 
 ## Closeout
 

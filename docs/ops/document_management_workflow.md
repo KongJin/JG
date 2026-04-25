@@ -75,12 +75,44 @@
 - test fixture와 third-party bundle
 - 사람이 repo 운영 기준으로 직접 읽지 않는 machine-only prompt
 
+## 작업 크기 판단
+
+작은 문서 작업:
+
+- 단일 문서의 오탈자, 링크, 표현만 고친다.
+- reference/historical 문서를 보존 목적으로 짧게 정리한다.
+- 상태나 진행률을 한두 줄 갱신한다.
+
+큰 문서 작업:
+
+- 새 문서를 만든다.
+- 문서 3개 이상을 같은 이유로 수정한다.
+- active/reference/historical/draft 상태를 바꾼다.
+- owner 문서, repo-local skill, 전역 skill trigger를 바꾼다.
+- 문서를 삭제, 리네임, 이동한다.
+
+작은 문서 작업은 기본 lint와 짧은 변경 요약으로 충분하다.
+큰 문서 작업은 시작 시 변경 이유, primary/secondary owner, 제외 범위를 드러내고 closeout에 `owner impact`와 `doc lifecycle checked`를 남긴다.
+전역 skill trigger를 바꾼 경우 repo lint가 직접 보장하지 않으므로, 실제 파일 변경 여부를 별도로 확인하고 closeout에 `skill trigger checked`를 남긴다.
+
 ## Owner 해석
 
 - `doc_id`가 stable owner identifier다.
 - 현재 file path는 `docs/index.md`에서 찾는다.
 - 이름이 바뀌어도 가능한 한 `doc_id`와 역할 위임은 유지한다.
 - entry 문서와 owner 본문이 충돌하면 owner 본문을 우선하고, entry는 같은 변경에서 맞춘다.
+
+## 새 문서 생성 기준
+
+새 문서를 만들기 전에 아래 순서로 판단한다.
+
+1. `plans.progress` 한 줄 갱신으로 충분한가?
+2. 기존 owner 문서의 짧은 섹션으로 충분한가?
+3. 기존 reference 문서 갱신으로 충분한가?
+4. 실행 순서, acceptance, residual handling이 따로 필요할 때만 새 plan을 만든다.
+
+새 문서를 만들지 않기로 한 판단은 보통 최종 응답이나 작업 요약에 남긴다.
+현재 상태, 우선순위, owner 이동이 바뀌는 경우에만 `plans.progress`나 owner 문서에 짧게 남긴다.
 
 ## 역할 전이
 
@@ -128,19 +160,15 @@
 - rules-only scope에서 `docs/**`, `AGENTS.md`, `.codex/skills/jg-*/**`, `tools/docs-lint/**`, `tools/rule-harness/**`, `.githooks/**`, 관련 workflow/script를 수정하면 `artifacts/rules/issue-recurrence-closeout.json`도 같은 변경에서 갱신한다.
 - closeout artifact는 declared lane, mutation class, acceptance evidence class, escalation 필요 여부를 함께 남겨 silent lane escalation을 기계적으로 점검할 수 있어야 한다.
 - closeout artifact 동기화는 `npm run --silent rules:sync-closeout`를 사용한다.
+- `rules:sync-closeout`는 환경변수로 변경 목록을 받지 않으면 staged 변경 기준으로 동작한다. unstaged working tree를 검증할 때는 실제 rules-only 변경 목록을 `RULES_LINT_CHANGED_FILES`로 넘기거나 먼저 stage한 뒤 실행한다.
 
 ## 빠른 체크
 
-문서를 만들거나 고칠 때는 다섯 가지만 본다.
+문서를 만들거나 고칠 때는 아래 여섯 가지만 먼저 본다.
 
 1. 이 문서의 역할은 하나인가?
 2. 이 사실의 owner는 여기인가?
 3. `docs/index.md`로 찾을 수 있는가?
 4. 같은 내용을 다른 문서가 장문으로 갖고 있지 않은가?
 5. closeout 표현에 기준, 증거, 남은 리스크가 맞게 붙어 있는가?
-6. 큰 작업이면 시작 시 변경 이유, primary/secondary owner, 제외 범위를 드러냈는가?
-7. 여러 owner가 흔들렸다면 closeout에 `owner impact`가 남았는가?
-8. 큰 문서 작업이면 `doc lifecycle checked`가 남았는가?
-9. blocked를 success로 바꾸기 위해 작업 lane이나 검증 기준을 조용히 바꾸지 않았는가?
-10. 사용자 지시가 충돌하거나 과하거나 부족한데도 질문/대안 없이 진행하지 않았는가?
-11. 규칙 개정 후 active old trace가 현재 기준처럼 남아 있지 않은가?
+6. 큰 문서 작업이면 `owner impact`(여러 owner 영향)와 `doc lifecycle checked`(상태/삭제 후보 확인)를 남겼는가?

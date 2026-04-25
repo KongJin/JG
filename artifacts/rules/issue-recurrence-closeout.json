@@ -13,24 +13,13 @@
   "blockedReason": "",
   "changedPaths": [
     "artifacts/rules/issue-recurrence-closeout.json",
-    "docs/discussions/discussion_removed_features_rationale.md",
-    "docs/discussions/discussion_unity.md",
     "docs/index.md",
     "docs/ops/document_management_workflow.md",
     "docs/ops/plan_authoring_review_workflow.md",
-    "docs/plans/account_system_plan.md",
-    "docs/plans/docs_simplification_recurrence_plan.md",
-    "docs/plans/game_scene_entry_plan.md",
-    "docs/plans/mcp_improvement_plan.md",
-    "docs/plans/ops_rules_simplification_plan.md",
-    "docs/plans/rule_revision_trace_cleanup_plan.md",
-    "docs/plans/stitch_llm_contract_pipeline_plan.md",
-    "docs/plans/stitch_ui_ux_overhaul_plan.md",
-    "docs/plans/tech_debt_reduction_plan.md",
-    "tools/stitch-unity/collectors/Collect-StitchSourceFacts.ps1",
-    "tools/stitch-unity/engine/StitchUnityCommon.ps1",
-    "tools/stitch-unity/README.md",
-    "tools/stitch-unity/surfaces/Invoke-StitchSurfaceTranslation.ps1",
-    "tools/stitch-unity/validators/Test-StitchContractDraft.ps1"
+    "docs/plans/document_management_followup_tuning_plan.md",
+    "docs/plans/document_management_lightweight_plan.md",
+    "docs/plans/garage_ui_ux_improvement_plan.md",
+    "docs/plans/progress.md",
+    "docs/plans/stitch_ui_ux_overhaul_plan.md"
   ]
 }

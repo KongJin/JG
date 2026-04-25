@@ -18,6 +18,15 @@
 - 산출물은 단순 시안이 아니라 `Unity scene 계약으로 바로 번역 가능한 structured contract`까지 포함한다.
 - `Stitch`는 방향 탐색과 visual handoff에 쓰고, reset 중의 committed runtime layout SSOT는 계속 `contract + prefab target + fresh translation evidence`가 가진다.
 
+## Simplified Loop
+
+Set A 재개 전 기준 루프는 아래 한 줄로 읽는다.
+
+`source html/png -> source facts -> contract draft -> validate -> translate/generate -> capture -> verdict`
+
+이 루프의 verdict는 `passed`, `blocked`, `mismatch` 중 하나로 남긴다.
+Set A에서 새 전용 helper나 set-specific route를 추가하지 않고, draft/validate route가 통과하지 못하면 blocked reason을 남긴다.
+
 ## Route Snapshot
 
 - Gate 0는 이미 통과했다.
@@ -77,7 +86,10 @@
 
 - 범위: `Lobby main`, `Room list empty/list`, `Create room`, `Garage summary`
 - contract: `set-a Lobby` in-memory execution contract lane
-- 현재 상태: set inventory에는 남아 있지만 active structured contract가 현재 repo에 닫혀 있지 않다. `Set B` recovery가 닫히기 전까지 reference lane으로 유지한다.
+- 현재 상태: `set-a-create-room-modal`과 `set-a-lobby-populated` source는 local reference로 남아 있지만, active translation-ready contract는 현재 repo에 닫혀 있지 않다.
+- `.stitch/designs/set-a-*`는 현재 실행 편의 입력과 visual reference로만 보고, active source freeze owner처럼 취급하지 않는다.
+- 진입 순서: 먼저 `set-a-create-room-modal`을 draft/validate route로 태워 pass 또는 blocked verdict를 남기고, 그 다음 `set-a-lobby-populated`를 같은 루프로 본다.
+- `set-a-lobby-populated`의 bottom nav는 Lobby page root가 아니라 shared `LobbyGarageNavBar` owner로 분리해서 해석한다.
 
 ### Set B - Garage
 

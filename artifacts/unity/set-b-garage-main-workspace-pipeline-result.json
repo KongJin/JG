@@ -12,30 +12,31 @@
                     "requiredDependencyFailureCount":  0,
                     "optionalDependencyFailureCount":  0,
                     "translationProduced":  true,
-                    "reviewCaptureAttempted":  true,
-                    "reviewCaptureSupported":  true,
+                    "reviewCaptureAttempted":  false,
+                    "reviewCaptureSupported":  false,
                     "targetKind":  "prefab",
                     "targetAssetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
                 },
     "stageStatus":  {
+                        "validation":  "passed",
                         "preflight":  "passed",
                         "dependencies":  "passed",
                         "translation":  "passed",
-                        "reviewCapture":  "passed",
+                        "reviewCapture":  "skipped",
                         "pipeline":  "written"
                     },
     "inputs":  {
-                   "sourceKind":  "compiled-parser",
-                   "mapPath":  "in-memory://compiled/set-b-garage-main-workspace/unity-map",
-                   "manifestPath":  "in-memory://compiled/set-b-garage-main-workspace/screen-manifest",
-                   "presentationPath":  "in-memory://compiled/set-b-garage-main-workspace/presentation-contract",
+                   "sourceKind":  "llm-draft",
+                   "mapPath":  "in-memory://draft/set-b-garage-main-workspace/unity-map",
+                   "manifestPath":  "in-memory://draft/set-b-garage-main-workspace/screen-manifest",
+                   "presentationPath":  "in-memory://draft/set-b-garage-main-workspace/presentation-contract",
                    "target":  {
                                   "kind":  "prefab",
                                   "assetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
                               }
                },
     "artifacts":  {
-                      "reviewCapture":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-scene-capture.png",
+                      "reviewCapture":  "",
                       "pipelineResult":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-pipeline-result.json"
                   },
     "dependencies":  {
@@ -50,19 +51,33 @@
                                      ]
                      },
     "contractSource":  {
-                           "sourceKind":  "compiled-parser",
+                           "sourceKind":  "llm-draft",
                            "targetKind":  "workspace-root",
-                           "profileGenerated":  true,
+                           "profileGenerated":  false,
                            "profilePath":  "",
+                           "draftPath":  "Temp/StitchDraftRoute/set-b-garage-main-workspace-draft.json",
+                           "draftValidation":  {
+                                                   "schemaVersion":  "1.0.0",
+                                                   "success":  true,
+                                                   "terminalVerdict":  "passed",
+                                                   "blockedReason":  "",
+                                                   "draftPath":  "Temp\\StitchDraftRoute\\set-b-garage-main-workspace-draft.json",
+                                                   "surfaceId":  "set-b-garage-main-workspace",
+                                                   "issueCount":  0,
+                                                   "issues":  [
+
+                                                              ],
+                                                   "checkedAt":  "2026-04-25T16:57:33.3124256+09:00"
+                                               },
                            "sharedUiCatalogPath":  ".stitch/contracts/components/shared-ui.component-catalog.json",
                            "sourceRefs":  {
                                               "htmlPath":  ".stitch/designs/set-b-garage-main-workspace.html",
                                               "imagePath":  ".stitch/designs/set-b-garage-main-workspace.png",
-                                              "presentationPath":  "in-memory://compiled/set-b-garage-main-workspace/presentation-contract"
+                                              "presentationPath":  "in-memory://draft/set-b-garage-main-workspace/presentation-contract"
                                           },
                            "compiledContractSummary":  {
-                                                           "mapPath":  "in-memory://compiled/set-b-garage-main-workspace/unity-map",
-                                                           "manifestPath":  "in-memory://compiled/set-b-garage-main-workspace/screen-manifest",
+                                                           "mapPath":  "in-memory://draft/set-b-garage-main-workspace/unity-map",
+                                                           "manifestPath":  "in-memory://draft/set-b-garage-main-workspace/screen-manifest",
                                                            "blockIds":  [
                                                                             "header-chrome",
                                                                             "slot-selector",
@@ -88,17 +103,87 @@
                                        "kind":  "prefab",
                                        "assetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
                                    },
-                        "targetCreated":  false,
+                        "targetCreated":  true,
                         "targetRootName":  "GaragePageRoot",
                         "contractRefs":  {
-                                             "manifestPath":  "in-memory://compiled/set-b-garage-main-workspace/screen-manifest",
-                                             "presentationPath":  "in-memory://compiled/set-b-garage-main-workspace/presentation-contract"
+                                             "manifestPath":  "in-memory://draft/set-b-garage-main-workspace/screen-manifest",
+                                             "presentationPath":  "in-memory://draft/set-b-garage-main-workspace/presentation-contract"
                                          },
                         "createdPaths":  [
-
+                                             "HeaderChrome",
+                                             "MainScroll",
+                                             "MainScroll/Content",
+                                             "MainScroll/Content/SlotSelector",
+                                             "MainScroll/Content/FocusBar",
+                                             "MainScroll/Content/EditorPanel",
+                                             "MainScroll/Content/PreviewCard",
+                                             "MainScroll/Content/PreviewCard/SummaryBar",
+                                             "SaveDock",
+                                             "SaveDock/PrimaryButton",
+                                             "HeaderChrome/SettingsButton",
+                                             "HeaderChrome/TitleGroup",
+                                             "HeaderChrome/TitleGroup/TitleText",
+                                             "HeaderChrome/TitleGroup/SubtitleText",
+                                             "HeaderChrome/SettingsButton/IconText",
+                                             "MainScroll/Content/SlotSelector/Slot01",
+                                             "MainScroll/Content/SlotSelector/Slot01/UnitText",
+                                             "MainScroll/Content/SlotSelector/Slot01/IconFrame",
+                                             "MainScroll/Content/SlotSelector/Slot01/IconFrame/IconText",
+                                             "MainScroll/Content/SlotSelector/Slot01/RoleText",
+                                             "MainScroll/Content/SlotSelector/Slot02",
+                                             "MainScroll/Content/SlotSelector/Slot02/UnitText",
+                                             "MainScroll/Content/SlotSelector/Slot02/IconFrame",
+                                             "MainScroll/Content/SlotSelector/Slot02/IconFrame/IconText",
+                                             "MainScroll/Content/SlotSelector/Slot02/RoleText",
+                                             "MainScroll/Content/SlotSelector/Slot03",
+                                             "MainScroll/Content/SlotSelector/Slot03/UnitText",
+                                             "MainScroll/Content/SlotSelector/Slot03/IconFrame",
+                                             "MainScroll/Content/SlotSelector/Slot03/IconFrame/IconText",
+                                             "MainScroll/Content/SlotSelector/Slot03/RoleText",
+                                             "MainScroll/Content/SlotSelector/Slot04",
+                                             "MainScroll/Content/SlotSelector/Slot04/UnitText",
+                                             "MainScroll/Content/SlotSelector/Slot04/IconFrame",
+                                             "MainScroll/Content/SlotSelector/Slot04/IconFrame/IconText",
+                                             "MainScroll/Content/SlotSelector/Slot04/RoleText",
+                                             "MainScroll/Content/FocusBar/Tab01",
+                                             "MainScroll/Content/FocusBar/Tab01/IconText",
+                                             "MainScroll/Content/FocusBar/Tab01/LabelText",
+                                             "MainScroll/Content/FocusBar/Tab02",
+                                             "MainScroll/Content/FocusBar/Tab02/IconText",
+                                             "MainScroll/Content/FocusBar/Tab02/LabelText",
+                                             "MainScroll/Content/FocusBar/Tab03",
+                                             "MainScroll/Content/FocusBar/Tab03/IconText",
+                                             "MainScroll/Content/FocusBar/Tab03/LabelText",
+                                             "MainScroll/Content/EditorPanel/BadgeText",
+                                             "MainScroll/Content/EditorPanel/TitleText",
+                                             "MainScroll/Content/EditorPanel/DescriptionText",
+                                             "MainScroll/Content/EditorPanel/Stat01",
+                                             "MainScroll/Content/EditorPanel/Stat01/LabelText",
+                                             "MainScroll/Content/EditorPanel/Stat01/ValueText",
+                                             "MainScroll/Content/EditorPanel/Stat02",
+                                             "MainScroll/Content/EditorPanel/Stat02/LabelText",
+                                             "MainScroll/Content/EditorPanel/Stat02/ValueText",
+                                             "MainScroll/Content/EditorPanel/Stat03",
+                                             "MainScroll/Content/EditorPanel/Stat03/LabelText",
+                                             "MainScroll/Content/EditorPanel/Stat03/ValueText",
+                                             "MainScroll/Content/EditorPanel/Stat04",
+                                             "MainScroll/Content/EditorPanel/Stat04/LabelText",
+                                             "MainScroll/Content/EditorPanel/Stat04/ValueText",
+                                             "MainScroll/Content/EditorPanel/Stat05",
+                                             "MainScroll/Content/EditorPanel/Stat05/LabelText",
+                                             "MainScroll/Content/EditorPanel/Stat05/ValueText",
+                                             "MainScroll/Content/PreviewCard/TitleText",
+                                             "MainScroll/Content/PreviewCard/CenterIcon",
+                                             "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack",
+                                             "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack/GaugeFill",
+                                             "MainScroll/Content/PreviewCard/SummaryBar/SummaryText",
+                                             "SaveDock/PrimaryButton/Label"
                                          ],
                         "addedComponents":  [
-
+                                                "MainScroll::ScrollRect",
+                                                "MainScroll::RectMask2D",
+                                                "MainScroll/Content::VerticalLayoutGroup",
+                                                "MainScroll/Content::ContentSizeFitter"
                                             ],
                         "blocks":  [
                                        {
@@ -106,7 +191,7 @@
                                            "manifestOrder":  0,
                                            "hostPath":  "HeaderChrome",
                                            "createdPaths":  [
-
+                                                                "HeaderChrome"
                                                             ],
                                            "addedComponents":  [
 
@@ -125,7 +210,9 @@
                                            "manifestOrder":  1,
                                            "hostPath":  "MainScroll/Content/SlotSelector",
                                            "createdPaths":  [
-
+                                                                "MainScroll",
+                                                                "MainScroll/Content",
+                                                                "MainScroll/Content/SlotSelector"
                                                             ],
                                            "addedComponents":  [
 
@@ -144,7 +231,7 @@
                                            "manifestOrder":  2,
                                            "hostPath":  "MainScroll/Content/FocusBar",
                                            "createdPaths":  [
-
+                                                                "MainScroll/Content/FocusBar"
                                                             ],
                                            "addedComponents":  [
 
@@ -161,7 +248,7 @@
                                            "manifestOrder":  3,
                                            "hostPath":  "MainScroll/Content/EditorPanel",
                                            "createdPaths":  [
-
+                                                                "MainScroll/Content/EditorPanel"
                                                             ],
                                            "addedComponents":  [
 
@@ -180,7 +267,7 @@
                                            "manifestOrder":  4,
                                            "hostPath":  "MainScroll/Content/PreviewCard",
                                            "createdPaths":  [
-
+                                                                "MainScroll/Content/PreviewCard"
                                                             ],
                                            "addedComponents":  [
 
@@ -198,7 +285,7 @@
                                            "manifestOrder":  5,
                                            "hostPath":  "MainScroll/Content/PreviewCard/SummaryBar",
                                            "createdPaths":  [
-
+                                                                "MainScroll/Content/PreviewCard/SummaryBar"
                                                             ],
                                            "addedComponents":  [
 
@@ -217,7 +304,7 @@
                                            "manifestOrder":  6,
                                            "hostPath":  "SaveDock",
                                            "createdPaths":  [
-
+                                                                "SaveDock"
                                                             ],
                                            "addedComponents":  [
 
@@ -236,7 +323,7 @@
                                            "manifestOrder":  7,
                                            "hostPath":  "SaveDock/PrimaryButton",
                                            "createdPaths":  [
-
+                                                                "SaveDock/PrimaryButton"
                                                             ],
                                            "addedComponents":  [
 
@@ -255,7 +342,7 @@
                                            "manifestOrder":  8,
                                            "hostPath":  "HeaderChrome/SettingsButton",
                                            "createdPaths":  [
-
+                                                                "HeaderChrome/SettingsButton"
                                                             ],
                                            "addedComponents":  [
 
@@ -275,10 +362,69 @@
                                              "extractionStatus":  "resolved",
                                              "elementCount":  69,
                                              "createdPaths":  [
-
+                                                                  "HeaderChrome/TitleGroup",
+                                                                  "HeaderChrome/TitleGroup/TitleText",
+                                                                  "HeaderChrome/TitleGroup/SubtitleText",
+                                                                  "HeaderChrome/SettingsButton/IconText",
+                                                                  "MainScroll/Content/SlotSelector/Slot01",
+                                                                  "MainScroll/Content/SlotSelector/Slot01/UnitText",
+                                                                  "MainScroll/Content/SlotSelector/Slot01/IconFrame",
+                                                                  "MainScroll/Content/SlotSelector/Slot01/IconFrame/IconText",
+                                                                  "MainScroll/Content/SlotSelector/Slot01/RoleText",
+                                                                  "MainScroll/Content/SlotSelector/Slot02",
+                                                                  "MainScroll/Content/SlotSelector/Slot02/UnitText",
+                                                                  "MainScroll/Content/SlotSelector/Slot02/IconFrame",
+                                                                  "MainScroll/Content/SlotSelector/Slot02/IconFrame/IconText",
+                                                                  "MainScroll/Content/SlotSelector/Slot02/RoleText",
+                                                                  "MainScroll/Content/SlotSelector/Slot03",
+                                                                  "MainScroll/Content/SlotSelector/Slot03/UnitText",
+                                                                  "MainScroll/Content/SlotSelector/Slot03/IconFrame",
+                                                                  "MainScroll/Content/SlotSelector/Slot03/IconFrame/IconText",
+                                                                  "MainScroll/Content/SlotSelector/Slot03/RoleText",
+                                                                  "MainScroll/Content/SlotSelector/Slot04",
+                                                                  "MainScroll/Content/SlotSelector/Slot04/UnitText",
+                                                                  "MainScroll/Content/SlotSelector/Slot04/IconFrame",
+                                                                  "MainScroll/Content/SlotSelector/Slot04/IconFrame/IconText",
+                                                                  "MainScroll/Content/SlotSelector/Slot04/RoleText",
+                                                                  "MainScroll/Content/FocusBar/Tab01",
+                                                                  "MainScroll/Content/FocusBar/Tab01/IconText",
+                                                                  "MainScroll/Content/FocusBar/Tab01/LabelText",
+                                                                  "MainScroll/Content/FocusBar/Tab02",
+                                                                  "MainScroll/Content/FocusBar/Tab02/IconText",
+                                                                  "MainScroll/Content/FocusBar/Tab02/LabelText",
+                                                                  "MainScroll/Content/FocusBar/Tab03",
+                                                                  "MainScroll/Content/FocusBar/Tab03/IconText",
+                                                                  "MainScroll/Content/FocusBar/Tab03/LabelText",
+                                                                  "MainScroll/Content/EditorPanel/BadgeText",
+                                                                  "MainScroll/Content/EditorPanel/TitleText",
+                                                                  "MainScroll/Content/EditorPanel/DescriptionText",
+                                                                  "MainScroll/Content/EditorPanel/Stat01",
+                                                                  "MainScroll/Content/EditorPanel/Stat01/LabelText",
+                                                                  "MainScroll/Content/EditorPanel/Stat01/ValueText",
+                                                                  "MainScroll/Content/EditorPanel/Stat02",
+                                                                  "MainScroll/Content/EditorPanel/Stat02/LabelText",
+                                                                  "MainScroll/Content/EditorPanel/Stat02/ValueText",
+                                                                  "MainScroll/Content/EditorPanel/Stat03",
+                                                                  "MainScroll/Content/EditorPanel/Stat03/LabelText",
+                                                                  "MainScroll/Content/EditorPanel/Stat03/ValueText",
+                                                                  "MainScroll/Content/EditorPanel/Stat04",
+                                                                  "MainScroll/Content/EditorPanel/Stat04/LabelText",
+                                                                  "MainScroll/Content/EditorPanel/Stat04/ValueText",
+                                                                  "MainScroll/Content/EditorPanel/Stat05",
+                                                                  "MainScroll/Content/EditorPanel/Stat05/LabelText",
+                                                                  "MainScroll/Content/EditorPanel/Stat05/ValueText",
+                                                                  "MainScroll/Content/PreviewCard/TitleText",
+                                                                  "MainScroll/Content/PreviewCard/CenterIcon",
+                                                                  "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack",
+                                                                  "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack/GaugeFill",
+                                                                  "MainScroll/Content/PreviewCard/SummaryBar/SummaryText",
+                                                                  "SaveDock/PrimaryButton/Label"
                                                               ],
                                              "addedComponents":  [
-
+                                                                     "MainScroll::ScrollRect",
+                                                                     "MainScroll::RectMask2D",
+                                                                     "MainScroll/Content::VerticalLayoutGroup",
+                                                                     "MainScroll/Content::ContentSizeFitter"
                                                                  ],
                                              "appliedProperties":  [
                                                                        "Image.m_Color",
@@ -725,7 +871,7 @@
                                                               {
                                                                   "path":  "HeaderChrome/TitleGroup",
                                                                   "createdPaths":  [
-
+                                                                                       "HeaderChrome/TitleGroup"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -741,7 +887,7 @@
                                                               {
                                                                   "path":  "HeaderChrome/TitleGroup/TitleText",
                                                                   "createdPaths":  [
-
+                                                                                       "HeaderChrome/TitleGroup/TitleText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -757,7 +903,7 @@
                                                               {
                                                                   "path":  "HeaderChrome/TitleGroup/SubtitleText",
                                                                   "createdPaths":  [
-
+                                                                                       "HeaderChrome/TitleGroup/SubtitleText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -791,7 +937,7 @@
                                                               {
                                                                   "path":  "HeaderChrome/SettingsButton/IconText",
                                                                   "createdPaths":  [
-
+                                                                                       "HeaderChrome/SettingsButton/IconText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -810,7 +956,8 @@
 
                                                                                    ],
                                                                   "addedComponents":  [
-
+                                                                                          "MainScroll::ScrollRect",
+                                                                                          "MainScroll::RectMask2D"
                                                                                       ],
                                                                   "propertyCount":  3,
                                                                   "finalNodeFound":  true,
@@ -826,7 +973,8 @@
 
                                                                                    ],
                                                                   "addedComponents":  [
-
+                                                                                          "MainScroll/Content::VerticalLayoutGroup",
+                                                                                          "MainScroll/Content::ContentSizeFitter"
                                                                                       ],
                                                                   "propertyCount":  11,
                                                                   "finalNodeFound":  true,
@@ -857,7 +1005,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot01",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot01"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -876,7 +1024,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot01/UnitText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot01/UnitText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -893,7 +1041,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot01/IconFrame",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot01/IconFrame"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -910,7 +1058,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot01/IconFrame/IconText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot01/IconFrame/IconText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -926,7 +1074,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot01/RoleText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot01/RoleText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -943,7 +1091,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot02",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot02"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -962,7 +1110,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot02/UnitText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot02/UnitText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -979,7 +1127,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot02/IconFrame",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot02/IconFrame"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -996,7 +1144,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot02/IconFrame/IconText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot02/IconFrame/IconText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1012,7 +1160,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot02/RoleText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot02/RoleText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1029,7 +1177,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot03",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot03"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1048,7 +1196,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot03/UnitText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot03/UnitText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1065,7 +1213,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot03/IconFrame",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot03/IconFrame"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1082,7 +1230,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot03/IconFrame/IconText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot03/IconFrame/IconText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1098,7 +1246,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot03/RoleText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot03/RoleText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1115,7 +1263,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot04",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot04"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1134,7 +1282,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot04/UnitText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot04/UnitText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1151,7 +1299,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot04/IconFrame",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot04/IconFrame"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1168,7 +1316,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot04/IconFrame/IconText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot04/IconFrame/IconText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1184,7 +1332,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/SlotSelector/Slot04/RoleText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/SlotSelector/Slot04/RoleText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1217,7 +1365,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/FocusBar/Tab01",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/FocusBar/Tab01"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1236,7 +1384,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/FocusBar/Tab01/IconText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/FocusBar/Tab01/IconText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1253,7 +1401,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/FocusBar/Tab01/LabelText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/FocusBar/Tab01/LabelText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1269,7 +1417,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/FocusBar/Tab02",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/FocusBar/Tab02"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1288,7 +1436,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/FocusBar/Tab02/IconText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/FocusBar/Tab02/IconText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1305,7 +1453,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/FocusBar/Tab02/LabelText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/FocusBar/Tab02/LabelText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1321,7 +1469,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/FocusBar/Tab03",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/FocusBar/Tab03"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1340,7 +1488,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/FocusBar/Tab03/IconText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/FocusBar/Tab03/IconText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1357,7 +1505,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/FocusBar/Tab03/LabelText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/FocusBar/Tab03/LabelText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1391,7 +1539,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/BadgeText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/BadgeText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1408,7 +1556,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/TitleText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/TitleText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1425,7 +1573,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/DescriptionText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/DescriptionText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1442,7 +1590,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat01",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat01"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1460,7 +1608,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat01/LabelText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat01/LabelText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1476,7 +1624,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat01/ValueText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat01/ValueText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1492,7 +1640,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat02",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat02"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1510,7 +1658,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat02/LabelText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat02/LabelText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1526,7 +1674,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat02/ValueText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat02/ValueText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1542,7 +1690,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat03",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat03"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1560,7 +1708,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat03/LabelText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat03/LabelText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1576,7 +1724,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat03/ValueText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat03/ValueText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1592,7 +1740,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat04",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat04"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1610,7 +1758,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat04/LabelText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat04/LabelText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1626,7 +1774,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat04/ValueText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat04/ValueText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1642,7 +1790,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat05",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat05"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1660,7 +1808,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat05/LabelText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat05/LabelText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1676,7 +1824,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/EditorPanel/Stat05/ValueText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/EditorPanel/Stat05/ValueText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1709,7 +1857,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/PreviewCard/TitleText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/PreviewCard/TitleText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1725,7 +1873,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/PreviewCard/CenterIcon",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/PreviewCard/CenterIcon"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1759,7 +1907,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1776,7 +1924,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack/GaugeFill",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/PreviewCard/SummaryBar/GaugeTrack/GaugeFill"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1792,7 +1940,7 @@
                                                               {
                                                                   "path":  "MainScroll/Content/PreviewCard/SummaryBar/SummaryText",
                                                                   "createdPaths":  [
-
+                                                                                       "MainScroll/Content/PreviewCard/SummaryBar/SummaryText"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1845,7 +1993,7 @@
                                                               {
                                                                   "path":  "SaveDock/PrimaryButton/Label",
                                                                   "createdPaths":  [
-
+                                                                                       "SaveDock/PrimaryButton/Label"
                                                                                    ],
                                                                   "addedComponents":  [
 
@@ -1868,43 +2016,18 @@
                                                           ],
                                                "passed":  true
                                            },
-                        "generatedAt":  "2026-04-25T15:29:53.8404286+09:00"
+                        "generatedAt":  "2026-04-25T17:01:30.8576004+09:00"
                     },
     "reviewCapture":  {
-                          "attempted":  true,
-                          "supported":  true,
-                          "status":  "passed",
+                          "attempted":  false,
+                          "supported":  false,
+                          "status":  "skipped",
                           "surfaceId":  "set-b-garage-main-workspace",
-                          "routeKind":  "temp-scene-sceneview",
-                          "menuPath":  "Tools/Scene/Prepare Stitch Runtime Review/Surface",
-                          "artifactPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-scene-capture.png",
-                          "relativeArtifactPath":  "artifacts/unity/set-b-garage-main-workspace-scene-capture.png",
-                          "reason":  "",
-                          "requestPath":  "Temp/StitchRuntimeReview/request.json",
-                          "menu":  {
-                                       "success":  true,
-                                       "message":  "Executed menu: Tools/Scene/Prepare Stitch Runtime Review/Surface",
-                                       "queued":  false,
-                                       "pendingCount":  0,
-                                       "autoSaved":  false
-                                   },
-                          "capture":  {
-                                          "success":  true,
-                                          "message":  "SceneView screenshot captured.",
-                                          "relativePath":  "artifacts/unity/set-b-garage-main-workspace-scene-capture.png",
-                                          "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-scene-capture.png",
-                                          "fileSizeBytes":  35330,
-                                          "sourceView":  "SceneCamera",
-                                          "width":  390,
-                                          "height":  844,
-                                          "prefabStageAssetPath":  ""
-                                      },
-                          "consoleErrors":  {
-                                                "count":  0,
-                                                "items":  [
-
-                                                          ]
-                                            },
-                          "generatedAt":  "2026-04-25T15:29:54.7255597+09:00"
+                          "routeKind":  "",
+                          "menuPath":  "",
+                          "artifactPath":  "",
+                          "relativeArtifactPath":  "",
+                          "reason":  "skip-review-capture-requested",
+                          "consoleErrors":  null
                       }
 }

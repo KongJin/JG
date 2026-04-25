@@ -27,7 +27,7 @@
 - Garage save/load WebGL, settings interaction, shared runtime correctness는 Set B prefab lane이 아니라 shared `Account/Garage` validation lane에서 계속 관리한다.
 - 현재 남은 Set C 핵심 리스크는 `warning icon glyph` asset 미해결과 `Prefab Mode SceneView capture != runtime/mobile framing` 차이다.
 - set별 전용 Stitch review/prefab SceneTool은 제거했고, 현재 review route는 generic tool만 남겨뒀다.
-- `Set A` source lookup은 이미 잡히지만, 현재 blocker는 source를 못 찾는 게 아니라 generic parser가 lobby/form modal structure를 아직 못 읽는 점이다.
+- `Set A`의 다음 판단은 `source html/png -> source facts -> contract draft -> validate -> translate/generate -> capture -> verdict` 루프에서 pass 또는 blocked verdict를 남기는 것이다.
 
 ## 현재 포커스
 
@@ -78,7 +78,7 @@
 - `GameScene` 쪽은 placement drag/drop automation contract와 multiplayer sync smoke를 우선 마감한다.
 - Lobby/Garage 쪽은 mobile-first Garage 단일 구조의 시각 밀도와 review evidence 기준 visual fidelity를 계속 sanity check 한다.
 - shared `Account/Garage` lane에서는 Garage save/load WebGL, settings interaction, save action 접근성을 계속 추적한다.
-- Stitch lane 쪽은 `Set B/C`를 generic onboarding 기준 샘플로 삼아, `Set D/E`와 이후 다시 여는 inventory set을 per-surface script edit 없이 태울 수 있게 source parser/review route를 일반화한다.
+- Stitch lane 쪽은 `Set B/C`를 generic onboarding 기준 샘플로 삼아, `Set A/D/E`와 이후 다시 여는 inventory set을 per-surface script edit 없이 단순 범용 루프의 verdict까지 태울 수 있게 source facts/draft/validate route를 일반화한다.
 - 외부 디자인 시안은 `Stitch`를 기본 생성 도구로 두고, 실제 반영은 Unity MCP와 scene/prefab contract 기준으로 번역한다.
 
 ## 상세 이력

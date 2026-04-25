@@ -6,18 +6,20 @@
 > role: plan
 > owner_scope: Set B Garage Stitch-to-Unity recovery의 현재 범위와 acceptance 기준
 > upstream: plans.progress, design.ui-foundations, ops.stitch-data-workflow, ops.unity-ui-authoring-workflow, ops.acceptance-reporting-guardrails
-> artifacts: `.stitch/designs/set-b-garage-main-workspace.html`, `.stitch/designs/set-b-garage-main-workspace.png`, `Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab`, `artifacts/unity/set-b-garage-main-workspace-pipeline-result.json`, `artifacts/unity/set-b-garage-main-workspace-scene-capture.png`
+> artifacts: `Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab`, `artifacts/unity/set-b-garage-main-workspace-pipeline-result.json`, `artifacts/unity/set-b-garage-main-workspace-scene-capture.png`
 >
 > 생성일: 2026-04-13
 > 근거: 2026-04-25 Set B recovery audit
 
 이 문서는 Set B Garage만 다룬다.
 기준은 `source freeze -> compiled contract -> translation -> SceneView capture -> visual judgment` 한 줄이다.
+Set B는 Set A 진입 전 범용 루프의 reference/sample surface로만 읽고, `.stitch/designs` copied source를 active source owner처럼 재정의하지 않는다.
+Set A의 새 기준은 별도 전용 helper가 아니라 `source html/png -> source facts -> contract draft -> validate -> translate/generate -> capture -> verdict` 루프에서 pass 또는 blocked verdict를 남기는 것이다.
 
 ## Target
 
 - surface: `set-b-garage-main-workspace`
-- source: `.stitch/designs/set-b-garage-main-workspace.html/png`
+- source convenience/reference: `.stitch/designs/set-b-garage-main-workspace.html/png`
 - prefab: `Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab`
 - evidence: `artifacts/unity/set-b-garage-main-workspace-pipeline-result.json`
 - capture: `artifacts/unity/set-b-garage-main-workspace-scene-capture.png`
