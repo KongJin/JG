@@ -1054,7 +1054,7 @@ GameObject:
   - component: {fileID: 63260484}
   - component: {fileID: 63260483}
   m_Layer: 0
-  m_Name: PreviewThrusterPrefab
+  m_Name: PreviewThrusterTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1704,7 +1704,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -2490,7 +2490,7 @@ GameObject:
   - component: {fileID: 162155397}
   - component: {fileID: 162155396}
   m_Layer: 0
-  m_Name: PreviewFramePrefab
+  m_Name: PreviewFrameTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2655,7 +2655,7 @@ GameObject:
   - component: {fileID: 191767925}
   - component: {fileID: 191767924}
   m_Layer: 0
-  m_Name: PreviewWeaponPrefab
+  m_Name: PreviewWeaponTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3117,7 +3117,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4294306016
   m_fontColor: {r: 0.88, g: 0.91, b: 0.96, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -3130,7 +3130,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -4688,7 +4688,7 @@ GameObject:
   - component: {fileID: 372372179}
   - component: {fileID: 372372178}
   m_Layer: 0
-  m_Name: PreviewWeaponPrefab
+  m_Name: PreviewWeaponTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9425,7 +9425,7 @@ GameObject:
   - component: {fileID: 672655436}
   - component: {fileID: 672655435}
   m_Layer: 0
-  m_Name: PreviewFramePrefab
+  m_Name: PreviewFrameTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9815,7 +9815,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -10881,7 +10881,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4294306016
   m_fontColor: {r: 0.88, g: 0.91, b: 0.96, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -10894,7 +10894,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -11102,7 +11102,7 @@ GameObject:
   - component: {fileID: 818875083}
   - component: {fileID: 818875082}
   m_Layer: 0
-  m_Name: PreviewWeaponPrefab
+  m_Name: PreviewWeaponTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11778,7 +11778,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -12072,7 +12072,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -12378,7 +12378,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4294306016
   m_fontColor: {r: 0.88, g: 0.91, b: 0.96, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -12391,7 +12391,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -13277,7 +13277,7 @@ GameObject:
   - component: {fileID: 978317953}
   - component: {fileID: 978317952}
   m_Layer: 0
-  m_Name: PreviewThrusterPrefab
+  m_Name: PreviewThrusterTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13648,7 +13648,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -13716,6 +13716,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1005858598}
   - component: {fileID: 1005858597}
+  - component: {fileID: 1005858599}
   m_Layer: 0
   m_Name: LobbyPreviewCamera
   m_TagString: Untagged
@@ -13789,6 +13790,14 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &1005858599
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1005858596}
+  m_Enabled: 1
 --- !u!1 &1016630622
 GameObject:
   m_ObjectHideFlags: 0
@@ -14560,7 +14569,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4294306016
   m_fontColor: {r: 0.88, g: 0.91, b: 0.96, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -14573,7 +14582,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -15902,7 +15911,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4294306016
   m_fontColor: {r: 0.88, g: 0.91, b: 0.96, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -15915,7 +15924,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -16032,6 +16041,27 @@ MonoBehaviour:
   _framePrefab: {fileID: 672655434}
   _weaponPrefab: {fileID: 818875081}
   _thrusterPrefab: {fileID: 978317951}
+  _frameModelPrefabs:
+  - _id: frame_striker
+    _prefab: {fileID: 6768920302994169036, guid: 5c8b3a5722fd6c840beb48be96aa2bb2, type: 3}
+  - _id: frame_bastion
+    _prefab: {fileID: 1969373289903566869, guid: e19fcfbb72678fe4aa6c3ce49eb07304, type: 3}
+  - _id: frame_relay
+    _prefab: {fileID: 1858289995377477668, guid: 5a527454f221e9a47ae529f092af6fa9, type: 3}
+  _firepowerModelPrefabs:
+  - _id: fire_scatter
+    _prefab: {fileID: 8466261784022016833, guid: ddafe22d4d17e154ba9cdf030c3d60fc, type: 3}
+  - _id: fire_pulse
+    _prefab: {fileID: 8510989780855498147, guid: 49ff3453ecdda894ea677dcb399f8fbe, type: 3}
+  - _id: fire_rail
+    _prefab: {fileID: 5381164519521476491, guid: 1ff00a3447a694041b239735aa2d7a2f, type: 3}
+  _mobilityModelPrefabs:
+  - _id: mob_treads
+    _prefab: {fileID: 6901450388720024572, guid: 0841bc7274d237b44a2c36d393dc6a30, type: 3}
+  - _id: mob_vector
+    _prefab: {fileID: 4819424358495046404, guid: 8e718cdc50cf1bf4c868fe53b10f7244, type: 3}
+  - _id: mob_burst
+    _prefab: {fileID: 1141816666252315615, guid: e3a779489187f2641a42b52be7db1192, type: 3}
   _autoRotationSpeed: 20
   _dragRotationMultiplier: 2
 --- !u!114 &1230291141
@@ -17750,7 +17780,7 @@ GameObject:
   - component: {fileID: 1442018564}
   - component: {fileID: 1442018563}
   m_Layer: 0
-  m_Name: PreviewFramePrefab
+  m_Name: PreviewFrameTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22148,10 +22178,10 @@ RectTransform:
   - {fileID: 534535596}
   m_Father: {fileID: 635884239}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 48}
-  m_SizeDelta: {x: -24, y: -168}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 195, y: -422}
+  m_SizeDelta: {x: 390, y: 844}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1864821820
 MonoBehaviour:
@@ -24315,7 +24345,7 @@ GameObject:
   - component: {fileID: 2132331882}
   - component: {fileID: 2132331881}
   m_Layer: 0
-  m_Name: PreviewThrusterPrefab
+  m_Name: PreviewThrusterTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

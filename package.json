@@ -12,6 +12,7 @@
     "stitch:policy:lint": "node ./tools/stitch-unity/lint-stitch-driven-policy.mjs",
     "policy:lint": "node ./tools/docs-lint/policy-lint.mjs && npm run --silent presentation:policy:lint && npm run --silent stitch:policy:lint",
     "rules:lint": "npm run --silent docs:lint && npm run --silent policy:lint",
+    "unity:asset-hygiene": "powershell -ExecutionPolicy Bypass -File .\\tools\\check-unity-asset-hygiene.ps1",
     "stitch:help": "node ./tools/stitch/stitch-inspect.mjs help",
     "stitch:list:projects": "node ./tools/stitch/stitch-inspect.mjs list-projects",
     "stitch:create:project": "node ./tools/stitch/stitch-inspect.mjs create-project",

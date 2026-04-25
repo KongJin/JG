@@ -19,13 +19,14 @@
 - `LobbyScene`은 `LobbyPageRoot`, `GaragePageRoot`, Set A/C overlay prefab instance를 scene에 배치하고, scene serialized reference가 런타임 계약을 소유한다.
 - `LobbySceneRuntimeAssemblyTool`은 초기 조립에는 유용했지만, 재실행 시 `LobbyRuntime`, `LobbyCanvas`, `EventSystem`, `LobbyPreviewCamera`를 삭제 후 재생성한다.
 - `LobbyScene.unity`에는 prefab root의 active state, anchors, size, position, name override가 다수 존재한다.
-- Garage preview의 `PreviewFramePrefab`, `PreviewWeaponPrefab`, `PreviewThrusterPrefab`은 asset prefab이 아니라 scene root의 inactive primitive template이다.
+- Garage preview의 `PreviewFrameTemplate`, `PreviewWeaponTemplate`, `PreviewThrusterTemplate`은 asset prefab이 아니라 scene root의 inactive primitive template이다.
 - `GaragePageController`는 현재 lint를 통과하지만, mobile tab state, settings overlay, save state, chrome orchestration이 한 클래스에 모여 있어 다음 UI 변경 때 책임이 커질 수 있다.
 
 ## 진행 메모
 
 - 2026-04-25: `LobbySceneRuntimeAssemblyTool` 메뉴와 실행 로그를 destructive rebuild로 명확히 하고, 실행 전 확인 다이얼로그를 추가했다.
 - 2026-04-25: `artifacts/unity/lobby-scene-prefab-override-audit.md`에 read-only prefab override audit 초안을 남겼다. 현재 visual/text/color override는 보이지 않고, `LobbyPageRoot`와 `GaragePageRoot`의 추가 active override만 review candidate로 분리했다.
+- 2026-04-25: Garage preview scene template 이름을 `*Prefab`에서 `*Template`으로 정리했고, rebuild helper도 같은 이름을 생성하도록 맞췄다.
 
 ## 목표
 
@@ -69,7 +70,7 @@
 
 3. **Preview placeholder 정리**
    - 현재 scene root inactive primitives가 필요한 이유를 확인한다.
-   - 유지한다면 이름을 `PreviewFrameTemplate`, `PreviewWeaponTemplate`, `PreviewThrusterTemplate`처럼 scene template임이 드러나게 바꾸는 안을 검토한다.
+   - 유지한다면 현재처럼 `PreviewFrameTemplate`, `PreviewWeaponTemplate`, `PreviewThrusterTemplate` 이름으로 scene template임이 드러나야 한다.
    - asset prefab화가 더 낫다면 `Assets/Prefabs/Features/Garage/Independent/` 아래로 빼고 scene reference를 갱신한다.
    - 둘 중 하나를 선택한 뒤 Required field audit과 Garage preview smoke로 검증한다.
 

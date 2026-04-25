@@ -43,14 +43,6 @@ namespace Features.Garage.Presentation.Theme
 
         // ─── 3D 프리뷰 ─────────────────────────────────────
         public static readonly Color PreviewBackground   = ParseColor("#08111E");
-        public static readonly Color PreviewFrameStriker = ParseColor("#F28019");
-        public static readonly Color PreviewFrameBastion = ParseColor("#5EB6FF");
-        public static readonly Color PreviewFrameRelay   = ParseColor("#22C55E");
-        public static readonly Color PreviewFireScatter  = ParseColor("#E63333");
-        public static readonly Color PreviewFirePulse    = ParseColor("#E6E633");
-        public static readonly Color PreviewFireRail     = ParseColor("#5EB6FF");
-        public static readonly Color PreviewMobTreads    = ParseColor("#808080");
-        public static readonly Color PreviewMobBurst     = ParseColor("#22C55E");
 
         // ─── 토스트 ─────────────────────────────────────────
         public static readonly Color ToastErrorBg        = new(0.35f, 0.08f, 0.08f, 0.95f);

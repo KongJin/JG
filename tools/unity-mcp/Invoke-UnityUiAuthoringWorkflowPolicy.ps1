@@ -192,6 +192,38 @@ function Get-StitchSourceFreezeResetPrefabTargets {
     return @($targets | Sort-Object -Unique)
 }
 
+function Get-NovaGaragePreviewPrefabTargets {
+    param(
+        [string]$RepoRoot
+    )
+
+    $planPath = Join-Path $RepoRoot "docs\plans\lobby_scene_nova1492_model_application_plan.md"
+    $reportPath = Join-Path $RepoRoot "artifacts\nova1492\lobby_preview_prefab_pack_report.md"
+    if (-not (Test-Path -LiteralPath $planPath) -or -not (Test-Path -LiteralPath $reportPath)) {
+        return @()
+    }
+
+    $planText = Get-Content -LiteralPath $planPath -Raw
+    if ($planText -notmatch "doc_id:\s*plans\.lobby-scene-nova1492-model-application" -or
+        $planText -notmatch "Phase 1:\s*preview prefab pack") {
+        return @()
+    }
+
+    $reportText = Get-Content -LiteralPath $reportPath -Raw
+    if ($reportText -notmatch "(?m)^-\s*created:\s*15\s*$" -or
+        $reportText -notmatch "(?m)^-\s*failed:\s*0\s*$") {
+        return @()
+    }
+
+    $targets = @()
+    $matches = [regex]::Matches($reportText, '`(Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_[^`]+\.prefab)`')
+    foreach ($match in $matches) {
+        $targets += $match.Groups[1].Value
+    }
+
+    return @($targets | Sort-Object -Unique)
+}
+
 function New-EvidenceRecord {
     param(
         [string]$Name,
@@ -306,9 +338,10 @@ $unityUiRelevantFiles = Get-PathsMatching -Paths $changedFiles -Patterns $unityU
 $stitchSurfaceOnboardingFiles = Get-PathsMatching -Paths $changedFiles -Patterns $stitchSurfaceOnboardingEvidencePatterns
 $stitchCapabilityExpansionFiles = Get-PathsMatching -Paths $changedFiles -Patterns $stitchCapabilityExpansionPatterns
 $newPrefabFiles = Get-PathsMatching -Paths $addedFiles -Patterns @('^Assets/.+\.prefab$')
-$declaredResetPrefabTargets = @(
+$declaredNewPrefabTargets = @(
     (Get-DeclaredResetPrefabTargets -RepoRoot $repoRoot) +
-    (Get-StitchSourceFreezeResetPrefabTargets -RepoRoot $repoRoot) |
+    (Get-StitchSourceFreezeResetPrefabTargets -RepoRoot $repoRoot) +
+    (Get-NovaGaragePreviewPrefabTargets -RepoRoot $repoRoot) |
         Sort-Object -Unique
 )
 
@@ -477,7 +510,7 @@ if ($route -ne "no-unity-ui-workflow") {
 
     if (@($newPrefabFiles).Count -gt 0) {
         foreach ($path in @($newPrefabFiles)) {
-            if ($declaredResetPrefabTargets -contains $path) {
+            if ($declaredNewPrefabTargets -contains $path) {
                 continue
             }
 

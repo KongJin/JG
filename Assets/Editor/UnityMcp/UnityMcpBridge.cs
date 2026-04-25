@@ -216,7 +216,11 @@ namespace ProjectSD.EditorTools.UnityMcp
             StopBridge(logWhenAlreadyStopped: false, logWhenStopped: false);
         }
 
+        internal static void StartBridgeForBatchmode(bool resetRetryCount = false) => StartBridge(resetRetryCount);
+
         private static void StopBridge() => StopBridge(logWhenAlreadyStopped: true, logWhenStopped: true);
+
+        internal static void StopBridgeForBatchmode() => StopBridge();
 
         private static void StopBridge(bool logWhenAlreadyStopped) => StopBridge(logWhenAlreadyStopped, logWhenStopped: true);
 
@@ -885,6 +889,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 typeof(PrefabHandlers),
                 typeof(BuildHandlers),
                 typeof(DebugHandlers),
+                typeof(RequestLogDebugHandlers),
                 // Phase 1~5 새 핸들러
                 typeof(LocatorHandlers),
                 typeof(WaitHandlers),

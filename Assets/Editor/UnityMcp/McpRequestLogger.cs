@@ -106,9 +106,9 @@ namespace ProjectSD.EditorTools.UnityMcp
     /// <summary>
     /// 디버깅 전용 엔드포인트.
     /// </summary>
-    internal static class DebugHandlers
+    internal static class RequestLogDebugHandlers
     {
-        static DebugHandlers()
+        static RequestLogDebugHandlers()
         {
             "GET".Register("/debug/requests", "Recent request log (query: limit=N)", async (req, res) => await HandleRequestsAsync(req, res));
             "GET".Register("/debug/slow", "Slow requests (query: threshold=N ms)", async (req, res) => await HandleSlowAsync(req, res));

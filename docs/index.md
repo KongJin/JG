@@ -88,6 +88,7 @@
 - `active`: [`lobby_scene_runtime_plan.md`](./plans/lobby_scene_runtime_plan.md) - LobbyScene 런타임 조립과 acceptance route 계획
 - `active`: [`lobby_scene_completion_plan.md`](./plans/lobby_scene_completion_plan.md) - LobbyScene 초기 표시 상태, visual pass, BattleScene 연결 closeout 계획
 - `active`: [`lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) - LobbyScene UI prefab instance/override 관리와 assembly helper 안전화 계획
+- `active`: [`lobby_scene_nova1492_model_application_plan.md`](./plans/lobby_scene_nova1492_model_application_plan.md) - 변환된 Nova1492 GX 모델의 LobbyScene/Garage preview 제한 적용 계획
 - `reference`: [`game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) - GameScene 진입 상위 흐름
 - `reference`: [`stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) - Stitch set inventory와 reset 기준
 - `reference`: [`docs_simplification_recurrence_plan.md`](./plans/docs_simplification_recurrence_plan.md) - 전체 문서 간소화와 재발 방지 완료 기록

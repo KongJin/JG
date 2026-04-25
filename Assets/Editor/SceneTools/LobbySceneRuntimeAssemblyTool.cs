@@ -487,13 +487,13 @@ namespace ProjectSD.EditorTools.SceneTools
             var raw = CreateRect(root, "RawImage", Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero).gameObject.AddComponent<RawImage>();
             raw.color = new Color(0.07f, 0.09f, 0.13f, 1f);
             var empty = CreateText(root, "EmptyStateText", "Saved unit silhouette", 16f, TextAlignmentOptions.Center, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(-24f, 60f));
-            var camera = new GameObject("LobbyPreviewCamera", typeof(Camera)).GetComponent<Camera>();
+            var camera = new GameObject("LobbyPreviewCamera", typeof(Camera), typeof(AudioListener)).GetComponent<Camera>();
             camera.transform.position = new Vector3(100f, 100f, -6f);
             camera.orthographic = true;
             camera.orthographicSize = 2.2f;
-            var framePrefab = CreatePreviewPrimitive("PreviewFramePrefab", PrimitiveType.Cube);
-            var weaponPrefab = CreatePreviewPrimitive("PreviewWeaponPrefab", PrimitiveType.Cylinder);
-            var thrusterPrefab = CreatePreviewPrimitive("PreviewThrusterPrefab", PrimitiveType.Capsule);
+            var framePrefab = CreatePreviewPrimitive("PreviewFrameTemplate", PrimitiveType.Cube);
+            var weaponPrefab = CreatePreviewPrimitive("PreviewWeaponTemplate", PrimitiveType.Cylinder);
+            var thrusterPrefab = CreatePreviewPrimitive("PreviewThrusterTemplate", PrimitiveType.Capsule);
             SetRef(view, "_previewCamera", camera);
             SetRef(view, "_rawImage", raw);
             SetRef(view, "_emptyStateText", empty);

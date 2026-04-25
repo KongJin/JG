@@ -13,5 +13,13 @@ namespace Features.Garage.Runtime
             child.transform.localPosition = localPosition;
             child.transform.localEulerAngles = localEulerAngles;
         }
+
+        internal static void SetYaw(GameObject root, float yawDegrees)
+        {
+            if (root == null)
+                return;
+
+            root.transform.localEulerAngles = new Vector3(0f, yawDegrees, 0f);
+        }
     }
 }

@@ -15,6 +15,20 @@ namespace Features.Garage.Presentation
     /// </summary>
     public sealed class GarageUnitPreviewView : MonoBehaviour
     {
+        [System.Serializable]
+        private sealed class PartPrefabMapping
+        {
+            [SerializeField] private string _id;
+            [SerializeField] private GameObject _prefab;
+
+            public GameObject Prefab => _prefab;
+
+            public bool Matches(string id)
+            {
+                return !string.IsNullOrWhiteSpace(id) && _id == id && _prefab != null;
+            }
+        }
+
         [Header("Viewport")]
         [Required, SerializeField] private Camera _previewCamera;
         [SerializeField] private RenderTexture _renderTexture;
@@ -28,6 +42,11 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private GameObject _weaponPrefab;
         [Tooltip("기동: 원뿔")]
         [Required, SerializeField] private GameObject _thrusterPrefab;
+
+        [Header("Nova1492 Model Mappings")]
+        [SerializeField] private PartPrefabMapping[] _frameModelPrefabs;
+        [SerializeField] private PartPrefabMapping[] _firepowerModelPrefabs;
+        [SerializeField] private PartPrefabMapping[] _mobilityModelPrefabs;
 
         [Header("Rotation")]
         [SerializeField] private float _autoRotationSpeed = 20f;
@@ -96,56 +115,38 @@ namespace Features.Garage.Presentation
 
         private GameObject CreateFrame(string frameId)
         {
-            var obj = Instantiate(_framePrefab);
+            var obj = Instantiate(ResolvePartPrefab(frameId, _frameModelPrefabs, _framePrefab));
             obj.SetActive(true);
             return obj;
         }
 
         private GameObject CreateWeapon(string firepowerId)
         {
-            var obj = Instantiate(_weaponPrefab);
+            var obj = Instantiate(ResolvePartPrefab(firepowerId, _firepowerModelPrefabs, _weaponPrefab));
             obj.SetActive(true);
             return obj;
         }
 
         private GameObject CreateThruster(string mobilityId)
         {
-            var obj = Instantiate(_thrusterPrefab);
+            var obj = Instantiate(ResolvePartPrefab(mobilityId, _mobilityModelPrefabs, _thrusterPrefab));
             obj.SetActive(true);
             return obj;
         }
 
-        private Color GetFrameColor(string frameId)
+        private static GameObject ResolvePartPrefab(string id, PartPrefabMapping[] mappings, GameObject fallback)
         {
-            return frameId switch
+            if (mappings != null)
             {
-                "frame_striker" => ThemeColors.PreviewFrameStriker,
-                "frame_bastion" => ThemeColors.PreviewFrameBastion,
-                "frame_relay" => ThemeColors.PreviewFrameRelay,
-                _ => Color.white
-            };
-        }
+                for (var i = 0; i < mappings.Length; i++)
+                {
+                    var mapping = mappings[i];
+                    if (mapping != null && mapping.Matches(id))
+                        return mapping.Prefab;
+                }
+            }
 
-        private Color GetWeaponColor(string firepowerId)
-        {
-            return firepowerId switch
-            {
-                "fire_scatter" => ThemeColors.PreviewFireScatter,
-                "fire_pulse" => ThemeColors.PreviewFirePulse,
-                "fire_rail" => ThemeColors.PreviewFireRail,
-                _ => Color.white
-            };
-        }
-
-        private Color GetThrusterColor(string mobilityId)
-        {
-            return mobilityId switch
-            {
-                "mob_treads" => ThemeColors.PreviewMobTreads,
-                "mob_vector" => Color.white,
-                "mob_burst" => ThemeColors.PreviewMobBurst,
-                _ => Color.white
-            };
+            return fallback;
         }
 
         private void DestroyCurrentPreview()
@@ -182,6 +183,33 @@ namespace Features.Garage.Presentation
         private void Update()
         {
             if (_currentPreviewRoot == null) return;
+
+            if (Input.GetMouseButtonDown(0) && IsPointerInsidePreview())
+            {
+                _isDragging = true;
+                _lastMousePosition = Input.mousePosition;
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                _isDragging = false;
+            }
+
+            if (_isDragging)
+            {
+                var mousePosition = (Vector2)Input.mousePosition;
+                var delta = mousePosition - _lastMousePosition;
+                _manualRotationY -= delta.x * _dragRotationMultiplier;
+                _lastMousePosition = mousePosition;
+            }
+
+            var autoRotation = Time.unscaledTime * _autoRotationSpeed;
+            GaragePreviewAssembler.SetYaw(_currentPreviewRoot, _manualRotationY + autoRotation);
+        }
+
+        private bool IsPointerInsidePreview()
+        {
+            return _rawImage != null &&
+                   RectTransformUtility.RectangleContainsScreenPoint(_rawImage.rectTransform, Input.mousePosition);
         }
 
         private void OnDestroy()

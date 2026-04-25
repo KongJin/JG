@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-04-25",
+  "updatedAt": "2026-04-26",
   "scope": "rules-only",
   "issueDetected": true,
   "declaredLane": "rules-only recurrence prevention",
@@ -14,12 +14,13 @@
   "changedPaths": [
     "artifacts/rules/issue-recurrence-closeout.json",
     "docs/index.md",
-    "docs/plans/garage_ui_ux_improvement_plan.md",
-    "docs/plans/lobby_scene_completion_plan.md",
-    "docs/plans/lobby_scene_runtime_plan.md",
+    "docs/plans/lobby_scene_nova1492_model_application_plan.md",
     "docs/plans/lobby_scene_ui_prefab_management_plan.md",
+    "docs/plans/nova1492_resource_integration_plan.md",
     "docs/plans/progress.md",
-    "tools/nova1492/OrganizeGxConvertedAssets.ps1",
-    "tools/rule-harness/memory/advisory-memory.json"
+    "package.json",
+    "tools/check-unity-asset-hygiene.ps1",
+    "tools/nova1492/SelectLobbyModelShortlist.ps1",
+    "tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1"
   ]
 }

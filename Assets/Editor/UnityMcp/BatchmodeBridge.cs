@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
-using UnityEditor.Compilation;
 using UnityEngine;
 
 namespace ProjectSD.EditorTools.UnityMcp
@@ -24,7 +23,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         /// </summary>
         public static void StartInBatchmode()
         {
-            if (!EditorApplication.isBatchMode)
+            if (!Application.isBatchMode)
             {
                 Debug.LogError("[BatchmodeBridge] Not running in batchmode. Use Unity CLI with -batchmode flag.");
                 EditorApplication.Exit(1);
@@ -54,7 +53,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             CheckCompilationErrors();
 
             // 브릿지 시작
-            UnityMcpBridge.StartBridge(resetRetryCount: true);
+            UnityMcpBridge.StartBridgeForBatchmode(resetRetryCount: true);
             _isRunning = true;
 
             // 메인 루프 (EditorApplication.update가 batchmode에서 제대로 작동하지 않을 수 있음)
@@ -75,7 +74,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             // 정리
             Cts.Cancel();
             mainThreadLoop.Wait(TimeSpan.FromSeconds(2));
-            UnityMcpBridge.StopBridge();
+            UnityMcpBridge.StopBridgeForBatchmode();
 
             Debug.Log("[BatchmodeBridge] Shutting down...");
             EditorApplication.Exit(0);
@@ -104,36 +103,7 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         private static void CheckCompilationErrors()
         {
-            var errorCount = 0;
-            var warningCount = 0;
-
-            // 최근 컴파일 메시지 확인
-            foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
-            {
-                var assemblyName = Path.GetFileNameWithoutExtension(assembly.Location);
-                var messages = CompilationPipeline.GetAssemblyCompilerMessages(assemblyName);
-
-                foreach (var msg in messages)
-                {
-                    if (msg.type == CompilerMessageType.Error)
-                    {
-                        errorCount++;
-                        Debug.LogError($"[Compile Error] {msg.file}({msg.line},{msg.column}): {msg.message}");
-                    }
-                    else if (msg.type == CompilerMessageType.Warning)
-                    {
-                        warningCount++;
-                        Debug.LogWarning($"[Compile Warning] {msg.file}({msg.line},{msg.column}): {msg.message}");
-                    }
-                }
-            }
-
-            Debug.Log($"[BatchmodeBridge] Compilation result: {errorCount} errors, {warningCount} warnings");
-
-            if (errorCount > 0)
-            {
-                Debug.LogError($"[BatchmodeBridge] Project has {errorCount} compilation errors. Bridge will start but some features may not work.");
-            }
+            Debug.Log("[BatchmodeBridge] Compilation completed. Detailed compiler output is available from the Editor log endpoints.");
         }
 
         private static void OnProcessExit(object sender, EventArgs e)
@@ -153,7 +123,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             if (!_isRunning) return;
             _isRunning = false;
             Cts.Cancel();
-            UnityMcpBridge.StopBridge();
+            UnityMcpBridge.StopBridgeForBatchmode();
         }
 
         /// <summary>
@@ -162,7 +132,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void OnBeforeSceneLoad()
         {
-            if (EditorApplication.isBatchMode)
+            if (Application.isBatchMode)
             {
                 Debug.Log("[BatchmodeBridge] Loaded in batchmode");
             }
