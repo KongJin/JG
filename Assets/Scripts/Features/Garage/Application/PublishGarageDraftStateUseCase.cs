@@ -1,4 +1,4 @@
-using Features.Garage.Domain;
+﻿using Features.Garage.Domain;
 
 namespace Features.Garage.Application
 {
@@ -12,7 +12,7 @@ namespace Features.Garage.Application
             if (committedRoster == null || !committedRoster.IsValid)
             {
                 int savedUnitCount = committedRoster?.Count ?? 0;
-                int missingUnits = UnityEngine.Mathf.Max(0, 3 - savedUnitCount);
+                int missingUnits = System.Math.Max(0, 3 - savedUnitCount);
                 return new GarageDraftStateSnapshot(
                     false,
                     false,
@@ -39,3 +39,4 @@ namespace Features.Garage.Application
         }
     }
 }
+
