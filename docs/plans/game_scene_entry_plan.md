@@ -1,10 +1,10 @@
 # 게임 씬 진입 계획 (Game Scene Entry Plan)
 
 > 마지막 업데이트: 2026-04-18
-> 상태: active
+> 상태: reference
 > doc_id: plans.game-scene-entry
 > role: plan
-> owner_scope: GameScene 진입 작업의 상위 흐름과 단계 구분
+> owner_scope: GameScene 진입 작업의 상위 흐름과 단계 구분 reference
 > upstream: plans.progress, design.game-design
 > artifacts: `Assets/Scenes/GameScene.unity`
 >
@@ -61,7 +61,7 @@ Phase 0~8의 세부 커밋과 작업 로그는 [`progress.md`](./progress.md)에
 2. 실제 멀티플레이어 smoke로 late-join, BattleEntity sync, Energy sync 확인
 3. GameScene bootstrap의 순수 전제 조건을 테스트 층으로 더 내릴 수 있는지 정리
 
-현재 기준으로 `CodexLobbyScene -> GameScene` 전환과 summon smoke는 이미 통과한 상태다.
+현재 기준으로 legacy lobby scene 전환과 summon smoke는 과거 통과 이력만 남아 있으며, active acceptance route가 아니다.
 
 ---
 

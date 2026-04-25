@@ -18,30 +18,75 @@ function Get-UnityMcpBaseUrl {
     return "http://127.0.0.1:51234"
 }
 
+function Test-UnityMcpRootCanFollowProjectPort {
+    param([string]$Root)
+
+    if ([string]::IsNullOrWhiteSpace($Root)) {
+        return $false
+    }
+
+    return $Root -match '^https?://(127\.0\.0\.1|localhost):\d+/?$'
+}
+
+function Get-UnityMcpRefreshedRoot {
+    param([string]$Root)
+
+    if (-not (Test-UnityMcpRootCanFollowProjectPort -Root $Root)) {
+        return $Root
+    }
+
+    $freshRoot = Get-UnityMcpBaseUrl -ExplicitBaseUrl ""
+    if ([string]::IsNullOrWhiteSpace($freshRoot)) {
+        return $Root
+    }
+
+    return $freshRoot
+}
+
 function Invoke-McpJson {
     param(
         [string]$Root,
         [string]$SubPath,
-        [object]$Body = $null
+        [object]$Body = $null,
+        [int]$TimeoutSec = 0
     )
 
     $uri = "$Root$SubPath"
+    $request = @{
+        Method = "Post"
+        Uri = $uri
+    }
+    if ($TimeoutSec -gt 0) {
+        $request.TimeoutSec = $TimeoutSec
+    }
+
     if ($null -eq $Body) {
-        return Invoke-RestMethod -Method Post -Uri $uri
+        return Invoke-RestMethod @request
     }
 
     $json = $Body | ConvertTo-Json -Compress
-    return Invoke-RestMethod -Method Post -Uri $uri -ContentType "application/json" -Body $json
+    $request.ContentType = "application/json"
+    $request.Body = [System.Text.Encoding]::UTF8.GetBytes($json)
+    return Invoke-RestMethod @request
 }
 
 function Invoke-McpGetJson {
     param(
         [string]$Root,
-        [string]$SubPath
+        [string]$SubPath,
+        [int]$TimeoutSec = 0
     )
 
     $uri = "$Root$SubPath"
-    return Invoke-RestMethod -Method Get -Uri $uri
+    $request = @{
+        Method = "Get"
+        Uri = $uri
+    }
+    if ($TimeoutSec -gt 0) {
+        $request.TimeoutSec = $TimeoutSec
+    }
+
+    return Invoke-RestMethod @request
 }
 
 function Invoke-McpJsonWithTransientRetry {
@@ -50,6 +95,7 @@ function Invoke-McpJsonWithTransientRetry {
         [string]$SubPath,
         [object]$Body = $null,
         [int]$TimeoutSec = 60,
+        [int]$RequestTimeoutSec = 15,
         [double]$PollSec = 0.5
     )
 
@@ -58,7 +104,14 @@ function Invoke-McpJsonWithTransientRetry {
 
     while ((Get-Date) -lt $deadline) {
         try {
-            return Invoke-McpJson -Root $Root -SubPath $SubPath -Body $Body
+            $response = Invoke-McpJson -Root $Root -SubPath $SubPath -Body $Body -TimeoutSec $RequestTimeoutSec
+            if ($null -eq $response -or ($response -is [string] -and [string]::IsNullOrWhiteSpace($response))) {
+                $lastError = "MCP POST ${SubPath} returned an empty response."
+                Start-Sleep -Seconds $PollSec
+                continue
+            }
+
+            return $response
         }
         catch {
             if (-not (Test-McpTransientConnectionFailure -Exception $_.Exception)) {
@@ -82,6 +135,7 @@ function Invoke-McpGetJsonWithTransientRetry {
         [string]$Root,
         [string]$SubPath,
         [int]$TimeoutSec = 60,
+        [int]$RequestTimeoutSec = 15,
         [double]$PollSec = 0.5
     )
 
@@ -90,7 +144,14 @@ function Invoke-McpGetJsonWithTransientRetry {
 
     while ((Get-Date) -lt $deadline) {
         try {
-            return Invoke-McpGetJson -Root $Root -SubPath $SubPath
+            $response = Invoke-McpGetJson -Root $Root -SubPath $SubPath -TimeoutSec $RequestTimeoutSec
+            if ($null -eq $response -or ($response -is [string] -and [string]::IsNullOrWhiteSpace($response))) {
+                $lastError = "MCP GET ${SubPath} returned an empty response."
+                Start-Sleep -Seconds $PollSec
+                continue
+            }
+
+            return $response
         }
         catch {
             if (-not (Test-McpTransientConnectionFailure -Exception $_.Exception)) {
@@ -117,7 +178,7 @@ function Test-McpTransientConnectionFailure {
     }
 
     $message = $Exception.Message
-    return $message -match "connect|connection|actively refused|forcibly closed|reset by peer|No connection could be made"
+    return $message -match "connect|connection|actively refused|forcibly closed|reset by peer|No connection could be made|timed out|timeout"
 }
 
 function Wait-McpBridgeHealthy {
@@ -130,14 +191,16 @@ function Wait-McpBridgeHealthy {
     $sw = [System.Diagnostics.Stopwatch]::StartNew()
     $deadline = (Get-Date).AddSeconds($TimeoutSec)
     $lastError = $null
+    $currentRoot = $Root
 
     while ((Get-Date) -lt $deadline) {
         try {
-            $state = Invoke-McpGetJson -Root $Root -SubPath "/health"
+            $state = Invoke-McpGetJson -Root $currentRoot -SubPath "/health" -TimeoutSec 10
             if ($null -ne $state -and $state.ok) {
                 $sw.Stop()
                 return @{
                     State = $state
+                    Root = $currentRoot
                     ElapsedMs = $sw.ElapsedMilliseconds
                 }
             }
@@ -146,6 +209,10 @@ function Wait-McpBridgeHealthy {
         }
         catch {
             $lastError = $_.Exception.Message
+            $refreshedRoot = Get-UnityMcpRefreshedRoot -Root $currentRoot
+            if ($refreshedRoot -ne $currentRoot) {
+                $currentRoot = $refreshedRoot
+            }
         }
 
         Start-Sleep -Seconds $PollSec
@@ -293,32 +360,31 @@ function Invoke-McpCompileRequestAndWait {
         [int]$PollIntervalMs = 250
     )
 
-    $request = Invoke-McpJsonWithTransientRetry -Root $Root -SubPath "/compile/request" -Body @{
+    $currentRoot = $Root
+
+    $request = Invoke-McpJsonWithTransientRetry -Root $currentRoot -SubPath "/compile/request" -Body @{
         cleanBuildCache = [bool]$CleanBuildCache
     } -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0))
 
-    Wait-McpBridgeHealthy -Root $Root -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0)) | Out-Null
+    $bridgeHealth = Wait-McpBridgeHealthy -Root $currentRoot -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0))
+    if ($null -ne $bridgeHealth.Root) {
+        $currentRoot = [string]$bridgeHealth.Root
+    }
 
-    $wait = Invoke-McpJsonWithTransientRetry -Root $Root -SubPath "/compile/wait" -Body @{
+    $wait = Invoke-McpJsonWithTransientRetry -Root $currentRoot -SubPath "/compile/wait" -Body @{
         timeoutMs = $TimeoutMs
         pollIntervalMs = $PollIntervalMs
         requestFirst = $false
         cleanBuildCache = $false
     } -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0))
 
-    $postCompileHealth = Wait-McpBridgeHealthy -Root $Root -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0))
+    $postCompileHealth = Wait-McpBridgeHealthy -Root $currentRoot -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0))
 
     return [PSCustomObject]@{
         Request = $request
         Wait = $wait
         HealthAfterWait = $postCompileHealth.State
     }
-}
-
-function Get-McpLobbyContract {
-    param([string]$Root)
-
-    return Invoke-McpGetJsonWithTransientRetry -Root $Root -SubPath "/scene/verify-lobby-contract" -TimeoutSec 60
 }
 
 function Get-McpPresentationLayoutOwnership {
@@ -591,6 +657,10 @@ function Test-McpResponseSuccess {
     param([object]$Response)
 
     if ($null -eq $Response) {
+        return $false
+    }
+
+    if ($Response -is [string]) {
         return $false
     }
 

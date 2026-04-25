@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import process from "node:process";
 
 export const REQUIRED_METADATA_FIELDS = [
   "상태",
@@ -83,6 +84,8 @@ const MUTATING_REPO_SKILL_ENTRIES = new Set([
   ".codex/skills/jg-unity-workflow/SKILL.md",
   ".codex/skills/jg-stitch-workflow/SKILL.md",
 ]);
+export const RECURRENCE_CLOSEOUT_PATH = "artifacts/rules/issue-recurrence-closeout.json";
+export const RECURRENCE_CHANGED_FILES_ENV = "RULES_LINT_CHANGED_FILES";
 
 export async function lintRepository(repoRoot, options = {}) {
   const includeGeneralChecks = options.includeGeneralChecks ?? true;
@@ -109,6 +112,8 @@ export async function lintRepository(repoRoot, options = {}) {
       errors.push(...(await validateContractArtifactReferences(document, repoRoot)));
       errors.push(...validateActiveDocHistoricalLinks(document));
       errors.push(...validateRepoSkillHistoricalMentions(document));
+      errors.push(...validateDocIdPathPrefix(document));
+      errors.push(...validateCompletedDraftPlan(document));
     }
     if (includePolicyChecks) {
       errors.push(...validatePlanModeRouting(document));
@@ -120,6 +125,10 @@ export async function lintRepository(repoRoot, options = {}) {
     errors.push(...validateKnownDocIdReferences(documents));
     errors.push(...validateIndexCoverage(documents, repoRoot));
     errors.push(...validateIndexStatusLabels(documents, repoRoot));
+  }
+
+  if (includePolicyChecks) {
+    errors.push(...(await validateRulesOnlyRecurrenceCloseout(repoRoot, options)));
   }
 
   return {
@@ -487,6 +496,55 @@ function validateRepoSkillHistoricalMentions(document) {
   return errors;
 }
 
+function validateDocIdPathPrefix(document) {
+  const docId = document.metadata.get("doc_id");
+  if (!docId) {
+    return [];
+  }
+
+  const expectedPrefix = getExpectedDocIdPrefix(document.repoRelativePath);
+  if (!expectedPrefix || docId.startsWith(expectedPrefix)) {
+    return [];
+  }
+
+  return [
+    createError(
+      "doc-id-path-prefix-mismatch",
+      document.repoRelativePath,
+      `Document path expects doc_id prefix \`${expectedPrefix}\`, found \`${docId}\`.`,
+    ),
+  ];
+}
+
+function validateCompletedDraftPlan(document) {
+  const status = document.metadata.get("상태");
+  const role = document.metadata.get("role");
+  if (status !== "draft" || role !== "plan") {
+    return [];
+  }
+
+  const content = stripFencedCodeBlocks(document.content);
+  const completionPatterns = [
+    /^## 최종 결정$/mu,
+    /^## Rereview$/mu,
+    /^-\s*closeout:\s*완료\s*$/mu,
+    /^상태:\s*완료\s*$/mu,
+    /plan rereview:\s*clean/u,
+  ];
+
+  if (!completionPatterns.some((pattern) => pattern.test(content))) {
+    return [];
+  }
+
+  return [
+    createError(
+      "completed-draft-plan",
+      document.repoRelativePath,
+      "Draft plan contains closeout/final-decision wording. Move it to `reference`, `historical`, or remove the completion wording.",
+    ),
+  ];
+}
+
 function validatePlanModeRouting(document) {
   if (document.repoRelativePath === "AGENTS.md") {
     return validateDocumentContainsAll(
@@ -541,6 +599,220 @@ function validatePlanModeRouting(document) {
 
   return [];
 }
+
+async function validateRulesOnlyRecurrenceCloseout(repoRoot, options) {
+  const changedFiles = getRecurrenceChangedFiles(options);
+  const relevantChangedFiles = changedFiles.filter(
+    (filePath) => isRulesOnlyRecurrenceTarget(filePath) && filePath !== RECURRENCE_CLOSEOUT_PATH,
+  );
+
+  if (relevantChangedFiles.length === 0) {
+    return [];
+  }
+
+  const errors = [];
+  const artifactAbsolutePath = path.join(repoRoot, RECURRENCE_CLOSEOUT_PATH);
+
+  if (!(await pathExists(artifactAbsolutePath))) {
+    return [
+      createError(
+        "missing-recurrence-closeout-artifact",
+        RECURRENCE_CLOSEOUT_PATH,
+        `Rules-only changed files require tracked closeout artifact \`${RECURRENCE_CLOSEOUT_PATH}\`.`,
+      ),
+    ];
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(await fs.readFile(artifactAbsolutePath, "utf8"));
+  } catch (error) {
+    return [
+      createError(
+        "invalid-recurrence-closeout-json",
+        RECURRENCE_CLOSEOUT_PATH,
+        `Failed to parse recurrence closeout artifact JSON. ${error.message}`,
+      ),
+    ];
+  }
+
+  if (!changedFiles.includes(RECURRENCE_CLOSEOUT_PATH)) {
+    errors.push(
+      createError(
+        "missing-recurrence-closeout-update",
+        RECURRENCE_CLOSEOUT_PATH,
+        `Rules-only changed files must update \`${RECURRENCE_CLOSEOUT_PATH}\` in the same change.`,
+      ),
+    );
+  }
+
+  errors.push(...validateRecurrenceCloseoutPayload(payload, relevantChangedFiles));
+  return errors;
+}
+
+function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
+  const errors = [];
+
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return [
+      createError(
+        "invalid-recurrence-closeout-field",
+        RECURRENCE_CLOSEOUT_PATH,
+        "Recurrence closeout artifact must be a JSON object.",
+      ),
+    ];
+  }
+
+  if (!Number.isInteger(payload.schemaVersion) || payload.schemaVersion < 1) {
+    errors.push(
+      createError(
+        "invalid-recurrence-closeout-field",
+        RECURRENCE_CLOSEOUT_PATH,
+        "`schemaVersion` must be an integer >= 1.",
+      ),
+    );
+  }
+
+  if (payload.scope !== "rules-only") {
+    errors.push(
+      createError(
+        "invalid-recurrence-closeout-field",
+        RECURRENCE_CLOSEOUT_PATH,
+        "`scope` must be `rules-only`.",
+      ),
+    );
+  }
+
+  if (typeof payload.issueDetected !== "boolean") {
+    errors.push(
+      createError(
+        "invalid-recurrence-closeout-field",
+        RECURRENCE_CLOSEOUT_PATH,
+        "`issueDetected` must be a boolean.",
+      ),
+    );
+  }
+
+  const stringFields = [
+    "updatedAt",
+    "declaredLane",
+    "observedMutationClass",
+    "acceptanceEvidenceClass",
+    "rootCause",
+    "prevention",
+    "verification",
+    "blockedReason",
+  ];
+  for (const field of stringFields) {
+    if (typeof payload[field] !== "string") {
+      errors.push(
+        createError(
+          "invalid-recurrence-closeout-field",
+          RECURRENCE_CLOSEOUT_PATH,
+          `\`${field}\` must be a string.`,
+        ),
+      );
+    }
+  }
+
+  if (typeof payload.escalationRequired !== "boolean") {
+    errors.push(
+      createError(
+        "invalid-recurrence-closeout-field",
+        RECURRENCE_CLOSEOUT_PATH,
+        "`escalationRequired` must be a boolean.",
+      ),
+    );
+  }
+
+  if (!Array.isArray(payload.changedPaths) || payload.changedPaths.some((value) => typeof value !== "string")) {
+    errors.push(
+      createError(
+        "invalid-recurrence-closeout-field",
+        RECURRENCE_CLOSEOUT_PATH,
+        "`changedPaths` must be an array of strings.",
+      ),
+    );
+  }
+
+  if (typeof payload.verification === "string" && payload.verification.trim() === "") {
+    errors.push(
+      createError(
+        "invalid-recurrence-closeout-field",
+        RECURRENCE_CLOSEOUT_PATH,
+        "`verification` must not be empty for rules-only closeout artifacts.",
+      ),
+    );
+  }
+
+  if (payload.issueDetected === true) {
+    for (const field of [
+      "declaredLane",
+      "observedMutationClass",
+      "acceptanceEvidenceClass",
+      "rootCause",
+      "prevention",
+      "verification",
+    ]) {
+      if (typeof payload[field] === "string" && payload[field].trim() === "") {
+        errors.push(
+          createError(
+            "missing-recurrence-closeout-field",
+            RECURRENCE_CLOSEOUT_PATH,
+            `\`${field}\` must not be empty when \`issueDetected = true\`.`,
+          ),
+        );
+      }
+    }
+  }
+
+  if (payload.escalationRequired === true && typeof payload.blockedReason === "string" && payload.blockedReason.trim() === "") {
+    errors.push(
+      createError(
+        "missing-recurrence-closeout-field",
+        RECURRENCE_CLOSEOUT_PATH,
+        "`blockedReason` must not be empty when `escalationRequired = true`.",
+      ),
+    );
+  }
+
+  const artifactChangedPaths = Array.isArray(payload.changedPaths)
+    ? new Set(payload.changedPaths.map((entry) => normalizeRepoRelativePath(entry)))
+    : new Set();
+
+  for (const changedFile of relevantChangedFiles.map((entry) => normalizeRepoRelativePath(entry))) {
+    if (!artifactChangedPaths.has(changedFile)) {
+      errors.push(
+        createError(
+          "recurrence-closeout-missing-changed-path",
+          RECURRENCE_CLOSEOUT_PATH,
+          `\`changedPaths\` must include rules-only changed file \`${changedFile}\`.`,
+        ),
+      );
+    }
+  }
+
+  return errors;
+}
+
+function getRecurrenceChangedFiles(options) {
+  if (Array.isArray(options.changedFiles)) {
+    return options.changedFiles
+      .map((entry) => normalizeRepoRelativePath(entry))
+      .filter(Boolean);
+  }
+
+  const raw = process.env[RECURRENCE_CHANGED_FILES_ENV];
+  if (!raw) {
+    return [];
+  }
+
+  return raw
+    .split(/\r?\n/u)
+    .map((entry) => normalizeRepoRelativePath(entry))
+    .filter(Boolean);
+}
+
 
 function validateUniqueDocIds(documents) {
   const docIdMap = new Map();
@@ -819,6 +1091,46 @@ function getDocumentKind(repoRelativePath) {
   return "managed-doc";
 }
 
+function getExpectedDocIdPrefix(repoRelativePath) {
+  if (repoRelativePath === "AGENTS.md") {
+    return "repo.";
+  }
+
+  if (repoRelativePath === "docs/index.md") {
+    return "docs.";
+  }
+
+  if (repoRelativePath.startsWith("docs/design/")) {
+    return "design.";
+  }
+
+  if (repoRelativePath.startsWith("docs/discussions/")) {
+    return "discussions.";
+  }
+
+  if (repoRelativePath.startsWith("docs/ops/")) {
+    return "ops.";
+  }
+
+  if (repoRelativePath.startsWith("docs/plans/")) {
+    return "plans.";
+  }
+
+  if (repoRelativePath.startsWith("docs/playtest/")) {
+    return "playtest.";
+  }
+
+  if (repoRelativePath.startsWith("tools/")) {
+    return "tools.";
+  }
+
+  if (repoRelativePath.startsWith(".codex/skills/jg-")) {
+    return "skill.";
+  }
+
+  return null;
+}
+
 function resolveInlinePathToken(token, document, repoRoot) {
   const normalized = token.startsWith("/") ? token.slice(1) : token;
   const documentKind = getDocumentKind(document.repoRelativePath);
@@ -918,4 +1230,40 @@ function toRepoRelative(repoRoot, absolutePath) {
 
 function toPosixPath(targetPath) {
   return targetPath.split(path.sep).join("/");
+}
+
+export function normalizeRepoRelativePath(repoRelativePath) {
+  if (typeof repoRelativePath !== "string") {
+    return "";
+  }
+
+  return repoRelativePath.replace(/\\/g, "/").trim();
+}
+
+export function isRulesOnlyRecurrenceTarget(repoRelativePath) {
+  const normalized = normalizeRepoRelativePath(repoRelativePath);
+  if (!normalized) {
+    return false;
+  }
+
+  if (
+    normalized === "AGENTS.md" ||
+    normalized.startsWith("docs/") ||
+    /^\.codex\/skills\/jg-[^/]+\//u.test(normalized) ||
+    normalized.startsWith(".githooks/") ||
+    normalized.startsWith("tools/docs-lint/") ||
+    normalized.startsWith("tools/rule-harness/") ||
+    normalized === ".github/workflows/docs-lint.yml" ||
+    normalized === "package.json" ||
+    normalized === "package-lock.json" ||
+    normalized === RECURRENCE_CLOSEOUT_PATH
+  ) {
+    return true;
+  }
+
+  if (/^tools\/.+\/README\.md$/u.test(normalized)) {
+    return true;
+  }
+
+  return /^tools\/.+\.(ps1|mjs|js|py)$/u.test(normalized);
 }

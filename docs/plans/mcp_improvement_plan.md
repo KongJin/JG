@@ -1,10 +1,10 @@
 # Unity MCP Refactor Plan
 
 > 마지막 업데이트: 2026-04-24
-> 상태: active
+> 상태: reference
 > doc_id: plans.mcp-improvement
 > role: plan
-> owner_scope: Unity MCP 역할 재정의와 개선 우선순위
+> owner_scope: Unity MCP 역할 재정의와 개선 우선순위 reference
 > upstream: plans.progress, ops.unity-ui-authoring-workflow
 > artifacts: `tools/unity-mcp/`, `Assets/Editor/UnityMcp/`
 
@@ -81,7 +81,6 @@ Legacy compatibility:
 
 - `tools/unity-mcp/server.js` should expose stable Play/UI/screenshot routes directly as MCP tools.
 - `tools/unity-mcp/McpHelpers.ps1` should call stable routes and use explicit wait helpers for Play start/stop.
-- `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1` is the legacy Lobby/Garage entrypoint when a real authoring scene exists.
 - Legacy scene-route smoke scripts are removed from the active toolset.
 - Lobby/Garage repair is scene-owned: verify contract first, then use MCP scene/prefab edits instead of builder-style full regeneration.
 - Open scene on-disk overwrite is out of policy. If a direct `.unity` restore is unavoidable, switch scenes or close Unity before touching the file.

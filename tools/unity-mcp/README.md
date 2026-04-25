@@ -9,7 +9,6 @@
 > artifacts: `tools/unity-mcp/`, `Assets/Editor/UnityMcp/`, `artifacts/unity/`
 
 Unity MCP in this repo is a `diagnostic + manual automation` bridge.
-The prior Lobby/Garage `LobbyScene.unity` workflow is now a historical route.
 While the repo is rebuilding UI from scratch, default to `prefab-first reset`:
 accepted Stitch handoff -> presentation contract review -> baseline prefab wiring -> new scene assembly -> fresh contract/translation pipeline.
 Unity UI/UX authoring policy 본문 owner는 `ops.unity-ui-authoring-workflow`이고, current path는 `docs/index.md`에서 해석한다. 이 문서는 실행 reference만 담당한다.
@@ -19,7 +18,6 @@ Unity UI/UX authoring policy 본문 owner는 `ops.unity-ui-authoring-workflow`�
 - Helper module: `tools/unity-mcp/McpHelpers.ps1`
 - Prefab-pack helper module: `tools/unity-mcp/McpPrefabPackHelpers.ps1`
 - Workflow policy check: `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
-- Workflow gate: `tools/unity-mcp/Invoke-CodexLobbyUiWorkflowGate.ps1` - legacy scene route only
 - Shared surface translation entry: `tools/stitch-unity/surfaces/Invoke-StitchSurfaceTranslation.ps1`
 
 `rule-harness` continues to use Unity MCP only for compile/status refresh plus generic diagnostics. Scene-specific runtime smoke stays out of harness scope.
@@ -44,8 +42,6 @@ These are the routes the current workflow depends on.
 - `POST /ui/wait-for-inactive`
 - `POST /sceneview/capture`
 - `GET /validation/verify-presentation-layout-ownership`
-- `GET /scene/verify-lobby-contract`
-
 `/menu/execute` still exists, but it is manual-only and non-authoritative for Lobby/Garage recovery.
 
 ## MCP Preflight
@@ -72,27 +68,12 @@ Use this order for current Lobby/Garage reset work:
 4. assemble a new scene
 5. run fresh contract/translation pipeline only after the new scene exists
 
-Historical note:
-
-- `Invoke-CodexLobbyUiWorkflowGate.ps1` is not the default route while `Assets/Scenes/LobbyScene.unity` is absent.
-- If you intentionally revive a concrete Lobby/Garage authoring scene later, add a dedicated runtime proof on top of the gate instead of reviving the old smoke scripts.
-- Keep the historical route summary in [HISTORICAL_LOBBY_SCENE_ROUTE.md](./HISTORICAL_LOBBY_SCENE_ROUTE.md).
-
 ## SSOT Guardrails
 
 - Never overwrite an open `.unity` scene on disk while Unity has that scene loaded.
 - Prefer MCP scene/prefab repair over direct YAML replacement for Lobby/Garage UI work.
 - If a disk-level restore is truly required, switch away from the scene or close Unity first, then restore the file, then reopen it in Unity.
 - The open-scene popup (`The following open scene(s) have been changed on disk`) is treated as a workflow violation, not as a prompt to accept casually.
-
-## Historical Lobby/Garage Route
-
-This route is historical while `Assets/Scenes/LobbyScene.unity` is absent.
-If a concrete Lobby/Garage authoring scene is intentionally revived later:
-
-- use `GET /scene/verify-lobby-contract` and the legacy gate again
-- keep scene serialization as the runtime truth for that route
-- re-check the historical route note in [HISTORICAL_LOBBY_SCENE_ROUTE.md](./HISTORICAL_LOBBY_SCENE_ROUTE.md) before reviving old acceptance proofs
 
 ## PowerShell Helpers
 
@@ -106,7 +87,6 @@ If a concrete Lobby/Garage authoring scene is intentionally revived later:
 - `Invoke-McpPlayStartAndWaitForBridge`
 - `Invoke-McpPlayStopAndWait`
 - `Assert-McpNoOpenSceneDiskWrite`
-- `Get-McpLobbyContract`
 - `Invoke-McpPrepareLobbyPlaySession`
 - `Get-McpPageStateSnapshot`
 - `Wait-McpPhotonLobbyReady`
@@ -198,35 +178,10 @@ The policy check reads the current changed files from git and enforces:
 - no new UI prefab creation by default
 - presentation validator requirements when presentation code changed
 - presentation responsibility lint when `*PageController` classes changed
-- fresh `CodexLobby` workflow gate evidence for Lobby/Garage source changes when the legacy scene route is active
+- prefab-first reset evidence for Lobby/Garage source changes while no authoring scene exists
 
 It does not replace the workflow SSOT.
 Keep the policy body in owner doc `ops.unity-ui-authoring-workflow` and use this README as the execution reference. Resolve the current file path through `docs/index.md`.
-
-## Workflow Gate
-
-Run the required Lobby/Garage gate like this:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-CodexLobbyUiWorkflowGate.ps1
-```
-
-The gate performs:
-
-1. compile/reload stabilization
-2. presentation layout ownership verification
-3. contract verification
-4. machine-readable result writeout
-
-Outputs:
-
-- `artifacts/unity/lobby-ui-workflow-result.json`
-- `Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json`
-
-The workflow gate is a `compile-clean after reload` validation step. It is not the recovery path for unresolved compile errors.
-The workflow gate is also not an exemption path for runtime layout authoring inside `Features.*.Presentation`; those violations fail before contract review.
-
-Use this as the required gate for Lobby/Garage UI changes only when the legacy scene route is intentionally active.
 
 ## Runtime Proof
 
@@ -235,9 +190,9 @@ Current runtime proof should be surface-specific and generated from the active c
 
 Recommended runtime proof order:
 
-1. workflow gate when a legacy authoring scene is truly active
-2. surface contract review
-3. translation artifact review
+1. surface contract review
+2. translation artifact review
+3. runtime smoke only after the active surface contract exists
 4. pipeline result review
 
 ## Notes

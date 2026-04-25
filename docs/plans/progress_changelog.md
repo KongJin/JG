@@ -22,7 +22,7 @@
 
 ## 2026-04-20
 
-- `LobbyPageRoot` baseline prefab reset seed를 accepted Stitch handoff 기준으로 다시 생성했다.
+- Lobby baseline prefab reset seed를 accepted Stitch handoff 기준으로 다시 생성했다.
 - Stitch handoff completeness checklist를 추가하고, 관련 entry/read-order를 새 owner 문서 기준으로 연결했다.
 - Lobby 공용 prefab pack baseline과 Garage Set B MCP authoring/prefab extraction을 진행했다.
 - Unity UI 작업의 단일 정책 본문을 `ops.unity-ui-authoring-workflow`로 고정하고, workflow policy check 스크립트를 추가했다.

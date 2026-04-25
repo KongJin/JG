@@ -4304,6 +4304,136 @@ function Get-RuleHarnessRulesOnlyViolationTargets {
     )
 }
 
+function Get-RuleHarnessRulesOnlyRecurrenceCloseoutStatus {
+    param(
+        [string]$RepoRoot,
+        [object]$ScopeInfo,
+        [string[]]$TargetFiles = @()
+    )
+
+    $stageName = 'rules_closeout'
+    $artifactRelativePath = 'artifacts/rules/issue-recurrence-closeout.json'
+    $normalizedTargets = @(
+        @($TargetFiles) |
+            Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+            ForEach-Object { ([string]$_).Replace('\', '/') } |
+            Where-Object { $_ -ne $artifactRelativePath -and (Test-RuleHarnessRulesOnlyPath -RelativePath $_) } |
+            Sort-Object -Unique
+    )
+
+    if ([string]::IsNullOrWhiteSpace($RepoRoot) -or $null -eq $ScopeInfo -or [string]$ScopeInfo.scopeGuard -ne 'rules-only' -or $normalizedTargets.Count -eq 0) {
+        return [pscustomobject]@{
+            failed = $false
+            stageResult = New-RuleHarnessStageResult `
+                -Stage $stageName `
+                -Status 'skipped' `
+                -Attempted $false `
+                -Summary 'Rules-only recurrence closeout gate was not applicable.' `
+                -Details ([pscustomobject]@{
+                    artifactPath = $artifactRelativePath
+                    targetFiles = @($normalizedTargets)
+                })
+            actionItems = @()
+        }
+    }
+
+    $errors = [System.Collections.Generic.List[string]]::new()
+    $artifactAbsolutePath = Join-Path $RepoRoot ($artifactRelativePath -replace '/', '\')
+    $payload = $null
+
+    if (-not (Test-Path -LiteralPath $artifactAbsolutePath)) {
+        [void]$errors.Add(("Missing closeout artifact `{0}`." -f $artifactRelativePath))
+    }
+    else {
+        try {
+            $payload = Get-Content -LiteralPath $artifactAbsolutePath -Raw -Encoding UTF8 | ConvertFrom-Json -Depth 20
+        }
+        catch {
+            [void]$errors.Add(("Failed to parse `{0}` as JSON. {1}" -f $artifactRelativePath, $_.Exception.Message))
+        }
+    }
+
+    if ($null -ne $payload) {
+        if ($payload.PSObject.Properties.Name -notcontains 'scope' -or [string]$payload.scope -ne 'rules-only') {
+            [void]$errors.Add('Closeout artifact `scope` must be `rules-only`.')
+        }
+
+        if ($payload.PSObject.Properties.Name -notcontains 'issueDetected' -or $payload.issueDetected -isnot [bool]) {
+            [void]$errors.Add('Closeout artifact `issueDetected` must be a boolean.')
+        }
+
+        foreach ($field in @('declaredLane', 'observedMutationClass', 'acceptanceEvidenceClass', 'verification', 'blockedReason')) {
+            if ($payload.PSObject.Properties.Name -notcontains $field -or $payload.$field -isnot [string]) {
+                [void]$errors.Add(("Closeout artifact `{0}` must be a string." -f $field))
+            }
+        }
+
+        if ($payload.PSObject.Properties.Name -notcontains 'escalationRequired' -or $payload.escalationRequired -isnot [bool]) {
+            [void]$errors.Add('Closeout artifact `escalationRequired` must be a boolean.')
+        }
+
+        if ($payload.PSObject.Properties.Name -notcontains 'verification' -or [string]::IsNullOrWhiteSpace([string]$payload.verification)) {
+            [void]$errors.Add('Closeout artifact `verification` must not be empty.')
+        }
+
+        if ($payload.issueDetected -eq $true) {
+            foreach ($field in @('declaredLane', 'observedMutationClass', 'acceptanceEvidenceClass', 'rootCause', 'prevention', 'verification')) {
+                if ($payload.PSObject.Properties.Name -notcontains $field -or [string]::IsNullOrWhiteSpace([string]$payload.$field)) {
+                    [void]$errors.Add(("Closeout artifact `{0}` must not be empty when `issueDetected = true`." -f $field))
+                }
+            }
+        }
+
+        if ($payload.PSObject.Properties.Name -contains 'escalationRequired' -and $payload.escalationRequired -eq $true -and [string]::IsNullOrWhiteSpace([string]$payload.blockedReason)) {
+            [void]$errors.Add('Closeout artifact `blockedReason` must not be empty when `escalationRequired = true`.')
+        }
+
+        if ($payload.PSObject.Properties.Name -notcontains 'changedPaths') {
+            [void]$errors.Add('Closeout artifact `changedPaths` must be an array of strings.')
+        }
+        else {
+            $changedPaths = @(
+                @($payload.changedPaths) |
+                    ForEach-Object { ([string]$_).Replace('\', '/') } |
+                    Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                    Sort-Object -Unique
+            )
+
+            foreach ($targetFile in @($normalizedTargets)) {
+                if ($changedPaths -notcontains $targetFile) {
+                    [void]$errors.Add(("Closeout artifact `changedPaths` must include `{0}`." -f $targetFile))
+                }
+            }
+        }
+    }
+
+    $failed = $errors.Count -gt 0
+    return [pscustomobject]@{
+        failed = $failed
+        stageResult = New-RuleHarnessStageResult `
+            -Stage $stageName `
+            -Status $(if ($failed) { 'failed' } else { 'passed' }) `
+            -Attempted $true `
+            -Summary $(if ($failed) { 'Rules-only recurrence closeout gate failed.' } else { 'Rules-only recurrence closeout gate passed.' }) `
+            -Details ([pscustomobject]@{
+                artifactPath = $artifactRelativePath
+                targetFiles = @($normalizedTargets)
+                errorCount = $errors.Count
+                errors = @($errors)
+            })
+        actionItems = @(
+            if ($failed) {
+                New-RuleHarnessActionItem `
+                    -Kind 'rules-only-recurrence-closeout' `
+                    -Severity 'high' `
+                    -Summary 'Update rules-only recurrence closeout artifact' `
+                    -Details ([string](@($errors) -join ' ')) `
+                    -RelatedPaths @($artifactRelativePath) + @($normalizedTargets)
+            }
+        )
+    }
+}
+
 function Get-RuleHarnessLearningSettings {
     param(
         [Parameter(Mandatory)]
@@ -5868,6 +5998,51 @@ function Test-RuleHarnessSupportsUsingDirectiveFix {
     return $false
 }
 
+function Test-RuleHarnessSupportsMathfScalarFix {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Finding
+    )
+
+    $title = [string]$Finding.title
+    $message = [string]$Finding.message
+    if (-not ($title -match 'Unity API used in Application' -or $title -match 'Framework API used in Domain')) {
+        if (-not (($message -match 'Application layer file' -or $message -match 'Domain layer file') -and $message -match 'Unity|Photon')) {
+            return $false
+        }
+    }
+
+    foreach ($evidence in @($Finding.evidence)) {
+        $snippet = [string]$evidence.snippet
+        if ($snippet -match 'UnityEngine\.Mathf\.(Max|Min)\s*\(') {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Get-RuleHarnessMathfScalarFixContent {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Content
+    )
+
+    $pattern = 'UnityEngine\.Mathf\.(?<method>Max|Min)\(\s*(?<left>[^(),\r\n]+(?:\s*[-+*/%]\s*[^(),\r\n]+)*)\s*,\s*(?<right>[^()\r\n]+?)\s*\)'
+    [regex]::Replace($Content, $pattern, {
+        param($match)
+
+        $method = [string]$match.Groups['method'].Value
+        $left = [string]$match.Groups['left'].Value
+        $right = [string]$match.Groups['right'].Value
+        if ([string]::IsNullOrWhiteSpace($method) -or [string]::IsNullOrWhiteSpace($left) -or [string]::IsNullOrWhiteSpace($right)) {
+            return $match.Value
+        }
+
+        "System.Math.$method($left, $right)"
+    })
+}
+
 function Get-RuleHarnessFeatureNameFromPath {
     param(
         [string]$RelativePath
@@ -6304,6 +6479,9 @@ function Get-RuleHarnessExistingCodeFixOperations {
         if (Test-RuleHarnessSupportsUsingDirectiveFix -Finding $Finding) {
             $updatedContent = [regex]::Replace($updatedContent, '^[ \t]*using\s+UnityEngine\s*;\r?\n', '', 'Multiline')
             $updatedContent = [regex]::Replace($updatedContent, '^[ \t]*using\s+Photon(?:\.[A-Za-z0-9_]+)*\s*;\r?\n', '', 'Multiline')
+        }
+        if (Test-RuleHarnessSupportsMathfScalarFix -Finding $Finding) {
+            $updatedContent = Get-RuleHarnessMathfScalarFixContent -Content $updatedContent
         }
 
         if ($updatedContent -ne $content) {
@@ -8053,6 +8231,7 @@ function Invoke-RuleHarness {
     $sameRunResolvedScopeCount = 0
     $staleStateRepairedCount = 0
     $compileGateStatus = $null
+    $rulesOnlyRecurrenceCloseoutStatus = $null
     $policyStaticFindings = @(Get-RuleHarnessHardcodedMcpUiSmokeFindings -RepoRoot $RepoRoot -Config $config)
     $staticFindingCount += $policyStaticFindings.Count
     foreach ($finding in @($policyStaticFindings)) {
@@ -8300,6 +8479,12 @@ function Invoke-RuleHarness {
             stoppedScope = if ($null -ne $stoppedScope) { [string]$stoppedScope.scopeId } else { $null }
         })))
 
+    $rulesOnlyRecurrenceCloseoutStatus = Get-RuleHarnessRulesOnlyRecurrenceCloseoutStatus `
+        -RepoRoot $RepoRoot `
+        -ScopeInfo $scopeInfo `
+        -TargetFiles @($plannedBatches | ForEach-Object { @($_.targetFiles) } | Sort-Object -Unique)
+    [void]$stageResults.Add($rulesOnlyRecurrenceCloseoutStatus.stageResult)
+
     $featureDependencyRefresh = Invoke-RuleHarnessFeatureDependencyReportRefresh -RepoRoot $RepoRoot
     [void]$stageResults.Add((New-RuleHarnessStageResult `
         -Stage 'feature_dependency_refresh' `
@@ -8470,6 +8655,7 @@ function Invoke-RuleHarness {
     }
     $reportActionItems = @(Merge-RuleHarnessActionItems -Items @(
         @($preMutationActionItems) +
+        $(if ($null -ne $rulesOnlyRecurrenceCloseoutStatus) { @($rulesOnlyRecurrenceCloseoutStatus.actionItems) } else { @() }) +
         @($featureDependencyGateStatus.actionItems) +
         @($featureDependencyRepair.actionItems) +
         @($compileGateStatus.actionItems) +

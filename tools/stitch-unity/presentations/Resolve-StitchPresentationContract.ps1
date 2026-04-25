@@ -1,7 +1,8 @@
-param(
+﻿param(
     [string]$SurfaceId = "account-delete-confirm",
     [string]$HtmlPath = "",
     [string]$ImagePath = "",
+    [string]$TargetAssetPath = "",
     [string]$OutputPath = ""
 )
 
@@ -113,6 +114,16 @@ function Get-TailwindPalette {
         "black" = "#000000"
         "white" = "#FFFFFF"
         "gray-900" = "#111827"
+        "slate-950" = "#020617"
+        "slate-900" = "#0F172A"
+        "slate-800" = "#1E293B"
+        "slate-700" = "#334155"
+        "slate-600" = "#475569"
+        "slate-500" = "#64748B"
+        "slate-400" = "#94A3B8"
+        "slate-300" = "#CBD5E1"
+        "slate-200" = "#E2E8F0"
+        "slate-100" = "#F1F5F9"
         "zinc-950" = "#09090B"
         "zinc-900" = "#18181B"
         "zinc-800" = "#27272A"
@@ -128,8 +139,11 @@ function Get-TailwindPalette {
         "red-400" = "#F87171"
         "amber-400" = "#FBBF24"
         "amber-500" = "#F59E0B"
+        "orange-500" = "#F97316"
         "blue-400" = "#60A5FA"
         "blue-500" = "#5EB6FF"
+        "cyan-400" = "#22D3EE"
+        "emerald-400" = "#34D399"
     }
 }
 
@@ -172,6 +186,12 @@ function Resolve-ColorToken {
         if ($baseValue.StartsWith("rgba", [System.StringComparison]::OrdinalIgnoreCase)) {
             $baseValue = Convert-RgbaToHex -Value $baseValue
         }
+    }
+    elseif ($base -match '^\[(?<hex>\#[0-9A-Fa-f]{6})\]$') {
+        $baseValue = [string]$Matches["hex"]
+    }
+    elseif ($base -match '^\#(?<hex>[0-9A-Fa-f]{6})$') {
+        $baseValue = ('#{0}' -f [string]$Matches["hex"])
     }
     else {
         $palette = Get-TailwindPalette
@@ -310,14 +330,36 @@ function Get-ProfileGeneratorScriptPath {
 }
 
 function Get-ProfileGeneratorProbe {
-    param([Parameter(Mandatory = $true)][string]$SurfaceId)
+    param(
+        [Parameter(Mandatory = $true)][string]$SurfaceId,
+        [string]$HtmlPath = "",
+        [string]$ImagePath = "",
+        [string]$TargetAssetPath = ""
+    )
 
     $generatorPath = Get-ProfileGeneratorScriptPath
     if (-not (Test-Path -LiteralPath $generatorPath)) {
         throw "Presentation profile generator not found: $generatorPath"
     }
 
-    $json = & powershell -NoProfile -ExecutionPolicy Bypass -File $generatorPath -SurfaceId $SurfaceId -CanGenerateOnly 2>&1
+    $invocationArgs = @(
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-File", $generatorPath,
+        "-SurfaceId", $SurfaceId,
+        "-CanGenerateOnly"
+    )
+    if (-not [string]::IsNullOrWhiteSpace($HtmlPath)) {
+        $invocationArgs += @("-HtmlPath", $HtmlPath)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ImagePath)) {
+        $invocationArgs += @("-ImagePath", $ImagePath)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($TargetAssetPath)) {
+        $invocationArgs += @("-TargetAssetPath", $TargetAssetPath)
+    }
+
+    $json = & powershell @invocationArgs 2>&1
     if ($LASTEXITCODE -ne 0) {
         throw "Presentation profile generator probe failed for '$SurfaceId': $json"
     }
@@ -326,15 +368,36 @@ function Get-ProfileGeneratorProbe {
 }
 
 function Get-GeneratedPresentationProfile {
-    param([Parameter(Mandatory = $true)][string]$SurfaceId)
+    param(
+        [Parameter(Mandatory = $true)][string]$SurfaceId,
+        [string]$HtmlPath = "",
+        [string]$ImagePath = "",
+        [string]$TargetAssetPath = ""
+    )
 
-    $probe = Get-ProfileGeneratorProbe -SurfaceId $SurfaceId
+    $probe = Get-ProfileGeneratorProbe -SurfaceId $SurfaceId -HtmlPath $HtmlPath -ImagePath $ImagePath -TargetAssetPath $TargetAssetPath
     if (-not [bool]$probe.supported) {
         throw "Presentation profile generator does not support '$SurfaceId': $([string]$probe.reason)"
     }
 
     $generatorPath = Get-ProfileGeneratorScriptPath
-    $json = & powershell -NoProfile -ExecutionPolicy Bypass -File $generatorPath -SurfaceId $SurfaceId 2>&1
+    $invocationArgs = @(
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-File", $generatorPath,
+        "-SurfaceId", $SurfaceId
+    )
+    if (-not [string]::IsNullOrWhiteSpace($HtmlPath)) {
+        $invocationArgs += @("-HtmlPath", $HtmlPath)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ImagePath)) {
+        $invocationArgs += @("-ImagePath", $ImagePath)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($TargetAssetPath)) {
+        $invocationArgs += @("-TargetAssetPath", $TargetAssetPath)
+    }
+
+    $json = & powershell @invocationArgs 2>&1
     if ($LASTEXITCODE -ne 0) {
         throw "Presentation profile generation failed for '$SurfaceId': $json"
     }
@@ -348,9 +411,14 @@ function Get-GeneratedPresentationProfile {
 }
 
 function Get-PresentationProfile {
-    param([Parameter(Mandatory = $true)][string]$SurfaceId)
+    param(
+        [Parameter(Mandatory = $true)][string]$SurfaceId,
+        [string]$HtmlPath = "",
+        [string]$ImagePath = "",
+        [string]$TargetAssetPath = ""
+    )
 
-    return (Get-GeneratedPresentationProfile -SurfaceId $SurfaceId)
+    return (Get-GeneratedPresentationProfile -SurfaceId $SurfaceId -HtmlPath $HtmlPath -ImagePath $ImagePath -TargetAssetPath $TargetAssetPath)
 }
 
 function New-OverlayDialogPresentationContract {
@@ -882,8 +950,21 @@ function New-WorkspacePresentationContract {
     $titleText = [string](Get-RequiredValue -InputObject $workspace -Name "titleText")
     $subtitleText = [string](Get-OptionalValue -InputObject $workspace -Name "subtitleText")
     $saveButtonText = [string](Get-RequiredValue -InputObject $workspace -Name "saveButtonText")
+    $settingsIconText = [string](Get-OptionalValue -InputObject $workspace -Name "settingsIconText")
+    $slotItems = @(Get-OptionalValue -InputObject $workspace -Name "slotItems")
+    $focusTabs = @(Get-OptionalValue -InputObject $workspace -Name "focusTabs")
+    $editor = Get-OptionalValue -InputObject $workspace -Name "editor"
+    $preview = Get-OptionalValue -InputObject $workspace -Name "preview"
     $summaryFillAnchorMaxX = [Math]::Max(0.0, [Math]::Min(1.0, ($summaryFillPercent / 100.0)))
     $summaryFillAnchorMaxXText = [string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0:0.##}", $summaryFillAnchorMaxX)
+    $accentColor = Resolve-ConfiguredColor -Token "blue-500" -CustomColors $CustomColors
+    $accentTextColor = Resolve-ConfiguredColor -Token "blue-400" -CustomColors $CustomColors
+    $mutedTextColor = Resolve-ConfiguredColor -Token "zinc-500" -CustomColors $CustomColors
+    $surfaceMutedColor = Resolve-ConfiguredColor -Token "zinc-900" -CustomColors $CustomColors
+    $surfaceStrongColor = Resolve-ConfiguredColor -Token "zinc-950" -CustomColors $CustomColors
+    $borderMutedColor = Resolve-ConfiguredColor -Token "zinc-800" -CustomColors $CustomColors
+    $accentBorderColor = Resolve-ConfiguredColor -Token "blue-500/50" -CustomColors $CustomColors
+    $subtitleMutedColor = Resolve-ConfiguredColor -Token "zinc-400" -CustomColors $CustomColors
 
     $elements = New-Object System.Collections.Generic.List[object]
 
@@ -915,6 +996,10 @@ function New-WorkspacePresentationContract {
         properties = @(
             (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $headerColor),
             (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Spacing" -Value "12"),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_ChildControlWidth" -Value "true"),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_ChildControlHeight" -Value "false"),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_ChildForceExpandWidth" -Value "true"),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_ChildForceExpandHeight" -Value "false"),
             (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Left" -Value ([string]$headerPaddingX)),
             (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Right" -Value ([string]$headerPaddingX)),
             (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value ([string]$headerHeightPx))
@@ -935,7 +1020,10 @@ function New-WorkspacePresentationContract {
         properties = @(
             (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Spacing" -Value "2"),
             (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildControlWidth" -Value "true"),
-            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildControlHeight" -Value "false")
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildControlHeight" -Value "false"),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildForceExpandWidth" -Value "true"),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildForceExpandHeight" -Value "false"),
+            (New-Property -ComponentType "LayoutElement" -PropertyName "m_FlexibleWidth" -Value "1")
         )
     })
 
@@ -954,6 +1042,8 @@ function New-WorkspacePresentationContract {
             (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value $titleText),
             (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "16"),
             (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $titleColor),
+            (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_HorizontalAlignment" -Value "1"),
+            (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_VerticalAlignment" -Value "512"),
             (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath)
         )
     })
@@ -974,6 +1064,8 @@ function New-WorkspacePresentationContract {
                 (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value $subtitleText),
                 (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "10"),
                 (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $subtitleColor),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_HorizontalAlignment" -Value "1"),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_VerticalAlignment" -Value "512"),
                 (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath)
             )
         })
@@ -997,6 +1089,73 @@ function New-WorkspacePresentationContract {
         )
     })
 
+    if (-not [string]::IsNullOrWhiteSpace($settingsIconText)) {
+        $elements.Add([PSCustomObject][ordered]@{
+            path = "HeaderChrome/SettingsButton/IconText"
+            role = "aux-action-icon"
+            components = @("TextMeshProUGUI")
+            rect = [ordered]@{
+                anchorMin = "(0,0)"
+                anchorMax = "(1,1)"
+                pivot = "(0.5,0.5)"
+                anchoredPosition = "(0,0)"
+                sizeDelta = "(0,0)"
+            }
+            properties = @(
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value $settingsIconText),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "18"),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $mutedTextColor),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_HorizontalAlignment" -Value "2"),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_VerticalAlignment" -Value "512")
+            )
+        })
+    }
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "MainScroll"
+        role = "main-scroll"
+        components = @("ScrollRect", "RectMask2D")
+        rect = [ordered]@{
+            anchorMin = "(0,0)"
+            anchorMax = "(1,1)"
+            pivot = "(0.5,0.5)"
+            anchoredPosition = "(0,10)"
+            sizeDelta = "(0,-132)"
+        }
+        properties = @(
+            (New-Property -ComponentType "ScrollRect" -PropertyName "m_Horizontal" -Value "false"),
+            (New-Property -ComponentType "ScrollRect" -PropertyName "m_Vertical" -Value "true"),
+            (New-Property -ComponentType "ScrollRect" -PropertyName "m_MovementType" -Value "1")
+        )
+    })
+
+    $elements.Add([PSCustomObject][ordered]@{
+        path = "MainScroll/Content"
+        role = "main-scroll-content"
+        components = @("VerticalLayoutGroup", "ContentSizeFitter")
+        rect = [ordered]@{
+            anchorMin = "(0,1)"
+            anchorMax = "(1,1)"
+            pivot = "(0.5,1)"
+            anchoredPosition = "(0,0)"
+            sizeDelta = "(0,0)"
+        }
+        properties = @(
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Spacing" -Value ([string]$mainGap)),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildControlWidth" -Value "true"),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildControlHeight" -Value "false"),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildForceExpandWidth" -Value "true"),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildForceExpandHeight" -Value "false"),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Left" -Value ([string]$mainPaddingX)),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Right" -Value ([string]$mainPaddingX)),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Top" -Value ([string]$mainGap)),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Bottom" -Value ([string]$mainGap)),
+            (New-Property -ComponentType "ContentSizeFitter" -PropertyName "m_HorizontalFit" -Value "0"),
+            (New-Property -ComponentType "ContentSizeFitter" -PropertyName "m_VerticalFit" -Value "2")
+        )
+    })
+
     $elements.Add([PSCustomObject][ordered]@{
         path = "MainScroll/Content/SlotSelector"
         role = "slot-selector"
@@ -1015,6 +1174,124 @@ function New-WorkspacePresentationContract {
         )
     })
 
+    for ($slotIndex = 0; $slotIndex -lt $slotItems.Count; $slotIndex++) {
+        $slot = $slotItems[$slotIndex]
+        $slotPath = "MainScroll/Content/SlotSelector/Slot{0:D2}" -f ($slotIndex + 1)
+        $slotLabelColor = if ([bool]$slot.active) { $accentTextColor } else { $mutedTextColor }
+        $slotRoleColor = if ([bool]$slot.active) { Resolve-ConfiguredColor -Token "zinc-300" -CustomColors $CustomColors } else { Resolve-ConfiguredColor -Token "zinc-600" -CustomColors $CustomColors }
+        $slotPanelColor = if ([bool]$slot.active) { Resolve-ConfiguredColor -Token "blue-500/10" -CustomColors $CustomColors } else { Resolve-ConfiguredColor -Token "zinc-900/50" -CustomColors $CustomColors }
+        $slotBorderColor = if ([bool]$slot.active) { $accentBorderColor } else { $borderMutedColor }
+        $slotIconPanelColor = if ([bool]$slot.active) { $surfaceStrongColor } else { Resolve-ConfiguredColor -Token "zinc-950" -CustomColors $CustomColors }
+
+        $elements.Add([PSCustomObject][ordered]@{
+            path = $slotPath
+            role = "slot-item"
+            components = @("Button", "Image", "VerticalLayoutGroup", "LayoutElement")
+            rect = [ordered]@{
+                anchorMin = "(0,0.5)"
+                anchorMax = "(0,0.5)"
+                pivot = "(0.5,0.5)"
+                anchoredPosition = "(0,0)"
+                sizeDelta = "(84,88)"
+            }
+            properties = @(
+                (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $slotPanelColor),
+                (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Spacing" -Value "4"),
+                (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildAlignment" -Value "0"),
+                (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildControlWidth" -Value "true"),
+                (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildControlHeight" -Value "false"),
+                (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildForceExpandWidth" -Value "true"),
+                (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Left" -Value "8"),
+                (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Right" -Value "8"),
+                (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Top" -Value "8"),
+                (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Bottom" -Value "8"),
+                (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredWidth" -Value "84"),
+                (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "88")
+            )
+        })
+
+        $elements.Add([PSCustomObject][ordered]@{
+            path = "$slotPath/UnitText"
+            role = "slot-item-unit"
+            components = @("TextMeshProUGUI", "LayoutElement")
+            rect = [ordered]@{
+                anchorMin = "(0,1)"
+                anchorMax = "(1,1)"
+                pivot = "(0.5,1)"
+                anchoredPosition = "(0,0)"
+                sizeDelta = "(0,12)"
+            }
+            properties = @(
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value ([string]$slot.unitText)),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "10"),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $slotLabelColor),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath),
+                (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "12")
+            )
+        })
+
+        $elements.Add([PSCustomObject][ordered]@{
+            path = "$slotPath/IconFrame"
+            role = "slot-item-icon-frame"
+            components = @("Image", "LayoutElement")
+            rect = [ordered]@{
+                anchorMin = "(0.5,0.5)"
+                anchorMax = "(0.5,0.5)"
+                pivot = "(0.5,0.5)"
+                anchoredPosition = "(0,0)"
+                sizeDelta = "(40,40)"
+            }
+            properties = @(
+                (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $slotIconPanelColor),
+                (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredWidth" -Value "40"),
+                (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "40")
+            )
+        })
+
+        if (-not [string]::IsNullOrWhiteSpace([string]$slot.iconText)) {
+            $elements.Add([PSCustomObject][ordered]@{
+                path = "$slotPath/IconFrame/IconText"
+                role = "slot-item-icon"
+                components = @("TextMeshProUGUI")
+                rect = [ordered]@{
+                    anchorMin = "(0,0)"
+                    anchorMax = "(1,1)"
+                    pivot = "(0.5,0.5)"
+                    anchoredPosition = "(0,0)"
+                    sizeDelta = "(0,0)"
+                }
+                properties = @(
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value ([string]$slot.iconText)),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "18"),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $slotLabelColor),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_HorizontalAlignment" -Value "2"),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_VerticalAlignment" -Value "512")
+                )
+            })
+        }
+
+        $elements.Add([PSCustomObject][ordered]@{
+            path = "$slotPath/RoleText"
+            role = "slot-item-role"
+            components = @("TextMeshProUGUI", "LayoutElement")
+            rect = [ordered]@{
+                anchorMin = "(0,0)"
+                anchorMax = "(1,0)"
+                pivot = "(0.5,0)"
+                anchoredPosition = "(0,0)"
+                sizeDelta = "(0,12)"
+            }
+            properties = @(
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value ([string]$slot.roleText)),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "9"),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $slotRoleColor),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath),
+                (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "12")
+            )
+        })
+    }
+
     $elements.Add([PSCustomObject][ordered]@{
         path = "MainScroll/Content/FocusBar"
         role = "focus-bar"
@@ -1032,6 +1309,73 @@ function New-WorkspacePresentationContract {
         )
     })
 
+    for ($focusIndex = 0; $focusIndex -lt $focusTabs.Count; $focusIndex++) {
+        $focusTab = $focusTabs[$focusIndex]
+        $focusPath = "MainScroll/Content/FocusBar/Tab{0:D2}" -f ($focusIndex + 1)
+        $focusColor = if ([bool]$focusTab.active) { $accentTextColor } else { $mutedTextColor }
+
+        $elements.Add([PSCustomObject][ordered]@{
+            path = $focusPath
+            role = "focus-tab"
+            components = @("Button", "Image", "HorizontalLayoutGroup", "LayoutElement")
+            rect = [ordered]@{
+                anchorMin = "(0,0.5)"
+                anchorMax = "(0,0.5)"
+                pivot = "(0.5,0.5)"
+                anchoredPosition = "(0,0)"
+                sizeDelta = "(116,36)"
+            }
+            properties = @(
+                (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $(if ([bool]$focusTab.active) { Resolve-ConfiguredColor -Token "blue-500/10" -CustomColors $CustomColors } else { "#00000000" })),
+                (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Spacing" -Value "4"),
+                (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_ChildAlignment" -Value "4"),
+                (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredWidth" -Value "116"),
+                (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "36")
+            )
+        })
+
+        if (-not [string]::IsNullOrWhiteSpace([string]$focusTab.iconText)) {
+            $elements.Add([PSCustomObject][ordered]@{
+                path = "$focusPath/IconText"
+                role = "focus-tab-icon"
+                components = @("TextMeshProUGUI", "LayoutElement")
+                rect = [ordered]@{
+                    anchorMin = "(0,0.5)"
+                    anchorMax = "(0,0.5)"
+                    pivot = "(0,0.5)"
+                    anchoredPosition = "(0,0)"
+                    sizeDelta = "(20,20)"
+                }
+                properties = @(
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value ([string]$focusTab.iconText)),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "12"),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $focusColor),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath),
+                    (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredWidth" -Value "20")
+                )
+            })
+        }
+
+        $elements.Add([PSCustomObject][ordered]@{
+            path = "$focusPath/LabelText"
+            role = "focus-tab-label"
+            components = @("TextMeshProUGUI")
+            rect = [ordered]@{
+                anchorMin = "(0,0)"
+                anchorMax = "(1,1)"
+                pivot = "(0.5,0.5)"
+                anchoredPosition = "(0,0)"
+                sizeDelta = "(0,0)"
+            }
+            properties = @(
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value ([string]$focusTab.labelText)),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "11"),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $focusColor),
+                (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath)
+            )
+        })
+    }
+
     $elements.Add([PSCustomObject][ordered]@{
         path = "MainScroll/Content/EditorPanel"
         role = "editor-panel"
@@ -1046,6 +1390,10 @@ function New-WorkspacePresentationContract {
         properties = @(
             (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $(if ([string]::IsNullOrWhiteSpace($editorColor)) { "#18181B" } else { $editorColor })),
             (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Spacing" -Value ([string]$editorPadding)),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildControlWidth" -Value "true"),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildControlHeight" -Value "false"),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildForceExpandWidth" -Value "true"),
+            (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_ChildForceExpandHeight" -Value "false"),
             (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Left" -Value ([string]$editorPadding)),
             (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Right" -Value ([string]$editorPadding)),
             (New-Property -ComponentType "VerticalLayoutGroup" -PropertyName "m_Padding.m_Top" -Value ([string]$editorPadding)),
@@ -1053,6 +1401,139 @@ function New-WorkspacePresentationContract {
             (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "320")
         )
     })
+
+    if ($null -ne $editor) {
+        if (-not [string]::IsNullOrWhiteSpace([string]$editor.badgeText)) {
+            $elements.Add([PSCustomObject][ordered]@{
+                path = "MainScroll/Content/EditorPanel/BadgeText"
+                role = "editor-badge"
+                components = @("TextMeshProUGUI", "LayoutElement")
+                rect = [ordered]@{
+                    anchorMin = "(0,1)"
+                    anchorMax = "(1,1)"
+                    pivot = "(0.5,1)"
+                    anchoredPosition = "(0,0)"
+                    sizeDelta = "(0,16)"
+                }
+                properties = @(
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value ([string]$editor.badgeText)),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "9"),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $accentTextColor),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath),
+                    (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "16")
+                )
+            })
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace([string]$editor.titleText)) {
+            $elements.Add([PSCustomObject][ordered]@{
+                path = "MainScroll/Content/EditorPanel/TitleText"
+                role = "editor-title"
+                components = @("TextMeshProUGUI", "LayoutElement")
+                rect = [ordered]@{
+                    anchorMin = "(0,1)"
+                    anchorMax = "(1,1)"
+                    pivot = "(0.5,1)"
+                    anchoredPosition = "(0,0)"
+                    sizeDelta = "(0,20)"
+                }
+                properties = @(
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value ([string]$editor.titleText)),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "14"),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value "#FFFFFFFF"),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath),
+                    (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "20")
+                )
+            })
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace([string]$editor.descriptionText)) {
+            $elements.Add([PSCustomObject][ordered]@{
+                path = "MainScroll/Content/EditorPanel/DescriptionText"
+                role = "editor-description"
+                components = @("TextMeshProUGUI", "LayoutElement")
+                rect = [ordered]@{
+                    anchorMin = "(0,1)"
+                    anchorMax = "(1,1)"
+                    pivot = "(0.5,1)"
+                    anchoredPosition = "(0,0)"
+                    sizeDelta = "(0,36)"
+                }
+                properties = @(
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value ([string]$editor.descriptionText)),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "11"),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $subtitleMutedColor),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath),
+                    (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "36")
+                )
+            })
+        }
+
+        for ($statIndex = 0; $statIndex -lt @($editor.stats).Count; $statIndex++) {
+            $stat = $editor.stats[$statIndex]
+            $statPath = "MainScroll/Content/EditorPanel/Stat{0:D2}" -f ($statIndex + 1)
+            $statValueColor = if ([string]$stat.valueEmphasis -eq "accent") { Resolve-ConfiguredColor -Token "amber-500" -CustomColors $CustomColors } else { Resolve-ConfiguredColor -Token "zinc-200" -CustomColors $CustomColors }
+            $elements.Add([PSCustomObject][ordered]@{
+                path = $statPath
+                role = "editor-stat"
+                components = @("Image", "HorizontalLayoutGroup", "LayoutElement")
+                rect = [ordered]@{
+                    anchorMin = "(0,1)"
+                    anchorMax = "(1,1)"
+                    pivot = "(0.5,1)"
+                    anchoredPosition = "(0,0)"
+                    sizeDelta = "(0,28)"
+                }
+                properties = @(
+                    (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $(Resolve-ConfiguredColor -Token "zinc-950/50" -CustomColors $CustomColors)),
+                    (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_ChildControlWidth" -Value "true"),
+                    (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_ChildForceExpandWidth" -Value "true"),
+                    (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Left" -Value "8"),
+                    (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Right" -Value "8"),
+                    (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value "28")
+                )
+            })
+
+            $elements.Add([PSCustomObject][ordered]@{
+                path = "$statPath/LabelText"
+                role = "editor-stat-label"
+                components = @("TextMeshProUGUI")
+                rect = [ordered]@{
+                    anchorMin = "(0,0)"
+                    anchorMax = "(0.6,1)"
+                    pivot = "(0,0.5)"
+                    anchoredPosition = "(0,0)"
+                    sizeDelta = "(0,0)"
+                }
+                properties = @(
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value ([string]$stat.labelText)),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "10"),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $mutedTextColor),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath)
+                )
+            })
+
+            $elements.Add([PSCustomObject][ordered]@{
+                path = "$statPath/ValueText"
+                role = "editor-stat-value"
+                components = @("TextMeshProUGUI")
+                rect = [ordered]@{
+                    anchorMin = "(0.4,0)"
+                    anchorMax = "(1,1)"
+                    pivot = "(1,0.5)"
+                    anchoredPosition = "(0,0)"
+                    sizeDelta = "(0,0)"
+                }
+                properties = @(
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value ([string]$stat.valueText)),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "11"),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $statValueColor),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_HorizontalAlignment" -Value "4")
+                )
+            })
+        }
+    }
 
     $elements.Add([PSCustomObject][ordered]@{
         path = "MainScroll/Content/PreviewCard"
@@ -1070,6 +1551,52 @@ function New-WorkspacePresentationContract {
             (New-Property -ComponentType "LayoutElement" -PropertyName "m_PreferredHeight" -Value ([string]$previewHeightPx))
         )
     })
+
+    if ($null -ne $preview) {
+        if (-not [string]::IsNullOrWhiteSpace([string]$preview.titleText)) {
+            $elements.Add([PSCustomObject][ordered]@{
+                path = "MainScroll/Content/PreviewCard/TitleText"
+                role = "preview-title"
+                components = @("TextMeshProUGUI")
+                rect = [ordered]@{
+                    anchorMin = "(0,1)"
+                    anchorMax = "(0,1)"
+                    pivot = "(0,1)"
+                    anchoredPosition = "(12,-12)"
+                    sizeDelta = "(160,16)"
+                }
+                properties = @(
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value ([string]$preview.titleText)),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "10"),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $mutedTextColor),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath)
+                )
+            })
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace([string]$preview.iconText)) {
+            $elements.Add([PSCustomObject][ordered]@{
+                path = "MainScroll/Content/PreviewCard/CenterIcon"
+                role = "preview-icon"
+                components = @("TextMeshProUGUI")
+                rect = [ordered]@{
+                    anchorMin = "(0.5,0.5)"
+                    anchorMax = "(0.5,0.5)"
+                    pivot = "(0.5,0.5)"
+                    anchoredPosition = "(0,0)"
+                    sizeDelta = "(72,72)"
+                }
+                properties = @(
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_text" -Value ([string]$preview.iconText)),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontSize" -Value "32"),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontColor" -Value $accentTextColor),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_fontAsset" -AssetReferencePath $FontAssetPath),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_HorizontalAlignment" -Value "2"),
+                    (New-Property -ComponentType "TextMeshProUGUI" -PropertyName "m_VerticalAlignment" -Value "512")
+                )
+            })
+        }
+    }
 
     if (-not [string]::IsNullOrWhiteSpace($summaryText)) {
         $elements.Add([PSCustomObject][ordered]@{
@@ -1163,6 +1690,10 @@ function New-WorkspacePresentationContract {
         }
         properties = @(
             (New-Property -ComponentType "Image" -PropertyName "m_Color" -Value $(if ([string]::IsNullOrWhiteSpace($saveDockColor)) { "#18181B" } else { $saveDockColor })),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_ChildControlWidth" -Value "true"),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_ChildControlHeight" -Value "false"),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_ChildForceExpandWidth" -Value "true"),
+            (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_ChildForceExpandHeight" -Value "false"),
             (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Left" -Value ([string]$saveDockPaddingX)),
             (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Right" -Value ([string]$saveDockPaddingX)),
             (New-Property -ComponentType "HorizontalLayoutGroup" -PropertyName "m_Padding.m_Top" -Value ([string]$saveDockPaddingTop)),
@@ -1230,7 +1761,7 @@ function New-WorkspacePresentationContract {
     }
 }
 
-$profile = Get-PresentationProfile -SurfaceId $SurfaceId
+$profile = Get-PresentationProfile -SurfaceId $SurfaceId -HtmlPath $HtmlPath -ImagePath $ImagePath -TargetAssetPath $TargetAssetPath
 $defaults = Get-RequiredValue -InputObject $profile -Name "defaults"
 
 if ([string]::IsNullOrWhiteSpace($HtmlPath)) {
@@ -1248,9 +1779,17 @@ if ([string]::IsNullOrWhiteSpace($OutputPath)) {
 $html = Read-AllText -PathValue $HtmlPath
 $customColors = Get-CustomColors -Html $html
 $fontAssetPath = "Assets/TextMesh Pro/Resources/Fonts & Materials/NotoSansKR Dynamic.asset"
-$family = [string](Get-RequiredValue -InputObject $profile -Name "family")
-switch ($family) {
-    "overlay-dialog-v1" {
+$profileKind = if ($null -ne $profile.PSObject.Properties["footer"] -and $null -ne $profile.PSObject.Properties["body"]) {
+    "overlay-dialog"
+}
+elseif ($null -ne $profile.PSObject.Properties["workspace"]) {
+    "workspace-screen"
+}
+else {
+    ""
+}
+switch ($profileKind) {
+    "overlay-dialog" {
         $contract = New-OverlayDialogPresentationContract `
             -Profile $profile `
             -Html $html `
@@ -1258,17 +1797,19 @@ switch ($family) {
             -HtmlPath $HtmlPath `
             -ImagePath $ImagePath `
             -FontAssetPath $fontAssetPath
+        break
     }
-    "workspace-screen-v1" {
+    "workspace-screen" {
         $contract = New-WorkspacePresentationContract `
             -Profile $profile `
             -CustomColors $customColors `
             -HtmlPath $HtmlPath `
             -ImagePath $ImagePath `
             -FontAssetPath $fontAssetPath
+        break
     }
     default {
-        throw "Unsupported presentation profile family '$family' for '$SurfaceId'."
+        throw "Unsupported presentation profile structure for '$SurfaceId'."
     }
 }
 

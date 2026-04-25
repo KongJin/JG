@@ -1,17 +1,18 @@
 # 기술부채 감축 실행 계획
 
 > 마지막 업데이트: 2026-04-23
-> 상태: active
+> 상태: reference
 > doc_id: plans.tech-debt-reduction
 > role: plan
-> owner_scope: 기술부채 감축 우선순위와 실행 순서
-> upstream: plans.progress, historical.tech-debt-review
-> artifacts: `docs/tech_debt_review.md`
+> owner_scope: 기술부채 감축 우선순위와 실행 순서 reference
+> upstream: plans.progress
+> artifacts: none
 >
 > 생성일: 2026-04-17
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
 이 문서는 현재 프로젝트의 기술부채를 "무엇이 불편한가" 수준이 아니라, **무엇을 어떤 순서로 줄여야 배포 신뢰도가 올라가는가** 기준으로 정리한 실행 계획이다.
+현재 실행 상태와 우선순위는 [`progress.md`](./progress.md)를 우선한다.
 
 핵심 방향은 아래 세 가지로 고정한다.
 
@@ -29,7 +30,7 @@
 |---|---:|---|
 | 런타임 검증 / 배포 신뢰도 | 7.9 | WebGL, GameScene loop, 멀티플레이 핵심 경로의 실기 확인이 아직 부족하다 |
 | 테스트 안전망 | 7.5 | 최근 EditMode/reflection 테스트는 늘었지만 핵심 흐름 대비 더 보강이 필요하다 |
-| 씬 / Inspector wiring | 6.2 | `CodexLobbySceneContract`와 required-field audit로 안정화가 진행됐다 |
+| 씬 / Inspector wiring | 6.2 | legacy Lobby scene contract route는 제거됐고, required-field audit 중심으로 정리 중이다 |
 | Account / Firebase / WebGL 통합 | 6.6 | Garage save/load, account delete는 진척됐지만 Google linking 실기는 남아 있다 |
 | 도구 / 자동화 안정성 | 5.8 | Unity MCP core workflow는 정리됐지만 Play Mode 전환은 간헐적 흔들림이 남는다 |
 | 비동기 UI 수명주기 | 6.2 | `async void` 기반 액션이 예외 추적과 취소를 어렵게 만든다 |
@@ -90,10 +91,10 @@ Editor 기준으로 Lobby/Garage 관련 씬 계약을 다시 흔들리지 않는
 - Lobby/Garage 핵심 씬에서 missing reference, runtime fallback, name-based lookup이 남지 않는다.
 - Play Mode 진입 시 즉시 터지는 wiring 오류가 없다.
 - `progress.md`의 관련 TODO가 구체적인 남은 항목만 남도록 줄어든다.
-- `CodexLobbySceneContract`와 required-field audit가 canonical structure 검증을 맡고, smoke는 decorative hierarchy에 의존하지 않는다.
+- required-field audit가 canonical structure 검증을 맡고, smoke는 decorative hierarchy에 의존하지 않는다.
 
 예상 순서:
-1. `CodexLobbyScene` wiring 재검증
+1. active scene wiring 재검증
 2. 필수 직렬화 참조 누락 수정
 3. contract 문서 / `progress.md` 동기화
 
@@ -258,5 +259,5 @@ Phase 10/11의 가장 큰 리스크인 "브라우저에서 진짜 되는가"를 
 
 - 공식 진행 상태는 항상 [`progress.md`](./progress.md)를 우선한다.
 - 이 문서는 우선순위와 실행 순서를 설명하는 계획 문서다.
-- 오래된 [`../tech_debt_review.md`](../tech_debt_review.md)는 참고용 이력으로 보고, 현재 우선순위 판단은 이 문서와 `progress.md`를 따른다.
+- 현재 우선순위 판단은 이 문서와 `progress.md`를 따른다.
 - 각 Track의 첫 실기 결과가 나오면 이 문서보다 먼저 `progress.md`를 갱신한다.

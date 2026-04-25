@@ -10,13 +10,12 @@
 
 이 문서는 JG에서 `Stitch` 산출물을 어떻게 저장하고 Unity handoff로 넘길지 정하는 단일 운영 기준이다.
 현재 활성 흐름은 `Stitch source freeze -> execution contracts -> Unity translation`이다.
+기본값은 아래와 같다.
 
-현재 기본 실행은 source를 다시 읽어 필요한 execution contract를 메모리에서 준비한 뒤 translation까지 이어지는 흐름이다.
-지원되는 화면 구조에서는 screen별 `manifest/map/presentation` JSON file을 실행 주인으로 두지 않는다.
-새 surface onboarding은 저장 파일을 늘리는 방식이 아니라 source에서 바로 execution contract를 준비하는 쪽으로 닫는다.
-set별 전용 SceneTool, set별 전용 review prep menu, set별 전용 prefab pack generator는 active route에서 제거한다.
-지원되는 review route는 family-level generic tool만 사용하고, surface-specific execution helper를 새로 늘리지 않는다.
-조용한 우회 실행은 허용하지 않는다.
+- source를 다시 읽어 필요한 execution contract를 메모리에서 준비한 뒤 translation까지 잇는다.
+- 지원되는 화면 구조에서는 screen별 `manifest/map/presentation` JSON file을 active execution owner로 두지 않는다.
+- 새 surface onboarding과 review route는 generic tool로 닫고, set/surface 전용 helper는 늘리지 않는다.
+- 조용한 우회 실행은 허용하지 않는다.
 
 ## 목적
 
@@ -101,7 +100,7 @@ execution contract 안의 `screen manifest`는 아래를 가진다.
 경로, layout 숫자, label literal은 manifest에 적지 않는다.
 
 지원되는 화면 구조에서는 manifest file을 repo에 남기지 않는다.
-실제 실행은 source에서 다시 준비된 in-memory contract가 소유한다.
+실제 실행 owner는 source에서 다시 준비된 in-memory contract다.
 
 ### 3. Unity Map 준비
 
@@ -118,7 +117,7 @@ map은 경로 binding만 가진다.
 시각 수치와 스타일 값은 map에 적지 않는다.
 
 지원되는 화면 구조에서는 unity-map file도 repo에 남기지 않는다.
-실제 실행은 source에서 다시 준비된 in-memory contract가 소유한다.
+실행 owner 기준은 manifest와 같다.
 
 ### 4. Presentation Contract 생성
 
@@ -172,6 +171,7 @@ translator는:
 - Stitch-driven script는 layout/style/text 상수나 fallback을 소유하지 않는다.
 - 계약에 필요한 값이 없으면 script가 기본값으로 메우지 않고 즉시 실패한다.
 - `source-derived`는 contract를 채우는 extraction 단계에만 허용되고, translator가 시각 결정을 새로 만드는 경로는 활성 기준이 아니다.
+- 새 screen onboarding 중 공통 parser, target binding, review route, MCP helper, evidence policy 수정이 필요해지면 그 실행은 즉시 `blocked`로 멈춘다. 해당 수정은 onboarding이 아니라 별도 capability expansion 작업으로 선언한다.
 
 ### 6. Translation Evidence 남기기
 
@@ -184,9 +184,10 @@ translation 뒤에는 아래 artifact를 남긴다.
 
 review route 규칙:
 
-- review prep은 family-level generic tool만 허용한다.
+- review prep은 generic tool만 허용한다.
 - review route가 없으면 translation과 분리된 `warning/not-configured`로만 남긴다.
 - set별 전용 TempScene prep tool을 새 active route로 복구하지 않는다.
+- review route를 추가해야만 한 화면을 닫을 수 있다면, 그 화면은 zero-touch onboarding closeout이 아니라 capability expansion backlog다.
 
 `pipeline`은 stage status, 입력 경로, artifact path만 남기는 얇은 요약이다.
 세부 내용은 `preflight`와 `translation` artifact가 각각 소유한다.
@@ -222,6 +223,7 @@ target prefab이 없어도 정상 케이스다.
 - hand-authored profile 수정을 활성 execution contract처럼 취급하는 것
 - `pending-source-derivation` 상태를 active translation-ready contract처럼 취급하는 것
 - source 기반 준비가 실패했는데 script가 조용히 다른 경로로 내려가게 두는 것
+- screen onboarding evidence와 공통 Stitch/Unity MCP capability 또는 evidence policy 수정을 같은 closeout에 섞는 것
 
 ## 읽기 순서
 

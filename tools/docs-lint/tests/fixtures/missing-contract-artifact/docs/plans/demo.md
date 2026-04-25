@@ -7,4 +7,4 @@
 > upstream: docs.index
 > artifacts: none
 
-Expected contract: `.stitch/contracts/set-a-lobby-root.json`
+Expected contract: `.stitch/contracts/example-screen-root.json`

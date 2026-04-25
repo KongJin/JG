@@ -6,8 +6,15 @@ on:
       - "docs/**"
       - "AGENTS.md"
       - ".codex/skills/jg-*/**"
+      - ".githooks/**"
+      - "artifacts/rules/**"
+      - "tools/**/*.ps1"
+      - "tools/**/*.mjs"
+      - "tools/**/*.js"
+      - "tools/**/*.py"
       - "tools/*/README.md"
       - "tools/docs-lint/**"
+      - "tools/rule-harness/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/**"
@@ -19,6 +26,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -29,5 +38,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Export changed files
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          changed_files="$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")"
+          {
+            echo 'RULES_LINT_CHANGED_FILES<<EOF'
+            printf '%s\n' "$changed_files"
+            echo 'EOF'
+          } >> "$GITHUB_ENV"
+
       - name: Run docs lint
-        run: npm run docs:lint
+        run: npm run rules:lint

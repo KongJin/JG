@@ -67,6 +67,10 @@ runtime 검증 운영 모델은 아래로 고정한다.
 - runtime 확인이 필요한 변경은 `manual-validation-required` 또는 `docs/playtest/runtime_validation_checklist.md` 기록으로 남긴다.
 - scope가 `AGENTS.md`, `docs/*`, `.codex/skills/jg-*`, `.githooks/*`, `tools/docs-lint/*`, `tools/rule-harness/*`로 시작하면 하네스는 이를 `rules-only scope`로 취급한다.
 - `rules-only scope`에서 feature code, scene/prefab, generated `.csproj` 같은 비규칙 target이 batch에 섞이면 `rules-scope-mutation-violation`으로 즉시 stop한다.
+- `rules-only scope`에서 patch plan target이 남으면 하네스는 `artifacts/rules/issue-recurrence-closeout.json`을 함께 검사한다.
+  - `verification`은 항상 비어 있으면 안 된다.
+  - `issueDetected = true`면 `rootCause`, `prevention`, `verification`이 모두 채워져야 한다.
+  - `changedPaths`는 rules-only target file을 포함해야 하고, 누락 시 `rules_closeout` stage가 failed가 된다.
 - 정적 스캔은 `tools/`, `.github/workflows/`, `tools/rule-harness/` 아래에서 hardcoded MCP UI smoke 재유입을 차단한다.
   - 차단 예: `/ui/button/invoke`, `/input/click`, `/input/drag`, `/input/key`, `/input/text`, `Get-McpUiPath`, `Invoke-McpButton`
   - 예외: `tools/mcp-test-compile.ps1`, `tools/mcp-diagnose-scene-hierarchy.ps1`, `tools/mcp-hierarchy-diag.ps1`, `tools/unity-mcp/`, `tools/rule-harness/tests/`

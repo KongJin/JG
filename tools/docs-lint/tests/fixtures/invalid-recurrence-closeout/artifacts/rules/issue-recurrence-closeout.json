@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-04-25",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "rootCause": "",
+  "prevention": "",
+  "verification": "",
+  "blockedReason": "",
+  "changedPaths": [
+    "docs/index.md",
+    "artifacts/rules/issue-recurrence-closeout.json"
+  ]
+}

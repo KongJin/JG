@@ -20,47 +20,36 @@ namespace ProjectSD.EditorTools.SceneTools
         private const string CameraRootName = "StitchRuntimeReviewCamera";
         private const string CanvasRootName = "StitchRuntimeReviewCanvas";
         private const string FrameRootName = "MobileReviewFrame";
+        private const float ReviewCanvasScale = 0.01f;
+        private const float ReviewFramePaddingFactor = 0.62f;
 
         [Serializable]
         private sealed class ReviewRequest
         {
-            public string familyId = string.Empty;
             public string surfaceId = string.Empty;
             public string displayName = string.Empty;
             public string prefabPath = string.Empty;
         }
 
-        private sealed class FamilyVisualSpec
+        private sealed class ReviewVisualSpec
         {
             public string DefaultRootName { get; set; }
             public Color CameraColor { get; set; }
             public Color FrameColor { get; set; }
         }
 
-        [MenuItem(MenuRoot + "Overlay Family")]
-        private static void PrepareOverlayFamily()
+        [MenuItem(MenuRoot + "Surface")]
+        private static void PrepareSurface()
         {
-            PrepareRequestedSurface("overlay-dialog-v1");
+            PrepareRequestedSurface();
         }
 
-        [MenuItem(MenuRoot + "Workspace Family")]
-        private static void PrepareWorkspaceFamily()
-        {
-            PrepareRequestedSurface("workspace-screen-v1");
-        }
-
-        private static void PrepareRequestedSurface(string expectedFamilyId)
+        private static void PrepareRequestedSurface()
         {
             var request = LoadRequest();
             if (request == null)
             {
                 Debug.LogError($"[StitchRuntimeReviewTool] Missing or invalid request file: {RequestPath}");
-                return;
-            }
-
-            if (!string.Equals(request.familyId, expectedFamilyId, StringComparison.Ordinal))
-            {
-                Debug.LogError($"[StitchRuntimeReviewTool] Requested family '{request.familyId}' does not match menu family '{expectedFamilyId}'.");
                 return;
             }
 
@@ -79,7 +68,7 @@ namespace ProjectSD.EditorTools.SceneTools
                 return;
             }
 
-            var spec = GetFamilyVisualSpec(expectedFamilyId);
+            var spec = GetReviewVisualSpec();
             var reviewCamera = ResetSceneRoots(spec.CameraColor);
             var canvasRoot = CreateCanvasRoot(reviewCamera);
             var frameRoot = CreateFrameRoot(canvasRoot.transform, spec.FrameColor);
@@ -108,8 +97,8 @@ namespace ProjectSD.EditorTools.SceneTools
 
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
-            FocusSceneView();
-            Selection.activeGameObject = instance;
+            Selection.activeGameObject = frameRoot.gameObject;
+            FocusSceneView(frameRoot);
 
             var displayName = string.IsNullOrWhiteSpace(request.displayName) ? prefabAsset.name : request.displayName;
             Debug.Log($"[StitchRuntimeReviewTool] Prepared {displayName} review surface in TempScene.");
@@ -131,28 +120,13 @@ namespace ProjectSD.EditorTools.SceneTools
             return JsonUtility.FromJson<ReviewRequest>(json);
         }
 
-        private static FamilyVisualSpec GetFamilyVisualSpec(string familyId)
+        private static ReviewVisualSpec GetReviewVisualSpec()
         {
-            return familyId switch
+            return new ReviewVisualSpec
             {
-                "overlay-dialog-v1" => new FamilyVisualSpec
-                {
-                    DefaultRootName = "OverlaySurface",
-                    CameraColor = new Color(0.03f, 0.04f, 0.07f, 1f),
-                    FrameColor = new Color(0.05f, 0.06f, 0.10f, 1f)
-                },
-                "workspace-screen-v1" => new FamilyVisualSpec
-                {
-                    DefaultRootName = "WorkspaceSurface",
-                    CameraColor = new Color(0.04f, 0.05f, 0.08f, 1f),
-                    FrameColor = new Color(0.07f, 0.08f, 0.11f, 1f)
-                },
-                _ => new FamilyVisualSpec
-                {
-                    DefaultRootName = "ReviewSurface",
-                    CameraColor = new Color(0.04f, 0.05f, 0.08f, 1f),
-                    FrameColor = new Color(0.07f, 0.08f, 0.11f, 1f)
-                }
+                DefaultRootName = "ReviewSurface",
+                CameraColor = new Color(0.04f, 0.05f, 0.08f, 1f),
+                FrameColor = new Color(0.07f, 0.08f, 0.11f, 1f)
             };
         }
 
@@ -214,7 +188,7 @@ namespace ProjectSD.EditorTools.SceneTools
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.anchoredPosition = Vector2.zero;
             rect.sizeDelta = new Vector2(390f, 844f);
-            rect.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+            rect.localScale = new Vector3(ReviewCanvasScale, ReviewCanvasScale, ReviewCanvasScale);
 
             return canvasGo;
         }
@@ -279,18 +253,34 @@ namespace ProjectSD.EditorTools.SceneTools
             }
         }
 
-        private static void FocusSceneView()
+        private static void FocusSceneView(RectTransform targetRect)
         {
             var sceneView = SceneView.lastActiveSceneView ?? EditorWindow.GetWindow<SceneView>();
-            if (sceneView == null)
+            if (sceneView == null || targetRect == null)
             {
                 return;
             }
 
+            var bounds = GetWorldBounds(targetRect);
+            var size = Mathf.Max(bounds.size.y * 0.5f, bounds.size.x * 0.5f) * ReviewFramePaddingFactor;
             sceneView.orthographic = true;
             sceneView.in2DMode = true;
-            sceneView.LookAt(Vector3.zero, Quaternion.identity, 4.5f, true);
+            sceneView.LookAtDirect(bounds.center, Quaternion.identity, Mathf.Max(0.1f, size));
             sceneView.Repaint();
+        }
+
+        private static Bounds GetWorldBounds(RectTransform rectTransform)
+        {
+            var corners = new Vector3[4];
+            rectTransform.GetWorldCorners(corners);
+
+            var bounds = new Bounds(corners[0], Vector3.zero);
+            for (var i = 1; i < corners.Length; i++)
+            {
+                bounds.Encapsulate(corners[i]);
+            }
+
+            return bounds;
         }
     }
 }

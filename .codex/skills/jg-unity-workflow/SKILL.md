@@ -1,6 +1,6 @@
 ---
 name: jg-unity-workflow
-description: Project-specific Unity workflow for the JG repo. Use when Codex works on Unity scenes, prefabs, MCP editor automation, runtime smoke scripts, or Unity-facing docs in this repository, especially under `Assets/Scenes`, `Assets/Resources`, `Assets/Editor/UnityMcp`, or `tools/unity-mcp`.
+description: Project-specific Unity workflow for the JG repo. Use when Codex works on Unity scenes, prefabs, Unity UI authoring policy, new UI prefab decisions, presentation ownership, workflow policy checks, Stitch handoff/translation/source freeze/execution contract/presentation contract work, MCP editor automation, runtime smoke scripts, or Unity-facing docs in this repository, especially under `Assets/Scenes`, `Assets/Resources`, `Assets/Prefabs`, `Assets/Editor/UnityMcp`, `tools/unity-mcp`, or `tools/stitch-unity`.
 ---
 
 # JG Unity Workflow
@@ -23,8 +23,8 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` when you need the current doc routes.
 3. Read owner doc `ops.cohesion-coupling-policy` when the task needs owner boundaries, cohesion/coupling judgment, or responsibility splitting.
-4. If the task touches Unity UI or UX authoring, read owner doc `ops.unity-ui-authoring-workflow` before any implementation.
-5. If the task depends on Stitch handoff or `.stitch` artifacts, read owner doc `ops.stitch-data-workflow` before translating them into Unity work.
+4. If the task touches Unity UI or UX authoring, new UI prefabs, presentation ownership, or workflow policy checks, read owner doc `ops.unity-ui-authoring-workflow` before any implementation.
+5. If the task depends on Stitch handoff, source freeze, execution contracts, presentation contracts, translation, or `.stitch` artifacts, read owner doc `ops.stitch-data-workflow` before translating them into Unity work.
 6. If the task touches Unity MCP, Play Mode automation, prefab-first reset, or runtime smoke, read `tools/unity-mcp/README.md` as execution reference.
 7. If the task creates or substantially rewrites a plan doc, read owner doc `ops.plan-authoring-review-workflow` before editing the plan.
 8. If the task needs acceptance, blocked/mismatch wording, or closeout judgment, read owner doc `ops.acceptance-reporting-guardrails`.

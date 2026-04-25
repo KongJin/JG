@@ -236,7 +236,10 @@ namespace ProjectSD.EditorTools.UnityMcp
                     break;
                 case SerializedPropertyType.String: sp.stringValue = value; break;
                 case SerializedPropertyType.Enum:
-                    if (int.TryParse(value, out var enumIdx)) sp.enumValueIndex = enumIdx;
+                    if (int.TryParse(value, out var enumNumericValue))
+                    {
+                        sp.intValue = enumNumericValue;
+                    }
                     else
                     {
                         var idx = Array.IndexOf(sp.enumDisplayNames, value);

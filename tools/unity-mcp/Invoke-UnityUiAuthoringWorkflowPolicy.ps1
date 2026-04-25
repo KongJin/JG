@@ -1,7 +1,8 @@
 param(
     [string]$UnityBridgeUrl,
     [string]$ResultPath = "artifacts/unity/unity-ui-authoring-workflow-policy.json",
-    [int]$TimeoutSec = 120
+    [int]$TimeoutSec = 120,
+    [switch]$AllowCapabilityExpansion
 )
 
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force | Out-Null
@@ -153,6 +154,44 @@ function Get-DeclaredResetPrefabTargets {
     return @($targets | Sort-Object -Unique)
 }
 
+function Get-StitchSourceFreezeResetPrefabTargets {
+    param(
+        [string]$RepoRoot
+    )
+
+    $designRoot = Join-Path $RepoRoot ".stitch\designs"
+    $generatorPath = Join-Path $RepoRoot "tools\stitch-unity\presentations\Generate-StitchPresentationProfile.ps1"
+    if (-not (Test-Path -LiteralPath $designRoot) -or -not (Test-Path -LiteralPath $generatorPath)) {
+        return @()
+    }
+
+    $targets = @()
+    foreach ($htmlFile in Get-ChildItem -LiteralPath $designRoot -Filter *.html -File) {
+        $surfaceId = [System.IO.Path]::GetFileNameWithoutExtension($htmlFile.Name)
+        try {
+            $json = & powershell -NoProfile -ExecutionPolicy Bypass -File $generatorPath -SurfaceId $surfaceId -CanGenerateOnly 2>$null
+            if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace(($json | Out-String))) {
+                continue
+            }
+
+            $probe = $json | Out-String | ConvertFrom-Json
+            if ($null -eq $probe -or -not [bool]$probe.supported) {
+                continue
+            }
+
+            $targetAssetPath = [string]$probe.targetAssetPath
+            if (-not [string]::IsNullOrWhiteSpace($targetAssetPath)) {
+                $targets += $targetAssetPath
+            }
+        }
+        catch {
+            continue
+        }
+    }
+
+    return @($targets | Sort-Object -Unique)
+}
+
 function New-EvidenceRecord {
     param(
         [string]$Name,
@@ -234,7 +273,6 @@ $presentationCodePatterns = @(
 )
 $lobbyPatterns = @(
     '^Assets/Scenes/LobbyScene\.unity$',
-    '^Assets/Editor/SceneTools/LobbySceneContract\.cs$',
     '^Assets/Scripts/Features/Garage/',
     '^Assets/Scripts/Features/Lobby/'
 )
@@ -248,14 +286,31 @@ $unityUiRelevantPatterns = @(
     '^Assets/.+\.prefab$',
     '^Assets/Scripts/Features/.+/Presentation/.+\.cs$'
 )
+$stitchSurfaceOnboardingEvidencePatterns = @(
+    '^artifacts/unity/set-[a-e]-.+\.(json|png)$',
+    '^artifacts/unity/(garage|lobby|account|common|battle|result)-.+\.(json|png)$',
+    '^Assets/Prefabs/Features/.+/Root/.+\.prefab$'
+)
+$stitchCapabilityExpansionPatterns = @(
+    '^tools/stitch-unity/',
+    '^tools/unity-mcp/',
+    '^Assets/Editor/UnityMcp/',
+    '^Assets/Editor/SceneTools/.+Stitch.+\.cs$'
+)
 
 $scenePrefabFiles = Get-PathsMatching -Paths $changedFiles -Patterns $scenePrefabPatterns
 $presentationFiles = Get-PathsMatching -Paths $changedFiles -Patterns $presentationCodePatterns
 $lobbyFiles = Get-PathsMatching -Paths $changedFiles -Patterns $lobbyPatterns
 $gameSceneFiles = Get-PathsMatching -Paths $changedFiles -Patterns $gameScenePatterns
 $unityUiRelevantFiles = Get-PathsMatching -Paths $changedFiles -Patterns $unityUiRelevantPatterns
+$stitchSurfaceOnboardingFiles = Get-PathsMatching -Paths $changedFiles -Patterns $stitchSurfaceOnboardingEvidencePatterns
+$stitchCapabilityExpansionFiles = Get-PathsMatching -Paths $changedFiles -Patterns $stitchCapabilityExpansionPatterns
 $newPrefabFiles = Get-PathsMatching -Paths $addedFiles -Patterns @('^Assets/.+\.prefab$')
-$declaredResetPrefabTargets = Get-DeclaredResetPrefabTargets -RepoRoot $repoRoot
+$declaredResetPrefabTargets = @(
+    (Get-DeclaredResetPrefabTargets -RepoRoot $repoRoot) +
+    (Get-StitchSourceFreezeResetPrefabTargets -RepoRoot $repoRoot) |
+        Sort-Object -Unique
+)
 
 $hasScenePrefab = @($scenePrefabFiles).Count -gt 0
 $hasPresentationCode = @($presentationFiles).Count -gt 0
@@ -289,6 +344,18 @@ $policyViolations = @()
 $compileSummary = $null
 $layoutOwnershipSummary = $null
 $presentationResponsibilitySummary = $null
+$capabilityExpansionGuard = [PSCustomObject]@{
+    allowCapabilityExpansion = [bool]$AllowCapabilityExpansion
+    surfaceOnboardingFiles = $stitchSurfaceOnboardingFiles
+    capabilityExpansionFiles = $stitchCapabilityExpansionFiles
+}
+
+if (@($stitchSurfaceOnboardingFiles).Count -gt 0 -and @($stitchCapabilityExpansionFiles).Count -gt 0 -and -not $AllowCapabilityExpansion) {
+    $policyViolations += [PSCustomObject]@{
+        code = "stitch-onboarding-mixed-with-capability-expansion"
+        message = "Stitch screen onboarding evidence is mixed with common Stitch/Unity MCP capability or policy edits. Stop and split the work: zero-touch onboarding must not mutate shared logic; capability expansion must be declared and validated as a separate lane."
+    }
+}
 
 if ($route -ne "no-unity-ui-workflow") {
     $requiredEvidence += [PSCustomObject]@{
@@ -421,29 +488,7 @@ if ($route -ne "no-unity-ui-workflow") {
         }
     }
 
-    if ($hasLobby -and $lobbySceneExists) {
-        $requiredEvidence += [PSCustomObject]@{
-            name = "lobby-workflow-gate"
-            path = "artifacts/unity/lobby-ui-workflow-result.json"
-            message = "Lobby UI changes require a fresh workflow gate result newer than the latest modified source file."
-        }
-
-        $workflowGateCheck = Test-EvidenceFreshness `
-            -RepoRoot $repoRoot `
-            -EvidencePath "artifacts/unity/lobby-ui-workflow-result.json" `
-            -SourcePaths $lobbyFiles `
-            -EvidenceName "lobby-workflow-gate" `
-            -MissingMessage "Lobby UI changes require a fresh workflow gate result newer than the latest modified source file." `
-            -StaleMessage "Lobby UI changes require a fresh workflow gate result newer than the latest modified source file."
-        if ($workflowGateCheck.status -eq "missing") {
-            $missingEvidence += $workflowGateCheck.record
-        }
-        elseif ($workflowGateCheck.status -eq "stale") {
-            $staleEvidence += $workflowGateCheck.record
-        }
-
-    }
-    elseif ($hasLobby -and -not $lobbySceneExists) {
+    if ($hasLobby -and -not $lobbySceneExists) {
         $requiredEvidence += [PSCustomObject]@{
             name = "prefab-first-reset"
             path = $null
@@ -481,6 +526,7 @@ $report = [PSCustomObject]@{
     compile = $compileSummary
     presentationLayoutOwnership = $layoutOwnershipSummary
     presentationResponsibility = $presentationResponsibilitySummary
+    capabilityExpansionGuard = $capabilityExpansionGuard
     resultPath = $resultAbsolutePath
 }
 

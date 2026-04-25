@@ -27,7 +27,6 @@
 | `scene/prefab authoring` | `Assets/Scenes/*.unity`, `Assets/**/*.prefab` 중심 UI 작업 | MCP로 현재 hierarchy와 serialized ref를 읽고, scene/prefab을 직접 authoring | compile/reload + workflow policy check |
 | `presentation-code` | `Assets/Scripts/Features/*/Presentation/*.cs` 변경이 필요한 상태 렌더/이벤트/UI 바인딩 작업 | 코드는 상태 렌더, 이벤트, 데이터 연결만 담당 | compile/reload + workflow policy check + presentation validator |
 | `mixed` | scene/prefab과 presentation code를 함께 건드릴 때 | scene contract를 먼저 읽고, scene/prefab authoring을 주인으로 유지 | compile/reload + workflow policy check + 필요한 scene-specific evidence |
-| `codex-lobby-ui` | legacy Lobby/Garage scene가 아직 실제 authoring 대상일 때만 | historical route. scene가 실제 존재할 때만 MCP repair 사용 | fresh workflow gate |
 | `game-scene-ui` | legacy battle scene가 아직 실제 authoring 대상일 때만 | scene가 실제 존재할 때만 MCP repair로 직접 정리 | compile/reload + workflow policy check + route-specific verification |
 | `prefab-first reset` | scene/prefab 결과물을 의도적으로 폐기하고 Stitch handoff에서 다시 가져올 때 | scene repair 대신 surface별 baseline prefab을 먼저 재구성하고, scene은 마지막에 새로 조립 | compile/reload + workflow policy check + prefab wiring review + scene 생성 후 fresh contract/translation pipeline |
 
@@ -53,14 +52,6 @@
 - `presentation-code` route는 값 하드코딩이나 fallback으로 contract 빈칸을 메우지 않는다. 값 owner는 token, serialized contract, 또는 scene/prefab SSOT다
 
 ## Route별 필수 증거
-
-### `CodexLobbyScene`
-
-이 evidence는 legacy scene route가 실제로 존재할 때만 acceptance proof다.
-reset 상태에서는 historical reference로만 본다.
-
-- `artifacts/unity/codex-lobby-ui-workflow-result.json`
-- artifact는 관련 source 변경보다 최신이어야 한다.
 
 ### `GameScene`
 
@@ -111,9 +102,6 @@ reset 상태에서는 historical reference로만 본다.
   - 현재 변경 파일을 읽고 route를 판정한다.
   - 필요한 validator, presentation responsibility lint, artifact freshness, prefab 금지 규칙을 검사한다.
   - policy가 blocked면 결과 artifact에 `blockedReason`을 남긴다.
-- `Invoke-CodexLobbyUiWorkflowGate.ps1`
-  - `CodexLobbyScene` acceptance proof를 생성한다.
-
 ## 실행 Entry
 
 - 엔트리: [`../../AGENTS.md`](../../AGENTS.md)

@@ -81,14 +81,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "translationResult": {
-          "type": "string",
-          "minLength": 1
-        },
-        "preflightResult": {
-          "type": "string",
-          "minLength": 1
-        },
         "pipelineResult": {
           "type": "string",
           "minLength": 1

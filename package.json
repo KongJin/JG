@@ -7,6 +7,7 @@
   },
   "scripts": {
     "docs:lint": "node ./tools/docs-lint/docs-lint.mjs",
+    "rules:sync-closeout": "node ./tools/docs-lint/sync-recurrence-closeout.mjs",
     "presentation:policy:lint": "node ./tools/presentation-lint/lint-presentation-responsibility.mjs",
     "stitch:policy:lint": "node ./tools/stitch-unity/lint-stitch-driven-policy.mjs",
     "policy:lint": "node ./tools/docs-lint/policy-lint.mjs && npm run --silent presentation:policy:lint && npm run --silent stitch:policy:lint",

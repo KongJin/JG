@@ -1,13 +1,10 @@
-param(
+﻿param(
     [Parameter(Mandatory = $true)][string]$SurfaceId,
     [string]$HtmlPath = "",
     [string]$ImagePath = "",
-    [string]$ProfileArtifactPath = "",
     [string]$PresentationOutputPath = "",
     [string]$TargetAssetPath = "",
-    [switch]$Force,
-    [switch]$CanGenerateOnly,
-    [switch]$WriteProfileArtifact
+    [switch]$CanGenerateOnly
 )
 
 Set-StrictMode -Version Latest
@@ -92,6 +89,136 @@ function Convert-ToSurfaceSlug {
     return $collapsed.Trim('-')
 }
 
+function Get-SlugTokens {
+    param([string]$Value)
+
+    $slug = Convert-ToSurfaceSlug -Value $Value
+    if ([string]::IsNullOrWhiteSpace($slug)) {
+        return @()
+    }
+
+    return @($slug -split '-' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+}
+
+function Get-UniqueSlugList {
+    param([string[]]$Values)
+
+    $seen = New-Object System.Collections.Generic.HashSet[string] ([System.StringComparer]::OrdinalIgnoreCase)
+    $result = New-Object System.Collections.Generic.List[string]
+    foreach ($value in @($Values)) {
+        $slug = Convert-ToSurfaceSlug -Value $value
+        if ([string]::IsNullOrWhiteSpace($slug)) {
+            continue
+        }
+
+        if ($seen.Add($slug)) {
+            $result.Add($slug)
+        }
+    }
+
+    return @($result.ToArray())
+}
+
+function Get-HtmlTitleText {
+    param([Parameter(Mandatory = $true)][string]$HtmlPath)
+
+    if (-not (Test-Path -LiteralPath $HtmlPath)) {
+        return ""
+    }
+
+    $html = Get-Content -LiteralPath $HtmlPath -Raw
+    $titleMatch = [regex]::Match($html, '<title>\s*(?<text>.*?)\s*</title>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    if (-not $titleMatch.Success) {
+        return ""
+    }
+
+    return ([System.Net.WebUtility]::HtmlDecode([string]$titleMatch.Groups["text"].Value)).Trim()
+}
+
+function Get-MetadataAliasCandidates {
+    param(
+        [Parameter(Mandatory = $true)][object]$Meta,
+        [Parameter(Mandatory = $true)][string]$HtmlPath
+    )
+
+    $values = New-Object System.Collections.Generic.List[string]
+
+    if ($null -ne $Meta.PSObject.Properties["screenName"]) {
+        $values.Add([string]$Meta.screenName)
+    }
+
+    if ($null -ne $Meta.PSObject.Properties["prompt"]) {
+        $prompt = [string]$Meta.prompt
+        if (-not [string]::IsNullOrWhiteSpace($prompt)) {
+            $firstLine = ($prompt -split "(\r?\n)+" | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 1)
+            if (-not [string]::IsNullOrWhiteSpace([string]$firstLine)) {
+                $values.Add([string]$firstLine)
+            }
+        }
+    }
+
+    $titleText = Get-HtmlTitleText -HtmlPath $HtmlPath
+    if (-not [string]::IsNullOrWhiteSpace($titleText)) {
+        $values.Add($titleText)
+    }
+
+    return @(Get-UniqueSlugList -Values @($values))
+}
+
+function Get-MetadataSurfaceMatchScore {
+    param(
+        [Parameter(Mandatory = $true)][string]$SurfaceId,
+        [AllowEmptyCollection()][string[]]$AliasCandidates
+    )
+
+    $surfaceSlug = Convert-ToSurfaceSlug -Value $SurfaceId
+    if ([string]::IsNullOrWhiteSpace($surfaceSlug)) {
+        return 0
+    }
+
+    $surfaceTokens = @(Get-SlugTokens -Value $surfaceSlug)
+    $bestScore = 0
+    foreach ($alias in @($AliasCandidates)) {
+        if ([string]::IsNullOrWhiteSpace($alias)) {
+            continue
+        }
+
+        $aliasTokens = @(Get-SlugTokens -Value $alias)
+        if ($aliasTokens.Count -eq 0) {
+            continue
+        }
+
+        if ($alias -eq $surfaceSlug) {
+            return 100
+        }
+
+        if ($alias.Contains($surfaceSlug) -or $surfaceSlug.Contains($alias)) {
+            if ([Math]::Min($surfaceTokens.Count, $aliasTokens.Count) -ge 2) {
+                $bestScore = [Math]::Max($bestScore, 75)
+            }
+            else {
+                $bestScore = [Math]::Max($bestScore, 35)
+            }
+            continue
+        }
+
+        $overlapCount = @($surfaceTokens | Where-Object { $aliasTokens -contains $_ }).Count
+        if ($overlapCount -eq 0) {
+            continue
+        }
+
+        $sharedPrefix = if ($surfaceTokens.Count -gt 0 -and $aliasTokens.Count -gt 0 -and $surfaceTokens[0] -eq $aliasTokens[0]) { 10 } else { 0 }
+        $score = ($overlapCount * 20) + $sharedPrefix
+        if ($overlapCount -eq $surfaceTokens.Count -or $overlapCount -eq $aliasTokens.Count) {
+            $score += 10
+        }
+
+        $bestScore = [Math]::Max($bestScore, $score)
+    }
+
+    return $bestScore
+}
+
 function Get-ArtifactSourceMetadata {
     param([Parameter(Mandatory = $true)][string]$SurfaceId)
 
@@ -101,18 +228,9 @@ function Get-ArtifactSourceMetadata {
         return $null
     }
 
+    $candidates = New-Object System.Collections.Generic.List[object]
     foreach ($metaFile in Get-ChildItem -LiteralPath $artifactRoot -Filter "meta.json" -Recurse -File) {
         $meta = Get-Content -LiteralPath $metaFile.FullName -Raw | ConvertFrom-Json
-        $screenNameProperty = $meta.PSObject.Properties["screenName"]
-        if ($null -eq $screenNameProperty) {
-            continue
-        }
-
-        $screenNameSlug = Convert-ToSurfaceSlug -Value ([string]$screenNameProperty.Value)
-        if ([string]::IsNullOrWhiteSpace($screenNameSlug) -or $screenNameSlug -ne $normalizedSurfaceId) {
-            continue
-        }
-
         $screenDirectory = Split-Path -Parent $metaFile.FullName
         $htmlPath = Join-Path $screenDirectory "screen.html"
         $imagePath = Join-Path $screenDirectory "screen.png"
@@ -120,17 +238,30 @@ function Get-ArtifactSourceMetadata {
             continue
         }
 
-        return [PSCustomObject]@{
+        $aliasCandidates = @(Get-MetadataAliasCandidates -Meta $meta -HtmlPath $htmlPath)
+        $score = Get-MetadataSurfaceMatchScore -SurfaceId $normalizedSurfaceId -AliasCandidates $aliasCandidates
+        if ($score -lt 50) {
+            continue
+        }
+
+        $candidates.Add([PSCustomObject]@{
+            score = $score
+            fetchedAt = if ($null -ne $meta.PSObject.Properties["fetchedAt"]) { [string]$meta.fetchedAt } else { "" }
             sourceRef = $normalizedSurfaceId
             projectId = if ($null -ne $meta.PSObject.Properties["projectId"]) { [string]$meta.projectId } else { "" }
             screenId = if ($null -ne $meta.PSObject.Properties["screenId"]) { [string]$meta.screenId } else { "" }
             url = if ($null -ne $meta.PSObject.Properties["htmlUrl"] -and -not [string]::IsNullOrWhiteSpace([string]$meta.htmlUrl)) { [string]$meta.htmlUrl } elseif ($null -ne $meta.PSObject.Properties["imageUrl"]) { [string]$meta.imageUrl } else { "" }
             htmlPath = Convert-ToRepoRelativePath -AbsolutePath $htmlPath
             imagePath = Convert-ToRepoRelativePath -AbsolutePath $imagePath
-        }
+            aliasCandidates = @($aliasCandidates)
+        })
     }
 
-    return $null
+    if ($candidates.Count -eq 0) {
+        return $null
+    }
+
+    return @($candidates | Sort-Object -Property @{ Expression = "score"; Descending = $true }, @{ Expression = "fetchedAt"; Descending = $true })[0]
 }
 
 function Get-DesignSourceMetadata {
@@ -141,25 +272,36 @@ function Get-DesignSourceMetadata {
         return $null
     }
 
-    $candidateFiles = @(Get-ChildItem -LiteralPath $designRoot -Filter "*.html" -File | Where-Object {
-        $_.BaseName.Equals($SurfaceId, [System.StringComparison]::OrdinalIgnoreCase) -or
-        $_.BaseName.EndsWith("-$SurfaceId", [System.StringComparison]::OrdinalIgnoreCase)
-    } | Sort-Object {
-        if ($_.BaseName.Equals($SurfaceId, [System.StringComparison]::OrdinalIgnoreCase)) { 0 } else { 1 }
-    }, FullName)
-
-    foreach ($candidate in $candidateFiles) {
+    $candidateFiles = New-Object System.Collections.Generic.List[object]
+    foreach ($candidate in @(Get-ChildItem -LiteralPath $designRoot -Filter "*.html" -File)) {
         $pairedImagePath = Join-Path $candidate.DirectoryName ($candidate.BaseName + ".png")
         if (-not (Test-Path -LiteralPath $pairedImagePath)) {
             continue
         }
 
-        $relativeHtmlPath = Convert-ToRepoRelativePath -AbsolutePath $candidate.FullName
-        $relativeImagePath = Convert-ToRepoRelativePath -AbsolutePath $pairedImagePath
+        $aliasCandidates = Get-UniqueSlugList -Values @(
+            $candidate.BaseName,
+            (Get-HtmlTitleText -HtmlPath $candidate.FullName)
+        )
+        $score = Get-MetadataSurfaceMatchScore -SurfaceId $SurfaceId -AliasCandidates @($aliasCandidates)
+        if ($score -le 0) {
+            continue
+        }
+
+        $candidateFiles.Add([PSCustomObject]@{
+            file = $candidate
+            imagePath = $pairedImagePath
+            score = $score
+        })
+    }
+
+    foreach ($candidate in @($candidateFiles | Sort-Object -Property @{ Expression = "score"; Descending = $true }, @{ Expression = { $_.file.BaseName }; Descending = $false })) {
+        $relativeHtmlPath = Convert-ToRepoRelativePath -AbsolutePath $candidate.file.FullName
+        $relativeImagePath = Convert-ToRepoRelativePath -AbsolutePath $candidate.imagePath
         return [PSCustomObject]@{
-            sourceRef = [string]$candidate.BaseName
+            sourceRef = [string]$candidate.file.BaseName
             projectId = ""
-            screenId = [string]$candidate.BaseName
+            screenId = [string]$candidate.file.BaseName
             url = $relativeImagePath
             htmlPath = $relativeHtmlPath
             imagePath = $relativeImagePath
@@ -211,6 +353,30 @@ function Clean-InnerText {
     $withoutTags = [regex]::Replace($withoutIcons, '<[^>]+>', ' ')
     $decoded = [System.Net.WebUtility]::HtmlDecode($withoutTags)
     return ([regex]::Replace($decoded, '\s+', ' ')).Trim()
+}
+
+function Convert-MaterialSymbolToFallbackText {
+    param([string]$Text)
+
+    $normalized = ([string]$Text).Trim()
+    switch ($normalized) {
+        "settings" { return "*" }
+        "smart_toy" { return "AI" }
+        "security" { return "D" }
+        "precision_manufacturing" { return "P" }
+        "add" { return "+" }
+        "swords" { return "X" }
+        "view_in_ar" { return "[]" }
+        "speed" { return ">" }
+        "filter_center_focus" { return "[]" }
+        "garage" { return "G" }
+        "radar" { return "R" }
+        "stars" { return "*" }
+        "terminal" { return ">" }
+        "android" { return "MECH" }
+        "save" { return "" }
+        default { return $normalized }
+    }
 }
 
 function Split-ClassTokens {
@@ -413,8 +579,23 @@ function Convert-ToPascalCase {
 function Get-FeatureName {
     param([Parameter(Mandatory = $true)][string]$SurfaceId)
 
-    $firstToken = ($SurfaceId -split '-')[0]
-    return Convert-ToPascalCase -Value $firstToken
+    $tokens = @(Get-SlugTokens -Value $SurfaceId)
+    foreach ($token in $tokens) {
+        switch ($token) {
+            { $_ -in @("lobby", "room", "rooms", "create") } { return "Lobby" }
+            "garage" { return "Garage" }
+            { $_ -in @("account", "delete", "login") } { return "Account" }
+            { $_ -in @("common", "error") } { return "Common" }
+            { $_ -in @("battle", "wave", "core", "hud") } { return "Battle" }
+            { $_ -in @("result", "victory", "defeat", "mission", "feedback") } { return "Result" }
+        }
+    }
+
+    if ($tokens.Count -eq 0) {
+        return "Shared"
+    }
+
+    return Convert-ToPascalCase -Value $tokens[0]
 }
 
 function Get-DefaultTargetAssetPath {
@@ -570,41 +751,44 @@ function Get-SetIdFromPath {
 function Get-DialogContext {
     param([Parameter(Mandatory = $true)][string]$Html)
 
-    if ($Html -notmatch '(role="dialog"|Overlay Scrim|Scrim Overlay)') {
+    if ($Html -notmatch '(role="dialog"|Overlay Scrim|Scrim Overlay|Modal Panel|absolute inset-0 bg-[^"]+/[0-9]+)') {
         throw "Could not detect overlay dialog structure from source HTML."
     }
 
     $scrimMatch = Get-OptionalMatch `
         -InputText $Html `
-        -Pattern '(?:<!--\s*Overlay Scrim\s*-->|<!--\s*Scrim Overlay\s*-->)\s*<div[^>]*class="(?<classes>[^"]+)"'
+        -Pattern '(?:<!--\s*Overlay Scrim\s*-->|<!--\s*Scrim Overlay\s*-->|<!--\s*Tactical Scrim / Overlay\s*-->)\s*<div[^>]*class="(?<classes>[^"]+)"'
     $panelMatch = Get-RequiredMatch `
         -InputText $Html `
-        -Pattern '(?:<!--\s*Modal Panel\s*-->|<!--\s*Error Dialog Panel\s*-->)\s*<div class="(?<classes>[^"]+)"' `
+        -Pattern '(?:<!--\s*Modal Panel\s*-->|<!--\s*Error Dialog Panel\s*-->)\s*<div[^>]*class="(?<classes>[^"]+)"' `
         -ErrorMessage "Could not find overlay panel classes."
     $headerMatch = Get-RequiredMatch `
         -InputText $Html `
-        -Pattern '(?:<!--\s*Modal Header\s*-->|<!--\s*Panel Header\s*-->)\s*<div class="(?<classes>[^"]+)">(?<inner>.*?)</div>\s*(?:<!--\s*Modal Body\s*-->|<!--\s*Panel Content\s*-->)' `
+        -Pattern '(?:<!--\s*Modal Header\s*-->|<!--\s*Panel Header\s*-->)\s*<div[^>]*class="(?<classes>[^"]+)"[^>]*>(?<inner>.*?)</div>\s*(?:<!--\s*Modal Body(?:\s*\(Form\))?\s*-->|<!--\s*Panel Content\s*-->)' `
         -ErrorMessage "Could not find overlay header section."
     $bodyMatch = Get-RequiredMatch `
         -InputText $Html `
-        -Pattern '(?:<!--\s*Modal Body\s*-->|<!--\s*Panel Content\s*-->)\s*<div class="(?<classes>[^"]+)">(?<inner>.*?)</div>' `
+        -Pattern '(?:<!--\s*Modal Body(?:\s*\(Form\))?\s*-->|<!--\s*Panel Content\s*-->)\s*<div[^>]*class="(?<classes>[^"]+)"[^>]*>(?<inner>.*?)(?=(?:<!--\s*Modal Footer(?:\s*\(Actions\))?\s*-->|</div>\s*</div>))' `
         -ErrorMessage "Could not find overlay body section."
     $footerMatch = Get-OptionalMatch `
         -InputText $Html `
-        -Pattern '(?:<!--\s*Modal Footer\s*-->)\s*<div class="(?<classes>[^"]+)">(?<inner>.*?)</div>'
+        -Pattern '(?:<!--\s*Modal Footer(?:\s*\(Actions\))?\s*-->)\s*<div[^>]*class="(?<classes>[^"]+)"[^>]*>(?<inner>.*?)</div>'
 
     $bodyInner = [string]$bodyMatch.Groups["inner"].Value
     $titleMatch = Get-RequiredMatch `
         -InputText ([string]$headerMatch.Groups["inner"].Value) `
-        -Pattern '<h2 class="(?<classes>[^"]+)">\s*(?<text>.*?)\s*</h2>' `
+        -Pattern '<h2[^>]*class="(?<classes>[^"]+)"[^>]*>\s*(?<text>.*?)\s*</h2>' `
         -ErrorMessage "Could not find dialog title."
     $summaryMatch = Get-OptionalMatch `
         -InputText ([string]$headerMatch.Groups["inner"].Value) `
-        -Pattern '<p class="(?<classes>[^"]+)">\s*(?<text>.*?)\s*</p>'
+        -Pattern '<p[^>]*class="(?<classes>[^"]+)"[^>]*>\s*(?<text>.*?)\s*</p>'
     $bodyTextMatch = Get-RequiredMatch `
         -InputText $bodyInner `
-        -Pattern '<p class="(?<classes>[^"]+)">\s*(?<text>.*?)\s*</p>' `
+        -Pattern '<p[^>]*class="(?<classes>[^"]+)"[^>]*>\s*(?<text>.*?)\s*</p>' `
         -ErrorMessage "Could not find dialog body copy."
+
+    $bodyTextClasses = [string]$bodyTextMatch.Groups["classes"].Value
+    $bodyText = Clean-InnerText -Value ([string]$bodyTextMatch.Groups["text"].Value)
 
     $footerSectionHtml = if ($footerMatch.Success) { [string]$footerMatch.Groups["inner"].Value } else { $bodyInner }
     $footerClasses = if ($footerMatch.Success) {
@@ -613,21 +797,21 @@ function Get-DialogContext {
     else {
         (Get-RequiredMatch `
             -InputText $bodyInner `
-            -Pattern '<div class="(?<classes>[^"]*flex[^"]*gap-[^"]*)">\s*<button' `
+            -Pattern '<div[^>]*class="(?<classes>[^"]*flex[^"]*gap-[^"]*)"[^>]*>\s*<button' `
             -ErrorMessage "Could not find dialog footer action row.").Groups["classes"].Value
     }
 
-    $buttonMatches = [regex]::Matches($footerSectionHtml, '<button class="(?<classes>[^"]+)"[^>]*>\s*(?<content>.*?)\s*</button>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    $buttonMatches = [regex]::Matches($footerSectionHtml, '<button[^>]*class="(?<classes>[^"]+)"[^>]*>\s*(?<content>.*?)\s*</button>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
     if ($buttonMatches.Count -lt 2) {
         throw "Expected at least two dialog footer buttons."
     }
 
     $iconBadgeMatch = Get-OptionalMatch `
         -InputText ([string]$headerMatch.Groups["inner"].Value) `
-        -Pattern '<div class="(?<classes>[^"]*w-[^"]*h-[^"]*bg-[^"]*)">\s*<span class="material-symbols-outlined[^"]*"[^>]*>(?<text>.*?)</span>'
+        -Pattern '<div[^>]*class="(?<classes>[^"]*w-[^"]*h-[^"]*bg-[^"]*)"[^>]*>\s*<span class="material-symbols-outlined[^"]*"[^>]*>(?<text>.*?)</span>'
     $iconTextMatch = Get-OptionalMatch `
         -InputText ([string]$headerMatch.Groups["inner"].Value) `
-        -Pattern '<span class="material-symbols-outlined (?<classes>[^"]+)"[^>]*>\s*(?<text>.*?)\s*</span>'
+        -Pattern '<span class="material-symbols-outlined(?: (?<classes>[^"]+))?"[^>]*>\s*(?<text>.*?)\s*</span>'
 
     $iconKind = if ($iconBadgeMatch.Success) { "badge" } else { "text" }
     $iconClasses = if ($iconBadgeMatch.Success) { [string]$iconBadgeMatch.Groups["classes"].Value } else { [string]$iconTextMatch.Groups["classes"].Value }
@@ -648,8 +832,8 @@ function Get-DialogContext {
         titleText = Clean-InnerText -Value ([string]$titleMatch.Groups["text"].Value)
         summaryClasses = $(if ($summaryMatch.Success) { [string]$summaryMatch.Groups["classes"].Value } else { "" })
         summaryText = $(if ($summaryMatch.Success) { Clean-InnerText -Value ([string]$summaryMatch.Groups["text"].Value) } else { "" })
-        bodyTextClasses = [string]$bodyTextMatch.Groups["classes"].Value
-        bodyText = Clean-InnerText -Value ([string]$bodyTextMatch.Groups["text"].Value)
+        bodyTextClasses = $bodyTextClasses
+        bodyText = $bodyText
         secondaryButtonClasses = [string]$buttonMatches[0].Groups["classes"].Value
         secondaryButtonText = Clean-InnerText -Value ([string]$buttonMatches[0].Groups["content"].Value)
         primaryButtonClasses = [string]$buttonMatches[1].Groups["classes"].Value
@@ -657,6 +841,136 @@ function Get-DialogContext {
         iconKind = $iconKind
         iconClasses = $iconClasses
         iconText = $iconText
+    }
+}
+
+function Get-WorkspaceSlotItems {
+    param([Parameter(Mandatory = $true)][string]$Html)
+
+    $items = New-Object System.Collections.Generic.List[object]
+    $buttonMatches = [regex]::Matches($Html, '<button class="(?<classes>[^"]+)"[^>]*>(?<inner>.*?)</button>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    foreach ($buttonMatch in $buttonMatches) {
+        $inner = [string]$buttonMatch.Groups["inner"].Value
+        $labelMatches = [regex]::Matches($inner, '<span[^>]*>\s*(?<text>.*?)\s*</span>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+        if ($labelMatches.Count -lt 2) {
+            continue
+        }
+
+        $iconMatch = Get-OptionalMatch -InputText $inner -Pattern '<span class="material-symbols-outlined[^"]*"[^>]*>\s*(?<text>.*?)\s*</span>'
+        $items.Add([PSCustomObject]@{
+            classes = [string]$buttonMatch.Groups["classes"].Value
+            unitText = Clean-InnerText -Value ([string]$labelMatches[0].Groups["text"].Value)
+            roleText = Clean-InnerText -Value ([string]$labelMatches[$labelMatches.Count - 1].Groups["text"].Value)
+            iconText = if ($iconMatch.Success) { Convert-MaterialSymbolToFallbackText -Text (Clean-InnerText -Value ([string]$iconMatch.Groups["text"].Value)) } else { "" }
+            active = ([string]$buttonMatch.Groups["classes"].Value -match 'blue-500')
+        })
+    }
+
+    return @($items.ToArray())
+}
+
+function Get-WorkspaceFocusTabs {
+    param([Parameter(Mandatory = $true)][string]$Html)
+
+    $items = New-Object System.Collections.Generic.List[object]
+    $buttonMatches = [regex]::Matches($Html, '<button class="(?<classes>[^"]+)"[^>]*>(?<inner>.*?)</button>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    foreach ($buttonMatch in $buttonMatches) {
+        $inner = [string]$buttonMatch.Groups["inner"].Value
+        $iconMatch = Get-OptionalMatch -InputText $inner -Pattern '<span class="material-symbols-outlined[^"]*"[^>]*>\s*(?<text>.*?)\s*</span>'
+        $labelInner = [regex]::Replace(
+            $inner,
+            '<span class="material-symbols-outlined[^"]*"[^>]*>.*?</span>',
+            '',
+            [System.Text.RegularExpressions.RegexOptions]::Singleline)
+        $label = Clean-InnerText -Value $labelInner
+        if ([string]::IsNullOrWhiteSpace($label)) {
+            continue
+        }
+
+        $items.Add([PSCustomObject]@{
+            classes = [string]$buttonMatch.Groups["classes"].Value
+            labelText = $label
+            iconText = if ($iconMatch.Success) { Convert-MaterialSymbolToFallbackText -Text (Clean-InnerText -Value ([string]$iconMatch.Groups["text"].Value)) } else { "" }
+            active = ([string]$buttonMatch.Groups["classes"].Value -match 'blue-500')
+        })
+    }
+
+    return @($items.ToArray())
+}
+
+function Get-WorkspaceEditorContext {
+    param([Parameter(Mandatory = $true)][string]$Html)
+
+    $titleMatch = Get-OptionalMatch -InputText $Html -Pattern '<h2[^>]*class="(?<classes>[^"]+)"[^>]*>\s*(?<text>.*?)\s*</h2>'
+    $descriptionMatch = Get-OptionalMatch -InputText $Html -Pattern '<p[^>]*class="(?<classes>[^"]*leading-tight[^"]*)"[^>]*>\s*(?<text>.*?)\s*</p>'
+    $badgeMatch = Get-OptionalMatch -InputText $Html -Pattern '<span[^>]*class="(?<classes>[^"]*px-1\.5[^"]*)"[^>]*>\s*(?<text>.*?)\s*</span>'
+    $iconMatch = Get-OptionalMatch -InputText $Html -Pattern '<div class="(?<classes>[^"]*shrink-0[^"]*)"[^>]*>\s*<span class="material-symbols-outlined[^"]*"[^>]*>(?<text>.*?)</span>'
+
+    $stats = New-Object System.Collections.Generic.List[object]
+    $statMatches = [regex]::Matches($Html, '<div class="(?<classes>[^"]*justify-between[^"]*)"[^>]*>\s*<span[^>]*>\s*(?<label>.*?)\s*</span>\s*<span[^>]*>\s*(?<value>.*?)\s*</span>\s*</div>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    foreach ($statMatch in $statMatches) {
+        $stats.Add([PSCustomObject]@{
+            classes = [string]$statMatch.Groups["classes"].Value
+            labelText = Clean-InnerText -Value ([string]$statMatch.Groups["label"].Value)
+            valueText = Clean-InnerText -Value ([string]$statMatch.Groups["value"].Value)
+            valueEmphasis = if ([string]$statMatch.Groups["value"].Value -match 'amber-') { "accent" } else { "default" }
+        })
+    }
+
+    $modifierButtons = New-Object System.Collections.Generic.List[object]
+    $modifierMatches = [regex]::Matches($Html, '<button class="(?<classes>[^"]*min-w-\[[^"]*)"[^>]*>(?<inner>.*?)</button>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    foreach ($modifierMatch in $modifierMatches) {
+        $inner = [string]$modifierMatch.Groups["inner"].Value
+        $titleCandidates = [regex]::Matches($inner, '<(?:div|span)[^>]*>\s*(?<text>.*?)\s*</(?:div|span)>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+        $iconInnerMatch = Get-OptionalMatch -InputText $inner -Pattern '<span class="material-symbols-outlined[^"]*"[^>]*>\s*(?<text>.*?)\s*</span>'
+        if ($titleCandidates.Count -eq 0) {
+            continue
+        }
+
+        $titleText = Clean-InnerText -Value ([string]$titleCandidates[0].Groups["text"].Value)
+        $subtitleText = if ($titleCandidates.Count -ge 2) { Clean-InnerText -Value ([string]$titleCandidates[1].Groups["text"].Value) } else { "" }
+        $modifierButtons.Add([PSCustomObject]@{
+            classes = [string]$modifierMatch.Groups["classes"].Value
+            titleText = $titleText
+            subtitleText = $subtitleText
+            iconText = if ($iconInnerMatch.Success) { Convert-MaterialSymbolToFallbackText -Text (Clean-InnerText -Value ([string]$iconInnerMatch.Groups["text"].Value)) } else { "" }
+            active = ([string]$modifierMatch.Groups["classes"].Value -match 'blue-500')
+        })
+    }
+
+    return [PSCustomObject]@{
+        badgeText = if ($badgeMatch.Success) { Clean-InnerText -Value ([string]$badgeMatch.Groups["text"].Value) } else { "" }
+        titleText = if ($titleMatch.Success) { Clean-InnerText -Value ([string]$titleMatch.Groups["text"].Value) } else { "" }
+        descriptionText = if ($descriptionMatch.Success) { Clean-InnerText -Value ([string]$descriptionMatch.Groups["text"].Value) } else { "" }
+        iconText = if ($iconMatch.Success) { Clean-InnerText -Value ([string]$iconMatch.Groups["text"].Value) } else { "" }
+        stats = @($stats.ToArray())
+        modifiers = @($modifierButtons.ToArray())
+    }
+}
+
+function Get-WorkspacePreviewContext {
+    param([Parameter(Mandatory = $true)][string]$Html)
+
+    $titleMatch = Get-OptionalMatch -InputText $Html -Pattern '<span class="(?<classes>[^"]*uppercase[^"]*)"[^>]*>\s*(?<text>.*?)\s*</span>'
+    $iconMatch = Get-OptionalMatch -InputText $Html -Pattern '<span class="material-symbols-outlined[^"]*text-4xl[^"]*"[^>]*>\s*(?<text>.*?)\s*</span>'
+    $tagMatches = [regex]::Matches($Html, '<span class="(?<classes>[^"]*px-1\.5[^"]*)"[^>]*>\s*(?<text>.*?)\s*</span>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    $tags = New-Object System.Collections.Generic.List[object]
+    foreach ($tagMatch in $tagMatches) {
+        $text = Clean-InnerText -Value ([string]$tagMatch.Groups["text"].Value)
+        if ([string]::IsNullOrWhiteSpace($text)) {
+            continue
+        }
+
+        $tags.Add([PSCustomObject]@{
+            classes = [string]$tagMatch.Groups["classes"].Value
+            text = $text
+        })
+    }
+
+    return [PSCustomObject]@{
+        titleText = if ($titleMatch.Success) { Clean-InnerText -Value ([string]$titleMatch.Groups["text"].Value) } else { "" }
+        iconText = if ($iconMatch.Success) { Convert-MaterialSymbolToFallbackText -Text (Clean-InnerText -Value ([string]$iconMatch.Groups["text"].Value)) } else { "" }
+        tags = @($tags.ToArray())
     }
 }
 
@@ -698,6 +1012,9 @@ function Get-WorkspaceContext {
     $focusSection = $sections[1]
     $editorSection = $sections[2]
     $previewSection = if ($sections.Count -ge 4) { $sections[3] } else { $sections[$sections.Count - 1] }
+    $slotInner = [string]$slotSection.Groups["inner"].Value
+    $focusInner = [string]$focusSection.Groups["inner"].Value
+    $editorInner = [string]$editorSection.Groups["inner"].Value
     $previewInner = [string]$previewSection.Groups["inner"].Value
     $summaryBarMatch = Get-OptionalMatch `
         -InputText $previewInner `
@@ -726,11 +1043,15 @@ function Get-WorkspaceContext {
         subtitleClasses = if ($subtitleMatch.Success) { [string]$subtitleMatch.Groups["classes"].Value } else { "" }
         subtitleText = if ($subtitleMatch.Success) { Clean-InnerText -Value ([string]$subtitleMatch.Groups["text"].Value) } else { "" }
         settingsButtonClasses = if ($settingsButtonMatch.Success) { [string]$settingsButtonMatch.Groups["classes"].Value } else { "" }
-        settingsIconText = if ($settingsButtonMatch.Success) { Clean-InnerText -Value ([string]$settingsButtonMatch.Groups["icon"].Value) } else { "settings" }
+        settingsIconText = if ($settingsButtonMatch.Success) { Convert-MaterialSymbolToFallbackText -Text (Clean-InnerText -Value ([string]$settingsButtonMatch.Groups["icon"].Value)) } else { Convert-MaterialSymbolToFallbackText -Text "settings" }
         slotSectionClasses = [string]$slotSection.Groups["classes"].Value
         focusSectionClasses = [string]$focusSection.Groups["classes"].Value
         editorSectionClasses = [string]$editorSection.Groups["classes"].Value
         previewSectionClasses = [string]$previewSection.Groups["classes"].Value
+        slotItems = @(Get-WorkspaceSlotItems -Html $slotInner)
+        focusTabs = @(Get-WorkspaceFocusTabs -Html $focusInner)
+        editor = Get-WorkspaceEditorContext -Html $editorInner
+        preview = Get-WorkspacePreviewContext -Html $previewInner
         summaryBarClasses = if ($summaryBarMatch.Success) { [string]$summaryBarMatch.Groups["barClasses"].Value } else { "" }
         summaryTrackClasses = if ($summaryBarMatch.Success) { [string]$summaryBarMatch.Groups["trackClasses"].Value } else { "" }
         summaryFillClasses = if ($summaryBarMatch.Success) { [string]$summaryBarMatch.Groups["fillClasses"].Value } else { "" }
@@ -833,7 +1154,8 @@ function New-OverlayDialogProfile {
 
     $profile = [ordered]@{
         surfaceId = $SurfaceId
-        family = "overlay-dialog-v1"
+        targetKind = "overlay-root"
+        reviewRoute = (New-ReviewRouteConfig -RouteId "surface-review" -MenuPath "Tools/Scene/Prepare Stitch Runtime Review/Surface")
         defaults = [ordered]@{
             htmlPath = $HtmlPath
             imagePath = $ImagePath
@@ -843,10 +1165,10 @@ function New-OverlayDialogProfile {
             label = "390x844 mobile-first"
         }
         patterns = [ordered]@{
-            titlePattern = "<h2 class=`"(?<classes>[^`"]+)`">\s*(?<text>.*?)\s*</h2>"
-            summaryPattern = "<h2[^>]*>.*?</h2>\s*<p class=`"(?<classes>[^`"]+)`">\s*(?<text>.*?)\s*</p>"
-            bodyPattern = "(?:<!-- Modal Body -->|<!-- Panel Content -->).*?<p class=`"(?<classes>[^`"]+)`">\s*(?<text>.*?)\s*</p>"
-            buttonPattern = "<button class=`"(?<classes>[^`"]+)`"[^>]*>\s*(?<content>.*?)\s*</button>"
+            titlePattern = "<h2[^>]*class=`"(?<classes>[^`"]+)`"[^>]*>\s*(?<text>.*?)\s*</h2>"
+            summaryPattern = "<h2[^>]*>.*?</h2>\s*<p[^>]*class=`"(?<classes>[^`"]+)`"[^>]*>\s*(?<text>.*?)\s*</p>"
+            bodyPattern = "(?:<!-- Modal Body(?: \(Form\))? -->|<!-- Panel Content -->).*?<p[^>]*class=`"(?<classes>[^`"]+)`"[^>]*>\s*(?<text>.*?)\s*</p>"
+            buttonPattern = "<button[^>]*class=`"(?<classes>[^`"]+)`"[^>]*>\s*(?<content>.*?)\s*</button>"
         }
         colors = [ordered]@{
             scrim = Get-ColorTokenFromClasses -Classes ([string]$Context.scrimClasses) -Prefix "bg"
@@ -1037,8 +1359,6 @@ function New-OverlayDialogProfile {
                 translationStrategy = "contract-complete-translator-v1"
                 strategyMode = "generate-or-patch"
                 artifactPaths = [ordered]@{
-                    translationResult = "artifacts/unity/$sourceRef-translation-result.json"
-                    preflightResult = "artifacts/unity/$sourceRef-preflight-result.json"
                     pipelineResult = "artifacts/unity/$sourceRef-pipeline-result.json"
                 }
                 notes = @(
@@ -1100,6 +1420,19 @@ function Get-WorkspaceTargetAssetPath {
     return "Assets/Prefabs/Features/$featureName/Root/$featureName`PageRoot.prefab"
 }
 
+function New-ReviewRouteConfig {
+    param(
+        [Parameter(Mandatory = $true)][string]$RouteId,
+        [Parameter(Mandatory = $true)][string]$MenuPath
+    )
+
+    return [ordered]@{
+        routeId = $RouteId
+        kind = "temp-scene-sceneview"
+        menuPath = $MenuPath
+    }
+}
+
 function New-WorkspaceProfile {
     param(
         [Parameter(Mandatory = $true)][string]$SurfaceId,
@@ -1137,7 +1470,8 @@ function New-WorkspaceProfile {
 
     $profile = [ordered]@{
         surfaceId = $SurfaceId
-        family = "workspace-screen-v1"
+        targetKind = "workspace-root"
+        reviewRoute = (New-ReviewRouteConfig -RouteId "surface-review" -MenuPath "Tools/Scene/Prepare Stitch Runtime Review/Surface")
         defaults = [ordered]@{
             htmlPath = $HtmlPath
             imagePath = $ImagePath
@@ -1183,6 +1517,10 @@ function New-WorkspaceProfile {
             subtitleText = [string]$Context.subtitleText
             saveButtonText = [string]$Context.saveButtonText
             settingsIconText = [string]$Context.settingsIconText
+            slotItems = @($Context.slotItems)
+            focusTabs = @($Context.focusTabs)
+            editor = $Context.editor
+            preview = $Context.preview
         }
         compiler = [ordered]@{
             manifest = [ordered]@{
@@ -1253,8 +1591,6 @@ function New-WorkspaceProfile {
                 translationStrategy = "contract-complete-translator-v1"
                 strategyMode = "generate-or-patch"
                 artifactPaths = [ordered]@{
-                    translationResult = "artifacts/unity/$sourceRef-translation-result.json"
-                    preflightResult = "artifacts/unity/$sourceRef-preflight-result.json"
                     pipelineResult = "artifacts/unity/$sourceRef-pipeline-result.json"
                 }
                 blocks = @(
@@ -1279,7 +1615,6 @@ function New-WorkspaceProfile {
 $sourceMetadata = Get-ActiveSourceFreezePaths -SurfaceId $SurfaceId
 $resolvedHtmlPath = if ([string]::IsNullOrWhiteSpace($HtmlPath)) { Get-SurfaceSourcePath -SurfaceId $SurfaceId -Extension "html" } else { Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $HtmlPath) }
 $resolvedImagePath = if ([string]::IsNullOrWhiteSpace($ImagePath)) { Get-SurfaceSourcePath -SurfaceId $SurfaceId -Extension "png" } else { Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $ImagePath) }
-$resolvedProfileArtifactPath = if ([string]::IsNullOrWhiteSpace($ProfileArtifactPath)) { "artifacts/stitch/debug/$SurfaceId.profile.json" } else { Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $ProfileArtifactPath) }
 $resolvedPresentationOutputPath = if ([string]::IsNullOrWhiteSpace($PresentationOutputPath)) {
     "in-memory://compiled/$SurfaceId/presentation-contract"
 }
@@ -1290,11 +1625,6 @@ else {
     Convert-ToRepoRelativePath -AbsolutePath (Resolve-RepoPath -PathValue $PresentationOutputPath)
 }
 $resolvedTargetAssetPath = if ([string]::IsNullOrWhiteSpace($TargetAssetPath)) { "" } else { $TargetAssetPath }
-
-$resolvedProfileAbsolutePath = Resolve-RepoPath -PathValue $resolvedProfileArtifactPath
-if ($WriteProfileArtifact -and (Test-Path -LiteralPath $resolvedProfileAbsolutePath) -and -not $Force -and -not $CanGenerateOnly) {
-    throw "Profile artifact already exists: $resolvedProfileAbsolutePath. Use -Force to overwrite."
-}
 
 $html = Read-AllText -PathValue $resolvedHtmlPath
 $profile = $null
@@ -1348,8 +1678,6 @@ if ($null -eq $profile) {
             surfaceId = $SurfaceId
             htmlPath = $resolvedHtmlPath
             imagePath = $resolvedImagePath
-            profileStorage = "in-memory"
-            profileArtifactPath = ""
             presentationOutputPath = $resolvedPresentationOutputPath
             targetAssetPath = $resolvedTargetAssetPath
             reason = $reason
@@ -1368,8 +1696,6 @@ if ($CanGenerateOnly) {
         surfaceId = $SurfaceId
         htmlPath = $resolvedHtmlPath
         imagePath = $resolvedImagePath
-        profileStorage = "in-memory"
-        profileArtifactPath = ""
         presentationOutputPath = $resolvedPresentationOutputPath
         targetAssetPath = $resolvedTargetAssetPath
         checkedAt = (Get-Date).ToString("o")
@@ -1377,20 +1703,13 @@ if ($CanGenerateOnly) {
     exit 0
 }
 
-$writtenPath = ""
-if ($WriteProfileArtifact) {
-    $writtenPath = Write-JsonFile -PathValue $resolvedProfileArtifactPath -InputObject $profile
-}
-
 [PSCustomObject]@{
     success = $true
     supported = $true
     surfaceId = $SurfaceId
-    family = [string]$profile.family
+    targetKind = if ($null -ne $profile.PSObject.Properties["targetKind"]) { [string]$profile.targetKind } else { "" }
     htmlPath = $resolvedHtmlPath
     imagePath = $resolvedImagePath
-    profileStorage = "in-memory"
-    profileArtifactPath = if ([string]::IsNullOrWhiteSpace($writtenPath)) { "" } else { Convert-ToRepoRelativePath -AbsolutePath $writtenPath }
     presentationOutputPath = $resolvedPresentationOutputPath
     targetAssetPath = $resolvedTargetAssetPath
     profile = $profile

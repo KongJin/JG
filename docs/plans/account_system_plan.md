@@ -1,17 +1,18 @@
 # 계정 시스템 복구 계획
 
 > 마지막 업데이트: 2026-04-25
-> 상태: active
+> 상태: reference
 > doc_id: plans.account-system
 > role: plan
-> owner_scope: 계정과 차고 복구 작업의 현재 범위와 우선순위
+> owner_scope: 계정과 차고 복구 작업의 범위와 검증 기준 reference
 > upstream: plans.progress, design.game-design
 > artifacts: `Assets/Scripts/Features/Account/`, `Assets/Scripts/Features/Garage/`
 >
 > 생성일: 2026-04-11
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
-이 문서는 Account Feature의 "기능 추가 계획"이 아니라, 이미 들어간 계정/차고 연동 코드와 실제 동작 사이의 간극을 메우는 **복구 SSOT**다.
+이 문서는 Account Feature의 "기능 추가 계획"이 아니라, 이미 들어간 계정/차고 연동 코드와 실제 동작 사이의 간극을 메우는 복구 기준 reference다.
+현재 실행 상태와 우선순위는 [`progress.md`](./progress.md)를 우선한다.
 
 핵심 메시지는 아래 세 가지로 고정한다.
 
@@ -46,7 +47,7 @@
 
 ### 구현된 것
 - Firebase Auth REST 기반 익명 로그인과 Google `signInWithIdp` 호출 코드가 존재한다.
-- `AccountSetup`, `LoginLoadingView`, `AccountSettingsView` 골격과 `CodexLobbyScene` wiring 코드가 존재한다.
+- `AccountSetup`, `LoginLoadingView`, `AccountSettingsView` 골격과 entry-scene wiring 코드가 존재한다.
 - Firestore용 `IAccountDataPort`와 `FirestoreRestPort`가 존재한다.
 - Garage 저장 시 Photon `CustomProperties["garageRoster"]` 동기화 경로는 유지된다.
 - Garage Firestore 저장/로드와 Photon roster handoff가 실제 runtime 경로에 연결됐다.

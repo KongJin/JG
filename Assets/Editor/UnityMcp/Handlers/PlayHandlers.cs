@@ -561,13 +561,19 @@ namespace ProjectSD.EditorTools.UnityMcp
                     sceneView.Repaint();
 
                     var superSize = capturePlan.superSize > 0 ? capturePlan.superSize : 1;
-                    var width = Mathf.Max(1, Mathf.RoundToInt(sceneView.position.width * superSize));
-                    var height = Mathf.Max(1, Mathf.RoundToInt(sceneView.position.height * superSize));
+                    var width = capturePlan.width > 0
+                        ? capturePlan.width
+                        : Mathf.Max(1, Mathf.RoundToInt(sceneView.position.width * superSize));
+                    var height = capturePlan.height > 0
+                        ? capturePlan.height
+                        : Mathf.Max(1, Mathf.RoundToInt(sceneView.position.height * superSize));
 
                     var renderTexture = RenderTexture.GetTemporary(width, height, 24, RenderTextureFormat.ARGB32);
                     var previousActive = RenderTexture.active;
-                    var sceneCamera = sceneView.camera;
+                    var reviewCamera = GameObject.Find("StitchRuntimeReviewCamera")?.GetComponent<Camera>();
+                    var sceneCamera = reviewCamera != null ? reviewCamera : sceneView.camera;
                     var previousTarget = sceneCamera != null ? sceneCamera.targetTexture : null;
+                    var previousAspect = sceneCamera != null ? sceneCamera.aspect : 1f;
                     Texture2D texture = null;
 
                     try
@@ -579,6 +585,11 @@ namespace ProjectSD.EditorTools.UnityMcp
 
                         texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
                         sceneCamera.targetTexture = renderTexture;
+                        if (reviewCamera != null)
+                        {
+                            sceneCamera.aspect = width / (float)height;
+                        }
+
                         RenderTexture.active = renderTexture;
                         GL.Clear(true, true, sceneCamera.backgroundColor);
                         sceneCamera.Render();
@@ -596,7 +607,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                             relativePath = capturePlan.relativePath,
                             absolutePath = capturePlan.absolutePath,
                             fileSizeBytes = pngBytes.LongLength,
-                            sourceView = "SceneView",
+                            sourceView = reviewCamera != null ? "SceneCamera" : "SceneView",
                             width = width,
                             height = height,
                             prefabStageAssetPath = prefabStage != null ? prefabStage.assetPath : null,
@@ -607,6 +618,10 @@ namespace ProjectSD.EditorTools.UnityMcp
                         if (sceneCamera != null)
                         {
                             sceneCamera.targetTexture = previousTarget;
+                            if (reviewCamera != null)
+                            {
+                                sceneCamera.aspect = previousAspect;
+                            }
                         }
 
                         RenderTexture.active = previousActive;
@@ -684,6 +699,8 @@ namespace ProjectSD.EditorTools.UnityMcp
                 relativePath = relativePath,
                 absolutePath = absolutePath,
                 superSize = superSize,
+                width = req.width > 0 ? req.width : 0,
+                height = req.height > 0 ? req.height : 0,
             };
         }
 

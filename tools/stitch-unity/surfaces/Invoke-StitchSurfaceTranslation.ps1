@@ -1,11 +1,14 @@
 param(
     [string]$SurfaceId = "",
     [string]$MapPath = "",
+    [string]$HtmlPath = "",
+    [string]$ImagePath = "",
+    [string]$TargetAssetPath = "",
     [string]$UnityBridgeUrl = "",
     [string]$ArtifactPath = "",
+    [switch]$WriteJsonArtifacts,
     [switch]$SkipReviewCapture,
-    [string]$ReviewCaptureArtifactPath = "",
-    [string]$CompiledContractDebugPath = ""
+    [string]$ReviewCaptureArtifactPath = ""
 )
 
 Set-StrictMode -Version Latest
@@ -13,19 +16,19 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot\..\engine\StitchUnityCommon.ps1"
 
-$context = Get-StitchUnitySurfaceContext -SurfaceId $SurfaceId -MapPath $MapPath -CompiledContractDebugPath $CompiledContractDebugPath
+$context = Get-StitchUnitySurfaceContext -SurfaceId $SurfaceId -MapPath $MapPath -HtmlPath $HtmlPath -ImagePath $ImagePath -TargetAssetPath $TargetAssetPath
 $mapResult = $context.MapResult
 $map = $context.Map
 $contracts = $context.Contracts
 
-$translationArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $map -ArtifactName "translationResult"
-$preflightArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $map -ArtifactName "preflightResult"
-$pipelineArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $map -ArtifactName "pipelineResult" -ArtifactPath $ArtifactPath
+$pipelineArtifactPath = if ($WriteJsonArtifacts -or -not [string]::IsNullOrWhiteSpace($ArtifactPath)) {
+    Resolve-StitchUnityArtifactOutputPath -Map $map -ArtifactName "pipelineResult" -ArtifactPath $ArtifactPath
+}
+else {
+    ""
+}
 
 $preflight = Get-StitchUnityPreflightObject -Map $map -ContractBundle $contracts -ContractSource $context.ContractSource
-if (-not [string]::IsNullOrWhiteSpace($preflightArtifactPath)) {
-    Write-StitchUnityArtifact -PathValue $preflightArtifactPath -InputObject $preflight
-}
 
 if (-not $preflight.ready) {
     $blockingCodes = @($preflight.blockingIssues | ForEach-Object { [string]$_.code })
@@ -60,8 +63,6 @@ if (-not $preflight.ready) {
                 target = $map.target
             }
             artifacts = [PSCustomObject]@{
-                translationResult = $translationArtifactPath
-                preflightResult = $preflightArtifactPath
                 reviewCapture = ""
                 pipelineResult = $pipelineArtifactPath
             }
@@ -76,7 +77,7 @@ if (-not $preflight.ready) {
 }
 
 $translationStrategy = [string]$map.translationStrategy
-$translationResult = $null
+$translation = $null
 $dependencyResults = @()
 $root = Get-StitchUnityMcpRoot -UnityBridgeUrl $UnityBridgeUrl
 Wait-McpBridgeHealthy -Root $root -TimeoutSec 30 | Out-Null
@@ -100,7 +101,7 @@ $reviewCaptureResult = [PSCustomObject]@{
 try {
     switch ($translationStrategy) {
         "contract-complete-translator-v1" {
-            $translationResult = Invoke-StitchUnityContractCompleteTranslation -Root $root -Map $map -ContractBundle $contracts
+            $translation = Invoke-StitchUnityContractCompleteTranslation -Root $root -Map $map -ContractBundle $contracts
         }
         default {
             throw "Unsupported translationStrategy '$translationStrategy'."
@@ -125,7 +126,7 @@ catch {
             stageStatus = [PSCustomObject]@{
                 preflight = if ($preflight.ready) { "passed" } else { "blocked" }
                 dependencies = if (@($requiredDependencyFailures).Count -gt 0) { "failed" } elseif (@($optionalDependencyFailures).Count -gt 0) { "warning" } else { "passed" }
-                translation = if ($null -ne $translationResult) { "partial" } else { "blocked" }
+                translation = if ($null -ne $translation) { "partial" } else { "blocked" }
                 reviewCapture = [string]$reviewCaptureResult.status
                 pipeline = "written"
             }
@@ -137,8 +138,6 @@ catch {
                 target = $map.target
             }
             artifacts = [PSCustomObject]@{
-                translationResult = $translationArtifactPath
-                preflightResult = $preflightArtifactPath
                 reviewCapture = [string]$reviewCaptureResult.artifactPath
                 pipelineResult = $pipelineArtifactPath
             }
@@ -170,7 +169,7 @@ $result = [PSCustomObject]@{
         dependencyCount = @($dependencyResults).Count
         requiredDependencyFailureCount = @($requiredDependencyFailures).Count
         optionalDependencyFailureCount = @($optionalDependencyFailures).Count
-        translationProducedResult = ($null -ne $translationResult)
+        translationProduced = ($null -ne $translation)
         reviewCaptureAttempted = [bool]$reviewCaptureResult.attempted
         reviewCaptureSupported = [bool]$reviewCaptureResult.supported
         targetKind = [string]$map.target.kind
@@ -179,7 +178,7 @@ $result = [PSCustomObject]@{
     stageStatus = [PSCustomObject]@{
         preflight = if ($preflight.ready) { "passed" } else { "failed" }
         dependencies = if (@($requiredDependencyFailures).Count -gt 0) { "failed" } elseif (@($optionalDependencyFailures).Count -gt 0) { "warning" } else { "passed" }
-        translation = if ($null -ne $translationResult) { "passed" } else { "not-implemented" }
+        translation = if ($null -ne $translation) { "passed" } else { "not-implemented" }
         reviewCapture = [string]$reviewCaptureResult.status
         pipeline = "written"
     }
@@ -191,8 +190,6 @@ $result = [PSCustomObject]@{
         target = $map.target
     }
     artifacts = [PSCustomObject]@{
-        translationResult = $translationArtifactPath
-        preflightResult = $preflightArtifactPath
         reviewCapture = [string]$reviewCaptureResult.artifactPath
         pipelineResult = $pipelineArtifactPath
     }
@@ -202,12 +199,8 @@ $result = [PSCustomObject]@{
         results = @($dependencyResults)
     }
     contractSource = $context.ContractSource
-    translation = $translationResult
+    translation = $translation
     reviewCapture = $reviewCaptureResult
-}
-
-if (-not [string]::IsNullOrWhiteSpace($translationArtifactPath) -and $null -ne $translationResult) {
-    Write-StitchUnityArtifact -PathValue $translationArtifactPath -InputObject $translationResult
 }
 
 if (-not [string]::IsNullOrWhiteSpace($pipelineArtifactPath)) {

@@ -201,44 +201,60 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
             var req = JsonUtility.FromJson<ComponentGetRequest>(body);
-            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
+            try
             {
-                var go = McpSharedHelpers.FindGameObjectByPath(req.gameObjectPath);
-                if (go == null)
-                    throw new Exception("GameObject not found: " + req.gameObjectPath);
-                Component comp = null;
-                var components = go.GetComponents<Component>();
-                comp = components.FirstOrDefault(c =>
-                    c != null
-                    && (
-                        c.GetType()
-                            .Name.Equals(req.componentType, StringComparison.OrdinalIgnoreCase)
-                        || c.GetType()
-                            .FullName.Equals(req.componentType, StringComparison.OrdinalIgnoreCase)
-                    )
-                );
-                if (comp == null)
-                    throw new Exception(
-                        "Component not found: " + req.componentType + " on " + req.gameObjectPath
-                    );
-                HashSet<string> propertyNameFilter = null;
-                if (req.propertyNames != null && req.propertyNames.Length > 0)
-                    propertyNameFilter = new HashSet<string>(
-                        req.propertyNames,
-                        StringComparer.Ordinal
-                    );
-                var props = McpSharedHelpers.CollectSerializedPropertiesForComponent(
-                    comp,
-                    propertyNameFilter
-                );
-                return new ComponentGetResponse
+                var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
                 {
-                    gameObjectPath = req.gameObjectPath,
-                    componentType = comp.GetType().Name,
-                    properties = props,
-                };
-            });
-            await UnityMcpBridge.WriteJsonAsync(response, 200, result);
+                    var go = McpSharedHelpers.FindGameObjectByPath(req.gameObjectPath);
+                    if (go == null)
+                        throw new Exception("GameObject not found: " + req.gameObjectPath);
+                    Component comp = null;
+                    var components = go.GetComponents<Component>();
+                    comp = components.FirstOrDefault(c =>
+                        c != null
+                        && (
+                            c.GetType()
+                                .Name.Equals(req.componentType, StringComparison.OrdinalIgnoreCase)
+                            || c.GetType()
+                                .FullName.Equals(req.componentType, StringComparison.OrdinalIgnoreCase)
+                        )
+                    );
+                    if (comp == null)
+                        throw new Exception(
+                            "Component not found: " + req.componentType + " on " + req.gameObjectPath
+                        );
+                    HashSet<string> propertyNameFilter = null;
+                    if (req.propertyNames != null && req.propertyNames.Length > 0)
+                        propertyNameFilter = new HashSet<string>(
+                            req.propertyNames,
+                            StringComparer.Ordinal
+                        );
+                    var props = McpSharedHelpers.CollectSerializedPropertiesForComponent(
+                        comp,
+                        propertyNameFilter
+                    );
+                    return new ComponentGetResponse
+                    {
+                        gameObjectPath = req.gameObjectPath,
+                        componentType = comp.GetType().Name,
+                        properties = props,
+                    };
+                });
+                await UnityMcpBridge.WriteJsonAsync(response, 200, result);
+            }
+            catch (Exception ex)
+            {
+                await UnityMcpBridge.WriteJsonAsync(
+                    response,
+                    404,
+                    new ErrorResponse
+                    {
+                        error = "Component lookup failed",
+                        detail = ex.Message,
+                        hint = UnityMcpBridge.GetErrorHintFromMessage(ex.Message),
+                    }
+                );
+            }
         }
 
         public static async Task HandleComponentSetSerializedFieldAsync(

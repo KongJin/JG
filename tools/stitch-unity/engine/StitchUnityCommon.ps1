@@ -136,14 +136,36 @@ function Get-StitchUnityPresentationResolverScriptPath {
 }
 
 function Get-StitchUnityProfileGeneratorProbe {
-    param([Parameter(Mandatory = $true)][string]$SurfaceId)
+    param(
+        [Parameter(Mandatory = $true)][string]$SurfaceId,
+        [string]$HtmlPath = "",
+        [string]$ImagePath = "",
+        [string]$TargetAssetPath = ""
+    )
 
     $generatorPath = Get-StitchUnityProfileGeneratorScriptPath
     if (-not (Test-Path -LiteralPath $generatorPath)) {
         throw "Profile generator script not found: $generatorPath"
     }
 
-    $json = & powershell -NoProfile -ExecutionPolicy Bypass -File $generatorPath -SurfaceId $SurfaceId -CanGenerateOnly 2>&1
+    $invocationArgs = @(
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-File", $generatorPath,
+        "-SurfaceId", $SurfaceId,
+        "-CanGenerateOnly"
+    )
+    if (-not [string]::IsNullOrWhiteSpace($HtmlPath)) {
+        $invocationArgs += @("-HtmlPath", $HtmlPath)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ImagePath)) {
+        $invocationArgs += @("-ImagePath", $ImagePath)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($TargetAssetPath)) {
+        $invocationArgs += @("-TargetAssetPath", $TargetAssetPath)
+    }
+
+    $json = & powershell @invocationArgs 2>&1
     if ($LASTEXITCODE -ne 0) {
         throw "Profile generator probe failed for '$SurfaceId': $json"
     }
@@ -152,15 +174,36 @@ function Get-StitchUnityProfileGeneratorProbe {
 }
 
 function Get-StitchUnityGeneratedProfile {
-    param([Parameter(Mandatory = $true)][string]$SurfaceId)
+    param(
+        [Parameter(Mandatory = $true)][string]$SurfaceId,
+        [string]$HtmlPath = "",
+        [string]$ImagePath = "",
+        [string]$TargetAssetPath = ""
+    )
 
-    $probe = Get-StitchUnityProfileGeneratorProbe -SurfaceId $SurfaceId
+    $probe = Get-StitchUnityProfileGeneratorProbe -SurfaceId $SurfaceId -HtmlPath $HtmlPath -ImagePath $ImagePath -TargetAssetPath $TargetAssetPath
     if (-not [bool]$probe.supported) {
         return $null
     }
 
     $generatorPath = Get-StitchUnityProfileGeneratorScriptPath
-    $json = & powershell -NoProfile -ExecutionPolicy Bypass -File $generatorPath -SurfaceId $SurfaceId 2>&1
+    $invocationArgs = @(
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-File", $generatorPath,
+        "-SurfaceId", $SurfaceId
+    )
+    if (-not [string]::IsNullOrWhiteSpace($HtmlPath)) {
+        $invocationArgs += @("-HtmlPath", $HtmlPath)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ImagePath)) {
+        $invocationArgs += @("-ImagePath", $ImagePath)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($TargetAssetPath)) {
+        $invocationArgs += @("-TargetAssetPath", $TargetAssetPath)
+    }
+
+    $json = & powershell @invocationArgs 2>&1
     if ($LASTEXITCODE -ne 0) {
         throw "Profile generation failed for '$SurfaceId': $json"
     }
@@ -176,7 +219,10 @@ function Get-StitchUnityGeneratedProfile {
 function Ensure-StitchUnityPresentationContract {
     param(
         [Parameter(Mandatory = $true)][string]$SurfaceId,
-        [Parameter(Mandatory = $true)][string]$OutputPath
+        [Parameter(Mandatory = $true)][string]$OutputPath,
+        [string]$HtmlPath = "",
+        [string]$ImagePath = "",
+        [string]$TargetAssetPath = ""
     )
 
     if (-not (Test-StitchUnityInMemoryPath -PathValue $OutputPath)) {
@@ -200,6 +246,15 @@ function Ensure-StitchUnityPresentationContract {
     if (-not [string]::IsNullOrWhiteSpace($OutputPath)) {
         $invocationArgs += @("-OutputPath", $OutputPath)
     }
+    if (-not [string]::IsNullOrWhiteSpace($HtmlPath)) {
+        $invocationArgs += @("-HtmlPath", $HtmlPath)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ImagePath)) {
+        $invocationArgs += @("-ImagePath", $ImagePath)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($TargetAssetPath)) {
+        $invocationArgs += @("-TargetAssetPath", $TargetAssetPath)
+    }
 
     $json = & powershell @invocationArgs 2>&1
     if ($LASTEXITCODE -ne 0) {
@@ -221,9 +276,14 @@ function Get-StitchUnityOptionalJsonFile {
 }
 
 function Get-StitchUnityCompiledContractDefinition {
-    param([Parameter(Mandatory = $true)][string]$SurfaceId)
+    param(
+        [Parameter(Mandatory = $true)][string]$SurfaceId,
+        [string]$HtmlPath = "",
+        [string]$ImagePath = "",
+        [string]$TargetAssetPath = ""
+    )
 
-    $profile = Get-StitchUnityGeneratedProfile -SurfaceId $SurfaceId
+    $profile = Get-StitchUnityGeneratedProfile -SurfaceId $SurfaceId -HtmlPath $HtmlPath -ImagePath $ImagePath -TargetAssetPath $TargetAssetPath
     if ($null -eq $profile) {
         return $null
     }
@@ -232,7 +292,8 @@ function Get-StitchUnityCompiledContractDefinition {
         return $null
     }
 
-    $family = [string](Get-StitchUnityOptionalPropertyValue -InputObject $profile -Name "family")
+    $targetKind = [string](Get-StitchUnityOptionalPropertyValue -InputObject $profile -Name "targetKind")
+    $reviewRoute = Get-StitchUnityOptionalPropertyValue -InputObject $profile -Name "reviewRoute"
 
     $componentCatalogPath = Get-StitchUnityComponentCatalogPath
     $componentCatalog = if (Test-Path -LiteralPath $componentCatalogPath) {
@@ -243,7 +304,8 @@ function Get-StitchUnityCompiledContractDefinition {
     }
 
     return [PSCustomObject]@{
-        familyId = $family
+        targetKind = $targetKind
+        reviewRoute = $reviewRoute
         profilePath = ""
         profile = $profile
         compiler = $compiler
@@ -383,11 +445,12 @@ function Compile-StitchUnityContracts {
     $translationStrategy = [string](Get-StitchUnityRequiredProperty -InputObject $mapDefinition -Name "translationStrategy")
     $strategyMode = [string](Get-StitchUnityRequiredProperty -InputObject $mapDefinition -Name "strategyMode")
     $mapNotes = @(Get-StitchUnityOptionalArray -InputObject $mapDefinition -Name "notes")
+    $reviewRoute = Get-StitchUnityOptionalPropertyValue -InputObject $Definition -Name "reviewRoute"
     $map = [PSCustomObject][ordered]@{
         schemaVersion = "1.0.0"
         contractKind = "unity-surface-map"
         surfaceId = $surfaceId
-        reviewRouteFamily = [string]$Definition.familyId
+        targetKind = [string]$Definition.targetKind
         target = $target
         contractRefs = [PSCustomObject][ordered]@{
             manifestPath = $manifestPath
@@ -399,8 +462,16 @@ function Compile-StitchUnityContracts {
         blocks = [PSCustomObject]$mapBlocks
         notes = @($mapNotes)
     }
+    if ($null -ne $reviewRoute) {
+        $map | Add-Member -NotePropertyName "reviewRoute" -NotePropertyValue $reviewRoute
+    }
 
-    $presentation = Ensure-StitchUnityPresentationContract -SurfaceId $surfaceId -OutputPath $presentationPath
+    $presentation = Ensure-StitchUnityPresentationContract `
+        -SurfaceId $surfaceId `
+        -OutputPath $presentationPath `
+        -HtmlPath ([string](Get-StitchUnityRequiredProperty -InputObject $defaults -Name "htmlPath")) `
+        -ImagePath ([string](Get-StitchUnityRequiredProperty -InputObject $defaults -Name "imagePath")) `
+        -TargetAssetPath ([string](Get-StitchUnityRequiredProperty -InputObject $target -Name "assetPath"))
 
     return [PSCustomObject]@{
         manifest = $manifest
@@ -412,9 +483,8 @@ function Compile-StitchUnityContracts {
             presentation = $presentation
         }
         contractSource = [PSCustomObject]@{
-            sourceKind = "compiled-family"
-            generatedFromFamily = $true
-            familyId = [string]$Definition.familyId
+            sourceKind = "compiled-parser"
+            targetKind = [string]$Definition.targetKind
             profileGenerated = $true
             profilePath = ""
             sharedUiCatalogPath = Convert-StitchUnityRepoRelativePath -AbsolutePath ([string]$Definition.componentCatalogPath)
@@ -493,28 +563,21 @@ function Get-StitchUnitySurfaceContext {
     param(
         [string]$SurfaceId,
         [string]$MapPath,
-        [string]$CompiledContractDebugPath = ""
+        [string]$HtmlPath = "",
+        [string]$ImagePath = "",
+        [string]$TargetAssetPath = ""
     )
 
     if ([string]::IsNullOrWhiteSpace($MapPath) -and -not [string]::IsNullOrWhiteSpace($SurfaceId)) {
-        $compiledDefinition = Get-StitchUnityCompiledContractDefinition -SurfaceId $SurfaceId
+        $compiledDefinition = Get-StitchUnityCompiledContractDefinition -SurfaceId $SurfaceId -HtmlPath $HtmlPath -ImagePath $ImagePath -TargetAssetPath $TargetAssetPath
         if ($null -ne $compiledDefinition) {
             $compiled = Compile-StitchUnityContracts -Definition $compiledDefinition
-
-            if (-not [string]::IsNullOrWhiteSpace($CompiledContractDebugPath)) {
-                $debugPayload = [PSCustomObject]@{
-                    manifest = $compiled.manifest
-                    map = $compiled.map
-                    contractSource = $compiled.contractSource
-                }
-                Write-StitchUnityArtifact -PathValue $CompiledContractDebugPath -InputObject $debugPayload
-            }
 
             return [PSCustomObject]@{
                 MapResult = [PSCustomObject]@{
                     Path = [string]$compiled.contractSource.compiledContractSummary.mapPath
                     Map = $compiled.map
-                    SourceKind = "compiled-family"
+                    SourceKind = "compiled-parser"
                 }
                 Map = $compiled.map
                 Contracts = $compiled.contractBundle
@@ -536,8 +599,6 @@ function Get-StitchUnitySurfaceContext {
         ContractRefs = Get-StitchUnityContractRefObject -ContractBundle $contracts
         ContractSource = [PSCustomObject]@{
             sourceKind = "file"
-            generatedFromFamily = $false
-            familyId = ""
             profileGenerated = $false
             profilePath = ""
             sharedUiCatalogPath = Get-StitchUnityComponentCatalogPath
@@ -736,37 +797,29 @@ function Get-StitchUnityReviewCaptureRouteConfig {
     param([Parameter(Mandatory = $true)][object]$Map)
 
     $surfaceId = [string](Get-StitchUnityRequiredProperty -InputObject $Map -Name "surfaceId")
-    $reviewRouteFamily = [string](Get-StitchUnityOptionalPropertyValue -InputObject $Map -Name "reviewRouteFamily")
+    $reviewRoute = Get-StitchUnityOptionalPropertyValue -InputObject $Map -Name "reviewRoute"
+    if ($null -ne $reviewRoute) {
+        $menuPath = [string](Get-StitchUnityOptionalPropertyValue -InputObject $reviewRoute -Name "menuPath")
+        $routeKind = [string](Get-StitchUnityOptionalPropertyValue -InputObject $reviewRoute -Name "kind")
+        $routeId = [string](Get-StitchUnityOptionalPropertyValue -InputObject $reviewRoute -Name "routeId")
+        if (-not [string]::IsNullOrWhiteSpace($menuPath) -and -not [string]::IsNullOrWhiteSpace($routeKind)) {
+            return [PSCustomObject]@{
+                supported = $true
+                surfaceId = $surfaceId
+                routeId = $routeId
+                menuPath = $menuPath
+                routeKind = $routeKind
+            }
+        }
+    }
 
-    switch ($reviewRouteFamily) {
-        "workspace-screen-v1" {
-            return [PSCustomObject]@{
-                supported = $true
-                surfaceId = $surfaceId
-                familyId = $reviewRouteFamily
-                menuPath = "Tools/Scene/Prepare Stitch Runtime Review/Workspace Family"
-                routeKind = "temp-scene-sceneview"
-            }
-        }
-        "overlay-dialog-v1" {
-            return [PSCustomObject]@{
-                supported = $true
-                surfaceId = $surfaceId
-                familyId = $reviewRouteFamily
-                menuPath = "Tools/Scene/Prepare Stitch Runtime Review/Overlay Family"
-                routeKind = "temp-scene-sceneview"
-            }
-        }
-        default {
-            return [PSCustomObject]@{
-                supported = $false
-                surfaceId = $surfaceId
-                familyId = $reviewRouteFamily
-                menuPath = ""
-                routeKind = ""
-                reason = "no-temp-scene-review-route"
-            }
-        }
+    return [PSCustomObject]@{
+        supported = $false
+        surfaceId = $surfaceId
+        routeId = ""
+        menuPath = ""
+        routeKind = ""
+        reason = "no-temp-scene-review-route"
     }
 }
 
@@ -783,13 +836,8 @@ function Write-StitchUnityReviewCaptureRequest {
     $target = Get-StitchUnityRequiredProperty -InputObject $Map -Name "target"
     $assetPath = [string](Get-StitchUnityRequiredProperty -InputObject $target -Name "assetPath")
     $assetName = [System.IO.Path]::GetFileNameWithoutExtension($assetPath)
-    $familyId = [string]$Route.familyId
-    if ([string]::IsNullOrWhiteSpace($familyId)) {
-        return ""
-    }
 
     $request = [PSCustomObject]@{
-        familyId = $familyId
         surfaceId = [string](Get-StitchUnityRequiredProperty -InputObject $Map -Name "surfaceId")
         displayName = $assetName
         prefabPath = $assetPath
@@ -801,9 +849,9 @@ function Write-StitchUnityReviewCaptureRequest {
 function Get-StitchUnityDefaultReviewCaptureArtifactPath {
     param([Parameter(Mandatory = $true)][object]$Map)
 
-    $translationArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $Map -ArtifactName "translationResult"
-    if (-not [string]::IsNullOrWhiteSpace($translationArtifactPath) -and $translationArtifactPath -match "-translation-result\.json$") {
-        return ($translationArtifactPath -replace "-translation-result\.json$", "-scene-capture.png")
+    $pipelineArtifactPath = Resolve-StitchUnityArtifactOutputPath -Map $Map -ArtifactName "pipelineResult"
+    if (-not [string]::IsNullOrWhiteSpace($pipelineArtifactPath) -and $pipelineArtifactPath -match "-pipeline-result\.json$") {
+        return ($pipelineArtifactPath -replace "-pipeline-result\.json$", "-scene-capture.png")
     }
 
     $surfaceId = [string](Get-StitchUnityRequiredProperty -InputObject $Map -Name "surfaceId")
@@ -844,6 +892,7 @@ function Invoke-StitchUnityReviewCapture {
     $relativeArtifactPath = Convert-StitchUnityRepoRelativePath -AbsolutePath $captureArtifactPath
 
     Wait-McpBridgeHealthy -Root $Root -TimeoutSec 30 | Out-Null
+    $captureStartUtc = [DateTime]::UtcNow
     $requestPath = Write-StitchUnityReviewCaptureRequest -Map $Map -Route $route
     $menuResult = Invoke-McpJsonWithTransientRetry -Root $Root -SubPath "/menu/execute" -Body @{
         menuPath = [string]$route.menuPath
@@ -853,9 +902,27 @@ function Invoke-StitchUnityReviewCapture {
         outputPath = $relativeArtifactPath
         overwrite = $true
         superSize = 1
+        width = 390
+        height = 844
     } -TimeoutSec 90
 
     $consoleErrors = Get-McpRecentErrors -Root $Root -Limit 10
+    if ($null -ne $consoleErrors -and $null -ne $consoleErrors.PSObject.Properties["items"]) {
+        $freshErrors = @()
+        foreach ($item in @($consoleErrors.items)) {
+            $timestamp = [DateTime]::MinValue
+            if ([DateTime]::TryParse([string]$item.timestampUtc, [ref]$timestamp) -and $timestamp.ToUniversalTime() -lt $captureStartUtc) {
+                continue
+            }
+
+            $freshErrors += $item
+        }
+
+        $consoleErrors = [PSCustomObject]@{
+            count = @($freshErrors).Count
+            items = @($freshErrors)
+        }
+    }
     $status = if ($null -ne $consoleErrors -and $null -ne $consoleErrors.PSObject.Properties["count"] -and [int]$consoleErrors.count -gt 0) {
         "warning"
     }
@@ -894,6 +961,310 @@ function Get-StitchUnityPresentationElements {
     }
 
     return @(Get-StitchUnityOptionalArray -InputObject $ContractBundle.presentation -Name "elements")
+}
+
+function Normalize-StitchUnityComparableValue {
+    param([AllowNull()][object]$Value)
+
+    if ($null -eq $Value) {
+        return ""
+    }
+
+    $text = [string]$Value
+    if ([string]::IsNullOrWhiteSpace($text)) {
+        return ""
+    }
+
+    $trimmed = $text.Trim()
+    if ($trimmed -match '^\(([^)]+)\)$') {
+        $parts = @($matches[1] -split ',')
+        $normalizedParts = foreach ($part in $parts) {
+            $numberText = [string]$part
+            $number = 0.0
+            if ([double]::TryParse($numberText.Trim(), [System.Globalization.NumberStyles]::Float, [System.Globalization.CultureInfo]::InvariantCulture, [ref]$number)) {
+                [string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0:0.##}", $number)
+            }
+            else {
+                $numberText.Trim().ToLowerInvariant()
+            }
+        }
+
+        return "(" + ($normalizedParts -join ",") + ")"
+    }
+
+    if ($trimmed -match '^(true|false)$') {
+        return $trimmed.ToLowerInvariant()
+    }
+
+    switch ($trimmed.ToLowerInvariant()) {
+        "unconstrained" { return "0" }
+        "min size" { return "1" }
+        "preferred size" { return "2" }
+        "unrestricted" { return "0" }
+        "elastic" { return "0" }
+        "clamped" { return "1" }
+    }
+
+    $numberValue = 0.0
+    if ([double]::TryParse($trimmed, [System.Globalization.NumberStyles]::Float, [System.Globalization.CultureInfo]::InvariantCulture, [ref]$numberValue)) {
+        return [string]::Format([System.Globalization.CultureInfo]::InvariantCulture, "{0:0.##}", $numberValue)
+    }
+
+    return $trimmed
+}
+
+function Get-StitchUnityWorkspaceRootBaselineSpec {
+    return @(
+        [PSCustomObject]@{
+            path = "HeaderChrome"
+            requiredComponents = @("HorizontalLayoutGroup")
+            requiredRect = @()
+            requiredProperties = @(
+                [PSCustomObject]@{ componentType = "HorizontalLayoutGroup"; propertyName = "m_ChildControlWidth"; value = "true" },
+                [PSCustomObject]@{ componentType = "HorizontalLayoutGroup"; propertyName = "m_ChildForceExpandWidth"; value = "true" }
+            )
+        },
+        [PSCustomObject]@{
+            path = "HeaderChrome/TitleGroup"
+            requiredComponents = @("VerticalLayoutGroup", "LayoutElement")
+            requiredRect = @()
+            requiredProperties = @(
+                [PSCustomObject]@{ componentType = "LayoutElement"; propertyName = "m_FlexibleWidth"; value = "1" }
+            )
+        },
+        [PSCustomObject]@{
+            path = "MainScroll"
+            requiredComponents = @("ScrollRect", "RectMask2D")
+            requiredRect = @(
+                [PSCustomObject]@{ field = "anchorMin"; value = "(0,0)" },
+                [PSCustomObject]@{ field = "anchorMax"; value = "(1,1)" },
+                [PSCustomObject]@{ field = "anchoredPosition"; value = "(0,10)" },
+                [PSCustomObject]@{ field = "sizeDelta"; value = "(0,-132)" }
+            )
+            requiredProperties = @(
+                [PSCustomObject]@{ componentType = "ScrollRect"; propertyName = "m_Horizontal"; value = "false" },
+                [PSCustomObject]@{ componentType = "ScrollRect"; propertyName = "m_Vertical"; value = "true" }
+            )
+        },
+        [PSCustomObject]@{
+            path = "MainScroll/Content"
+            requiredComponents = @("VerticalLayoutGroup", "ContentSizeFitter")
+            requiredRect = @(
+                [PSCustomObject]@{ field = "anchorMin"; value = "(0,1)" },
+                [PSCustomObject]@{ field = "anchorMax"; value = "(1,1)" },
+                [PSCustomObject]@{ field = "pivot"; value = "(0.5,1)" }
+            )
+            requiredProperties = @(
+                [PSCustomObject]@{ componentType = "VerticalLayoutGroup"; propertyName = "m_ChildControlWidth"; value = "true" },
+                [PSCustomObject]@{ componentType = "VerticalLayoutGroup"; propertyName = "m_ChildForceExpandWidth"; value = "true" },
+                [PSCustomObject]@{ componentType = "ContentSizeFitter"; propertyName = "m_VerticalFit"; value = "2" }
+            )
+        },
+        [PSCustomObject]@{
+            path = "SaveDock"
+            requiredComponents = @("HorizontalLayoutGroup")
+            requiredRect = @()
+            requiredProperties = @(
+                [PSCustomObject]@{ componentType = "HorizontalLayoutGroup"; propertyName = "m_ChildControlWidth"; value = "true" },
+                [PSCustomObject]@{ componentType = "HorizontalLayoutGroup"; propertyName = "m_ChildForceExpandWidth"; value = "true" }
+            )
+        }
+    )
+}
+
+function Get-StitchUnityPresentationBaselineIssues {
+    param(
+        [Parameter(Mandatory = $true)][object]$ContractBundle,
+        [Parameter(Mandatory = $true)][string]$TargetKind
+    )
+
+    if ($TargetKind -ne "workspace-root") {
+        return @()
+    }
+
+    $elements = @(Get-StitchUnityPresentationElements -ContractBundle $ContractBundle)
+    $issues = @()
+
+    foreach ($spec in @(Get-StitchUnityWorkspaceRootBaselineSpec)) {
+        $element = $null
+        foreach ($candidate in $elements) {
+            if ([string]$candidate.path -eq [string]$spec.path) {
+                $element = $candidate
+                break
+            }
+        }
+
+        if ($null -eq $element) {
+            $issues += [PSCustomObject]@{
+                code = "workspace-root-baseline-element-missing"
+                message = "Presentation contract is missing required workspace baseline element '$([string]$spec.path)'."
+                path = [string]$spec.path
+            }
+            continue
+        }
+
+        $componentNames = @(Get-StitchUnityOptionalArray -InputObject $element -Name "components" | ForEach-Object { [string]$_ })
+        $requiredComponents = @(Get-StitchUnityOptionalArray -InputObject $spec -Name "requiredComponents" | ForEach-Object { [string]$_ })
+        $missingComponents = @($requiredComponents | Where-Object { $componentNames -notcontains [string]$_ })
+        if ($missingComponents.Count -gt 0) {
+            $issues += [PSCustomObject]@{
+                code = "workspace-root-baseline-components-missing"
+                message = "Presentation contract element '$([string]$spec.path)' is missing required components: $([string]::Join(', ', $missingComponents))."
+                path = [string]$spec.path
+                componentNames = @($missingComponents)
+            }
+        }
+
+        $rect = Get-StitchUnityOptionalPropertyValue -InputObject $element -Name "rect"
+        foreach ($rectRule in @(Get-StitchUnityOptionalArray -InputObject $spec -Name "requiredRect")) {
+            $actualRectValue = [string](Get-StitchUnityOptionalPropertyValue -InputObject $rect -Name ([string]$rectRule.field))
+            if ((Normalize-StitchUnityComparableValue $actualRectValue) -ne (Normalize-StitchUnityComparableValue $rectRule.value)) {
+                $issues += [PSCustomObject]@{
+                    code = "workspace-root-baseline-rect-mismatch"
+                    message = "Presentation contract element '$([string]$spec.path)' must set RectTransform.$([string]$rectRule.field) to '$([string]$rectRule.value)'."
+                    path = [string]$spec.path
+                    field = [string]$rectRule.field
+                    expectedValue = [string]$rectRule.value
+                    actualValue = $actualRectValue
+                }
+            }
+        }
+
+        $elementProperties = @(Get-StitchUnityOptionalArray -InputObject $element -Name "properties")
+        foreach ($propertyRule in @(Get-StitchUnityOptionalArray -InputObject $spec -Name "requiredProperties")) {
+            $matchedProperty = $null
+            foreach ($elementProperty in $elementProperties) {
+                if ([string]$elementProperty.componentType -eq [string]$propertyRule.componentType -and
+                    [string]$elementProperty.propertyName -eq [string]$propertyRule.propertyName) {
+                    $matchedProperty = $elementProperty
+                    break
+                }
+            }
+            $actualValue = if ($null -ne $matchedProperty) { [string](Get-StitchUnityOptionalPropertyValue -InputObject $matchedProperty -Name "value") } else { "" }
+            if ((Normalize-StitchUnityComparableValue $actualValue) -ne (Normalize-StitchUnityComparableValue $propertyRule.value)) {
+                $issues += [PSCustomObject]@{
+                    code = "workspace-root-baseline-property-mismatch"
+                    message = "Presentation contract element '$([string]$spec.path)' must set $([string]$propertyRule.componentType).$([string]$propertyRule.propertyName) to '$([string]$propertyRule.value)'."
+                    path = [string]$spec.path
+                    componentType = [string]$propertyRule.componentType
+                    propertyName = [string]$propertyRule.propertyName
+                    expectedValue = [string]$propertyRule.value
+                    actualValue = $actualValue
+                }
+            }
+        }
+    }
+
+    return @($issues)
+}
+
+function Get-StitchUnityPrefabNodePropertyValue {
+    param(
+        [Parameter(Mandatory = $true)][object]$PrefabNode,
+        [Parameter(Mandatory = $true)][string]$ComponentType,
+        [Parameter(Mandatory = $true)][string]$PropertyName
+    )
+
+    if ($null -eq $PrefabNode -or -not [bool]$PrefabNode.found) {
+        return ""
+    }
+
+    foreach ($component in @($PrefabNode.components)) {
+        if ($null -eq $component -or [string]$component.typeName -ne $ComponentType) {
+            continue
+        }
+
+        foreach ($property in @($component.properties)) {
+            if ($null -eq $property -or [string]$property.name -ne $PropertyName) {
+                continue
+            }
+
+            return [string]$property.value
+        }
+    }
+
+    return ""
+}
+
+function Get-StitchUnityPrefabBaselineIssues {
+    param(
+        [Parameter(Mandatory = $true)][string]$Root,
+        [Parameter(Mandatory = $true)][string]$AssetPath,
+        [Parameter(Mandatory = $true)][string]$TargetKind
+    )
+
+    if ($TargetKind -ne "workspace-root") {
+        return @()
+    }
+
+    $issues = @()
+
+    foreach ($spec in @(Get-StitchUnityWorkspaceRootBaselineSpec)) {
+        $node = Get-StitchUnityPrefabNode -Root $Root -AssetPath $AssetPath -ChildPath ([string]$spec.path)
+        if (-not [bool]$node.found) {
+            $issues += [PSCustomObject]@{
+                code = "workspace-root-prefab-element-missing"
+                message = "Prefab is missing required workspace baseline node '$([string]$spec.path)'."
+                path = [string]$spec.path
+            }
+            continue
+        }
+
+        $componentNames = @(Get-StitchUnityPrefabComponentTypeNames -PrefabNode $node)
+        $requiredComponents = @(Get-StitchUnityOptionalArray -InputObject $spec -Name "requiredComponents" | ForEach-Object { [string]$_ })
+        $missingComponents = @($requiredComponents | Where-Object { $componentNames -notcontains [string]$_ })
+        if ($missingComponents.Count -gt 0) {
+            $issues += [PSCustomObject]@{
+                code = "workspace-root-prefab-components-missing"
+                message = "Prefab node '$([string]$spec.path)' is missing required components: $([string]::Join(', ', $missingComponents))."
+                path = [string]$spec.path
+                componentNames = @($missingComponents)
+            }
+        }
+
+        foreach ($rectRule in @(Get-StitchUnityOptionalArray -InputObject $spec -Name "requiredRect")) {
+            $rectPropertyName = switch ([string]$rectRule.field) {
+                "anchorMin" { "m_AnchorMin" }
+                "anchorMax" { "m_AnchorMax" }
+                "pivot" { "m_Pivot" }
+                "anchoredPosition" { "m_AnchoredPosition" }
+                "sizeDelta" { "m_SizeDelta" }
+                default { "" }
+            }
+            if ([string]::IsNullOrWhiteSpace($rectPropertyName)) {
+                continue
+            }
+
+            $actualRectValue = Get-StitchUnityPrefabNodePropertyValue -PrefabNode $node -ComponentType "RectTransform" -PropertyName $rectPropertyName
+            if ((Normalize-StitchUnityComparableValue $actualRectValue) -ne (Normalize-StitchUnityComparableValue $rectRule.value)) {
+                $issues += [PSCustomObject]@{
+                    code = "workspace-root-prefab-rect-mismatch"
+                    message = "Prefab node '$([string]$spec.path)' must set RectTransform.$rectPropertyName to '$([string]$rectRule.value)'."
+                    path = [string]$spec.path
+                    field = [string]$rectRule.field
+                    expectedValue = [string]$rectRule.value
+                    actualValue = $actualRectValue
+                }
+            }
+        }
+
+        foreach ($propertyRule in @(Get-StitchUnityOptionalArray -InputObject $spec -Name "requiredProperties")) {
+            $actualValue = Get-StitchUnityPrefabNodePropertyValue -PrefabNode $node -ComponentType ([string]$propertyRule.componentType) -PropertyName ([string]$propertyRule.propertyName)
+            if ((Normalize-StitchUnityComparableValue $actualValue) -ne (Normalize-StitchUnityComparableValue $propertyRule.value)) {
+                $issues += [PSCustomObject]@{
+                    code = "workspace-root-prefab-property-mismatch"
+                    message = "Prefab node '$([string]$spec.path)' must set $([string]$propertyRule.componentType).$([string]$propertyRule.propertyName) to '$([string]$propertyRule.value)'."
+                    path = [string]$spec.path
+                    componentType = [string]$propertyRule.componentType
+                    propertyName = [string]$propertyRule.propertyName
+                    expectedValue = [string]$propertyRule.value
+                    actualValue = $actualValue
+                }
+            }
+        }
+    }
+
+    return @($issues)
 }
 
 function Get-StitchUnityTargetRootName {
@@ -966,6 +1337,9 @@ function Get-StitchUnityRequiredComponentTypeName {
     switch ($ComponentName) {
         "Image" { return "UnityEngine.UI.Image" }
         "Button" { return "UnityEngine.UI.Button" }
+        "ScrollRect" { return "UnityEngine.UI.ScrollRect" }
+        "RectMask2D" { return "UnityEngine.UI.RectMask2D" }
+        "Mask" { return "UnityEngine.UI.Mask" }
         "HorizontalLayoutGroup" { return "UnityEngine.UI.HorizontalLayoutGroup" }
         "VerticalLayoutGroup" { return "UnityEngine.UI.VerticalLayoutGroup" }
         "LayoutElement" { return "UnityEngine.UI.LayoutElement" }
@@ -1286,9 +1660,11 @@ function Invoke-StitchUnityPresentationContract {
 
     $target = Get-StitchUnityRequiredProperty -InputObject $Map -Name "target"
     $assetPath = [string](Get-StitchUnityRequiredProperty -InputObject $target -Name "assetPath")
+    $targetKind = [string](Get-StitchUnityOptionalPropertyValue -InputObject $Map -Name "targetKind")
     $createdPaths = New-Object System.Collections.Generic.List[string]
     $addedComponents = New-Object System.Collections.Generic.List[string]
     $appliedProperties = New-Object System.Collections.Generic.List[string]
+    $workspaceTextDefaultsApplied = New-Object 'System.Collections.Generic.HashSet[string]'
     $elementResults = @()
 
     foreach ($element in @($elements)) {
@@ -1356,6 +1732,20 @@ function Invoke-StitchUnityPresentationContract {
             foreach ($addedComponent in @($propertyEnsureResult.addedComponents)) {
                 if (-not $addedComponents.Contains([string]$addedComponent)) {
                     $addedComponents.Add([string]$addedComponent)
+                }
+            }
+
+            if ($targetKind -eq "workspace-root" -and $componentType -eq "TextMeshProUGUI") {
+                $textDefaultsKey = if ([string]::IsNullOrWhiteSpace($path)) { "<root>" } else { $path }
+                if ($workspaceTextDefaultsApplied.Add($textDefaultsKey)) {
+                    Set-StitchUnityPrefabProperty `
+                        -Root $Root `
+                        -AssetPath $assetPath `
+                        -ChildPath $path `
+                        -ComponentType "TextMeshProUGUI" `
+                        -PropertyName "m_TextWrappingMode" `
+                        -Value "0"
+                    $appliedProperties.Add("$textDefaultsKey::TextMeshProUGUI.m_TextWrappingMode")
                 }
             }
 
@@ -1466,6 +1856,16 @@ function Invoke-StitchUnityContractCompleteTranslation {
         }
     }
 
+    $targetKind = [string](Get-StitchUnityOptionalPropertyValue -InputObject $Map -Name "targetKind")
+    $baselineIssues = @()
+    if (-not [string]::IsNullOrWhiteSpace($targetKind)) {
+        $baselineIssues = @(Get-StitchUnityPrefabBaselineIssues -Root $Root -AssetPath $assetPath -TargetKind $targetKind)
+    }
+    if (@($baselineIssues).Count -gt 0) {
+        $baselineMessages = @($baselineIssues | ForEach-Object { [string]$_.message })
+        throw "Target baseline validation failed after translation. $([string]::Join(' | ', $baselineMessages))"
+    }
+
     return [PSCustomObject]@{
         schemaVersion = "1.0.0"
         success = $true
@@ -1479,6 +1879,11 @@ function Invoke-StitchUnityContractCompleteTranslation {
         addedComponents = @($addedComponents)
         blocks = $blockResults
         presentation = $presentationResult
+        targetBaseline = [PSCustomObject]@{
+            targetKind = $targetKind
+            issues = @($baselineIssues)
+            passed = (@($baselineIssues).Count -eq 0)
+        }
         generatedAt = (Get-Date).ToString("o")
     }
 }
@@ -1549,6 +1954,7 @@ function Get-StitchUnityPreflightObject {
     $orderedBlockEntries = Get-StitchUnityOrderedBlockEntries -Map $Map -ContractBundle $ContractBundle
     $presentationState = Get-StitchUnityPresentationContractState -ContractBundle $ContractBundle
     $requiresPresentationContract = Test-StitchUnityPresentationContractRequired -Map $Map
+    $targetKind = if ($null -ne $ContractSource) { [string](Get-StitchUnityOptionalPropertyValue -InputObject $ContractSource -Name "targetKind") } else { [string](Get-StitchUnityOptionalPropertyValue -InputObject $Map -Name "targetKind") }
     $roughEdges = @()
     $blockingIssues = @()
 
@@ -1632,6 +2038,14 @@ function Get-StitchUnityPreflightObject {
         }
     }
 
+    if ($requiresPresentationContract -and $presentationState.exists -and $presentationState.extractionStatus -eq "resolved" -and -not [string]::IsNullOrWhiteSpace($targetKind)) {
+        $baselineIssues = @(Get-StitchUnityPresentationBaselineIssues -ContractBundle $ContractBundle -TargetKind $targetKind)
+        foreach ($issue in $baselineIssues) {
+            $roughEdges += $issue
+            $blockingIssues += $issue
+        }
+    }
+
     $blockedReason = ""
     if (@($blockingIssues).Count -gt 0) {
         $blockedReason = [string](@($blockingIssues | ForEach-Object { [string]$_.message }) -join " | ")
@@ -1650,8 +2064,7 @@ function Get-StitchUnityPreflightObject {
         contractSource = if ($null -ne $ContractSource) { $ContractSource } else {
             [PSCustomObject]@{
                 sourceKind = "file"
-                generatedFromFamily = $false
-                familyId = ""
+                targetKind = $targetKind
                 profileGenerated = $false
                 profilePath = ""
                 sharedUiCatalogPath = ""

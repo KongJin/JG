@@ -1,11 +1,11 @@
 # Unit Feature 분리 설계
 
-> 마지막 업데이트: 2026-04-20
+> 마지막 업데이트: 2026-04-25
 > 상태: reference
 > doc_id: design.unit-feature-separation
 > role: reference
 > owner_scope: Unit feature 분리 배경과 경계 설계 메모
-> upstream: design.game-design, `agent/architecture.md`
+> upstream: design.game-design, docs.index
 > artifacts: none
 
 이 문서는 `Garage` Feature에 있는 `Unit` 도메인을 독립적인 `Unit` Feature로 분리하는 설계안이다.
@@ -135,7 +135,7 @@ Features/Garage/                        ← 편성 관리 전문
 
 ### 포트 소유권 규칙
 
-`../../agent/architecture.md (line 130-131)` 규칙을 따른다:
+현재 architecture owner 문서의 포트 소유권 규칙을 따른다:
 
 > "Port interface는 소비자(A)의 Application/Ports에 정의. Implementation은 제공자(B)의 Infrastructure에 위치."
 
@@ -511,7 +511,7 @@ namespace Features.Garage.Application.Ports
     /// <summary>
     /// Unit 조합에 필요한 모듈 스탯 조회 포트.
     /// Garage가 정의하고, Unit Infrastructure가 구현한다.
-    /// ../../agent/architecture.md (line 130-131) 규칙 준수: 소비자가 포트 정의, 제공자가 구현.
+    /// 현재 architecture owner 문서 규칙 준수: 소비자가 포트 정의, 제공자가 구현.
     /// </summary>
     public interface IUnitCompositionPort
     {
@@ -527,7 +527,7 @@ namespace Features.Garage.Application.Ports
 **설계 판단**:
 - `IUnitCompositionPort`는 **Garage가 정의** (소비자)
 - `UnitCompositionProvider`는 **Unit Infrastructure가 구현** (제공자)
-- 이는 `../../agent/architecture.md`의 크로스 피처 포트 규칙을 정확히 따름
+- 이는 현재 architecture owner 문서의 크로스 피처 포트 규칙을 따른다
 
 ---
 

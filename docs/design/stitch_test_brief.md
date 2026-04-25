@@ -1,7 +1,7 @@
 # Stitch Test Brief
 
 > 마지막 업데이트: 2026-04-24
-> 상태: active
+> 상태: reference
 > doc_id: design.stitch-test-brief
 > role: reference
 > owner_scope: Stitch 빠른 탐색용 테스트 브리프 템플릿

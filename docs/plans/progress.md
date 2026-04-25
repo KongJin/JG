@@ -13,9 +13,9 @@
 - 중요: Phase 0~9의 `완료` 표기는 주로 코드 경로 기준이다.
 - 2026-04-18 확인 시 실제 `Assets/Scenes/GameScene.unity` 씬 에셋은 삭제된 상태였고, 플레이 가능한 전투 씬 완성도와 문서 표기가 어긋나 있었다.
 - 현재는 새 hand-authored `GameScene.unity`와 최소 `BattleEntity.prefab`을 다시 만들었고, build settings 등록과 required-field audit까지 복구했다.
-- `CodexLobbyScene -> GameScene` end-to-end summon smoke는 통과했다.
+- legacy lobby-to-game end-to-end summon smoke는 과거 통과 이력만 남아 있으며 현재 acceptance route가 아니다.
 - click summon 기준 `GameScene` wave/core/victory loop는 다시 통과했고, 현재 남은 핵심 리스크는 placement drag/drop 자동화와 멀티플레이 동기화 smoke다.
-- 2026-04-24 repo audit 기준, 현재 committed repo에는 `Assets/Scenes/GameScene.unity`, `Assets/Scenes/CodexLobbyScene.unity`, build settings scene entry가 존재하지 않는다.
+- 2026-04-24 repo audit 기준, 현재 committed repo에는 `Assets/Scenes/GameScene.unity`, legacy lobby scene, build settings scene entry가 존재하지 않는다.
 - 따라서 2026-04-18 전후의 scene/smoke artifact는 historical recovery evidence로만 보고, reset 중의 current committed SSOT와 분리해서 읽는다.
 - Lobby/Garage UI lane의 현재 active recovery surface는 `Set B Garage`이고, Set C는 `account-delete-confirm` overlay translation lane을 별도로 복구 중이다.
 - `Set C account-delete-confirm`는 `source html/png -> execution contracts -> translation evidence`까지 연결됐다.
@@ -26,7 +26,7 @@
 - 현재 Set B lane의 직접 남은 일은 dedicated runtime smoke 부재가 아니라 visual fidelity final judgment이다.
 - Garage save/load WebGL, settings interaction, shared runtime correctness는 Set B prefab lane이 아니라 shared `Account/Garage` validation lane에서 계속 관리한다.
 - 현재 남은 Set C 핵심 리스크는 `warning icon glyph` asset 미해결과 `Prefab Mode SceneView capture != runtime/mobile framing` 차이다.
-- set별 전용 Stitch review/prefab SceneTool은 제거했고, 현재 review route는 family-level generic tool만 남겨뒀다.
+- set별 전용 Stitch review/prefab SceneTool은 제거했고, 현재 review route는 generic tool만 남겨뒀다.
 - `Set A` source lookup은 이미 잡히지만, 현재 blocker는 source를 못 찾는 게 아니라 generic parser가 lobby/form modal structure를 아직 못 읽는 점이다.
 
 ## 현재 포커스
@@ -75,12 +75,10 @@
 
 ## 다음 작업
 
-- `docs/index.md`에서 현재 owner 경로를 해석한 뒤 lane별 SSOT를 읽는다.
-- Unity UI/UX 작업은 시작 전에 owner doc `ops.unity-ui-authoring-workflow`를 먼저 읽고, 종료 전 `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`로 route/evidence freshness를 확인한다.
 - `GameScene` 쪽은 placement drag/drop automation contract와 multiplayer sync smoke를 우선 마감한다.
 - Lobby/Garage 쪽은 mobile-first Garage 단일 구조의 시각 밀도와 review evidence 기준 visual fidelity를 계속 sanity check 한다.
 - shared `Account/Garage` lane에서는 Garage save/load WebGL, settings interaction, save action 접근성을 계속 추적한다.
-- Stitch lane 쪽은 `Set B/C`를 generic onboarding 기준 샘플로 삼아, `Set D/E`와 이후 다시 여는 inventory set을 per-surface script edit 없이 태울 수 있게 source discovery/family detection/review route를 일반화한다.
+- Stitch lane 쪽은 `Set B/C`를 generic onboarding 기준 샘플로 삼아, `Set D/E`와 이후 다시 여는 inventory set을 per-surface script edit 없이 태울 수 있게 source parser/review route를 일반화한다.
 - 외부 디자인 시안은 `Stitch`를 기본 생성 도구로 두고, 실제 반영은 Unity MCP와 scene/prefab contract 기준으로 번역한다.
 
 ## 상세 이력

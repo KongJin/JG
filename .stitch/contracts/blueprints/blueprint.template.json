@@ -3,7 +3,7 @@
   "contractKind": "blueprint",
   "blueprintId": "<blueprint-id>",
   "surfaceRole": "root",
-  "description": "<reusable-surface-family>",
+  "description": "<reusable-surface-description>",
   "blocks": [
     {
       "blockId": "root",

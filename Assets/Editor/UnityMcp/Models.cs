@@ -370,24 +370,13 @@ namespace ProjectSD.EditorTools.UnityMcp
     }
 
     [Serializable]
-    internal sealed class LobbyContractResponse
-    {
-        public bool success;
-        public string message;
-        public string scenePath;
-        public bool sceneSaved;
-        public string[] verifiedSentinels;
-        public string[] missingSentinels;
-        public string[] verifiedReferences;
-        public string[] missingReferences;
-    }
-
-    [Serializable]
     internal sealed class ScreenshotCaptureRequest
     {
         public string outputPath;
         public int superSize;
         public bool overwrite;
+        public int width;
+        public int height;
     }
 
     [Serializable]
@@ -409,6 +398,8 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string relativePath;
         public string absolutePath;
         public int superSize;
+        public int width;
+        public int height;
     }
 
     [Serializable]

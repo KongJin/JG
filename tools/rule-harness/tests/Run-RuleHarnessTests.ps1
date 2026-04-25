@@ -1094,6 +1094,36 @@ Assert-RuleHarness `
     -Condition ($null -ne $unplannedPatchPlan -and [int]$unplannedPatchPlan.details.unplannedFindingCount -eq 1) `
     -Message 'Expected patch_plan stage details to record unplanned findings when no recipe matched.'
 
+$mathfRepo = Join-Path $scratchRoot 'mathf-scalar-fix'
+Initialize-RuleHarnessScopeRepo -RepoPath $mathfRepo -Features @(
+    [pscustomobject]@{ Name = 'Garage'; ApplicationContent = @"
+namespace Features.Garage.Application
+{
+    public sealed class GarageService
+    {
+        public int ComputeMissing(int savedUnitCount)
+        {
+            return UnityEngine.Mathf.Max(0, 3 - savedUnitCount);
+        }
+    }
+}
+"@ }
+)
+$mathfReport = Invoke-RuleHarness `
+    -RepoRoot $mathfRepo `
+    -ConfigPath (Join-Path $mathfRepo 'tools/rule-harness/config.json') `
+    -DisableLlm
+$mathfContent = Get-Content -Path (Join-Path $mathfRepo 'Assets/Scripts/Features/Garage/Application/GarageService.cs') -Raw
+Assert-RuleHarness `
+    -Condition ($mathfReport.commit.created -and $mathfReport.stoppedScope.scopeId -eq 'Garage' -and $mathfReport.stoppedScope.finalStatus -eq 'clean') `
+    -Message 'Expected fully-qualified UnityEngine.Mathf scalar calls in Application to be auto-fixed and committed.'
+Assert-RuleHarness `
+    -Condition ($mathfContent.Contains('System.Math.Max(0, 3 - savedUnitCount)') -and -not $mathfContent.Contains('UnityEngine.Mathf.Max')) `
+    -Message 'Expected the Mathf scalar recipe to rewrite UnityEngine.Mathf.Max to System.Math.Max.'
+Assert-RuleHarness `
+    -Condition (@($mathfReport.actionItems | Where-Object kind -eq 'expand-auto-fix-coverage').Count -eq 0) `
+    -Message 'Expected supported Mathf scalar fixes to avoid expand-auto-fix-coverage action items.'
+
 $compileGateRepo = Join-Path $scratchRoot 'compile-gate-default'
 Initialize-RuleHarnessScopeRepo -RepoPath $compileGateRepo -Features @(
     [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }

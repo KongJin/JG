@@ -55,6 +55,24 @@ test("reports docs/index entries that are missing from the registry", async () =
   assert.ok(result.errors.some((error) => error.code === "index-missing-entry"));
 });
 
+test("reports doc_id prefixes that do not match the document path owner", async () => {
+  const result = await lintRepository(getFixturePath("doc-id-path-prefix-mismatch"), {
+    includeGeneralChecks: true,
+    includePolicyChecks: false,
+  });
+  assert.ok(
+    result.errors.some((error) => error.code === "doc-id-path-prefix-mismatch"),
+  );
+});
+
+test("reports completed plan wording left in draft plans", async () => {
+  const result = await lintRepository(getFixturePath("completed-draft-plan"), {
+    includeGeneralChecks: true,
+    includePolicyChecks: false,
+  });
+  assert.ok(result.errors.some((error) => error.code === "completed-draft-plan"));
+});
+
 test("ignores excluded .system skill files", async () => {
   const result = await lintRepository(getFixturePath("excluded-system-skill-ignored"), {
     includeGeneralChecks: true,
@@ -183,4 +201,52 @@ test("reports missing cohesion/coupling owner route in repo-local skill", async 
   assert.ok(
     result.errors.some((error) => error.code === "missing-skill-owner-route"),
   );
+});
+
+test("reports missing recurrence closeout artifact for rules-only changes", async () => {
+  const result = await lintRepository(getFixturePath("missing-recurrence-closeout-artifact"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+    changedFiles: ["docs/index.md"],
+  });
+  assert.ok(
+    result.errors.some((error) => error.code === "missing-recurrence-closeout-artifact"),
+  );
+});
+
+test("reports recurrence closeout artifact that was not updated in the same change", async () => {
+  const result = await lintRepository(getFixturePath("valid-recurrence-closeout"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+    changedFiles: ["docs/index.md"],
+  });
+  assert.ok(
+    result.errors.some((error) => error.code === "missing-recurrence-closeout-update"),
+  );
+});
+
+test("reports missing required recurrence closeout fields when issueDetected is true", async () => {
+  const result = await lintRepository(getFixturePath("invalid-recurrence-closeout"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+    changedFiles: [
+      "docs/index.md",
+      "artifacts/rules/issue-recurrence-closeout.json",
+    ],
+  });
+  assert.ok(
+    result.errors.some((error) => error.code === "missing-recurrence-closeout-field"),
+  );
+});
+
+test("accepts valid recurrence closeout artifact for rules-only changes", async () => {
+  const result = await lintRepository(getFixturePath("valid-recurrence-closeout"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+    changedFiles: [
+      "docs/index.md",
+      "artifacts/rules/issue-recurrence-closeout.json",
+    ],
+  });
+  assert.equal(result.errors.length, 0);
 });

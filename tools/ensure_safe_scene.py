@@ -38,7 +38,7 @@ def main():
     print(f"Current scene: {current_scene}")
     
     # If we are in a historical lobby authoring scene, switch away before touching files on disk.
-    if current_scene.endswith('/LobbyScene.unity') or current_scene.endswith('/CodexLobbyScene.unity'):
+    if current_scene.endswith('/LobbyScene.unity'):
         print("Historical lobby authoring scene is open. Switching to safe scene...")
         
         safe_scene = "Assets/FromStore/Plugins/Demigiant/DOTweenPro Examples/DOTweenAnimation_Basics.unity"
