@@ -19,6 +19,7 @@ namespace Features.Player
                 return false;
 
             soundPlayer.Initialize(eventBus, playerId);
+            soundPlayer.PlayBgm("bgm_battle", 0.35f);
             errorMessage = null;
             return true;
         }

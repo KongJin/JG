@@ -153,6 +153,187 @@ function Test-DuplicateValues {
     }
 }
 
+function Normalize-ComparableValue {
+    param([object]$Value)
+
+    if ($null -eq $Value) {
+        return ""
+    }
+
+    $trimmed = ([string]$Value).Trim()
+    if ($trimmed -match '^(true|false)$') {
+        return $trimmed.ToLowerInvariant()
+    }
+
+    switch ($trimmed.ToLowerInvariant()) {
+        "unconstrained" { return "0" }
+        "min size" { return "1" }
+        "preferred size" { return "2" }
+        "unrestricted" { return "0" }
+        "elastic" { return "0" }
+        "clamped" { return "1" }
+    }
+
+    return ($trimmed -replace '\s+', '').ToLowerInvariant()
+}
+
+function Get-ComponentNames {
+    param([object]$Element)
+
+    return @(Get-ArrayValue -Value (Get-Value -InputObject $Element -Name "components") | ForEach-Object { [string]$_ })
+}
+
+function Get-PresentationElementByPath {
+    param(
+        [object[]]$Elements,
+        [Parameter(Mandatory = $true)][string]$PathValue
+    )
+
+    foreach ($element in @($Elements)) {
+        if ([string](Get-Value -InputObject $element -Name "path") -eq $PathValue) {
+            return $element
+        }
+    }
+
+    return $null
+}
+
+function Get-PresentationPropertyValue {
+    param(
+        [object]$Element,
+        [Parameter(Mandatory = $true)][string]$ComponentType,
+        [Parameter(Mandatory = $true)][string]$PropertyName
+    )
+
+    foreach ($property in @(Get-ArrayValue -Value (Get-Value -InputObject $Element -Name "properties"))) {
+        if ([string](Get-Value -InputObject $property -Name "componentType") -eq $ComponentType -and
+            [string](Get-Value -InputObject $property -Name "propertyName") -eq $PropertyName) {
+            return [string](Get-Value -InputObject $property -Name "value")
+        }
+    }
+
+    return ""
+}
+
+function Test-PresentationElementComposition {
+    param(
+        [object[]]$Elements,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][System.Collections.Generic.List[object]]$Issues
+    )
+
+    foreach ($element in @($Elements)) {
+        $path = [string](Get-Value -InputObject $element -Name "path")
+        $components = @(Get-ComponentNames -Element $element)
+        $hasImage = $components -contains "Image"
+        $hasText = $components -contains "TextMeshProUGUI"
+        $hasButton = $components -contains "Button"
+
+        if ($hasImage -and $hasText) {
+            Add-Issue -Issues $Issues -Code "presentation-element-mixes-image-and-text" -Message "Presentation element '$path' mixes Image and TextMeshProUGUI. Use a container/background element plus a child Label text element so Unity MCP can apply components reliably." -Path ("contracts.presentation.elements[{0}]" -f $path)
+        }
+
+        if ($hasButton -and $hasText) {
+            Add-Issue -Issues $Issues -Code "button-label-on-host" -Message "Button element '$path' should not host TextMeshProUGUI directly. Put button text on '$path/Label'." -Path ("contracts.presentation.elements[{0}]" -f $path)
+        }
+    }
+}
+
+function Get-WorkspaceRootBaselineSpec {
+    return @(
+        [PSCustomObject]@{
+            path = "HeaderChrome"
+            requiredComponents = @("HorizontalLayoutGroup")
+            requiredRect = @()
+            requiredProperties = @(
+                [PSCustomObject]@{ componentType = "HorizontalLayoutGroup"; propertyName = "m_ChildControlWidth"; value = "true" },
+                [PSCustomObject]@{ componentType = "HorizontalLayoutGroup"; propertyName = "m_ChildForceExpandWidth"; value = "true" }
+            )
+        },
+        [PSCustomObject]@{
+            path = "HeaderChrome/TitleGroup"
+            requiredComponents = @("VerticalLayoutGroup", "LayoutElement")
+            requiredRect = @()
+            requiredProperties = @(
+                [PSCustomObject]@{ componentType = "LayoutElement"; propertyName = "m_FlexibleWidth"; value = "1" }
+            )
+        },
+        [PSCustomObject]@{
+            path = "MainScroll"
+            requiredComponents = @("ScrollRect", "RectMask2D")
+            requiredRect = @(
+                [PSCustomObject]@{ field = "anchorMin"; value = "(0,0)" },
+                [PSCustomObject]@{ field = "anchorMax"; value = "(1,1)" },
+                [PSCustomObject]@{ field = "anchoredPosition"; value = "(0,10)" },
+                [PSCustomObject]@{ field = "sizeDelta"; value = "(0,-132)" }
+            )
+            requiredProperties = @(
+                [PSCustomObject]@{ componentType = "ScrollRect"; propertyName = "m_Horizontal"; value = "false" },
+                [PSCustomObject]@{ componentType = "ScrollRect"; propertyName = "m_Vertical"; value = "true" }
+            )
+        },
+        [PSCustomObject]@{
+            path = "MainScroll/Content"
+            requiredComponents = @("VerticalLayoutGroup", "ContentSizeFitter")
+            requiredRect = @(
+                [PSCustomObject]@{ field = "anchorMin"; value = "(0,1)" },
+                [PSCustomObject]@{ field = "anchorMax"; value = "(1,1)" },
+                [PSCustomObject]@{ field = "pivot"; value = "(0.5,1)" }
+            )
+            requiredProperties = @(
+                [PSCustomObject]@{ componentType = "VerticalLayoutGroup"; propertyName = "m_ChildControlWidth"; value = "true" },
+                [PSCustomObject]@{ componentType = "VerticalLayoutGroup"; propertyName = "m_ChildForceExpandWidth"; value = "true" },
+                [PSCustomObject]@{ componentType = "ContentSizeFitter"; propertyName = "m_VerticalFit"; value = "2" }
+            )
+        },
+        [PSCustomObject]@{
+            path = "SaveDock"
+            requiredComponents = @("HorizontalLayoutGroup")
+            requiredRect = @()
+            requiredProperties = @(
+                [PSCustomObject]@{ componentType = "HorizontalLayoutGroup"; propertyName = "m_ChildControlWidth"; value = "true" },
+                [PSCustomObject]@{ componentType = "HorizontalLayoutGroup"; propertyName = "m_ChildForceExpandWidth"; value = "true" }
+            )
+        }
+    )
+}
+
+function Test-WorkspaceRootBaseline {
+    param(
+        [object[]]$Elements,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][System.Collections.Generic.List[object]]$Issues
+    )
+
+    foreach ($spec in @(Get-WorkspaceRootBaselineSpec)) {
+        $element = Get-PresentationElementByPath -Elements $Elements -PathValue ([string]$spec.path)
+        if ($null -eq $element) {
+            Add-Issue -Issues $Issues -Code "workspace-root-baseline-element-missing" -Message "Workspace-root draft is missing required baseline element '$([string]$spec.path)'." -Path ("contracts.presentation.elements[{0}]" -f [string]$spec.path)
+            continue
+        }
+
+        $componentNames = @(Get-ComponentNames -Element $element)
+        foreach ($componentName in @(Get-ArrayValue -Value $spec.requiredComponents)) {
+            if ($componentNames -notcontains [string]$componentName) {
+                Add-Issue -Issues $Issues -Code "workspace-root-baseline-components-missing" -Message "Workspace-root baseline element '$([string]$spec.path)' is missing required component '$([string]$componentName)'." -Path ("contracts.presentation.elements[{0}].components" -f [string]$spec.path)
+            }
+        }
+
+        $rect = Get-Value -InputObject $element -Name "rect"
+        foreach ($rectRule in @(Get-ArrayValue -Value $spec.requiredRect)) {
+            $actualRectValue = [string](Get-Value -InputObject $rect -Name ([string]$rectRule.field))
+            if ((Normalize-ComparableValue $actualRectValue) -ne (Normalize-ComparableValue $rectRule.value)) {
+                Add-Issue -Issues $Issues -Code "workspace-root-baseline-rect-mismatch" -Message "Workspace-root baseline element '$([string]$spec.path)' must set RectTransform.$([string]$rectRule.field) to '$([string]$rectRule.value)'." -Path ("contracts.presentation.elements[{0}].rect.{1}" -f [string]$spec.path, [string]$rectRule.field)
+            }
+        }
+
+        foreach ($propertyRule in @(Get-ArrayValue -Value $spec.requiredProperties)) {
+            $actualPropertyValue = Get-PresentationPropertyValue -Element $element -ComponentType ([string]$propertyRule.componentType) -PropertyName ([string]$propertyRule.propertyName)
+            if ((Normalize-ComparableValue $actualPropertyValue) -ne (Normalize-ComparableValue $propertyRule.value)) {
+                Add-Issue -Issues $Issues -Code "workspace-root-baseline-property-mismatch" -Message "Workspace-root baseline element '$([string]$spec.path)' must set $([string]$propertyRule.componentType).$([string]$propertyRule.propertyName) to '$([string]$propertyRule.value)'." -Path ("contracts.presentation.elements[{0}].properties" -f [string]$spec.path)
+            }
+        }
+    }
+}
+
 function Test-ContractDraft {
     param(
         [Parameter(Mandatory = $true)][object]$Draft,
@@ -314,6 +495,13 @@ function Test-ContractDraft {
         $elementPaths += $path
     }
     Test-DuplicateValues -Values $elementPaths -IssueCode "duplicate-presentation-element-path" -MessagePrefix "Duplicate presentation element path" -Path "contracts.presentation.elements" -Issues $issues
+
+    Test-PresentationElementComposition -Elements $elements -Issues $issues
+
+    $targetKind = [string](Get-Value -InputObject $map -Name "targetKind")
+    if ($targetKind -eq "workspace-root") {
+        Test-WorkspaceRootBaseline -Elements $elements -Issues $issues
+    }
 
     return $issues
 }

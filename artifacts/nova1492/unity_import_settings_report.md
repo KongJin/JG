@@ -18,7 +18,7 @@
 
 ## Changed Assets
 
-- `Assets/Art/Nova1492/Units/01_AN_1.bmp`
-- `Assets/Art/Nova1492/Units/01_SW_1.bmp`
-- `Assets/Art/Nova1492/Units/05_HS_01.bmp`
-- `Assets/Art/Nova1492/Units/06dam.bmp`
+- `Assets/Art/Nova1492/Units/Atlases/01_AN_1.bmp`
+- `Assets/Art/Nova1492/Units/Atlases/01_SW_1.bmp`
+- `Assets/Art/Nova1492/Units/Atlases/05_HS_01.bmp`
+- `Assets/Art/Nova1492/Effects/Atlases/06dam.bmp`

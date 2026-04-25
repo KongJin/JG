@@ -85,6 +85,7 @@
 - `reference`: [`document_management_lightweight_plan.md`](./plans/document_management_lightweight_plan.md) - 문서관리 빠른 체크와 새 문서 생성 기준 경량화 완료 기록
 - `reference`: [`document_management_followup_tuning_plan.md`](./plans/document_management_followup_tuning_plan.md) - 문서관리 경량화 후속 보정 완료 기록
 - `draft`: [`stitch_llm_contract_pipeline_plan.md`](./plans/stitch_llm_contract_pipeline_plan.md) - Stitch source facts + LLM contract draft + script validation 전환 계획
+- `draft`: [`stitch_screen_onboarding_simplification_plan.md`](./plans/stitch_screen_onboarding_simplification_plan.md) - 새 Stitch screen onboarding 반복 blocker를 줄이는 실행 계획
 - `draft`: [`game_scene_ui_ux_improvement_plan.md`](./plans/game_scene_ui_ux_improvement_plan.md) - GameScene 전투 HUD/소환 UX 재설계 계획
 - `reference`: [`nova1492_resource_integration_plan.md`](./plans/nova1492_resource_integration_plan.md) - Nova1492 설치 리소스 staging 결과와 후속 적용 기준
 - `reference`: [`rule_trigger_skill_extraction_plan.md`](./plans/rule_trigger_skill_extraction_plan.md) - 행동 트리거가 필요한 문서 규칙을 skill로 분리한 결과와 후속 자동화 검토

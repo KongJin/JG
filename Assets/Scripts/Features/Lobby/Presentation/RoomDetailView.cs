@@ -8,7 +8,10 @@ using Shared.ErrorHandling;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Lifecycle;
+using Shared.Math;
 using Shared.Runtime.Pooling;
+using Shared.Runtime.Sound;
+using Shared.Sound;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -156,18 +159,21 @@ namespace Features.Lobby.Presentation
 
         private void HandleLeave()
         {
+            PublishSound("ui_click");
             var result = _useCases.LeaveRoom(_currentRoomId, _localMemberId);
             UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
         }
 
         private void HandleChangeTeam(TeamType team)
         {
+            PublishSound("ui_select");
             var result = _useCases.ChangeTeam(_currentRoomId, _localMemberId, team);
             UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
         }
 
         private void HandleToggleReady()
         {
+            PublishSound("ui_confirm");
             if (!HasRoomMemberContext())
                 return;
 
@@ -186,8 +192,19 @@ namespace Features.Lobby.Presentation
 
         private void HandleStartGame()
         {
+            PublishSound("ui_confirm");
             var result = _useCases.StartGame(_currentRoomId);
             UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
+        }
+
+        private void PublishSound(string soundKey)
+        {
+            _eventPublisher?.Publish(new SoundRequestEvent(new SoundRequest(
+                soundKey,
+                Float3.Zero,
+                PlaybackPolicy.LocalOnly,
+                SoundPlayer.LobbyOwnerId,
+                0.05f)));
         }
 
         private void ClearMemberList()

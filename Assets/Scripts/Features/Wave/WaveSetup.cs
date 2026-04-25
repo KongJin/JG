@@ -137,6 +137,13 @@ namespace Features.Wave
             var gameEndBridge = new WaveGameEndBridge(eventBus, eventBus, () => UnityEngine.Time.realtimeSinceStartup);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, gameEndBridge));
 
+            var waveSoundHandler = new WaveSoundEventHandler(
+                eventBus,
+                eventBus,
+                coreObjectiveQuery.CoreId,
+                coreObjectiveQuery.CoreMaxHp);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, waveSoundHandler));
+
             _flowController.Initialize(
                 new WaveFlowDriver(
                     waveLoop,

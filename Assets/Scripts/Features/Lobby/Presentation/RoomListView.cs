@@ -6,7 +6,10 @@ using Features.Lobby.Application.Ports;
 using Shared.ErrorHandling;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Math;
 using Shared.Runtime.Pooling;
+using Shared.Runtime.Sound;
+using Shared.Sound;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -97,6 +100,8 @@ namespace Features.Lobby.Presentation
 
         private void HandleCreateRoom()
         {
+            PublishSound("ui_confirm");
+
             var roomName = _roomNameInput != null ? _roomNameInput.text : "Room";
             var capacityText = _capacityInput != null ? _capacityInput.text : "4";
             var displayName = _displayNameInput != null ? _displayNameInput.text : string.Empty;
@@ -112,9 +117,21 @@ namespace Features.Lobby.Presentation
 
         private void OnJoinRoomClicked(DomainEntityId roomId)
         {
+            PublishSound("ui_select");
+
             var displayName = _displayNameInput != null ? _displayNameInput.text : string.Empty;
             var result = _useCases.JoinRoom(roomId, displayName);
             UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
+        }
+
+        private void PublishSound(string soundKey)
+        {
+            _eventPublisher?.Publish(new SoundRequestEvent(new SoundRequest(
+                soundKey,
+                Float3.Zero,
+                PlaybackPolicy.LocalOnly,
+                SoundPlayer.LobbyOwnerId,
+                0.05f)));
         }
 
         private void ClearList()

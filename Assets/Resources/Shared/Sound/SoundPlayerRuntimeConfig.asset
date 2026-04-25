@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5f52f7a6af148cc8cdd17459bbcfbea, type: 3}
   m_Name: SoundPlayerRuntimeConfig
   m_EditorClassIdentifier: 
-  _audioSourcePrefab: {fileID: 4459536716551180174, guid: 5e3f256091dc5d546b9adc51695f93d8, type: 3}
   _catalog: {fileID: 11400000, guid: ce12d1d3fadb19541b6cf905025c8794, type: 2}
   _initialPoolSize: 8

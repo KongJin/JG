@@ -1,0 +1,330 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifactKind": "stitch-contract-draft",
+  "surfaceId": "__surface_id__",
+  "source": {
+    "htmlPath": ".stitch/designs/__surface_id__.html",
+    "imagePath": ".stitch/designs/__surface_id__.png"
+  },
+  "target": {
+    "kind": "prefab",
+    "assetPath": "Assets/Prefabs/Features/__feature__/Root/__prefab_name__.prefab"
+  },
+  "contracts": {
+    "manifest": {
+      "schemaVersion": "1.1.0",
+      "contractKind": "screen-manifest",
+      "setId": "__set_id__",
+      "surfaceId": "__surface_id__",
+      "surfaceRole": "overlay",
+      "status": "draft",
+      "source": {
+        "tool": "stitch",
+        "sourceRef": "__surface_id__",
+        "projectId": "",
+        "screenId": "__surface_id__",
+        "url": ".stitch/designs/__surface_id__.png"
+      },
+      "ctaPriority": [
+        {
+          "id": "primary-cta",
+          "priority": "primary",
+          "outcome": "__primary_outcome__"
+        }
+      ],
+      "states": {
+        "default": true,
+        "empty": false,
+        "loading": false,
+        "error": false,
+        "selected": false,
+        "disabled": false
+      },
+      "blocks": [
+        {
+          "blockId": "overlay-shell",
+          "role": "dialog",
+          "sourceName": "__dialog_source_name__",
+          "children": [
+            "dialog-header",
+            "dialog-body",
+            "primary-cta"
+          ]
+        },
+        {
+          "blockId": "dialog-header",
+          "role": "header",
+          "sourceName": "__title_text__",
+          "children": []
+        },
+        {
+          "blockId": "dialog-body",
+          "role": "content",
+          "sourceName": "__body_summary__",
+          "children": []
+        },
+        {
+          "blockId": "primary-cta",
+          "role": "cta",
+          "sourceName": "__primary_cta_text__",
+          "children": []
+        }
+      ],
+      "validation": {
+        "firstReadOrder": [
+          "dialog-header",
+          "dialog-body",
+          "primary-cta"
+        ],
+        "requiredChecks": [
+          "dialog-title-readable",
+          "primary-cta-visible"
+        ]
+      },
+      "notes": [
+        "Template convenience input only; replace placeholders before validation.",
+        "Keep text on child Label/Text nodes instead of mixing Image and TextMeshProUGUI on one element."
+      ]
+    },
+    "map": {
+      "schemaVersion": "1.0.0",
+      "contractKind": "unity-surface-map",
+      "surfaceId": "__surface_id__",
+      "targetKind": "overlay-root",
+      "target": {
+        "kind": "prefab",
+        "assetPath": "Assets/Prefabs/Features/__feature__/Root/__prefab_name__.prefab"
+      },
+      "contractRefs": {
+        "manifestPath": "in-memory://draft/__surface_id__/screen-manifest",
+        "presentationPath": "in-memory://draft/__surface_id__/presentation-contract"
+      },
+      "translationStrategy": "contract-complete-translator-v1",
+      "strategyMode": "generate-or-patch",
+      "artifactPaths": {
+        "pipelineResult": "artifacts/unity/__surface_id__-pipeline-result.json"
+      },
+      "blocks": {
+        "overlay-shell": {
+          "hostPath": "DialogPanel",
+          "requiredComponents": [
+            "Image",
+            "VerticalLayoutGroup"
+          ]
+        },
+        "dialog-header": {
+          "hostPath": "DialogPanel/HeaderText",
+          "requiredComponents": [
+            "TextMeshProUGUI",
+            "LayoutElement"
+          ]
+        },
+        "dialog-body": {
+          "hostPath": "DialogPanel/BodyText",
+          "requiredComponents": [
+            "TextMeshProUGUI",
+            "LayoutElement"
+          ]
+        },
+        "primary-cta": {
+          "hostPath": "DialogPanel/PrimaryButton",
+          "requiredComponents": [
+            "Button",
+            "Image",
+            "LayoutElement"
+          ]
+        }
+      },
+      "reviewRoute": {
+        "routeId": "surface-review",
+        "kind": "temp-scene-sceneview",
+        "menuPath": "Tools/Scene/Prepare Stitch Runtime Review/Surface"
+      }
+    },
+    "presentation": {
+      "schemaVersion": "1.0.0",
+      "contractKind": "presentation-contract",
+      "surfaceId": "__surface_id__",
+      "surfaceRole": "overlay",
+      "extractionStatus": "resolved",
+      "sourceRefs": {
+        "imagePath": ".stitch/designs/__surface_id__.png",
+        "htmlPath": ".stitch/designs/__surface_id__.html"
+      },
+      "derivedFrom": {
+        "viewport": "390x844 mobile-first",
+        "title": "__title_text__"
+      },
+      "unresolvedDerivedFields": [],
+      "elements": [
+        {
+          "path": "",
+          "components": [
+            "Image"
+          ],
+          "rect": {
+            "anchorMin": "(0,0)",
+            "anchorMax": "(1,1)",
+            "pivot": "(0.5,0.5)",
+            "anchoredPosition": "(0,0)",
+            "sizeDelta": "(0,0)"
+          },
+          "properties": [
+            {
+              "componentType": "Image",
+              "propertyName": "m_Color",
+              "value": "#00000000"
+            }
+          ]
+        },
+        {
+          "path": "Scrim",
+          "components": [
+            "Image"
+          ],
+          "rect": {
+            "anchorMin": "(0,0)",
+            "anchorMax": "(1,1)",
+            "pivot": "(0.5,0.5)",
+            "anchoredPosition": "(0,0)",
+            "sizeDelta": "(0,0)"
+          },
+          "properties": [
+            {
+              "componentType": "Image",
+              "propertyName": "m_Color",
+              "value": "#020617DD"
+            }
+          ]
+        },
+        {
+          "path": "DialogPanel",
+          "components": [
+            "Image",
+            "VerticalLayoutGroup"
+          ],
+          "rect": {
+            "anchorMin": "(0.5,0.5)",
+            "anchorMax": "(0.5,0.5)",
+            "pivot": "(0.5,0.5)",
+            "anchoredPosition": "(0,0)",
+            "sizeDelta": "(320,240)"
+          },
+          "properties": [
+            {
+              "componentType": "Image",
+              "propertyName": "m_Color",
+              "value": "#0F172AFF"
+            },
+            {
+              "componentType": "VerticalLayoutGroup",
+              "propertyName": "m_Spacing",
+              "value": "12"
+            },
+            {
+              "componentType": "VerticalLayoutGroup",
+              "propertyName": "m_ChildControlWidth",
+              "value": "true"
+            },
+            {
+              "componentType": "VerticalLayoutGroup",
+              "propertyName": "m_ChildControlHeight",
+              "value": "false"
+            }
+          ]
+        },
+        {
+          "path": "DialogPanel/HeaderText",
+          "components": [
+            "TextMeshProUGUI",
+            "LayoutElement"
+          ],
+          "properties": [
+            {
+              "componentType": "TextMeshProUGUI",
+              "propertyName": "m_text",
+              "value": "__title_text__"
+            },
+            {
+              "componentType": "TextMeshProUGUI",
+              "propertyName": "m_fontSize",
+              "value": "18"
+            }
+          ]
+        },
+        {
+          "path": "DialogPanel/BodyText",
+          "components": [
+            "TextMeshProUGUI",
+            "LayoutElement"
+          ],
+          "properties": [
+            {
+              "componentType": "TextMeshProUGUI",
+              "propertyName": "m_text",
+              "value": "__body_text__"
+            },
+            {
+              "componentType": "TextMeshProUGUI",
+              "propertyName": "m_fontSize",
+              "value": "13"
+            }
+          ]
+        },
+        {
+          "path": "DialogPanel/PrimaryButton",
+          "components": [
+            "Button",
+            "Image",
+            "LayoutElement"
+          ],
+          "properties": [
+            {
+              "componentType": "Image",
+              "propertyName": "m_Color",
+              "value": "#F59E0BFF"
+            },
+            {
+              "componentType": "LayoutElement",
+              "propertyName": "m_PreferredHeight",
+              "value": "40"
+            }
+          ]
+        },
+        {
+          "path": "DialogPanel/PrimaryButton/Label",
+          "components": [
+            "TextMeshProUGUI"
+          ],
+          "rect": {
+            "anchorMin": "(0,0)",
+            "anchorMax": "(1,1)",
+            "pivot": "(0.5,0.5)",
+            "anchoredPosition": "(0,0)",
+            "sizeDelta": "(0,0)"
+          },
+          "properties": [
+            {
+              "componentType": "TextMeshProUGUI",
+              "propertyName": "m_text",
+              "value": "__primary_cta_text__"
+            },
+            {
+              "componentType": "TextMeshProUGUI",
+              "propertyName": "m_HorizontalAlignment",
+              "value": "2"
+            },
+            {
+              "componentType": "TextMeshProUGUI",
+              "propertyName": "m_VerticalAlignment",
+              "value": "512"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "notes": [
+    "Copy this template to Temp/StitchDraftRoute/<surface-id>-draft.json and replace placeholders before running the validator."
+  ]
+}

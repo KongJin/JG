@@ -14,6 +14,7 @@ namespace Tests.Editor
         {
             NormalizeRelativePath("Assets/Scripts/Features/Enemy/EnemySetup.cs"),
             NormalizeRelativePath("Assets/Scripts/Features/Player/Infrastructure/DefaultPlayerSpecProvider.cs"),
+            NormalizeRelativePath("Assets/Scripts/Shared/Runtime/Sound/SoundPlayerRuntimeHostFactory.cs"),
             NormalizeRelativePath("Assets/Scripts/Shared/Ui/RoundedRectGraphic.cs"),
         };
 

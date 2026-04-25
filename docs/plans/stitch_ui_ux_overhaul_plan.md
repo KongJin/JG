@@ -86,9 +86,11 @@ Set A에서 새 전용 helper나 set-specific route를 추가하지 않고, draf
 
 - 범위: `Lobby main`, `Room list empty/list`, `Create room`, `Garage summary`
 - contract: `set-a Lobby` in-memory execution contract lane
-- 현재 상태: `set-a-create-room-modal`과 `set-a-lobby-populated` source는 local reference로 남아 있지만, active translation-ready contract는 현재 repo에 닫혀 있지 않다.
+- 현재 상태: `set-a-create-room-modal`과 `set-a-lobby-populated`는 단순 범용 루프에서 draft validation, translation/generation, SceneView capture까지 `passed` verdict를 남겼다.
+- active evidence: `artifacts/unity/set-a-create-room-modal-pipeline-result.json`, `artifacts/unity/set-a-lobby-populated-pipeline-result.json`
+- 남은 판단: 신규 Lobby prefab 생성은 workflow policy의 기본 guard에서 blocked로 기록되므로 명시 승인/declared reset target 정리가 필요하고, `set-a-lobby-populated` capture는 visual fidelity final pass 전이다.
 - `.stitch/designs/set-a-*`는 현재 실행 편의 입력과 visual reference로만 보고, active source freeze owner처럼 취급하지 않는다.
-- 진입 순서: 먼저 `set-a-create-room-modal`을 draft/validate route로 태워 pass 또는 blocked verdict를 남기고, 그 다음 `set-a-lobby-populated`를 같은 루프로 본다.
+- 진입 순서: `set-a-create-room-modal`을 먼저 태웠고, 그 다음 `set-a-lobby-populated`를 같은 루프로 태웠다.
 - `set-a-lobby-populated`의 bottom nav는 Lobby page root가 아니라 shared `LobbyGarageNavBar` owner로 분리해서 해석한다.
 
 ### Set B - Garage
@@ -103,18 +105,23 @@ Set A에서 새 전용 helper나 set-specific route를 추가하지 않고, draf
 - contract: `set-c overlay` in-memory execution contract lane
 - 현재 상태: `account-delete-confirm`는 active execution contracts, committed prefab baseline, translation artifact, SceneView capture evidence까지 닫혔다. 남은 이슈는 `warning icon glyph` asset과 runtime/mobile framing fidelity이고, 나머지 Set C surface는 계속 reference lane이다.
 - 현재 상태: `common-error-dialog`도 같은 loop로 닫혔다. execution contracts, translation artifact, SceneView capture evidence가 모두 있고, translation에서 `presentation.applied = true`를 유지한다.
+- 현재 상태: `login-loading-overlay`와 `room-detail-panel`도 generic overlay draft route에서 draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
+- 남은 판단: Set C 전체 visual fidelity final pass와 신규 prefab workflow policy guard 승인.
 
 ### Set D - Battle HUD
 
 - 범위: `HUD`, `Unit summon bar`, `Core HP`, `Wave HUD`, `Placement feedback`, `Cannot afford overlay`
 - contract: `set-d Battle HUD` in-memory execution contract lane
-- 현재 상태: set inventory와 source artifact는 남아 있지만, current repo truth에서 concrete runtime scene과 active handoff가 함께 닫혀 있지 않다. `Set B` recovery 이후에 다시 연다.
+- 현재 상태: `battle-hud-baseline`, `low-core-warning`, `unit-stats-popup`은 generic overlay draft route에서 draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
+- 추가 상태: `.stitch/designs` 밖의 `artifacts/stitch/11729197788183873077/bf3d08890f2d4a4e98f81c25e14d6073/` GameScene HUD source freeze를 `set-d-gamescene-hud-full`로 가져왔고, `WAVE`, `CORE_INTEGRITY`, summon buttons, selected/cannot-afford feedback, bottom battle nav까지 포함한 SceneView capture `passed` verdict를 남겼다.
+- 남은 판단: battle runtime scene integration, HUD-specific visual fidelity final pass, 신규 Battle prefab workflow policy guard 승인.
 
 ### Set E - Result / Feedback
 
 - 범위: `Wave end / result overlay`, `toast`, `banner`, `feedback`
 - contract: `set-e result/feedback` in-memory execution contract lane
-- 현재 상태: 일부 brief와 source artifact만 남아 있다. `Set D`와 함께 reference lane으로 유지한다.
+- 현재 상태: `mission-defeat-overlay`와 `mission-victory-overlay`는 generic overlay draft route에서 draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
+- 남은 판단: result runtime integration, visual fidelity final pass, 신규 Result prefab workflow policy guard 승인.
 
 ## Standard Execution Loop
 

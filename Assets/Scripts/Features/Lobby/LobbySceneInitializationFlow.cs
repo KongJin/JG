@@ -35,6 +35,7 @@ internal sealed class LobbySceneInitializationFlow
 
         soundPlayer.Initialize(eventBus, SoundPlayer.LobbyOwnerId);
         applyLoadedAccountSettings?.Invoke();
+        soundPlayer.PlayBgm("bgm_lobby", 0.25f);
 
         view.Initialize(eventBus, eventBus, useCases);
         eventBus.Publish(new LobbyUpdatedEvent(repository.LoadLobby() ?? new DomainLobby()));

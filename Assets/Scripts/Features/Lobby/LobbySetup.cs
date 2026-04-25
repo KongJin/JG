@@ -189,7 +189,10 @@ public sealed class LobbySetup : MonoBehaviour
             return;
 
         float masterVolume = _loadedAccountData?.Settings?.masterVolume ?? 1f;
+        float bgmVolume = _loadedAccountData?.Settings?.bgmVolume ?? 0.8f;
+        float sfxVolume = _loadedAccountData?.Settings?.sfxVolume ?? 1f;
         _soundPlayer.SetMasterVolume(masterVolume);
+        _soundPlayer.SetChannelVolumes(bgmVolume, sfxVolume);
     }
 
     private void OnAccountLogoutRequested()

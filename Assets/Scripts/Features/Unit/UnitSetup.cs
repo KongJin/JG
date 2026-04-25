@@ -84,6 +84,9 @@ namespace Features.Unit
             }
 
             _battleEntitySetup.Initialize(eventBus, energyPort, _summonAdapter, combatSetup, unitPositionQuery);
+
+            var summonSoundHandler = new UnitSummonSoundEventHandler(eventBus, eventBus);
+            _disposables.Add(EventBusSubscription.ForOwner(eventBus, summonSoundHandler));
         }
 
         /// <summary>

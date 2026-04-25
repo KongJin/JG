@@ -27,7 +27,14 @@
 - Garage save/load WebGL, settings interaction, shared runtime correctness는 Set B prefab lane이 아니라 shared `Account/Garage` validation lane에서 계속 관리한다.
 - 현재 남은 Set C 핵심 리스크는 `warning icon glyph` asset 미해결과 `Prefab Mode SceneView capture != runtime/mobile framing` 차이다.
 - set별 전용 Stitch review/prefab SceneTool은 제거했고, 현재 review route는 generic tool만 남겨뒀다.
-- `Set A`의 다음 판단은 `source html/png -> source facts -> contract draft -> validate -> translate/generate -> capture -> verdict` 루프에서 pass 또는 blocked verdict를 남기는 것이다.
+- `Set A`는 `set-a-create-room-modal`과 `set-a-lobby-populated` 모두 `source html/png -> source facts -> contract draft -> validate -> translate/generate -> capture -> verdict` 루프에서 pipeline `passed` verdict를 남겼다.
+- 최신 Set A evidence는 `artifacts/unity/set-a-create-room-modal-pipeline-result.json`, `artifacts/unity/set-a-create-room-modal-scene-capture.png`, `artifacts/unity/set-a-lobby-populated-pipeline-result.json`, `artifacts/unity/set-a-lobby-populated-scene-capture.png`다.
+- Set A의 남은 판단은 신규 Lobby prefab 생성에 대한 workflow policy 승인과 lobby capture visual fidelity pass다.
+- 남은 Stitch source surfaces도 generic overlay draft route로 모두 onboarding했다: `set-c-login-loading-overlay`, `set-c-room-detail-panel`, `set-d-battle-hud-baseline`, `set-d-low-core-warning`, `set-d-unit-stats-popup`, `set-e-mission-defeat-overlay`, `set-e-mission-victory-overlay`.
+- 위 7개 surface는 draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
+- Battle 쪽 추가 source freeze인 `set-d-gamescene-hud-full`도 `artifacts/stitch/11729197788183873077/bf3d08890f2d4a4e98f81c25e14d6073/`의 `GameScene HUD` source에서 generic draft route로 가져왔고, draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
+- 현재 Stitch UI lane의 남은 공통 판단은 신규 prefab workflow policy guard 승인과 visual fidelity final pass다.
+- Nova1492 audio 첫 pass로 SFX 11개/BGM 3개가 제한 staging됐고, 기존 SoundPlayer 경로에 SFX/BGM 채널, Lobby/Battle/Result BGM 전환, 저장된 `master/bgm/sfxVolume` 소비가 연결됐다. WebGL 오디오 로드/재생 smoke는 아직 남아 있다.
 
 ## 현재 포커스
 
@@ -65,6 +72,7 @@
 - Phase 9: 실제 멀티플레이어 smoke 테스트 (late-join, BattleEntity sync, Energy sync)
 - Phase 10: Firebase Console 설정 (API Key, Project ID, Firestore DB 생성)
 - Phase 10: 설정 Firestore 동기화 마무리 (저장 UI, language 소비 경로)
+- Phase 10: 사운드 설정은 런타임 소비까지 연결됨. 설정 UI 저장 확장과 WebGL 오디오 실기 검증은 후속
 - Phase 10: WebGL 빌드 smoke 테스트
 - Phase 10: Garage save/load WebGL 실기 확인 후속 1회 더 재현
 - Phase 10: Garage save action 접근성 / settings interaction을 shared `Account/Garage` validation으로 재확인
@@ -78,7 +86,7 @@
 - `GameScene` 쪽은 placement drag/drop automation contract와 multiplayer sync smoke를 우선 마감한다.
 - Lobby/Garage 쪽은 mobile-first Garage 단일 구조의 시각 밀도와 review evidence 기준 visual fidelity를 계속 sanity check 한다.
 - shared `Account/Garage` lane에서는 Garage save/load WebGL, settings interaction, save action 접근성을 계속 추적한다.
-- Stitch lane 쪽은 `Set B/C`를 generic onboarding 기준 샘플로 삼아, `Set A/D/E`와 이후 다시 여는 inventory set을 per-surface script edit 없이 단순 범용 루프의 verdict까지 태울 수 있게 source facts/draft/validate route를 일반화한다.
+- Stitch lane 쪽은 `Set A/B/C/D/E`와 추가 `GameScene HUD` source freeze를 generic onboarding 기준 샘플로 삼아, 이후 다시 여는 inventory set을 per-surface script edit 없이 단순 범용 루프의 verdict까지 태울 수 있게 source facts/draft/validate route를 일반화한다.
 - 외부 디자인 시안은 `Stitch`를 기본 생성 도구로 두고, 실제 반영은 Unity MCP와 scene/prefab contract 기준으로 번역한다.
 
 ## 상세 이력

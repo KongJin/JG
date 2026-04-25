@@ -1,0 +1,779 @@
+﻿{
+    "schemaVersion":  "1.0.0",
+    "success":  true,
+    "surfaceId":  "set-d-gamescene-hud-full",
+    "strategyMode":  "generate-or-patch",
+    "translationStrategy":  "contract-complete-translator-v1",
+    "terminalVerdict":  "",
+    "blockedReason":  "",
+    "summary":  {
+                    "preflightReady":  true,
+                    "dependencyCount":  0,
+                    "requiredDependencyFailureCount":  0,
+                    "optionalDependencyFailureCount":  0,
+                    "translationProduced":  true,
+                    "reviewCaptureAttempted":  true,
+                    "reviewCaptureSupported":  true,
+                    "targetKind":  "prefab",
+                    "targetAssetPath":  "Assets/Prefabs/Features/Battle/Root/SetDGameSceneHudFullRoot.prefab"
+                },
+    "stageStatus":  {
+                        "validation":  "passed",
+                        "preflight":  "passed",
+                        "dependencies":  "passed",
+                        "translation":  "passed",
+                        "reviewCapture":  "passed",
+                        "pipeline":  "written"
+                    },
+    "inputs":  {
+                   "sourceKind":  "llm-draft",
+                   "mapPath":  "in-memory://draft/set-d-gamescene-hud-full/unity-map",
+                   "manifestPath":  "in-memory://draft/set-d-gamescene-hud-full/screen-manifest",
+                   "presentationPath":  "in-memory://draft/set-d-gamescene-hud-full/presentation-contract",
+                   "target":  {
+                                  "kind":  "prefab",
+                                  "assetPath":  "Assets/Prefabs/Features/Battle/Root/SetDGameSceneHudFullRoot.prefab"
+                              }
+               },
+    "artifacts":  {
+                      "reviewCapture":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-d-gamescene-hud-full-scene-capture.png",
+                      "pipelineResult":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-d-gamescene-hud-full-pipeline-result.json"
+                  },
+    "dependencies":  {
+                         "requiredFailures":  [
+
+                                              ],
+                         "optionalFailures":  [
+
+                                              ],
+                         "results":  [
+
+                                     ]
+                     },
+    "contractSource":  {
+                           "sourceKind":  "llm-draft",
+                           "targetKind":  "overlay-root",
+                           "profileGenerated":  false,
+                           "profilePath":  "",
+                           "draftPath":  "Temp/StitchDraftRoute/set-d-gamescene-hud-full-draft.json",
+                           "draftValidation":  {
+                                                   "schemaVersion":  "1.0.0",
+                                                   "success":  true,
+                                                   "terminalVerdict":  "passed",
+                                                   "blockedReason":  "",
+                                                   "draftPath":  "Temp/StitchDraftRoute/set-d-gamescene-hud-full-draft.json",
+                                                   "surfaceId":  "set-d-gamescene-hud-full",
+                                                   "issueCount":  0,
+                                                   "issues":  [
+
+                                                              ],
+                                                   "checkedAt":  "2026-04-25T19:14:27.0245648+09:00"
+                                               },
+                           "sharedUiCatalogPath":  ".stitch/contracts/components/shared-ui.component-catalog.json",
+                           "sourceRefs":  {
+                                              "htmlPath":  "artifacts/stitch/11729197788183873077/bf3d08890f2d4a4e98f81c25e14d6073/screen.html",
+                                              "imagePath":  "artifacts/stitch/11729197788183873077/bf3d08890f2d4a4e98f81c25e14d6073/screen.png",
+                                              "presentationPath":  "in-memory://draft/set-d-gamescene-hud-full/presentation-contract"
+                                          },
+                           "compiledContractSummary":  {
+                                                           "mapPath":  "in-memory://draft/set-d-gamescene-hud-full/unity-map",
+                                                           "manifestPath":  "in-memory://draft/set-d-gamescene-hud-full/screen-manifest",
+                                                           "blockIds":  [
+                                                                            "sector-status-bar",
+                                                                            "mission-status",
+                                                                            "core-integrity",
+                                                                            "placement-feedback",
+                                                                            "summon-command-bar",
+                                                                            "striker-summon",
+                                                                            "defender-summon",
+                                                                            "drone-cannot-afford",
+                                                                            "battle-command-nav"
+                                                                        ],
+                                                           "targetAssetPath":  "Assets/Prefabs/Features/Battle/Root/SetDGameSceneHudFullRoot.prefab",
+                                                           "translationStrategy":  "contract-complete-translator-v1",
+                                                           "strategyMode":  "generate-or-patch"
+                                                       }
+                       },
+    "translation":  {
+                        "schemaVersion":  "1.0.0",
+                        "success":  true,
+                        "surfaceId":  "set-d-gamescene-hud-full",
+                        "translationStrategy":  "contract-complete-translator-v1",
+                        "target":  {
+                                       "kind":  "prefab",
+                                       "assetPath":  "Assets/Prefabs/Features/Battle/Root/SetDGameSceneHudFullRoot.prefab"
+                                   },
+                        "targetCreated":  false,
+                        "targetRootName":  "SetDGameSceneHudFullRoot",
+                        "contractRefs":  {
+                                             "manifestPath":  "in-memory://draft/set-d-gamescene-hud-full/screen-manifest",
+                                             "presentationPath":  "in-memory://draft/set-d-gamescene-hud-full/presentation-contract"
+                                         },
+                        "createdPaths":  [
+
+                                         ],
+                        "addedComponents":  [
+
+                                            ],
+                        "blocks":  [
+                                       {
+                                           "blockId":  "sector-status-bar",
+                                           "manifestOrder":  0,
+                                           "hostPath":  "SectorStatusBar",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "HorizontalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "mission-status",
+                                           "manifestOrder":  1,
+                                           "hostPath":  "TopHudRow/MissionStatusCard",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "VerticalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "core-integrity",
+                                           "manifestOrder":  2,
+                                           "hostPath":  "TopHudRow/CoreIntegrityCard",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "VerticalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "placement-feedback",
+                                           "manifestOrder":  3,
+                                           "hostPath":  "BattlefieldLayer/EnemyMarker",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "VerticalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "summon-command-bar",
+                                           "manifestOrder":  4,
+                                           "hostPath":  "SummonCommandBar",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "HorizontalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "striker-summon",
+                                           "manifestOrder":  5,
+                                           "hostPath":  "SummonCommandBar/StrikerButton",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "Button",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "VerticalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "defender-summon",
+                                           "manifestOrder":  6,
+                                           "hostPath":  "SummonCommandBar/DefenderButton",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "Button",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "VerticalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "drone-cannot-afford",
+                                           "manifestOrder":  7,
+                                           "hostPath":  "SummonCommandBar/DroneButton",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "Button",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "VerticalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       },
+                                       {
+                                           "blockId":  "battle-command-nav",
+                                           "manifestOrder":  8,
+                                           "hostPath":  "BattleCommandNav",
+                                           "createdPaths":  [
+
+                                                            ],
+                                           "addedComponents":  [
+
+                                                               ],
+                                           "finalNodeFound":  true,
+                                           "finalComponents":  [
+                                                                   "RectTransform",
+                                                                   "CanvasRenderer",
+                                                                   "Image",
+                                                                   "HorizontalLayoutGroup",
+                                                                   "LayoutElement"
+                                                               ]
+                                       }
+                                   ],
+                        "presentation":  {
+                                             "applied":  true,
+                                             "extractionStatus":  "resolved",
+                                             "elementCount":  20,
+                                             "createdPaths":  [
+
+                                                              ],
+                                             "addedComponents":  [
+
+                                                                 ],
+                                             "appliedProperties":  [
+                                                                       "Image.m_Color",
+                                                                       "SectorStatusBar::Image.m_Color",
+                                                                       "SectorStatusBar::HorizontalLayoutGroup.m_Spacing",
+                                                                       "SectorStatusBar::HorizontalLayoutGroup.m_ChildControlWidth",
+                                                                       "SectorStatusBar::HorizontalLayoutGroup.m_ChildControlHeight",
+                                                                       "SectorStatusBar::HorizontalLayoutGroup.m_ChildForceExpandWidth",
+                                                                       "SectorStatusBar::LayoutElement.m_PreferredHeight",
+                                                                       "SectorStatusBar/Title::TextMeshProUGUI.m_text",
+                                                                       "SectorStatusBar/Title::TextMeshProUGUI.m_fontSize",
+                                                                       "SectorStatusBar/Title::TextMeshProUGUI.m_fontColor",
+                                                                       "TopHudRow::HorizontalLayoutGroup.m_Spacing",
+                                                                       "TopHudRow::HorizontalLayoutGroup.m_ChildControlWidth",
+                                                                       "TopHudRow::LayoutElement.m_PreferredHeight",
+                                                                       "TopHudRow/MissionStatusCard::Image.m_Color",
+                                                                       "TopHudRow/MissionStatusCard::VerticalLayoutGroup.m_Spacing",
+                                                                       "TopHudRow/MissionStatusCard::LayoutElement.m_PreferredWidth",
+                                                                       "TopHudRow/MissionStatusCard::LayoutElement.m_PreferredHeight",
+                                                                       "TopHudRow/MissionStatusCard/Text::TextMeshProUGUI.m_text",
+                                                                       "TopHudRow/MissionStatusCard/Text::TextMeshProUGUI.m_fontSize",
+                                                                       "TopHudRow/MissionStatusCard/Text::TextMeshProUGUI.m_fontColor",
+                                                                       "TopHudRow/CoreIntegrityCard::Image.m_Color",
+                                                                       "TopHudRow/CoreIntegrityCard::VerticalLayoutGroup.m_Spacing",
+                                                                       "TopHudRow/CoreIntegrityCard::LayoutElement.m_PreferredWidth",
+                                                                       "TopHudRow/CoreIntegrityCard::LayoutElement.m_PreferredHeight",
+                                                                       "TopHudRow/CoreIntegrityCard/Text::TextMeshProUGUI.m_text",
+                                                                       "TopHudRow/CoreIntegrityCard/Text::TextMeshProUGUI.m_fontSize",
+                                                                       "TopHudRow/CoreIntegrityCard/Text::TextMeshProUGUI.m_fontColor",
+                                                                       "BattlefieldLayer::Image.m_Color",
+                                                                       "BattlefieldLayer/EnemyMarker::Image.m_Color",
+                                                                       "BattlefieldLayer/EnemyMarker::LayoutElement.m_PreferredHeight",
+                                                                       "BattlefieldLayer/EnemyMarker/Text::TextMeshProUGUI.m_text",
+                                                                       "BattlefieldLayer/EnemyMarker/Text::TextMeshProUGUI.m_fontSize",
+                                                                       "BattlefieldLayer/EnemyMarker/Text::TextMeshProUGUI.m_fontColor",
+                                                                       "SummonCommandBar::Image.m_Color",
+                                                                       "SummonCommandBar::HorizontalLayoutGroup.m_Spacing",
+                                                                       "SummonCommandBar::HorizontalLayoutGroup.m_ChildControlWidth",
+                                                                       "SummonCommandBar::HorizontalLayoutGroup.m_ChildControlHeight",
+                                                                       "SummonCommandBar::HorizontalLayoutGroup.m_ChildForceExpandWidth",
+                                                                       "SummonCommandBar::HorizontalLayoutGroup.m_ChildForceExpandHeight",
+                                                                       "SummonCommandBar::LayoutElement.m_PreferredHeight",
+                                                                       "SummonCommandBar/StrikerButton::Image.m_Color",
+                                                                       "SummonCommandBar/StrikerButton::VerticalLayoutGroup.m_ChildControlWidth",
+                                                                       "SummonCommandBar/StrikerButton::VerticalLayoutGroup.m_ChildControlHeight",
+                                                                       "SummonCommandBar/StrikerButton::VerticalLayoutGroup.m_ChildForceExpandWidth",
+                                                                       "SummonCommandBar/StrikerButton::VerticalLayoutGroup.m_ChildForceExpandHeight",
+                                                                       "SummonCommandBar/StrikerButton::LayoutElement.m_PreferredWidth",
+                                                                       "SummonCommandBar/StrikerButton::LayoutElement.m_PreferredHeight",
+                                                                       "SummonCommandBar/StrikerButton::LayoutElement.m_FlexibleWidth",
+                                                                       "SummonCommandBar/StrikerButton::LayoutElement.m_FlexibleHeight",
+                                                                       "SummonCommandBar/StrikerButton/Label::TextMeshProUGUI.m_text",
+                                                                       "SummonCommandBar/StrikerButton/Label::TextMeshProUGUI.m_fontSize",
+                                                                       "SummonCommandBar/StrikerButton/Label::TextMeshProUGUI.m_fontColor",
+                                                                       "SummonCommandBar/DefenderButton::Image.m_Color",
+                                                                       "SummonCommandBar/DefenderButton::VerticalLayoutGroup.m_ChildControlWidth",
+                                                                       "SummonCommandBar/DefenderButton::VerticalLayoutGroup.m_ChildControlHeight",
+                                                                       "SummonCommandBar/DefenderButton::VerticalLayoutGroup.m_ChildForceExpandWidth",
+                                                                       "SummonCommandBar/DefenderButton::VerticalLayoutGroup.m_ChildForceExpandHeight",
+                                                                       "SummonCommandBar/DefenderButton::LayoutElement.m_PreferredWidth",
+                                                                       "SummonCommandBar/DefenderButton::LayoutElement.m_PreferredHeight",
+                                                                       "SummonCommandBar/DefenderButton::LayoutElement.m_FlexibleWidth",
+                                                                       "SummonCommandBar/DefenderButton::LayoutElement.m_FlexibleHeight",
+                                                                       "SummonCommandBar/DefenderButton/Label::TextMeshProUGUI.m_text",
+                                                                       "SummonCommandBar/DefenderButton/Label::TextMeshProUGUI.m_fontSize",
+                                                                       "SummonCommandBar/DefenderButton/Label::TextMeshProUGUI.m_fontColor",
+                                                                       "SummonCommandBar/DroneButton::Image.m_Color",
+                                                                       "SummonCommandBar/DroneButton::VerticalLayoutGroup.m_ChildControlWidth",
+                                                                       "SummonCommandBar/DroneButton::VerticalLayoutGroup.m_ChildControlHeight",
+                                                                       "SummonCommandBar/DroneButton::VerticalLayoutGroup.m_ChildForceExpandWidth",
+                                                                       "SummonCommandBar/DroneButton::VerticalLayoutGroup.m_ChildForceExpandHeight",
+                                                                       "SummonCommandBar/DroneButton::LayoutElement.m_PreferredWidth",
+                                                                       "SummonCommandBar/DroneButton::LayoutElement.m_PreferredHeight",
+                                                                       "SummonCommandBar/DroneButton::LayoutElement.m_FlexibleWidth",
+                                                                       "SummonCommandBar/DroneButton::LayoutElement.m_FlexibleHeight",
+                                                                       "SummonCommandBar/DroneButton/Label::TextMeshProUGUI.m_text",
+                                                                       "SummonCommandBar/DroneButton/Label::TextMeshProUGUI.m_fontSize",
+                                                                       "SummonCommandBar/DroneButton/Label::TextMeshProUGUI.m_fontColor",
+                                                                       "BattleCommandNav::Image.m_Color",
+                                                                       "BattleCommandNav::HorizontalLayoutGroup.m_Spacing",
+                                                                       "BattleCommandNav::LayoutElement.m_PreferredHeight",
+                                                                       "BattleCommandNav/Label::TextMeshProUGUI.m_text",
+                                                                       "BattleCommandNav/Label::TextMeshProUGUI.m_fontSize",
+                                                                       "BattleCommandNav/Label::TextMeshProUGUI.m_fontColor"
+                                                                   ],
+                                             "elements":  [
+                                                              {
+                                                                  "path":  "",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  1,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "SectorStatusBar",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  6,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "HorizontalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "SectorStatusBar/Title",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "TextMeshProUGUI"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "TopHudRow",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "HorizontalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "TopHudRow/MissionStatusCard",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  4,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "VerticalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "TopHudRow/MissionStatusCard/Text",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "TextMeshProUGUI"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "TopHudRow/CoreIntegrityCard",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  4,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "VerticalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "TopHudRow/CoreIntegrityCard/Text",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "TextMeshProUGUI"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "BattlefieldLayer",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  1,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "BattlefieldLayer/EnemyMarker",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  2,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "VerticalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "BattlefieldLayer/EnemyMarker/Text",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "TextMeshProUGUI"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "SummonCommandBar",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  7,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "HorizontalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "SummonCommandBar/StrikerButton",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  9,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "Button",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "VerticalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "SummonCommandBar/StrikerButton/Label",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "TextMeshProUGUI"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "SummonCommandBar/DefenderButton",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  9,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "Button",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "VerticalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "SummonCommandBar/DefenderButton/Label",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "TextMeshProUGUI"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "SummonCommandBar/DroneButton",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  9,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "Button",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "VerticalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "SummonCommandBar/DroneButton/Label",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "TextMeshProUGUI"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "BattleCommandNav",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "Image",
+                                                                                          "HorizontalLayoutGroup",
+                                                                                          "LayoutElement"
+                                                                                      ]
+                                                              },
+                                                              {
+                                                                  "path":  "BattleCommandNav/Label",
+                                                                  "createdPaths":  [
+
+                                                                                   ],
+                                                                  "addedComponents":  [
+
+                                                                                      ],
+                                                                  "propertyCount":  3,
+                                                                  "finalNodeFound":  true,
+                                                                  "finalComponents":  [
+                                                                                          "RectTransform",
+                                                                                          "CanvasRenderer",
+                                                                                          "TextMeshProUGUI"
+                                                                                      ]
+                                                              }
+                                                          ],
+                                             "reason":  "applied"
+                                         },
+                        "targetBaseline":  {
+                                               "targetKind":  "overlay-root",
+                                               "issues":  [
+
+                                                          ],
+                                               "passed":  true
+                                           },
+                        "generatedAt":  "2026-04-25T19:15:08.1079129+09:00"
+                    },
+    "reviewCapture":  {
+                          "attempted":  true,
+                          "supported":  true,
+                          "status":  "passed",
+                          "surfaceId":  "set-d-gamescene-hud-full",
+                          "routeKind":  "temp-scene-sceneview",
+                          "menuPath":  "Tools/Scene/Prepare Stitch Runtime Review/Surface",
+                          "artifactPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-d-gamescene-hud-full-scene-capture.png",
+                          "relativeArtifactPath":  "artifacts/unity/set-d-gamescene-hud-full-scene-capture.png",
+                          "reason":  "",
+                          "requestPath":  "Temp/StitchRuntimeReview/request.json",
+                          "menu":  {
+                                       "success":  true,
+                                       "message":  "Executed menu: Tools/Scene/Prepare Stitch Runtime Review/Surface",
+                                       "queued":  false,
+                                       "pendingCount":  0,
+                                       "autoSaved":  false
+                                   },
+                          "capture":  {
+                                          "success":  true,
+                                          "message":  "SceneView screenshot captured.",
+                                          "relativePath":  "artifacts/unity/set-d-gamescene-hud-full-scene-capture.png",
+                                          "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-d-gamescene-hud-full-scene-capture.png",
+                                          "fileSizeBytes":  35493,
+                                          "sourceView":  "SceneCamera",
+                                          "width":  390,
+                                          "height":  844,
+                                          "prefabStageAssetPath":  ""
+                                      },
+                          "consoleErrors":  {
+                                                "count":  0,
+                                                "items":  [
+
+                                                          ]
+                                            },
+                          "generatedAt":  "2026-04-25T19:15:08.5886412+09:00"
+                      }
+}

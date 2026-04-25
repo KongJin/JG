@@ -18,3 +18,89 @@ MonoBehaviour:
     volume: 1
     spatialBlend: 1
     cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: ui_click
+    clip: {fileID: 8300000, guid: c976574ccc6043c29954eef5c22859c5, type: 3}
+    volume: 0.8
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: ui_confirm
+    clip: {fileID: 8300000, guid: fafe5a43ce4d4d6ebc1b97443298d6c5, type: 3}
+    volume: 0.85
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: ui_select
+    clip: {fileID: 8300000, guid: 5cb2d68e7f9c4b5f8a60dc8d2ef50524, type: 3}
+    volume: 0.75
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: garage_select
+    clip: {fileID: 8300000, guid: d86a95d905174ecd950d35d7ff954ff5, type: 3}
+    volume: 0.8
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: battle_summon
+    clip: {fileID: 8300000, guid: 7849e96494664babb6c05b84ae603d42, type: 3}
+    volume: 0.9
+    spatialBlend: 1
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: battle_hit
+    clip: {fileID: 8300000, guid: 02581f75521d4545a7c2413176de946a, type: 3}
+    volume: 0.45
+    spatialBlend: 1
+    cooldown: 0.04
+    channel: 0
+    loop: 0
+  - key: battle_explosion
+    clip: {fileID: 8300000, guid: de45cc74b7eb440f962e183f059797e4, type: 3}
+    volume: 0.8
+    spatialBlend: 1
+    cooldown: 0.08
+    channel: 0
+    loop: 0
+  - key: core_warning
+    clip: {fileID: 8300000, guid: 144f626324ea4202a326db7bed780417, type: 3}
+    volume: 0.9
+    spatialBlend: 0
+    cooldown: 1
+    channel: 0
+    loop: 0
+  - key: core_destroyed
+    clip: {fileID: 8300000, guid: 6ad1c2c5b285400d9e09b17061259217, type: 3}
+    volume: 1
+    spatialBlend: 1
+    cooldown: 0.2
+    channel: 0
+    loop: 0
+  - key: bgm_lobby
+    clip: {fileID: 8300000, guid: cce6d2f8083246d9935e8b74e5bc9d77, type: 3}
+    volume: 0.45
+    spatialBlend: 0
+    cooldown: 0
+    channel: 1
+    loop: 1
+  - key: bgm_battle
+    clip: {fileID: 8300000, guid: ba3a8d401446489fb29563e79001f045, type: 3}
+    volume: 0.5
+    spatialBlend: 0
+    cooldown: 0
+    channel: 1
+    loop: 1
+  - key: bgm_result
+    clip: {fileID: 8300000, guid: 66e3de9d082142628612092548ab23e2, type: 3}
+    volume: 0.45
+    spatialBlend: 0
+    cooldown: 0
+    channel: 1
+    loop: 1
