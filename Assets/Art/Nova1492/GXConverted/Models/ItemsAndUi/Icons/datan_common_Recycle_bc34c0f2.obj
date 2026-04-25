@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_Recycle_bc34c0f2.mtl
+o datan_common_Recycle_bc34c0f2
+v -3.75 -0.000075 3.75
+v 3.75 -0.000075 3.75
+v 3.75 -0.000075 -3.75
+v -3.75 -0.000075 -3.75
+vt 0.253033 0.506066
+vt 0.496967 0.506066
+vt 0.496967 0.993934
+vt 0.253033 0.993934
+vn 0 1 -0
+vn -0 1 0
+vn 0 1 -0
+vn 0 1 -0
+usemtl datan_common_Recycle_bc34c0f2
+f 1/1/1 2/2/2 3/3/3
+f 3/3/3 4/4/4 1/1/1

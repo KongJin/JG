@@ -14,11 +14,12 @@
   "changedPaths": [
     "artifacts/rules/issue-recurrence-closeout.json",
     "docs/index.md",
-    "docs/plans/nova1492_resource_integration_plan.md",
+    "docs/plans/garage_ui_ux_improvement_plan.md",
+    "docs/plans/lobby_scene_completion_plan.md",
+    "docs/plans/lobby_scene_runtime_plan.md",
+    "docs/plans/lobby_scene_ui_prefab_management_plan.md",
     "docs/plans/progress.md",
-    "docs/plans/stitch_screen_onboarding_simplification_plan.md",
-    "docs/plans/stitch_ui_ux_overhaul_plan.md",
-    "tools/stitch-unity/drafts/New-StitchOverlayDraftFromSourceFacts.ps1",
-    "tools/stitch-unity/validators/Test-StitchContractDraft.ps1"
+    "tools/nova1492/OrganizeGxConvertedAssets.ps1",
+    "tools/rule-harness/memory/advisory-memory.json"
   ]
 }

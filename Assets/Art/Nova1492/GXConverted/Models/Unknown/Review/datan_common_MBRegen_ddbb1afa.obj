@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_MBRegen_ddbb1afa.mtl
+o datan_common_MBRegen_ddbb1afa
+v 7.828407 -0.000001 -5.547927
+v 5.54943 -0.000001 -7.826903
+v -1.407254 -0.000001 -0.870219
+v 0.871723 -0.000001 1.408757
+vt 0.005941 0.869121
+vt 0.005941 0.755879
+vt 0.244059 0.755879
+vt 0.244059 0.869121
+vn 0 1 0
+vn 0 -1 0
+vn 0 1 0
+vn 0 -1 0
+usemtl datan_common_MBRegen_ddbb1afa
+f 1/1/1 2/2/2 3/3/3
+f 3/3/3 4/4/4 1/1/1

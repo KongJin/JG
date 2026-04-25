@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_delaydown_87651683.mtl
+o datan_common_delaydown_87651683
+v 0.025626 0 -0.145334
+v -0.145334 0 -0.025626
+v 0.145334 0 0.025626
+v -0.025626 0 0.145334
+vt 0 1
+vt 0 0
+vt 1 1
+vt 1 0
+vn 0 1 -0
+vn 0 1 0
+vn 0 1 0
+vn 0 1 0
+usemtl datan_common_delaydown_87651683
+f 1/1/1 2/2/2 3/3/3
+f 4/4/4 3/3/3 2/2/2

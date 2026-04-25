@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_bublind_254a9963.mtl
+o datan_common_bublind_254a9963
+v 1.456923 0 -0
+v 0 0 -1.456923
+v 0 0 1.456923
+v -1.456923 0 -0
+vt 0.506066 0.993934
+vt 0.506066 0.506066
+vt 0.993934 0.993934
+vt 0.993934 0.506066
+vn 0 1 -0
+vn -0 1 0
+vn -0 1 0
+vn -0 1 0
+usemtl datan_common_bublind_254a9963
+f 1/1/1 2/2/2 3/3/3
+f 4/4/4 3/3/3 2/2/2

@@ -114,17 +114,17 @@ namespace Features.Garage.Presentation
             SetActive(_mobileSlotHost != null ? _mobileSlotHost.gameObject : null, true);
             SetActive(_mobileTabBar, true);
             SetActive(_mobileSaveDockRoot, true);
-            SetActive(_rightRailRoot, true);
-            SetActive(_previewCard, true);
-            SetActive(_resultPane, true);
+            SetActive(_rightRailRoot, false);
+            SetActive(_previewCard, false);
+            SetActive(_resultPane, false);
             SetActive(_settingsOverlayRoot, isSettingsOverlayOpen);
         }
 
         private void RefreshTabs(bool isEditActive, bool isPreviewActive, bool isSummaryActive)
         {
-            ConfigureTabButton(_mobileEditTabButton, _mobileEditTabLabel, "[프레임]", isEditActive, true);
-            ConfigureTabButton(_mobilePreviewTabButton, _mobilePreviewTabLabel, "[무장]", isPreviewActive, true);
-            ConfigureTabButton(_mobileSummaryTabButton, _mobileSummaryTabLabel, "[기동]", isSummaryActive, true);
+            ConfigureTabButton(_mobileEditTabButton, _mobileEditTabLabel, "프레임", isEditActive, true);
+            ConfigureTabButton(_mobilePreviewTabButton, _mobilePreviewTabLabel, "무장", isPreviewActive, true);
+            ConfigureTabButton(_mobileSummaryTabButton, _mobileSummaryTabLabel, "기동", isSummaryActive, true);
         }
 
         private void RefreshHeaderSummary(string headerSummary)

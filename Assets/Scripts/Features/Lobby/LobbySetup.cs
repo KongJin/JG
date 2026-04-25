@@ -24,6 +24,7 @@ using DomainLobby = Features.Lobby.Domain.Lobby;
 public sealed class LobbySetup : MonoBehaviour
 {
     private const int MaxAutoSignInAttempts = 3;
+    private const string BattleSceneName = "BattleScene";
 
     [Required, SerializeField]
     private LobbyView _view;
@@ -158,7 +159,7 @@ public sealed class LobbySetup : MonoBehaviour
                 _unitSetup,
                 _garageSetup,
                 _sceneLoader,
-                "GameScene",
+                BattleSceneName,
                 _accountSetup?.DataPort,
                 ApplyLoadedAccountSettings);
 

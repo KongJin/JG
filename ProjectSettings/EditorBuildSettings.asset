@@ -4,7 +4,13 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/LobbyScene.unity
+    guid: 3adf3785fe8daa84a8bed91f974faeb6
+  - enabled: 1
+    path: Assets/Scenes/BattleScene.unity
+    guid: f30e6b711bb3f7d489243c6be2446c61
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 87011026c77287e4abfbe942ce1b2482, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

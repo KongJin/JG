@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_SightUpArea_26074b5a.mtl
+o datan_common_SightUpArea_26074b5a
+v -3.417857 -0.591692 3.342269
+v -3.417857 0.590911 -3.364613
+v 3.388521 0.590911 -3.364613
+v 3.388521 -0.591692 3.342269
+vt 0.255941 0.255942
+vt 0.255941 0.494059
+vt 0.494059 0.494059
+vt 0.494059 0.255941
+vn 0 0 1
+vn 0 0 1
+vn 0 0 1
+vn 0 0 1
+usemtl datan_common_SightUpArea_26074b5a
+f 1/1/1 2/2/2 3/3/3
+f 3/3/3 4/4/4 1/1/1

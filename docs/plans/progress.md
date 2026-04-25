@@ -34,6 +34,7 @@
 - 위 7개 surface는 draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
 - Battle 쪽 추가 source freeze인 `set-d-gamescene-hud-full`도 `artifacts/stitch/11729197788183873077/bf3d08890f2d4a4e98f81c25e14d6073/`의 `GameScene HUD` source에서 generic draft route로 가져왔고, draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
 - 현재 Stitch UI lane의 남은 공통 판단은 신규 prefab workflow policy guard 승인과 visual fidelity final pass다.
+- `LobbyScene` runtime assembly는 scene 생성, Build Settings 등록, required-field validation, Play Mode Lobby/Garage tab smoke까지 통과했다. 초기 overlay state, `BattleScene` 연결명, Garage 기본 tab density와 1차 typography/copy polish는 정리됐고, 최신 clean captures는 `artifacts/unity/lobby-scene-lobby-tab-clean.png`, `artifacts/unity/lobby-scene-garage-tab-clean.png`다. 남은 visual 판단은 `Set B Garage` final fidelity다.
 - Nova1492 audio 첫 pass로 SFX 11개/BGM 3개가 제한 staging됐고, 기존 SoundPlayer 경로에 SFX/BGM 채널, Lobby/Battle/Result BGM 전환, 저장된 `master/bgm/sfxVolume` 소비가 연결됐다. WebGL 오디오 로드/재생 smoke는 아직 남아 있다.
 
 ## 현재 포커스
@@ -46,6 +47,7 @@
 - `GameScene` placement drag/drop automation contract와 multiplayer sync smoke 마감
 - shared `Account/Garage` validation, WebGL 실기 검증, 설정 동기화 마감
 - Lobby/Garage 시각 polish와 공용 validation 보강
+- LobbyScene UI prefab instance/override 관리와 assembly helper 안전화 정리
 - Stitch contract-first -> prefab-first reset 루프 정착
 
 ## Phase 진행률
@@ -77,6 +79,7 @@
 - Phase 10: Garage save/load WebGL 실기 확인 후속 1회 더 재현
 - Phase 10: Garage save action 접근성 / settings interaction을 shared `Account/Garage` validation으로 재확인
 - Phase 10: Set B Garage visual fidelity final judgment closeout
+- `LobbyScene` completion pass residual: Garage final visual fidelity는 `Set B Garage` 판단으로 분리해 추적
 - Phase 11: WebGL 빌드에서 Google 로그인 실기 테스트
 - Phase 11: 익명->Google 계정 linking 시 UID 유지 확인
 - Phase 11: Google 로그인 WebGL smoke 테스트
@@ -84,6 +87,8 @@
 ## 다음 작업
 
 - `GameScene` 쪽은 placement drag/drop automation contract와 multiplayer sync smoke를 우선 마감한다.
+- `LobbyScene` 쪽은 [`lobby_scene_completion_plan.md`](./lobby_scene_completion_plan.md)를 evidence/residual 기준으로 유지하고, 새 blocker가 없으면 Garage final fidelity만 `Set B Garage` 판단과 함께 본다.
+- LobbyScene UI/prefab 관리 부채는 [`lobby_scene_ui_prefab_management_plan.md`](./lobby_scene_ui_prefab_management_plan.md)에서 assembly helper 안전화, prefab override audit, preview placeholder 정리 순서로 본다.
 - Lobby/Garage 쪽은 mobile-first Garage 단일 구조의 시각 밀도와 review evidence 기준 visual fidelity를 계속 sanity check 한다.
 - shared `Account/Garage` lane에서는 Garage save/load WebGL, settings interaction, save action 접근성을 계속 추적한다.
 - Stitch lane 쪽은 `Set A/B/C/D/E`와 추가 `GameScene HUD` source freeze를 generic onboarding 기준 샘플로 삼아, 이후 다시 여는 inventory set을 per-surface script edit 없이 단순 범용 루프의 verdict까지 태울 수 있게 source facts/draft/validate route를 일반화한다.

@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_base-overwork_a9b70116.mtl
+o datan_common_base-overwork_a9b70116
+v 0.027754 -0.134583 -0
+v -0.027754 -0.134583 -0
+v -0.027754 0.005417 -0
+v 0.027754 0.005417 -0
+vt 0.755941 0.994121
+vt 0.755941 0.880879
+vt 0.994059 0.880879
+vt 0.994059 0.994121
+vn 0 0 1
+vn 0 0 1
+vn 0 0 1
+vn 0 0 1
+usemtl datan_common_base-overwork_a9b70116
+f 1/1/1 2/2/2 3/3/3
+f 3/3/3 4/4/4 1/1/1

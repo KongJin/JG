@@ -90,9 +90,9 @@ namespace Features.Garage.Presentation
             {
                 title = frame.DisplayName;
                 subtitle = hasCommittedUnit && !hasDraftChanges
-                    ? "저장본 검토 중"
+                    ? "저장됨"
                     : hasCommittedUnit
-                        ? "저장 시 현재 슬롯 갱신"
+                        ? "저장 가능"
                         : "프레임부터 조립 시작";
             }
             else if (!hasCommittedUnit && !hasAnyDraftSelection)
@@ -103,12 +103,12 @@ namespace Features.Garage.Presentation
             else if (hasCommittedUnit && !hasDraftChanges)
             {
                 title = $"UNIT {state.SelectedSlotIndex + 1:00}";
-                subtitle = "저장본 검토 중";
+                subtitle = "저장됨";
             }
             else if (hasCommittedUnit)
             {
                 title = $"UNIT {state.SelectedSlotIndex + 1:00}";
-                subtitle = "저장 시 현재 슬롯 갱신";
+                subtitle = "저장 가능";
             }
             else
             {

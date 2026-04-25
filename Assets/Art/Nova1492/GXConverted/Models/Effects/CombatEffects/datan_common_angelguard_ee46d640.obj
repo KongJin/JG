@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_angelguard_ee46d640.mtl
+o datan_common_angelguard_ee46d640
+v -2.991453 4.659788 2.27081
+v -2.991453 -1.323117 2.270811
+v 2.991453 4.659788 2.27081
+v 2.991453 -1.323117 2.270811
+vt 0.12791 0.87209
+vt 0.12791 0.75291
+vt 0.24709 0.87209
+vt 0.24709 0.75291
+vn 0 0 1
+vn 0 0 1
+vn 0 0 1
+vn 0 0 1
+usemtl datan_common_angelguard_ee46d640
+f 1/1/1 2/2/2 3/3/3
+f 4/4/4 3/3/3 2/2/2

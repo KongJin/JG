@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_gil07_0312c21c.mtl
+o datan_common_gil07_0312c21c
+v -7.526948 -0.094148 -2.578931
+v -4.88388 -0.094148 -2.578931
+v -4.88388 -0.094148 -7.865067
+v -7.526948 -0.094148 -7.865067
+vt 0.0005 0.0005
+vt 0.9995 0.000499
+vt 0.999501 0.9995
+vt 0.0005 0.999501
+vn 0 1 -0
+vn -0 1 0
+vn 0 1 -0
+vn 0 1 -0
+usemtl datan_common_gil07_0312c21c
+f 1/1/1 2/2/2 3/3/3
+f 3/3/3 4/4/4 1/1/1

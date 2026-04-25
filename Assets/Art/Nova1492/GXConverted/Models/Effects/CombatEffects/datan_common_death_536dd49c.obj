@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_death_536dd49c.mtl
+o datan_common_death_536dd49c
+v -3.75 -0.000075 3.75
+v 3.75 -0.000075 3.75
+v 3.75 -0.000075 -3.75
+v -3.75 -0.000075 -3.75
+vt 0.503033 0.506066
+vt 0.746967 0.506066
+vt 0.746967 0.993934
+vt 0.503033 0.993934
+vn 0 1 -0
+vn -0 1 0
+vn 0 1 -0
+vn 0 1 -0
+usemtl datan_common_death_536dd49c
+f 1/1/1 2/2/2 3/3/3
+f 3/3/3 4/4/4 1/1/1

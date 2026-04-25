@@ -31,6 +31,7 @@ namespace Features.Account.Presentation
 
         public void Show()
         {
+            gameObject.SetActive(true);
             _loadingPanel.SetActive(true);
             _errorPanel.SetActive(false);
             _statusText.text = "Signing in...";
@@ -40,10 +41,13 @@ namespace Features.Account.Presentation
         public void Hide()
         {
             _loadingPanel.SetActive(false);
+            _errorPanel.SetActive(false);
+            gameObject.SetActive(false);
         }
 
         public void ShowError(string message)
         {
+            gameObject.SetActive(true);
             _loadingPanel.SetActive(false);
             _errorPanel.SetActive(true);
             _errorText.text = message;

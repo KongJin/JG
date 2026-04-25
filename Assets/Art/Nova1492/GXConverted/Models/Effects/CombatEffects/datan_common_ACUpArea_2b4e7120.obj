@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_ACUpArea_2b4e7120.mtl
+o datan_common_ACUpArea_2b4e7120
+v -0.291438 0 -0.291438
+v -0.291438 0 0.291438
+v 0.291438 0 -0.291438
+v 0.291438 0 0.291438
+vt 0.25291 0.49709
+vt 0.25291 0.25291
+vt 0.49709 0.49709
+vt 0.49709 0.25291
+vn -0 1 0
+vn 0 1 0
+vn 0 1 0
+vn 0 1 0
+usemtl datan_common_ACUpArea_2b4e7120
+f 1/1/1 2/2/2 3/3/3
+f 4/4/4 3/3/3 2/2/2

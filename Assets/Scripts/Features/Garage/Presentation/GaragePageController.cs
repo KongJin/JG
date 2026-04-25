@@ -141,7 +141,6 @@ namespace Features.Garage.Presentation
             _unitEditorView.FirepowerCycleRequested += CycleFirepower;
             _unitEditorView.MobilityCycleRequested += CycleMobility;
             _unitEditorView.ClearRequested += ClearSelectedSlot;
-            _unitEditorView.PartHoverRequested += ShowPartHoverTooltip;
             _resultPanelView.SaveClicked += () => _ = RunSaveAsync();
 
             _mobileEditTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Frame));
@@ -218,45 +217,6 @@ namespace Features.Garage.Presentation
             _state.SetEditingMobilityId(CycleId(_state.EditingMobilityId, _catalog.Mobility, delta, module => module.Id));
             _state.ClearValidationOverride();
             Render();
-        }
-
-        private void ShowPartHoverTooltip(string partType, int delta)
-        {
-            EnsureInitialized();
-
-            string currentId = partType switch
-            {
-                "frame" => _state.EditingFrameId,
-                "firepower" => _state.EditingFirepowerId,
-                "mobility" => _state.EditingMobilityId,
-                _ => null
-            };
-
-            string nextId = partType switch
-            {
-                "frame" => CycleId(currentId, _catalog.Frames, delta, m => m.Id),
-                "firepower" => CycleId(currentId, _catalog.Firepower, delta, m => m.Id),
-                "mobility" => CycleId(currentId, _catalog.Mobility, delta, m => m.Id),
-                _ => null
-            };
-
-            string currentName = partType switch
-            {
-                "frame" => _catalog.FindFrame(currentId)?.DisplayName ?? "—",
-                "firepower" => _catalog.FindFirepower(currentId)?.DisplayName ?? "—",
-                "mobility" => _catalog.FindMobility(currentId)?.DisplayName ?? "—",
-                _ => "—"
-            };
-
-            string nextName = partType switch
-            {
-                "frame" => _catalog.FindFrame(nextId)?.DisplayName ?? "—",
-                "firepower" => _catalog.FindFirepower(nextId)?.DisplayName ?? "—",
-                "mobility" => _catalog.FindMobility(nextId)?.DisplayName ?? "—",
-                _ => "—"
-            };
-
-            _resultPanelView.ShowToast($"{currentName} -> {nextName}");
         }
 
         private void ClearSelectedSlot()

@@ -44,8 +44,31 @@ powershell -ExecutionPolicy Bypass -File .\tools\stitch-unity\surfaces\Invoke-St
 
 ## Open
 
-- source PNG와 SceneView capture를 눈으로 비교해서 visual fidelity를 닫아야 한다.
 - runtime save/settings 검증은 shared Account/Garage validation lane에서 본다.
+
+## Visual Fidelity Verdict
+
+- verdict: `mismatch`
+- judgedAt: 2026-04-25
+- source: `.stitch/designs/set-b-garage-main-workspace.png`
+- compared captures:
+  - `artifacts/unity/set-b-garage-main-workspace-scene-capture.png`
+  - `artifacts/unity/lobby-scene-garage-tab-polished.png`
+- mechanical status: structure and semantic block verification passed, but mechanical pass is not acceptance.
+- acceptance status: source and current Unity captures do not yet read as the same final screen.
+
+Mismatch reasons:
+
+- source header/summary chrome is clipped or missing in Unity captures.
+- source card framing, icon treatment, border contrast, and compact dark-panel hierarchy are not preserved.
+- source `slot selector -> focus bar -> editor -> preview -> save dock` flow exists structurally, but current LobbyScene Garage capture reduces the page to roster plus focused editor and hides the preview/summary/save-dock relationship.
+- source final preview has a framed blueprint/cockpit read with progress treatment; Unity capture reads as sparse placeholder text/empty space.
+- source primary CTA is compact and persistent; Unity pipeline capture shows an oversized dock, while latest LobbyScene capture does not show it in the same first-read composition.
+
+Closeout note:
+
+- This is a translation mismatch, not a polish-only residual.
+- Do not mark Set B Garage visual fidelity as accepted until a fresh capture matches the source screen's first-read hierarchy, card density, preview treatment, and persistent save action.
 
 ## Acceptance
 

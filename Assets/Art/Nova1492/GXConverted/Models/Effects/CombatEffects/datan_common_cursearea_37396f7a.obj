@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_cursearea_37396f7a.mtl
+o datan_common_cursearea_37396f7a
+v -1.385073 4.805194 -0
+v -1.385073 0.020396 0
+v 1.385073 4.805194 -0
+v 1.385073 0.020396 0
+vt 0.50582 0.99418
+vt 0.50582 0.50582
+vt 0.99418 0.99418
+vt 0.99418 0.50582
+vn 0 0 1
+vn 0 0 1
+vn 0 0 1
+vn 0 0 1
+usemtl datan_common_cursearea_37396f7a
+f 1/1/1 2/2/2 3/3/3
+f 4/4/4 3/3/3 2/2/2

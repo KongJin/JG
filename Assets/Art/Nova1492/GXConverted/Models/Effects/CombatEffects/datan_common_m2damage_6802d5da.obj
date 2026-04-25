@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_m2damage_6802d5da.mtl
+o datan_common_m2damage_6802d5da
+v -0.5 0 0.816917
+v 0.5 0 0.816917
+v -0.5 0 -0.183083
+v 0.5 0 -0.183083
+vt 0.00582 0.99418
+vt 0.00582 0.75582
+vt 0.49418 0.99418
+vt 0.49418 0.75582
+vn -0 1 0
+vn 0 1 -0
+vn 0 1 -0
+vn 0 1 -0
+usemtl datan_common_m2damage_6802d5da
+f 1/1/1 2/2/2 3/3/3
+f 4/4/4 3/3/3 2/2/2

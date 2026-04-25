@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0.0",
+  "surfaceId": "set-b-garage-main-workspace",
+  "judgedAt": "2026-04-25T00:00:00+09:00",
+  "acceptanceStatus": "mismatch",
+  "advanceVerdict": "mismatch",
+  "source": ".stitch/designs/set-b-garage-main-workspace.png",
+  "comparedCaptures": [
+    "artifacts/unity/set-b-garage-main-workspace-scene-capture.png",
+    "artifacts/unity/lobby-scene-garage-tab-polished.png"
+  ],
+  "mechanicalEvidence": [
+    "artifacts/unity/set-b-garage-main-workspace-pipeline-result.json",
+    "artifacts/unity/stitch-garage-verification-result.json"
+  ],
+  "mechanicalStatus": {
+    "pipelineSuccess": true,
+    "structuralVerification": true,
+    "semanticVerification": true,
+    "runtimeVerification": false
+  },
+  "mismatchReasons": [
+    "Source header and summary chrome is clipped or missing in Unity captures.",
+    "Source card framing, icon treatment, border contrast, and compact dark-panel hierarchy are not preserved.",
+    "The structural flow exists, but the latest LobbyScene Garage capture reduces the page to roster plus focused editor and does not preserve the preview/summary/save-dock relationship.",
+    "The source preview reads as a framed blueprint cockpit with progress treatment; Unity reads as sparse placeholder text or empty space.",
+    "The primary CTA does not match the source first-read composition across the compared captures."
+  ],
+  "closeout": "Set B Garage visual fidelity is not accepted. Treat the remaining work as translation mismatch recovery, not polish-only cleanup."
+}

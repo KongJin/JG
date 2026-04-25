@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_MBoverwork1_ced7d588.mtl
+o datan_common_MBoverwork1_ced7d588
+v -0 -4.806519 0.495605
+v -0 -4.806519 -0.495606
+v -0 0.19346 -0.495606
+v -0 0.19346 0.495605
+vt 0.755941 0.494121
+vt 0.755941 0.380879
+vt 0.994059 0.380879
+vt 0.994059 0.494121
+vn 1 0 0
+vn -1 0 0
+vn 1 0 0
+vn -1 0 0
+usemtl datan_common_MBoverwork1_ced7d588
+f 1/1/1 2/2/2 3/3/3
+f 3/3/3 4/4/4 1/1/1

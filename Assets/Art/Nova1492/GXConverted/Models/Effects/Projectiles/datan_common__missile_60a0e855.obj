@@ -1,0 +1,22 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common__missile_60a0e855.mtl
+o datan_common__missile_60a0e855
+v 0.130941 0.244059 0.369059
+v 0.244059 0 0
+v 0 0 0
+v 0 0 0
+v 0 0 0
+vt 0 0.625832
+vt 0.405241 1
+vt 0 1
+vt 0 1
+vt 0 1
+vn 0 0 0
+vn 0 0.154329 0
+vn -0 0.374168 -0.405241
+vn 0.405241 0.374168 -0
+vn -0.405241 0.374168 0
+usemtl datan_common__missile_60a0e855
+f 2/2/2 1/1/1 2/2/2
+f 4/4/4 1/1/1 4/4/4
+f 5/5/5 1/1/1 5/5/5

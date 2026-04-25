@@ -1,0 +1,18 @@
+# Generated from Nova1492 GX by tools/nova1492/GxObjConverter
+mtllib datan_common_cursepoison_afe3f92c.mtl
+o datan_common_cursepoison_afe3f92c
+v 2.569981 2.56998 1.032939
+v -2.56998 2.569981 1.032939
+v 2.56998 -2.569981 1.032939
+v -2.569981 -2.56998 1.032939
+vt 0.00582 0.99418
+vt 0.00582 0.50582
+vt 0.49418 0.99418
+vt 0.49418 0.50582
+vn 0 0 1
+vn -0 -0 1
+vn -0 -0 1
+vn -0 -0 1
+usemtl datan_common_cursepoison_afe3f92c
+f 1/1/1 2/2/2 3/3/3
+f 4/4/4 3/3/3 2/2/2

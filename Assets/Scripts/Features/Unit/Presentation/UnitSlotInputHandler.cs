@@ -171,6 +171,17 @@ namespace Features.Unit.Presentation
 
         private void UpdateDragGhostColor(bool isValid)
         {
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.alpha = isValid ? 0.82f : 0.46f;
+            }
+
+            if (_dragGhost != null && _dragGhost.TryGetComponent<UnityEngine.UI.Image>(out var ghostImage))
+            {
+                ghostImage.color = isValid
+                    ? new Color(0.45f, 0.85f, 1f, 0.9f)
+                    : new Color(1f, 0.32f, 0.28f, 0.75f);
+            }
         }
 
         private Vector3 ScreenToWorldPosition(Vector2 screenPosition)

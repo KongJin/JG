@@ -136,6 +136,26 @@
                         "status":  "observed"
                     },
                     {
+                        "signature":  "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Player Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
+                        "scopeType":  "harness",
+                        "scopePath":  "tools/rule-harness/README.md",
+                        "symptoms":  "Scope=Player Stage=diagnose TimeoutSec=120 HTTP request failed. Status=429 Body={\"error\":{\"code\":\"1113\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
+                        "preferredRepairStrategy":  "Improve harness prompts, config, tests, or docs before retrying.",
+                        "validationHints":  [
+                                                "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+                                                "tools/rule-harness/README.md"
+                                            ],
+                        "confidence":  "high",
+                        "hitCount":  1,
+                        "distinctCommitCount":  1,
+                        "commitShas":  [
+                                           "b143862db76cf5cd6178fa36ee9f8dd15a45ff90"
+                                       ],
+                        "lastSeen":  "2026-04-25T12:59:05.3509420Z",
+                        "promotionTarget":  "tools/rule-harness/README.md",
+                        "status":  "observed"
+                    },
+                    {
                         "signature":  "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Projectile Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
                         "scopeType":  "harness",
                         "scopePath":  "tools/rule-harness/README.md",

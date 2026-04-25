@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+#pragma warning disable CS0649 // DTO fields are populated by Unity JsonUtility/reflection.
 using System;
 using UnityEditor;
 using UnityEngine;
@@ -1075,4 +1076,5 @@ namespace ProjectSD.EditorTools.UnityMcp
         public bool isPublic;
     }
 }
+#pragma warning restore CS0649
 #endif

@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+#pragma warning disable CS0649 // Request DTO fields are populated by Unity JsonUtility.
 using System;
 using System.IO;
 using System.Linq;
@@ -278,4 +279,5 @@ namespace ProjectSD.EditorTools.UnityMcp
         }
     }
 }
+#pragma warning restore CS0649
 #endif

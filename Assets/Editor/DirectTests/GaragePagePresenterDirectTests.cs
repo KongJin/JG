@@ -19,7 +19,7 @@ namespace Tests.Editor
             Assert.IsTrue(viewModel.IsReady);
             Assert.IsFalse(viewModel.IsDirty);
             Assert.IsFalse(viewModel.CanSave);
-            Assert.AreEqual("Roster Saved", viewModel.PrimaryActionLabel);
+            Assert.AreEqual("저장됨", viewModel.PrimaryActionLabel);
         }
 
         [Test]
@@ -36,8 +36,8 @@ namespace Tests.Editor
             Assert.IsFalse(viewModel.IsReady);
             Assert.IsTrue(viewModel.IsDirty);
             Assert.IsTrue(viewModel.CanSave);
-            Assert.AreEqual("Save Roster", viewModel.PrimaryActionLabel);
-            StringAssert.Contains("Unsaved draft active", viewModel.RosterStatusText);
+            Assert.AreEqual("편성 저장", viewModel.PrimaryActionLabel);
+            StringAssert.Contains("SAVE REQUIRED", viewModel.RosterStatusText);
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace Tests.Editor
             Assert.IsTrue(viewModel.IsReady);
             Assert.IsFalse(viewModel.IsDirty);
             Assert.IsFalse(viewModel.CanSave);
-            StringAssert.Contains("Ready unlocked", viewModel.RosterStatusText);
+            StringAssert.Contains("SYNCED ROSTER", viewModel.RosterStatusText);
         }
 
         private static GaragePageState CreateInitializedState(int completeUnitCount)
