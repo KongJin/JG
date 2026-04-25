@@ -4,13 +4,13 @@
 > 상태: reference
 > doc_id: plans.rule-revision-trace-cleanup
 > role: plan
-> owner_scope: 규칙 개정 후 active old trace가 남아 충돌하는 문제를 정리하고 closeout에서 강제하는 실행 계획
+> owner_scope: 규칙 개정 후 active old trace 충돌을 정리한 결과 기록과 후속 reference
 > upstream: docs.index, ops.document-management-workflow, ops.plan-authoring-review-workflow
 > artifacts: `artifacts/rules/rule-revision-trace-inventory.md`
 
 ## 목적
 
-규칙을 개정했는데 이전 규칙 문구, 테스트, 코드 주석, 툴팁, entry 요약이 active 상태로 남아 old/new 기준이 동시에 살아나는 문제를 막는다.
+규칙을 개정했는데 이전 규칙 문구, 테스트, 코드 주석, 툴팁, entry 요약이 active 상태로 남아 old/new 기준이 동시에 살아나는 문제를 정리한 계획 기록이다.
 
 이 문서는 원칙 본문을 새로 소유하지 않는다. 현재 문서 역할, SSOT, closeout 기준은 `ops.document-management-workflow`를 따른다.
 
@@ -29,7 +29,7 @@
 - 제품 밸런스 결정 자체의 재정의
 - 각 도메인 owner 문서의 규칙 본문을 이 plan에 복제
 
-## 핵심 판정
+## 당시 핵심 판정
 
 - current owner 문서, active plan, 테스트, 코드, UI 텍스트, tooltip, README에서 새 규칙과 충돌하는 old trace는 수정 또는 제거한다.
 - 보존 가치가 있는 old trace는 `historical`, changelog, discussion 등으로 내리고 현재 판단 근거가 아님을 명시한다.
@@ -110,7 +110,9 @@ Acceptance:
 - `npm run --silent rules:sync-closeout`: passed
 - `npm run --silent rules:lint`: passed
 
-## Closeout 기준
+## Closeout 기록
+
+실행 당시 closeout 판정은 아래 기준으로 기록했다.
 
 - `success`: active-current old trace 후보가 없고, 검증이 통과했다.
 - `residual`: 일부 범위가 자동/수동으로 확인되지 않았지만 현재 판단 근거 충돌은 발견되지 않았다.

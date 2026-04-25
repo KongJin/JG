@@ -14,9 +14,9 @@
 
 ---
 
-## 핵심 결정
+## 핵심 결정 기록
 
-| 항목 | 현재 기준 |
+| 항목 | 기준 |
 |---|---|
 | 전투 진입 흐름 | `LobbyScene` → `GameScene` |
 | 편성 데이터 | `garageRoster`를 Room CustomProperties로 동기화 |
@@ -53,20 +53,20 @@ Phase 0~8의 세부 커밋과 작업 로그는 [`progress.md`](./progress.md)에
 
 ---
 
-## 현재 집중 영역: GameScene Rebuild Milestone
+## 현재 TODO 위임: GameScene Rebuild Milestone
 
-현재 활성 TODO는 `progress.md`와 동일하게 아래 순서로 본다.
+현재 활성 TODO는 `progress.md`를 우선한다. 이 문서는 당시 정리한 순서를 reference로 남긴다.
 
 1. placement area drag/drop과 wave/core loop 실제 Play Mode 검증
 2. 실제 멀티플레이어 smoke로 late-join, BattleEntity sync, Energy sync 확인
 3. GameScene bootstrap의 순수 전제 조건을 테스트 층으로 더 내릴 수 있는지 정리
 
-현재 기준으로 legacy lobby scene 전환과 summon smoke는 과거 통과 이력만 남아 있으며, active acceptance route가 아니다.
+legacy lobby scene 전환과 summon smoke는 과거 통과 이력만 남아 있으며, 현재 active acceptance route는 `progress.md`를 따른다.
 
 ---
 
 ## 유지 원칙
 
-- GameScene 진입 관련 상세 진행률, 최근 커밋, 남은 TODO는 항상 [`progress.md`](./progress.md)에 먼저 반영한다.
+- GameScene 진입 관련 상세 진행률, 최근 커밋, 남은 TODO는 [`progress.md`](./progress.md)에 먼저 반영한다.
 - 이 문서에는 이미 끝난 Phase의 세부 구현 순서나 오래된 “다음 액션” 체크리스트를 다시 복제하지 않는다.
 - 설계 기준은 [`../design/game_design.md`](../design/game_design.md), 루트 진입점은 [`../../AGENTS.md`](../../AGENTS.md)를 따른다.

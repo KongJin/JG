@@ -12,8 +12,8 @@
                     "requiredDependencyFailureCount":  0,
                     "optionalDependencyFailureCount":  0,
                     "translationProduced":  true,
-                    "reviewCaptureAttempted":  false,
-                    "reviewCaptureSupported":  false,
+                    "reviewCaptureAttempted":  true,
+                    "reviewCaptureSupported":  true,
                     "targetKind":  "prefab",
                     "targetAssetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
                 },
@@ -21,7 +21,7 @@
                         "preflight":  "passed",
                         "dependencies":  "passed",
                         "translation":  "passed",
-                        "reviewCapture":  "skipped",
+                        "reviewCapture":  "passed",
                         "pipeline":  "written"
                     },
     "inputs":  {
@@ -35,7 +35,7 @@
                               }
                },
     "artifacts":  {
-                      "reviewCapture":  "",
+                      "reviewCapture":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-scene-capture.png",
                       "pipelineResult":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-pipeline-result.json"
                   },
     "dependencies":  {
@@ -1868,18 +1868,43 @@
                                                           ],
                                                "passed":  true
                                            },
-                        "generatedAt":  "2026-04-25T15:26:25.0622753+09:00"
+                        "generatedAt":  "2026-04-25T15:29:53.8404286+09:00"
                     },
     "reviewCapture":  {
-                          "attempted":  false,
-                          "supported":  false,
-                          "status":  "skipped",
+                          "attempted":  true,
+                          "supported":  true,
+                          "status":  "passed",
                           "surfaceId":  "set-b-garage-main-workspace",
-                          "routeKind":  "",
-                          "menuPath":  "",
-                          "artifactPath":  "",
-                          "relativeArtifactPath":  "",
-                          "reason":  "skip-review-capture-requested",
-                          "consoleErrors":  null
+                          "routeKind":  "temp-scene-sceneview",
+                          "menuPath":  "Tools/Scene/Prepare Stitch Runtime Review/Surface",
+                          "artifactPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-scene-capture.png",
+                          "relativeArtifactPath":  "artifacts/unity/set-b-garage-main-workspace-scene-capture.png",
+                          "reason":  "",
+                          "requestPath":  "Temp/StitchRuntimeReview/request.json",
+                          "menu":  {
+                                       "success":  true,
+                                       "message":  "Executed menu: Tools/Scene/Prepare Stitch Runtime Review/Surface",
+                                       "queued":  false,
+                                       "pendingCount":  0,
+                                       "autoSaved":  false
+                                   },
+                          "capture":  {
+                                          "success":  true,
+                                          "message":  "SceneView screenshot captured.",
+                                          "relativePath":  "artifacts/unity/set-b-garage-main-workspace-scene-capture.png",
+                                          "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\set-b-garage-main-workspace-scene-capture.png",
+                                          "fileSizeBytes":  35330,
+                                          "sourceView":  "SceneCamera",
+                                          "width":  390,
+                                          "height":  844,
+                                          "prefabStageAssetPath":  ""
+                                      },
+                          "consoleErrors":  {
+                                                "count":  0,
+                                                "items":  [
+
+                                                          ]
+                                            },
+                          "generatedAt":  "2026-04-25T15:29:54.7255597+09:00"
                       }
 }

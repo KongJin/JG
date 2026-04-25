@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jg.local/stitch-contract-draft.schema.json",
+  "title": "Stitch Contract Draft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "artifactKind",
+    "surfaceId",
+    "source",
+    "target",
+    "contracts"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "artifactKind": {
+      "type": "string",
+      "const": "stitch-contract-draft"
+    },
+    "surfaceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "htmlPath",
+        "imagePath"
+      ],
+      "properties": {
+        "htmlPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "imagePath": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "assetPath"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "prefab"
+        },
+        "assetPath": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "contracts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest",
+        "map",
+        "presentation"
+      ],
+      "properties": {
+        "manifest": {
+          "type": "object"
+        },
+        "map": {
+          "type": "object"
+        },
+        "presentation": {
+          "type": "object"
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

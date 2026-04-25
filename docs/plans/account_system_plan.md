@@ -14,7 +14,7 @@
 이 문서는 Account Feature의 "기능 추가 계획"이 아니라, 이미 들어간 계정/차고 연동 코드와 실제 동작 사이의 간극을 메우는 복구 기준 reference다.
 현재 실행 상태와 우선순위는 [`progress.md`](./progress.md)를 우선한다.
 
-핵심 메시지는 아래 세 가지로 고정한다.
+작성 당시 핵심 메시지는 아래 세 가지였다.
 
 - 현재 계정 시스템은 **복구가 많이 진행됐지만**, Google linking 실기와 설정 소비 경로가 아직 남아 있다.
 - 우선순위는 새 기능 추가가 아니라 **이미 약속한 흐름을 실제로 동작하게 복구**하는 것이다.
@@ -43,7 +43,7 @@
 
 ---
 
-## 1. 현재 실제 상태
+## 1. 상태 기록
 
 ### 구현된 것
 - Firebase Auth REST 기반 익명 로그인과 Google `signInWithIdp` 호출 코드가 존재한다.
@@ -59,7 +59,7 @@
 - 설정 저장/소비 경로의 마무리
 - 반복 회귀를 막는 추가 WebGL smoke와 테스트 확장
 
-### 현재 씬에서 실제 소비하는 데이터
+### 씬에서 실제 소비하던 데이터
 - `Profile`
   - 사용 중: `uid`, `displayName`, `authType`
 - `Garage`
@@ -89,13 +89,13 @@
 
 ---
 
-## 3. 현재 구현 기준
+## 3. 구현 기준 기록
 
 ### Firestore 저장 어댑터
 - `FirestoreRestPort`는 Garage 저장/로드 경로를 실제 runtime에서 사용한다.
 - Garage 저장은 Firestore + Photon custom properties를 같이 갱신한다.
 - 과거의 `AuthTokenProvider` 정적 우회는 제거 대상으로 본다.
-- 현재 기준 세션 접근은 `AccountSetup -> FirebaseAuthRestAdapter -> FirestoreRestPort`의 injected session access로 유지한다.
+- 세션 접근은 `AccountSetup -> FirebaseAuthRestAdapter -> FirestoreRestPort`의 injected session access로 유지하는 기준이었다.
 
 ### Garage 초기화 경로
 - `InitializeGarageUseCase`는 Firestore 우선 복원과 committed roster 재동기화를 담당한다.
@@ -171,9 +171,9 @@
 
 ## 5. 문서/SSOT 동기화 규칙
 
-- Account 관련 공식 진행 상태는 항상 [`progress.md`](./progress.md)를 먼저 갱신한다.
+- Account 관련 공식 진행 상태는 [`progress.md`](./progress.md)를 먼저 갱신한다.
 - 이 문서는 "무엇을 복구해야 하는가"에 집중하고, 세부 완료/미완료 상태는 `progress.md`와 일치해야 한다.
-- "완료" 표현은 반드시 아래 조건을 충족할 때만 사용한다.
+- "완료" 표현은 아래 조건을 충족할 때만 사용한다.
   - 코드가 연결되어 있고
   - 해당 경로의 smoke 또는 테스트가 존재하며
   - 문서에 남은 blocker가 없다

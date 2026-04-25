@@ -7,7 +7,7 @@
 > owner_scope: 과거 Unity 규칙과 도구 한계 검토 기록
 > upstream: docs.index, plans.mcp-improvement, plans.tech-debt-reduction
 > artifacts: none
-> 현재 기준: [`../index.md`](../index.md), [`../plans/mcp_improvement_plan.md`](../plans/mcp_improvement_plan.md), [`../plans/tech_debt_reduction_plan.md`](../plans/tech_debt_reduction_plan.md)
+> 현재 기준 경로: [`../index.md`](../index.md)에서 owner 문서를 찾는다. 이 문서는 historical 기록이다.
 
 실제 코드와 문서, 도구를 비교해 보니 여러 문제점과 한계가 발견되었습니다.                                                                                  
                                                               

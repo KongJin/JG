@@ -10,30 +10,31 @@
 
 Unity MCP is not being retired. In this repo it is now defined as a `diagnostic + manual automation` tool.
 
-이 문서는 "무엇을 더 붙일까"보다 "무엇을 핵심으로 남길까"를 설명하는 운영 기준 문서다.
+이 문서는 "무엇을 더 붙일까"보다 "무엇을 핵심으로 남길까"를 정리한 reference다.
+현재 Unity UI/UX authoring 기준은 `ops.unity-ui-authoring-workflow`와 `tools/unity-mcp/README.md`를 우선한다.
 
-## Target Role
+## Target Role 기록
 
 - Keep `rule-harness` usage limited to compile/status refresh plus generic diagnostics.
 - Keep scene-specific runtime smoke out of harness scope.
 - Keep supervised Play/UI/screenshot flows stable enough for repeatable runtime verification.
 - In reset mode, treat `accepted source freeze + execution contracts + committed prefab target + fresh evidence` as the Lobby/Garage committed SSOT before any concrete authoring scene is revived.
 
-## Current Validation Stack
+## Validation Stack 기록
 
-Lobby/Garage 기준 기본 검증 순서는 아래로 고정한다.
+Lobby/Garage 기준 기본 검증 순서는 아래처럼 정리했다.
 
 1. contract / required-field audit
 2. EditMode or domain tests
 3. thin runtime verification
 
-핵심 원칙:
+당시 핵심 원칙:
 
 - scene contract는 `wiring / sentinel roots / serialized refs`를 본다.
 - EditMode tests는 `Ready/Save`, roster validation, room rule, 초기 계산 같은 순수 규칙을 본다.
 - runtime verification은 끝까지 연결되는 핵심 사용자 흐름만 본다.
 
-## Current Direction
+## Direction 기록
 
 ### 1. Bridge Core
 
@@ -108,7 +109,7 @@ Diagnostic / experimental:
 - screenshot comparison
 - snapshot/eval/explore helpers
 
-## Acceptance Checks
+## Acceptance 기록
 
 - compile-clean succeeds
 - `GET /scene/verify-codex-lobby-contract` succeeds

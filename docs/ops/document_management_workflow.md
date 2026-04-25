@@ -36,6 +36,7 @@
 - mechanical pass와 actual acceptance를 섞지 않는다.
 - 막혔으면 `blocked`, 비교 결과가 다르면 `mismatch`로 남긴다.
 - 작업 범위가 여러 owner를 건드렸다면 closeout에 `owner impact`를 남겨 primary, secondary, out-of-scope를 구분한다.
+- 큰 문서 작업이면 closeout에 `doc lifecycle checked`를 남겨 active/reference/historical/delete 후보를 확인했다는 사실을 드러낸다.
 - 작업 중 기준/도구/policy를 바꿔 blocked lane을 success로 만들지 않는다.
 - 규칙을 개정했으면 active/current 기준에 남은 old trace를 수정, 제거, 또는 historical/reference로 격리하기 전에는 success로 닫지 않는다.
 - 문서/skill/script 문제를 발견했으면 원인, 예방, 검증을 함께 남긴다.
@@ -139,6 +140,7 @@
 5. closeout 표현에 기준, 증거, 남은 리스크가 맞게 붙어 있는가?
 6. 큰 작업이면 시작 시 변경 이유, primary/secondary owner, 제외 범위를 드러냈는가?
 7. 여러 owner가 흔들렸다면 closeout에 `owner impact`가 남았는가?
-8. blocked를 success로 바꾸기 위해 작업 lane이나 검증 기준을 조용히 바꾸지 않았는가?
-9. 사용자 지시가 충돌하거나 과하거나 부족한데도 질문/대안 없이 진행하지 않았는가?
-10. 규칙 개정 후 active old trace가 현재 기준처럼 남아 있지 않은가?
+8. 큰 문서 작업이면 `doc lifecycle checked`가 남았는가?
+9. blocked를 success로 바꾸기 위해 작업 lane이나 검증 기준을 조용히 바꾸지 않았는가?
+10. 사용자 지시가 충돌하거나 과하거나 부족한데도 질문/대안 없이 진행하지 않았는가?
+11. 규칙 개정 후 active old trace가 현재 기준처럼 남아 있지 않은가?

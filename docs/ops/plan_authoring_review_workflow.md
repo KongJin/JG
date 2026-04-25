@@ -48,6 +48,7 @@ plan은 규칙 본문을 새로 만드는 곳이 아니라, 실행 순서와 현
 
 - owner, scope, 제외 범위가 보이는가
 - primary owner와 secondary owner가 구분되는가
+- 큰 문서 작업이면 active/reference/historical/delete 후보 확인이 보이는가
 - acceptance와 closeout 조건이 있는가
 - 실행 순서와 검증 방법이 있는가
 - unresolved risk나 residual handling이 있는가

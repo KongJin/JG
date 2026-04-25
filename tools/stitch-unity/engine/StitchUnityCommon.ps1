@@ -135,6 +135,10 @@ function Get-StitchUnityPresentationResolverScriptPath {
     return Resolve-StitchUnityRepoPath -PathValue "tools/stitch-unity/presentations/Resolve-StitchPresentationContract.ps1"
 }
 
+function Get-StitchUnityContractDraftValidatorScriptPath {
+    return Resolve-StitchUnityRepoPath -PathValue "tools/stitch-unity/validators/Test-StitchContractDraft.ps1"
+}
+
 function Get-StitchUnityProfileGeneratorProbe {
     param(
         [Parameter(Mandatory = $true)][string]$SurfaceId,
@@ -559,14 +563,159 @@ function Get-StitchUnityContractRefObject {
     return [PSCustomObject]$refs
 }
 
+function Invoke-StitchUnityContractDraftValidation {
+    param(
+        [Parameter(Mandatory = $true)][string]$DraftPath,
+        [string]$SurfaceId = "",
+        [string]$TargetAssetPath = ""
+    )
+
+    $validatorPath = Get-StitchUnityContractDraftValidatorScriptPath
+    if (-not (Test-Path -LiteralPath $validatorPath)) {
+        throw "Contract draft validator script not found: $validatorPath"
+    }
+
+    $invocationArgs = @(
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-File", $validatorPath,
+        "-DraftPath", $DraftPath
+    )
+    if (-not [string]::IsNullOrWhiteSpace($SurfaceId)) {
+        $invocationArgs += @("-SurfaceId", $SurfaceId)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($TargetAssetPath)) {
+        $invocationArgs += @("-TargetAssetPath", $TargetAssetPath)
+    }
+
+    $output = & powershell @invocationArgs 2>&1
+    $exitCode = $LASTEXITCODE
+    $outputText = ($output | Out-String).Trim()
+    $result = $null
+    try {
+        $result = $outputText | ConvertFrom-Json
+    }
+    catch {
+        throw "Contract draft validation did not return JSON. $outputText"
+    }
+
+    if ($exitCode -ne 0 -or -not [bool]$result.success) {
+        $reason = [string]$result.blockedReason
+        if ([string]::IsNullOrWhiteSpace($reason)) {
+            $reason = "Validator exited with code $exitCode."
+        }
+
+        throw "Contract draft validation failed. $reason"
+    }
+
+    return $result
+}
+
+function Get-StitchUnityDraftSurfaceContext {
+    param(
+        [Parameter(Mandatory = $true)][string]$DraftPath,
+        [string]$SurfaceId = "",
+        [string]$TargetAssetPath = ""
+    )
+
+    $validation = Invoke-StitchUnityContractDraftValidation -DraftPath $DraftPath -SurfaceId $SurfaceId -TargetAssetPath $TargetAssetPath
+    $draft = Read-StitchUnityJsonFile -PathValue $DraftPath
+    $draftSurfaceId = [string](Get-StitchUnityRequiredProperty -InputObject $draft -Name "surfaceId")
+    $contracts = Get-StitchUnityRequiredProperty -InputObject $draft -Name "contracts"
+    $manifest = Get-StitchUnityRequiredProperty -InputObject $contracts -Name "manifest"
+    $map = Get-StitchUnityRequiredProperty -InputObject $contracts -Name "map"
+    $presentation = Get-StitchUnityRequiredProperty -InputObject $contracts -Name "presentation"
+    $source = Get-StitchUnityRequiredProperty -InputObject $draft -Name "source"
+    $target = Get-StitchUnityRequiredProperty -InputObject $draft -Name "target"
+    $targetKind = if ($null -ne $map.PSObject.Properties["targetKind"]) { [string]$map.targetKind } else { "" }
+
+    $manifestPath = "in-memory://draft/{0}/screen-manifest" -f $draftSurfaceId
+    $mapPath = "in-memory://draft/{0}/unity-map" -f $draftSurfaceId
+    $presentationPath = "in-memory://draft/{0}/presentation-contract" -f $draftSurfaceId
+
+    $contractRefs = [PSCustomObject][ordered]@{
+        manifestPath = $manifestPath
+        presentationPath = $presentationPath
+    }
+    if ($null -eq $map.PSObject.Properties["contractRefs"]) {
+        $map | Add-Member -NotePropertyName "contractRefs" -NotePropertyValue $contractRefs
+    }
+    else {
+        $map.contractRefs = $contractRefs
+    }
+
+    $defaultPipelineResultPath = "artifacts/unity/$draftSurfaceId-pipeline-result.json"
+    if ($null -eq $map.PSObject.Properties["artifactPaths"] -or $null -eq $map.artifactPaths) {
+        $map | Add-Member -NotePropertyName "artifactPaths" -NotePropertyValue ([PSCustomObject][ordered]@{
+            pipelineResult = $defaultPipelineResultPath
+        })
+    }
+    elseif ($null -eq $map.artifactPaths.PSObject.Properties["pipelineResult"] -or [string]::IsNullOrWhiteSpace([string]$map.artifactPaths.pipelineResult)) {
+        $map.artifactPaths | Add-Member -NotePropertyName "pipelineResult" -NotePropertyValue $defaultPipelineResultPath -Force
+    }
+
+    $blockIds = @(Get-StitchUnityOptionalArray -InputObject $manifest -Name "blocks" | ForEach-Object {
+        [string](Get-StitchUnityRequiredProperty -InputObject $_ -Name "blockId")
+    })
+
+    $contractBundle = [PSCustomObject]@{
+        manifestPath = $manifestPath
+        manifest = $manifest
+        presentationPath = $presentationPath
+        presentation = $presentation
+    }
+
+    return [PSCustomObject]@{
+        MapResult = [PSCustomObject]@{
+            Path = $mapPath
+            Map = $map
+            SourceKind = "llm-draft"
+        }
+        Map = $map
+        Contracts = $contractBundle
+        ContractRefs = Get-StitchUnityContractRefObject -ContractBundle $contractBundle
+        ContractSource = [PSCustomObject]@{
+            sourceKind = "llm-draft"
+            targetKind = $targetKind
+            profileGenerated = $false
+            profilePath = ""
+            draftPath = Convert-StitchUnityRepoRelativePath -AbsolutePath (Resolve-StitchUnityRepoPath -PathValue $DraftPath)
+            draftValidation = $validation
+            sharedUiCatalogPath = Convert-StitchUnityRepoRelativePath -AbsolutePath (Get-StitchUnityComponentCatalogPath)
+            sourceRefs = [PSCustomObject]@{
+                htmlPath = [string](Get-StitchUnityRequiredProperty -InputObject $source -Name "htmlPath")
+                imagePath = [string](Get-StitchUnityRequiredProperty -InputObject $source -Name "imagePath")
+                presentationPath = $presentationPath
+            }
+            compiledContractSummary = [PSCustomObject]@{
+                mapPath = $mapPath
+                manifestPath = $manifestPath
+                blockIds = @($blockIds)
+                targetAssetPath = [string](Get-StitchUnityRequiredProperty -InputObject $target -Name "assetPath")
+                translationStrategy = [string](Get-StitchUnityRequiredProperty -InputObject $map -Name "translationStrategy")
+                strategyMode = [string](Get-StitchUnityRequiredProperty -InputObject $map -Name "strategyMode")
+            }
+        }
+    }
+}
+
 function Get-StitchUnitySurfaceContext {
     param(
         [string]$SurfaceId,
         [string]$MapPath,
         [string]$HtmlPath = "",
         [string]$ImagePath = "",
-        [string]$TargetAssetPath = ""
+        [string]$TargetAssetPath = "",
+        [string]$DraftPath = ""
     )
+
+    if (-not [string]::IsNullOrWhiteSpace($DraftPath)) {
+        if (-not [string]::IsNullOrWhiteSpace($MapPath)) {
+            throw "Use either -DraftPath or -MapPath for a surface translation, not both."
+        }
+
+        return Get-StitchUnityDraftSurfaceContext -DraftPath $DraftPath -SurfaceId $SurfaceId -TargetAssetPath $TargetAssetPath
+    }
 
     if ([string]::IsNullOrWhiteSpace($MapPath) -and -not [string]::IsNullOrWhiteSpace($SurfaceId)) {
         $compiledDefinition = Get-StitchUnityCompiledContractDefinition -SurfaceId $SurfaceId -HtmlPath $HtmlPath -ImagePath $ImagePath -TargetAssetPath $TargetAssetPath

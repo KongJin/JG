@@ -9,7 +9,8 @@
 > artifacts: `docs/ops/document_management_workflow.md`, `docs/ops/cohesion_coupling_policy.md`, `docs/ops/acceptance_reporting_guardrails.md`, `docs/ops/plan_authoring_review_workflow.md`, `docs/index.md`
 
 이 문서는 JG 레포의 운영 규칙을 더 덜 답답하게 만들기 위해 수행한 정리 계획과 결과 기록이다.
-목표는 새 규칙을 추가하는 것이 아니라, 상위 원칙을 선명하게 해서 하위 규칙과 체크리스트를 줄이는 것이다.
+당시 목표는 새 규칙을 추가하는 것이 아니라, 상위 원칙을 선명하게 해서 하위 규칙과 체크리스트를 줄이는 것이었다.
+현재 운영 기준은 각 `docs/ops/*` owner 문서가 소유하고, 이 문서는 정리 과정의 reference로만 읽는다.
 
 ## 배경
 
@@ -22,7 +23,7 @@
 - 새 hard-fail을 늘리기보다, 기존 owner 문서의 책임을 더 선명하게 한다.
 - 문서 운영 판단은 적은 수의 상위 원칙에서 시작한다.
 
-## 상위 4원칙
+## 당시 정리한 상위 4원칙
 
 ### 1. SSOT
 
@@ -155,7 +156,7 @@
 결과:
 - 완료. `docs/index.md`와 `AGENTS.md`의 운영 진입 경로를 `document_management_workflow.md` 중심으로 줄였다.
 
-## Acceptance
+## Acceptance 기록
 
 - 운영 판단 시작에 필요한 active ops 문서 수가 줄어든다.
 - 상위 4원칙이 `document_management_workflow.md`에서 바로 보인다.
@@ -165,16 +166,16 @@
 - 새 hard-fail lint를 추가하지 않는다.
 - `npm run --silent rules:lint`가 통과한다.
 
-## 리스크와 보류 기준
+## 당시 리스크와 보류 기준
 
 - 너무 많이 줄여서 blocked/mismatch/success 의미가 흐려지면 보류한다.
 - 상위 원칙만 남기고 lane별 실제 작업자가 필요한 절차를 잃으면 보류한다.
 - 삭제하려는 문서가 active skill이나 tool README에서 아직 직접 참조되면 삭제하지 않는다.
 - lint가 잡는 machine-checkable safety는 유지하고, 이번 plan에서 새 hard-fail은 추가하지 않는다.
 
-## 재리뷰 기준
+## 재리뷰 기록 기준
 
-이 plan 자체도 `ops.plan-authoring-review-workflow`를 따른다.
+이 plan은 작성 당시 `ops.plan-authoring-review-workflow`를 따랐다.
 
 - 과한점: 새 문서나 새 lint를 늘리고 있지 않은가
 - 부족한점: owner, scope, acceptance, 실행 순서, 검증 기준이 빠져 있지 않은가

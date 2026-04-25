@@ -8,11 +8,11 @@
 > upstream: design.ui-reference-workflow, ops.stitch-data-workflow, plans.progress
 > artifacts: `.stitch/DESIGN.md`, `.stitch/prompt-briefs/`, `.stitch/contracts/`
 
-이 문서는 JG의 `Stitch` 기반 UI/UX 개편 실행 기준 reference다.
+이 문서는 JG의 `Stitch` 기반 UI/UX 개편 실행 기록과 기준 reference다.
 외부 메모나 세션 채팅에 흩어진 기준을 레포 안으로 모으고, `Stitch 판단 -> structured contract -> Unity prefab-first reset` 루프를 같은 용어로 유지하는 목적을 가진다.
 세부 운영 규칙은 `ops.stitch-data-workflow`, 활용 원칙은 `design.ui-reference-workflow`를 따르고, 현재 실행 상태와 우선순위는 `plans.progress`를 우선한다.
 
-## Goal
+## Goal 기록
 
 - `Lobby`, `Garage`, `Overlay`, `Battle HUD`, `Result`를 하나의 tactical hangar visual language로 재정렬한다.
 - 산출물은 단순 시안이 아니라 `Unity scene 계약으로 바로 번역 가능한 structured contract`까지 포함한다.
@@ -38,7 +38,7 @@
 이 snapshot은 route 판단을 위한 기준 메모다.
 실제 현재 우선순위와 완료/미완료 판정은 `plans.progress`를 우선한다.
 
-## Working SSOT
+## Working SSOT 기록
 
 - 제품 판단: `design.game-design`
 - Lobby/Garage layout 기준: `design.ui-foundations`
@@ -49,7 +49,7 @@
 - Stitch shared vocabulary artifact: `.stitch/contracts/components/shared-ui.component-catalog.json`
 - 진행 상태 SSOT: `plans.progress`
 
-규칙:
+당시 운용 규칙:
 
 - `Stitch` 산출물은 시안과 structured contract 기준이다.
 - shared component catalog는 세트 공통 vocabulary를 고정하는 reference lane이다.
@@ -205,7 +205,7 @@ capability gate:
 
 ### Workstream 6. Command Completion And Evidence Atomicity
 
-- 목표: from-scratch generate가 성공/blocked/timeout 중 하나로 반드시 종료되고, 부분 생성된 prefab만 남아 success처럼 보이지 않게 한다.
+- 목표: from-scratch generate가 성공/blocked/timeout 중 하나로 종료되고, 부분 생성된 prefab만 남아 success처럼 보이지 않게 한다.
 - 방법: translation stage, Unity MCP call, asset save/import, review capture를 stage 단위로 timeout 처리하고 pipeline artifact에 terminal verdict를 쓴다.
 - 완료 조건: target prefab 삭제 상태에서 `source freeze -> compile -> generate -> pipeline`이 한 실행에서 fresh하게 닫히거나, 아래 최소 shape로 닫힌다.
 
