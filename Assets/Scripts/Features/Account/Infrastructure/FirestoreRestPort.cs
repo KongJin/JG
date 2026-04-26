@@ -2,6 +2,8 @@ using Features.Account.Application.Ports;
 using Features.Account.Domain;
 using Features.Garage.Application;
 using Features.Garage.Domain;
+using Features.Player.Application.Ports;
+using Features.Player.Domain;
 using System;
 using System.Threading.Tasks;
 
@@ -14,7 +16,8 @@ namespace Features.Account.Infrastructure
     public sealed class FirestoreRestPort :
         IAccountDataPort,
         SaveRosterUseCase.ICloudGaragePort,
-        InitializeGarageUseCase.ICloudGarageLoadPort
+        InitializeGarageUseCase.ICloudGarageLoadPort,
+        IOperationRecordCloudPort
     {
         private readonly FirestoreDocumentClient _documentClient;
         private readonly IAccountSessionAccess _sessionAccess;
@@ -70,6 +73,28 @@ namespace Features.Account.Infrastructure
             return FirestoreGarageMapper.FromDocument(json);
         }
 
+        public async Task SaveOperationRecords(RecentOperationRecords records, string uid, string idToken)
+        {
+            var normalizedRecords = records ?? new RecentOperationRecords();
+            normalizedRecords.Normalize();
+
+            await WriteRawDocument(
+                uid,
+                "operations",
+                "recent",
+                FirestoreOperationRecordMapper.ToJson(normalizedRecords),
+                idToken);
+        }
+
+        public async Task<RecentOperationRecords> LoadOperationRecords(string uid, string idToken)
+        {
+            string json = await ReadDocument(uid, "operations", "recent", idToken);
+            if (string.IsNullOrEmpty(json))
+                return null;
+
+            return FirestoreOperationRecordMapper.FromDocument(json);
+        }
+
         public async Task SaveGarageAsync(GarageRoster roster)
         {
             string uid = _sessionAccess.GetCurrentUid();
@@ -92,6 +117,28 @@ namespace Features.Account.Infrastructure
             return await LoadGarage(uid, idToken);
         }
 
+        public async Task SaveOperationRecordsAsync(RecentOperationRecords records)
+        {
+            string uid = _sessionAccess.GetCurrentUid();
+            string idToken = await _sessionAccess.GetIdToken();
+
+            if (string.IsNullOrWhiteSpace(uid) || string.IsNullOrWhiteSpace(idToken))
+                throw new InvalidOperationException("Account session is not ready for operation record save.");
+
+            await SaveOperationRecords(records, uid, idToken);
+        }
+
+        public async Task<RecentOperationRecords> LoadOperationRecordsAsync()
+        {
+            string uid = _sessionAccess.GetCurrentUid();
+            string idToken = await _sessionAccess.GetIdToken();
+
+            if (string.IsNullOrWhiteSpace(uid) || string.IsNullOrWhiteSpace(idToken))
+                return null;
+
+            return await LoadOperationRecords(uid, idToken);
+        }
+
         public async Task SaveSettings(UserSettings settings, string uid, string idToken)
         {
             await WriteDocument(uid, "settings", "settings", FirestoreAccountMapper.ToSettingsFields(settings), idToken);
@@ -112,6 +159,7 @@ namespace Features.Account.Infrastructure
             await DeleteDocument(uid, "stats", "stats", idToken);
             await DeleteDocument(uid, "settings", "settings", idToken);
             await DeleteDocument(uid, "garage", "roster", idToken);
+            await DeleteDocument(uid, "operations", "recent", idToken);
         }
 
         private async Task<string> ReadDocument(string uid, string collectionId, string documentId, string idToken)

@@ -39,6 +39,7 @@ namespace Features.Garage.Presentation
         public Button SettingsOpenButton => _settingsOpenButton;
         public Button SettingsCloseButton => _settingsCloseButton;
         public Button MobileSaveButton => _mobileSaveButton;
+        internal TMP_Text MobileSaveStateText => _mobileSaveStateText;
 
         internal GaragePageChromeController CreateController()
         {

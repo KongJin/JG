@@ -1,5 +1,6 @@
 using Features.Account.Domain;
 using Features.Garage.Domain;
+using Features.Player.Domain;
 using System;
 using UnityEngine;
 
@@ -113,5 +114,41 @@ namespace Features.Account.Infrastructure
     public sealed class RosterWrapper
     {
         public GarageRoster roster;
+    }
+
+    internal static class FirestoreOperationRecordMapper
+    {
+        public static string ToJson(RecentOperationRecords records)
+        {
+            records ??= new RecentOperationRecords();
+            records.Normalize();
+            return JsonUtility.ToJson(new OperationRecordWrapper { records = records });
+        }
+
+        public static RecentOperationRecords FromDocument(string json)
+        {
+            string jsonStr = FirestoreFieldReader.GetString(json, "json");
+            if (string.IsNullOrEmpty(jsonStr))
+                return null;
+
+            try
+            {
+                var wrapper = JsonUtility.FromJson<OperationRecordWrapper>(jsonStr);
+                var records = wrapper?.records ?? new RecentOperationRecords();
+                records.Normalize();
+                return records;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[Firestore] Failed to parse operation records: {ex.Message}");
+                return null;
+            }
+        }
+    }
+
+    [Serializable]
+    internal sealed class OperationRecordWrapper
+    {
+        public RecentOperationRecords records;
     }
 }

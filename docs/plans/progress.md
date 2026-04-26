@@ -54,7 +54,7 @@
 |---|---|
 | `GameScene` runtime | 2-client sync에서 BattleEntity/Energy/Wave hydration mismatch 여부 확인, player avatar commander/base contract |
 | `GameScene` flow closeout | 자연 final-wave victory loop, console error 0 재확인, GameEnd result HUD actual player-flow evidence |
-| `GameScene` operation record | local-first 최근 5회 기록 모델/저장 code path와 Garage 요약 표시 code path가 추가됐고, Play Mode defeat -> local record 생성 및 Garage active text smoke가 통과됨. 남은 TODO는 EditMode test 실행, screenshot/mobile framing evidence, Firestore/WebGL restore smoke |
+| `GameScene` operation record | local-first 최근 5회 기록 모델/저장 code path, Garage 요약 표시, Firestore `operations/recent` bridge code path가 추가됐고, Play Mode defeat -> local record 생성 및 Garage active text smoke가 통과됨. 모바일 요약 카피/chrome guard 보정은 들어갔지만 screenshot/mobile framing acceptance는 아직 residual. 남은 TODO는 EditMode test 실행, screenshot/mobile framing evidence, WebGL/실계정 Firestore restore smoke |
 | `GameScene` HUD/input | placement area drag/drop automation contract, room/result UI가 실제 조작 경로에서 보이는지 확인 |
 | `GameScene` multiplayer | wave start, core victory/defeat baseline, late-join/BattleEntity/Energy multiplayer sync smoke |
 | `Account/Garage` WebGL | Firebase Console 설정, WebGL build smoke, Garage save/load 재현, settings 저장/소비, save action 접근성, settings interaction |

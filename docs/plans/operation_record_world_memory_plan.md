@@ -146,20 +146,26 @@ Acceptance:
 - Code path: `OperationRecord`, `RecentOperationRecords`, `OperationRecordFactory`, `SaveOperationRecordUseCase`, `OperationRecordGameEndHandler`, `OperationRecordJsonStore`가 추가됐다.
 - Code path: `GameSceneRoot`가 `GameEndReportRequestedEvent`를 소비해 최근 작전 기록을 local JSON으로 저장하는 handler를 조립한다.
 - Code path: `GarageSetup`이 local 최근 작전 기록을 읽고 `GaragePagePresenter`가 기존 Garage result stats text에 최근 작전 2줄 요약을 표시한다.
+- Code path: `FirestoreRestPort`가 `operations/recent` 문서 저장/로드 포트를 구현했고, `GarageSetup`은 local record를 먼저 표시한 뒤 계정 세션이 있으면 cloud/local 최근 5회를 merge해서 local과 Firestore에 다시 저장한다.
 - Direct test coverage: `OperationRecordDirectTests`가 최근 5회 trimming, duplicate replacement, report-to-record mapping, JSON roundtrip, same-session duplicate guard를 검증하도록 추가됐다.
 - Direct test coverage: `GaragePagePresenterDirectTests`가 최근 작전 요약 표시와 기록 없음 fallback을 검증하도록 확장됐다.
+- Direct test coverage: `OperationRecordDirectTests`와 `FirestoreMapperDirectTests`가 cloud/local merge와 Firestore raw-json mapper roundtrip을 검증하도록 확장됐다.
 - Compile validation: `tools/check-compile-errors.ps1` pass with `ERRORS: 0`, `WARNINGS: 0`.
 - Docs validation: `npm run --silent rules:lint` pass.
 - UI workflow validation: `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1` pass. Presentation layout ownership and presentation responsibility lint pass.
 - Play Mode smoke: `LobbyScene -> BattleScene` defeat flow produced `recent_operation_records.json` under `LocalLow/DefaultCompany/MakeSD` with one `baseCollapsed` record: reached wave 1, core 0%, survival about 45s.
 - Play Mode UI smoke: reopening Lobby/Garage and invoking `/LobbyCanvas/LobbyGarageNavBar/GarageTabButton` showed active Garage stats text with `최근 작전: 거점 붕괴 | 공세 1 | 코어 0%` and `기록 1/5 | 작전 시간 0:45`.
 - Console validation during UI smoke: recent MCP console errors count was 0.
+- Mobile visibility follow-up: operation summary copy was compressed to one line and Garage chrome initialization now guards pre-`Initialize` state, so Garage tab activation no longer throws `SyncChrome` NRE in the checked path.
+- Mobile visibility follow-up: `MobileSaveStateText` can now receive the operation summary when its normal save/status text would otherwise be empty.
+- Validation after follow-up: `tools/check-compile-errors.ps1` pass with `ERRORS: 0`, `WARNINGS: 0`; `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1` pass for mixed presentation-code route.
+- Validation after Firestore bridge: `tools/check-compile-errors.ps1` pass with `ERRORS: 0`, `WARNINGS: 0`; `npm run --silent rules:lint` pass.
 
 Residuals after this pass:
 
 - Unity EditMode test execution은 Unity Editor가 이미 열려 있어 CLI test route가 `open-editor-owns-project`로 blocked됐다. 테스트 코드는 compile clean까지만 확인됐다.
-- Screenshot capture for the Garage UI smoke was blocked by MCP `/screenshot/capture` returning 409, so the current UI evidence is text-state based rather than image-based.
-- Firestore/account persistence bridge와 WebGL restore smoke는 Account/Garage residual로 남아 있다.
+- Screenshot/mobile visual acceptance remains residual. The first captured screenshot showed the active stats text was not actually readable in the first mobile viewport; after the compact-copy and chrome guard fixes, follow-up automation intermittently stayed on the Lobby page or inactive Garage roots, so `artifacts/unity/operation-record-garage-summary-mobile-smoke.png` is not yet an acceptance proof.
+- Firestore/account persistence bridge code path는 추가됐지만, 실제 계정 세션/WebGL에서 `operations/recent` 저장·복원 smoke는 Account/Garage residual로 남아 있다.
 
 ---
 
@@ -225,3 +231,9 @@ Residuals after this pass:
 - 2026-04-26 Play Mode smoke 반영 후 과한점 리뷰: actual record 생성과 Garage text-state 표시 증거만 추가했고, screenshot/Firestore/WebGL을 success로 승격하지 않았다.
 - 2026-04-26 Play Mode smoke 반영 후 부족한점 리뷰: EditMode test route blocked, screenshot capture 409, Firestore/WebGL restore residual을 남겨 mechanical evidence와 acceptance residual을 분리했다.
 - 2026-04-26 Play Mode smoke 반영 후 재리뷰: plan rereview: clean.
+- 2026-04-26 mobile visibility follow-up 과한점 리뷰: 기록 표시 카피와 Garage chrome null guard만 반영했고, scene/prefab layout acceptance나 Firestore/WebGL을 success로 승격하지 않았다.
+- 2026-04-26 mobile visibility follow-up 부족한점 리뷰: screenshot visual proof가 아직 Lobby/inactive-root automation residual이라 acceptance residual로 남겼다.
+- 2026-04-26 mobile visibility follow-up 재리뷰: plan rereview: clean.
+- 2026-04-26 Firestore bridge follow-up 과한점 리뷰: 기존 Account/Garage Firestore raw-json document 패턴을 재사용했고, 통산 전적/랭킹/새 UI를 확장하지 않았다.
+- 2026-04-26 Firestore bridge follow-up 부족한점 리뷰: code path와 mapper/merge 검증은 추가됐지만 WebGL 실계정 smoke와 모바일 screenshot acceptance는 residual로 남겼다.
+- 2026-04-26 Firestore bridge follow-up 재리뷰: plan rereview: clean.

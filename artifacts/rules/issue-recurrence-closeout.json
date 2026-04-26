@@ -13,18 +13,8 @@
   "blockedReason": "",
   "changedPaths": [
     "artifacts/rules/issue-recurrence-closeout.json",
-    "docs/design/game_design.md",
-    "docs/design/world_design.md",
-    "docs/index.md",
-    "docs/plans/game_scene_agent_a_result_belonging_plan.md",
-    "docs/plans/game_scene_agent_c_unit_identity_terms_plan.md",
-    "docs/plans/game_scene_flow_validation_closeout_plan.md",
     "docs/plans/operation_record_world_memory_plan.md",
     "docs/plans/progress.md",
-    "tools/presentation-lint/lint-presentation-responsibility.mjs",
-    "tools/rule-harness/README.md",
-    "tools/rule-harness/RuleHarness.psm1",
-    "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
-    "tools/workflow/Invoke-CloseoutPack.ps1"
+    "tools/unity-mcp/Invoke-GameSceneAgentBPlacementSmoke.ps1"
   ]
 }

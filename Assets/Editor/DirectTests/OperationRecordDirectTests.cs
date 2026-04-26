@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 using Features.Player.Application;
 using Features.Player.Application.Events;
 using Features.Player.Application.Ports;
@@ -121,6 +122,28 @@ namespace Editor.DirectTests
             Assert.AreEqual(1, store.Snapshot.Count);
         }
 
+        [Test]
+        public void SyncOperationRecordsUseCase_MergesLocalAndCloudRecords()
+        {
+            var localStore = new InMemoryOperationRecordStore();
+            localStore.Snapshot.AddOrReplace(CreateRecord("local-op", endedAtUnixMs: 20, reachedWave: 2));
+            localStore.Snapshot.AddOrReplace(CreateRecord("same-op", endedAtUnixMs: 40, reachedWave: 4));
+
+            var cloudPort = new InMemoryOperationRecordCloudPort();
+            cloudPort.Snapshot.AddOrReplace(CreateRecord("cloud-op", endedAtUnixMs: 30, reachedWave: 3));
+            cloudPort.Snapshot.AddOrReplace(CreateRecord("same-op", endedAtUnixMs: 50, reachedWave: 5));
+
+            var sync = new SyncOperationRecordsUseCase(localStore, cloudPort);
+            var result = sync.Execute().GetAwaiter().GetResult();
+
+            Assert.IsTrue(result.IsSuccess, result.Error);
+            Assert.AreEqual(3, result.Value.Count);
+            Assert.AreEqual(1, localStore.SaveCount);
+            Assert.AreEqual(1, cloudPort.SaveCount);
+            Assert.AreEqual(3, cloudPort.Snapshot.Count);
+            Assert.AreEqual(5, FindRecord(result.Value, "same-op").reachedWave);
+        }
+
         private static OperationRecord CreateRecord(
             string id,
             long endedAtUnixMs,
@@ -156,6 +179,35 @@ namespace Editor.DirectTests
                 Snapshot = records.Clone();
                 return Result.Success();
             }
+        }
+
+        private sealed class InMemoryOperationRecordCloudPort : IOperationRecordCloudPort
+        {
+            public int SaveCount { get; private set; }
+            public RecentOperationRecords Snapshot { get; private set; } = new();
+
+            public Task<RecentOperationRecords> LoadOperationRecordsAsync()
+            {
+                return Task.FromResult(Snapshot.Clone());
+            }
+
+            public Task SaveOperationRecordsAsync(RecentOperationRecords records)
+            {
+                SaveCount++;
+                Snapshot = records.Clone();
+                return Task.CompletedTask;
+            }
+        }
+
+        private static OperationRecord FindRecord(RecentOperationRecords records, string operationId)
+        {
+            foreach (var record in records.Records)
+            {
+                if (record.operationId == operationId)
+                    return record;
+            }
+
+            return null;
         }
     }
 }

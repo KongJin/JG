@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Features.Combat;
 using Features.Combat.Application;
@@ -88,6 +89,9 @@ namespace Features.Player
         private readonly GameSceneGarageBootstrapFlow _garageBootstrapFlow = new();
         private readonly GameScenePlayerConnector _playerConnector = new();
         private readonly GameSceneAudioBootstrapFlow _audioBootstrapFlow = new();
+#if UNITY_EDITOR
+        private Coroutine _mcpFinalWaveClearRoutine;
+#endif
 
         /// <summary>
         /// Unit/Garage Feature 초기화 및 Unit 스펙 계산.
@@ -399,10 +403,83 @@ namespace Features.Player
         {
             _eventBus?.Publish(new Features.Wave.Application.Events.WaveVictoryEvent());
         }
+
+        public void RunFinalWaveClearForMcpSmoke(float timeScale = 8f, float maxRealtimeSeconds = 90f)
+        {
+            if (_mcpFinalWaveClearRoutine != null)
+                StopCoroutine(_mcpFinalWaveClearRoutine);
+
+            var requestedTimeScale = timeScale > 0f ? timeScale : 12f;
+            var requestedMaxRealtimeSeconds = maxRealtimeSeconds > 0f ? maxRealtimeSeconds : 70f;
+            Debug.Log($"[McpSmoke] Final wave clear smoke started. timeScale={requestedTimeScale:F1}, maxRealtimeSeconds={requestedMaxRealtimeSeconds:F1}");
+            _mcpFinalWaveClearRoutine = StartCoroutine(RunFinalWaveClearForMcpSmokeRoutine(
+                Mathf.Clamp(requestedTimeScale, 1f, 20f),
+                Mathf.Max(1f, requestedMaxRealtimeSeconds)));
+        }
+
+        private IEnumerator RunFinalWaveClearForMcpSmokeRoutine(float timeScale, float maxRealtimeSeconds)
+        {
+            var previousTimeScale = Time.timeScale;
+            var elapsed = 0f;
+            Time.timeScale = timeScale;
+
+            while (elapsed < maxRealtimeSeconds)
+            {
+                var cleared = ClearSpawnedEnemiesForMcpSmoke();
+                if (cleared > 0)
+                    Debug.Log($"[McpSmoke] Cleared spawned enemies: {cleared}");
+
+                yield return new WaitForSecondsRealtime(0.25f);
+                elapsed += 0.25f;
+            }
+
+            Time.timeScale = previousTimeScale;
+            Debug.Log("[McpSmoke] Final wave clear smoke finished.");
+            _mcpFinalWaveClearRoutine = null;
+        }
+
+        private int ClearSpawnedEnemiesForMcpSmoke()
+        {
+            if (_combatSetup == null)
+                return 0;
+
+            var holders = FindObjectsByType<EntityIdHolder>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var attackerId = _localPlayerSetup != null
+                ? _localPlayerSetup.PlayerId
+                : new DomainEntityId("mcp-smoke");
+            var cleared = 0;
+
+            foreach (var holder in holders)
+            {
+                if (holder == null || !holder.IsInitialized)
+                    continue;
+                if (string.IsNullOrWhiteSpace(holder.Id.Value) || !holder.Id.Value.StartsWith("enemy-"))
+                    continue;
+
+                _combatSetup.ApplyDamage(
+                    holder.Id,
+                    100000f,
+                    DamageType.Physical,
+                    attackerId);
+                cleared++;
+            }
+
+            return cleared;
+        }
 #endif
 
         private void OnDestroy()
         {
+#if UNITY_EDITOR
+            if (_mcpFinalWaveClearRoutine != null)
+            {
+                StopCoroutine(_mcpFinalWaveClearRoutine);
+                _mcpFinalWaveClearRoutine = null;
+            }
+
+            Time.timeScale = 1f;
+#endif
+
             if (_playerSceneRegistry != null)
                 _playerSceneRegistry.PlayerArrived -= OnPlayerArrived;
 

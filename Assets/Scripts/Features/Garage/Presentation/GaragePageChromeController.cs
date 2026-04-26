@@ -244,17 +244,17 @@ namespace Features.Garage.Presentation
                 return;
             }
 
-            if (resultViewModel.IsDirty)
-            {
-                _mobileSaveStateText.text = resultViewModel.ValidationText;
-                _mobileSaveStateText.color = ThemeColors.TextSecondary;
-                return;
-            }
-
             string operationSummary = ExtractOperationSummary(resultViewModel.StatsText);
             if (!string.IsNullOrWhiteSpace(operationSummary))
             {
                 _mobileSaveStateText.text = operationSummary;
+                _mobileSaveStateText.color = ThemeColors.TextSecondary;
+                return;
+            }
+
+            if (resultViewModel.IsDirty)
+            {
+                _mobileSaveStateText.text = resultViewModel.ValidationText;
                 _mobileSaveStateText.color = ThemeColors.TextSecondary;
                 return;
             }
@@ -270,7 +270,7 @@ namespace Features.Garage.Presentation
             _mobileSaveStateText.color = ThemeColors.TextSecondary;
         }
 
-        private static string ExtractOperationSummary(string statsText)
+        internal static string ExtractOperationSummary(string statsText)
         {
             if (string.IsNullOrWhiteSpace(statsText))
                 return null;

@@ -280,6 +280,22 @@ namespace Features.Garage.Presentation
                 selectedSlotIndex,
                 committedRosterCount,
                 resultViewModel);
+            ApplyOperationSummaryToMobileDock(resultViewModel);
+        }
+
+        private void ApplyOperationSummaryToMobileDock(GarageResultViewModel resultViewModel)
+        {
+            if (resultViewModel == null ||
+                _chromeBindings == null ||
+                _chromeBindings.MobileSaveStateText == null ||
+                !string.IsNullOrWhiteSpace(_chromeBindings.MobileSaveStateText.text))
+                return;
+
+            var operationSummary = GaragePageChromeController.ExtractOperationSummary(resultViewModel.StatsText);
+            if (string.IsNullOrWhiteSpace(operationSummary))
+                return;
+
+            _chromeBindings.MobileSaveStateText.text = operationSummary;
         }
 
         private static GarageEditorFocus ToEditorFocus(MobilePartFocus focus)

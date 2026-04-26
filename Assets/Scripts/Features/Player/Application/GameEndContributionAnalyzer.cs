@@ -148,7 +148,7 @@ namespace Features.Player.Application
         private void AddPressureCard(List<ResultContributionCard> candidates, int fallbackKillCount)
         {
             var bucket = FindBestOwnerBucket(value => value.Kills > 0 ? value.Kills : value.DamageDealt);
-            var teamKills = _teamBucket.Kills > 0 ? _teamBucket.Kills : fallbackKillCount;
+            var teamKills = Math.Max(_teamBucket.Kills, fallbackKillCount);
             var value = bucket != null
                 ? Math.Max((float)bucket.Kills, bucket.DamageDealt)
                 : Math.Max((float)teamKills, _teamBucket.DamageDealt);

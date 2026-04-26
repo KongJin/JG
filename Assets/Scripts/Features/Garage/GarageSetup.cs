@@ -3,6 +3,8 @@ using Features.Garage.Application;
 using Features.Garage.Application.Ports;
 using Features.Garage.Infrastructure;
 using Features.Garage.Presentation;
+using Features.Player.Application;
+using Features.Player.Application.Ports;
 using Features.Player.Infrastructure;
 using Features.Unit.Application;
 using Features.Unit.Infrastructure;
@@ -32,6 +34,7 @@ namespace Features.Garage
         private RosterValidationProvider _rosterValidationProvider;
         private DisposableScope _disposables;
         private IEventPublisher _eventPublisher;
+        private GaragePanelCatalog _panelCatalog;
         private readonly GaragePanelCatalogFactory _panelCatalogFactory = new();
 
         // Application UseCases
@@ -55,12 +58,14 @@ namespace Features.Garage
             _accountDataPort = accountDataPort;
             _eventPublisher = eventBus;
             _rosterValidationProvider = new RosterValidationProvider(unitCatalog);
+            _panelCatalog = _panelCatalogFactory.Build(unitCatalog);
 
             // Composition root — UseCase 조립
             _disposables?.Dispose();
             _disposables = new DisposableScope();
             var localPersistence = new GarageJsonPersistence();
-            var recentOperations = new OperationRecordJsonStore().Load();
+            var operationRecordStore = new OperationRecordJsonStore();
+            var recentOperations = operationRecordStore.Load();
 
             ComposeUnit = new ComposeUnitUseCase(compositionPort);
             InitializeGarage = new InitializeGarageUseCase(
@@ -96,9 +101,41 @@ namespace Features.Garage
                     ValidateRoster,
                     SaveRoster,
                     _eventPublisher,
-                    _panelCatalogFactory.Build(unitCatalog),
+                    _panelCatalog,
                     recentOperations);
             }
+
+            _ = SyncOperationRecordsAsync(
+                operationRecordStore,
+                accountDataPort as IOperationRecordCloudPort);
+        }
+
+        private async System.Threading.Tasks.Task SyncOperationRecordsAsync(
+            OperationRecordJsonStore operationRecordStore,
+            IOperationRecordCloudPort cloudPort)
+        {
+            if (operationRecordStore == null || cloudPort == null)
+                return;
+
+            var syncOperationRecords = new SyncOperationRecordsUseCase(
+                operationRecordStore,
+                cloudPort,
+                Debug.LogWarning);
+            var result = await syncOperationRecords.Execute();
+            if (result.IsFailure)
+                return;
+
+            if (_pageController == null || _panelCatalog == null)
+                return;
+
+            _pageController.Initialize(
+                InitializeGarage,
+                ComposeUnit,
+                ValidateRoster,
+                SaveRoster,
+                _eventPublisher,
+                _panelCatalog,
+                result.Value);
         }
 
         /// <summary>
