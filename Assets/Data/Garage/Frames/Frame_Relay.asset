@@ -20,3 +20,4 @@ MonoBehaviour:
   baseAttackSpeed: 1
   passiveTrait: {fileID: 11400000, guid: bc98b9332021fb54baff449cdc0b4af0, type: 2}
   unitPrefab: {fileID: 0}
+  previewPrefab: {fileID: 1858289995377477668, guid: 5a527454f221e9a47ae529f092af6fa9, type: 3}

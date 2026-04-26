@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("A", "B", "Phase5", "Any")]
+    [ValidateSet("A", "B", "C", "Phase5", "Any")]
     [string]$Agent = "Any",
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path,
     [switch]$RunCloseoutPack,
@@ -24,6 +24,8 @@ function Get-AgentScope {
                     "^Assets/Scripts/Features/Wave/(Application|Domain|Infrastructure)/",
                     "^Assets/Scripts/Features/Unit/(Domain|Application|Infrastructure|UnitSetup\.cs|PlacementArea\.cs)",
                     "^Assets/Editor/DirectTests/",
+                    "^artifacts/unity/(game-scene-agent-a|gamescene-runtime).*\.(json|log|png)$",
+                    "^artifacts/unity/unity-ui-authoring-workflow-policy-a\.json$",
                     "^docs/plans/game_scene_agent_a_runtime_core_plan\.md$",
                     "^docs/plans/progress\.md$"
                 )
@@ -38,12 +40,31 @@ function Get-AgentScope {
                     "^Assets/Scripts/Shared/Ui/",
                     "^Assets/Prefabs/Features/Battle/",
                     "^Assets/Prefabs/Features/Result/",
-                    "^tools/unity-mcp/",
+                    "^tools/unity-mcp/(Invoke-GameSceneAgentBPlacementSmoke\.ps1|McpHelpers\.ps1)$",
                     "^docs/playtest/runtime_validation_checklist\.md$",
                     "^docs/plans/game_scene_agent_b_hud_input_validation_plan\.md$",
-                    "^artifacts/unity/"
+                    "^artifacts/unity/(game-scene-agent-b|placement-area-view).*\.(json|log|png)$",
+                    "^artifacts/unity/unity-ui-authoring-workflow-policy-b\.json$"
                 )
                 OutOfScopeHint = "Runtime orchestration, authoritative gameplay state, sync source of truth, and GameSceneRoot are Agent A/Phase5 handoff lanes."
+            }
+        }
+        "C" {
+            return [PSCustomObject]@{
+                Plan = "docs/plans/game_scene_agent_c_unit_identity_terms_plan.md"
+                Patterns = @(
+                    "^Assets/Scripts/Features/Garage/",
+                    "^Assets/Scripts/Features/Unit/Presentation/((UnitSlotView|UnitSlotsContainer)\.cs|.+(Identity|Callsign|Formatter).+\.cs)$",
+                    "^Assets/Scripts/Features/Wave/Presentation/WaveEndView\.cs$",
+                    "^Assets/Prefabs/Features/Battle/",
+                    "^Assets/Prefabs/Features/Result/",
+                    "^docs/design/(game_design|world_design|unit_module_design)\.md$",
+                    "^docs/plans/game_scene_agent_c_unit_identity_terms_plan\.md$",
+                    "^docs/plans/progress\.md$",
+                    "^artifacts/unity/game-scene-agent-c.*\.(json|log|png)$",
+                    "^artifacts/unity/unity-ui-authoring-workflow-policy-c\.json$"
+                )
+                OutOfScopeHint = "Runtime scoring/storage, operation record persistence, and HUD layout/input ownership belong to Agent A/B unless C is only changing shared copy labels."
             }
         }
         "Phase5" {
@@ -54,7 +75,8 @@ function Get-AgentScope {
                     "^Assets/Editor/DirectTests/",
                     "^docs/plans/game_scene_phase5_multiplayer_sync_plan\.md$",
                     "^docs/playtest/runtime_validation_checklist\.md$",
-                    "^artifacts/unity/"
+                    "^artifacts/unity/(game-scene-phase5|phase5|multiplayer-sync).*\.(json|log|png)$",
+                    "^artifacts/unity/unity-ui-authoring-workflow-policy-phase5\.json$"
                 )
                 OutOfScopeHint = "Phase5 should prove sync/smoke behavior without reviving unrelated HUD polish or product scope."
             }
@@ -147,7 +169,7 @@ if ($artifactFiles.Count -eq 0 -and $newCsFiles.Count -eq 0 -and ($Agent -eq "An
 
 if ($RunCloseoutPack) {
     Write-WorkflowSection "Closeout Pack"
-    & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "tools\workflow\Invoke-CloseoutPack.ps1") -RepoRoot $RepoRoot -ChangedFile $inScope
+    & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "tools\workflow\Invoke-CloseoutPack.ps1") -RepoRoot $RepoRoot -ChangedFile ($inScope -join ",") -Agent $Agent
     if ($LASTEXITCODE -ne 0) {
         exit $LASTEXITCODE
     }

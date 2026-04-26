@@ -1,6 +1,9 @@
 param(
     [string]$UnityBridgeUrl,
     [string]$ResultPath = "artifacts/unity/unity-ui-authoring-workflow-policy.json",
+    [ValidateSet("", "A", "B", "C", "Phase5", "Any")]
+    [string]$Agent = "",
+    [string[]]$ChangedFile = @(),
     [int]$TimeoutSec = 120,
     [switch]$AllowCapabilityExpansion
 )
@@ -285,16 +288,41 @@ function Test-EvidenceFreshness {
 }
 
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
+$defaultResultPath = "artifacts/unity/unity-ui-authoring-workflow-policy.json"
+if (-not [string]::IsNullOrWhiteSpace($Agent) -and $Agent -ne "Any" -and $ResultPath -eq $defaultResultPath) {
+    $ResultPath = "artifacts/unity/unity-ui-authoring-workflow-policy-$($Agent.ToLowerInvariant()).json"
+}
+
 $resultAbsolutePath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $ResultPath))
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
 $lobbySceneExists = Test-Path -LiteralPath ([System.IO.Path]::GetFullPath((Join-Path $repoRoot "Assets/Scenes/LobbyScene.unity")))
 
 $changedTracked = Get-GitCommandLines -RepoRoot $repoRoot -Arguments @("diff", "--name-only", "HEAD")
 $changedUntracked = Get-GitCommandLines -RepoRoot $repoRoot -Arguments @("ls-files", "--others", "--exclude-standard")
-$changedFiles = @($changedTracked + $changedUntracked | Sort-Object -Unique)
+$allChangedFiles = @($changedTracked + $changedUntracked | Sort-Object -Unique)
+$changedFiles = if (@($ChangedFile).Count -gt 0) {
+    @(
+        foreach ($path in @($ChangedFile)) {
+            if ([string]::IsNullOrWhiteSpace($path)) {
+                continue
+            }
+
+            ([string]$path).Replace("\", "/").Trim()
+        }
+    ) | Sort-Object -Unique
+}
+else {
+    $allChangedFiles
+}
 
 $addedTracked = Get-GitCommandLines -RepoRoot $repoRoot -Arguments @("diff", "--cached", "--name-only", "--diff-filter=A", "HEAD")
-$addedFiles = @($addedTracked + $changedUntracked | Sort-Object -Unique)
+$allAddedFiles = @($addedTracked + $changedUntracked | Sort-Object -Unique)
+$addedFiles = if (@($ChangedFile).Count -gt 0) {
+    @($changedFiles | Where-Object { $allAddedFiles -contains $_ })
+}
+else {
+    $allAddedFiles
+}
 
 $scenePrefabPatterns = @(
     '^Assets/Scenes/.+\.unity$',
@@ -549,8 +577,10 @@ $report = [PSCustomObject]@{
     terminalVerdict = if (@($policyViolations).Count -eq 0) { "" } else { "blocked" }
     blockedReason = if (@($policyViolations).Count -eq 0) { "" } else { [string](@($policyViolations | ForEach-Object { [string]$_.message }) -join " | ") }
     generatedAt = (Get-Date).ToString("yyyy-MM-dd HH:mm:ssK")
+    agent = $Agent
     route = $route
     changedFiles = $changedFiles
+    allDirtyFileCount = @($allChangedFiles).Count
     unityUiRelevantFiles = $unityUiRelevantFiles
     requiredEvidence = $requiredEvidence
     missingEvidence = $missingEvidence

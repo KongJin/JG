@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 622e143eb1be2a146b829b3b8c32e6be, type: 3}
+  m_Name: nova_fire_arm16_mgbr
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
+  moduleId: nova_fire_arm16_mgbr
+  displayName: Arm16 Mgbr
+  icon: {fileID: 0}
+  attackDamage: 40
+  attackSpeed: 1.06
+  range: 6.25
+  description: 'Generated Nova1492 baseline. Source: datan\common\arm16_mgbr.gx.
+    Tier: 3.'
+  previewPrefab: {fileID: 4897347517656341753, guid: 6ff28f66b27367544afbbe28ea8e9c2e, type: 3}

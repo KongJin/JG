@@ -653,6 +653,104 @@ function Ensure-McpParentDirectory {
     }
 }
 
+function Enter-McpExclusiveOperation {
+    param(
+        [string]$Name,
+        [string]$Owner = "unknown",
+        [string]$LockPath = "Temp/UnityMcp/runtime-operation.lock",
+        [int]$TimeoutSec = 0,
+        [double]$PollSec = 0.5,
+        [int]$StaleAfterMinutes = 90
+    )
+
+    $absolutePath = Resolve-McpAbsolutePath -PathValue $LockPath
+    Ensure-McpParentDirectory -PathValue $absolutePath
+
+    $token = [guid]::NewGuid().ToString("N")
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    $payload = [ordered]@{
+        name = $Name
+        owner = $Owner
+        token = $token
+        pid = $PID
+        startedAt = (Get-Date).ToString("o")
+    }
+
+    while ($true) {
+        try {
+            $stream = [System.IO.File]::Open($absolutePath, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+            try {
+                $writer = New-Object System.IO.StreamWriter($stream, [System.Text.Encoding]::UTF8)
+                try {
+                    $writer.Write(($payload | ConvertTo-Json -Depth 4))
+                    $writer.Flush()
+                }
+                finally {
+                    $writer.Dispose()
+                }
+            }
+            finally {
+                $stream.Dispose()
+            }
+
+            return [PSCustomObject]@{
+                Name = $Name
+                Owner = $Owner
+                Token = $token
+                Path = $LockPath
+                AbsolutePath = $absolutePath
+            }
+        }
+        catch [System.IO.IOException] {
+            $existingText = ""
+            if (Test-Path -LiteralPath $absolutePath) {
+                $lockItem = Get-Item -LiteralPath $absolutePath
+                if ($StaleAfterMinutes -gt 0 -and $lockItem.LastWriteTimeUtc -lt (Get-Date).ToUniversalTime().AddMinutes(-1 * $StaleAfterMinutes)) {
+                    Remove-Item -LiteralPath $absolutePath -Force
+                    continue
+                }
+
+                try {
+                    $existingText = (Get-Content -LiteralPath $absolutePath -Raw).Trim()
+                }
+                catch {
+                    $existingText = "unable to read lock: $($_.Exception.Message)"
+                }
+            }
+
+            if ($TimeoutSec -le 0 -or (Get-Date) -ge $deadline) {
+                throw ("MCP exclusive operation lock is held. lock='{0}' requested='{1}' owner='{2}' existing='{3}'" -f $LockPath, $Name, $Owner, $existingText)
+            }
+
+            Start-Sleep -Seconds $PollSec
+        }
+    }
+}
+
+function Exit-McpExclusiveOperation {
+    param([object]$Lock)
+
+    if ($null -eq $Lock -or [string]::IsNullOrWhiteSpace([string]$Lock.AbsolutePath)) {
+        return
+    }
+
+    if (-not (Test-Path -LiteralPath $Lock.AbsolutePath)) {
+        return
+    }
+
+    try {
+        $json = Get-Content -LiteralPath $Lock.AbsolutePath -Raw | ConvertFrom-Json
+        if ($null -ne $json.PSObject.Properties["token"] -and [string]$json.token -ne [string]$Lock.Token) {
+            return
+        }
+    }
+    catch {
+        return
+    }
+
+    Remove-Item -LiteralPath $Lock.AbsolutePath -Force
+}
+
 function Test-McpResponseSuccess {
     param([object]$Response)
 

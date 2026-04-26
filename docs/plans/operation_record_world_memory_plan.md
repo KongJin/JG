@@ -160,12 +160,13 @@ Acceptance:
 - Mobile visibility follow-up: `MobileSaveStateText` can now receive the operation summary when its normal save/status text would otherwise be empty.
 - Validation after follow-up: `tools/check-compile-errors.ps1` pass with `ERRORS: 0`, `WARNINGS: 0`; `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1` pass for mixed presentation-code route.
 - Validation after Firestore bridge: `tools/check-compile-errors.ps1` pass with `ERRORS: 0`, `WARNINGS: 0`; `npm run --silent rules:lint` pass.
+- MCP account bridge smoke: Lobby Play Mode reused persisted anonymous session, loaded local operation records, saw Firestore `operations/recent` missing, then wrote the merged recent record document successfully.
+- MCP mobile UI smoke: Garage tab activation showed `MobileSaveStateText` with `작전 2/5: 버텨냄 | 공세5 | 코어46% | 0:42 | 제거27`; GameView screenshot proof was captured at `artifacts/unity/operation-record-garage-summary-mobile-smoke.png`; recent MCP console errors count was 0.
 
 Residuals after this pass:
 
 - Unity EditMode test execution은 Unity Editor가 이미 열려 있어 CLI test route가 `open-editor-owns-project`로 blocked됐다. 테스트 코드는 compile clean까지만 확인됐다.
-- Screenshot/mobile visual acceptance remains residual. The first captured screenshot showed the active stats text was not actually readable in the first mobile viewport; after the compact-copy and chrome guard fixes, follow-up automation intermittently stayed on the Lobby page or inactive Garage roots, so `artifacts/unity/operation-record-garage-summary-mobile-smoke.png` is not yet an acceptance proof.
-- Firestore/account persistence bridge code path는 추가됐지만, 실제 계정 세션/WebGL에서 `operations/recent` 저장·복원 smoke는 Account/Garage residual로 남아 있다.
+- WebGL build/player 환경에서 `operations/recent` 저장·복원 smoke는 Account/Garage residual로 남아 있다.
 
 ---
 
@@ -237,3 +238,6 @@ Residuals after this pass:
 - 2026-04-26 Firestore bridge follow-up 과한점 리뷰: 기존 Account/Garage Firestore raw-json document 패턴을 재사용했고, 통산 전적/랭킹/새 UI를 확장하지 않았다.
 - 2026-04-26 Firestore bridge follow-up 부족한점 리뷰: code path와 mapper/merge 검증은 추가됐지만 WebGL 실계정 smoke와 모바일 screenshot acceptance는 residual로 남겼다.
 - 2026-04-26 Firestore bridge follow-up 재리뷰: plan rereview: clean.
+- 2026-04-26 MCP smoke follow-up 과한점 리뷰: 기존 Garage 모바일 dock과 Account Firestore 경로만 검증/보정했고, 새 UI surface나 WebGL acceptance로 범위를 넓히지 않았다.
+- 2026-04-26 MCP smoke follow-up 부족한점 리뷰: Editor Play Mode 계정 저장과 모바일 screenshot proof는 닫혔지만 WebGL player restore와 Unity EditMode test route는 residual로 남겼다.
+- 2026-04-26 MCP smoke follow-up 재리뷰: plan rereview: clean.

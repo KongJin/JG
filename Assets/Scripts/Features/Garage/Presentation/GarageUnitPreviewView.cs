@@ -102,41 +102,44 @@ namespace Features.Garage.Presentation
             GaragePreviewAssembler.AttachToPreviewCamera(_currentPreviewRoot, _previewCamera, new Vector3(0f, -0.04f, 6f), Vector3.zero);
 
             // 프레임 (중심)
-            var frameObj = CreateFrame(viewModel.FrameId);
+            var frameObj = CreateFrame(viewModel.FrameId, viewModel.FramePreviewPrefab);
             GaragePreviewAssembler.Attach(frameObj, _currentPreviewRoot.transform, Vector3.zero, Vector3.zero);
 
             // 무기 (상단)
-            var weaponObj = CreateWeapon(viewModel.FirepowerId);
+            var weaponObj = CreateWeapon(viewModel.FirepowerId, viewModel.FirepowerPreviewPrefab);
             GaragePreviewAssembler.Attach(weaponObj, _currentPreviewRoot.transform, new Vector3(0f, 0.62f, 0f), new Vector3(0f, 0f, 90f));
 
             // 기동 (하단)
-            var thrusterObj = CreateThruster(viewModel.MobilityId);
+            var thrusterObj = CreateThruster(viewModel.MobilityId, viewModel.MobilityPreviewPrefab);
             GaragePreviewAssembler.Attach(thrusterObj, _currentPreviewRoot.transform, new Vector3(0f, -0.58f, 0f), Vector3.zero);
         }
 
-        private GameObject CreateFrame(string frameId)
+        private GameObject CreateFrame(string frameId, GameObject previewPrefab)
         {
-            var obj = Instantiate(ResolvePartPrefab(frameId, _frameModelPrefabs, _framePrefab));
+            var obj = Instantiate(ResolvePartPrefab(frameId, previewPrefab, _frameModelPrefabs, _framePrefab));
             obj.SetActive(true);
             return obj;
         }
 
-        private GameObject CreateWeapon(string firepowerId)
+        private GameObject CreateWeapon(string firepowerId, GameObject previewPrefab)
         {
-            var obj = Instantiate(ResolvePartPrefab(firepowerId, _firepowerModelPrefabs, _weaponPrefab));
+            var obj = Instantiate(ResolvePartPrefab(firepowerId, previewPrefab, _firepowerModelPrefabs, _weaponPrefab));
             obj.SetActive(true);
             return obj;
         }
 
-        private GameObject CreateThruster(string mobilityId)
+        private GameObject CreateThruster(string mobilityId, GameObject previewPrefab)
         {
-            var obj = Instantiate(ResolvePartPrefab(mobilityId, _mobilityModelPrefabs, _thrusterPrefab));
+            var obj = Instantiate(ResolvePartPrefab(mobilityId, previewPrefab, _mobilityModelPrefabs, _thrusterPrefab));
             obj.SetActive(true);
             return obj;
         }
 
-        private static GameObject ResolvePartPrefab(string id, PartPrefabMapping[] mappings, GameObject fallback)
+        private static GameObject ResolvePartPrefab(string id, GameObject previewPrefab, PartPrefabMapping[] mappings, GameObject fallback)
         {
+            if (previewPrefab != null)
+                return previewPrefab;
+
             if (mappings != null)
             {
                 for (var i = 0; i < mappings.Length; i++)

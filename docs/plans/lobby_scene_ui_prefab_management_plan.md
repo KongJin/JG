@@ -5,14 +5,13 @@
 > doc_id: plans.lobby-scene-ui-prefab-management
 > role: plan
 > owner_scope: `LobbyScene` UI prefab instance 관리, scene override drift 점검, assembly helper 안전화, Garage preview placeholder 정리
-> upstream: plans.progress, plans.lobby-scene-runtime, plans.lobby-scene-completion, ops.unity-ui-authoring-workflow
+> upstream: plans.progress, ops.unity-ui-authoring-workflow
 > artifacts: `Assets/Scenes/LobbyScene.unity`, `Assets/Editor/SceneTools/LobbySceneRuntimeAssemblyTool.cs`, `Assets/Prefabs/Features/`
 >
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
 이 문서는 `LobbyScene`이 현재 동작하는 상태를 유지하면서 UI/prefab 관리 부채를 줄이는 실행 계획이다.
-런타임 조립 이력은 [`lobby_scene_runtime_plan.md`](./lobby_scene_runtime_plan.md)가 맡고, 초기 표시와 visual closeout은 [`lobby_scene_completion_plan.md`](./lobby_scene_completion_plan.md)가 맡는다.
-이 계획은 그 둘을 대체하지 않고, scene-owned wiring을 오래 유지하기 위한 관리 정리만 다룬다.
+런타임 조립과 초기 표시 closeout은 완료되어 현재 실행 기준에서 제거했고, 남은 owner는 scene-owned wiring을 오래 유지하기 위한 관리 정리다.
 
 ## 현재 관찰
 
@@ -121,8 +120,8 @@
 - 부족한점 리뷰: 현재 관찰, 목표, 제외 범위, 판단 기준, 실행 순서, acceptance, blocked/residual, 검증 명령을 포함했다.
 - 수정 후 재리뷰: `LobbyScene` runtime/completion 계획과 역할을 분리했고, Set B visual fidelity를 이 계획 acceptance로 섞지 않았다.
 - 반복 재리뷰 반영: obvious 과한점/부족한점 없음.
-- owner impact: primary `plans.lobby-scene-ui-prefab-management`; secondary `plans.progress`, `docs.index`; out-of-scope `ops.unity-ui-authoring-workflow`, `plans.lobby-scene-runtime`, `plans.lobby-scene-completion`.
-- doc lifecycle checked: 새 active plan으로 등록한다. 기존 runtime/completion plan은 대체하지 않고 유지하며, 이 계획은 관리 정리 closeout 뒤 reference 또는 historical 전환 후보로 본다.
+- owner impact: primary `plans.lobby-scene-ui-prefab-management`; secondary `plans.progress`, `docs.index`; out-of-scope `ops.unity-ui-authoring-workflow`.
+- doc lifecycle checked: 새 active plan으로 등록한다. runtime/completion 기록은 현재 실행 기준에서 제거했고, 이 계획은 관리 정리 closeout 뒤 reference 또는 historical 전환 후보로 본다.
 - plan rereview: clean
 - 2026-04-25 반복리뷰: override audit 결과가 새 required artifact처럼 읽힐 수 있는 표현을 구현 closeout evidence 또는 선택적 정리 artifact로 좁혔다.
 - 반복리뷰 후 과한점 리뷰: 새 hard-fail, 새 validation gate, 새 owner 규칙을 추가하지 않았다.

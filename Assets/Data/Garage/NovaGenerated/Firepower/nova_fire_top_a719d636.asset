@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 622e143eb1be2a146b829b3b8c32e6be, type: 3}
+  m_Name: nova_fire_top_a719d636
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
+  moduleId: nova_fire_top_a719d636
+  displayName: Firepower a719d636
+  icon: {fileID: 0}
+  attackDamage: 56
+  attackSpeed: 0.8
+  range: 7.75
+  description: "Generated Nova1492 baseline. Source: datan\\common\\\uBC29\uC5B4\uC624\uB77C_Top.GX.
+    Tier: 5."
+  previewPrefab: {fileID: 8691557474830814352, guid: 560609a5a398f2c4e9f6009ce5ccbeb1, type: 3}

@@ -19,3 +19,4 @@ MonoBehaviour:
   moveRange: 5.5
   anchorRange: 6.5
   description: Fast chassis for dive or flanking melee builds.
+  previewPrefab: {fileID: 1141816666252315615, guid: e3a779489187f2641a42b52be7db1192, type: 3}

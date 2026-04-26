@@ -1,6 +1,8 @@
 param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path,
     [string[]]$ChangedFile = @(),
+    [ValidateSet("", "A", "B", "C", "Phase5", "Any")]
+    [string]$Agent = "",
     [switch]$StagedOnly,
     [switch]$PlanOnly,
     [switch]$SkipCompile,
@@ -15,12 +17,22 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot\WorkflowHelpers.ps1"
 
-$changedFiles = if ($ChangedFile.Count -gt 0) {
-    @($ChangedFile | ForEach-Object { $_ -replace "\\", "/" } | Sort-Object -Unique)
+$changedFiles = @(if (@($ChangedFile).Count -gt 0) {
+    @(
+        foreach ($file in @($ChangedFile)) {
+            foreach ($part in ([string]$file -split ",")) {
+                if ([string]::IsNullOrWhiteSpace($part)) {
+                    continue
+                }
+
+                $part.Trim() -replace "\\", "/"
+            }
+        }
+    ) | Sort-Object -Unique
 }
 else {
     @(Get-WorkflowChangedFiles -RepoRoot $RepoRoot -StagedOnly:$StagedOnly)
-}
+})
 
 $hasCs = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("\.cs$")).Count -gt 0
 $hasDocs = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^docs/", "^AGENTS\.md$", "^\.codex/skills/", "^tools/.+README\.md$")).Count -gt 0
@@ -38,6 +50,9 @@ if ($planned.Count -eq 0 -and -not $SkipRulesLint) { $planned.Add("git-diff-chec
 
 Write-WorkflowSection "Closeout Pack"
 Write-Host ("changedFiles={0}" -f $changedFiles.Count)
+if (-not [string]::IsNullOrWhiteSpace($Agent)) {
+    Write-Host ("agent={0}" -f $Agent)
+}
 Write-Host ("planned={0}" -f ($(if ($planned.Count -gt 0) { $planned -join ", " } else { "none" })))
 
 foreach ($path in @($changedFiles | Select-Object -First 40)) {
@@ -65,7 +80,12 @@ foreach ($step in $planned) {
             $results.Add((Invoke-WorkflowCommand -RepoRoot $RepoRoot -Label "unity:asset-hygiene" -FileName "npm" -Arguments @("run", "--silent", "unity:asset-hygiene")))
         }
         "unity-ui-policy" {
-            $results.Add((Invoke-WorkflowCommand -RepoRoot $RepoRoot -Label "unity-ui-policy" -FileName "powershell" -Arguments @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", (Join-Path $RepoRoot "tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1"))))
+            $policyArguments = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", (Join-Path $RepoRoot "tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1"), "-ChangedFile") + $changedFiles
+            if (-not [string]::IsNullOrWhiteSpace($Agent)) {
+                $policyArguments += @("-Agent", $Agent)
+            }
+
+            $results.Add((Invoke-WorkflowCommand -RepoRoot $RepoRoot -Label "unity-ui-policy" -FileName "powershell" -Arguments $policyArguments))
         }
         "generated-artifact-scope" {
             $expectedPatterns = @(

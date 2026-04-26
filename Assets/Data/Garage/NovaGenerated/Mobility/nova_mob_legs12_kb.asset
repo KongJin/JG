@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2592f69f3d63646418bae73532699608, type: 3}
+  m_Name: nova_mob_legs12_kb
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
+  moduleId: nova_mob_legs12_kb
+  displayName: Legs12 Kb
+  icon: {fileID: 0}
+  hpBonus: 280
+  moveRange: 4
+  anchorRange: 4
+  description: 'Generated Nova1492 baseline. Source: datan\common\legs12_kb.gx. Tier:
+    4.'
+  previewPrefab: {fileID: 1982837181266124392, guid: 6883747b02d11f24d8c93fb0be14e167, type: 3}

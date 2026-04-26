@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2592f69f3d63646418bae73532699608, type: 3}
+  m_Name: nova_mob_s_legs27_ksor
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
+  moduleId: nova_mob_s_legs27_ksor
+  displayName: S Legs27 Ksor
+  icon: {fileID: 0}
+  hpBonus: 230
+  moveRange: 4.55
+  anchorRange: 4.55
+  description: 'Generated Nova1492 baseline. Source: datan\common\s_legs27_ksor.gx.
+    Tier: 3.'
+  previewPrefab: {fileID: 4073888999692125120, guid: 3fd6c13869767084abd94bf618d6d416, type: 3}

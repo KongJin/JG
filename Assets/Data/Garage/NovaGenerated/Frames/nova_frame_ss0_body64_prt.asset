@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45d76c43914029045b4a9ec31b96abaa, type: 3}
+  m_Name: nova_frame_ss0_body64_prt
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
+  frameId: nova_frame_ss0_body64_prt
+  displayName: Ss0 Body64 Prt
+  icon: {fileID: 0}
+  baseHp: 465
+  baseMoveRange: 4
+  baseAttackSpeed: 1.2
+  passiveTrait: {fileID: 0}
+  unitPrefab: {fileID: 0}
+  previewPrefab: {fileID: 4561544303506585908, guid: 308b5c8492bf22f47b550aaa771ac147, type: 3}

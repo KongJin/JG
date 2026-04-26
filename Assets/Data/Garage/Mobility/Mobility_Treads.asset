@@ -19,3 +19,4 @@ MonoBehaviour:
   moveRange: 2.5
   anchorRange: 2
   description: Heavy but stable. Great for long range artillery.
+  previewPrefab: {fileID: 6901450388720024572, guid: 0841bc7274d237b44a2c36d393dc6a30, type: 3}

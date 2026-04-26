@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 622e143eb1be2a146b829b3b8c32e6be, type: 3}
+  m_Name: nova_fire_review_fe4703c5
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
+  moduleId: nova_fire_review_fe4703c5
+  displayName: Firepower fe4703c5
+  icon: {fileID: 0}
+  attackDamage: 48
+  attackSpeed: 0.93
+  range: 7
+  description: "Generated Nova1492 baseline. Source: datan\\common\\\uACF5\uC911\uD0C0\uC6CC\uB9C1.GX.
+    Tier: 4."
+  previewPrefab: {fileID: 4782173698737767862, guid: 7344f74b39d43b84b810c3c4f6dd842d, type: 3}

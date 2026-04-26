@@ -50,6 +50,12 @@ function Get-ChangedFilesFromJson {
 }
 
 $currentChangedFiles = @(Get-WorkflowChangedFiles -RepoRoot $RepoRoot -StagedOnly:$StagedOnly)
+$artifactPathsToCheck = @(
+    @($ArtifactPath) +
+    @(Get-WorkflowPathsMatching -Paths $currentChangedFiles -Patterns @("^artifacts/(unity|rules)/.*\.json$")) |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+        Sort-Object -Unique
+)
 $normalizedExpectedPatterns = @(
     foreach ($pattern in @($ExpectedPattern)) {
         if ([string]::IsNullOrWhiteSpace($pattern)) {
@@ -66,7 +72,7 @@ $normalizedExpectedPatterns = @(
 $results = @()
 $hasIssue = $false
 
-foreach ($artifact in @($ArtifactPath)) {
+foreach ($artifact in @($artifactPathsToCheck)) {
     $absolutePath = Join-Path $RepoRoot $artifact
     if (-not (Test-Path -LiteralPath $absolutePath)) {
         $results += [PSCustomObject]@{

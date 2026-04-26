@@ -5,7 +5,7 @@
 > doc_id: plans.lobby-scene-nova1492-model-application
 > role: plan
 > owner_scope: `LobbyScene`에서 변환된 Nova1492 GX 모델을 Garage preview와 로비 장식 후보로 제한 적용하는 실행 순서와 검증 기준
-> upstream: plans.progress, plans.lobby-scene-completion, plans.lobby-scene-ui-prefab-management, plans.nova1492-resource-integration, ops.unity-ui-authoring-workflow, design.game-design, design.unit-module-design
+> upstream: plans.progress, plans.lobby-scene-ui-prefab-management, plans.nova1492-resource-integration, ops.unity-ui-authoring-workflow, design.game-design, design.unit-module-design
 > artifacts: `Assets/Art/Nova1492/GXConverted/`, `artifacts/nova1492/gx_asset_classification.csv`, `Assets/Scenes/LobbyScene.unity`
 >
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
@@ -248,6 +248,6 @@ Acceptance:
 - 2026-04-26 Phase 2 매핑 후 재리뷰: mapping은 serialized reference로 닫았고 hidden runtime lookup을 만들지 않았다. AudioListener 누락은 scene/build tool 양쪽에서 보정했다. 과한점은 domain data나 battle prefab truth까지 건드리지 않은 점에서 정리됐고, 부족한점은 visual capture/framing acceptance가 아직 남아 있다는 점이다.
 - 2026-04-26 Phase 2 visual closeout 재리뷰: preview root 배치, lighting, RawImage tint 보정은 `GarageUnitPreviewView`의 표시 책임과 `GaragePreviewAssembler`의 runtime 배치 책임으로 분리했고, scene/domain truth나 Set B fidelity 기준을 확장하지 않았다. active-state/capture evidence가 생겼으므로 Phase 2 부족점은 해소됐다.
 - 2026-04-26 Phase 3 template cleanup 재리뷰: scene template 정리는 fallback root 중복 제거와 serialized reference 유지에만 제한했고, Garage layout이나 Set B visual fidelity 판단으로 확장하지 않았다. Required field validation, Play Mode Garage smoke, `390x844` capture, compile check가 남아 있어 acceptance evidence는 충분하다.
-- owner impact: primary `plans.lobby-scene-nova1492-model-application`; secondary `plans.progress`, `plans.lobby-scene-completion`, `plans.lobby-scene-ui-prefab-management`, `plans.nova1492-resource-integration`, `docs.index`; out-of-scope scene/prefab mutation, converter rewrite, GameScene runtime model application.
-- doc lifecycle checked: 새 active plan으로 등록한다. 기존 Nova resource integration plan은 reference로 유지하고, LobbyScene runtime/completion/UI prefab management plan은 대체하지 않는다.
+- owner impact: primary `plans.lobby-scene-nova1492-model-application`; secondary `plans.progress`, `plans.lobby-scene-ui-prefab-management`, `plans.nova1492-resource-integration`, `docs.index`; out-of-scope scene/prefab mutation, converter rewrite, GameScene runtime model application.
+- doc lifecycle checked: 새 active plan으로 등록한다. 기존 Nova resource integration plan은 reference로 유지하고, LobbyScene UI prefab management plan은 대체하지 않는다.
 - plan rereview: clean

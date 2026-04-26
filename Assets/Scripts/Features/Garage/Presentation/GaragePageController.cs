@@ -151,6 +151,12 @@ namespace Features.Garage.Presentation
         private void OnEnable()
         {
             _chromeController ??= GaragePageChromeBindingResolver.CreateController(this, ref _chromeBindings);
+            if (_isInitialized && _state != null && _presenter != null)
+            {
+                Render();
+                return;
+            }
+
             SyncChrome(null);
         }
 
@@ -252,6 +258,13 @@ namespace Features.Garage.Presentation
             _unitPreviewView.Render(slotViewModels[_state.SelectedSlotIndex]);
 
             SyncChrome(resultViewModel);
+            if (_chromeBindings != null &&
+                _chromeBindings.MobileSaveStateText != null &&
+                !string.IsNullOrWhiteSpace(operationSummary))
+            {
+                _chromeBindings.MobileSaveStateText.text = operationSummary;
+            }
+
             PublishDraftState();
         }
 
@@ -280,22 +293,6 @@ namespace Features.Garage.Presentation
                 selectedSlotIndex,
                 committedRosterCount,
                 resultViewModel);
-            ApplyOperationSummaryToMobileDock(resultViewModel);
-        }
-
-        private void ApplyOperationSummaryToMobileDock(GarageResultViewModel resultViewModel)
-        {
-            if (resultViewModel == null ||
-                _chromeBindings == null ||
-                _chromeBindings.MobileSaveStateText == null ||
-                !string.IsNullOrWhiteSpace(_chromeBindings.MobileSaveStateText.text))
-                return;
-
-            var operationSummary = GaragePageChromeController.ExtractOperationSummary(resultViewModel.StatsText);
-            if (string.IsNullOrWhiteSpace(operationSummary))
-                return;
-
-            _chromeBindings.MobileSaveStateText.text = operationSummary;
         }
 
         private static GarageEditorFocus ToEditorFocus(MobilePartFocus focus)

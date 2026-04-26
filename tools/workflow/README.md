@@ -21,6 +21,7 @@ These helpers do not define new repo policy. They only automate checks already d
 
 ```powershell
 .\tools\workflow\Invoke-AgentPassReview.ps1 -Agent B
+.\tools\workflow\Invoke-AgentPassReview.ps1 -Agent C
 .\tools\workflow\Invoke-CloseoutPack.ps1 -PlanOnly
 .\tools\workflow\Find-SimplificationCandidates.ps1
 .\tools\workflow\Test-GeneratedArtifactScope.ps1
@@ -30,6 +31,9 @@ These helpers do not define new repo policy. They only automate checks already d
 ```
 
 Use `Invoke-AgentPassReview.ps1 -RunCloseoutPack` only when the current dirty worktree is scoped enough that running generated artifact and Unity policy checks will not overwrite another lane's evidence.
+
+For parallel Agent A/B/C work, run closeout with the matching `-Agent` value so Unity UI policy evidence is written to an agent-scoped artifact such as `artifacts/unity/unity-ui-authoring-workflow-policy-b.json`.
+Do not use the shared `unity-ui-authoring-workflow-policy.json` as closeout evidence when another lane has dirty files.
 
 Do not call `Unity.exe -batchmode -runTests` directly while this repo is open in Unity Editor.
 Use `Invoke-UnityEditModeTests.ps1`; it first checks `Library/EditorInstance.json` and blocks with `open-editor-owns-project` when the active editor already owns the project.

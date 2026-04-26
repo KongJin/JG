@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Features.Garage.Presentation
 {
@@ -10,6 +11,7 @@ namespace Features.Garage.Presentation
             public string DisplayName { get; set; }
             public float BaseHp { get; set; }
             public float BaseAttackSpeed { get; set; }
+            public GameObject PreviewPrefab { get; set; }
         }
 
         public sealed class FirepowerOption
@@ -19,6 +21,7 @@ namespace Features.Garage.Presentation
             public float AttackDamage { get; set; }
             public float AttackSpeed { get; set; }
             public float Range { get; set; }
+            public GameObject PreviewPrefab { get; set; }
         }
 
         public sealed class MobilityOption
@@ -28,6 +31,7 @@ namespace Features.Garage.Presentation
             public float HpBonus { get; set; }
             public float MoveRange { get; set; }
             public float AnchorRange { get; set; }
+            public GameObject PreviewPrefab { get; set; }
         }
 
         private readonly Dictionary<string, FrameOption> _framesById;

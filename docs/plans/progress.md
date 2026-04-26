@@ -16,8 +16,8 @@
 - `Set B Garage`는 visual fidelity final judgment가 직접 residual이다. Garage save/load, settings, accessibility는 shared `Account/Garage` validation lane에서 본다.
 - `LobbyScene` runtime assembly, 초기 overlay state, `BattleScene` 연결명, Garage 기본 density/copy polish는 기능상 닫혔다. 남은 Garage visual 판단은 `Set B Garage`로 분리한다.
 - Nova1492 audio는 SFX/BGM 채널과 런타임 소비까지 연결됐고, WebGL 오디오 로드/재생 smoke가 남아 있다.
-- Nova1492 `.GX` 모델은 제한 변환/staging과 Garage preview mapping이 들어갔다. 다음 판단은 Lobby 장식 후보를 별도 inactive variant로 둘지 여부다.
-- Garage 모바일 single vertical scroll 구조와 code cleanup은 완료 기록으로 내렸고, 남은 밀도/시각 판단은 Set B Garage fidelity로 본다.
+- Nova1492 `.GX` 모델은 제한 변환/staging과 Garage preview mapping이 들어갔다. UnitParts Core 321은 catalog, generated preview prefab, playable SO, `ModuleCatalog.asset` append까지 완료됐고, 남은 Garage Nova Parts panel/runtime closeout은 [`nova1492_part_catalog_playable_plan.md`](./nova1492_part_catalog_playable_plan.md)가 맡는다. Lobby 장식 후보 판단은 기존 LobbyScene 모델 계획에 남긴다.
+- Garage 모바일 single vertical scroll 구조와 code cleanup은 닫혔고, 남은 밀도/시각 판단은 Set B Garage fidelity로 본다.
 
 ## 현재 포커스
 
@@ -29,7 +29,7 @@
 - `Set B Garage` visual fidelity final judgment
 - shared `Account/Garage` WebGL save/load, settings interaction, save action accessibility 검증
 - Stitch generic source-to-contract route 정착과 신규 prefab workflow policy guard 판단
-- Lobby/Garage prefab instance 관리 부채와 Nova1492 preview 후속 판단
+- Lobby/Garage prefab instance 관리 부채와 Nova1492 Garage panel/runtime closeout
 
 ## Phase 진행률
 
@@ -54,7 +54,7 @@
 |---|---|
 | `GameScene` runtime | 2-client sync에서 BattleEntity/Energy/Wave hydration mismatch 여부 확인, player avatar commander/base contract |
 | `GameScene` flow closeout | 자연 final-wave victory loop, console error 0 재확인, GameEnd result HUD actual player-flow evidence |
-| `GameScene` operation record | local-first 최근 5회 기록 모델/저장 code path, Garage 요약 표시, Firestore `operations/recent` bridge code path가 추가됐고, Play Mode defeat -> local record 생성 및 Garage active text smoke가 통과됨. 모바일 요약 카피/chrome guard 보정은 들어갔지만 screenshot/mobile framing acceptance는 아직 residual. 남은 TODO는 EditMode test 실행, screenshot/mobile framing evidence, WebGL/실계정 Firestore restore smoke |
+| `GameScene` operation record | local-first 최근 5회 기록 모델/저장 code path, Garage 요약 표시, Firestore `operations/recent` bridge code path가 추가됐고, Play Mode defeat -> local record 생성, persisted account session Firestore write, Garage mobile dock screenshot smoke가 통과됨. 남은 TODO는 EditMode test 실행과 WebGL player Firestore restore smoke |
 | `GameScene` HUD/input | placement area drag/drop automation contract, room/result UI가 실제 조작 경로에서 보이는지 확인 |
 | `GameScene` multiplayer | wave start, core victory/defeat baseline, late-join/BattleEntity/Energy multiplayer sync smoke |
 | `Account/Garage` WebGL | Firebase Console 설정, WebGL build smoke, Garage save/load 재현, settings 저장/소비, save action 접근성, settings interaction |
@@ -66,10 +66,9 @@
 
 - `GameScene` 쪽은 [`game_scene_flow_validation_closeout_plan.md`](./game_scene_flow_validation_closeout_plan.md)에 따라 actual UI path, GameEnd stats, victory/defeat, 2-client sync를 success/blocked/mismatch로 분리해 닫는다.
 - 작전 기록 / 세계 기억 작업은 [`operation_record_world_memory_plan.md`](./operation_record_world_memory_plan.md)에 따라 최근 5회 기록을 local-first로 저장하고, GameEnd summary 확장값은 Agent A owner와 분리해 소비한다.
-- `LobbyScene` 쪽은 runtime/completion 기록을 reference로 보고, 새 blocker가 없으면 Garage final fidelity만 `Set B Garage` 판단과 함께 본다.
+- `LobbyScene` 쪽은 runtime/completion이 닫혔으므로, 새 blocker가 없으면 Garage final fidelity만 `Set B Garage` 판단과 함께 본다.
 - LobbyScene UI/prefab 관리 부채는 [`lobby_scene_ui_prefab_management_plan.md`](./lobby_scene_ui_prefab_management_plan.md)에서 assembly helper 안전화, prefab override audit, preview placeholder 정리 순서로 본다.
-- 변환된 Nova1492 GX 모델은 [`lobby_scene_nova1492_model_application_plan.md`](./lobby_scene_nova1492_model_application_plan.md)에 따라 Phase 4 로비 장식 후보를 별도 inactive variant로 검토한다.
-- Garage 모바일 scroll 구조와 코드 정리 완료 기록은 [`garage_mobile_scroll_recovery_plan.md`](./garage_mobile_scroll_recovery_plan.md), [`garage_mobile_scroll_code_cleanup_plan.md`](./garage_mobile_scroll_code_cleanup_plan.md)에서 reference로 본다.
+- 변환된 Nova1492 GX 모델 중 Garage UnitParts 대량 승격은 [`nova1492_part_catalog_playable_plan.md`](./nova1492_part_catalog_playable_plan.md)에 따라 catalog manifest, preview prefab pack, playable SO까지 완료됐고, 다음은 Garage Nova Parts panel과 runtime save/load smoke다. Lobby 장식 후보는 [`lobby_scene_nova1492_model_application_plan.md`](./lobby_scene_nova1492_model_application_plan.md)에 남긴다.
 - Lobby/Garage 쪽은 mobile-first Garage 단일 구조의 시각 밀도와 review evidence 기준 visual fidelity를 계속 sanity check 한다.
 - shared `Account/Garage` lane에서는 Garage save/load WebGL, settings interaction, save action 접근성을 계속 추적한다.
 - Stitch lane 쪽은 `Set A/B/C/D/E`와 추가 `GameScene HUD` source freeze를 generic onboarding 기준 샘플로 삼아, 이후 다시 여는 inventory set을 per-surface script edit 없이 단순 범용 루프의 verdict까지 태울 수 있게 source facts/draft/validate route를 일반화한다.

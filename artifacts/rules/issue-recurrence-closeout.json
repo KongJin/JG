@@ -13,8 +13,32 @@
   "blockedReason": "",
   "changedPaths": [
     "artifacts/rules/issue-recurrence-closeout.json",
+    "docs/index.md",
+    "docs/plans/code_doc_simplification_recurrence_prevention_plan.md",
+    "docs/plans/docs_simplification_recurrence_plan.md",
+    "docs/plans/document_management_followup_tuning_plan.md",
+    "docs/plans/document_management_lightweight_plan.md",
+    "docs/plans/document_management_process_tuning_plan.md",
+    "docs/plans/document_management_recurrence_prevention_plan.md",
+    "docs/plans/garage_mobile_scroll_code_cleanup_plan.md",
+    "docs/plans/garage_mobile_scroll_recovery_plan.md",
+    "docs/plans/lobby_scene_completion_plan.md",
+    "docs/plans/lobby_scene_nova1492_model_application_plan.md",
+    "docs/plans/lobby_scene_runtime_plan.md",
+    "docs/plans/lobby_scene_ui_prefab_management_plan.md",
+    "docs/plans/nova1492_part_catalog_playable_plan.md",
     "docs/plans/operation_record_world_memory_plan.md",
+    "docs/plans/ops_rules_simplification_plan.md",
     "docs/plans/progress.md",
-    "tools/unity-mcp/Invoke-GameSceneAgentBPlacementSmoke.ps1"
+    "tools/nova1492/BuildNovaPartCatalog.ps1",
+    "tools/nova1492/Invoke-Nova1492PartGeneration.ps1",
+    "tools/unity-mcp/Invoke-GameSceneAgentBPlacementSmoke.ps1",
+    "tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1",
+    "tools/unity-mcp/McpHelpers.ps1",
+    "tools/unity-mcp/README.md",
+    "tools/workflow/Invoke-AgentPassReview.ps1",
+    "tools/workflow/Invoke-CloseoutPack.ps1",
+    "tools/workflow/README.md",
+    "tools/workflow/Test-GeneratedArtifactScope.ps1"
   ]
 }

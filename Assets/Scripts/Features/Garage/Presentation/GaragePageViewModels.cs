@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Features.Garage.Presentation
 {
     public sealed class GarageSlotViewModel
@@ -18,7 +20,10 @@ namespace Features.Garage.Presentation
             string loadoutKey = null,
             string frameId = null,
             string firepowerId = null,
-            string mobilityId = null)
+            string mobilityId = null,
+            GameObject framePreviewPrefab = null,
+            GameObject firepowerPreviewPrefab = null,
+            GameObject mobilityPreviewPrefab = null)
         {
             SlotLabel = slotLabel;
             Title = title;
@@ -36,6 +41,9 @@ namespace Features.Garage.Presentation
             FrameId = frameId;
             FirepowerId = firepowerId;
             MobilityId = mobilityId;
+            FramePreviewPrefab = framePreviewPrefab;
+            FirepowerPreviewPrefab = firepowerPreviewPrefab;
+            MobilityPreviewPrefab = mobilityPreviewPrefab;
         }
 
         public string SlotLabel { get; }
@@ -54,6 +62,9 @@ namespace Features.Garage.Presentation
         public string FrameId { get; }
         public string FirepowerId { get; }
         public string MobilityId { get; }
+        public GameObject FramePreviewPrefab { get; }
+        public GameObject FirepowerPreviewPrefab { get; }
+        public GameObject MobilityPreviewPrefab { get; }
     }
 
     public sealed class GarageEditorViewModel

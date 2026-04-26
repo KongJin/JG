@@ -19,3 +19,4 @@ MonoBehaviour:
   attackSpeed: 1.15
   range: 4.5
   description: Balanced rifle for hybrid engagement ranges.
+  previewPrefab: {fileID: 8510989780855498147, guid: 49ff3453ecdda894ea677dcb399f8fbe, type: 3}

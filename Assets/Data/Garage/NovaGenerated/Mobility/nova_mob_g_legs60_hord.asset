@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2592f69f3d63646418bae73532699608, type: 3}
+  m_Name: nova_mob_g_legs60_hord
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
+  moduleId: nova_mob_g_legs60_hord
+  displayName: G Legs60 Hord
+  icon: {fileID: 0}
+  hpBonus: 130
+  moveRange: 5.65
+  anchorRange: 5.65
+  description: 'Generated Nova1492 baseline. Source: datan\common\g_legs60_hord.gx.
+    Tier: 1.'
+  previewPrefab: {fileID: 6858203933536509969, guid: 8c6f44d98dc27474ab367c5393ae4046, type: 3}

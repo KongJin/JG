@@ -56,6 +56,21 @@ Before using Unity MCP for prefab authoring, scene assembly, Play Mode automatio
 
 If compile errors remain, `play/start`, the workflow gate, and verification helpers can fail with misleading timeout symptoms. Treat that as a compile-clean failure first, not as an MCP failure.
 
+## Parallel Agent Guardrails
+
+Unity Editor Play Mode, MCP scene changes, screenshots, and runtime smoke share one editor state. Only one Agent A/B/C lane may own those operations at a time.
+Other lanes can continue static review, docs, or compile-readonly work, but they should not start Play Mode or capture smoke evidence until the active MCP lane is finished.
+
+Runtime smoke helpers should take the MCP operation lock unless a human is intentionally running a supervised manual check.
+Use lane-specific evidence paths, for example:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1 -Agent B
+powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameSceneAgentBPlacementSmoke.ps1 -Owner AgentB -OutputPath artifacts/unity/game-scene-agent-b-placement-smoke.json
+```
+
+If a helper reports that `Temp/UnityMcp/runtime-smoke.lock` is held, treat the smoke as `blocked` for this lane instead of stopping the other lane's Play Mode session.
+
 ## Recommended Workflow
 
 This order assumes compile-clean state and completed script reload.

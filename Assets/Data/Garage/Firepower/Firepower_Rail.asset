@@ -19,3 +19,4 @@ MonoBehaviour:
   attackSpeed: 0.72
   range: 8.5
   description: Long range option for backline and siege builds.
+  previewPrefab: {fileID: 5381164519521476491, guid: 1ff00a3447a694041b239735aa2d7a2f, type: 3}

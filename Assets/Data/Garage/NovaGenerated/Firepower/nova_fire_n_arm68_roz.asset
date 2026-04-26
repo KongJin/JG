@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 622e143eb1be2a146b829b3b8c32e6be, type: 3}
+  m_Name: nova_fire_n_arm68_roz
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
+  moduleId: nova_fire_n_arm68_roz
+  displayName: N Arm68 Roz
+  icon: {fileID: 0}
+  attackDamage: 40
+  attackSpeed: 1.06
+  range: 6.25
+  description: 'Generated Nova1492 baseline. Source: datan\common\n_arm68_roz.gx.
+    Tier: 3.'
+  previewPrefab: {fileID: 1840010528929325222, guid: a0b120b40f2cfe04993773d7207a801a, type: 3}

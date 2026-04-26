@@ -237,18 +237,18 @@ namespace Features.Garage.Presentation
                 return;
             }
 
-            if (resultViewModel.IsDirty && resultViewModel.CanSave)
-            {
-                _mobileSaveStateText.text = "현재 조합을 저장해 출격 편성에 반영";
-                _mobileSaveStateText.color = ThemeColors.AccentAmber;
-                return;
-            }
-
             string operationSummary = ExtractOperationSummary(resultViewModel.StatsText);
             if (!string.IsNullOrWhiteSpace(operationSummary))
             {
                 _mobileSaveStateText.text = operationSummary;
                 _mobileSaveStateText.color = ThemeColors.TextSecondary;
+                return;
+            }
+
+            if (resultViewModel.IsDirty && resultViewModel.CanSave)
+            {
+                _mobileSaveStateText.text = "현재 조합을 저장해 출격 편성에 반영";
+                _mobileSaveStateText.color = ThemeColors.AccentAmber;
                 return;
             }
 

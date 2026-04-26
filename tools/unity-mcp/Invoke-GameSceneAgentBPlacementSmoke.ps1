@@ -2,8 +2,12 @@ param(
     [string]$BaseUrl,
     [ValidateSet("None", "Defeat", "Victory")]
     [string]$ResultMode = "Defeat",
+    [string]$Owner = "AgentB",
     [string]$OutputPath = "artifacts/unity/game-scene-agent-b-placement-smoke.json",
+    [string]$LockPath = "Temp/UnityMcp/runtime-smoke.lock",
+    [int]$LockTimeoutSec = 0,
     [int]$TimeoutSec = 120,
+    [switch]$NoMcpLock,
     [switch]$LeavePlayMode
 )
 
@@ -177,8 +181,18 @@ $result = [ordered]@{
     resultMode = $ResultMode
     evidence = [ordered]@{}
 }
+$operationLock = $null
 
 try {
+    if (-not $NoMcpLock) {
+        $operationLock = Enter-McpExclusiveOperation -Name "game-scene-agent-b-placement-smoke" -Owner $Owner -LockPath $LockPath -TimeoutSec $LockTimeoutSec
+        $result.evidence.mcpLock = @{
+            owner = $operationLock.Owner
+            path = $operationLock.Path
+            token = $operationLock.Token
+        }
+    }
+
     Wait-McpBridgeHealthy -Root $root -TimeoutSec $TimeoutSec | Out-Null
     Invoke-McpCompileRequestAndWait -Root $root -TimeoutMs 120000 | Out-Null
 
@@ -281,6 +295,8 @@ finally {
             $result.evidence.stopPlayModeError = $_.Exception.Message
         }
     }
+
+    Exit-McpExclusiveOperation -Lock $operationLock
 
     Ensure-McpParentDirectory -PathValue $OutputPath
     $result | ConvertTo-Json -Depth 12 | Set-Content -Path $OutputPath -Encoding UTF8

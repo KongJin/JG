@@ -19,3 +19,4 @@ MonoBehaviour:
   moveRange: 3.5
   anchorRange: 4
   description: Mid-line option suited for hybrid pressure.
+  previewPrefab: {fileID: 4819424358495046404, guid: 8e718cdc50cf1bf4c868fe53b10f7244, type: 3}

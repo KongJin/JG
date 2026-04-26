@@ -40,11 +40,13 @@ namespace Features.Garage.Presentation
                 string summary = "빈 슬롯";
                 string statusBadgeText = GarageUnitIdentityFormatter.BuildEmptyStatusBadge();
 
+                var frame = hasDraftLoadout ? Catalog?.FindFrame(draft.frameId) : null;
+                var firepower = hasDraftLoadout ? Catalog?.FindFirepower(draft.firepowerModuleId) : null;
+                var mobility = hasDraftLoadout ? Catalog?.FindMobility(draft.mobilityModuleId) : null;
+
                 if (hasDraftLoadout)
                 {
-                    var frameName = Catalog?.FindFrame(draft.frameId)?.DisplayName ?? draft.frameId;
-                    var firepower = Catalog?.FindFirepower(draft.firepowerModuleId);
-                    var mobility = Catalog?.FindMobility(draft.mobilityModuleId);
+                    var frameName = frame?.DisplayName ?? draft.frameId;
                     title = GarageUnitIdentityFormatter.BuildTitle(i, frameName, hasDraftLoadout);
                     summary = GarageUnitIdentityFormatter.BuildSlotSummary(
                         firepower,
@@ -63,8 +65,8 @@ namespace Features.Garage.Presentation
                     statusBadgeText = GarageUnitIdentityFormatter.BuildDraftStatusBadge(hasDraftLoadout);
                     summary = hasDraftLoadout
                         ? GarageUnitIdentityFormatter.BuildSlotSummary(
-                            Catalog?.FindFirepower(draft.firepowerModuleId),
-                            Catalog?.FindMobility(draft.mobilityModuleId),
+                            firepower,
+                            mobility,
                             draft.firepowerModuleId,
                             draft.mobilityModuleId)
                         : "조립 중";
@@ -87,8 +89,8 @@ namespace Features.Garage.Presentation
                     callsign: hasDraftLoadout ? GarageUnitIdentityFormatter.BuildCallsign(i) : null,
                     roleLabel: hasDraftLoadout
                         ? GarageUnitIdentityFormatter.BuildRoleLabel(
-                            Catalog?.FindFirepower(draft.firepowerModuleId),
-                            Catalog?.FindMobility(draft.mobilityModuleId))
+                            firepower,
+                            mobility)
                         : null,
                     serviceTagText: hasDraftLoadout
                         ? GarageUnitIdentityFormatter.BuildServiceTagText(serviceTag)
@@ -96,7 +98,10 @@ namespace Features.Garage.Presentation
                     loadoutKey: loadoutKey,
                     frameId: hasDraftLoadout ? draft.frameId : null,
                     firepowerId: hasDraftLoadout ? draft.firepowerModuleId : null,
-                    mobilityId: hasDraftLoadout ? draft.mobilityModuleId : null));
+                    mobilityId: hasDraftLoadout ? draft.mobilityModuleId : null,
+                    framePreviewPrefab: frame?.PreviewPrefab,
+                    firepowerPreviewPrefab: firepower?.PreviewPrefab,
+                    mobilityPreviewPrefab: mobility?.PreviewPrefab));
             }
 
             return slotViewModels;

@@ -55,8 +55,6 @@
 | Stitch surface 실행 명령과 review capture 루프 확인 | [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) |
 | Stitch 전면 개편 실행 계획 확인 | [`plans/stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) |
 | Stitch 테스트 프롬프트 확인 | [`design/stitch_test_brief.md`](./design/stitch_test_brief.md) |
-| LobbyScene 런타임 조립 계획 확인 | [`plans/lobby_scene_runtime_plan.md`](./plans/lobby_scene_runtime_plan.md) |
-| LobbyScene 초기 표시/visual/BattleScene 연결 정리 확인 | [`plans/lobby_scene_completion_plan.md`](./plans/lobby_scene_completion_plan.md) |
 | LobbyScene UI/prefab 관리 부채 정리 확인 | [`plans/lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) |
 | GameScene 진입 큰 흐름 확인 | [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) |
 | GameScene 실제 플로우 검증/closeout 확인 | [`plans/game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) |
@@ -71,7 +69,6 @@
 | WebGL 실기 절차 확인 | [`playtest/webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) |
 | Firebase 배포 절차 확인 | [`ops/firebase_hosting.md`](./ops/firebase_hosting.md) |
 | 문서 역할/참조/리네임 관리 기준 확인 | [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) |
-| 코드/문서 간소화 재발 방지 확인 | [`plans/code_doc_simplification_recurrence_prevention_plan.md`](./plans/code_doc_simplification_recurrence_prevention_plan.md) |
 
 ## 폴더별 안내
 
@@ -91,14 +88,10 @@
 
 - `active`: [`progress.md`](./plans/progress.md) - 공식 진행률 SSOT
 - `reference`: [`progress_changelog.md`](./plans/progress_changelog.md) - 진행 상황에서 분리한 dated change log
-- `reference`: [`code_doc_simplification_recurrence_prevention_plan.md`](./plans/code_doc_simplification_recurrence_prevention_plan.md) - 코드 helper 중복, plan SSOT 중복, generated artifact diff 비대화 재발 방지 체크리스트
 - `reference`: [`account_system_plan.md`](./plans/account_system_plan.md) - 계정/차고 복구 기준
-- `reference`: [`lobby_scene_runtime_plan.md`](./plans/lobby_scene_runtime_plan.md) - LobbyScene 런타임 조립과 acceptance route 완료 기록
-- `reference`: [`lobby_scene_completion_plan.md`](./plans/lobby_scene_completion_plan.md) - LobbyScene 초기 표시 상태, visual pass, BattleScene 연결 closeout 기록
 - `active`: [`lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) - LobbyScene UI prefab instance/override 관리와 assembly helper 안전화 계획
 - `active`: [`lobby_scene_nova1492_model_application_plan.md`](./plans/lobby_scene_nova1492_model_application_plan.md) - 변환된 Nova1492 GX 모델의 LobbyScene/Garage preview 제한 적용 계획
-- `reference`: [`garage_mobile_scroll_recovery_plan.md`](./plans/garage_mobile_scroll_recovery_plan.md) - Garage 모바일 single vertical scroll 구조와 fixed save dock 복구 기록
-- `reference`: [`garage_mobile_scroll_code_cleanup_plan.md`](./plans/garage_mobile_scroll_code_cleanup_plan.md) - Garage 모바일 scroll 복구 이후 코드/이름/중복 정리 완료 기록
+- `active`: [`nova1492_part_catalog_playable_plan.md`](./plans/nova1492_part_catalog_playable_plan.md) - 변환된 Nova1492 UnitParts 모델의 Garage 부품 catalog/playable 승격 계획
 - `reference`: [`game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) - GameScene 진입 상위 흐름
 - `active`: [`game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) - GameScene/BattleScene 실제 플레이 플로우 acceptance, blocker/mismatch closeout 계획
 - `active`: [`game_scene_agent_a_runtime_core_plan.md`](./plans/game_scene_agent_a_runtime_core_plan.md) - Agent A가 맡는 GameScene/BattleScene 전투 런타임 시스템, BattleEntity, Wave/Core, sync baseline 계획
@@ -108,7 +101,6 @@
 - `active`: [`operation_record_world_memory_plan.md`](./plans/operation_record_world_memory_plan.md) - 제품 분업 Agent B가 맡는 최근 작전 기록, 세계 기억, Lobby/Garage 기록 표시 계획
 - `active`: [`game_scene_agent_c_unit_identity_terms_plan.md`](./plans/game_scene_agent_c_unit_identity_terms_plan.md) - Agent C가 맡는 기체 애착, 로스터 슬롯 정체성, 기체 전적 태그, 유저-facing 용어/카피 정리 계획
 - `reference`: [`stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) - Stitch set inventory와 reset 기준
-- `reference`: [`document_management_recurrence_prevention_plan.md`](./plans/document_management_recurrence_prevention_plan.md) - 문서관리 점검 후 재발 방지 실행 기록
 - `draft`: [`stitch_llm_contract_pipeline_plan.md`](./plans/stitch_llm_contract_pipeline_plan.md) - Stitch source facts + LLM contract draft + script validation 전환 계획
 - `draft`: [`stitch_screen_onboarding_simplification_plan.md`](./plans/stitch_screen_onboarding_simplification_plan.md) - 새 Stitch screen onboarding 반복 blocker를 줄이는 실행 계획
 - `draft`: [`stitch_button_sound_contract_plan.md`](./plans/stitch_button_sound_contract_plan.md) - Stitch-to-Unity prefab 생성 시 버튼 사운드 affordance 누락을 줄이는 실행 계획
@@ -118,15 +110,10 @@
 - `active`: [`garage_ui_ux_improvement_plan.md`](./plans/garage_ui_ux_improvement_plan.md) - 현재 Set B Garage Stitch-to-Unity recovery plan
 - `reference`: [`mcp_improvement_plan.md`](./plans/mcp_improvement_plan.md) - Unity MCP 역할/검증 레이어 정리
 
-문서관리/규칙 정리 완료 기록:
+규칙 routing reference:
 
-- `reference`: [`docs_simplification_recurrence_plan.md`](./plans/docs_simplification_recurrence_plan.md) - 전체 문서 간소화와 재발 방지 완료 기록
-- `reference`: [`document_management_lightweight_plan.md`](./plans/document_management_lightweight_plan.md) - 문서관리 빠른 체크와 새 문서 생성 기준 경량화 완료 기록
-- `reference`: [`document_management_followup_tuning_plan.md`](./plans/document_management_followup_tuning_plan.md) - 문서관리 경량화 후속 보정 완료 기록
-- `reference`: [`document_management_process_tuning_plan.md`](./plans/document_management_process_tuning_plan.md) - 문서관리 절차의 과한 부담과 부족한 판정 기준 보정 기록
 - `reference`: [`rule_trigger_skill_extraction_plan.md`](./plans/rule_trigger_skill_extraction_plan.md) - 행동 트리거가 필요한 문서 규칙을 skill로 분리한 결과와 후속 자동화 검토
 - `reference`: [`rule_revision_trace_cleanup_plan.md`](./plans/rule_revision_trace_cleanup_plan.md) - 규칙 개정 후 active old trace 정리와 closeout 강제화 완료 기록
-- `reference`: [`ops_rules_simplification_plan.md`](./plans/ops_rules_simplification_plan.md) - 운영 규칙 상위 원칙화와 하위 규칙 축약 결과 기록
 
 ### `playtest/`
 

@@ -19,3 +19,4 @@ MonoBehaviour:
   attackSpeed: 1.25
   range: 3
   description: Short range burst weapon for melee rush builds.
+  previewPrefab: {fileID: 8466261784022016833, guid: ddafe22d4d17e154ba9cdf030c3d60fc, type: 3}

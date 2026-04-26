@@ -24,6 +24,7 @@ namespace Features.Unit.Infrastructure
 
         [Header("Presentation")]
         [SerializeField] private GameObject unitPrefab;
+        [SerializeField] private GameObject previewPrefab;
 
         public string FrameId => frameId;
         public string DisplayName => displayName;
@@ -33,5 +34,6 @@ namespace Features.Unit.Infrastructure
         public float BaseAttackSpeed => baseAttackSpeed;
         public PassiveTraitData PassiveTrait => passiveTrait;
         public GameObject UnitPrefab => unitPrefab;
+        public GameObject PreviewPrefab => previewPrefab;
     }
 }

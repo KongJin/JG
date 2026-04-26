@@ -166,7 +166,8 @@ namespace Features.Garage
                     Id = frame.FrameId,
                     DisplayName = frame.DisplayName,
                     BaseHp = frame.BaseHp,
-                    BaseAttackSpeed = frame.BaseAttackSpeed
+                    BaseAttackSpeed = frame.BaseAttackSpeed,
+                    PreviewPrefab = frame.PreviewPrefab
                 });
             }
 
@@ -180,7 +181,8 @@ namespace Features.Garage
                     DisplayName = module.DisplayName,
                     AttackDamage = module.AttackDamage,
                     AttackSpeed = module.AttackSpeed,
-                    Range = module.Range
+                    Range = module.Range,
+                    PreviewPrefab = module.PreviewPrefab
                 });
             }
 
@@ -194,7 +196,8 @@ namespace Features.Garage
                     DisplayName = module.DisplayName,
                     HpBonus = module.HpBonus,
                     MoveRange = module.MoveRange,
-                    AnchorRange = module.AnchorRange
+                    AnchorRange = module.AnchorRange,
+                    PreviewPrefab = module.PreviewPrefab
                 });
             }
 

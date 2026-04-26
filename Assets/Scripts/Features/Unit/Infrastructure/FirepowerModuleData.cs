@@ -22,6 +22,9 @@ namespace Features.Unit.Infrastructure
         [Header("Description")]
         [TextArea] [SerializeField] private string description;
 
+        [Header("Presentation")]
+        [SerializeField] private GameObject previewPrefab;
+
         public string ModuleId => moduleId;
         public string DisplayName => displayName;
         public Sprite Icon => icon;
@@ -29,5 +32,6 @@ namespace Features.Unit.Infrastructure
         public float AttackSpeed => attackSpeed;
         public float Range => range;
         public string Description => description;
+        public GameObject PreviewPrefab => previewPrefab;
     }
 }

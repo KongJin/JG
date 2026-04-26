@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 622e143eb1be2a146b829b3b8c32e6be, type: 3}
+  m_Name: nova_fire_02_larm
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
+  moduleId: nova_fire_02_larm
+  displayName: Firepower dfaf7b27
+  icon: {fileID: 0}
+  attackDamage: 24
+  attackSpeed: 1.32
+  range: 4.75
+  description: "Generated Nova1492 baseline. Source: datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD02_LArm.GX.
+    Tier: 1."
+  previewPrefab: {fileID: 839833618287784101, guid: c79de790a3228b547b194492d9e1b3f0, type: 3}
