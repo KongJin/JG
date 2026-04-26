@@ -26,6 +26,7 @@
 - LobbyScene 런타임 조립 작업: [`plans/progress.md`](./plans/progress.md) -> [`plans/lobby_scene_runtime_plan.md`](./plans/lobby_scene_runtime_plan.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> relevant scene/prefab
 - LobbyScene 완성도 정리 작업: [`plans/progress.md`](./plans/progress.md) -> [`plans/lobby_scene_completion_plan.md`](./plans/lobby_scene_completion_plan.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> relevant scene/prefab
 - LobbyScene UI/prefab 관리 정리: [`plans/progress.md`](./plans/progress.md) -> [`plans/lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> relevant scene/prefab/tool
+- 여러 에이전트 overnight 운영 / MCP 단일 writer 조율: [`plans/overnight_agent_coordination_plan.md`](./plans/overnight_agent_coordination_plan.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant active plan
 - Stitch / handoff 작업: [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md)
 - Stitch -> Unity 한 장씩 번역: [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)
 - 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> `docs/index.md` -> relevant owner doc
@@ -89,6 +90,8 @@
 - `active`: [`lobby_scene_completion_plan.md`](./plans/lobby_scene_completion_plan.md) - LobbyScene 초기 표시 상태, visual pass, BattleScene 연결 closeout 계획
 - `active`: [`lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) - LobbyScene UI prefab instance/override 관리와 assembly helper 안전화 계획
 - `active`: [`lobby_scene_nova1492_model_application_plan.md`](./plans/lobby_scene_nova1492_model_application_plan.md) - 변환된 Nova1492 GX 모델의 LobbyScene/Garage preview 제한 적용 계획
+- `active`: [`garage_mobile_scroll_recovery_plan.md`](./plans/garage_mobile_scroll_recovery_plan.md) - Garage 모바일 single vertical scroll 구조와 fixed save dock 복구 계획
+- `reference`: [`garage_mobile_scroll_code_cleanup_plan.md`](./plans/garage_mobile_scroll_code_cleanup_plan.md) - Garage 모바일 scroll 복구 이후 코드/이름/중복 정리 완료 기록
 - `reference`: [`game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) - GameScene 진입 상위 흐름
 - `reference`: [`stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) - Stitch set inventory와 reset 기준
 - `reference`: [`docs_simplification_recurrence_plan.md`](./plans/docs_simplification_recurrence_plan.md) - 전체 문서 간소화와 재발 방지 완료 기록
@@ -102,6 +105,7 @@
 - `reference`: [`rule_revision_trace_cleanup_plan.md`](./plans/rule_revision_trace_cleanup_plan.md) - 규칙 개정 후 active old trace 정리와 closeout 강제화 완료 기록
 - `reference`: [`tech_debt_reduction_plan.md`](./plans/tech_debt_reduction_plan.md) - 기술부채 감축 우선순위 reference
 - `active`: [`garage_ui_ux_improvement_plan.md`](./plans/garage_ui_ux_improvement_plan.md) - 현재 Set B Garage Stitch-to-Unity recovery plan
+- `active`: [`overnight_agent_coordination_plan.md`](./plans/overnight_agent_coordination_plan.md) - 여러 Codex 에이전트 수면 중 작업 루프와 Unity MCP 단일 writer 운영 계획
 - `reference`: [`ops_rules_simplification_plan.md`](./plans/ops_rules_simplification_plan.md) - 운영 규칙 상위 원칙화와 하위 규칙 축약 결과 기록
 - `reference`: [`mcp_improvement_plan.md`](./plans/mcp_improvement_plan.md) - Unity MCP 역할/검증 레이어 정리
 

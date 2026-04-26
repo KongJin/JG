@@ -41,6 +41,17 @@ namespace ProjectSD.EditorTools.SceneTools
         private const string AccountConfigPath = "Assets/Settings/AccountConfig.asset";
         private const string ModuleCatalogPath = "Assets/Data/Garage/ModuleCatalog.asset";
         private const string SoundCatalogPath = "Assets/Data/Sound/SoundCatalog.asset";
+        private const float GarageMobileViewportLeftInset = 16f;
+        private const float GarageMobileViewportBottomInset = 78f;
+        private const float GarageMobileViewportWidthInset = -32f;
+        private const float GarageMobileViewportHeightInset = -218f;
+        private const float GarageMobileSlotHostHeight = 208f;
+        private const float GarageMobileFocusBarHeight = 52f;
+        private const float GarageMobileEditorHeight = 188f;
+        private const float GarageMobilePreviewCardHeight = 220f;
+        private const float GarageMobileResultPaneHeight = 118f;
+        private const float GarageMobileSaveDockBottomOffset = 88f;
+        private const float GarageMobileSaveDockHeight = 72f;
 
         [MenuItem(MenuPath)]
         private static void Assemble()
@@ -347,22 +358,26 @@ namespace ProjectSD.EditorTools.SceneTools
             var header = CreateText((RectTransform)parent, "GarageHeaderSummaryText", "Garage", 24f, TextAlignmentOptions.Left, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(16f, -18f), new Vector2(-96f, 32f));
             header.gameObject.SetActive(false);
             var settingsOpen = CreateButton((RectTransform)parent, "SettingsOpenButton", "Settings", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-16f, -18f), new Vector2(80f, 32f));
-            var contentRoot = CreatePanel(parent, "MobileContentRoot", new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f), new Vector2(16f, 78f), new Vector2(-32f, -218f), new Color(0.06f, 0.08f, 0.13f, 0.82f));
-            var slotHost = CreatePanel(contentRoot, "MobileSlotHost", new Vector2(0f, 0.55f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, new Color(0.04f, 0.05f, 0.09f, 0.4f));
-            var bodyHost = CreatePanel(contentRoot, "MobileBodyHost", new Vector2(0f, 0f), new Vector2(1f, 0.55f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, new Color(0.04f, 0.05f, 0.09f, 0.4f));
+            var contentRoot = CreatePanel(parent, "MobileContentRoot", new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f), new Vector2(GarageMobileViewportLeftInset, GarageMobileViewportBottomInset), new Vector2(GarageMobileViewportWidthInset, GarageMobileViewportHeightInset), new Color(0.06f, 0.08f, 0.13f, 0.82f));
+            var bodyHost = CreatePanel(contentRoot, "MobileBodyHost", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, 0f), Color.clear);
+            ConfigureMobileScroll(contentRoot, bodyHost);
+            var slotHost = CreatePanel(bodyHost, "MobileSlotHost", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, GarageMobileSlotHostHeight), new Color(0.04f, 0.05f, 0.09f, 0.4f));
+            SetPreferredHeight(slotHost, GarageMobileSlotHostHeight);
             var roster = BuildRosterList(slotHost);
-            var editor = BuildUnitEditor(bodyHost);
-            var previewCard = CreatePanel(bodyHost, "PreviewCard", new Vector2(0f, 0.32f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f), new Vector2(8f, -8f), new Vector2(-16f, -16f), new Color(0.08f, 0.11f, 0.18f, 1f));
-            var preview = BuildPreview(previewCard);
-            var resultPane = CreatePanel(bodyHost, "ResultPane", new Vector2(0f, 0f), new Vector2(1f, 0.32f), new Vector2(0.5f, 0.5f), new Vector2(8f, 8f), new Vector2(-16f, -16f), new Color(0.08f, 0.11f, 0.18f, 1f));
-            var result = BuildResultPanel(resultPane);
-            previewCard.gameObject.SetActive(false);
-            resultPane.gameObject.SetActive(false);
-            var tabBar = CreatePanel(parent, "MobileTabBar", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f), new Vector2(16f, 88f), new Vector2(-32f, 48f), new Color(0.03f, 0.05f, 0.09f, 0.95f));
+            var tabBar = CreatePanel(bodyHost, "MobileTabBar", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, GarageMobileFocusBarHeight), new Color(0.03f, 0.05f, 0.09f, 0.95f));
+            SetPreferredHeight(tabBar, GarageMobileFocusBarHeight);
             var editTab = CreateButton(tabBar, "MobileEditTabButton", "Edit", new Vector2(0f, 0.5f), new Vector2(0.33f, 0.5f), new Vector2(0f, 0.5f), new Vector2(4f, 0f), new Vector2(-8f, 36f));
-            var previewTab = CreateButton(tabBar, "MobilePreviewTabButton", "Preview", new Vector2(0.33f, 0.5f), new Vector2(0.66f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(-8f, 36f));
+            var firepowerTab = CreateButton(tabBar, "MobileFirepowerTabButton", "Firepower", new Vector2(0.33f, 0.5f), new Vector2(0.66f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(-8f, 36f));
             var summaryTab = CreateButton(tabBar, "MobileSummaryTabButton", "Summary", new Vector2(0.66f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-4f, 0f), new Vector2(-8f, 36f));
-            var saveDock = CreatePanel(parent, "MobileSaveDockRoot", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f), new Vector2(16f, 8f), new Vector2(-32f, 72f), new Color(0.04f, 0.06f, 0.10f, 0.98f));
+            var editor = BuildUnitEditor(bodyHost);
+            SetPreferredHeight((RectTransform)editor.transform, GarageMobileEditorHeight);
+            var previewCard = CreatePanel(bodyHost, "PreviewCard", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, GarageMobilePreviewCardHeight), new Color(0.08f, 0.11f, 0.18f, 1f));
+            SetPreferredHeight(previewCard, GarageMobilePreviewCardHeight);
+            var preview = BuildPreview(previewCard);
+            var resultPane = CreatePanel(bodyHost, "ResultPane", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, GarageMobileResultPaneHeight), new Color(0.08f, 0.11f, 0.18f, 1f));
+            SetPreferredHeight(resultPane, GarageMobileResultPaneHeight);
+            var result = BuildResultPanel(resultPane);
+            var saveDock = CreatePanel(parent, "MobileSaveDockRoot", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f), new Vector2(GarageMobileViewportLeftInset, GarageMobileSaveDockBottomOffset), new Vector2(GarageMobileViewportWidthInset, GarageMobileSaveDockHeight), new Color(0.04f, 0.06f, 0.10f, 0.98f));
             var saveButton = CreateButton(saveDock, "MobileSaveButton", "Save", new Vector2(0f, 0.5f), new Vector2(0.45f, 0.5f), new Vector2(0f, 0.5f), new Vector2(8f, 0f), new Vector2(-16f, 48f));
             var saveState = CreateText(saveDock, "MobileSaveStateText", "Draft", 14f, TextAlignmentOptions.Left, new Vector2(0.48f, 0f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f), new Vector2(4f, 0f), new Vector2(-12f, -16f));
             var settingsOverlay = CreatePanel(parent, "SettingsOverlayRoot", new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0.72f));
@@ -384,8 +399,8 @@ namespace ProjectSD.EditorTools.SceneTools
             SetRef(controller, "_mobileTabBar", tabBar.gameObject);
             SetRef(controller, "_mobileEditTabButton", editTab);
             SetRef(controller, "_mobileEditTabLabel", editTab.GetComponentInChildren<TMP_Text>());
-            SetRef(controller, "_mobilePreviewTabButton", previewTab);
-            SetRef(controller, "_mobilePreviewTabLabel", previewTab.GetComponentInChildren<TMP_Text>());
+            SetRef(controller, "_mobileFirepowerTabButton", firepowerTab);
+            SetRef(controller, "_mobileFirepowerTabLabel", firepowerTab.GetComponentInChildren<TMP_Text>());
             SetRef(controller, "_mobileSummaryTabButton", summaryTab);
             SetRef(controller, "_mobileSummaryTabLabel", summaryTab.GetComponentInChildren<TMP_Text>());
             SetRef(controller, "_garageHeaderSummaryText", header);
@@ -399,6 +414,42 @@ namespace ProjectSD.EditorTools.SceneTools
             SetRef(controller, "_mobileSaveButtonLabel", saveButton.GetComponentInChildren<TMP_Text>());
             SetRef(controller, "_mobileSaveStateText", saveState);
             return controller;
+        }
+
+        private static void ConfigureMobileScroll(RectTransform viewport, RectTransform content)
+        {
+            var mask = EnsureComponent<RectMask2D>(viewport.gameObject);
+            mask.padding = Vector4.zero;
+            mask.softness = Vector2Int.zero;
+
+            var scrollRect = EnsureComponent<ScrollRect>(viewport.gameObject);
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+            scrollRect.inertia = true;
+            scrollRect.viewport = viewport;
+            scrollRect.content = content;
+
+            var layout = EnsureComponent<VerticalLayoutGroup>(content.gameObject);
+            layout.padding = new RectOffset(8, 8, 8, 24);
+            layout.spacing = 10f;
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+
+            var fitter = EnsureComponent<ContentSizeFitter>(content.gameObject);
+            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+
+        private static void SetPreferredHeight(RectTransform rect, float preferredHeight)
+        {
+            var element = EnsureComponent<LayoutElement>(rect.gameObject);
+            element.minHeight = preferredHeight;
+            element.preferredHeight = preferredHeight;
+            element.flexibleHeight = 0f;
         }
 
         private static GarageRosterListView BuildRosterList(RectTransform parent)

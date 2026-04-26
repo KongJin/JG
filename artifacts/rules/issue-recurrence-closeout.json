@@ -14,13 +14,11 @@
   "changedPaths": [
     "artifacts/rules/issue-recurrence-closeout.json",
     "docs/index.md",
+    "docs/plans/garage_mobile_scroll_code_cleanup_plan.md",
+    "docs/plans/garage_mobile_scroll_recovery_plan.md",
     "docs/plans/lobby_scene_nova1492_model_application_plan.md",
-    "docs/plans/lobby_scene_ui_prefab_management_plan.md",
-    "docs/plans/nova1492_resource_integration_plan.md",
+    "docs/plans/overnight_agent_coordination_plan.md",
     "docs/plans/progress.md",
-    "package.json",
-    "tools/check-unity-asset-hygiene.ps1",
-    "tools/nova1492/SelectLobbyModelShortlist.ps1",
-    "tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1"
+    "tools/rule-harness/memory/advisory-memory.json"
   ]
 }

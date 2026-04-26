@@ -7,6 +7,7 @@ using Shared.Kernel;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using ComposedUnit = Features.Unit.Domain.Unit;
 
@@ -39,8 +40,10 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private GameObject _mobileTabBar;
         [Required, SerializeField] private Button _mobileEditTabButton;
         [Required, SerializeField] private TMP_Text _mobileEditTabLabel;
-        [Required, SerializeField] private Button _mobilePreviewTabButton;
-        [Required, SerializeField] private TMP_Text _mobilePreviewTabLabel;
+        [FormerlySerializedAs("_mobilePreviewTabButton")]
+        [Required, SerializeField] private Button _mobileFirepowerTabButton;
+        [FormerlySerializedAs("_mobilePreviewTabLabel")]
+        [Required, SerializeField] private TMP_Text _mobileFirepowerTabLabel;
         [Required, SerializeField] private Button _mobileSummaryTabButton;
         [Required, SerializeField] private TMP_Text _mobileSummaryTabLabel;
         [Required, SerializeField] private TMP_Text _garageHeaderSummaryText;
@@ -144,7 +147,7 @@ namespace Features.Garage.Presentation
             _resultPanelView.SaveClicked += () => _ = RunSaveAsync();
 
             _mobileEditTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Frame));
-            _mobilePreviewTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Firepower));
+            _mobileFirepowerTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Firepower));
             _mobileSummaryTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Mobility));
 
             _settingsOpenButton.onClick.AddListener(() =>
@@ -282,7 +285,7 @@ namespace Features.Garage.Presentation
             _resultPanelView.SetInlineSaveVisible(false);
 
             var selectedSlot = slotViewModels[_state.SelectedSlotIndex];
-            _unitPreviewView.Render(selectedSlot, _catalog);
+            _unitPreviewView.Render(selectedSlot);
 
             SyncChrome(resultViewModel);
             PublishDraftState();
@@ -438,8 +441,8 @@ namespace Features.Garage.Presentation
                 _mobileTabBar,
                 _mobileEditTabButton,
                 _mobileEditTabLabel,
-                _mobilePreviewTabButton,
-                _mobilePreviewTabLabel,
+                _mobileFirepowerTabButton,
+                _mobileFirepowerTabLabel,
                 _mobileSummaryTabButton,
                 _mobileSummaryTabLabel,
                 _garageHeaderSummaryText,

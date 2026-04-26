@@ -5,13 +5,13 @@ using Features.Garage.Runtime;
 using Features.Garage.Presentation.Theme;
 using Shared.Attributes;
 using TMPro;
+using UnityEngine.InputSystem;
 
 namespace Features.Garage.Presentation
 {
     /// <summary>
     /// Garage에서 선택된 유닛의 3D 미리보기를 표시합니다.
-    /// 현재는 기본 도형(Cube/Cylinder/Cone)으로 플레이스홀더 역할을 하며,
-    /// 추후 FBX 모델로 교체할 수 있는 구조입니다.
+    /// Nova1492 preview prefab mapping을 우선 사용하고, mapping이 없으면 기본 도형 fallback을 사용합니다.
     /// </summary>
     public sealed class GarageUnitPreviewView : MonoBehaviour
     {
@@ -35,12 +35,12 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private RawImage _rawImage;
         [Required, SerializeField] private TMP_Text _emptyStateText;
 
-        [Header("Part Prefabs (Basic Shapes)")]
-        [Tooltip("프레임: 직육면체")]
+        [Header("Part Prefabs (Primitive Fallbacks)")]
+        [Tooltip("Nova1492 frame mapping이 없을 때 쓰는 fallback")]
         [Required, SerializeField] private GameObject _framePrefab;
-        [Tooltip("무기: 원기둥")]
+        [Tooltip("Nova1492 firepower mapping이 없을 때 쓰는 fallback")]
         [Required, SerializeField] private GameObject _weaponPrefab;
-        [Tooltip("기동: 원뿔")]
+        [Tooltip("Nova1492 mobility mapping이 없을 때 쓰는 fallback")]
         [Required, SerializeField] private GameObject _thrusterPrefab;
 
         [Header("Nova1492 Model Mappings")]
@@ -62,6 +62,7 @@ namespace Features.Garage.Presentation
             EnsureRenderTexture();
             _previewCamera.backgroundColor = ThemeColors.PreviewBackground;
             _previewCamera.clearFlags = CameraClearFlags.SolidColor;
+            GaragePreviewAssembler.EnsurePreviewLighting(_previewCamera);
             _rawImage.color = Color.Lerp(ThemeColors.PreviewBackground, ThemeColors.BackgroundCard, 0.18f);
             _emptyStateText.text = "저장 유닛 실루엣";
             _emptyStateText.color = ThemeColors.TextMuted;
@@ -69,7 +70,7 @@ namespace Features.Garage.Presentation
             SetEmptyStateVisible(true);
         }
 
-        public void Render(GarageSlotViewModel viewModel, GaragePanelCatalog catalog)
+        public void Render(GarageSlotViewModel viewModel)
         {
             EnsureRenderTexture();
             DestroyCurrentPreview();
@@ -87,18 +88,18 @@ namespace Features.Garage.Presentation
                 return;
             }
 
-            CreatePreview(viewModel, catalog);
+            CreatePreview(viewModel);
             SetEmptyStateVisible(false);
-            _rawImage.color = ThemeColors.PreviewBackground;
+            _rawImage.color = Color.white;
 
             if (_previewCamera.targetTexture != null)
                 _previewCamera.Render();
         }
 
-        private void CreatePreview(GarageSlotViewModel viewModel, GaragePanelCatalog catalog)
+        private void CreatePreview(GarageSlotViewModel viewModel)
         {
             _currentPreviewRoot = new GameObject("PreviewRoot");
-            GaragePreviewAssembler.Attach(_currentPreviewRoot, transform, new Vector3(0f, -0.04f, 0f), Vector3.zero);
+            GaragePreviewAssembler.AttachToPreviewCamera(_currentPreviewRoot, _previewCamera, new Vector3(0f, -0.04f, 6f), Vector3.zero);
 
             // 프레임 (중심)
             var frameObj = CreateFrame(viewModel.FrameId);
@@ -151,8 +152,11 @@ namespace Features.Garage.Presentation
 
         private void DestroyCurrentPreview()
         {
-            if (_currentPreviewRoot != null)
-                Destroy(_currentPreviewRoot);
+            if (_currentPreviewRoot == null)
+                return;
+
+            Destroy(_currentPreviewRoot);
+            _currentPreviewRoot = null;
         }
 
         private void SetEmptyStateVisible(bool isVisible)
@@ -184,32 +188,56 @@ namespace Features.Garage.Presentation
         {
             if (_currentPreviewRoot == null) return;
 
-            if (Input.GetMouseButtonDown(0) && IsPointerInsidePreview())
+            bool hasPointer = TryGetPointerState(
+                out var pointerPosition,
+                out var wasPressedThisFrame,
+                out var wasReleasedThisFrame);
+
+            if (hasPointer && wasPressedThisFrame && IsPointerInsidePreview(pointerPosition))
             {
                 _isDragging = true;
-                _lastMousePosition = Input.mousePosition;
+                _lastMousePosition = pointerPosition;
             }
-            else if (Input.GetMouseButtonUp(0))
+            else if (wasReleasedThisFrame)
             {
                 _isDragging = false;
             }
 
-            if (_isDragging)
+            if (_isDragging && hasPointer)
             {
-                var mousePosition = (Vector2)Input.mousePosition;
-                var delta = mousePosition - _lastMousePosition;
+                var delta = pointerPosition - _lastMousePosition;
                 _manualRotationY -= delta.x * _dragRotationMultiplier;
-                _lastMousePosition = mousePosition;
+                _lastMousePosition = pointerPosition;
             }
 
             var autoRotation = Time.unscaledTime * _autoRotationSpeed;
             GaragePreviewAssembler.SetYaw(_currentPreviewRoot, _manualRotationY + autoRotation);
         }
 
-        private bool IsPointerInsidePreview()
+        private static bool TryGetPointerState(
+            out Vector2 pointerPosition,
+            out bool wasPressedThisFrame,
+            out bool wasReleasedThisFrame)
+        {
+            var pointer = Pointer.current;
+            if (pointer == null)
+            {
+                pointerPosition = Vector2.zero;
+                wasPressedThisFrame = false;
+                wasReleasedThisFrame = false;
+                return false;
+            }
+
+            pointerPosition = pointer.position.ReadValue();
+            wasPressedThisFrame = pointer.press.wasPressedThisFrame;
+            wasReleasedThisFrame = pointer.press.wasReleasedThisFrame;
+            return true;
+        }
+
+        private bool IsPointerInsidePreview(Vector2 pointerPosition)
         {
             return _rawImage != null &&
-                   RectTransformUtility.RectangleContainsScreenPoint(_rawImage.rectTransform, Input.mousePosition);
+                   RectTransformUtility.RectangleContainsScreenPoint(_rawImage.rectTransform, pointerPosition);
         }
 
         private void OnDestroy()

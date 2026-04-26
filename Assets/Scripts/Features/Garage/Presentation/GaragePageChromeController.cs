@@ -15,8 +15,8 @@ namespace Features.Garage.Presentation
         private readonly GameObject _mobileTabBar;
         private readonly Button _mobileEditTabButton;
         private readonly TMP_Text _mobileEditTabLabel;
-        private readonly Button _mobilePreviewTabButton;
-        private readonly TMP_Text _mobilePreviewTabLabel;
+        private readonly Button _mobileFirepowerTabButton;
+        private readonly TMP_Text _mobileFirepowerTabLabel;
         private readonly Button _mobileSummaryTabButton;
         private readonly TMP_Text _mobileSummaryTabLabel;
         private readonly TMP_Text _garageHeaderSummaryText;
@@ -39,8 +39,8 @@ namespace Features.Garage.Presentation
             GameObject mobileTabBar,
             Button mobileEditTabButton,
             TMP_Text mobileEditTabLabel,
-            Button mobilePreviewTabButton,
-            TMP_Text mobilePreviewTabLabel,
+            Button mobileFirepowerTabButton,
+            TMP_Text mobileFirepowerTabLabel,
             Button mobileSummaryTabButton,
             TMP_Text mobileSummaryTabLabel,
             TMP_Text garageHeaderSummaryText,
@@ -62,8 +62,8 @@ namespace Features.Garage.Presentation
             _mobileTabBar = mobileTabBar;
             _mobileEditTabButton = mobileEditTabButton;
             _mobileEditTabLabel = mobileEditTabLabel;
-            _mobilePreviewTabButton = mobilePreviewTabButton;
-            _mobilePreviewTabLabel = mobilePreviewTabLabel;
+            _mobileFirepowerTabButton = mobileFirepowerTabButton;
+            _mobileFirepowerTabLabel = mobileFirepowerTabLabel;
             _mobileSummaryTabButton = mobileSummaryTabButton;
             _mobileSummaryTabLabel = mobileSummaryTabLabel;
             _garageHeaderSummaryText = garageHeaderSummaryText;
@@ -83,19 +83,19 @@ namespace Features.Garage.Presentation
             bool isSettingsOverlayOpen,
             bool isSaving,
             bool isEditActive,
-            bool isPreviewActive,
+            bool isFirepowerActive,
             bool isSummaryActive,
             int selectedSlotIndex,
             int committedRosterCount,
             GarageResultViewModel resultViewModel)
         {
             ApplyLayout(pageRoot, isSettingsOverlayOpen);
-            RefreshTabs(isEditActive, isPreviewActive, isSummaryActive);
+            RefreshTabs(isEditActive, isFirepowerActive, isSummaryActive);
             RefreshHeaderSummary(BuildHeaderSummary(
                 selectedSlotIndex,
                 committedRosterCount,
                 isEditActive,
-                isPreviewActive,
+                isFirepowerActive,
                 resultViewModel));
             RefreshSettings(isSettingsOverlayOpen);
             RefreshSave(resultViewModel, isSaving);
@@ -115,15 +115,15 @@ namespace Features.Garage.Presentation
             SetActive(_mobileTabBar, true);
             SetActive(_mobileSaveDockRoot, true);
             SetActive(_rightRailRoot, false);
-            SetActive(_previewCard, false);
-            SetActive(_resultPane, false);
+            SetActive(_previewCard, true);
+            SetActive(_resultPane, true);
             SetActive(_settingsOverlayRoot, isSettingsOverlayOpen);
         }
 
-        private void RefreshTabs(bool isEditActive, bool isPreviewActive, bool isSummaryActive)
+        private void RefreshTabs(bool isEditActive, bool isFirepowerActive, bool isSummaryActive)
         {
             ConfigureTabButton(_mobileEditTabButton, _mobileEditTabLabel, "프레임", isEditActive, true);
-            ConfigureTabButton(_mobilePreviewTabButton, _mobilePreviewTabLabel, "무장", isPreviewActive, true);
+            ConfigureTabButton(_mobileFirepowerTabButton, _mobileFirepowerTabLabel, "무장", isFirepowerActive, true);
             ConfigureTabButton(_mobileSummaryTabButton, _mobileSummaryTabLabel, "기동", isSummaryActive, true);
         }
 
@@ -142,7 +142,7 @@ namespace Features.Garage.Presentation
             int selectedSlotIndex,
             int committedRosterCount,
             bool isEditActive,
-            bool isPreviewActive,
+            bool isFirepowerActive,
             GarageResultViewModel resultViewModel)
         {
             string readySummary = resultViewModel != null && resultViewModel.IsReady
@@ -154,7 +154,7 @@ namespace Features.Garage.Presentation
                     : $"활성 {committedRosterCount}/6";
             string focusSummary = isEditActive
                 ? "프레임 포커스"
-                : isPreviewActive
+                : isFirepowerActive
                     ? "무장 포커스"
                     : "기동 포커스";
 

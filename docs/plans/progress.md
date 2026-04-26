@@ -1,6 +1,6 @@
 # 진행 상황 (Game Scene Entry)
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-26
 > 상태: active
 > doc_id: plans.progress
 > role: plan
@@ -36,7 +36,8 @@
 - 현재 Stitch UI lane의 남은 공통 판단은 신규 prefab workflow policy guard 승인과 visual fidelity final pass다.
 - `LobbyScene` runtime assembly는 scene 생성, Build Settings 등록, required-field validation, Play Mode Lobby/Garage tab smoke까지 통과했다. 초기 overlay state, `BattleScene` 연결명, Garage 기본 tab density와 1차 typography/copy polish는 정리됐고, 최신 clean captures는 `artifacts/unity/lobby-scene-lobby-tab-clean.png`, `artifacts/unity/lobby-scene-garage-tab-clean.png`다. 남은 visual 판단은 `Set B Garage` final fidelity다.
 - Nova1492 audio 첫 pass로 SFX 11개/BGM 3개가 제한 staging됐고, 기존 SoundPlayer 경로에 SFX/BGM 채널, Lobby/Battle/Result BGM 전환, 저장된 `master/bgm/sfxVolume` 소비가 연결됐다. WebGL 오디오 로드/재생 smoke는 아직 남아 있다.
-- Nova1492 `.GX` 모델 후보는 converter prototype으로 871개 중 865개를 OBJ로 변환했고, `Assets/Art/Nova1492/GXConverted/` 아래에 category별로 정리했다. `LobbyScene` 적용 Phase 0 shortlist와 Phase 1 preview prefab pack 15개는 고정됐고, `GarageUnitPreviewView`에는 9개 runtime ID -> prefab mapping을 scene serialized reference로 연결했다. Play Mode Lobby -> Garage tab smoke와 AudioListener 경고 재확인은 통과했으며, 남은 일은 preview visual active-state/capture 확인이다.
+- Nova1492 `.GX` 모델 후보는 converter prototype으로 871개 중 865개를 OBJ로 변환했고, `Assets/Art/Nova1492/GXConverted/` 아래에 category별로 정리했다. `LobbyScene` 적용 Phase 0 shortlist와 Phase 1 preview prefab pack 15개는 고정됐고, `GarageUnitPreviewView`에는 9개 runtime ID -> prefab mapping을 scene serialized reference로 연결했다. Play Mode Lobby -> Garage tab smoke, AudioListener 경고 재확인, preview visual active-state/GameView capture까지 통과했으며, 다음 일은 scene template 중복 정리다.
+- Garage 모바일 레이아웃은 `MobileContentRoot` active `ScrollRect` + `MobileBodyHost` content 구조로 복구했고, `MobileSaveDockRoot`는 shared nav 위 fixed dock으로 조정했다. 이후 code cleanup pass에서 Firepower tab serialized field/object naming, unused preview parameter, migration helper naming, local layout constants를 정리했다.
 
 ## 현재 포커스
 
@@ -48,6 +49,7 @@
 - `GameScene` placement drag/drop automation contract와 multiplayer sync smoke 마감
 - shared `Account/Garage` validation, WebGL 실기 검증, 설정 동기화 마감
 - Lobby/Garage 시각 polish와 공용 validation 보강
+- Garage 모바일 single vertical scroll 구조와 후속 code cleanup은 닫혔고, 남은 일은 Set B visual fidelity 판단 분리다.
 - LobbyScene UI prefab instance/override 관리와 assembly helper 안전화 정리
 - Stitch contract-first -> prefab-first reset 루프 정착
 
@@ -90,7 +92,9 @@
 - `GameScene` 쪽은 placement drag/drop automation contract와 multiplayer sync smoke를 우선 마감한다.
 - `LobbyScene` 쪽은 [`lobby_scene_completion_plan.md`](./lobby_scene_completion_plan.md)를 evidence/residual 기준으로 유지하고, 새 blocker가 없으면 Garage final fidelity만 `Set B Garage` 판단과 함께 본다.
 - LobbyScene UI/prefab 관리 부채는 [`lobby_scene_ui_prefab_management_plan.md`](./lobby_scene_ui_prefab_management_plan.md)에서 assembly helper 안전화, prefab override audit, preview placeholder 정리 순서로 본다.
-- 변환된 Nova1492 GX 모델은 [`lobby_scene_nova1492_model_application_plan.md`](./lobby_scene_nova1492_model_application_plan.md)에 따라 preview visual active-state/capture 확인 후 scene template 중복 정리로 넘어간다.
+- 변환된 Nova1492 GX 모델은 [`lobby_scene_nova1492_model_application_plan.md`](./lobby_scene_nova1492_model_application_plan.md)에 따라 Phase 3 scene template 중복 정리로 넘어간다.
+- Garage 모바일 밀도 문제는 [`garage_mobile_scroll_recovery_plan.md`](./garage_mobile_scroll_recovery_plan.md)의 1차 ScrollRect 복구 evidence를 기준으로 보고, 남은 visual fidelity는 Set B 판단과 분리해서 닫는다.
+- Garage 모바일 scroll 관련 코드 정리 완료 기록은 [`garage_mobile_scroll_code_cleanup_plan.md`](./garage_mobile_scroll_code_cleanup_plan.md)에서 본다.
 - Lobby/Garage 쪽은 mobile-first Garage 단일 구조의 시각 밀도와 review evidence 기준 visual fidelity를 계속 sanity check 한다.
 - shared `Account/Garage` lane에서는 Garage save/load WebGL, settings interaction, save action 접근성을 계속 추적한다.
 - Stitch lane 쪽은 `Set A/B/C/D/E`와 추가 `GameScene HUD` source freeze를 generic onboarding 기준 샘플로 삼아, 이후 다시 여는 inventory set을 per-surface script edit 없이 단순 범용 루프의 verdict까지 태울 수 있게 source facts/draft/validate route를 일반화한다.

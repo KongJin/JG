@@ -25,6 +25,7 @@ namespace Features.Garage.Presentation
             }
 
             scrollRect.StopMovement();
+            scrollRect.normalizedPosition = new Vector2(scrollRect.normalizedPosition.x, 1f);
             scrollRect.verticalNormalizedPosition = 1f;
         }
     }

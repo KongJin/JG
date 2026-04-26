@@ -146,12 +146,13 @@
                                                 "tools/rule-harness/README.md"
                                             ],
                         "confidence":  "high",
-                        "hitCount":  1,
-                        "distinctCommitCount":  1,
+                        "hitCount":  4,
+                        "distinctCommitCount":  2,
                         "commitShas":  [
-                                           "b143862db76cf5cd6178fa36ee9f8dd15a45ff90"
+                                           "b143862db76cf5cd6178fa36ee9f8dd15a45ff90",
+                                           "65484128f8e9d53768fec7a7075d6bc5df63e07a"
                                        ],
-                        "lastSeen":  "2026-04-25T12:59:05.3509420Z",
+                        "lastSeen":  "2026-04-25T21:58:55.0991819Z",
                         "promotionTarget":  "tools/rule-harness/README.md",
                         "status":  "observed"
                     },

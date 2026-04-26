@@ -129,7 +129,7 @@ Acceptance:
 
 ### Phase 2: `GarageUnitPreviewView` model mapping 도입
 
-상태: 부분 완료
+상태: 완료
 
 목표:
 
@@ -156,10 +156,12 @@ Acceptance:
 - 매핑 결과는 `artifacts/nova1492/lobby_preview_mapping_report.md`에 남겼다.
 - `LobbyPreviewCamera`에 `AudioListener`를 추가했고, `LobbySceneRuntimeAssemblyTool`도 재생성 시 `AudioListener`를 만들도록 보정했다. Play Mode 재진입 후 `audio listeners` 경고 필터 결과는 0건이다.
 - Play Mode에서 Lobby -> Garage tab invoke smoke는 console errors 0을 유지했다.
+- preview root를 `LobbyPreviewCamera` 공간에 배치하도록 `GaragePreviewAssembler`로 분리했고, preview 전용 key light와 RawImage texture tint 보정을 추가해 모델이 GameView capture에서 읽히도록 정리했다.
+- Play Mode에서 `/LobbyRuntime/LobbyView.OpenGaragePage` 호출 후 `GaragePageRoot`, `PreviewCard`, `MobileFirepowerTabButton` active/interactable 상태를 확인했다. `MobileFirepowerTabButton/Label`은 `무장`이며, GameView capture `artifacts/unity/lobby-scene-garage-nova-preview-phase2.png`에서 Nova1492 조립 preview가 보인다. console errors는 0건이다.
 
 남은 일:
 
-- 모바일 preview tab의 active state/capture까지 확인해 실제 visual framing을 닫는다.
+- Phase 2 범위에서는 없음. 다음은 Phase 3 scene template 중복 정리다.
 
 ### Phase 3: scene template 중복 정리
 
@@ -227,6 +229,7 @@ Acceptance:
 - 2026-04-25 Phase 1 생성 후 재리뷰: preview prefab pack은 생성됐지만 policy가 새 prefab 생성 자체를 blocked로 판정하므로 scene wiring으로 확장하지 않는다. 과한점은 scene root template 교체나 runtime mapping까지 밀고 가지 않은 점에서 정리됐고, 부족한점은 policy blocked 해소 또는 명시 승인 전까지 Phase 1 acceptance를 닫을 수 없다는 점이다.
 - 2026-04-26 Phase 1 policy 정리 후 재리뷰: policy는 `lobby_preview_prefab_pack_report.md`에 기록된 정확한 Garage preview prefab 15개만 active plan 근거로 허용한다. presentation rotation write는 `GaragePreviewAssembler` runtime helper로 옮겨 ownership validator를 통과했다. 과한점은 wildcard 허용이나 scene wiring까지 확장하지 않은 점에서 정리됐고, 부족한점은 Phase 2 scene/reference mapping과 runtime smoke가 아직 남아 있다는 점이다.
 - 2026-04-26 Phase 2 매핑 후 재리뷰: mapping은 serialized reference로 닫았고 hidden runtime lookup을 만들지 않았다. AudioListener 누락은 scene/build tool 양쪽에서 보정했다. 과한점은 domain data나 battle prefab truth까지 건드리지 않은 점에서 정리됐고, 부족한점은 visual capture/framing acceptance가 아직 남아 있다는 점이다.
+- 2026-04-26 Phase 2 visual closeout 재리뷰: preview root 배치, lighting, RawImage tint 보정은 `GarageUnitPreviewView`의 표시 책임과 `GaragePreviewAssembler`의 runtime 배치 책임으로 분리했고, scene/domain truth나 Set B fidelity 기준을 확장하지 않았다. active-state/capture evidence가 생겼으므로 Phase 2 부족점은 해소됐다.
 - owner impact: primary `plans.lobby-scene-nova1492-model-application`; secondary `plans.progress`, `plans.lobby-scene-completion`, `plans.lobby-scene-ui-prefab-management`, `plans.nova1492-resource-integration`, `docs.index`; out-of-scope scene/prefab mutation, converter rewrite, GameScene runtime model application.
 - doc lifecycle checked: 새 active plan으로 등록한다. 기존 Nova resource integration plan은 reference로 유지하고, LobbyScene runtime/completion/UI prefab management plan은 대체하지 않는다.
-- plan rereview: residual - Phase 2 mapping and audio-listener smoke are clean, but preview visual active-state/capture remains open.
+- plan rereview: clean
