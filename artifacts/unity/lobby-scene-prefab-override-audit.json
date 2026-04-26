@@ -1,0 +1,205 @@
+﻿{
+    "schemaVersion":  "1.0.0",
+    "generatedAt":  "2026-04-27 00:03:52+09:00",
+    "source":  "Assets/Scenes/LobbyScene.unity",
+    "purpose":  "warning evidence for plans.prefab-management-gap-closeout",
+    "summary":  {
+                    "surfaceCount":  6,
+                    "allowedCandidateCount":  3,
+                    "reviewCandidateCount":  2,
+                    "warningCount":  1,
+                    "visualOverrideCount":  1
+                },
+    "surfaces":  [
+                     {
+                         "surfaceName":  "GaragePageRoot",
+                         "prefabAssetPath":  "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab",
+                         "sourceGuid":  "b430fa1aad4618945959b626634f69ab",
+                         "overrideCount":  25,
+                         "activeOverrideCount":  4,
+                         "visualOverrideCount":  0,
+                         "internalActiveOverrideCount":  3,
+                         "internalLayoutTargetCount":  0,
+                         "unknownOverrideCount":  0,
+                         "classification":  "review-candidate",
+                         "note":  "Root placement/default active is allowed, but internal active/layout override candidates should be confirmed. internalActive=3 internalLayoutTargets=0",
+                         "propertyFamilies":  [
+                                                  {
+                                                      "family":  "active",
+                                                      "count":  4
+                                                  },
+                                                  {
+                                                      "family":  "layout",
+                                                      "count":  20
+                                                  },
+                                                  {
+                                                      "family":  "name",
+                                                      "count":  1
+                                                  }
+                                              ],
+                         "warningOverrides":  [
+
+                                              ]
+                     },
+                     {
+                         "surfaceName":  "LobbyPageRoot",
+                         "prefabAssetPath":  "Assets/Prefabs/Features/Lobby/Root/LobbyPageRoot.prefab",
+                         "sourceGuid":  "d47fe3309a584c047880ba562c69e1e7",
+                         "overrideCount":  24,
+                         "activeOverrideCount":  3,
+                         "visualOverrideCount":  0,
+                         "internalActiveOverrideCount":  2,
+                         "internalLayoutTargetCount":  0,
+                         "unknownOverrideCount":  0,
+                         "classification":  "review-candidate",
+                         "note":  "Root placement/default active is allowed, but internal active/layout override candidates should be confirmed. internalActive=2 internalLayoutTargets=0",
+                         "propertyFamilies":  [
+                                                  {
+                                                      "family":  "active",
+                                                      "count":  3
+                                                  },
+                                                  {
+                                                      "family":  "layout",
+                                                      "count":  20
+                                                  },
+                                                  {
+                                                      "family":  "name",
+                                                      "count":  1
+                                                  }
+                                              ],
+                         "warningOverrides":  [
+
+                                              ]
+                     },
+                     {
+                         "surfaceName":  "SetACreateRoomModalRoot",
+                         "prefabAssetPath":  "Assets/Prefabs/Features/Lobby/Root/SetACreateRoomModalRoot.prefab",
+                         "sourceGuid":  "20245fa3747b40344a026f5c792b115f",
+                         "overrideCount":  22,
+                         "activeOverrideCount":  1,
+                         "visualOverrideCount":  0,
+                         "internalActiveOverrideCount":  0,
+                         "internalLayoutTargetCount":  0,
+                         "unknownOverrideCount":  0,
+                         "classification":  "allowed-candidate",
+                         "note":  "Only root name, placement, and default active override families were found.",
+                         "propertyFamilies":  [
+                                                  {
+                                                      "family":  "active",
+                                                      "count":  1
+                                                  },
+                                                  {
+                                                      "family":  "layout",
+                                                      "count":  20
+                                                  },
+                                                  {
+                                                      "family":  "name",
+                                                      "count":  1
+                                                  }
+                                              ],
+                         "warningOverrides":  [
+
+                                              ]
+                     },
+                     {
+                         "surfaceName":  "SetCCommonErrorDialogRoot",
+                         "prefabAssetPath":  "Assets/Prefabs/Features/Common/Independent/SetCCommonErrorDialogRoot.prefab",
+                         "sourceGuid":  "d831bb6f18f40714db92c55aa57b8e11",
+                         "overrideCount":  22,
+                         "activeOverrideCount":  1,
+                         "visualOverrideCount":  0,
+                         "internalActiveOverrideCount":  0,
+                         "internalLayoutTargetCount":  0,
+                         "unknownOverrideCount":  0,
+                         "classification":  "allowed-candidate",
+                         "note":  "Only root name, placement, and default active override families were found.",
+                         "propertyFamilies":  [
+                                                  {
+                                                      "family":  "active",
+                                                      "count":  1
+                                                  },
+                                                  {
+                                                      "family":  "layout",
+                                                      "count":  20
+                                                  },
+                                                  {
+                                                      "family":  "name",
+                                                      "count":  1
+                                                  }
+                                              ],
+                         "warningOverrides":  [
+
+                                              ]
+                     },
+                     {
+                         "surfaceName":  "SetCLoginLoadingOverlayRoot",
+                         "prefabAssetPath":  "Assets/Prefabs/Features/Common/Independent/SetCLoginLoadingOverlayRoot.prefab",
+                         "sourceGuid":  "a02103e73b5df3148b13a24afae87290",
+                         "overrideCount":  22,
+                         "activeOverrideCount":  1,
+                         "visualOverrideCount":  0,
+                         "internalActiveOverrideCount":  0,
+                         "internalLayoutTargetCount":  0,
+                         "unknownOverrideCount":  0,
+                         "classification":  "allowed-candidate",
+                         "note":  "Only root name, placement, and default active override families were found.",
+                         "propertyFamilies":  [
+                                                  {
+                                                      "family":  "active",
+                                                      "count":  1
+                                                  },
+                                                  {
+                                                      "family":  "layout",
+                                                      "count":  20
+                                                  },
+                                                  {
+                                                      "family":  "name",
+                                                      "count":  1
+                                                  }
+                                              ],
+                         "warningOverrides":  [
+
+                                              ]
+                     },
+                     {
+                         "surfaceName":  "SetCRoomDetailPanelRoot",
+                         "prefabAssetPath":  "Assets/Prefabs/Features/Lobby/Independent/SetCRoomDetailPanelRoot.prefab",
+                         "sourceGuid":  "6de632536d56d0a4f865070024c6223a",
+                         "overrideCount":  24,
+                         "activeOverrideCount":  2,
+                         "visualOverrideCount":  1,
+                         "internalActiveOverrideCount":  1,
+                         "internalLayoutTargetCount":  0,
+                         "unknownOverrideCount":  0,
+                         "classification":  "warning",
+                         "note":  "Visual/text/color/asset-reference or unknown prefab overrides need review before acceptance. visual=1 unknown=0",
+                         "propertyFamilies":  [
+                                                  {
+                                                      "family":  "active",
+                                                      "count":  2
+                                                  },
+                                                  {
+                                                      "family":  "color",
+                                                      "count":  1
+                                                  },
+                                                  {
+                                                      "family":  "layout",
+                                                      "count":  20
+                                                  },
+                                                  {
+                                                      "family":  "name",
+                                                      "count":  1
+                                                  }
+                                              ],
+                         "warningOverrides":  [
+                                                  {
+                                                      "targetFileId":  "7640929244844615742",
+                                                      "propertyPath":  "m_Color.a",
+                                                      "family":  "color",
+                                                      "value":  "0.6",
+                                                      "objectReference":  "{fileID: 0}"
+                                                  }
+                                              ]
+                     }
+                 ]
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractKind": "unity-surface-map",
+  "surfaceId": "set-c-account-settings-overlay",
+  "targetKind": "overlay-root",
+  "target": {
+    "kind": "prefab",
+    "assetPath": "Assets/Prefabs/Features/Account/Independent/SetCAccountSettingsOverlayRoot.prefab"
+  },
+  "contractRefs": {
+    "manifestPath": "in-memory://draft/set-c-account-settings-overlay/screen-manifest",
+    "presentationPath": "in-memory://draft/set-c-account-settings-overlay/presentation-contract"
+  },
+  "translationStrategy": "contract-complete-translator-v1",
+  "strategyMode": "generate-or-patch"
+}

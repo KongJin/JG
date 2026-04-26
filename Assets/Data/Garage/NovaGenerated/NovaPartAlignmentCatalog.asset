@@ -1,0 +1,3225 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 163b553963943d54aaf15d1582fd2153, type: 3}
+  m_Name: NovaPartAlignmentCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Garage.Infrastructure.NovaPartAlignmentCatalog
+  entries:
+  - partId: nova_fire_01_larm
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.12312518, z: 0.7725182}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.06156259, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_01_larm_70738f30
+    slot: 1
+    boundsSize: {x: 0.20142192, y: 0.6577233, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.32886165, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_01_larm_a60b1435
+    slot: 1
+    boundsSize: {x: 0.20142192, y: 0.6577233, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.32886165, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_01_larm_b07ca42b
+    slot: 1
+    boundsSize: {x: 0.8012331, y: 0.82, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_01_larm_ba64d7e9
+    slot: 1
+    boundsSize: {x: 0.8012331, y: 0.82, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_01_larm_fb67c0f6
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.12312518, z: 0.7725182}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.06156259, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_01_rarm
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.12312576, z: 0.7725182}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.06156288, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_01_rarm_78f1d508
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.12312576, z: 0.7725182}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.06156288, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_01_rarm_9ba136d9
+    slot: 1
+    boundsSize: {x: 0.8012331, y: 0.82, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_01_rarm_ae65717f
+    slot: 1
+    boundsSize: {x: 0.20142192, y: 0.6577233, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.32886165, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_01_rarm_ba79b34c
+    slot: 1
+    boundsSize: {x: 0.20142192, y: 0.6577233, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.32886165, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_01_rarm_cefde3b6
+    slot: 1
+    boundsSize: {x: 0.8012331, y: 0.82, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_02_larm
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.5976495, z: 0.69010526}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.29882476, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_02_larm_37321bd3
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.5976495, z: 0.69010526}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.29882476, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_02_larm_8089aa7c
+    slot: 1
+    boundsSize: {x: 0.39520067, y: 0.49656084, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.24828042, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_02_larm_977dfdc1
+    slot: 1
+    boundsSize: {x: 0.18431105, y: 0.82, z: 0.4677867}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_02_larm_97fa2bd5
+    slot: 1
+    boundsSize: {x: 0.39520067, y: 0.49656084, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.24828042, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_02_larm_b6fa80c6
+    slot: 1
+    boundsSize: {x: 0.18431105, y: 0.82, z: 0.4677867}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_02_rarm
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.5976495, z: 0.69010526}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.29882476, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_02_rarm_0a4c1935
+    slot: 1
+    boundsSize: {x: 0.39520067, y: 0.49656084, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.24828042, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_02_rarm_55b5d821
+    slot: 1
+    boundsSize: {x: 0.39520067, y: 0.49656084, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.24828042, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_02_rarm_94889939
+    slot: 1
+    boundsSize: {x: 0.18431105, y: 0.82, z: 0.4677867}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_02_rarm_967e17ca
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.5976495, z: 0.69010526}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.29882476, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_02_rarm_c5fb8c37
+    slot: 1
+    boundsSize: {x: 0.18431105, y: 0.82, z: 0.4677867}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_1_lback
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.44566166, z: 0.5567079}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.22283083, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_1_lback_86755cc5
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.44566166, z: 0.5567079}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.22283083, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_1_rback
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.44566166, z: 0.5567079}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.22283083, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_1_rback_fddbd3e1
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.44566166, z: 0.5567079}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.22283083, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_2_lback
+    slot: 1
+    boundsSize: {x: 0.40999416, y: 0.6681006, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.3340503, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_2_lback_1a3908fc
+    slot: 1
+    boundsSize: {x: 0.40999416, y: 0.6681006, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.3340503, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_2_rback
+    slot: 1
+    boundsSize: {x: 0.40999416, y: 0.6681006, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.3340503, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_2_rback_31cd6d75
+    slot: 1
+    boundsSize: {x: 0.40999416, y: 0.6681006, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.3340503, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm1_sz
+    slot: 1
+    boundsSize: {x: 0.23244955, y: 0.1411212, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.0705606, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm10_broz
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.44136828, z: 0.6887314}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.22068414, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm11_poms
+    slot: 1
+    boundsSize: {x: 0.4064574, y: 0.27053675, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.13526838, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm12_onms
+    slot: 1
+    boundsSize: {x: 0.39643824, y: 0.26591223, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.13295612, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm13_prs
+    slot: 1
+    boundsSize: {x: 0.28116348, y: 0.31782806, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.15891403, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm14_hbsz
+    slot: 1
+    boundsSize: {x: 0.57452404, y: 0.49590093, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.24795046, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm15_hdkn
+    slot: 1
+    boundsSize: {x: 0.72746956, y: 0.50564337, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.25282168, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm16_mgbr
+    slot: 1
+    boundsSize: {x: 0.4722909, y: 0.5342459, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.26712295, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm17_prrs
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.37711698, z: 0.47525862}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.18855849, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm18_knst
+    slot: 1
+    boundsSize: {x: 0.7281536, y: 0.45911244, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.22955622, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm19_roz
+    slot: 1
+    boundsSize: {x: 0.81999993, y: 0.35477906, z: 0.505499}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.17738953, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm2_hbbr
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.31306347, z: 0.6880831}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.15653174, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm20_rkto
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.3371764, z: 0.45355582}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.1685882, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm21_nmsz
+    slot: 1
+    boundsSize: {x: 0.31447577, y: 0.23510171, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.11755086, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm22_bsrsk
+    slot: 1
+    boundsSize: {x: 0.37898684, y: 0.22317417, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.111587085, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm23_rkog
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.81999934, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.40999967, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm24_bzk
+    slot: 1
+    boundsSize: {x: 0.19988425, y: 0.26616436, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.13308218, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm25_skoob
+    slot: 1
+    boundsSize: {x: 0.32391825, y: 0.18187776, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.09093888, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm26_srmd
+    slot: 1
+    boundsSize: {x: 0.28860027, y: 0.5697875, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.28489375, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm27_stst
+    slot: 1
+    boundsSize: {x: 0.55158377, y: 0.82000005, z: 0.7369823}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41000003, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm28_ozs
+    slot: 1
+    boundsSize: {x: 0.3768615, y: 0.276549, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.1382745, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm29_sdbt
+    slot: 1
+    boundsSize: {x: 0.16558631, y: 0.1822694, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.0911347, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm3_krst
+    slot: 1
+    boundsSize: {x: 0.82000005, y: 0.22753063, z: 0.49871212}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.113765314, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm30_sm
+    slot: 1
+    boundsSize: {x: 0.4804798, y: 0.29414847, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.14707424, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm31_skokr
+    slot: 1
+    boundsSize: {x: 0.81999993, y: 0.36996794, z: 0.4553657}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.18498397, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm32_sppoo
+    slot: 1
+    boundsSize: {x: 0.46133634, y: 0.3902517, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.19512585, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm33_hkoo
+    slot: 1
+    boundsSize: {x: 0.47457406, y: 0.31000224, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.15500112, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm34_skpo
+    slot: 1
+    boundsSize: {x: 0.33097804, y: 0.31036794, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.15518397, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm35_ons
+    slot: 1
+    boundsSize: {x: 0.81999993, y: 0.16514006, z: 0.4199822}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.08257003, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm36_bnso
+    slot: 1
+    boundsSize: {x: 0.28109348, y: 0.2645452, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.1322726, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm37_sts
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.287852, z: 0.39586714}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.143926, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm39_hmsk
+    slot: 1
+    boundsSize: {x: 0.27191335, y: 0.82, z: 0.6540104}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm4_bk
+    slot: 1
+    boundsSize: {x: 0.3689756, y: 0.15191925, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.07595962, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm41_onoo
+    slot: 1
+    boundsSize: {x: 0.82000005, y: 0.37684217, z: 0.47628632}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.18842109, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm43_przso
+    slot: 1
+    boundsSize: {x: 0.31363443, y: 0.2157648, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.1078824, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm46_dbkr
+    slot: 1
+    boundsSize: {x: 0.5965106, y: 0.6614105, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.33070526, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm5_dmsz
+    slot: 1
+    boundsSize: {x: 0.14874594, y: 0.12846002, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.06423001, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm55_bbs
+    slot: 1
+    boundsSize: {x: 0.81434774, y: 0.6665268, z: 0.82000005}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.3332634, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm6_msg
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.4013671, z: 0.7704643}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.20068355, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm7_br
+    slot: 1
+    boundsSize: {x: 0.606552, y: 0.22435811, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.112179056, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm71_toptower
+    slot: 1
+    boundsSize: {x: 0.24982536, y: 0.2681633, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.13408165, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm72_larmtower
+    slot: 1
+    boundsSize: {x: 0.38551965, y: 0.5284977, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.26424885, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm73_rarmtower
+    slot: 1
+    boundsSize: {x: 0.38551965, y: 0.5284977, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.26424885, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm74_lshdtower
+    slot: 1
+    boundsSize: {x: 0.3294345, y: 0.82000005, z: 0.3140987}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41000003, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm75_rshdtower
+    slot: 1
+    boundsSize: {x: 0.3294345, y: 0.82000005, z: 0.3140987}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41000003, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm76_orns
+    slot: 1
+    boundsSize: {x: 0.20467973, y: 0.5035668, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.2517834, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm77_osdor
+    slot: 1
+    boundsSize: {x: 0.49096042, y: 0.77567005, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.38783503, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm78_rdoot
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.6634169, z: 0.59213203}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.33170846, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm79_snop
+    slot: 1
+    boundsSize: {x: 0.26951945, y: 0.25276396, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.12638198, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm8_do
+    slot: 1
+    boundsSize: {x: 0.33961278, y: 0.5723061, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.28615305, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm80_opkrs
+    slot: 1
+    boundsSize: {x: 0.36115283, y: 0.4402257, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.22011285, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm81_rtro
+    slot: 1
+    boundsSize: {x: 0.3294392, y: 0.41980466, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.20990233, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_arm9_omg
+    slot: 1
+    boundsSize: {x: 0.12280979, y: 0.37533826, z: 0.82000005}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.18766913, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_armtowermis
+    slot: 1
+    boundsSize: {x: 0.43714553, y: 0.31820357, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.15910178, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_front
+    slot: 1
+    boundsSize: {x: 0, y: 0, z: 0}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: missing_renderer
+    reviewReason: bounds max dimension is zero
+  - partId: nova_fire_front_25584a9c
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.8003481, z: 0.7768924}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.40017405, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_front_72f37ed3
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.5420988, z: 0.7523433}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.2710494, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_front_caad5e5c
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.8003481, z: 0.7768924}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.40017405, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_front_cbb7fd7f
+    slot: 1
+    boundsSize: {x: 0, y: 0, z: 0}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: missing_renderer
+    reviewReason: bounds max dimension is zero
+  - partId: nova_fire_front_cca45776
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.5420988, z: 0.7523433}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.2710494, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_g_arm56_prrs
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.37711698, z: 0.47525862}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.18855849, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_g_arm57_prs
+    slot: 1
+    boundsSize: {x: 0.28116348, y: 0.31782806, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.15891403, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_g_arm58_dbkr
+    slot: 1
+    boundsSize: {x: 0.5965106, y: 0.6614105, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.33070526, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_g_arm93_rtro
+    slot: 1
+    boundsSize: {x: 0.3294392, y: 0.41980466, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.20990233, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_g_arm94_rdoot
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.6634169, z: 0.59213203}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.33170846, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_g_arm95_sppoo
+    slot: 1
+    boundsSize: {x: 0.46133634, y: 0.3902517, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.19512585, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_g_arm96_snop
+    slot: 1
+    boundsSize: {x: 0.26951945, y: 0.25276396, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.12638198, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_g_arm97_rkog
+    slot: 1
+    boundsSize: {x: 0.20064144, y: 0.5120646, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.2560323, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_larm
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.8187669, z: 0.8085391}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.40938345, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_larm_0731a786
+    slot: 1
+    boundsSize: {x: 0.35696054, y: 0.50007075, z: 0.82000005}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.25003538, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_larm_46c9554a
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.8187669, z: 0.8085391}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.40938345, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_larm_cc51d9e0
+    slot: 1
+    boundsSize: {x: 0.35696054, y: 0.50007075, z: 0.82000005}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.25003538, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_larm81m
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.14111724, z: 0.27693596}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.07055862, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_lback
+    slot: 1
+    boundsSize: {x: 0.23163742, y: 0.7508489, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.37542444, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_lback_5f1d02d8
+    slot: 1
+    boundsSize: {x: 0.23163742, y: 0.7508489, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.37542444, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_m
+    slot: 1
+    boundsSize: {x: 0.43714553, y: 0.31820357, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.15910178, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_m_d46a2a2f
+    slot: 1
+    boundsSize: {x: 0.4519967, y: 0.34835938, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.17417969, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_m_df76d31f
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.25483382, z: 0.5881478}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.12741691, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_n_arm59_dmsz
+    slot: 1
+    boundsSize: {x: 0.14874594, y: 0.12846002, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.06423001, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_n_arm60_mgbr
+    slot: 1
+    boundsSize: {x: 0.4722909, y: 0.5342459, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.26712295, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_n_arm61_bsrsk
+    slot: 1
+    boundsSize: {x: 0.37898684, y: 0.22317417, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.111587085, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_n_arm62_knst
+    slot: 1
+    boundsSize: {x: 0.7281536, y: 0.45911244, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.22955622, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_n_arm63_krst
+    slot: 1
+    boundsSize: {x: 0.82000005, y: 0.22753063, z: 0.49871212}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.113765314, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_n_arm64_hdkn
+    slot: 1
+    boundsSize: {x: 0.72746956, y: 0.50564337, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.25282168, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_n_arm65_bbs
+    slot: 1
+    boundsSize: {x: 0.81434774, y: 0.6665268, z: 0.82000005}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.3332634, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_n_arm66_skpo
+    slot: 1
+    boundsSize: {x: 0.33097804, y: 0.31036794, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.15518397, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_n_arm67_sts
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.287852, z: 0.39586714}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.143926, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_n_arm68_roz
+    slot: 1
+    boundsSize: {x: 0.81999993, y: 0.35477906, z: 0.505499}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.17738953, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_n_arm69_rkog
+    slot: 1
+    boundsSize: {x: 0.20064144, y: 0.5120646, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.2560323, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_n_arm70_hmsk
+    slot: 1
+    boundsSize: {x: 0.27191335, y: 0.82, z: 0.6540104}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_rarm
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.8187669, z: 0.8085391}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.40938345, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_rarm_0575504b
+    slot: 1
+    boundsSize: {x: 0.35696054, y: 0.50007075, z: 0.82000005}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.25003538, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_rarm_647b83b7
+    slot: 1
+    boundsSize: {x: 0.35696054, y: 0.50007075, z: 0.82000005}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.25003538, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_rarm_ae592bf0
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.8187669, z: 0.8085391}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.40938345, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_rback
+    slot: 1
+    boundsSize: {x: 0.23163742, y: 0.7508489, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.37542444, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_rback_9c6bd72c
+    slot: 1
+    boundsSize: {x: 0.23163742, y: 0.7508489, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.37542444, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_review
+    slot: 1
+    boundsSize: {x: 0.82, y: 0, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: needs_review_flat
+    reviewReason: min/max ratio 0 is below 0.04
+  - partId: nova_fire_review_29e11d45
+    slot: 1
+    boundsSize: {x: 0.27056327, y: 0.3225775, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.16128875, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_review_58d20138
+    slot: 1
+    boundsSize: {x: 0.23945402, y: 0.39649487, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.19824743, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_review_70df0174
+    slot: 1
+    boundsSize: {x: 0.44062626, y: 0.31419387, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.15709694, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_review_72000940
+    slot: 1
+    boundsSize: {x: 0.44062626, y: 0.25055647, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.12527823, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_review_921ded0f
+    slot: 1
+    boundsSize: {x: 0.32852617, y: 0.2091066, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.1045533, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_review_f7c085c0
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.79032856, z: 0.7111264}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.39516428, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_review_fe4703c5
+    slot: 1
+    boundsSize: {x: 0.80696356, y: 0.31615132, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.15807566, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_s_arm48_nmsz
+    slot: 1
+    boundsSize: {x: 0.31447577, y: 0.23510171, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.11755086, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_s_arm49_rkog
+    slot: 1
+    boundsSize: {x: 0.20064144, y: 0.5120646, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.2560323, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_s_arm50_hmsk
+    slot: 1
+    boundsSize: {x: 0.27191335, y: 0.82, z: 0.6540104}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_s_arm51_roz
+    slot: 1
+    boundsSize: {x: 0.81999993, y: 0.35477906, z: 0.505499}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.17738953, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_s_arm52_bzk
+    slot: 1
+    boundsSize: {x: 0.19988425, y: 0.26616436, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.13308218, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_s_arm53_ons
+    slot: 1
+    boundsSize: {x: 0.81999993, y: 0.16514006, z: 0.4199822}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.08257003, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_s_arm54_onoo
+    slot: 1
+    boundsSize: {x: 0.82000005, y: 0.37684217, z: 0.47628632}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.18842109, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_ss0_arm82_msg
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.4429105, z: 0.72176176}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.22145525, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_ss0_arm83_amg
+    slot: 1
+    boundsSize: {x: 0.4578689, y: 0.82, z: 0.3465702}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_ss0_arm84_skoob
+    slot: 1
+    boundsSize: {x: 0.29722145, y: 0.1259419, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.06297095, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_ss0_arm85_sppoo
+    slot: 1
+    boundsSize: {x: 0.2960708, y: 0.20683312, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.10341656, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_ss0_arm86_hmsk
+    slot: 1
+    boundsSize: {x: 0.650652, y: 0.7862505, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.39312524, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_ss0_arm87_dbkr
+    slot: 1
+    boundsSize: {x: 0.5000343, y: 0.71215683, z: 0.81999993}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.35607842, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_ss0_arm88_orns
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.8136308, z: 0.4241298}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.4068154, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_ss0_arm89_bnso
+    slot: 1
+    boundsSize: {x: 0.60625637, y: 0.82, z: 0.40733635}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_ss0_arm90_skokr
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.5592937, z: 0.51600856}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.27964684, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_ss0_arm91_snop
+    slot: 1
+    boundsSize: {x: 0.7415665, y: 0.7682078, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.3841039, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_ss0_arm92_ons
+    slot: 1
+    boundsSize: {x: 0.63321394, y: 0.53488684, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.26744342, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_top
+    slot: 1
+    boundsSize: {x: 0.750903, y: 0.23057315, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.115286574, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_top_06508a33
+    slot: 1
+    boundsSize: {x: 0.41186437, y: 0.37609702, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.18804851, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_top_547935c6
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.33985883, z: 0.72897047}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.16992941, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_top_5524fda7
+    slot: 1
+    boundsSize: {x: 0.750903, y: 0.23057315, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.115286574, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_top_a719d636
+    slot: 1
+    boundsSize: {x: 0.41186437, y: 0.37609702, z: 0.82}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.18804851, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_fire_top_ff856aa4
+    slot: 1
+    boundsSize: {x: 0.82, y: 0.33985883, z: 0.72897047}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: -0.16992941, z: 0}
+    socketEuler: {x: 0, y: 0, z: 90}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_0
+    slot: 0
+    boundsSize: {x: 0.24685127, y: 0.4579109, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22895545, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_0_92d68f03
+    slot: 0
+    boundsSize: {x: 0.24685127, y: 0.4579109, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22895545, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_a_allinone
+    slot: 0
+    boundsSize: {x: 0.93484443, y: 0.95, z: 0.50980407}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_all
+    slot: 0
+    boundsSize: {x: 0.95, y: 0.9191075, z: 0.3985698}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45955375, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_b0001
+    slot: 0
+    boundsSize: {x: 0.714164, y: 0.7013755, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.35068774, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_b0002
+    slot: 0
+    boundsSize: {x: 0.24685127, y: 0.4579109, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22895545, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_b0003
+    slot: 0
+    boundsSize: {x: 0.714164, y: 0.7013755, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.35068774, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_b0004
+    slot: 0
+    boundsSize: {x: 0.24685127, y: 0.4579109, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22895545, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_b0005
+    slot: 0
+    boundsSize: {x: 0.714164, y: 0.7013755, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.35068774, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_b0006
+    slot: 0
+    boundsSize: {x: 0.24685127, y: 0.4579109, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22895545, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_b0007
+    slot: 0
+    boundsSize: {x: 0.714164, y: 0.7013755, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.35068774, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_b0008
+    slot: 0
+    boundsSize: {x: 0.24685127, y: 0.4579109, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22895545, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_b0009
+    slot: 0
+    boundsSize: {x: 0.714164, y: 0.7013755, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.35068774, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_b0010
+    slot: 0
+    boundsSize: {x: 0.24685127, y: 0.4579109, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22895545, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_base_lab
+    slot: 0
+    boundsSize: {x: 0.9499999, y: 0.4675352, z: 0.54426676}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.2337676, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_base_overwork
+    slot: 0
+    boundsSize: {x: 0.37666142, y: 0.95, z: 0}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: needs_review_flat
+    reviewReason: min/max ratio 0 is below 0.04
+  - partId: nova_frame_base1
+    slot: 0
+    boundsSize: {x: 0.3338439, y: 0.35291275, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.17645638, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_base2
+    slot: 0
+    boundsSize: {x: 0.714164, y: 0.7013755, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.35068774, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_base3
+    slot: 0
+    boundsSize: {x: 0.24685127, y: 0.4579109, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22895545, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_base4
+    slot: 0
+    boundsSize: {x: 0.714164, y: 0.7013755, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.35068774, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_basebasic
+    slot: 0
+    boundsSize: {x: 0.92731357, y: 0.24773742, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.12386871, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_baseshop
+    slot: 0
+    boundsSize: {x: 0.8929974, y: 0.85175776, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.42587888, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_d_allinone
+    slot: 0
+    boundsSize: {x: 0.93484443, y: 0.95, z: 0.50980407}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_review
+    slot: 0
+    boundsSize: {x: 0.65374565, y: 0.3868152, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.1934076, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_review_212e1e7a
+    slot: 0
+    boundsSize: {x: 0.4636026, y: 0.95000005, z: 0.40674886}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.47500002, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_s_allinone
+    slot: 0
+    boundsSize: {x: 0.93484443, y: 0.95, z: 0.50980407}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_ss0_base5
+    slot: 0
+    boundsSize: {x: 0.8151816, y: 0.95, z: 0.50590014}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_ss0_base6
+    slot: 0
+    boundsSize: {x: 0.5768684, y: 0.95, z: 0.538632}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body1_sz
+    slot: 0
+    boundsSize: {x: 0.87611425, y: 0.34536356, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.17268178, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body10_skdr
+    slot: 0
+    boundsSize: {x: 0.3645005, y: 0.4786495, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.23932475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body101
+    slot: 0
+    boundsSize: {x: 0.5279911, y: 0.95, z: 0.48209894}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body11_kn
+    slot: 0
+    boundsSize: {x: 0.5855856, y: 0.3591961, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.17959805, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body114
+    slot: 0
+    boundsSize: {x: 0.9499999, y: 0.33531126, z: 0.6747775}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.16765563, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body12_kt
+    slot: 0
+    boundsSize: {x: 0.67223036, y: 0.4521868, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.2260934, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body13_scro
+    slot: 0
+    boundsSize: {x: 0.6451878, y: 0.49074024, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.24537012, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body14_trb
+    slot: 0
+    boundsSize: {x: 0.6336682, y: 0.31200483, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.15600242, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body15_znr
+    slot: 0
+    boundsSize: {x: 0.40945005, y: 0.3211633, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.16058165, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body16_kmdo
+    slot: 0
+    boundsSize: {x: 0.49760443, y: 0.3353874, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.1676937, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body17_rzmt
+    slot: 0
+    boundsSize: {x: 0.325771, y: 0.5618113, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.28090566, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body18_brgod
+    slot: 0
+    boundsSize: {x: 0.21969779, y: 0.47552496, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.23776248, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body19_spd
+    slot: 0
+    boundsSize: {x: 0.5846931, y: 0.36219394, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.18109697, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body2_prt
+    slot: 0
+    boundsSize: {x: 0.34956363, y: 0.43966877, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.21983439, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body20_prsd
+    slot: 0
+    boundsSize: {x: 0.5402624, y: 0.47976038, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.23988019, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body21_rzo
+    slot: 0
+    boundsSize: {x: 0.18644102, y: 0.5567114, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.2783557, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body22_kdd
+    slot: 0
+    boundsSize: {x: 0.8188272, y: 0.41438174, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.20719087, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body23_ms
+    slot: 0
+    boundsSize: {x: 0.7826252, y: 0.28204244, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.14102122, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body24_grbs
+    slot: 0
+    boundsSize: {x: 0.86413807, y: 0.36354765, z: 0.95000005}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.18177383, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body25_bosro
+    slot: 0
+    boundsSize: {x: 0.49262533, y: 0.3910943, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.19554715, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body26_kp
+    slot: 0
+    boundsSize: {x: 0.1895313, y: 0.47992185, z: 0.95000005}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.23996092, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body27_zns
+    slot: 0
+    boundsSize: {x: 0.73826796, y: 0.37146166, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.18573083, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body28_kp2
+    slot: 0
+    boundsSize: {x: 0.18007506, y: 0.44060102, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22030051, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body29_onms
+    slot: 0
+    boundsSize: {x: 0.95, y: 0.47144186, z: 0.8412097}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.23572093, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body3_bgd
+    slot: 0
+    boundsSize: {x: 0.46150374, y: 0.3305047, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.16525234, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body30_ozs
+    slot: 0
+    boundsSize: {x: 0.42166156, y: 0.49383456, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.24691728, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body31_poms
+    slot: 0
+    boundsSize: {x: 0.52085465, y: 0.49597117, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.24798559, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body32_brps
+    slot: 0
+    boundsSize: {x: 0.7890835, y: 0.4460697, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22303484, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body33_hmt
+    slot: 0
+    boundsSize: {x: 0.95, y: 0.19719455, z: 0.9182339}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.09859727, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body34_xxx
+    slot: 0
+    boundsSize: {x: 0.7076435, y: 0.40985805, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.20492902, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body35_trbn
+    slot: 0
+    boundsSize: {x: 0.654009, y: 0.31414407, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.15707204, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body36_rzn
+    slot: 0
+    boundsSize: {x: 0.18087395, y: 0.3701936, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.1850968, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body37_ktn
+    slot: 0
+    boundsSize: {x: 0.47908905, y: 0.3548133, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.17740665, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body38_qrso
+    slot: 0
+    boundsSize: {x: 0.50542384, y: 0.392946, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.196473, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body4_kpr
+    slot: 0
+    boundsSize: {x: 0.40704802, y: 0.35016122, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.17508061, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body5_skms
+    slot: 0
+    boundsSize: {x: 0.55022156, y: 0.5368544, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.2684272, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body51_pomsx
+    slot: 0
+    boundsSize: {x: 0.3243618, y: 0.95, z: 0.08076187}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body52_onmsx
+    slot: 0
+    boundsSize: {x: 0.5955667, y: 0.95, z: 0.1386773}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body53_ozsx
+    slot: 0
+    boundsSize: {x: 0.6658404, y: 0.95, z: 0.21350744}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body54_ooto
+    slot: 0
+    boundsSize: {x: 0.35086182, y: 0.50774086, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.25387043, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body55_sqk
+    slot: 0
+    boundsSize: {x: 0.2547001, y: 0.27607292, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.13803646, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body56_brk
+    slot: 0
+    boundsSize: {x: 0.34821916, y: 0.46088693, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.23044346, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body57_kpk
+    slot: 0
+    boundsSize: {x: 0.95, y: 0.3151099, z: 0.23329931}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.15755495, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body58_scrs
+    slot: 0
+    boundsSize: {x: 0.95, y: 0.6089196, z: 0.49375764}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.3044598, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body59_hrot
+    slot: 0
+    boundsSize: {x: 0.25856963, y: 0.37291703, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.18645851, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body6_skd
+    slot: 0
+    boundsSize: {x: 0.22881114, y: 0.45536938, z: 0.95000005}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22768469, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body60_optr
+    slot: 0
+    boundsSize: {x: 0.8665603, y: 0.95, z: 0.5596918}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body61_bsk
+    slot: 0
+    boundsSize: {x: 0.40429989, y: 0.4657213, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.23286065, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body62_cmd
+    slot: 0
+    boundsSize: {x: 0.95, y: 0.4458834, z: 0.6753678}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.2229417, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body63_vts
+    slot: 0
+    boundsSize: {x: 0.95, y: 0.2836804, z: 0.80516136}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.1418402, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body7_mops
+    slot: 0
+    boundsSize: {x: 0.7253839, y: 0.36508626, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.18254313, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body8_brc
+    slot: 0
+    boundsSize: {x: 0.6275446, y: 0.42534086, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.21267043, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_body9_btro
+    slot: 0
+    boundsSize: {x: 0.2395371, y: 0.45478123, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22739062, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_g_body66_brk
+    slot: 0
+    boundsSize: {x: 0.34821916, y: 0.46088693, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.23044346, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_g_body67_ktn
+    slot: 0
+    boundsSize: {x: 0.47908905, y: 0.3548133, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.17740665, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_g_body68_vts
+    slot: 0
+    boundsSize: {x: 0.95, y: 0.2836804, z: 0.80516136}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.1418402, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_g_body69_kpk
+    slot: 0
+    boundsSize: {x: 0.95, y: 0.3151099, z: 0.23329931}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.15755495, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_n_body39_brgod
+    slot: 0
+    boundsSize: {x: 0.21969779, y: 0.47552496, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.23776248, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_n_body40_zns
+    slot: 0
+    boundsSize: {x: 0.73826796, y: 0.37146166, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.18573083, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_n_body41_kmdo
+    slot: 0
+    boundsSize: {x: 0.49760443, y: 0.3353874, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.1676937, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_n_body42_kdd
+    slot: 0
+    boundsSize: {x: 0.8188272, y: 0.41438174, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.20719087, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_n_body43_prt
+    slot: 0
+    boundsSize: {x: 0.34956363, y: 0.43966877, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.21983439, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_n_body44_brps
+    slot: 0
+    boundsSize: {x: 0.7890835, y: 0.4460697, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22303484, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_n_body45_scro
+    slot: 0
+    boundsSize: {x: 0.6451878, y: 0.49074024, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.24537012, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_n_body46_spd
+    slot: 0
+    boundsSize: {x: 0.5846931, y: 0.36219394, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.18109697, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_n_body47_kp
+    slot: 0
+    boundsSize: {x: 0.1895313, y: 0.47992185, z: 0.95000005}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.23996092, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_n_body48_grbs
+    slot: 0
+    boundsSize: {x: 0.86413807, y: 0.36354765, z: 0.95000005}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.18177383, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_n_body49_rzmt
+    slot: 0
+    boundsSize: {x: 0.325771, y: 0.5618113, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.28090566, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_n_body50_bgd
+    slot: 0
+    boundsSize: {x: 0.46150374, y: 0.3305047, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.16525234, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_no21_body
+    slot: 0
+    boundsSize: {x: 0.32150286, y: 0.45558754, z: 0.95}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.22779377, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_ss0_body64_prt
+    slot: 0
+    boundsSize: {x: 0.95, y: 0.84356314, z: 0.7751608}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.42178157, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_frame_ss0_body65_brk
+    slot: 0
+    boundsSize: {x: 0.3913652, y: 0.25952527, z: 0.9499999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.12976263, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_g_legs35_prg
+    slot: 2
+    boundsSize: {x: 0.8189954, y: 0.26163635, z: 0.90000004}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.13081817, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_g_legs36_oprd
+    slot: 2
+    boundsSize: {x: 0.46829838, y: 0.29496583, z: 0.8999999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.14748292, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_g_legs37_sts
+    slot: 2
+    boundsSize: {x: 0.48933524, y: 0.5776007, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.28880036, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_g_legs57_ppo
+    slot: 2
+    boundsSize: {x: 0.49873677, y: 0.25251648, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.12625824, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_g_legs58_pps
+    slot: 2
+    boundsSize: {x: 0.898676, y: 0.9, z: 0.8835783}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_g_legs59_hb
+    slot: 2
+    boundsSize: {x: 0.81712395, y: 0.5000943, z: 0.90000004}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.25004715, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_g_legs60_hord
+    slot: 2
+    boundsSize: {x: 0.47300297, y: 0.9, z: 0.7246202}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs1_rdrn
+    slot: 2
+    boundsSize: {x: 0.2604025, y: 0.2458528, z: 0.8999999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.1229264, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs10_prg
+    slot: 2
+    boundsSize: {x: 0.8189954, y: 0.26163635, z: 0.90000004}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.13081817, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs11_strod
+    slot: 2
+    boundsSize: {x: 0.8272114, y: 0.5728545, z: 0.8999999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.28642726, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs112
+    slot: 2
+    boundsSize: {x: 0.9, y: 0.2628177, z: 0.884622}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.13140886, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs12_kb
+    slot: 2
+    boundsSize: {x: 0.44631642, y: 0.19359586, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.09679793, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs13_krz
+    slot: 2
+    boundsSize: {x: 0.8105803, y: 0.6565015, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.32825074, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs14_grp
+    slot: 2
+    boundsSize: {x: 0.61344, y: 0.90000004, z: 0.6192191}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45000002, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs15_krr
+    slot: 2
+    boundsSize: {x: 0.4329593, y: 0.55029964, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.27514982, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs16_sprt
+    slot: 2
+    boundsSize: {x: 0.44029227, y: 0.9, z: 0.5982584}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs17_oprd
+    slot: 2
+    boundsSize: {x: 0.46829838, y: 0.29496583, z: 0.8999999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.14748292, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs18_hord
+    slot: 2
+    boundsSize: {x: 0.47300297, y: 0.9, z: 0.7246202}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs19_tower
+    slot: 2
+    boundsSize: {x: 0.4653335, y: 0.3507238, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.1753619, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs2_tdr
+    slot: 2
+    boundsSize: {x: 0.49056652, y: 0.9, z: 0.7744447}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs20_spod
+    slot: 2
+    boundsSize: {x: 0.5589288, y: 0.683336, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.341668, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs21_ksor
+    slot: 2
+    boundsSize: {x: 0.3247572, y: 0.31284574, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.15642287, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs23_tk
+    slot: 2
+    boundsSize: {x: 0.3578521, y: 0.65861714, z: 0.90000004}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.32930857, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs24_sts
+    slot: 2
+    boundsSize: {x: 0.48933524, y: 0.5776007, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.28880036, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs25_kd
+    slot: 2
+    boundsSize: {x: 0.32803017, y: 0.33826098, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.16913049, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs26_tower
+    slot: 2
+    boundsSize: {x: 0.58422124, y: 0.34986654, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.17493327, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs3_ktpr
+    slot: 2
+    boundsSize: {x: 0.24129967, y: 0.46889725, z: 0.90000004}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.23444863, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs34_dpns
+    slot: 2
+    boundsSize: {x: 0.46372524, y: 0.5498307, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.27491534, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs4_kt
+    slot: 2
+    boundsSize: {x: 0.75658244, y: 0.6884895, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.34424475, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs47_tower2
+    slot: 2
+    boundsSize: {x: 0.9, y: 0.7547087, z: 0.6413488}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.37735435, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs48_tower2
+    slot: 2
+    boundsSize: {x: 0.21176422, y: 0.52941453, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.26470727, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs49_otrs
+    slot: 2
+    boundsSize: {x: 0.26183167, y: 0.8203732, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.4101866, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs5_ko
+    slot: 2
+    boundsSize: {x: 0.29808185, y: 0.20666781, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.103333905, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs50_pps
+    slot: 2
+    boundsSize: {x: 0.898676, y: 0.9, z: 0.8835783}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs51_ppo
+    slot: 2
+    boundsSize: {x: 0.49873677, y: 0.25251648, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.12625824, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs52_pkk
+    slot: 2
+    boundsSize: {x: 0.26816595, y: 0.3150527, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.15752634, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs53_rgd
+    slot: 2
+    boundsSize: {x: 0.5809972, y: 0.27905753, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.13952877, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs54_ros
+    slot: 2
+    boundsSize: {x: 0.4985138, y: 0.82931083, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.41465542, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs6_ok
+    slot: 2
+    boundsSize: {x: 0.4974358, y: 0.8999999, z: 0.5434309}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.44999996, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs7_hb
+    slot: 2
+    boundsSize: {x: 0.81712395, y: 0.5000943, z: 0.90000004}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.25004715, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs8_obr
+    slot: 2
+    boundsSize: {x: 0.6495434, y: 0.6422578, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.3211289, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_legs9_ptr
+    slot: 2
+    boundsSize: {x: 0.8895096, y: 0.21783137, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.10891569, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_n_legs38_grp
+    slot: 2
+    boundsSize: {x: 0.61344, y: 0.90000004, z: 0.6192191}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45000002, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_n_legs39_wk
+    slot: 2
+    boundsSize: {x: 0.4974358, y: 0.8999999, z: 0.5434309}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.44999996, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_n_legs40_krz
+    slot: 2
+    boundsSize: {x: 0.8105803, y: 0.6565015, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.32825074, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_n_legs41_tdr
+    slot: 2
+    boundsSize: {x: 0.49056652, y: 0.9, z: 0.7744447}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_n_legs42_krr
+    slot: 2
+    boundsSize: {x: 0.4329593, y: 0.55029964, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.27514982, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_n_legs43_ptr
+    slot: 2
+    boundsSize: {x: 0.8895096, y: 0.21783137, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.10891569, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_n_legs44_hord
+    slot: 2
+    boundsSize: {x: 0.47300297, y: 0.9, z: 0.7246202}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_n_legs45_strod
+    slot: 2
+    boundsSize: {x: 0.8272114, y: 0.5728545, z: 0.8999999}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1.0000001
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.28642726, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_n_legs46_sprt
+    slot: 2
+    boundsSize: {x: 0.44029227, y: 0.9, z: 0.5982584}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_no21_legs
+    slot: 2
+    boundsSize: {x: 0.6491742, y: 0.89649075, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.44824538, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_s_legs27_ksor
+    slot: 2
+    boundsSize: {x: 0.3247572, y: 0.31284574, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.15642287, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_s_legs28_krz
+    slot: 2
+    boundsSize: {x: 0.8105803, y: 0.6565015, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.32825074, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_s_legs29_sprt
+    slot: 2
+    boundsSize: {x: 0.44029227, y: 0.9, z: 0.5982584}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_s_legs30_tk
+    slot: 2
+    boundsSize: {x: 0.3578521, y: 0.65861714, z: 0.90000004}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 0.99999994
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.32930857, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_s_legs31_ko
+    slot: 2
+    boundsSize: {x: 0.29808185, y: 0.20666781, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.103333905, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_s_legs32_kb
+    slot: 2
+    boundsSize: {x: 0.44631642, y: 0.19359586, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.09679793, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_s_legs33_spod
+    slot: 2
+    boundsSize: {x: 0.5589288, y: 0.683336, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.341668, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_ss0_legs55_krz
+    slot: 2
+    boundsSize: {x: 0.8751513, y: 0.1976148, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.0988074, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 
+  - partId: nova_mob_ss0_legs56_otrs
+    slot: 2
+    boundsSize: {x: 0.73300683, y: 0.4929756, z: 0.9}
+    boundsCenter: {x: 0, y: 0, z: 0}
+    normalizedScale: 1
+    pivotOffset: {x: 0, y: 0, z: 0}
+    socketOffset: {x: 0, y: 0.2464878, z: 0}
+    socketEuler: {x: 0, y: 0, z: 0}
+    qualityFlag: auto_ok
+    reviewReason: 

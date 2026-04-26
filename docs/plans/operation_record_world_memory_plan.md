@@ -4,14 +4,11 @@
 > 상태: active
 > doc_id: plans.operation-record-world-memory
 > role: plan
-> owner_scope: 제품 분업 Agent B가 맡는 최근 작전 기록, 세계 기억, Lobby/Garage 기록 표시 작업
+> owner_scope: 최근 작전 기록, 세계 기억, Lobby/Garage 기록 표시 작업
 > upstream: plans.progress, design.game-design, design.world-design, plans.account-system
 > artifacts: `Assets/Scripts/Features/Player/`, `Assets/Scripts/Features/Wave/`, `Assets/Scripts/Features/Account/`, `Assets/Scripts/Features/Garage/`, `Assets/Scripts/Features/Lobby/Presentation/`, `Assets/Prefabs/Features/Lobby/`, `Assets/Prefabs/Features/Garage/`
 >
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
-
-이 문서는 제품 분업 기준 Agent B가 맡는 "작전 기록 / 세계 기억" 계획이다.
-기존 [`game_scene_agent_b_hud_input_validation_plan.md`](./game_scene_agent_b_hud_input_validation_plan.md)의 Agent B는 HUD/input 실행 lane이고, 이 문서의 Agent B는 사용자 제공 분업안의 두 번째 역할을 가리킨다.
 
 목표는 보상 테이블을 늘리는 것이 아니라, 한 판이 끝난 뒤 플레이어가 "내가 이 세계에서 실제로 몇 번 버텼고, 어떤 흔적을 남겼는지"를 Lobby/Garage에서 다시 볼 수 있게 하는 것이다.
 
@@ -19,7 +16,7 @@
 
 ## Scope
 
-Agent B가 소유한다:
+이 문서가 소유한다:
 
 - 최근 작전 기록 5개 저장 모델과 읽기 API
 - 전투 종료 시 작전 기록 생성
@@ -29,7 +26,7 @@ Agent B가 소유한다:
 - 기록 저장 실패가 전투 종료나 Lobby 복귀를 막지 않는 fallback 처리
 - 기록 검증용 direct test와 WebGL/Play Mode smoke 항목
 
-Agent B가 소유하지 않는다:
+이 문서가 소유하지 않는다:
 
 - 결과 화면의 팀 기여 카드 생성과 UI 배치
 - `GameEndSummary` 또는 동급 전투 종료 요약의 authoritative 계산
@@ -40,9 +37,9 @@ Agent B가 소유하지 않는다:
 
 Primary boundary:
 
-- Agent A는 "이번 판 결과"와 팀 기여 요약을 만든다.
-- Agent B는 그 결과를 "누적 작전 기록"으로 저장하고 Lobby/Garage에 보여준다.
-- Agent C는 유저-facing 용어와 기체 정체성 기준을 잠근다.
+- 전투 결과 runtime은 이번 판 결과와 팀 기여 요약을 만든다.
+- 이 문서는 그 결과를 누적 작전 기록으로 저장하고 Lobby/Garage에 보여준다.
+- 유저-facing 용어와 기체 정체성 기준은 `design.game-design`과 `design.world-design`을 따른다.
 
 ---
 
@@ -54,10 +51,10 @@ Primary boundary:
 |---|---|---|
 | `operationId` | 로컬 생성 timestamp 기반 ID | 서버 고유 ID는 후순위 |
 | `endedAtUnixMs` | 종료 시각 | 정렬 기준 |
-| `result` | `held` 또는 `baseCollapsed` | 화면 문구는 Agent C 용어 기준을 따른다 |
+| `result` | `held` 또는 `baseCollapsed` | 화면 문구는 design owner 용어 기준을 따른다 |
 | `survivalSeconds` | 실제 플레이 시간 | 현재 `GameEndEvent.PlayTimeSeconds`부터 시작 |
 | `reachedWave` | 도달 공세/침공 단계 | 내부 wave 용어는 UI에서 직접 노출하지 않는다 |
-| `coreHealthPercent` | 종료 시 코어 잔여율 | Agent A summary에 없으면 `unknown` 허용 |
+| `coreHealthPercent` | 종료 시 코어 잔여율 | 전투 결과 summary에 없으면 `unknown` 허용 |
 | `summonCount` | 소환 횟수 | 현재 event에서 확보 가능 |
 | `unitKillCount` | 제거 수 | 현재 event에서 확보 가능 |
 | `primaryRosterUnits` | 주요 기체 1~2기 | 초기에는 roster slot/frame/module 조합에서 산출 |
@@ -70,10 +67,10 @@ MVP는 "최근 5회만 보여준다"를 기준으로 한다.
 
 ## Data Contract
 
-Agent B는 전투 runtime을 다시 계산하지 않고 종료 요약을 소비한다.
+이 문서는 전투 runtime을 다시 계산하지 않고 종료 요약을 소비한다.
 
 1. 단기 시작점은 현재 `GameEndEvent`의 `IsVictory`, `ReachedWave`, `PlayTimeSeconds`, `SummonCount`, `UnitKillCount`다.
-2. `coreHealthPercent`, 팀 기여 카드, enemy pressure, 주요 기여 기체 같은 확장값은 Agent A가 `GameEndSummary` 또는 동급 DTO로 제공할 때 연결한다.
+2. `coreHealthPercent`, 팀 기여 카드, enemy pressure, 주요 기여 기체 같은 확장값은 전투 결과 runtime이 `GameEndSummary` 또는 동급 DTO로 제공할 때 연결한다.
 3. 확장값이 없을 때는 기록을 만들되 해당 필드는 `unknown` 또는 보수적 fallback으로 남긴다.
 4. 저장 모델은 presentation 문구가 아니라 정규화된 값과 짧은 label key를 저장한다.
 
@@ -92,7 +89,7 @@ Acceptance:
 - `GameEndEvent`, `GameEndAnalytics`, `WaveGameEndBridge`, `WaveEndView`가 현재 어떤 값을 보유하는지 확인한다.
 - `CoreObjectiveSetup`에서 종료 시 코어 잔여율을 안전하게 읽을 수 있는지 확인한다.
 - Garage roster handoff와 Lobby/Garage 표시 경로에서 주요 기체명을 얻을 수 있는지 확인한다.
-- acceptance: 즉시 사용 가능 필드와 Agent A 제공이 필요한 필드가 분리된다.
+- acceptance: 즉시 사용 가능 필드와 전투 결과 owner 제공이 필요한 필드가 분리된다.
 
 ### Phase 2. Operation Record Domain And Port
 
@@ -120,7 +117,7 @@ Acceptance:
 - Lobby 또는 Garage 한쪽에 최근 작전 기록 요약을 표시한다.
 - 요약은 보상/랭킹보다 "버틴 흔적"이 먼저 읽히게 한다.
 - 첫 표시는 3줄 내외로 제한하고, 상세 모달이 필요하면 후순위로 둔다.
-- 예시 문구는 Agent C의 용어 기준을 따르되, 임시 기준은 `버텨냈다`, `거점 붕괴`, `코어 잔여율`, `주요 기체`를 사용한다.
+- 예시 문구는 design owner의 용어 기준을 따르되, 임시 기준은 `버텨냈다`, `거점 붕괴`, `코어 잔여율`, `주요 기체`를 사용한다.
 - acceptance: 모바일 세로 Lobby/Garage에서 기록 요약이 기존 roster/save/settings 흐름을 가리지 않는다.
 
 ### Phase 6. Result Flow Integration
@@ -141,7 +138,7 @@ Acceptance:
 
 ## Current Implementation Evidence
 
-2026-04-26 Agent B pass:
+2026-04-26 implementation pass:
 
 - Code path: `OperationRecord`, `RecentOperationRecords`, `OperationRecordFactory`, `SaveOperationRecordUseCase`, `OperationRecordGameEndHandler`, `OperationRecordJsonStore`가 추가됐다.
 - Code path: `GameSceneRoot`가 `GameEndReportRequestedEvent`를 소비해 최근 작전 기록을 local JSON으로 저장하는 handler를 조립한다.
@@ -173,7 +170,7 @@ Residuals after this pass:
 ## UI Copy Guardrails
 
 이 문서는 용어 SSOT가 아니다.
-다만 Agent C 기준이 잠기기 전까지 Agent B 구현은 아래 임시 guardrail을 따른다.
+다만 design owner 기준이 잠기기 전까지 이 구현은 아래 임시 guardrail을 따른다.
 
 - `승리`보다 `버텨냈다`를 우선한다.
 - `패배`보다 `거점 붕괴` 또는 `방어 실패`를 우선한다.
@@ -185,8 +182,8 @@ Residuals after this pass:
 
 ## Blocked / Residual Handling
 
-- Agent A의 종료 요약에 코어 잔여율이나 pressure summary가 없으면 MVP 기록은 현재 event 필드로 먼저 만들고, 누락 필드는 residual로 남긴다.
-- Agent C 용어 기준이 아직 없으면 임시 카피로 표시하되, 저장 schema에 임시 문구를 고정하지 않는다.
+- 전투 종료 요약에 코어 잔여율이나 pressure summary가 없으면 MVP 기록은 현재 event 필드로 먼저 만들고, 누락 필드는 residual로 남긴다.
+- design owner 용어 기준이 아직 없으면 임시 카피로 표시하되, 저장 schema에 임시 문구를 고정하지 않는다.
 - Firestore 계정 경로가 WebGL에서 아직 불안정하면 로컬 최근 5회까지만 acceptance로 닫고 계정 동기화는 `Account/Garage` residual로 남긴다.
 - Lobby/Garage visual lane이 Set B final judgment와 충돌하면 기록 표시 prefab 준비까지만 닫고 scene integration을 residual로 남긴다.
 - 저장 실패는 전투 결과 흐름을 막지 않는다. 저장 실패 UI를 새로 크게 만들지 않고 로그와 다음 진입 복원 실패로 구분한다.
@@ -218,15 +215,15 @@ Residuals after this pass:
 
 - 과한점 리뷰: 세계관/용어 규칙 본문을 새로 소유하지 않고, 최근 작전 기록 실행 계획과 owner boundary만 정리했다.
 - 부족한점 리뷰: owner, scope, 제외 범위, MVP record shape, 실행 순서, acceptance, validation, blocked/residual, lifecycle을 포함했다.
-- 수정 후 재리뷰: 기존 HUD Agent B plan과 이름 충돌을 본문에서 분리했고, Firestore 확장을 MVP 필수로 만들지 않도록 local-first로 낮췄다.
+- 수정 후 재리뷰: HUD/input plan과 이름 충돌을 본문에서 제거했고, Firestore 확장을 MVP 필수로 만들지 않도록 local-first로 낮췄다.
 - 반복 재리뷰 반영: obvious 과한점/부족한점 없음.
-- owner impact: primary `plans.operation-record-world-memory`; secondary `plans.progress`, `docs.index`, `plans.account-system`, `design.game-design`, `design.world-design`; out-of-scope Agent A result card implementation, Agent C terminology/unit attachment implementation, Account recovery backlog.
-- doc lifecycle checked: 새 active plan으로 등록한다. 기존 Agent B HUD/input plan은 대체하지 않고 유지하며, 이 문서는 제품 분업 Agent B의 작전 기록 lane만 소유한다.
+- owner impact: primary `plans.operation-record-world-memory`; secondary `plans.progress`, `docs.index`, `plans.account-system`, `design.game-design`, `design.world-design`; out-of-scope result card implementation, terminology/unit attachment implementation, Account recovery backlog.
+- doc lifecycle checked: 새 active plan으로 등록한다. 이 문서는 작전 기록 lane만 소유한다.
 - plan rereview: clean
-- 2026-04-26 B 구현 증거 반영 후 과한점 리뷰: 최근 작전 기록 local-first code path와 residual만 추가했고, Firestore schema/UI layout/Agent C 용어 규칙은 이 문서에서 새로 확정하지 않았다.
-- 2026-04-26 B 구현 증거 반영 후 부족한점 리뷰: compile/docs lint 증거, EditMode test blocked reason, Lobby/Garage 표시와 Firestore/WebGL residual을 분리했다.
-- 2026-04-26 B 구현 증거 반영 후 재리뷰: plan rereview: clean.
-- 2026-04-26 Garage 요약 표시 반영 후 과한점 리뷰: 새 prefab/scene authoring이나 새 상세 모달을 만들지 않고 기존 result stats text에 최소 요약만 붙였다. Firestore, WebGL, Agent C 용어 SSOT는 그대로 residual/out-of-scope다.
+- 2026-04-26 구현 증거 반영 후 과한점 리뷰: 최근 작전 기록 local-first code path와 residual만 추가했고, Firestore schema/UI layout/용어 규칙은 이 문서에서 새로 확정하지 않았다.
+- 2026-04-26 구현 증거 반영 후 부족한점 리뷰: compile/docs lint 증거, EditMode test blocked reason, Lobby/Garage 표시와 Firestore/WebGL residual을 분리했다.
+- 2026-04-26 구현 증거 반영 후 재리뷰: plan rereview: clean.
+- 2026-04-26 Garage 요약 표시 반영 후 과한점 리뷰: 새 prefab/scene authoring이나 새 상세 모달을 만들지 않고 기존 result stats text에 최소 요약만 붙였다. Firestore, WebGL, design owner 용어 SSOT는 그대로 residual/out-of-scope다.
 - 2026-04-26 Garage 요약 표시 반영 후 부족한점 리뷰: compile, docs lint, Unity UI workflow policy, direct test coverage, 실제 UI smoke 미판정 residual을 구분했다.
 - 2026-04-26 Garage 요약 표시 반영 후 재리뷰: plan rereview: clean.
 - 2026-04-26 Play Mode smoke 반영 후 과한점 리뷰: actual record 생성과 Garage text-state 표시 증거만 추가했고, screenshot/Firestore/WebGL을 success로 승격하지 않았다.

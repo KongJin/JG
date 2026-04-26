@@ -157,6 +157,142 @@ function Get-DeclaredResetPrefabTargets {
     return @($targets | Sort-Object -Unique)
 }
 
+function Get-ApprovedNewPrefabTargets {
+    param(
+        [string]$RepoRoot
+    )
+
+    $manifestPath = Join-Path $RepoRoot "artifacts\unity\prefab-management-approved-new-prefabs.json"
+    if (-not (Test-Path -LiteralPath $manifestPath)) {
+        return @()
+    }
+
+    try {
+        $json = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+        if ($null -eq $json -or $null -eq $json.prefabs) {
+            return @()
+        }
+
+        return @(
+            foreach ($record in @($json.prefabs)) {
+                if ($null -eq $record) {
+                    continue
+                }
+
+                $assetPath = ([string]$record.assetPath).Replace("\", "/")
+                $status = [string]$record.status
+                if ([string]::IsNullOrWhiteSpace($assetPath)) {
+                    continue
+                }
+
+                if ($status -notin @("approved-declared", "residual-declared")) {
+                    continue
+                }
+
+                $assetPath
+            }
+        ) | Sort-Object -Unique
+    }
+    catch {
+        return @()
+    }
+}
+
+function Get-PrefabManagementSummary {
+    param(
+        [string]$RepoRoot
+    )
+
+    $inventoryPath = Join-Path $RepoRoot "artifacts\unity\prefab-management-inventory.json"
+    $approvalPath = Join-Path $RepoRoot "artifacts\unity\prefab-management-approved-new-prefabs.json"
+    $inventory = $null
+    $approval = $null
+
+    if (Test-Path -LiteralPath $inventoryPath) {
+        try {
+            $json = Get-Content -LiteralPath $inventoryPath -Raw | ConvertFrom-Json
+            $inventory = [PSCustomObject]@{
+                path = "artifacts/unity/prefab-management-inventory.json"
+                generatedAt = [string]$json.generatedAt
+                totalPrefabs = [int]$json.summary.totalPrefabs
+                generatedPreviewPrefabs = [int]$json.summary.generatedPreviewPrefabs
+                resourcesPrefabs = [int]$json.summary.resourcesPrefabs
+                duplicateCandidateGroups = [int]$json.summary.duplicateCandidateGroups
+                approvedNewPrefabTargets = [int]$json.summary.approvedNewPrefabTargets
+            }
+        }
+        catch {
+            $inventory = [PSCustomObject]@{
+                path = "artifacts/unity/prefab-management-inventory.json"
+                error = $_.Exception.Message
+            }
+        }
+    }
+
+    if (Test-Path -LiteralPath $approvalPath) {
+        try {
+            $json = Get-Content -LiteralPath $approvalPath -Raw | ConvertFrom-Json
+            $approval = [PSCustomObject]@{
+                path = "artifacts/unity/prefab-management-approved-new-prefabs.json"
+                generatedAt = [string]$json.generatedAt
+                prefabCount = @($json.prefabs).Count
+                prefabPaths = @($json.prefabs | ForEach-Object { [string]$_.assetPath })
+            }
+        }
+        catch {
+            $approval = [PSCustomObject]@{
+                path = "artifacts/unity/prefab-management-approved-new-prefabs.json"
+                error = $_.Exception.Message
+            }
+        }
+    }
+
+    return [PSCustomObject]@{
+        inventory = $inventory
+        approvalManifest = $approval
+    }
+}
+
+function Get-PrefabOverrideDriftSummary {
+    param(
+        [string]$RepoRoot
+    )
+
+    $auditPath = Join-Path $RepoRoot "artifacts\unity\lobby-scene-prefab-override-audit.json"
+    if (-not (Test-Path -LiteralPath $auditPath)) {
+        return $null
+    }
+
+    try {
+        $json = Get-Content -LiteralPath $auditPath -Raw | ConvertFrom-Json
+        return [PSCustomObject]@{
+            path = "artifacts/unity/lobby-scene-prefab-override-audit.json"
+            generatedAt = [string]$json.generatedAt
+            surfaceCount = [int]$json.summary.surfaceCount
+            allowedCandidateCount = [int]$json.summary.allowedCandidateCount
+            reviewCandidateCount = [int]$json.summary.reviewCandidateCount
+            warningCount = [int]$json.summary.warningCount
+            visualOverrideCount = [int]$json.summary.visualOverrideCount
+            warningSurfaces = @(
+                $json.surfaces |
+                    Where-Object { $_.classification -eq "warning" } |
+                    ForEach-Object { [string]$_.surfaceName }
+            )
+            reviewCandidateSurfaces = @(
+                $json.surfaces |
+                    Where-Object { $_.classification -eq "review-candidate" } |
+                    ForEach-Object { [string]$_.surfaceName }
+            )
+        }
+    }
+    catch {
+        return [PSCustomObject]@{
+            path = "artifacts/unity/lobby-scene-prefab-override-audit.json"
+            error = $_.Exception.Message
+        }
+    }
+}
+
 function Get-StitchSourceFreezeResetPrefabTargets {
     param(
         [string]$RepoRoot
@@ -366,12 +502,30 @@ $unityUiRelevantFiles = Get-PathsMatching -Paths $changedFiles -Patterns $unityU
 $stitchSurfaceOnboardingFiles = Get-PathsMatching -Paths $changedFiles -Patterns $stitchSurfaceOnboardingEvidencePatterns
 $stitchCapabilityExpansionFiles = Get-PathsMatching -Paths $changedFiles -Patterns $stitchCapabilityExpansionPatterns
 $newPrefabFiles = Get-PathsMatching -Paths $addedFiles -Patterns @('^Assets/.+\.prefab$')
-$declaredNewPrefabTargets = @(
-    (Get-DeclaredResetPrefabTargets -RepoRoot $repoRoot) +
-    (Get-StitchSourceFreezeResetPrefabTargets -RepoRoot $repoRoot) +
-    (Get-NovaGaragePreviewPrefabTargets -RepoRoot $repoRoot) |
-        Sort-Object -Unique
-)
+$declaredNewPrefabTargetValues = New-Object System.Collections.Generic.List[string]
+foreach ($candidate in @(Get-DeclaredResetPrefabTargets -RepoRoot $repoRoot)) {
+    if (-not [string]::IsNullOrWhiteSpace($candidate)) {
+        $declaredNewPrefabTargetValues.Add(([string]$candidate).Replace("\", "/")) | Out-Null
+    }
+}
+foreach ($candidate in @(Get-ApprovedNewPrefabTargets -RepoRoot $repoRoot)) {
+    if (-not [string]::IsNullOrWhiteSpace($candidate)) {
+        $declaredNewPrefabTargetValues.Add(([string]$candidate).Replace("\", "/")) | Out-Null
+    }
+}
+foreach ($candidate in @(Get-StitchSourceFreezeResetPrefabTargets -RepoRoot $repoRoot)) {
+    if (-not [string]::IsNullOrWhiteSpace($candidate)) {
+        $declaredNewPrefabTargetValues.Add(([string]$candidate).Replace("\", "/")) | Out-Null
+    }
+}
+foreach ($candidate in @(Get-NovaGaragePreviewPrefabTargets -RepoRoot $repoRoot)) {
+    if (-not [string]::IsNullOrWhiteSpace($candidate)) {
+        $declaredNewPrefabTargetValues.Add(([string]$candidate).Replace("\", "/")) | Out-Null
+    }
+}
+$declaredNewPrefabTargets = @($declaredNewPrefabTargetValues.ToArray() | Sort-Object -Unique)
+$prefabManagementSummary = Get-PrefabManagementSummary -RepoRoot $repoRoot
+$prefabOverrideDriftSummary = Get-PrefabOverrideDriftSummary -RepoRoot $repoRoot
 
 $hasScenePrefab = @($scenePrefabFiles).Count -gt 0
 $hasPresentationCode = @($presentationFiles).Count -gt 0
@@ -590,6 +744,9 @@ $report = [PSCustomObject]@{
     presentationLayoutOwnership = $layoutOwnershipSummary
     presentationResponsibility = $presentationResponsibilitySummary
     capabilityExpansionGuard = $capabilityExpansionGuard
+    prefabManagement = $prefabManagementSummary
+    prefabOverrideDrift = $prefabOverrideDriftSummary
+    declaredNewPrefabTargets = $declaredNewPrefabTargets
     resultPath = $resultAbsolutePath
 }
 

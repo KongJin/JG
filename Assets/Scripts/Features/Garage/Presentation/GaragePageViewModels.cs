@@ -23,7 +23,10 @@ namespace Features.Garage.Presentation
             string mobilityId = null,
             GameObject framePreviewPrefab = null,
             GameObject firepowerPreviewPrefab = null,
-            GameObject mobilityPreviewPrefab = null)
+            GameObject mobilityPreviewPrefab = null,
+            GaragePanelCatalog.PartAlignment frameAlignment = null,
+            GaragePanelCatalog.PartAlignment firepowerAlignment = null,
+            GaragePanelCatalog.PartAlignment mobilityAlignment = null)
         {
             SlotLabel = slotLabel;
             Title = title;
@@ -44,6 +47,9 @@ namespace Features.Garage.Presentation
             FramePreviewPrefab = framePreviewPrefab;
             FirepowerPreviewPrefab = firepowerPreviewPrefab;
             MobilityPreviewPrefab = mobilityPreviewPrefab;
+            FrameAlignment = frameAlignment;
+            FirepowerAlignment = firepowerAlignment;
+            MobilityAlignment = mobilityAlignment;
         }
 
         public string SlotLabel { get; }
@@ -65,6 +71,9 @@ namespace Features.Garage.Presentation
         public GameObject FramePreviewPrefab { get; }
         public GameObject FirepowerPreviewPrefab { get; }
         public GameObject MobilityPreviewPrefab { get; }
+        public GaragePanelCatalog.PartAlignment FrameAlignment { get; }
+        public GaragePanelCatalog.PartAlignment FirepowerAlignment { get; }
+        public GaragePanelCatalog.PartAlignment MobilityAlignment { get; }
     }
 
     public sealed class GarageEditorViewModel

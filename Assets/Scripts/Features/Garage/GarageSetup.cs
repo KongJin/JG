@@ -30,6 +30,12 @@ namespace Features.Garage
         [SerializeField]
         private GaragePageController _pageController;
 
+        [SerializeField]
+        private NovaPartVisualCatalog _novaPartVisualCatalog;
+
+        [SerializeField]
+        private NovaPartAlignmentCatalog _novaPartAlignmentCatalog;
+
         private IAccountDataPort _accountDataPort;
         private RosterValidationProvider _rosterValidationProvider;
         private DisposableScope _disposables;
@@ -58,7 +64,10 @@ namespace Features.Garage
             _accountDataPort = accountDataPort;
             _eventPublisher = eventBus;
             _rosterValidationProvider = new RosterValidationProvider(unitCatalog);
-            _panelCatalog = _panelCatalogFactory.Build(unitCatalog);
+            _panelCatalog = _panelCatalogFactory.Build(
+                unitCatalog,
+                _novaPartVisualCatalog,
+                _novaPartAlignmentCatalog);
 
             // Composition root — UseCase 조립
             _disposables?.Dispose();
@@ -155,19 +164,30 @@ namespace Features.Garage
 
     internal sealed class GaragePanelCatalogFactory
     {
-        public GaragePanelCatalog Build(ModuleCatalog unitCatalog)
+        public GaragePanelCatalog Build(
+            ModuleCatalog unitCatalog,
+            NovaPartVisualCatalog novaPartVisualCatalog = null,
+            NovaPartAlignmentCatalog novaPartAlignmentCatalog = null)
         {
+            var novaMetadata = BuildNovaMetadataByPartId(novaPartVisualCatalog);
+            var novaAlignment = BuildNovaAlignmentByPartId(novaPartAlignmentCatalog);
             var frames = new System.Collections.Generic.List<GaragePanelCatalog.FrameOption>();
             for (int i = 0; i < unitCatalog.UnitFrames.Count; i++)
             {
                 var frame = unitCatalog.UnitFrames[i];
+                novaMetadata.TryGetValue(frame.FrameId, out var metadata);
+                novaAlignment.TryGetValue(frame.FrameId, out var alignment);
                 frames.Add(new GaragePanelCatalog.FrameOption
                 {
                     Id = frame.FrameId,
                     DisplayName = frame.DisplayName,
                     BaseHp = frame.BaseHp,
                     BaseAttackSpeed = frame.BaseAttackSpeed,
-                    PreviewPrefab = frame.PreviewPrefab
+                    PreviewPrefab = frame.PreviewPrefab,
+                    SourcePath = metadata?.SourceRelativePath,
+                    Tier = metadata?.Tier ?? 0,
+                    NeedsNameReview = metadata?.NeedsNameReview ?? false,
+                    Alignment = CreateAlignment(alignment)
                 });
             }
 
@@ -175,6 +195,8 @@ namespace Features.Garage
             for (int i = 0; i < unitCatalog.FirepowerModules.Count; i++)
             {
                 var module = unitCatalog.FirepowerModules[i];
+                novaMetadata.TryGetValue(module.ModuleId, out var metadata);
+                novaAlignment.TryGetValue(module.ModuleId, out var alignment);
                 firepower.Add(new GaragePanelCatalog.FirepowerOption
                 {
                     Id = module.ModuleId,
@@ -182,7 +204,11 @@ namespace Features.Garage
                     AttackDamage = module.AttackDamage,
                     AttackSpeed = module.AttackSpeed,
                     Range = module.Range,
-                    PreviewPrefab = module.PreviewPrefab
+                    PreviewPrefab = module.PreviewPrefab,
+                    SourcePath = metadata?.SourceRelativePath,
+                    Tier = metadata?.Tier ?? 0,
+                    NeedsNameReview = metadata?.NeedsNameReview ?? false,
+                    Alignment = CreateAlignment(alignment)
                 });
             }
 
@@ -190,6 +216,8 @@ namespace Features.Garage
             for (int i = 0; i < unitCatalog.MobilityModules.Count; i++)
             {
                 var module = unitCatalog.MobilityModules[i];
+                novaMetadata.TryGetValue(module.ModuleId, out var metadata);
+                novaAlignment.TryGetValue(module.ModuleId, out var alignment);
                 mobility.Add(new GaragePanelCatalog.MobilityOption
                 {
                     Id = module.ModuleId,
@@ -197,11 +225,70 @@ namespace Features.Garage
                     HpBonus = module.HpBonus,
                     MoveRange = module.MoveRange,
                     AnchorRange = module.AnchorRange,
-                    PreviewPrefab = module.PreviewPrefab
+                    PreviewPrefab = module.PreviewPrefab,
+                    SourcePath = metadata?.SourceRelativePath,
+                    Tier = metadata?.Tier ?? 0,
+                    NeedsNameReview = metadata?.NeedsNameReview ?? false,
+                    Alignment = CreateAlignment(alignment)
                 });
             }
 
             return new GaragePanelCatalog(frames, firepower, mobility);
+        }
+
+        private static System.Collections.Generic.Dictionary<string, NovaPartVisualCatalog.Entry> BuildNovaMetadataByPartId(
+            NovaPartVisualCatalog novaPartVisualCatalog)
+        {
+            var byPartId = new System.Collections.Generic.Dictionary<string, NovaPartVisualCatalog.Entry>();
+            if (novaPartVisualCatalog == null)
+                return byPartId;
+
+            for (int i = 0; i < novaPartVisualCatalog.Entries.Count; i++)
+            {
+                var entry = novaPartVisualCatalog.Entries[i];
+                if (entry == null || string.IsNullOrWhiteSpace(entry.PartId))
+                    continue;
+
+                byPartId[entry.PartId] = entry;
+            }
+
+            return byPartId;
+        }
+
+        private static System.Collections.Generic.Dictionary<string, NovaPartAlignmentCatalog.Entry> BuildNovaAlignmentByPartId(
+            NovaPartAlignmentCatalog novaPartAlignmentCatalog)
+        {
+            var byPartId = new System.Collections.Generic.Dictionary<string, NovaPartAlignmentCatalog.Entry>();
+            if (novaPartAlignmentCatalog == null)
+                return byPartId;
+
+            for (int i = 0; i < novaPartAlignmentCatalog.Entries.Count; i++)
+            {
+                var entry = novaPartAlignmentCatalog.Entries[i];
+                if (entry == null || string.IsNullOrWhiteSpace(entry.PartId))
+                    continue;
+
+                byPartId[entry.PartId] = entry;
+            }
+
+            return byPartId;
+        }
+
+        private static GaragePanelCatalog.PartAlignment CreateAlignment(NovaPartAlignmentCatalog.Entry entry)
+        {
+            if (entry == null)
+                return null;
+
+            return new GaragePanelCatalog.PartAlignment
+            {
+                BoundsSize = entry.BoundsSize,
+                BoundsCenter = entry.BoundsCenter,
+                PivotOffset = entry.PivotOffset,
+                SocketOffset = entry.SocketOffset,
+                SocketEuler = entry.SocketEuler,
+                QualityFlag = entry.QualityFlag,
+                ReviewReason = entry.ReviewReason
+            };
         }
     }
 }

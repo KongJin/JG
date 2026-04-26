@@ -21,14 +21,14 @@
 
 Primary owner:
 
-- Agent A runtime lane
+- GameScene/BattleScene runtime sync lane
 - `GameSceneRoot`, player/energy/unit/wave runtime wiring
 - Photon 기반 BattleEntity HP, position, dead state 동기화
 - late-join 복구와 master switch 중복 실행 검증
 
 Secondary owner:
 
-- Agent B HUD/input lane은 검증 중 UI 조작 blocker가 발견될 때만 handoff를 받는다.
+- GameScene UI/UX lane은 검증 중 UI 조작 blocker가 발견될 때만 handoff를 받는다.
 - scene/prefab serialized 변경이 필요하면 한 writer가 preflight evidence를 남긴 뒤 순차 처리한다.
 
 Out of scope:
@@ -44,8 +44,8 @@ Out of scope:
 
 - Phase 0~9의 완료 표기는 주로 code path 기준이다.
 - `progress.md` 기준 현재 남은 GameScene 리스크는 placement drag/drop automation contract와 multiplayer sync smoke다.
-- 기존 Agent A 계획은 Phase 5를 "Multiplayer Sync Smoke"로 잡아두었고, 이 문서는 그 Phase 5만 실행 가능한 단위로 분리한다.
-- placement drag/drop 실패가 runtime summon contract 때문이면 Agent A가 본다. 순수 HUD/input 조작 문제면 Agent B로 넘긴다.
+- 기존 상위 계획은 Phase 5를 "Multiplayer Sync Smoke"로 잡아두었고, 이 문서는 그 Phase 5만 실행 가능한 단위로 분리한다.
+- placement drag/drop 실패가 runtime summon contract 때문이면 runtime blocker로 본다. 순수 HUD/input 조작 문제면 GameScene UI/UX lane으로 넘긴다.
 
 ---
 
@@ -55,7 +55,7 @@ Out of scope:
 
 - Unity가 Play Mode가 아닌지, compile 상태가 안정적인지 확인한다.
 - Lobby load target, build settings, direct run target이 같은 `BattleScene`을 가리키는지 확인한다.
-- 현재 dirty worktree를 확인하고 Agent B presentation 파일이나 unrelated artifact를 덮어쓰지 않는다.
+- 현재 dirty worktree를 확인하고 presentation 파일이나 unrelated artifact를 덮어쓰지 않는다.
 - scene/prefab mutation이 필요하면 Unity MCP preflight로 active scene, object path, serialized reference를 먼저 확인한다.
 
 Acceptance:
@@ -112,9 +112,9 @@ Acceptance:
 
 ### Phase 5.6 - Fix Or Handoff
 
-- runtime event/state 문제는 Agent A runtime 파일 안에서 최소 수정한다.
+- runtime event/state 문제는 runtime owner 파일 안에서 최소 수정한다.
 - scene contract 문제는 실제 serialized owner를 확인한 뒤 한 writer만 수정한다.
-- HUD/input 조작 문제는 Agent B plan으로 handoff하고 Phase 5 success로 포장하지 않는다.
+- HUD/input 조작 문제는 GameScene UI/UX lane으로 handoff하고 Phase 5 success로 포장하지 않는다.
 - multiplayer 자체를 실행할 수 없는 환경이면 `blocked: manual multiplayer validation required`로 남긴다.
 
 Acceptance:
@@ -170,15 +170,15 @@ Phase 5 closeout은 아래 중 하나로만 닫는다.
 
 - Placement drag/drop 자동화는 Phase 5 smoke를 막는 summon contract 문제일 때만 이 문서에서 다룬다.
 - direct `BattleScene` 실행에서 SoundPlayer가 없어서 나는 오디오 결함은 core runtime blocker로 보지 않는다.
-- Agent B presentation 파일이 dirty이면 Phase 5 runtime 수정 중 덮어쓰지 않는다.
+- presentation 파일이 dirty이면 Phase 5 runtime 수정 중 덮어쓰지 않는다.
 - multiplayer runner나 Photon 환경이 로컬에서 준비되지 않았으면 수동 검증 필요 blocker로 남기고, code path 완료와 actual smoke 완료를 분리한다.
 
 ---
 
 ## Handoff Notes
 
-- Agent A -> Agent B: runtime state/event가 정상인데 HUD 표시나 drag/drop 조작만 깨지면 Agent B plan으로 넘긴다.
-- Agent B -> Agent A: UI 입력이 정상인데 summon, Energy spend, BattleEntity spawn이 실패하면 Agent A runtime blocker로 되돌린다.
+- Runtime -> UI/UX: runtime state/event가 정상인데 HUD 표시나 drag/drop 조작만 깨지면 GameScene UI/UX lane으로 넘긴다.
+- UI/UX -> Runtime: UI 입력이 정상인데 summon, Energy spend, BattleEntity spawn이 실패하면 runtime blocker로 되돌린다.
 - Progress update는 실제 Phase 5 acceptance 판정이 바뀐 경우에만 한다.
 
 plan rereview: clean

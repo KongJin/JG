@@ -1,41 +1,35 @@
-# LobbyScene Prefab Override Audit
+﻿# LobbyScene Prefab Override Audit
 
-> generatedAt: 2026-04-25
+> generatedAt: 2026-04-27 00:03:52+09:00
 > source: `Assets/Scenes/LobbyScene.unity`
-> purpose: optional closeout evidence for `plans.lobby-scene-ui-prefab-management`
+> purpose: warning evidence for `plans.prefab-management-gap-closeout`
 
 This is a read-only YAML audit of prefab instance overrides currently present in `LobbyScene`.
-It is not a new workflow gate.
+It is workflow policy evidence, but starts as warning/review evidence rather than a hard gate.
 
 ## Summary
 
-| Surface | Prefab asset | Override count | Active overrides | Classification | Note |
-|---|---|---:|---:|---|---|
-| `SetCRoomDetailPanelRoot` | `Assets/Prefabs/Features/Lobby/Independent/SetCRoomDetailPanelRoot.prefab` | 22 | 1 | allowed candidate | Root placement/default active override only. |
-| `GaragePageRoot` | `Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab` | 25 | 4 | review candidate | Root placement plus multiple active overrides; confirm these are intentional scene-state hides. |
-| `SetACreateRoomModalRoot` | `Assets/Prefabs/Features/Lobby/Root/SetACreateRoomModalRoot.prefab` | 22 | 1 | allowed candidate | Root placement/default active override only. |
-| `LobbyPageRoot` | `Assets/Prefabs/Features/Lobby/Root/LobbyPageRoot.prefab` | 24 | 3 | review candidate | Root placement plus multiple active overrides; confirm these are intentional scene-state hides. |
-| `SetCCommonErrorDialogRoot` | `Assets/Prefabs/Features/Common/Independent/SetCCommonErrorDialogRoot.prefab` | 22 | 1 | allowed candidate | Root placement/default active override only. |
-| `SetCLoginLoadingOverlayRoot` | `Assets/Prefabs/Features/Common/Independent/SetCLoginLoadingOverlayRoot.prefab` | 22 | 1 | allowed candidate | Root placement/default active override only. |
+- surfaces: 6
+- allowed candidates: 3
+- review candidates: 2
+- warnings: 1
+- visual/text/color/asset-reference overrides: 1
+
+| Surface | Prefab asset | Override count | Active overrides | Visual overrides | Classification | Note |
+|---|---|---:|---:|---:|---|---|
+| GaragePageRoot | Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab | 25 | 4 | 0 | review-candidate | Root placement/default active is allowed, but internal active/layout override candidates should be confirmed. internalActive=3 internalLayoutTargets=0 |
+| LobbyPageRoot | Assets/Prefabs/Features/Lobby/Root/LobbyPageRoot.prefab | 24 | 3 | 0 | review-candidate | Root placement/default active is allowed, but internal active/layout override candidates should be confirmed. internalActive=2 internalLayoutTargets=0 |
+| SetACreateRoomModalRoot | Assets/Prefabs/Features/Lobby/Root/SetACreateRoomModalRoot.prefab | 22 | 1 | 0 | allowed-candidate | Only root name, placement, and default active override families were found. |
+| SetCCommonErrorDialogRoot | Assets/Prefabs/Features/Common/Independent/SetCCommonErrorDialogRoot.prefab | 22 | 1 | 0 | allowed-candidate | Only root name, placement, and default active override families were found. |
+| SetCLoginLoadingOverlayRoot | Assets/Prefabs/Features/Common/Independent/SetCLoginLoadingOverlayRoot.prefab | 22 | 1 | 0 | allowed-candidate | Only root name, placement, and default active override families were found. |
+| SetCRoomDetailPanelRoot | Assets/Prefabs/Features/Lobby/Independent/SetCRoomDetailPanelRoot.prefab | 24 | 2 | 1 | warning | Visual/text/color/asset-reference or unknown prefab overrides need review before acceptance. visual=1 unknown=0 |
 
 ## Property Families
 
-All captured overrides currently fall into root placement/default-state families:
-
-- `m_Name`
-- `m_IsActive`
-- `m_AnchorMin.*`
-- `m_AnchorMax.*`
-- `m_AnchoredPosition.*`
-- `m_SizeDelta.*`
-- `m_Pivot.*`
-- `m_LocalPosition.*`
-- `m_LocalRotation.*`
-- `m_LocalEulerAnglesHint.*`
-
-No `m_text`, `m_Color`, sprite, material, or component reference override appeared in this pass.
+Warnings are triggered by text/color/asset-reference/unknown property overrides. Review candidates are internal active/layout overrides that may still be intentional scene state.
 
 ## Follow-Up
 
-- Confirm the extra `m_IsActive` overrides on `LobbyPageRoot` and `GaragePageRoot` are the intended scene-level hides for runtime assembly.
-- If future audits show text/color/child layout overrides inside prefab surfaces, move those changes back to the prefab or Stitch translation lane unless there is a scene-contract reason to keep them.
+- Review warning surfaces before acceptance: SetCRoomDetailPanelRoot.
+- Confirm review-candidate active/layout overrides are intentional scene-level state: GaragePageRoot, LobbyPageRoot.
+

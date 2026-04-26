@@ -11,13 +11,13 @@ $changedFiles = @(Get-WorkflowChangedFiles -RepoRoot $RepoRoot)
 $progressPath = Join-Path $RepoRoot "docs\plans\progress.md"
 $progress = if (Test-Path -LiteralPath $progressPath) { Get-Content -LiteralPath $progressPath -Raw } else { "" }
 
-$agentAChanges = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @(
+$runtimeChanges = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @(
     "^Assets/Scripts/Features/Player/",
     "^Assets/Scripts/Features/Enemy/",
     "^Assets/Scripts/Features/Wave/",
     "^Assets/Scripts/Features/Unit/(Domain|Application|Infrastructure|UnitSetup\.cs)"
 ))
-$agentBChanges = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @(
+$presentationChanges = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @(
     "^Assets/Scripts/Features/.+/Presentation/",
     "^Assets/Scripts/Shared/Ui/",
     "^tools/unity-mcp/",
@@ -28,12 +28,12 @@ $artifactChanges = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @(
 
 $suggestions = New-Object System.Collections.Generic.List[object]
 
-if ($agentAChanges.Count -gt 0 -and $agentBChanges.Count -gt 0) {
+if ($runtimeChanges.Count -gt 0 -and $presentationChanges.Count -gt 0) {
     $suggestions.Add([PSCustomObject]@{
         Priority = 1
         Lane = "review"
-        Suggestion = "Run Agent A/B pass reviews and avoid broad runtime/presentation edits until owner mismatches are classified."
-        Command = ".\tools\workflow\Invoke-AgentPassReview.ps1 -Agent B"
+        Suggestion = "Runtime and presentation changes are mixed; classify blocker ownership before closeout."
+        Command = ".\tools\workflow\Invoke-CloseoutPack.ps1 -PlanOnly"
     })
 }
 
@@ -74,7 +74,7 @@ if ($suggestions.Count -eq 0) {
 }
 
 Write-WorkflowSection "Worktree Signals"
-Write-Host ("changedFiles={0} agentA={1} agentB={2} docs={3} artifacts={4}" -f $changedFiles.Count, $agentAChanges.Count, $agentBChanges.Count, $docsChanges.Count, $artifactChanges.Count)
+Write-Host ("changedFiles={0} runtime={1} presentation={2} docs={3} artifacts={4}" -f $changedFiles.Count, $runtimeChanges.Count, $presentationChanges.Count, $docsChanges.Count, $artifactChanges.Count)
 
 Write-WorkflowSection "Next Work Suggestions"
 foreach ($item in @($suggestions | Sort-Object Priority)) {

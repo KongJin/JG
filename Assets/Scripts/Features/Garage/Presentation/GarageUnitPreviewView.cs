@@ -15,6 +15,11 @@ namespace Features.Garage.Presentation
     /// </summary>
     public sealed class GarageUnitPreviewView : MonoBehaviour
     {
+        private static readonly Vector3 FallbackFramePosition = Vector3.zero;
+        private static readonly Vector3 FallbackWeaponPosition = new Vector3(0f, 0.62f, 0f);
+        private static readonly Vector3 FallbackWeaponEuler = new Vector3(0f, 0f, 90f);
+        private static readonly Vector3 FallbackMobilityPosition = new Vector3(0f, -0.58f, 0f);
+
         [System.Serializable]
         private sealed class PartPrefabMapping
         {
@@ -101,17 +106,80 @@ namespace Features.Garage.Presentation
             _currentPreviewRoot = new GameObject("PreviewRoot");
             GaragePreviewAssembler.AttachToPreviewCamera(_currentPreviewRoot, _previewCamera, new Vector3(0f, -0.04f, 6f), Vector3.zero);
 
-            // 프레임 (중심)
+            var framePosition = ResolveFramePosition(viewModel.FrameAlignment);
+            var weaponPosition = ResolveAttachedPartPosition(
+                viewModel.FrameAlignment,
+                viewModel.FirepowerAlignment,
+                attachToFrameTop: true,
+                FallbackWeaponPosition);
+            var weaponEuler = ResolvePartEuler(viewModel.FirepowerAlignment, FallbackWeaponEuler);
+            var mobilityPosition = ResolveAttachedPartPosition(
+                viewModel.FrameAlignment,
+                viewModel.MobilityAlignment,
+                attachToFrameTop: false,
+                FallbackMobilityPosition);
+            var mobilityEuler = ResolvePartEuler(viewModel.MobilityAlignment, Vector3.zero);
+
             var frameObj = CreateFrame(viewModel.FrameId, viewModel.FramePreviewPrefab);
-            GaragePreviewAssembler.Attach(frameObj, _currentPreviewRoot.transform, Vector3.zero, Vector3.zero);
+            GaragePreviewAssembler.Attach(frameObj, _currentPreviewRoot.transform, framePosition, Vector3.zero);
 
-            // 무기 (상단)
             var weaponObj = CreateWeapon(viewModel.FirepowerId, viewModel.FirepowerPreviewPrefab);
-            GaragePreviewAssembler.Attach(weaponObj, _currentPreviewRoot.transform, new Vector3(0f, 0.62f, 0f), new Vector3(0f, 0f, 90f));
+            GaragePreviewAssembler.Attach(weaponObj, _currentPreviewRoot.transform, weaponPosition, weaponEuler);
 
-            // 기동 (하단)
             var thrusterObj = CreateThruster(viewModel.MobilityId, viewModel.MobilityPreviewPrefab);
-            GaragePreviewAssembler.Attach(thrusterObj, _currentPreviewRoot.transform, new Vector3(0f, -0.58f, 0f), Vector3.zero);
+            GaragePreviewAssembler.Attach(thrusterObj, _currentPreviewRoot.transform, mobilityPosition, mobilityEuler);
+        }
+
+        private static Vector3 ResolveFramePosition(GaragePanelCatalog.PartAlignment frameAlignment)
+        {
+            return CanApply(frameAlignment)
+                ? frameAlignment.PivotOffset
+                : FallbackFramePosition;
+        }
+
+        private static Vector3 ResolveAttachedPartPosition(
+            GaragePanelCatalog.PartAlignment frameAlignment,
+            GaragePanelCatalog.PartAlignment partAlignment,
+            bool attachToFrameTop,
+            Vector3 fallbackPosition)
+        {
+            if (!CanApply(frameAlignment) || !CanApply(partAlignment))
+                return fallbackPosition;
+
+            var framePosition = ResolveFramePosition(frameAlignment);
+            var frameSocket = attachToFrameTop
+                ? ResolveFrameTopSocket(frameAlignment, framePosition)
+                : ResolveFrameBottomSocket(frameAlignment, framePosition);
+            var rotatedSocketOffset = Quaternion.Euler(partAlignment.SocketEuler) * partAlignment.SocketOffset;
+            return frameSocket - rotatedSocketOffset;
+        }
+
+        private static Vector3 ResolvePartEuler(GaragePanelCatalog.PartAlignment partAlignment, Vector3 fallbackEuler)
+        {
+            return CanApply(partAlignment)
+                ? partAlignment.SocketEuler
+                : fallbackEuler;
+        }
+
+        private static Vector3 ResolveFrameTopSocket(GaragePanelCatalog.PartAlignment alignment, Vector3 framePosition)
+        {
+            return framePosition + new Vector3(
+                alignment.BoundsCenter.x,
+                alignment.BoundsCenter.y + alignment.BoundsSize.y * 0.5f,
+                alignment.BoundsCenter.z);
+        }
+
+        private static Vector3 ResolveFrameBottomSocket(GaragePanelCatalog.PartAlignment alignment, Vector3 framePosition)
+        {
+            return framePosition + new Vector3(
+                alignment.BoundsCenter.x,
+                alignment.BoundsCenter.y - alignment.BoundsSize.y * 0.5f,
+                alignment.BoundsCenter.z);
+        }
+
+        private static bool CanApply(GaragePanelCatalog.PartAlignment alignment)
+        {
+            return alignment != null && alignment.CanApply;
         }
 
         private GameObject CreateFrame(string frameId, GameObject previewPrefab)

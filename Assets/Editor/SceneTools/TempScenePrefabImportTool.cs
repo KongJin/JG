@@ -26,12 +26,12 @@ namespace ProjectSD.EditorTools.SceneTools
 
         private static readonly PrefabSpec[] SharedPrefabs =
         {
-            new("LobbyGarageNavBar", "Assets/Prefabs/Shared/Ui/Navigation/LobbyGarageNavBar.prefab", new Vector2(560f, 260f), Vector3.one * 0.9f),
         };
 
         private static readonly PrefabSpec[] IndependentPrefabs =
         {
-            new("LoginLoadingOverlay", "Assets/Prefabs/Features/Lobby/Independent/LoginLoadingOverlay.prefab", new Vector2(560f, 20f), Vector3.one * 0.58f),
+            new("SetCLoginLoadingOverlayRoot", "Assets/Prefabs/Features/Common/Independent/SetCLoginLoadingOverlayRoot.prefab", new Vector2(560f, 20f), Vector3.one * 0.58f),
+            new("SetCAccountSettingsOverlayRoot", "Assets/Prefabs/Features/Account/Independent/SetCAccountSettingsOverlayRoot.prefab", new Vector2(1240f, 20f), Vector3.one * 0.58f),
         };
 
         [MenuItem(MenuPath)]
@@ -45,6 +45,10 @@ namespace ProjectSD.EditorTools.SceneTools
             CreateSectionHeader(reviewRoot, "Root Prefabs", new Vector2(-120f, 510f));
             CreateSectionHeader(reviewRoot, "Shared Prefabs", new Vector2(560f, 510f));
             CreateSectionHeader(reviewRoot, "Independent Prefabs", new Vector2(1240f, 510f));
+
+            ValidateSpecs(RootPrefabs);
+            ValidateSpecs(SharedPrefabs);
+            ValidateSpecs(IndependentPrefabs);
 
             ImportSection(reviewRoot, RootPrefabs);
             ImportSection(reviewRoot, SharedPrefabs);
@@ -115,8 +119,7 @@ namespace ProjectSD.EditorTools.SceneTools
                 var prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(spec.AssetPath);
                 if (prefabAsset == null)
                 {
-                    Debug.LogWarning($"[TempScenePrefabImportTool] Prefab missing: {spec.AssetPath}");
-                    continue;
+                    throw new System.IO.FileNotFoundException("Prefab review board path is stale or missing.", spec.AssetPath);
                 }
 
                 var instance = PrefabUtility.InstantiatePrefab(prefabAsset, SceneManager.GetActiveScene()) as GameObject;
@@ -144,6 +147,21 @@ namespace ProjectSD.EditorTools.SceneTools
                     instance.transform.localScale = spec.Scale;
                 }
             }
+        }
+
+        private static void ValidateSpecs(IEnumerable<PrefabSpec> specs)
+        {
+            var missing = new List<string>();
+            foreach (var spec in specs)
+            {
+                if (AssetDatabase.LoadAssetAtPath<GameObject>(spec.AssetPath) == null)
+                    missing.Add(spec.AssetPath);
+            }
+
+            if (missing.Count == 0)
+                return;
+
+            throw new System.IO.FileNotFoundException("[TempScenePrefabImportTool] Review board contains stale prefab path(s): " + string.Join(", ", missing));
         }
 
         private static RectTransform CreateChildRect(

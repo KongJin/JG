@@ -1,0 +1,47 @@
+﻿[
+    {
+        "step":  "ready-click",
+        "ok":  true,
+        "result":  {
+                       "success":  true,
+                       "message":  "Invoked Button.onClick and coded handlers",
+                       "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/ReadyButton",
+                       "invokedMethod":  "Button.onClick",
+                       "result":  "",
+                       "durationMs":  1.0
+                   }
+    },
+    {
+        "step":  "start-click",
+        "ok":  true,
+        "result":  {
+                       "success":  true,
+                       "message":  "Invoked Button.onClick and coded handlers",
+                       "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/StartGameButton",
+                       "invokedMethod":  "Button.onClick",
+                       "result":  "",
+                       "durationMs":  5.0
+                   }
+    },
+    {
+        "step":  "battle-loaded",
+        "ok":  true,
+        "result":  {
+                       "ok":  true,
+                       "bridgeRunning":  true,
+                       "port":  52675,
+                       "isPlaying":  true,
+                       "isPlayingOrWillChange":  false,
+                       "isPlayModeChanging":  false,
+                       "rawIsPlayingOrWillChange":  true,
+                       "isCompiling":  false,
+                       "isWaitingForPlayMode":  false,
+                       "projectKey":  "0d8ea703",
+                       "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                       "activeScene":  "BattleScene",
+                       "activeScenePath":  "Assets/Scenes/BattleScene.unity",
+                       "pendingPlayAction":  "",
+                       "pendingPlayAgeMs":  0
+                   }
+    }
+]

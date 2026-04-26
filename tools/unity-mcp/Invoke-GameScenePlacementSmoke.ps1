@@ -2,8 +2,8 @@ param(
     [string]$BaseUrl,
     [ValidateSet("None", "Defeat", "Victory")]
     [string]$ResultMode = "Defeat",
-    [string]$Owner = "AgentB",
-    [string]$OutputPath = "artifacts/unity/game-scene-agent-b-placement-smoke.json",
+    [string]$Owner = "GameSceneUIUX",
+    [string]$OutputPath = "artifacts/unity/game-scene-placement-smoke.json",
     [string]$LockPath = "Temp/UnityMcp/runtime-smoke.lock",
     [int]$LockTimeoutSec = 0,
     [int]$TimeoutSec = 120,
@@ -185,7 +185,7 @@ $operationLock = $null
 
 try {
     if (-not $NoMcpLock) {
-        $operationLock = Enter-McpExclusiveOperation -Name "game-scene-agent-b-placement-smoke" -Owner $Owner -LockPath $LockPath -TimeoutSec $LockTimeoutSec
+        $operationLock = Enter-McpExclusiveOperation -Name "game-scene-placement-smoke" -Owner $Owner -LockPath $LockPath -TimeoutSec $LockTimeoutSec
         $result.evidence.mcpLock = @{
             owner = $operationLock.Owner
             path = $operationLock.Path

@@ -176,7 +176,7 @@ namespace Features.Garage.Presentation
         {
             _settingsOpenButton.Apply(ButtonStyles.Ghost, _settingsOpenButtonLabel);
             _settingsOpenButton.interactable = !isSettingsOverlayOpen;
-            _settingsOpenButtonLabel.text = "⚙";
+            _settingsOpenButtonLabel.text = "SET";
 
             _settingsCloseButton.Apply(ButtonStyles.Secondary, _settingsCloseButtonLabel);
             _settingsCloseButton.interactable = isSettingsOverlayOpen;

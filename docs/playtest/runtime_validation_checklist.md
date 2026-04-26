@@ -50,7 +50,7 @@
 | Wave/Core HUD 유지 | wave 시작, core damage, victory/defeat까지 wave/core/result HUD가 사라지거나 겹치지 않는다. | | |
 | late-join hydration | 2-client 검증 시 joiner가 기존 BattleEntity HP/position/dead state, Energy, WaveState를 복구하거나 blocked owner를 남긴다. | | |
 | 중복 event 방지 | summon, damage, death, reward/result가 같은 입력 1회에 중복 발행되지 않는다. | | |
-| GameScene blocker owner 분리 | 실패 시 Agent A runtime event/state 문제인지 Agent B HUD/input/prefab 문제인지 메모에 분리한다. | | |
+| GameScene blocker owner 분리 | 실패 시 runtime event/state 문제인지 HUD/input/prefab 문제인지 메모에 분리한다. | | |
 | 신규 console error 없음 | 검증 중 새 `Error/Exception/Assert`가 발생하지 않는다. | | |
 
 ---
@@ -60,8 +60,8 @@
 - `success`: GameScene/BattleScene acceptance를 실제 실행으로 비교했고 기대 결과와 맞는다.
 - `blocked`: 실행 환경, Photon 2-client setup, scene contract, compile state 때문에 핵심 acceptance를 아직 판정할 수 없다.
 - `mismatch`: 실행은 했지만 결과가 기대와 다르다. 재현 절차와 owner lane을 메모에 남긴다.
-- Agent A owner: summon runtime, BattleEntity, anchor combat, enemy priority, wave/core/victory-defeat, late-join runtime state.
-- Agent B owner: HUD layout, slot/input, placement preview, error/feedback, Wave/Core/result 표시.
+- Runtime owner: summon runtime, BattleEntity, anchor combat, enemy priority, wave/core/victory-defeat, late-join runtime state.
+- UI/UX owner: HUD layout, slot/input, placement preview, error/feedback, Wave/Core/result 표시.
 - Phase 5 owner: 2-client session, late-join hydration, BattleEntity/Energy/WaveState sync smoke.
 
 ---

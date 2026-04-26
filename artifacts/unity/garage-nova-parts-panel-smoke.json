@@ -1,0 +1,65 @@
+﻿{
+    "success":  true,
+    "title":  "Nova Parts",
+    "countBefore":  "103 parts",
+    "frameSearchText":  "body23",
+    "frameRowNameAfterSearch":  "Body23 Ms",
+    "frameRowDetailAfterSearch":  "HP 645 | ASPD 1.00 | T5",
+    "frameValueAfterApply":  "Body23 Ms",
+    "firepowerSearchText":  "arm43",
+    "firepowerRowNameAfterSearch":  "Arm43 Przso",
+    "firepowerRowDetailAfterSearch":  "ATK 56 | RNG 7.8 | T5",
+    "firepowerValueAfterApply":  "Arm43 Przso",
+    "mobilitySearchText":  "legs24",
+    "mobilityRowNameAfterSearch":  "Legs24 Sts",
+    "mobilityRowDetailAfterSearch":  "HP+ 330 | MOV 3.5 | T5",
+    "mobilityValueAfterApply":  "Legs24 Sts",
+    "screenshot":  {
+                       "success":  true,
+                       "message":  "Screenshot captured.",
+                       "relativePath":  "artifacts/unity/garage-nova-parts-panel-smoke.png",
+                       "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\garage-nova-parts-panel-smoke.png",
+                       "fileSizeBytes":  52742,
+                       "sourceView":  "GameView",
+                       "width":  0,
+                       "height":  0,
+                       "prefabStageAssetPath":  ""
+                   },
+    "console":  {
+                    "warningCount":  4,
+                    "errorCount":  0,
+                    "warnings":  [
+                                     {
+                                         "type":  "Warning",
+                                         "message":  "[Firestore] Document not found (129ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                         "count":  2,
+                                         "latestTimestampUtc":  "2026-04-26 14:29:05.490",
+                                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
+                                     },
+                                     {
+                                         "type":  "Warning",
+                                         "message":  "[Firestore] Document not found (3397ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                         "count":  2,
+                                         "latestTimestampUtc":  "2026-04-26 14:29:05.360",
+                                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
+                                     },
+                                     {
+                                         "type":  "Warning",
+                                         "message":  "DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.",
+                                         "count":  1,
+                                         "latestTimestampUtc":  "2026-04-26 14:29:01.590",
+                                         "stackTrace":  "UnityEngine.Object:DontDestroyOnLoad (UnityEngine.Object)\nShared.Runtime.Sound.SoundPlayer:Awake () (at Assets/Scripts/Shared/Runtime/Sound/SoundPlayer.cs:52)\n"
+                                     },
+                                     {
+                                         "type":  "Warning",
+                                         "message":  "PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                                         "count":  2,
+                                         "latestTimestampUtc":  "2026-04-26 14:29:06.338",
+                                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nPhoton.Pun.PhotonNetwork:OnRegionsPinged (Photon.Realtime.RegionHandler) (at Assets/FromStore/Photon/PhotonUnityNetworking/Code/PhotonNetworkPart.cs:2546)\nPhoton.Realtime.MonoBehaviourEmpty:Update () (at Assets/FromStore/Photon/PhotonRealtime/Code/RegionHandler.cs:884)\n"
+                                     }
+                                 ],
+                    "errors":  [
+
+                               ]
+                }
+}

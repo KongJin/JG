@@ -22,6 +22,7 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private GarageRosterListView _rosterListView;
         [Required, SerializeField] private GarageUnitEditorView _unitEditorView;
         [Required, SerializeField] private GarageResultPanelView _resultPanelView;
+        [SerializeField] private GarageNovaPartsPanelView _novaPartsPanelView;
 
         [Header("Preview")]
         [Required, SerializeField] private GarageUnitPreviewView _unitPreviewView;
@@ -47,6 +48,7 @@ namespace Features.Garage.Presentation
         private readonly GaragePageScrollController _scrollController = new();
         private readonly GarageSaveFlow _saveFlow = new();
         private GaragePageChromeController _chromeController;
+        private GarageNovaPartsPanelCoordinator _novaPartsPanel;
 
         public void Initialize(
             InitializeGarageUseCase initializeGarage,
@@ -113,6 +115,33 @@ namespace Features.Garage.Presentation
 
             _rosterListView.Bind();
             _unitEditorView.Bind();
+            if (_novaPartsPanelView != null)
+            {
+                _novaPartsPanel ??= new GarageNovaPartsPanelCoordinator(_novaPartsPanelView);
+                _novaPartsPanel.Bind();
+                _novaPartsPanel.ApplyRequested += selection =>
+                {
+                    EnsureInitialized();
+                    switch (selection.Slot)
+                    {
+                        case GarageNovaPartPanelSlot.Frame:
+                            _mobilePartFocus = MobilePartFocus.Frame;
+                            _state.SetEditingFrameId(selection.PartId);
+                            break;
+                        case GarageNovaPartPanelSlot.Firepower:
+                            _mobilePartFocus = MobilePartFocus.Firepower;
+                            _state.SetEditingFirepowerId(selection.PartId);
+                            break;
+                        case GarageNovaPartPanelSlot.Mobility:
+                            _mobilePartFocus = MobilePartFocus.Mobility;
+                            _state.SetEditingMobilityId(selection.PartId);
+                            break;
+                    }
+
+                    _state.ClearValidationOverride();
+                    Render();
+                };
+            }
 
             _rosterListView.SlotSelected += SelectSlot;
             _unitEditorView.FrameCycleRequested += CycleFrame;
@@ -253,6 +282,13 @@ namespace Features.Garage.Presentation
             _rosterListView.Render(slotViewModels);
             _unitEditorView.Render(_presenter.BuildEditorViewModel(_state));
             _unitEditorView.SetFocusedPart(ToEditorFocus(_mobilePartFocus));
+            _novaPartsPanel?.Render(
+                _catalog,
+                new GarageNovaPartsDraftSelection(
+                    _state.EditingFrameId,
+                    _state.EditingFirepowerId,
+                    _state.EditingMobilityId),
+                ToEditorFocus(_mobilePartFocus));
             _resultPanelView.Render(resultViewModel);
             _resultPanelView.SetInlineSaveVisible(false);
             _unitPreviewView.Render(slotViewModels[_state.SelectedSlotIndex]);

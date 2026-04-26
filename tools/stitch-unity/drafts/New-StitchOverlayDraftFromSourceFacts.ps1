@@ -3,10 +3,10 @@ param(
     [Parameter(Mandatory = $true)][string]$TargetAssetPath,
     [string]$DraftPath = "",
     [string]$SetId = "",
-    [string]$Title = "",
-    [string]$PrimaryText = "",
-    [string]$BodyText = "",
-    [switch]$NoActionButton
+    [string]$HtmlPath = "",
+    [string]$ImagePath = "",
+    [switch]$NoActionButton,
+    [switch]$AllowHeuristicResolved
 )
 
 Set-StrictMode -Version Latest
@@ -91,7 +91,21 @@ function New-LayoutProperty {
 
 $repoRoot = Get-RepoRoot
 $collectorPath = Join-Path $repoRoot "tools\stitch-unity\collectors\Collect-StitchSourceFacts.ps1"
-$collectorJson = & powershell -NoProfile -ExecutionPolicy Bypass -File $collectorPath -SurfaceId $SurfaceId -TargetAssetPath $TargetAssetPath
+$collectorArgs = @(
+    "-NoProfile",
+    "-ExecutionPolicy", "Bypass",
+    "-File", $collectorPath,
+    "-SurfaceId", $SurfaceId,
+    "-TargetAssetPath", $TargetAssetPath
+)
+if (-not [string]::IsNullOrWhiteSpace($HtmlPath)) {
+    $collectorArgs += @("-HtmlPath", $HtmlPath)
+}
+if (-not [string]::IsNullOrWhiteSpace($ImagePath)) {
+    $collectorArgs += @("-ImagePath", $ImagePath)
+}
+
+$collectorJson = & powershell @collectorArgs
 if ($LASTEXITCODE -ne 0) {
     throw "Collect-StitchSourceFacts failed for $SurfaceId."
 }
@@ -110,48 +124,57 @@ if ([string]::IsNullOrWhiteSpace($SetId)) {
     }
 }
 
+if ($PSBoundParameters.ContainsKey("Title") -or
+    $PSBoundParameters.ContainsKey("PrimaryText") -or
+    $PSBoundParameters.ContainsKey("BodyText")) {
+    throw "Manual text overrides are not allowed in the Stitch reimport path. Generate a draft from source facts with an LLM, then pass it through -DraftPath."
+}
+
+$Title = Get-FirstMeaningfulText -Texts $visibleTexts -Skip @($htmlTitle)
 if ([string]::IsNullOrWhiteSpace($Title)) {
-    $Title = Get-FirstMeaningfulText -Texts $visibleTexts -Skip @($htmlTitle)
-    if ([string]::IsNullOrWhiteSpace($Title)) {
-        $Title = $SurfaceId
-    }
+    throw "Could not derive an overlay title from source facts for '$SurfaceId'. Use the LLM draft route instead of script-side fallback."
 }
 
 $hasActionButton = (-not $NoActionButton.IsPresent -and $buttons.Count -gt 0)
-if ([string]::IsNullOrWhiteSpace($PrimaryText)) {
-    if ($hasActionButton) {
-        $PrimaryText = [string]$buttons[0]
-    }
-    else {
-        $PrimaryText = $Title
-    }
+$PrimaryText = ""
+if ($hasActionButton) {
+    $PrimaryText = [string]$buttons[0]
 }
 
-if ([string]::IsNullOrWhiteSpace($BodyText)) {
-    $bodyCandidates = @(
-        $visibleTexts |
-            Where-Object {
-                $candidate = ([string]$_).Trim()
-                -not [string]::IsNullOrWhiteSpace($candidate) -and
-                $candidate -ne $htmlTitle -and
-                $candidate -ne $Title -and
-                $candidate -ne $PrimaryText
-            } |
-            Select-Object -First 8
-    )
+$bodyCandidates = @(
+    $visibleTexts |
+        Where-Object {
+            $candidate = ([string]$_).Trim()
+            -not [string]::IsNullOrWhiteSpace($candidate) -and
+            $candidate -ne $htmlTitle -and
+            $candidate -ne $Title -and
+            $candidate -ne $PrimaryText
+        } |
+        Select-Object -First 8
+)
 
-    $BodyText = [string]::Join("`n", @($bodyCandidates))
-    if ([string]::IsNullOrWhiteSpace($BodyText)) {
-        $BodyText = $htmlTitle
-    }
+$BodyText = [string]::Join("`n", @($bodyCandidates))
+if ([string]::IsNullOrWhiteSpace($BodyText)) {
+    throw "Could not derive overlay body text from source facts for '$SurfaceId'. Use the LLM draft route instead of script-side fallback."
 }
 
 if ([string]::IsNullOrWhiteSpace($DraftPath)) {
     $DraftPath = "Temp/StitchDraftRoute/$SurfaceId-draft.json"
 }
 
-$htmlPath = ".stitch/designs/$SurfaceId.html"
-$imagePath = ".stitch/designs/$SurfaceId.png"
+$htmlPath = [string]$facts.source.htmlPath
+$imagePath = [string]$facts.source.imagePath
+$extractionStatus = if ($AllowHeuristicResolved.IsPresent) { "resolved" } else { "pending-source-derivation" }
+$unresolvedDerivedFields = if ($AllowHeuristicResolved.IsPresent) {
+    @()
+}
+else {
+    @(
+        "semantic block priority requires LLM/source-derived review",
+        "presentation values are heuristic skeleton defaults",
+        "primary CTA may not be the source primary action"
+    )
+}
 $primaryBlockRole = if ($hasActionButton) { "cta" } else { "status" }
 $primaryHostPath = if ($hasActionButton) { "DialogPanel/PrimaryButton" } else { "DialogPanel/PrimaryStatus" }
 $primaryComponents = if ($hasActionButton) { @("Button", "Image", "LayoutElement") } else { @("TextMeshProUGUI", "LayoutElement") }
@@ -329,7 +352,7 @@ $draft = [PSCustomObject][ordered]@{
             contractKind = "presentation-contract"
             surfaceId = $SurfaceId
             surfaceRole = "overlay"
-            extractionStatus = "resolved"
+            extractionStatus = $extractionStatus
             sourceRefs = [PSCustomObject][ordered]@{
                 imagePath = $imagePath
                 htmlPath = $htmlPath
@@ -340,7 +363,7 @@ $draft = [PSCustomObject][ordered]@{
                 title = $Title
                 primary = $PrimaryText
             }
-            unresolvedDerivedFields = @()
+            unresolvedDerivedFields = @($unresolvedDerivedFields)
             elements = @(
                 [PSCustomObject][ordered]@{
                     path = ""
@@ -403,8 +426,9 @@ $draft = [PSCustomObject][ordered]@{
         }
     }
     notes = @(
-        "Generated draft; source facts are from .stitch/designs html/png.",
-        "Use Test-StitchContractDraft before translation."
+        "Generated heuristic draft from source facts.",
+        "Do not use this as an active translation-ready contract unless AllowHeuristicResolved was explicitly set for a debug lane.",
+        "Production reimport should use Collect-StitchSourceFacts followed by an LLM-authored draft and Test-StitchContractDraft."
     )
 }
 

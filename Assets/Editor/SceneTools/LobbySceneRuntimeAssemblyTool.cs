@@ -62,6 +62,7 @@ namespace ProjectSD.EditorTools.SceneTools
             Debug.Log("[LobbySceneRuntimeAssemblyTool] Starting destructive LobbyScene runtime rebuild. Existing runtime/canvas/input roots will be replaced.");
 
             EnsureSceneOpen();
+            ValidateRequiredBuildAssets();
 
             DestroyRootIfExists("LobbyRuntime");
             DestroyRootIfExists("LobbyCanvas");
@@ -204,20 +205,10 @@ namespace ProjectSD.EditorTools.SceneTools
 
         private static GameObject InstantiateUiSurface(string prefabPath, string name, Transform parent)
         {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-            GameObject instance;
-            if (prefab != null)
-            {
-                instance = PrefabUtility.InstantiatePrefab(prefab, SceneManager.GetActiveScene()) as GameObject;
-                if (instance == null)
-                    throw new System.InvalidOperationException("Failed to instantiate prefab: " + prefabPath);
-            }
-            else
-            {
-                instance = new GameObject(name, typeof(RectTransform), typeof(Image));
-                instance.GetComponent<Image>().color = new Color(0.05f, 0.07f, 0.11f, 1f);
-                Debug.LogWarning("[LobbySceneRuntimeAssemblyTool] Missing prefab, created fallback: " + prefabPath);
-            }
+            var prefab = LoadRequiredAsset<GameObject>(prefabPath);
+            var instance = PrefabUtility.InstantiatePrefab(prefab, SceneManager.GetActiveScene()) as GameObject;
+            if (instance == null)
+                throw new System.InvalidOperationException("Failed to instantiate prefab: " + prefabPath);
 
             instance.name = name;
             instance.transform.SetParent(parent, false);
@@ -587,6 +578,20 @@ namespace ProjectSD.EditorTools.SceneTools
             SetRef(view, "_toastCanvasGroup", toastGroup);
             SetRef(view, "_toastText", toastText);
             return view;
+        }
+
+        private static void ValidateRequiredBuildAssets()
+        {
+            LoadRequiredAsset<GameObject>(LobbyPrefabPath);
+            LoadRequiredAsset<GameObject>(GaragePrefabPath);
+            LoadRequiredAsset<GameObject>(CreateRoomModalPrefabPath);
+            LoadRequiredAsset<GameObject>(RoomDetailPanelPrefabPath);
+            LoadRequiredAsset<GameObject>(CommonErrorDialogPrefabPath);
+            LoadRequiredAsset<GameObject>(LoginLoadingOverlayPrefabPath);
+            LoadRequiredAsset<Object>(AccountConfigPath);
+            LoadRequiredAsset<Object>(ModuleCatalogPath);
+            LoadRequiredAsset<Object>(SoundCatalogPath);
+            Debug.Log("[LobbySceneRuntimeAssemblyTool] Required prefab/assets resolved before destructive rebuild.");
         }
 
         private static LoginLoadingView BuildLoginLoading(Transform parent)

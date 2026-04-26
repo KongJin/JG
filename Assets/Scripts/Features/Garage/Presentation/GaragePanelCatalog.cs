@@ -5,6 +5,19 @@ namespace Features.Garage.Presentation
 {
     public sealed class GaragePanelCatalog
     {
+        public sealed class PartAlignment
+        {
+            public Vector3 BoundsSize { get; set; }
+            public Vector3 BoundsCenter { get; set; }
+            public Vector3 PivotOffset { get; set; }
+            public Vector3 SocketOffset { get; set; }
+            public Vector3 SocketEuler { get; set; }
+            public string QualityFlag { get; set; }
+            public string ReviewReason { get; set; }
+
+            public bool CanApply => QualityFlag == "auto_ok";
+        }
+
         public sealed class FrameOption
         {
             public string Id { get; set; }
@@ -12,6 +25,10 @@ namespace Features.Garage.Presentation
             public float BaseHp { get; set; }
             public float BaseAttackSpeed { get; set; }
             public GameObject PreviewPrefab { get; set; }
+            public string SourcePath { get; set; }
+            public int Tier { get; set; }
+            public bool NeedsNameReview { get; set; }
+            public PartAlignment Alignment { get; set; }
         }
 
         public sealed class FirepowerOption
@@ -22,6 +39,10 @@ namespace Features.Garage.Presentation
             public float AttackSpeed { get; set; }
             public float Range { get; set; }
             public GameObject PreviewPrefab { get; set; }
+            public string SourcePath { get; set; }
+            public int Tier { get; set; }
+            public bool NeedsNameReview { get; set; }
+            public PartAlignment Alignment { get; set; }
         }
 
         public sealed class MobilityOption
@@ -32,6 +53,10 @@ namespace Features.Garage.Presentation
             public float MoveRange { get; set; }
             public float AnchorRange { get; set; }
             public GameObject PreviewPrefab { get; set; }
+            public string SourcePath { get; set; }
+            public int Tier { get; set; }
+            public bool NeedsNameReview { get; set; }
+            public PartAlignment Alignment { get; set; }
         }
 
         private readonly Dictionary<string, FrameOption> _framesById;

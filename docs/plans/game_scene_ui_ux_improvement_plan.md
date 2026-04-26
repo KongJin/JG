@@ -17,9 +17,9 @@
 ## Draft Triage
 
 - 판정: draft 유지.
-- 이유: 현재 직접 실행은 Agent B HUD/input validation plan이 맡고, 이 문서는 UX 방향과 다음 redesign 기준을 보존한다.
-- active 전환 조건: Agent B closeout 뒤 GameScene HUD/소환 UX redesign을 직접 실행할 때 active로 올린다.
-- reference 전환 조건: UX 방향이 Agent B plan, design owner, 또는 구현 결과로 흡수되어 더 이상 실행 순서를 소유하지 않으면 reference로 내린다.
+- 이유: 현재 직접 실행은 flow closeout과 Phase 5 smoke가 맡고, 이 문서는 HUD/input/placement UX 방향과 다음 redesign 기준을 보존한다.
+- active 전환 조건: GameScene HUD/소환 UX redesign을 직접 실행할 때 active로 올린다.
+- reference 전환 조건: UX 방향이 design owner, flow closeout, 또는 구현 결과로 흡수되어 더 이상 실행 순서를 소유하지 않으면 reference로 내린다.
 
 ---
 
