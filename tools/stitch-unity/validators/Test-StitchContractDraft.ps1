@@ -215,6 +215,36 @@ function Get-PresentationPropertyValue {
     return ""
 }
 
+function Get-PresentationProperties {
+    param([object]$Element)
+
+    return @(Get-ArrayValue -Value (Get-Value -InputObject $Element -Name "properties"))
+}
+
+function Test-AllowedButtonSoundKey {
+    param(
+        [object[]]$Elements,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][System.Collections.Generic.List[object]]$Issues
+    )
+
+    $allowedSoundKeys = @("ui_click", "ui_select", "ui_confirm", "garage_select")
+    foreach ($element in @($Elements)) {
+        $path = [string](Get-Value -InputObject $element -Name "path")
+        foreach ($property in @(Get-PresentationProperties -Element $element)) {
+            $componentType = [string](Get-Value -InputObject $property -Name "componentType")
+            $propertyName = [string](Get-Value -InputObject $property -Name "propertyName")
+            if ($componentType -ne "ButtonSoundEmitter" -or $propertyName -ne "soundKey") {
+                continue
+            }
+
+            $soundKey = [string](Get-Value -InputObject $property -Name "value")
+            if ($allowedSoundKeys -notcontains $soundKey) {
+                Add-Issue -Issues $Issues -Code "unknown-button-sound-key" -Message "ButtonSoundEmitter on '$path' uses unknown soundKey '$soundKey'. Use one of: $([string]::Join(', ', $allowedSoundKeys))." -Path ("contracts.presentation.elements[{0}].properties" -f $path)
+            }
+        }
+    }
+}
+
 function Test-PresentationElementComposition {
     param(
         [object[]]$Elements,
@@ -497,6 +527,7 @@ function Test-ContractDraft {
     Test-DuplicateValues -Values $elementPaths -IssueCode "duplicate-presentation-element-path" -MessagePrefix "Duplicate presentation element path" -Path "contracts.presentation.elements" -Issues $issues
 
     Test-PresentationElementComposition -Elements $elements -Issues $issues
+    Test-AllowedButtonSoundKey -Elements $elements -Issues $issues
 
     $targetKind = [string](Get-Value -InputObject $map -Name "targetKind")
     if ($targetKind -eq "workspace-root") {

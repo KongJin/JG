@@ -1,6 +1,6 @@
 # Document Management Workflow
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-26
 > 상태: active
 > doc_id: ops.document-management-workflow
 > role: ssot
@@ -104,20 +104,39 @@
 
 ## 새 문서 생성 기준
 
+작업 시작 전 계획은 기본적으로 repo 문서가 아니라 세션 계획으로 둔다.
+새 `docs/plans/*.md` 문서는 multi-session handoff나 persistent acceptance가 필요할 때만 만든다.
+
 새 문서를 만들기 전에 아래 순서로 판단한다.
 
 1. `plans.progress` 한 줄 갱신으로 충분한가?
 2. 기존 owner 문서의 짧은 섹션으로 충분한가?
 3. 기존 reference 문서 갱신으로 충분한가?
-4. 실행 순서, acceptance, residual handling이 따로 필요할 때만 새 plan을 만든다.
+4. 채팅/세션 체크리스트로 끝낼 수 있는 작업인가?
+5. 실행 순서, acceptance, residual handling을 나중에 다시 찾아야 할 때만 새 plan을 만든다.
 
 새 문서를 만들지 않기로 한 판단은 보통 최종 응답이나 작업 요약에 남긴다.
-현재 상태, 우선순위, owner 이동이 바뀌는 경우에만 `plans.progress`나 owner 문서에 짧게 남긴다.
+나중에 다시 찾아야 하는 owner 판단, 우선순위 판단, residual 이관 판단이면 `plans.progress`나 owner 문서에 짧게 남긴다.
+세션 안에서만 의미가 있는 판단이면 문서 본문에 늘리지 않는다.
+
+새 plan 문서가 필요한 예:
+
+- 여러 세션에 걸쳐 이어질 작업이다.
+- acceptance, residual, blocked 판단을 나중에 다시 찾아야 한다.
+- 여러 owner가 영향을 받아 scope와 out-of-scope를 고정해야 한다.
+- 사람이 나중에 실행 순서를 이어받아야 한다.
+- `plans.progress` 한 줄이나 기존 owner 문서 섹션으로 부족하다.
+
+## `plans.progress` 기록 기준
+
+`plans.progress`는 현재 상태, 현재 포커스, 미완료 TODO, 다음 작업만 짧게 소유한다.
+dated implementation log, 긴 evidence 목록, 완료된 pass의 세부 기록은 `progress_changelog.md`나 해당 owner plan/reference로 넘긴다.
+현재 포커스가 오래된 active plan 목록에 묻히면, 진행률 본문을 늘리기보다 plan lifecycle을 먼저 재검토한다.
 
 ## 역할 전이
 
 - `draft -> active`: 현재 작업에서 직접 기준으로 쓰이고, owner scope와 upstream이 안정적일 때만 올린다.
-- `active -> reference`: 현재 구현 기준이 아니지만 배경/절차로 유용할 때 내린다.
+- `active -> reference`: 현재 구현 기준이 아니지만 배경/절차로 유용할 때 내린다. 남은 residual이 `plans.progress`, 다른 active plan, 또는 owner 문서로 이관되어 원 plan이 더 이상 직접 실행 기준이 아닐 때도 내린다.
 - `active/reference -> historical`: 당시 판단 기록만 남길 때 내린다.
 - 완료된 plan은 active/draft로 방치하지 않는다.
 
@@ -145,6 +164,7 @@
 2. `docs/index.md`와 주요 entry 링크를 먼저 갱신한다.
 3. 본문 문서의 상세 경로 참조를 가능한 한 줄인다.
 4. 필요한 경우에만 짧은 moved stub를 둔다.
+5. `rg`로 old path, filename, `doc_id`, owner id 참조가 active 문서, active skill, tool README에 남았는지 확인한다.
 
 삭제할 때:
 
@@ -152,15 +172,18 @@
 2. 현재 owner가 다른 문서로 이동했는지 확인한다.
 3. `docs/index.md`, active skill, tool README의 참조를 제거한다.
 4. 필요하면 `progress.md`나 owner 문서에 owner 이동을 짧게 남긴다.
+5. `rg`로 deleted path, filename, `doc_id`, owner id 참조가 active 문서, active skill, tool README에 남았는지 확인한다.
 
 ## 자동 검증
 
 - 문서 관리 변경 후 기본 검증은 `npm run --silent rules:lint`다.
 - `rules:lint`는 metadata, relative links, `doc_id`, index registry, status mismatch, owner reference, Plan Mode routing, repo-local skill routing, recurrence closeout, presentation/stitch policy lint를 함께 본다.
-- rules-only scope에서 `docs/**`, `AGENTS.md`, `.codex/skills/jg-*/**`, `tools/docs-lint/**`, `tools/rule-harness/**`, `.githooks/**`, 관련 workflow/script를 수정하면 `artifacts/rules/issue-recurrence-closeout.json`도 같은 변경에서 갱신한다.
+- 단순 docs-only plan 작성, 작은 문서 보정, 상태 한두 줄 갱신은 `rules:lint`와 authoring review로 충분하다.
+- rules/policy/tooling recurrence 예방 자체가 작업 대상이면 `artifacts/rules/issue-recurrence-closeout.json`도 같은 변경에서 갱신한다. 예: `docs/ops/*`의 운영 기준 변경, repo-local skill routing 변경, `tools/docs-lint/**`, `tools/rule-harness/**`, `.githooks/**`, 관련 workflow/script 변경.
 - closeout artifact는 declared lane, mutation class, acceptance evidence class, escalation 필요 여부를 함께 남겨 silent lane escalation을 기계적으로 점검할 수 있어야 한다.
 - closeout artifact 동기화는 `npm run --silent rules:sync-closeout`를 사용한다.
 - `rules:sync-closeout`는 환경변수로 변경 목록을 받지 않으면 staged 변경 기준으로 동작한다. unstaged working tree를 검증할 때는 실제 rules-only 변경 목록을 `RULES_LINT_CHANGED_FILES`로 넘기거나 먼저 stage한 뒤 실행한다.
+- closeout artifact가 이미 다른 작업의 dirty state라면 덮어쓰지 않는다. 이번 작업의 변경 목록으로 분리해 동기화할 수 없으면 residual 또는 blocked로 남긴다.
 
 ## 빠른 체크
 

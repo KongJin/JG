@@ -35,16 +35,16 @@ namespace Features.Player
                 return;
 
             var players = FindObjectsByType<PlayerSetup>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            foreach (var player in players)
+            foreach (var playerSetup in players)
             {
-                if (player == null)
+                if (playerSetup == null)
                     continue;
 
-                var id = player.GetInstanceID();
+                var id = playerSetup.GetInstanceID();
                 if (!_announcedPlayers.Add(id))
                     continue;
 
-                _playerSceneRegistry.NotifyArrived(player);
+                _playerSceneRegistry.NotifyArrived(playerSetup);
             }
         }
 

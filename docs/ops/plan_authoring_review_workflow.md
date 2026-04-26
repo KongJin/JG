@@ -1,6 +1,6 @@
 # Plan Authoring Review Workflow
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-26
 > 상태: active
 > doc_id: ops.plan-authoring-review-workflow
 > role: ssot
@@ -21,9 +21,17 @@ plan은 규칙 본문을 새로 만드는 곳이 아니라, 실행 순서와 현
 
 제외한다:
 
+- 작업 시작 전 세션 계획만 세우는 경우
+- 사용자가 "계획 세워줘"라고만 요청했고, repo에 지속 기록할 필요가 없는 경우
 - 오탈자, 링크, 메타데이터 같은 경미한 수정
 - 상태 라벨이나 진행률만 짧게 갱신하는 경우
 - historical/reference 문서 보존 목적의 작은 정리
+
+## 세션 계획과 plan 문서
+
+작업 시작 전 계획의 기본값은 채팅 또는 세션 체크리스트다.
+`docs/plans/*.md`는 multi-session handoff, persistent acceptance/residual/blocked 판단, 여러 owner scope 고정이 필요할 때만 만든다.
+`progress.md` 한 줄이나 기존 owner 문서의 짧은 섹션으로 충분하면 새 plan 문서를 만들지 않는다.
 
 ## 핵심 루프
 
@@ -33,6 +41,9 @@ plan은 규칙 본문을 새로 만드는 곳이 아니라, 실행 순서와 현
 4. 문제가 있으면 수정
 5. 수정 후 한 번 더 재리뷰
 6. clean이거나 residual을 명시했을 때만 closeout
+
+문서 본문에는 최종 판단 중심으로 남긴다.
+초안 작성 중의 반복 사고 과정은 길게 보존하지 않고, 남는 위험이나 이관 판단이 있을 때만 residual로 남긴다.
 
 ## 재리뷰 기준
 
@@ -69,5 +80,8 @@ closeout 표현은 아래 둘 중 하나일 때만 쓴다.
 
 - `plan rereview: clean`
 - `plan rereview: residual - <reason>`
+
+새 plan 생성이나 큰 plan 수정이라도 owner/scope, acceptance, residual/lifecycle 판단이 보이면 위 한 줄 closeout으로 충분하다.
+반복 리뷰 로그는 실행 판단을 바꾼 경우나 residual 근거가 될 때만 남긴다.
 
 draft plan에 closeout 문구를 남기면 완료된 plan처럼 읽히므로 피한다.

@@ -1602,7 +1602,7 @@ Initialize-RuleHarnessScopeRepo -RepoPath $scheduledRepo -Features @(
 )
 Push-Location $scheduledRepo
 try {
-    & (Join-Path $scheduledRepo 'tools/rule-harness/run-rule-harness-scheduled.ps1') -DisableLlm -MutationMode 'code_and_rules'
+    & (Join-Path $scheduledRepo 'tools/rule-harness/run-rule-harness-scheduled.ps1') -MutationMode 'code_and_rules'
 }
 finally {
     Pop-Location
@@ -1615,6 +1615,9 @@ Assert-RuleHarness `
 Assert-RuleHarness `
     -Condition (-not [string]::IsNullOrWhiteSpace([string]$latestStatus.currentScope) -and $latestStatus.PSObject.Properties.Name -contains 'completedScopes' -and $latestStatus.PSObject.Properties.Name -contains 'nextScope' -and $latestStatus.PSObject.Properties.Name -contains 'topDocProposals') `
     -Message 'Expected scheduled latest status to expose currentScope, completedScopes, nextScope, and topDocProposals.'
+Assert-RuleHarness `
+    -Condition (-not [bool]$latestStatus.llmEnabled) `
+    -Message 'Expected scheduled wrapper to default to deterministic static-only mode without requiring LLM quota.'
 Assert-RuleHarness `
     -Condition ((Test-Path -LiteralPath ([string]$latestStatus.docProposalPath)) -and (@($latestStatus.topDocProposals).Count -ge 1)) `
     -Message 'Expected scheduled runs to emit the proposal markdown file and surface top doc proposals.'

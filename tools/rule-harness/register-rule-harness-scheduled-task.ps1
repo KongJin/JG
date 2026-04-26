@@ -1,10 +1,12 @@
 param(
-    [string]$TaskName = 'JG Rule Harness GLM',
+    [string]$TaskName = 'JG Rule Harness Static',
     [int]$IntervalMinutes = 60,
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
     [string]$Model = 'glm-5',
     [string]$ApiBaseUrl = 'https://open.bigmodel.cn/api/paas/v4',
     [string]$MutationMode = 'code_and_rules',
+    [switch]$EnableLlm,
+    [switch]$RequireLlm,
     [switch]$WakeToRun
 )
 
@@ -31,11 +33,25 @@ $actionArgs = @(
     '-NoProfile',
     '-ExecutionPolicy', 'Bypass',
     '-File', ('"{0}"' -f $scriptPath),
-    '-RequireLlm',
-    '-Model', ('"{0}"' -f $Model),
-    '-ApiBaseUrl', ('"{0}"' -f $ApiBaseUrl),
     '-MutationMode', ('"{0}"' -f $MutationMode)
-) -join ' '
+)
+
+if ($RequireLlm) {
+    $actionArgs += @(
+        '-RequireLlm',
+        '-Model', ('"{0}"' -f $Model),
+        '-ApiBaseUrl', ('"{0}"' -f $ApiBaseUrl)
+    )
+}
+elseif ($EnableLlm) {
+    $actionArgs += @(
+        '-EnableLlm',
+        '-Model', ('"{0}"' -f $Model),
+        '-ApiBaseUrl', ('"{0}"' -f $ApiBaseUrl)
+    )
+}
+
+$actionArgs = $actionArgs -join ' '
 
 $action = New-ScheduledTaskAction `
     -Execute 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' `
@@ -62,7 +78,7 @@ $task = New-ScheduledTask `
     -Trigger $trigger `
     -Settings $settings `
     -Principal $principal `
-    -Description "Periodic local rule-harness run using GLM provider. Repo: $RepoRoot"
+    -Description "Periodic local deterministic rule-harness run. Optional LLM mode must be explicitly enabled. Repo: $RepoRoot"
 
 Register-ScheduledTask -TaskName $TaskName -InputObject $task -Force | Out-Null
 
@@ -70,7 +86,10 @@ Write-Host "Registered scheduled task: $TaskName"
 Write-Host "Interval (minutes): $IntervalMinutes"
 Write-Host "First run: $startAt"
 Write-Host "Command: $scriptPath"
-Write-Host "Model: $Model"
-Write-Host "ApiBaseUrl: $ApiBaseUrl"
+Write-Host "LlmMode: $(if ($RequireLlm) { 'required' } elseif ($EnableLlm) { 'optional' } else { 'disabled' })"
+if ($RequireLlm -or $EnableLlm) {
+    Write-Host "Model: $Model"
+    Write-Host "ApiBaseUrl: $ApiBaseUrl"
+}
 Write-Host "MutationMode: $MutationMode"
 Write-Host "WakeToRun: $WakeToRun"

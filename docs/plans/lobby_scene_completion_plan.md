@@ -1,7 +1,7 @@
 # LobbyScene 완성도 정리 계획
 
 > 마지막 업데이트: 2026-04-25
-> 상태: active
+> 상태: reference
 > doc_id: plans.lobby-scene-completion
 > role: plan
 > owner_scope: `Assets/Scenes/LobbyScene.unity`의 초기 표시 상태, Lobby/Garage visual pass, BattleScene 전환 연결 closeout
@@ -108,3 +108,4 @@
 - doc lifecycle checked: 새 문서는 active plan으로 등록하고, 기존 `lobby_scene_runtime_plan.md`는 runtime assembly plan으로 유지하며 대체/삭제하지 않는다.
 - 2026-04-25 polish update rereview: 상태 문구만 최신 evidence에 맞췄고, 새 owner/새 규칙/새 artifact gate는 추가하지 않았다. 남은 판단은 `Set B Garage` final fidelity로 분리된다.
 - plan rereview: clean
+- 2026-04-26 simplification pass: LobbyScene 초기 표시와 BattleScene 연결은 완료 기록으로 보고 reference로 내린다. 남은 Garage visual 판단은 `plans.garage-ui-ux-improvement`와 `plans.progress`에서 본다.

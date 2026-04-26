@@ -159,8 +159,13 @@ $primaryPresentation = if ($hasActionButton) {
     @(
         [PSCustomObject][ordered]@{
             path = "DialogPanel/PrimaryButton"
-            components = @("Button", "Image", "LayoutElement")
+            components = @("Button", "ButtonSoundEmitter", "Image", "LayoutElement")
             properties = @(
+                [PSCustomObject][ordered]@{
+                    componentType = "ButtonSoundEmitter"
+                    propertyName = "soundKey"
+                    value = "ui_confirm"
+                },
                 (New-ImageProperty -Color "#F59E0BFF"),
                 (New-LayoutProperty -ComponentType "LayoutElement" -Name "m_PreferredHeight" -Value "40")
             )

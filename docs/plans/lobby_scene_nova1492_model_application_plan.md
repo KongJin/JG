@@ -26,7 +26,7 @@
 - `/LobbyCanvas`는 `LobbyPageRoot`, `GaragePageRoot`, `Overlays`, `LobbyGarageNavBar`를 가진다.
 - `GaragePageRoot`는 scene instance 기준으로 `GaragePageController`를 갖고, `GarageUnitPreviewView`는 `Camera + RawImage + RenderTexture` preview 구조를 이미 갖고 있다.
 - `GarageUnitPreviewView`는 `_framePrefab`, `_weaponPrefab`, `_thrusterPrefab`을 참조하지만 현재 값은 scene root의 inactive primitive template이다.
-- 씬 root에는 `PreviewFramePrefab`, `PreviewWeaponPrefab`, `PreviewThrusterPrefab` 이름의 inactive primitive template이 중복으로 남아 있다. 이는 바로 모델을 바꾸기보다 template ownership 정리를 먼저 해야 한다는 신호다.
+- 씬 root의 preview fallback primitive template은 `PreviewFrameTemplate`, `PreviewWeaponTemplate`, `PreviewThrusterTemplate` 이름으로 정리됐고, 각 root는 하나씩만 남아 있다.
 - 변환 결과는 `GX 871개 중 865개 OBJ 변환`, 카테고리 분류 `organized=865`, MTL texture link `missing_texture_refs=0` 상태다.
 
 ## 모델 후보 현황
@@ -165,6 +165,8 @@ Acceptance:
 
 ### Phase 3: scene template 중복 정리
 
+상태: 완료
+
 목표:
 
 - `PreviewFramePrefab`, `PreviewWeaponPrefab`, `PreviewThrusterPrefab` 중복 root를 audit한다.
@@ -176,6 +178,15 @@ Acceptance:
 - scene root에 같은 이름의 inactive preview template이 중복으로 남지 않는다.
 - `GarageUnitPreviewView` required refs가 비지 않는다.
 - required-field validation이 통과한다.
+
+결과:
+
+- Unity MCP로 `LobbyScene` root의 duplicate preview template을 정리해 `PreviewFrameTemplate`, `PreviewWeaponTemplate`, `PreviewThrusterTemplate`이 각각 1개만 남도록 했다.
+- `GarageUnitPreviewView`의 fallback refs `_framePrefab`, `_weaponPrefab`, `_thrusterPrefab`은 남은 scene template root로 다시 연결했다.
+- MCP `/scene/save`로 `Assets/Scenes/LobbyScene.unity`를 저장했다.
+- Play Mode에서 `/LobbyRuntime/LobbyView.OpenGaragePage`를 호출해 Garage tab 진입을 확인했고, `GaragePageRoot`, `PreviewCard`, `GarageUnitPreviewView` active 상태를 확인했다.
+- GameView capture `artifacts/unity/lobby-scene-garage-template-cleanup-smoke.png`는 `390x844` framing이며, Garage tab과 Nova1492 조립 preview가 표시된다.
+- compile check는 errors 0 / warnings 0, console errors는 0건이다.
 
 ### Phase 4: 로비 장식 후보는 별도 variant로 검토
 
@@ -230,6 +241,7 @@ Acceptance:
 - 2026-04-26 Phase 1 policy 정리 후 재리뷰: policy는 `lobby_preview_prefab_pack_report.md`에 기록된 정확한 Garage preview prefab 15개만 active plan 근거로 허용한다. presentation rotation write는 `GaragePreviewAssembler` runtime helper로 옮겨 ownership validator를 통과했다. 과한점은 wildcard 허용이나 scene wiring까지 확장하지 않은 점에서 정리됐고, 부족한점은 Phase 2 scene/reference mapping과 runtime smoke가 아직 남아 있다는 점이다.
 - 2026-04-26 Phase 2 매핑 후 재리뷰: mapping은 serialized reference로 닫았고 hidden runtime lookup을 만들지 않았다. AudioListener 누락은 scene/build tool 양쪽에서 보정했다. 과한점은 domain data나 battle prefab truth까지 건드리지 않은 점에서 정리됐고, 부족한점은 visual capture/framing acceptance가 아직 남아 있다는 점이다.
 - 2026-04-26 Phase 2 visual closeout 재리뷰: preview root 배치, lighting, RawImage tint 보정은 `GarageUnitPreviewView`의 표시 책임과 `GaragePreviewAssembler`의 runtime 배치 책임으로 분리했고, scene/domain truth나 Set B fidelity 기준을 확장하지 않았다. active-state/capture evidence가 생겼으므로 Phase 2 부족점은 해소됐다.
+- 2026-04-26 Phase 3 template cleanup 재리뷰: scene template 정리는 fallback root 중복 제거와 serialized reference 유지에만 제한했고, Garage layout이나 Set B visual fidelity 판단으로 확장하지 않았다. Required field validation, Play Mode Garage smoke, `390x844` capture, compile check가 남아 있어 acceptance evidence는 충분하다.
 - owner impact: primary `plans.lobby-scene-nova1492-model-application`; secondary `plans.progress`, `plans.lobby-scene-completion`, `plans.lobby-scene-ui-prefab-management`, `plans.nova1492-resource-integration`, `docs.index`; out-of-scope scene/prefab mutation, converter rewrite, GameScene runtime model application.
 - doc lifecycle checked: 새 active plan으로 등록한다. 기존 Nova resource integration plan은 reference로 유지하고, LobbyScene runtime/completion/UI prefab management plan은 대체하지 않는다.
 - plan rereview: clean

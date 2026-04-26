@@ -1,6 +1,6 @@
 # Docs Index
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-26
 > 상태: active
 > doc_id: docs.index
 > role: entry
@@ -23,10 +23,7 @@
 ## Quick Start
 
 - Unity UI / prefab / scene 작업: [`plans/progress.md`](./plans/progress.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant contract/prefab
-- LobbyScene 런타임 조립 작업: [`plans/progress.md`](./plans/progress.md) -> [`plans/lobby_scene_runtime_plan.md`](./plans/lobby_scene_runtime_plan.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> relevant scene/prefab
-- LobbyScene 완성도 정리 작업: [`plans/progress.md`](./plans/progress.md) -> [`plans/lobby_scene_completion_plan.md`](./plans/lobby_scene_completion_plan.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> relevant scene/prefab
 - LobbyScene UI/prefab 관리 정리: [`plans/progress.md`](./plans/progress.md) -> [`plans/lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> relevant scene/prefab/tool
-- 여러 에이전트 overnight 운영 / MCP 단일 writer 조율: [`plans/overnight_agent_coordination_plan.md`](./plans/overnight_agent_coordination_plan.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant active plan
 - Stitch / handoff 작업: [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md)
 - Stitch -> Unity 한 장씩 번역: [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)
 - 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> `docs/index.md` -> relevant owner doc
@@ -61,6 +58,8 @@
 | LobbyScene 초기 표시/visual/BattleScene 연결 정리 확인 | [`plans/lobby_scene_completion_plan.md`](./plans/lobby_scene_completion_plan.md) |
 | LobbyScene UI/prefab 관리 부채 정리 확인 | [`plans/lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) |
 | GameScene 진입 큰 흐름 확인 | [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) |
+| GameScene Agent A runtime core 작업 확인 | [`plans/game_scene_agent_a_runtime_core_plan.md`](./plans/game_scene_agent_a_runtime_core_plan.md) |
+| GameScene Agent B HUD/input/validation 작업 확인 | [`plans/game_scene_agent_b_hud_input_validation_plan.md`](./plans/game_scene_agent_b_hud_input_validation_plan.md) |
 | GameScene 전투 HUD / 소환 UX 개선 계획 확인 | [`plans/game_scene_ui_ux_improvement_plan.md`](./plans/game_scene_ui_ux_improvement_plan.md) |
 | 계정/차고 복구 상태 확인 | [`plans/account_system_plan.md`](./plans/account_system_plan.md) |
 | Unity MCP 실행 루틴 확인 | [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) |
@@ -86,26 +85,29 @@
 - `active`: [`progress.md`](./plans/progress.md) - 공식 진행률 SSOT
 - `reference`: [`progress_changelog.md`](./plans/progress_changelog.md) - 진행 상황에서 분리한 dated change log
 - `reference`: [`account_system_plan.md`](./plans/account_system_plan.md) - 계정/차고 복구 기준
-- `active`: [`lobby_scene_runtime_plan.md`](./plans/lobby_scene_runtime_plan.md) - LobbyScene 런타임 조립과 acceptance route 계획
-- `active`: [`lobby_scene_completion_plan.md`](./plans/lobby_scene_completion_plan.md) - LobbyScene 초기 표시 상태, visual pass, BattleScene 연결 closeout 계획
+- `reference`: [`lobby_scene_runtime_plan.md`](./plans/lobby_scene_runtime_plan.md) - LobbyScene 런타임 조립과 acceptance route 완료 기록
+- `reference`: [`lobby_scene_completion_plan.md`](./plans/lobby_scene_completion_plan.md) - LobbyScene 초기 표시 상태, visual pass, BattleScene 연결 closeout 기록
 - `active`: [`lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) - LobbyScene UI prefab instance/override 관리와 assembly helper 안전화 계획
 - `active`: [`lobby_scene_nova1492_model_application_plan.md`](./plans/lobby_scene_nova1492_model_application_plan.md) - 변환된 Nova1492 GX 모델의 LobbyScene/Garage preview 제한 적용 계획
-- `active`: [`garage_mobile_scroll_recovery_plan.md`](./plans/garage_mobile_scroll_recovery_plan.md) - Garage 모바일 single vertical scroll 구조와 fixed save dock 복구 계획
+- `reference`: [`garage_mobile_scroll_recovery_plan.md`](./plans/garage_mobile_scroll_recovery_plan.md) - Garage 모바일 single vertical scroll 구조와 fixed save dock 복구 기록
 - `reference`: [`garage_mobile_scroll_code_cleanup_plan.md`](./plans/garage_mobile_scroll_code_cleanup_plan.md) - Garage 모바일 scroll 복구 이후 코드/이름/중복 정리 완료 기록
 - `reference`: [`game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) - GameScene 진입 상위 흐름
+- `active`: [`game_scene_agent_a_runtime_core_plan.md`](./plans/game_scene_agent_a_runtime_core_plan.md) - Agent A가 맡는 GameScene/BattleScene 전투 런타임 core flow 안정화 계획
+- `active`: [`game_scene_agent_b_hud_input_validation_plan.md`](./plans/game_scene_agent_b_hud_input_validation_plan.md) - Agent B가 맡는 GameScene/BattleScene HUD, input, feedback, validation 계획
 - `reference`: [`stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) - Stitch set inventory와 reset 기준
 - `reference`: [`docs_simplification_recurrence_plan.md`](./plans/docs_simplification_recurrence_plan.md) - 전체 문서 간소화와 재발 방지 완료 기록
 - `reference`: [`document_management_lightweight_plan.md`](./plans/document_management_lightweight_plan.md) - 문서관리 빠른 체크와 새 문서 생성 기준 경량화 완료 기록
 - `reference`: [`document_management_followup_tuning_plan.md`](./plans/document_management_followup_tuning_plan.md) - 문서관리 경량화 후속 보정 완료 기록
+- `reference`: [`document_management_process_tuning_plan.md`](./plans/document_management_process_tuning_plan.md) - 문서관리 절차의 과한 부담과 부족한 판정 기준 보정 기록
 - `draft`: [`stitch_llm_contract_pipeline_plan.md`](./plans/stitch_llm_contract_pipeline_plan.md) - Stitch source facts + LLM contract draft + script validation 전환 계획
 - `draft`: [`stitch_screen_onboarding_simplification_plan.md`](./plans/stitch_screen_onboarding_simplification_plan.md) - 새 Stitch screen onboarding 반복 blocker를 줄이는 실행 계획
+- `draft`: [`stitch_button_sound_contract_plan.md`](./plans/stitch_button_sound_contract_plan.md) - Stitch-to-Unity prefab 생성 시 버튼 사운드 affordance 누락을 줄이는 실행 계획
 - `draft`: [`game_scene_ui_ux_improvement_plan.md`](./plans/game_scene_ui_ux_improvement_plan.md) - GameScene 전투 HUD/소환 UX 재설계 계획
 - `reference`: [`nova1492_resource_integration_plan.md`](./plans/nova1492_resource_integration_plan.md) - Nova1492 설치 리소스 staging 결과와 후속 적용 기준
 - `reference`: [`rule_trigger_skill_extraction_plan.md`](./plans/rule_trigger_skill_extraction_plan.md) - 행동 트리거가 필요한 문서 규칙을 skill로 분리한 결과와 후속 자동화 검토
 - `reference`: [`rule_revision_trace_cleanup_plan.md`](./plans/rule_revision_trace_cleanup_plan.md) - 규칙 개정 후 active old trace 정리와 closeout 강제화 완료 기록
 - `reference`: [`tech_debt_reduction_plan.md`](./plans/tech_debt_reduction_plan.md) - 기술부채 감축 우선순위 reference
 - `active`: [`garage_ui_ux_improvement_plan.md`](./plans/garage_ui_ux_improvement_plan.md) - 현재 Set B Garage Stitch-to-Unity recovery plan
-- `active`: [`overnight_agent_coordination_plan.md`](./plans/overnight_agent_coordination_plan.md) - 여러 Codex 에이전트 수면 중 작업 루프와 Unity MCP 단일 writer 운영 계획
 - `reference`: [`ops_rules_simplification_plan.md`](./plans/ops_rules_simplification_plan.md) - 운영 규칙 상위 원칙화와 하위 규칙 축약 결과 기록
 - `reference`: [`mcp_improvement_plan.md`](./plans/mcp_improvement_plan.md) - Unity MCP 역할/검증 레이어 정리
 

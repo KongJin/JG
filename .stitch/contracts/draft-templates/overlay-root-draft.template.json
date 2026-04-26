@@ -130,6 +130,7 @@
           "hostPath": "DialogPanel/PrimaryButton",
           "requiredComponents": [
             "Button",
+            "ButtonSoundEmitter",
             "Image",
             "LayoutElement"
           ]
@@ -275,10 +276,16 @@
           "path": "DialogPanel/PrimaryButton",
           "components": [
             "Button",
+            "ButtonSoundEmitter",
             "Image",
             "LayoutElement"
           ],
           "properties": [
+            {
+              "componentType": "ButtonSoundEmitter",
+              "propertyName": "soundKey",
+              "value": "ui_confirm"
+            },
             {
               "componentType": "Image",
               "propertyName": "m_Color",

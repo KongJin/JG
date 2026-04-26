@@ -1486,6 +1486,7 @@ function Get-StitchUnityRequiredComponentTypeName {
     switch ($ComponentName) {
         "Image" { return "UnityEngine.UI.Image" }
         "Button" { return "UnityEngine.UI.Button" }
+        "ButtonSoundEmitter" { return "Shared.Ui.ButtonSoundEmitter" }
         "ScrollRect" { return "UnityEngine.UI.ScrollRect" }
         "RectMask2D" { return "UnityEngine.UI.RectMask2D" }
         "Mask" { return "UnityEngine.UI.Mask" }
@@ -1498,6 +1499,38 @@ function Get-StitchUnityRequiredComponentTypeName {
         "TMP_Text" { return "TMPro.TextMeshProUGUI" }
         default { return $ComponentName }
     }
+}
+
+function Get-StitchUnityComponentsWithButtonSound {
+    param([string[]]$Components)
+
+    $result = New-Object System.Collections.Generic.List[string]
+    $hasButton = $false
+    $hasEmitter = $false
+
+    foreach ($component in @($Components)) {
+        $componentName = [string]$component
+        if ([string]::IsNullOrWhiteSpace($componentName)) {
+            continue
+        }
+
+        if (-not $result.Contains($componentName)) {
+            $result.Add($componentName)
+        }
+
+        if ($componentName -eq "Button") {
+            $hasButton = $true
+        }
+        if ($componentName -eq "ButtonSoundEmitter" -or $componentName -eq "Shared.Ui.ButtonSoundEmitter") {
+            $hasEmitter = $true
+        }
+    }
+
+    if ($hasButton -and -not $hasEmitter) {
+        $result.Add("ButtonSoundEmitter")
+    }
+
+    return @($result.ToArray())
 }
 
 function New-StitchUnityPrefabTargetIfMissing {
@@ -1818,7 +1851,7 @@ function Invoke-StitchUnityPresentationContract {
 
     foreach ($element in @($elements)) {
         $path = [string](Get-StitchUnityRequiredProperty -InputObject $element -Name "path")
-        $components = @(Get-StitchUnityOptionalArray -InputObject $element -Name "components")
+        $components = @(Get-StitchUnityComponentsWithButtonSound -Components @(Get-StitchUnityOptionalArray -InputObject $element -Name "components"))
         $elementCreatedPaths = @()
         $elementAddedComponents = @()
 
@@ -1938,6 +1971,57 @@ function Invoke-StitchUnityPresentationContract {
     }
 }
 
+function Get-StitchUnityButtonSoundCoverage {
+    param([object[]]$Entries)
+
+    $buttonPaths = New-Object System.Collections.Generic.List[string]
+    $emitterPaths = New-Object System.Collections.Generic.List[string]
+    $missingEmitterPaths = New-Object System.Collections.Generic.List[string]
+
+    foreach ($entry in @($Entries)) {
+        if ($null -eq $entry) {
+            continue
+        }
+
+        $path = [string](Get-StitchUnityOptionalPropertyValue -InputObject $entry -Name "path")
+        if ([string]::IsNullOrWhiteSpace($path)) {
+            $path = [string](Get-StitchUnityOptionalPropertyValue -InputObject $entry -Name "hostPath")
+        }
+        if ([string]::IsNullOrWhiteSpace($path)) {
+            $path = "<root>"
+        }
+
+        $components = @(Get-StitchUnityOptionalArray -InputObject $entry -Name "finalComponents")
+        $hasButton = ($components -contains "Button")
+        $hasEmitter = ($components -contains "ButtonSoundEmitter")
+        if (-not $hasButton) {
+            continue
+        }
+
+        if (-not $buttonPaths.Contains($path)) {
+            $buttonPaths.Add($path)
+        }
+        if ($hasEmitter) {
+            if (-not $emitterPaths.Contains($path)) {
+                $emitterPaths.Add($path)
+            }
+        }
+        elseif (-not $missingEmitterPaths.Contains($path)) {
+            $missingEmitterPaths.Add($path)
+        }
+    }
+
+    return [PSCustomObject]@{
+        buttonCount = $buttonPaths.Count
+        soundEmitterCount = $emitterPaths.Count
+        missingEmitterCount = $missingEmitterPaths.Count
+        buttonPaths = @($buttonPaths.ToArray())
+        soundEmitterPaths = @($emitterPaths.ToArray())
+        missingEmitterPaths = @($missingEmitterPaths.ToArray())
+        passed = ($missingEmitterPaths.Count -eq 0)
+    }
+}
+
 function Invoke-StitchUnityContractCompleteTranslation {
     param(
         [Parameter(Mandatory = $true)][string]$Root,
@@ -1962,7 +2046,7 @@ function Invoke-StitchUnityContractCompleteTranslation {
         $blockId = [string]$entry.blockId
         $mapping = $entry.mapping
         $hostPath = [string](Get-StitchUnityRequiredProperty -InputObject $mapping -Name "hostPath")
-        $requiredComponents = @(Get-StitchUnityOptionalArray -InputObject $mapping -Name "requiredComponents")
+        $requiredComponents = @(Get-StitchUnityComponentsWithButtonSound -Components @(Get-StitchUnityOptionalArray -InputObject $mapping -Name "requiredComponents"))
         $pathResult = Ensure-StitchUnityPrefabHostPath -Root $Root -AssetPath $assetPath -HostPath $hostPath -RequiredComponents $requiredComponents
 
         foreach ($createdPath in @($pathResult.createdPaths)) {
@@ -2005,6 +2089,9 @@ function Invoke-StitchUnityContractCompleteTranslation {
         }
     }
 
+    $buttonSoundEntries = @($blockResults) + @($presentationResult.elements)
+    $buttonSoundCoverage = Get-StitchUnityButtonSoundCoverage -Entries $buttonSoundEntries
+
     $targetKind = [string](Get-StitchUnityOptionalPropertyValue -InputObject $Map -Name "targetKind")
     $baselineIssues = @()
     if (-not [string]::IsNullOrWhiteSpace($targetKind)) {
@@ -2026,6 +2113,7 @@ function Invoke-StitchUnityContractCompleteTranslation {
         contractRefs = Get-StitchUnityContractRefObject -ContractBundle $ContractBundle
         createdPaths = @($createdPaths)
         addedComponents = @($addedComponents)
+        buttonSoundCoverage = $buttonSoundCoverage
         blocks = $blockResults
         presentation = $presentationResult
         targetBaseline = [PSCustomObject]@{

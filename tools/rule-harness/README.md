@@ -97,10 +97,27 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\write-feature-depe
 powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\register-rule-harness-scheduled-task.ps1
 ```
 
+기본 예약 실행은 deterministic static-only 모드다.
+API 키나 GLM quota가 없어도 `static scan -> doc proposal/report -> compile/feature dependency gate -> latest-status.json`까지 진행한다.
+LLM diagnose는 명시적으로 켠 경우에만 사용한다.
+기본 예약 작업 이름은 `JG Rule Harness Static`이다.
+
 30분 주기로 등록:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\register-rule-harness-scheduled-task.ps1 -IntervalMinutes 30
+```
+
+LLM diagnose를 선택적으로 켜서 등록:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\register-rule-harness-scheduled-task.ps1 -EnableLlm
+```
+
+LLM이 없으면 실패해야 하는 실험 run으로 등록:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\register-rule-harness-scheduled-task.ps1 -RequireLlm
 ```
 
 예약 작업이 실제로 호출하는 스크립트:
@@ -131,12 +148,17 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-ha
 [Environment]::SetEnvironmentVariable('RULE_HARNESS_API_KEY', 'YOUR_GLM_KEY', 'User')
 ```
 
+키를 저장해도 기본 예약 작업은 LLM을 사용하지 않는다.
+LLM diagnose가 필요하면 예약 등록 때 `-EnableLlm` 또는 `-RequireLlm`을 명시한다.
+
 ## 주요 옵션
 
 - `-DryRun`
   - patch batch를 실제 적용하지 않고 제안 상태로만 남긴다.
 - `-DisableLlm`
   - API 키가 있어도 LLM 단계를 끈다.
+- `-EnableLlm`
+  - 예약 wrapper에서만 쓰는 옵션이다. API 키가 있으면 LLM diagnose를 사용하고, 키가 없으면 static-only로 계속 진행한다.
 - `-RequireLlm`
   - LLM이 실제로 켜지지 않으면 바로 실패한다.
 - `-ApiKey`
@@ -228,6 +250,7 @@ feature dependency repair가 켜진 run에서는 `feature_dependency_refresh`, `
 - `manual-validation-required` 가 보이면 하네스가 아직 충분히 강한 inferred signal을 못 찾은 것이다. 해당 feature의 구조 규칙, static coverage, feature test asset 유무를 먼저 보강한다.
 - `remove-hardcoded-mcp-ui-smoke` 가 보이면 자동화 스크립트/워크플로우에 scene-specific UI flow가 다시 들어온 것이다. offending file을 제거하고 runtime 확인은 `docs/playtest/runtime_validation_checklist.md`로 옮긴다.
 - 예약 작업 산출물은 `latest-run.txt`로 run 디렉터리를 찾고, 그 디렉터리의 report/summary/log를 순서대로 열면 된다.
+- 예약 실행에서 `llmEnabled = false`는 정상 기본값이다. 하네스가 GLM 없이 돌며 남긴 static finding과 action item을 Codex 작업 큐처럼 읽는다.
 
 ## GLM 메모
 
@@ -236,6 +259,6 @@ feature dependency repair가 켜진 run에서는 `feature_dependency_refresh`, `
 - LLM HTTP 호출에는 기본 `120초` timeout이 걸려 있다. 오래 멈춘 것처럼 보이면 `rule-harness.log` 에서 `static scan`, `LLM review`, `doc sync`, `apply-doc-edits` 단계 로그를 보면 된다.
 - doc sync는 문서별 request timeout과 대상 문서 크기 제한으로 제어된다. 대상 문서가 기본 `20000`자를 넘으면 그 문서만 skip하고, run 전체는 계속 진행한다.
 - 같은 commit에서 같은 batch가 반복 실패하면 `Temp/RuleHarnessState/history.json` 을 기준으로 suppression 하거나 `max-attempts-reached` 로 skip될 수 있다.
-- 예약 작업은 `-RequireLlm -MutationMode code_and_rules` 로 실행되므로, 실제 작업 스케줄러 세션에서 `GLM_API_KEY`가 보이지 않으면 run log에 실패가 남는다.
-- 스케줄러 등록 스크립트는 기본으로 `-Model glm-5 -ApiBaseUrl https://open.bigmodel.cn/api/paas/v4 -MutationMode code_and_rules` 를 task action에 직접 넣는다.
+- 예약 작업은 기본적으로 `-MutationMode code_and_rules` 만 넘기며 LLM을 끈다.
+- 스케줄러 등록 스크립트는 `-EnableLlm` 또는 `-RequireLlm`을 받은 경우에만 `-Model glm-5 -ApiBaseUrl https://open.bigmodel.cn/api/paas/v4` 를 task action에 넣는다.
 - 키는 `GLM_API_KEY`보다 `RULE_HARNESS_API_KEY`를 사용자 환경변수로 저장하는 편이 스케줄러 세션에서 더 예측 가능하다.

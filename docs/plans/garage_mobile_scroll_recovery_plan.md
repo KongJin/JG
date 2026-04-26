@@ -1,7 +1,7 @@
 # Garage Mobile Scroll Recovery Plan
 
 > 마지막 업데이트: 2026-04-26
-> 상태: active
+> 상태: reference
 > doc_id: plans.garage-mobile-scroll-recovery
 > role: plan
 > owner_scope: LobbyScene Garage 모바일 본문을 `slot first -> single scroll body -> fixed save dock` 구조로 복구하는 실행 순서와 acceptance
@@ -128,3 +128,4 @@ Set B Stitch visual fidelity 최종 판단은 [`garage_ui_ux_improvement_plan.md
 - owner impact: primary `plans.garage-mobile-scroll-recovery`; secondary `plans.progress`, `docs.index`, `design.ui-foundations`, `ops.unity-ui-authoring-workflow`; out-of-scope `plans.garage-ui-ux-improvement`, Account/Garage persistence, WebGL validation.
 - doc lifecycle checked: 새 문서는 active plan으로 등록한다. 기존 Set B Garage plan은 visual fidelity owner로 유지하고 대체/삭제하지 않는다.
 - plan rereview: residual - serialized `MobilePreviewTabButton` naming remains to avoid broad serialized churn; Set B final visual fidelity remains separate.
+- 2026-04-26 simplification pass: scroll 구조와 code cleanup은 완료 기록으로 보고 reference로 내린다. 남은 visual fidelity는 `plans.garage-ui-ux-improvement`와 `plans.progress`에서 본다.

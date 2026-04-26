@@ -1,7 +1,7 @@
 # LobbyScene 런타임 조립 계획
 
 > 마지막 업데이트: 2026-04-25
-> 상태: active
+> 상태: reference
 > doc_id: plans.lobby-scene-runtime
 > role: plan
 > owner_scope: `Assets/Scenes/LobbyScene.unity` 생성, runtime wiring, acceptance route
@@ -127,3 +127,8 @@
 - `GaragePageController` 관련 presentation responsibility lint residual이 남아 있으면, LobbyScene assembly 검증과 별도 blocker로 분리해야 한다.
 - `GameScene` 부재 상태에서는 start-game end-to-end acceptance를 닫을 수 없다.
 - 현재 smoke capture에서 Stitch visual surface와 runtime controls가 일부 겹치므로 visual fidelity pass가 필요하다.
+
+## Closeout 기록
+
+- 2026-04-26 simplification pass: LobbyScene 생성, Build Settings 등록, required reference audit, Play Mode Lobby/Garage smoke는 완료 기록으로 보고 reference로 내린다.
+- remaining residual: `Set B Garage` visual fidelity와 GameScene gameplay readiness는 각 active lane에서 본다.

@@ -2,37 +2,35 @@
     "success":  true,
     "terminalVerdict":  "",
     "blockedReason":  "",
-    "generatedAt":  "2026-04-26 01:03:17+09:00",
-    "route":  "lobby-ui",
+    "generatedAt":  "2026-04-26 10:21:11+09:00",
+    "route":  "game-scene-ui",
     "changedFiles":  [
-                         "artifacts/unity/garage-mobile-scroll-migration-report.md",
-                         "artifacts/unity/lobby-scene-garage-mobile-scroll-smoke.png",
-                         "artifacts/unity/lobby-scene-garage-nova-preview-phase2.png",
+                         ".stitch/contracts/draft-templates/overlay-root-draft.template.json",
+                         ".stitch/contracts/draft-templates/workspace-root-draft.template.json",
+                         "artifacts/rules/issue-recurrence-closeout.json",
                          "artifacts/unity/unity-ui-authoring-workflow-policy.json",
-                         "Assets/Editor/SceneTools/GarageMobileScrollMigrationTool.cs",
-                         "Assets/Editor/SceneTools/GarageMobileScrollMigrationTool.cs.meta",
-                         "Assets/Editor/SceneTools/LobbySceneRuntimeAssemblyTool.cs",
-                         "Assets/Scenes/LobbyScene.unity",
-                         "Assets/Scripts/Features/Garage/Presentation/GaragePageChromeController.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GaragePageController.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GaragePageScrollController.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GarageUnitPreviewView.cs",
-                         "Assets/Scripts/Features/Garage/Runtime/GaragePreviewAssembler.cs",
+                         "Assets/Scripts/Features/Player/GameSceneRuntimeSpawnRegistrar.cs",
                          "docs/index.md",
-                         "docs/plans/garage_mobile_scroll_code_cleanup_plan.md",
-                         "docs/plans/garage_mobile_scroll_recovery_plan.md",
+                         "docs/ops/acceptance_reporting_guardrails.md",
+                         "docs/ops/document_management_workflow.md",
+                         "docs/ops/plan_authoring_review_workflow.md",
+                         "docs/plans/document_management_process_tuning_plan.md",
                          "docs/plans/lobby_scene_nova1492_model_application_plan.md",
                          "docs/plans/overnight_agent_coordination_plan.md",
                          "docs/plans/progress.md",
-                         "tools/rule-harness/memory/advisory-memory.json"
+                         "docs/plans/stitch_button_sound_contract_plan.md",
+                         "tools/rule-harness/README.md",
+                         "tools/rule-harness/register-rule-harness-scheduled-task.ps1",
+                         "tools/rule-harness/run-rule-harness-scheduled.ps1",
+                         "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+                         "tools/rule-harness/unregister-rule-harness-scheduled-task.ps1",
+                         "tools/stitch-unity/drafts/New-StitchOverlayDraftFromSourceFacts.ps1",
+                         "tools/stitch-unity/engine/StitchUnityCommon.ps1",
+                         "tools/stitch-unity/validators/Test-StitchContractDraft.ps1"
                      ],
-    "unityUiRelevantFiles":  [
-                                 "Assets/Scenes/LobbyScene.unity",
-                                 "Assets/Scripts/Features/Garage/Presentation/GaragePageChromeController.cs",
-                                 "Assets/Scripts/Features/Garage/Presentation/GaragePageController.cs",
-                                 "Assets/Scripts/Features/Garage/Presentation/GaragePageScrollController.cs",
-                                 "Assets/Scripts/Features/Garage/Presentation/GarageUnitPreviewView.cs"
-                             ],
+    "unityUiRelevantFiles":  {
+
+                             },
     "requiredEvidence":  [
                              {
                                  "name":  "compile-reload",
@@ -43,11 +41,6 @@
                                  "name":  "presentation-layout-ownership",
                                  "path":  "Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json",
                                  "message":  "Presentation code must not author geometry or materials. Move the authoring to scene/prefab or runtime non-presentation layer."
-                             },
-                             {
-                                 "name":  "presentation-responsibility",
-                                 "path":  "npm run --silent presentation:policy:lint",
-                                 "message":  "Presentation PageController classes must stay thin. Smoke entrypoints, chrome styling, and oversized orchestration fail the workflow."
                              }
                          ],
     "missingEvidence":  [
@@ -71,7 +64,7 @@
                                  "ok":  true,
                                  "timedOut":  false,
                                  "requestedCompilation":  false,
-                                 "waitedMs":  60000,
+                                 "waitedMs":  120000,
                                  "isCompiling":  false
                              },
                     "healthAfterWait":  {
@@ -97,22 +90,17 @@
                                         "reportPath":  "Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json",
                                         "violationCount":  0
                                     },
-    "presentationResponsibility":  {
-                                       "success":  true,
-                                       "command":  "node ./tools/presentation-lint/lint-presentation-responsibility.mjs",
-                                       "output":  [
-                                                      "Presentation responsibility lint passed. Checked 63 presentation C# file(s)."
-                                                  ]
-                                   },
+    "presentationResponsibility":  null,
     "capabilityExpansionGuard":  {
                                      "allowCapabilityExpansion":  false,
-                                     "surfaceOnboardingFiles":  [
-                                                                    "artifacts/unity/lobby-scene-garage-mobile-scroll-smoke.png",
-                                                                    "artifacts/unity/lobby-scene-garage-nova-preview-phase2.png"
-                                                                ],
-                                     "capabilityExpansionFiles":  {
+                                     "surfaceOnboardingFiles":  {
 
-                                                                  }
+                                                                },
+                                     "capabilityExpansionFiles":  [
+                                                                      "tools/stitch-unity/drafts/New-StitchOverlayDraftFromSourceFacts.ps1",
+                                                                      "tools/stitch-unity/engine/StitchUnityCommon.ps1",
+                                                                      "tools/stitch-unity/validators/Test-StitchContractDraft.ps1"
+                                                                  ]
                                  },
     "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\unity-ui-authoring-workflow-policy.json"
 }

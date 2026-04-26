@@ -5,7 +5,8 @@ param(
     [string]$ApiBaseUrl,
     [string]$Model,
     [string]$MutationMode = 'code_and_rules',
-    [switch]$RequireLlm = $true,
+    [switch]$EnableLlm,
+    [switch]$RequireLlm,
     [switch]$DisableLlm,
     [switch]$SkipCompileStatusRefresh,
     [switch]$SkipFeatureDependencyRefresh,
@@ -15,6 +16,10 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+if ($DisableLlm -and ($EnableLlm -or $RequireLlm)) {
+    throw 'Use either -DisableLlm or -EnableLlm/-RequireLlm, not both.'
+}
 
 if (-not (Test-Path -LiteralPath $OutputRoot)) {
     New-Item -ItemType Directory -Path $OutputRoot -Force | Out-Null
@@ -39,10 +44,9 @@ try {
     Write-Host "RepoRoot: $RepoRoot"
     Write-Host "Output: $runDir"
 
+    $llmRequested = $EnableLlm -or $RequireLlm
     $requireLlmForRun = $RequireLlm
-    if ($DisableLlm) {
-        $requireLlmForRun = $false
-    }
+    $disableLlmForRun = $DisableLlm -or (-not $llmRequested)
 
     & (Join-Path $PSScriptRoot 'run-rule-harness.ps1') `
         -RepoRoot $RepoRoot `
@@ -55,7 +59,7 @@ try {
         -MutationMode $MutationMode `
         -EnableMutation `
         -RequireLlm:$requireLlmForRun `
-        -DisableLlm:$DisableLlm `
+        -DisableLlm:$disableLlmForRun `
         -SkipCompileStatusRefresh:$SkipCompileStatusRefresh `
         -SkipFeatureDependencyRefresh:$SkipFeatureDependencyRefresh `
         -UnityMcpBaseUrl $UnityMcpBaseUrl `

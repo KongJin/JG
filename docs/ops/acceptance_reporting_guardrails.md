@@ -1,6 +1,6 @@
 # Acceptance Reporting Guardrails
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-26
 > 상태: active
 > doc_id: ops.acceptance-reporting-guardrails
 > role: ssot
@@ -106,6 +106,7 @@ visual staged workflow에서만 사용한다.
 ### rules-only recurrence closeout
 
 문서, repo-local skill, repo-maintained rule/script lane에서 closeout artifact를 운용할 때는 아래 필드를 사용한다.
+모든 docs-only 변경이 이 artifact를 필요로 하는 것은 아니며, 필수 여부는 `ops.document-management-workflow`의 자동 검증 기준을 따른다.
 
 - `issueDetected`
 - `declaredLane`

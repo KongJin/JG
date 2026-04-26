@@ -1,5 +1,5 @@
 param(
-    [string]$TaskName = 'JG Rule Harness GLM'
+    [string]$TaskName = 'JG Rule Harness Static'
 )
 
 Set-StrictMode -Version Latest
