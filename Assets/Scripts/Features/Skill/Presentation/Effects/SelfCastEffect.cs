@@ -8,15 +8,14 @@ namespace Features.Skill.Presentation
     {
         [SerializeField] private float _duration = 1f;
         [SerializeField] private Color _effectColor = new Color(0.3f, 1f, 0.4f, 0.5f);
+        [SerializeField] private Renderer _renderer;
 
         private float _elapsed;
-        private Renderer _renderer;
         private PooledObject _pooledObject;
         private Vector3 _initialScale = Vector3.one;
 
         private void Awake()
         {
-            _renderer = GetComponentInChildren<Renderer>();
             _pooledObject = GetComponent<PooledObject>();
             _initialScale = transform.localScale;
         }

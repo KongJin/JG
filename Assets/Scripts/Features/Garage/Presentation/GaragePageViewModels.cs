@@ -12,6 +12,10 @@ namespace Features.Garage.Presentation
             bool isEmpty,
             bool isSelected,
             bool showArrow = false,
+            string callsign = null,
+            string roleLabel = null,
+            string serviceTagText = null,
+            string loadoutKey = null,
             string frameId = null,
             string firepowerId = null,
             string mobilityId = null)
@@ -25,6 +29,10 @@ namespace Features.Garage.Presentation
             IsEmpty = isEmpty;
             IsSelected = isSelected;
             ShowArrow = showArrow;
+            Callsign = callsign;
+            RoleLabel = roleLabel;
+            ServiceTagText = serviceTagText;
+            LoadoutKey = loadoutKey;
             FrameId = frameId;
             FirepowerId = firepowerId;
             MobilityId = mobilityId;
@@ -39,6 +47,10 @@ namespace Features.Garage.Presentation
         public bool IsEmpty { get; }
         public bool IsSelected { get; }
         public bool ShowArrow { get; }
+        public string Callsign { get; }
+        public string RoleLabel { get; }
+        public string ServiceTagText { get; }
+        public string LoadoutKey { get; }
         public string FrameId { get; }
         public string FirepowerId { get; }
         public string MobilityId { get; }

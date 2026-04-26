@@ -128,6 +128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9599af225e999d14b9f2d8ef215dfc4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Features.Zone.Presentation.ZoneView
+  _renderer: {fileID: 3517442384041128187}
   _fadeSpeed: 1
 --- !u!114 &2939057820588137287
 MonoBehaviour:

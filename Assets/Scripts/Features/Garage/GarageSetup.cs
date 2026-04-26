@@ -3,6 +3,7 @@ using Features.Garage.Application;
 using Features.Garage.Application.Ports;
 using Features.Garage.Infrastructure;
 using Features.Garage.Presentation;
+using Features.Player.Infrastructure;
 using Features.Unit.Application;
 using Features.Unit.Infrastructure;
 using Shared.Attributes;
@@ -59,6 +60,7 @@ namespace Features.Garage
             _disposables?.Dispose();
             _disposables = new DisposableScope();
             var localPersistence = new GarageJsonPersistence();
+            var recentOperations = new OperationRecordJsonStore().Load();
 
             ComposeUnit = new ComposeUnitUseCase(compositionPort);
             InitializeGarage = new InitializeGarageUseCase(
@@ -94,7 +96,8 @@ namespace Features.Garage
                     ValidateRoster,
                     SaveRoster,
                     _eventPublisher,
-                    _panelCatalogFactory.Build(unitCatalog));
+                    _panelCatalogFactory.Build(unitCatalog),
+                    recentOperations);
             }
         }
 

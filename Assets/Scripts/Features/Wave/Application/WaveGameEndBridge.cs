@@ -12,16 +12,19 @@ namespace Features.Wave.Application
     public sealed class WaveGameEndBridge : IDisposable
     {
         private readonly IEventPublisher _publisher;
-        private readonly Func<float> _getCurrentTimeSeconds;
+        private readonly Func<float> _getElapsedTimeSeconds;
+        private readonly Func<int> _getReachedWave;
 
         public WaveGameEndBridge(
             IEventSubscriber subscriber,
             IEventPublisher publisher,
-            Func<float> getCurrentTimeSeconds
+            Func<float> getElapsedTimeSeconds,
+            Func<int> getReachedWave
         )
         {
             _publisher = publisher;
-            _getCurrentTimeSeconds = getCurrentTimeSeconds;
+            _getElapsedTimeSeconds = getElapsedTimeSeconds;
+            _getReachedWave = getReachedWave;
 
             subscriber.Subscribe(this, new Action<WaveVictoryEvent>(OnVictory));
             subscriber.Subscribe(this, new Action<WaveDefeatEvent>(OnDefeat));
@@ -32,8 +35,8 @@ namespace Features.Wave.Application
             _publisher.Publish(new GameEndEvent(
                 isVictory: true,
                 message: "Victory!",
-                reachedWave: 0, // WaveLoop에서 관리하는 경우 보강 가능
-                playTimeSeconds: _getCurrentTimeSeconds()
+                reachedWave: GetReachedWave(),
+                playTimeSeconds: GetElapsedTimeSeconds()
             ));
         }
 
@@ -42,9 +45,19 @@ namespace Features.Wave.Application
             _publisher.Publish(new GameEndEvent(
                 isVictory: false,
                 message: "Defeat!",
-                reachedWave: 0,
-                playTimeSeconds: _getCurrentTimeSeconds()
+                reachedWave: GetReachedWave(),
+                playTimeSeconds: GetElapsedTimeSeconds()
             ));
+        }
+
+        private float GetElapsedTimeSeconds()
+        {
+            return _getElapsedTimeSeconds != null ? Math.Max(0f, _getElapsedTimeSeconds()) : 0f;
+        }
+
+        private int GetReachedWave()
+        {
+            return _getReachedWave != null ? Math.Max(0, _getReachedWave()) : 0;
         }
 
         public void Dispose()

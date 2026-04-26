@@ -134,8 +134,18 @@ function countMethods(content) {
 }
 
 function countSerializedFields(content) {
-  const matches = content.match(/\[.*SerializeField.*\][^\n]*\n\s*private\s+/gmu);
-  return matches ? matches.length : 0;
+  const fieldMatches = content.matchAll(
+    /(?:^\s*\[[^\]]*\]\s*)+(?:private|protected|public|internal)\s+[^;{}]+;/gmu,
+  );
+  let count = 0;
+
+  for (const match of fieldMatches) {
+    if (/\bSerializeField\b/u.test(match[0])) {
+      count++;
+    }
+  }
+
+  return count;
 }
 
 function countUseCaseFields(content) {

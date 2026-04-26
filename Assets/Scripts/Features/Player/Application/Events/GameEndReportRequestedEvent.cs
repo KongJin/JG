@@ -1,3 +1,5 @@
+using System;
+
 namespace Features.Player.Application.Events
 {
     /// <summary>
@@ -11,14 +13,28 @@ namespace Features.Player.Application.Events
         public float PlayTimeSeconds { get; }
         public int SummonCount { get; }
         public int UnitKillCount { get; }
+        public ResultContributionCard[] ContributionCards { get; }
+        public float CoreRemainingHealth { get; }
+        public float CoreMaxHealth { get; }
 
-        public GameEndReportRequestedEvent(bool isVictory, int reachedWave, float playTimeSeconds, int summonCount, int unitKillCount)
+        public GameEndReportRequestedEvent(
+            bool isVictory,
+            int reachedWave,
+            float playTimeSeconds,
+            int summonCount,
+            int unitKillCount,
+            ResultContributionCard[] contributionCards = null,
+            float coreRemainingHealth = 0f,
+            float coreMaxHealth = 0f)
         {
             IsVictory = isVictory;
             ReachedWave = reachedWave;
             PlayTimeSeconds = playTimeSeconds;
             SummonCount = summonCount;
             UnitKillCount = unitKillCount;
+            ContributionCards = contributionCards ?? Array.Empty<ResultContributionCard>();
+            CoreRemainingHealth = coreRemainingHealth;
+            CoreMaxHealth = coreMaxHealth;
         }
     }
 }

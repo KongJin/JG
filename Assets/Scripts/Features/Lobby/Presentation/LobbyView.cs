@@ -68,8 +68,9 @@ namespace Features.Lobby.Presentation
             _disposables.Dispose();
             _disposables = new DisposableScope();
 
-            _roomListView.Initialize(useCases, eventPublisher);
-            _roomDetailView.Initialize(useCases, eventBus, eventPublisher);
+            var roomInputHandler = new LobbyRoomInputHandler(useCases, eventPublisher);
+            _roomListView.Initialize(roomInputHandler);
+            _roomDetailView.Initialize(roomInputHandler, eventBus);
             _garageSummaryView.Initialize(eventBus);
             HookNavigation();
 
@@ -96,6 +97,7 @@ namespace Features.Lobby.Presentation
         public void RenderRoomList(RoomListReceivedEvent e)
         {
             _roomListView.Render(e.Rooms);
+            ShowRoomList();
         }
 
         public void RenderRoom(RoomUpdatedEvent e)
@@ -236,7 +238,22 @@ namespace Features.Lobby.Presentation
                 roomListPanel.SetActive(!showingRoomDetail);
 
             if (roomDetailPanel != null)
+            {
+                SetOptionalPanelRootActive(roomDetailPanel, showingRoomDetail);
                 roomDetailPanel.SetActive(showingRoomDetail);
+            }
+        }
+
+        private static void SetOptionalPanelRootActive(GameObject panel, bool isActive)
+        {
+            var parent = panel != null && panel.transform.parent != null
+                ? panel.transform.parent.gameObject
+                : null;
+            if (parent == null)
+                return;
+
+            if (parent.name.Contains("RoomDetailPanelRoot"))
+                parent.SetActive(isActive);
         }
     }
 

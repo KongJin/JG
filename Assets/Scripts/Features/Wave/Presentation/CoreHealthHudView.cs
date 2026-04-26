@@ -65,12 +65,6 @@ namespace Features.Wave.Presentation
                 panelImage = GetComponent<Image>();
             }
 
-            if (sliderBackgroundImage == null && healthSlider != null)
-            {
-                var background = healthSlider.transform.Find("Background");
-                sliderBackgroundImage = background != null ? background.GetComponent<Image>() : null;
-            }
-
             if (panelImage != null)
             {
                 panelImage.color = new Color(0.10f, 0.14f, 0.19f, 0.94f);

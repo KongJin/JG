@@ -11,7 +11,9 @@ namespace Features.Garage.Presentation
 
         private GaragePanelCatalog Catalog { get; }
 
-        public IReadOnlyList<GarageSlotViewModel> BuildSlotViewModels(GaragePageState state)
+        public IReadOnlyList<GarageSlotViewModel> BuildSlotViewModels(
+            GaragePageState state,
+            IReadOnlyDictionary<string, GarageUnitServiceTag> serviceTagsByLoadoutKey = null)
         {
             var slotViewModels = new List<GarageSlotViewModel>(Domain.GarageRoster.MaxSlots);
 
@@ -26,38 +28,54 @@ namespace Features.Garage.Presentation
                     committed.firepowerModuleId != draft.firepowerModuleId ||
                     committed.mobilityModuleId != draft.mobilityModuleId;
                 bool isEmpty = !draft.HasAnySelection;
+                string loadoutKey = hasDraftLoadout
+                    ? GarageUnitIdentityFormatter.BuildLoadoutKey(
+                        draft.frameId,
+                        draft.firepowerModuleId,
+                        draft.mobilityModuleId)
+                    : null;
+                var serviceTag = ResolveServiceTag(loadoutKey, serviceTagsByLoadoutKey);
 
-                string title = "EMPTY";
+                string title = GarageUnitIdentityFormatter.BuildEmptySlotTitle();
                 string summary = "빈 슬롯";
-                string statusBadgeText = "EMPTY";
+                string statusBadgeText = GarageUnitIdentityFormatter.BuildEmptyStatusBadge();
 
                 if (hasDraftLoadout)
                 {
-                    title = Catalog?.FindFrame(draft.frameId)?.DisplayName ?? draft.frameId;
-                    var firepowerName = CompactPartName(Catalog?.FindFirepower(draft.firepowerModuleId)?.DisplayName ?? draft.firepowerModuleId);
-                    var mobilityName = CompactPartName(Catalog?.FindMobility(draft.mobilityModuleId)?.DisplayName ?? draft.mobilityModuleId);
-                    summary = $"{firepowerName} | {mobilityName}";
+                    var frameName = Catalog?.FindFrame(draft.frameId)?.DisplayName ?? draft.frameId;
+                    var firepower = Catalog?.FindFirepower(draft.firepowerModuleId);
+                    var mobility = Catalog?.FindMobility(draft.mobilityModuleId);
+                    title = GarageUnitIdentityFormatter.BuildTitle(i, frameName, hasDraftLoadout);
+                    summary = GarageUnitIdentityFormatter.BuildSlotSummary(
+                        firepower,
+                        mobility,
+                        draft.firepowerModuleId,
+                        draft.mobilityModuleId);
                 }
                 else if (draft.HasAnySelection)
                 {
-                    title = "DRAFT";
+                    title = "조립 중";
                     summary = "조립 중";
                 }
 
                 if (hasDraftChanges)
                 {
-                    statusBadgeText = hasDraftLoadout ? "DRAFT" : "EDIT";
+                    statusBadgeText = GarageUnitIdentityFormatter.BuildDraftStatusBadge(hasDraftLoadout);
                     summary = hasDraftLoadout
-                        ? $"{CompactPartName(Catalog?.FindFirepower(draft.firepowerModuleId)?.DisplayName ?? draft.firepowerModuleId)} | {CompactPartName(Catalog?.FindMobility(draft.mobilityModuleId)?.DisplayName ?? draft.mobilityModuleId)}"
+                        ? GarageUnitIdentityFormatter.BuildSlotSummary(
+                            Catalog?.FindFirepower(draft.firepowerModuleId),
+                            Catalog?.FindMobility(draft.mobilityModuleId),
+                            draft.firepowerModuleId,
+                            draft.mobilityModuleId)
                         : "조립 중";
                 }
                 else if (hasCommittedLoadout)
                 {
-                    statusBadgeText = "ACTIVE";
+                    statusBadgeText = GarageUnitIdentityFormatter.BuildActiveStatusBadge();
                 }
 
                 slotViewModels.Add(new GarageSlotViewModel(
-                    $"UNIT {i + 1:00}",
+                    GarageUnitIdentityFormatter.BuildSlotLabel(i, hasDraftLoadout),
                     title,
                     summary,
                     statusBadgeText,
@@ -66,12 +84,34 @@ namespace Features.Garage.Presentation
                     isEmpty,
                     i == state.SelectedSlotIndex,
                     showArrow: i == state.SelectedSlotIndex,
+                    callsign: hasDraftLoadout ? GarageUnitIdentityFormatter.BuildCallsign(i) : null,
+                    roleLabel: hasDraftLoadout
+                        ? GarageUnitIdentityFormatter.BuildRoleLabel(
+                            Catalog?.FindFirepower(draft.firepowerModuleId),
+                            Catalog?.FindMobility(draft.mobilityModuleId))
+                        : null,
+                    serviceTagText: hasDraftLoadout
+                        ? GarageUnitIdentityFormatter.BuildServiceTagText(serviceTag)
+                        : null,
+                    loadoutKey: loadoutKey,
                     frameId: hasDraftLoadout ? draft.frameId : null,
                     firepowerId: hasDraftLoadout ? draft.firepowerModuleId : null,
                     mobilityId: hasDraftLoadout ? draft.mobilityModuleId : null));
             }
 
             return slotViewModels;
+        }
+
+        private static GarageUnitServiceTag ResolveServiceTag(
+            string loadoutKey,
+            IReadOnlyDictionary<string, GarageUnitServiceTag> serviceTagsByLoadoutKey)
+        {
+            if (string.IsNullOrWhiteSpace(loadoutKey) || serviceTagsByLoadoutKey == null)
+                return GarageUnitServiceTag.Pending();
+
+            return serviceTagsByLoadoutKey.TryGetValue(loadoutKey, out var tag)
+                ? tag
+                : GarageUnitServiceTag.Pending();
         }
 
         public GarageEditorViewModel BuildEditorViewModel(GaragePageState state)
@@ -88,31 +128,31 @@ namespace Features.Garage.Presentation
 
             if (frame != null)
             {
-                title = frame.DisplayName;
+                title = $"{GarageUnitIdentityFormatter.BuildCallsign(state.SelectedSlotIndex)} {frame.DisplayName}";
                 subtitle = hasCommittedUnit && !hasDraftChanges
-                    ? "저장됨"
+                    ? GarageUnitIdentityFormatter.BuildServiceTagText(GarageUnitServiceTag.Pending())
                     : hasCommittedUnit
-                        ? "저장 가능"
+                        ? "저장 가능 | 전적 유지"
                         : "프레임부터 조립 시작";
             }
             else if (!hasCommittedUnit && !hasAnyDraftSelection)
             {
-                title = $"UNIT {state.SelectedSlotIndex + 1:00}";
+                title = GarageUnitIdentityFormatter.BuildSlotLabel(state.SelectedSlotIndex, hasLoadout: false);
                 subtitle = "프레임부터 조립 시작";
             }
             else if (hasCommittedUnit && !hasDraftChanges)
             {
-                title = $"UNIT {state.SelectedSlotIndex + 1:00}";
-                subtitle = "저장됨";
+                title = GarageUnitIdentityFormatter.BuildCallsign(state.SelectedSlotIndex);
+                subtitle = GarageUnitIdentityFormatter.BuildServiceTagText(GarageUnitServiceTag.Pending());
             }
             else if (hasCommittedUnit)
             {
-                title = $"UNIT {state.SelectedSlotIndex + 1:00}";
-                subtitle = "저장 가능";
+                title = GarageUnitIdentityFormatter.BuildCallsign(state.SelectedSlotIndex);
+                subtitle = "저장 가능 | 전적 유지";
             }
             else
             {
-                title = $"UNIT {state.SelectedSlotIndex + 1:00}";
+                title = GarageUnitIdentityFormatter.BuildSlotLabel(state.SelectedSlotIndex, hasLoadout: false);
                 subtitle = "세 파츠를 완성하면 저장 가능";
             }
 
@@ -134,34 +174,28 @@ namespace Features.Garage.Presentation
                 hasCommittedUnit || hasAnyDraftSelection);
         }
 
-        public GarageResultViewModel BuildResultViewModel(GaragePageState state, GarageDraftEvaluation evaluation)
+        public GarageResultViewModel BuildResultViewModel(
+            GaragePageState state,
+            GarageDraftEvaluation evaluation,
+            string operationSummary = null)
         {
             int missingUnits = state.CommittedRoster.Count >= 3 ? 0 : 3 - state.CommittedRoster.Count;
             bool readyEligible = state.CommittedRoster.IsValid && !evaluation.HasDraftChanges;
-            string rosterStatusText;
-            if (readyEligible)
-            {
-                rosterStatusText = $"SYNCED ROSTER  |  ACTIVE {state.CommittedRoster.Count}/6";
-            }
-            else if (evaluation.HasDraftChanges)
-            {
-                rosterStatusText = evaluation.CanSave
-                    ? "SAVE REQUIRED  |  SLOT UPDATE READY"
-                    : "DRAFT LOADOUT  |  SAVE BLOCKED";
-            }
-            else
-            {
-                rosterStatusText = $"ACTIVE {state.CommittedRoster.Count}/6  |  NEED +{missingUnits}";
-            }
+            string rosterStatusText = GarageUnitIdentityFormatter.BuildRosterStatusText(
+                state.CommittedRoster.Count,
+                missingUnits,
+                readyEligible,
+                evaluation.HasDraftChanges,
+                evaluation.CanSave);
 
             return new GarageResultViewModel(
                 rosterStatusText,
                 BuildValidationText(state, evaluation),
-                BuildStatsText(evaluation),
+                BuildStatsText(evaluation, operationSummary),
                 isReady: readyEligible,
                 isDirty: evaluation.HasDraftChanges,
                 canSave: evaluation.CanSave,
-                primaryActionLabel: BuildPrimaryActionLabel(evaluation));
+                primaryActionLabel: GarageUnitIdentityFormatter.BuildPrimaryActionLabel(evaluation));
         }
 
         private static string BuildValidationText(GaragePageState state, GarageDraftEvaluation evaluation)
@@ -194,10 +228,15 @@ namespace Features.Garage.Presentation
             return "저장 시 선택 슬롯과 전체 편성이 동시에 갱신됩니다.";
         }
 
-        private static string BuildStatsText(GarageDraftEvaluation evaluation)
+        private static string BuildStatsText(
+            GarageDraftEvaluation evaluation,
+            string operationSummary)
         {
+            operationSummary = string.IsNullOrWhiteSpace(operationSummary)
+                ? "최근 작전 기록 없음"
+                : operationSummary;
             if (!evaluation.HasCompleteDraft)
-                return "세 파츠를 선택하면 전투 수치가 열립니다.";
+                return operationSummary;
 
             if (!evaluation.HasCatalogData)
                 return evaluation.ComposeError;
@@ -208,30 +247,9 @@ namespace Features.Garage.Presentation
             var unit = evaluation.ComposeResult.Value;
             return
                 $"ATK {unit.FinalAttackDamage:0}  |  RNG {unit.FinalRange:0.0}m  |  COST {unit.SummonCost}\n" +
-                $"HP {unit.FinalHp:0}  |  ASPD {unit.FinalAttackSpeed:0.00}  |  MOV {unit.FinalMoveRange:0.0}";
+                $"HP {unit.FinalHp:0}  |  ASPD {unit.FinalAttackSpeed:0.00}  |  MOV {unit.FinalMoveRange:0.0}\n" +
+                operationSummary;
         }
 
-        private static string BuildPrimaryActionLabel(GarageDraftEvaluation evaluation)
-        {
-            if (evaluation.CanSave)
-                return "편성 저장";
-
-            if (!evaluation.HasDraftChanges)
-                return "저장됨";
-
-            return "임시안 완성";
-        }
-
-        private static string CompactPartName(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return "Unknown";
-
-            int separatorIndex = value.IndexOf(' ');
-            if (separatorIndex > 0)
-                return value[..separatorIndex];
-
-            return value;
-        }
     }
 }

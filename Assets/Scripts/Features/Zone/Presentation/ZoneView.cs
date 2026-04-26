@@ -1,13 +1,15 @@
 using UnityEngine;
+using Shared.Attributes;
 using Shared.Runtime.Pooling;
 
 namespace Features.Zone.Presentation
 {
     public sealed class ZoneView : MonoBehaviour, IPoolResetHandler
     {
+        [Required, SerializeField] private Renderer _renderer;
+
         private float _duration;
         private float _elapsed;
-        private Renderer _renderer;
         private PooledObject _pooledObject;
         private Vector3 _scale = Vector3.one;
         private Color _baseColor = Color.white;
@@ -18,7 +20,6 @@ namespace Features.Zone.Presentation
             _elapsed = 0f;
             _scale = new Vector3(radius * 2f, 0.1f, radius * 2f);
 
-            _renderer = GetComponentInChildren<Renderer>();
             _pooledObject ??= GetComponent<PooledObject>();
         }
 
@@ -45,9 +46,6 @@ namespace Features.Zone.Presentation
         public void OnRentFromPool()
         {
             _elapsed = 0f;
-
-            if (_renderer == null)
-                _renderer = GetComponentInChildren<Renderer>();
         }
 
         public void OnReturnToPool()

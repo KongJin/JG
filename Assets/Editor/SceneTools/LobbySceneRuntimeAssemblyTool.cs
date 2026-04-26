@@ -355,6 +355,7 @@ namespace ProjectSD.EditorTools.SceneTools
         private static GaragePageController BuildGaragePage(Transform parent)
         {
             var controller = parent.gameObject.AddComponent<GaragePageController>();
+            var chromeBindings = parent.gameObject.AddComponent<GaragePageChromeBindings>();
             var header = CreateText((RectTransform)parent, "GarageHeaderSummaryText", "Garage", 24f, TextAlignmentOptions.Left, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(16f, -18f), new Vector2(-96f, 32f));
             header.gameObject.SetActive(false);
             var settingsOpen = CreateButton((RectTransform)parent, "SettingsOpenButton", "Settings", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-16f, -18f), new Vector2(80f, 32f));
@@ -390,29 +391,31 @@ namespace ProjectSD.EditorTools.SceneTools
             SetRef(controller, "_unitEditorView", editor);
             SetRef(controller, "_resultPanelView", result);
             SetRef(controller, "_unitPreviewView", preview);
-            SetRef(controller, "_mobileContentRoot", contentRoot.gameObject);
-            SetRef(controller, "_mobileBodyHost", bodyHost);
-            SetRef(controller, "_mobileSlotHost", slotHost);
-            SetRef(controller, "_rightRailRoot", rightRail.gameObject);
-            SetRef(controller, "_previewCard", previewCard.gameObject);
-            SetRef(controller, "_resultPane", resultPane.gameObject);
-            SetRef(controller, "_mobileTabBar", tabBar.gameObject);
-            SetRef(controller, "_mobileEditTabButton", editTab);
-            SetRef(controller, "_mobileEditTabLabel", editTab.GetComponentInChildren<TMP_Text>());
-            SetRef(controller, "_mobileFirepowerTabButton", firepowerTab);
-            SetRef(controller, "_mobileFirepowerTabLabel", firepowerTab.GetComponentInChildren<TMP_Text>());
-            SetRef(controller, "_mobileSummaryTabButton", summaryTab);
-            SetRef(controller, "_mobileSummaryTabLabel", summaryTab.GetComponentInChildren<TMP_Text>());
-            SetRef(controller, "_garageHeaderSummaryText", header);
-            SetRef(controller, "_settingsOpenButton", settingsOpen);
-            SetRef(controller, "_settingsOpenButtonLabel", settingsOpen.GetComponentInChildren<TMP_Text>());
-            SetRef(controller, "_settingsOverlayRoot", settingsOverlay.gameObject);
-            SetRef(controller, "_settingsCloseButton", settingsClose);
-            SetRef(controller, "_settingsCloseButtonLabel", settingsClose.GetComponentInChildren<TMP_Text>());
-            SetRef(controller, "_mobileSaveDockRoot", saveDock.gameObject);
-            SetRef(controller, "_mobileSaveButton", saveButton);
-            SetRef(controller, "_mobileSaveButtonLabel", saveButton.GetComponentInChildren<TMP_Text>());
-            SetRef(controller, "_mobileSaveStateText", saveState);
+            SetRef(controller, "_chromeBindings", chromeBindings);
+
+            SetRef(chromeBindings, "_mobileContentRoot", contentRoot.gameObject);
+            SetRef(chromeBindings, "_mobileBodyHost", bodyHost);
+            SetRef(chromeBindings, "_mobileSlotHost", slotHost);
+            SetRef(chromeBindings, "_rightRailRoot", rightRail.gameObject);
+            SetRef(chromeBindings, "_previewCard", previewCard.gameObject);
+            SetRef(chromeBindings, "_resultPane", resultPane.gameObject);
+            SetRef(chromeBindings, "_mobileTabBar", tabBar.gameObject);
+            SetRef(chromeBindings, "_mobileEditTabButton", editTab);
+            SetRef(chromeBindings, "_mobileEditTabLabel", editTab.GetComponentInChildren<TMP_Text>());
+            SetRef(chromeBindings, "_mobileFirepowerTabButton", firepowerTab);
+            SetRef(chromeBindings, "_mobileFirepowerTabLabel", firepowerTab.GetComponentInChildren<TMP_Text>());
+            SetRef(chromeBindings, "_mobileSummaryTabButton", summaryTab);
+            SetRef(chromeBindings, "_mobileSummaryTabLabel", summaryTab.GetComponentInChildren<TMP_Text>());
+            SetRef(chromeBindings, "_garageHeaderSummaryText", header);
+            SetRef(chromeBindings, "_settingsOpenButton", settingsOpen);
+            SetRef(chromeBindings, "_settingsOpenButtonLabel", settingsOpen.GetComponentInChildren<TMP_Text>());
+            SetRef(chromeBindings, "_settingsOverlayRoot", settingsOverlay.gameObject);
+            SetRef(chromeBindings, "_settingsCloseButton", settingsClose);
+            SetRef(chromeBindings, "_settingsCloseButtonLabel", settingsClose.GetComponentInChildren<TMP_Text>());
+            SetRef(chromeBindings, "_mobileSaveDockRoot", saveDock.gameObject);
+            SetRef(chromeBindings, "_mobileSaveButton", saveButton);
+            SetRef(chromeBindings, "_mobileSaveButtonLabel", saveButton.GetComponentInChildren<TMP_Text>());
+            SetRef(chromeBindings, "_mobileSaveStateText", saveState);
             return controller;
         }
 

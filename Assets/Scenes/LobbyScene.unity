@@ -3691,6 +3691,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9141806631110922263, guid: b430fa1aad4618945959b626634f69ab, type: 3}
       insertIndex: -1
       addedObject: {fileID: 316757057}
+    - targetCorrespondingSourceObject: {fileID: 9141806631110922263, guid: b430fa1aad4618945959b626634f69ab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 316757059}
   m_SourcePrefab: {fileID: 100100000, guid: b430fa1aad4618945959b626634f69ab, type: 3}
 --- !u!224 &316757055 stripped
 RectTransform:
@@ -3718,6 +3721,19 @@ MonoBehaviour:
   _unitEditorView: {fileID: 891875644}
   _resultPanelView: {fileID: 1207524055}
   _unitPreviewView: {fileID: 1230291140}
+  _chromeBindings: {fileID: 316757059}
+--- !u!114 &316757059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 316757056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daae08647d454269bbdb0bb2d56a0e9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Garage.Presentation.GaragePageChromeBindings
   _mobileContentRoot: {fileID: 506185263}
   _mobileBodyHost: {fileID: 41552732}
   _mobileSlotHost: {fileID: 399241716}

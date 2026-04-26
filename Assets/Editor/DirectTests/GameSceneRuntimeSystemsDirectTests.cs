@@ -1,9 +1,19 @@
+using Features.Combat.Application.Events;
+using Features.Combat.Domain;
 using Features.Enemy.Application;
+using Features.Enemy.Application.Events;
 using Features.Enemy.Application.Ports;
 using Features.Enemy.Domain;
+using Features.Player.Application;
+using Features.Player.Application.Events;
+using Features.Unit.Application.Events;
 using Features.Unit.Domain;
+using Features.Wave.Application;
+using Features.Wave.Application.Events;
 using Features.Wave.Infrastructure;
 using NUnit.Framework;
+using Shared.EventBus;
+using Shared.Gameplay;
 using Shared.Kernel;
 using Shared.Math;
 using UnityEngine;
@@ -93,14 +103,160 @@ namespace Tests.Editor
             }
         }
 
+        [Test]
+        public void WaveGameEndBridge_UsesElapsedTimeAndReachedWave()
+        {
+            var eventBus = new EventBus();
+            var bridge = new WaveGameEndBridge(
+                eventBus,
+                eventBus,
+                () => 12.5f,
+                () => 2);
+            GameEndEvent received = default;
+            var receivedCount = 0;
+
+            eventBus.Subscribe(this, new System.Action<GameEndEvent>(e =>
+            {
+                received = e;
+                receivedCount++;
+            }));
+
+            eventBus.Publish(new WaveDefeatEvent());
+
+            Assert.AreEqual(1, receivedCount);
+            Assert.IsFalse(received.IsVictory);
+            Assert.AreEqual(2, received.ReachedWave);
+            Assert.AreEqual(12.5f, received.PlayTimeSeconds);
+            bridge.Dispose();
+        }
+
+        [Test]
+        public void GameEndAnalytics_ReportsCountedSummonsAndKills()
+        {
+            var eventBus = new EventBus();
+            var analytics = new GameEndAnalytics(eventBus, eventBus);
+            GameEndReportRequestedEvent report = default;
+            var reportCount = 0;
+
+            eventBus.Subscribe(this, new System.Action<GameEndReportRequestedEvent>(e =>
+            {
+                report = e;
+                reportCount++;
+            }));
+
+            eventBus.Publish(new UnitSummonCompletedEvent(
+                new DomainEntityId("player-1"),
+                new DomainEntityId("battle-unit-1"),
+                CreateUnit("frame", "fire", "mobility", 3f)));
+            eventBus.Publish(new EnemyDiedEvent(
+                new DomainEntityId("enemy-1"),
+                new DomainEntityId("battle-unit-1")));
+            eventBus.Publish(new GameEndEvent(
+                isVictory: false,
+                message: "Defeat!",
+                reachedWave: 1,
+                playTimeSeconds: 9f));
+
+            Assert.AreEqual(1, reportCount);
+            Assert.AreEqual(1, report.ReachedWave);
+            Assert.AreEqual(9f, report.PlayTimeSeconds);
+            Assert.AreEqual(1, report.SummonCount);
+            Assert.AreEqual(1, report.UnitKillCount);
+            Assert.IsNotNull(report.ContributionCards);
+            analytics.Dispose();
+        }
+
+        [Test]
+        public void GameEndAnalytics_BuildsContributionCardsFromCombatEvents()
+        {
+            var eventBus = new EventBus();
+            var coreId = new DomainEntityId("objective-core");
+            var analytics = new GameEndAnalytics(eventBus, eventBus, coreId, 100f);
+            GameEndReportRequestedEvent report = default;
+            var reportCount = 0;
+            var playerId = new DomainEntityId("player-1");
+            var unitId = new DomainEntityId("battle-unit-1");
+            var enemyId = new DomainEntityId("enemy-1");
+
+            eventBus.Subscribe(this, new System.Action<GameEndReportRequestedEvent>(e =>
+            {
+                report = e;
+                reportCount++;
+            }));
+
+            eventBus.Publish(new UnitSummonCompletedEvent(
+                playerId,
+                unitId,
+                CreateUnit("guardian", "single", "heavy", 3f)));
+            eventBus.Publish(new EnemySpawnedEvent(enemyId));
+            eventBus.Publish(new DamageAppliedEvent(enemyId, 25f, DamageType.Physical, 0f, isDead: true, unitId));
+            eventBus.Publish(new DamageAppliedEvent(unitId, 10f, DamageType.Physical, 90f, isDead: false, enemyId));
+            eventBus.Publish(new DamageAppliedEvent(coreId, 20f, DamageType.Physical, 80f, isDead: false, enemyId));
+            eventBus.Publish(new GameEndEvent(
+                isVictory: true,
+                message: "Victory!",
+                reachedWave: 2,
+                playTimeSeconds: 30f));
+
+            Assert.AreEqual(1, reportCount);
+            Assert.AreEqual(80f, report.CoreRemainingHealth);
+            Assert.AreEqual(100f, report.CoreMaxHealth);
+            Assert.LessOrEqual(report.ContributionCards.Length, 3);
+            Assert.IsTrue(ContainsContribution(report, ResultContributionKind.KeepCoreAlive));
+            Assert.IsTrue(ContainsContribution(report, ResultContributionKind.ClearPressure));
+            Assert.IsTrue(ContainsContribution(report, ResultContributionKind.HoldPosition));
+            Assert.IsTrue(System.Array.Exists(
+                report.ContributionCards,
+                card => card.LoadoutKey == "guardian|single|heavy"));
+            analytics.Dispose();
+        }
+
+        [Test]
+        public void GameEndAnalytics_DoesNotClaimCorePreservedWhenCoreCollapsed()
+        {
+            var eventBus = new EventBus();
+            var coreId = new DomainEntityId("objective-core");
+            var analytics = new GameEndAnalytics(eventBus, eventBus, coreId, 100f);
+            GameEndReportRequestedEvent report = default;
+
+            eventBus.Subscribe(this, new System.Action<GameEndReportRequestedEvent>(e => report = e));
+
+            eventBus.Publish(new DamageAppliedEvent(
+                coreId,
+                100f,
+                DamageType.Physical,
+                0f,
+                isDead: true,
+                new DomainEntityId("enemy-1")));
+            eventBus.Publish(new GameEndEvent(
+                isVictory: false,
+                message: "Defeat!",
+                reachedWave: 1,
+                playTimeSeconds: 30f));
+
+            Assert.AreEqual(0f, report.CoreRemainingHealth);
+            Assert.IsFalse(ContainsContribution(report, ResultContributionKind.KeepCoreAlive));
+            Assert.IsTrue(report.ContributionCards.Length > 0);
+            analytics.Dispose();
+        }
+
         private static UnitSpec CreateUnit(float anchorRange)
+        {
+            return CreateUnit("frame", "fire", "mobility", anchorRange);
+        }
+
+        private static UnitSpec CreateUnit(
+            string frameId,
+            string firepowerId,
+            string mobilityId,
+            float anchorRange)
         {
             return new UnitSpec(
                 new DomainEntityId("unit-1"),
-                "frame",
+                frameId,
                 "Unit",
-                "fire",
-                "mobility",
+                firepowerId,
+                mobilityId,
                 "",
                 0,
                 100f,
@@ -110,6 +266,17 @@ namespace Tests.Editor
                 3f,
                 anchorRange,
                 3);
+        }
+
+        private static bool ContainsContribution(GameEndReportRequestedEvent report, ResultContributionKind kind)
+        {
+            for (var i = 0; i < report.ContributionCards.Length; i++)
+            {
+                if (report.ContributionCards[i].Kind == kind)
+                    return true;
+            }
+
+            return false;
         }
 
         private sealed class FakePlayerPositionQuery : IPlayerPositionQuery

@@ -2,6 +2,7 @@ using Shared.Attributes;
 using Features.Combat.Application.Events;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Logging;
 using UnityEngine;
 
 namespace Features.Combat.Presentation
@@ -32,7 +33,8 @@ namespace Features.Combat.Presentation
         {
             if (_entityIdHolder == null)
             {
-                Debug.LogError(
+                Log.Error(
+                    "Combat",
                     "[CombatTargetView] EntityIdHolder is not assigned in Inspector.",
                     this
                 );
@@ -77,7 +79,8 @@ namespace Features.Combat.Presentation
 
             _flashRemaining = e.IsDead ? 0f : _flashDuration;
 
-            Debug.Log(
+            Log.Info(
+                "Combat",
                 $"[CombatTargetView] Target={e.TargetId.Value}, Damage={e.Damage}, Remaining={e.RemainingHealth}"
             );
         }

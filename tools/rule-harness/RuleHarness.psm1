@@ -294,6 +294,21 @@ function Get-RuleHarnessActionItemsForFindings {
             continue
         }
 
+        if ([string]$finding.title -eq 'Presentation responsibility lint failed') {
+            $details = [string]$finding.message
+            if ($pathHint) {
+                $details = "$details. $pathHint."
+            }
+
+            [void]$items.Add((New-RuleHarnessActionItem `
+                -Kind 'fix-presentation-responsibility-lint' `
+                -Severity ([string]$finding.severity) `
+                -Summary 'Fix Presentation responsibility lint failure' `
+                -Details $details `
+                -RelatedPaths @($relatedPaths)))
+            continue
+        }
+
         if ([string]$finding.remediationKind -eq 'rule_fix') {
             $details = [string]$finding.message
             if ($pathHint) {
@@ -5170,6 +5185,105 @@ function Get-RuleHarnessStaticFindings {
             }
         }
 
+        if ($layer -eq 'Presentation') {
+            $presentationPlatformEvidence = $null
+            if ($codeWithoutCommentsOrStrings -match '\bDllImport\s*\(' -or
+                $codeWithoutCommentsOrStrings -match '\bUNITY_WEBGL\b' -or
+                $codeWithoutCommentsOrStrings -match '\bSystem\.Runtime\.InteropServices\b') {
+                $presentationPlatformEvidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @(
+                    'using\s+System\.Runtime\.InteropServices\s*;',
+                    '\bDllImport\s*\(',
+                    '\bUNITY_WEBGL\b',
+                    '"__Internal"'
+                )
+            }
+            if ($null -ne $presentationPlatformEvidence) {
+                [void]$findings.Add((New-RuleHarnessFinding `
+                    -FindingType 'code_violation' `
+                    -Severity 'high' `
+                    -OwnerDoc $architectureOwnerDoc `
+                    -Title 'Presentation platform bridge' `
+                    -Message "Presentation file '$relative' owns platform bridge logic. Move DllImport/WebGL calls behind an Application port implemented in Infrastructure." `
+                    -Evidence @([pscustomobject]@{ path = $relative; line = [int]$presentationPlatformEvidence.line; snippet = [string]$presentationPlatformEvidence.snippet }) `
+                    -Confidence 'high' `
+                    -RemediationKind 'report_only' `
+                    -Rationale 'Presentation should render UI and collect input; platform SDK calls belong behind ports/adapters.'))
+                [void]$docCandidates.Add($architectureOwnerDoc)
+            }
+
+            $presentationTraversalEvidence = $null
+            if ($codeWithoutCommentsOrStrings -match '\btransform\s*\.\s*Find\s*\(' -or
+                $codeWithoutCommentsOrStrings -match '\bGetComponents?InChildren\s*<' -or
+                $codeWithoutCommentsOrStrings -match '\bResources\s*\.\s*Load\s*<' -or
+                $codeWithoutCommentsOrStrings -match '\bFind(?:First|Any)?Object(?:s)?ByType\s*<') {
+                $presentationTraversalEvidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @(
+                    '\btransform\s*\.\s*Find\s*\(',
+                    '\bGetComponents?InChildren\s*<',
+                    '\bResources\s*\.\s*Load\s*<',
+                    '\bFind(?:First|Any)?Object(?:s)?ByType\s*<'
+                )
+            }
+            if ($null -ne $presentationTraversalEvidence) {
+                [void]$findings.Add((New-RuleHarnessFinding `
+                    -FindingType 'code_violation' `
+                    -Severity 'high' `
+                    -OwnerDoc $architectureOwnerDoc `
+                    -Title 'Presentation runtime lookup' `
+                    -Message "Presentation file '$relative' performs runtime hierarchy/resource lookup. Prefer serialized references, scene/prefab contract wiring, or an approved runtime seam." `
+                    -Evidence @([pscustomobject]@{ path = $relative; line = [int]$presentationTraversalEvidence.line; snippet = [string]$presentationTraversalEvidence.snippet }) `
+                    -Confidence 'high' `
+                    -RemediationKind 'report_only' `
+                    -Rationale 'Runtime child traversal and resource lookup in Presentation frequently hide scene contract drift.'))
+                [void]$docCandidates.Add($architectureOwnerDoc)
+            }
+
+            $presentationLogEvidence = $null
+            if ($codeWithoutCommentsOrStrings -match '\bDebug\s*\.\s*Log(?:Warning|Error|Exception)?\s*\(' -or
+                $codeWithoutCommentsOrStrings -match '\bUnityEngine\s*\.\s*Debug\s*\.\s*Log(?:Warning|Error|Exception)?\s*\(') {
+                $presentationLogEvidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @(
+                    '\bDebug\s*\.\s*Log(?:Warning|Error|Exception)?\s*\(',
+                    '\bUnityEngine\s*\.\s*Debug\s*\.\s*Log(?:Warning|Error|Exception)?\s*\('
+                )
+            }
+            if ($null -ne $presentationLogEvidence) {
+                [void]$findings.Add((New-RuleHarnessFinding `
+                    -FindingType 'code_violation' `
+                    -Severity 'medium' `
+                    -OwnerDoc $architectureOwnerDoc `
+                    -Title 'Presentation direct Unity logging' `
+                    -Message "Presentation file '$relative' calls Unity Debug logging directly. Route logs through the shared logging entry point or an event/user-facing error path." `
+                    -Evidence @([pscustomobject]@{ path = $relative; line = [int]$presentationLogEvidence.line; snippet = [string]$presentationLogEvidence.snippet }) `
+                    -Confidence 'high' `
+                    -RemediationKind 'report_only' `
+                    -Rationale 'Direct Debug.Log calls tend to bypass the repo logging policy and build filtering.'))
+                [void]$docCandidates.Add($architectureOwnerDoc)
+            }
+
+            $presentationIsPlainView = $relative -match 'View\.cs$' -and $relative -notmatch '(InputHandler|Controller|Flow|Presenter|Spawner|Adapter)\.cs$'
+            $presentationViewUseCaseEvidence = $null
+            if ($presentationIsPlainView -and
+                ($codeWithoutCommentsOrStrings -match '\b[A-Za-z_][A-Za-z0-9_]*UseCase(?:s)?\b') -and
+                ($codeWithoutCommentsOrStrings -match '\.(Execute|CreateRoom|JoinRoom|LeaveRoom|ChangeTeam|SetReady|StartGame|Save|DeleteAccount)\s*\(')) {
+                $presentationViewUseCaseEvidence = Find-RuleHarnessPatternEvidence -Lines $lines -Patterns @(
+                    '\b[A-Za-z_][A-Za-z0-9_]*UseCase(?:s)?\b',
+                    '\.(Execute|CreateRoom|JoinRoom|LeaveRoom|ChangeTeam|SetReady|StartGame|Save|DeleteAccount)\s*\('
+                )
+            }
+            if ($null -ne $presentationViewUseCaseEvidence) {
+                [void]$findings.Add((New-RuleHarnessFinding `
+                    -FindingType 'code_violation' `
+                    -Severity 'medium' `
+                    -OwnerDoc $architectureOwnerDoc `
+                    -Title 'Presentation view executes use case' `
+                    -Message "Presentation View '$relative' appears to execute use cases directly. Move action handling to an InputHandler/coordinator and keep the View focused on rendering." `
+                    -Evidence @([pscustomobject]@{ path = $relative; line = [int]$presentationViewUseCaseEvidence.line; snippet = [string]$presentationViewUseCaseEvidence.snippet }) `
+                    -Confidence 'medium' `
+                    -RemediationKind 'report_only' `
+                    -Rationale 'InputHandler may call UseCases directly, but plain Views should avoid owning application flow.'))
+                [void]$docCandidates.Add($architectureOwnerDoc)
+            }
+        }
+
         if (-not [string]::IsNullOrWhiteSpace($featureName)) {
             $sameNameTypePath = Join-Path $RepoRoot ("Assets/Scripts/Features/{0}/Domain/{0}.cs" -f $featureName)
             if ((Test-Path -LiteralPath $sameNameTypePath) -and $relative -notlike "Assets/Scripts/Features/$featureName/Domain/$featureName.cs") {
@@ -5515,6 +5629,124 @@ function Get-RuleHarnessHardcodedMcpUiSmokeFindings {
     }
 
     @($findings)
+}
+
+function Invoke-RuleHarnessPresentationPolicyLint {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    $relativeScriptPath = 'tools/presentation-lint/lint-presentation-responsibility.mjs'
+    $scriptPath = Join-Path $RepoRoot $relativeScriptPath
+    if (-not (Test-Path -LiteralPath $scriptPath)) {
+        return [pscustomobject]@{
+            failed      = $false
+            findings    = @()
+            actionItems = @()
+            stageResult = New-RuleHarnessStageResult `
+                -Stage 'presentation_policy_lint' `
+                -Status 'skipped' `
+                -Attempted $false `
+                -Summary 'Presentation responsibility lint script is not available in this repository snapshot.' `
+                -Details ([pscustomobject]@{
+                    scriptPath = $relativeScriptPath
+                })
+        }
+    }
+
+    $nodeCommand = Get-Command node -ErrorAction SilentlyContinue
+    if ($null -eq $nodeCommand) {
+        $message = 'Presentation responsibility lint could not run because node was not found on PATH.'
+        return [pscustomobject]@{
+            failed      = $true
+            findings    = @()
+            actionItems = @((New-RuleHarnessActionItem `
+                -Kind 'restore-node-toolchain' `
+                -Severity 'high' `
+                -Summary 'Restore Node.js for Presentation responsibility lint' `
+                -Details $message `
+                -RelatedPaths @($relativeScriptPath)))
+            stageResult = New-RuleHarnessStageResult `
+                -Stage 'presentation_policy_lint' `
+                -Status 'failed' `
+                -Attempted $true `
+                -Summary $message `
+                -Details ([pscustomobject]@{
+                    scriptPath = $relativeScriptPath
+                })
+        }
+    }
+
+    Push-Location $RepoRoot
+    try {
+        $outputLines = @(& node $scriptPath 2>&1 | ForEach-Object { [string]$_ })
+        $exitCode = $LASTEXITCODE
+    }
+    catch {
+        $outputLines = @([string]$_.Exception.Message)
+        $exitCode = 1
+    }
+    finally {
+        Pop-Location
+    }
+
+    $trimmedOutput = @($outputLines | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+    if ($exitCode -eq 0) {
+        return [pscustomobject]@{
+            failed      = $false
+            findings    = @()
+            actionItems = @()
+            stageResult = New-RuleHarnessStageResult `
+                -Stage 'presentation_policy_lint' `
+                -Status 'passed' `
+                -Attempted $true `
+                -Summary 'Presentation responsibility lint passed.' `
+                -Details ([pscustomobject]@{
+                    scriptPath = $relativeScriptPath
+                    output     = @($trimmedOutput | Select-Object -First 20)
+                })
+        }
+    }
+
+    $evidencePath = $relativeScriptPath
+    $evidenceSnippet = if ($trimmedOutput.Count -gt 0) { [string]$trimmedOutput[0] } else { 'Presentation responsibility lint exited with a non-zero status.' }
+    foreach ($line in @($trimmedOutput)) {
+        if ([string]$line -match '(Assets[\\/][^\s:]+\.cs)') {
+            $evidencePath = ([string]$Matches[1]).Replace('\', '/')
+            $evidenceSnippet = [string]$line
+            break
+        }
+    }
+
+    $message = "Presentation responsibility lint failed with exit code $exitCode. Run npm run --silent presentation:policy:lint and fix PageController responsibility violations."
+    $finding = New-RuleHarnessFinding `
+        -FindingType 'code_violation' `
+        -Severity 'high' `
+        -OwnerDoc 'tools/rule-harness/README.md' `
+        -Title 'Presentation responsibility lint failed' `
+        -Message $message `
+        -Evidence @([pscustomobject]@{ path = $evidencePath; line = $null; snippet = $evidenceSnippet }) `
+        -Confidence 'high' `
+        -Source 'static' `
+        -RemediationKind 'report_only' `
+        -Rationale 'Presentation responsibility lint owns PageController size, chrome/style ownership, smoke entrypoint, and dependency-count policy.'
+
+    [pscustomobject]@{
+        failed      = $true
+        findings    = @($finding)
+        actionItems = @()
+        stageResult = New-RuleHarnessStageResult `
+            -Stage 'presentation_policy_lint' `
+            -Status 'failed' `
+            -Attempted $true `
+            -Summary 'Presentation responsibility lint failed.' `
+            -Details ([pscustomobject]@{
+                scriptPath = $relativeScriptPath
+                exitCode   = $exitCode
+                output     = @($trimmedOutput | Select-Object -First 50)
+            })
+    }
 }
 
 function Invoke-RuleHarnessChatCompletion {
@@ -8232,6 +8464,11 @@ function Invoke-RuleHarness {
     $staleStateRepairedCount = 0
     $compileGateStatus = $null
     $rulesOnlyRecurrenceCloseoutStatus = $null
+    $presentationPolicyLintStatus = Invoke-RuleHarnessPresentationPolicyLint -RepoRoot $RepoRoot
+    $staticFindingCount += @($presentationPolicyLintStatus.findings).Count
+    foreach ($finding in @($presentationPolicyLintStatus.findings)) {
+        [void]$findings.Add($finding)
+    }
     $policyStaticFindings = @(Get-RuleHarnessHardcodedMcpUiSmokeFindings -RepoRoot $RepoRoot -Config $config)
     $staticFindingCount += $policyStaticFindings.Count
     foreach ($finding in @($policyStaticFindings)) {
@@ -8249,6 +8486,7 @@ function Invoke-RuleHarness {
             featureCount = $orderedScopes.Count
             selectedScopes = @($selectedScopes | ForEach-Object { $_.scopeId })
         })))
+    [void]$stageResults.Add($presentationPolicyLintStatus.stageResult)
 
     foreach ($scope in @($selectedScopes)) {
         [void]$attemptedScopes.Add([string]$scope.scopeId)
@@ -8659,6 +8897,7 @@ function Invoke-RuleHarness {
         @($featureDependencyGateStatus.actionItems) +
         @($featureDependencyRepair.actionItems) +
         @($compileGateStatus.actionItems) +
+        @($presentationPolicyLintStatus.actionItems) +
         @($mutationResult.actionItems) +
         @($recurringFailurePromotion.actionItems) +
         @($reportPromotionCandidates | ForEach-Object {
@@ -8751,7 +8990,7 @@ function Invoke-RuleHarness {
         commit            = $mutationResult.commit
         rollback          = $mutationResult.rollback
         applied           = [bool]$mutationResult.applied
-        failed            = ([bool]$failed -or [bool]$featureDependencyGateStatus.failed -or [bool]$compileGateStatus.failed -or [bool]$featureDependencyRepair.failed)
+        failed            = ([bool]$failed -or [bool]$presentationPolicyLintStatus.failed -or [bool]$featureDependencyGateStatus.failed -or [bool]$compileGateStatus.failed -or [bool]$featureDependencyRepair.failed)
     }
 
     if (-not [string]::IsNullOrWhiteSpace($docProposalPath)) {

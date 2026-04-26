@@ -2,6 +2,7 @@ using Features.Unit.Application.Events;
 using Features.Unit.Application.Ports;
 using Features.Unit.Domain;
 using Shared.EventBus;
+using Shared.Gameplay;
 using Shared.Kernel;
 using Shared.Math;
 using UnitSpec = Features.Unit.Domain.Unit;
@@ -58,6 +59,9 @@ namespace Features.Unit.Application
                 playerId,
                 battleEntityId,
                 unitSpec));
+            _eventBus.Publish(new BattleUnitDeployedEvent(
+                playerId,
+                battleEntityId));
 
             return true;
         }

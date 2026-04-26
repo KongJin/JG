@@ -201,8 +201,18 @@ namespace Features.Player
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndHandler));
 
             // GameEndAnalytics — 소환/처치 카운팅 + GameEndReportRequestedEvent 발행
-            var gameEndAnalytics = new GameEndAnalytics(_eventBus, _eventBus);
+            var gameEndAnalytics = new GameEndAnalytics(
+                _eventBus,
+                _eventBus,
+                _coreObjective != null ? _coreObjective.CoreId : default,
+                _coreObjective != null ? _coreObjective.CoreMaxHp : 0f);
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndAnalytics));
+
+            var operationRecordHandler = new OperationRecordGameEndHandler(
+                _eventBus,
+                new SaveOperationRecordUseCase(new OperationRecordJsonStore()),
+                logWarning: Debug.LogWarning);
+            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, operationRecordHandler));
 
             // GameEnd 리포트 로깅 (Bootstrap 책임 — Debug.Log 허용)
             _eventBus.Subscribe(this, new System.Action<Features.Player.Application.Events.GameEndReportRequestedEvent>(OnGameEndReport));
@@ -354,7 +364,14 @@ namespace Features.Player
             Debug.Log($"  Play Time:  {e.PlayTimeSeconds:F1}s ({e.PlayTimeSeconds / 60f:F1}m)");
             Debug.Log($"  Summons:    {e.SummonCount}");
             Debug.Log($"  Unit Kills: {e.UnitKillCount}");
-            Debug.Log($"  K/D Ratio:  {(e.SummonCount > 0 ? (float)e.UnitKillCount / e.SummonCount : 0):F2}");
+            if (e.CoreMaxHealth > 0f)
+                Debug.Log($"  Core HP:    {e.CoreRemainingHealth:F0}/{e.CoreMaxHealth:F0}");
+
+            for (var i = 0; i < e.ContributionCards.Length; i++)
+            {
+                var card = e.ContributionCards[i];
+                Debug.Log($"  Card {i + 1}:   {card.Title} - {card.Body}");
+            }
             Debug.Log($"[GameEnd] =========================");
 
             // Firebase Analytics 전송
@@ -363,6 +380,26 @@ namespace Features.Player
                 _analytics.LogGameResult(e.IsVictory, e.ReachedWave, e.PlayTimeSeconds, e.SummonCount, e.UnitKillCount);
             }
         }
+
+#if UNITY_EDITOR
+        public void ForceCoreDefeatForMcpSmoke()
+        {
+            if (_combatSetup == null || _coreObjective == null)
+                return;
+
+            var lethalDamage = _coreObjective.CoreMaxHp + 10000f;
+            _combatSetup.ApplyDamage(
+                _coreObjective.CoreId,
+                lethalDamage,
+                DamageType.Physical,
+                new DomainEntityId("mcp-smoke"));
+        }
+
+        public void ForceVictoryForMcpSmoke()
+        {
+            _eventBus?.Publish(new Features.Wave.Application.Events.WaveVictoryEvent());
+        }
+#endif
 
         private void OnDestroy()
         {

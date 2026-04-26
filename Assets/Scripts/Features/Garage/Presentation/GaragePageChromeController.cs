@@ -147,7 +147,7 @@ namespace Features.Garage.Presentation
         {
             string focusSummary = BuildFocusSummary(isEditActive, isFirepowerActive);
             string readySummary = BuildReadySummary(committedRosterCount, resultViewModel);
-            return $"UNIT {selectedSlotIndex + 1:00}  |  {focusSummary}  |  {readySummary}";
+            return $"{GarageUnitIdentityFormatter.BuildSlotLabel(selectedSlotIndex, hasLoadout: true)}  |  {focusSummary}  |  {readySummary}";
         }
 
         private static string BuildFocusSummary(bool isEditActive, bool isFirepowerActive)
@@ -161,13 +161,13 @@ namespace Features.Garage.Presentation
         private static string BuildReadySummary(int committedRosterCount, GarageResultViewModel resultViewModel)
         {
             if (resultViewModel == null)
-                return $"활성 {committedRosterCount}/6";
+                return $"현역 {committedRosterCount}/6";
 
             if (resultViewModel.IsReady)
-                return "저장본 최신";
+                return "출격 편성 최신";
 
             if (!resultViewModel.IsDirty)
-                return $"활성 {committedRosterCount}/6";
+                return $"현역 {committedRosterCount}/6";
 
             return resultViewModel.CanSave ? "저장 가능" : "조립 진행 중";
         }
@@ -192,7 +192,7 @@ namespace Features.Garage.Presentation
             SetActive(_mobileSaveButton.gameObject, true);
             _mobileSaveButton.Apply(ButtonStyles.Primary, _mobileSaveButtonLabel);
             _mobileSaveButton.interactable = canSave;
-            _mobileSaveButtonLabel.text = isSaving ? "저장 중..." : "저장 및 배치";
+            _mobileSaveButtonLabel.text = isSaving ? "저장 중..." : "출격 편성 저장";
 
             if (_mobileSaveButton.TryGetComponent<Image>(out var background))
             {
@@ -251,6 +251,14 @@ namespace Features.Garage.Presentation
                 return;
             }
 
+            string operationSummary = ExtractOperationSummary(resultViewModel.StatsText);
+            if (!string.IsNullOrWhiteSpace(operationSummary))
+            {
+                _mobileSaveStateText.text = operationSummary;
+                _mobileSaveStateText.color = ThemeColors.TextSecondary;
+                return;
+            }
+
             if (resultViewModel.IsReady)
             {
                 _mobileSaveStateText.text = "저장본이 최신입니다 | 룸 패널에서 바로 출격 가능";
@@ -260,6 +268,22 @@ namespace Features.Garage.Presentation
 
             _mobileSaveStateText.text = resultViewModel.ValidationText;
             _mobileSaveStateText.color = ThemeColors.TextSecondary;
+        }
+
+        private static string ExtractOperationSummary(string statsText)
+        {
+            if (string.IsNullOrWhiteSpace(statsText))
+                return null;
+
+            var lines = statsText.Split('\n');
+            for (var i = lines.Length - 1; i >= 0; i--)
+            {
+                var line = lines[i].Trim();
+                if (line.StartsWith("작전 ", System.StringComparison.Ordinal))
+                    return line;
+            }
+
+            return null;
         }
 
         private static void ConfigureTabButton(

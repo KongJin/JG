@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-using Features.Account.Application;
 using Features.Account.Domain;
 using Shared.Attributes;
 using TMPro;
@@ -35,39 +33,14 @@ namespace Features.Account.Presentation
         [SerializeField] private Button _confirmYesButton;
         [SerializeField] private Button _confirmNoButton;
 
-        private SignInWithGoogleUseCase _signInWithGoogle;
-        private ChangeDisplayNameUseCase _changeDisplayName;
-        private DeleteAccountUseCase _deleteAccount;
-        private string _googleWebClientId;
-        private System.Action _onLogout;
-        private System.Action _onDeleteAccount;
+        private AccountSettingsInputHandler _inputHandler;
         private AccountProfile _currentProfile;
         private bool _buttonsHooked;
         private bool _deleteConfirmationPending;
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-        [DllImport("__Internal")]
-        private static extern void AccountGoogleSignIn_RequestIdToken(
-            string clientId,
-            string callbackObjectName,
-            string successMethodName,
-            string errorMethodName);
-#endif
-
-        public void Initialize(
-            SignInWithGoogleUseCase signInWithGoogle,
-            ChangeDisplayNameUseCase changeDisplayName,
-            DeleteAccountUseCase deleteAccount,
-            string googleWebClientId,
-            System.Action onLogout,
-            System.Action onDeleteAccount)
+        public void Initialize(AccountSettingsInputHandler inputHandler)
         {
-            _signInWithGoogle = signInWithGoogle;
-            _changeDisplayName = changeDisplayName;
-            _deleteAccount = deleteAccount;
-            _googleWebClientId = googleWebClientId;
-            _onLogout = onLogout;
-            _onDeleteAccount = onDeleteAccount;
+            _inputHandler = inputHandler;
 
             HookButtons();
         }
@@ -120,23 +93,18 @@ namespace Features.Account.Presentation
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(_googleWebClientId))
+            if (!_inputHandler.CanRequestGoogleSignIn(out string unavailableMessage))
             {
-                SetStatusMessage("googleWebClientId is empty.");
+                SetStatusMessage(unavailableMessage);
                 return;
             }
 
-#if UNITY_WEBGL && !UNITY_EDITOR
             _googleSignInButton.interactable = false;
             SetStatusMessage("Opening Google sign-in...");
-            AccountGoogleSignIn_RequestIdToken(
-                _googleWebClientId,
+            _inputHandler.RequestGoogleIdToken(
                 gameObject.name,
                 nameof(OnGoogleIdTokenReceived),
                 nameof(OnGoogleIdTokenFailed));
-#else
-            SetStatusMessage("Google sign-in is only available in WebGL builds.");
-#endif
         }
 
         public void OnGoogleIdTokenReceived(string googleIdToken)
@@ -158,7 +126,7 @@ namespace Features.Account.Presentation
             {
                 SetStatusMessage("Linking Google account...");
 
-                var result = await _signInWithGoogle.Execute(googleIdToken);
+                var result = await _inputHandler.CompleteGoogleSignInAsync(googleIdToken);
                 if (result.IsFailure)
                 {
                     SetStatusMessage(result.Error);
@@ -191,7 +159,7 @@ namespace Features.Account.Presentation
                 return;
 
             string newName = _nicknameInput.text;
-            var result = await _changeDisplayName.Execute(newName);
+            var result = await _inputHandler.ChangeDisplayNameAsync(newName);
 
             SetNicknameMessage(result.IsSuccess ? "Nickname changed." : result.Error);
 
@@ -201,7 +169,7 @@ namespace Features.Account.Presentation
 
         private void OnLogoutClicked()
         {
-            _onLogout?.Invoke();
+            _inputHandler?.Logout();
         }
 
         private void OnDeleteAccountClicked()
@@ -224,23 +192,6 @@ namespace Features.Account.Presentation
             OnConfirmYesClicked();
         }
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        public void WebglSmokeDeleteAccountClick()
-        {
-            OnDeleteAccountClicked();
-        }
-
-        public void WebglSmokeDeleteAccountConfirm()
-        {
-            OnConfirmYesClicked();
-        }
-
-        public void WebglSmokeDeleteAccountCancel()
-        {
-            OnConfirmNoClicked();
-        }
-#endif
-
         private void OnConfirmYesClicked()
         {
             _ = RunConfirmYesAsync();
@@ -256,8 +207,7 @@ namespace Features.Account.Presentation
             try
             {
                 SetStatusMessage("Deleting account...");
-                await _deleteAccount.Execute();
-                _onDeleteAccount?.Invoke();
+                await _inputHandler.DeleteAccountAsync();
             }
             catch (System.Exception ex)
             {
@@ -334,7 +284,7 @@ namespace Features.Account.Presentation
 
         private void EnsureInitialized()
         {
-            if (_signInWithGoogle == null || _changeDisplayName == null || _deleteAccount == null)
+            if (_inputHandler == null)
                 throw new System.InvalidOperationException("AccountSettingsView.Initialize must be called before interaction.");
         }
 

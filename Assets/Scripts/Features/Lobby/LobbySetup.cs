@@ -173,14 +173,15 @@ public sealed class LobbySetup : MonoBehaviour
         if (_accountSettingsView == null || _accountSetup == null || _currentAccountProfile == null)
             return;
 
-        _accountSettingsView.Initialize(
+        var accountSettingsInputHandler = new AccountSettingsInputHandler(
             _accountSetup.SignInWithGoogle,
             _accountSetup.ChangeDisplayName,
             _accountSetup.DeleteAccount,
-            _accountSetup.GoogleWebClientId,
+            _accountSetup.GoogleSignInRequestPort,
             OnAccountLogoutRequested,
             OnAccountDeleted
         );
+        _accountSettingsView.Initialize(accountSettingsInputHandler);
         _accountSettingsView.Render(_currentAccountProfile);
     }
 

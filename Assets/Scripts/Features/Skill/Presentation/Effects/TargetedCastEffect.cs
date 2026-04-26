@@ -8,8 +8,8 @@ namespace Features.Skill.Presentation
     {
         [SerializeField] private float _duration = 0.5f;
         [SerializeField] private Color _flashColor = new Color(1f, 0.2f, 0.2f);
+        [SerializeField] private Renderer _renderer;
 
-        private Renderer _renderer;
         private Color _defaultColor;
         private Color _originalColor;
         private float _elapsed;
@@ -18,7 +18,6 @@ namespace Features.Skill.Presentation
 
         private void Awake()
         {
-            _renderer = GetComponentInChildren<Renderer>();
             _pooledObject = GetComponent<PooledObject>();
 
             if (_renderer != null)
@@ -27,7 +26,6 @@ namespace Features.Skill.Presentation
 
         public void Play()
         {
-            _renderer ??= GetComponentInChildren<Renderer>();
             _pooledObject ??= GetComponent<PooledObject>();
             if (_renderer == null)
             {
@@ -56,7 +54,6 @@ namespace Features.Skill.Presentation
         {
             _elapsed = 0f;
             _isFlashing = false;
-            _renderer ??= GetComponentInChildren<Renderer>();
             _pooledObject ??= GetComponent<PooledObject>();
         }
 

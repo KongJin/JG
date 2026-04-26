@@ -926,6 +926,59 @@ Assert-RuleHarness `
     -Condition (@($layerFindings | Where-Object { $_.title -eq 'Layer dependency violation' }).Count -ge 2) `
     -Message 'Expected Presentation->Photon and Infrastructure->Presentation imports to be reported as layer dependency violations.'
 
+$presentationRepo = Join-Path $scratchRoot 'presentation-antipatterns'
+Initialize-RuleHarnessScopeRepo -RepoPath $presentationRepo -Features @(
+    [pscustomobject]@{ Name = 'Account'; ApplicationContent = 'namespace Features.Account.Application { public sealed class Placeholder { } }' }
+)
+New-Item -ItemType Directory -Path (Join-Path $presentationRepo 'Assets/Scripts/Features/Account/Presentation') -Force | Out-Null
+Set-Content -Path (Join-Path $presentationRepo 'Assets/Scripts/Features/Account/Presentation/AccountSettingsView.cs') -Value @"
+using System.Runtime.InteropServices;
+using UnityEngine;
+
+namespace Features.Account.Presentation
+{
+    public sealed class AccountSettingsView
+    {
+        private SignInWithGoogleUseCase _signInWithGoogle;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [DllImport("__Internal")]
+        private static extern void RequestGoogleToken();
+#endif
+
+        public void RenderAndSubmit()
+        {
+            var label = transform.Find("Label");
+            Debug.Log(label);
+            _signInWithGoogle.Execute("token");
+        }
+    }
+
+    public sealed class SignInWithGoogleUseCase
+    {
+        public void Execute(string token)
+        {
+        }
+    }
+}
+"@ -Encoding UTF8
+$presentationFindings = Get-RuleHarnessStaticFindings `
+    -RepoRoot $presentationRepo `
+    -Config $config `
+    -ScopeId 'Account'
+Assert-RuleHarness `
+    -Condition (@($presentationFindings | Where-Object { $_.title -eq 'Presentation platform bridge' }).Count -eq 1) `
+    -Message 'Expected Presentation DllImport/WebGL bridge code to be reported as a platform bridge violation.'
+Assert-RuleHarness `
+    -Condition (@($presentationFindings | Where-Object { $_.title -eq 'Presentation runtime lookup' }).Count -eq 1) `
+    -Message 'Expected Presentation transform.Find/runtime lookup to be reported.'
+Assert-RuleHarness `
+    -Condition (@($presentationFindings | Where-Object { $_.title -eq 'Presentation direct Unity logging' }).Count -eq 1) `
+    -Message 'Expected Presentation direct Debug.Log usage to be reported.'
+Assert-RuleHarness `
+    -Condition (@($presentationFindings | Where-Object { $_.title -eq 'Presentation view executes use case' }).Count -eq 1) `
+    -Message 'Expected plain Presentation Views that execute UseCases directly to be reported.'
+
 $bridgeRepo = Join-Path $scratchRoot 'energy-bridge-drift'
 Initialize-RuleHarnessScopeRepo -RepoPath $bridgeRepo -Features @(
     [pscustomobject]@{ Name = 'Player'; ApplicationContent = @"
@@ -1559,6 +1612,47 @@ $mcpPolicyAllowedReport = Invoke-RuleHarness `
 Assert-RuleHarness `
     -Condition (@($mcpPolicyAllowedReport.findings | Where-Object title -eq 'Hardcoded MCP UI smoke reintroduced').Count -eq 0 -and -not [bool]$mcpPolicyAllowedReport.failed) `
     -Message 'Expected generic MCP compile/status scripts to avoid false positives from the hardcoded smoke policy.'
+
+$presentationPolicyFailRepo = Join-Path $scratchRoot 'presentation-policy-lint-failed'
+Initialize-RuleHarnessScopeRepo -RepoPath $presentationPolicyFailRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+New-Item -ItemType Directory -Path (Join-Path $presentationPolicyFailRepo 'tools/presentation-lint') -Force | Out-Null
+Set-Content -Path (Join-Path $presentationPolicyFailRepo 'tools/presentation-lint/lint-presentation-responsibility.mjs') -Value @'
+console.error("- [page-controller-method-count] Assets/Scripts/Features/Garage/Presentation/GaragePageController.cs - Presentation PageController exceeds 28 methods (31).");
+process.exit(1);
+'@ -Encoding UTF8
+$presentationPolicyFailReport = Invoke-RuleHarness `
+    -RepoRoot $presentationPolicyFailRepo `
+    -ConfigPath (Join-Path $presentationPolicyFailRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+$presentationPolicyFailStage = @($presentationPolicyFailReport.stageResults | Where-Object stage -eq 'presentation_policy_lint' | Select-Object -First 1)
+Assert-RuleHarness `
+    -Condition ([string]$presentationPolicyFailStage.status -eq 'failed' -and @($presentationPolicyFailReport.findings | Where-Object { $_.title -eq 'Presentation responsibility lint failed' -and $_.evidence[0].path -eq 'Assets/Scripts/Features/Garage/Presentation/GaragePageController.cs' }).Count -eq 1 -and [bool]$presentationPolicyFailReport.failed) `
+    -Message 'Expected Presentation responsibility lint failures to surface as a dedicated stage failure and high-severity finding.'
+Assert-RuleHarness `
+    -Condition (@($presentationPolicyFailReport.actionItems | Where-Object kind -eq 'fix-presentation-responsibility-lint').Count -eq 1) `
+    -Message 'Expected Presentation responsibility lint findings to emit a dedicated action item.'
+
+$presentationPolicyPassedRepo = Join-Path $scratchRoot 'presentation-policy-lint-passed'
+Initialize-RuleHarnessScopeRepo -RepoPath $presentationPolicyPassedRepo -Features @(
+    [pscustomobject]@{ Name = 'Clean'; ApplicationContent = 'namespace Features.Clean.Application { public sealed class CleanService { } }' }
+)
+New-Item -ItemType Directory -Path (Join-Path $presentationPolicyPassedRepo 'tools/presentation-lint') -Force | Out-Null
+Set-Content -Path (Join-Path $presentationPolicyPassedRepo 'tools/presentation-lint/lint-presentation-responsibility.mjs') -Value @'
+console.log("Presentation responsibility lint passed.");
+process.exit(0);
+'@ -Encoding UTF8
+$presentationPolicyPassedReport = Invoke-RuleHarness `
+    -RepoRoot $presentationPolicyPassedRepo `
+    -ConfigPath (Join-Path $presentationPolicyPassedRepo 'tools/rule-harness/config.json') `
+    -DisableLlm `
+    -DryRun
+$presentationPolicyPassedStage = @($presentationPolicyPassedReport.stageResults | Where-Object stage -eq 'presentation_policy_lint' | Select-Object -First 1)
+Assert-RuleHarness `
+    -Condition ([string]$presentationPolicyPassedStage.status -eq 'passed' -and @($presentationPolicyPassedReport.findings | Where-Object title -eq 'Presentation responsibility lint failed').Count -eq 0 -and -not [bool]$presentationPolicyPassedReport.failed) `
+    -Message 'Expected successful Presentation responsibility lint to pass without false positive findings.'
 
 $mcpPolicySummaryRepo = Join-Path $scratchRoot 'mcp-policy-summary'
 Initialize-RuleHarnessScopeRepo -RepoPath $mcpPolicySummaryRepo -Features @(

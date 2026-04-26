@@ -46,3 +46,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.TargetedCastEffect
   _duration: 0.5
   _flashColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+  _renderer: {fileID: 0}

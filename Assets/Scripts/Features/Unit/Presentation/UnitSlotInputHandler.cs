@@ -1,5 +1,6 @@
 using Features.Unit.Domain;
 using Shared.Attributes;
+using Shared.Logging;
 using Shared.Math;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -52,7 +53,7 @@ namespace Features.Unit.Presentation
             var ghostCanvasGroup = _dragGhostPrefab.GetComponent<CanvasGroup>();
             if (ghostCanvasGroup == null)
             {
-                Debug.LogError($"[UnitSlotInputHandler] DragGhostPrefab '{_dragGhostPrefab.name}'에 CanvasGroup이 없습니다. Prefab에 CanvasGroup을 추가하세요.");
+                Log.Error("Unit", $"[UnitSlotInputHandler] DragGhostPrefab '{_dragGhostPrefab.name}'에 CanvasGroup이 없습니다. Prefab에 CanvasGroup을 추가하세요.", this);
             }
             else
             {
@@ -163,7 +164,7 @@ namespace Features.Unit.Presentation
             // Prefab에 CanvasGroup이 필수적으로 포함되어야 함
             if (_canvasGroup == null)
             {
-                Debug.LogError($"[UnitSlotInputHandler] DragGhostPrefab '{_dragGhostPrefab.name}'에 CanvasGroup이 없습니다. Prefab에 CanvasGroup을 추가하세요.");
+                Log.Error("Unit", $"[UnitSlotInputHandler] DragGhostPrefab '{_dragGhostPrefab.name}'에 CanvasGroup이 없습니다. Prefab에 CanvasGroup을 추가하세요.", this);
                 return;
             }
 
@@ -209,18 +210,7 @@ namespace Features.Unit.Presentation
 
         private Vector3 ScreenToWorldPosition(Vector2 screenPosition)
         {
-            if (_worldCamera == null) return Vector3.zero;
-
-            // Plane-Raycast 교차 계산으로 정확한 지면 위치 변환
-            var ray = _worldCamera.ScreenPointToRay(new Vector3(screenPosition.x, screenPosition.y, 0f));
-            var plane = new Plane(Vector3.up, new Vector3(0, _screenToPlaneY, 0));
-
-            if (plane.Raycast(ray, out float enter))
-            {
-                return ray.GetPoint(enter);
-            }
-
-            return Vector3.zero;
+            return PlacementScreenProjector.ToWorld(_worldCamera, _screenToPlaneY, screenPosition);
         }
     }
 }

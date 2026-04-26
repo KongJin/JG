@@ -1,15 +1,9 @@
 using Shared.Attributes;
 using System.Collections.Generic;
-using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
 using Features.Lobby.Application.Ports;
-using Shared.ErrorHandling;
-using Shared.EventBus;
 using Shared.Kernel;
-using Shared.Math;
 using Shared.Runtime.Pooling;
-using Shared.Runtime.Sound;
-using Shared.Sound;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -49,26 +43,18 @@ namespace Features.Lobby.Presentation
         [Required, SerializeField]
         private TMP_Text _roomListEmptyStateText;
 
-        private LobbyUseCases _useCases;
-        private IEventPublisher _eventPublisher;
+        private LobbyRoomInputHandler _inputHandler;
         private GameObjectPool _roomItemPool;
         private readonly List<GameObject> _activeItems = new();
 
-        public void Initialize(LobbyUseCases useCases, IEventPublisher eventPublisher)
+        public void Initialize(LobbyRoomInputHandler inputHandler)
         {
-            _useCases = useCases;
-            _eventPublisher = eventPublisher;
+            _inputHandler = inputHandler;
             _roomItemPool = new GameObjectPool(_roomItemPrefab.gameObject, _roomListContent);
             _createRoomButton?.onClick.AddListener(HandleCreateRoom);
 
             UpdateListChrome(0);
         }
-
-        public Result CreateRoom(string roomName, int capacity, string ownerDisplayName, int difficultyPresetId = 0) =>
-            _useCases.CreateRoom(roomName, capacity, ownerDisplayName, difficultyPresetId);
-
-        public Result JoinRoom(DomainEntityId roomId, string memberDisplayName) =>
-            _useCases.JoinRoom(roomId, memberDisplayName);
 
         public void Render(IReadOnlyList<RoomSnapshot> rooms)
         {
@@ -100,8 +86,6 @@ namespace Features.Lobby.Presentation
 
         private void HandleCreateRoom()
         {
-            PublishSound("ui_confirm");
-
             var roomName = _roomNameInput != null ? _roomNameInput.text : "Room";
             var capacityText = _capacityInput != null ? _capacityInput.text : "4";
             var displayName = _displayNameInput != null ? _displayNameInput.text : string.Empty;
@@ -111,27 +95,13 @@ namespace Features.Lobby.Presentation
 
             var difficulty = _difficultyDropdown != null ? _difficultyDropdown.value : 0;
 
-            var result = _useCases.CreateRoom(roomName, capacity, displayName, difficulty);
-            UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
+            _inputHandler.CreateRoom(roomName, capacity, displayName, difficulty);
         }
 
         private void OnJoinRoomClicked(DomainEntityId roomId)
         {
-            PublishSound("ui_select");
-
             var displayName = _displayNameInput != null ? _displayNameInput.text : string.Empty;
-            var result = _useCases.JoinRoom(roomId, displayName);
-            UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
-        }
-
-        private void PublishSound(string soundKey)
-        {
-            _eventPublisher?.Publish(new SoundRequestEvent(new SoundRequest(
-                soundKey,
-                Float3.Zero,
-                PlaybackPolicy.LocalOnly,
-                SoundPlayer.LobbyOwnerId,
-                0.05f)));
+            _inputHandler.JoinRoom(roomId, displayName);
         }
 
         private void ClearList()
@@ -145,11 +115,6 @@ namespace Features.Lobby.Presentation
         {
             if (_roomListCountText != null)
             {
-                var countBadge = _roomListCountText.transform.parent != null
-                    ? _roomListCountText.transform.parent.gameObject
-                    : null;
-                countBadge?.SetActive(roomCount > 0);
-
                 _roomListCountText.text = roomCount switch
                 {
                     <= 0 => "0 open rooms",

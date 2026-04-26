@@ -127,3 +127,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Skill.Presentation.SelfCastEffect
   _duration: 1
   _effectColor: {r: 0.3, g: 1, b: 0.4, a: 0.5}
+  _renderer: {fileID: 4783888600636314568}

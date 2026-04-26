@@ -3,6 +3,7 @@ using Features.Player.Application.Events;
 using Features.Player.Runtime;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Logging;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,25 +44,25 @@ namespace Features.Player.Presentation
         {
             if (eventBus == null)
             {
-                Debug.LogError("[PlayerHealthHudView] EventBus is missing.", this);
+                Log.Error("Player", "[PlayerHealthHudView] EventBus is missing.", this);
                 return;
             }
 
             if (target == null)
             {
-                Debug.LogError("[PlayerHealthHudView] Target is missing.", this);
+                Log.Error("Player", "[PlayerHealthHudView] Target is missing.", this);
                 return;
             }
 
             if (worldCamera == null)
             {
-                Debug.LogError("[PlayerHealthHudView] World camera is missing.", this);
+                Log.Error("Player", "[PlayerHealthHudView] World camera is missing.", this);
                 return;
             }
 
             if (hudCanvas == null)
             {
-                Debug.LogError("[PlayerHealthHudView] Hud canvas is missing.", this);
+                Log.Error("Player", "[PlayerHealthHudView] Hud canvas is missing.", this);
                 return;
             }
 

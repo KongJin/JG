@@ -46,6 +46,7 @@
 | Plan Mode / Codex 운영 규칙 확인 | `rule-operations` owner 문서 (`docs/index.md`로 current path를 해석한 뒤 읽기) |
 | Unity UI/UX 작업 시작 규칙 확인 | [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) |
 | 게임 방향과 MVP 기준 확인 | [`design/game_design.md`](./design/game_design.md) |
+| 세계관 / Nova1492 원전 기반 정서 기준 확인 | [`design/world_design.md`](./design/world_design.md) |
 | Garage UI 레이아웃/토큰/Unity handoff 기준 확인 | [`design/ui_foundations.md`](./design/ui_foundations.md) |
 | Stitch UI 시안 워크플로우 확인 | [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) |
 | Stitch 데이터 저장/갱신/Unity handoff 흐름 확인 | [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) |
@@ -58,9 +59,12 @@
 | LobbyScene 초기 표시/visual/BattleScene 연결 정리 확인 | [`plans/lobby_scene_completion_plan.md`](./plans/lobby_scene_completion_plan.md) |
 | LobbyScene UI/prefab 관리 부채 정리 확인 | [`plans/lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) |
 | GameScene 진입 큰 흐름 확인 | [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) |
+| GameScene 실제 플로우 검증/closeout 확인 | [`plans/game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) |
 | GameScene Agent A runtime systems 작업 확인 | [`plans/game_scene_agent_a_runtime_core_plan.md`](./plans/game_scene_agent_a_runtime_core_plan.md) |
+| GameScene Agent A 결과/소속감 작업 확인 | [`plans/game_scene_agent_a_result_belonging_plan.md`](./plans/game_scene_agent_a_result_belonging_plan.md) |
 | GameScene Phase 5 multiplayer sync smoke 확인 | [`plans/game_scene_phase5_multiplayer_sync_plan.md`](./plans/game_scene_phase5_multiplayer_sync_plan.md) |
 | GameScene Agent B HUD/input/preview/validation 작업 확인 | [`plans/game_scene_agent_b_hud_input_validation_plan.md`](./plans/game_scene_agent_b_hud_input_validation_plan.md) |
+| GameScene Agent C 기체 애착/용어 작업 확인 | [`plans/game_scene_agent_c_unit_identity_terms_plan.md`](./plans/game_scene_agent_c_unit_identity_terms_plan.md) |
 | GameScene 전투 HUD / 소환 UX 개선 계획 확인 | [`plans/game_scene_ui_ux_improvement_plan.md`](./plans/game_scene_ui_ux_improvement_plan.md) |
 | 계정/차고 복구 상태 확인 | [`plans/account_system_plan.md`](./plans/account_system_plan.md) |
 | Unity MCP 실행 루틴 확인 | [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) |
@@ -74,6 +78,7 @@
 ### `design/`
 
 - `active`: [`game_design.md`](./design/game_design.md) - 현재 게임 방향 SSOT
+- `active`: [`world_design.md`](./design/world_design.md) - Nova1492 원전 기반 세계관과 정서 기준 SSOT
 - `active`: [`ui_foundations.md`](./design/ui_foundations.md) - Garage UI 레이아웃/토큰/Unity 변환 기준
 - `active`: [`ui_reference_workflow.md`](./design/ui_reference_workflow.md) - Stitch 기반 UI 시안 활용 기준
 - `reference`: [`stitch_test_brief.md`](./design/stitch_test_brief.md) - Stitch 붙여넣기용 테스트 브리프
@@ -95,9 +100,13 @@
 - `reference`: [`garage_mobile_scroll_recovery_plan.md`](./plans/garage_mobile_scroll_recovery_plan.md) - Garage 모바일 single vertical scroll 구조와 fixed save dock 복구 기록
 - `reference`: [`garage_mobile_scroll_code_cleanup_plan.md`](./plans/garage_mobile_scroll_code_cleanup_plan.md) - Garage 모바일 scroll 복구 이후 코드/이름/중복 정리 완료 기록
 - `reference`: [`game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) - GameScene 진입 상위 흐름
+- `active`: [`game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) - GameScene/BattleScene 실제 플레이 플로우 acceptance, blocker/mismatch closeout 계획
 - `active`: [`game_scene_agent_a_runtime_core_plan.md`](./plans/game_scene_agent_a_runtime_core_plan.md) - Agent A가 맡는 GameScene/BattleScene 전투 런타임 시스템, BattleEntity, Wave/Core, sync baseline 계획
+- `active`: [`game_scene_agent_a_result_belonging_plan.md`](./plans/game_scene_agent_a_result_belonging_plan.md) - Agent A가 맡는 전투 결과 기여 카드와 소속감 피드백 계획
 - `active`: [`game_scene_phase5_multiplayer_sync_plan.md`](./plans/game_scene_phase5_multiplayer_sync_plan.md) - GameScene/BattleScene Phase 5 멀티플레이 동기화 smoke와 blocker closeout 계획
 - `active`: [`game_scene_agent_b_hud_input_validation_plan.md`](./plans/game_scene_agent_b_hud_input_validation_plan.md) - Agent B가 맡는 GameScene/BattleScene HUD, input, preview, feedback, onboarding, validation 계획
+- `active`: [`operation_record_world_memory_plan.md`](./plans/operation_record_world_memory_plan.md) - 제품 분업 Agent B가 맡는 최근 작전 기록, 세계 기억, Lobby/Garage 기록 표시 계획
+- `active`: [`game_scene_agent_c_unit_identity_terms_plan.md`](./plans/game_scene_agent_c_unit_identity_terms_plan.md) - Agent C가 맡는 기체 애착, 로스터 슬롯 정체성, 기체 전적 태그, 유저-facing 용어/카피 정리 계획
 - `reference`: [`stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) - Stitch set inventory와 reset 기준
 - `reference`: [`document_management_recurrence_prevention_plan.md`](./plans/document_management_recurrence_prevention_plan.md) - 문서관리 점검 후 재발 방지 실행 기록
 - `draft`: [`stitch_llm_contract_pipeline_plan.md`](./plans/stitch_llm_contract_pipeline_plan.md) - Stitch source facts + LLM contract draft + script validation 전환 계획

@@ -61,8 +61,6 @@ namespace Features.Player.Presentation
 
         private void ApplyPresentationDefaults()
         {
-            AutoBindIfNeeded();
-
             if (_energyText != null)
             {
                 _energyText.fontSize = 18;
@@ -74,21 +72,6 @@ namespace Features.Player.Presentation
             if (_sliderBackgroundImage != null)
             {
                 _sliderBackgroundImage.color = new Color(0.11f, 0.16f, 0.22f, 0.96f);
-            }
-        }
-
-        private void AutoBindIfNeeded()
-        {
-            if (_energyText == null)
-            {
-                var label = transform.Find("Label");
-                _energyText = label != null ? label.GetComponent<Text>() : null;
-            }
-
-            if (_sliderBackgroundImage == null && _energySlider != null)
-            {
-                var background = _energySlider.transform.Find("Background");
-                _sliderBackgroundImage = background != null ? background.GetComponent<Image>() : null;
             }
         }
     }

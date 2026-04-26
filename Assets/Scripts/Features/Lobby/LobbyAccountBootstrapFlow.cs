@@ -25,8 +25,9 @@ internal sealed class LobbyAccountBootstrapFlow
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"[LobbySetup] Anonymous sign-in failed: {ex.Message}");
-                loginLoadingView.OnLoginFailed(ex.Message);
+                Debug.LogError($"[LobbySetup] Anonymous sign-in flow failed: {ex.Message}");
+                Debug.LogException(ex);
+                loginLoadingView?.OnLoginFailed(ex.Message);
             }
 
             if (attempt < maxAttempts)

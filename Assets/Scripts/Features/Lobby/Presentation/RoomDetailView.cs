@@ -4,14 +4,10 @@ using Features.Garage.Application;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
 using Features.Lobby.Domain;
-using Shared.ErrorHandling;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Lifecycle;
-using Shared.Math;
 using Shared.Runtime.Pooling;
-using Shared.Runtime.Sound;
-using Shared.Sound;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -56,9 +52,8 @@ namespace Features.Lobby.Presentation
         [Required, SerializeField]
         private Button _startGameButton;
 
-        private LobbyUseCases _useCases;
+        private LobbyRoomInputHandler _inputHandler;
         private IEventSubscriber _eventSubscriber;
-        private IEventPublisher _eventPublisher;
         private DisposableScope _disposables = new();
 
         private GameObjectPool _memberItemPool;
@@ -72,11 +67,10 @@ namespace Features.Lobby.Presentation
         private readonly List<GameObject> _activeItems = new();
         private readonly LobbyReadyPolicy _readyPolicy = new();
 
-        public void Initialize(LobbyUseCases useCases, IEventSubscriber eventSubscriber, IEventPublisher eventPublisher)
+        public void Initialize(LobbyRoomInputHandler inputHandler, IEventSubscriber eventSubscriber)
         {
-            _useCases = useCases;
+            _inputHandler = inputHandler;
             _eventSubscriber = eventSubscriber;
-            _eventPublisher = eventPublisher;
             _memberItemPool = new GameObjectPool(_memberItemPrefab.gameObject, _memberListContent);
 
             if (!_callbacksHooked)
@@ -102,17 +96,6 @@ namespace Features.Lobby.Presentation
         {
             _localMemberId = memberId;
         }
-
-        public Result LeaveRoom(DomainEntityId roomId, DomainEntityId memberId) =>
-            _useCases.LeaveRoom(roomId, memberId);
-
-        public Result ChangeTeam(DomainEntityId roomId, DomainEntityId memberId, TeamType team) =>
-            _useCases.ChangeTeam(roomId, memberId, team);
-
-        public Result SetReady(DomainEntityId roomId, DomainEntityId memberId, bool isReady) =>
-            _useCases.SetReady(roomId, memberId, isReady);
-
-        public Result StartGame(DomainEntityId roomId) => _useCases.StartGame(roomId);
 
         public void Render(RoomSnapshot room)
         {
@@ -159,52 +142,31 @@ namespace Features.Lobby.Presentation
 
         private void HandleLeave()
         {
-            PublishSound("ui_click");
-            var result = _useCases.LeaveRoom(_currentRoomId, _localMemberId);
-            UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
+            _inputHandler.LeaveRoom(_currentRoomId, _localMemberId);
         }
 
         private void HandleChangeTeam(TeamType team)
         {
-            PublishSound("ui_select");
-            var result = _useCases.ChangeTeam(_currentRoomId, _localMemberId, team);
-            UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
+            _inputHandler.ChangeTeam(_currentRoomId, _localMemberId, team);
         }
 
         private void HandleToggleReady()
         {
-            PublishSound("ui_confirm");
             if (!HasRoomMemberContext())
                 return;
 
             if (!_readyPolicy.CanToggleReady(_garageReadyEligible, _localIsReady))
             {
-                UiErrorResultBridge.PublishBannerIfFailure(
-                    _eventPublisher,
-                    Result.Failure(_readyPolicy.BuildBlockReason(_garageReadyBlockReason)),
-                    "Lobby");
+                _inputHandler.PublishFailure(_readyPolicy.BuildBlockReason(_garageReadyBlockReason));
                 return;
             }
 
-            var result = _useCases.SetReady(_currentRoomId, _localMemberId, !_localIsReady);
-            UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
+            _inputHandler.SetReady(_currentRoomId, _localMemberId, !_localIsReady);
         }
 
         private void HandleStartGame()
         {
-            PublishSound("ui_confirm");
-            var result = _useCases.StartGame(_currentRoomId);
-            UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
-        }
-
-        private void PublishSound(string soundKey)
-        {
-            _eventPublisher?.Publish(new SoundRequestEvent(new SoundRequest(
-                soundKey,
-                Float3.Zero,
-                PlaybackPolicy.LocalOnly,
-                SoundPlayer.LobbyOwnerId,
-                0.05f)));
+            _inputHandler.StartGame(_currentRoomId);
         }
 
         private void ClearMemberList()
@@ -266,8 +228,7 @@ namespace Features.Lobby.Presentation
             if (!_readyPolicy.ShouldForceRelock(_garageReadyEligible, _localIsReady, HasRoomMemberContext()))
                 return;
 
-            var result = _useCases.SetReady(_currentRoomId, _localMemberId, false);
-            UiErrorResultBridge.PublishBannerIfFailure(_eventPublisher, result, "Lobby");
+            _inputHandler.SetReady(_currentRoomId, _localMemberId, false);
             _localIsReady = false;
         }
 

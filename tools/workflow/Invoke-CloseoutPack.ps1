@@ -22,11 +22,11 @@ else {
     @(Get-WorkflowChangedFiles -RepoRoot $RepoRoot -StagedOnly:$StagedOnly)
 }
 
-$hasCs = (Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("\.cs$")).Count -gt 0
-$hasDocs = (Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^docs/", "^AGENTS\.md$", "^\.codex/skills/", "^tools/.+README\.md$")).Count -gt 0
-$hasUnityAssets = (Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^Assets/.*\.(meta|prefab|unity|asset|mat|controller|anim)$")).Count -gt 0
-$hasPresentation = (Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^Assets/Scripts/Features/.+/Presentation/", "^Assets/Scripts/Shared/Ui/", "^Assets/Prefabs/")).Count -gt 0
-$hasGeneratedArtifact = (Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^artifacts/(unity|rules)/.*\.json$")).Count -gt 0
+$hasCs = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("\.cs$")).Count -gt 0
+$hasDocs = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^docs/", "^AGENTS\.md$", "^\.codex/skills/", "^tools/.+README\.md$")).Count -gt 0
+$hasUnityAssets = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^Assets/.*\.(meta|prefab|unity|asset|mat|controller|anim)$")).Count -gt 0
+$hasPresentation = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^Assets/Scripts/Features/.+/Presentation/", "^Assets/Scripts/Shared/Ui/", "^Assets/Prefabs/")).Count -gt 0
+$hasGeneratedArtifact = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^artifacts/(unity|rules)/.*\.json$")).Count -gt 0
 
 $planned = New-Object System.Collections.Generic.List[string]
 if ($hasCs -and -not $SkipCompile) { $planned.Add("compile") }

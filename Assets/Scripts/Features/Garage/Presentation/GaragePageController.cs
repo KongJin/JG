@@ -1,12 +1,10 @@
 using Features.Garage.Application;
 using Features.Garage.Domain;
+using Features.Player.Domain;
 using Features.Unit.Application;
 using Shared.Attributes;
 using Shared.EventBus;
-using Shared.Kernel;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Features.Garage.Presentation
@@ -28,32 +26,8 @@ namespace Features.Garage.Presentation
         [Header("Preview")]
         [Required, SerializeField] private GarageUnitPreviewView _unitPreviewView;
 
-        [Header("Layout")]
-        [Required, SerializeField] private GameObject _mobileContentRoot;
-        [Required, SerializeField] private Transform _mobileBodyHost;
-        [Required, SerializeField] private Transform _mobileSlotHost;
-        [Required, SerializeField] private GameObject _rightRailRoot;
-        [Required, SerializeField] private GameObject _previewCard;
-        [Required, SerializeField] private GameObject _resultPane;
-        [Required, SerializeField] private GameObject _mobileTabBar;
-        [Required, SerializeField] private Button _mobileEditTabButton;
-        [Required, SerializeField] private TMP_Text _mobileEditTabLabel;
-        [FormerlySerializedAs("_mobilePreviewTabButton")]
-        [Required, SerializeField] private Button _mobileFirepowerTabButton;
-        [FormerlySerializedAs("_mobilePreviewTabLabel")]
-        [Required, SerializeField] private TMP_Text _mobileFirepowerTabLabel;
-        [Required, SerializeField] private Button _mobileSummaryTabButton;
-        [Required, SerializeField] private TMP_Text _mobileSummaryTabLabel;
-        [Required, SerializeField] private TMP_Text _garageHeaderSummaryText;
-        [Required, SerializeField] private Button _settingsOpenButton;
-        [Required, SerializeField] private TMP_Text _settingsOpenButtonLabel;
-        [Required, SerializeField] private GameObject _settingsOverlayRoot;
-        [Required, SerializeField] private Button _settingsCloseButton;
-        [Required, SerializeField] private TMP_Text _settingsCloseButtonLabel;
-        [Required, SerializeField] private GameObject _mobileSaveDockRoot;
-        [Required, SerializeField] private Button _mobileSaveButton;
-        [Required, SerializeField] private TMP_Text _mobileSaveButtonLabel;
-        [Required, SerializeField] private TMP_Text _mobileSaveStateText;
+        [Header("Chrome")]
+        [Required, SerializeField] private GaragePageChromeBindings _chromeBindings;
 
         private InitializeGarageUseCase _initializeGarage;
         private ComposeUnitUseCase _composeUnit;
@@ -61,16 +35,17 @@ namespace Features.Garage.Presentation
         private SaveRosterUseCase _saveRoster;
         private IEventPublisher _eventPublisher;
         private GaragePanelCatalog _catalog;
+        private RecentOperationRecords _recentOperations;
         private GaragePageState _state;
         private GaragePagePresenter _presenter;
         private bool _callbacksHooked;
         private bool _isInitialized;
         private bool _isInitializingRoster;
-        private bool _isSaving;
         private bool _isSettingsOverlayOpen;
         private MobilePartFocus _mobilePartFocus = MobilePartFocus.Frame;
         private readonly PublishGarageDraftStateUseCase _draftStatePublisher = new();
         private readonly GaragePageScrollController _scrollController = new();
+        private readonly GarageSaveFlow _saveFlow = new();
         private GaragePageChromeController _chromeController;
 
         public void Initialize(
@@ -79,7 +54,8 @@ namespace Features.Garage.Presentation
             ValidateRosterUseCase validateRoster,
             SaveRosterUseCase saveRoster,
             IEventPublisher eventPublisher,
-            GaragePanelCatalog catalog)
+            GaragePanelCatalog catalog,
+            RecentOperationRecords recentOperations = null)
         {
             _initializeGarage = initializeGarage;
             _composeUnit = composeUnit;
@@ -87,9 +63,10 @@ namespace Features.Garage.Presentation
             _saveRoster = saveRoster;
             _eventPublisher = eventPublisher;
             _catalog = catalog;
+            _recentOperations = recentOperations;
             _presenter = new GaragePagePresenter(_catalog);
             _state ??= new GaragePageState();
-            _chromeController ??= CreateChromeController();
+            _chromeController ??= GaragePageChromeBindingResolver.CreateController(this, ref _chromeBindings);
 
             _unitPreviewView.Initialize();
             HookCallbacks();
@@ -144,13 +121,25 @@ namespace Features.Garage.Presentation
             _unitEditorView.ClearRequested += ClearSelectedSlot;
             _resultPanelView.SaveClicked += RequestSave;
 
-            _mobileEditTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Frame));
-            _mobileFirepowerTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Firepower));
-            _mobileSummaryTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Mobility));
+            var chromeBindings = GaragePageChromeBindingResolver.Resolve(this, ref _chromeBindings);
+            if (chromeBindings == null)
+                return;
 
-            _settingsOpenButton.onClick.AddListener(() => SetSettingsOverlayOpen(!_isSettingsOverlayOpen));
-            _settingsCloseButton.onClick.AddListener(() => SetSettingsOverlayOpen(false));
-            _mobileSaveButton.onClick.AddListener(RequestSave);
+            void AddButtonListener(Button button, UnityEngine.Events.UnityAction action)
+            {
+                if (button == null || action == null)
+                    return;
+
+                button.onClick.AddListener(action);
+            }
+
+            AddButtonListener(chromeBindings.MobileEditTabButton, () => SetMobilePartFocus(MobilePartFocus.Frame));
+            AddButtonListener(chromeBindings.MobileFirepowerTabButton, () => SetMobilePartFocus(MobilePartFocus.Firepower));
+            AddButtonListener(chromeBindings.MobileSummaryTabButton, () => SetMobilePartFocus(MobilePartFocus.Mobility));
+
+            AddButtonListener(chromeBindings.SettingsOpenButton, () => SetSettingsOverlayOpen(!_isSettingsOverlayOpen));
+            AddButtonListener(chromeBindings.SettingsCloseButton, () => SetSettingsOverlayOpen(false));
+            AddButtonListener(chromeBindings.MobileSaveButton, RequestSave);
         }
 
         private void OnDisable()
@@ -161,7 +150,7 @@ namespace Features.Garage.Presentation
 
         private void OnEnable()
         {
-            _chromeController ??= CreateChromeController();
+            _chromeController ??= GaragePageChromeBindingResolver.CreateController(this, ref _chromeBindings);
             SyncChrome(null);
         }
 
@@ -178,32 +167,35 @@ namespace Features.Garage.Presentation
             _state.SelectSlot(slotIndex);
             _mobilePartFocus = MobilePartFocus.Frame;
             Render();
-            _scrollController.ScrollBodyToTop(_mobileBodyHost);
+            _scrollController.ScrollBodyToTop(_chromeBindings != null ? _chromeBindings.MobileBodyHost : null);
         }
 
         private void CycleFrame(int delta)
         {
-            EnsureInitialized();
-            _mobilePartFocus = MobilePartFocus.Frame;
-            _state.SetEditingFrameId(CycleId(_state.EditingFrameId, _catalog.Frames, delta, frame => frame.Id));
-            _state.ClearValidationOverride();
-            Render();
+            CyclePart(MobilePartFocus.Frame, _state.EditingFrameId, _catalog.Frames, delta, frame => frame.Id, _state.SetEditingFrameId);
         }
 
         private void CycleFirepower(int delta)
         {
-            EnsureInitialized();
-            _mobilePartFocus = MobilePartFocus.Firepower;
-            _state.SetEditingFirepowerId(CycleId(_state.EditingFirepowerId, _catalog.Firepower, delta, module => module.Id));
-            _state.ClearValidationOverride();
-            Render();
+            CyclePart(MobilePartFocus.Firepower, _state.EditingFirepowerId, _catalog.Firepower, delta, module => module.Id, _state.SetEditingFirepowerId);
         }
 
         private void CycleMobility(int delta)
         {
+            CyclePart(MobilePartFocus.Mobility, _state.EditingMobilityId, _catalog.Mobility, delta, module => module.Id, _state.SetEditingMobilityId);
+        }
+
+        private void CyclePart<T>(
+            MobilePartFocus focus,
+            string currentId,
+            System.Collections.Generic.IReadOnlyList<T> items,
+            int delta,
+            System.Func<T, string> getId,
+            System.Action<string> setId)
+        {
             EnsureInitialized();
-            _mobilePartFocus = MobilePartFocus.Mobility;
-            _state.SetEditingMobilityId(CycleId(_state.EditingMobilityId, _catalog.Mobility, delta, module => module.Id));
+            _mobilePartFocus = focus;
+            setId(CycleId(currentId, items, delta, getId));
             _state.ClearValidationOverride();
             Render();
         }
@@ -231,35 +223,15 @@ namespace Features.Garage.Presentation
 
         private async System.Threading.Tasks.Task RunSaveAsync()
         {
-            if (_isSaving)
-                return;
-
             EnsureInitialized();
-            var evaluation = EvaluateDraft();
-            if (!evaluation.CanSave)
-            {
-                ShowValidationOverride(evaluation.SaveBlockedMessage);
-                return;
-            }
+            var result = await _saveFlow.SaveAsync(
+                _state.DraftRoster,
+                EvaluateDraft(),
+                _saveRoster,
+                BeginSave,
+                EndSave);
 
-            BeginSave(evaluation);
-            Result result;
-            try
-            {
-                result = await _saveRoster.Execute(_state.DraftRoster.Clone());
-            }
-            finally
-            {
-                EndSave();
-            }
-
-            if (!result.IsSuccess)
-            {
-                ShowValidationOverride(result.Error);
-                return;
-            }
-
-            CompleteSave();
+            ApplySaveResult(result);
         }
 
         private void Render()
@@ -267,17 +239,17 @@ namespace Features.Garage.Presentation
             EnsureInitialized();
 
             var evaluation = EvaluateDraft();
-            var slotViewModels = _presenter.BuildSlotViewModels(_state);
-            var resultViewModel = _presenter.BuildResultViewModel(_state, evaluation);
+            var operationSummary = GarageOperationRecordSummaryFormatter.BuildSummary(_recentOperations);
+            var serviceTagsByLoadoutKey = GarageOperationRecordServiceTagMapper.BuildByLoadoutKey(_recentOperations);
+            var slotViewModels = _presenter.BuildSlotViewModels(_state, serviceTagsByLoadoutKey);
+            var resultViewModel = _presenter.BuildResultViewModel(_state, evaluation, operationSummary);
 
             _rosterListView.Render(slotViewModels);
             _unitEditorView.Render(_presenter.BuildEditorViewModel(_state));
             _unitEditorView.SetFocusedPart(ToEditorFocus(_mobilePartFocus));
             _resultPanelView.Render(resultViewModel);
             _resultPanelView.SetInlineSaveVisible(false);
-
-            var selectedSlot = slotViewModels[_state.SelectedSlotIndex];
-            _unitPreviewView.Render(selectedSlot);
+            _unitPreviewView.Render(slotViewModels[_state.SelectedSlotIndex]);
 
             SyncChrome(resultViewModel);
             PublishDraftState();
@@ -291,16 +263,22 @@ namespace Features.Garage.Presentation
 
         private void SyncChrome(GarageResultViewModel resultViewModel)
         {
-            _chromeController ??= CreateChromeController();
+            _chromeController ??= GaragePageChromeBindingResolver.CreateController(this, ref _chromeBindings);
+            if (_chromeController == null)
+                return;
+
+            var selectedSlotIndex = _state != null ? _state.SelectedSlotIndex : 0;
+            var committedRosterCount = _state != null ? _state.CommittedRoster.Count : 0;
+
             _chromeController.ApplyState(
                 transform,
                 _isSettingsOverlayOpen,
-                _isSaving,
+                _saveFlow.IsSaving,
                 _mobilePartFocus == MobilePartFocus.Frame,
                 _mobilePartFocus == MobilePartFocus.Firepower,
                 _mobilePartFocus == MobilePartFocus.Mobility,
-                _state.SelectedSlotIndex,
-                _state.CommittedRoster.Count,
+                selectedSlotIndex,
+                committedRosterCount,
                 resultViewModel);
         }
 
@@ -355,15 +333,30 @@ namespace Features.Garage.Presentation
 
         private void BeginSave(GarageDraftEvaluation evaluation)
         {
-            _isSaving = true;
-            SyncChrome(_presenter.BuildResultViewModel(_state, evaluation));
+            var operationSummary = GarageOperationRecordSummaryFormatter.BuildSummary(_recentOperations);
+            SyncChrome(_presenter.BuildResultViewModel(_state, evaluation, operationSummary));
             _resultPanelView.ShowLoading(true);
         }
 
         private void EndSave()
         {
-            _isSaving = false;
             _resultPanelView.ShowLoading(false);
+        }
+
+        private void ApplySaveResult(GarageSaveFlowResult result)
+        {
+            switch (result.Kind)
+            {
+                case GarageSaveFlowResultKind.Ignored:
+                    return;
+                case GarageSaveFlowResultKind.Saved:
+                    CompleteSave();
+                    return;
+                case GarageSaveFlowResultKind.Blocked:
+                case GarageSaveFlowResultKind.Failed:
+                    ShowValidationOverride(result.Message);
+                    return;
+            }
         }
 
         private void ShowValidationOverride(string message)
@@ -377,7 +370,7 @@ namespace Features.Garage.Presentation
             _state.CommitDraft();
             _resultPanelView.ShowToast("Roster saved!");
             Render();
-            _scrollController.ScrollBodyToTop(_mobileBodyHost);
+            _scrollController.ScrollBodyToTop(_chromeBindings != null ? _chromeBindings.MobileBodyHost : null);
         }
 
         private void PublishDraftState()
@@ -405,6 +398,7 @@ namespace Features.Garage.Presentation
                 _saveRoster == null ||
                 _eventPublisher == null ||
                 _catalog == null ||
+                _chromeBindings == null ||
                 _state == null)
                 throw new System.InvalidOperationException("GaragePageController.Initialize must be called before interaction.");
         }
@@ -435,31 +429,5 @@ namespace Features.Garage.Presentation
             return getId(items[nextIndex]);
         }
 
-        private GaragePageChromeController CreateChromeController()
-        {
-            return new GaragePageChromeController(
-                _mobileContentRoot,
-                _mobileSlotHost,
-                _rightRailRoot,
-                _previewCard,
-                _resultPane,
-                _mobileTabBar,
-                _mobileEditTabButton,
-                _mobileEditTabLabel,
-                _mobileFirepowerTabButton,
-                _mobileFirepowerTabLabel,
-                _mobileSummaryTabButton,
-                _mobileSummaryTabLabel,
-                _garageHeaderSummaryText,
-                _settingsOpenButton,
-                _settingsOpenButtonLabel,
-                _settingsOverlayRoot,
-                _settingsCloseButton,
-                _settingsCloseButtonLabel,
-                _mobileSaveDockRoot,
-                _mobileSaveButton,
-                _mobileSaveButtonLabel,
-                _mobileSaveStateText);
-        }
     }
 }

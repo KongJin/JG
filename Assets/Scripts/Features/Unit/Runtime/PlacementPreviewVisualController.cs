@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Features.Unit
+namespace Features.Unit.Runtime
 {
     internal sealed class PlacementPreviewVisualController
     {

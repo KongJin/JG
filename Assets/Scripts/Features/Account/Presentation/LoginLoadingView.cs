@@ -26,31 +26,40 @@ namespace Features.Account.Presentation
 
         private void Awake()
         {
-            _retryButton.onClick.AddListener(OnRetryClicked);
+            if (_retryButton != null)
+                _retryButton.onClick.AddListener(OnRetryClicked);
         }
 
         public void Show()
         {
             gameObject.SetActive(true);
-            _loadingPanel.SetActive(true);
-            _errorPanel.SetActive(false);
-            _statusText.text = "Signing in...";
+            if (_loadingPanel != null)
+                _loadingPanel.SetActive(true);
+            if (_errorPanel != null)
+                _errorPanel.SetActive(false);
+            if (_statusText != null)
+                _statusText.text = "Signing in...";
             _retryCount = 0;
         }
 
         public void Hide()
         {
-            _loadingPanel.SetActive(false);
-            _errorPanel.SetActive(false);
+            if (_loadingPanel != null)
+                _loadingPanel.SetActive(false);
+            if (_errorPanel != null)
+                _errorPanel.SetActive(false);
             gameObject.SetActive(false);
         }
 
         public void ShowError(string message)
         {
             gameObject.SetActive(true);
-            _loadingPanel.SetActive(false);
-            _errorPanel.SetActive(true);
-            _errorText.text = message;
+            if (_loadingPanel != null)
+                _loadingPanel.SetActive(false);
+            if (_errorPanel != null)
+                _errorPanel.SetActive(true);
+            if (_errorText != null)
+                _errorText.text = message;
         }
 
         public void SetOnLoginSuccess(System.Action callback)
@@ -78,7 +87,8 @@ namespace Features.Account.Presentation
             }
             else
             {
-                _statusText.text = $"Sign-in failed ({_retryCount}/{MaxRetries})\nRetrying...";
+                if (_statusText != null)
+                    _statusText.text = $"Sign-in failed ({_retryCount}/{MaxRetries})\nRetrying...";
             }
         }
 
@@ -91,7 +101,8 @@ namespace Features.Account.Presentation
 
         private void OnDestroy()
         {
-            _retryButton.onClick.RemoveListener(OnRetryClicked);
+            if (_retryButton != null)
+                _retryButton.onClick.RemoveListener(OnRetryClicked);
         }
     }
 }

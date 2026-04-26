@@ -7,9 +7,7 @@ using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Math;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
 using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Presentation
@@ -40,6 +38,8 @@ namespace Features.Unit.Presentation
         private UnitSpec _selectedUnit;
         private DomainEntityId _selectionOwnerId;
         private int _selectedSlotIndex = -1;
+        private PlacementCommandPreviewPresenter _previewPresenter;
+        private SummonDockLayoutBinder _dockLayoutBinder;
         public string CurrentFeedbackMessage { get; private set; } = string.Empty;
 
         private void Awake()
@@ -68,6 +68,11 @@ namespace Features.Unit.Presentation
             _selectionOwnerId = ownerId;
             ClearSelectionState();
             ApplyDockLayout();
+            _previewPresenter = new PlacementCommandPreviewPresenter(
+                _worldCamera,
+                _screenToPlaneY,
+                _placementArea,
+                _placementAreaView);
 
             _eventBus.Subscribe(this, new System.Action<UnitSummonCompletedEvent>(OnSummonCompleted));
             _eventBus.Subscribe(this, new System.Action<UnitSummonFailedEvent>(OnSummonFailed));
@@ -80,11 +85,7 @@ namespace Features.Unit.Presentation
         {
             _slotViews = slotViews ?? System.Array.Empty<UnitSlotView>();
             RefreshSlotSelection();
-
-            if (_slotRowRect != null)
-            {
-                LayoutRebuilder.ForceRebuildLayoutImmediate(_slotRowRect);
-            }
+            _dockLayoutBinder?.RebuildSlotRow();
         }
 
         public bool TrySelectSlot(UnitSlotView slotView)
@@ -204,17 +205,9 @@ namespace Features.Unit.Presentation
 
             try
             {
-                UpdatePlacementPreviewFromPointer();
+                _previewPresenter?.UpdateFromPointer(_selectedUnit);
 
-                if (TryHandleTouchInput())
-                {
-                    return;
-                }
-
-                if (TryHandleMouseInput())
-                {
-                    return;
-                }
+                TryHandlePlacementInput();
             }
             catch (System.InvalidOperationException)
             {
@@ -291,108 +284,23 @@ namespace Features.Unit.Presentation
             RefreshSlotSelection();
         }
 
-        private bool IsPointerOverUi(int pointerId = -1)
-        {
-            if (EventSystem.current == null)
-                return false;
-
-            return pointerId >= 0
-                ? EventSystem.current.IsPointerOverGameObject(pointerId)
-                : EventSystem.current.IsPointerOverGameObject();
-        }
-
-        private Vector3 ScreenToWorldPosition(Vector2 screenPosition)
-        {
-            var ray = _worldCamera.ScreenPointToRay(new Vector3(screenPosition.x, screenPosition.y, 0f));
-            var plane = new Plane(Vector3.up, new Vector3(0f, _screenToPlaneY, 0f));
-            return plane.Raycast(ray, out var enter) ? ray.GetPoint(enter) : Vector3.zero;
-        }
-
         private void ShowPlacementPreview(Vector3 worldPosition)
         {
-            if (_selectedUnit == null)
-                return;
-
-            var previewPosition = _placementArea != null
-                ? _placementArea.ClampToBounds(worldPosition)
-                : worldPosition;
-
-            _placementAreaView?.ShowUnitPreview(
-                previewPosition,
-                _selectedUnit.FinalAnchorRange,
-                _selectedUnit.FinalRange);
+            _previewPresenter?.Show(_selectedUnit, worldPosition);
         }
 
-        private void UpdatePlacementPreviewFromPointer()
+        private void TryHandlePlacementInput()
         {
-            if (_selectedUnit == null || !TryResolvePointerScreenPosition(out var screenPosition, out var pointerId))
-                return;
-
-            if (IsPointerOverUi(pointerId))
-                return;
-
-            var worldPosition = ScreenToWorldPosition(screenPosition);
-            var isValid = _placementArea == null || _placementArea.Contains(worldPosition);
-            ShowPlacementPreview(worldPosition);
-            _placementAreaView?.SetHighlight(isValid);
-        }
-
-        private static bool TryResolvePointerScreenPosition(out Vector2 screenPosition, out int pointerId)
-        {
-            var touchscreen = Touchscreen.current;
-            if (touchscreen != null)
+            if (_previewPresenter == null ||
+                !_previewPresenter.TryConsumePlacementPress(out var worldPosition, out var shouldConfirm))
             {
-                var touch = touchscreen.primaryTouch;
-                if (touch.press.isPressed)
-                {
-                    screenPosition = touch.position.ReadValue();
-                    pointerId = touch.touchId.ReadValue();
-                    return true;
-                }
+                return;
             }
 
-            var mouse = Mouse.current;
-            if (mouse != null)
-            {
-                screenPosition = mouse.position.ReadValue();
-                pointerId = -1;
-                return true;
-            }
+            if (!shouldConfirm)
+                return;
 
-            screenPosition = default;
-            pointerId = -1;
-            return false;
-        }
-
-        private bool TryHandleTouchInput()
-        {
-            var touchscreen = Touchscreen.current;
-            if (touchscreen == null)
-                return false;
-
-            var touch = touchscreen.primaryTouch;
-            if (!touch.press.wasPressedThisFrame)
-                return false;
-
-            var touchId = touch.touchId.ReadValue();
-            if (IsPointerOverUi(touchId))
-                return true;
-
-            TryConfirmPlacementWorld(ScreenToWorldPosition(touch.position.ReadValue()));
-            return true;
-        }
-
-        private bool TryHandleMouseInput()
-        {
-            var mouse = Mouse.current;
-            if (mouse == null || !mouse.leftButton.wasPressedThisFrame)
-                return false;
-
-            if (IsPointerOverUi())
-                return true;
-
-            TryConfirmPlacementWorld(ScreenToWorldPosition(mouse.position.ReadValue()));
-            return true;
+            TryConfirmPlacementWorld(worldPosition);
         }
 
         private static string TranslateFailureReason(string reason)
@@ -420,54 +328,16 @@ namespace Features.Unit.Presentation
 
         private void ApplyDockLayout()
         {
-            AutoBindLayoutReferences();
-
-            if (_dockBackgroundImage != null)
-            {
-                _dockBackgroundImage.color = _dockBackgroundColor;
-                _dockBackgroundImage.raycastTarget = false;
-            }
-        }
-
-        private void AutoBindLayoutReferences()
-        {
-            if (_dockRoot == null)
-            {
-                _dockRoot = transform as RectTransform;
-            }
-
-            if (_dockBackgroundImage == null)
-            {
-                _dockBackgroundImage = GetComponent<Image>();
-            }
-
-            if (_slotRowRect == null)
-            {
-                var child = transform.Find("SlotRow");
-                _slotRowRect = child as RectTransform;
-            }
-
-            if (_energyBarRect == null)
-            {
-                var child = transform.Find("EnergyBar");
-                _energyBarRect = child as RectTransform;
-            }
-
-            if (_feedbackRect == null)
-            {
-                var child = transform.Find("PlacementErrorView");
-                _feedbackRect = child as RectTransform;
-            }
-
-            if (_slotRowLayout == null && _slotRowRect != null)
-            {
-                _slotRowLayout = _slotRowRect.GetComponent<HorizontalLayoutGroup>();
-            }
-
-            if (_worldCamera == null)
-            {
-                _worldCamera = Camera.main;
-            }
+            _dockLayoutBinder ??= new SummonDockLayoutBinder(transform);
+            _dockLayoutBinder.Apply(
+                ref _dockRoot,
+                ref _slotRowRect,
+                ref _energyBarRect,
+                ref _feedbackRect,
+                ref _slotRowLayout,
+                ref _dockBackgroundImage,
+                _dockBackgroundColor,
+                ref _worldCamera);
         }
 
         private void OnDestroy()

@@ -10,7 +10,7 @@
 
 ## 상태 주석
 
-- Phase 0~9의 `완료` 표기는 주로 code path 기준이다. Agent A runtime baseline은 2026-04-26 single-client smoke에서 `LobbyScene -> BattleScene`, 유닛 소환, 적 스폰/제거, core damage -> defeat overlay까지 에러 0으로 재현됐다. 남은 직접 GameScene acceptance 리스크는 Agent B placement drag/drop 자동화와 Phase 5 멀티플레이 동기화 smoke다.
+- Phase 0~9의 `완료` 표기는 주로 code path 기준이다. Agent A runtime baseline은 2026-04-26 single-client smoke에서 `LobbyScene -> BattleScene`, 적 스폰/제거, core damage -> defeat overlay까지 에러 0으로 재현됐다. 같은 날 actual UI path로 Lobby room create -> room detail -> ready -> start -> BattleScene 진입, actual placement/summon stat smoke, diagnostic victory result smoke도 통과했다. 실제 플로우 acceptance는 [`game_scene_flow_validation_closeout_plan.md`](./game_scene_flow_validation_closeout_plan.md)가 소유하며, 남은 리스크는 자연 final-wave victory loop, console error 0 재확인, Agent B placement automation, Phase 5 멀티플레이어 smoke다.
 - Phase 10/11은 Firestore/Garage 핵심 경로와 Google linking 코드가 있으나 WebGL 실기 검증, 설정 동기화, UID 유지 확인이 남아 있다.
 - Stitch-to-Unity는 set별 전용 SceneTool을 줄이고 generic source facts -> draft -> validate route로 모으는 중이다. 남은 공통 판단은 신규 prefab workflow policy guard와 visual fidelity final pass다.
 - `Set B Garage`는 visual fidelity final judgment가 직접 residual이다. Garage save/load, settings, accessibility는 shared `Account/Garage` validation lane에서 본다.
@@ -22,6 +22,8 @@
 ## 현재 포커스
 
 - `GameScene` Agent A 2-client sync residual 판정과 Agent B handoff
+- `GameScene` 작전 기록 / 세계 기억 handoff: 최근 5회 작전 기록, GameEnd summary 소비, Lobby/Garage 기록 표시 계획
+- `GameScene` 실제 플로우 validation closeout: 자연 final-wave victory loop, console error 0 재확인, 2-client sync, 모바일 HUD smoke
 - `GameScene` Agent B placement drag/drop automation contract 마감
 - `GameScene` Phase 5 multiplayer sync smoke 마감
 - `Set B Garage` visual fidelity final judgment
@@ -51,7 +53,9 @@
 | Lane | 남은 TODO |
 |---|---|
 | `GameScene` runtime | 2-client sync에서 BattleEntity/Energy/Wave hydration mismatch 여부 확인, player avatar commander/base contract |
-| `GameScene` HUD/input | placement area drag/drop automation contract |
+| `GameScene` flow closeout | 자연 final-wave victory loop, console error 0 재확인, GameEnd result HUD actual player-flow evidence |
+| `GameScene` operation record | local-first 최근 5회 기록 모델/저장 code path와 Garage 요약 표시 code path가 추가됐고, Play Mode defeat -> local record 생성 및 Garage active text smoke가 통과됨. 남은 TODO는 EditMode test 실행, screenshot/mobile framing evidence, Firestore/WebGL restore smoke |
+| `GameScene` HUD/input | placement area drag/drop automation contract, room/result UI가 실제 조작 경로에서 보이는지 확인 |
 | `GameScene` multiplayer | wave start, core victory/defeat baseline, late-join/BattleEntity/Energy multiplayer sync smoke |
 | `Account/Garage` WebGL | Firebase Console 설정, WebGL build smoke, Garage save/load 재현, settings 저장/소비, save action 접근성, settings interaction |
 | `Audio` WebGL | 사운드 설정 UI 저장 확장과 WebGL 오디오 로드/재생 smoke |
@@ -60,7 +64,8 @@
 
 ## 다음 작업
 
-- `GameScene` 쪽은 Agent A single-client runtime baseline 증거를 기준으로 Agent B preview/HUD/checklist 준비와 Phase 5 multiplayer sync smoke를 이어서 판정한다.
+- `GameScene` 쪽은 [`game_scene_flow_validation_closeout_plan.md`](./game_scene_flow_validation_closeout_plan.md)에 따라 actual UI path, GameEnd stats, victory/defeat, 2-client sync를 success/blocked/mismatch로 분리해 닫는다.
+- 작전 기록 / 세계 기억 작업은 [`operation_record_world_memory_plan.md`](./operation_record_world_memory_plan.md)에 따라 최근 5회 기록을 local-first로 저장하고, GameEnd summary 확장값은 Agent A owner와 분리해 소비한다.
 - `LobbyScene` 쪽은 runtime/completion 기록을 reference로 보고, 새 blocker가 없으면 Garage final fidelity만 `Set B Garage` 판단과 함께 본다.
 - LobbyScene UI/prefab 관리 부채는 [`lobby_scene_ui_prefab_management_plan.md`](./lobby_scene_ui_prefab_management_plan.md)에서 assembly helper 안전화, prefab override audit, preview placeholder 정리 순서로 본다.
 - 변환된 Nova1492 GX 모델은 [`lobby_scene_nova1492_model_application_plan.md`](./lobby_scene_nova1492_model_application_plan.md)에 따라 Phase 4 로비 장식 후보를 별도 inactive variant로 검토한다.

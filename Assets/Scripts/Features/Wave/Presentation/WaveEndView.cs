@@ -1,5 +1,6 @@
 using Shared.Attributes;
 using System;
+using System.Text;
 using Features.Player.Application.Events;
 using Features.Wave.Application.Events;
 using Features.Wave.Domain;
@@ -44,14 +45,14 @@ namespace Features.Wave.Presentation
         {
             if (_gameEnded) return;
             _gameEnded = true;
-            Show("Victory!", isVictory: true);
+            Show("버텨냈다", isVictory: true);
         }
 
         private void OnDefeat(WaveDefeatEvent e)
         {
             if (_gameEnded) return;
             _gameEnded = true;
-            Show("Defeat!", isVictory: false);
+            Show("거점 붕괴", isVictory: false);
         }
 
         private void OnWaveHydrated(WaveHydratedEvent e)
@@ -61,12 +62,12 @@ namespace Features.Wave.Presentation
                 case WaveState.Victory:
                     if (_gameEnded) return;
                     _gameEnded = true;
-                    Show("Victory!", isVictory: true);
+                    Show("버텨냈다", isVictory: true);
                     break;
                 case WaveState.Defeat:
                     if (_gameEnded) return;
                     _gameEnded = true;
-                    Show("Defeat!", isVictory: false);
+                    Show("거점 붕괴", isVictory: false);
                     break;
             }
         }
@@ -77,15 +78,36 @@ namespace Features.Wave.Presentation
             {
                 var playTimeMin = e.PlayTimeSeconds / 60f;
                 var playTimeSec = e.PlayTimeSeconds % 60f;
-                var kdRatio = e.SummonCount > 0 ? (float)e.UnitKillCount / e.SummonCount : 0f;
+                var resultLabel = e.IsVictory ? "버텨냈다" : "거점 붕괴";
+                var builder = new StringBuilder();
+                builder.AppendLine($"결과: {resultLabel}");
+                builder.AppendLine($"도달 공세: {e.ReachedWave}");
+                builder.AppendLine($"작전 시간: {playTimeMin:F0}분 {playTimeSec:F0}초");
 
-                statsText.text =
-                    $"결과: {(e.IsVictory ? "승리" : "패배")}\n" +
-                    $"도달 Wave: {e.ReachedWave}\n" +
-                    $"플레이 시간: {playTimeMin:F0}분 {playTimeSec:F0}초\n" +
-                    $"소환 횟수: {e.SummonCount}\n" +
-                    $"처치 횟수: {e.UnitKillCount}\n" +
-                    $"K/D 비율: {kdRatio:F2}";
+                if (e.CoreMaxHealth > 0f)
+                {
+                    var corePercent = Math.Max(0f, Math.Min(100f, e.CoreRemainingHealth / e.CoreMaxHealth * 100f));
+                    builder.AppendLine($"거점 내구도: {corePercent:F0}%");
+                }
+
+                if (e.ContributionCards.Length > 0)
+                {
+                    builder.AppendLine();
+                    builder.AppendLine("기여 카드");
+                    for (var i = 0; i < e.ContributionCards.Length; i++)
+                    {
+                        var card = e.ContributionCards[i];
+                        builder.AppendLine($"- {card.Title}: {card.Body}");
+                    }
+                }
+                else
+                {
+                    builder.AppendLine();
+                    builder.AppendLine($"기체 전개: {e.SummonCount}");
+                    builder.AppendLine($"압박 정리: {e.UnitKillCount}");
+                }
+
+                statsText.text = builder.ToString();
             }
         }
 
@@ -96,7 +118,7 @@ namespace Features.Wave.Presentation
 
             if (statsText != null)
             {
-                statsText.text = $"결과: {(isVictory ? "승리" : "패배")}";
+                statsText.text = $"결과: {(isVictory ? "버텨냈다" : "거점 붕괴")}";
             }
 
             if (returnToLobbyButton != null)

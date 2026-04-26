@@ -20,6 +20,7 @@ namespace Features.Account
         // Ports
         public IAuthPort AuthPort { get; private set; }
         public IAccountDataPort DataPort { get; private set; }
+        public IGoogleSignInRequestPort GoogleSignInRequestPort { get; private set; }
         public string GoogleWebClientId => _config.googleWebClientId;
 
         // UseCases
@@ -44,6 +45,7 @@ namespace Features.Account
 
             AuthPort = authAdapter;
             DataPort = firestorePort;
+            GoogleSignInRequestPort = new WebGlGoogleSignInRequestAdapter(_config.googleWebClientId);
 
             // UseCases
             SignInAnonymously = new SignInAnonymouslyUseCase(AuthPort, DataPort);

@@ -1,3 +1,4 @@
+using Features.Unit.Runtime;
 using UnityEngine;
 
 namespace Features.Unit.Presentation
@@ -165,7 +166,7 @@ namespace Features.Unit.Presentation
             if (_meshRenderer == null || material == null)
                 return;
 
-            _meshRenderer.sharedMaterial = material;
+            PlacementAreaRendererMaterialApplier.Apply(_meshRenderer, material);
         }
 
         private System.Collections.IEnumerator ShowInvalidFeedbackRoutine()
