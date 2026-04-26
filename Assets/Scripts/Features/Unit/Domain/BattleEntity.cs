@@ -16,6 +16,7 @@ namespace Features.Unit.Domain
 
         public float MaxHp { get; }
         public float CurrentHp { get; private set; }
+        public Float3 AnchorPosition { get; }
         public Float3 Position { get; private set; }
         public bool IsAlive => CurrentHp > 0f;
         public bool IsDead => CurrentHp <= 0f;
@@ -31,6 +32,7 @@ namespace Features.Unit.Domain
             OwnerId = ownerId;
             MaxHp = unitSpec.FinalHp;
             CurrentHp = initialHp != null ? Clamp(initialHp.Value, 0f, unitSpec.FinalHp) : unitSpec.FinalHp;
+            AnchorPosition = spawnPosition;
             Position = spawnPosition;
         }
 
@@ -54,14 +56,20 @@ namespace Features.Unit.Domain
         public void MoveTo(Float3 newPosition)
         {
             // 앵커 반경 제한 확인
-            var distance = (newPosition - Position).Magnitude;
-            if (distance > UnitSpec.FinalAnchorRange)
-            {
-                // 앵커 반경 밖으로 이동 불가
+            if (!IsWithinAnchorRadius(newPosition))
                 return;
-            }
 
             Position = newPosition;
+        }
+
+        public bool IsWithinAnchorRadius(Float3 position)
+        {
+            var anchorRange = UnitSpec.FinalAnchorRange;
+            if (anchorRange <= 0f)
+                return true;
+
+            var distance = (position - AnchorPosition).Magnitude;
+            return distance <= anchorRange;
         }
 
         public void Die()

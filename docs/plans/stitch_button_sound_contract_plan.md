@@ -11,6 +11,13 @@
 이 문서는 Stitch source에서 Unity prefab을 만들 때 interactive button이 사운드 시스템을 모르는 상태로 생성되는 문제를 줄이기 위한 계획이다.
 규칙 본문은 `ops.stitch-data-workflow`, `ops.stitch-structured-handoff-contract`, `ops.unity-ui-authoring-workflow`가 소유하고, 이 문서는 실행 순서와 acceptance만 가진다.
 
+## Draft Triage
+
+- 판정: draft 유지.
+- 이유: contract vocabulary, translator assurance, evidence summary first pass는 있으나 runtime initialization과 pilot surface acceptance가 남아 있다.
+- active 전환 조건: Phase 3 또는 Phase 5를 실제 구현/검증할 때 active로 올린다.
+- reference 전환 조건: button sound intent 기준이 owner 문서나 translator contract로 흡수되고 이 문서가 당시 실행 기록만 남게 되면 reference로 내린다.
+
 ## Problem
 
 현재 사운드 런타임은 `SoundRequestEvent -> SoundPlayer -> SoundCatalog` 흐름으로 연결돼 있고, 공통 UI 컴포넌트로 `ButtonSoundEmitter`도 존재한다.

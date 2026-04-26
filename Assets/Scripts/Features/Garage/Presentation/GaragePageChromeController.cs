@@ -145,20 +145,31 @@ namespace Features.Garage.Presentation
             bool isFirepowerActive,
             GarageResultViewModel resultViewModel)
         {
-            string readySummary = resultViewModel != null && resultViewModel.IsReady
-                ? "저장본 최신"
-                : resultViewModel != null && resultViewModel.IsDirty
-                    ? resultViewModel.CanSave
-                        ? "저장 가능"
-                        : "조립 진행 중"
-                    : $"활성 {committedRosterCount}/6";
-            string focusSummary = isEditActive
-                ? "프레임 포커스"
-                : isFirepowerActive
-                    ? "무장 포커스"
-                    : "기동 포커스";
-
+            string focusSummary = BuildFocusSummary(isEditActive, isFirepowerActive);
+            string readySummary = BuildReadySummary(committedRosterCount, resultViewModel);
             return $"UNIT {selectedSlotIndex + 1:00}  |  {focusSummary}  |  {readySummary}";
+        }
+
+        private static string BuildFocusSummary(bool isEditActive, bool isFirepowerActive)
+        {
+            if (isEditActive)
+                return "프레임 포커스";
+
+            return isFirepowerActive ? "무장 포커스" : "기동 포커스";
+        }
+
+        private static string BuildReadySummary(int committedRosterCount, GarageResultViewModel resultViewModel)
+        {
+            if (resultViewModel == null)
+                return $"활성 {committedRosterCount}/6";
+
+            if (resultViewModel.IsReady)
+                return "저장본 최신";
+
+            if (!resultViewModel.IsDirty)
+                return $"활성 {committedRosterCount}/6";
+
+            return resultViewModel.CanSave ? "저장 가능" : "조립 진행 중";
         }
 
         private void RefreshSettings(bool isSettingsOverlayOpen)
@@ -185,16 +196,7 @@ namespace Features.Garage.Presentation
 
             if (_mobileSaveButton.TryGetComponent<Image>(out var background))
             {
-                Color readyBaseline = Color.Lerp(ThemeColors.AccentOrange, ThemeColors.BackgroundCard, 0.32f);
-                background.color = isSaving
-                    ? ThemeColors.AccentOrange
-                    : canSave
-                        ? ThemeColors.AccentOrange
-                        : isDirty
-                            ? ThemeColors.BackgroundCard
-                            : isReady
-                                ? readyBaseline
-                                : ThemeColors.StateDisabled;
+                background.color = GetSaveButtonColor(isSaving, canSave, isDirty, isReady);
 
                 var feedback = _mobileSaveButton.GetComponent<ButtonFeedback>();
                 if (feedback != null)
@@ -204,6 +206,20 @@ namespace Features.Garage.Presentation
             }
 
             RefreshSaveStateText(resultViewModel, isSaving);
+        }
+
+        private static Color GetSaveButtonColor(bool isSaving, bool canSave, bool isDirty, bool isReady)
+        {
+            if (isSaving || canSave)
+                return ThemeColors.AccentOrange;
+
+            if (isDirty)
+                return ThemeColors.BackgroundCard;
+
+            if (isReady)
+                return Color.Lerp(ThemeColors.AccentOrange, ThemeColors.BackgroundCard, 0.32f);
+
+            return ThemeColors.StateDisabled;
         }
 
         private void RefreshSaveStateText(GarageResultViewModel resultViewModel, bool isSaving)
@@ -258,17 +274,11 @@ namespace Features.Garage.Presentation
             button.interactable = isAvailable && !isActive;
 
             label.text = title;
-            label.color = isAvailable
-                ? isActive ? ThemeColors.TextPrimary : ThemeColors.TextSecondary
-                : ThemeColors.TextMuted;
+            label.color = GetTabLabelColor(isActive, isAvailable);
 
             if (button.TryGetComponent<Image>(out var background))
             {
-                background.color = !isAvailable
-                    ? ThemeColors.StateDisabled
-                    : isActive
-                        ? ThemeColors.AccentBlue
-                        : ThemeColors.BackgroundCard;
+                background.color = GetTabBackgroundColor(isActive, isAvailable);
 
                 var feedback = button.GetComponent<ButtonFeedback>();
                 if (feedback != null)
@@ -276,6 +286,22 @@ namespace Features.Garage.Presentation
                     feedback.UpdateBaseColor(background.color);
                 }
             }
+        }
+
+        private static Color GetTabLabelColor(bool isActive, bool isAvailable)
+        {
+            if (!isAvailable)
+                return ThemeColors.TextMuted;
+
+            return isActive ? ThemeColors.TextPrimary : ThemeColors.TextSecondary;
+        }
+
+        private static Color GetTabBackgroundColor(bool isActive, bool isAvailable)
+        {
+            if (!isAvailable)
+                return ThemeColors.StateDisabled;
+
+            return isActive ? ThemeColors.AccentBlue : ThemeColors.BackgroundCard;
         }
 
         private static void SetActive(GameObject target, bool isActive)

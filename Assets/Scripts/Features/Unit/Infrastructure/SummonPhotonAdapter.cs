@@ -73,11 +73,20 @@ namespace Features.Unit.Infrastructure
                 Debug.LogError("[SummonPhotonAdapter] BattleEntityPrefabSetup is missing on the prefab.", this);
             }
 
-            // 소환 완료 이벤트 예약
-            // Note: 실제 이벤트는 BattleEntityPrefabSetup.Initialize 내에서 발행
-            // 여기서는 ID만 반환
+            var view = spawnedGo != null ? spawnedGo.GetComponent<PhotonView>() : null;
+            var fallbackInstanceId = spawnedGo != null ? spawnedGo.GetInstanceID() : 0;
+            return BattleEntityNetworkId.Build(unitSpec, view, fallbackInstanceId);
+        }
+    }
 
-            return new DomainEntityId($"battle-{unitSpec.Id.Value}-{spawnedGo.GetInstanceID()}");
+    internal static class BattleEntityNetworkId
+    {
+        public static DomainEntityId Build(UnitSpec unitSpec, PhotonView photonView, int fallbackInstanceId)
+        {
+            if (photonView != null && photonView.ViewID > 0)
+                return new DomainEntityId($"battle-{unitSpec.Id.Value}-view-{photonView.ViewID}");
+
+            return new DomainEntityId($"battle-{unitSpec.Id.Value}-{fallbackInstanceId}");
         }
     }
 }

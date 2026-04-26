@@ -1,6 +1,6 @@
 # Stitch Screen Onboarding Simplification Plan
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-26
 > 상태: draft
 > doc_id: plans.stitch-screen-onboarding-simplification
 > role: plan
@@ -16,6 +16,13 @@
 ```text
 source html/png -> source facts -> contract draft -> validate -> translate/generate -> capture -> verdict
 ```
+
+## Draft Triage
+
+- 판정: draft 유지.
+- 이유: template/validator/next-screen trial first pass는 끝났지만, 신규 prefab policy path가 residual로 남아 있다.
+- active 전환 조건: 새 screen onboarding을 다시 열고 `new-prefab-blocked` policy 판단을 직접 닫는 세션에서 active로 올린다.
+- reference 전환 조건: 신규 prefab policy 판단이 다른 owner 문서나 `plans.progress`로 이관되고, 이 문서가 runbook 기록으로만 남으면 reference로 내린다.
 
 ## Goal
 

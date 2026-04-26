@@ -6,10 +6,8 @@ using Shared.EventBus;
 using Shared.Kernel;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
-using ComposedUnit = Features.Unit.Domain.Unit;
 
 namespace Features.Garage.Presentation
 {
@@ -144,26 +142,15 @@ namespace Features.Garage.Presentation
             _unitEditorView.FirepowerCycleRequested += CycleFirepower;
             _unitEditorView.MobilityCycleRequested += CycleMobility;
             _unitEditorView.ClearRequested += ClearSelectedSlot;
-            _resultPanelView.SaveClicked += () => _ = RunSaveAsync();
+            _resultPanelView.SaveClicked += RequestSave;
 
             _mobileEditTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Frame));
             _mobileFirepowerTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Firepower));
             _mobileSummaryTabButton.onClick.AddListener(() => SetMobilePartFocus(MobilePartFocus.Mobility));
 
-            _settingsOpenButton.onClick.AddListener(() =>
-            {
-                _isSettingsOverlayOpen = !_isSettingsOverlayOpen;
-                SyncChrome(null);
-            });
-            _settingsCloseButton.onClick.AddListener(() =>
-            {
-                if (_isSettingsOverlayOpen)
-                {
-                    _isSettingsOverlayOpen = false;
-                    SyncChrome(null);
-                }
-            });
-            _mobileSaveButton.onClick.AddListener(() => _ = RunSaveAsync());
+            _settingsOpenButton.onClick.AddListener(() => SetSettingsOverlayOpen(!_isSettingsOverlayOpen));
+            _settingsCloseButton.onClick.AddListener(() => SetSettingsOverlayOpen(false));
+            _mobileSaveButton.onClick.AddListener(RequestSave);
         }
 
         private void OnDisable()
@@ -180,11 +167,10 @@ namespace Features.Garage.Presentation
 
         private void Update()
         {
-            var keyboard = Keyboard.current;
-            if (keyboard == null)
+            if (!GaragePageKeyboardShortcuts.TryGetCurrentAction(out var action))
                 return;
 
-            HandleKeyboardInput(keyboard);
+            HandleKeyboardAction(action);
         }
 
         private void SelectSlot(int slotIndex)
@@ -229,6 +215,20 @@ namespace Features.Garage.Presentation
             Render();
         }
 
+        private void RequestSave()
+        {
+            _ = RunSaveAsync();
+        }
+
+        private void SetSettingsOverlayOpen(bool isOpen)
+        {
+            if (_isSettingsOverlayOpen == isOpen)
+                return;
+
+            _isSettingsOverlayOpen = isOpen;
+            SyncChrome(null);
+        }
+
         private async System.Threading.Tasks.Task RunSaveAsync()
         {
             if (_isSaving)
@@ -238,36 +238,28 @@ namespace Features.Garage.Presentation
             var evaluation = EvaluateDraft();
             if (!evaluation.CanSave)
             {
-                string message = !string.IsNullOrWhiteSpace(evaluation.RosterValidationError)
-                    ? evaluation.RosterValidationError
-                    : evaluation.HasDraftChanges
-                        ? "Draft is not ready to save."
-                        : "No unsaved changes.";
-                _state.SetValidationOverride(message);
-                Render();
+                ShowValidationOverride(evaluation.SaveBlockedMessage);
                 return;
             }
 
-            _isSaving = true;
-            SyncChrome(_presenter.BuildResultViewModel(_state, evaluation));
-            _resultPanelView.ShowLoading(true);
-
-            var result = await _saveRoster.Execute(_state.DraftRoster.Clone());
-
-            _isSaving = false;
-            _resultPanelView.ShowLoading(false);
+            BeginSave(evaluation);
+            Result result;
+            try
+            {
+                result = await _saveRoster.Execute(_state.DraftRoster.Clone());
+            }
+            finally
+            {
+                EndSave();
+            }
 
             if (!result.IsSuccess)
             {
-                _state.SetValidationOverride(result.Error);
-                Render();
+                ShowValidationOverride(result.Error);
                 return;
             }
 
-            _state.CommitDraft();
-            _resultPanelView.ShowToast("Roster saved!");
-            Render();
-            _scrollController.ScrollBodyToTop(_mobileBodyHost);
+            CompleteSave();
         }
 
         private void Render()
@@ -322,35 +314,70 @@ namespace Features.Garage.Presentation
             };
         }
 
-        private void HandleKeyboardInput(Keyboard keyboard)
+        private void HandleKeyboardAction(GaragePageKeyboardAction action)
         {
-            if (keyboard.leftCtrlKey.isPressed || keyboard.rightCtrlKey.isPressed)
+            switch (action.Kind)
             {
-                if (keyboard.sKey.wasPressedThisFrame)
-                {
+                case GaragePageKeyboardActionKind.Save:
                     _ = RunSaveAsync();
-                    return;
-                }
+                    break;
+                case GaragePageKeyboardActionKind.SelectSlot:
+                    SelectSlot(action.SlotIndex);
+                    break;
+                case GaragePageKeyboardActionKind.CyclePart:
+                    CycleFocusedPart(action.Delta);
+                    break;
+            }
+        }
+
+        private void CycleFocusedPart(int delta)
+        {
+            if (!string.IsNullOrEmpty(_state.EditingFrameId))
+            {
+                CycleFrame(delta);
+                return;
             }
 
-            if (keyboard.digit1Key.wasPressedThisFrame || keyboard.numpad1Key.wasPressedThisFrame) { SelectSlot(0); return; }
-            if (keyboard.digit2Key.wasPressedThisFrame || keyboard.numpad2Key.wasPressedThisFrame) { SelectSlot(1); return; }
-            if (keyboard.digit3Key.wasPressedThisFrame || keyboard.numpad3Key.wasPressedThisFrame) { SelectSlot(2); return; }
-            if (keyboard.digit4Key.wasPressedThisFrame || keyboard.numpad4Key.wasPressedThisFrame) { SelectSlot(3); return; }
-            if (keyboard.digit5Key.wasPressedThisFrame || keyboard.numpad5Key.wasPressedThisFrame) { SelectSlot(4); return; }
-            if (keyboard.digit6Key.wasPressedThisFrame || keyboard.numpad6Key.wasPressedThisFrame) { SelectSlot(5); return; }
-
-            int delta = 0;
-            if (keyboard.aKey.wasPressedThisFrame || keyboard.leftArrowKey.wasPressedThisFrame) delta = -1;
-            else if (keyboard.dKey.wasPressedThisFrame || keyboard.rightArrowKey.wasPressedThisFrame) delta = 1;
-
-            if (delta == 0)
+            if (!string.IsNullOrEmpty(_state.EditingFirepowerId))
+            {
+                CycleFirepower(delta);
                 return;
+            }
 
-            if (!string.IsNullOrEmpty(_state.EditingFrameId)) { CycleFrame(delta); return; }
-            if (!string.IsNullOrEmpty(_state.EditingFirepowerId)) { CycleFirepower(delta); return; }
-            if (!string.IsNullOrEmpty(_state.EditingMobilityId)) { CycleMobility(delta); return; }
+            if (!string.IsNullOrEmpty(_state.EditingMobilityId))
+            {
+                CycleMobility(delta);
+                return;
+            }
+
             CycleFrame(delta);
+        }
+
+        private void BeginSave(GarageDraftEvaluation evaluation)
+        {
+            _isSaving = true;
+            SyncChrome(_presenter.BuildResultViewModel(_state, evaluation));
+            _resultPanelView.ShowLoading(true);
+        }
+
+        private void EndSave()
+        {
+            _isSaving = false;
+            _resultPanelView.ShowLoading(false);
+        }
+
+        private void ShowValidationOverride(string message)
+        {
+            _state.SetValidationOverride(message);
+            Render();
+        }
+
+        private void CompleteSave()
+        {
+            _state.CommitDraft();
+            _resultPanelView.ShowToast("Roster saved!");
+            Render();
+            _scrollController.ScrollBodyToTop(_mobileBodyHost);
         }
 
         private void PublishDraftState()
@@ -367,29 +394,7 @@ namespace Features.Garage.Presentation
         private GarageDraftEvaluation EvaluateDraft()
         {
             EnsureInitialized();
-            bool hasCatalogData = _catalog.Frames.Count > 0 &&
-                                  _catalog.Firepower.Count > 0 &&
-                                  _catalog.Mobility.Count > 0;
-
-            Result<ComposedUnit> composeResult = Result<ComposedUnit>.Failure("Draft composition was not evaluated.");
-            if (hasCatalogData && _state.HasCompleteDraft())
-            {
-                composeResult = _composeUnit.Execute(
-                    Shared.Kernel.DomainEntityId.New(),
-                    _state.EditingFrameId,
-                    _state.EditingFirepowerId,
-                    _state.EditingMobilityId);
-            }
-
-            Result rosterValidation = Result.Success();
-            if (_state.HasDraftChanges())
-            {
-                rosterValidation = _validateRoster.Execute(_state.DraftRoster, out string validationError);
-                if (rosterValidation.IsFailure && string.IsNullOrWhiteSpace(rosterValidation.Error) && !string.IsNullOrWhiteSpace(validationError))
-                    rosterValidation = Result.Failure(validationError);
-            }
-
-            return GarageDraftEvaluation.Create(_state, hasCatalogData, composeResult, rosterValidation);
+            return GarageDraftEvaluator.Evaluate(_state, _catalog, _composeUnit, _validateRoster);
         }
 
         private void EnsureInitialized()

@@ -18,9 +18,24 @@ namespace Features.Wave.Infrastructure
 
         public (float x, float y, float z) GetNearestPlayerPosition(float fromX, float fromY, float fromZ)
         {
+            if (TryGetNearestPlayerPosition(fromX, fromY, fromZ, out var x, out var y, out var z))
+                return (x, y, z);
+
+            return (fromX, fromY, fromZ);
+        }
+
+        public bool TryGetNearestPlayerPosition(
+            float fromX,
+            float fromY,
+            float fromZ,
+            out float tx,
+            out float ty,
+            out float tz)
+        {
             var from = new Vector3(fromX, fromY, fromZ);
-            var nearest = from;
             var minDist = float.MaxValue;
+            tx = ty = tz = 0f;
+            var found = false;
 
             for (var i = _playerTransforms.Count - 1; i >= 0; i--)
             {
@@ -35,11 +50,14 @@ namespace Features.Wave.Infrastructure
                 if (dist < minDist)
                 {
                     minDist = dist;
-                    nearest = t.position;
+                    found = true;
+                    tx = t.position.x;
+                    ty = t.position.y;
+                    tz = t.position.z;
                 }
             }
 
-            return (nearest.x, nearest.y, nearest.z);
+            return found;
         }
 
         public bool TryGetNearestPlayerWithinHorizontalRadius(

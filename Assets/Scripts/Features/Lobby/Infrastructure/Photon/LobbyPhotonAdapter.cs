@@ -40,6 +40,11 @@ namespace Features.Lobby.Infrastructure.Photon
         public System.Action<DomainEntityId> OnGameStarted { get; set; }
         public System.Action<List<RoomListItem>> OnRoomListUpdated { get; set; }
 
+        private void Start()
+        {
+            EnsureConnected();
+        }
+
         // ===== ILobbyNetworkCommandPort =====
 
         public Result CreateRoom(DomainRoom room)
@@ -209,6 +214,17 @@ namespace Features.Lobby.Infrastructure.Photon
 
         // ===== Photon Callbacks =====
 
+        public override void OnConnectedToMaster()
+        {
+            Debug.Log("[LobbyPhotonAdapter] Connected to Master. Joining lobby...");
+            PhotonNetwork.JoinLobby();
+        }
+
+        public override void OnJoinedLobby()
+        {
+            Debug.Log("[LobbyPhotonAdapter] Joined lobby. Ready for matchmaking.");
+        }
+
         public override void OnCreatedRoom()
         {
             _callbackTranslator.HandleCreatedRoom(_pendingState, OnCreateRoomSucceeded);
@@ -271,6 +287,24 @@ namespace Features.Lobby.Infrastructure.Photon
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
         {
             OnRoomListUpdated?.Invoke(_callbackTranslator.BuildRoomListItems(roomList));
+        }
+
+        private static void EnsureConnected()
+        {
+            PhotonNetwork.AutomaticallySyncScene = true;
+
+            if (PhotonNetwork.IsConnectedAndReady)
+            {
+                if (!PhotonNetwork.InLobby && !PhotonNetwork.InRoom)
+                    PhotonNetwork.JoinLobby();
+                return;
+            }
+
+            if (PhotonNetwork.IsConnected)
+                return;
+
+            PhotonNetwork.ConnectUsingSettings();
+            Debug.Log("[LobbyPhotonAdapter] Connecting...");
         }
     }
 }

@@ -1,7 +1,5 @@
 using Features.Combat;
 using Features.Combat.Domain;
-using Features.Combat.Application.Events;
-using Features.Unit.Application.Events;
 using Features.Unit.Application.Ports;
 using Features.Unit.Domain;
 using Features.Wave.Infrastructure;
@@ -111,7 +109,10 @@ namespace Features.Unit.Infrastructure
                 return;
             }
 
-            var battleEntityId = new DomainEntityId($"battle-{unitSpec.Id.Value}-{gameObject.GetInstanceID()}");
+            var battleEntityId = BattleEntityNetworkId.Build(
+                unitSpec,
+                photonView,
+                gameObject.GetInstanceID());
             BattleEntityId = battleEntityId;
 
             // BattleEntity 도메인 생성 (실제 UnitSpec 사용, late-join 시 초기HP 보정)
@@ -132,9 +133,6 @@ namespace Features.Unit.Infrastructure
 
             // Photon controller 초기화
             _photonController.SetBattleEntity(_battleEntity, eventBus, eventBus, ownerId);
-
-            // 소환 완료 이벤트 발행
-            eventBus.Publish(new Application.Events.UnitSummonCompletedEvent(ownerId, battleEntityId, unitSpec));
 
             _initialized = true;
         }
@@ -169,9 +167,11 @@ namespace Features.Unit.Infrastructure
             targetId = default;
 
             var attackRange = Mathf.Max(0.5f, _battleEntity.UnitSpec.FinalRange + _fallbackAttackRangePadding);
+            var anchorRange = _battleEntity.UnitSpec.FinalAnchorRange;
+            var queryRange = anchorRange > 0f ? Mathf.Min(attackRange, anchorRange) : attackRange;
             var hits = Physics.OverlapSphere(
                 transform.position,
-                attackRange,
+                queryRange,
                 ~0,
                 QueryTriggerInteraction.Collide);
 
@@ -190,6 +190,15 @@ namespace Features.Unit.Infrastructure
                 var candidateId = holder.Id;
                 if (string.IsNullOrWhiteSpace(candidateId.Value) || !candidateId.Value.StartsWith("enemy-"))
                     continue;
+
+                var candidatePosition = hit.transform.position;
+                if (!_battleEntity.IsWithinAnchorRadius(new Float3(
+                        candidatePosition.x,
+                        candidatePosition.y,
+                        candidatePosition.z)))
+                {
+                    continue;
+                }
 
                 var distanceSq = (hit.transform.position - transform.position).sqrMagnitude;
                 if (distanceSq >= bestDistanceSq)

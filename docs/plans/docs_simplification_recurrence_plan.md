@@ -1,6 +1,6 @@
 # Docs Simplification Recurrence Plan
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-26
 > 상태: reference
 > doc_id: plans.docs-simplification-recurrence
 > role: plan
@@ -272,6 +272,42 @@ npm run --silent rules:lint
 | 새 재발방지 규칙이 또 문서 부담이 됨 | 먼저 closeout 문구 후보로 운용하고 hard-fail은 보류 |
 | 문서 간소화가 제품/Unity 작업과 섞임 | owner impact와 out-of-scope를 closeout에 남김 |
 
+## 2026-04-26 Follow-Up: Active Owner Split Guard
+
+문제:
+
+- 큰 active plan에서 Phase 전용 active plan을 분리한 뒤, 부모 plan도 계속 active로 남으면 같은 residual을 두 문서가 동시에 직접 소유한다.
+- `progress.md`의 code path 완료와 smoke acceptance 미완료가 같은 `완료` 표현으로 묶이면 다음 작업자가 실제 blocker를 다시 해석해야 한다.
+
+운영 계획:
+
+1. active plan을 새로 만들거나 Phase 전용 plan을 추출하면, 같은 patch에서 기존 parent plan의 lifecycle을 재판정한다.
+2. child plan이 직접 실행 owner이면 parent plan은 reference/handoff로 낮추거나, active 유지 이유를 child plan과 겹치지 않게 다시 쓴다.
+3. `progress.md`는 code path 완료와 acceptance smoke 미완료를 한 상태로 뭉개지 않고 분리해 적는다.
+4. 코드 간소화 후보는 바로 새 plan을 만들기보다 `progress.md`, 기존 tech-debt reference, 또는 해당 active owner plan의 residual로 먼저 등록한다.
+
+Acceptance:
+
+- 같은 이유로 바뀌는 active plan이 둘 이상 남지 않는다.
+- parent/child plan 관계가 있으면 parent는 scope reference, child는 execution owner로 읽힌다.
+- smoke 미완료가 `완료` phase 표기 뒤에 숨어 있지 않다.
+- 새 규칙/skill trigger 추가 없이 `doc lifecycle checked`와 owner 재판정으로 처리된다.
+
+첫 실행:
+
+- 2026-04-26 Guard Run 1에서 `docs.index`의 active plan registry와 `plans.progress` 현재 포커스를 대조했다.
+- GameScene 쪽은 parent Agent A runtime plan을 current registry에서 제거했고, execution owner는 `game_scene_phase5_multiplayer_sync_plan.md`와 `game_scene_agent_b_hud_input_validation_plan.md`로 분리되어 있다.
+- Lobby/Garage 쪽 active plan은 둘 다 `LobbyScene`을 언급하지만 직접 residual이 다르다. `lobby_scene_ui_prefab_management_plan.md`는 prefab/placeholder/controller 책임 경계를 보고, `lobby_scene_nova1492_model_application_plan.md`는 Nova1492 Phase 4 로비 장식 후보 판단을 본다.
+- `garage_ui_ux_improvement_plan.md`는 Set B visual fidelity verdict만 직접 residual로 보며, shared Account/Garage WebGL 검증과 섞지 않는다.
+- 추가 parent/child active 중복은 발견하지 않았다. 다만 Lobby/Garage scene mutation은 여전히 같은 씬을 건드릴 수 있으므로 실제 구현 때 한 writer씩 순차 처리한다.
+
+Guard Run 1 closeout:
+
+- owner impact: primary `plans.docs-simplification-recurrence`; secondary `docs.index`, `plans.progress`, active plan registry
+- doc lifecycle checked: active parent/child 중복 없음. GameScene parent는 reference, Phase 5/Agent B는 active execution owner로 유지한다.
+- skill trigger checked: covered by `rule-operations` and `rule-plan-authoring`
+- plan rereview: clean
+
 ## Closeout 조건
 
 - 전체 문서 인벤토리와 상태 후보가 작성되어 있다.
@@ -301,3 +337,5 @@ npm run --silent rules:lint
 - 2026-04-25 Phase 3 실행: 중복 설명 owner를 확인했다. entry와 registry는 본문 owner가 아니며, 반복 설명은 active owner 문서 또는 완료 기록으로 분리되어 있어 추가 축약하지 않았다.
 - 2026-04-25 Phase 4 실행: 즉시 삭제 후보와 삭제된 옛 경로 잔존 참조를 확인했다. 모든 human-facing `.md` 문서는 index에 남아 있고, 추가 삭제는 하지 않았다.
 - 2026-04-25 Phase 5 실행: `doc lifecycle checked`를 owner 문서와 skill trigger에 반영하고, 새 hard-fail lint는 추가하지 않았다.
+- 2026-04-26 follow-up 실행: GameScene Agent A parent plan을 reference로 낮추고, Phase 5 multiplayer sync와 Agent B placement automation을 직접 실행 owner로 분리했다.
+- 2026-04-26 follow-up 재리뷰: plan rereview: clean. 과한점은 새 status, 새 lint, 새 artifact를 만들지 않은 점에서 해소됐고, 부족한점은 parent/child active owner 중복과 progress의 code-path/smoke 표현을 함께 보정해 해소했다.

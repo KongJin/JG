@@ -13,6 +13,12 @@
 이 문서는 변환된 Nova1492 GX 모델을 `LobbyScene`에 어떻게 시험 적용할지 정한다.
 리소스 인벤토리와 변환 이력은 [`nova1492_resource_integration_plan.md`](./nova1492_resource_integration_plan.md)와 `artifacts/nova1492/`가 맡고, 이 문서는 `LobbyScene` 적용 순서와 acceptance만 맡는다.
 
+## Lifecycle
+
+- active 유지 이유: Phase 4의 로비 장식 후보를 별도 inactive variant로 둘지 여부가 아직 직접 판단으로 남아 있다.
+- reference 전환 조건: Phase 4를 `applied`, `rejected`, 또는 owner가 명확한 residual로 닫고, Garage preview mapping 유지 판단만 `plans.progress` 또는 Lobby/Garage owner plan에 남긴다.
+- 전환 시 갱신: 이 문서 header와 `docs.index` 상태 라벨을 함께 `reference`로 맞춘다.
+
 ## 목적
 
 - 현재 Garage preview의 primitive placeholder를 Nova1492식 조립 유닛 실루엣으로 바꿀 수 있는지 검증한다.

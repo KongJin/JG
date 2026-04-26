@@ -1,6 +1,6 @@
 # Garage UI/UX Recovery Plan
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-26
 > 상태: active
 > doc_id: plans.garage-ui-ux-improvement
 > role: plan
@@ -45,6 +45,12 @@ powershell -ExecutionPolicy Bypass -File .\tools\stitch-unity\surfaces\Invoke-St
 ## Open
 
 - runtime save/settings 검증은 shared Account/Garage validation lane에서 본다.
+
+## Lifecycle
+
+- active 유지 이유: `Set B Garage` visual fidelity final judgment가 `plans.progress`의 직접 residual이다.
+- reference 전환 조건: fresh capture 기준 visual verdict가 `success`, `blocked`, 또는 `mismatch`로 닫히고 남은 save/load/settings/accessibility 검증은 shared `Account/Garage` lane으로만 남는다.
+- 전환 시 갱신: 이 문서 header와 `docs.index` 상태 라벨을 함께 `reference`로 맞춘다.
 
 ## Visual Fidelity Verdict
 

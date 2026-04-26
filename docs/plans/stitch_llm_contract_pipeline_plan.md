@@ -1,6 +1,6 @@
 # Stitch LLM Contract Pipeline Plan
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-26
 > 상태: draft
 > doc_id: plans.stitch-llm-contract-pipeline
 > role: plan
@@ -10,6 +10,13 @@
 
 이 문서는 새 screen이 추가될 때마다 PowerShell parser가 화면 문법을 계속 배워야 하는 문제를 줄이기 위한 전환 계획이다.
 규칙 본문은 `ops.stitch-data-workflow`와 `ops.stitch-structured-handoff-contract`가 소유하고, 이 문서는 실행 순서와 acceptance만 가진다.
+
+## Draft Triage
+
+- 판정: draft 유지.
+- 이유: collector/validator first pass는 있으나 LLM draft 생성 자동화와 supported screen acceptance가 아직 닫히지 않았다.
+- active 전환 조건: 다음 Stitch surface 작업에서 이 route를 직접 실행 기준으로 삼고, provider/prompt 범위를 제외한 acceptance를 닫아야 할 때만 active로 올린다.
+- reference 전환 조건: 현재 generic draft/validate route가 충분하다고 판단되어 별도 LLM draft plan이 실행 기준이 아니게 되면 reference로 내린다.
 
 ## Scope
 

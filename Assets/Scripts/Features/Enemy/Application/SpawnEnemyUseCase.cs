@@ -38,6 +38,12 @@ namespace Features.Enemy.Application
             out float dy,
             out float dz)
         {
+            if (core.TryGetCoreWorldPosition(out dx, out dy, out dz))
+            {
+                isCoreTarget = true;
+                return true;
+            }
+
             switch (spec.TargetMode)
             {
                 case EnemyTargetMode.ChaseNearestPlayer:
@@ -46,11 +52,6 @@ namespace Features.Enemy.Application
                     return true;
 
                 case EnemyTargetMode.ChaseCore:
-                    if (core.TryGetCoreWorldPosition(out dx, out dy, out dz))
-                    {
-                        isCoreTarget = true;
-                        return true;
-                    }
                     isCoreTarget = false;
                     (dx, dy, dz) = players.GetNearestPlayerPosition(ex, ey, ez);
                     return true;
@@ -61,11 +62,6 @@ namespace Features.Enemy.Application
                             ex, ey, ez, spec.AggroRadius, out dx, out dy, out dz))
                     {
                         isCoreTarget = false;
-                        return true;
-                    }
-                    if (core.TryGetCoreWorldPosition(out dx, out dy, out dz))
-                    {
-                        isCoreTarget = true;
                         return true;
                     }
                     isCoreTarget = false;

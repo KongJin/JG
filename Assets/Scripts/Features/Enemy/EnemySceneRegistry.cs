@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+using Shared.Runtime;
 using UnityEngine;
 
 namespace Features.Enemy
 {
     public sealed class EnemySceneRegistry : MonoBehaviour
     {
-        private readonly Queue<EnemySetup> _pendingArrivals = new();
+        private readonly PendingArrivalBuffer<EnemySetup> _pendingArrivals = new();
 
         public event System.Action<EnemySetup> EnemyArrived;
 
@@ -17,8 +17,7 @@ namespace Features.Enemy
                 return;
             }
 
-            _pendingArrivals.Enqueue(setup);
-            EnemyArrived?.Invoke(setup);
+            _pendingArrivals.Notify(setup, EnemyArrived);
         }
 
         public void DrainPendingArrivals(System.Action<EnemySetup> handler)
@@ -26,8 +25,7 @@ namespace Features.Enemy
             if (handler == null)
                 return;
 
-            while (_pendingArrivals.Count > 0)
-                handler(_pendingArrivals.Dequeue());
+            _pendingArrivals.Drain(handler);
         }
     }
 }

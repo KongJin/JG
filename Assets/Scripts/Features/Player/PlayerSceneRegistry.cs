@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Shared.Kernel;
+using Shared.Runtime;
 using UnityEngine;
 
 namespace Features.Player
@@ -7,7 +9,7 @@ namespace Features.Player
     public sealed class PlayerSceneRegistry : MonoBehaviour
     {
         private readonly Dictionary<string, PlayerSetup> _players = new();
-        private readonly Queue<PlayerSetup> _pendingArrivals = new();
+        private readonly PendingArrivalBuffer<PlayerSetup> _pendingArrivals = new();
 
         public event System.Action<PlayerSetup> PlayerArrived;
 
@@ -21,8 +23,7 @@ namespace Features.Player
                 return;
             }
 
-            _pendingArrivals.Enqueue(setup);
-            PlayerArrived?.Invoke(setup);
+            _pendingArrivals.Notify(setup, PlayerArrived);
         }
 
         public void DrainPendingArrivals(System.Action<PlayerSetup> handler)
@@ -30,8 +31,7 @@ namespace Features.Player
             if (handler == null)
                 return;
 
-            while (_pendingArrivals.Count > 0)
-                handler(_pendingArrivals.Dequeue());
+            _pendingArrivals.Drain(handler);
         }
 
         public bool TryRegister(PlayerSetup setup)
@@ -74,6 +74,34 @@ namespace Features.Player
             }
 
             return _players.TryGetValue(playerId.Value, out setup);
+        }
+    }
+}
+
+namespace Shared.Runtime
+{
+    internal sealed class PendingArrivalBuffer<T> where T : class
+    {
+        private readonly Queue<T> _pending = new();
+
+        public void Notify(T item, Action<T> handler)
+        {
+            if (handler == null)
+            {
+                _pending.Enqueue(item);
+                return;
+            }
+
+            handler.Invoke(item);
+        }
+
+        public void Drain(Action<T> handler)
+        {
+            if (handler == null)
+                return;
+
+            while (_pending.Count > 0)
+                handler(_pending.Dequeue());
         }
     }
 }

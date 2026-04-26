@@ -25,6 +25,12 @@ namespace Features.Unit.Presentation
         private Material _invalidMaterial;
         private bool _selectionActive;
         private Coroutine _invalidFeedbackRoutine;
+        private PlacementPreviewVisualController _previewVisual;
+
+        public bool HasUnitPreview { get; private set; }
+        public Vector3 PreviewWorldPosition { get; private set; }
+        public float PreviewAnchorRadius { get; private set; }
+        public float PreviewAttackRange { get; private set; }
 
         /// <summary>
         /// 배치 영역을 기반으로 메쉬를 생성하고 Material을 설정한다.
@@ -43,6 +49,7 @@ namespace Features.Unit.Presentation
 
             _meshFilter = GetComponent<MeshFilter>();
             _meshRenderer = GetComponent<MeshRenderer>();
+            _previewVisual ??= PlacementPreviewVisualController.Attach(transform);
 
             BuildQuadMesh();
             ApplyMaterial(_idleMaterial);
@@ -60,6 +67,26 @@ namespace Features.Unit.Presentation
         {
             _selectionActive = active;
             ApplyMaterial(active ? _activeMaterial : _idleMaterial);
+        }
+
+        public void ShowUnitPreview(Vector3 worldPosition, float anchorRadius, float attackRange)
+        {
+            HasUnitPreview = true;
+            PreviewWorldPosition = worldPosition;
+            PreviewAnchorRadius = Mathf.Max(0f, anchorRadius);
+            PreviewAttackRange = Mathf.Max(0f, attackRange);
+            SetSelectionActive(true);
+            _previewVisual?.Show(PreviewWorldPosition, PreviewAnchorRadius, PreviewAttackRange);
+        }
+
+        public void HideUnitPreview()
+        {
+            HasUnitPreview = false;
+            PreviewWorldPosition = Vector3.zero;
+            PreviewAnchorRadius = 0f;
+            PreviewAttackRange = 0f;
+            SetSelectionActive(false);
+            _previewVisual?.Hide();
         }
 
         public void ShowInvalidPlacementFeedback()
@@ -130,6 +157,15 @@ namespace Features.Unit.Presentation
 
         private void ApplyMaterial(Material material)
         {
+            if (_meshRenderer == null)
+            {
+                _meshRenderer = GetComponent<MeshRenderer>();
+            }
+
+            if (_meshRenderer == null || material == null)
+                return;
+
+            _meshRenderer.sharedMaterial = material;
         }
 
         private System.Collections.IEnumerator ShowInvalidFeedbackRoutine()
@@ -147,6 +183,12 @@ namespace Features.Unit.Presentation
             {
                 RebuildMesh();
             }
+        }
+
+        private void OnDestroy()
+        {
+            _previewVisual?.Dispose();
+            _previewVisual = null;
         }
     }
 }

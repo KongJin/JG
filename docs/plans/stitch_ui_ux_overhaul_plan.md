@@ -11,6 +11,7 @@
 이 문서는 JG의 `Stitch` 기반 UI/UX 개편 실행 기록과 기준 reference다.
 외부 메모나 세션 채팅에 흩어진 기준을 레포 안으로 모으고, `Stitch 판단 -> structured contract -> Unity prefab-first reset` 루프를 같은 용어로 유지하는 목적을 가진다.
 세부 운영 규칙은 `ops.stitch-data-workflow`, 활용 원칙은 `design.ui-reference-workflow`를 따르고, 현재 실행 상태와 우선순위는 `plans.progress`를 우선한다.
+이 문서는 당시 Stitch inventory와 reset 판단을 보존하는 reference로 읽는다.
 
 ## Goal 기록
 
@@ -33,11 +34,11 @@ Set A에서 새 전용 helper나 set-specific route를 추가하지 않고, draf
   - Stitch 인증/프로젝트 접근 성공
   - 마스터 프로젝트 `11729197788183873077` 확정
   - `.stitch/DESIGN.md` 초안 작성 완료
-- set inventory 자체는 남아 있지만, 현재 zero-touch route의 active rehearsal surface는 `Set B Garage main workspace`, `Set C account-delete-confirm`, `Set C common-error-dialog` 정도다. 나머지 inventory는 아직 reference lane이다.
+- 작성 당시 set inventory 자체는 남아 있었고, zero-touch route의 rehearsal surface는 `Set B Garage main workspace`, `Set C account-delete-confirm`, `Set C common-error-dialog` 정도였다. 나머지 inventory는 reference lane으로 보존한다.
 - active handoff artifact는 accepted source freeze와 in-memory execution contract만 허용한다.
 - per-surface `screen/map/presentation` JSON file은 active route에서 제거했다.
 - set별 전용 SceneTool과 set별 전용 review prep menu는 active route에서 제거했다.
-- 하지만 새 surface translation이 아직 `zero-touch source-to-prefab` 상태는 아니다. 현재 병목은 source discovery보다 source grammar 해석, target capability 매칭, generic parser coverage다.
+- 당시 새 surface translation은 아직 `zero-touch source-to-prefab` 상태가 아니었다. 병목은 source discovery보다 source grammar 해석, target capability 매칭, generic parser coverage였다.
 - 2026-04-25 Set B deleted-target rehearsal 기준, target prefab이 없는 상태에서 source-to-prefab route를 실행하면 prefab file은 생성될 수 있지만 command completion, fresh translation/pipeline evidence, Korean text preservation, review capture framing이 아직 한 줄로 닫히지 않는다.
 - `.stitch/contracts/components/shared-ui.component-catalog.json`은 shared UI vocabulary용 companion contract로 유지하고, active generator input으로 올리지 않는다.
 - set별 md/png 기반 자산은 historical reference로만 남는다.
@@ -86,7 +87,7 @@ Set A에서 새 전용 helper나 set-specific route를 추가하지 않고, draf
 
 - 범위: `Lobby main`, `Room list empty/list`, `Create room`, `Garage summary`
 - contract: `set-a Lobby` in-memory execution contract lane
-- 현재 상태: `set-a-create-room-modal`과 `set-a-lobby-populated`는 단순 범용 루프에서 draft validation, translation/generation, SceneView capture까지 `passed` verdict를 남겼다.
+- 작성 당시 상태: `set-a-create-room-modal`과 `set-a-lobby-populated`는 단순 범용 루프에서 draft validation, translation/generation, SceneView capture까지 `passed` verdict를 남겼다.
 - active evidence: `artifacts/unity/set-a-create-room-modal-pipeline-result.json`, `artifacts/unity/set-a-lobby-populated-pipeline-result.json`
 - 남은 판단: 신규 Lobby prefab 생성은 workflow policy의 기본 guard에서 blocked로 기록되므로 명시 승인/declared reset target 정리가 필요하고, `set-a-lobby-populated` capture는 visual fidelity final pass 전이다.
 - `.stitch/designs/set-a-*`는 현재 실행 편의 입력과 visual reference로만 보고, active source freeze owner처럼 취급하지 않는다.
@@ -97,22 +98,22 @@ Set A에서 새 전용 helper나 set-specific route를 추가하지 않고, draf
 
 - 범위: `Garage main workspace`, `slot selector`, `focused editor`, `preview`, `summary`, `save dock`, `Garage settings overlay`, `Account card`
 - contract: `set-b Garage` in-memory execution contract lane
-- 현재 상태: zero-touch route의 primary rehearsal surface다. 다음 패스는 시각 polish가 아니라 deleted-target 상태에서도 `compiled manifest -> compiled unity-map -> generated prefab target -> fresh translation/pipeline evidence -> review proof`를 다시 한 줄로 닫는 것이다.
+- 작성 당시 상태: zero-touch route의 primary rehearsal surface였다. 다음 패스는 시각 polish가 아니라 deleted-target 상태에서도 `compiled manifest -> compiled unity-map -> generated prefab target -> fresh translation/pipeline evidence -> review proof`를 다시 한 줄로 닫는 것이었다.
 
 ### Set C - Overlay
 
 - 범위: `Room detail panel`, `Login loading overlay`, `Account delete confirm`, `Common modal/error dialog`
 - contract: `set-c overlay` in-memory execution contract lane
-- 현재 상태: `account-delete-confirm`는 active execution contracts, committed prefab baseline, translation artifact, SceneView capture evidence까지 닫혔다. 남은 이슈는 `warning icon glyph` asset과 runtime/mobile framing fidelity이고, 나머지 Set C surface는 계속 reference lane이다.
-- 현재 상태: `common-error-dialog`도 같은 loop로 닫혔다. execution contracts, translation artifact, SceneView capture evidence가 모두 있고, translation에서 `presentation.applied = true`를 유지한다.
-- 현재 상태: `login-loading-overlay`와 `room-detail-panel`도 generic overlay draft route에서 draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
+- 작성 당시 상태: `account-delete-confirm`는 active execution contracts, committed prefab baseline, translation artifact, SceneView capture evidence까지 닫혔다. 남은 이슈는 `warning icon glyph` asset과 runtime/mobile framing fidelity였고, 나머지 Set C surface는 reference lane이었다.
+- 작성 당시 상태: `common-error-dialog`도 같은 loop로 닫혔다. execution contracts, translation artifact, SceneView capture evidence가 모두 있었고, translation에서 `presentation.applied = true`를 유지했다.
+- 작성 당시 상태: `login-loading-overlay`와 `room-detail-panel`도 generic overlay draft route에서 draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
 - 남은 판단: Set C 전체 visual fidelity final pass와 신규 prefab workflow policy guard 승인.
 
 ### Set D - Battle HUD
 
 - 범위: `HUD`, `Unit summon bar`, `Core HP`, `Wave HUD`, `Placement feedback`, `Cannot afford overlay`
 - contract: `set-d Battle HUD` in-memory execution contract lane
-- 현재 상태: `battle-hud-baseline`, `low-core-warning`, `unit-stats-popup`은 generic overlay draft route에서 draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
+- 작성 당시 상태: `battle-hud-baseline`, `low-core-warning`, `unit-stats-popup`은 generic overlay draft route에서 draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
 - 추가 상태: `.stitch/designs` 밖의 `artifacts/stitch/11729197788183873077/bf3d08890f2d4a4e98f81c25e14d6073/` GameScene HUD source freeze를 `set-d-gamescene-hud-full`로 가져왔고, `WAVE`, `CORE_INTEGRITY`, summon buttons, selected/cannot-afford feedback, bottom battle nav까지 포함한 SceneView capture `passed` verdict를 남겼다.
 - 남은 판단: battle runtime scene integration, HUD-specific visual fidelity final pass, 신규 Battle prefab workflow policy guard 승인.
 
@@ -120,7 +121,7 @@ Set A에서 새 전용 helper나 set-specific route를 추가하지 않고, draf
 
 - 범위: `Wave end / result overlay`, `toast`, `banner`, `feedback`
 - contract: `set-e result/feedback` in-memory execution contract lane
-- 현재 상태: `mission-defeat-overlay`와 `mission-victory-overlay`는 generic overlay draft route에서 draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
+- 작성 당시 상태: `mission-defeat-overlay`와 `mission-victory-overlay`는 generic overlay draft route에서 draft validation, translation/generation, SceneView capture까지 pipeline `passed` verdict를 남겼다.
 - 남은 판단: result runtime integration, visual fidelity final pass, 신규 Result prefab workflow policy guard 승인.
 
 ## Standard Execution Loop

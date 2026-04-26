@@ -49,12 +49,7 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         public static async Task HandleUiInvokeAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
-            UiInvokeRequest req = null;
-            if (request.HasEntityBody)
-            {
-                var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
-                if (!string.IsNullOrWhiteSpace(body)) req = JsonUtility.FromJson<UiInvokeRequest>(body);
-            }
+            var req = await ReadJsonRequestAsync<UiInvokeRequest>(request);
 
             try
             {
@@ -83,11 +78,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             if (!EditorApplication.isPlaying)
                 throw new InvalidOperationException("UI invoke requires play mode.");
 
-            var gameObject = McpSharedHelpers.FindGameObjectByPath(req.path);
-            if (gameObject == null)
-                gameObject = GameObject.Find(req.path);
-            if (gameObject == null)
-                throw new MissingMemberException("GameObject not found: " + req.path);
+            var gameObject = FindUiGameObjectOrThrow(req.path);
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -261,7 +252,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             throw new MissingMemberException($"No value-assignable component found on: {path}. Expected Toggle, Slider, or custom method.");
         }
 
-        private static UiInvokeResponse ExecuteCustomMethod(GameObject go, string methodName, object[] args, System.Diagnostics.Stopwatch stopwatch)
+        private static UiInvokeResponse ExecuteCustomMethod(GameObject go, string methodName, string[] args, System.Diagnostics.Stopwatch stopwatch)
         {
             var path = McpSharedHelpers.GetTransformPath(go.transform);
             var result = FindAndInvokeMethod(go, methodName, args);
@@ -282,8 +273,7 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         public static async Task HandleUiGetStateAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
-            var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
-            var req = JsonUtility.FromJson<UiInvokeRequest>(body);
+            var req = await ReadJsonRequestAsync<UiInvokeRequest>(request);
 
             try
             {
@@ -301,11 +291,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             if (req == null || string.IsNullOrWhiteSpace(req.path))
                 throw new ArgumentException("path is required.");
 
-            var gameObject = McpSharedHelpers.FindGameObjectByPath(req.path);
-            if (gameObject == null)
-                gameObject = GameObject.Find(req.path);
-            if (gameObject == null)
-                throw new MissingMemberException("GameObject not found: " + req.path);
+            var gameObject = FindUiGameObjectOrThrow(req.path);
 
             var state = new Dictionary<string, object>
             {
@@ -370,8 +356,7 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         public static async Task HandleUiSetValueAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
-            var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
-            var req = JsonUtility.FromJson<UiSetValueRequest>(body);
+            var req = await ReadJsonRequestAsync<UiSetValueRequest>(request);
 
             try
             {
@@ -389,11 +374,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             if (req == null || string.IsNullOrWhiteSpace(req.path))
                 throw new ArgumentException("path is required.");
 
-            var gameObject = McpSharedHelpers.FindGameObjectByPath(req.path);
-            if (gameObject == null)
-                gameObject = GameObject.Find(req.path);
-            if (gameObject == null)
-                throw new MissingMemberException("GameObject not found: " + req.path);
+            var gameObject = FindUiGameObjectOrThrow(req.path);
 
             var path = McpSharedHelpers.GetTransformPath(gameObject.transform);
 
@@ -438,8 +419,7 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         public static async Task HandleUiListHandlersAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
-            var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
-            var req = JsonUtility.FromJson<UiInvokeRequest>(body);
+            var req = await ReadJsonRequestAsync<UiInvokeRequest>(request);
 
             try
             {
@@ -457,11 +437,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             if (req == null || string.IsNullOrWhiteSpace(req.path))
                 throw new ArgumentException("path is required.");
 
-            var gameObject = McpSharedHelpers.FindGameObjectByPath(req.path);
-            if (gameObject == null)
-                gameObject = GameObject.Find(req.path);
-            if (gameObject == null)
-                throw new MissingMemberException("GameObject not found: " + req.path);
+            var gameObject = FindUiGameObjectOrThrow(req.path);
 
             var path = McpSharedHelpers.GetTransformPath(gameObject.transform);
             var handlers = new List<object>();
@@ -525,8 +501,29 @@ namespace ProjectSD.EditorTools.UnityMcp
         // Helper Methods
         // =====================================================================
 
-        private static string FindAndInvokeMethod(GameObject go, string methodName, params object[] args)
+        private static async Task<T> ReadJsonRequestAsync<T>(HttpListenerRequest request) where T : class
         {
+            if (!request.HasEntityBody)
+                return null;
+
+            var body = await UnityMcpBridge.ReadRequestBodyAsync(request);
+            return string.IsNullOrWhiteSpace(body) ? null : JsonUtility.FromJson<T>(body);
+        }
+
+        private static GameObject FindUiGameObjectOrThrow(string path)
+        {
+            var gameObject = McpSharedHelpers.FindGameObjectByPath(path);
+            if (gameObject == null)
+                gameObject = GameObject.Find(path);
+            if (gameObject == null)
+                throw new MissingMemberException("GameObject not found: " + path);
+            return gameObject;
+        }
+
+        private static string FindAndInvokeMethod(GameObject go, string methodName, params string[] args)
+        {
+            args ??= Array.Empty<string>();
+
             var components = go.GetComponents<MonoBehaviour>();
             foreach (var comp in components)
             {

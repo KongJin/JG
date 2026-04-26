@@ -116,7 +116,7 @@ namespace Features.Unit.Presentation
             _selectionActivatedFrame = Time.frameCount;
             CurrentFeedbackMessage = "배치 구역을 탭하세요";
 
-            _placementAreaView?.SetSelectionActive(true);
+            ShowPlacementPreview(ResolveDefaultPlacementPoint());
             _feedbackView?.ShowInfo(CurrentFeedbackMessage);
             RefreshSlotSelection();
             return true;
@@ -147,6 +147,7 @@ namespace Features.Unit.Presentation
 
             if (_placementArea != null && !_placementArea.Contains(worldPosition))
             {
+                ShowPlacementPreview(worldPosition);
                 _placementAreaView?.ShowInvalidPlacementFeedback();
                 ShowError("배치 영역 밖");
                 return false;
@@ -155,6 +156,7 @@ namespace Features.Unit.Presentation
             var summonPosition = _placementArea != null
                 ? _placementArea.ClampToBounds(worldPosition)
                 : worldPosition;
+            ShowPlacementPreview(summonPosition);
 
             var success = _summonUseCase.Execute(
                 _selectionOwnerId,
@@ -202,6 +204,8 @@ namespace Features.Unit.Presentation
 
             try
             {
+                UpdatePlacementPreviewFromPointer();
+
                 if (TryHandleTouchInput())
                 {
                     return;
@@ -250,7 +254,7 @@ namespace Features.Unit.Presentation
             _selectionActivatedFrame = -1;
             CurrentFeedbackMessage = string.Empty;
 
-            _placementAreaView?.SetSelectionActive(false);
+            _placementAreaView?.HideUnitPreview();
             _feedbackView?.Hide();
             RefreshSlotSelection();
         }
@@ -302,6 +306,62 @@ namespace Features.Unit.Presentation
             var ray = _worldCamera.ScreenPointToRay(new Vector3(screenPosition.x, screenPosition.y, 0f));
             var plane = new Plane(Vector3.up, new Vector3(0f, _screenToPlaneY, 0f));
             return plane.Raycast(ray, out var enter) ? ray.GetPoint(enter) : Vector3.zero;
+        }
+
+        private void ShowPlacementPreview(Vector3 worldPosition)
+        {
+            if (_selectedUnit == null)
+                return;
+
+            var previewPosition = _placementArea != null
+                ? _placementArea.ClampToBounds(worldPosition)
+                : worldPosition;
+
+            _placementAreaView?.ShowUnitPreview(
+                previewPosition,
+                _selectedUnit.FinalAnchorRange,
+                _selectedUnit.FinalRange);
+        }
+
+        private void UpdatePlacementPreviewFromPointer()
+        {
+            if (_selectedUnit == null || !TryResolvePointerScreenPosition(out var screenPosition, out var pointerId))
+                return;
+
+            if (IsPointerOverUi(pointerId))
+                return;
+
+            var worldPosition = ScreenToWorldPosition(screenPosition);
+            var isValid = _placementArea == null || _placementArea.Contains(worldPosition);
+            ShowPlacementPreview(worldPosition);
+            _placementAreaView?.SetHighlight(isValid);
+        }
+
+        private static bool TryResolvePointerScreenPosition(out Vector2 screenPosition, out int pointerId)
+        {
+            var touchscreen = Touchscreen.current;
+            if (touchscreen != null)
+            {
+                var touch = touchscreen.primaryTouch;
+                if (touch.press.isPressed)
+                {
+                    screenPosition = touch.position.ReadValue();
+                    pointerId = touch.touchId.ReadValue();
+                    return true;
+                }
+            }
+
+            var mouse = Mouse.current;
+            if (mouse != null)
+            {
+                screenPosition = mouse.position.ReadValue();
+                pointerId = -1;
+                return true;
+            }
+
+            screenPosition = default;
+            pointerId = -1;
+            return false;
         }
 
         private bool TryHandleTouchInput()

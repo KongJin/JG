@@ -31,6 +31,8 @@ namespace Features.Unit.Presentation
         [SerializeField] private PlacementArea _placementArea;
         [Tooltip("배치 실패 시 에러 표시 UI View.")]
         [SerializeField] private PlacementErrorView _errorView;
+        [Tooltip("드래그 중 배치 가능 영역을 표시하는 View.")]
+        [SerializeField] private PlacementAreaView _placementAreaView;
 
         private UnitSpec _unitSpec;
         private System.Action<UnitSpec, Float3> _onSummonRequested;
@@ -66,7 +68,8 @@ namespace Features.Unit.Presentation
             Canvas canvas,
             Camera worldCamera,
             PlacementArea placementArea,
-            PlacementErrorView errorView)
+            PlacementErrorView errorView,
+            PlacementAreaView placementAreaView = null)
         {
             _unitSpec = unitSpec;
             _onSummonRequested = onSummonRequested;
@@ -74,6 +77,7 @@ namespace Features.Unit.Presentation
             _worldCamera = worldCamera;
             _placementArea = placementArea;
             _errorView = errorView;
+            _placementAreaView = placementAreaView;
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -81,6 +85,7 @@ namespace Features.Unit.Presentation
             if (_unitSpec == null) return;
             _isDragging = true;
             _isInPlacementZone = false;
+            UpdatePlacementPreview(eventData.position);
             CreateDragGhost();
         }
 
@@ -94,6 +99,8 @@ namespace Features.Unit.Presentation
 
             // 고스트 색상 피드백
             UpdateDragGhostColor(_isInPlacementZone);
+            UpdatePlacementPreview(eventData.position);
+            _placementAreaView?.SetHighlight(_isInPlacementZone);
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -110,6 +117,7 @@ namespace Features.Unit.Presentation
             {
                 var finalPos = _placementArea != null ? _placementArea.ClampToBounds(worldPos) : worldPos;
                 _onSummonRequested?.Invoke(_unitSpec, new Float3(finalPos.x, finalPos.y, finalPos.z));
+                _placementAreaView?.HideUnitPreview();
             }
             else
             {
@@ -124,6 +132,21 @@ namespace Features.Unit.Presentation
         private void OnPlacementFailed()
         {
             _errorView?.ShowError("배치 영역 밖");
+            _placementAreaView?.HideUnitPreview();
+            _placementAreaView?.ShowInvalidPlacementFeedback();
+        }
+
+        private void UpdatePlacementPreview(Vector2 screenPosition)
+        {
+            if (_unitSpec == null)
+                return;
+
+            var worldPos = ScreenToWorldPosition(screenPosition);
+            var previewPos = _placementArea != null ? _placementArea.ClampToBounds(worldPos) : worldPos;
+            _placementAreaView?.ShowUnitPreview(
+                previewPos,
+                _unitSpec.FinalAnchorRange,
+                _unitSpec.FinalRange);
         }
 
         private void CreateDragGhost()

@@ -110,7 +110,7 @@ Phase 2 실행 표:
 | inventory 후보 | 판정 | 대상 skill | description 보강 방향 | 새 skill 여부 |
 |---|---|---|---|---|
 | Reporting closeout / blocked / mismatch / success | description 보강 | `rule-operations` | `acceptance`, `blocked`, `mismatch`, `success`, `residual`, `closeout 보고`를 직접 트리거 문구에 추가 | 보류. 반복 미스가 계속될 때만 `rule-acceptance-reporting` 검토 |
-| Stitch data and translation workflow | description 보강 | `jg-unity-workflow` | `Stitch`, `handoff`, `source freeze`, `execution contract`, `presentation contract`, `translation`을 JG Unity routing trigger로 추가 | 보류. Stitch 전용 실패가 반복될 때만 `rule-stitch-workflow` 검토 |
+| Stitch data and translation workflow | router skill 확인 | `jg-stitch-workflow` -> `jg-unity-workflow` | Stitch-side source freeze, prompt brief, contract review는 `jg-stitch-workflow`가 라우팅하고 Unity 구현 handoff는 `jg-unity-workflow`로 넘긴다 | 새 rule skill 만들지 않음 |
 | Unity UI authoring policy | description 보강 | `jg-unity-workflow` | `Unity UI authoring policy`, `new UI prefab`, `presentation ownership`, `workflow policy check`를 trigger에 추가 | 새 skill 만들지 않음 |
 | Skill trigger coverage for new rules | owner 승격 전 interim 유지 | `rule-plan-authoring`, `rule-operations` | `새 규칙`, `행동 트리거`, `skill trigger checked`, `규칙 추가`를 trigger에 추가 | 새 skill 만들지 않음 |
 
@@ -209,6 +209,8 @@ Historical interim:
 - 2026-04-25 Phase 2 실행 리뷰: 과한점 발견. 새 skill을 더 만들면 과증식이므로 description 보강만 진행하는 것이 맞다. 부족한점은 `description-needs-review` 4개가 아직 covered로 갱신되지 않은 점이었다.
 - 2026-04-25 Phase 2 실행 반영: `rule-operations`, `rule-plan-authoring`, `jg-unity-workflow` description을 보강하고 inventory coverage를 갱신했다.
 - 2026-04-25 Phase 2 실행 재리뷰: plan rereview: residual - skill 파일은 보강됐지만 현재 세션의 available skill metadata에는 즉시 반영되지 않을 수 있어 다음 세션 확인이 필요하다.
+- 2026-04-26 skills 관리 점검 반영: Stitch coverage 기록을 현재 repo-local router인 `jg-stitch-workflow` 기준으로 정정했다. Unity 구현 handoff는 계속 `jg-unity-workflow`가 맡는다.
+- 2026-04-26 skills 관리 재리뷰: plan rereview: clean. 새 skill이나 새 hard-fail lint를 만들지 않고 stale coverage 기록만 수정했다. 현재 세션 available skill metadata에서 `jg-stitch-workflow` 노출 확인은 residual로 남긴다.
 - 2026-04-25 Phase 3 실행 리뷰: 부족한점 발견. 새 규칙 closeout만 다루면 사용자의 충돌/과범위/부족범위 지시를 즉시 제안하는 행동이 빠진다.
 - 2026-04-25 Phase 3 실행 반영: `ops.document-management-workflow`에 Instruction Fit 원칙을 추가하고, `ops.plan-authoring-review-workflow`의 부족한점 체크에 closeout 전 처리 기준을 추가했다.
 - 2026-04-25 Phase 3 실행 재리뷰: plan rereview: clean. 과한점/부족한점 없음.
@@ -217,3 +219,4 @@ Historical interim:
 
 - `skill trigger checked: added to rule-operations, rule-plan-authoring, jg-unity-workflow`
 - `skill trigger checked: added to rule-operations, rule-plan-authoring`
+- `skill trigger checked: corrected Stitch coverage to jg-stitch-workflow`

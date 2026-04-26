@@ -915,7 +915,7 @@ function Invoke-McpUiInvoke {
     }
 
     if ($null -ne $Args) {
-        $body.args = $Args
+        $body.args = @($Args | ForEach-Object { if ($null -eq $_) { "" } else { [string]$_ } })
     }
 
     return Invoke-McpJson -Root $Root -SubPath "/ui/invoke" -Body $body

@@ -54,14 +54,12 @@ namespace Features.Unit.Infrastructure
 
         private void InitializeAsOwner()
         {
-            // Owner: BattleEntityPrefabSetup에서 이미 초기화됨
-            // 추가 Owner 전용 로직이 필요하면 여기에 추가
+            _eventBus.Subscribe(this, new System.Action<DamageAppliedEvent>(OnDamageApplied));
         }
 
         private void InitializeAsRemote()
         {
-            // 원격은 네트워크 상태만 구독
-            _eventBus.Subscribe(this, new System.Action<DamageAppliedEvent>(OnDamageApplied));
+            // Remote state arrives through OnPhotonSerializeView.
         }
 
         private void OnDamageApplied(DamageAppliedEvent e)
@@ -96,8 +94,6 @@ namespace Features.Unit.Infrastructure
             PhotonNetwork.CurrentRoom.SetCustomProperties(props);
         }
 
-        private bool _hasReceivedSync;
-
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
             if (stream.IsWriting)
@@ -114,13 +110,22 @@ namespace Features.Unit.Infrastructure
                 _networkCurrentHp = (float)stream.ReceiveNext();
                 _isDead = (bool)stream.ReceiveNext();
 
-                // 첫 수신 시 로컬 BattleEntity 도메인에 반영
-                if (!_hasReceivedSync && _battleEntity != null)
-                {
-                    _battleEntity.SetHpFromNetwork(_networkCurrentHp);
-                    _hasReceivedSync = true;
-                }
+                ApplyRemoteState();
             }
+        }
+
+        private void ApplyRemoteState()
+        {
+            if (_battleEntity == null)
+                return;
+
+            if (_isDead)
+            {
+                _battleEntity.Die();
+                return;
+            }
+
+            _battleEntity.SetHpFromNetwork(_networkCurrentHp);
         }
 
         private void Update()

@@ -126,7 +126,8 @@ namespace Features.Unit.Presentation
                     _canvas,
                     _worldCamera,
                     _placementArea,
-                    _errorView);
+                    _errorView,
+                    _placementAreaView);
             }
         }
 

@@ -2,35 +2,84 @@
     "success":  true,
     "terminalVerdict":  "",
     "blockedReason":  "",
-    "generatedAt":  "2026-04-26 10:21:11+09:00",
-    "route":  "game-scene-ui",
+    "generatedAt":  "2026-04-26 11:45:53+09:00",
+    "route":  "mixed",
     "changedFiles":  [
-                         ".stitch/contracts/draft-templates/overlay-root-draft.template.json",
-                         ".stitch/contracts/draft-templates/workspace-root-draft.template.json",
                          "artifacts/rules/issue-recurrence-closeout.json",
+                         "artifacts/rules/skill-trigger-inventory.md",
                          "artifacts/unity/unity-ui-authoring-workflow-policy.json",
-                         "Assets/Scripts/Features/Player/GameSceneRuntimeSpawnRegistrar.cs",
+                         "Assets/Editor/DirectTests/GameSceneRuntimeSystemsDirectTests.cs",
+                         "Assets/Editor/DirectTests/GameSceneRuntimeSystemsDirectTests.cs.meta",
+                         "Assets/Editor/DirectTests/PlacementAreaViewDirectTests.cs",
+                         "Assets/Editor/DirectTests/PlacementAreaViewDirectTests.cs.meta",
+                         "Assets/Editor/DirectTests/SceneRegistryDirectTests.cs",
+                         "Assets/Editor/DirectTests/SceneRegistryDirectTests.cs.meta",
+                         "Assets/Editor/DirectTests/SummonUnitUseCaseDirectTests.cs",
+                         "Assets/Editor/DirectTests/SummonUnitUseCaseDirectTests.cs.meta",
+                         "Assets/Editor/UnityMcp/Handlers/ImprovedUiHandlers.cs",
+                         "Assets/Editor/UnityMcp/Models.cs",
+                         "Assets/Scripts/Features/Enemy/Application/SpawnEnemyUseCase.cs",
+                         "Assets/Scripts/Features/Enemy/EnemySceneRegistry.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageDraftEvaluation.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePageChromeController.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePageController.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePageScrollController.cs",
+                         "Assets/Scripts/Features/Lobby/Infrastructure/Photon/LobbyPhotonAdapter.cs",
+                         "Assets/Scripts/Features/Player/GameSceneRoot.cs",
+                         "Assets/Scripts/Features/Player/PlayerSceneRegistry.cs",
+                         "Assets/Scripts/Features/Unit/Domain/BattleEntity.cs",
+                         "Assets/Scripts/Features/Unit/Infrastructure/BattleEntityPhotonController.cs",
+                         "Assets/Scripts/Features/Unit/Infrastructure/BattleEntityPrefabSetup.cs",
+                         "Assets/Scripts/Features/Unit/Infrastructure/SummonPhotonAdapter.cs",
+                         "Assets/Scripts/Features/Unit/PlacementPreviewVisualController.cs",
+                         "Assets/Scripts/Features/Unit/PlacementPreviewVisualController.cs.meta",
+                         "Assets/Scripts/Features/Unit/Presentation/PlacementAreaView.cs",
+                         "Assets/Scripts/Features/Unit/Presentation/SummonCommandController.cs",
+                         "Assets/Scripts/Features/Unit/Presentation/UnitSlotInputHandler.cs",
+                         "Assets/Scripts/Features/Unit/Presentation/UnitSlotsContainer.cs",
+                         "Assets/Scripts/Features/Unit/UnitSetup.cs",
+                         "Assets/Scripts/Features/Wave/Infrastructure/HostilePositionQuery.cs",
+                         "Assets/Scripts/Features/Wave/Infrastructure/PlayerPositionQueryAdapter.cs",
+                         "Assets/Scripts/Features/Wave/Infrastructure/UnitPositionQueryAdapter.cs",
                          "docs/index.md",
-                         "docs/ops/acceptance_reporting_guardrails.md",
                          "docs/ops/document_management_workflow.md",
-                         "docs/ops/plan_authoring_review_workflow.md",
-                         "docs/plans/document_management_process_tuning_plan.md",
+                         "docs/plans/code_doc_simplification_recurrence_prevention_plan.md",
+                         "docs/plans/docs_simplification_recurrence_plan.md",
+                         "docs/plans/document_management_recurrence_prevention_plan.md",
+                         "docs/plans/game_scene_agent_a_runtime_core_plan.md",
+                         "docs/plans/game_scene_agent_b_hud_input_validation_plan.md",
+                         "docs/plans/game_scene_phase5_multiplayer_sync_plan.md",
+                         "docs/plans/game_scene_ui_ux_improvement_plan.md",
+                         "docs/plans/garage_ui_ux_improvement_plan.md",
                          "docs/plans/lobby_scene_nova1492_model_application_plan.md",
-                         "docs/plans/overnight_agent_coordination_plan.md",
+                         "docs/plans/lobby_scene_ui_prefab_management_plan.md",
                          "docs/plans/progress.md",
+                         "docs/plans/rule_trigger_skill_extraction_plan.md",
                          "docs/plans/stitch_button_sound_contract_plan.md",
-                         "tools/rule-harness/README.md",
-                         "tools/rule-harness/register-rule-harness-scheduled-task.ps1",
-                         "tools/rule-harness/run-rule-harness-scheduled.ps1",
-                         "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
-                         "tools/rule-harness/unregister-rule-harness-scheduled-task.ps1",
-                         "tools/stitch-unity/drafts/New-StitchOverlayDraftFromSourceFacts.ps1",
-                         "tools/stitch-unity/engine/StitchUnityCommon.ps1",
-                         "tools/stitch-unity/validators/Test-StitchContractDraft.ps1"
+                         "docs/plans/stitch_llm_contract_pipeline_plan.md",
+                         "docs/plans/stitch_screen_onboarding_simplification_plan.md",
+                         "docs/plans/stitch_ui_ux_overhaul_plan.md",
+                         "docs/playtest/runtime_validation_checklist.md",
+                         "package.json",
+                         "tools/unity-mcp/McpHelpers.ps1",
+                         "tools/workflow/Find-SimplificationCandidates.ps1",
+                         "tools/workflow/Get-NextWorkSuggestion.ps1",
+                         "tools/workflow/Invoke-AgentPassReview.ps1",
+                         "tools/workflow/Invoke-CloseoutPack.ps1",
+                         "tools/workflow/README.md",
+                         "tools/workflow/Test-GeneratedArtifactScope.ps1",
+                         "tools/workflow/WorkflowHelpers.ps1"
                      ],
-    "unityUiRelevantFiles":  {
-
-                             },
+    "unityUiRelevantFiles":  [
+                                 "Assets/Scripts/Features/Garage/Presentation/GarageDraftEvaluation.cs",
+                                 "Assets/Scripts/Features/Garage/Presentation/GaragePageChromeController.cs",
+                                 "Assets/Scripts/Features/Garage/Presentation/GaragePageController.cs",
+                                 "Assets/Scripts/Features/Garage/Presentation/GaragePageScrollController.cs",
+                                 "Assets/Scripts/Features/Unit/Presentation/PlacementAreaView.cs",
+                                 "Assets/Scripts/Features/Unit/Presentation/SummonCommandController.cs",
+                                 "Assets/Scripts/Features/Unit/Presentation/UnitSlotInputHandler.cs",
+                                 "Assets/Scripts/Features/Unit/Presentation/UnitSlotsContainer.cs"
+                             ],
     "requiredEvidence":  [
                              {
                                  "name":  "compile-reload",
@@ -41,6 +90,11 @@
                                  "name":  "presentation-layout-ownership",
                                  "path":  "Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json",
                                  "message":  "Presentation code must not author geometry or materials. Move the authoring to scene/prefab or runtime non-presentation layer."
+                             },
+                             {
+                                 "name":  "presentation-responsibility",
+                                 "path":  "npm run --silent presentation:policy:lint",
+                                 "message":  "Presentation PageController classes must stay thin. Smoke entrypoints, chrome styling, and oversized orchestration fail the workflow."
                              }
                          ],
     "missingEvidence":  [
@@ -90,16 +144,22 @@
                                         "reportPath":  "Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json",
                                         "violationCount":  0
                                     },
-    "presentationResponsibility":  null,
+    "presentationResponsibility":  {
+                                       "success":  true,
+                                       "command":  "node ./tools/presentation-lint/lint-presentation-responsibility.mjs",
+                                       "output":  [
+                                                      "Presentation responsibility lint passed. Checked 63 presentation C# file(s)."
+                                                  ]
+                                   },
     "capabilityExpansionGuard":  {
                                      "allowCapabilityExpansion":  false,
                                      "surfaceOnboardingFiles":  {
 
                                                                 },
                                      "capabilityExpansionFiles":  [
-                                                                      "tools/stitch-unity/drafts/New-StitchOverlayDraftFromSourceFacts.ps1",
-                                                                      "tools/stitch-unity/engine/StitchUnityCommon.ps1",
-                                                                      "tools/stitch-unity/validators/Test-StitchContractDraft.ps1"
+                                                                      "Assets/Editor/UnityMcp/Handlers/ImprovedUiHandlers.cs",
+                                                                      "Assets/Editor/UnityMcp/Models.cs",
+                                                                      "tools/unity-mcp/McpHelpers.ps1"
                                                                   ]
                                  },
     "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\unity-ui-authoring-workflow-policy.json"

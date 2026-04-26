@@ -10,7 +10,7 @@
 
 ## 상태 주석
 
-- Phase 0~9의 `완료` 표기는 주로 code path 기준이다. 현재 직접 남은 GameScene 리스크는 placement drag/drop 자동화와 멀티플레이 동기화 smoke다.
+- Phase 0~9의 `완료` 표기는 주로 code path 기준이다. Agent A runtime baseline은 2026-04-26 single-client smoke에서 `LobbyScene -> BattleScene`, 유닛 소환, 적 스폰/제거, core damage -> defeat overlay까지 에러 0으로 재현됐다. 남은 직접 GameScene acceptance 리스크는 Agent B placement drag/drop 자동화와 Phase 5 멀티플레이 동기화 smoke다.
 - Phase 10/11은 Firestore/Garage 핵심 경로와 Google linking 코드가 있으나 WebGL 실기 검증, 설정 동기화, UID 유지 확인이 남아 있다.
 - Stitch-to-Unity는 set별 전용 SceneTool을 줄이고 generic source facts -> draft -> validate route로 모으는 중이다. 남은 공통 판단은 신규 prefab workflow policy guard와 visual fidelity final pass다.
 - `Set B Garage`는 visual fidelity final judgment가 직접 residual이다. Garage save/load, settings, accessibility는 shared `Account/Garage` validation lane에서 본다.
@@ -21,7 +21,9 @@
 
 ## 현재 포커스
 
-- `GameScene` placement drag/drop automation contract와 multiplayer sync smoke 마감
+- `GameScene` Agent A 2-client sync residual 판정과 Agent B handoff
+- `GameScene` Agent B placement drag/drop automation contract 마감
+- `GameScene` Phase 5 multiplayer sync smoke 마감
 - `Set B Garage` visual fidelity final judgment
 - shared `Account/Garage` WebGL save/load, settings interaction, save action accessibility 검증
 - Stitch generic source-to-contract route 정착과 신규 prefab workflow policy guard 판단
@@ -36,7 +38,7 @@
 | Phase 2: 소환 시스템 | ✅ 완료 | SummonUnitUseCase, Energy 시스템, UnitSlot UI (드래그+클릭), 로테이션 |
 | Phase 3: Wave/Enemy와 Unit 연결 | ✅ 완료 | GameStartEvent 조건 제거, Enemy -> Unit 타겟팅, BattleEntity Combat 등록 |
 | Phase 4: 재소환 시스템 | ✅ 완료 | UnitDiedEvent, UnitDeathEventHandler, 재소환 UI |
-| Phase 5: 네트워크 동기화 | ✅ 완료 | Energy/Mana 통합, IPlayerSpecProvider, GetLocalPlayerRoster, BattleEntity late-join HP sync |
+| Phase 5: 네트워크 동기화 | ✅ code path 완료 / 🟨 smoke 남음 | Energy/Mana 통합, IPlayerSpecProvider, GetLocalPlayerRoster, BattleEntity late-join HP sync. 2-client acceptance는 `game_scene_phase5_multiplayer_sync_plan.md`가 소유 |
 | Phase 6: 게임 종료 | ✅ 완료 | GameEndEvent 재설계, GameEndAnalytics, WaveEndView 개선, Lobby 복귀, Firebase Analytics |
 | Phase 7: 배치 시스템 완성 | ✅ 완료 | PlacementArea, PlacementAreaView, 드래그 피드백, 영역 검증, MaterialFactory, ErrorView |
 | Phase 8: Energy 재생 증가 곡선 | ✅ 완료 | EnergyRegenCurve (시간 기반 60s->180s, 3->5/s), EnergyRegenCurveConfig, TickRegen wiring |
@@ -46,24 +48,19 @@
 
 ## 미완료 TODO
 
-- `GameScene` rebuild: placement area drag/drop, wave start, core victory/defeat loop 검증
-- `GameScene` rebuild: 멀티플레이 smoke로 late-join, BattleEntity sync, Energy sync 확인
-- Phase 9: 실제 멀티플레이어 smoke 테스트 (late-join, BattleEntity sync, Energy sync)
-- Phase 10: Firebase Console 설정 (API Key, Project ID, Firestore DB 생성)
-- Phase 10: 설정 Firestore 동기화 마무리 (저장 UI, language 소비 경로)
-- Phase 10: 사운드 설정은 런타임 소비까지 연결됨. 설정 UI 저장 확장과 WebGL 오디오 실기 검증은 후속
-- Phase 10: WebGL 빌드 smoke 테스트
-- Phase 10: Garage save/load WebGL 실기 확인 후속 1회 더 재현
-- Phase 10: Garage save action 접근성 / settings interaction을 shared `Account/Garage` validation으로 재확인
-- Phase 10: Set B Garage visual fidelity final judgment closeout
-- `LobbyScene` completion pass residual: Garage final visual fidelity는 `Set B Garage` 판단으로 분리해 추적
-- Phase 11: WebGL 빌드에서 Google 로그인 실기 테스트
-- Phase 11: 익명->Google 계정 linking 시 UID 유지 확인
-- Phase 11: Google 로그인 WebGL smoke 테스트
+| Lane | 남은 TODO |
+|---|---|
+| `GameScene` runtime | 2-client sync에서 BattleEntity/Energy/Wave hydration mismatch 여부 확인, player avatar commander/base contract |
+| `GameScene` HUD/input | placement area drag/drop automation contract |
+| `GameScene` multiplayer | wave start, core victory/defeat baseline, late-join/BattleEntity/Energy multiplayer sync smoke |
+| `Account/Garage` WebGL | Firebase Console 설정, WebGL build smoke, Garage save/load 재현, settings 저장/소비, save action 접근성, settings interaction |
+| `Audio` WebGL | 사운드 설정 UI 저장 확장과 WebGL 오디오 로드/재생 smoke |
+| `Set B Garage` | visual fidelity final judgment closeout |
+| `Google Login` | WebGL Google login smoke와 anonymous -> Google linking UID 유지 확인 |
 
 ## 다음 작업
 
-- `GameScene` 쪽은 placement drag/drop automation contract와 multiplayer sync smoke를 우선 마감한다.
+- `GameScene` 쪽은 Agent A single-client runtime baseline 증거를 기준으로 Agent B preview/HUD/checklist 준비와 Phase 5 multiplayer sync smoke를 이어서 판정한다.
 - `LobbyScene` 쪽은 runtime/completion 기록을 reference로 보고, 새 blocker가 없으면 Garage final fidelity만 `Set B Garage` 판단과 함께 본다.
 - LobbyScene UI/prefab 관리 부채는 [`lobby_scene_ui_prefab_management_plan.md`](./lobby_scene_ui_prefab_management_plan.md)에서 assembly helper 안전화, prefab override audit, preview placeholder 정리 순서로 본다.
 - 변환된 Nova1492 GX 모델은 [`lobby_scene_nova1492_model_application_plan.md`](./lobby_scene_nova1492_model_application_plan.md)에 따라 Phase 4 로비 장식 후보를 별도 inactive variant로 검토한다.

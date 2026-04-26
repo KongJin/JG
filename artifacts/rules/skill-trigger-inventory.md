@@ -1,6 +1,7 @@
 # Skill Trigger Inventory
 
 > generated: 2026-04-25
+> updated: 2026-04-26
 > scope: first pass for `docs/ops`, `docs/plans`, `docs/design`, `AGENTS.md`, `.codex/skills/rule-*`
 
 This inventory separates rules that need an always-on skill trigger from rules that should remain only in owner documents.
@@ -25,7 +26,7 @@ This inventory separates rules that need an always-on skill trigger from rules t
 | Unity scene/prefab/MCP workflow | `docs/ops/unity_ui_authoring_workflow.md`, `tools/unity-mcp/README.md` | Unity, scene, prefab, MCP, Play Mode, compile error, UI authoring | covered by `rule-unity` and `jg-unity-workflow` | Keep both; use `jg-unity-workflow` for JG-specific ordering. |
 | Architecture / layer dependency | design architecture docs, rule architecture refs | architecture, layer, dependency, port, UseCase, Bootstrap | covered by `rule-architecture` | Keep in `rule-architecture`. |
 | Reporting closeout / blocked / mismatch / success | `docs/ops/acceptance_reporting_guardrails.md`, `docs/ops/document_management_workflow.md` | blocked, mismatch, success, acceptance, closeout, residual | covered by `rule-operations` | Description strengthened. Consider `rule-acceptance-reporting` only if misses continue. |
-| Stitch data and translation workflow | `docs/ops/stitch_data_workflow.md`, `docs/ops/stitch_to_unity_translation_guide.md`, `tools/stitch-unity/README.md` | Stitch, handoff, source freeze, execution contract, translation, presentation contract | covered by `jg-unity-workflow` | Description strengthened. Consider `rule-stitch-workflow` only if repeated Stitch-specific misses continue. |
+| Stitch data and translation workflow | `docs/ops/stitch_data_workflow.md`, `docs/ops/stitch_to_unity_translation_guide.md`, `tools/stitch-unity/README.md` | Stitch, handoff, source freeze, execution contract, translation, presentation contract | covered by `jg-stitch-workflow`; Unity handoff continues through `jg-unity-workflow` | Keep `jg-stitch-workflow` as the thin router. Confirm next-session available skill metadata exposes it. |
 | Unity UI authoring policy | `docs/ops/unity_ui_authoring_workflow.md` | Unity UI, UI authoring, new prefab, presentation ownership, workflow policy | covered by `jg-unity-workflow` | Description strengthened. |
 | Skill trigger coverage for new rules | `docs/plans/rule_trigger_skill_extraction_plan.md` | new rule, 규칙 추가, skill trigger checked, behavior trigger | covered by `rule-plan-authoring` and `rule-operations` | Descriptions strengthened. Phase 3 should still move interim rule to owner closeout. |
 | WebGL / Firebase / deployment context | `docs/playtest/webgl_smoke_checklist.md`, `docs/ops/firebase_hosting.md` | WebGL, Firebase, hosting, 배포, 실기 검증 | covered by `rule-context` and `rule-validation` | Keep split: deployment in `rule-context`, verification in `rule-validation`. |
@@ -48,3 +49,4 @@ This inventory separates rules that need an always-on skill trigger from rules t
 ## Skill Trigger Checked
 
 - `skill trigger checked: added to rule-operations, rule-plan-authoring, jg-unity-workflow`
+- `skill trigger checked: corrected Stitch coverage to jg-stitch-workflow on 2026-04-26`

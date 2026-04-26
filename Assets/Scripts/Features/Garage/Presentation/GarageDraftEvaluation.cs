@@ -1,3 +1,5 @@
+using Features.Garage.Application;
+using Features.Unit.Application;
 using Shared.Kernel;
 using ComposedUnit = Features.Unit.Domain.Unit;
 
@@ -5,6 +7,9 @@ namespace Features.Garage.Presentation
 {
     public sealed class GarageDraftEvaluation
     {
+        private const string DraftNotReadyMessage = "Draft is not ready to save.";
+        private const string NoUnsavedChangesMessage = "No unsaved changes.";
+
         private GarageDraftEvaluation(
             bool hasCatalogData,
             bool hasCompleteDraft,
@@ -34,6 +39,11 @@ namespace Features.Garage.Presentation
         public string ComposeError => WasComposeEvaluated ? ComposeResult.Error : "Garage catalog is unavailable.";
         public bool CanSave => HasDraftChanges && RosterValidationResult.IsSuccess;
         public string RosterValidationError => RosterValidationResult.Error;
+        public string SaveBlockedMessage => !string.IsNullOrWhiteSpace(RosterValidationError)
+            ? RosterValidationError
+            : HasDraftChanges
+                ? DraftNotReadyMessage
+                : NoUnsavedChangesMessage;
 
         public static GarageDraftEvaluation Create(
             GaragePageState state,
@@ -51,6 +61,45 @@ namespace Features.Garage.Presentation
                 hasCatalogData && hasCompleteDraft,
                 composeResult,
                 rosterValidationResult);
+        }
+    }
+
+    internal static class GarageDraftEvaluator
+    {
+        public static GarageDraftEvaluation Evaluate(
+            GaragePageState state,
+            GaragePanelCatalog catalog,
+            ComposeUnitUseCase composeUnit,
+            ValidateRosterUseCase validateRoster)
+        {
+            bool hasCatalogData = catalog != null &&
+                                  catalog.Frames.Count > 0 &&
+                                  catalog.Firepower.Count > 0 &&
+                                  catalog.Mobility.Count > 0;
+
+            Result<ComposedUnit> composeResult = Result<ComposedUnit>.Failure("Draft composition was not evaluated.");
+            if (hasCatalogData && state != null && state.HasCompleteDraft())
+            {
+                composeResult = composeUnit.Execute(
+                    DomainEntityId.New(),
+                    state.EditingFrameId,
+                    state.EditingFirepowerId,
+                    state.EditingMobilityId);
+            }
+
+            Result rosterValidation = Result.Success();
+            if (state != null && state.HasDraftChanges())
+            {
+                rosterValidation = validateRoster.Execute(state.DraftRoster, out string validationError);
+                if (rosterValidation.IsFailure &&
+                    string.IsNullOrWhiteSpace(rosterValidation.Error) &&
+                    !string.IsNullOrWhiteSpace(validationError))
+                {
+                    rosterValidation = Result.Failure(validationError);
+                }
+            }
+
+            return GarageDraftEvaluation.Create(state, hasCatalogData, composeResult, rosterValidation);
         }
     }
 }

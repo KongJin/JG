@@ -1,6 +1,6 @@
 # LobbyScene UI/Prefab 관리 정리 계획
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-26
 > 상태: active
 > doc_id: plans.lobby-scene-ui-prefab-management
 > role: plan
@@ -27,6 +27,12 @@
 - 2026-04-25: `LobbySceneRuntimeAssemblyTool` 메뉴와 실행 로그를 destructive rebuild로 명확히 하고, 실행 전 확인 다이얼로그를 추가했다.
 - 2026-04-25: `artifacts/unity/lobby-scene-prefab-override-audit.md`에 read-only prefab override audit 초안을 남겼다. 현재 visual/text/color override는 보이지 않고, `LobbyPageRoot`와 `GaragePageRoot`의 추가 active override만 review candidate로 분리했다.
 - 2026-04-25: Garage preview scene template 이름을 `*Prefab`에서 `*Template`으로 정리했고, rebuild helper도 같은 이름을 생성하도록 맞췄다.
+
+## Lifecycle
+
+- active 유지 이유: preview placeholder 정리와 `GaragePageController` 책임 경계 표시가 아직 이 계획의 직접 residual이다.
+- reference 전환 조건: placeholder/template 처리와 controller 분리 후보가 pass 또는 명확한 residual owner로 닫히고, Set B visual fidelity가 별도 Garage/Stitch lane에만 남는다.
+- 전환 시 갱신: 이 문서 header와 `docs.index` 상태 라벨을 함께 `reference`로 맞춘다.
 
 ## 목표
 
