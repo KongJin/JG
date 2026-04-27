@@ -131,7 +131,7 @@ function Get-DeclaredApprovalRecords {
                     }
                 )
 
-    $records.Add([PSCustomObject][ordered]@{
+                $records.Add([PSCustomObject][ordered]@{
                     assetPath = $assetPath
                     sourceEvidence = @($sourceEvidence)
                     ownerPlan = "docs/plans/non_stitch_ui_stitch_reimport_plan.md"

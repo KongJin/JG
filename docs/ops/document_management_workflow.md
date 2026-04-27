@@ -130,7 +130,7 @@
 ## `plans.progress` 기록 기준
 
 `plans.progress`는 현재 상태, 현재 포커스, 미완료 TODO, 다음 작업만 짧게 소유한다.
-dated implementation log, 긴 evidence 목록, 완료된 pass의 세부 기록은 `progress_changelog.md`나 해당 owner plan/reference로 넘긴다.
+dated implementation log, 긴 evidence 목록, 완료된 pass의 세부 기록은 해당 owner plan/reference로 넘긴다.
 현재 포커스가 오래된 active plan 목록에 묻히면, 진행률 본문을 늘리기보다 plan lifecycle을 먼저 재검토한다.
 
 ## 역할 전이

@@ -5,7 +5,7 @@
 > doc_id: plans.game-scene-flow-validation-closeout
 > role: plan
 > owner_scope: GameScene/BattleScene 실제 플레이 플로우 검증, blocker/mismatch closeout, runtime-smoke-clean 판정
-> upstream: plans.progress, plans.game-scene-entry, plans.game-scene-phase5-multiplayer-sync, plans.game-scene-ui-ux-improvement, playtest.runtime-validation-checklist
+> upstream: plans.progress, plans.game-scene-entry, plans.game-scene-phase5-multiplayer-sync, playtest.runtime-validation-checklist
 > artifacts: `Assets/Scripts/Features/Lobby/`, `Assets/Scripts/Features/Player/`, `Assets/Scripts/Features/Unit/`, `Assets/Scripts/Features/Wave/`, `Assets/Scripts/Features/Enemy/`, `Assets/Scenes/BattleScene.unity`, `artifacts/unity/`
 >
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
@@ -25,11 +25,15 @@ Pass:
 - actual placement/summon stat smoke에서 `UnitSlot-0 -> ConfirmPlacementAtPlacementCenter -> ForceCoreDefeatForMcpSmoke` 순서로 `Summons: 1`, `Unit Kills: 1`, result contribution cards, Firebase stub count가 일치했다.
 - diagnostic victory result smoke에서 `UnitSlot-0 -> ConfirmPlacementAtPlacementCenter -> ForceVictoryForMcpSmoke` 순서로 `Result: Victory`, `Summons: 1`, `Unit Kills: 1`, `Core HP: 1470/1500`, `거점 보존/압박 정리/기체 전개` 카드가 기록됐다.
 - `WaveGameEndBridge`는 match-relative elapsed time과 reached wave를 전달한다.
+- 2026-04-27 current automation smoke에서 stale Lobby/Battle HUD path를 current prefab-first hierarchy에 맞췄고, placement path smoke가 `newErrorCount: 0`으로 통과했다.
+- 2026-04-27 natural victory smoke에서 `RunFinalWaveClearForMcpSmoke`가 final wave spawned enemies를 damage/death event로 제거했고, `EnemyDiedEvent -> WaveVictoryEvent -> GameEndEvent -> ResultPanel/GameEndReport`가 `Result: Victory`, `Summons: 1`, `Core HP: 1474/1500`, `newErrorCount: 0`으로 통과했다.
+- 2026-04-27 defeat regression smoke도 `ForceCoreDefeatForMcpSmoke -> Result: Defeat`, `newErrorCount: 0`으로 통과했다.
+- 2026-04-27 `SummonUnitUseCase` rollback contract는 spawn exception과 empty/default battle entity id 모두 Energy refund + failed event path로 고정하는 direct test asset을 갖췄고, compile-clean은 통과했다. EditMode 실행은 현재 Unity Editor가 프로젝트를 소유 중이라 batchmode test preflight에서 `open-editor-owns-project`로 blocked다.
+- 2026-04-27 enemy target priority direct test asset은 core 우선, core unavailable fallback, unit-before-player, player fallback, aggro-radius unit/player fallback 조건을 갖췄고 compile-clean은 통과했다. EditMode 실행은 동일하게 `open-editor-owns-project` 해소 후 확인해야 한다.
 
 Residual:
 
-- 자연 final-wave clear로 victory event가 발생하는 loop evidence가 없다. 현재 pass는 diagnostic victory event smoke다.
-- victory smoke 세션의 console error buffer에는 `GaragePageController.SyncChrome`의 Garage nav 경로 `NullReferenceException` 2건이 남아 있어, victory result report pass와 console error 0 closeout을 분리한다.
+- 자연 final-wave victory loop와 console error 0 single-client smoke는 통과했다. 남은 flow residual은 summon failure cost rollback EditMode 실행, enemy target priority direct test 실행, 2-client sync/late-join hydration, mobile HUD/input framing이다.
 - 2-client sync와 late-join hydration은 Phase 5 residual이다.
 - mobile HUD framing과 placement automation은 GameScene UI/UX residual이다.
 
@@ -47,11 +51,11 @@ Out of scope:
 | ID | 상태 | Owner | Closeout |
 |---|---|---|---|
 | F1 Lobby room start UI | single-client pass | Lobby UX | 2-client room flow와 mobile framing만 residual |
-| F2 GameEnd stats | single-client pass | Wave/GameEnd runtime | defeat, actual summon/kill, diagnostic victory result report 값 일치 |
+| F2 GameEnd stats | single-client pass | Wave/GameEnd runtime | defeat, actual summon/kill, diagnostic victory, natural victory report 값 일치 |
 | F3 BattleEntity late-join hydration | blocked/residual | Phase 5 sync | entity id별 HP/position/dead state 수렴 증거 |
-| F4 Enemy priority gameplay pressure | partial pass | Battle runtime | core unavailable, unit present, player fallback 조건 분리 |
-| F5 Summon failure cost rollback | unverified risk | Summon/Energy runtime | spawn 실패가 impossible이거나 Energy rollback 보장 |
-| F6 Victory loop | diagnostic result pass / natural loop residual | Flow closeout + result HUD | final wave clear -> victory overlay -> result report |
+| F4 Enemy priority gameplay pressure | test asset added / execution blocked | Battle runtime | core alive, core unavailable, unit present, player fallback, aggro-radius fallback direct tests added. EditMode 실행은 `open-editor-owns-project` 해소 후 확인 |
+| F5 Summon failure cost rollback | test asset added / execution blocked | Summon/Energy runtime | spawn exception과 empty id 실패 path는 refund contract로 고정됨. EditMode 실행은 `open-editor-owns-project` 해소 후 확인 |
+| F6 Victory loop | natural loop pass | Flow closeout + result HUD | final wave clear -> victory overlay -> result report |
 
 ---
 
@@ -62,8 +66,8 @@ BattleScene 미완성 시스템은 아래 순서로 닫는다.
 
 | Priority | System | 왜 먼저/나중인가 | Done when |
 |---|---|---|---|
-| P0 | console error 0 재확인 | 최신 smoke의 에러 버퍼가 섞이면 이후 pass/fail 판정이 흐려진다. | smoke 직전 console clear 또는 timestamp 분리 후 actual UI path, summon, result smoke의 error 0이 확인된다. |
-| P1 | 자연 final-wave victory loop | 현재 victory는 diagnostic event smoke다. 실제 wave clear로 승리가 나와야 BattleScene 기본 루프가 닫힌다. | final wave clear -> victory event -> result overlay -> report values가 custom force 없이 이어진다. |
+| P0 | console error 0 재확인 | 최신 smoke의 에러 버퍼가 섞이면 이후 pass/fail 판정이 흐려진다. | 2026-04-27 placement, natural victory, defeat regression smoke에서 timestamp 분리와 `newErrorCount: 0` 확인. |
+| P1 | 자연 final-wave victory loop | 현재 victory는 diagnostic event smoke다. 실제 wave clear로 승리가 나와야 BattleScene 기본 루프가 닫힌다. | 2026-04-27 final wave clear -> victory event -> result overlay -> report values가 diagnostic victory event 없이 이어짐. |
 | P1 | summon failure cost rollback | 배치/소환 실패 시 Energy가 조용히 빠지면 모든 전투 smoke가 신뢰를 잃는다. | spawn 실패가 scene contract상 불가능하거나, 실패 시 Energy rollback이 direct/runtime test로 고정된다. |
 | P2 | enemy target priority pressure | defeat path는 통과했지만 unit/core/player fallback 조건이 분리 검증되어야 전투 압박이 의도대로 읽힌다. | core alive, core unavailable, unit present, player fallback 각각에서 target 선택이 기대와 맞는다. |
 | P2 | placement automation contract | 실제 플레이는 가능하지만 automation이 불안정하면 회귀 확인이 느려진다. | slot select -> placement center tap/drag -> summon smoke가 stable helper로 반복 가능하다. |
@@ -78,6 +82,22 @@ BattleScene 미완성 시스템은 아래 순서로 닫는다.
 
 이 작업은 한 번에 "BattleScene 완성"으로 열면 원인 분리가 어렵다.
 실행 단위는 작게 자르고, 각 단위는 pass / blocked / mismatch 중 하나로만 닫는다.
+
+### Next Implementation Slice
+
+다음 구현 pass는 P1 summon failure cost rollback과 P2 enemy target priority direct test 실행 확인을 먼저 다룬다.
+
+포함:
+
+- summon failure rollback direct tests를 실행해 Energy rollback 보장을 acceptance evidence로 확정
+- enemy target priority direct tests를 실행해 core alive, core unavailable, unit present, player fallback, aggro-radius 조건을 acceptance evidence로 확정
+- 실패 시 summon/Energy contract, enemy targeting, scene contract mismatch 중 하나로 분리
+
+제외:
+
+- placement automation 재작성
+- 2-client sync와 late join
+- BattleScene Nova1492 combat model assembly
 
 ### First Cut - actual victory loop
 
@@ -94,7 +114,7 @@ BattleScene 미완성 시스템은 아래 순서로 닫는다.
 
 완료 기준:
 
-- single-client actual UI path에서 defeat와 natural victory가 모두 재현된다.
+- single-client actual UI path에서 defeat와 natural victory가 모두 재현된다. 2026-04-27 pass.
 - diagnostic victory smoke와 natural victory smoke가 문서와 evidence에서 구분된다.
 
 ### Second Cut - runtime contract hardening
@@ -111,8 +131,8 @@ BattleScene 미완성 시스템은 아래 순서로 닫는다.
 
 완료 기준:
 
-- summon failure path가 direct/runtime test 또는 impossible contract로 고정된다.
-- enemy pressure가 defeat smoke 한 종류가 아니라 조건별 검증으로 설명된다.
+- summon failure path가 direct/runtime test 실행 또는 impossible contract로 고정된다.
+- enemy pressure가 defeat smoke 한 종류가 아니라 조건별 direct test 실행으로 설명된다.
 
 ### Third Cut - repeatable automation
 
@@ -177,11 +197,14 @@ BattleScene 미완성 시스템은 아래 순서로 닫는다.
 2. Actual UI single-client flow
    - Lobby actual UI path로 room create -> ready -> start를 재확인한다.
    - custom method로 room start를 직접 호출하지 않는다.
+   - 2026-04-27 `artifacts/unity/game-flow/game-scene-placement-path-smoke.json` pass.
 
 3. Combat result smoke
    - actual placement/input 경로로 unit summon을 수행한다.
    - defeat path와 victory path를 분리해 result HUD/analytics 값을 확인한다.
    - summon count와 kill count는 실제 이벤트가 있었을 때 0이면 mismatch다.
+   - 2026-04-27 `artifacts/unity/game-flow/game-scene-defeat-regression-smoke.json` pass.
+   - 2026-04-27 `artifacts/unity/game-flow/game-scene-natural-victory-smoke.json` pass.
 
 4. Runtime contract tests
    - enemy target priority를 core alive, core unavailable, unit present, player fallback으로 나눈다.
@@ -211,9 +234,9 @@ BattleScene 미완성 시스템은 아래 순서로 닫는다.
 이 계획은 아래가 모두 충족되기 전에는 `reference`로 내리지 않는다.
 
 - Actual UI path로 Lobby room create -> ready -> start -> BattleScene 진입이 된다. 2026-04-26 single-client pass.
-- Single-client defeat path와 diagnostic victory result path가 재현된다. defeat pass, diagnostic victory result pass, 자연 final-wave victory loop residual.
+- Single-client defeat path와 diagnostic/natural victory result path가 재현된다. 2026-04-27 defeat regression pass와 natural final-wave victory loop pass.
 - Result HUD와 analytics report의 play time, reached wave, summon count, kill count가 실제 이벤트와 일치한다. actual summon/kill smoke pass.
-- console error 0 closeout은 smoke 직전/직후 buffer를 분리해 재확인한다. 현재 console buffer의 Garage nav `NullReferenceException`은 Account/Garage lane residual이다.
+- console error 0 closeout은 smoke 직전/직후 buffer를 분리해 재확인한다. 2026-04-27 placement, defeat regression, natural victory smoke에서 `newErrorCount: 0`.
 - BattleEntity/Energy/Wave 2-client sync가 pass하거나 blocker owner가 명확하다.
 - late-join hydration이 pass하거나 blocker owner가 명확하다.
 - runtime validation checklist가 custom invoke diagnostic과 actual player flow를 분리한다.
@@ -242,7 +265,10 @@ BattleScene 미완성 시스템은 아래 순서로 닫는다.
 
 - 과한점 리뷰: 실행 로그 상세와 owner별 구현 절차를 제거하고, residual closeout 기준만 유지했다.
 - 부족한점 리뷰: current state, findings, execution order, validation, closeout, blocked/mismatch handling은 남겼다.
-- doc lifecycle checked: cross-owner actual-flow closeout plan으로 active 유지. diagnostic victory result와 actual summon/kill stat은 pass로 반영했고, 자연 final-wave victory loop와 2-client/mobile residual은 이 문서가 계속 추적한다.
+- doc lifecycle checked: cross-owner actual-flow closeout plan으로 active 유지. diagnostic victory result, actual summon/kill stat, 자연 final-wave victory loop는 pass로 반영했고, summon rollback, enemy priority, 2-client/mobile residual은 이 문서가 계속 추적한다.
 - 2026-04-26 priority board 재리뷰: 과한점은 새 owner plan을 만들지 않고 이 active closeout 문서 안의 실행 순서로 제한해 줄였다. 부족한점은 runtime loop, automation, multiplayer, HUD, BattleScene model assembly residual의 상대 순서를 추가해 해소했다.
 - 2026-04-27 difficult work strategy 재리뷰: 과한점은 별도 plan 신설 없이 기존 active closeout 문서의 실행 전략 섹션으로 제한했다. 부족한점은 first cut, stop condition, done criteria를 추가해 큰 작업을 작은 acceptance 단위로 나누며 해소했다.
-- plan rereview: residual - diagnostic victory result와 actual summon/kill stat은 닫혔지만, P0~P5 우선순위 항목은 아직 실행 전이다.
+- 2026-04-27 반복 리뷰 반영: 과한점은 다음 구현 pass 범위를 P0/P1 첫 절단면으로 제한해 줄였다. 부족한점은 포함/제외 항목을 추가해 구현자가 멀티플레이어나 모델 교체로 범위를 넓히지 않도록 보강했다.
+- 2026-04-27 implementation closeout 재리뷰: 과한점은 자동화 수리와 editor-only smoke hook 안정화 증거만 남기고, BattleScene model assembly나 multiplayer success로 확장하지 않았다. 부족한점은 placement/natural victory/defeat evidence와 다음 slice를 summon rollback + enemy priority로 갱신해 해소했다.
+- 2026-04-27 summon rollback/enemy priority 갱신 재리뷰: 과한점은 direct test asset 추가와 compile-clean까지만 반영하고, 실행되지 않은 EditMode test를 success로 올리지 않았다. 부족한점은 `open-editor-owns-project` blocked 이유와 다음 확인 조건을 Current State/Findings/Next Slice에 남겨 해소했다.
+- plan rereview: clean for document shape / residual for execution - owner, scope, next slice, stop conditions, and excluded work are clear; remaining implementation items start at direct EditMode execution, multiplayer, HUD/input, and combat model assembly.

@@ -5,7 +5,7 @@ description: Project-specific Stitch workflow for the JG repo. Use whenever Code
 
 # JG Stitch Workflow
 
-> 마지막 업데이트: 2026-04-24
+> 마지막 업데이트: 2026-04-27
 > 상태: active
 > doc_id: skill.jg-stitch-workflow
 > role: skill-entry
@@ -29,7 +29,7 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 7. Read owner doc `design.ui-reference-workflow` when the task needs Stitch visual principles or reference usage rules.
 8. If the task creates or substantially rewrites a plan doc, read owner doc `ops.plan-authoring-review-workflow` before editing the plan.
 9. If the task needs acceptance, blocked/mismatch wording, or closeout judgment, read owner doc `ops.acceptance-reporting-guardrails`.
-10. Read owner doc `plans.stitch-ui-ux-overhaul` when the task touches set-level planning or `.stitch` inventory.
+10. Read `plans.progress` when the task touches set-level planning or `.stitch` inventory priority.
 11. Read the accepted source freeze first. Only after that, inspect the execution contracts that were derived from it.
 
 ## Active Artifacts
@@ -94,5 +94,5 @@ If the screen clearly communicates one of these and the intake/manifest does not
 - `ops.stitch-structured-handoff-contract`
 - `ops.stitch-handoff-completeness-checklist`
 - `design.ui-reference-workflow`
-- `plans.stitch-ui-ux-overhaul`
+- `plans.progress`
 - `.stitch/DESIGN.md`

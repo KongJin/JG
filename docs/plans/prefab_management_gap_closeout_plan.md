@@ -1,7 +1,7 @@
 # Prefab 관리 빈틈 closeout 계획
 
-> 마지막 업데이트: 2026-04-26
-> 상태: active
+> 마지막 업데이트: 2026-04-27
+> 상태: reference
 > doc_id: plans.prefab-management-gap-closeout
 > role: plan
 > owner_scope: 새 UI prefab 승인 잔여, generated prefab lifecycle, prefab review/import tooling, scene override drift, Resources prefab migration inventory
@@ -34,6 +34,30 @@
 - 2026-04-26: `TempScenePrefabImportTool`의 stale prefab path를 실제 existing prefab으로 정리하고, missing prefab을 warning으로 건너뛰지 않고 import 전에 fail 하도록 바꿨다.
 - 2026-04-26: `LobbySceneRuntimeAssemblyTool`은 destructive rebuild 전에 required prefab/assets를 먼저 resolve하고, required UI surface prefab 누락 시 skeleton fallback을 만들지 않고 실패하도록 바꿨다.
 - 2026-04-26: `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`는 prefab management inventory/approval manifest summary와 exact declared new prefab targets를 report에 포함한다.
+- 2026-04-27: `tools/unity-mcp/Invoke-LobbyScenePrefabOverrideAudit.ps1`를 추가해 `LobbyScene` prefab override drift를 JSON/markdown으로 생성하고 workflow policy report에 summary를 연결했다.
+  - override audit: `artifacts/unity/lobby-scene-prefab-override-audit.json`, `artifacts/unity/lobby-scene-prefab-override-audit.md`
+  - current result: surface 6, allowed candidate 3, review candidate 2, warning 1
+  - residual warning: `SetCRoomDetailPanelRoot` has one scene-owned `m_Color.a` override. This is warning evidence, not a workflow hard-fail.
+- 2026-04-27: full workflow policy check succeeded and reports prefab inventory, approval manifest, and override drift summary together.
+
+## Closeout
+
+Status: reference.
+
+Closed acceptance:
+
+- Declared Stitch reimport prefab target is machine-readable through `artifacts/unity/prefab-management-approved-new-prefabs.json`.
+- New prefab policy still blocks unapproved prefab additions by default while reading explicit declared targets.
+- Generated preview prefab count and duplicate candidate groups are in `artifacts/unity/prefab-management-inventory.json`.
+- `TempScenePrefabImportTool` fails on stale prefab review paths.
+- `LobbySceneRuntimeAssemblyTool` no longer turns missing required UI surface prefabs into skeleton success.
+- `LobbyScene` prefab override drift is scriptable warning evidence and included in workflow policy output.
+- `Assets/Resources` prefab migration categories are connected to the prefab inventory.
+
+Residual:
+
+- `SetCRoomDetailPanelRoot` has one `m_Color.a` scene override. Keep it as visual drift warning evidence until a focused Lobby/Set C surface pass either moves the value into the prefab/translation source or confirms it as scene-owned.
+- `GaragePageRoot` and `LobbyPageRoot` have internal active override review candidates. Current workflow policy treats them as review evidence, not hard-fail.
 
 ## 목표
 
@@ -152,3 +176,7 @@
 - 2026-04-26 작업 시작 후 과한점 리뷰: inventory/approval evidence와 helper fail-fast만 추가했고, `ops.unity-ui-authoring-workflow` 정책 본문이나 generated prefab 삭제 범위를 늘리지 않았다.
 - 2026-04-26 작업 시작 후 부족한점 리뷰: override drift warning의 scriptable audit 연결과 full workflow policy default run은 아직 남아 있어 이 plan은 active로 유지한다.
 - plan rereview: residual - implementation started; override drift warning integration and full workflow policy closeout remain.
+- 2026-04-27 closeout 후 과한점 리뷰: plan을 새 정책 본문으로 키우지 않고, 구현 결과와 residual evidence만 기록했다. 새 hard-fail은 추가하지 않았다.
+- 2026-04-27 closeout 후 부족한점 리뷰: acceptance 항목별 evidence, residual warning, 검증 결과, lifecycle 전환 사유가 보인다.
+- doc lifecycle checked: active 실행 계획에서 reference closeout 기록으로 전환한다. 남은 drift는 audit artifact와 관련 surface pass에서 추적한다.
+- plan rereview: clean

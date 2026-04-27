@@ -2,11 +2,11 @@
     "success":  true,
     "terminalVerdict":  "",
     "blockedReason":  "",
-    "generatedAt":  "2026-04-26 23:37:13+09:00",
+    "generatedAt":  "2026-04-27 00:05:01+09:00",
     "agent":  "",
     "route":  "no-unity-ui-workflow",
     "changedFiles":  "tools/unity-mcp/Invoke-PrefabManagementInventory.ps1",
-    "allDirtyFileCount":  99,
+    "allDirtyFileCount":  102,
     "unityUiRelevantFiles":  {
 
                              },
@@ -35,7 +35,7 @@
     "prefabManagement":  {
                              "inventory":  {
                                                "path":  "artifacts/unity/prefab-management-inventory.json",
-                                               "generatedAt":  "2026-04-26 23:35:55+09:00",
+                                               "generatedAt":  "2026-04-27 00:04:52+09:00",
                                                "totalPrefabs":  362,
                                                "generatedPreviewPrefabs":  336,
                                                "resourcesPrefabs":  13,
@@ -44,13 +44,29 @@
                                            },
                              "approvalManifest":  {
                                                       "path":  "artifacts/unity/prefab-management-approved-new-prefabs.json",
-                                                      "generatedAt":  "2026-04-26 23:35:55+09:00",
+                                                      "generatedAt":  "2026-04-27 00:04:52+09:00",
                                                       "prefabCount":  1,
                                                       "prefabPaths":  [
                                                                           "Assets/Prefabs/Features/Account/Independent/SetCAccountSettingsOverlayRoot.prefab"
                                                                       ]
                                                   }
                          },
+    "prefabOverrideDrift":  {
+                                "path":  "artifacts/unity/lobby-scene-prefab-override-audit.json",
+                                "generatedAt":  "2026-04-27 00:03:52+09:00",
+                                "surfaceCount":  6,
+                                "allowedCandidateCount":  3,
+                                "reviewCandidateCount":  2,
+                                "warningCount":  1,
+                                "visualOverrideCount":  1,
+                                "warningSurfaces":  [
+                                                        "SetCRoomDetailPanelRoot"
+                                                    ],
+                                "reviewCandidateSurfaces":  [
+                                                                "GaragePageRoot",
+                                                                "LobbyPageRoot"
+                                                            ]
+                            },
     "declaredNewPrefabTargets":  [
                                      "Assets/Prefabs/Features/Account/Independent/SetCAccountDeleteConfirmDialogRoot.prefab",
                                      "Assets/Prefabs/Features/Account/Independent/SetCAccountSettingsOverlayRoot.prefab",

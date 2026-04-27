@@ -22,6 +22,11 @@ namespace Features.Player.Infrastructure
             return _energyAdapter.TrySpendEnergy(ownerId, cost);
         }
 
+        public void RefundEnergy(DomainEntityId ownerId, float amount)
+        {
+            _energyAdapter.RefundEnergy(ownerId, amount);
+        }
+
         public float GetCurrentEnergy(DomainEntityId ownerId)
         {
             return _energyAdapter.GetCurrentEnergy(ownerId);

@@ -71,6 +71,37 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void EnemyMoveTargetResolver_UsesHostileQuery_WhenCoreIsUnavailable()
+        {
+            var players = new FakePlayerPositionQuery(5f, 0f, 5f);
+            var core = new FakeCoreObjectiveQuery(hasCore: false, 10f, 0f, 10f);
+            var spec = new EnemySpec(
+                maxHp: 10f,
+                defense: 0f,
+                moveSpeed: 1f,
+                contactDamage: 1f,
+                contactCooldown: 1f,
+                targetMode: EnemyTargetMode.ChaseCore);
+
+            var resolved = EnemyMoveTargetResolver.TryGetMoveDestination(
+                spec,
+                0f,
+                0f,
+                0f,
+                players,
+                core,
+                out var isCoreTarget,
+                out var dx,
+                out _,
+                out var dz);
+
+            Assert.IsTrue(resolved);
+            Assert.IsFalse(isCoreTarget);
+            Assert.AreEqual(5f, dx);
+            Assert.AreEqual(5f, dz);
+        }
+
+        [Test]
         public void HostilePositionQuery_UsesUnitBeforePlayerWhenCoreIsUnavailable()
         {
             var playerGo = new GameObject("Player");
@@ -99,6 +130,117 @@ namespace Tests.Editor
                 Object.DestroyImmediate(unitQueryGo);
                 Object.DestroyImmediate(playerQueryGo);
                 Object.DestroyImmediate(unitGo);
+                Object.DestroyImmediate(playerGo);
+            }
+        }
+
+        [Test]
+        public void HostilePositionQuery_FallsBackToPlayerWhenNoUnitIsRegistered()
+        {
+            var playerGo = new GameObject("Player");
+            var playerQueryGo = new GameObject("PlayerQuery");
+            var unitQueryGo = new GameObject("UnitQuery");
+
+            try
+            {
+                playerGo.transform.position = new Vector3(1f, 0f, 1f);
+
+                var playerQuery = playerQueryGo.AddComponent<PlayerPositionQueryAdapter>();
+                var unitQuery = unitQueryGo.AddComponent<UnitPositionQueryAdapter>();
+                playerQuery.RegisterPlayer(playerGo.transform);
+
+                var hostileQuery = new HostilePositionQuery(playerQuery, unitQuery);
+                var target = hostileQuery.GetNearestPlayerPosition(0f, 0f, 0f);
+
+                Assert.AreEqual(1f, target.x);
+                Assert.AreEqual(1f, target.z);
+            }
+            finally
+            {
+                Object.DestroyImmediate(unitQueryGo);
+                Object.DestroyImmediate(playerQueryGo);
+                Object.DestroyImmediate(playerGo);
+            }
+        }
+
+        [Test]
+        public void HostilePositionQuery_UsesUnitWithinAggroRadiusBeforePlayer()
+        {
+            var playerGo = new GameObject("Player");
+            var unitGo = new GameObject("Unit");
+            var playerQueryGo = new GameObject("PlayerQuery");
+            var unitQueryGo = new GameObject("UnitQuery");
+
+            try
+            {
+                playerGo.transform.position = new Vector3(1f, 0f, 1f);
+                unitGo.transform.position = new Vector3(3f, 0f, 0f);
+
+                var playerQuery = playerQueryGo.AddComponent<PlayerPositionQueryAdapter>();
+                var unitQuery = unitQueryGo.AddComponent<UnitPositionQueryAdapter>();
+                playerQuery.RegisterPlayer(playerGo.transform);
+                unitQuery.RegisterUnit(unitGo.transform);
+
+                var hostileQuery = new HostilePositionQuery(playerQuery, unitQuery);
+                var found = hostileQuery.TryGetNearestPlayerWithinHorizontalRadius(
+                    0f,
+                    0f,
+                    0f,
+                    4f,
+                    out var x,
+                    out _,
+                    out var z);
+
+                Assert.IsTrue(found);
+                Assert.AreEqual(3f, x);
+                Assert.AreEqual(0f, z);
+            }
+            finally
+            {
+                Object.DestroyImmediate(unitQueryGo);
+                Object.DestroyImmediate(playerQueryGo);
+                Object.DestroyImmediate(unitGo);
+                Object.DestroyImmediate(playerGo);
+            }
+        }
+
+        [Test]
+        public void HostilePositionQuery_FallsBackToPlayerWithinAggroRadiusWhenNoUnitMatches()
+        {
+            var playerGo = new GameObject("Player");
+            var farUnitGo = new GameObject("FarUnit");
+            var playerQueryGo = new GameObject("PlayerQuery");
+            var unitQueryGo = new GameObject("UnitQuery");
+
+            try
+            {
+                playerGo.transform.position = new Vector3(1f, 0f, 1f);
+                farUnitGo.transform.position = new Vector3(9f, 0f, 0f);
+
+                var playerQuery = playerQueryGo.AddComponent<PlayerPositionQueryAdapter>();
+                var unitQuery = unitQueryGo.AddComponent<UnitPositionQueryAdapter>();
+                playerQuery.RegisterPlayer(playerGo.transform);
+                unitQuery.RegisterUnit(farUnitGo.transform);
+
+                var hostileQuery = new HostilePositionQuery(playerQuery, unitQuery);
+                var found = hostileQuery.TryGetNearestPlayerWithinHorizontalRadius(
+                    0f,
+                    0f,
+                    0f,
+                    4f,
+                    out var x,
+                    out _,
+                    out var z);
+
+                Assert.IsTrue(found);
+                Assert.AreEqual(1f, x);
+                Assert.AreEqual(1f, z);
+            }
+            finally
+            {
+                Object.DestroyImmediate(unitQueryGo);
+                Object.DestroyImmediate(playerQueryGo);
+                Object.DestroyImmediate(farUnitGo);
                 Object.DestroyImmediate(playerGo);
             }
         }

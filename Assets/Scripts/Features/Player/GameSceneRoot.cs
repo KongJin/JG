@@ -91,6 +91,7 @@ namespace Features.Player
         private readonly GameSceneAudioBootstrapFlow _audioBootstrapFlow = new();
 #if UNITY_EDITOR
         private Coroutine _mcpFinalWaveClearRoutine;
+        private bool _mcpFinalWaveClearGameEnded;
 #endif
 
         /// <summary>
@@ -362,6 +363,9 @@ namespace Features.Player
 
         private void OnGameEndReport(Features.Player.Application.Events.GameEndReportRequestedEvent e)
         {
+#if UNITY_EDITOR
+            _mcpFinalWaveClearGameEnded = true;
+#endif
             Debug.Log($"[GameEnd] ===== Game Result =====");
             Debug.Log($"  Result:     {(e.IsVictory ? "Victory" : "Defeat")}");
             Debug.Log($"  Wave:       {e.ReachedWave}");
@@ -411,6 +415,7 @@ namespace Features.Player
 
             var requestedTimeScale = timeScale > 0f ? timeScale : 12f;
             var requestedMaxRealtimeSeconds = maxRealtimeSeconds > 0f ? maxRealtimeSeconds : 70f;
+            _mcpFinalWaveClearGameEnded = false;
             Debug.Log($"[McpSmoke] Final wave clear smoke started. timeScale={requestedTimeScale:F1}, maxRealtimeSeconds={requestedMaxRealtimeSeconds:F1}");
             _mcpFinalWaveClearRoutine = StartCoroutine(RunFinalWaveClearForMcpSmokeRoutine(
                 Mathf.Clamp(requestedTimeScale, 1f, 20f),
@@ -423,7 +428,7 @@ namespace Features.Player
             var elapsed = 0f;
             Time.timeScale = timeScale;
 
-            while (elapsed < maxRealtimeSeconds)
+            while (elapsed < maxRealtimeSeconds && !_mcpFinalWaveClearGameEnded)
             {
                 var cleared = ClearSpawnedEnemiesForMcpSmoke();
                 if (cleared > 0)

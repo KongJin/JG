@@ -1,11 +1,11 @@
 # Unity MCP
 
-> 마지막 업데이트: 2026-04-24
+> 마지막 업데이트: 2026-04-27
 > 상태: active
 > doc_id: tools.unity-mcp-readme
 > role: reference
 > owner_scope: Unity MCP 실행 reference, helper route, verification command guide
-> upstream: repo.agents, docs.index, ops.unity-ui-authoring-workflow, plans.mcp-improvement
+> upstream: repo.agents, docs.index, ops.unity-ui-authoring-workflow
 > artifacts: `tools/unity-mcp/`, `Assets/Editor/UnityMcp/`, `artifacts/unity/`
 
 Unity MCP in this repo is a `diagnostic + manual automation` bridge.

@@ -246,6 +246,10 @@ $records = @($surfaceRecords.ToArray() | Sort-Object surfaceName)
 $warningRecords = @($records | Where-Object { $_.classification -eq "warning" })
 $reviewRecords = @($records | Where-Object { $_.classification -eq "review-candidate" })
 $allowedRecords = @($records | Where-Object { $_.classification -eq "allowed-candidate" })
+$visualOverrideCount = ($records | Measure-Object -Property visualOverrideCount -Sum).Sum
+if ($null -eq $visualOverrideCount) {
+    $visualOverrideCount = 0
+}
 
 $report = [ordered]@{
     schemaVersion = "1.0.0"
@@ -257,7 +261,7 @@ $report = [ordered]@{
         allowedCandidateCount = @($allowedRecords).Count
         reviewCandidateCount = @($reviewRecords).Count
         warningCount = @($warningRecords).Count
-        visualOverrideCount = @($records | Measure-Object -Property visualOverrideCount -Sum).Sum
+        visualOverrideCount = $visualOverrideCount
     }
     surfaces = $records
 }

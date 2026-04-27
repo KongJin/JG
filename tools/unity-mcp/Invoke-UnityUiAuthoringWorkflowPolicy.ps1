@@ -487,6 +487,10 @@ $stitchSurfaceOnboardingEvidencePatterns = @(
     '^artifacts/unity/(garage|lobby|account|common|battle|result)-.+\.(json|png)$',
     '^Assets/Prefabs/Features/.+/Root/.+\.prefab$'
 )
+$stitchSurfaceOnboardingExclusionPatterns = @(
+    '^artifacts/unity/prefab-management-',
+    '^artifacts/unity/lobby-scene-prefab-override-audit\.'
+)
 $stitchCapabilityExpansionPatterns = @(
     '^tools/stitch-unity/',
     '^tools/unity-mcp/',
@@ -499,7 +503,12 @@ $presentationFiles = Get-PathsMatching -Paths $changedFiles -Patterns $presentat
 $lobbyFiles = Get-PathsMatching -Paths $changedFiles -Patterns $lobbyPatterns
 $gameSceneFiles = Get-PathsMatching -Paths $changedFiles -Patterns $gameScenePatterns
 $unityUiRelevantFiles = Get-PathsMatching -Paths $changedFiles -Patterns $unityUiRelevantPatterns
-$stitchSurfaceOnboardingFiles = Get-PathsMatching -Paths $changedFiles -Patterns $stitchSurfaceOnboardingEvidencePatterns
+$stitchSurfaceOnboardingFiles = @(
+    Get-PathsMatching -Paths $changedFiles -Patterns $stitchSurfaceOnboardingEvidencePatterns |
+        Where-Object {
+            -not (Test-AnyPathMatch -Paths @($_) -Patterns $stitchSurfaceOnboardingExclusionPatterns)
+        }
+)
 $stitchCapabilityExpansionFiles = Get-PathsMatching -Paths $changedFiles -Patterns $stitchCapabilityExpansionPatterns
 $newPrefabFiles = Get-PathsMatching -Paths $addedFiles -Patterns @('^Assets/.+\.prefab$')
 $declaredNewPrefabTargetValues = New-Object System.Collections.Generic.List[string]

@@ -1,3 +1,4 @@
+using System;
 using Features.Unit.Application.Events;
 using Features.Unit.Application.Ports;
 using Features.Unit.Domain;
@@ -51,8 +52,31 @@ namespace Features.Unit.Application
                 return false;
             }
 
-            // 2. BattleEntity 생성
-            var battleEntityId = _summonPort.SpawnBattleEntity(unitSpec, spawnPosition, playerId);
+            // 2. BattleEntity 생성. 생성 실패 시 Energy를 되돌려 소환 실패가 조용한 비용 손실로 이어지지 않게 한다.
+            DomainEntityId battleEntityId;
+            try
+            {
+                battleEntityId = _summonPort.SpawnBattleEntity(unitSpec, spawnPosition, playerId);
+            }
+            catch (Exception ex)
+            {
+                _energyPort.RefundEnergy(playerId, cost);
+                _eventBus.Publish(new UnitSummonFailedEvent(
+                    playerId,
+                    unitSpec,
+                    $"BattleEntity spawn failed: {ex.Message}"));
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(battleEntityId.Value))
+            {
+                _energyPort.RefundEnergy(playerId, cost);
+                _eventBus.Publish(new UnitSummonFailedEvent(
+                    playerId,
+                    unitSpec,
+                    "BattleEntity spawn failed: empty id"));
+                return false;
+            }
 
             // 3. 성공 이벤트 발행
             _eventBus.Publish(new UnitSummonCompletedEvent(

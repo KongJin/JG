@@ -1,6 +1,6 @@
 # Docs Index
 
-> 마지막 업데이트: 2026-04-26
+> 마지막 업데이트: 2026-04-27
 > 상태: active
 > doc_id: docs.index
 > role: entry
@@ -54,14 +54,12 @@
 | Stitch JSON handoff contract 구조 확인 | [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) |
 | Stitch screen을 Unity로 한 장씩 옮기는 실무 가이드 확인 | [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) |
 | Stitch surface 실행 명령과 review capture 루프 확인 | [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) |
-| Stitch 전면 개편 실행 계획 확인 | [`plans/stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) |
 | Stitch 테스트 프롬프트 확인 | [`design/stitch_test_brief.md`](./design/stitch_test_brief.md) |
 | LobbyScene UI/prefab 관리 부채 정리 확인 | [`plans/lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) |
 | Prefab 관리 빈틈 closeout 확인 | [`plans/prefab_management_gap_closeout_plan.md`](./plans/prefab_management_gap_closeout_plan.md) |
 | GameScene 진입 큰 흐름 확인 | [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) |
 | GameScene 실제 플로우 검증/closeout 확인 | [`plans/game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) |
 | GameScene Phase 5 multiplayer sync smoke 확인 | [`plans/game_scene_phase5_multiplayer_sync_plan.md`](./plans/game_scene_phase5_multiplayer_sync_plan.md) |
-| GameScene 전투 HUD / 소환 UX 개선 계획 확인 | [`plans/game_scene_ui_ux_improvement_plan.md`](./plans/game_scene_ui_ux_improvement_plan.md) |
 | 계정/차고 복구 상태 확인 | [`plans/account_system_plan.md`](./plans/account_system_plan.md) |
 | Unity MCP 실행 루틴 확인 | [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) |
 | WebGL 실기 절차 확인 | [`playtest/webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) |
@@ -85,26 +83,18 @@
 ### `plans/`
 
 - `active`: [`progress.md`](./plans/progress.md) - 공식 진행률 SSOT
-- `reference`: [`progress_changelog.md`](./plans/progress_changelog.md) - 진행 상황에서 분리한 dated change log
 - `reference`: [`account_system_plan.md`](./plans/account_system_plan.md) - 계정/차고 복구 기준
 - `active`: [`lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) - LobbyScene UI prefab instance/override 관리와 assembly helper 안전화 계획
-- `active`: [`prefab_management_gap_closeout_plan.md`](./plans/prefab_management_gap_closeout_plan.md) - 새 UI prefab 승인, generated prefab lifecycle, review/import tooling, Resources prefab migration 상태 정리 계획
+- `reference`: [`prefab_management_gap_closeout_plan.md`](./plans/prefab_management_gap_closeout_plan.md) - 새 UI prefab 승인, generated prefab lifecycle, review/import tooling, Resources prefab migration closeout 기록
 - `active`: [`lobby_scene_nova1492_model_application_plan.md`](./plans/lobby_scene_nova1492_model_application_plan.md) - 변환된 Nova1492 GX 모델의 LobbyScene/Garage preview 제한 적용 계획
 - `reference`: [`nova1492_part_catalog_playable_plan.md`](./plans/nova1492_part_catalog_playable_plan.md) - 변환된 Nova1492 UnitParts 모델의 Garage 부품 catalog/playable 승격 closeout 기록
 - `reference`: [`game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) - GameScene 진입 상위 흐름
 - `active`: [`game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) - GameScene/BattleScene 실제 플레이 플로우 acceptance, blocker/mismatch closeout 계획
 - `active`: [`game_scene_phase5_multiplayer_sync_plan.md`](./plans/game_scene_phase5_multiplayer_sync_plan.md) - GameScene/BattleScene Phase 5 멀티플레이 동기화 smoke와 blocker closeout 계획
 - `active`: [`operation_record_world_memory_plan.md`](./plans/operation_record_world_memory_plan.md) - 최근 작전 기록, 세계 기억, Lobby/Garage 기록 표시 계획
-- `reference`: [`stitch_ui_ux_overhaul_plan.md`](./plans/stitch_ui_ux_overhaul_plan.md) - Stitch set inventory와 reset 기준
-- `draft`: [`stitch_llm_contract_pipeline_plan.md`](./plans/stitch_llm_contract_pipeline_plan.md) - Stitch source facts + LLM contract draft + script validation 전환 계획
-- `draft`: [`stitch_screen_onboarding_simplification_plan.md`](./plans/stitch_screen_onboarding_simplification_plan.md) - 새 Stitch screen onboarding 반복 blocker를 줄이는 실행 계획
-- `draft`: [`stitch_button_sound_contract_plan.md`](./plans/stitch_button_sound_contract_plan.md) - Stitch-to-Unity prefab 생성 시 버튼 사운드 affordance 누락을 줄이는 실행 계획
 - `active`: [`non_stitch_ui_stitch_reimport_plan.md`](./plans/non_stitch_ui_stitch_reimport_plan.md) - Stitch source freeze가 없는 Unity-native/mixed UI를 Stitch에서 다시 만든 뒤 Unity로 재import하는 migration plan
-- `draft`: [`game_scene_ui_ux_improvement_plan.md`](./plans/game_scene_ui_ux_improvement_plan.md) - GameScene 전투 HUD/소환 UX 재설계 계획
 - `reference`: [`nova1492_resource_integration_plan.md`](./plans/nova1492_resource_integration_plan.md) - Nova1492 설치 리소스 staging 결과와 후속 적용 기준
-- `reference`: [`tech_debt_reduction_plan.md`](./plans/tech_debt_reduction_plan.md) - 기술부채 감축 우선순위 reference
 - `active`: [`garage_ui_ux_improvement_plan.md`](./plans/garage_ui_ux_improvement_plan.md) - 현재 Set B Garage Stitch-to-Unity recovery plan
-- `reference`: [`mcp_improvement_plan.md`](./plans/mcp_improvement_plan.md) - Unity MCP 역할/검증 레이어 정리
 
 규칙 routing reference:
 

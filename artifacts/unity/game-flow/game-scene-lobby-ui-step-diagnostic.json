@@ -1,0 +1,32 @@
+﻿{
+    "success":  false,
+    "terminalVerdict":  "blocked",
+    "generatedAt":  "2026-04-27 00:25:53+09:00",
+    "startedAtUtc":  "2026-04-26T15:25:53.2531994Z",
+    "steps":  [
+                  {
+                      "name":  "health-before",
+                      "ok":  true,
+                      "detail":  {
+                                     "isPlaying":  false,
+                                     "activeScene":  "LobbyScene",
+                                     "isCompiling":  false
+                                 }
+                  },
+                  {
+                      "name":  "exception",
+                      "ok":  false,
+                      "detail":  {
+                                     "message":  "원격 서버에 연결할 수 없습니다."
+                                 }
+                  },
+                  {
+                      "name":  "stop-play-finally",
+                      "ok":  false,
+                      "detail":  {
+                                     "message":  "원격 서버에 연결할 수 없습니다."
+                                 }
+                  }
+              ],
+    "blockedReason":  "원격 서버에 연결할 수 없습니다."
+}

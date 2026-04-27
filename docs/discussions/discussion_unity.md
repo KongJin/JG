@@ -1,11 +1,11 @@
 # Unity Discussion Notes
 
-> 마지막 업데이트: 2026-04-20
+> 마지막 업데이트: 2026-04-27
 > 상태: historical
 > doc_id: discussions.unity
 > role: historical
 > owner_scope: 과거 Unity 규칙과 도구 한계 검토 기록
-> upstream: docs.index, plans.mcp-improvement, plans.tech-debt-reduction
+> upstream: docs.index
 > artifacts: none
 > 현재 기준 경로: [`../index.md`](../index.md)에서 owner 문서를 찾는다. 이 문서는 historical 기록이다.
 

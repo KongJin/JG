@@ -1,6 +1,6 @@
 ﻿# LobbyScene Prefab Override Audit
 
-> generatedAt: 2026-04-27 00:03:52+09:00
+> generatedAt: 2026-04-27 00:18:03+09:00
 > source: `Assets/Scenes/LobbyScene.unity`
 > purpose: warning evidence for `plans.prefab-management-gap-closeout`
 

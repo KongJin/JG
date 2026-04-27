@@ -9,6 +9,7 @@ namespace Features.Unit.Application.Ports
     public interface IUnitEnergyPort
     {
         bool TrySpendEnergy(DomainEntityId ownerId, float cost);
+        void RefundEnergy(DomainEntityId ownerId, float amount);
         float GetCurrentEnergy(DomainEntityId ownerId);
     }
 }

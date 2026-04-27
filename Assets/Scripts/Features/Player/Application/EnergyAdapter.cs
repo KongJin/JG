@@ -52,6 +52,17 @@ namespace Features.Player.Application
             return true;
         }
 
+        public void RefundEnergy(DomainEntityId ownerId, float amount)
+        {
+            var previousEnergy = _player.CurrentEnergy;
+            _player.RestoreEnergy(amount);
+            if (_player.CurrentEnergy == previousEnergy)
+                return;
+
+            PublishEnergyChanged();
+            _network.SyncEnergy(_player.Id, _player.CurrentEnergy, _player.MaxEnergy);
+        }
+
         public float GetCurrentEnergy(DomainEntityId ownerId)
         {
             return _player.CurrentEnergy;

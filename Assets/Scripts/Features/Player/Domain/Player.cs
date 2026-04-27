@@ -87,6 +87,14 @@ namespace Features.Player.Domain
             return true;
         }
 
+        public void RestoreEnergy(float amount)
+        {
+            if (amount <= 0f)
+                return;
+
+            CurrentEnergy = System.Math.Min(MaxEnergy, CurrentEnergy + amount);
+        }
+
         public void RegenEnergy(float deltaTime, float regenPerSecond)
         {
             if (CurrentEnergy >= MaxEnergy)

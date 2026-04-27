@@ -81,6 +81,7 @@ namespace Shared.Ui
 
         private void ShowBanner(UiErrorMessage error)
         {
+            EnsurePresenterActive();
             _bannerMessageText.text = error.Message;
             ShowBannerGroup(_bannerGroup);
 
@@ -99,6 +100,7 @@ namespace Shared.Ui
 
         private void ShowModal(UiErrorMessage error)
         {
+            EnsurePresenterActive();
             _modalMessageText.text = error.Message;
             _modalDismissButton.gameObject.SetActive(error.CanDismiss);
             HideGroup(_bannerGroup);
@@ -108,6 +110,15 @@ namespace Shared.Ui
         private void HideModal()
         {
             HideGroup(_modalGroup);
+        }
+
+        private void EnsurePresenterActive()
+        {
+            if (!gameObject.activeSelf)
+                gameObject.SetActive(true);
+
+            if (!enabled)
+                enabled = true;
         }
 
         private static void ShowGroup(CanvasGroup group)

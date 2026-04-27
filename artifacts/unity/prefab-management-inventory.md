@@ -1,6 +1,6 @@
 ﻿# Prefab Management Inventory
 
-> generated: 2026-04-26 23:35:55+09:00
+> generated: 2026-04-27 00:18:01+09:00
 
 ## Summary
 

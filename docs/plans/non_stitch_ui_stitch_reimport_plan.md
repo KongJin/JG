@@ -139,5 +139,5 @@ Residual:
 - 반복 재리뷰 반영: generated Nova1492 preview model prefab과 gameplay prefab 구조 변경은 제외 범위로 분리했다.
 - 2026-04-26 first pass 후 재리뷰: Account settings overlay는 Stitch source freeze만 active evidence로 유지한다. Script-side/manual 값을 섞은 debug prefab/capture는 제거했고, no-hardcoding draft probe는 validator blocked 상태로 남긴다.
 - owner impact: primary `plans.non-stitch-ui-stitch-reimport`; secondary `plans.progress`, `docs.index`; out-of-scope `ops.stitch-data-workflow`, `ops.unity-ui-authoring-workflow` 규칙 개정.
-- doc lifecycle checked: 새 active plan으로 등록한다. 기존 `plans.stitch-ui-ux-overhaul`은 historical/reference inventory 성격을 유지하고, 이 plan은 native/mixed UI migration closeout 뒤 reference 전환 후보로 본다.
+- doc lifecycle checked: 새 active plan으로 등록한다. 이전 Stitch inventory plan은 lifecycle cleanup으로 제거했고, 이 plan은 native/mixed UI migration closeout 뒤 reference 전환 후보로 본다.
 - plan rereview: Account settings overlay now has source freeze, source-derived LLM draft, prefab-first Unity reimport, pipeline artifact, and capture evidence. Residual is workflow policy new-prefab approval plus runtime scene wiring.

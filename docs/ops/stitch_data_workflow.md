@@ -1,11 +1,11 @@
 # Stitch Data Workflow
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-27
 > 상태: active
 > doc_id: ops.stitch-data-workflow
 > role: ssot
 > owner_scope: Stitch working data ownership, source freeze, Unity handoff 운영
-> upstream: design.ui-reference-workflow, plans.stitch-ui-ux-overhaul, ops.unity-ui-authoring-workflow
+> upstream: design.ui-reference-workflow, ops.unity-ui-authoring-workflow
 > artifacts: `artifacts/stitch/`, `artifacts/unity/`, `in-memory://compiled/*`
 
 이 문서는 JG에서 `Stitch` 산출물을 어떻게 저장하고 Unity handoff로 넘길지 정하는 단일 운영 기준이다.
