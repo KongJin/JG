@@ -1,17 +1,17 @@
 ---
 name: jg-unity-workflow
-description: Project-specific Unity workflow for the JG repo. Use when Codex works on Unity scenes, prefabs, Unity UI authoring policy, new UI prefab decisions, presentation ownership, workflow policy checks, Stitch handoff/translation/source freeze/execution contract/presentation contract work, MCP editor automation, runtime smoke scripts, or Unity-facing docs in this repository, especially under `Assets/Scenes`, `Assets/Resources`, `Assets/Prefabs`, `Assets/Editor/UnityMcp`, `tools/unity-mcp`, or `tools/stitch-unity`.
+description: Project-specific Unity workflow for the JG repo. Use when Codex works on Unity scenes, prefabs, UI Toolkit candidate surfaces, Unity UI authoring policy, workflow policy checks, Stitch handoff/translation/source freeze/execution contract/source visual contract work, MCP editor automation, runtime smoke scripts, or Unity-facing docs in this repository, especially under `Assets/Scenes`, `Assets/Resources`, `Assets/Prefabs`, `Assets/UI`, `Assets/Editor/UnityMcp`, `tools/unity-mcp`, or `tools/stitch-unity`.
 ---
 
 # JG Unity Workflow
 
-> 마지막 업데이트: 2026-04-24
+> 마지막 업데이트: 2026-04-27
 > 상태: active
 > doc_id: skill.jg-unity-workflow
 > role: skill-entry
 > owner_scope: JG Unity lane read order, owner doc routing, MCP and validation entrypoint
 > upstream: repo.agents, docs.index, ops.cohesion-coupling-policy, ops.plan-authoring-review-workflow, ops.acceptance-reporting-guardrails, ops.unity-ui-authoring-workflow
-> artifacts: `tools/unity-mcp/`, `artifacts/unity/`, `Assets/Scenes/`, `Assets/Prefabs/`
+> artifacts: `tools/unity-mcp/`, `artifacts/unity/`, `Assets/Scenes/`, `Assets/Prefabs/`, `Assets/UI/`
 
 Use this skill for JG-specific Unity execution order and sources of truth.
 Keep generic Unity serialization, MCP/CLI theory, and broad engine rules in `rule-unity`.
@@ -23,9 +23,9 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` when you need the current doc routes.
 3. Read owner doc `ops.cohesion-coupling-policy` when the task needs owner boundaries, cohesion/coupling judgment, or responsibility splitting.
-4. If the task touches Unity UI or UX authoring, new UI prefabs, presentation ownership, or workflow policy checks, read owner doc `ops.unity-ui-authoring-workflow` before any implementation.
-5. If the task depends on Stitch handoff, source freeze, execution contracts, presentation contracts, translation, or `.stitch` artifacts, read owner doc `ops.stitch-data-workflow` before translating them into Unity work.
-6. If the task touches Unity MCP, Play Mode automation, prefab-first reset, or runtime smoke, read `tools/unity-mcp/README.md` as execution reference.
+4. If the task touches Unity UI or UX authoring, UI Toolkit candidate surfaces, legacy runtime UI scripts, new UI prefabs, or workflow policy checks, read owner doc `ops.unity-ui-authoring-workflow` before any implementation.
+5. If the task depends on Stitch handoff, source freeze, execution contracts, source visual contracts, translation, or `.stitch` artifacts, read owner doc `ops.stitch-data-workflow` before translating them into Unity work.
+6. If the task touches Unity MCP, Play Mode automation, or runtime smoke, read `tools/unity-mcp/README.md` as execution reference.
 7. If the task creates or substantially rewrites a plan doc, read owner doc `ops.plan-authoring-review-workflow` before editing the plan.
 8. If the task needs acceptance, blocked/mismatch wording, or closeout judgment, read owner doc `ops.acceptance-reporting-guardrails`.
 9. If the task depends on current project priorities or recent recovery work, skim the relevant plan in `docs/plans/`.
@@ -36,17 +36,16 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 - Prefer Unity MCP and in-editor changes over direct `.unity` or `.prefab` YAML edits.
 - In `Plan Mode`, inspect Unity paths and compile truth only. Do not run mutation flows through MCP, scene/prefab edits, or smoke scripts that rewrite evidence.
 - Treat serialized scene and prefab state as runtime truth for scene-owned wiring.
-- In `prefab-first reset`, verify the actual prefab asset path and current child names from the repo before trusting helper scripts, import boards, or summary artifacts.
 - Do not reintroduce code-driven builder or rebuild loops when the repo expects MCP prefab or scene authoring.
 - Never overwrite an open scene on disk. If Unity already has the scene loaded, keep the work inside MCP or switch scenes first.
 - Stop play mode before script edits that need recompilation, then wait for compile to settle before testing again.
 - Run `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1` before closeout when the task changes Unity UI authoring surfaces.
+- New Stitch-driven UI starts as an `Assets/UI` UI Toolkit candidate surface first; existing runtime UI scripts are compatibility code until replaced.
 - If a generated `.csproj` looks stale, confirm Unity/Bee compile truth and Unity Test Runner inclusion first. Do not patch the generated `.csproj` file directly.
 
 ## Task Routing
 
 - `scene/prefab authoring`: use MCP first, inspect current hierarchy and serialized refs, then mutate the smallest possible surface.
-- `prefab-first reset`: when a legacy scene or prefab route was intentionally discarded, rebuild baseline prefabs from handoff and presentation contracts before assembling a new scene.
 - `code-only`: edit scripts normally, then refresh compile state before Play Mode validation.
 - `mixed`: inspect the scene contract first, then keep scene edits and script edits easy to localize.
 - `plan authoring`: after drafting or substantial plan edits, run the repeat re-review loop from `ops.plan-authoring-review-workflow` before closeout.
@@ -77,7 +76,7 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 ## JG Workflow Rules
 
 - Use the existing PowerShell helpers under `tools/unity-mcp` when a defined workflow already exists.
-- For Lobby and Garage work, if the prior authoring scene was discarded, use `prefab-first reset` instead of reviving the historical workflow gate/page-switch route.
+- For Lobby and Garage Stitch imports, prefer the `jg-stitch-unity-import` UI Toolkit candidate route before touching legacy runtime prefabs.
 - For GameScene UI and HUD work, default to MCP prefab or scene authoring, not builder regeneration.
 - If a smoke script depends on stale UI paths or fragile runtime clone names, repair the automation contract instead of forcing the scene back to match the old path.
 - When a reset renames a hierarchy node, keep translators and smoke helpers compatible with both legacy and current paths until every caller and contract document has migrated.
@@ -91,14 +90,14 @@ When Unity work implements an accepted Stitch screen, use this loop:
 3. Confirm the execution contracts were derived from that source freeze.
 4. Confirm the real target asset path before touching hierarchy.
 5. Read the execution contracts before touching hierarchy so required refs and source-derived presentation values are known up front.
-6. Build or repair the smallest prefab baseline that can carry the contract.
+6. Build or repair the smallest UI Toolkit candidate surface that can carry the contract.
 7. Compare Unity output against the source screen before calling the pass done.
 
 Semantic contract alone is not enough for overlay recovery.
 If the surface depends on scrim, dialog bounds, typography weight, CTA labels, or emphasis hierarchy, close the source-derived presentation contract first.
 Otherwise the translator usually only recreates a skeleton surface.
 
-## Presentation Contract Rules
+## Source Visual Contract Rules
 
 - Treat `screen manifest` as semantic meaning only.
 - Treat `unity-map` as binding only.
@@ -118,13 +117,12 @@ Otherwise the translator usually only recreates a skeleton surface.
 - `Prefab Mode capture vs runtime view`
   - `sceneview/capture` in Prefab Mode is good for structure and presentation sanity checks, but it is not the same as runtime/mobile framing.
 - `source re-read`
-  - In supported Stitch screen structures, `Resolve-StitchPresentationContract.ps1` and `Invoke-StitchSurfaceTranslation.ps1` rebuild the execution inputs from html/png before they continue. Do not treat optional profile dumps as hand-maintained owner files.
+  - In supported Stitch screen structures, source fact and presentation profile tools rebuild the execution inputs from html/png before candidate work continues. Do not treat optional profile dumps as hand-maintained owner files.
 - `skeleton-only translation`
   - When semantic contract + map succeed but the UI still looks like a placeholder, the missing layer is usually source-derived presentation extraction.
 
-## Guardrails From Recent Reset Work
+## Guardrails From Recent Import Work
 
-- In `prefab-first reset`, do not promote a temporary contract into an execution contract just because it unblocks one pass.
 - New intermediate layers must record their status explicitly instead of silently becoming runtime truth.
 - If a presentation field is still uncertain, keep it in `unresolvedDerivedFields` and leave the contract in `pending-source-derivation`.
 - Do not use translator-side constants or fallback to paper over missing presentation data.

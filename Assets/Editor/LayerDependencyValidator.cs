@@ -86,8 +86,6 @@ namespace ProjectSD.LayerValidation
                 return "Bootstrap";
             if (Contains(path, "/Infrastructure/"))
                 return "Infrastructure";
-            if (Contains(path, "/Presentation/"))
-                return "Presentation";
             if (Contains(path, "/Application/"))
                 return "Application";
             if (Contains(path, "/Domain/"))
@@ -110,8 +108,6 @@ namespace ProjectSD.LayerValidation
                         return "Domain → System.IO 금지";
                     if (CheckForbiddenLayer(ns, "Application"))
                         return "Domain → Application 참조 금지";
-                    if (CheckForbiddenLayer(ns, "Presentation"))
-                        return "Domain → Presentation 참조 금지";
                     if (CheckForbiddenLayer(ns, "Infrastructure"))
                         return "Domain → Infrastructure 참조 금지";
                     if (CheckForbiddenLayer(ns, "Bootstrap"))
@@ -125,26 +121,13 @@ namespace ProjectSD.LayerValidation
                         return "Application → UnityEditor 금지";
                     if (ns.StartsWith("Photon", StringComparison.Ordinal))
                         return "Application → Photon 금지";
-                    if (CheckForbiddenLayer(ns, "Presentation"))
-                        return "Application → Presentation 참조 금지";
                     if (CheckForbiddenLayer(ns, "Infrastructure"))
                         return "Application → Infrastructure 참조 금지";
                     if (CheckForbiddenLayer(ns, "Bootstrap"))
                         return "Application → Bootstrap 참조 금지";
                     break;
 
-                case "Presentation":
-                    if (ns.StartsWith("Photon", StringComparison.Ordinal))
-                        return "Presentation → Photon 금지";
-                    if (CheckForbiddenLayer(ns, "Infrastructure"))
-                        return "Presentation → Infrastructure 참조 금지";
-                    if (CheckForbiddenLayer(ns, "Bootstrap"))
-                        return "Presentation → Bootstrap 참조 금지";
-                    break;
-
                 case "Infrastructure":
-                    if (CheckForbiddenLayer(ns, "Presentation"))
-                        return "Infrastructure → Presentation 참조 금지";
                     if (CheckForbiddenLayer(ns, "Bootstrap"))
                         return "Infrastructure → Bootstrap 참조 금지";
                     break;
@@ -506,7 +489,6 @@ namespace ProjectSD.LayerValidation
                     continue;
 
                 if (!(Contains(evidence.path, "/Application/") ||
-                      Contains(evidence.path, "/Presentation/") ||
                       Contains(evidence.path, "/Infrastructure/")))
                     continue;
 

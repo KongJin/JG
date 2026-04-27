@@ -1,6 +1,6 @@
 ---
 name: jg-stitch-unity-import
-description: Project-specific Stitch-to-Unity UI import workflow for the JG repo. Use this skill whenever the user asks to bring, import, port, translate, reimport, apply, compare, or review a Stitch screen in Unity, especially for UI Toolkit pilots, runtime replacement candidates, prefab-first reset surfaces, Set A/B/C/D/E screens, accepted source html/png, UXML/USS, UIDocument, PanelSettings, preview scenes, capture evidence, scoped workflow policy, or visual fidelity closeout. This skill turns an accepted Stitch source into a Unity candidate surface without confusing pilot success with active runtime acceptance.
+description: Project-specific Stitch-to-Unity UI import workflow for the JG repo. Use this skill whenever the user asks to bring, import, port, translate, reimport, apply, compare, or review a Stitch screen in Unity, especially for UI Toolkit pilots, runtime replacement candidates, Set A/B/C/D/E screens, accepted source html/png, UXML/USS, UIDocument, PanelSettings, preview scenes, capture evidence, scoped workflow policy, or visual fidelity closeout. This skill turns an accepted Stitch source into a Unity candidate surface without confusing pilot success with active runtime acceptance.
 ---
 
 # JG Stitch Unity Import
@@ -11,7 +11,7 @@ description: Project-specific Stitch-to-Unity UI import workflow for the JG repo
 > role: skill-entry
 > owner_scope: accepted Stitch screen을 Unity 후보 surface로 가져오는 반복 실행 루틴
 > upstream: repo.agents, docs.index, ops.cohesion-coupling-policy, ops.stitch-data-workflow, ops.unity-ui-authoring-workflow, ops.acceptance-reporting-guardrails
-> artifacts: `.stitch/`, `Assets/UI/`, `Assets/Scenes/`, `Assets/Prefabs/`, `artifacts/unity/`
+> artifacts: `.stitch/`, `Assets/UI/`, `Assets/Scenes/`, `artifacts/unity/`
 
 Use this skill for the execution loop that sits between the thin Stitch router and the Unity authoring router.
 It does not own policy, source-freeze rules, or acceptance definitions.
@@ -34,7 +34,7 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 - Default to a **candidate pilot first** when the user asks to "bring over" or "try" a Stitch screen.
 - Treat runtime replacement as a separate pass unless the user explicitly asks for replacement and the active target, binding, and acceptance evidence are clear.
 - Prefer UI Toolkit pilot surfaces for WebGL-friendly mobile UI experiments, while keeping existing uGUI runtime surfaces intact until replacement acceptance is locked.
-- Use prefab-first reset only when an existing Unity route has been intentionally discarded or the owner plan already chooses it.
+- Stitch imports start as UI Toolkit candidate surfaces. If an existing uGUI surface must be touched, handle it as runtime repair through `jg-unity-workflow`.
 
 ## Import Loop
 
@@ -45,8 +45,8 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 
 2. **Choose the Unity route**
    - `UI Toolkit pilot`: create UXML/USS plus PanelSettings, UIDocument, preview scene, capture, and report.
-   - `uGUI/prefab patch`: use MCP scene/prefab authoring and existing serialized refs.
-   - `prefab-first reset`: rebuild from source-derived contracts and keep scene assembly as the later step.
+   - `runtime replacement candidate`: plan binding and acceptance separately after the pilot exists.
+   - `runtime uGUI repair`: use MCP scene/prefab authoring only for existing runtime surfaces that must remain uGUI.
    - Record whether the pass is `pilot`, `runtime candidate`, or `active replacement`.
 
 3. **Translate safely**
@@ -82,7 +82,7 @@ Never fix a policy/tooling blocker inside the same surface import and call the s
 Use this checklist in the final report or artifact:
 
 - Source freeze path or Stitch screen identity
-- Route: UI Toolkit pilot, uGUI patch, or prefab-first reset
+- Route: UI Toolkit pilot, runtime replacement candidate, or legacy uGUI repair
 - Output assets and capture path
 - Runtime target touched or explicitly untouched
 - First-read hierarchy preserved or changed

@@ -114,90 +114,6 @@ function Get-LatestExistingWriteTimeUtc {
     return $latest
 }
 
-function Get-DeclaredResetPrefabTargets {
-    param(
-        [string]$RepoRoot
-    )
-
-    $mappingRoot = Join-Path $RepoRoot ".stitch/contracts/mappings"
-    if (-not (Test-Path -LiteralPath $mappingRoot)) {
-        return @()
-    }
-
-    $targets = @()
-    foreach ($file in Get-ChildItem -LiteralPath $mappingRoot -Filter *.json -File) {
-        try {
-            $json = Get-Content -LiteralPath $file.FullName -Raw | ConvertFrom-Json
-            if ($null -eq $json) {
-                continue
-            }
-
-            if ($json.contractKind -ne "unity-surface-map") {
-                continue
-            }
-
-            if ($null -eq $json.target) {
-                continue
-            }
-
-            if ($json.target.kind -ne "prefab") {
-                continue
-            }
-
-            $assetPath = [string]$json.target.assetPath
-            if (-not [string]::IsNullOrWhiteSpace($assetPath)) {
-                $targets += $assetPath
-            }
-        }
-        catch {
-            continue
-        }
-    }
-
-    return @($targets | Sort-Object -Unique)
-}
-
-function Get-ApprovedNewPrefabTargets {
-    param(
-        [string]$RepoRoot
-    )
-
-    $manifestPath = Join-Path $RepoRoot "artifacts\unity\prefab-management-approved-new-prefabs.json"
-    if (-not (Test-Path -LiteralPath $manifestPath)) {
-        return @()
-    }
-
-    try {
-        $json = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-        if ($null -eq $json -or $null -eq $json.prefabs) {
-            return @()
-        }
-
-        return @(
-            foreach ($record in @($json.prefabs)) {
-                if ($null -eq $record) {
-                    continue
-                }
-
-                $assetPath = ([string]$record.assetPath).Replace("\", "/")
-                $status = [string]$record.status
-                if ([string]::IsNullOrWhiteSpace($assetPath)) {
-                    continue
-                }
-
-                if ($status -notin @("approved-declared", "residual-declared")) {
-                    continue
-                }
-
-                $assetPath
-            }
-        ) | Sort-Object -Unique
-    }
-    catch {
-        return @()
-    }
-}
-
 function Get-PrefabManagementSummary {
     param(
         [string]$RepoRoot
@@ -251,116 +167,6 @@ function Get-PrefabManagementSummary {
         inventory = $inventory
         approvalManifest = $approval
     }
-}
-
-function Get-PrefabOverrideDriftSummary {
-    param(
-        [string]$RepoRoot
-    )
-
-    $auditPath = Join-Path $RepoRoot "artifacts\unity\lobby-scene-prefab-override-audit.json"
-    if (-not (Test-Path -LiteralPath $auditPath)) {
-        return $null
-    }
-
-    try {
-        $json = Get-Content -LiteralPath $auditPath -Raw | ConvertFrom-Json
-        return [PSCustomObject]@{
-            path = "artifacts/unity/lobby-scene-prefab-override-audit.json"
-            generatedAt = [string]$json.generatedAt
-            surfaceCount = [int]$json.summary.surfaceCount
-            allowedCandidateCount = [int]$json.summary.allowedCandidateCount
-            reviewCandidateCount = [int]$json.summary.reviewCandidateCount
-            warningCount = [int]$json.summary.warningCount
-            visualOverrideCount = [int]$json.summary.visualOverrideCount
-            warningSurfaces = @(
-                $json.surfaces |
-                    Where-Object { $_.classification -eq "warning" } |
-                    ForEach-Object { [string]$_.surfaceName }
-            )
-            reviewCandidateSurfaces = @(
-                $json.surfaces |
-                    Where-Object { $_.classification -eq "review-candidate" } |
-                    ForEach-Object { [string]$_.surfaceName }
-            )
-        }
-    }
-    catch {
-        return [PSCustomObject]@{
-            path = "artifacts/unity/lobby-scene-prefab-override-audit.json"
-            error = $_.Exception.Message
-        }
-    }
-}
-
-function Get-StitchSourceFreezeResetPrefabTargets {
-    param(
-        [string]$RepoRoot
-    )
-
-    $designRoot = Join-Path $RepoRoot ".stitch\designs"
-    $generatorPath = Join-Path $RepoRoot "tools\stitch-unity\presentations\Generate-StitchPresentationProfile.ps1"
-    if (-not (Test-Path -LiteralPath $designRoot) -or -not (Test-Path -LiteralPath $generatorPath)) {
-        return @()
-    }
-
-    $targets = @()
-    foreach ($htmlFile in Get-ChildItem -LiteralPath $designRoot -Filter *.html -File) {
-        $surfaceId = [System.IO.Path]::GetFileNameWithoutExtension($htmlFile.Name)
-        try {
-            $json = & powershell -NoProfile -ExecutionPolicy Bypass -File $generatorPath -SurfaceId $surfaceId -CanGenerateOnly 2>$null
-            if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace(($json | Out-String))) {
-                continue
-            }
-
-            $probe = $json | Out-String | ConvertFrom-Json
-            if ($null -eq $probe -or -not [bool]$probe.supported) {
-                continue
-            }
-
-            $targetAssetPath = [string]$probe.targetAssetPath
-            if (-not [string]::IsNullOrWhiteSpace($targetAssetPath)) {
-                $targets += $targetAssetPath
-            }
-        }
-        catch {
-            continue
-        }
-    }
-
-    return @($targets | Sort-Object -Unique)
-}
-
-function Get-NovaGaragePreviewPrefabTargets {
-    param(
-        [string]$RepoRoot
-    )
-
-    $planPath = Join-Path $RepoRoot "docs\plans\lobby_scene_nova1492_model_application_plan.md"
-    $reportPath = Join-Path $RepoRoot "artifacts\nova1492\lobby_preview_prefab_pack_report.md"
-    if (-not (Test-Path -LiteralPath $planPath) -or -not (Test-Path -LiteralPath $reportPath)) {
-        return @()
-    }
-
-    $planText = Get-Content -LiteralPath $planPath -Raw
-    if ($planText -notmatch "doc_id:\s*plans\.lobby-scene-nova1492-model-application" -or
-        $planText -notmatch "Phase 1:\s*preview prefab pack") {
-        return @()
-    }
-
-    $reportText = Get-Content -LiteralPath $reportPath -Raw
-    if ($reportText -notmatch "(?m)^-\s*created:\s*15\s*$" -or
-        $reportText -notmatch "(?m)^-\s*failed:\s*0\s*$") {
-        return @()
-    }
-
-    $targets = @()
-    $matches = [regex]::Matches($reportText, '`(Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_[^`]+\.prefab)`')
-    foreach ($match in $matches) {
-        $targets += $match.Groups[1].Value
-    }
-
-    return @($targets | Sort-Object -Unique)
 }
 
 function New-EvidenceRecord {
@@ -464,9 +270,6 @@ $scenePrefabPatterns = @(
     '^Assets/Scenes/.+\.unity$',
     '^Assets/.+\.prefab$'
 )
-$presentationCodePatterns = @(
-    '^Assets/Scripts/Features/.+/Presentation/.+\.cs$'
-)
 $lobbyPatterns = @(
     '^Assets/Scenes/LobbyScene\.unity$',
     '^Assets/Scripts/Features/Garage/',
@@ -480,16 +283,15 @@ $gameScenePatterns = @(
 $unityUiRelevantPatterns = @(
     '^Assets/Scenes/.+\.unity$',
     '^Assets/.+\.prefab$',
-    '^Assets/Scripts/Features/.+/Presentation/.+\.cs$'
+    '^Assets/UI/.+\.(uxml|uss|asset)$'
 )
 $stitchSurfaceOnboardingEvidencePatterns = @(
     '^artifacts/unity/set-[a-e]-.+\.(json|png)$',
     '^artifacts/unity/(garage|lobby|account|common|battle|result)-.+\.(json|png)$',
-    '^Assets/Prefabs/Features/.+/Root/.+\.prefab$'
+    '^Assets/UI/UIToolkit/.+\.(uxml|uss|asset)$'
 )
 $stitchSurfaceOnboardingExclusionPatterns = @(
-    '^artifacts/unity/prefab-management-',
-    '^artifacts/unity/lobby-scene-prefab-override-audit\.'
+    '^artifacts/unity/prefab-management-'
 )
 $stitchCapabilityExpansionPatterns = @(
     '^tools/stitch-unity/',
@@ -499,7 +301,6 @@ $stitchCapabilityExpansionPatterns = @(
 )
 
 $scenePrefabFiles = Get-PathsMatching -Paths $changedFiles -Patterns $scenePrefabPatterns
-$presentationFiles = Get-PathsMatching -Paths $changedFiles -Patterns $presentationCodePatterns
 $lobbyFiles = Get-PathsMatching -Paths $changedFiles -Patterns $lobbyPatterns
 $gameSceneFiles = Get-PathsMatching -Paths $changedFiles -Patterns $gameScenePatterns
 $unityUiRelevantFiles = Get-PathsMatching -Paths $changedFiles -Patterns $unityUiRelevantPatterns
@@ -511,33 +312,10 @@ $stitchSurfaceOnboardingFiles = @(
 )
 $stitchCapabilityExpansionFiles = Get-PathsMatching -Paths $changedFiles -Patterns $stitchCapabilityExpansionPatterns
 $newPrefabFiles = Get-PathsMatching -Paths $addedFiles -Patterns @('^Assets/.+\.prefab$')
-$declaredNewPrefabTargetValues = New-Object System.Collections.Generic.List[string]
-foreach ($candidate in @(Get-DeclaredResetPrefabTargets -RepoRoot $repoRoot)) {
-    if (-not [string]::IsNullOrWhiteSpace($candidate)) {
-        $declaredNewPrefabTargetValues.Add(([string]$candidate).Replace("\", "/")) | Out-Null
-    }
-}
-foreach ($candidate in @(Get-ApprovedNewPrefabTargets -RepoRoot $repoRoot)) {
-    if (-not [string]::IsNullOrWhiteSpace($candidate)) {
-        $declaredNewPrefabTargetValues.Add(([string]$candidate).Replace("\", "/")) | Out-Null
-    }
-}
-foreach ($candidate in @(Get-StitchSourceFreezeResetPrefabTargets -RepoRoot $repoRoot)) {
-    if (-not [string]::IsNullOrWhiteSpace($candidate)) {
-        $declaredNewPrefabTargetValues.Add(([string]$candidate).Replace("\", "/")) | Out-Null
-    }
-}
-foreach ($candidate in @(Get-NovaGaragePreviewPrefabTargets -RepoRoot $repoRoot)) {
-    if (-not [string]::IsNullOrWhiteSpace($candidate)) {
-        $declaredNewPrefabTargetValues.Add(([string]$candidate).Replace("\", "/")) | Out-Null
-    }
-}
-$declaredNewPrefabTargets = @($declaredNewPrefabTargetValues.ToArray() | Sort-Object -Unique)
+$declaredNewPrefabTargets = @()
 $prefabManagementSummary = Get-PrefabManagementSummary -RepoRoot $repoRoot
-$prefabOverrideDriftSummary = Get-PrefabOverrideDriftSummary -RepoRoot $repoRoot
 
 $hasScenePrefab = @($scenePrefabFiles).Count -gt 0
-$hasPresentationCode = @($presentationFiles).Count -gt 0
 $hasLobby = @($lobbyFiles).Count -gt 0
 $hasGameScene = @($gameSceneFiles).Count -gt 0
 
@@ -546,19 +324,13 @@ if ($hasLobby -and $hasGameScene) {
     $route = "mixed"
 }
 elseif ($hasLobby) {
-    $route = if ($lobbySceneExists) { "lobby-ui" } else { "prefab-first reset" }
+    $route = if ($lobbySceneExists) { "lobby-ui" } else { "uitk-candidate" }
 }
 elseif ($hasGameScene) {
     $route = "game-scene-ui"
 }
-elseif ($hasScenePrefab -and $hasPresentationCode) {
-    $route = "mixed"
-}
 elseif ($hasScenePrefab) {
     $route = "scene/prefab authoring"
-}
-elseif ($hasPresentationCode) {
-    $route = "presentation-code"
 }
 
 $requiredEvidence = @()
@@ -566,8 +338,6 @@ $missingEvidence = @()
 $staleEvidence = @()
 $policyViolations = @()
 $compileSummary = $null
-$layoutOwnershipSummary = $null
-$presentationResponsibilitySummary = $null
 $capabilityExpansionGuard = [PSCustomObject]@{
     allowCapabilityExpansion = [bool]$AllowCapabilityExpansion
     surfaceOnboardingFiles = $stitchSurfaceOnboardingFiles
@@ -621,84 +391,6 @@ if ($route -ne "no-unity-ui-workflow") {
         }
     }
 
-    $needsLayoutValidator = $hasPresentationCode -or $route -eq "game-scene-ui" -or ($route -eq "mixed" -and $hasGameScene)
-    if ($needsLayoutValidator) {
-        $requiredEvidence += [PSCustomObject]@{
-            name = "presentation-layout-ownership"
-            path = "Temp/PresentationLayoutOwnershipValidator/presentation-layout-ownership.json"
-            message = "Presentation code must not author geometry or materials. Move the authoring to scene/prefab or runtime non-presentation layer."
-        }
-
-        try {
-            $layoutOwnership = Get-McpPresentationLayoutOwnership -Root $root
-            $layoutOwnershipSummary = [PSCustomObject]@{
-                success = [bool]$layoutOwnership.success
-                reportPath = $layoutOwnership.reportPath
-                violationCount = @($layoutOwnership.violations).Count
-            }
-
-            if (-not $layoutOwnership.success) {
-                $policyViolations += [PSCustomObject]@{
-                    code = "presentation-layout-ownership-failed"
-                    message = "Presentation code must not author geometry or materials. Move the authoring to scene/prefab or runtime non-presentation layer."
-                }
-            }
-        }
-        catch {
-            $layoutOwnershipSummary = [PSCustomObject]@{
-                success = $false
-                error = $_.Exception.Message
-            }
-            $policyViolations += [PSCustomObject]@{
-                code = "presentation-layout-ownership-failed"
-                message = ("Presentation layout ownership could not be verified. Fix the validator route and rerun the workflow. Details: {0}" -f $_.Exception.Message)
-            }
-        }
-    }
-
-    if ($hasPresentationCode) {
-        $requiredEvidence += [PSCustomObject]@{
-            name = "presentation-responsibility"
-            path = "npm run --silent presentation:policy:lint"
-            message = "Presentation PageController classes must stay thin. Smoke entrypoints, chrome styling, and oversized orchestration fail the workflow."
-        }
-
-        try {
-            $presentationLintPath = Join-Path $repoRoot "tools\presentation-lint\lint-presentation-responsibility.mjs"
-            Push-Location $repoRoot
-            try {
-                $presentationLintOutput = & node $presentationLintPath 2>&1
-                $presentationLintExitCode = $LASTEXITCODE
-            }
-            finally {
-                Pop-Location
-            }
-
-            $presentationResponsibilitySummary = [PSCustomObject]@{
-                success = ($presentationLintExitCode -eq 0)
-                command = "node ./tools/presentation-lint/lint-presentation-responsibility.mjs"
-                output = @($presentationLintOutput)
-            }
-
-            if ($presentationLintExitCode -ne 0) {
-                $policyViolations += [PSCustomObject]@{
-                    code = "presentation-responsibility-lint-failed"
-                    message = "Presentation responsibility lint failed. Split smoke, chrome, or oversized orchestration out of the page controller before acceptance."
-                }
-            }
-        }
-        catch {
-            $presentationResponsibilitySummary = [PSCustomObject]@{
-                success = $false
-                error = $_.Exception.Message
-            }
-            $policyViolations += [PSCustomObject]@{
-                code = "presentation-responsibility-lint-failed"
-                message = ("Presentation responsibility lint could not be verified. Fix the lint route and rerun the workflow. Details: {0}" -f $_.Exception.Message)
-            }
-        }
-    }
-
     if (@($newPrefabFiles).Count -gt 0) {
         foreach ($path in @($newPrefabFiles)) {
             if ($declaredNewPrefabTargets -contains $path) {
@@ -714,9 +406,9 @@ if ($route -ne "no-unity-ui-workflow") {
 
     if ($hasLobby -and -not $lobbySceneExists) {
         $requiredEvidence += [PSCustomObject]@{
-            name = "prefab-first-reset"
+            name = "uitk-candidate"
             path = $null
-            message = "Lobby/Garage changes are currently in prefab-first reset mode because Assets/Scenes/LobbyScene.unity does not exist."
+            message = "Lobby/Garage changes need a UI Toolkit candidate surface before fresh scene evidence can be trusted."
         }
     }
 }
@@ -750,11 +442,8 @@ $report = [PSCustomObject]@{
     staleEvidence = $staleEvidence
     policyViolations = $policyViolations
     compile = $compileSummary
-    presentationLayoutOwnership = $layoutOwnershipSummary
-    presentationResponsibility = $presentationResponsibilitySummary
     capabilityExpansionGuard = $capabilityExpansionGuard
     prefabManagement = $prefabManagementSummary
-    prefabOverrideDrift = $prefabOverrideDriftSummary
     declaredNewPrefabTargets = $declaredNewPrefabTargets
     resultPath = $resultAbsolutePath
 }

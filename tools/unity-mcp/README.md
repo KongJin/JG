@@ -9,16 +9,15 @@
 > artifacts: `tools/unity-mcp/`, `Assets/Editor/UnityMcp/`, `artifacts/unity/`
 
 Unity MCP in this repo is a `diagnostic + manual automation` bridge.
-While the repo is rebuilding UI from scratch, default to `prefab-first reset`:
-accepted Stitch handoff -> presentation contract review -> baseline prefab wiring -> new scene assembly -> fresh contract/translation pipeline.
+While the repo is rebuilding UI from scratch, default to `UI Toolkit candidate surface`:
+accepted Stitch handoff -> source visual contract review -> UI Toolkit candidate surface -> preview scene/capture -> fresh contract/translation pipeline.
 Unity UI/UX authoring policy 본문 owner는 `ops.unity-ui-authoring-workflow`이고, current path는 `docs/index.md`에서 해석한다. 이 문서는 실행 reference만 담당한다.
 
 - Bridge core: `Assets/Editor/UnityMcp/`
 - MCP stdio wrapper: `tools/unity-mcp/server.js`
 - Helper module: `tools/unity-mcp/McpHelpers.ps1`
-- Prefab-pack helper module: `tools/unity-mcp/McpPrefabPackHelpers.ps1`
 - Workflow policy check: `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
-- Shared surface translation entry: `tools/stitch-unity/surfaces/Invoke-StitchSurfaceTranslation.ps1`
+- Stitch source/contract tooling: `tools/stitch-unity/`
 
 `rule-harness` continues to use Unity MCP only for compile/status refresh plus generic diagnostics. Scene-specific runtime smoke stays out of harness scope.
 
@@ -41,7 +40,6 @@ These are the routes the current workflow depends on.
 - `POST /ui/wait-for-active`
 - `POST /ui/wait-for-inactive`
 - `POST /sceneview/capture`
-- `GET /validation/verify-presentation-layout-ownership`
 `/menu/execute` still exists, but it is manual-only and non-authoritative for Lobby/Garage recovery.
 
 ## MCP Preflight
@@ -52,7 +50,7 @@ Before using Unity MCP for prefab authoring, scene assembly, Play Mode automatio
 2. If there are compile errors, fix them before entering any Unity MCP workflow
 3. After the fix, wait for compile and script reload to settle with `Invoke-McpCompileRequestAndWait` or `Invoke-EditorProjectSync.ps1`
 4. Confirm `/health` reports `isCompiling = false`
-5. For reset work, continue with `prefab wiring review -> new scene assembly -> fresh contract/translation pipeline`
+5. For reset work, continue with `UI Toolkit candidate surface -> preview capture -> fresh contract/translation pipeline`
 
 If compile errors remain, `play/start`, the workflow gate, and verification helpers can fail with misleading timeout symptoms. Treat that as a compile-clean failure first, not as an MCP failure.
 
@@ -80,13 +78,13 @@ Mobile HUD framing snapshots should use bounded `/ui/get-state` requests so a st
 
 This order assumes compile-clean state and completed script reload.
 
-Use this order for current Lobby/Garage reset work:
+Use this order for current Lobby/Garage UI Toolkit candidate work:
 
 1. `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
-2. confirm accepted handoff + required presentation refs
-3. rebuild baseline prefab wiring first
-4. assemble a new scene
-5. run fresh contract/translation pipeline only after the new scene exists
+2. confirm accepted handoff + source visual contract
+3. create or update the UXML/USS candidate surface
+4. capture the preview scene
+5. run runtime replacement only after the candidate evidence is accepted
 
 ## SSOT Guardrails
 
@@ -119,22 +117,12 @@ Use this order for current Lobby/Garage reset work:
 - `Wait-McpUiActive`
 - `Wait-McpUiInactive`
 
-`McpPrefabPackHelpers.ps1` centralizes the reusable prefab-pack authoring loop:
+Current UI translation stance:
 
-- common MCP UI authoring helpers for scratch prefab composition
-- `New-McpScratchCanvas`
-- `Invoke-McpPrefabPackGeneration`
-
-Use this for repeated Stitch-to-Unity prefab imports so surface generation stays behind the shared generator entry and reusable prefab-pack helpers.
-
-Current translation entry:
-
-- `tools/stitch-unity/surfaces/Invoke-StitchSurfaceTranslation.ps1`
-  - shared public entry for accepted Stitch surface translation
-  - current policy disables the prior constant-owned surface generator route
-  - only contract-complete translators should be reintroduced under a new strategy id
-- accepted Stitch prefab review는 `TempScene review prep -> POST /sceneview/capture`를 기본 route로 본다
-- `POST /screenshot/capture`는 현재 Stitch prefab review 표준 경로가 아니다. 일반 수동 점검용 route로만 본다.
+- `tools/stitch-unity/` remains useful for source facts and contract derivation.
+- legacy runtime prefab translators are outside the current UI Toolkit candidate route unless a new strategy explicitly owns them.
+- accepted Stitch review는 `UI Toolkit preview scene -> POST /sceneview/capture`를 기본 route로 본다.
+- `POST /screenshot/capture`는 현재 Stitch-to-UI Toolkit candidate review 표준 경로가 아니다. 일반 수동 점검용 route로만 본다.
 
 Use `Assert-McpNoOpenSceneDiskWrite` before any script that would touch a `.unity` file on disk outside the editor bridge.
 If the target matches `health.activeScenePath`, the helper fails fast and tells you to use MCP repair or switch scenes first.
@@ -161,7 +149,7 @@ Use this when prefab-authoring work benefits from an explicit Prefab Mode stage 
 - `/console/logs`와 `/console/errors`
   - stale error가 남아 있을 수 있으니 timestamp로 현재 실패와 과거 실패를 구분해야 한다.
 - `POST /sceneview/capture`
-  - current Stitch prefab review 기본 capture route다.
+  - UI Toolkit candidate와 Prefab Mode staging proof에 쓰는 capture route다.
   - Prefab Mode SceneView capture는 runtime/mobile framing과 동일하지 않으므로 staging proof로만 본다.
 
 한 줄 기준:
@@ -194,19 +182,16 @@ Outputs:
 
 The policy check reads the current changed files from git and enforces:
 
-- route classification for `scene/prefab authoring`, `presentation-code`, `mixed`, `lobby-ui`, `game-scene-ui`
+- route classification for `scene/prefab authoring`, `mixed`, `lobby-ui`, `game-scene-ui`
 - no new UI prefab creation by default
-- presentation validator requirements when presentation code changed
-- presentation responsibility lint when `*PageController` classes changed
-- prefab-first reset evidence for Lobby/Garage source changes while no authoring scene exists
+- UI Toolkit candidate evidence for fresh Lobby/Garage source changes
 
 It does not replace the workflow SSOT.
 Keep the policy body in owner doc `ops.unity-ui-authoring-workflow` and use this README as the execution reference. Resolve the current file path through `docs/index.md`.
 
 ## Runtime Proof
 
-Legacy runtime smoke scripts were removed from the active toolset.
-Current runtime proof should be surface-specific and generated from the active contract or translation pipeline instead of relying on old scene-route smoke scripts.
+Current runtime proof should be surface-specific and generated from the active contract or translation pipeline.
 
 Recommended runtime proof order:
 

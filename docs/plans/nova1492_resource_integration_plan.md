@@ -181,7 +181,7 @@ Acceptance:
 
 목표:
 
-- `GaragePageRoot` 또는 현재 Garage prefab-first surface에 원본 리소스 일부를 적용한다.
+- `GaragePageRoot` 또는 현재 Garage runtime surface에 원본 리소스 일부를 적용한다.
 - 기능 구현보다 첫인상과 조립 감각을 우선 확인한다.
 
 적용 우선순위:

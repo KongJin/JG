@@ -56,23 +56,15 @@ function Get-ResourceMigrationStatus {
     param([string]$Path)
 
     switch -Regex ($Path) {
-        '^Assets/Resources/(SkillBarCanvas|StartSkillSelectionCanvas|PlayerHealthHudView)\.prefab$' { return "native-candidate" }
+        '^Assets/Resources/PlayerHealthHudView\.prefab$' { return "native-candidate" }
         '^Assets/Resources/(EnemyHealthBar|DamageNumber)\.prefab$' { return "gameplay-feedback-candidate" }
-        '^Assets/Resources/(BattleEntity|EnemyCharacter|EnemyCharacterCore|PlayerCharacter|ProjectilePhysicsAdapter|SelfEffect|TargetedEffect|ZoneEffect)\.prefab$' { return "not-ui/gameplay-runtime" }
+        '^Assets/Resources/(BattleEntity|EnemyCharacter|EnemyCharacterCore|PlayerCharacter|ProjectilePhysicsAdapter|ZoneEffect)\.prefab$' { return "not-ui/gameplay-runtime" }
         default { return "" }
     }
 }
 
 function Get-PrefabClass {
     param([string]$Path)
-
-    if ($Path -match '^Assets/Prefabs/Features/Garage/PreviewModels/Generated/') {
-        return "generated-preview"
-    }
-
-    if ($Path -match '^Assets/Prefabs/Features/Garage/PreviewModels/') {
-        return "generated-preview"
-    }
 
     if ($Path -match '^Assets/Resources/.+\.prefab$') {
         $migration = Get-ResourceMigrationStatus -Path $Path
@@ -83,18 +75,6 @@ function Get-PrefabClass {
         return "gameplay-runtime"
     }
 
-    if ($Path -match '^Assets/Prefabs/Features/.+/Root/.+\.prefab$') {
-        return "scene-root"
-    }
-
-    if ($Path -match '^Assets/Prefabs/Features/.+/Independent/.+\.prefab$') {
-        return "independent-overlay"
-    }
-
-    if ($Path -match '^Assets/Prefabs/(Shared/Ui|Features/.+/.+)\b') {
-        return "ui-surface"
-    }
-
     if ($Path -match '^Assets/Prefabs/.+\b(Battle|Projectile|Effect|Enemy|Player)\b.+\.prefab$') {
         return "gameplay-runtime"
     }
@@ -103,79 +83,7 @@ function Get-PrefabClass {
 }
 
 function Get-DeclaredApprovalRecords {
-    $records = New-Object System.Collections.Generic.List[object]
-    $mappingRoot = Resolve-RepoPath ".stitch/contracts/mappings"
-    if (Test-Path -LiteralPath $mappingRoot) {
-        foreach ($file in Get-ChildItem -LiteralPath $mappingRoot -Filter *.json -File) {
-            try {
-                $json = Get-Content -LiteralPath $file.FullName -Raw | ConvertFrom-Json
-                if ($null -eq $json -or $json.contractKind -ne "unity-surface-map") {
-                    continue
-                }
-
-                if ($null -eq $json.target -or $json.target.kind -ne "prefab") {
-                    continue
-                }
-
-                $assetPath = ([string]$json.target.assetPath).Replace("\", "/")
-                if ([string]::IsNullOrWhiteSpace($assetPath)) {
-                    continue
-                }
-
-                $surfaceId = [string]$json.surfaceId
-                $pipelinePath = if ([string]::IsNullOrWhiteSpace($surfaceId)) { "" } else { "artifacts/unity/$surfaceId-pipeline-result.json" }
-                $sourceEvidence = @(
-                    ConvertTo-RepoPath $file.FullName
-                    if (-not [string]::IsNullOrWhiteSpace($pipelinePath) -and (Test-Path -LiteralPath (Resolve-RepoPath $pipelinePath))) {
-                        $pipelinePath
-                    }
-                )
-
-                $records.Add([PSCustomObject][ordered]@{
-                    assetPath = $assetPath
-                    sourceEvidence = @($sourceEvidence)
-                    ownerPlan = "docs/plans/non_stitch_ui_stitch_reimport_plan.md"
-                    reason = "Declared unity-surface-map target for prefab-first Stitch reimport."
-                    status = "approved-declared"
-                    expiresOrResidual = "Revalidate if the source freeze, surface map, or target asset path changes."
-                })
-            }
-            catch {
-                continue
-            }
-        }
-    }
-
-    $manifestAbsolute = Resolve-RepoPath $ApprovalManifestPath
-    if (Test-Path -LiteralPath $manifestAbsolute) {
-        try {
-            $existing = Get-Content -LiteralPath $manifestAbsolute -Raw | ConvertFrom-Json
-            foreach ($record in @($existing.prefabs)) {
-                $assetPath = ([string]$record.assetPath).Replace("\", "/")
-                if ([string]::IsNullOrWhiteSpace($assetPath)) {
-                    continue
-                }
-
-                if (@($records | Where-Object { $_.assetPath -eq $assetPath }).Count -gt 0) {
-                    continue
-                }
-
-                $records.Add([PSCustomObject][ordered]@{
-                    assetPath = $assetPath
-                    sourceEvidence = @($record.sourceEvidence)
-                    ownerPlan = [string]$record.ownerPlan
-                    reason = [string]$record.reason
-                    status = [string]$record.status
-                    expiresOrResidual = [string]$record.expiresOrResidual
-                })
-            }
-        }
-        catch {
-            Write-Warning "Existing approval manifest could not be parsed: $ApprovalManifestPath"
-        }
-    }
-
-    return @($records | Sort-Object assetPath -Unique)
+    return @()
 }
 
 function Get-ReferencedPrefabGuids {
@@ -238,9 +146,6 @@ foreach ($file in @($prefabFiles | Sort-Object FullName)) {
 
     $approvalStatus = if ($approvedPaths.Contains($path)) {
         "approved-declared"
-    }
-    elseif ($class -in @("scene-root", "independent-overlay", "ui-surface") -and $path -match '^Assets/Prefabs/Features/') {
-        "existing-ui-prefab"
     }
     else {
         ""

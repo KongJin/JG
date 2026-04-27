@@ -2,21 +2,98 @@
     "success":  true,
     "terminalVerdict":  "",
     "blockedReason":  "",
-    "generatedAt":  "2026-04-27 20:49:58+09:00",
+    "generatedAt":  "2026-04-27 21:53:42+09:00",
     "agent":  "",
     "route":  "scene/prefab authoring",
     "changedFiles":  [
-                         "artifacts/unity/garage-setb-uitoolkit-port-report.md",
-                         "artifacts/unity/garage-setb-uitoolkit-preview.png",
-                         "Assets/Editor/SceneTools/GarageSetBUitkPreviewTool.cs",
-                         "Assets/Scenes/GarageSetBUitkPreview.unity",
-                         "Assets/Settings/UI/GarageSetBPanelSettings.asset",
-                         "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
-                         "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml",
-                         "docs/plans/garage_ui_ux_improvement_plan.md"
+                         ".codex/skills/jg-stitch-unity-import/SKILL.md",
+                         ".codex/skills/jg-unity-workflow/SKILL.md",
+                         "artifacts/rules/issue-recurrence-closeout.json",
+                         "artifacts/rules/skill-trigger-inventory.md",
+                         "artifacts/unity/game-flow/polish-game-flow-report.md",
+                         "artifacts/unity/prefab-management-approved-new-prefabs.json",
+                         "artifacts/unity/prefab-management-inventory.json",
+                         "artifacts/unity/prefab-management-inventory.md",
+                         "Assets/Editor/AssetTools/Nova1492GaragePreviewPrefabTool.cs",
+                         "Assets/Editor/AssetTools/Nova1492GaragePreviewPrefabTool.cs.meta",
+                         "Assets/Editor/AssetTools/Nova1492PartAlignmentTool.cs",
+                         "Assets/Editor/AssetTools/Nova1492PartAlignmentTool.cs.meta",
+                         "Assets/Editor/AssetTools/Nova1492PartCatalogTool.cs",
+                         "Assets/Editor/AssetTools/Nova1492PartCatalogTool.cs.meta",
+                         "Assets/Editor/CliCommands.cs",
+                         "Assets/Editor/CliCommands.cs.meta",
+                         "Assets/Editor/LayerDependencyValidator.cs",
+                         "Assets/Editor/SceneTools/BattleSceneAuthoringTool.cs",
+                         "Assets/Editor/SceneTools/BattleSceneAuthoringTool.cs.meta",
+                         "Assets/Editor/SceneTools/GarageMobileScrollMigrationTool.cs",
+                         "Assets/Editor/SceneTools/GarageMobileScrollMigrationTool.cs.meta",
+                         "Assets/Editor/SceneTools/GarageNovaPartsPanelInstallTool.cs",
+                         "Assets/Editor/SceneTools/GarageNovaPartsPanelInstallTool.cs.meta",
+                         "Assets/Editor/SceneTools/LobbySceneRuntimeAssemblyTool.cs",
+                         "Assets/Editor/SceneTools/LobbySceneRuntimeAssemblyTool.cs.meta",
+                         "Assets/Editor/SceneTools/StitchRuntimeReviewTool.cs",
+                         "Assets/Editor/SceneTools/StitchRuntimeReviewTool.cs.meta",
+                         "Assets/Editor/SceneTools/TempScenePrefabImportTool.cs",
+                         "Assets/Editor/SceneTools/TempScenePrefabImportTool.cs.meta",
+                         "Assets/Editor/UnityMcp/Handlers/BuildHandlers.cs",
+                         "Assets/Editor/Validation/PresentationLayoutOwnershipValidator.cs",
+                         "Assets/Editor/Validation/PresentationLayoutOwnershipValidator.cs.meta",
+                         "Assets/Prefabs/Features.meta",
+                         "Assets/Resources/SelfEffect.prefab",
+                         "Assets/Resources/SelfEffect.prefab.meta",
+                         "Assets/Resources/SkillBarCanvas.prefab",
+                         "Assets/Resources/SkillBarCanvas.prefab.meta",
+                         "Assets/Resources/StartSkillSelectionCanvas.prefab",
+                         "Assets/Resources/StartSkillSelectionCanvas.prefab.meta",
+                         "Assets/Resources/TargetedEffect.prefab",
+                         "Assets/Resources/TargetedEffect.prefab.meta",
+                         "docs/design/architecture-diagram.md",
+                         "docs/design/module_data_structure.md",
+                         "docs/design/stitch_test_brief.md",
+                         "docs/design/ui_foundations.md",
+                         "docs/design/ui_reference_workflow.md",
+                         "docs/index.md",
+                         "docs/ops/cohesion_coupling_policy.md",
+                         "docs/ops/stitch_data_workflow.md",
+                         "docs/ops/stitch_to_unity_translation_guide.md",
+                         "docs/ops/unity_ui_authoring_workflow.md",
+                         "docs/plans/garage_ui_ux_improvement_plan.md",
+                         "docs/plans/lobby_scene_nova1492_model_application_plan.md",
+                         "docs/plans/lobby_scene_ui_prefab_management_plan.md",
+                         "docs/plans/non_stitch_ui_stitch_reimport_plan.md",
+                         "docs/plans/nova1492_part_catalog_playable_plan.md",
+                         "docs/plans/operation_record_world_memory_plan.md",
+                         "docs/plans/prefab_management_gap_closeout_plan.md",
+                         "docs/plans/progress.md",
+                         "docs/plans/rule_trigger_skill_extraction_plan.md",
+                         "docs/plans/set_b_operation_memory_visual_improvement_plan.md",
+                         "package.json",
+                         "tools/check-unity-asset-hygiene.ps1",
+                         "tools/presentation-lint/lint-presentation-responsibility.mjs",
+                         "tools/rule-harness/README.md",
+                         "tools/rule-harness/RuleHarness.psm1",
+                         "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+                         "tools/stitch-unity/presentations/Generate-StitchPresentationProfile.ps1",
+                         "tools/stitch-unity/README.md",
+                         "tools/stitch-unity/surfaces/Invoke-StitchSurfaceTranslation.ps1",
+                         "tools/stitch-unity/validators/Test-StitchContractDraft.ps1",
+                         "tools/unity-mcp/Invoke-LobbyScenePrefabOverrideAudit.ps1",
+                         "tools/unity-mcp/Invoke-PrefabManagementInventory.ps1",
+                         "tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1",
+                         "tools/unity-mcp/McpHelpers.ps1",
+                         "tools/unity-mcp/McpPrefabPackHelpers.ps1",
+                         "tools/unity-mcp/README.md",
+                         "tools/workflow/Find-SimplificationCandidates.ps1",
+                         "tools/workflow/Get-NextWorkSuggestion.ps1",
+                         "tools/workflow/Invoke-CloseoutPack.ps1"
                      ],
-    "allDirtyFileCount":  803,
-    "unityUiRelevantFiles":  "Assets/Scenes/GarageSetBUitkPreview.unity",
+    "allDirtyFileCount":  80,
+    "unityUiRelevantFiles":  [
+                                 "Assets/Resources/SelfEffect.prefab",
+                                 "Assets/Resources/SkillBarCanvas.prefab",
+                                 "Assets/Resources/StartSkillSelectionCanvas.prefab",
+                                 "Assets/Resources/TargetedEffect.prefab"
+                             ],
     "requiredEvidence":  [
                              {
                                  "name":  "compile-reload",
@@ -66,72 +143,46 @@
                                             "pendingPlayAgeMs":  0
                                         }
                 },
-    "presentationLayoutOwnership":  null,
-    "presentationResponsibility":  null,
     "capabilityExpansionGuard":  {
                                      "allowCapabilityExpansion":  false,
                                      "surfaceOnboardingFiles":  [
-                                                                    "artifacts/unity/garage-setb-uitoolkit-preview.png"
-                                                                ],
-                                     "capabilityExpansionFiles":  {
 
-                                                                  }
+                                                                ],
+                                     "capabilityExpansionFiles":  [
+                                                                      "Assets/Editor/UnityMcp/Handlers/BuildHandlers.cs",
+                                                                      "tools/stitch-unity/presentations/Generate-StitchPresentationProfile.ps1",
+                                                                      "tools/stitch-unity/README.md",
+                                                                      "tools/stitch-unity/surfaces/Invoke-StitchSurfaceTranslation.ps1",
+                                                                      "tools/stitch-unity/validators/Test-StitchContractDraft.ps1",
+                                                                      "tools/unity-mcp/Invoke-LobbyScenePrefabOverrideAudit.ps1",
+                                                                      "tools/unity-mcp/Invoke-PrefabManagementInventory.ps1",
+                                                                      "tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1",
+                                                                      "tools/unity-mcp/McpHelpers.ps1",
+                                                                      "tools/unity-mcp/McpPrefabPackHelpers.ps1",
+                                                                      "tools/unity-mcp/README.md"
+                                                                  ]
                                  },
     "prefabManagement":  {
                              "inventory":  {
                                                "path":  "artifacts/unity/prefab-management-inventory.json",
-                                               "generatedAt":  "2026-04-27 00:18:01+09:00",
-                                               "totalPrefabs":  362,
-                                               "generatedPreviewPrefabs":  336,
-                                               "resourcesPrefabs":  13,
-                                               "duplicateCandidateGroups":  18,
-                                               "approvedNewPrefabTargets":  1
+                                               "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                               "totalPrefabs":  9,
+                                               "generatedPreviewPrefabs":  0,
+                                               "resourcesPrefabs":  9,
+                                               "duplicateCandidateGroups":  0,
+                                               "approvedNewPrefabTargets":  0
                                            },
                              "approvalManifest":  {
                                                       "path":  "artifacts/unity/prefab-management-approved-new-prefabs.json",
-                                                      "generatedAt":  "2026-04-27 00:18:01+09:00",
-                                                      "prefabCount":  1,
+                                                      "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                                      "prefabCount":  0,
                                                       "prefabPaths":  [
-                                                                          "Assets/Prefabs/Features/Account/Independent/SetCAccountSettingsOverlayRoot.prefab"
+
                                                                       ]
                                                   }
                          },
-    "prefabOverrideDrift":  {
-                                "path":  "artifacts/unity/lobby-scene-prefab-override-audit.json",
-                                "generatedAt":  "2026-04-27 00:18:03+09:00",
-                                "surfaceCount":  6,
-                                "allowedCandidateCount":  3,
-                                "reviewCandidateCount":  2,
-                                "warningCount":  1,
-                                "visualOverrideCount":  1,
-                                "warningSurfaces":  [
-                                                        "SetCRoomDetailPanelRoot"
-                                                    ],
-                                "reviewCandidateSurfaces":  [
-                                                                "GaragePageRoot",
-                                                                "LobbyPageRoot"
-                                                            ]
-                            },
     "declaredNewPrefabTargets":  [
-                                     "Assets/Prefabs/Features/Account/Independent/SetCAccountDeleteConfirmDialogRoot.prefab",
-                                     "Assets/Prefabs/Features/Account/Independent/SetCAccountSettingsOverlayRoot.prefab",
-                                     "Assets/Prefabs/Features/Common/Independent/SetCCommonErrorDialogRoot.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_firepower_1_arm43_przso.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_firepower_2_arm20_rkto.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_firepower_3_arm6_msg.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_firepower_4_arm31_skokr.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_firepower_5_0913missile.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_frame_body_1_body23_ms.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_frame_body_2_body25_bosro.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_frame_body_3_body37_ktn.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_frame_body_4_body11_kn.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_frame_body_5_B0002.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_mobility_1_legs24_sts.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_mobility_2_legs20_spod.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_mobility_3_legs7_hb.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_mobility_4_legs13_krz.prefab",
-                                     "Assets/Prefabs/Features/Garage/PreviewModels/GaragePreview_mobility_5_legs25_kd.prefab",
-                                     "Assets/Prefabs/Features/Garage/Root/GaragePageRoot.prefab"
+
                                  ],
     "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\unity-ui-authoring-workflow-policy.json"
 }

@@ -8,9 +8,8 @@
   "scripts": {
     "docs:lint": "node ./tools/docs-lint/docs-lint.mjs",
     "rules:sync-closeout": "node ./tools/docs-lint/sync-recurrence-closeout.mjs",
-    "presentation:policy:lint": "node ./tools/presentation-lint/lint-presentation-responsibility.mjs",
     "stitch:policy:lint": "node ./tools/stitch-unity/lint-stitch-driven-policy.mjs",
-    "policy:lint": "node ./tools/docs-lint/policy-lint.mjs && npm run --silent presentation:policy:lint && npm run --silent stitch:policy:lint",
+    "policy:lint": "node ./tools/docs-lint/policy-lint.mjs && npm run --silent stitch:policy:lint",
     "rules:lint": "npm run --silent docs:lint && npm run --silent policy:lint",
     "unity:asset-hygiene": "powershell -ExecutionPolicy Bypass -File .\\tools\\check-unity-asset-hygiene.ps1",
     "workflow:agent-review": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\workflow\\Invoke-AgentPassReview.ps1",

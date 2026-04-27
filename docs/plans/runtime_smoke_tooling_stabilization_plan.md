@@ -51,7 +51,7 @@ Out of scope:
 | T1 | stale background smoke/probe가 Play Mode를 다시 시작하거나 stop한다 | 다음 실행의 scene, console, result가 오염된다 | tooling blocker |
 | T2 | `-NoMcpLock`가 자동화 실행에도 쉽게 쓰인다 | lane 간 MCP ownership이 깨진다 | tooling blocker |
 | T3 | long wait endpoint가 client timeout 뒤에도 server-side write를 시도한다 | 504/transport error가 Unity console error처럼 보인다 | bridge/tooling blocker |
-| T4 | UI path 후보가 helper마다 중복된다 | current prefab-first hierarchy 변경 때 stale path fail이 반복된다 | path contract blocker |
+| T4 | UI path 후보가 helper마다 중복된다 | current runtime UI hierarchy 변경 때 stale path fail이 반복된다 | path contract blocker |
 | T5 | artifact가 finally에서만 쓰이거나 필드가 부족하다 | blocked/mismatch/success를 사후에 구분하기 어렵다 | evidence blocker |
 | T6 | inactive root 위에서 runtime presenter/coroutine이 시작된다 | UI state 실패가 gameplay 실패처럼 보인다 | UI contract blocker |
 | T7 | direct PowerShell 실행이 policy에 막힌다 | 검증 명령 재현성이 낮다 | workflow friction |

@@ -77,7 +77,6 @@ shared/global skill 문서는 배경 설명으로만 참고하고, 현재 owner 
 ### Hard Fail
 
 - `docs:lint`가 잡는 owner, path, metadata, index registry, `doc_id`, routing 위반
-- `presentation responsibility lint`
 - `stitch-driven policy lint`
 - repo에서 이미 금지한 fallback, style ownership, smoke host 위반
 

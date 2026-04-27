@@ -110,13 +110,11 @@ namespace Features.Garage.Presentation
             var weaponPosition = ResolveAttachedPartPosition(
                 viewModel.FrameAlignment,
                 viewModel.FirepowerAlignment,
-                attachToFrameTop: true,
                 FallbackWeaponPosition);
             var weaponEuler = ResolvePartEuler(viewModel.FirepowerAlignment, FallbackWeaponEuler);
-            var mobilityPosition = ResolveAttachedPartPosition(
+            var mobilityPosition = ResolveMobilityPosition(
                 viewModel.FrameAlignment,
                 viewModel.MobilityAlignment,
-                attachToFrameTop: false,
                 FallbackMobilityPosition);
             var mobilityEuler = ResolvePartEuler(viewModel.MobilityAlignment, Vector3.zero);
 
@@ -140,18 +138,30 @@ namespace Features.Garage.Presentation
         private static Vector3 ResolveAttachedPartPosition(
             GaragePanelCatalog.PartAlignment frameAlignment,
             GaragePanelCatalog.PartAlignment partAlignment,
-            bool attachToFrameTop,
             Vector3 fallbackPosition)
         {
             if (!CanApply(frameAlignment) || !CanApply(partAlignment))
                 return fallbackPosition;
 
             var framePosition = ResolveFramePosition(frameAlignment);
-            var frameSocket = attachToFrameTop
-                ? ResolveFrameTopSocket(frameAlignment, framePosition)
-                : ResolveFrameBottomSocket(frameAlignment, framePosition);
+            if (!TryResolveFrameTopSocket(frameAlignment, framePosition, out var frameSocket))
+                return fallbackPosition;
+
             var rotatedSocketOffset = Quaternion.Euler(partAlignment.SocketEuler) * partAlignment.SocketOffset;
             return frameSocket - rotatedSocketOffset;
+        }
+
+        private static Vector3 ResolveMobilityPosition(
+            GaragePanelCatalog.PartAlignment frameAlignment,
+            GaragePanelCatalog.PartAlignment mobilityAlignment,
+            Vector3 fallbackPosition)
+        {
+            if (!CanApply(frameAlignment) || !CanApply(mobilityAlignment) || !mobilityAlignment.HasXfiAttachSocket)
+                return fallbackPosition;
+
+            var framePosition = ResolveFramePosition(frameAlignment);
+            var rotatedSocketOffset = Quaternion.Euler(mobilityAlignment.SocketEuler) * mobilityAlignment.XfiAttachSocketOffset;
+            return framePosition - rotatedSocketOffset;
         }
 
         private static Vector3 ResolvePartEuler(GaragePanelCatalog.PartAlignment partAlignment, Vector3 fallbackEuler)
@@ -161,20 +171,19 @@ namespace Features.Garage.Presentation
                 : fallbackEuler;
         }
 
-        private static Vector3 ResolveFrameTopSocket(GaragePanelCatalog.PartAlignment alignment, Vector3 framePosition)
+        private static bool TryResolveFrameTopSocket(
+            GaragePanelCatalog.PartAlignment alignment,
+            Vector3 framePosition,
+            out Vector3 frameSocket)
         {
-            return framePosition + new Vector3(
-                alignment.BoundsCenter.x,
-                alignment.BoundsCenter.y + alignment.BoundsSize.y * 0.5f,
-                alignment.BoundsCenter.z);
-        }
+            if (alignment.HasFrameTopSocket)
+            {
+                frameSocket = framePosition + alignment.FrameTopSocketOffset;
+                return true;
+            }
 
-        private static Vector3 ResolveFrameBottomSocket(GaragePanelCatalog.PartAlignment alignment, Vector3 framePosition)
-        {
-            return framePosition + new Vector3(
-                alignment.BoundsCenter.x,
-                alignment.BoundsCenter.y - alignment.BoundsSize.y * 0.5f,
-                alignment.BoundsCenter.z);
+            frameSocket = default;
+            return false;
         }
 
         private static bool CanApply(GaragePanelCatalog.PartAlignment alignment)

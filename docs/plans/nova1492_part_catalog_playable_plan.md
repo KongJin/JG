@@ -1,12 +1,12 @@
 # Nova1492 Part Catalog Playable Closeout
 
-> 마지막 업데이트: 2026-04-26
+> 마지막 업데이트: 2026-04-27
 > 상태: reference
 > doc_id: plans.nova1492-part-catalog-playable
 > role: plan
 > owner_scope: 변환된 Nova1492 UnitParts 모델의 Garage 부품 catalog/playable 승격 closeout 기록
 > upstream: plans.progress, plans.nova1492-resource-integration, plans.lobby-scene-nova1492-model-application, design.unit-module-design, design.module-data-structure, ops.unity-ui-authoring-workflow
-> artifacts: `artifacts/nova1492/nova_part_catalog.csv`, `artifacts/nova1492/nova_part_catalog_summary.md`, `artifacts/nova1492/nova_part_preview_prefab_report.md`, `artifacts/nova1492/nova_part_playable_asset_report.md`, `artifacts/nova1492/nova_part_validation_closeout_report.md`, `artifacts/nova1492/nova_part_alignment_report.md`, `artifacts/nova1492/nova_part_alignment.csv`, `Assets/Prefabs/Features/Garage/PreviewModels/Generated/`, `Assets/Data/Garage/NovaGenerated/`, `tools/nova1492/`
+> artifacts: `artifacts/nova1492/nova_part_catalog.csv`, `artifacts/nova1492/nova_part_catalog_summary.md`, `artifacts/nova1492/nova_part_preview_prefab_report.md`, `artifacts/nova1492/nova_part_playable_asset_report.md`, `artifacts/nova1492/nova_part_validation_closeout_report.md`, `artifacts/nova1492/nova_part_alignment_report.md`, `artifacts/nova1492/nova_part_alignment.csv`, `Assets/Data/Garage/NovaGenerated/`, `tools/nova1492/`
 >
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
@@ -21,10 +21,11 @@
   - Mobility 61: `UnitParts/Legs`
 - 제외 대상: `UnitParts/Accessories`, `Effects/Projectiles`, `Unknown/Review`
 - generated assets:
-  - preview prefabs: `Assets/Prefabs/Features/Garage/PreviewModels/Generated/`
+  - historical preview prefab report: `artifacts/nova1492/nova_part_preview_prefab_report.md`
   - playable SOs: `Assets/Data/Garage/NovaGenerated/`
   - visual catalog: `Assets/Data/Garage/NovaGenerated/NovaPartVisualCatalog.asset`
   - module catalog: `Assets/Data/Garage/ModuleCatalog.asset`
+- preview asset pack은 historical evidence로만 보며, active Garage preview는 data/catalog wiring을 기준으로 한다.
 - `ModuleCatalog.asset` 최종 수: Frame 103, Firepower 163, Mobility 64
 - 기존 수동 9개 id는 save compatibility 때문에 유지했다.
 - socket/pivot/scale 자동 1차 데이터는 `NovaPartAlignmentCatalog.asset`로 준비했고, `auto_ok` 부품은 Garage preview runtime 조립에 적용했다. `needs_review_*`, `missing_*`, alignment 누락 부품은 기존 고정 오프셋 fallback을 유지한다.
@@ -68,7 +69,7 @@
 
 ## Rereview
 
-- 과한점 재리뷰: 상세 Phase 로그와 반복 리뷰 기록은 closeout reference에 불필요해 제거했다. 실행 증거는 artifact 링크와 최종 판정만 남긴다.
+- 과한점 재리뷰: closeout reference는 artifact 링크와 최종 판정 중심으로 유지한다.
 - 부족한점 재리뷰: owner, scope, excluded categories, acceptance evidence, residual, lifecycle 상태가 남아 있다. 부족한점 없음.
 - owner impact: primary `plans.nova1492-part-catalog-playable`; secondary `plans.progress`, `docs.index`; out-of-scope public release rights, final balance pass, WebGL account cloud mutation smoke.
 - doc lifecycle checked: reference 기록으로 유지한다.

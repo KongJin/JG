@@ -1,12 +1,12 @@
 # Stitch To Unity Translation Guide
 
-> 마지막 업데이트: 2026-04-24
+> 마지막 업데이트: 2026-04-27
 > 상태: reference
 > doc_id: ops.stitch-to-unity-translation-guide
 > role: reference
-> owner_scope: accepted Stitch screen을 Unity prefab으로 번역할 때의 fidelity, wiring, evidence 기준
+> owner_scope: accepted Stitch screen을 Unity candidate surface로 번역할 때의 fidelity, wiring, evidence 기준
 > upstream: docs.index, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract, ops.unity-ui-authoring-workflow, design.ui-foundations
-> artifacts: `Assets/Prefabs/`, `artifacts/unity/`
+> artifacts: `Assets/UI/`, `Assets/Scenes/`, `artifacts/unity/`
 
 이 문서는 `Stitch -> Unity` 번역에서 workflow를 다시 설명하지 않는다.
 실행 순서와 파일 ownership은 `ops.stitch-data-workflow`, JSON 구조는 `ops.stitch-structured-handoff-contract`, 명령은 `tools/stitch-unity/README.md`를 기준으로 본다.
@@ -18,7 +18,7 @@
 
 1. semantic block 순서가 source와 같게 읽힌다.
 2. block이 shared component vocabulary로 무리 없이 설명된다.
-3. required serialized ref가 실제 prefab에 연결돼 있다.
+3. required binding target이 실제 Unity surface에서 확인된다.
 4. primary CTA, selected state, completion posture가 source와 같은 등급으로 읽힌다.
 5. preflight / translation / pipeline / workflow policy evidence가 남아 있다.
 
@@ -37,7 +37,7 @@
 
 ## Component Mapping
 
-prefab authoring을 시작하기 전에 `block -> shared component` 대응을 먼저 닫는다.
+surface authoring을 시작하기 전에 `block -> shared component` 대응을 먼저 닫는다.
 
 - active generator input은 계속 `manifest + map`뿐이다.
 - shared component catalog는 작은 재사용 primitive를 고르는 vocabulary reference다.
@@ -80,7 +80,7 @@ Garage baseline quick mapping:
 
 ## Wiring Check
 
-- `unity-map.target.assetPath`가 실제 target asset과 맞아야 한다.
+- `unity-map.target.assetPath`가 실제 target surface와 맞아야 한다.
 - `unity-map.blocks.<blockId>.hostPath`가 실제 hierarchy에 존재해야 한다.
 - required component가 빠지면 시각적으로 비슷해도 실패다.
 - presentation code가 geometry나 typography를 다시 덮어쓰면 실패다.
@@ -101,4 +101,4 @@ Garage baseline quick mapping:
 
 한 줄 기준:
 
-`source에서 manifest/map/presentation 준비가 다시 닫히고, SceneView capture까지 source와 비교 가능해야 번역이 닫힌다.`
+`source에서 manifest/map/presentation 준비가 다시 닫히고, capture까지 source와 비교 가능해야 번역이 닫힌다.`

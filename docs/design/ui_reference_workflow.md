@@ -9,7 +9,7 @@
 > artifacts: none
 
 이 문서는 JG UI/UX 작업에서 `Stitch`를 어떻게 활용할지 정리한 실무용 메모다.
-목표는 빠르게 시안을 만들고, 그것을 JG 문맥에 맞게 scene-owned layout으로 번역하는 것이다.
+목표는 빠르게 시안을 만들고, 그것을 JG 문맥에 맞게 UI Toolkit candidate surface로 번역할 수 있는지 판단하는 것이다.
 저장 위치, prompt brief 수명, handoff 운영 같은 작업 절차는 `ops.stitch-data-workflow`와 `ops.stitch-structured-handoff-contract`가 소유한다.
 
 ## 채택 도구
@@ -31,13 +31,13 @@
 ## 기본 원칙
 
 - Stitch 산출물은 `최종 SSOT`가 아니라 `시안`이다.
-- JG의 runtime SSOT는 Stitch 산출물이 아니라 Unity의 serialized prefab/scene contract다.
-- legacy scene route를 폐기한 reset 상태에서는 accepted source freeze에서 execution contract를 다시 준비한 뒤 baseline prefab을 세운다.
+- JG의 runtime SSOT는 Stitch 산출물이 아니라 Unity의 runtime surface와 scene contract다.
+- 새 Stitch import는 accepted source freeze에서 execution contract를 다시 준비한 뒤 UI Toolkit candidate surface로 먼저 가져온다.
 - 시각 판단은 `design.ui-foundations`를 우선한다.
 - Stitch 결과를 그대로 복제하지 말고, JG의 실제 flow와 serialized contract로 번역한다.
 - 실제 반영과 검증은 Unity MCP와 scene contract 기준으로 한다.
 - `.stitch` 자산의 저장 위치와 handoff 운영 규칙은 `ops.stitch-data-workflow`를 따른다.
-- Unity 번역은 항상 `source freeze -> execution contracts -> prefab/output` 순서를 따른다.
+- Unity 번역은 항상 `source freeze -> execution contracts -> UI Toolkit candidate/output` 순서를 따른다.
 - stored `.stitch/contracts/*.json`은 source freeze를 건너뛰는 시작점이 되면 안 된다.
 
 ## 추천 사용 순서
@@ -45,8 +45,8 @@
 1. Stitch에 현재 화면 목표를 짧고 강하게 넣는다.
 2. 나온 시안 중 정보 위계가 가장 선명한 한 방향만 고른다.
 3. `design.ui-foundations` 계약에 맞게 source에서 execution contract를 준비한다.
-4. Unity MCP로 baseline prefab을 먼저 재구성한다.
-5. 새 scene을 조립한 뒤 fresh contract/smoke로 검증한다.
+4. UI Toolkit candidate surface와 preview scene을 만든다.
+5. fresh capture와 scoped workflow policy로 검증한다.
 
 ## JG Quick Test
 
@@ -90,14 +90,14 @@ Style:
 
 ## Unity 반영 규칙
 
-- Stitch에서 얻은 결과는 scene-owned layout으로 번역한다.
+- Stitch에서 얻은 결과는 먼저 UI Toolkit candidate surface와 preview capture로 검토한다.
 - `LobbyView`, `GaragePageController`에 runtime layout 보정 코드를 추가해서 해결하지 않는다.
-- hierarchy, wiring, card 구조 변경 시 scene contract 기준 문서와 필요한 운영 문서를 같은 턴에 갱신한다.
+- runtime scene/prefab 교체가 필요하면 candidate evidence 이후 별도 replacement pass로 분리한다.
 
 ## 현재 JG에 가장 잘 맞는 사용법
 
 - Stitch: 시안 생성과 방향 탐색
-- Unity MCP: baseline prefab 재구성과 이후 새 scene 검증
+- Unity MCP: preview scene/capture와 runtime replacement 검증
 - repo 기준 진입점은 `jg-stitch-workflow`, `jg-stitch-unity-import`, `jg-unity-workflow`를 사용한다.
   - `jg-stitch-workflow`: source freeze와 contract 준비 라우팅
   - `jg-stitch-unity-import`: Stitch 화면을 Unity 후보 surface로 가져오는 반복 루틴

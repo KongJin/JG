@@ -1,18 +1,8 @@
 ﻿{
     "schemaVersion":  "1.0.0",
-    "generatedAt":  "2026-04-27 00:18:01+09:00",
+    "generatedAt":  "2026-04-27 21:52:17+09:00",
     "ownerPlan":  "docs/plans/prefab_management_gap_closeout_plan.md",
     "prefabs":  [
-                    {
-                        "assetPath":  "Assets/Prefabs/Features/Account/Independent/SetCAccountSettingsOverlayRoot.prefab",
-                        "sourceEvidence":  [
-                                               ".stitch/contracts/mappings/set-c-account-settings-overlay.json",
-                                               "artifacts/unity/set-c-account-settings-overlay-pipeline-result.json"
-                                           ],
-                        "ownerPlan":  "docs/plans/non_stitch_ui_stitch_reimport_plan.md",
-                        "reason":  "Declared unity-surface-map target for prefab-first Stitch reimport.",
-                        "status":  "approved-declared",
-                        "expiresOrResidual":  "Revalidate if the source freeze, surface map, or target asset path changes."
-                    }
+
                 ]
 }

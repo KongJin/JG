@@ -17,8 +17,8 @@ $runtimeChanges = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @(
     "^Assets/Scripts/Features/Wave/",
     "^Assets/Scripts/Features/Unit/(Domain|Application|Infrastructure|UnitSetup\.cs)"
 ))
-$presentationChanges = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @(
-    "^Assets/Scripts/Features/.+/Presentation/",
+$uiSurfaceChanges = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @(
+    "^Assets/UI/",
     "^Assets/Scripts/Shared/Ui/",
     "^tools/unity-mcp/",
     "^docs/playtest/runtime_validation_checklist\.md$"
@@ -28,11 +28,11 @@ $artifactChanges = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @(
 
 $suggestions = New-Object System.Collections.Generic.List[object]
 
-if ($runtimeChanges.Count -gt 0 -and $presentationChanges.Count -gt 0) {
+if ($runtimeChanges.Count -gt 0 -and $uiSurfaceChanges.Count -gt 0) {
     $suggestions.Add([PSCustomObject]@{
         Priority = 1
         Lane = "review"
-        Suggestion = "Runtime and presentation changes are mixed; classify blocker ownership before closeout."
+        Suggestion = "Runtime and UI surface/tooling changes are mixed; classify blocker ownership before closeout."
         Command = ".\tools\workflow\Invoke-CloseoutPack.ps1 -PlanOnly"
     })
 }
@@ -74,7 +74,7 @@ if ($suggestions.Count -eq 0) {
 }
 
 Write-WorkflowSection "Worktree Signals"
-Write-Host ("changedFiles={0} runtime={1} presentation={2} docs={3} artifacts={4}" -f $changedFiles.Count, $runtimeChanges.Count, $presentationChanges.Count, $docsChanges.Count, $artifactChanges.Count)
+Write-Host ("changedFiles={0} runtime={1} uiSurface={2} docs={3} artifacts={4}" -f $changedFiles.Count, $runtimeChanges.Count, $uiSurfaceChanges.Count, $docsChanges.Count, $artifactChanges.Count)
 
 Write-WorkflowSection "Next Work Suggestions"
 foreach ($item in @($suggestions | Sort-Object Priority)) {

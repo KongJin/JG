@@ -1,6 +1,6 @@
 # LobbyScene Nova1492 모델 활용 계획
 
-> 마지막 업데이트: 2026-04-26
+> 마지막 업데이트: 2026-04-27
 > 상태: active
 > doc_id: plans.lobby-scene-nova1492-model-application
 > role: plan
@@ -69,7 +69,7 @@
 
 - 첫 적용 surface는 `GarageUnitPreviewView`로 제한한다.
 - `LobbyPageRoot`와 `GaragePageRoot`의 UI layout은 첫 pass에서 변경하지 않는다.
-- scene root primitive template 중복을 먼저 정리하거나, 새 preview asset prefab으로 분리한 뒤 scene reference를 갱신한다.
+- scene root primitive template 중복을 먼저 정리하고, preview asset route는 별도 pass에서 판단한다.
 - 변환 모델을 domain data의 `unitPrefab` truth로 바로 승격하지 않는다. 처음에는 presentation preview 후보로만 쓴다.
 - `Unknown/Review` 모델은 자동 후보에서 제외한다.
 - 모델 수가 많으므로 Resources 전체 로드나 runtime name scan을 쓰지 않는다.
@@ -104,15 +104,13 @@ Acceptance:
 - triangle range는 `frame_body 156~286`, `firepower 32~256`, `mobility 179~313`, `ambient_prop 49~117`이다.
 - `Unknown/Review`는 포함하지 않았다.
 
-### Phase 1: preview prefab pack 생성
+### Phase 1: preview asset pack reference
 
-상태: 완료
+상태: reference
 
 목표:
 
-- 선택 후보를 `Assets/Prefabs/Features/Garage/PreviewModels/` 아래의 작은 prefab pack으로 만든다.
-- prefab 이름은 slot과 source를 드러내게 한다.
-- material/texture 연결 상태를 확인한다.
+- 이후 Nova preview는 scene-owned template, direct model reference, 또는 UI Toolkit candidate route에서 다시 설계한다.
 
 주의:
 
@@ -125,13 +123,12 @@ Acceptance:
 - prefab root scale과 pivot이 preview camera에서 비교 가능하다.
 - material missing 또는 texture missing이 없다.
 
-결과:
+Historical result:
 
-- `Tools/Nova1492/Create Garage Preview Model Prefabs` editor tool로 `frame_body`, `firepower`, `mobility` 각 5개씩 총 15개 preview prefab을 생성했다.
+- `Tools/Nova1492/Create Garage Preview Model Prefabs` editor tool로 `frame_body`, `firepower`, `mobility` 각 5개씩 총 15개 preview prefab을 생성했었다.
 - 생성 결과는 `artifacts/nova1492/lobby_preview_prefab_pack_report.md`에 남겼고, report 기준 `created=15`, `failed=0`, `missing materials=0`이다.
 - `tools/check-compile-errors.ps1` 기준 `Assembly-CSharp-Editor.csproj` 빌드는 errors 0 / warnings 0이다.
-- `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`는 active plan과 prefab pack report에 선언된 정확한 15개 target만 허용했고, compile/reload, presentation layout ownership, presentation responsibility까지 통과했다.
-- `GarageUnitPreviewView` scene/reference wiring은 Phase 2 범위로 분리한다.
+- Historical note: 당시 `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`는 active plan과 prefab pack report에 선언된 정확한 15개 target만 허용했고, compile/reload도 통과했다.
 
 ### Phase 2: `GarageUnitPreviewView` model mapping 도입
 
@@ -158,9 +155,9 @@ Acceptance:
 결과:
 
 - `GarageUnitPreviewView`에 serialized `frame/firepower/mobility` ID -> prefab mapping 배열을 추가했다. 매핑이 없으면 기존 primitive `_framePrefab`, `_weaponPrefab`, `_thrusterPrefab` fallback을 유지한다.
-- `Tools/Nova1492/Wire Garage Preview Model Prefabs` editor tool로 현재 `LobbyScene`의 `GarageUnitPreviewView`에 9개 runtime ID 매핑을 주입했다.
+- 과거 `Tools/Nova1492/Wire Garage Preview Model Prefabs` editor tool로 현재 `LobbyScene`의 `GarageUnitPreviewView`에 9개 runtime ID 매핑을 주입했다.
 - 매핑 결과는 `artifacts/nova1492/lobby_preview_mapping_report.md`에 남겼다.
-- `LobbyPreviewCamera`에 `AudioListener`를 추가했고, `LobbySceneRuntimeAssemblyTool`도 재생성 시 `AudioListener`를 만들도록 보정했다. Play Mode 재진입 후 `audio listeners` 경고 필터 결과는 0건이다.
+- `LobbyPreviewCamera`에 `AudioListener`를 추가했다.
 - Play Mode에서 Lobby -> Garage tab invoke smoke는 console errors 0을 유지했다.
 - preview root를 `LobbyPreviewCamera` 공간에 배치하도록 `GaragePreviewAssembler`로 분리했고, preview 전용 key light와 RawImage texture tint 보정을 추가해 모델이 GameView capture에서 읽히도록 정리했다.
 - Play Mode에서 `/LobbyRuntime/LobbyView.OpenGaragePage` 호출 후 `GaragePageRoot`, `PreviewCard`, `MobileFirepowerTabButton` active/interactable 상태를 확인했다. `MobileFirepowerTabButton/Label`은 `무장`이며, GameView capture `artifacts/unity/lobby-scene-garage-nova-preview-phase2.png`에서 Nova1492 조립 preview가 보인다. console errors는 0건이다.

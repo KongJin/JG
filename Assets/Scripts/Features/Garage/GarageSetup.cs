@@ -281,11 +281,25 @@ namespace Features.Garage
 
             return new GaragePanelCatalog.PartAlignment
             {
-                BoundsSize = entry.BoundsSize,
-                BoundsCenter = entry.BoundsCenter,
                 PivotOffset = entry.PivotOffset,
                 SocketOffset = entry.SocketOffset,
                 SocketEuler = entry.SocketEuler,
+                HasXfiMetadata = entry.HasXfiMetadata,
+                XfiPath = entry.XfiPath,
+                XfiHeader = entry.XfiHeader,
+                XfiHeaderKind = entry.XfiHeaderKind,
+                XfiAttachSlot = entry.XfiAttachSlot,
+                XfiAttachVariant = entry.XfiAttachVariant,
+                XfiTransformCount = entry.XfiTransformCount,
+                XfiTransformTranslations = entry.XfiTransformTranslations,
+                XfiDirectionRangeCount = entry.XfiDirectionRangeCount,
+                XfiDirectionRanges = entry.XfiDirectionRanges,
+                HasXfiAttachSocket = entry.HasXfiAttachSocket,
+                XfiAttachSocketOffset = entry.XfiAttachSocketOffset,
+                HasFrameTopSocket = entry.HasFrameTopSocket,
+                FrameTopSocketOffset = entry.FrameTopSocketOffset,
+                XfiSocketQuality = entry.XfiSocketQuality,
+                XfiSocketName = entry.XfiSocketName,
                 QualityFlag = entry.QualityFlag,
                 ReviewReason = entry.ReviewReason
             };

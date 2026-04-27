@@ -92,11 +92,7 @@ if (-not $SkipResourcesAllowlist) {
         "Assets/Resources/PlayerHealthHudView.prefab",
         "Assets/Resources/ProjectilePhysicsAdapter.prefab",
         "Assets/Resources/RoundedRectMaterial.mat",
-        "Assets/Resources/SelfEffect.prefab",
         "Assets/Resources/Shared/Sound/SoundPlayerRuntimeConfig.asset",
-        "Assets/Resources/SkillBarCanvas.prefab",
-        "Assets/Resources/StartSkillSelectionCanvas.prefab",
-        "Assets/Resources/TargetedEffect.prefab",
         "Assets/Resources/Wave/DefaultWaveTable.asset",
         "Assets/Resources/ZoneEffect.prefab"
     ) | ForEach-Object { [void]$allowedResources.Add($_) }

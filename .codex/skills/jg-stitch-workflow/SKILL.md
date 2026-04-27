@@ -1,6 +1,6 @@
 ---
 name: jg-stitch-workflow
-description: Project-specific Stitch workflow for the JG repo. Use whenever Codex works with `.stitch/DESIGN.md`, `.stitch/prompt-briefs`, `.stitch/contracts`, Stitch screen generation/editing, or translating Stitch outputs into Unity scene-owned layouts in this repository. In JG, this skill is a thin router: it points to the active owner docs for prompt-brief refinement and structured handoff preparation, then hands off Unity implementation to `jg-unity-workflow`.
+description: Project-specific Stitch workflow for the JG repo. Use whenever Codex works with `.stitch/DESIGN.md`, `.stitch/prompt-briefs`, `.stitch/contracts`, Stitch screen generation/editing, or preparing Stitch outputs for Unity UI Toolkit candidate surfaces in this repository. In JG, this skill is a thin router: it points to the active owner docs for prompt-brief refinement and structured handoff preparation, then hands off Unity implementation to `jg-stitch-unity-import` or `jg-unity-workflow`.
 ---
 
 # JG Stitch Workflow
@@ -32,18 +32,17 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 10. Read `plans.progress` when the task touches set-level planning or `.stitch` inventory priority.
 11. Read the accepted source freeze first. Only after that, inspect the execution contracts that were derived from it.
 
-## Active Artifacts
+## Routed Artifacts
 
 - `.stitch/DESIGN.md`
 - `.stitch/prompt-briefs/*.md`
 - `.stitch/contracts/blueprints/*.json`
-- `.stitch/contracts/screens/*.json`
-- `.stitch/contracts/mappings/*.json`
-- `.stitch/contracts/presentations/*.json`
+- `.stitch/contracts/schema/*.json`
+- `.stitch/contracts/screens/*.json`, `.stitch/contracts/mappings/*.json`, `.stitch/contracts/presentations/*.json` when present as review/reference artifacts only
 
 한 줄 기준:
 
-- 읽기 순서는 항상 `source freeze -> execution contracts -> prefab/output`이다.
+- 읽기 순서는 항상 `source freeze -> execution contracts -> UI Toolkit candidate/output`이다.
 - stored contract files는 source freeze를 건너뛰게 만드는 시작점이 되면 안 된다.
 
 ## Task Routing

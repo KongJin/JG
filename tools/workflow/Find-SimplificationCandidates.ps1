@@ -36,7 +36,7 @@ $csFiles = @(Get-CsFiles -Root $RepoRoot)
 $largeFiles = New-Object System.Collections.Generic.List[object]
 $helperTypes = New-Object System.Collections.Generic.List[object]
 $nestedTernary = New-Object System.Collections.Generic.List[object]
-$rootPresentationHelpers = New-Object System.Collections.Generic.List[object]
+$rootRuntimeVisualHelpers = New-Object System.Collections.Generic.List[object]
 
 foreach ($file in $csFiles) {
     $relativePath = Get-WorkflowRepoPath -RepoRoot $RepoRoot -Path $file.FullName
@@ -74,11 +74,11 @@ foreach ($file in $csFiles) {
     }
 
     $isFeatureRootFile = $relativePath -match "^Assets/Scripts/Features/[^/]+/[^/]+\.cs$"
-    $looksPresentationOnly = $text -match "\b(LineRenderer|Canvas|RectTransform|Material|Shader\.Find|new GameObject|View|Preview)\b"
-    if ($isFeatureRootFile -and $looksPresentationOnly) {
-        $rootPresentationHelpers.Add([PSCustomObject]@{
+    $looksRuntimeVisualOnly = $text -match "\b(LineRenderer|Canvas|RectTransform|Material|Shader\.Find|new GameObject|View|Preview)\b"
+    if ($isFeatureRootFile -and $looksRuntimeVisualOnly) {
+        $rootRuntimeVisualHelpers.Add([PSCustomObject]@{
             File = $relativePath
-            Signal = "feature-root presentation/runtime-visual code"
+            Signal = "feature-root runtime visual code"
         })
     }
 }
@@ -99,11 +99,11 @@ foreach ($item in @($nestedTernary | Select-Object -First $MaxItemsPerSection)) 
     Write-Host ("{0}:{1} {2}" -f $item.File, $item.Line, $item.Text)
 }
 
-Write-WorkflowSection "Feature-Root Presentation Helper Candidates"
-foreach ($item in @($rootPresentationHelpers | Sort-Object File | Select-Object -First $MaxItemsPerSection)) {
+Write-WorkflowSection "Feature-Root Runtime Visual Helper Candidates"
+foreach ($item in @($rootRuntimeVisualHelpers | Sort-Object File | Select-Object -First $MaxItemsPerSection)) {
     Write-Host ("{0} - {1}" -f $item.File, $item.Signal)
 }
 
-if ($largeFiles.Count -eq 0 -and $helperTypes.Count -eq 0 -and $nestedTernary.Count -eq 0 -and $rootPresentationHelpers.Count -eq 0) {
+if ($largeFiles.Count -eq 0 -and $helperTypes.Count -eq 0 -and $nestedTernary.Count -eq 0 -and $rootRuntimeVisualHelpers.Count -eq 0) {
     Write-Host "No obvious simplification candidates found."
 }

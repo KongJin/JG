@@ -387,12 +387,6 @@ function Invoke-McpCompileRequestAndWait {
     }
 }
 
-function Get-McpPresentationLayoutOwnership {
-    param([string]$Root)
-
-    return Invoke-McpGetJsonWithTransientRetry -Root $Root -SubPath "/validation/verify-presentation-layout-ownership" -TimeoutSec 60
-}
-
 function Invoke-McpPlayStartAndWaitForBridge {
     param(
         [string]$Root,
@@ -628,7 +622,7 @@ function Assert-McpSceneAssetExistsForWorkflow {
     param(
         [string]$ScenePath,
         [string]$WorkflowName,
-        [string]$FallbackRoute = "prefab-first reset"
+        [string]$FallbackRoute = "UI Toolkit candidate surface"
     )
 
     if ([string]::IsNullOrWhiteSpace($ScenePath)) {
@@ -641,7 +635,7 @@ function Assert-McpSceneAssetExistsForWorkflow {
         return
     }
 
-    throw ("{0} is a historical scene workflow and cannot run because '{1}' does not exist. Use the {2} route and rebuild baseline prefabs before generating fresh scene evidence." -f $WorkflowName, $ScenePath, $FallbackRoute)
+    throw ("{0} is a historical scene workflow and cannot run because '{1}' does not exist. Use the {2} route before generating fresh scene evidence." -f $WorkflowName, $ScenePath, $FallbackRoute)
 }
 
 function Ensure-McpParentDirectory {

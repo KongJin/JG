@@ -7,11 +7,25 @@ namespace Features.Garage.Presentation
     {
         public sealed class PartAlignment
         {
-            public Vector3 BoundsSize { get; set; }
-            public Vector3 BoundsCenter { get; set; }
             public Vector3 PivotOffset { get; set; }
             public Vector3 SocketOffset { get; set; }
             public Vector3 SocketEuler { get; set; }
+            public bool HasXfiMetadata { get; set; }
+            public string XfiPath { get; set; }
+            public string XfiHeader { get; set; }
+            public string XfiHeaderKind { get; set; }
+            public string XfiAttachSlot { get; set; }
+            public string XfiAttachVariant { get; set; }
+            public int XfiTransformCount { get; set; }
+            public string XfiTransformTranslations { get; set; }
+            public int XfiDirectionRangeCount { get; set; }
+            public string XfiDirectionRanges { get; set; }
+            public bool HasXfiAttachSocket { get; set; }
+            public Vector3 XfiAttachSocketOffset { get; set; }
+            public bool HasFrameTopSocket { get; set; }
+            public Vector3 FrameTopSocketOffset { get; set; }
+            public string XfiSocketQuality { get; set; }
+            public string XfiSocketName { get; set; }
             public string QualityFlag { get; set; }
             public string ReviewReason { get; set; }
 

@@ -609,8 +609,8 @@ function Get-DefaultTargetAssetPath {
     else {
         "{0}DialogRoot" -f $baseName
     }
-    $assetName = "$assetRootName.prefab"
-    return "Assets/Prefabs/Features/$featureName/Independent/$assetName"
+    $assetName = "$assetRootName.uxml"
+    return "Assets/UI/UIToolkit/$featureName/$assetName"
 }
 
 function Get-ActionSpec {
@@ -1353,11 +1353,11 @@ function New-OverlayDialogProfile {
             }
             map = [ordered]@{
                 target = [ordered]@{
-                    kind = "prefab"
+                    kind = "uitoolkit-candidate"
                     assetPath = $TargetAssetPath
                 }
-                translationStrategy = "contract-complete-translator-v1"
-                strategyMode = "generate-or-patch"
+                translationStrategy = "uitoolkit-candidate-v1"
+                strategyMode = "candidate-authoring"
                 artifactPaths = [ordered]@{
                     pipelineResult = "artifacts/unity/$sourceRef-pipeline-result.json"
                 }
@@ -1417,7 +1417,7 @@ function Get-WorkspaceTargetAssetPath {
     param([Parameter(Mandatory = $true)][string]$SurfaceId)
 
     $featureName = Get-FeatureName -SurfaceId $SurfaceId
-    return "Assets/Prefabs/Features/$featureName/Root/$featureName`PageRoot.prefab"
+    return "Assets/UI/UIToolkit/$featureName/$featureName`Workspace.uxml"
 }
 
 function New-ReviewRouteConfig {
@@ -1585,11 +1585,11 @@ function New-WorkspaceProfile {
             }
             map = [ordered]@{
                 target = [ordered]@{
-                    kind = "prefab"
+                    kind = "uitoolkit-candidate"
                     assetPath = $TargetAssetPath
                 }
-                translationStrategy = "contract-complete-translator-v1"
-                strategyMode = "generate-or-patch"
+                translationStrategy = "uitoolkit-candidate-v1"
+                strategyMode = "candidate-authoring"
                 artifactPaths = [ordered]@{
                     pipelineResult = "artifacts/unity/$sourceRef-pipeline-result.json"
                 }

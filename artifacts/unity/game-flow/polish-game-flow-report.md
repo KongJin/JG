@@ -8,7 +8,7 @@
 - Final editor state: playing=False, scene=LobbyScene
 
 ## Changes Verified
-- RoomDetail placeholder DialogPanel removed from LobbyScene hierarchy.
+- RoomDetail placeholder DialogPanel is absent from the verified LobbyScene hierarchy.
 - RoomDetailPanel displays as a centered card; room title, 1/2 count, difficulty, CodexPilot row, Ready/Start/Leave/team buttons are readable at 390x844.
 - Garage SettingsOverlayRoot shows AccountSettingsView content with dim background and top-right close button.
 - BattleScene enters from RoomDetail Start; HUD cards, command dock slots, cost text, and cannot-afford overlay are readable at 390x844.

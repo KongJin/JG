@@ -1,12 +1,12 @@
 # Operation Record / World Memory Plan
 
-> 마지막 업데이트: 2026-04-26
+> 마지막 업데이트: 2026-04-27
 > 상태: active
 > doc_id: plans.operation-record-world-memory
 > role: plan
 > owner_scope: 최근 작전 기록, 세계 기억, Lobby/Garage 기록 표시 작업
 > upstream: plans.progress, design.game-design, design.world-design, plans.account-system
-> artifacts: `Assets/Scripts/Features/Player/`, `Assets/Scripts/Features/Wave/`, `Assets/Scripts/Features/Account/`, `Assets/Scripts/Features/Garage/`, `Assets/Scripts/Features/Lobby/Presentation/`, `Assets/Prefabs/Features/Lobby/`, `Assets/Prefabs/Features/Garage/`
+> artifacts: `Assets/Scripts/Features/Player/`, `Assets/Scripts/Features/Wave/`, `Assets/Scripts/Features/Account/`, `Assets/Scripts/Features/Garage/`, `Assets/UI/`
 >
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
@@ -149,13 +149,13 @@ Acceptance:
 - Direct test coverage: `OperationRecordDirectTests`와 `FirestoreMapperDirectTests`가 cloud/local merge와 Firestore raw-json mapper roundtrip을 검증하도록 확장됐다.
 - Compile validation: `tools/check-compile-errors.ps1` pass with `ERRORS: 0`, `WARNINGS: 0`.
 - Docs validation: `npm run --silent rules:lint` pass.
-- UI workflow validation: `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1` pass. Presentation layout ownership and presentation responsibility lint pass.
+- UI workflow validation: `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1` pass.
 - Play Mode smoke: `LobbyScene -> BattleScene` defeat flow produced `recent_operation_records.json` under `LocalLow/DefaultCompany/MakeSD` with one `baseCollapsed` record: reached wave 1, core 0%, survival about 45s.
 - Play Mode UI smoke: reopening Lobby/Garage and invoking `/LobbyCanvas/LobbyGarageNavBar/GarageTabButton` showed active Garage stats text with `최근 작전: 거점 붕괴 | 공세 1 | 코어 0%` and `기록 1/5 | 작전 시간 0:45`.
 - Console validation during UI smoke: recent MCP console errors count was 0.
 - Mobile visibility follow-up: operation summary copy was compressed to one line and Garage chrome initialization now guards pre-`Initialize` state, so Garage tab activation no longer throws `SyncChrome` NRE in the checked path.
 - Mobile visibility follow-up: `MobileSaveStateText` can now receive the operation summary when its normal save/status text would otherwise be empty.
-- Validation after follow-up: `tools/check-compile-errors.ps1` pass with `ERRORS: 0`, `WARNINGS: 0`; `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1` pass for mixed presentation-code route.
+- Validation after follow-up: `tools/check-compile-errors.ps1` pass with `ERRORS: 0`, `WARNINGS: 0`; `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1` passed.
 - Validation after Firestore bridge: `tools/check-compile-errors.ps1` pass with `ERRORS: 0`, `WARNINGS: 0`; `npm run --silent rules:lint` pass.
 - MCP account bridge smoke: Lobby Play Mode reused persisted anonymous session, loaded local operation records, saw Firestore `operations/recent` missing, then wrote the merged recent record document successfully.
 - MCP mobile UI smoke: Garage tab activation showed `MobileSaveStateText` with `작전 2/5: 버텨냄 | 공세5 | 코어46% | 0:42 | 제거27`; GameView screenshot proof was captured at `artifacts/unity/operation-record-garage-summary-mobile-smoke.png`; recent MCP console errors count was 0.
@@ -176,7 +176,7 @@ Residuals after this pass:
 - `패배`보다 `거점 붕괴` 또는 `방어 실패`를 우선한다.
 - `웨이브`는 내부 용어로 두고, 유저-facing은 `공세`, `침공`, `접근` 후보를 따른다.
 - `유닛`은 내부 용어로 두고, 유저-facing은 `기체`를 우선한다.
-- 카피 문자열은 저장 데이터에 박지 않고 presentation layer에서 변환한다.
+- 카피 문자열은 저장 데이터에 박지 않고 UI surface/binding 단계에서 변환한다.
 
 ---
 

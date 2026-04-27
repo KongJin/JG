@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using ProjectSD.EditorTools.SceneTools;
-using ProjectSD.EditorTools.Validation;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,7 +21,6 @@ namespace ProjectSD.EditorTools.UnityMcp
             "POST".Register("/compile/wait", "Wait for compilation to finish", async (req, res) => await HandleCompileWaitAsync(req, res));
             "POST".Register("/build/webgl", "Build WebGL player", async (req, res) => await HandleBuildWebGLAsync(req, res));
             "POST".Register("/menu/execute", "Execute an Editor menu item", async (req, res) => await HandleMenuExecuteAsync(req, res));
-            "GET".Register("/validation/verify-presentation-layout-ownership", "Verify Features.*.Presentation does not author runtime geometry or visual presentation state", async (req, res) => await HandlePresentationLayoutOwnershipVerifyAsync(res));
             "GET".Register("/config/get", "Get current MCP configuration", async (req, res) => await HandleConfigGetAsync(res));
             "POST".Register("/config/set", "Update MCP configuration", async (req, res) => await HandleConfigSetAsync(req, res));
         }
@@ -204,38 +202,6 @@ namespace ProjectSD.EditorTools.UnityMcp
             });
 
             await UnityMcpBridge.WriteJsonAsync(response, result.success ? 200 : 500, result);
-        }
-
-        public static async Task HandlePresentationLayoutOwnershipVerifyAsync(HttpListenerResponse response)
-        {
-            var result = await UnityMcpBridge.RunOnMainThreadAsync(() =>
-            {
-                var report = PresentationLayoutOwnershipValidator.VerifyProject();
-                var violations = (report.violations ?? Array.Empty<PresentationLayoutOwnershipViolation>())
-                    .Select(violation => new
-                    {
-                        typeName = violation.typeName,
-                        path = violation.path,
-                        line = violation.line,
-                        rule = violation.rule,
-                        matchedText = violation.matchedText,
-                    })
-                    .ToArray();
-
-                return new
-                {
-                    success = report.ok,
-                    message = report.summary,
-                    reportPath = PresentationLayoutOwnershipValidator.ReportRelativePath,
-                    generatedAtUtc = report.generatedAtUtc,
-                    scannedFileCount = report.scannedFileCount,
-                    presentationFileCount = report.presentationFileCount,
-                    violationCount = report.violationCount,
-                    violations = violations,
-                };
-            });
-
-            await UnityMcpBridge.WriteJsonAsync(response, 200, result);
         }
 
         public static async Task HandleConfigGetAsync(HttpListenerResponse response)

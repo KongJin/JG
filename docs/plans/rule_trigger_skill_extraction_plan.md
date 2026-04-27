@@ -111,7 +111,7 @@ Phase 2 실행 표:
 |---|---|---|---|---|
 | Reporting closeout / blocked / mismatch / success | description 보강 | `rule-operations` | `acceptance`, `blocked`, `mismatch`, `success`, `residual`, `closeout 보고`를 직접 트리거 문구에 추가 | 보류. 반복 미스가 계속될 때만 `rule-acceptance-reporting` 검토 |
 | Stitch data and translation workflow | router skill 확인 | `jg-stitch-workflow` -> `jg-unity-workflow` | Stitch-side source freeze, prompt brief, contract review는 `jg-stitch-workflow`가 라우팅하고 Unity 구현 handoff는 `jg-unity-workflow`로 넘긴다 | 새 rule skill 만들지 않음 |
-| Unity UI authoring policy | description 보강 | `jg-unity-workflow` | `Unity UI authoring policy`, `new UI prefab`, `presentation ownership`, `workflow policy check`를 trigger에 추가 | 새 skill 만들지 않음 |
+| Unity UI authoring policy | description 보강 | `jg-unity-workflow` | `Unity UI authoring policy`, `UI Toolkit candidate`, `new UI prefab`, `workflow policy check`를 trigger에 추가 | 새 skill 만들지 않음 |
 | Skill trigger coverage for new rules | owner 승격 전 interim 유지 | `rule-plan-authoring`, `rule-operations` | `새 규칙`, `행동 트리거`, `skill trigger checked`, `규칙 추가`를 trigger에 추가 | 새 skill 만들지 않음 |
 
 Phase 2 실행 순서:

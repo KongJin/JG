@@ -1,41 +1,41 @@
 # LobbyScene UI/Prefab 관리 정리 계획
 
-> 마지막 업데이트: 2026-04-26
-> 상태: active
+> 마지막 업데이트: 2026-04-27
+> 상태: reference
 > doc_id: plans.lobby-scene-ui-prefab-management
 > role: plan
 > owner_scope: `LobbyScene` UI prefab instance 관리, scene override drift 점검, assembly helper 안전화, Garage preview placeholder 정리
 > upstream: plans.progress, ops.unity-ui-authoring-workflow
-> artifacts: `Assets/Scenes/LobbyScene.unity`, `Assets/Editor/SceneTools/LobbySceneRuntimeAssemblyTool.cs`, `Assets/Prefabs/Features/`
+> artifacts: `Assets/Scenes/LobbyScene.unity`, `Assets/UI/`, `artifacts/unity/`
 >
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 
-이 문서는 `LobbyScene`이 현재 동작하는 상태를 유지하면서 UI/prefab 관리 부채를 줄이는 실행 계획이다.
-런타임 조립과 초기 표시 closeout은 완료되어 현재 실행 기준에서 제거했고, 남은 owner는 scene-owned wiring을 오래 유지하기 위한 관리 정리다.
+이 문서는 `LobbyScene`이 현재 동작하는 상태를 유지하면서 UI/prefab 관리 부채를 줄이던 reference 계획이다.
+현재 새 UI 작업은 UI Toolkit candidate surface route가 맡는다.
 
 ## 현재 관찰
 
-- `LobbyScene`은 `LobbyPageRoot`, `GaragePageRoot`, Set A/C overlay prefab instance를 scene에 배치하고, scene serialized reference가 런타임 계약을 소유한다.
-- `LobbySceneRuntimeAssemblyTool`은 초기 조립에는 유용했지만, 재실행 시 `LobbyRuntime`, `LobbyCanvas`, `EventSystem`, `LobbyPreviewCamera`를 삭제 후 재생성한다.
+- `LobbyScene`은 scene serialized reference가 런타임 계약을 소유한다.
+- Lobby scene rebuild fallback은 active route가 아니며, 현재 runtime truth는 scene serialized reference다.
 - `LobbyScene.unity`에는 prefab root의 active state, anchors, size, position, name override가 다수 존재한다.
 - Garage preview의 `PreviewFrameTemplate`, `PreviewWeaponTemplate`, `PreviewThrusterTemplate`은 asset prefab이 아니라 scene root의 inactive primitive template이다.
 - `GaragePageController`는 현재 lint를 통과하지만, mobile tab state, settings overlay, save state, chrome orchestration이 한 클래스에 모여 있어 다음 UI 변경 때 책임이 커질 수 있다.
 
 ## 진행 메모
 
-- 2026-04-25: `LobbySceneRuntimeAssemblyTool` 메뉴와 실행 로그를 destructive rebuild로 명확히 하고, 실행 전 확인 다이얼로그를 추가했다.
+- 2026-04-25: 당시 destructive rebuild helper 메뉴와 실행 로그를 명확히 하고, 실행 전 확인 다이얼로그를 추가했다.
 - 2026-04-25: `artifacts/unity/lobby-scene-prefab-override-audit.md`에 read-only prefab override audit 초안을 남겼다. 현재 visual/text/color override는 보이지 않고, `LobbyPageRoot`와 `GaragePageRoot`의 추가 active override만 review candidate로 분리했다.
 - 2026-04-25: Garage preview scene template 이름을 `*Prefab`에서 `*Template`으로 정리했고, rebuild helper도 같은 이름을 생성하도록 맞췄다.
+- 2026-04-27: 남은 Set B visual 판단은 Garage UI/UITK lane에서 본다.
 
 ## Lifecycle
 
-- active 유지 이유: preview placeholder 정리와 `GaragePageController` 책임 경계 표시가 아직 이 계획의 직접 residual이다.
-- reference 전환 조건: placeholder/template 처리와 controller 분리 후보가 pass 또는 명확한 residual owner로 닫히고, Set B visual fidelity가 별도 Garage/Stitch lane에만 남는다.
-- 전환 시 갱신: 이 문서 header와 `docs.index` 상태 라벨을 함께 `reference`로 맞춘다.
+- reference 전환 이유: 이 문서는 현재 실행 owner가 아니라 배경 기록이다.
+- 남은 visual fidelity와 runtime replacement 판단은 Set B Garage / Non-Stitch UI migration lane에서 추적한다.
 
 ## 목표
 
-- `LobbySceneRuntimeAssemblyTool`을 실수로 재실행해 scene-owned 수정이 사라지는 위험을 줄인다.
+- scene-owned 수정은 serialized scene contract 기준으로 유지한다.
 - `LobbyScene` prefab instance override를 허용 override와 의심 override로 분류할 수 있게 한다.
 - preview placeholder가 asset prefab인지 scene template인지 헷갈리지 않게 정리한다.
 - `GaragePageController`는 당장 큰 분해를 하지 않고, 다음 변경 때 분리할 책임 경계를 먼저 정한다.
@@ -62,10 +62,8 @@
 
 ## 실행 순서
 
-1. **Assembly helper 안전화**
-   - `LobbySceneRuntimeAssemblyTool` 상단에 destructive rebuild 성격과 사용 조건을 명확히 남긴다.
-   - 메뉴 이름 또는 로그 문구가 "일반 수리"처럼 읽히지 않는지 확인한다.
-   - 가능하면 dry-run 또는 explicit confirmation 성격의 가벼운 가드를 검토하되, 이번 계획에서 새 workflow policy를 만들지는 않는다.
+1. **Current route**
+   - 이후 Lobby/Garage UI 변경은 UI Toolkit candidate surface 또는 scene-owned MCP repair route로만 연다.
 
 2. **Prefab override audit 초안**
    - `LobbyScene.unity`의 prefab instance override를 surface별로 추출한다.
@@ -76,7 +74,7 @@
 3. **Preview placeholder 정리**
    - 현재 scene root inactive primitives가 필요한 이유를 확인한다.
    - 유지한다면 현재처럼 `PreviewFrameTemplate`, `PreviewWeaponTemplate`, `PreviewThrusterTemplate` 이름으로 scene template임이 드러나야 한다.
-   - asset prefab화가 더 낫다면 `Assets/Prefabs/Features/Garage/Independent/` 아래로 빼고 scene reference를 갱신한다.
+   - asset화가 더 낫다면 prefab route를 다시 열지 말고 UI Toolkit candidate 또는 scene-owned model reference로 설계한다.
    - 둘 중 하나를 선택한 뒤 Required field audit과 Garage preview smoke로 검증한다.
 
 4. **GaragePageController 책임 경계 표시**
@@ -92,7 +90,7 @@
 
 ## Acceptance
 
-- assembly helper가 destructive rebuild 성격임을 작업자와 로그에서 분명히 알 수 있다.
+- Lobby/Garage UI 변경 route가 UI Toolkit candidate surface 또는 scene-owned MCP repair로 정리되어 있다.
 - `LobbyScene` prefab override 중 허용/검토 후보가 한 번 이상 분류되어 있다.
 - Garage preview placeholder가 scene template인지 asset prefab인지 이름과 위치로 구분된다.
 - `GaragePageController`의 다음 분리 후보가 문서 또는 코드 구조에서 확인 가능하다.
@@ -121,7 +119,7 @@
 - 수정 후 재리뷰: `LobbyScene` runtime/completion 계획과 역할을 분리했고, Set B visual fidelity를 이 계획 acceptance로 섞지 않았다.
 - 반복 재리뷰 반영: obvious 과한점/부족한점 없음.
 - owner impact: primary `plans.lobby-scene-ui-prefab-management`; secondary `plans.progress`, `docs.index`; out-of-scope `ops.unity-ui-authoring-workflow`.
-- doc lifecycle checked: 새 active plan으로 등록한다. runtime/completion 기록은 현재 실행 기준에서 제거했고, 이 계획은 관리 정리 closeout 뒤 reference 또는 historical 전환 후보로 본다.
+- doc lifecycle checked: 새 active plan으로 등록한다. 이 계획은 관리 정리 closeout 뒤 reference 또는 historical 전환 후보로 본다.
 - plan rereview: clean
 - 2026-04-25 반복리뷰: override audit 결과가 새 required artifact처럼 읽힐 수 있는 표현을 구현 closeout evidence 또는 선택적 정리 artifact로 좁혔다.
 - 반복리뷰 후 과한점 리뷰: 새 hard-fail, 새 validation gate, 새 owner 규칙을 추가하지 않았다.
@@ -131,3 +129,7 @@
 - 작업 시작 후 과한점 리뷰: optional audit artifact를 새 gate로 승격하지 않았고, helper는 bounded fallback 역할만 더 분명히 했다.
 - 작업 시작 후 부족한점 리뷰: preview placeholder 정리와 `GaragePageController` 책임 경계 구현은 아직 residual로 남아 있다.
 - plan rereview: residual - preview placeholder 정리와 controller 책임 경계 표시는 다음 implementation pass에서 처리한다.
+- 2026-04-27 route 리뷰: 이 문서는 현재 route를 다시 정의하지 않고 residual owner 이동만 기록한다.
+- 2026-04-27 부족한점 리뷰: reference 전환 이유와 남은 owner가 보인다.
+- doc lifecycle checked: active plan에서 reference 기록으로 전환한다.
+- plan rereview: clean

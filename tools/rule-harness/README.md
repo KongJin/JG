@@ -48,14 +48,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-rule-harness.p
 행동 회귀는 여기서 대체하지 않는다. 정책, mapper, serializer, presenter 로직은 direct EditMode 테스트가 별도로 보호해야 한다.
 이 레포의 editor 테스트는 별도 test `asmdef`를 두지 않고 `Assets/Editor/`의 predefined editor assembly에 둔다.
 
-Presentation responsibility static scan은 수동 리뷰에서 반복적으로 확인하던 냄새를 하네스 finding으로 올린다.
-- Presentation의 `DllImport`, `UNITY_WEBGL`, `System.Runtime.InteropServices` platform bridge
-- Presentation의 `transform.Find`, `GetComponentInChildren`, `Resources.Load`, `Find*Object*ByType` runtime lookup
-- Presentation의 직접 `Debug.Log*`
-- plain `*View.cs`가 UseCase를 직접 실행하는 흐름
-
-`InputHandler`, `Controller`, `Flow`, `Presenter`, `Spawner`, `Adapter` 성격의 Presentation 파일은 입력 처리/연출 seam일 수 있으므로 plain View UseCase 규칙에서 제외한다.
-Rule Harness는 `tools/presentation-lint/lint-presentation-responsibility.mjs`가 있으면 `presentation_policy_lint` stage로 실행한다. 이 stage는 PageController 크기, chrome/style 책임, smoke entrypoint, 과도한 dependency count를 `npm run --silent presentation:policy:lint`와 같은 기준으로 차단한다.
+새 UX/UI 기준은 Stitch source freeze와 UI Toolkit candidate surface이며, 기존 runtime UI script는 런타임 참조 유지보수 대상으로만 다룬다.
 
 feature dependency repair는 문서 우선순위를 고정한 채 동작한다.
 - 정책 우선순위: `AGENTS.md -> docs/index.md -> owner docs/doc_id -> code analysis`

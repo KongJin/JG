@@ -25,7 +25,7 @@ Pass:
 - actual placement/summon stat smoke에서 `UnitSlot-0 -> ConfirmPlacementAtPlacementCenter -> ForceCoreDefeatForMcpSmoke` 순서로 `Summons: 1`, `Unit Kills: 1`, result contribution cards, Firebase stub count가 일치했다.
 - diagnostic victory result smoke에서 `UnitSlot-0 -> ConfirmPlacementAtPlacementCenter -> ForceVictoryForMcpSmoke` 순서로 `Result: Victory`, `Summons: 1`, `Unit Kills: 1`, `Core HP: 1470/1500`, `거점 보존/압박 정리/기체 전개` 카드가 기록됐다.
 - `WaveGameEndBridge`는 match-relative elapsed time과 reached wave를 전달한다.
-- 2026-04-27 current automation smoke에서 stale Lobby/Battle HUD path를 current prefab-first hierarchy에 맞췄고, placement path smoke가 `newErrorCount: 0`으로 통과했다.
+- 2026-04-27 current automation smoke에서 stale Lobby/Battle HUD path를 current runtime UI hierarchy에 맞췄고, placement path smoke가 `newErrorCount: 0`으로 통과했다.
 - 2026-04-27 natural victory smoke에서 `RunFinalWaveClearForMcpSmoke`가 final wave spawned enemies를 damage/death event로 제거했고, `EnemyDiedEvent -> WaveVictoryEvent -> GameEndEvent -> ResultPanel/GameEndReport`가 `Result: Victory`, `Summons: 1`, `Core HP: 1474/1500`, `newErrorCount: 0`으로 통과했다.
 - 2026-04-27 defeat regression smoke도 `ForceCoreDefeatForMcpSmoke -> Result: Defeat`, `newErrorCount: 0`으로 통과했다.
 - 2026-04-27 `SummonUnitUseCase` rollback contract는 spawn exception과 empty/default battle entity id 모두 Energy refund + failed event path로 고정하는 direct test asset을 갖췄고, compile-clean은 통과했다. EditMode 실행은 현재 Unity Editor가 프로젝트를 소유 중이라 batchmode test preflight에서 `open-editor-owns-project`로 blocked다.

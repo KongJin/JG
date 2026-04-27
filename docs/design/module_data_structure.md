@@ -1,6 +1,6 @@
 # Module Data Structure
 
-> 마지막 업데이트: 2026-04-20
+> 마지막 업데이트: 2026-04-27
 > 상태: active
 > doc_id: design.module-data-structure
 > role: ssot
@@ -15,12 +15,12 @@
 
 ## 아키텍처 개요
 
-### 레이어 구조
+### 런타임 구조
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  Garage UI (Presentation)                           │
-│  - 편성 화면, 모듈 선택, 비용 실시간 표시            │
+│  Garage UI Surface                                  │
+│  - Stitch/UI Toolkit 후보 surface가 새 UX 기준       │
 ├─────────────────────────────────────────────────────┤
 │  UnitComposition (Application)                      │
 │  - 프레임 + 모듈 조합 결과 계산                      │
@@ -70,7 +70,7 @@ namespace Features.Garage.Domain
         [Header("Passive Trait")]
         [SerializeField] private PassiveTraitData passiveTrait; // 고유 특성 (고정)
 
-        [Header("Presentation")]
+        [Header("Visual")]
         [SerializeField] private GameObject unitPrefab; // 전투에서 생성될 프리팹
 
         public string FrameId => frameId;
@@ -556,6 +556,6 @@ namespace Features.Garage.Infrastructure
 
 ### 과도기 허용 상태
 
-- 기존 `SkillData` 자산은 당분간 프리젠테이션 참조용으로 유지
+- 기존 `SkillData` 자산은 당분간 legacy visual 참조용으로 유지
 - 신규 구현은 Unit/Module 데이터 구조만 사용
 - 완전 제거는 Phase 5에서 진행

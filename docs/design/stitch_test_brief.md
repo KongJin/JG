@@ -9,7 +9,7 @@
 > artifacts: `.stitch/prompt-briefs/`
 
 이 문서는 JG에서 `Stitch`를 빠르게 시험할 때 바로 붙여넣어 쓸 수 있는 실전 브리프다.
-목표는 예쁜 목업을 많이 만드는 것이 아니라, 현재 execution contracts와 새 baseline prefab으로 번역 가능한 시안을 빠르게 찾는 것이다.
+목표는 예쁜 목업을 많이 만드는 것이 아니라, 현재 execution contracts와 UI Toolkit candidate surface로 번역 가능한 시안을 빠르게 찾는 것이다.
 
 ## Test Goal
 
@@ -18,7 +18,7 @@
 - `Lobby`와 `Garage`를 각각 별도 화면처럼 읽히게 만들기
 - `Lobby`에서는 room list가 가장 먼저 읽히는지 보기
 - `Garage`에서는 slot first, single scroll body, fixed save action이 선명한지 보기
-- 생성 결과가 Unity scene-owned layout으로 무리 없이 옮겨질 수 있는지 보기
+- 생성 결과가 UI Toolkit candidate surface로 무리 없이 옮겨질 수 있는지 보기
 
 ## Prompt 1
 
@@ -101,13 +101,13 @@ Constraints:
 2. `Garage`에서 slot selection이 첫 구조로 읽히는가
 3. save action이 화면에서 가장 명확한 CTA인가
 4. empty state와 preview가 공백처럼 보이지 않는가
-5. 결과를 새 baseline prefab hierarchy로 번역할 때 불필요한 desktop/web 전용 구조가 없는가
+5. 결과를 UI Toolkit candidate surface로 번역할 때 불필요한 desktop/web 전용 구조가 없는가
 
 ## Translation Rule
 
 - Stitch 산출물은 시안이다.
-- 최종 SSOT는 `ui_foundations.md`와 새로 세울 serialized prefab/scene contract다.
-- 실제 구현에서는 런타임 layout 보정 코드 대신 prefab-first authoring으로 번역한다.
+- 최종 SSOT는 `ui_foundations.md`, source freeze에서 준비한 execution contract, UI Toolkit candidate evidence다.
+- 실제 구현에서는 런타임 layout 보정 코드 대신 UI Toolkit candidate surface로 먼저 번역한다.
 
 ## Next Step
 
@@ -115,6 +115,6 @@ Constraints:
 
 1. 블록 순서를 `ui_foundations.md` 용어로 다시 적기
 2. 필요한 hierarchy root를 적기
-3. Unity MCP로 baseline prefab 재구성
-4. prefab wiring review
-5. 새 scene 조립 후 fresh contract/smoke
+3. UI Toolkit candidate surface와 preview scene 구성
+4. preview capture와 scoped workflow policy 확인
+5. runtime replacement가 필요하면 별도 pass로 binding/smoke 검증

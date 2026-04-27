@@ -396,7 +396,10 @@ function Test-ContractDraft {
         Add-Issue -Issues $issues -Code "missing-target" -Message "Draft target is missing." -Path "target"
     }
     else {
-        Test-ExpectedValue -InputObject $target -Name "kind" -Expected "prefab" -Issues $issues -Path "target.kind"
+        $targetKind = Test-RequiredString -InputObject $target -Name "kind" -Issues $issues -Path "target.kind"
+        if (-not [string]::IsNullOrWhiteSpace($targetKind) -and $targetKind -notin @("prefab", "uitoolkit-candidate")) {
+            Add-Issue -Issues $issues -Code "target-kind-mismatch" -Message "Draft target kind '$targetKind' must be 'uitoolkit-candidate' or legacy 'prefab'." -Path "target.kind"
+        }
         $targetAssetPath = Test-RequiredString -InputObject $target -Name "assetPath" -Issues $issues -Path "target.assetPath"
         if (-not [string]::IsNullOrWhiteSpace($ExpectedTargetAssetPath) -and $targetAssetPath -ne $ExpectedTargetAssetPath) {
             Add-Issue -Issues $issues -Code "target-asset-path-mismatch" -Message "Draft target assetPath '$targetAssetPath' does not match expected '$ExpectedTargetAssetPath'." -Path "target.assetPath"

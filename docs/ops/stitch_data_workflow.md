@@ -19,7 +19,7 @@
 
 ## 목적
 
-- `Stitch prompt -> accepted screen -> Unity prefab 생성` 루프의 파일 경계를 고정한다.
+- `Stitch prompt -> accepted screen -> Unity candidate surface` 루프의 파일 경계를 고정한다.
 - 같은 역할의 문서와 JSON이 여러 경로에서 중복되지 않게 한다.
 - source artifact와 실행 contract를 분리한다.
 
@@ -35,7 +35,7 @@
 
 - runtime hierarchy
 - serialized reference
-- 실제 prefab/scene 저장
+- 실제 runtime surface와 scene state
 - preflight / translation / pipeline evidence
 
 한 줄 기준:
@@ -162,9 +162,9 @@ translator는:
 1. manifest semantic block 순서를 읽고
 2. map binding과 target을 검증하고
 3. presentation contract가 `resolved`인지 확인하고
-4. contract에 적힌 값만 적용해 prefab을 생성/갱신하고
-5. controller wiring을 연결하고
-6. prefab을 저장한다
+4. contract에 적힌 값만 적용해 Unity 후보 surface를 생성/갱신하고
+5. 필요한 경우 별도 runtime replacement pass에서 binding을 연결한다
+6. candidate surface와 evidence를 저장한다
 
 추가 규칙:
 
@@ -193,10 +193,10 @@ review route 규칙:
 세부 내용은 `preflight`와 `translation` artifact가 각각 소유한다.
 translation이 blocked로 멈추면 `preflight` 또는 `pipeline` artifact에 `blockedReason`이 남아야 한다.
 
-## Reset / Reimport 기준
+## Import 기준
 
-target prefab이 없어도 정상 케이스다.
-이 경우에도 `patch-only`가 아니라 `generate` 또는 `generate-or-patch`로 surface를 실행한다.
+target runtime prefab이 없어도 정상 케이스다.
+새 Stitch import의 기본값은 runtime prefab 생성이 아니라 UI Toolkit candidate surface 생성이다.
 
 권장 순서:
 
@@ -205,13 +205,13 @@ target prefab이 없어도 정상 케이스다.
 3. in-memory unity-map 준비 확인
 4. in-memory presentation contract 확인
 5. `extractionStatus = resolved` 확인
-6. translator 실행
-7. review route가 있으면 `TempScene + SceneView capture` 확인
+6. candidate surface 생성
+7. review route가 있으면 GameView 또는 SceneView capture 확인
 8. preflight / translation / pipeline 확인
 
 한 줄 기준:
 
-`기존 prefab 복구`가 아니라 `contract에서 새 prefab 생성`이 기본값이다.
+`기존 prefab 복구`가 아니라 `source에서 UI Toolkit 후보 surface를 만들고 증거를 남기는 것`이 기본값이다.
 
 ## 금지사항
 
