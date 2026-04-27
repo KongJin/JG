@@ -45,6 +45,12 @@ powershell -ExecutionPolicy Bypass -File .\tools\stitch-unity\surfaces\Invoke-St
 ## Open
 
 - runtime save/settings 검증은 shared Account/Garage validation lane에서 본다.
+- UI Toolkit pilot surface exists for Set B visual comparison:
+  - `Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml`
+  - `Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss`
+  - `Assets/Scenes/GarageSetBUitkPreview.unity`
+  - `artifacts/unity/garage-setb-uitoolkit-preview.png`
+- The pilot is static and does not replace `GaragePageRoot.prefab` until a separate runtime binding/replacement pass is accepted.
 
 ## Lifecycle
 
@@ -75,6 +81,13 @@ Closeout note:
 
 - This is a translation mismatch, not a polish-only residual.
 - Do not mark Set B Garage visual fidelity as accepted until a fresh capture matches the source screen's first-read hierarchy, card density, preview treatment, and persistent save action.
+- 2026-04-27 UI Toolkit pilot capture improves first-read hierarchy but remains evidence for a candidate route, not acceptance of the active runtime Garage.
+
+Plan rereview:
+
+- 과한점: no new owner rules were added; UITK pilot evidence is recorded as candidate evidence only.
+- 부족한점: active runtime replacement, state binding, 3D preview integration, and fresh Lobby/Garage flow acceptance remain explicitly open.
+- plan rereview: clean
 
 ## Acceptance
 

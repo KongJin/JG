@@ -1,0 +1,53 @@
+﻿{
+    "success":  false,
+    "terminalVerdict":  "blocked",
+    "owner":  "RuntimeSmokeToolingStabilization",
+    "script":  "tools/unity-mcp/Invoke-GameScenePlacementSmoke.ps1",
+    "command":  "C:\\Users\\SOL\\Documents\\JG\\tools\\unity-mcp\\Invoke-GameScenePlacementSmoke.ps1",
+    "blockedReason":  "runtime-smoke-lock-held",
+    "mismatchReason":  "",
+    "generatedAt":  "2026-04-27 10:01:53+09:00",
+    "startedAtUtc":  "2026-04-27T01:01:53.1164640Z",
+    "endedAtUtc":  "2026-04-27T01:01:54.7426258Z",
+    "resultMode":  "None",
+    "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+    "lockOwner":  "",
+    "playModeStarted":  false,
+    "playModeStopped":  true,
+    "stepVerdicts":  [
+                         {
+                             "name":  "blocked",
+                             "verdict":  "blocked",
+                             "atUtc":  "2026-04-27T01:01:53.2794431Z",
+                             "detail":  "runtime-smoke-lock-held"
+                         },
+                         {
+                             "name":  "play-stop",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:01:54.7401088Z"
+                         }
+                     ],
+    "transportErrors":  [
+
+                        ],
+    "evidenceScopeReason":  "Runtime smoke artifact records execution evidence rather than source file ownership.",
+    "evidence":  {
+                     "exception":  {
+                                       "message":  "MCP exclusive operation lock is held. lock=\u0027Temp/UnityMcp/runtime-smoke.lock\u0027 requested=\u0027game-scene-placement-smoke\u0027 owner=\u0027RuntimeSmokeToolingStabilization\u0027 existing=\u0027{\r\n    \"name\":  \"game-scene-mobile-hud-framing-smoke\",\r\n    \"owner\":  \"GameSceneMobileHudFraming\",\r\n    \"token\":  \"20930b474df24524b876ecbe3c9cced2\",\r\n    \"pid\":  11700,\r\n    \"startedAt\":  \"2026-04-27T10:01:17.2393054+09:00\"\r\n}\u0027",
+                                       "category":  "runtime-smoke-lock-held"
+                                   },
+                     "blockedConsoleDelta":  {
+                                                 "newErrorCount":  0,
+                                                 "items":  [
+
+                                                           ]
+                                             },
+                     "finalHealth":  {
+                                         "ok":  true,
+                                         "isPlaying":  false,
+                                         "isCompiling":  false,
+                                         "activeScene":  "LobbyScene",
+                                         "activeScenePath":  "Assets/Scenes/LobbyScene.unity"
+                                     }
+                 }
+}

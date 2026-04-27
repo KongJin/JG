@@ -29,6 +29,7 @@
 - Stitch -> Unity 한 장씩 번역: [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)
 - 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> `docs/index.md` -> relevant owner doc
 - GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
+- Runtime smoke/tooling 안정화: [`plans/progress.md`](./plans/progress.md) -> [`plans/runtime_smoke_tooling_stabilization_plan.md`](./plans/runtime_smoke_tooling_stabilization_plan.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant helper
 
 ## 상태 규칙
 
@@ -60,6 +61,7 @@
 | GameScene 진입 큰 흐름 확인 | [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) |
 | GameScene 실제 플로우 검증/closeout 확인 | [`plans/game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) |
 | GameScene Phase 5 multiplayer sync smoke 확인 | [`plans/game_scene_phase5_multiplayer_sync_plan.md`](./plans/game_scene_phase5_multiplayer_sync_plan.md) |
+| Runtime smoke/helper 반복 blocker 확인 | [`plans/runtime_smoke_tooling_stabilization_plan.md`](./plans/runtime_smoke_tooling_stabilization_plan.md) |
 | 계정/차고 복구 상태 확인 | [`plans/account_system_plan.md`](./plans/account_system_plan.md) |
 | Unity MCP 실행 루틴 확인 | [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) |
 | WebGL 실기 절차 확인 | [`playtest/webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) |
@@ -91,6 +93,7 @@
 - `reference`: [`game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) - GameScene 진입 상위 흐름
 - `active`: [`game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) - GameScene/BattleScene 실제 플레이 플로우 acceptance, blocker/mismatch closeout 계획
 - `active`: [`game_scene_phase5_multiplayer_sync_plan.md`](./plans/game_scene_phase5_multiplayer_sync_plan.md) - GameScene/BattleScene Phase 5 멀티플레이 동기화 smoke와 blocker closeout 계획
+- `active`: [`runtime_smoke_tooling_stabilization_plan.md`](./plans/runtime_smoke_tooling_stabilization_plan.md) - Unity MCP runtime smoke helper의 lock/process, timeout/transport, UI path contract, evidence artifact 안정화 계획
 - `active`: [`operation_record_world_memory_plan.md`](./plans/operation_record_world_memory_plan.md) - 최근 작전 기록, 세계 기억, Lobby/Garage 기록 표시 계획
 - `active`: [`non_stitch_ui_stitch_reimport_plan.md`](./plans/non_stitch_ui_stitch_reimport_plan.md) - Stitch source freeze가 없는 Unity-native/mixed UI를 Stitch에서 다시 만든 뒤 Unity로 재import하는 migration plan
 - `reference`: [`nova1492_resource_integration_plan.md`](./plans/nova1492_resource_integration_plan.md) - Nova1492 설치 리소스 staging 결과와 후속 적용 기준

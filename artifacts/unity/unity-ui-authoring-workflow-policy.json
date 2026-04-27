@@ -2,50 +2,27 @@
     "success":  true,
     "terminalVerdict":  "",
     "blockedReason":  "",
-    "generatedAt":  "2026-04-27 00:18:17+09:00",
+    "generatedAt":  "2026-04-27 20:49:58+09:00",
     "agent":  "",
-    "route":  "no-unity-ui-workflow",
+    "route":  "scene/prefab authoring",
     "changedFiles":  [
-                         ".codex/skills/jg-stitch-workflow/SKILL.md",
-                         "artifacts/rules/issue-recurrence-closeout.json",
-                         "artifacts/unity/game-flow/game-scene-natural-victory-placement-smoke.json",
-                         "artifacts/unity/game-scene-natural-victory-smoke.json",
-                         "artifacts/unity/game-scene-placement-probe-none.json",
-                         "artifacts/unity/lobby-scene-prefab-override-audit.json",
-                         "artifacts/unity/lobby-scene-prefab-override-audit.md",
-                         "artifacts/unity/prefab-management-approved-new-prefabs.json",
-                         "artifacts/unity/prefab-management-inventory.json",
-                         "artifacts/unity/prefab-management-inventory.md",
-                         "artifacts/unity/unity-ui-authoring-workflow-policy.json",
-                         "artifacts/unity/unity-ui-authoring-workflow-policy-prefab-management-probe.json",
-                         "docs/discussions/discussion_unity.md",
-                         "docs/index.md",
-                         "docs/ops/document_management_workflow.md",
-                         "docs/ops/stitch_data_workflow.md",
-                         "docs/plans/game_scene_flow_validation_closeout_plan.md",
-                         "docs/plans/game_scene_ui_ux_improvement_plan.md",
-                         "docs/plans/mcp_improvement_plan.md",
-                         "docs/plans/non_stitch_ui_stitch_reimport_plan.md",
-                         "docs/plans/prefab_management_gap_closeout_plan.md",
-                         "docs/plans/progress.md",
-                         "docs/plans/progress_changelog.md",
-                         "docs/plans/stitch_button_sound_contract_plan.md",
-                         "docs/plans/stitch_llm_contract_pipeline_plan.md",
-                         "docs/plans/stitch_screen_onboarding_simplification_plan.md",
-                         "docs/plans/stitch_ui_ux_overhaul_plan.md",
-                         "docs/plans/tech_debt_reduction_plan.md",
-                         "tools/unity-mcp/Invoke-GameScenePlacementSmoke.ps1",
-                         "tools/unity-mcp/Invoke-LobbyScenePrefabOverrideAudit.ps1",
-                         "tools/unity-mcp/Invoke-PrefabManagementInventory.ps1",
-                         "tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1",
-                         "tools/unity-mcp/README.md"
+                         "artifacts/unity/garage-setb-uitoolkit-port-report.md",
+                         "artifacts/unity/garage-setb-uitoolkit-preview.png",
+                         "Assets/Editor/SceneTools/GarageSetBUitkPreviewTool.cs",
+                         "Assets/Scenes/GarageSetBUitkPreview.unity",
+                         "Assets/Settings/UI/GarageSetBPanelSettings.asset",
+                         "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
+                         "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml",
+                         "docs/plans/garage_ui_ux_improvement_plan.md"
                      ],
-    "allDirtyFileCount":  33,
-    "unityUiRelevantFiles":  {
-
-                             },
+    "allDirtyFileCount":  803,
+    "unityUiRelevantFiles":  "Assets/Scenes/GarageSetBUitkPreview.unity",
     "requiredEvidence":  [
-
+                             {
+                                 "name":  "compile-reload",
+                                 "path":  null,
+                                 "message":  "Compile and script reload must settle before Unity UI workflow evidence is trusted."
+                             }
                          ],
     "missingEvidence":  [
 
@@ -56,21 +33,49 @@
     "policyViolations":  [
 
                          ],
-    "compile":  null,
+    "compile":  {
+                    "success":  true,
+                    "request":  {
+                                    "ok":  true,
+                                    "cleanBuildCacheRequested":  false,
+                                    "isCompiling":  false,
+                                    "message":  "Asset refresh triggered."
+                                },
+                    "wait":  {
+                                 "ok":  true,
+                                 "timedOut":  false,
+                                 "requestedCompilation":  false,
+                                 "waitedMs":  120000,
+                                 "isCompiling":  false
+                             },
+                    "healthAfterWait":  {
+                                            "ok":  true,
+                                            "bridgeRunning":  true,
+                                            "port":  52675,
+                                            "isPlaying":  false,
+                                            "isPlayingOrWillChange":  false,
+                                            "isPlayModeChanging":  false,
+                                            "rawIsPlayingOrWillChange":  false,
+                                            "isCompiling":  false,
+                                            "isWaitingForPlayMode":  false,
+                                            "projectKey":  "0d8ea703",
+                                            "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                            "activeScene":  "GarageSetBUitkPreview",
+                                            "activeScenePath":  "Assets/Scenes/GarageSetBUitkPreview.unity",
+                                            "pendingPlayAction":  "",
+                                            "pendingPlayAgeMs":  0
+                                        }
+                },
     "presentationLayoutOwnership":  null,
     "presentationResponsibility":  null,
     "capabilityExpansionGuard":  {
                                      "allowCapabilityExpansion":  false,
                                      "surfaceOnboardingFiles":  [
-
+                                                                    "artifacts/unity/garage-setb-uitoolkit-preview.png"
                                                                 ],
-                                     "capabilityExpansionFiles":  [
-                                                                      "tools/unity-mcp/Invoke-GameScenePlacementSmoke.ps1",
-                                                                      "tools/unity-mcp/Invoke-LobbyScenePrefabOverrideAudit.ps1",
-                                                                      "tools/unity-mcp/Invoke-PrefabManagementInventory.ps1",
-                                                                      "tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1",
-                                                                      "tools/unity-mcp/README.md"
-                                                                  ]
+                                     "capabilityExpansionFiles":  {
+
+                                                                  }
                                  },
     "prefabManagement":  {
                              "inventory":  {

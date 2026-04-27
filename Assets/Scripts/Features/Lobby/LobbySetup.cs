@@ -106,7 +106,8 @@ public sealed class LobbySetup : MonoBehaviour
                 {
                     _currentAccountProfile = profile;
                     await LoadSignedInAccount();
-                    _loginLoadingView.OnLoginSuccess();
+                    if (_loginLoadingView != null)
+                        _loginLoadingView.OnLoginSuccess();
                 });
 
             if (signInResult.HasProfile)

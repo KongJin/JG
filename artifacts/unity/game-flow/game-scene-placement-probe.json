@@ -1,0 +1,330 @@
+﻿{
+    "success":  true,
+    "terminalVerdict":  "success",
+    "owner":  "GameSceneMobileHudFramingProbe",
+    "script":  "tools/unity-mcp/Invoke-GameScenePlacementSmoke.ps1",
+    "command":  "C:\\Users\\SOL\\Documents\\JG\\tools\\unity-mcp\\Invoke-GameScenePlacementSmoke.ps1",
+    "blockedReason":  "",
+    "mismatchReason":  "",
+    "generatedAt":  "2026-04-27 10:17:34+09:00",
+    "startedAtUtc":  "2026-04-27T01:17:34.5622454Z",
+    "endedAtUtc":  "2026-04-27T01:18:05.2377247Z",
+    "resultMode":  "None",
+    "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+    "lockOwner":  "GameSceneMobileHudFramingProbe",
+    "playModeStarted":  true,
+    "playModeStopped":  true,
+    "stepVerdicts":  [
+                         {
+                             "name":  "lock",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:17:34.6183740Z",
+                             "detail":  "Temp/UnityMcp/runtime-smoke.lock"
+                         },
+                         {
+                             "name":  "mcp-preflight",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:17:34.7267518Z",
+                             "detail":  "Assets/Scenes/BattleScene.unity"
+                         },
+                         {
+                             "name":  "compile",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:17:35.1090859Z"
+                         },
+                         {
+                             "name":  "lobby-play-session",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:17:58.1183155Z"
+                         },
+                         {
+                             "name":  "lobby-ready",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:17:59.2038634Z"
+                         },
+                         {
+                             "name":  "room-create",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:01.5549055Z",
+                             "detail":  "/LobbyCanvas/LobbyPageRoot/RoomListPanel/CreateRoomButton"
+                         },
+                         {
+                             "name":  "room-detail-active",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:01.9449310Z",
+                             "detail":  "RoomDetailPanel"
+                         },
+                         {
+                             "name":  "room-ready",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:01.9555281Z",
+                             "detail":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/ReadyButton"
+                         },
+                         {
+                             "name":  "ready-state-applied",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:02.2681365Z",
+                             "detail":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/ReadyButton/Label"
+                         },
+                         {
+                             "name":  "start-button-ready",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:02.2777773Z",
+                             "detail":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/StartGameButton"
+                         },
+                         {
+                             "name":  "room-start",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:02.2895905Z",
+                             "detail":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/StartGameButton"
+                         },
+                         {
+                             "name":  "battle-scene-active",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:02.9612624Z",
+                             "detail":  "Assets/Scenes/BattleScene.unity"
+                         },
+                         {
+                             "name":  "slot-ready",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:03.0843670Z",
+                             "detail":  "/BattleHudCanvas/RuntimeBindingLayer/CommandDock/SlotRow/UnitSlot-0"
+                         },
+                         {
+                             "name":  "slot-click",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:03.0960720Z",
+                             "detail":  "/BattleHudCanvas/RuntimeBindingLayer/CommandDock/SlotRow/UnitSlot-0"
+                         },
+                         {
+                             "name":  "placement-confirm",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:03.1521829Z",
+                             "detail":  "/BattleHudCanvas/RuntimeBindingLayer/CommandDock"
+                         },
+                         {
+                             "name":  "placement-preview-hidden",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:03.1738961Z"
+                         },
+                         {
+                             "name":  "result-trigger",
+                             "verdict":  "skipped",
+                             "atUtc":  "2026-04-27T01:18:03.1738961Z",
+                             "detail":  "None"
+                         },
+                         {
+                             "name":  "console-delta",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:03.7289891Z",
+                             "detail":  "newErrorCount=0"
+                         },
+                         {
+                             "name":  "play-stop",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:18:05.2276359Z"
+                         }
+                     ],
+    "transportErrors":  [
+
+                        ],
+    "evidenceScopeReason":  "Runtime smoke artifact records execution evidence rather than source file ownership.",
+    "evidence":  {
+                     "mcpLock":  {
+                                     "path":  "Temp/UnityMcp/runtime-smoke.lock",
+                                     "owner":  "GameSceneMobileHudFramingProbe",
+                                     "token":  "3fb6f107bc7e44f4a9d3ff21f8e33e0f"
+                                 },
+                     "prepareLobby":  {
+                                          "stoppedPreExistingPlay":  false,
+                                          "play":  {
+                                                       "Response":  "",
+                                                       "Wait":  {
+                                                                    "success":  true,
+                                                                    "action":  "wait-for-play",
+                                                                    "isPlaying":  true,
+                                                                    "isPlayingOrWillChange":  false,
+                                                                    "isPlayModeChanging":  false,
+                                                                    "rawIsPlayingOrWillChange":  true,
+                                                                    "isCompiling":  false,
+                                                                    "activeScene":  "LobbyScene",
+                                                                    "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                                                    "waitedMs":  574
+                                                                },
+                                                       "Health":  {
+                                                                      "ok":  true,
+                                                                      "bridgeRunning":  true,
+                                                                      "port":  52675,
+                                                                      "isPlaying":  true,
+                                                                      "isPlayingOrWillChange":  false,
+                                                                      "isPlayModeChanging":  false,
+                                                                      "rawIsPlayingOrWillChange":  true,
+                                                                      "isCompiling":  false,
+                                                                      "isWaitingForPlayMode":  false,
+                                                                      "projectKey":  "0d8ea703",
+                                                                      "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                                                      "activeScene":  "LobbyScene",
+                                                                      "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                                                      "pendingPlayAction":  "",
+                                                                      "pendingPlayAgeMs":  0
+                                                                  },
+                                                       "ReadyState":  {
+                                                                          "ok":  true,
+                                                                          "bridgeRunning":  true,
+                                                                          "port":  52675,
+                                                                          "isPlaying":  true,
+                                                                          "isPlayingOrWillChange":  false,
+                                                                          "isPlayModeChanging":  false,
+                                                                          "rawIsPlayingOrWillChange":  true,
+                                                                          "isCompiling":  false,
+                                                                          "isWaitingForPlayMode":  false,
+                                                                          "projectKey":  "0d8ea703",
+                                                                          "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                                                          "activeScene":  "LobbyScene",
+                                                                          "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                                                          "pendingPlayAction":  "",
+                                                                          "pendingPlayAgeMs":  0
+                                                                      },
+                                                       "ElapsedMs":  21373
+                                                   },
+                                          "loadingPanelWait":  {
+                                                                   "success":  true,
+                                                                   "path":  "/LobbyCanvas/Overlays/SetCLoginLoadingOverlayRoot/LoadingPanel",
+                                                                   "name":  null,
+                                                                   "activeInHierarchy":  false,
+                                                                   "waitedMs":  14
+                                                               }
+                                      },
+                     "lobbyReady":  {
+                                        "success":  true,
+                                        "message":  "Photon lobby ready."
+                                    },
+                     "roomNameInput":  {
+                                           "success":  true,
+                                           "path":  "/LobbyCanvas/LobbyPageRoot/RoomListPanel/RoomNameInput",
+                                           "value":  "mcp-20260427011801"
+                                       },
+                     "displayNameInput":  {
+                                              "success":  true,
+                                              "path":  "/LobbyCanvas/LobbyPageRoot/RoomListPanel/DisplayNameInput",
+                                              "value":  "MCP Smoke"
+                                          },
+                     "capacityInput":  {
+                                           "success":  true,
+                                           "path":  "/LobbyCanvas/LobbyPageRoot/RoomListPanel/CapacityInput",
+                                           "value":  "2"
+                                       },
+                     "createRoom":  {
+                                        "success":  true,
+                                        "path":  "/LobbyCanvas/LobbyPageRoot/RoomListPanel/CreateRoomButton",
+                                        "response":  {
+                                                         "success":  true,
+                                                         "message":  "Invoked Button.onClick and coded handlers",
+                                                         "path":  "/LobbyCanvas/LobbyPageRoot/RoomListPanel/CreateRoomButton",
+                                                         "invokedMethod":  "Button.onClick",
+                                                         "result":  "",
+                                                         "durationMs":  7.0
+                                                     }
+                                    },
+                     "roomDetailActive":  {
+                                              "success":  true,
+                                              "path":  "RoomDetailPanel"
+                                          },
+                     "ready":  {
+                                   "success":  true,
+                                   "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/ReadyButton",
+                                   "response":  {
+                                                    "success":  true,
+                                                    "message":  "Invoked Button.onClick and coded handlers",
+                                                    "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/ReadyButton",
+                                                    "invokedMethod":  "Button.onClick",
+                                                    "result":  "",
+                                                    "durationMs":  1.0
+                                                }
+                               },
+                     "readyStateApplied":  {
+                                               "success":  true,
+                                               "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/ReadyButton/Label",
+                                               "text":  "Cancel"
+                                           },
+                     "startButtonReady":  {
+                                              "success":  true,
+                                              "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/StartGameButton",
+                                              "activeInHierarchy":  true,
+                                              "interactable":  true
+                                          },
+                     "start":  {
+                                   "success":  true,
+                                   "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/StartGameButton",
+                                   "response":  {
+                                                    "success":  true,
+                                                    "message":  "Invoked Button.onClick and coded handlers",
+                                                    "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/StartGameButton",
+                                                    "invokedMethod":  "Button.onClick",
+                                                    "result":  "",
+                                                    "durationMs":  4.0
+                                                }
+                               },
+                     "battleSceneActive":  {
+                                               "success":  true,
+                                               "root":  "http://127.0.0.1:52675",
+                                               "activeScene":  "BattleScene",
+                                               "activeScenePath":  "Assets/Scenes/BattleScene.unity"
+                                           },
+                     "slotReady":  {
+                                       "success":  true,
+                                       "path":  "/BattleHudCanvas/RuntimeBindingLayer/CommandDock/SlotRow/UnitSlot-0",
+                                       "response":  {
+                                                        "success":  true,
+                                                        "path":  "/BattleHudCanvas/RuntimeBindingLayer/CommandDock/SlotRow/UnitSlot-0",
+                                                        "componentType":  "UnitSlotView",
+                                                        "waitedMs":  90
+                                                    }
+                                   },
+                     "slotClick":  {
+                                       "success":  true,
+                                       "path":  "/BattleHudCanvas/RuntimeBindingLayer/CommandDock/SlotRow/UnitSlot-0",
+                                       "response":  {
+                                                        "success":  true,
+                                                        "message":  "Invoked IPointerClickHandler",
+                                                        "path":  "/BattleHudCanvas/RuntimeBindingLayer/CommandDock/SlotRow/UnitSlot-0",
+                                                        "invokedMethod":  "IPointerClickHandler.OnPointerClick",
+                                                        "result":  "",
+                                                        "durationMs":  2.0
+                                                    }
+                                   },
+                     "previewBeforeConfirm":  {
+                                                  "path":  "/Battlefield/PlacementAreaView/PlacementPreviewVisuals",
+                                                  "activeSelf":  true
+                                              },
+                     "confirmPlacement":  {
+                                              "success":  true,
+                                              "path":  "/BattleHudCanvas/RuntimeBindingLayer/CommandDock",
+                                              "response":  {
+                                                               "success":  true,
+                                                               "message":  "Invoked custom method: ConfirmPlacementAtPlacementCenter",
+                                                               "path":  "/BattleHudCanvas/RuntimeBindingLayer/CommandDock",
+                                                               "invokedMethod":  "ConfirmPlacementAtPlacementCenter()",
+                                                               "result":  "ConfirmPlacementAtPlacementCenter() invoked successfully",
+                                                               "durationMs":  17.0
+                                                           }
+                                          },
+                     "previewAfterConfirm":  {
+                                                 "path":  "/Battlefield/PlacementAreaView/PlacementPreviewVisuals",
+                                                 "activeSelf":  false
+                                             },
+                     "newErrorCount":  0,
+                     "hasSummonLog":  false,
+                     "hasUnitKillLog":  false,
+                     "hasResultLog":  false,
+                     "hasVictoryResultLog":  false,
+                     "hasDefeatResultLog":  false,
+                     "finalHealth":  {
+                                         "ok":  true,
+                                         "isPlaying":  false,
+                                         "isCompiling":  false,
+                                         "activeScene":  "LobbyScene",
+                                         "activeScenePath":  "Assets/Scenes/LobbyScene.unity"
+                                     }
+                 }
+}

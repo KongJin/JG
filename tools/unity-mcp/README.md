@@ -65,11 +65,16 @@ Runtime smoke helpers should take the MCP operation lock unless a human is inten
 Use lane-specific evidence paths, for example:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameScenePlacementSmoke.ps1 -Owner GameSceneUIUX -OutputPath artifacts/unity/game-scene-placement-smoke.json
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameScenePlacementSmoke.ps1 -Owner GameSceneUIUX -OutputPath artifacts/unity/game-scene-placement-smoke.json
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameSceneMobileHudFramingSmoke.ps1 -Owner GameSceneMobileHudFraming -OutputPath artifacts/unity/game-flow/game-scene-mobile-hud-framing-smoke.json -PlacementOutputPath artifacts/unity/game-flow/game-scene-mobile-hud-placement-source.json -ScreenshotPath artifacts/unity/game-flow/game-scene-mobile-hud-framing.png -LeavePlayMode
 ```
 
 If a helper reports that `Temp/UnityMcp/runtime-smoke.lock` is held, treat the smoke as `blocked` for this lane instead of stopping the other lane's Play Mode session.
+If the lock holder process no longer exists, helpers may clear that stale lock and continue; live process locks remain authoritative.
+Nested helpers must run under the parent helper's lock and record that fact in their artifact instead of competing for the same lock.
+Placement smoke path candidates are centralized in the placement helper and recorded into each artifact as `pathContractVersion`/`pathCandidates`; update that contract map when Lobby/Battle UI hierarchy paths move.
+Mobile HUD framing snapshots should use bounded `/ui/get-state` requests so a stuck UI query does not hold the runtime smoke lock indefinitely.
 
 ## Recommended Workflow
 

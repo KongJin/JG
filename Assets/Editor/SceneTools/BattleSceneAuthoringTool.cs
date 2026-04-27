@@ -327,6 +327,7 @@ namespace ProjectSD.EditorTools.SceneTools
 
             sceneErrorPresenter = CreateSceneErrorPresenter(bindingLayer);
             waveEndView = CreateWaveEndView(bindingLayer);
+            WireWaveEndVisuals(waveEndView, visualLayer);
         }
 
         private static UnitSlotView CreateUnitSlotTemplate(Transform parent)
@@ -402,6 +403,25 @@ namespace ProjectSD.EditorTools.SceneTools
             SetObjectField(view, "statsText", stats);
             SetObjectField(view, "returnToLobbyButton", button);
             return view;
+        }
+
+        private static void WireWaveEndVisuals(WaveEndView view, Transform visualLayer)
+        {
+            var victoryOverlay = visualLayer.Find("MissionVictoryOverlayVisual");
+            var defeatOverlay = visualLayer.Find("MissionDefeatOverlayVisual");
+            SetObjectField(view, "victoryOverlayVisual", victoryOverlay != null ? victoryOverlay.gameObject : null);
+            SetObjectField(view, "defeatOverlayVisual", defeatOverlay != null ? defeatOverlay.gameObject : null);
+            SetObjectField(view, "victoryReturnButton", FindGameObject(victoryOverlay, "DialogPanel/PrimaryButton"));
+            SetObjectField(view, "defeatReturnButton", FindGameObject(defeatOverlay, "DialogPanel/PrimaryButton"));
+        }
+
+        private static GameObject FindGameObject(Transform root, string path)
+        {
+            if (root == null)
+                return null;
+
+            var child = root.Find(path);
+            return child != null ? child.gameObject : null;
         }
 
         private static void WireRuntimeRegistrar(GameSceneRuntimeSpawnRegistrar registrar, PlayerSceneRegistry playerRegistry, EnemySceneRegistry enemyRegistry)

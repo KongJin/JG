@@ -1,0 +1,69 @@
+﻿{
+    "success":  true,
+    "run":  "20260427-132056",
+    "directory":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056",
+    "steps":  [
+                  {
+                      "name":  "lobby-home",
+                      "status":  "captured",
+                      "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056/01-lobby-home.png",
+                      "note":  ""
+                  },
+                  {
+                      "name":  "garage-home",
+                      "status":  "captured",
+                      "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056/02-garage-home.png",
+                      "note":  ""
+                  },
+                  {
+                      "name":  "garage-settings",
+                      "status":  "captured",
+                      "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056/03-garage-settings.png",
+                      "note":  ""
+                  },
+                  {
+                      "name":  "lobby-return",
+                      "status":  "captured",
+                      "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056/04-lobby-return.png",
+                      "note":  ""
+                  },
+                  {
+                      "name":  "create-room-filled",
+                      "status":  "captured",
+                      "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056/05-create-room-filled.png",
+                      "note":  ""
+                  },
+                  {
+                      "name":  "room-detail",
+                      "status":  "captured",
+                      "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056/06-room-detail.png",
+                      "note":  ""
+                  },
+                  {
+                      "name":  "room-ready",
+                      "status":  "captured",
+                      "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056/07-room-ready.png",
+                      "note":  ""
+                  },
+                  {
+                      "name":  "battle-entry",
+                      "status":  "captured",
+                      "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056/08-battle-entry.png",
+                      "note":  ""
+                  },
+                  {
+                      "name":  "battle-placement-preview",
+                      "status":  "captured",
+                      "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056/09-battle-placement-preview.png",
+                      "note":  ""
+                  },
+                  {
+                      "name":  "battle-after-placement",
+                      "status":  "captured",
+                      "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056/10-battle-after-placement.png",
+                      "note":  ""
+                  }
+              ],
+    "errorCount":  0,
+    "generatedAt":  "2026-04-27 13:21:28+09:00"
+}

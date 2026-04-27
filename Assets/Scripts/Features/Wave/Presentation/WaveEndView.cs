@@ -20,6 +20,10 @@ namespace Features.Wave.Presentation
         [Required, SerializeField] private Text resultText;
         [SerializeField] private Text statsText;
         [SerializeField] private Button returnToLobbyButton;
+        [SerializeField] private GameObject victoryOverlayVisual;
+        [SerializeField] private GameObject defeatOverlayVisual;
+        [SerializeField] private GameObject victoryReturnButton;
+        [SerializeField] private GameObject defeatReturnButton;
 
         private bool _gameEnded;
         private Action _onReturnToLobbyRequested;
@@ -38,6 +42,10 @@ namespace Features.Wave.Presentation
                 returnToLobbyButton.onClick.AddListener(OnReturnToLobbyClicked);
             }
 
+            AddReturnListener(victoryReturnButton);
+            AddReturnListener(defeatReturnButton);
+            SetOverlayActive(victoryOverlayVisual, false);
+            SetOverlayActive(defeatOverlayVisual, false);
             panel.SetActive(false);
         }
 
@@ -125,6 +133,27 @@ namespace Features.Wave.Presentation
             {
                 returnToLobbyButton.gameObject.SetActive(true);
             }
+
+            SetOverlayActive(victoryOverlayVisual, isVictory);
+            SetOverlayActive(defeatOverlayVisual, !isVictory);
+        }
+
+        private void AddReturnListener(GameObject buttonObject)
+        {
+            if (buttonObject == null)
+                return;
+
+            var button = buttonObject.GetComponent<Button>();
+            if (button == null)
+                return;
+
+            button.onClick.AddListener(OnReturnToLobbyClicked);
+        }
+
+        private static void SetOverlayActive(GameObject overlay, bool active)
+        {
+            if (overlay != null)
+                overlay.SetActive(active);
         }
 
         private void OnReturnToLobbyClicked()

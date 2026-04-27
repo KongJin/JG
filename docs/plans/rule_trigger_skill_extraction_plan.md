@@ -1,12 +1,12 @@
 # Rule Trigger Skill Extraction Plan
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-27
 > 상태: reference
 > doc_id: plans.rule-trigger-skill-extraction
 > role: plan
 > owner_scope: 문서 규칙 중 행동 트리거가 필요한 내용을 skill로 분리하고, 이후 규칙 추가 시 재발을 막는 실행 계획
 > upstream: docs.index, ops.document-management-workflow, ops.plan-authoring-review-workflow
-> artifacts: `.codex/skills/rule-*/`, `artifacts/rules/`
+> artifacts: `.codex/skills/rule-*/`, `.codex/skills/jg-*/`, `artifacts/rules/`
 
 ## 목적
 
@@ -211,6 +211,8 @@ Historical interim:
 - 2026-04-25 Phase 2 실행 재리뷰: plan rereview: residual - skill 파일은 보강됐지만 현재 세션의 available skill metadata에는 즉시 반영되지 않을 수 있어 다음 세션 확인이 필요하다.
 - 2026-04-26 skills 관리 점검 반영: Stitch coverage 기록을 현재 repo-local router인 `jg-stitch-workflow` 기준으로 정정했다. Unity 구현 handoff는 계속 `jg-unity-workflow`가 맡는다.
 - 2026-04-26 skills 관리 재리뷰: plan rereview: clean. 새 skill이나 새 hard-fail lint를 만들지 않고 stale coverage 기록만 수정했다. 현재 세션 available skill metadata에서 `jg-stitch-workflow` 노출 확인은 residual로 남긴다.
+- 2026-04-27 SetB UITK import 회고 반영: 반복되는 Stitch source -> Unity 후보 surface -> capture -> scoped policy -> mismatch/residual closeout 루프는 `jg-stitch-workflow`와 `jg-unity-workflow` 사이에 묻히기 쉬워 `jg-stitch-unity-import`를 새 focused execution skill로 분리했다.
+- 2026-04-27 SetB UITK import 재리뷰: 과한점은 새 owner 규칙을 만들지 않고 기존 `ops.*` 문서로 라우팅해 줄였다. 부족한점은 runtime replacement와 pilot acceptance 혼동을 skill body의 acceptance language로 명시해 해소했다. plan rereview: clean.
 - 2026-04-25 Phase 3 실행 리뷰: 부족한점 발견. 새 규칙 closeout만 다루면 사용자의 충돌/과범위/부족범위 지시를 즉시 제안하는 행동이 빠진다.
 - 2026-04-25 Phase 3 실행 반영: `ops.document-management-workflow`에 Instruction Fit 원칙을 추가하고, `ops.plan-authoring-review-workflow`의 부족한점 체크에 closeout 전 처리 기준을 추가했다.
 - 2026-04-25 Phase 3 실행 재리뷰: plan rereview: clean. 과한점/부족한점 없음.
@@ -220,3 +222,4 @@ Historical interim:
 - `skill trigger checked: added to rule-operations, rule-plan-authoring, jg-unity-workflow`
 - `skill trigger checked: added to rule-operations, rule-plan-authoring`
 - `skill trigger checked: corrected Stitch coverage to jg-stitch-workflow`
+- `skill trigger checked: added jg-stitch-unity-import`

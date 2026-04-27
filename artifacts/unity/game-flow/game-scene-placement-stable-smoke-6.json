@@ -1,0 +1,212 @@
+﻿{
+    "success":  false,
+    "terminalVerdict":  "blocked",
+    "owner":  "RuntimeSmokeToolingStabilization",
+    "script":  "tools/unity-mcp/Invoke-GameScenePlacementSmoke.ps1",
+    "command":  "C:\\Users\\SOL\\Documents\\JG\\tools\\unity-mcp\\Invoke-GameScenePlacementSmoke.ps1",
+    "blockedReason":  "transport-error",
+    "mismatchReason":  "",
+    "generatedAt":  "2026-04-27 10:19:41+09:00",
+    "startedAtUtc":  "2026-04-27T01:19:41.1121476Z",
+    "endedAtUtc":  "2026-04-27T01:20:34.0964834Z",
+    "resultMode":  "None",
+    "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+    "lockOwner":  "RuntimeSmokeToolingStabilization",
+    "playModeStarted":  false,
+    "playModeStopped":  true,
+    "stepVerdicts":  [
+                         {
+                             "name":  "lock",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:19:41.1702835Z",
+                             "detail":  "Temp/UnityMcp/runtime-smoke.lock"
+                         },
+                         {
+                             "name":  "mcp-preflight",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:19:41.2845284Z",
+                             "detail":  "Assets/Scenes/LobbyScene.unity"
+                         },
+                         {
+                             "name":  "compile",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:19:41.6706021Z"
+                         },
+                         {
+                             "name":  "blocked",
+                             "verdict":  "blocked",
+                             "atUtc":  "2026-04-27T01:20:33.3970418Z",
+                             "detail":  "transport-error"
+                         },
+                         {
+                             "name":  "play-stop",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:20:34.0761437Z"
+                         }
+                     ],
+    "transportErrors":  [
+                            {
+                                "atUtc":  "2026-04-27T01:20:33.3970418Z",
+                                "message":  "원격 서버에서 (504) 게이트웨이 시간 초과 오류를 반환했습니다."
+                            }
+                        ],
+    "evidenceScopeReason":  "Runtime smoke artifact records execution evidence rather than source file ownership.",
+    "evidence":  {
+                     "mcpLock":  {
+                                     "path":  "Temp/UnityMcp/runtime-smoke.lock",
+                                     "owner":  "RuntimeSmokeToolingStabilization",
+                                     "token":  "23db69034ec049c380275700c5861b8b"
+                                 },
+                     "exception":  {
+                                       "message":  "원격 서버에서 (504) 게이트웨이 시간 초과 오류를 반환했습니다.",
+                                       "category":  "transport-error"
+                                   },
+                     "blockedConsoleDelta":  {
+                                                 "newErrorCount":  4,
+                                                 "items":  [
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Unity MCP] SceneChangeQueue InitOnLoad called",
+                                                                   "timestampUtc":  "2026-04-27 01:19:50.470"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[FirebaseStub] session_start {}",
+                                                                   "timestampUtc":  "2026-04-27 01:19:57.725"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[FirebaseAuth] RestoreSession uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2, hasIdToken=True, hasRefreshToken=True, expiryMs=1777256277397.",
+                                                                   "timestampUtc":  "2026-04-27 01:19:57.727"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[FirebaseAuth] Reused persisted anonymous session for uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2.",
+                                                                   "timestampUtc":  "2026-04-27 01:19:57.747"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.",
+                                                                   "timestampUtc":  "2026-04-27 01:19:57.764"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (367ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 01:19:58.120"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[LobbyPhotonAdapter] Connecting...",
+                                                                   "timestampUtc":  "2026-04-27 01:19:58.152"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Unity MCP] Registered 95 endpoints.",
+                                                                   "timestampUtc":  "2026-04-27 01:20:02.837"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Unity MCP] Registered 95 endpoints.",
+                                                                   "timestampUtc":  "2026-04-27 01:20:02.837"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                                                                   "timestampUtc":  "2026-04-27 01:20:02.842"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                                                                   "timestampUtc":  "2026-04-27 01:20:02.842"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (5036ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.164"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (5036ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.164"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "[Firestore] Document not found (64ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.230"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "[Firestore] Document not found (64ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.230"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[FirebaseStub] session_end {\"duration_seconds\":5.612336}",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.337"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[FirebaseStub] session_end {\"duration_seconds\":5.612336}",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.337"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[FirebaseStub] drop_off {\"context\":\"lobby\",\"elapsed_seconds\":5.612336}",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.338"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[FirebaseStub] drop_off {\"context\":\"lobby\",\"elapsed_seconds\":5.612336}",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.338"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "[Firestore] Document not found (121ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.353"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "[Firestore] Document not found (121ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.353"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (234ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.589"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (234ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.589"
+                                                               },
+                                                               {
+                                                                   "type":  "Error",
+                                                                   "message":  "[LobbySetup] Anonymous sign-in flow failed: The object of type \u0027Features.Account.Presentation.LoginLoadingView\u0027 has been destroyed but you are still trying to access it.\nYour script should either check if it is null or you should not destroy the object.",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.593"
+                                                               },
+                                                               {
+                                                                   "type":  "Error",
+                                                                   "message":  "[LobbySetup] Anonymous sign-in flow failed: The object of type \u0027Features.Account.Presentation.LoginLoadingView\u0027 has been destroyed but you are still trying to access it.\nYour script should either check if it is null or you should not destroy the object.",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.593"
+                                                               },
+                                                               {
+                                                                   "type":  "Exception",
+                                                                   "message":  "MissingReferenceException: The object of type \u0027Features.Account.Presentation.LoginLoadingView\u0027 has been destroyed but you are still trying to access it.\nYour script should either check if it is null or you should not destroy the object.",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.601"
+                                                               },
+                                                               {
+                                                                   "type":  "Exception",
+                                                                   "message":  "MissingReferenceException: The object of type \u0027Features.Account.Presentation.LoginLoadingView\u0027 has been destroyed but you are still trying to access it.\nYour script should either check if it is null or you should not destroy the object.",
+                                                                   "timestampUtc":  "2026-04-27 01:20:03.601"
+                                                               }
+                                                           ]
+                                             },
+                     "finalHealth":  {
+                                         "ok":  true,
+                                         "isPlaying":  false,
+                                         "isCompiling":  false,
+                                         "activeScene":  "LobbyScene",
+                                         "activeScenePath":  "Assets/Scenes/LobbyScene.unity"
+                                     }
+                 }
+}

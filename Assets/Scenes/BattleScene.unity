@@ -281,6 +281,10 @@ MonoBehaviour:
   resultText: {fileID: 854117161}
   statsText: {fileID: 1853695558}
   returnToLobbyButton: {fileID: 398788247}
+  victoryOverlayVisual: {fileID: 79835798}
+  defeatOverlayVisual: {fileID: 1393532877}
+  victoryReturnButton: {fileID: 79835797}
+  defeatReturnButton: {fileID: 1393532876}
 --- !u!1001 &79835795
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -385,6 +389,16 @@ PrefabInstance:
 --- !u!224 &79835796 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2363138049392692477, guid: f58f9ef57fa12e84fa5e1823233012ed, type: 3}
+  m_PrefabInstance: {fileID: 79835795}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &79835797 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4195002475285721465, guid: f58f9ef57fa12e84fa5e1823233012ed, type: 3}
+  m_PrefabInstance: {fileID: 79835795}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &79835798 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6007941301407598201, guid: f58f9ef57fa12e84fa5e1823233012ed, type: 3}
   m_PrefabInstance: {fileID: 79835795}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &112418281
@@ -1008,6 +1022,7 @@ MonoBehaviour:
   _networkAdapter: {fileID: 258941324}
   _pageController: {fileID: 0}
   _novaPartVisualCatalog: {fileID: 0}
+  _novaPartAlignmentCatalog: {fileID: 0}
 --- !u!114 &258941326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4482,6 +4497,16 @@ PrefabInstance:
 --- !u!224 &1393532875 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5650332226785408825, guid: 8b77a5fc9ac471247b4727ffc016c24f, type: 3}
+  m_PrefabInstance: {fileID: 1393532874}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1393532876 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6525373591956229733, guid: 8b77a5fc9ac471247b4727ffc016c24f, type: 3}
+  m_PrefabInstance: {fileID: 1393532874}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1393532877 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5119476807087220526, guid: 8b77a5fc9ac471247b4727ffc016c24f, type: 3}
   m_PrefabInstance: {fileID: 1393532874}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1421938965

@@ -187,7 +187,11 @@ namespace Features.Unit.Presentation
         {
             if (_dragGhost != null)
             {
-                Destroy(_dragGhost.gameObject);
+                if (UnityEngine.Application.isPlaying)
+                    Destroy(_dragGhost.gameObject);
+                else
+                    DestroyImmediate(_dragGhost.gameObject);
+
                 _dragGhost = null;
                 _canvasGroup = null;
             }

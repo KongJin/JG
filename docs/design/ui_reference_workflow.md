@@ -98,4 +98,7 @@ Style:
 
 - Stitch: 시안 생성과 방향 탐색
 - Unity MCP: baseline prefab 재구성과 이후 새 scene 검증
-- repo 기준 진입점은 `jg-stitch-workflow`와 `jg-unity-workflow`만 사용한다.
+- repo 기준 진입점은 `jg-stitch-workflow`, `jg-stitch-unity-import`, `jg-unity-workflow`를 사용한다.
+  - `jg-stitch-workflow`: source freeze와 contract 준비 라우팅
+  - `jg-stitch-unity-import`: Stitch 화면을 Unity 후보 surface로 가져오는 반복 루틴
+  - `jg-unity-workflow`: scene/prefab/MCP authoring과 검증 라우팅

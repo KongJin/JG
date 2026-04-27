@@ -1,0 +1,23 @@
+{
+  "skill_name": "jg-stitch-unity-import",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Stitch의 Garage 화면을 UI Toolkit pilot으로 가져와줘",
+      "expected_output": "Plans or implements a UI Toolkit pilot without touching the existing runtime Garage prefab, and records UXML/USS, preview scene, capture, report, and scoped validation evidence.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "이 Stitch 화면을 실제 Lobby runtime에 교체 적용해줘",
+      "expected_output": "Separates pilot work from active runtime replacement, locks target/binding/acceptance/capture requirements first, and avoids reporting replacement success before runtime evidence exists.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "현재 가져온 UI가 SetB와 같은지 리뷰해줘",
+      "expected_output": "Reviews hierarchy, density, preview completeness, persistent CTA, scoped workflow policy, and reports pilot success, runtime success, mismatch, or blocked without mixing mechanical evidence with acceptance.",
+      "files": []
+    }
+  ]
+}

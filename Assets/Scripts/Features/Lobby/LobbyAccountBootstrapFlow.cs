@@ -12,22 +12,30 @@ internal sealed class LobbyAccountBootstrapFlow
     {
         for (int attempt = 1; attempt <= maxAttempts; attempt++)
         {
+            if (loginLoadingView == null)
+                return LobbySignInResult.None();
+
             try
             {
                 var result = await accountSetup.SignInAnonymously.Execute();
+                if (loginLoadingView == null)
+                    return LobbySignInResult.None();
+
                 if (result.IsSuccess)
                 {
                     await onSuccess(result.Value);
                     return LobbySignInResult.Success(result.Value);
                 }
 
-                loginLoadingView.OnLoginFailed(result.Error ?? "Unknown error");
+                if (loginLoadingView != null)
+                    loginLoadingView.OnLoginFailed(result.Error ?? "Unknown error");
             }
             catch (System.Exception ex)
             {
                 Debug.LogError($"[LobbySetup] Anonymous sign-in flow failed: {ex.Message}");
                 Debug.LogException(ex);
-                loginLoadingView?.OnLoginFailed(ex.Message);
+                if (loginLoadingView != null)
+                    loginLoadingView.OnLoginFailed(ex.Message);
             }
 
             if (attempt < maxAttempts)

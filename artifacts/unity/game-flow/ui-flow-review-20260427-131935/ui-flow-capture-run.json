@@ -1,0 +1,21 @@
+﻿{
+    "success":  false,
+    "run":  "20260427-131935",
+    "directory":  "artifacts/unity/game-flow/ui-flow-review-20260427-131935",
+    "error":  "The remote server returned an error: (404) Not Found.",
+    "steps":  [
+                  {
+                      "name":  "lobby-home",
+                      "status":  "captured",
+                      "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-131935/01-lobby-home.png",
+                      "note":  ""
+                  },
+                  {
+                      "name":  "garage-home",
+                      "status":  "captured",
+                      "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-131935/02-garage-home.png",
+                      "note":  ""
+                  }
+              ],
+    "generatedAt":  "2026-04-27 13:20:04+09:00"
+}

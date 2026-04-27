@@ -83,6 +83,7 @@ const INSPECTION_REFERENCE_PATTERNS = [
 const MUTATING_REPO_SKILL_ENTRIES = new Set([
   ".codex/skills/jg-unity-workflow/SKILL.md",
   ".codex/skills/jg-stitch-workflow/SKILL.md",
+  ".codex/skills/jg-stitch-unity-import/SKILL.md",
 ]);
 export const RECURRENCE_CLOSEOUT_PATH = "artifacts/rules/issue-recurrence-closeout.json";
 export const RECURRENCE_CHANGED_FILES_ENV = "RULES_LINT_CHANGED_FILES";

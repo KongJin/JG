@@ -1,0 +1,90 @@
+﻿{
+    "success":  true,
+    "terminalVerdict":  "success",
+    "blockedReason":  "",
+    "generatedAt":  "2026-04-27 13:22:30+09:00",
+    "resultMode":  "Defeat",
+    "battleSceneDirect":  false,
+    "lockOwner":  "GameSceneMobileHudFraming",
+    "playModeStopped":  true,
+    "evidence":  {
+                     "mcpLock":  {
+                                     "owner":  "GameSceneMobileHudFraming",
+                                     "path":  "Temp/UnityMcp/runtime-smoke.lock",
+                                     "token":  "8abf7d206f574a13ad0833a5bf1c741a"
+                                 },
+                     "preHealth":  {
+                                       "ok":  true,
+                                       "port":  52675,
+                                       "isPlaying":  false,
+                                       "isCompiling":  false,
+                                       "activeScene":  "LobbyScene",
+                                       "activeScenePath":  "Assets/Scenes/LobbyScene.unity"
+                                   },
+                     "placementSmoke":  {
+                                            "path":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056/12-defeat-placement-source.json",
+                                            "success":  true,
+                                            "terminalVerdict":  "success",
+                                            "blockedReason":  "",
+                                            "newErrorCount":  0,
+                                            "hasSummonLog":  true,
+                                            "hasUnitKillLog":  true,
+                                            "hasResultLog":  true,
+                                            "hasVictoryResultLog":  false,
+                                            "hasDefeatResultLog":  true
+                                        },
+                     "directBattleScene":  null,
+                     "screenshot":  {
+                                        "success":  true,
+                                        "relativePath":  "artifacts/unity/game-flow/ui-flow-review-20260427-132056/12-battle-defeat.png",
+                                        "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\game-flow\\ui-flow-review-20260427-132056\\12-battle-defeat.png",
+                                        "fileSizeBytes":  39169,
+                                        "sourceView":  "GameView",
+                                        "width":  390,
+                                        "height":  844,
+                                        "portrait":  true,
+                                        "dimensionError":  null
+                                    },
+                     "ui":  {
+                                "battleHudCanvas":  {
+                                                        "path":  "/BattleHudCanvas",
+                                                        "activeInHierarchy":  true
+                                                    },
+                                "commandDock":  {
+                                                    "path":  "/BattleHudCanvas/RuntimeBindingLayer/CommandDock",
+                                                    "activeInHierarchy":  true
+                                                },
+                                "firstUnitSlot":  {
+                                                      "path":  "/BattleHudCanvas/RuntimeBindingLayer/CommandDock/SlotRow/UnitSlot-0",
+                                                      "activeInHierarchy":  false,
+                                                      "error":  "The remote server returned an error: (404) Not Found."
+                                                  },
+                                "resultPanel":  {
+                                                    "path":  "/BattleHudCanvas/RuntimeBindingLayer/WaveEndOverlay/ResultPanel",
+                                                    "activeInHierarchy":  true
+                                                },
+                                "runtimeResultText":  {
+                                                          "path":  "/BattleHudCanvas/RuntimeBindingLayer/WaveEndOverlay/ResultPanel/ResultText",
+                                                          "text":  ""
+                                                      },
+                                "visualVictoryOverlay":  {
+                                                             "path":  "/BattleHudCanvas/StitchBattleVisualLayer/MissionVictoryOverlayVisual",
+                                                             "activeInHierarchy":  false
+                                                         },
+                                "visualDefeatOverlay":  {
+                                                            "path":  "/BattleHudCanvas/StitchBattleVisualLayer/MissionDefeatOverlayVisual",
+                                                            "activeInHierarchy":  true
+                                                        },
+                                "visualVictoryTitle":  {
+                                                           "path":  "/BattleHudCanvas/StitchBattleVisualLayer/MissionVictoryOverlayVisual/DialogPanel/HeaderText",
+                                                           "text":  "MISSION_SUCCESS"
+                                                       },
+                                "visualDefeatTitle":  {
+                                                          "path":  "/BattleHudCanvas/StitchBattleVisualLayer/MissionDefeatOverlayVisual/DialogPanel/HeaderText",
+                                                          "text":  "MISSION_FAILED"
+                                                      }
+                            },
+                     "stopPlayModeError":  null,
+                     "finalHealthError":  null
+                 }
+}

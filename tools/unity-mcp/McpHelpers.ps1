@@ -716,6 +716,20 @@ function Enter-McpExclusiveOperation {
                 catch {
                     $existingText = "unable to read lock: $($_.Exception.Message)"
                 }
+
+                try {
+                    $existingJson = $existingText | ConvertFrom-Json
+                    if ($null -ne $existingJson.PSObject.Properties["pid"]) {
+                        $existingPid = [int]$existingJson.pid
+                        if ($existingPid -gt 0 -and $null -eq (Get-Process -Id $existingPid -ErrorAction SilentlyContinue)) {
+                            Remove-Item -LiteralPath $absolutePath -Force
+                            continue
+                        }
+                    }
+                }
+                catch {
+                    # Keep unreadable or non-JSON locks conservative; age-based cleanup below still applies.
+                }
             }
 
             if ($TimeoutSec -le 0 -or (Get-Date) -ge $deadline) {

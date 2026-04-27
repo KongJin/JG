@@ -1,0 +1,399 @@
+﻿{
+    "success":  false,
+    "terminalVerdict":  "blocked",
+    "owner":  "RuntimeSmokeToolingStabilization",
+    "script":  "tools/unity-mcp/Invoke-GameScenePlacementSmoke.ps1",
+    "command":  "C:\\Users\\SOL\\Documents\\JG\\tools\\unity-mcp\\Invoke-GameScenePlacementSmoke.ps1",
+    "blockedReason":  "scene-transition",
+    "mismatchReason":  "",
+    "generatedAt":  "2026-04-27 09:59:07+09:00",
+    "startedAtUtc":  "2026-04-27T00:59:07.1587535Z",
+    "endedAtUtc":  "2026-04-27T01:01:06.4838769Z",
+    "resultMode":  "None",
+    "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+    "lockOwner":  "RuntimeSmokeToolingStabilization",
+    "playModeStarted":  true,
+    "playModeStopped":  true,
+    "stepVerdicts":  [
+                         {
+                             "name":  "lock",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T00:59:07.2428080Z",
+                             "detail":  "Temp/UnityMcp/runtime-smoke.lock"
+                         },
+                         {
+                             "name":  "mcp-preflight",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T00:59:07.3757140Z",
+                             "detail":  "Assets/Scenes/LobbyScene.unity"
+                         },
+                         {
+                             "name":  "compile",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T00:59:07.7550940Z"
+                         },
+                         {
+                             "name":  "lobby-play-session",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T00:59:29.9608653Z"
+                         },
+                         {
+                             "name":  "lobby-ready",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T00:59:31.6104778Z"
+                         },
+                         {
+                             "name":  "room-create",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T00:59:33.9253102Z",
+                             "detail":  "/LobbyCanvas/LobbyPageRoot/RoomListPanel/CreateRoomButton"
+                         },
+                         {
+                             "name":  "room-detail-active",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T00:59:34.5374818Z",
+                             "detail":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel"
+                         },
+                         {
+                             "name":  "room-ready",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T00:59:34.5465684Z",
+                             "detail":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/ReadyButton"
+                         },
+                         {
+                             "name":  "start-button-ready",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T00:59:34.5552272Z",
+                             "detail":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/StartGameButton"
+                         },
+                         {
+                             "name":  "room-start",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T00:59:34.5643832Z",
+                             "detail":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/StartGameButton"
+                         },
+                         {
+                             "name":  "blocked",
+                             "verdict":  "blocked",
+                             "atUtc":  "2026-04-27T01:01:05.0405697Z",
+                             "detail":  "scene-transition"
+                         },
+                         {
+                             "name":  "play-stop",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-27T01:01:06.4716109Z"
+                         }
+                     ],
+    "transportErrors":  [
+
+                        ],
+    "evidenceScopeReason":  "Runtime smoke artifact records execution evidence rather than source file ownership.",
+    "evidence":  {
+                     "mcpLock":  {
+                                     "path":  "Temp/UnityMcp/runtime-smoke.lock",
+                                     "owner":  "RuntimeSmokeToolingStabilization",
+                                     "token":  "0960c88e75254e2a9b03318ad9d12558"
+                                 },
+                     "prepareLobby":  {
+                                          "stoppedPreExistingPlay":  false,
+                                          "play":  {
+                                                       "Response":  "",
+                                                       "Wait":  {
+                                                                    "success":  true,
+                                                                    "action":  "wait-for-play",
+                                                                    "isPlaying":  true,
+                                                                    "isPlayingOrWillChange":  false,
+                                                                    "isPlayModeChanging":  false,
+                                                                    "rawIsPlayingOrWillChange":  true,
+                                                                    "isCompiling":  false,
+                                                                    "activeScene":  "LobbyScene",
+                                                                    "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                                                    "waitedMs":  642
+                                                                },
+                                                       "Health":  {
+                                                                      "ok":  true,
+                                                                      "bridgeRunning":  true,
+                                                                      "port":  52675,
+                                                                      "isPlaying":  true,
+                                                                      "isPlayingOrWillChange":  false,
+                                                                      "isPlayModeChanging":  false,
+                                                                      "rawIsPlayingOrWillChange":  true,
+                                                                      "isCompiling":  false,
+                                                                      "isWaitingForPlayMode":  false,
+                                                                      "projectKey":  "0d8ea703",
+                                                                      "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                                                      "activeScene":  "LobbyScene",
+                                                                      "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                                                      "pendingPlayAction":  "",
+                                                                      "pendingPlayAgeMs":  0
+                                                                  },
+                                                       "ReadyState":  {
+                                                                          "ok":  true,
+                                                                          "bridgeRunning":  true,
+                                                                          "port":  52675,
+                                                                          "isPlaying":  true,
+                                                                          "isPlayingOrWillChange":  false,
+                                                                          "isPlayModeChanging":  false,
+                                                                          "rawIsPlayingOrWillChange":  true,
+                                                                          "isCompiling":  false,
+                                                                          "isWaitingForPlayMode":  false,
+                                                                          "projectKey":  "0d8ea703",
+                                                                          "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                                                          "activeScene":  "LobbyScene",
+                                                                          "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                                                          "pendingPlayAction":  "",
+                                                                          "pendingPlayAgeMs":  0
+                                                                      },
+                                                       "ElapsedMs":  21136
+                                                   },
+                                          "loadingPanelWait":  {
+                                                                   "success":  true,
+                                                                   "path":  "/LobbyCanvas/Overlays/SetCLoginLoadingOverlayRoot/LoadingPanel",
+                                                                   "name":  null,
+                                                                   "activeInHierarchy":  false,
+                                                                   "waitedMs":  4
+                                                               }
+                                      },
+                     "lobbyReady":  {
+                                        "success":  true,
+                                        "message":  "Photon lobby ready."
+                                    },
+                     "roomNameInput":  {
+                                           "success":  true,
+                                           "path":  "/LobbyCanvas/LobbyPageRoot/RoomListPanel/RoomNameInput",
+                                           "value":  "mcp-20260427005933"
+                                       },
+                     "displayNameInput":  {
+                                              "success":  true,
+                                              "path":  "/LobbyCanvas/LobbyPageRoot/RoomListPanel/DisplayNameInput",
+                                              "value":  "MCP Smoke"
+                                          },
+                     "capacityInput":  {
+                                           "success":  true,
+                                           "path":  "/LobbyCanvas/LobbyPageRoot/RoomListPanel/CapacityInput",
+                                           "value":  "2"
+                                       },
+                     "createRoom":  {
+                                        "success":  true,
+                                        "path":  "/LobbyCanvas/LobbyPageRoot/RoomListPanel/CreateRoomButton",
+                                        "response":  {
+                                                         "success":  true,
+                                                         "message":  "Invoked Button.onClick and coded handlers",
+                                                         "path":  "/LobbyCanvas/LobbyPageRoot/RoomListPanel/CreateRoomButton",
+                                                         "invokedMethod":  "Button.onClick",
+                                                         "result":  "",
+                                                         "durationMs":  7.0
+                                                     }
+                                    },
+                     "roomDetailActive":  {
+                                              "success":  true,
+                                              "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel"
+                                          },
+                     "ready":  {
+                                   "success":  true,
+                                   "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/ReadyButton",
+                                   "response":  {
+                                                    "success":  true,
+                                                    "message":  "Invoked Button.onClick and coded handlers",
+                                                    "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/ReadyButton",
+                                                    "invokedMethod":  "Button.onClick",
+                                                    "result":  "",
+                                                    "durationMs":  1.0
+                                                }
+                               },
+                     "startButtonReady":  {
+                                              "success":  true,
+                                              "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/StartGameButton",
+                                              "activeInHierarchy":  true,
+                                              "interactable":  true
+                                          },
+                     "start":  {
+                                   "success":  true,
+                                   "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/StartGameButton",
+                                   "response":  {
+                                                    "success":  true,
+                                                    "message":  "Invoked Button.onClick and coded handlers",
+                                                    "path":  "/LobbyCanvas/Overlays/SetCRoomDetailPanelRoot/RoomDetailPanel/StartGameButton",
+                                                    "invokedMethod":  "Button.onClick",
+                                                    "result":  "",
+                                                    "durationMs":  3.0
+                                                }
+                               },
+                     "exception":  {
+                                       "message":  "Active scene did not become \u0027BattleScene\u0027 within 90s. Last error: ",
+                                       "category":  "scene-transition"
+                                   },
+                     "blockedConsoleDelta":  {
+                                                 "newErrorCount":  0,
+                                                 "items":  [
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Unity MCP] SceneChangeQueue InitOnLoad called",
+                                                                   "timestampUtc":  "2026-04-27 00:59:16.856"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[FirebaseStub] session_start {}",
+                                                                   "timestampUtc":  "2026-04-27 00:59:23.675"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[FirebaseAuth] RestoreSession uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2, hasIdToken=True, hasRefreshToken=True, expiryMs=1777252653170.",
+                                                                   "timestampUtc":  "2026-04-27 00:59:23.677"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[FirebaseAuth] Reused persisted anonymous session for uid=NaPzrfRlDPapqZRBTFpsMpuc7Zz2.",
+                                                                   "timestampUtc":  "2026-04-27 00:59:23.684"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.",
+                                                                   "timestampUtc":  "2026-04-27 00:59:23.705"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (363ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:24.053"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (536ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:24.597"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[LobbyPhotonAdapter] Connecting...",
+                                                                   "timestampUtc":  "2026-04-27 00:59:24.613"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Unity MCP] Registered 95 endpoints.",
+                                                                   "timestampUtc":  "2026-04-27 00:59:28.873"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Unity MCP] Registered 95 endpoints.",
+                                                                   "timestampUtc":  "2026-04-27 00:59:28.873"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                                                                   "timestampUtc":  "2026-04-27 00:59:28.877"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Unity MCP] Bridge started at http://127.0.0.1:52675/ (config: ProjectSettings/UnityMcpPort.txt)",
+                                                                   "timestampUtc":  "2026-04-27 00:59:28.877"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "[Firestore] Document not found (4582ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:29.180"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "[Firestore] Document not found (4582ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:29.180"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "[Firestore] Document not found (64ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:29.245"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "[Firestore] Document not found (64ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:29.245"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (236ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:29.483"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (236ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:29.483"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (123ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/operations/recent?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:29.900"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (123ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/operations/recent?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:29.900"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (133ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:29.908"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (133ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:29.909"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (49ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/operations/recent?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:29.956"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[Firestore] Request succeeded (49ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/operations/recent?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                                                   "timestampUtc":  "2026-04-27 00:59:29.956"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                                                                   "timestampUtc":  "2026-04-27 00:59:30.533"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                                                                   "timestampUtc":  "2026-04-27 00:59:30.533"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[LobbyPhotonAdapter] Connected to Master. Joining lobby...",
+                                                                   "timestampUtc":  "2026-04-27 00:59:31.331"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[LobbyPhotonAdapter] Connected to Master. Joining lobby...",
+                                                                   "timestampUtc":  "2026-04-27 00:59:31.331"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[LobbyPhotonAdapter] Joined lobby. Ready for matchmaking.",
+                                                                   "timestampUtc":  "2026-04-27 00:59:31.396"
+                                                               },
+                                                               {
+                                                                   "type":  "Log",
+                                                                   "message":  "[LobbyPhotonAdapter] Joined lobby. Ready for matchmaking.",
+                                                                   "timestampUtc":  "2026-04-27 00:59:31.396"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "[Lobby] All players must be ready and room must have at least two members.",
+                                                                   "timestampUtc":  "2026-04-27 00:59:34.561"
+                                                               },
+                                                               {
+                                                                   "type":  "Warning",
+                                                                   "message":  "[Lobby] All players must be ready and room must have at least two members.",
+                                                                   "timestampUtc":  "2026-04-27 00:59:34.561"
+                                                               }
+                                                           ]
+                                             },
+                     "finalHealth":  {
+                                         "ok":  true,
+                                         "isPlaying":  false,
+                                         "isCompiling":  false,
+                                         "activeScene":  "LobbyScene",
+                                         "activeScenePath":  "Assets/Scenes/LobbyScene.unity"
+                                     }
+                 }
+}

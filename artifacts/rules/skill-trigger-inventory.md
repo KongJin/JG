@@ -1,7 +1,7 @@
 # Skill Trigger Inventory
 
 > generated: 2026-04-25
-> updated: 2026-04-26
+> updated: 2026-04-27
 > scope: first pass for `docs/ops`, `docs/plans`, `docs/design`, `AGENTS.md`, `.codex/skills/rule-*`
 
 This inventory separates rules that need an always-on skill trigger from rules that should remain only in owner documents.
@@ -10,7 +10,7 @@ This inventory separates rules that need an always-on skill trigger from rules t
 
 | status | count | meaning |
 |---|---:|---|
-| covered | 10 | Already has a direct skill trigger or a newly added trigger |
+| covered | 11 | Already has a direct skill trigger or a newly added trigger |
 | description-needs-review | 0 | Existing skill likely covers it, but the description may be too broad or indirect |
 | new-skill-candidate | 2 | Repeated action lane may need its own skill if under-triggering continues |
 | docs-only | 5 | Keep in owner docs; not a skill trigger |
@@ -26,7 +26,8 @@ This inventory separates rules that need an always-on skill trigger from rules t
 | Unity scene/prefab/MCP workflow | `docs/ops/unity_ui_authoring_workflow.md`, `tools/unity-mcp/README.md` | Unity, scene, prefab, MCP, Play Mode, compile error, UI authoring | covered by `rule-unity` and `jg-unity-workflow` | Keep both; use `jg-unity-workflow` for JG-specific ordering. |
 | Architecture / layer dependency | design architecture docs, rule architecture refs | architecture, layer, dependency, port, UseCase, Bootstrap | covered by `rule-architecture` | Keep in `rule-architecture`. |
 | Reporting closeout / blocked / mismatch / success | `docs/ops/acceptance_reporting_guardrails.md`, `docs/ops/document_management_workflow.md` | blocked, mismatch, success, acceptance, closeout, residual | covered by `rule-operations` | Description strengthened. Consider `rule-acceptance-reporting` only if misses continue. |
-| Stitch data and translation workflow | `docs/ops/stitch_data_workflow.md`, `docs/ops/stitch_to_unity_translation_guide.md`, `tools/stitch-unity/README.md` | Stitch, handoff, source freeze, execution contract, translation, presentation contract | covered by `jg-stitch-workflow`; Unity handoff continues through `jg-unity-workflow` | Keep `jg-stitch-workflow` as the thin router. Confirm next-session available skill metadata exposes it. |
+| Stitch data and translation workflow | `docs/ops/stitch_data_workflow.md`, `docs/ops/stitch_to_unity_translation_guide.md`, `tools/stitch-unity/README.md` | Stitch, handoff, source freeze, execution contract, translation, presentation contract | covered by `jg-stitch-workflow`; Unity handoff continues through `jg-unity-workflow` | Keep `jg-stitch-workflow` as the thin router. Use `jg-stitch-unity-import` for the repeated source-to-Unity candidate import loop. |
+| Stitch to Unity UI import execution | `docs/ops/stitch_data_workflow.md`, `docs/ops/unity_ui_authoring_workflow.md`, `docs/ops/acceptance_reporting_guardrails.md` | 가져와줘, import, port, UI Toolkit pilot, runtime replacement, UXML, USS, UIDocument, PanelSettings, preview scene, capture, visual fidelity | covered by `jg-stitch-unity-import` | Keep as a focused execution skill; it must route policy and owner authority to existing owner docs instead of defining new rules. |
 | Unity UI authoring policy | `docs/ops/unity_ui_authoring_workflow.md` | Unity UI, UI authoring, new prefab, presentation ownership, workflow policy | covered by `jg-unity-workflow` | Description strengthened. |
 | Skill trigger coverage for new rules | `docs/plans/rule_trigger_skill_extraction_plan.md` | new rule, 규칙 추가, skill trigger checked, behavior trigger | covered by `rule-plan-authoring` and `rule-operations` | Descriptions strengthened. Phase 3 should still move interim rule to owner closeout. |
 | WebGL / Firebase / deployment context | `docs/playtest/webgl_smoke_checklist.md`, `docs/ops/firebase_hosting.md` | WebGL, Firebase, hosting, 배포, 실기 검증 | covered by `rule-context` and `rule-validation` | Keep split: deployment in `rule-context`, verification in `rule-validation`. |
@@ -40,7 +41,7 @@ This inventory separates rules that need an always-on skill trigger from rules t
 
 ## Immediate Recommendations
 
-1. Keep `rule-plan-authoring` as the only new skill from this pass.
+1. Keep `rule-plan-authoring` and `jg-stitch-unity-import` as focused skills for recurring action loops.
 2. Do not create more skills until a repeated miss is observed or the inventory confirms a distinct action loop.
 3. In Phase 3, promote `skill trigger checked: ...` from interim plan rule into the owner closeout workflow.
 4. In Phase 4, start with advisory lint rather than hard fail.
@@ -50,3 +51,4 @@ This inventory separates rules that need an always-on skill trigger from rules t
 
 - `skill trigger checked: added to rule-operations, rule-plan-authoring, jg-unity-workflow`
 - `skill trigger checked: corrected Stitch coverage to jg-stitch-workflow on 2026-04-26`
+- `skill trigger checked: added jg-stitch-unity-import on 2026-04-27`
