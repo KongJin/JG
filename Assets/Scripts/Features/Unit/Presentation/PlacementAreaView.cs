@@ -1,4 +1,6 @@
 using Features.Unit.Runtime;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 
 namespace Features.Unit.Presentation
@@ -48,8 +50,8 @@ namespace Features.Unit.Presentation
                 : PlacementAreaMaterialFactory.CreateActiveMaterial();
             _invalidMaterial = PlacementAreaMaterialFactory.CreateInvalidMaterial();
 
-            _meshFilter = GetComponent<MeshFilter>();
-            _meshRenderer = GetComponent<MeshRenderer>();
+            _meshFilter = ComponentAccess.Get<MeshFilter>(gameObject);
+            _meshRenderer = ComponentAccess.Get<MeshRenderer>(gameObject);
             _previewVisual ??= PlacementPreviewVisualController.Attach(transform);
 
             BuildQuadMesh();
@@ -160,7 +162,7 @@ namespace Features.Unit.Presentation
         {
             if (_meshRenderer == null)
             {
-                _meshRenderer = GetComponent<MeshRenderer>();
+                _meshRenderer = ComponentAccess.Get<MeshRenderer>(gameObject);
             }
 
             if (_meshRenderer == null || material == null)

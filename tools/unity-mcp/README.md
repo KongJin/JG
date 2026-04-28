@@ -46,7 +46,7 @@ These are the routes the current workflow depends on.
 
 Before using Unity MCP for prefab authoring, scene assembly, Play Mode automation, screenshots, or smoke:
 
-1. Run `powershell -ExecutionPolicy Bypass -File .\tools\check-compile-errors.ps1`
+1. Run `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\check-compile-errors.ps1`
 2. If there are compile errors, fix them before entering any Unity MCP workflow
 3. After the fix, wait for compile and script reload to settle with `Invoke-McpCompileRequestAndWait` or `Invoke-EditorProjectSync.ps1`
 4. Confirm `/health` reports `isCompiling = false`
@@ -159,7 +159,7 @@ Use this when prefab-authoring work benefits from an explicit Prefab Mode stage 
 When Unity already has the project open and you need generated `.csproj` files refreshed for editor tests or IDE sync, use:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-EditorProjectSync.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-EditorProjectSync.ps1
 ```
 
 This uses the current editor instance through MCP and performs:
@@ -173,7 +173,18 @@ This uses the current editor instance through MCP and performs:
 Run the workflow policy check like this:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1
+```
+
+For a scoped UI Toolkit candidate pass, pass the changed paths as a PowerShell array:
+
+```powershell
+$changed = @(
+  'Assets/UI/UIToolkit/OperationMemory/OperationMemoryWorkspace.uxml',
+  'Assets/UI/UIToolkit/OperationMemory/OperationMemoryWorkspace.uss',
+  'artifacts/unity/operation-memory-shared-shell-uitk-candidate-report.md'
+)
+.\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1 -ChangedFile $changed
 ```
 
 Outputs:
@@ -183,8 +194,9 @@ Outputs:
 The policy check reads the current changed files from git and enforces:
 
 - route classification for `scene/prefab authoring`, `mixed`, `lobby-ui`, `game-scene-ui`
+- route classification for `uitk-candidate` when `Assets/UI/UIToolkit/**` UXML/USS/asset files change
 - no new UI prefab creation by default
-- UI Toolkit candidate evidence for fresh Lobby/Garage source changes
+- UI Toolkit candidate evidence for fresh source changes; policy pass is not runtime acceptance
 
 It does not replace the workflow SSOT.
 Keep the policy body in owner doc `ops.unity-ui-authoring-workflow` and use this README as the execution reference. Resolve the current file path through `docs/index.md`.

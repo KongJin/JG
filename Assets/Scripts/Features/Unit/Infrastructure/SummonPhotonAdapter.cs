@@ -8,6 +8,8 @@ using Photon.Pun;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Math;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 using UnitSpec = Features.Unit.Domain.Unit;
 
@@ -63,7 +65,7 @@ namespace Features.Unit.Infrastructure
             }
 
             // BattleEntityPrefabSetup 초기화
-            var prefabSetup = spawnedGo.GetComponent<BattleEntityPrefabSetup>();
+            var prefabSetup = ComponentAccess.Get<BattleEntityPrefabSetup>(spawnedGo);
             if (prefabSetup != null)
             {
                 prefabSetup.Initialize(_eventBus, _combatSetup, _unitPositionQuery, unitSpec, ownerId);
@@ -73,7 +75,7 @@ namespace Features.Unit.Infrastructure
                 Debug.LogError("[SummonPhotonAdapter] BattleEntityPrefabSetup is missing on the prefab.", this);
             }
 
-            var view = spawnedGo != null ? spawnedGo.GetComponent<PhotonView>() : null;
+            var view = ComponentAccess.Get<PhotonView>(spawnedGo);
             var fallbackInstanceId = spawnedGo != null ? spawnedGo.GetInstanceID() : 0;
             return BattleEntityNetworkId.Build(unitSpec, view, fallbackInstanceId);
         }

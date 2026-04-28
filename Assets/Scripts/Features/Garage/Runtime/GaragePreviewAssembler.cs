@@ -1,4 +1,6 @@
 using UnityEngine;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 
 namespace Features.Garage.Runtime
 {
@@ -35,14 +37,14 @@ namespace Features.Garage.Runtime
             {
                 var lightObject = new GameObject(PreviewKeyLightName);
                 lightObject.transform.SetParent(previewCamera.transform, false);
-                keyLight = lightObject.AddComponent<Light>();
+                keyLight = ComponentAccess.Ensure<Light>(lightObject);
                 keyLight.type = LightType.Directional;
             }
             else
             {
-                keyLight = lightTransform.GetComponent<Light>();
+                keyLight = ComponentAccess.Get<Light>(lightTransform.gameObject);
                 if (keyLight == null)
-                    keyLight = lightTransform.gameObject.AddComponent<Light>();
+                    keyLight = ComponentAccess.Ensure<Light>(lightTransform.gameObject);
             }
 
             keyLight.type = LightType.Directional;

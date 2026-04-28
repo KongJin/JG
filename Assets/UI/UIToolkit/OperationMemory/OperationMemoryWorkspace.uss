@@ -1,0 +1,342 @@
+:root {
+    --memory-bg: var(--jg-bg);
+    --memory-panel: var(--jg-panel-raised);
+    --memory-panel-dark: var(--jg-panel-dark);
+    --memory-panel-mid: #162233;
+    --memory-line: var(--jg-line);
+    --memory-line-soft: var(--jg-line-soft);
+    --memory-text: var(--jg-text);
+    --memory-muted: var(--jg-muted);
+    --memory-blue: var(--jg-command-blue);
+    --memory-orange: var(--jg-signal-orange);
+    --memory-red: var(--jg-danger-red);
+}
+
+.operation-memory-screen {
+    flex-grow: 1;
+    min-width: 320px;
+    background-color: var(--memory-bg);
+    color: var(--memory-text);
+    position: relative;
+    overflow: hidden;
+}
+
+.memory-top-shell {
+    height: 58px;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #090d13;
+    border-bottom-width: 2px;
+    border-bottom-color: #1f2937;
+    flex-shrink: 0;
+}
+
+.memory-icon-button {
+    width: 34px;
+    height: 34px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: #2b3442;
+    background-color: #111827;
+    color: #94a3b8;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    -unity-font-style: bold;
+}
+
+.memory-icon-button--blue {
+    color: var(--memory-blue);
+}
+
+.memory-title-stack {
+    flex-grow: 1;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.memory-title {
+    color: var(--memory-blue);
+    font-size: 15px;
+    -unity-font-style: bold;
+}
+
+.memory-status {
+    color: var(--memory-muted);
+    font-size: 9px;
+}
+
+.memory-scroll {
+    flex-grow: 1;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 124px;
+}
+
+.memory-card {
+    background-color: var(--memory-panel);
+    border-width: 1px;
+    border-color: #2d3748;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.memory-card--latest {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-left-width: 3px;
+    border-left-color: var(--memory-blue);
+}
+
+.memory-card-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.memory-kicker,
+.memory-section-title,
+.memory-stat-label,
+.memory-sitrep-label,
+.trace-slot {
+    color: var(--memory-muted);
+    font-size: 9px;
+    -unity-font-style: bold;
+}
+
+.memory-result {
+    font-size: 20px;
+    -unity-font-style: bold;
+}
+
+.memory-result--held {
+    color: var(--memory-blue);
+}
+
+.memory-time {
+    color: #9ca3af;
+    font-size: 10px;
+}
+
+.memory-stat-grid {
+    flex-direction: row;
+    margin-bottom: 8px;
+}
+
+.memory-stat-cell {
+    flex-grow: 1;
+    min-width: 0;
+    height: 44px;
+    margin-right: 5px;
+    padding-top: 6px;
+    border-width: 1px;
+    border-color: var(--memory-line-soft);
+    background-color: var(--memory-panel-dark);
+    align-items: center;
+    justify-content: center;
+}
+
+.memory-stat-value {
+    color: var(--memory-text);
+    font-size: 13px;
+    -unity-font-style: bold;
+}
+
+.memory-stat-value--blue,
+.operation-title--held {
+    color: var(--memory-blue);
+}
+
+.memory-stat-value--orange,
+.operation-core--orange,
+.memory-chip--orange {
+    color: var(--memory-orange);
+}
+
+.memory-sitrep {
+    background-color: #0b1220;
+    border-width: 1px;
+    border-color: var(--memory-line-soft);
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.memory-sitrep-text {
+    color: #cbd5e1;
+    font-size: 11px;
+    white-space: normal;
+}
+
+.memory-section {
+    margin-bottom: 12px;
+}
+
+.memory-section-title {
+    margin-bottom: 6px;
+}
+
+.operation-row {
+    min-height: 46px;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+    background-color: #0f1724;
+    border-width: 1px;
+    border-color: var(--memory-line-soft);
+    border-radius: 3px;
+}
+
+.operation-row-line {
+    width: 3px;
+    height: 28px;
+    background-color: var(--memory-blue);
+    margin-right: 8px;
+}
+
+.operation-row-line--danger {
+    background-color: var(--memory-red);
+}
+
+.operation-row-main {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.operation-title {
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+.operation-title--danger,
+.operation-core--danger {
+    color: var(--memory-red);
+}
+
+.operation-meta {
+    color: var(--memory-muted);
+    font-size: 9px;
+    white-space: normal;
+}
+
+.operation-core {
+    width: 58px;
+    color: var(--memory-blue);
+    font-size: 9px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-right;
+}
+
+.operation-row--empty {
+    height: 42px;
+    justify-content: center;
+    border-color: #263244;
+    background-color: rgba(10, 15, 24, 0.55);
+}
+
+.operation-empty-text {
+    color: #64748b;
+    font-size: 10px;
+}
+
+.trace-grid {
+    flex-direction: row;
+}
+
+.trace-card {
+    flex-grow: 1;
+    min-width: 0;
+    margin-right: 7px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: #0f1724;
+    border-width: 1px;
+    border-color: #334155;
+}
+
+.trace-name {
+    color: var(--memory-text);
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+.trace-meta,
+.trace-contribution {
+    color: #94a3b8;
+    font-size: 9px;
+}
+
+.trace-contribution--high {
+    color: var(--memory-orange);
+}
+
+.memory-chip-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.memory-chip {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    color: #94a3b8;
+    background-color: #111827;
+    border-width: 1px;
+    border-color: #334155;
+    font-size: 8px;
+}
+
+.memory-chip--blue {
+    color: var(--memory-blue);
+}
+
+.memory-return-dock {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 112px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 9px;
+    background-color: #06080d;
+    border-top-width: 2px;
+    border-top-color: #1f2937;
+}
+
+.memory-primary-button {
+    height: 48px;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: var(--memory-orange);
+    color: #05070b;
+    font-size: 13px;
+    -unity-font-style: bold;
+}
+
+.memory-secondary-button {
+    height: 32px;
+    margin-top: 8px;
+    border-width: 1px;
+    border-color: #334155;
+    border-radius: 3px;
+    background-color: #0b1220;
+    color: #cbd5e1;
+    font-size: 10px;
+}

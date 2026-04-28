@@ -1,0 +1,14 @@
+:root {
+    --jg-bg: #05070b;
+    --jg-bg-raised: #090d13;
+    --jg-panel: #0b1220;
+    --jg-panel-raised: #101822;
+    --jg-panel-dark: #07101a;
+    --jg-line: #334155;
+    --jg-line-soft: #1f2a38;
+    --jg-text: #dbeafe;
+    --jg-muted: #718096;
+    --jg-command-blue: #5eb6ff;
+    --jg-signal-orange: #f59e0b;
+    --jg-danger-red: #ef4444;
+}

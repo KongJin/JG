@@ -1,4 +1,6 @@
 using Shared.Logging;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
@@ -20,7 +22,7 @@ namespace Features.Garage.Presentation
             if (bindings != null)
                 return bindings;
 
-            bindings = owner.GetComponent<GaragePageChromeBindings>();
+            bindings = ComponentAccess.Get<GaragePageChromeBindings>(owner.gameObject);
             if (bindings == null)
             {
                 Log.Warn(

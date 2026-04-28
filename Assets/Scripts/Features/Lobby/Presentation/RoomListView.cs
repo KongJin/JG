@@ -62,9 +62,9 @@ namespace Features.Lobby.Presentation
 
             foreach (var room in rooms)
             {
-                var go = _roomItemPool.Rent(Vector3.zero, Quaternion.identity);
-                go.GetComponent<RoomItemView>().Bind(room, OnJoinRoomClicked);
-                _activeItems.Add(go);
+                var item = _roomItemPool.RentComponent<RoomItemView>(Vector3.zero, Quaternion.identity);
+                item.Bind(room, OnJoinRoomClicked);
+                _activeItems.Add(item.gameObject);
             }
 
             UpdateListChrome(rooms != null ? rooms.Count : 0);
@@ -76,9 +76,9 @@ namespace Features.Lobby.Presentation
 
             foreach (var room in rooms)
             {
-                var go = _roomItemPool.Rent(Vector3.zero, Quaternion.identity);
-                go.GetComponent<RoomItemView>().Bind(room, OnJoinRoomClicked);
-                _activeItems.Add(go);
+                var item = _roomItemPool.RentComponent<RoomItemView>(Vector3.zero, Quaternion.identity);
+                item.Bind(room, OnJoinRoomClicked);
+                _activeItems.Add(item.gameObject);
             }
 
             UpdateListChrome(rooms != null ? rooms.Count : 0);

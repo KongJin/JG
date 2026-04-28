@@ -1,6 +1,6 @@
 # Plan Authoring Review Workflow
 
-> 마지막 업데이트: 2026-04-26
+> 마지막 업데이트: 2026-04-28
 > 상태: active
 > doc_id: ops.plan-authoring-review-workflow
 > role: ssot
@@ -59,6 +59,7 @@ plan은 규칙 본문을 새로 만드는 곳이 아니라, 실행 순서와 현
 - owner와 scope가 보이는가
 - 큰 문서 작업이나 여러 owner 작업이면 primary owner, secondary owner, 제외 범위가 구분되는가
 - 큰 문서 작업이면 active/reference/historical/delete 후보 확인이 보이는가
+- 완료 후 삭제 가능한지, 아니면 residual 때문에 reference 압축 보존이 필요한지 보이는가
 - acceptance와 closeout 조건이 있는가
 - 실행 순서와 검증 방법이 있는가
 - unresolved risk나 residual handling이 있는가
@@ -83,5 +84,7 @@ closeout 표현은 아래 둘 중 하나일 때만 쓴다.
 
 새 plan 생성이나 큰 plan 수정이라도 owner/scope, acceptance, residual/lifecycle 판단이 보이면 위 한 줄 closeout으로 충분하다.
 반복 리뷰 로그는 실행 판단을 바꾼 경우나 residual 근거가 될 때만 남긴다.
+완료된 plan의 `doc lifecycle checked`에는 delete 후보인지, reference 압축 보존이 필요한지, 또는 아직 active 유지가 필요한지 드러나야 한다.
+완료된 plan에 새 TODO를 계속 붙여 재사용하지 않는다. 새 변경 이유가 생기면 `ops.document-management-workflow`의 새 문서 생성 기준으로 다시 판단한다.
 
 draft plan에 closeout 문구를 남기면 완료된 plan처럼 읽히므로 피한다.

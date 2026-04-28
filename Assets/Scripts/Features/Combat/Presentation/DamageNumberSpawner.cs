@@ -3,6 +3,8 @@ using Features.Combat.Application.Events;
 using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 
 namespace Features.Combat.Presentation
@@ -28,8 +30,10 @@ namespace Features.Combat.Presentation
                 return;
 
             var pos = holder.transform.position + spawnOffset;
-            var go = Instantiate(damageNumberPrefab, pos, Quaternion.identity);
-            var view = go.GetComponent<DamageNumberView>();
+            var view = ComponentAccess.InstantiateComponent<DamageNumberView>(
+                damageNumberPrefab,
+                pos,
+                Quaternion.identity);
             if (view != null)
                 view.Show(e.Damage);
         }

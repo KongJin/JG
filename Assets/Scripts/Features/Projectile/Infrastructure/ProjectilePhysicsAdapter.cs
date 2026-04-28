@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Features.Projectile.Infrastructure
 {
-    public sealed class ProjectilePhysicsAdapter : MonoBehaviour, IProjectilePhysicsPort, IPoolResetHandler
+    public sealed class ProjectilePhysicsAdapter : MonoBehaviour, IProjectilePhysicsPort, IPoolResetHandler, IPoolBindingHandler
     {
         private Domain.Projectile _projectile;
         private ITrajectory _trajectory;
@@ -28,7 +28,6 @@ namespace Features.Projectile.Infrastructure
         public void Initialize(IEventPublisher eventBus)
         {
             _eventBus = eventBus;
-            _pooledObject ??= GetComponent<PooledObject>();
         }
 
         public void Spawn(
@@ -117,9 +116,13 @@ namespace Features.Projectile.Infrastructure
             ResetState();
         }
 
+        public void OnBindToPool(PooledObject pooledObject)
+        {
+            _pooledObject = pooledObject;
+        }
+
         private void ReleaseSelf()
         {
-            _pooledObject ??= GetComponent<PooledObject>();
             if (_pooledObject != null)
             {
                 _pooledObject.Release();

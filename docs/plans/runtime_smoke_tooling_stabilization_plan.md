@@ -1,7 +1,7 @@
 # Runtime Smoke Tooling Stabilization Plan
 
-> 마지막 업데이트: 2026-04-27
-> 상태: active
+> 마지막 업데이트: 2026-04-28
+> 상태: reference
 > doc_id: plans.runtime-smoke-tooling-stabilization
 > role: plan
 > owner_scope: Unity MCP runtime smoke helper의 lock/process, timeout/transport, UI path contract, evidence artifact 안정화
@@ -84,11 +84,12 @@ Verified:
 - `game-scene-placement-stable-smoke-8.json` blocked at room detail path wait with console delta `newErrorCount = 0`; classification was corrected so path waits no longer become transport errors just because the text contains "Timed out".
 - `game-scene-placement-stable-smoke-9.json` passed the same `ResultMode None` route again with console delta `newErrorCount = 0`, proving repeatable placement smoke after the Ready-state wait.
 
-Residual:
+Closeout:
 
 - The full GameScene `ResultMode None` runtime smoke repeatability acceptance is satisfied by `game-scene-placement-stable-smoke-7.json` and `game-scene-placement-stable-smoke-9.json`.
 - Step artifact writing is currently top-level artifact only; per-step files are still future work.
 - Remaining tooling residual is per-step artifact files; mobile HUD helper hang hardening and placement path contract inventory now have first-pass coverage.
+- Lifecycle: this plan is now reference because lock/process ownership, timeout/transport classification, path contract inventory, wrapper examples, and repeatable placement/mobile HUD smoke evidence have moved from active blocker to closeout record. Future per-step artifact files should reopen a targeted tooling pass instead of keeping this broad plan active.
 
 ## 2026-04-27 Slice 2
 
@@ -244,5 +245,5 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-Gam
 - 과한점 리뷰: GameScene gameplay, 2-client sync, HUD visual, model assembly를 이 계획의 success 조건으로 가져오지 않고 tooling reliability만 소유한다.
 - 부족한점 리뷰: 최근 반복된 lock/process, timeout/transport, path contract, artifact evidence, execution wrapper 문제를 acceptance와 workstream으로 분리했다.
 - owner impact: primary `plans.runtime-smoke-tooling-stabilization`; secondary `plans.progress`, `docs.index`, `tools.unity-mcp-readme`; feature acceptance owner는 `plans.game-scene-flow-validation-closeout`와 `plans.game-scene-phase5-multiplayer-sync`로 유지한다.
-- doc lifecycle checked: runtime smoke helper 안정화는 여러 active feature plan의 공통 blocker라 새 active plan으로 등록한다. Acceptance가 pass 또는 명확한 owner residual로 이관되면 reference 전환한다.
-- plan rereview: clean for document shape / residual for execution - scope, stop conditions, workstreams, validation commands, and acceptance are explicit; implementation starts at lock/process ownership and step artifact contract.
+- doc lifecycle checked: runtime smoke helper 안정화는 closeout evidence와 residual owner가 명확해져 reference 기록으로 전환한다.
+- plan rereview: clean for lifecycle cleanup / residual for future tooling - per-step artifact files remain a future targeted tooling pass, not a reason to keep this broad stabilization plan active.

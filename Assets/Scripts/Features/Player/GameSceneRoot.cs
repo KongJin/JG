@@ -27,6 +27,8 @@ using Shared.ErrorHandling;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Lifecycle;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using Shared.Runtime.Sound;
 using Shared.Ui;
 using UnityEngine;
@@ -80,7 +82,6 @@ namespace Features.Player
         private bool _dropOffLogged;
         private readonly Queue<PlayerSetup> _pendingRemotePlayers = new();
         private bool _remotePlayerWiringReady;
-        private IEnergyRegenPort _energyRegenPort;
 
         // Unit specs per player (computed from GarageRoster)
         private Dictionary<DomainEntityId, Unit.Domain.Unit[]> _playerUnitSpecs = new();
@@ -226,8 +227,11 @@ namespace Features.Player
             ConnectPlayer(_localPlayerSetup);
 
             // Energy (Mana renamed to Energy)
-            _energyRegenPort = _localPlayerSetup.EnergyAdapterInstance;
-            _energyBarView.Initialize(_eventBus, _localPlayerSetup.PlayerId, _localPlayerSetup.MaxEnergy);
+            _energyBarView.Initialize(
+                _eventBus,
+                _localPlayerSetup.PlayerId,
+                _localPlayerSetup.MaxEnergy,
+                _localPlayerSetup.EnergyAdapterInstance);
 
             // SoundPlayer is usually carried from LobbyScene; direct BattleScene runs create a runtime host.
             _audioBootstrapFlow.InitializeOrReport(_eventBus, _localPlayerSetup.PlayerId.Value);
@@ -323,8 +327,9 @@ namespace Features.Player
                 _playerLookup))
                 return;
 
-            var hudGo = Instantiate(_healthHudPrefab, _hudCanvas.transform, false);
-            var hudView = hudGo.GetComponent<PlayerHealthHudView>();
+            var hudView = ComponentAccess.InstantiateComponent<PlayerHealthHudView>(
+                _healthHudPrefab,
+                _hudCanvas.transform);
             hudView.Initialize(
                 _eventBus,
                 setup.PlayerId,
@@ -493,11 +498,6 @@ namespace Features.Player
                 _analytics.LogGameEnd(_matchId, playTime, RoundCounter.Current);
 
             _disposables?.Dispose();
-        }
-
-        private void Update()
-        {
-            _energyRegenPort?.TickRegen(Time.deltaTime, Time.time);
         }
 
         public override void OnDisconnected(Photon.Realtime.DisconnectCause cause)

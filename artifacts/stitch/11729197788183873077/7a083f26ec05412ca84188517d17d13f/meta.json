@@ -1,0 +1,14 @@
+﻿{
+    "projectId":  "11729197788183873077",
+    "screenId":  "7a083f26ec05412ca84188517d17d13f",
+    "title":  "Nova1492 Shared Shell / Navigation Only",
+    "deviceType":  "MOBILE",
+    "width":  780,
+    "height":  1768,
+    "htmlUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzk0NzNiZGIyYWMwNjRiY2Q4YWUyMThhNGZkN2ZhYmI5EgsSBxC5mdrmrAsYAZIBJAoKcHJvamVjdF9pZBIWQhQxMTcyOTE5Nzc4ODE4Mzg3MzA3Nw\u0026filename=\u0026opi=96797242",
+    "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0uj7PWGqZpU4m1Txvt8s_9JFUtiqBOK-HIyoCX6N1rOK9Hl5P8PolifaJmY_BvfiAK-KjYyEoZ6pVEXhS5gXKyYD1VAXNpcNGuZlyztSB81F5VKWYghR-qsjCXSQz15FKyabpzJX-cFew4hOHUO761HO-XnZGBi-ECKkeZATrJ6px5q7hPQimFLB8e830VpSMWgLT9LcLIE9kgx0lqUOwiC61V2zjfdf9BjpKUW4MRONRWxY1ALeMALUoBfE",
+    "frozenAt":  "2026-04-28",
+    "source":  "stitch.edit_screens",
+    "candidateStatus":  "accepted-source",
+    "reason":  "Shared top shell and blue-only shared navigation remain isolated from page-owned CTAs and component-board examples."
+}

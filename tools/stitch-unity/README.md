@@ -19,7 +19,7 @@
 LLM draft 전에 source facts를 확인한다.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\stitch-unity\collectors\Collect-StitchSourceFacts.ps1 `
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\stitch-unity\collectors\Collect-StitchSourceFacts.ps1 `
   -SurfaceId <surface-id> `
   -HtmlPath <source.html> `
   -ImagePath <source.png>
@@ -33,7 +33,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\stitch-unity\collectors\Collect
 LLM이 만든 contract draft JSON은 후보 구현 전에 먼저 검사한다.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\stitch-unity\validators\Test-StitchContractDraft.ps1 `
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\stitch-unity\validators\Test-StitchContractDraft.ps1 `
   -DraftPath <draft.json> `
   -SurfaceId <surface-id>
 ```
@@ -45,7 +45,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\stitch-unity\validators\Test-St
 Stitch source가 현재 presentation profile 생성 대상인지 확인한다.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\stitch-unity\presentations\Generate-StitchPresentationProfile.ps1 `
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\stitch-unity\presentations\Generate-StitchPresentationProfile.ps1 `
   -SurfaceId set-b-garage-main-workspace `
   -CanGenerateOnly
 ```

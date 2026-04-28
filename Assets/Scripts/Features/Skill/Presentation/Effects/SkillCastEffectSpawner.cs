@@ -61,9 +61,7 @@ namespace Features.Skill.Presentation
                 return;
 
             var spawnPos = e.TargetPosition.ToVector3();
-            var go = GetPool(prefab).Rent(spawnPos, Quaternion.identity);
-
-            var effect = go.GetComponent<TargetedCastEffect>();
+            var effect = GetPool(prefab).RentComponent<TargetedCastEffect>(spawnPos, Quaternion.identity);
             if (effect != null)
                 effect.Play();
 
@@ -77,9 +75,7 @@ namespace Features.Skill.Presentation
                 return;
 
             var pos = e.Position.ToVector3();
-            var go = GetPool(prefab).Rent(pos, Quaternion.identity);
-
-            var effect = go.GetComponent<SelfCastEffect>();
+            var effect = GetPool(prefab).RentComponent<SelfCastEffect>(pos, Quaternion.identity);
             if (effect != null)
                 effect.Play();
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="TacticalTokens.uss" />
+    <Style src="SharedShellNavigation.uss" />
+    <ui:VisualElement name="SharedNavigationBar" class="shared-navigation-bar">
+        <ui:Button name="LobbyNavButton" text="로비" class="shared-nav-item" />
+        <ui:Button name="GarageNavButton" text="차고" class="shared-nav-item shared-nav-item--selected" />
+        <ui:Button name="RecordsNavButton" text="기록" class="shared-nav-item" />
+    </ui:VisualElement>
+</ui:UXML>

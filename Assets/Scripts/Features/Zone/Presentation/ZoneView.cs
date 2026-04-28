@@ -4,7 +4,7 @@ using Shared.Runtime.Pooling;
 
 namespace Features.Zone.Presentation
 {
-    public sealed class ZoneView : MonoBehaviour, IPoolResetHandler
+    public sealed class ZoneView : MonoBehaviour, IPoolResetHandler, IPoolBindingHandler
     {
         [Required, SerializeField] private Renderer _renderer;
 
@@ -19,8 +19,6 @@ namespace Features.Zone.Presentation
             _duration = duration;
             _elapsed = 0f;
             _scale = new Vector3(radius * 2f, 0.1f, radius * 2f);
-
-            _pooledObject ??= GetComponent<PooledObject>();
         }
 
         public void SetColor(Color color)
@@ -53,9 +51,13 @@ namespace Features.Zone.Presentation
             _elapsed = 0f;
         }
 
+        public void OnBindToPool(PooledObject pooledObject)
+        {
+            _pooledObject = pooledObject;
+        }
+
         private void ReleaseSelf()
         {
-            _pooledObject ??= GetComponent<PooledObject>();
             if (_pooledObject != null)
             {
                 _pooledObject.Release();

@@ -5,6 +5,8 @@ using Features.Player.Application.Events;
 using Features.Wave.Application.Events;
 using Features.Wave.Domain;
 using Shared.EventBus;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -143,7 +145,7 @@ namespace Features.Wave.Presentation
             if (buttonObject == null)
                 return;
 
-            var button = buttonObject.GetComponent<Button>();
+            var button = ComponentAccess.Get<Button>(buttonObject);
             if (button == null)
                 return;
 

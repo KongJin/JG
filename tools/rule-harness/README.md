@@ -1,14 +1,15 @@
 # Rule Harness
 
-> 마지막 업데이트: 2026-04-26
+> 마지막 업데이트: 2026-04-28
 > 상태: active
 > doc_id: tools.rule-harness-readme
 > role: reference
 > owner_scope: Rule Harness 실행 reference와 owner-doc policy ordering 설명
 > upstream: repo.agents, docs.index, ops.document-management-workflow
-> artifacts: `tools/rule-harness/`, `Temp/RuleHarness/`, `Temp/RuleHarnessScheduled/`
+> artifacts: `tools/rule-harness/`, `Temp/RuleHarness/`, `Temp/RuleHarnessRoles/`, `Temp/RuleHarnessScheduled/`
 
 `tools/rule-harness/` 는 코드와 SSOT 문서의 불일치를 찾고, 안전한 범위에서는 직접 수정까지 시도하는 로컬/CI 하네스다.
+현재 기본 운용은 4분리 role harness다. 기존 `run-rule-harness.ps1`는 legacy combined harness로 남겨 호환 실행에만 사용한다.
 
 기본 기준 문서:
 
@@ -17,6 +18,53 @@
 - 실제 `Setup` / `Bootstrap` 와 관련 코드 경로
 
 ## 로컬 실행
+
+### 4분리 role harness
+
+기술부채 리뷰만:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-tech-debt-review.ps1
+```
+
+리뷰 기록 기반 작업:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-review-work.ps1 -ReviewPath .\Temp\RuleHarnessRoles\<run>\01-tech-debt-review\report.json
+```
+
+재발 방지 계획:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-recurrence-plan.ps1 -ReviewPath .\Temp\RuleHarnessRoles\<run>\01-tech-debt-review\report.json -WorkReportPath .\Temp\RuleHarnessRoles\<run>\02-review-work\report.json
+```
+
+재발 방지 계획 기반 작업:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-recurrence-work.ps1 -PlanPath .\Temp\RuleHarnessRoles\<run>\03-recurrence-plan\report.json
+```
+
+전체 체인:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-harness-pipeline.ps1
+```
+
+출력은 `Temp/RuleHarnessRoles/<timestamp>/01-tech-debt-review` 부터 `04-recurrence-work`까지 단계별 폴더에 `report.json`, `summary.md`, `log.txt`로 남는다.
+latest pointer는 `Temp/RuleHarnessRoles/latest-pipeline.txt`, `latest-tech-debt-review.txt`, `latest-recurrence-plan.txt`를 사용한다.
+
+역할 경계:
+
+- `run-tech-debt-review.ps1`: 전체 feature scope를 읽기 전용으로 평가하고 `severityScore` 0-100, `scoreBreakdown`, `refactorTargets`, `recommendedBatches`를 남긴다.
+- `run-review-work.ps1`: 리뷰 JSON의 `recommendedBatches`만 기존 mutation guard로 적용한다.
+- `run-recurrence-plan.ps1`: 리뷰/작업 report, `history.json`, `advisory-memory.json`를 읽어 `preventionItems`를 만든다.
+- `run-recurrence-work.ps1`: 재발 방지 계획 JSON의 `recommendedBatches`만 기존 mutation guard로 적용한다.
+
+입력 artifact의 `baseCommitSha`가 현재 `HEAD`와 다르거나 target path가 repo-relative path가 아니면 작업형 하네스는 실패한다.
+절대 경로, `..`, 입력 artifact 밖 target은 허용하지 않는다.
+
+### Legacy combined harness
 
 정적 검사만:
 
@@ -92,6 +140,15 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\write-feature-depe
 ```
 
 ## 로컬 주기 실행
+
+현재 role harness 운용에서는 새 예약 작업을 만들지 않는다.
+기존 예약 작업이 남아 있으면 아래 명령으로 해제한다.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-harness-scheduled-task.ps1
+```
+
+아래 예약 실행 설명은 legacy combined harness reference다.
 
 기본 1시간 주기 등록:
 

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hangar Management UI Kit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&amp;family=IBM+Plex+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        zinc: {
+                            800: '#27272a',
+                            900: '#18181b',
+                            950: '#09090b',
+                        },
+                        blue: {
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            900: '#1e3a8a',
+                            950: '#172554',
+                        },
+                        orange: {
+                            500: '#f97316',
+                        }
+                    },
+                    fontFamily: {
+                        headline: ["Space Grotesk", "sans-serif"],
+                        display: ["Space Grotesk", "sans-serif"],
+                        body: ["IBM Plex Sans", "sans-serif"],
+                        label: ["IBM Plex Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            color: #d4d4d8;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body text-sm antialiased h-screen overflow-hidden flex flex-col bg-black">
+<!-- TopAppBar from JSON -->
+<header class="fixed top-0 w-full h-14 flex items-center justify-between px-4 z-50 bg-zinc-950 border-b-4 border-zinc-800 shadow-[inset_0_-2px_10px_rgba(0,0,0,0.8)] border-b-2 border-zinc-900">
+<div class="flex items-center gap-3">
+<button class="text-zinc-500 hover:bg-zinc-800 active:scale-95 transition-transform p-1 rounded">
+<span class="material-symbols-outlined text-[20px]">menu_open</span>
+</button>
+<h1 class="font-mono font-bold tracking-tight text-xs uppercase font-black text-orange-500 tracking-tighter">HANGAR_OS_V2.1</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-bold px-2 py-0.5 bg-blue-900/50 text-blue-400 border border-blue-500/30 rounded-sm uppercase">LOCAL_PRIMARY</span>
+</div>
+</header>
+<!-- Main Scrollable Canvas for UI Kit Showcase -->
+<main class="flex-1 overflow-y-auto mt-14 mb-16 p-4 space-y-6">
+<!-- Section: Title -->
+<div class="border-l-4 border-blue-500 pl-3 py-1">
+<h2 class="font-headline font-bold text-lg text-white uppercase tracking-wider">UI Components Library</h2>
+<p class="text-xs text-zinc-500 font-mono mt-1">SYS_REF_v1.0 // DO NOT DEPLOY</p>
+</div>
+<!-- Section: Status Chips -->
+<div class="bg-zinc-900 border border-zinc-800 p-4 shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
+<h3 class="font-mono text-[10px] text-zinc-400 mb-3 uppercase tracking-widest border-b border-zinc-800 pb-1">Status Chips</h3>
+<div class="flex flex-wrap gap-2">
+<span class="text-[10px] font-bold px-2 py-1 bg-blue-900/50 text-blue-400 border border-blue-500/50 rounded-sm font-mono flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
+                    LOCAL PRIMARY
+                </span>
+<span class="text-[10px] font-bold px-2 py-1 bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-sm font-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">cloud_sync</span>
+                    CLOUD PENDING
+                </span>
+<span class="text-[10px] font-bold px-2 py-1 bg-red-900/30 text-red-400 border border-red-500/50 rounded-sm font-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">block</span>
+                    BLOCKED
+                </span>
+<span class="text-[10px] font-bold px-2 py-1 bg-orange-900/30 text-orange-400 border border-orange-500/50 rounded-sm font-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">refresh</span>
+                    MANUAL RETRY
+                </span>
+</div>
+</div>
+<!-- Section: System Toasts / Mini Dialogs -->
+<div class="bg-zinc-900 border border-zinc-800 p-4 shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
+<h3 class="font-mono text-[10px] text-zinc-400 mb-3 uppercase tracking-widest border-b border-zinc-800 pb-1">System Alerts</h3>
+<div class="space-y-3">
+<!-- Success Toast -->
+<div class="bg-black border-l-4 border-blue-500 p-3 flex items-start gap-3 shadow-md">
+<span class="material-symbols-outlined text-blue-500 text-[18px] mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-bold text-sm text-white">저장 완료</p>
+<p class="text-xs text-zinc-500 font-mono mt-0.5">CFG_UPDATE_OK</p>
+</div>
+</div>
+<!-- Error Toast -->
+<div class="bg-black border-l-4 border-red-500 p-3 flex items-start gap-3 shadow-md">
+<span class="material-symbols-outlined text-red-500 text-[18px] mt-0.5" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div>
+<p class="font-bold text-sm text-white">연결 차단</p>
+<p class="text-xs text-zinc-500 font-mono mt-0.5">NET_ERR_REFUSED</p>
+</div>
+</div>
+<!-- Action Required Toast -->
+<div class="bg-black border-l-4 border-orange-500 p-3 flex items-start justify-between shadow-md">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-orange-500 text-[18px] mt-0.5">sync_problem</span>
+<div>
+<p class="font-bold text-sm text-white">수동 재시도 필요</p>
+<p class="text-xs text-zinc-500 font-mono mt-0.5">SEQ_HALTED</p>
+</div>
+</div>
+<button class="bg-zinc-800 hover:bg-zinc-700 text-xs px-2 py-1 rounded-sm border border-zinc-600 font-mono active:scale-95 transition-transform">RETRY</button>
+</div>
+</div>
+</div>
+<!-- Section: Common Controls -->
+<div class="bg-zinc-900 border border-zinc-800 p-4 shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
+<h3 class="font-mono text-[10px] text-zinc-400 mb-3 uppercase tracking-widest border-b border-zinc-800 pb-1">Controls &amp; Panels</h3>
+<div class="space-y-4">
+<!-- Slot Row -->
+<div class="bg-black border border-zinc-800 p-2 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-zinc-900 flex items-center justify-center border border-zinc-800">
+<span class="material-symbols-outlined text-zinc-500 text-[16px]">memory</span>
+</div>
+<div>
+<div class="text-xs font-bold text-zinc-300">CORE_MODULE_A</div>
+<div class="text-[10px] text-zinc-600 font-mono">STATUS: ONLINE</div>
+</div>
+</div>
+<button class="text-blue-500 p-1 bg-blue-900/20 hover:bg-blue-900/40 rounded border border-blue-900">
+<span class="material-symbols-outlined text-[16px]">settings</span>
+</button>
+</div>
+<!-- Buttons -->
+<div class="flex gap-2">
+<button class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 text-xs tracking-wider flex items-center justify-center gap-2 shadow-[0_0_10px_rgba(59,130,246,0.3)] active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+                        ENGAGE
+                    </button>
+<button class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-600 font-bold py-2 px-4 text-xs tracking-wider flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+                        ABORT
+                    </button>
+</div>
+<!-- Section Frame -->
+<div class="border border-zinc-700 relative mt-6">
+<div class="absolute -top-2.5 left-2 bg-zinc-900 px-1 text-[10px] font-mono text-blue-400 font-bold uppercase tracking-widest">
+                        Data Stream
+                    </div>
+<div class="p-3 bg-black/50 text-xs font-mono text-zinc-500 leading-relaxed overflow-hidden h-20 relative">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 pointer-events-none"></div>
+<p>0x00A1: INITIATING SEQUENCE...</p>
+<p>0x00A2: CHECKING THERMAL LIMITS... OK.</p>
+<p>0x00A3: HYDRAULIC PRESSURE... NOMINAL.</p>
+<p>0x00A4: WAITING FOR COMMAND INPUT.</p>
+<p>0x00A5: IDLE.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar from JSON -->
+<nav class="fixed bottom-0 left-0 w-full h-16 z-50 flex justify-around items-stretch bg-zinc-950 border-t-4 border-zinc-800 divide-x divide-zinc-800 shadow-[0_-4px_20px_rgba(0,0,0,0.9)] hidden md:hidden flex">
+<!-- Active Tab: COMMAND (assuming Lobbie/Command is active) -->
+<a class="flex flex-col items-center justify-center bg-blue-900/30 text-blue-400 border-t-2 border-blue-500 h-full w-full hover:bg-zinc-900 active:inner-shadow" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<span class="font-mono text-[10px] font-bold uppercase">COMMAND</span>
+</a>
+<!-- Inactive Tab: FLEET -->
+<a class="flex flex-col items-center justify-center text-zinc-600 h-full w-full hover:bg-zinc-900 active:inner-shadow" href="#">
+<span class="material-symbols-outlined mb-1">rocket_launch</span>
+<span class="font-mono text-[10px] font-bold uppercase">FLEET</span>
+</a>
+<!-- Inactive Tab: REPAIR -->
+<a class="flex flex-col items-center justify-center text-zinc-600 h-full w-full hover:bg-zinc-900 active:inner-shadow" href="#">
+<span class="material-symbols-outlined mb-1">build</span>
+<span class="font-mono text-[10px] font-bold uppercase">REPAIR</span>
+</a>
+<!-- Inactive Tab: SYSTEM -->
+<a class="flex flex-col items-center justify-center text-zinc-600 h-full w-full hover:bg-zinc-900 active:inner-shadow" href="#">
+<span class="material-symbols-outlined mb-1">settings_input_component</span>
+<span class="font-mono text-[10px] font-bold uppercase">SYSTEM</span>
+</a>
+</nav>
+</body></html>

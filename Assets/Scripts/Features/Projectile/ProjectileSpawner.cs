@@ -71,8 +71,12 @@ namespace Features.Projectile
 
             var rotation = dir.sqrMagnitude > 0.001f ? Quaternion.LookRotation(dir) : Quaternion.identity;
 
-            var physicsGo = _projectilePool.Rent(spawnPosition, rotation);
-            var physicsAdapter = physicsGo.GetComponent<ProjectilePhysicsAdapter>();
+            var physicsAdapter = _projectilePool.RentComponent<ProjectilePhysicsAdapter>(spawnPosition, rotation);
+            if (physicsAdapter == null)
+            {
+                Debug.LogError("[ProjectileSpawner] ProjectilePhysicsAdapter is missing on pooled projectile.", this);
+                return;
+            }
 
             physicsAdapter.Initialize(_publisher);
             _spawnUseCase.Execute(

@@ -7,6 +7,8 @@ using Features.Wave.Application;
 using Features.Wave.Application.Ports;
 using Photon.Pun;
 using Shared.EventBus;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 
 namespace Features.Wave.Infrastructure
@@ -48,7 +50,7 @@ namespace Features.Wave.Infrastructure
                 0,
                 new object[] { data.ResourcesLoadPath });
 
-            var setup = go.GetComponent<EnemySetup>();
+            var setup = ComponentAccess.Get<EnemySetup>(go);
             if (setup != null)
                 setup.Initialize(_eventBus, _combatBootstrap, data, _playerQuery, _coreObjectiveQuery);
             else

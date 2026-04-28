@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Shared/TacticalTokens.uss" />
+    <Style src="OperationMemoryWorkspace.uss" />
+    <ui:VisualElement name="OperationMemoryScreen" class="operation-memory-screen">
+        <ui:VisualElement name="MemoryTopShell" class="memory-top-shell">
+            <ui:Button name="BackButton" text="&lt;" class="memory-icon-button" />
+            <ui:VisualElement class="memory-title-stack">
+                <ui:Label text="작전 기록" class="memory-title" />
+                <ui:Label text="OPERATION MEMORY / LOCAL LOG / SYNC PENDING" class="memory-status" />
+            </ui:VisualElement>
+            <ui:Button name="GarageButton" text="G" class="memory-icon-button memory-icon-button--blue" />
+        </ui:VisualElement>
+
+        <ui:ScrollView name="MemoryScroll" class="memory-scroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
+            <ui:VisualElement name="LatestOperationCard" class="memory-card memory-card--latest">
+                <ui:VisualElement class="memory-card-header">
+                    <ui:VisualElement>
+                        <ui:Label text="LATEST_OP" class="memory-kicker" />
+                        <ui:Label text="버텨냄" class="memory-result memory-result--held" />
+                    </ui:VisualElement>
+                    <ui:Label text="22:45:01" class="memory-time" />
+                </ui:VisualElement>
+                <ui:VisualElement class="memory-stat-grid">
+                    <ui:VisualElement class="memory-stat-cell">
+                        <ui:Label text="생존" class="memory-stat-label" />
+                        <ui:Label text="22:45" class="memory-stat-value memory-stat-value--blue" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="memory-stat-cell">
+                        <ui:Label text="공세" class="memory-stat-label" />
+                        <ui:Label text="14" class="memory-stat-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="memory-stat-cell">
+                        <ui:Label text="코어" class="memory-stat-label" />
+                        <ui:Label text="42%" class="memory-stat-value memory-stat-value--orange" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="memory-stat-cell">
+                        <ui:Label text="제거" class="memory-stat-label" />
+                        <ui:Label text="342" class="memory-stat-value" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="memory-sitrep">
+                    <ui:Label text="SITREP" class="memory-sitrep-label" />
+                    <ui:Label text="동쪽 라인 집중 압박. 방어선 유지됨." class="memory-sitrep-text" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="RecentOperations" class="memory-section">
+                <ui:Label text="RECENT OPERATIONS" class="memory-section-title" />
+                <ui:VisualElement class="operation-row operation-row--held">
+                    <ui:VisualElement class="operation-row-line" />
+                    <ui:VisualElement class="operation-row-main">
+                        <ui:Label text="버텨냄" class="operation-title operation-title--held" />
+                        <ui:Label text="22:45 / 공세 14 / HVY-ASSAULT + LIGHT-RECON" class="operation-meta" />
+                    </ui:VisualElement>
+                    <ui:Label text="CORE 42%" class="operation-core" />
+                </ui:VisualElement>
+                <ui:VisualElement class="operation-row operation-row--danger">
+                    <ui:VisualElement class="operation-row-line operation-row-line--danger" />
+                    <ui:VisualElement class="operation-row-main">
+                        <ui:Label text="거점 붕괴" class="operation-title operation-title--danger" />
+                        <ui:Label text="21:10 / 공세 08 / RAIL-GUARD" class="operation-meta" />
+                    </ui:VisualElement>
+                    <ui:Label text="CORE 0%" class="operation-core operation-core--danger" />
+                </ui:VisualElement>
+                <ui:VisualElement class="operation-row operation-row--held">
+                    <ui:VisualElement class="operation-row-line" />
+                    <ui:VisualElement class="operation-row-main">
+                        <ui:Label text="버텨냄" class="operation-title operation-title--held" />
+                        <ui:Label text="19:42 / 공세 12 / HVY-ASSAULT" class="operation-meta" />
+                    </ui:VisualElement>
+                    <ui:Label text="CORE 15%" class="operation-core operation-core--orange" />
+                </ui:VisualElement>
+                <ui:VisualElement class="operation-row operation-row--held">
+                    <ui:VisualElement class="operation-row-line" />
+                    <ui:VisualElement class="operation-row-main">
+                        <ui:Label text="버텨냄" class="operation-title operation-title--held" />
+                        <ui:Label text="18:05 / 공세 15 / LIGHT-RECON" class="operation-meta" />
+                    </ui:VisualElement>
+                    <ui:Label text="CORE 88%" class="operation-core" />
+                </ui:VisualElement>
+                <ui:VisualElement class="operation-row operation-row--empty">
+                    <ui:Label text="전적 기록 대기중" class="operation-empty-text" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="UnitTrace" class="memory-section">
+                <ui:Label text="기체 전적" class="memory-section-title" />
+                <ui:VisualElement class="trace-grid">
+                    <ui:VisualElement class="trace-card">
+                        <ui:Label text="SLOT 02" class="trace-slot" />
+                        <ui:Label text="HVY-ASSAULT" class="trace-name" />
+                        <ui:Label text="FRM-HV / WPN-GAT" class="trace-meta" />
+                        <ui:Label text="Contribution: HIGH" class="trace-contribution trace-contribution--high" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="trace-card">
+                        <ui:Label text="SLOT 04" class="trace-slot" />
+                        <ui:Label text="LIGHT-RECON" class="trace-name" />
+                        <ui:Label text="FRM-LT / WPN-SCT" class="trace-meta" />
+                        <ui:Label text="Contribution: MED" class="trace-contribution" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="memory-chip-row">
+                    <ui:Label text="3/5 RECORDS STORED" class="memory-chip" />
+                    <ui:Label text="LOCAL FIRST" class="memory-chip memory-chip--blue" />
+                    <ui:Label text="CLOUD SYNC WAITING" class="memory-chip memory-chip--orange" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:ScrollView>
+
+        <ui:VisualElement name="ReturnDock" class="memory-return-dock">
+            <ui:Button name="ReturnToLobbyButton" text="RETURN TO LOBBY" class="memory-primary-button" />
+            <ui:Button name="OpenGarageButton" text="OPEN GARAGE" class="memory-secondary-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Operation Memory - Nova1492</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        },
+                        amber: {
+                            500: '#f59e0b',
+                        },
+                        sky: {
+                            400: '#38bdf8',
+                        }
+                    },
+                    fontFamily: {
+                        headline: ["Space Grotesk", "sans-serif"],
+                        display: ["Space Grotesk", "sans-serif"],
+                        body: ["IBM Plex Sans", "sans-serif"],
+                        label: ["IBM Plex Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-slate-950 text-slate-400 font-body min-h-screen pb-24 selection:bg-sky-400/30 selection:text-sky-400">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-12 bg-slate-950/95 docked full-width top-0 border-b-2 border-slate-800 border-b border-slate-800 shadow-[inset_0_-2px_10px_rgba(0,0,0,0.5)]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-500 text-lg" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
+<span class="font-mono font-bold tracking-tighter uppercase text-xs text-amber-500">SYS_STATUS: ONLINE</span>
+</div>
+<div class="flex items-center">
+<span class="text-sky-400 font-black tracking-widest uppercase text-sm mr-4">NOVA1492</span>
+<button class="text-slate-500 hover:bg-slate-900 transition-colors active:brightness-125 p-1 rounded">
+<span class="material-symbols-outlined text-lg">settings_input_component</span>
+</button>
+</div>
+</header>
+<main class="pt-16 px-4 max-w-md mx-auto space-y-6">
+<!-- Header Section -->
+<div class="border-l-4 border-amber-500 pl-3">
+<h1 class="font-headline font-bold text-2xl text-slate-200 tracking-tight">작전 기록</h1>
+<p class="text-xs font-mono text-sky-400 mt-1 uppercase tracking-wider">로컬 기록 / 동기화 대기</p>
+</div>
+<!-- Latest Operation Console -->
+<div class="bg-slate-900 border-2 border-slate-700 p-4 rounded relative overflow-hidden shadow-lg">
+<div class="absolute top-0 right-0 w-16 h-16 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div>
+<span class="text-[10px] font-mono text-slate-500 uppercase tracking-widest block mb-1">LATEST_OP_RESULT</span>
+<h2 class="text-3xl font-headline font-bold text-sky-400 tracking-tighter">버텨냄</h2>
+</div>
+<div class="text-right">
+<span class="text-[10px] font-mono text-slate-500 uppercase tracking-widest block mb-1">TIMESTAMP</span>
+<span class="font-mono text-slate-300">22:45:01</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-4 relative z-10">
+<div class="bg-slate-950 border border-slate-800 p-2 rounded-sm text-center">
+<span class="block text-[10px] font-mono text-slate-500 uppercase">WAVE</span>
+<span class="font-mono text-lg text-slate-200 font-bold">14</span>
+</div>
+<div class="bg-slate-950 border border-slate-800 p-2 rounded-sm text-center">
+<span class="block text-[10px] font-mono text-slate-500 uppercase">CORE%</span>
+<span class="font-mono text-lg text-amber-500 font-bold">42%</span>
+</div>
+<div class="bg-slate-950 border border-slate-800 p-2 rounded-sm text-center">
+<span class="block text-[10px] font-mono text-slate-500 uppercase">KILLS</span>
+<span class="font-mono text-lg text-slate-200 font-bold">342</span>
+</div>
+</div>
+<div class="bg-slate-800/50 p-3 rounded-sm border-l-2 border-sky-400 relative z-10">
+<span class="block text-[10px] font-mono text-sky-400 uppercase tracking-widest mb-1">SITREP</span>
+<p class="text-sm text-slate-300">동쪽 라인 집중 압박. 중형 워커 다수 출현. 방어선 유지됨.</p>
+</div>
+</div>
+<!-- Recent Operations List -->
+<div>
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-slate-500 text-sm">history</span>
+<h3 class="text-xs font-mono text-slate-400 uppercase tracking-widest">RECENT_OPS</h3>
+</div>
+<div class="space-y-2">
+<!-- Record 1 (Failure) -->
+<div class="bg-slate-900 border border-slate-800 p-3 flex justify-between items-center rounded-sm">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-slate-700"></div>
+<div>
+<span class="text-slate-200 font-bold block text-sm">거점 붕괴</span>
+<span class="text-[10px] font-mono text-slate-500">21:10 • WAVE 08</span>
+</div>
+</div>
+<span class="font-mono text-sm text-slate-400">CORE 0%</span>
+</div>
+<!-- Record 2 (Success) -->
+<div class="bg-slate-900 border border-slate-800 p-3 flex justify-between items-center rounded-sm">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-sky-400/50"></div>
+<div>
+<span class="text-sky-400 font-bold block text-sm">버텨냄</span>
+<span class="text-[10px] font-mono text-slate-500">19:42 • WAVE 12</span>
+</div>
+</div>
+<span class="font-mono text-sm text-amber-500">CORE 15%</span>
+</div>
+<!-- Record 3 (Success) -->
+<div class="bg-slate-900 border border-slate-800 p-3 flex justify-between items-center rounded-sm">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-sky-400/50"></div>
+<div>
+<span class="text-sky-400 font-bold block text-sm">버텨냄</span>
+<span class="text-[10px] font-mono text-slate-500">18:05 • WAVE 15</span>
+</div>
+</div>
+<span class="font-mono text-sm text-amber-500">CORE 88%</span>
+</div>
+<!-- Empty Slots -->
+<div class="bg-slate-950 border border-slate-800 border-dashed p-3 flex justify-center items-center rounded-sm">
+<span class="text-[10px] font-mono text-slate-600 uppercase tracking-widest">전적 기록 대기중</span>
+</div>
+<div class="bg-slate-950 border border-slate-800 border-dashed p-3 flex justify-center items-center rounded-sm">
+<span class="text-[10px] font-mono text-slate-600 uppercase tracking-widest">전적 기록 대기중</span>
+</div>
+</div>
+</div>
+<!-- Unit Trace -->
+<div class="bg-slate-900 border border-slate-700 p-3 rounded-sm relative">
+<div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
+<div class="flex justify-between items-center mb-2 pl-2">
+<span class="text-[10px] font-mono text-amber-500 uppercase tracking-widest">UNIT_TRACE (기체 전적)</span>
+<span class="text-[10px] font-mono text-slate-500">SLOT 02/04</span>
+</div>
+<div class="pl-2 flex justify-between items-center">
+<div>
+<span class="text-sm font-bold text-slate-200 block">FRM-HV / WPN-GAT</span>
+<span class="text-xs text-slate-400">Contribution: HIGH</span>
+</div>
+<span class="material-symbols-outlined text-slate-600">precision_manufacturing</span>
+</div>
+</div>
+<!-- World Memory Chips -->
+<div class="flex gap-2 flex-wrap">
+<div class="bg-slate-800 px-2 py-1 rounded-sm flex items-center gap-1 border border-slate-700">
+<span class="material-symbols-outlined text-[10px] text-sky-400">sd_storage</span>
+<span class="text-[9px] font-mono text-slate-300 uppercase">3/5 RECORDS STORED</span>
+</div>
+<div class="bg-slate-800 px-2 py-1 rounded-sm flex items-center gap-1 border border-slate-700">
+<span class="material-symbols-outlined text-[10px] text-slate-400">save</span>
+<span class="text-[9px] font-mono text-slate-300 uppercase">LOCAL FIRST</span>
+</div>
+<div class="bg-slate-800 px-2 py-1 rounded-sm flex items-center gap-1 border border-amber-500/30">
+<span class="material-symbols-outlined text-[10px] text-amber-500">cloud_sync</span>
+<span class="text-[9px] font-mono text-amber-500 uppercase">CLOUD SYNC WAITING</span>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-stretch h-20 pb-safe px-2 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] bg-slate-900 docked full-width bottom-0 rounded-t-lg border-t-4 border-slate-700 divide-x divide-slate-800 shadow-[0_-4px_20px_rgba(0,0,0,0.6)]">
+<button class="flex flex-col items-center justify-center bg-amber-500 text-slate-950 rounded-sm m-1 py-2 w-full shadow-[0_0_10px_#F59E0B] active:scale-95 duration-75">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">meeting_room</span>
+<span class="font-mono font-black tracking-widest text-[10px]">LOBBY</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 py-2 w-full hover:text-sky-400 hover:bg-slate-800 active:scale-95 duration-75">
+<span class="material-symbols-outlined mb-1">target</span>
+<span class="font-mono font-black tracking-widest text-[10px]">MISSIONS</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 py-2 w-full hover:text-sky-400 hover:bg-slate-800 active:scale-95 duration-75">
+<span class="material-symbols-outlined mb-1">shield</span>
+<span class="font-mono font-black tracking-widest text-[10px]">ARMORY</span>
+</button>
+</nav>
+</body></html>

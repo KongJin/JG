@@ -1,6 +1,6 @@
 # UI Foundations
 
-> 마지막 업데이트: 2026-04-27
+> 마지막 업데이트: 2026-04-28
 > 상태: active
 > doc_id: design.ui-foundations
 > role: ssot
@@ -19,6 +19,7 @@
 - 문서 SSOT: 이 문서
 - import 진행 중 layout SSOT: accepted Stitch structured contract + UI Toolkit candidate surface + capture/report evidence
 - 색상 구현 SSOT: UI Toolkit USS/tokens under `Assets/UI/`
+- 현재 shared tactical token candidate: `Assets/UI/UIToolkit/Shared/TacticalTokens.uss`
 - 외부 레퍼런스 참고 원칙 owner: `design.ui-reference-workflow` (`docs/index.md`에서 현재 경로 확인)
 
 ## Validation Frames
@@ -105,6 +106,11 @@
 | `slot/empty-hover` | `SlotEmptyHover` | 빈 슬롯 hover |
 | `toast/success-bg` | `ToastSuccessBg` | 성공 토스트 |
 | `toast/error-bg` | `ToastErrorBg` | 실패 토스트 |
+
+Current UITK candidate note:
+
+- `Assets/UI/UIToolkit/Shared/TacticalTokens.uss`는 Operation Memory / Shared Shell 후보에서 command blue, signal orange, dark panel 색을 중복 정의하지 않기 위한 shared token candidate다.
+- Shared navigation selected state는 command blue만 사용하고, signal orange는 page-owned primary CTA에만 쓴다.
 
 ### Spacing / Radius / Sizing
 

@@ -35,6 +35,28 @@ namespace Shared.Runtime.Pooling
             return instance;
         }
 
+        public T RentComponent<T>(Vector3 position, Quaternion rotation, Transform parentOverride = null)
+            where T : Component
+        {
+            var instance = Rent(position, rotation, parentOverride);
+            return instance.GetComponent<T>();
+        }
+
+        public bool RentComponents<TFirst, TSecond>(
+            Vector3 position,
+            Quaternion rotation,
+            out TFirst first,
+            out TSecond second,
+            Transform parentOverride = null)
+            where TFirst : Component
+            where TSecond : Component
+        {
+            var instance = Rent(position, rotation, parentOverride);
+            first = instance.GetComponent<TFirst>();
+            second = instance.GetComponent<TSecond>();
+            return first != null && second != null;
+        }
+
         public void Return(GameObject instance)
         {
             if (instance == null || _availableSet.Contains(instance))
@@ -70,6 +92,13 @@ namespace Shared.Runtime.Pooling
                 pooledObject = instance.AddComponent<PooledObject>();
 
             pooledObject.Bind(this);
+
+            var behaviours = instance.GetComponentsInChildren<MonoBehaviour>(true);
+            for (var i = 0; i < behaviours.Length; i++)
+            {
+                if (behaviours[i] is IPoolBindingHandler bindingHandler)
+                    bindingHandler.OnBindToPool(pooledObject);
+            }
         }
 
         private static void Notify(GameObject instance, bool onRent)

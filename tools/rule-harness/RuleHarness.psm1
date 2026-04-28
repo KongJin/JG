@@ -4412,12 +4412,13 @@ function Get-RuleHarnessRulesOnlyRecurrenceCloseoutStatus {
             })
         actionItems = @(
             if ($failed) {
+                $relatedPaths = @($artifactRelativePath) + @($normalizedTargets)
                 New-RuleHarnessActionItem `
                     -Kind 'rules-only-recurrence-closeout' `
                     -Severity 'high' `
                     -Summary 'Update rules-only recurrence closeout artifact' `
                     -Details ([string](@($errors) -join ' ')) `
-                    -RelatedPaths @($artifactRelativePath) + @($normalizedTargets)
+                    -RelatedPaths $relatedPaths
             }
         )
     }
@@ -8753,6 +8754,238 @@ function Invoke-RuleHarness {
     $report
 }
 
+function Test-RuleHarnessSafeRelativePath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $false
+    }
+
+    $normalized = $Path.Replace('\', '/')
+    if ($normalized.StartsWith('/') -or [System.IO.Path]::IsPathRooted($Path)) {
+        return $false
+    }
+
+    foreach ($segment in @($normalized -split '/')) {
+        if ($segment -eq '..') {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Get-RuleHarnessProjectReviewSnapshot {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string]$ConfigPath,
+        [switch]$AllScopes,
+        [switch]$ReadOnly
+    )
+
+    $config = Get-RuleHarnessConfig -ConfigPath $ConfigPath
+    $orderedScopes = @(Get-RuleHarnessOrderedFeatureScopes -RepoRoot $RepoRoot -Config $config)
+    $selectedScopes = if ($AllScopes) {
+        @($orderedScopes)
+    }
+    else {
+        $maxScopesPerRun = if ($config.scan.PSObject.Properties.Name -contains 'maxScopesPerRun') { [int]$config.scan.maxScopesPerRun } else { 1 }
+        @($orderedScopes | Select-Object -First $maxScopesPerRun)
+    }
+
+    $findings = [System.Collections.Generic.List[object]]::new()
+    foreach ($policyFinding in @(Get-RuleHarnessHardcodedMcpUiSmokeFindings -RepoRoot $RepoRoot -Config $config)) {
+        [void]$findings.Add($policyFinding)
+    }
+
+    foreach ($scope in @($selectedScopes)) {
+        foreach ($finding in @(Get-RuleHarnessStaticFindings -RepoRoot $RepoRoot -Config $config -ScopeId ([string]$scope.scopeId))) {
+            [void]$findings.Add($finding)
+        }
+    }
+
+    $featureDependencyGateStatus = Get-RuleHarnessFeatureDependencyGateStatus -RepoRoot $RepoRoot -Config $config
+    $compileGateStatus = Get-RuleHarnessCompileGateStatus -RepoRoot $RepoRoot -Config $config
+    $commitSha = ((Invoke-RuleHarnessGit -RepoRoot $RepoRoot -Arguments @('rev-parse', 'HEAD')) | Select-Object -First 1).Trim()
+
+    [pscustomobject]@{
+        runId                 = [guid]::NewGuid().ToString()
+        baseCommitSha         = $commitSha
+        generatedAtUtc        = (Get-Date).ToUniversalTime().ToString('o')
+        readOnly              = [bool]$ReadOnly
+        allScopes             = [bool]$AllScopes
+        scannedScopes         = @($selectedScopes | ForEach-Object { [string]$_.scopeId })
+        totalScopeCount       = $orderedScopes.Count
+        findings              = @($findings)
+        featureDependencyGate = [pscustomobject]@{
+            status      = [string]$featureDependencyGateStatus.featureDependencyGateStatus
+            cycleCount  = [int]$featureDependencyGateStatus.featureDependencyCycleCount
+            reportPath  = [string]$featureDependencyGateStatus.reportPath
+            failed      = [bool]$featureDependencyGateStatus.failed
+            findings    = @($featureDependencyGateStatus.findings)
+            actionItems = @($featureDependencyGateStatus.actionItems)
+        }
+        compileGate           = [pscustomobject]@{
+            status     = [string]$compileGateStatus.compileGateStatus
+            reasonCode = [string]$compileGateStatus.compileGateReasonCode
+            cleanLevel = [string]$compileGateStatus.cleanLevel
+            verified   = [bool]$compileGateStatus.compileVerified
+            failed     = [bool]$compileGateStatus.failed
+            actionItems = @($compileGateStatus.actionItems)
+        }
+    }
+}
+
+function Test-RuleHarnessRoleInput {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string]$InputPath,
+        [switch]$ThrowOnError
+    )
+
+    $errors = [System.Collections.Generic.List[string]]::new()
+    $resolvedPath = $null
+    $payload = $null
+
+    try {
+        $resolvedPath = (Resolve-Path -LiteralPath $InputPath -ErrorAction Stop).Path
+        $payload = Get-Content -Path $resolvedPath -Raw | ConvertFrom-Json
+    }
+    catch {
+        [void]$errors.Add("Input artifact could not be read as JSON: $($_.Exception.Message)")
+    }
+
+    if ($null -ne $payload) {
+        $currentCommit = ((Invoke-RuleHarnessGit -RepoRoot $RepoRoot -Arguments @('rev-parse', 'HEAD')) | Select-Object -First 1).Trim()
+        if (-not ($payload.PSObject.Properties.Name -contains 'baseCommitSha') -or [string]$payload.baseCommitSha -ne $currentCommit) {
+            [void]$errors.Add("Input artifact baseCommitSha must match current HEAD. Expected=$currentCommit Actual=$([string]$payload.baseCommitSha)")
+        }
+
+        foreach ($batch in @($payload.recommendedBatches)) {
+            if (-not ($batch.PSObject.Properties.Name -contains 'targetFiles')) {
+                [void]$errors.Add("Batch '$([string]$batch.id)' is missing targetFiles.")
+                continue
+            }
+
+            foreach ($target in @($batch.targetFiles)) {
+                if (-not (Test-RuleHarnessSafeRelativePath -Path ([string]$target))) {
+                    [void]$errors.Add("Batch '$([string]$batch.id)' contains unsafe target path '$target'.")
+                }
+            }
+        }
+    }
+
+    if ($errors.Count -gt 0 -and $ThrowOnError) {
+        throw ($errors -join ' ')
+    }
+
+    [pscustomobject]@{
+        valid = ($errors.Count -eq 0)
+        errors = @($errors)
+        path = $resolvedPath
+        payload = $payload
+    }
+}
+
+function ConvertTo-RuleHarnessRoleBatches {
+    param(
+        [Parameter(Mandatory)]
+        [object]$InputObject
+    )
+
+    $batches = [System.Collections.Generic.List[object]]::new()
+    foreach ($batch in @($InputObject.recommendedBatches)) {
+        foreach ($target in @($batch.targetFiles)) {
+            if (-not (Test-RuleHarnessSafeRelativePath -Path ([string]$target))) {
+                throw "Unsafe target path in role batch '$([string]$batch.id)': $target"
+            }
+        }
+
+        [void]$batches.Add($batch)
+    }
+
+    @($batches)
+}
+
+function Invoke-RuleHarnessRoleMutation {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string]$ConfigPath,
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [object[]]$PlannedBatches,
+        [string]$RoleInputPath,
+        [switch]$DryRun
+    )
+
+    $config = Get-RuleHarnessConfig -ConfigPath $ConfigPath
+    $mutationState = Get-RuleHarnessMutationState -Config $config -MutationMode 'code_and_rules' -EnableMutation
+    $targetFiles = @($PlannedBatches | ForEach-Object { @($_.targetFiles) } | Sort-Object -Unique)
+    foreach ($target in @($targetFiles)) {
+        if (-not (Test-RuleHarnessSafeRelativePath -Path ([string]$target))) {
+            throw "Unsafe target path in role mutation input: $target"
+        }
+    }
+
+    $ownerDoc = @(
+        $PlannedBatches |
+            ForEach-Object { @($_.ownerDocs) } |
+            Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+            Select-Object -First 1
+    )
+    $scopeInfo = Get-RuleHarnessScopeInfo `
+        -RepoRoot $RepoRoot `
+        -OwnerDoc $(if ($ownerDoc.Count -gt 0) { [string]$ownerDoc[0] } else { $null }) `
+        -TargetFiles $targetFiles
+    $rulesOnlyCloseout = Get-RuleHarnessRulesOnlyRecurrenceCloseoutStatus `
+        -RepoRoot $RepoRoot `
+        -ScopeInfo $scopeInfo `
+        -TargetFiles $targetFiles
+
+    if ([bool]$rulesOnlyCloseout.failed) {
+        $emptyResult = Invoke-RuleHarnessMutationPlan `
+            -PlannedBatches @() `
+            -InitialStaticFindings @() `
+            -RepoRoot $RepoRoot `
+            -Config $config `
+            -MutationState $mutationState `
+            -ScopeInfo $scopeInfo `
+            -DryRun:$DryRun
+        $combinedStageResults = @($rulesOnlyCloseout.stageResult) + @($emptyResult.stageResults)
+        $combinedActionItems = @(Merge-RuleHarnessActionItems -Items (@($rulesOnlyCloseout.actionItems) + @($emptyResult.actionItems)))
+        Set-RuleHarnessObjectProperty -Object $emptyResult -Name 'stageResults' -Value $combinedStageResults
+        Set-RuleHarnessObjectProperty -Object $emptyResult -Name 'actionItems' -Value $combinedActionItems
+        Set-RuleHarnessObjectProperty -Object $emptyResult -Name 'failed' -Value $true
+        Set-RuleHarnessObjectProperty -Object $emptyResult -Name 'roleInputPath' -Value $RoleInputPath
+        return $emptyResult
+    }
+
+    $result = Invoke-RuleHarnessMutationPlan `
+        -PlannedBatches @($PlannedBatches) `
+        -InitialStaticFindings @() `
+        -RepoRoot $RepoRoot `
+        -Config $config `
+        -MutationState $mutationState `
+        -ScopeInfo $scopeInfo `
+        -DryRun:$DryRun
+
+    $combinedStageResults = @($rulesOnlyCloseout.stageResult) + @($result.stageResults)
+    $combinedActionItems = @(Merge-RuleHarnessActionItems -Items (@($rulesOnlyCloseout.actionItems) + @($result.actionItems)))
+    Set-RuleHarnessObjectProperty -Object $result -Name 'stageResults' -Value $combinedStageResults
+    Set-RuleHarnessObjectProperty -Object $result -Name 'actionItems' -Value $combinedActionItems
+    Set-RuleHarnessObjectProperty -Object $result -Name 'roleInputPath' -Value $RoleInputPath
+    $result
+}
+
 Export-ModuleMember -Function `
     Get-RuleHarnessConfig, `
     Get-RuleHarnessStaticFindings, `
@@ -8764,6 +8997,10 @@ Export-ModuleMember -Function `
     Get-RuleHarnessDirtyTargetPaths, `
     Get-RuleHarnessMutationState, `
     Invoke-RuleHarnessMutationPlan, `
+    Get-RuleHarnessProjectReviewSnapshot, `
+    Test-RuleHarnessRoleInput, `
+    ConvertTo-RuleHarnessRoleBatches, `
+    Invoke-RuleHarnessRoleMutation, `
     Read-RuleHarnessHistoryState, `
     Read-RuleHarnessFeatureScanState, `
     Read-RuleHarnessDocProposalBacklog, `

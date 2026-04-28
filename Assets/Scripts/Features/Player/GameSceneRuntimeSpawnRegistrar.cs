@@ -6,65 +6,66 @@ namespace Features.Player
 {
     public sealed class GameSceneRuntimeSpawnRegistrar : MonoBehaviour
     {
+        private static GameSceneRuntimeSpawnRegistrar _active;
+
         [SerializeField] private PlayerSceneRegistry _playerSceneRegistry;
         [SerializeField] private EnemySceneRegistry _enemySceneRegistry;
-        [SerializeField] private float _scanIntervalSeconds = 0.25f;
 
         private readonly HashSet<int> _announcedPlayers = new();
         private readonly HashSet<int> _announcedEnemies = new();
-        private float _nextScanTime;
 
-        private void Update()
+        public static void NotifyPlayerArrived(PlayerSetup playerSetup)
         {
-            if (Time.unscaledTime < _nextScanTime)
+            if (_active == null)
                 return;
 
-            _nextScanTime = Time.unscaledTime + Mathf.Max(0.05f, _scanIntervalSeconds);
-            ScanNow();
+            _active.AnnouncePlayer(playerSetup);
         }
 
-        public void ScanNow()
+        public static void NotifyEnemyArrived(EnemySetup enemySetup)
         {
-            AnnouncePlayers();
-            AnnounceEnemies();
-        }
-
-        private void AnnouncePlayers()
-        {
-            if (_playerSceneRegistry == null)
+            if (_active == null)
                 return;
 
-            var players = FindObjectsByType<PlayerSetup>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            foreach (var playerSetup in players)
-            {
-                if (playerSetup == null)
-                    continue;
-
-                var id = playerSetup.GetInstanceID();
-                if (!_announcedPlayers.Add(id))
-                    continue;
-
-                _playerSceneRegistry.NotifyArrived(playerSetup);
-            }
+            _active.AnnounceEnemy(enemySetup);
         }
 
-        private void AnnounceEnemies()
+        private void Awake()
         {
-            if (_enemySceneRegistry == null)
+            if (_active != null && _active != this)
+                Debug.LogWarning("[GameSceneRuntimeSpawnRegistrar] Replacing active scene registrar.", this);
+
+            _active = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (_active == this)
+                _active = null;
+        }
+
+        private void AnnouncePlayer(PlayerSetup playerSetup)
+        {
+            if (_playerSceneRegistry == null || playerSetup == null)
                 return;
 
-            var enemies = FindObjectsByType<EnemySetup>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            foreach (var enemy in enemies)
-            {
-                if (enemy == null)
-                    continue;
+            var id = playerSetup.GetInstanceID();
+            if (!_announcedPlayers.Add(id))
+                return;
 
-                var id = enemy.GetInstanceID();
-                if (!_announcedEnemies.Add(id))
-                    continue;
+            _playerSceneRegistry.NotifyArrived(playerSetup);
+        }
 
-                _enemySceneRegistry.NotifyArrived(enemy);
-            }
+        private void AnnounceEnemy(EnemySetup enemy)
+        {
+            if (_enemySceneRegistry == null || enemy == null)
+                return;
+
+            var id = enemy.GetInstanceID();
+            if (!_announcedEnemies.Add(id))
+                return;
+
+            _enemySceneRegistry.NotifyArrived(enemy);
         }
     }
 }

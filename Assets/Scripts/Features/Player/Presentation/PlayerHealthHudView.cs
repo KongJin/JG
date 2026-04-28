@@ -1,6 +1,5 @@
 using Shared.Attributes;
 using Features.Player.Application.Events;
-using Features.Player.Runtime;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Logging;
@@ -11,6 +10,8 @@ namespace Features.Player.Presentation
 {
     public sealed class PlayerHealthHudView : MonoBehaviour
     {
+        private static readonly Vector2 HiddenAnchoredPosition = new Vector2(100000f, 100000f);
+
         [Required, SerializeField]
         private Slider _healthSlider;
 
@@ -31,6 +32,11 @@ namespace Features.Player.Presentation
 
         private IEventSubscriber _eventBus;
         private DomainEntityId _playerId;
+        private Transform _target;
+        private Camera _worldCamera;
+        private Canvas _hudCanvas;
+        private RectTransform _rectTransform;
+        private RectTransform _hudCanvasRectTransform;
 
         public void Initialize(
             IEventSubscriber eventBus,
@@ -73,11 +79,11 @@ namespace Features.Player.Presentation
             _healthSlider.value = maxHealth;
             UpdateFillColor(1f);
 
-            var follower = gameObject.GetComponent<PlayerHealthHudFollower>();
-            if (follower == null)
-                follower = gameObject.AddComponent<PlayerHealthHudFollower>();
-
-            follower.Initialize(target, worldCamera, hudCanvas, _headOffset);
+            _target = target;
+            _worldCamera = worldCamera;
+            _hudCanvas = hudCanvas;
+            _rectTransform = transform as RectTransform;
+            _hudCanvasRectTransform = hudCanvas.transform as RectTransform;
 
             _eventBus.Subscribe(this, new System.Action<PlayerHealthChangedEvent>(OnHealthChanged));
             _eventBus.Subscribe(this, new System.Action<PlayerRespawnedEvent>(OnRespawned));
@@ -86,6 +92,31 @@ namespace Features.Player.Presentation
         private void OnDestroy()
         {
             _eventBus?.UnsubscribeAll(this);
+        }
+
+        private void LateUpdate()
+        {
+            if (_target == null || _worldCamera == null || _hudCanvas == null || _rectTransform == null || _hudCanvasRectTransform == null)
+                return;
+
+            var screenPoint = _worldCamera.WorldToScreenPoint(_target.position + _headOffset);
+            if (screenPoint.z <= 0f)
+            {
+                _rectTransform.anchoredPosition = HiddenAnchoredPosition;
+                return;
+            }
+
+            var uiCamera = _hudCanvas.renderMode == RenderMode.ScreenSpaceOverlay
+                ? null
+                : _hudCanvas.worldCamera;
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                _hudCanvasRectTransform,
+                screenPoint,
+                uiCamera,
+                out var anchoredPosition);
+
+            _rectTransform.anchoredPosition = anchoredPosition;
         }
 
         private void OnHealthChanged(PlayerHealthChangedEvent e)

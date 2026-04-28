@@ -1,6 +1,6 @@
 # Non-Stitch UI Stitch Import Plan
 
-> 마지막 업데이트: 2026-04-27
+> 마지막 업데이트: 2026-04-28
 > 상태: active
 > doc_id: plans.non-stitch-ui-stitch-reimport
 > role: plan
@@ -34,7 +34,7 @@
 |---|---|---|---|
 | Garage main workspace | current runtime `GaragePageRoot` | mixed / Set B residual | Set B source freeze 기준 UI Toolkit candidate를 만들고, runtime 교체는 별도 pass로 판단한다 |
 | Lobby main shell | current runtime `LobbyPageRoot` | mixed / Set A candidate | current source freeze와 scene capture를 대조한 뒤, missing native regions만 Stitch source 후보로 다시 만든다 |
-| Account settings overlay | scene-owned inside `LobbyScene.unity` / Garage bindings | historical prefab evidence / UITK candidate needed | 새로 열면 UI Toolkit candidate로 다시 가져온다 |
+| Account settings overlay | scene-owned inside `LobbyScene.unity` / Garage bindings | historical prefab evidence / new source freeze available | `Nova1492 Compact Sync Console` source freeze를 기준으로 UI Toolkit candidate를 다시 가져오고, runtime integration은 별도 pass로 판단한다 |
 | Skill bar HUD | scene-owned `BattleScene` skill bar wiring | native candidate | GameScene HUD UI Toolkit candidate를 먼저 만든 뒤 runtime replacement를 판단한다 |
 | Start skill selection | scene-owned `BattleScene` start skill selection wiring | native candidate | modal/selection overlay는 Stitch source freeze에서 다시 시작한다 |
 | Player health HUD | `Assets/Resources/PlayerHealthHudView.prefab` | native candidate | 현재 `SetDGameSceneHudFullRoot`와 중복 여부를 확인하고, 남는 기능만 Stitch source로 재작성한다 |
@@ -119,9 +119,22 @@ No-hardcoding result:
 
 Residual:
 
-- The next pass should create a UI Toolkit candidate.
+- The next pass should create a UI Toolkit candidate from the newer `Nova1492 Compact Sync Console` source candidate.
 - Runtime integration into `LobbyScene` / Garage settings is not started.
 - Visual fidelity is acceptable for first-read hierarchy but still needs final polish against the Stitch source if this becomes the production settings overlay.
+
+## 2026-04-28 Account / Connection Source Candidates
+
+- Account/sync source: `Nova1492 Compact Sync Console` / `7bc5b4ca92ca45559d4207a067057b57`
+  - `artifacts/stitch/11729197788183873077/7bc5b4ca92ca45559d4207a067057b57/screen.html`
+  - `artifacts/stitch/11729197788183873077/7bc5b4ca92ca45559d4207a067057b57/screen.png`
+  - `artifacts/stitch/11729197788183873077/7bc5b4ca92ca45559d4207a067057b57/meta.json`
+- Connection/reconnect source: `JG Connection / Reconnect Control` / `4e2da1df82fe4c619de57a4133a527dc`
+  - `artifacts/stitch/11729197788183873077/4e2da1df82fe4c619de57a4133a527dc/screen.html`
+  - `artifacts/stitch/11729197788183873077/4e2da1df82fe4c619de57a4133a527dc/screen.png`
+  - `artifacts/stitch/11729197788183873077/4e2da1df82fe4c619de57a4133a527dc/meta.json`
+
+These sources follow the Nova1492 Garage UI flow guide and keep blocked/waiting/manual retry states explicit. They are source candidates only; no runtime replacement or account/cloud acceptance is implied.
 
 ## Current Runtime Compatibility
 
@@ -130,8 +143,8 @@ Residual:
 
 ## 검증 명령
 
-- `powershell -ExecutionPolicy Bypass -File .\tools\check-compile-errors.ps1`
-- `powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
+- `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\check-compile-errors.ps1`
+- `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
 - UI Toolkit candidate capture command or MCP capture flow for the surface
 - route-specific Play Mode smoke when the surface is runtime-critical
 - `npm run --silent rules:lint`
@@ -148,4 +161,5 @@ Residual:
 - 2026-04-27 route 재리뷰: 다음 migration route는 UI Toolkit candidate surface로 고정했다. plan rereview: clean.
 - 2026-04-27 범위 리뷰: runtime-referenced HUD/feedback prefab은 compatibility surface로 남기고, replacement는 별도 pass에서 판단한다.
 - 2026-04-27 부족한점 리뷰: 남은 runtime replacement 대상이 surface inventory에 구분된다.
+- 2026-04-28 source freeze 재리뷰: 과한점은 새 Account/Connection sources를 runtime success로 올리지 않고, source freeze evidence로만 남겼다. 부족한점은 next UITK candidate 기준 화면과 artifact paths를 추가해 해소했다.
 - plan rereview: clean

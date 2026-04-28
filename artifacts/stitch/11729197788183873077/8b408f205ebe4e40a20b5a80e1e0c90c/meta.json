@@ -1,0 +1,15 @@
+﻿{
+    "projectId":  "11729197788183873077",
+    "screenId":  "8b408f205ebe4e40a20b5a80e1e0c90c",
+    "title":  "Operation Memory - Nova Panel Style",
+    "deviceType":  "MOBILE",
+    "width":  780,
+    "height":  2158,
+    "htmlUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2NhYjM0Y2Y4MDkxNzQyZWE4N2E5ZDg3OGYwMjlkMmYzEgsSBxC5mdrmrAsYAZIBJAoKcHJvamVjdF9pZBIWQhQxMTcyOTE5Nzc4ODE4Mzg3MzA3Nw\u0026filename=\u0026opi=96797242",
+    "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0uiXn97Q4A0OnP8VzUl9l5R7Z6YBoOOeEEA8ftLqbS5os-m41wnfU7PfcLdQHjZKr5arEZegTjsL_ipnxNQ3UiAGdmvdDo06R8IExyTEMKL4JiNxdW748KPtJUt2pHG4u8bE2MFf9VhwXZkbrSa5zcWW-usuODKi335xp_a_7N-tVK6MIhPzL6Cq4Hni3a1B5wyKhTYkzblcRHgOjfVFFVIeY8XmDuj2lIcx8tVVUCKw0DFfdvpolmrrjtY",
+    "frozenAt":  "2026-04-28",
+    "source":  "stitch.edit_screens",
+    "candidateStatus":  "superseded",
+    "supersededBy":  "753d889cc0874d69858fd17d98c66f7f",
+    "reason":  "The screen aligned with Nova1492 tone but still carried bottom navigation/status ambiguity before the accepted dark dock source was generated."
+}

@@ -1,6 +1,6 @@
 # LobbyScene UI/Prefab 관리 정리 계획
 
-> 마지막 업데이트: 2026-04-27
+> 마지막 업데이트: 2026-04-28
 > 상태: reference
 > doc_id: plans.lobby-scene-ui-prefab-management
 > role: plan
@@ -106,9 +106,9 @@
 
 ## 검증 명령
 
-- `powershell -ExecutionPolicy Bypass -File .\tools\check-compile-errors.ps1`
+- `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\check-compile-errors.ps1`
 - Unity MCP `Tools/Validate Required Fields`
-- `powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
+- `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
 - 필요한 경우 Unity MCP Play Mode Lobby/Garage tab smoke
 - `npm run --silent rules:lint`
 

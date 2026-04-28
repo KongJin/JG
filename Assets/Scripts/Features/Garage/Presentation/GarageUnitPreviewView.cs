@@ -15,11 +15,6 @@ namespace Features.Garage.Presentation
     /// </summary>
     public sealed class GarageUnitPreviewView : MonoBehaviour
     {
-        private static readonly Vector3 FallbackFramePosition = Vector3.zero;
-        private static readonly Vector3 FallbackWeaponPosition = new Vector3(0f, 0.62f, 0f);
-        private static readonly Vector3 FallbackWeaponEuler = new Vector3(0f, 0f, 90f);
-        private static readonly Vector3 FallbackMobilityPosition = new Vector3(0f, -0.58f, 0f);
-
         [System.Serializable]
         private sealed class PartPrefabMapping
         {
@@ -81,19 +76,18 @@ namespace Features.Garage.Presentation
             DestroyCurrentPreview();
             SetEmptyStateVisible(true);
 
-            bool hasPreviewLoadout =
-                viewModel != null &&
-                !string.IsNullOrWhiteSpace(viewModel.FrameId) &&
-                !string.IsNullOrWhiteSpace(viewModel.FirepowerId) &&
-                !string.IsNullOrWhiteSpace(viewModel.MobilityId);
-
-            if (!hasPreviewLoadout)
+            if (!GarageUnitPreviewAssembly.HasCompleteLoadout(viewModel))
             {
                 _rawImage.color = Color.Lerp(ThemeColors.PreviewBackground, ThemeColors.BackgroundCard, 0.18f);
                 return;
             }
 
-            CreatePreview(viewModel);
+            if (!CreatePreview(viewModel))
+            {
+                _rawImage.color = Color.Lerp(ThemeColors.PreviewBackground, ThemeColors.BackgroundCard, 0.18f);
+                return;
+            }
+
             SetEmptyStateVisible(false);
             _rawImage.color = Color.white;
 
@@ -101,94 +95,15 @@ namespace Features.Garage.Presentation
                 _previewCamera.Render();
         }
 
-        private void CreatePreview(GarageSlotViewModel viewModel)
+        private bool CreatePreview(GarageSlotViewModel viewModel)
         {
-            _currentPreviewRoot = new GameObject("PreviewRoot");
-            GaragePreviewAssembler.AttachToPreviewCamera(_currentPreviewRoot, _previewCamera, new Vector3(0f, -0.04f, 6f), Vector3.zero);
-
-            var framePosition = ResolveFramePosition(viewModel.FrameAlignment);
-            var weaponPosition = ResolveAttachedPartPosition(
-                viewModel.FrameAlignment,
-                viewModel.FirepowerAlignment,
-                FallbackWeaponPosition);
-            var weaponEuler = ResolvePartEuler(viewModel.FirepowerAlignment, FallbackWeaponEuler);
-            var mobilityPosition = ResolveMobilityPosition(
-                viewModel.FrameAlignment,
-                viewModel.MobilityAlignment,
-                FallbackMobilityPosition);
-            var mobilityEuler = ResolvePartEuler(viewModel.MobilityAlignment, Vector3.zero);
-
-            var frameObj = CreateFrame(viewModel.FrameId, viewModel.FramePreviewPrefab);
-            GaragePreviewAssembler.Attach(frameObj, _currentPreviewRoot.transform, framePosition, Vector3.zero);
-
-            var weaponObj = CreateWeapon(viewModel.FirepowerId, viewModel.FirepowerPreviewPrefab);
-            GaragePreviewAssembler.Attach(weaponObj, _currentPreviewRoot.transform, weaponPosition, weaponEuler);
-
-            var thrusterObj = CreateThruster(viewModel.MobilityId, viewModel.MobilityPreviewPrefab);
-            GaragePreviewAssembler.Attach(thrusterObj, _currentPreviewRoot.transform, mobilityPosition, mobilityEuler);
-        }
-
-        private static Vector3 ResolveFramePosition(GaragePanelCatalog.PartAlignment frameAlignment)
-        {
-            return CanApply(frameAlignment)
-                ? frameAlignment.PivotOffset
-                : FallbackFramePosition;
-        }
-
-        private static Vector3 ResolveAttachedPartPosition(
-            GaragePanelCatalog.PartAlignment frameAlignment,
-            GaragePanelCatalog.PartAlignment partAlignment,
-            Vector3 fallbackPosition)
-        {
-            if (!CanApply(frameAlignment) || !CanApply(partAlignment))
-                return fallbackPosition;
-
-            var framePosition = ResolveFramePosition(frameAlignment);
-            if (!TryResolveFrameTopSocket(frameAlignment, framePosition, out var frameSocket))
-                return fallbackPosition;
-
-            var rotatedSocketOffset = Quaternion.Euler(partAlignment.SocketEuler) * partAlignment.SocketOffset;
-            return frameSocket - rotatedSocketOffset;
-        }
-
-        private static Vector3 ResolveMobilityPosition(
-            GaragePanelCatalog.PartAlignment frameAlignment,
-            GaragePanelCatalog.PartAlignment mobilityAlignment,
-            Vector3 fallbackPosition)
-        {
-            if (!CanApply(frameAlignment) || !CanApply(mobilityAlignment) || !mobilityAlignment.HasXfiAttachSocket)
-                return fallbackPosition;
-
-            var framePosition = ResolveFramePosition(frameAlignment);
-            var rotatedSocketOffset = Quaternion.Euler(mobilityAlignment.SocketEuler) * mobilityAlignment.XfiAttachSocketOffset;
-            return framePosition - rotatedSocketOffset;
-        }
-
-        private static Vector3 ResolvePartEuler(GaragePanelCatalog.PartAlignment partAlignment, Vector3 fallbackEuler)
-        {
-            return CanApply(partAlignment)
-                ? partAlignment.SocketEuler
-                : fallbackEuler;
-        }
-
-        private static bool TryResolveFrameTopSocket(
-            GaragePanelCatalog.PartAlignment alignment,
-            Vector3 framePosition,
-            out Vector3 frameSocket)
-        {
-            if (alignment.HasFrameTopSocket)
-            {
-                frameSocket = framePosition + alignment.FrameTopSocketOffset;
-                return true;
-            }
-
-            frameSocket = default;
-            return false;
-        }
-
-        private static bool CanApply(GaragePanelCatalog.PartAlignment alignment)
-        {
-            return alignment != null && alignment.CanApply;
+            return GarageUnitPreviewAssembly.TryCreatePreviewRoot(
+                viewModel,
+                _previewCamera,
+                ResolvePartPrefab(viewModel.FrameId, viewModel.FramePreviewPrefab, _frameModelPrefabs, _framePrefab),
+                ResolvePartPrefab(viewModel.FirepowerId, viewModel.FirepowerPreviewPrefab, _firepowerModelPrefabs, _weaponPrefab),
+                ResolvePartPrefab(viewModel.MobilityId, viewModel.MobilityPreviewPrefab, _mobilityModelPrefabs, _thrusterPrefab),
+                out _currentPreviewRoot);
         }
 
         private GameObject CreateFrame(string frameId, GameObject previewPrefab)
@@ -291,7 +206,7 @@ namespace Features.Garage.Presentation
             }
 
             var autoRotation = Time.unscaledTime * _autoRotationSpeed;
-            GaragePreviewAssembler.SetYaw(_currentPreviewRoot, _manualRotationY + autoRotation);
+            GarageUnitPreviewAssembly.SetYaw(_currentPreviewRoot, _manualRotationY + autoRotation);
         }
 
         private static bool TryGetPointerState(

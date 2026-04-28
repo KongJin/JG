@@ -23,6 +23,7 @@ namespace Features.Garage.Presentation
         [Required, SerializeField] private GarageUnitEditorView _unitEditorView;
         [Required, SerializeField] private GarageResultPanelView _resultPanelView;
         [SerializeField] private GarageNovaPartsPanelView _novaPartsPanelView;
+        [SerializeField] private GarageSetBUitkRuntimeAdapter _setBUitkAdapter;
 
         [Header("Preview")]
         [Required, SerializeField] private GarageUnitPreviewView _unitPreviewView;
@@ -149,6 +150,14 @@ namespace Features.Garage.Presentation
             _unitEditorView.MobilityCycleRequested += CycleMobility;
             _unitEditorView.ClearRequested += ClearSelectedSlot;
             _resultPanelView.SaveClicked += RequestSave;
+            if (_setBUitkAdapter != null)
+            {
+                _setBUitkAdapter.Bind();
+                _setBUitkAdapter.SlotSelected += SelectSlot;
+                _setBUitkAdapter.PartFocusSelected += focus => SetMobilePartFocus(ToMobilePartFocus(focus));
+                _setBUitkAdapter.SaveRequested += RequestSave;
+                _setBUitkAdapter.SettingsRequested += () => SetSettingsOverlayOpen(!_isSettingsOverlayOpen);
+            }
 
             var chromeBindings = GaragePageChromeBindingResolver.Resolve(this, ref _chromeBindings);
             if (chromeBindings == null)
@@ -277,10 +286,11 @@ namespace Features.Garage.Presentation
             var operationSummary = GarageOperationRecordSummaryFormatter.BuildSummary(_recentOperations);
             var serviceTagsByLoadoutKey = GarageOperationRecordServiceTagMapper.BuildByLoadoutKey(_recentOperations);
             var slotViewModels = _presenter.BuildSlotViewModels(_state, serviceTagsByLoadoutKey);
+            var editorViewModel = _presenter.BuildEditorViewModel(_state);
             var resultViewModel = _presenter.BuildResultViewModel(_state, evaluation, operationSummary);
 
             _rosterListView.Render(slotViewModels);
-            _unitEditorView.Render(_presenter.BuildEditorViewModel(_state));
+            _unitEditorView.Render(editorViewModel);
             _unitEditorView.SetFocusedPart(ToEditorFocus(_mobilePartFocus));
             _novaPartsPanel?.Render(
                 _catalog,
@@ -292,6 +302,12 @@ namespace Features.Garage.Presentation
             _resultPanelView.Render(resultViewModel);
             _resultPanelView.SetInlineSaveVisible(false);
             _unitPreviewView.Render(slotViewModels[_state.SelectedSlotIndex]);
+            _setBUitkAdapter?.Render(
+                slotViewModels,
+                editorViewModel,
+                resultViewModel,
+                ToEditorFocus(_mobilePartFocus),
+                _saveFlow.IsSaving);
 
             SyncChrome(resultViewModel);
             if (_chromeBindings != null &&
@@ -338,6 +354,16 @@ namespace Features.Garage.Presentation
                 MobilePartFocus.Frame => GarageEditorFocus.Frame,
                 MobilePartFocus.Firepower => GarageEditorFocus.Firepower,
                 _ => GarageEditorFocus.Mobility,
+            };
+        }
+
+        private static MobilePartFocus ToMobilePartFocus(GarageEditorFocus focus)
+        {
+            return focus switch
+            {
+                GarageEditorFocus.Firepower => MobilePartFocus.Firepower,
+                GarageEditorFocus.Mobility => MobilePartFocus.Mobility,
+                _ => MobilePartFocus.Frame,
             };
         }
 

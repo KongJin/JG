@@ -31,6 +31,9 @@ namespace Features.Garage
         private GaragePageController _pageController;
 
         [SerializeField]
+        private GarageSetBUitkPageController _setBUitkPageController;
+
+        [SerializeField]
         private NovaPartVisualCatalog _novaPartVisualCatalog;
 
         [SerializeField]
@@ -114,6 +117,18 @@ namespace Features.Garage
                     recentOperations);
             }
 
+            if (_setBUitkPageController != null)
+            {
+                _setBUitkPageController.Initialize(
+                    InitializeGarage,
+                    ComposeUnit,
+                    ValidateRoster,
+                    SaveRoster,
+                    _eventPublisher,
+                    _panelCatalog,
+                    recentOperations);
+            }
+
             _ = SyncOperationRecordsAsync(
                 operationRecordStore,
                 accountDataPort as IOperationRecordCloudPort);
@@ -135,7 +150,21 @@ namespace Features.Garage
                 return;
 
             if (_pageController == null || _panelCatalog == null)
+            {
+                if (_setBUitkPageController != null && _panelCatalog != null)
+                {
+                    _setBUitkPageController.Initialize(
+                        InitializeGarage,
+                        ComposeUnit,
+                        ValidateRoster,
+                        SaveRoster,
+                        _eventPublisher,
+                        _panelCatalog,
+                        result.Value);
+                }
+
                 return;
+            }
 
             _pageController.Initialize(
                 InitializeGarage,
@@ -145,6 +174,18 @@ namespace Features.Garage
                 _eventPublisher,
                 _panelCatalog,
                 result.Value);
+
+            if (_setBUitkPageController != null)
+            {
+                _setBUitkPageController.Initialize(
+                    InitializeGarage,
+                    ComposeUnit,
+                    ValidateRoster,
+                    SaveRoster,
+                    _eventPublisher,
+                    _panelCatalog,
+                    result.Value);
+            }
         }
 
         /// <summary>
@@ -183,7 +224,7 @@ namespace Features.Garage
                     DisplayName = frame.DisplayName,
                     BaseHp = frame.BaseHp,
                     BaseAttackSpeed = frame.BaseAttackSpeed,
-                    PreviewPrefab = frame.PreviewPrefab,
+                    PreviewPrefab = ResolvePreviewPrefab(frame.PreviewPrefab, metadata),
                     SourcePath = metadata?.SourceRelativePath,
                     Tier = metadata?.Tier ?? 0,
                     NeedsNameReview = metadata?.NeedsNameReview ?? false,
@@ -204,7 +245,7 @@ namespace Features.Garage
                     AttackDamage = module.AttackDamage,
                     AttackSpeed = module.AttackSpeed,
                     Range = module.Range,
-                    PreviewPrefab = module.PreviewPrefab,
+                    PreviewPrefab = ResolvePreviewPrefab(module.PreviewPrefab, metadata),
                     SourcePath = metadata?.SourceRelativePath,
                     Tier = metadata?.Tier ?? 0,
                     NeedsNameReview = metadata?.NeedsNameReview ?? false,
@@ -225,7 +266,7 @@ namespace Features.Garage
                     HpBonus = module.HpBonus,
                     MoveRange = module.MoveRange,
                     AnchorRange = module.AnchorRange,
-                    PreviewPrefab = module.PreviewPrefab,
+                    PreviewPrefab = ResolvePreviewPrefab(module.PreviewPrefab, metadata),
                     SourcePath = metadata?.SourceRelativePath,
                     Tier = metadata?.Tier ?? 0,
                     NeedsNameReview = metadata?.NeedsNameReview ?? false,
@@ -250,9 +291,30 @@ namespace Features.Garage
                     continue;
 
                 byPartId[entry.PartId] = entry;
+                var legacyPartId = ResolveLegacySamplePartId(entry.PartId);
+                if (!string.IsNullOrWhiteSpace(legacyPartId))
+                    byPartId[legacyPartId] = entry;
             }
 
             return byPartId;
+        }
+
+        private static UnityEngine.GameObject ResolvePreviewPrefab(
+            UnityEngine.GameObject directPrefab,
+            NovaPartVisualCatalog.Entry metadata)
+        {
+            if (directPrefab != null)
+                return directPrefab;
+
+            if (metadata?.PreviewPrefab != null)
+                return metadata.PreviewPrefab;
+
+#if UNITY_EDITOR
+            if (metadata != null && !string.IsNullOrWhiteSpace(metadata.ModelPath))
+                return UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(metadata.ModelPath);
+#endif
+
+            return null;
         }
 
         private static System.Collections.Generic.Dictionary<string, NovaPartAlignmentCatalog.Entry> BuildNovaAlignmentByPartId(
@@ -269,9 +331,29 @@ namespace Features.Garage
                     continue;
 
                 byPartId[entry.PartId] = entry;
+                var legacyPartId = ResolveLegacySamplePartId(entry.PartId);
+                if (!string.IsNullOrWhiteSpace(legacyPartId))
+                    byPartId[legacyPartId] = entry;
             }
 
             return byPartId;
+        }
+
+        private static string ResolveLegacySamplePartId(string novaPartId)
+        {
+            return novaPartId switch
+            {
+                "nova_frame_body25_bosro" => "frame_bastion",
+                "nova_frame_body1_sz" => "frame_striker",
+                "nova_frame_body11_kn" => "frame_relay",
+                "nova_fire_arm10_broz" => "fire_scatter",
+                "nova_fire_arm1_sz" => "fire_pulse",
+                "nova_fire_arm13_prs" => "fire_rail",
+                "nova_mob_g_legs35_prg" => "mob_burst",
+                "nova_mob_legs1_rdrn" => "mob_vector",
+                "nova_mob_legs19_tower" => "mob_treads",
+                _ => null
+            };
         }
 
         private static GaragePanelCatalog.PartAlignment CreateAlignment(NovaPartAlignmentCatalog.Entry entry)

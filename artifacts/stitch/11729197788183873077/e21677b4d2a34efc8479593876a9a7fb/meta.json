@@ -1,0 +1,15 @@
+﻿{
+    "projectId":  "11729197788183873077",
+    "screenId":  "e21677b4d2a34efc8479593876a9a7fb",
+    "title":  "Operation Memory - Return Dock",
+    "deviceType":  "MOBILE",
+    "width":  780,
+    "height":  1768,
+    "htmlUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzJhNzgwYjM4ODU2NzRmMGU5ZTQ1NjNjOTQwYWVkMzM3EgsSBxC5mdrmrAsYAZIBJAoKcHJvamVjdF9pZBIWQhQxMTcyOTE5Nzc4ODE4Mzg3MzA3Nw\u0026filename=\u0026opi=96797242",
+    "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0uhfeIdLj9Od1JSBVH6XaGZS_JHBMH-AdmEMZBQavjNTp1nDBZD5q9XpiZp9Mcqm0txszT9_LDPwRCb5-GNmGR0AX2FUwQJR6VOE6q1Un2NLr9zwk3Un2EpekdzJwbNBVOSlj7l0BCIcNxLp4aym3OeAFmoU_7w3kaVCqu6eHBwuQ-i12CKgMGM_VkSq4SAzNVXLQ2qrqsRgV8v2tGSgkkBa0z7p-sriWwyEQTBRWJE0hSxVhznpWF2_5IM",
+    "frozenAt":  "2026-04-28",
+    "source":  "stitch.edit_screens",
+    "candidateStatus":  "superseded",
+    "supersededBy":  "753d889cc0874d69858fd17d98c66f7f",
+    "reason":  "The fixed return dock was corrected, but the bright striped background and weakened recent-5 structure regressed from the dark Nova1492 source target."
+}

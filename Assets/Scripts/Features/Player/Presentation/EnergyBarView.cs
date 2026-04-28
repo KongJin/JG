@@ -1,5 +1,6 @@
 using Shared.Attributes;
 using Features.Player.Application.Events;
+using Features.Player.Application.Ports;
 using Shared.EventBus;
 using Shared.Kernel;
 using UnityEngine;
@@ -16,16 +17,22 @@ namespace Features.Player.Presentation
 
         private IEventSubscriber _eventBus;
         private DomainEntityId _playerId;
+        private IEnergyRegenPort _energyRegenPort;
 
         private void Awake()
         {
             ApplyPresentationDefaults();
         }
 
-        public void Initialize(IEventSubscriber eventBus, DomainEntityId playerId, float maxEnergy)
+        public void Initialize(
+            IEventSubscriber eventBus,
+            DomainEntityId playerId,
+            float maxEnergy,
+            IEnergyRegenPort energyRegenPort)
         {
             _eventBus = eventBus;
             _playerId = playerId;
+            _energyRegenPort = energyRegenPort;
 
             _energySlider.maxValue = maxEnergy;
             _energySlider.value = maxEnergy;
@@ -37,6 +44,11 @@ namespace Features.Player.Presentation
         private void OnDestroy()
         {
             _eventBus?.UnsubscribeAll(this);
+        }
+
+        private void Update()
+        {
+            _energyRegenPort?.TickRegen(Time.deltaTime, Time.time);
         }
 
         private void OnEnergyChanged(PlayerEnergyChangedEvent e)

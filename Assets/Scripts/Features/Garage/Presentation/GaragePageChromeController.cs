@@ -194,15 +194,10 @@ namespace Features.Garage.Presentation
             _mobileSaveButton.interactable = canSave;
             _mobileSaveButtonLabel.text = isSaving ? "저장 중..." : "출격 편성 저장";
 
-            if (_mobileSaveButton.TryGetComponent<Image>(out var background))
+            if (_mobileSaveButton.targetGraphic is Image background)
             {
                 background.color = GetSaveButtonColor(isSaving, canSave, isDirty, isReady);
-
-                var feedback = _mobileSaveButton.GetComponent<ButtonFeedback>();
-                if (feedback != null)
-                {
-                    feedback.UpdateBaseColor(background.color);
-                }
+                ButtonStyles.ApplyRuntimeColors(_mobileSaveButton, background.color);
             }
 
             RefreshSaveStateText(resultViewModel, isSaving);
@@ -300,15 +295,10 @@ namespace Features.Garage.Presentation
             label.text = title;
             label.color = GetTabLabelColor(isActive, isAvailable);
 
-            if (button.TryGetComponent<Image>(out var background))
+            if (button.targetGraphic is Image background)
             {
                 background.color = GetTabBackgroundColor(isActive, isAvailable);
-
-                var feedback = button.GetComponent<ButtonFeedback>();
-                if (feedback != null)
-                {
-                    feedback.UpdateBaseColor(background.color);
-                }
+                ButtonStyles.ApplyRuntimeColors(button, background.color);
             }
         }
 

@@ -5,6 +5,8 @@ using Features.Unit.Domain;
 using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 using UnityEngine.UI;
 using UnitSpec = Features.Unit.Domain.Unit;
@@ -72,7 +74,7 @@ namespace Features.Unit.Presentation
 
             if (_commandController == null)
             {
-                _commandController = GetComponent<SummonCommandController>();
+                _commandController = ComponentAccess.Get<SummonCommandController>(gameObject);
             }
 
             _commandController?.Initialize(
@@ -102,9 +104,8 @@ namespace Features.Unit.Presentation
         {
             if (rosterIndex >= _roster.Length) return;
 
-            var slotGo = Instantiate(_slotPrefab.gameObject, _slotsParent, false);
-            slotGo.name = $"UnitSlot-{rosterIndex}";
-            var slotView = slotGo.GetComponent<UnitSlotView>();
+            var slotView = Instantiate(_slotPrefab, _slotsParent, false);
+            slotView.name = $"UnitSlot-{rosterIndex}";
             slotView.Initialize(
                 _eventBus,
                 _energyPort,
@@ -118,8 +119,7 @@ namespace Features.Unit.Presentation
             // 드래그 앤 드롭 핸들러 연결 (고급 입력 전용)
             if (_inputHandlerPrefab != null && _canvas != null)
             {
-                var inputGo = Instantiate(_inputHandlerPrefab.gameObject, slotGo.transform, false);
-                var inputHandler = inputGo.GetComponent<UnitSlotInputHandler>();
+                var inputHandler = Instantiate(_inputHandlerPrefab, slotView.transform, false);
                 inputHandler.Initialize(
                     _roster[rosterIndex],
                     (_, spawnPosition) => OnSummonRequested(_roster[rosterIndex], rosterIndex, spawnPosition),

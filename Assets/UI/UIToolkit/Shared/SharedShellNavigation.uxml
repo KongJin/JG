@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="TacticalTokens.uss" />
+    <Style src="SharedShellNavigation.uss" />
+    <ui:VisualElement name="SharedShellScreen" class="shared-shell-screen">
+        <ui:VisualElement name="SharedTopShell" class="shared-top-shell">
+            <ui:Button name="ShellMenuButton" text="=" class="shared-icon-button" />
+            <ui:VisualElement class="shared-title-stack">
+                <ui:Label text="격납고 관리" class="shared-title" />
+                <ui:Label text="동기화 완료" class="shared-state" />
+            </ui:VisualElement>
+            <ui:Button name="ShellSettingsButton" text="S" class="shared-icon-button" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="SharedWorkspacePlaceholder" class="shared-workspace">
+            <ui:VisualElement class="shared-workspace-inset">
+                <ui:Label text="PAGE WORKSPACE" class="shared-workspace-title" />
+                <ui:Label text="page-owned content starts here" class="shared-workspace-copy" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="SharedBoundaryNote" class="shared-boundary-note">
+            <ui:Label text="BLUE = NAV" class="shared-note-blue" />
+            <ui:Label text="ORANGE = PAGE CTA ONLY" class="shared-note-muted" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="SharedNavigationBarReference" class="shared-navigation-bar">
+            <ui:Button name="LobbyNavButton" text="로비" class="shared-nav-item" />
+            <ui:Button name="GarageNavButton" text="차고" class="shared-nav-item shared-nav-item--selected" />
+            <ui:Button name="RecordsNavButton" text="기록" class="shared-nav-item" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

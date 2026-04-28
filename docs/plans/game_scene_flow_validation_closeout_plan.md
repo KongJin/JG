@@ -6,7 +6,7 @@
 > role: plan
 > owner_scope: GameScene/BattleScene 실제 플레이 플로우 검증, blocker/mismatch closeout, runtime-smoke-clean 판정
 > upstream: plans.progress, plans.game-scene-entry, plans.game-scene-phase5-multiplayer-sync, playtest.runtime-validation-checklist
-> artifacts: `Assets/Scripts/Features/Lobby/`, `Assets/Scripts/Features/Player/`, `Assets/Scripts/Features/Unit/`, `Assets/Scripts/Features/Wave/`, `Assets/Scripts/Features/Enemy/`, `Assets/Scenes/BattleScene.unity`, `artifacts/unity/`
+> artifacts: `Assets/Scripts/Features/Lobby/`, `Assets/Scripts/Features/Player/`, `Assets/Scripts/Features/Unit/`, `Assets/Scripts/Features/Wave/`, `Assets/Scripts/Features/Enemy/`, `artifacts/unity/`
 >
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
 

@@ -1,6 +1,6 @@
 # Unity UI Authoring Workflow
 
-> 마지막 업데이트: 2026-04-27
+> 마지막 업데이트: 2026-04-28
 > 상태: active
 > doc_id: ops.unity-ui-authoring-workflow
 > role: ssot
@@ -72,6 +72,7 @@
 
 - `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
   - 현재 변경 파일을 읽고 route를 판정한다.
+  - `Assets/UI/UIToolkit/**`의 UXML/USS/asset 변경은 `uitk-candidate` route로 판정한다.
   - compile/reload, artifact freshness, prefab 금지 규칙을 검사한다.
   - policy가 blocked면 결과 artifact에 `blockedReason`을 남긴다.
 ## 실행 Entry

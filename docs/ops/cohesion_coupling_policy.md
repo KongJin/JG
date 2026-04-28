@@ -1,6 +1,6 @@
 # Cohesion Coupling Policy
 
-> 마지막 업데이트: 2026-04-23
+> 마지막 업데이트: 2026-04-28
 > 상태: active
 > doc_id: ops.cohesion-coupling-policy
 > role: ssot
@@ -79,6 +79,8 @@ shared/global skill 문서는 배경 설명으로만 참고하고, 현재 owner 
 - `docs:lint`가 잡는 owner, path, metadata, index registry, `doc_id`, routing 위반
 - `stitch-driven policy lint`
 - repo에서 이미 금지한 fallback, style ownership, smoke host 위반
+- Core cohesion/coupling lint는 관측 가능한 세 가지 흔적만 hard-fail로 둔다: active plan 상호 참조, active plan concrete artifact owner collision, `plans.progress` concrete evidence overload.
+- 의미 판단은 hard-fail로 만들지 않는다. "같은 이유로 바뀌는가", owner boundary 재설계, route 문서 장문화 여부는 Review Gate에 남긴다.
 
 ### Review Gate
 

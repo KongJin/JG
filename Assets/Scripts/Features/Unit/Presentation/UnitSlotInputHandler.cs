@@ -2,6 +2,8 @@ using Features.Unit.Domain;
 using Shared.Attributes;
 using Shared.Logging;
 using Shared.Math;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnitSpec = Features.Unit.Domain.Unit;
@@ -50,7 +52,7 @@ namespace Features.Unit.Presentation
         {
             if (_dragGhostPrefab == null) return;
 
-            var ghostCanvasGroup = _dragGhostPrefab.GetComponent<CanvasGroup>();
+            var ghostCanvasGroup = ComponentAccess.Get<CanvasGroup>(_dragGhostPrefab);
             if (ghostCanvasGroup == null)
             {
                 Log.Error("Unit", $"[UnitSlotInputHandler] DragGhostPrefab '{_dragGhostPrefab.name}'에 CanvasGroup이 없습니다. Prefab에 CanvasGroup을 추가하세요.", this);
@@ -158,8 +160,8 @@ namespace Features.Unit.Presentation
             // Prefab 기반으로 인스턴스화
             var ghostGo = Instantiate(_dragGhostPrefab, _canvas.transform);
             ghostGo.name = "DragGhost";
-            _dragGhost = ghostGo.GetComponent<RectTransform>();
-            _canvasGroup = ghostGo.GetComponent<CanvasGroup>();
+            _dragGhost = ghostGo.transform as RectTransform;
+            _canvasGroup = ComponentAccess.Get<CanvasGroup>(ghostGo);
 
             // Prefab에 CanvasGroup이 필수적으로 포함되어야 함
             if (_canvasGroup == null)
@@ -171,8 +173,9 @@ namespace Features.Unit.Presentation
             _canvasGroup.alpha = 0.7f;
 
             // 슬롯 이미지 스프라이트 복제
-            if (_dragGhost.TryGetComponent<UnityEngine.UI.Image>(out var ghostImage) &&
-                TryGetComponent<UnityEngine.UI.Image>(out var slotImage))
+            var ghostImage = ComponentAccess.Get<UnityEngine.UI.Image>(_dragGhost.gameObject);
+            var slotImage = ComponentAccess.Get<UnityEngine.UI.Image>(gameObject);
+            if (ghostImage != null && slotImage != null)
             {
                 ghostImage.sprite = slotImage.sprite;
             }
@@ -204,7 +207,10 @@ namespace Features.Unit.Presentation
                 _canvasGroup.alpha = isValid ? 0.82f : 0.46f;
             }
 
-            if (_dragGhost != null && _dragGhost.TryGetComponent<UnityEngine.UI.Image>(out var ghostImage))
+            var ghostImage = _dragGhost != null
+                ? ComponentAccess.Get<UnityEngine.UI.Image>(_dragGhost.gameObject)
+                : null;
+            if (ghostImage != null)
             {
                 ghostImage.color = isValid
                     ? new Color(0.45f, 0.85f, 1f, 0.9f)

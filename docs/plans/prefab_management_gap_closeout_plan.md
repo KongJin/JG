@@ -1,6 +1,6 @@
 # Prefab 관리 빈틈 closeout 계획
 
-> 마지막 업데이트: 2026-04-27
+> 마지막 업데이트: 2026-04-28
 > 상태: reference
 > doc_id: plans.prefab-management-gap-closeout
 > role: plan
@@ -138,10 +138,10 @@ Residual:
 
 ## 검증 명령
 
-- `powershell -ExecutionPolicy Bypass -File .\tools\check-compile-errors.ps1`
-- `powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-PrefabManagementInventory.ps1`
-- `powershell -ExecutionPolicy Bypass -File .\tools\check-unity-asset-hygiene.ps1`
-- `powershell -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
+- `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\check-compile-errors.ps1`
+- `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-PrefabManagementInventory.ps1`
+- `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\check-unity-asset-hygiene.ps1`
+- `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
 - Unity MCP prefab hierarchy / scene capture as needed
 - `npm run --silent rules:lint`
 

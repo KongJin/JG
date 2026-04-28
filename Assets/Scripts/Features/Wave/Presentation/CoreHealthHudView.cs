@@ -3,6 +3,8 @@ using Features.Combat.Application.Events;
 using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -62,7 +64,7 @@ namespace Features.Wave.Presentation
         {
             if (panelImage == null)
             {
-                panelImage = GetComponent<Image>();
+                panelImage = ComponentAccess.Get<Image>(gameObject);
             }
 
             if (panelImage != null)

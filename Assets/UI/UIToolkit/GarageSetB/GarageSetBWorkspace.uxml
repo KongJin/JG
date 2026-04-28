@@ -2,109 +2,109 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="GarageSetBWorkspace.uss" />
     <ui:VisualElement name="GarageSetBScreen" class="garage-setb-screen">
-        <ui:VisualElement class="top-app-bar">
+        <ui:VisualElement name="TopAppBar" class="top-app-bar">
             <ui:VisualElement class="top-brand-row">
                 <ui:VisualElement class="app-mark">
                     <ui:Label text="*" class="app-mark-symbol" />
                 </ui:VisualElement>
                 <ui:VisualElement class="top-title-stack">
                     <ui:Label text="격납고 관리" class="screen-title" />
-                    <ui:Label text="COMMAND_STATUS: ACTIVE | UNITS: 3/4" class="command-status" />
+                    <ui:Label name="CommandStatusLabel" text="COMMAND_STATUS: ACTIVE | UNITS: 3/4" class="command-status" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:Button text="S" class="icon-button settings-button" />
+            <ui:Button name="SettingsButton" text="S" class="icon-button settings-button" />
         </ui:VisualElement>
 
         <ui:ScrollView name="WorkspaceScroll" class="workspace-scroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
-            <ui:VisualElement class="slot-strip">
-                <ui:Button class="slot-card slot-card--active">
+            <ui:VisualElement name="SlotStrip" class="slot-strip">
+                <ui:Button name="SlotCard01" class="slot-card slot-card--active">
                     <ui:VisualElement class="slot-active-line" />
-                    <ui:Label text="UNIT_01" class="slot-code slot-code--active" />
-                    <ui:VisualElement class="slot-icon slot-icon--active">
-                        <ui:Label text="A" class="slot-icon-label slot-icon-label--active" />
+                    <ui:Label name="SlotCode01Label" text="UNIT_01" class="slot-code slot-code--active" />
+                    <ui:VisualElement name="SlotIcon01" class="slot-icon slot-icon--active">
+                        <ui:Label name="SlotIcon01Label" text="A" class="slot-icon-label slot-icon-label--active" />
                     </ui:VisualElement>
-                    <ui:Label text="ASSAULT" class="slot-name slot-name--active" />
+                    <ui:Label name="SlotName01Label" text="ASSAULT" class="slot-name slot-name--active" />
                 </ui:Button>
-                <ui:Button class="slot-card">
-                    <ui:Label text="UNIT_02" class="slot-code" />
-                    <ui:VisualElement class="slot-icon">
-                        <ui:Label text="D" class="slot-icon-label" />
+                <ui:Button name="SlotCard02" class="slot-card">
+                    <ui:Label name="SlotCode02Label" text="UNIT_02" class="slot-code" />
+                    <ui:VisualElement name="SlotIcon02" class="slot-icon">
+                        <ui:Label name="SlotIcon02Label" text="D" class="slot-icon-label" />
                     </ui:VisualElement>
-                    <ui:Label text="DEFENSE" class="slot-name" />
+                    <ui:Label name="SlotName02Label" text="DEFENSE" class="slot-name" />
                 </ui:Button>
-                <ui:Button class="slot-card">
-                    <ui:Label text="UNIT_03" class="slot-code" />
-                    <ui:VisualElement class="slot-icon">
-                        <ui:Label text="S" class="slot-icon-label" />
+                <ui:Button name="SlotCard03" class="slot-card">
+                    <ui:Label name="SlotCode03Label" text="UNIT_03" class="slot-code" />
+                    <ui:VisualElement name="SlotIcon03" class="slot-icon">
+                        <ui:Label name="SlotIcon03Label" text="S" class="slot-icon-label" />
                     </ui:VisualElement>
-                    <ui:Label text="SUPPORT" class="slot-name" />
+                    <ui:Label name="SlotName03Label" text="SUPPORT" class="slot-name" />
                 </ui:Button>
-                <ui:Button class="slot-card slot-card--empty">
-                    <ui:Label text="UNIT_04" class="slot-code slot-code--empty" />
-                    <ui:VisualElement class="slot-icon slot-icon--empty">
-                        <ui:Label text="+" class="slot-icon-label slot-icon-label--empty" />
+                <ui:Button name="SlotCard04" class="slot-card slot-card--empty">
+                    <ui:Label name="SlotCode04Label" text="UNIT_04" class="slot-code slot-code--empty" />
+                    <ui:VisualElement name="SlotIcon04" class="slot-icon slot-icon--empty">
+                        <ui:Label name="SlotIcon04Label" text="+" class="slot-icon-label slot-icon-label--empty" />
                     </ui:VisualElement>
-                    <ui:Label text="EMPTY" class="slot-name slot-name--empty" />
+                    <ui:Label name="SlotName04Label" text="EMPTY" class="slot-name slot-name--empty" />
                 </ui:Button>
             </ui:VisualElement>
 
-            <ui:VisualElement class="part-focus-bar">
-                <ui:Button text="[프레임]" class="focus-tab" />
-                <ui:Button text="[무장]" class="focus-tab focus-tab--active" />
-                <ui:Button text="[기동]" class="focus-tab" />
+            <ui:VisualElement name="PartFocusBar" class="part-focus-bar">
+                <ui:Button name="FrameTabButton" text="[프레임]" class="focus-tab" />
+                <ui:Button name="FirepowerTabButton" text="[무장]" class="focus-tab focus-tab--active" />
+                <ui:Button name="MobilityTabButton" text="[기동]" class="focus-tab" />
             </ui:VisualElement>
 
-            <ui:VisualElement class="editor-card">
+            <ui:VisualElement name="EditorCard" class="editor-card">
                 <ui:VisualElement class="editor-head">
                     <ui:VisualElement class="editor-title-stack">
                         <ui:VisualElement class="editor-title-row">
-                            <ui:Label text="주무장" class="part-badge" />
-                            <ui:Label text="HV-42 레일건" class="part-title" />
+                            <ui:Label name="FocusedPartBadgeLabel" text="주무장" class="part-badge" />
+                            <ui:Label name="FocusedPartTitleLabel" text="HV-42 레일건" class="part-title" />
                         </ui:VisualElement>
-                        <ui:Label text="고속 관통 탄환을 발사하여 중장갑 목표물 타격에 특화됨." class="part-description" />
+                        <ui:Label name="FocusedPartDescriptionLabel" text="고속 관통 탄환을 발사하여 중장갑 목표물 타격에 특화됨." class="part-description" />
                     </ui:VisualElement>
                     <ui:VisualElement class="part-icon">
-                        <ui:Label text="R" class="part-icon-label" />
+                        <ui:Label name="FocusedPartIconLabel" text="R" class="part-icon-label" />
                     </ui:VisualElement>
                 </ui:VisualElement>
 
-                <ui:VisualElement class="stat-grid">
-                    <ui:VisualElement class="stat-cell">
-                        <ui:Label text="공격력 (ATK)" class="stat-label" />
-                        <ui:Label text="840" class="stat-value" />
+                <ui:VisualElement name="StatGrid" class="stat-grid">
+                    <ui:VisualElement name="AttackStatCell" class="stat-cell">
+                        <ui:Label name="AttackStatLabel" text="공격력 (ATK)" class="stat-label" />
+                        <ui:Label name="AttackStatValueLabel" text="840" class="stat-value" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="stat-cell">
-                        <ui:Label text="사거리 (RNG)" class="stat-label" />
-                        <ui:Label text="12.5m" class="stat-value" />
+                    <ui:VisualElement name="RangeStatCell" class="stat-cell">
+                        <ui:Label name="RangeStatLabel" text="사거리 (RNG)" class="stat-label" />
+                        <ui:Label name="RangeStatValueLabel" text="12.5m" class="stat-value" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="stat-cell">
-                        <ui:Label text="연사력 (RTS)" class="stat-label" />
-                        <ui:Label text="Low" class="stat-value stat-value--warning" />
+                    <ui:VisualElement name="RateStatCell" class="stat-cell">
+                        <ui:Label name="RateStatLabel" text="연사력 (RTS)" class="stat-label" />
+                        <ui:Label name="RateStatValueLabel" text="Low" class="stat-value stat-value--warning" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="stat-cell">
-                        <ui:Label text="전력 소모 (PWR)" class="stat-label" />
-                        <ui:Label text="45kW" class="stat-value" />
+                    <ui:VisualElement name="PowerStatCell" class="stat-cell">
+                        <ui:Label name="PowerStatLabel" text="전력 소모 (PWR)" class="stat-label" />
+                        <ui:Label name="PowerStatValueLabel" text="45kW" class="stat-value" />
                     </ui:VisualElement>
                 </ui:VisualElement>
 
-                <ui:VisualElement class="attachments">
+                <ui:VisualElement name="AttachmentsSection" class="attachments">
                     <ui:VisualElement class="attachment-head">
                         <ui:Label text="부착물 슬롯" class="attachment-meta" />
-                        <ui:Label text="1/2 사용됨" class="attachment-meta" />
+                        <ui:Label name="AttachmentUsageLabel" text="1/2 사용됨" class="attachment-meta" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="attachment-row">
-                        <ui:Button class="attachment-chip attachment-chip--active">
-                            <ui:Label text="광학 조준경" class="attachment-name attachment-name--active" />
-                            <ui:Label text="+ 명중률" class="attachment-effect" />
+                    <ui:VisualElement name="AttachmentRow" class="attachment-row">
+                        <ui:Button name="AttachmentChip01" class="attachment-chip attachment-chip--active">
+                            <ui:Label name="AttachmentName01Label" text="광학 조준경" class="attachment-name attachment-name--active" />
+                            <ui:Label name="AttachmentEffect01Label" text="+ 명중률" class="attachment-effect" />
                         </ui:Button>
-                        <ui:Button class="attachment-chip attachment-chip--empty">
-                            <ui:Label text="+ 빈 슬롯" class="attachment-name attachment-name--empty" />
+                        <ui:Button name="AttachmentChip02" class="attachment-chip attachment-chip--empty">
+                            <ui:Label name="AttachmentName02Label" text="+ 빈 슬롯" class="attachment-name attachment-name--empty" />
                         </ui:Button>
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:VisualElement class="preview-card">
+            <ui:VisualElement name="PreviewCard" class="preview-card">
                 <ui:VisualElement class="blueprint-grid">
                     <ui:VisualElement class="grid-line grid-line--v grid-line--v1" />
                     <ui:VisualElement class="grid-line grid-line--v grid-line--v2" />
@@ -115,31 +115,31 @@
                 </ui:VisualElement>
                 <ui:VisualElement class="preview-content">
                     <ui:VisualElement class="preview-head">
-                        <ui:Label text="BLUEPRINT VIEW" class="preview-title" />
-                        <ui:VisualElement class="tag-row">
-                            <ui:Label text="대장갑" class="mini-tag" />
-                            <ui:Label text="장거리" class="mini-tag" />
+                        <ui:Label name="PreviewTitleLabel" text="BLUEPRINT VIEW" class="preview-title" />
+                        <ui:VisualElement name="PreviewTagRow" class="tag-row">
+                            <ui:Label name="PreviewTag01Label" text="대장갑" class="mini-tag" />
+                            <ui:Label name="PreviewTag02Label" text="장거리" class="mini-tag" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement class="unit-diagram">
+                    <ui:VisualElement name="UnitPreviewHost" class="unit-diagram">
                         <ui:VisualElement class="reticle-corner reticle-corner--tl" />
                         <ui:VisualElement class="reticle-corner reticle-corner--tr" />
                         <ui:VisualElement class="reticle-corner reticle-corner--bl" />
                         <ui:VisualElement class="reticle-corner reticle-corner--br" />
-                        <ui:Label text="UNIT_01" class="unit-core-label" />
+                        <ui:Label name="UnitPreviewLabel" text="UNIT_01" class="unit-core-label" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="power-bar">
+                    <ui:VisualElement name="PreviewPowerBar" class="power-bar">
                         <ui:VisualElement class="power-track">
-                            <ui:VisualElement class="power-fill" />
+                            <ui:VisualElement name="PreviewPowerFill" class="power-fill" />
                         </ui:VisualElement>
-                        <ui:Label text="전력 70%" class="power-label" />
+                        <ui:Label name="PreviewPowerLabel" text="전력 70%" class="power-label" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:ScrollView>
 
-        <ui:VisualElement class="save-dock">
-            <ui:Button text="저장 및 배치" class="save-button" />
+        <ui:VisualElement name="SaveDock" class="save-dock">
+            <ui:Button name="SaveButton" text="저장 및 배치" class="save-button" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

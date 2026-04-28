@@ -4,6 +4,8 @@ using Features.Player.Application.Events;
 using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using System.Globalization;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -143,7 +145,7 @@ namespace Features.Unit.Presentation
             if (_backgroundImage != null)
                 return _backgroundImage;
 
-            _backgroundImage = GetComponent<Image>();
+            _backgroundImage = ComponentAccess.Get<Image>(gameObject);
             return _backgroundImage;
         }
 
@@ -151,7 +153,7 @@ namespace Features.Unit.Presentation
         {
             if (_layoutElement == null)
             {
-                _layoutElement = GetComponent<LayoutElement>();
+                _layoutElement = ComponentAccess.Get<LayoutElement>(gameObject);
             }
 
             if (_nameText != null)

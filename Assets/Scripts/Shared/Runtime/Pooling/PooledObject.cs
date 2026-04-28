@@ -2,6 +2,11 @@ using UnityEngine;
 
 namespace Shared.Runtime.Pooling
 {
+    public interface IPoolBindingHandler
+    {
+        void OnBindToPool(PooledObject pooledObject);
+    }
+
     public sealed class PooledObject : MonoBehaviour
     {
         private GameObjectPool _owner;
@@ -24,4 +29,5 @@ namespace Shared.Runtime.Pooling
             Destroy(gameObject);
         }
     }
+
 }

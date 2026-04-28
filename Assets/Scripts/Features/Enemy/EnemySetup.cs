@@ -7,9 +7,12 @@ using Features.Enemy.Application.Events;
 using Features.Enemy.Application.Ports;
 using Features.Enemy.Infrastructure;
 using Features.Enemy.Presentation;
+using Features.Player;
 using Photon.Pun;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 
 namespace Features.Enemy
@@ -30,8 +33,7 @@ namespace Features.Enemy
 
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
         {
-            // Arrival fallback was intentionally removed so enemy wiring depends on
-            // explicit scene contract / bootstrap paths instead of runtime global lookup.
+            GameSceneRuntimeSpawnRegistrar.NotifyEnemyArrived(this);
         }
 
         public void Initialize(
@@ -100,11 +102,14 @@ namespace Features.Enemy
 
             if (_healthBarPrefab != null)
             {
-                var hbGo = Instantiate(_healthBarPrefab, transform);
-                hbGo.transform.localPosition = new Vector3(0f, 2f, 0f);
-                var hbView = hbGo.GetComponent<EnemyHealthBarView>();
+                var hbView = ComponentAccess.InstantiateComponent<EnemyHealthBarView>(
+                    _healthBarPrefab,
+                    transform);
                 if (hbView != null)
+                {
+                    hbView.transform.localPosition = new Vector3(0f, 2f, 0f);
                     hbView.Initialize(eventBus, EnemyId, spec.MaxHp);
+                }
             }
 
             if (PhotonNetwork.IsMasterClient)
@@ -126,7 +131,7 @@ namespace Features.Enemy
 
         private EnemyData ResolveDataFromInstantiation()
         {
-            var pv = GetComponent<PhotonView>();
+            var pv = ComponentAccess.Get<PhotonView>(gameObject);
             if (pv != null &&
                 pv.InstantiationData != null &&
                 pv.InstantiationData.Length > 0 &&

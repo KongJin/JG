@@ -1,0 +1,15 @@
+﻿{
+    "projectId":  "11729197788183873077",
+    "screenId":  "d976b36722dd4220a6e8ad0b6c83d847",
+    "title":  "Nova1492 Shared Shell / Navigation",
+    "deviceType":  "MOBILE",
+    "width":  780,
+    "height":  1768,
+    "htmlUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzFmNGFjZGE5ZWE2YzRhOGQ4Y2M3ZTg3MWQ5YmY1NWRiEgsSBxC5mdrmrAsYAZIBJAoKcHJvamVjdF9pZBIWQhQxMTcyOTE5Nzc4ODE4Mzg3MzA3Nw\u0026filename=\u0026opi=96797242",
+    "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0ugmbJUU7m5g6T1l84X1IgBsEkdlb8YbWlsMhAM9A2uJD-SDq1EGDVECw67y2OC9rDMrlytywY-mOdW3shoV1UFOmsSbeOHWI9oPai4PuSOMRcZyj_DgBr4Th289IxSxWG52F02gQYFV6CBvVzMYjrzkqHpcR2EcCSwBIp9zqexe5b7f19RRFkpr6I9UbxngEV3sqrGSkkDznr2wVOBYzfrTp0_rSyz7QBE0hP2e1yNz-7mEciulf6m_gnRh",
+    "frozenAt":  "2026-04-28",
+    "source":  "stitch.edit_screens",
+    "candidateStatus":  "superseded",
+    "supersededBy":  "7a083f26ec05412ca84188517d17d13f",
+    "reason":  "The candidate drifted into a component-board/status-control surface instead of remaining a shell/navigation-only shared source."
+}

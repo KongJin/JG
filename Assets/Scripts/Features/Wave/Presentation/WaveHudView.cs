@@ -3,6 +3,8 @@ using System;
 using Features.Wave.Application.Events;
 using Features.Wave.Domain;
 using Shared.EventBus;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -154,7 +156,7 @@ namespace Features.Wave.Presentation
         {
             if (backgroundImage == null)
             {
-                backgroundImage = GetComponent<Image>();
+                backgroundImage = ComponentAccess.Get<Image>(gameObject);
             }
 
             if (backgroundImage != null)

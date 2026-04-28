@@ -20,7 +20,7 @@ namespace Features.Garage.Presentation
             }
 
             Canvas.ForceUpdateCanvases();
-            if (mobileBodyHost.TryGetComponent<RectTransform>(out var contentRoot))
+            if (mobileBodyHost is RectTransform contentRoot)
             {
                 LayoutRebuilder.ForceRebuildLayoutImmediate(contentRoot);
             }

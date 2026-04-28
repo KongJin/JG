@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Features.Garage.Presentation;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -58,6 +59,20 @@ namespace ProjectSD.EditorTools.SceneTools
             document.visualTreeAsset = visualTree;
             document.sortingOrder = 10;
 
+            var previewCameraObject = new GameObject("GarageSetBPreviewCamera");
+            var previewCamera = previewCameraObject.AddComponent<Camera>();
+            previewCamera.clearFlags = CameraClearFlags.SolidColor;
+            previewCamera.backgroundColor = new Color(0.035f, 0.035f, 0.043f, 1f);
+            previewCamera.enabled = false;
+            previewCamera.fieldOfView = 32f;
+            previewCamera.nearClipPlane = 0.01f;
+            previewCamera.farClipPlane = 50f;
+            previewCamera.depth = -10f;
+            var previewRenderer = previewCameraObject.AddComponent<GarageSetBUitkPreviewRenderer>();
+
+            var runtimeAdapter = documentObject.AddComponent<GarageSetBUitkRuntimeAdapter>();
+            WireRuntimeAdapter(runtimeAdapter, document, previewRenderer);
+
             EditorSceneManager.SaveScene(scene, ScenePath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -73,6 +88,17 @@ namespace ProjectSD.EditorTools.SceneTools
             panelSettings.screenMatchMode = PanelScreenMatchMode.MatchWidthOrHeight;
             panelSettings.match = 0.5f;
             panelSettings.sortingOrder = 10;
+        }
+
+        private static void WireRuntimeAdapter(
+            GarageSetBUitkRuntimeAdapter runtimeAdapter,
+            UIDocument document,
+            GarageSetBUitkPreviewRenderer previewRenderer)
+        {
+            var serializedObject = new SerializedObject(runtimeAdapter);
+            serializedObject.FindProperty("_document").objectReferenceValue = document;
+            serializedObject.FindProperty("_previewRenderer").objectReferenceValue = previewRenderer;
+            serializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static void EnsureFolder(string path)

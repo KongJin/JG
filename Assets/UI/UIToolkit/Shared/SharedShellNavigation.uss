@@ -1,0 +1,155 @@
+:root {
+    --shell-bg: var(--jg-bg);
+    --shell-panel: var(--jg-panel);
+    --shell-panel-mid: #111827;
+    --shell-line: var(--jg-line);
+    --shell-muted: #64748b;
+    --shell-text: var(--jg-text);
+    --shell-blue: var(--jg-command-blue);
+}
+
+.shared-shell-screen {
+    flex-grow: 1;
+    min-width: 320px;
+    background-color: var(--shell-bg);
+    color: var(--shell-text);
+    position: relative;
+    overflow: hidden;
+}
+
+.shared-top-shell {
+    height: 58px;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 8px;
+    padding-right: 8px;
+    background-color: #090d13;
+    border-bottom-width: 2px;
+    border-bottom-color: #1f2937;
+    flex-shrink: 0;
+}
+
+.shared-icon-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 3px;
+    border-width: 1px;
+    border-color: #334155;
+    background-color: #111827;
+    color: #94a3b8;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    -unity-font-style: bold;
+}
+
+.shared-title-stack {
+    flex-grow: 1;
+    align-items: center;
+}
+
+.shared-title {
+    color: var(--shell-text);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.shared-state {
+    color: var(--shell-blue);
+    font-size: 9px;
+}
+
+.shared-workspace {
+    flex-grow: 1;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 12px;
+    padding-bottom: 82px;
+}
+
+.shared-workspace {
+    background-color: #06101a;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-color: #142033;
+}
+
+.shared-workspace-inset {
+    flex-grow: 1;
+    border-width: 1px;
+    border-color: #263244;
+    background-color: #060b12;
+    align-items: center;
+    justify-content: center;
+}
+
+.shared-workspace-title {
+    color: #94a3b8;
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+.shared-workspace-copy {
+    color: var(--shell-muted);
+    font-size: 9px;
+}
+
+.shared-boundary-note {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 66px;
+    height: 18px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.shared-note-blue,
+.shared-note-muted {
+    font-size: 8px;
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+.shared-note-blue {
+    color: var(--shell-blue);
+}
+
+.shared-note-muted {
+    color: #64748b;
+}
+
+.shared-navigation-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 62px;
+    flex-direction: row;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 7px;
+    background-color: #080c12;
+    border-top-width: 2px;
+    border-top-color: #1f2937;
+}
+
+.shared-nav-item {
+    flex-grow: 1;
+    margin-left: 3px;
+    margin-right: 3px;
+    border-width: 1px;
+    border-color: #263244;
+    border-radius: 3px;
+    background-color: #0b1220;
+    color: #7b8797;
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.shared-nav-item--selected {
+    border-color: rgba(94, 182, 255, 0.55);
+    background-color: rgba(94, 182, 255, 0.15);
+    color: var(--shell-blue);
+}

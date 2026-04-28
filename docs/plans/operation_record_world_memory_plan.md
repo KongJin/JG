@@ -1,7 +1,7 @@
 # Operation Record / World Memory Plan
 
-> 마지막 업데이트: 2026-04-27
-> 상태: active
+> 마지막 업데이트: 2026-04-28
+> 상태: reference
 > doc_id: plans.operation-record-world-memory
 > role: plan
 > owner_scope: 최근 작전 기록, 세계 기억, Lobby/Garage 기록 표시 작업
@@ -205,8 +205,8 @@ Residuals after this pass:
 
 ## Lifecycle
 
-- active 유지 이유: 이 계획은 새 persistent record와 Lobby/Garage 표시를 만들며, `progress.md`의 GameEnd stats, Account/Garage 저장 검증, Garage surface 후속 판단과 직접 연결된다.
-- reference 전환 조건: 최근 5회 작전 기록 생성/저장/표시가 pass 또는 명확한 blocked/residual로 닫히고, 남은 용어/기체 애착/통산 기록 판단이 각 owner로 이관된다.
+- reference 전환 이유: 최근 5회 작전 기록 생성, local-first 저장, Garage 표시, Firestore bridge code path, Play Mode/Garage mobile smoke evidence가 남았고, 남은 EditMode 실행과 WebGL player restore는 blocked/residual owner가 명확하다.
+- 남은 residual owner: Unity EditMode test route는 `open-editor-owns-project` 해소 뒤 확인하고, WebGL player Firestore restore는 shared `Account/Garage` validation lane에서 본다.
 - 전환 시 갱신: 이 문서 header와 `docs.index` 상태 라벨을 함께 `reference`로 맞춘다.
 
 ---
@@ -238,3 +238,6 @@ Residuals after this pass:
 - 2026-04-26 MCP smoke follow-up 과한점 리뷰: 기존 Garage 모바일 dock과 Account Firestore 경로만 검증/보정했고, 새 UI surface나 WebGL acceptance로 범위를 넓히지 않았다.
 - 2026-04-26 MCP smoke follow-up 부족한점 리뷰: Editor Play Mode 계정 저장과 모바일 screenshot proof는 닫혔지만 WebGL player restore와 Unity EditMode test route는 residual로 남겼다.
 - 2026-04-26 MCP smoke follow-up 재리뷰: plan rereview: clean.
+- 2026-04-28 lifecycle cleanup 재리뷰: 과한점은 새 실행 계획을 만들지 않고 완료 증거와 residual owner를 기준으로 reference 전환만 수행했다. 부족한점은 WebGL player restore와 EditMode 실행 blocked를 Lifecycle에 남겨 해소했다.
+- doc lifecycle checked: active 실행 계획에서 reference closeout 기록으로 전환한다.
+- plan rereview: clean

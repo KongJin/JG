@@ -61,7 +61,7 @@ namespace Features.Lobby.Presentation
             {
                 button.interactable = !isActive;
 
-                if (button.TryGetComponent<Image>(out var background))
+                if (button.targetGraphic is Image background)
                     background.color = isActive ? _activeTabColor : _inactiveTabColor;
             }
 

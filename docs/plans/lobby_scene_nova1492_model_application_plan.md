@@ -1,7 +1,7 @@
 # LobbyScene Nova1492 모델 활용 계획
 
-> 마지막 업데이트: 2026-04-27
-> 상태: active
+> 마지막 업데이트: 2026-04-28
+> 상태: reference
 > doc_id: plans.lobby-scene-nova1492-model-application
 > role: plan
 > owner_scope: `LobbyScene`에서 변환된 Nova1492 GX 모델을 Garage preview와 로비 장식 후보로 제한 적용하는 실행 순서와 검증 기준
@@ -15,8 +15,8 @@
 
 ## Lifecycle
 
-- active 유지 이유: Phase 4의 로비 장식 후보를 별도 inactive variant로 둘지 여부가 아직 직접 판단으로 남아 있다.
-- reference 전환 조건: Phase 4를 `applied`, `rejected`, 또는 owner가 명확한 residual로 닫고, Garage preview mapping 유지 판단만 `plans.progress` 또는 Lobby/Garage owner plan에 남긴다.
+- reference 전환 이유: Garage preview mapping, scene template cleanup, required validation, Play Mode Garage smoke, `390x844` capture는 closeout evidence가 남았다. Phase 4 로비 장식 후보는 후속 decorative variant 판단 residual로만 남긴다.
+- 남은 residual owner: Lobby 장식 후보와 BattleScene 전투 유닛 모델 교체는 각각 후속 visual/model pass에서 본다. Garage preview mapping 유지 판단은 `plans.progress`와 Garage/UI owner lane에서만 추적한다.
 - 전환 시 갱신: 이 문서 header와 `docs.index` 상태 라벨을 함께 `reference`로 맞춘다.
 
 ## 목적
@@ -246,5 +246,6 @@ Acceptance:
 - 2026-04-26 Phase 2 visual closeout 재리뷰: preview root 배치, lighting, RawImage tint 보정은 `GarageUnitPreviewView`의 표시 책임과 `GaragePreviewAssembler`의 runtime 배치 책임으로 분리했고, scene/domain truth나 Set B fidelity 기준을 확장하지 않았다. active-state/capture evidence가 생겼으므로 Phase 2 부족점은 해소됐다.
 - 2026-04-26 Phase 3 template cleanup 재리뷰: scene template 정리는 fallback root 중복 제거와 serialized reference 유지에만 제한했고, Garage layout이나 Set B visual fidelity 판단으로 확장하지 않았다. Required field validation, Play Mode Garage smoke, `390x844` capture, compile check가 남아 있어 acceptance evidence는 충분하다.
 - owner impact: primary `plans.lobby-scene-nova1492-model-application`; secondary `plans.progress`, `plans.lobby-scene-ui-prefab-management`, `plans.nova1492-resource-integration`, `docs.index`; out-of-scope scene/prefab mutation, converter rewrite, GameScene runtime model application.
-- doc lifecycle checked: 새 active plan으로 등록한다. 기존 Nova resource integration plan은 reference로 유지하고, LobbyScene UI prefab management plan은 대체하지 않는다.
+- 2026-04-28 lifecycle cleanup 재리뷰: 과한점은 로비 장식 후보 판단을 새 active plan으로 확장하지 않고 residual owner로 이관했다. 부족한점은 Garage preview mapping closeout evidence와 남은 후속 범위를 Lifecycle에 남겨 해소했다.
+- doc lifecycle checked: active 실행 계획에서 reference 기록으로 전환한다. 기존 Nova resource integration plan은 reference로 유지하고, LobbyScene UI prefab management plan은 대체하지 않는다.
 - plan rereview: clean

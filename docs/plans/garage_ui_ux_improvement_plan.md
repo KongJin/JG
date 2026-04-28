@@ -1,7 +1,7 @@
 # Garage UI/UX Recovery Plan
 
-> 마지막 업데이트: 2026-04-27
-> 상태: active
+> 마지막 업데이트: 2026-04-28
+> 상태: reference
 > doc_id: plans.garage-ui-ux-improvement
 > role: plan
 > owner_scope: Set B Garage Stitch-to-UI Toolkit recovery의 현재 범위와 acceptance 기준
@@ -29,7 +29,7 @@ Set A의 새 기준은 별도 전용 helper가 아니라 `source html/png -> sou
 ## Command
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\stitch-unity\presentations\Generate-StitchPresentationProfile.ps1 `
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\stitch-unity\presentations\Generate-StitchPresentationProfile.ps1 `
   -SurfaceId set-b-garage-main-workspace `
   -CanGenerateOnly
 ```
@@ -57,8 +57,8 @@ powershell -ExecutionPolicy Bypass -File .\tools\stitch-unity\presentations\Gene
 
 ## Lifecycle
 
-- active 유지 이유: `Set B Garage` visual fidelity final judgment가 `plans.progress`의 직접 residual이다.
-- reference 전환 조건: fresh capture 기준 visual verdict가 `success`, `blocked`, 또는 `mismatch`로 닫히고 남은 save/load/settings/accessibility 검증은 shared `Account/Garage` lane으로만 남는다.
+- reference 전환 이유: Set B Garage visual fidelity verdict는 `mismatch`로 기록됐고, 이후 source 후보 개선은 closeout되어 `plans.progress`, `design.ui-foundations`, Unity/Stitch evidence artifacts로 이관됐다. Runtime binding/replacement gap은 `garage_setb_uitk_runtime_gap_plan.md`가 소유한다.
+- 남은 save/load/settings/accessibility 검증은 shared `Account/Garage` lane으로만 남는다.
 - 전환 시 갱신: 이 문서 header와 `docs.index` 상태 라벨을 함께 `reference`로 맞춘다.
 
 ## Visual Fidelity Verdict
@@ -90,6 +90,8 @@ Plan rereview:
 
 - 과한점: no new owner rules were added; UITK pilot evidence is recorded as candidate evidence only.
 - 부족한점: active runtime replacement, state binding, 3D preview integration, and fresh Lobby/Garage flow acceptance remain explicitly open.
+- 2026-04-28 lifecycle cleanup 재리뷰: 과한점은 mismatch verdict 문서를 계속 active owner로 유지하지 않고 후속 owner로 이관했다. 부족한점은 source 개선과 runtime gap owner를 Lifecycle에 명시해 해소했다.
+- doc lifecycle checked: active plan에서 reference visual mismatch 기록으로 전환한다.
 - plan rereview: clean
 
 ## Acceptance

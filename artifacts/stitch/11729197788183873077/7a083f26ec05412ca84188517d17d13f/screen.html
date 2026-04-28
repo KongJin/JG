@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nova1492 Shared Shell</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&amp;family=IBM+Plex+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        zinc: {
+                            500: '#71717a',
+                            600: '#52525b',
+                            700: '#3f3f46',
+                            800: '#27272a',
+                            900: '#18181b',
+                            950: '#09090b',
+                        },
+                        blue: {
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            900: '#1e3a8a',
+                            950: '#172554',
+                        },
+                        command: {
+                            blue: '#5eb6ff',
+                        },
+                        orange: {
+                            500: '#f97316',
+                        }
+                    },
+                    fontFamily: {
+                        headline: ["Space Grotesk", "sans-serif"],
+                        display: ["Space Grotesk", "sans-serif"],
+                        body: ["IBM Plex Sans", "sans-serif"],
+                        label: ["IBM Plex Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #050b14;
+            color: #d4d4d8;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(844px, 100dvh);
+      max-width: 390px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body class="font-body text-sm antialiased h-screen overflow-hidden flex flex-col bg-[#050b14] border-x border-zinc-900 mx-auto w-full relative">
+<!-- Top Shell -->
+<header class="w-full flex-shrink-0 flex items-center justify-between px-3 h-14 bg-zinc-900 border-b-4 border-zinc-700 shadow-[inset_0_-2px_10px_rgba(0,0,0,0.8),_0_4px_12px_rgba(0,0,0,0.5)] z-50 relative">
+<!-- Mechanical seam detail top -->
+<div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 opacity-50"></div>
+<div class="flex items-center">
+<button class="text-zinc-400 hover:text-white active:scale-95 transition-transform p-1.5 bg-zinc-800 border border-zinc-700 rounded-sm shadow-[inset_0_1px_3px_rgba(255,255,255,0.1)]">
+<span class="material-symbols-outlined text-[20px]">menu</span>
+</button>
+</div>
+<div class="flex flex-col items-center justify-center flex-1 px-4">
+<h1 class="font-headline font-bold text-sm tracking-widest text-zinc-200 uppercase">격납고 관리</h1>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="w-1.5 h-1.5 bg-command-blue rounded-full"></span>
+<span class="text-[9px] font-bold text-command-blue uppercase tracking-widest font-mono">동기화 완료</span>
+</div>
+</div>
+<div class="flex items-center">
+<button class="text-zinc-400 hover:text-white active:scale-95 transition-transform p-1.5 bg-zinc-800 border border-zinc-700 rounded-sm shadow-[inset_0_1px_3px_rgba(255,255,255,0.1)]">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+</div>
+</header>
+<!-- Boundary Note -->
+<div class="absolute top-16 right-3 z-40 text-[8px] font-mono font-bold text-zinc-600 tracking-widest uppercase">
+    BLUE = NAV / ORANGE = PAGE CTA ONLY
+</div>
+<!-- Page Workspace Placeholder -->
+<main class="flex-1 overflow-hidden p-4 flex flex-col relative z-0">
+<div class="flex-1 bg-[#02050a] border-2 border-zinc-800 rounded-sm shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] flex items-center justify-center relative overflow-hidden">
+<!-- Grid pattern overlay -->
+<div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(#5eb6ff 1px, transparent 1px), linear-gradient(90deg, #5eb6ff 1px, transparent 1px); background-size: 20px 20px;"></div>
+<div class="text-center p-6 border border-dashed border-zinc-700 bg-zinc-950/50">
+<span class="material-symbols-outlined text-zinc-700 text-4xl mb-2 block">space_dashboard</span>
+<p class="font-mono text-xs text-zinc-600 uppercase tracking-widest">PAGE WORKSPACE</p>
+<p class="text-[10px] text-zinc-700 mt-1 font-mono">page-owned content starts here</p>
+</div>
+</div>
+</main>
+<!-- Bottom Nav -->
+<nav class="w-full flex-shrink-0 h-16 bg-zinc-900 border-t-4 border-zinc-700 shadow-[0_-4px_20px_rgba(0,0,0,0.9)] flex z-50 relative">
+<!-- Bolts detail -->
+<div class="absolute top-[-2px] left-4 w-1.5 h-1.5 rounded-full bg-zinc-500 shadow-[inset_0_1px_1px_rgba(0,0,0,0.5)]"></div>
+<div class="absolute top-[-2px] right-4 w-1.5 h-1.5 rounded-full bg-zinc-500 shadow-[inset_0_1px_1px_rgba(0,0,0,0.5)]"></div>
+<div class="flex-1 flex border-r border-zinc-800 bg-zinc-900 hover:bg-zinc-800 transition-colors cursor-pointer group">
+<a class="w-full h-full flex flex-col items-center justify-center p-2 text-zinc-500 group-hover:text-zinc-300" href="#">
+<span class="material-symbols-outlined mb-1 text-[22px]">hub</span>
+<span class="font-headline text-[10px] font-bold tracking-widest">로비</span>
+</a>
+</div>
+<div class="flex-1 flex border-r border-zinc-800 bg-[#0a121c] relative cursor-pointer">
+<!-- Active indicator line -->
+<div class="absolute top-0 left-0 w-full h-1 bg-command-blue shadow-[0_2px_8px_rgba(94,182,255,0.5)]"></div>
+<a class="w-full h-full flex flex-col items-center justify-center p-2 text-command-blue shadow-[inset_0_10px_20px_-10px_rgba(94,182,255,0.15)]" href="#">
+<span class="material-symbols-outlined mb-1 text-[22px]" style="font-variation-settings: 'FILL' 1;">warehouse</span>
+<span class="font-headline text-[10px] font-bold tracking-widest text-white drop-shadow-[0_0_2px_rgba(94,182,255,0.8)]">차고</span>
+</a>
+</div>
+<div class="flex-1 flex bg-zinc-900 hover:bg-zinc-800 transition-colors cursor-pointer group">
+<a class="w-full h-full flex flex-col items-center justify-center p-2 text-zinc-500 group-hover:text-zinc-300" href="#">
+<span class="material-symbols-outlined mb-1 text-[22px]">receipt_long</span>
+<span class="font-headline text-[10px] font-bold tracking-widest">기록</span>
+</a>
+</div>
+</nav>
+</body></html>

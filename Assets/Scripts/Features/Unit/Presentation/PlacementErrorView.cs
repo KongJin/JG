@@ -1,4 +1,6 @@
 using Shared.Attributes;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -104,7 +106,7 @@ namespace Features.Unit.Presentation
             if (_backgroundImage != null)
                 return _backgroundImage;
 
-            _backgroundImage = GetComponent<Image>();
+            _backgroundImage = ComponentAccess.Get<Image>(gameObject);
             return _backgroundImage;
         }
 

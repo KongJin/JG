@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>연결 상태</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {},
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "display": ["Space Grotesk"],
+                        "body": ["IBM Plex Sans"],
+                        "label": ["IBM Plex Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #000; color: #e4e4e7; }
+        .metallic-frame {
+            background: linear-gradient(180deg, #27272a 0%, #18181b 100%);
+            border: 2px solid #3f3f46;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 6px -1px rgba(0,0,0,0.5);
+        }
+        .inset-panel {
+            background-color: #09090b;
+            border: 1px solid #27272a;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .screws::before, .screws::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #52525b;
+            border-radius: 50%;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.8);
+        }
+        .screws::before { top: 6px; left: 6px; }
+        .screws::after { bottom: 6px; right: 6px; }
+        .screws-tl-br::before { top: 6px; left: 6px; }
+        .screws-tl-br::after { bottom: 6px; right: 6px; }
+        .screws-tr-bl::before { top: 6px; right: 6px; }
+        .screws-tr-bl::after { bottom: 6px; left: 6px; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body antialiased min-h-screen pb-20 selection:bg-sky-500/30">
+<!-- TopAppBar (Transactional Context -> Suppressed Nav, Custom Header) -->
+<header class="fixed top-0 left-0 w-full z-50 px-4 h-14 flex items-center justify-between bg-zinc-950 dark:bg-black border-b-2 border-zinc-800 dark:border-zinc-900 shadow-[0_1px_0_0_rgba(56,189,248,0.1)]">
+<button class="text-amber-500 hover:bg-zinc-900 dark:hover:bg-zinc-800 active:opacity-80 transition-all p-2 rounded-md flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<h1 class="font-mono font-bold tracking-tighter uppercase text-sm text-sky-400">연결 상태</h1>
+<div class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest border border-zinc-800 px-2 py-1 rounded bg-zinc-900">
+            SESSION CHECK
+        </div>
+</header>
+<main class="pt-16 px-4 space-y-4 max-w-[390px] mx-auto">
+<!-- Dominant Connection State Panel -->
+<div class="metallic-frame rounded relative p-4 screws">
+<div class="screws-tr-bl absolute inset-0 pointer-events-none"></div>
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-amber-500 text-3xl" style="font-variation-settings: 'FILL' 1;">block</span>
+<div>
+<h2 class="font-headline font-bold text-2xl text-amber-500 tracking-tight leading-none">연결 차단</h2>
+<p class="text-xs font-mono text-zinc-400 mt-1">계정 인증 필요</p>
+</div>
+</div>
+</div>
+<div class="inset-panel rounded p-3 flex justify-center items-center">
+<span class="font-mono text-sm text-red-400 font-bold tracking-widest">SESSION EXPIRED</span>
+</div>
+</div>
+<!-- Connection Pipeline -->
+<div class="metallic-frame rounded p-3 relative screws">
+<h3 class="font-mono text-[10px] text-sky-400 uppercase tracking-widest mb-3 pl-1">SYS.PIPELINE</h3>
+<div class="space-y-2">
+<div class="inset-panel rounded p-2 flex items-center justify-between border-l-2 border-l-emerald-500">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-emerald-500 text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body text-sm font-medium text-zinc-300">계정 확인</span>
+</div>
+<span class="font-mono text-[10px] text-emerald-500">확인됨</span>
+</div>
+<div class="inset-panel rounded p-2 flex items-center justify-between border-l-2 border-l-sky-500">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-sky-500 text-sm" style="font-variation-settings: 'FILL' 0;">hourglass_empty</span>
+<span class="font-body text-sm font-medium text-zinc-300">방 동기화</span>
+</div>
+<span class="font-mono text-[10px] text-sky-500">대기</span>
+</div>
+<div class="inset-panel rounded p-2 flex items-center justify-between border-l-2 border-l-amber-500 bg-amber-950/20">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-amber-500 text-sm" style="font-variation-settings: 'FILL' 1;">warning</span>
+<span class="font-body text-sm font-medium text-amber-500">전투 상태 확인</span>
+</div>
+<span class="font-mono text-[10px] text-amber-500 font-bold">차단</span>
+</div>
+<div class="inset-panel rounded p-2 flex items-center justify-between border-l-2 border-l-zinc-600 opacity-50">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-zinc-500 text-sm" style="font-variation-settings: 'FILL' 0;">radio_button_unchecked</span>
+<span class="font-body text-sm font-medium text-zinc-400">재입장 준비</span>
+</div>
+<span class="font-mono text-[10px] text-zinc-500">재시도 필요</span>
+</div>
+</div>
+</div>
+<!-- Blocked Reason Panel -->
+<div class="metallic-frame rounded p-3 relative border-amber-500/50 bg-amber-950/10">
+<div class="flex items-start space-x-3">
+<span class="material-symbols-outlined text-amber-500 mt-1" style="font-variation-settings: 'FILL' 1;">gpp_maybe</span>
+<div class="flex-1 space-y-2">
+<h4 class="font-mono text-xs font-bold text-amber-400">BLOCKED: CLOUD AUTH REQUIRED</h4>
+<div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 text-xs font-body">
+<span class="text-zinc-500">원인:</span>
+<span class="text-zinc-300">Google 연결 필요</span>
+<span class="text-zinc-500">영향:</span>
+<span class="text-zinc-300">방 재입장 중지</span>
+<span class="text-zinc-500">행동:</span>
+<span class="text-sky-400">계정 확인 후 수동 재시도</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Manual Actions -->
+<div class="flex flex-col space-y-3 pt-2">
+<button class="w-full bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-black font-headline font-bold text-sm py-3 rounded uppercase tracking-wider transition-colors shadow-[0_0_15px_rgba(217,119,6,0.3)] border border-amber-400 flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined text-lg">refresh</span>
+<span>수동 재시도</span>
+</button>
+<button class="w-full bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-900 text-zinc-300 font-headline font-medium text-sm py-3 rounded uppercase tracking-wider transition-colors border border-zinc-700">
+                로비로 돌아가기
+            </button>
+</div>
+<!-- Diagnostics Strip -->
+<div class="flex flex-wrap justify-between gap-2 pt-2 border-t border-zinc-800">
+<div class="inset-panel px-2 py-1 rounded flex items-center space-x-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="font-mono text-[9px] text-zinc-400">PING 48ms</span>
+</div>
+<div class="inset-panel px-2 py-1 rounded">
+<span class="font-mono text-[9px] text-zinc-400">ROOM #A17</span>
+</div>
+<div class="inset-panel px-2 py-1 rounded">
+<span class="font-mono text-[9px] text-zinc-400">LAST CHECK 02:14</span>
+</div>
+<div class="inset-panel px-2 py-1 rounded">
+<span class="font-mono text-[9px] text-amber-500 font-bold">RETRY 1/3</span>
+</div>
+</div>
+</main>
+</body></html>

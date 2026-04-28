@@ -1,0 +1,453 @@
+﻿{
+    "startedAtUtc":  "2026-04-27T16:46:22.1980895Z",
+    "scene":  "Assets/Scenes/LobbyScene.unity",
+    "playStart":  {
+                      "Response":  "",
+                      "Wait":  {
+                                   "success":  true,
+                                   "action":  "wait-for-play",
+                                   "isPlaying":  true,
+                                   "isPlayingOrWillChange":  false,
+                                   "isPlayModeChanging":  false,
+                                   "rawIsPlayingOrWillChange":  true,
+                                   "isCompiling":  false,
+                                   "activeScene":  "LobbyScene",
+                                   "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                   "waitedMs":  435
+                               },
+                      "Health":  {
+                                     "ok":  true,
+                                     "bridgeRunning":  true,
+                                     "port":  52675,
+                                     "isPlaying":  true,
+                                     "isPlayingOrWillChange":  false,
+                                     "isPlayModeChanging":  false,
+                                     "rawIsPlayingOrWillChange":  true,
+                                     "isCompiling":  false,
+                                     "isWaitingForPlayMode":  false,
+                                     "projectKey":  "0d8ea703",
+                                     "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                     "activeScene":  "LobbyScene",
+                                     "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                     "pendingPlayAction":  "",
+                                     "pendingPlayAgeMs":  0
+                                 },
+                      "ReadyState":  {
+                                         "ok":  true,
+                                         "bridgeRunning":  true,
+                                         "port":  52675,
+                                         "isPlaying":  true,
+                                         "isPlayingOrWillChange":  false,
+                                         "isPlayModeChanging":  false,
+                                         "rawIsPlayingOrWillChange":  true,
+                                         "isCompiling":  false,
+                                         "isWaitingForPlayMode":  false,
+                                         "projectKey":  "0d8ea703",
+                                         "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                         "activeScene":  "LobbyScene",
+                                         "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                         "pendingPlayAction":  "",
+                                         "pendingPlayAgeMs":  0
+                                     },
+                      "ElapsedMs":  40899
+                  },
+    "initialState":  {
+                         "gameObjectPath":  "/GarageSetBUitkDocument",
+                         "componentType":  "GarageSetBUitkPageController",
+                         "properties":  [
+                                            {
+                                                "name":  "_lastRenderStatus",
+                                                "type":  "String",
+                                                "value":  "rendered:frame_bastion/fire_scatter/mob_burst"
+                                            },
+                                            {
+                                                "name":  "_lastInteractionStatus",
+                                                "type":  "String",
+                                                "value":  ""
+                                            },
+                                            {
+                                                "name":  "_selectedSlotIndex",
+                                                "type":  "Integer",
+                                                "value":  "0"
+                                            },
+                                            {
+                                                "name":  "_focusedPart",
+                                                "type":  "Enum",
+                                                "value":  "Frame"
+                                            },
+                                            {
+                                                "name":  "_isSettingsOpen",
+                                                "type":  "Boolean",
+                                                "value":  "False"
+                                            }
+                                        ]
+                     },
+    "interactions":  [
+                         {
+                             "method":  "SelectSlotForMcpSmoke",
+                             "args":  [
+                                          "1"
+                                      ],
+                             "invoke":  {
+                                            "success":  true,
+                                            "message":  "Invoked custom method: SelectSlotForMcpSmoke",
+                                            "path":  "/GarageSetBUitkDocument",
+                                            "invokedMethod":  "SelectSlotForMcpSmoke()",
+                                            "result":  "SelectSlotForMcpSmoke() invoked successfully",
+                                            "durationMs":  16.0
+                                        },
+                             "state":  {
+                                           "gameObjectPath":  "/GarageSetBUitkDocument",
+                                           "componentType":  "GarageSetBUitkPageController",
+                                           "properties":  [
+                                                              {
+                                                                  "name":  "_lastRenderStatus",
+                                                                  "type":  "String",
+                                                                  "value":  "rendered:frame_striker/fire_pulse/mob_vector"
+                                                              },
+                                                              {
+                                                                  "name":  "_lastInteractionStatus",
+                                                                  "type":  "String",
+                                                                  "value":  "slot:1"
+                                                              },
+                                                              {
+                                                                  "name":  "_selectedSlotIndex",
+                                                                  "type":  "Integer",
+                                                                  "value":  "1"
+                                                              },
+                                                              {
+                                                                  "name":  "_focusedPart",
+                                                                  "type":  "Enum",
+                                                                  "value":  "Frame"
+                                                              },
+                                                              {
+                                                                  "name":  "_isSettingsOpen",
+                                                                  "type":  "Boolean",
+                                                                  "value":  "False"
+                                                              }
+                                                          ]
+                                       }
+                         },
+                         {
+                             "method":  "SelectFocusForMcpSmoke",
+                             "args":  [
+                                          "Firepower"
+                                      ],
+                             "invoke":  {
+                                            "success":  true,
+                                            "message":  "Invoked custom method: SelectFocusForMcpSmoke",
+                                            "path":  "/GarageSetBUitkDocument",
+                                            "invokedMethod":  "SelectFocusForMcpSmoke()",
+                                            "result":  "SelectFocusForMcpSmoke() invoked successfully",
+                                            "durationMs":  4.0
+                                        },
+                             "state":  {
+                                           "gameObjectPath":  "/GarageSetBUitkDocument",
+                                           "componentType":  "GarageSetBUitkPageController",
+                                           "properties":  [
+                                                              {
+                                                                  "name":  "_lastRenderStatus",
+                                                                  "type":  "String",
+                                                                  "value":  "rendered:frame_striker/fire_pulse/mob_vector"
+                                                              },
+                                                              {
+                                                                  "name":  "_lastInteractionStatus",
+                                                                  "type":  "String",
+                                                                  "value":  "focus:Firepower"
+                                                              },
+                                                              {
+                                                                  "name":  "_selectedSlotIndex",
+                                                                  "type":  "Integer",
+                                                                  "value":  "1"
+                                                              },
+                                                              {
+                                                                  "name":  "_focusedPart",
+                                                                  "type":  "Enum",
+                                                                  "value":  "Firepower"
+                                                              },
+                                                              {
+                                                                  "name":  "_isSettingsOpen",
+                                                                  "type":  "Boolean",
+                                                                  "value":  "False"
+                                                              }
+                                                          ]
+                                       }
+                         },
+                         {
+                             "method":  "ToggleSettingsForMcpSmoke",
+                             "args":  [
+
+                                      ],
+                             "invoke":  {
+                                            "success":  true,
+                                            "message":  "Invoked custom method: ToggleSettingsForMcpSmoke",
+                                            "path":  "/GarageSetBUitkDocument",
+                                            "invokedMethod":  "ToggleSettingsForMcpSmoke()",
+                                            "result":  "ToggleSettingsForMcpSmoke() invoked successfully",
+                                            "durationMs":  2.0
+                                        },
+                             "state":  {
+                                           "gameObjectPath":  "/GarageSetBUitkDocument",
+                                           "componentType":  "GarageSetBUitkPageController",
+                                           "properties":  [
+                                                              {
+                                                                  "name":  "_lastRenderStatus",
+                                                                  "type":  "String",
+                                                                  "value":  "rendered:frame_striker/fire_pulse/mob_vector"
+                                                              },
+                                                              {
+                                                                  "name":  "_lastInteractionStatus",
+                                                                  "type":  "String",
+                                                                  "value":  "settings:True"
+                                                              },
+                                                              {
+                                                                  "name":  "_selectedSlotIndex",
+                                                                  "type":  "Integer",
+                                                                  "value":  "1"
+                                                              },
+                                                              {
+                                                                  "name":  "_focusedPart",
+                                                                  "type":  "Enum",
+                                                                  "value":  "Firepower"
+                                                              },
+                                                              {
+                                                                  "name":  "_isSettingsOpen",
+                                                                  "type":  "Boolean",
+                                                                  "value":  "True"
+                                                              }
+                                                          ]
+                                       }
+                         },
+                         {
+                             "method":  "RequestSaveForMcpSmoke",
+                             "args":  [
+
+                                      ],
+                             "invoke":  {
+                                            "success":  true,
+                                            "message":  "Invoked custom method: RequestSaveForMcpSmoke",
+                                            "path":  "/GarageSetBUitkDocument",
+                                            "invokedMethod":  "RequestSaveForMcpSmoke()",
+                                            "result":  "RequestSaveForMcpSmoke() invoked successfully",
+                                            "durationMs":  7.0
+                                        },
+                             "state":  {
+                                           "gameObjectPath":  "/GarageSetBUitkDocument",
+                                           "componentType":  "GarageSetBUitkPageController",
+                                           "properties":  [
+                                                              {
+                                                                  "name":  "_lastRenderStatus",
+                                                                  "type":  "String",
+                                                                  "value":  "rendered:frame_striker/fire_pulse/mob_vector"
+                                                              },
+                                                              {
+                                                                  "name":  "_lastInteractionStatus",
+                                                                  "type":  "String",
+                                                                  "value":  "save-requested"
+                                                              },
+                                                              {
+                                                                  "name":  "_selectedSlotIndex",
+                                                                  "type":  "Integer",
+                                                                  "value":  "1"
+                                                              },
+                                                              {
+                                                                  "name":  "_focusedPart",
+                                                                  "type":  "Enum",
+                                                                  "value":  "Firepower"
+                                                              },
+                                                              {
+                                                                  "name":  "_isSettingsOpen",
+                                                                  "type":  "Boolean",
+                                                                  "value":  "True"
+                                                              }
+                                                          ]
+                                       }
+                         },
+                         {
+                             "method":  "post-save-wait",
+                             "args":  [
+
+                                      ],
+                             "invoke":  null,
+                             "state":  {
+                                           "gameObjectPath":  "/GarageSetBUitkDocument",
+                                           "componentType":  "GarageSetBUitkPageController",
+                                           "properties":  [
+                                                              {
+                                                                  "name":  "_lastRenderStatus",
+                                                                  "type":  "String",
+                                                                  "value":  "rendered:frame_striker/fire_pulse/mob_vector"
+                                                              },
+                                                              {
+                                                                  "name":  "_lastInteractionStatus",
+                                                                  "type":  "String",
+                                                                  "value":  "save-requested"
+                                                              },
+                                                              {
+                                                                  "name":  "_selectedSlotIndex",
+                                                                  "type":  "Integer",
+                                                                  "value":  "1"
+                                                              },
+                                                              {
+                                                                  "name":  "_focusedPart",
+                                                                  "type":  "Enum",
+                                                                  "value":  "Firepower"
+                                                              },
+                                                              {
+                                                                  "name":  "_isSettingsOpen",
+                                                                  "type":  "Boolean",
+                                                                  "value":  "True"
+                                                              }
+                                                          ]
+                                       }
+                         }
+                     ],
+    "previewHierarchy":  {
+                             "sceneName":  "LobbyScene",
+                             "nodes":  [
+                                           {
+                                               "name":  "GarageSetBPreviewCamera",
+                                               "path":  "/GarageSetBPreviewCamera",
+                                               "activeSelf":  true,
+                                               "components":  [
+                                                                  "Transform",
+                                                                  "Camera",
+                                                                  "GarageSetBUitkPreviewRenderer"
+                                                              ],
+                                               "childCount":  2,
+                                               "children":  [
+                                                                {
+                                                                    "name":  "GaragePreviewKeyLight",
+                                                                    "path":  "/GarageSetBPreviewCamera/GaragePreviewKeyLight",
+                                                                    "activeSelf":  true,
+                                                                    "components":  [
+                                                                                       "Transform",
+                                                                                       "Light",
+                                                                                       "UniversalAdditionalLightData"
+                                                                                   ],
+                                                                    "childCount":  0,
+                                                                    "children":  [
+
+                                                                                 ]
+                                                                },
+                                                                {
+                                                                    "name":  "PreviewRoot",
+                                                                    "path":  "/GarageSetBPreviewCamera/PreviewRoot",
+                                                                    "activeSelf":  true,
+                                                                    "components":  [
+                                                                                       "Transform"
+                                                                                   ],
+                                                                    "childCount":  3,
+                                                                    "children":  [
+                                                                                     {
+                                                                                         "name":  "datan_common_body1_sz_206b7fcc(Clone)",
+                                                                                         "path":  "/GarageSetBPreviewCamera/PreviewRoot/datan_common_body1_sz_206b7fcc(Clone)",
+                                                                                         "activeSelf":  true,
+                                                                                         "components":  [
+                                                                                                            "Transform"
+                                                                                                        ],
+                                                                                         "childCount":  1,
+                                                                                         "children":  [
+                                                                                                          {
+                                                                                                              "name":  "default",
+                                                                                                              "path":  "/GarageSetBPreviewCamera/PreviewRoot/datan_common_body1_sz_206b7fcc(Clone)/default",
+                                                                                                              "activeSelf":  true,
+                                                                                                              "components":  [
+                                                                                                                                 "Transform",
+                                                                                                                                 "MeshFilter",
+                                                                                                                                 "MeshRenderer"
+                                                                                                                             ],
+                                                                                                              "childCount":  0,
+                                                                                                              "children":  [
+
+                                                                                                                           ]
+                                                                                                          }
+                                                                                                      ]
+                                                                                     },
+                                                                                     {
+                                                                                         "name":  "datan_common_arm1_sz_5fce3a7e(Clone)",
+                                                                                         "path":  "/GarageSetBPreviewCamera/PreviewRoot/datan_common_arm1_sz_5fce3a7e(Clone)",
+                                                                                         "activeSelf":  true,
+                                                                                         "components":  [
+                                                                                                            "Transform"
+                                                                                                        ],
+                                                                                         "childCount":  1,
+                                                                                         "children":  [
+                                                                                                          {
+                                                                                                              "name":  "default",
+                                                                                                              "path":  "/GarageSetBPreviewCamera/PreviewRoot/datan_common_arm1_sz_5fce3a7e(Clone)/default",
+                                                                                                              "activeSelf":  true,
+                                                                                                              "components":  [
+                                                                                                                                 "Transform",
+                                                                                                                                 "MeshFilter",
+                                                                                                                                 "MeshRenderer"
+                                                                                                                             ],
+                                                                                                              "childCount":  0,
+                                                                                                              "children":  [
+
+                                                                                                                           ]
+                                                                                                          }
+                                                                                                      ]
+                                                                                     },
+                                                                                     {
+                                                                                         "name":  "datan_common_legs1_rdrn_46fa96e7(Clone)",
+                                                                                         "path":  "/GarageSetBPreviewCamera/PreviewRoot/datan_common_legs1_rdrn_46fa96e7(Clone)",
+                                                                                         "activeSelf":  true,
+                                                                                         "components":  [
+                                                                                                            "Transform"
+                                                                                                        ],
+                                                                                         "childCount":  1,
+                                                                                         "children":  [
+                                                                                                          {
+                                                                                                              "name":  "default",
+                                                                                                              "path":  "/GarageSetBPreviewCamera/PreviewRoot/datan_common_legs1_rdrn_46fa96e7(Clone)/default",
+                                                                                                              "activeSelf":  true,
+                                                                                                              "components":  [
+                                                                                                                                 "Transform",
+                                                                                                                                 "MeshFilter",
+                                                                                                                                 "MeshRenderer"
+                                                                                                                             ],
+                                                                                                              "childCount":  0,
+                                                                                                              "children":  [
+
+                                                                                                                           ]
+                                                                                                          }
+                                                                                                      ]
+                                                                                     }
+                                                                                 ]
+                                                                }
+                                                            ]
+                                           }
+                                       ]
+                         },
+    "screenshot":  {
+                       "success":  true,
+                       "message":  "Screenshot captured.",
+                       "relativePath":  "artifacts/unity/garage-setb-uitk-phase5-runtime-acceptance.png",
+                       "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\garage-setb-uitk-phase5-runtime-acceptance.png",
+                       "fileSizeBytes":  42279,
+                       "sourceView":  "GameView",
+                       "width":  0,
+                       "height":  0,
+                       "prefabStageAssetPath":  ""
+                   },
+    "screenshotDimensions":  {
+                                 "width":  390,
+                                 "height":  844,
+                                 "portrait":  true
+                             },
+    "errorsBefore":  {
+                         "count":  0,
+                         "items":  [
+
+                                   ]
+                     },
+    "errorsAfter":  {
+                        "count":  0,
+                        "items":  [
+
+                                  ]
+                    },
+    "terminalVerdict":  "success",
+    "blockedReason":  ""
+}

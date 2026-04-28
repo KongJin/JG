@@ -6,8 +6,8 @@ import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
 import {
-  RECURRENCE_CHANGED_FILES_ENV,
   RECURRENCE_CLOSEOUT_PATH,
+  getRecurrenceChangedFiles,
   isRulesOnlyRecurrenceTarget,
   normalizeRepoRelativePath,
 } from "./lib.mjs";
@@ -21,7 +21,7 @@ export async function getRulesOnlyChangedFiles({
 } = {}) {
   const sourceFiles = Array.isArray(changedFiles)
     ? changedFiles
-    : await readChangedFilesFromEnvironmentOrGit(repoRoot);
+    : await getRecurrenceChangedFiles({ repoRoot });
 
   const filtered = sourceFiles
     .map((entry) => normalizeRepoRelativePath(entry))
@@ -67,20 +67,6 @@ export async function syncRecurrenceCloseoutArtifact({
     artifactPath: RECURRENCE_CLOSEOUT_PATH,
     changedPaths,
   };
-}
-
-async function readChangedFilesFromEnvironmentOrGit(repoRoot) {
-  const raw = process.env[RECURRENCE_CHANGED_FILES_ENV];
-  if (raw) {
-    return raw.split(/\r?\n/u);
-  }
-
-  const { stdout } = await execFileAsync(
-    "git",
-    ["diff", "--cached", "--name-only", "--diff-filter=ACMRD"],
-    { cwd: repoRoot },
-  );
-  return stdout.split(/\r?\n/u);
 }
 
 function formatDateForArtifact(value) {

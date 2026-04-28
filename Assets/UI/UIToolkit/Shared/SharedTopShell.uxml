@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="TacticalTokens.uss" />
+    <Style src="SharedShellNavigation.uss" />
+    <ui:VisualElement name="SharedTopShell" class="shared-top-shell">
+        <ui:Button name="ShellMenuButton" text="=" class="shared-icon-button" />
+        <ui:VisualElement class="shared-title-stack">
+            <ui:Label name="ShellTitleLabel" text="격납고 관리" class="shared-title" />
+            <ui:Label name="ShellStateLabel" text="동기화 완료" class="shared-state" />
+        </ui:VisualElement>
+        <ui:Button name="ShellSettingsButton" text="S" class="shared-icon-button" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,6 +1,6 @@
 # Module Data Structure
 
-> 마지막 업데이트: 2026-04-27
+> 마지막 업데이트: 2026-04-28
 > 상태: active
 > doc_id: design.module-data-structure
 > role: ssot
@@ -52,9 +52,9 @@
 ### 1. UnitFrameData (유닛 프레임)
 
 ```csharp
-namespace Features.Garage.Domain
+namespace Features.Unit.Infrastructure
 {
-    [CreateAssetMenu(fileName = "NewUnitFrame", menuName = "Garage/UnitFrame")]
+    [CreateAssetMenu(fileName = "NewUnitFrame", menuName = "Unit/UnitFrame")]
     public sealed class UnitFrameData : ScriptableObject
     {
         [Header("Identity")]
@@ -87,9 +87,9 @@ namespace Features.Garage.Domain
 ### 2. FirepowerModuleData (상단 모듈)
 
 ```csharp
-namespace Features.Garage.Domain
+namespace Features.Unit.Infrastructure
 {
-    [CreateAssetMenu(fileName = "NewFirepowerModule", menuName = "Garage/FirepowerModule")]
+    [CreateAssetMenu(fileName = "NewFirepowerModule", menuName = "Unit/FirepowerModule")]
     public sealed class FirepowerModuleData : ScriptableObject
     {
         [Header("Identity")]
@@ -117,9 +117,9 @@ namespace Features.Garage.Domain
 ### 3. MobilityModuleData (하단 모듈)
 
 ```csharp
-namespace Features.Garage.Domain
+namespace Features.Unit.Infrastructure
 {
-    [CreateAssetMenu(fileName = "NewMobilityModule", menuName = "Garage/MobilityModule")]
+    [CreateAssetMenu(fileName = "NewMobilityModule", menuName = "Unit/MobilityModule")]
     public sealed class MobilityModuleData : ScriptableObject
     {
         [Header("Identity")]
@@ -149,9 +149,9 @@ namespace Features.Garage.Domain
 ### 4. PassiveTraitData (중단 - 고유 특성)
 
 ```csharp
-namespace Features.Garage.Domain
+namespace Features.Unit.Infrastructure
 {
-    [CreateAssetMenu(fileName = "NewPassiveTrait", menuName = "Garage/PassiveTrait")]
+    [CreateAssetMenu(fileName = "NewPassiveTrait", menuName = "Unit/PassiveTrait")]
     public sealed class PassiveTraitData : ScriptableObject
     {
         public enum TraitStrength
@@ -186,7 +186,7 @@ namespace Features.Garage.Domain
 ### 1. Unit (전투 중 유닛 엔티티)
 
 ```csharp
-namespace Features.Garage.Domain
+namespace Features.Unit.Domain
 {
     /// <summary>
     /// 전투에서 실제 동작하는 유닛 엔티티.
@@ -233,7 +233,7 @@ namespace Features.Garage.Domain
 ### 2. UnitComposition (조합 계산기)
 
 ```csharp
-namespace Features.Garage.Domain
+namespace Features.Unit.Domain
 {
     /// <summary>
     /// 프레임 + 모듈 조합의 유효성 검증 + 결과 계산.
@@ -304,7 +304,7 @@ namespace Features.Garage.Domain
 ### 3. CostCalculator (비용 계산기)
 
 ```csharp
-namespace Features.Garage.Domain
+namespace Features.Unit.Domain
 {
     /// <summary>
     /// 스탯 기반 소환 비용 자동 계산.
@@ -437,9 +437,9 @@ Assets/Data/Garage/
 ### 모듈 카탈로그 ScriptableObject
 
 ```csharp
-namespace Features.Garage.Infrastructure
+namespace Features.Unit.Infrastructure
 {
-    [CreateAssetMenu(fileName = "ModuleCatalog", menuName = "Garage/ModuleCatalog")]
+    [CreateAssetMenu(fileName = "ModuleCatalog", menuName = "Unit/ModuleCatalog")]
     public sealed class ModuleCatalog : ScriptableObject
     {
         [Header("Firepower Modules")]
@@ -499,42 +499,47 @@ namespace Features.Garage.Domain
 
 ## 저장/불러오기
 
-### GarageSaveService
+### GarageJsonPersistence
 
 ```csharp
+using Features.Garage.Application.Ports;
+
 namespace Features.Garage.Infrastructure
 {
     /// <summary>
-    /// 편성 데이터를 JSON으로 저장/불러오기.
+    /// JSON 기반 편성 데이터 저장/불러오기 구현.
+    /// Application.persistentDataPath에 저장.
     /// </summary>
-    public class GarageSaveService
+    public sealed class GarageJsonPersistence : IGaragePersistencePort
     {
         private const string FileName = "garage_roster.json";
 
         public void Save(GarageRoster roster)
         {
-            string json = JsonUtility.ToJson(new GarageRosterWrapper(roster), true);
-            File.WriteAllText(Path.Combine(Application.persistentDataPath, FileName), json);
+            var wrapper = new GarageRosterWrapper { roster = roster };
+            string json = JsonUtility.ToJson(wrapper, true);
+            string path = Path.Combine(UnityEngine.Application.persistentDataPath, FileName);
+            File.WriteAllText(path, json);
         }
 
         public GarageRoster Load()
         {
-            string path = Path.Combine(Application.persistentDataPath, FileName);
+            string path = Path.Combine(UnityEngine.Application.persistentDataPath, FileName);
             if (!File.Exists(path))
                 return new GarageRoster(); // 기본값
 
             string json = File.ReadAllText(path);
             var wrapper = JsonUtility.FromJson<GarageRosterWrapper>(json);
-            return wrapper.roster;
+            var roster = wrapper?.roster ?? new GarageRoster();
+            roster.Normalize();
+            return roster;
         }
-    }
 
-    [Serializable]
-    public class GarageRosterWrapper
-    {
-        public GarageRoster roster;
-        public GarageRosterWrapper(GarageRoster r) => roster = r;
-        public GarageRosterWrapper() { }
+        [System.Serializable]
+        private class GarageRosterWrapper
+        {
+            public GarageRoster roster;
+        }
     }
 }
 ```

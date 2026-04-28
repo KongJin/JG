@@ -61,8 +61,7 @@ namespace Features.Player
 
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
         {
-            // Arrival fallback was intentionally removed so player wiring depends on
-            // explicit scene contract / bootstrap registration paths instead of runtime global lookup.
+            GameSceneRuntimeSpawnRegistrar.NotifyPlayerArrived(this);
         }
 
         /// <summary>

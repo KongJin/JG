@@ -285,6 +285,18 @@ $unityUiRelevantPatterns = @(
     '^Assets/.+\.prefab$',
     '^Assets/UI/.+\.(uxml|uss|asset)$'
 )
+$uitkCandidatePatterns = @(
+    '^Assets/UI/UIToolkit/.+\.(uxml|uss|asset)$'
+)
+$uitkCandidateEvidencePatterns = @(
+    '^artifacts/unity/.+\.(md|json|png)$'
+)
+$uitkCandidatePreviewEvidencePatterns = @(
+    '^artifacts/unity/.+\.png$'
+)
+$uitkCandidateReportEvidencePatterns = @(
+    '^artifacts/unity/.+\.(md|json)$'
+)
 $stitchSurfaceOnboardingEvidencePatterns = @(
     '^artifacts/unity/set-[a-e]-.+\.(json|png)$',
     '^artifacts/unity/(garage|lobby|account|common|battle|result)-.+\.(json|png)$',
@@ -304,6 +316,10 @@ $scenePrefabFiles = Get-PathsMatching -Paths $changedFiles -Patterns $scenePrefa
 $lobbyFiles = Get-PathsMatching -Paths $changedFiles -Patterns $lobbyPatterns
 $gameSceneFiles = Get-PathsMatching -Paths $changedFiles -Patterns $gameScenePatterns
 $unityUiRelevantFiles = Get-PathsMatching -Paths $changedFiles -Patterns $unityUiRelevantPatterns
+$uitkCandidateFiles = Get-PathsMatching -Paths $changedFiles -Patterns $uitkCandidatePatterns
+$uitkCandidateEvidenceFiles = Get-PathsMatching -Paths $changedFiles -Patterns $uitkCandidateEvidencePatterns
+$uitkCandidatePreviewEvidenceFiles = Get-PathsMatching -Paths $changedFiles -Patterns $uitkCandidatePreviewEvidencePatterns
+$uitkCandidateReportEvidenceFiles = Get-PathsMatching -Paths $changedFiles -Patterns $uitkCandidateReportEvidencePatterns
 $stitchSurfaceOnboardingFiles = @(
     Get-PathsMatching -Paths $changedFiles -Patterns $stitchSurfaceOnboardingEvidencePatterns |
         Where-Object {
@@ -318,6 +334,7 @@ $prefabManagementSummary = Get-PrefabManagementSummary -RepoRoot $repoRoot
 $hasScenePrefab = @($scenePrefabFiles).Count -gt 0
 $hasLobby = @($lobbyFiles).Count -gt 0
 $hasGameScene = @($gameSceneFiles).Count -gt 0
+$hasUitkCandidate = @($uitkCandidateFiles).Count -gt 0
 
 $route = "no-unity-ui-workflow"
 if ($hasLobby -and $hasGameScene) {
@@ -332,6 +349,9 @@ elseif ($hasGameScene) {
 elseif ($hasScenePrefab) {
     $route = "scene/prefab authoring"
 }
+elseif ($hasUitkCandidate) {
+    $route = "uitk-candidate"
+}
 
 $requiredEvidence = @()
 $missingEvidence = @()
@@ -340,8 +360,8 @@ $policyViolations = @()
 $compileSummary = $null
 $capabilityExpansionGuard = [PSCustomObject]@{
     allowCapabilityExpansion = [bool]$AllowCapabilityExpansion
-    surfaceOnboardingFiles = $stitchSurfaceOnboardingFiles
-    capabilityExpansionFiles = $stitchCapabilityExpansionFiles
+    surfaceOnboardingFiles = @($stitchSurfaceOnboardingFiles)
+    capabilityExpansionFiles = @($stitchCapabilityExpansionFiles)
 }
 
 if (@($stitchSurfaceOnboardingFiles).Count -gt 0 -and @($stitchCapabilityExpansionFiles).Count -gt 0 -and -not $AllowCapabilityExpansion) {
@@ -411,6 +431,28 @@ if ($route -ne "no-unity-ui-workflow") {
             message = "Lobby/Garage changes need a UI Toolkit candidate surface before fresh scene evidence can be trusted."
         }
     }
+
+    if ($route -eq "uitk-candidate") {
+        $requiredEvidence += [PSCustomObject]@{
+            name = "preview-capture-report"
+            path = $null
+            message = "UI Toolkit candidate surfaces require a fresh preview capture/report before pilot success or runtime acceptance can be claimed."
+        }
+
+        if (@($uitkCandidatePreviewEvidenceFiles).Count -eq 0) {
+            $missingEvidence += New-EvidenceRecord `
+                -Name "preview-capture" `
+                -Path "artifacts/unity/*.png" `
+                -Message "No preview capture PNG was included with the UI Toolkit surface change. Leave the pass blocked or add a fresh preview capture before claiming pilot success."
+        }
+
+        if (@($uitkCandidateReportEvidenceFiles).Count -eq 0) {
+            $missingEvidence += New-EvidenceRecord `
+                -Name "preview-capture-report" `
+                -Path "artifacts/unity/*.md|*.json" `
+                -Message "No preview report or summary artifact was included with the UI Toolkit surface change. Leave the pass blocked or add a fresh report before claiming pilot success."
+        }
+    }
 }
 
 foreach ($record in @($missingEvidence)) {
@@ -434,13 +476,17 @@ $report = [PSCustomObject]@{
     generatedAt = (Get-Date).ToString("yyyy-MM-dd HH:mm:ssK")
     agent = $Agent
     route = $route
-    changedFiles = $changedFiles
+    changedFiles = @($changedFiles)
     allDirtyFileCount = @($allChangedFiles).Count
-    unityUiRelevantFiles = $unityUiRelevantFiles
-    requiredEvidence = $requiredEvidence
-    missingEvidence = $missingEvidence
-    staleEvidence = $staleEvidence
-    policyViolations = $policyViolations
+    unityUiRelevantFiles = @($unityUiRelevantFiles)
+    uitkCandidateFiles = @($uitkCandidateFiles)
+    uitkCandidateEvidenceFiles = @($uitkCandidateEvidenceFiles)
+    uitkCandidatePreviewEvidenceFiles = @($uitkCandidatePreviewEvidenceFiles)
+    uitkCandidateReportEvidenceFiles = @($uitkCandidateReportEvidenceFiles)
+    requiredEvidence = @($requiredEvidence)
+    missingEvidence = @($missingEvidence)
+    staleEvidence = @($staleEvidence)
+    policyViolations = @($policyViolations)
     compile = $compileSummary
     capabilityExpansionGuard = $capabilityExpansionGuard
     prefabManagement = $prefabManagementSummary

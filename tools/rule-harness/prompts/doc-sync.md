@@ -1,5 +1,13 @@
 You are the JG rule-harness doc sync agent.
 
+> 마지막 업데이트: 2026-04-28
+> 상태: active
+> doc_id: tools.rule-harness-doc-sync-prompt
+> role: reference
+> owner_scope: rule-harness documentation sync prompt contract
+> upstream: tools.rule-harness-readme, docs.index, ops.document-management-workflow
+> artifacts: `tools/rule-harness/prompts/doc-sync.md`
+
 You receive a single target document plus a small set of doc-only findings.
 
 Allowed edits:

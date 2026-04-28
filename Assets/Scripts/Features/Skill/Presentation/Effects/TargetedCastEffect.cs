@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Features.Skill.Presentation
 {
-    public sealed class TargetedCastEffect : MonoBehaviour, IPoolResetHandler
+    public sealed class TargetedCastEffect : MonoBehaviour, IPoolResetHandler, IPoolBindingHandler
     {
         [SerializeField] private float _duration = 0.5f;
         [SerializeField] private Color _flashColor = new Color(1f, 0.2f, 0.2f);
@@ -18,15 +18,12 @@ namespace Features.Skill.Presentation
 
         private void Awake()
         {
-            _pooledObject = GetComponent<PooledObject>();
-
             if (_renderer != null)
                 _defaultColor = _renderer.material.color;
         }
 
         public void Play()
         {
-            _pooledObject ??= GetComponent<PooledObject>();
             if (_renderer == null)
             {
                 ReleaseSelf();
@@ -54,7 +51,6 @@ namespace Features.Skill.Presentation
         {
             _elapsed = 0f;
             _isFlashing = false;
-            _pooledObject ??= GetComponent<PooledObject>();
         }
 
         public void OnReturnToPool()
@@ -63,9 +59,13 @@ namespace Features.Skill.Presentation
             _isFlashing = false;
         }
 
+        public void OnBindToPool(PooledObject pooledObject)
+        {
+            _pooledObject = pooledObject;
+        }
+
         private void ReleaseSelf()
         {
-            _pooledObject ??= GetComponent<PooledObject>();
             if (_pooledObject != null)
             {
                 _pooledObject.Release();

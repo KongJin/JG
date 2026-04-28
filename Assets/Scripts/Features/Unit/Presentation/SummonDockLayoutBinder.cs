@@ -1,3 +1,5 @@
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,13 +26,13 @@ namespace Features.Unit.Presentation
             ref Camera worldCamera)
         {
             dockRoot ??= _rootTransform as RectTransform;
-            dockBackgroundImage ??= _rootTransform.GetComponent<Image>();
+            dockBackgroundImage ??= ComponentAccess.Get<Image>(_rootTransform.gameObject);
             slotRowRect ??= FindRect("SlotRow");
             energyBarRect ??= FindRect("EnergyBar");
             feedbackRect ??= FindRect("PlacementErrorView");
 
             if (slotRowLayout == null && slotRowRect != null)
-                slotRowLayout = slotRowRect.GetComponent<HorizontalLayoutGroup>();
+                slotRowLayout = ComponentAccess.Get<HorizontalLayoutGroup>(slotRowRect.gameObject);
 
             worldCamera ??= Camera.main;
             _slotRowRect = slotRowRect;

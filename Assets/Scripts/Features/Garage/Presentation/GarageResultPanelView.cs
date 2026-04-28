@@ -4,6 +4,8 @@ using Shared.Attributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 
 namespace Features.Garage.Presentation
 {
@@ -80,7 +82,8 @@ namespace Features.Garage.Presentation
             _toastCanvasGroup.interactable = false;
 
             // ToastPanel Image 배경을 완전히 투명하게 — 하얀 사각형 방지
-            if (_toastPanel.TryGetComponent<Image>(out var toastImage))
+            var toastImage = ComponentAccess.Get<Image>(_toastPanel);
+            if (toastImage != null)
             {
                 toastImage.color = Color.clear;
             }
@@ -155,7 +158,8 @@ namespace Features.Garage.Presentation
         private void UpdateToastColors(bool isError)
         {
             // 배경색: 어두운 톤으로 가시성 확보
-            if (_toastPanel.TryGetComponent<Image>(out var panelImage))
+            var panelImage = ComponentAccess.Get<Image>(_toastPanel);
+            if (panelImage != null)
             {
                 panelImage.color = isError ? ThemeColors.ToastErrorBg : ThemeColors.ToastSuccessBg;
             }
@@ -245,10 +249,7 @@ namespace Features.Garage.Presentation
                     ? ThemeColors.AccentAmber
                     : ThemeColors.StateDisabled;
             _saveButtonImage.color = targetColor;
-
-            var feedback = _saveButton.GetComponent<ButtonFeedback>();
-            if (feedback != null)
-                feedback.UpdateBaseColor(targetColor);
+            ButtonStyles.ApplyRuntimeColors(_saveButton, targetColor);
         }
 
         private void RefreshSaveButtonState()

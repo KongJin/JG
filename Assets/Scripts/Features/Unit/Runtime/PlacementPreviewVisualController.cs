@@ -1,4 +1,6 @@
 using UnityEngine;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 
 namespace Features.Unit.Runtime
 {
@@ -75,7 +77,7 @@ namespace Features.Unit.Runtime
             go.transform.localRotation = Quaternion.identity;
             go.transform.localScale = Vector3.one;
 
-            var line = go.AddComponent<LineRenderer>();
+            var line = ComponentAccess.Ensure<LineRenderer>(go);
             line.sharedMaterial = material;
             line.loop = true;
             line.useWorldSpace = true;

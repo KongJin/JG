@@ -118,9 +118,9 @@ namespace Features.Lobby.Presentation
 
             foreach (var member in members)
             {
-                var go = _memberItemPool.Rent(Vector3.zero, Quaternion.identity);
-                go.GetComponent<MemberItemView>().Bind(member);
-                _activeItems.Add(go);
+                var item = _memberItemPool.RentComponent<MemberItemView>(Vector3.zero, Quaternion.identity);
+                item.Bind(member);
+                _activeItems.Add(item.gameObject);
             }
         }
 

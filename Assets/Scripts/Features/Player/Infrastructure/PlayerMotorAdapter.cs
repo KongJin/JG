@@ -1,4 +1,6 @@
 using Features.Player.Application.Ports;
+using Shared.Runtime;
+using Shared.Runtime.Pooling;
 using Shared.Math;
 using UnityEngine;
 
@@ -11,7 +13,7 @@ namespace Features.Player.Infrastructure
 
         private void Awake()
         {
-            _controller = GetComponent<CharacterController>();
+            _controller = ComponentAccess.Get<CharacterController>(gameObject);
         }
 
         public MotorResult Move(Float3 delta)

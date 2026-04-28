@@ -69,15 +69,20 @@ namespace Features.Lobby.Presentation
             _disposables = new DisposableScope();
 
             var roomInputHandler = new LobbyRoomInputHandler(useCases, eventPublisher);
-            _roomListView.Initialize(roomInputHandler);
-            _roomDetailView.Initialize(roomInputHandler, eventBus);
-            _garageSummaryView.Initialize(eventBus);
+            _roomListView?.Initialize(roomInputHandler);
+            _roomDetailView?.Initialize(roomInputHandler, eventBus);
+            _garageSummaryView?.Initialize(eventBus);
             HookNavigation();
 
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, this));
-            _eventBus.Subscribe<LobbyUpdatedEvent>(this, e => RenderLobby(e.Lobby));
-            _eventBus.Subscribe<RoomUpdatedEvent>(this, e => RenderRoom(e));
-            _eventBus.Subscribe<RoomListReceivedEvent>(this, e => RenderRoomList(e));
+            if (_roomListView != null)
+            {
+                _eventBus.Subscribe<LobbyUpdatedEvent>(this, e => RenderLobby(e.Lobby));
+                _eventBus.Subscribe<RoomListReceivedEvent>(this, e => RenderRoomList(e));
+            }
+
+            if (_roomDetailView != null)
+                _eventBus.Subscribe<RoomUpdatedEvent>(this, e => RenderRoom(e));
 
             ShowLobbyPage();
             ShowRoomList();
@@ -90,18 +95,27 @@ namespace Features.Lobby.Presentation
 
         public void RenderLobby(LobbySnapshot lobby)
         {
+            if (_roomListView == null)
+                return;
+
             _roomListView.Render(lobby.Rooms);
             ShowRoomList();
         }
 
         public void RenderRoomList(RoomListReceivedEvent e)
         {
+            if (_roomListView == null)
+                return;
+
             _roomListView.Render(e.Rooms);
             ShowRoomList();
         }
 
         public void RenderRoom(RoomUpdatedEvent e)
         {
+            if (_roomDetailView == null)
+                return;
+
             _roomDetailView.SetLocalMemberId(e.LocalMemberId);
             _roomDetailView.Render(e.Room);
             ShowRoomDetail();

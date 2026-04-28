@@ -1619,4 +1619,136 @@ Assert-RuleHarness `
     -Condition ((Test-Path -LiteralPath ([string]$latestStatus.docProposalPath)) -and (@($latestStatus.topDocProposals).Count -ge 1)) `
     -Message 'Expected scheduled runs to emit the proposal markdown file and surface top doc proposals.'
 
+$roleRepo = Join-Path $scratchRoot 'role-harness'
+Initialize-RuleHarnessScopeRepo -RepoPath $roleRepo -Features @(
+    [pscustomobject]@{ Name = 'RoleA'; ApplicationContent = 'namespace Features.RoleA.Application { public sealed class RoleAService { } }' },
+    [pscustomobject]@{ Name = 'RoleB'; ApplicationContent = 'namespace Features.RoleB.Application { public sealed class RoleBService { } }' },
+    [pscustomobject]@{ Name = 'RoleC'; ApplicationContent = 'namespace Features.RoleC.Application { public sealed class RoleCService { } }' },
+    [pscustomobject]@{ Name = 'RoleD'; ApplicationContent = 'namespace Features.RoleD.Application { public sealed class RoleDService { } }' },
+    [pscustomobject]@{ Name = 'RoleE'; ApplicationContent = 'namespace Features.RoleE.Application { public sealed class RoleEService { } }' }
+)
+$roleConfigPath = Join-Path $roleRepo 'tools/rule-harness/config.json'
+$roleConfig = Get-Content -Path $roleConfigPath -Raw | ConvertFrom-Json
+$roleConfig.scan.maxScopesPerRun = 1
+$roleConfig | ConvertTo-Json -Depth 50 | Set-Content -Path $roleConfigPath -Encoding UTF8
+$roleReviewDir = Join-Path $roleRepo 'Temp/RoleReview'
+& (Join-Path $roleRepo 'tools/rule-harness/run-tech-debt-review.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -OutputRoot (Join-Path $roleRepo 'Temp/RuleHarnessRoles') `
+    -OutputDir $roleReviewDir | Out-Null
+$roleReviewPath = Join-Path $roleReviewDir 'report.json'
+$roleReview = Get-Content -Path $roleReviewPath -Raw | ConvertFrom-Json
+Assert-RuleHarness `
+    -Condition (@($roleReview.scannedScopes).Count -eq 5 -and [int]$roleReview.severityScore -ge 0 -and [int]$roleReview.severityScore -le 100 -and $roleReview.PSObject.Properties.Name -contains 'scoreBreakdown' -and $roleReview.PSObject.Properties.Name -contains 'refactorTargets') `
+    -Message 'Expected tech debt role review to scan all scopes and emit severity/refactor artifacts.'
+Assert-RuleHarness `
+    -Condition (-not (Test-Path -LiteralPath (Join-Path $roleRepo 'Temp/RuleHarnessState/feature-scan-state.json')) -and -not (Test-Path -LiteralPath (Join-Path $roleRepo 'Temp/RuleHarnessState/doc-proposals.json'))) `
+    -Message 'Expected tech debt role review to leave feature scan state and doc proposal backlog untouched.'
+
+$badPathReview = Join-Path $roleRepo 'Temp/bad-path-review.json'
+[pscustomobject]@{
+    baseCommitSha = [string]$roleReview.baseCommitSha
+    recommendedBatches = @([pscustomobject]@{
+        id = 'bad-path'
+        kind = 'code_fix'
+        targetFiles = @('../outside.cs')
+        reason = 'fixture unsafe path'
+        validation = @()
+        expectedFindingsResolved = @()
+        status = 'proposed'
+        operations = @()
+    })
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $badPathReview -Encoding UTF8
+$badPathRejected = $false
+try {
+    & (Join-Path $roleRepo 'tools/rule-harness/run-review-work.ps1') `
+        -RepoRoot $roleRepo `
+        -ConfigPath $roleConfigPath `
+        -ReviewPath $badPathReview `
+        -OutputDir (Join-Path $roleRepo 'Temp/BadPathWork') | Out-Null
+}
+catch {
+    $badPathRejected = $true
+}
+Assert-RuleHarness `
+    -Condition $badPathRejected `
+    -Message 'Expected review work role to reject path traversal targets.'
+
+$staleReview = Join-Path $roleRepo 'Temp/stale-review.json'
+[pscustomobject]@{
+    baseCommitSha = '0000000000000000000000000000000000000000'
+    recommendedBatches = @()
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $staleReview -Encoding UTF8
+$staleRejected = $false
+try {
+    & (Join-Path $roleRepo 'tools/rule-harness/run-review-work.ps1') `
+        -RepoRoot $roleRepo `
+        -ConfigPath $roleConfigPath `
+        -ReviewPath $staleReview `
+        -OutputDir (Join-Path $roleRepo 'Temp/StaleWork') | Out-Null
+}
+catch {
+    $staleRejected = $true
+}
+Assert-RuleHarness `
+    -Condition $staleRejected `
+    -Message 'Expected review work role to reject stale commit artifacts.'
+
+$roleWorkReportPath = Join-Path $roleRepo 'Temp/work-report.json'
+[pscustomobject]@{
+    inputReviewPath = $roleReviewPath
+    baseCommitSha = [string]$roleReview.baseCommitSha
+    skippedBatches = @([pscustomobject]@{ id = 'skip-1'; reasonCode = 'dirty-target-files'; targets = @('AGENTS.md') })
+    rollback = [pscustomobject]@{ performed = $true; failedBatches = @('batch-001') }
+    retryAttempts = 1
+    memoryUpdates = @([pscustomobject]@{ scopePath = 'tools/rule-harness/README.md'; hitCount = 2 })
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $roleWorkReportPath -Encoding UTF8
+& (Join-Path $roleRepo 'tools/rule-harness/run-recurrence-plan.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -ReviewPath $roleReviewPath `
+    -WorkReportPath $roleWorkReportPath `
+    -OutputDir (Join-Path $roleRepo 'Temp/RecurrencePlan') | Out-Null
+$rolePlan = Get-Content -Path (Join-Path $roleRepo 'Temp/RecurrencePlan/report.json') -Raw | ConvertFrom-Json
+Assert-RuleHarness `
+    -Condition (@($rolePlan.preventionItems | Where-Object kind -in @('skipped-batch', 'rollback', 'retry', 'memory-update')).Count -ge 4 -and [bool]$rolePlan.manualValidationRequired) `
+    -Message 'Expected recurrence plan role to convert work report failure signals into prevention items.'
+
+$rulesCloseoutPlanPath = Join-Path $roleRepo 'Temp/rules-closeout-plan.json'
+[pscustomobject]@{
+    baseCommitSha = [string]$roleReview.baseCommitSha
+    recommendedBatches = @([pscustomobject]@{
+        id = 'rules-closeout-missing'
+        kind = 'rule_fix'
+        targetFiles = @('tools/rule-harness/roles/RecurrenceWorkHarness.psm1')
+        reason = 'fixture rules closeout gate'
+        validation = @('rule_harness_tests')
+        expectedFindingsResolved = @()
+        status = 'proposed'
+        operations = @()
+        ownerDocs = @('tools/rule-harness/README.md')
+    })
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $rulesCloseoutPlanPath -Encoding UTF8
+& (Join-Path $roleRepo 'tools/rule-harness/run-recurrence-work.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -PlanPath $rulesCloseoutPlanPath `
+    -OutputDir (Join-Path $roleRepo 'Temp/RulesCloseoutWork') | Out-Null
+$rulesCloseoutWork = Get-Content -Path (Join-Path $roleRepo 'Temp/RulesCloseoutWork/report.json') -Raw | ConvertFrom-Json
+Assert-RuleHarness `
+    -Condition ([bool]$rulesCloseoutWork.failed -and @($rulesCloseoutWork.stageResults | Where-Object { $_.stage -eq 'rules_closeout' -and $_.status -eq 'failed' }).Count -eq 1) `
+    -Message 'Expected recurrence work role to block rules-only mutations when closeout artifact does not cover the target.'
+
+& (Join-Path $roleRepo 'tools/rule-harness/run-harness-pipeline.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -OutputRoot (Join-Path $roleRepo 'Temp/RuleHarnessRoles') `
+    -DryRun | Out-Null
+$rolePipelineRoot = Get-Content -Path (Join-Path $roleRepo 'Temp/RuleHarnessRoles/latest-pipeline.txt') -Raw
+$rolePipelineRoot = $rolePipelineRoot.Trim()
+Assert-RuleHarness `
+    -Condition ((Test-Path -LiteralPath (Join-Path $rolePipelineRoot '01-tech-debt-review/report.json')) -and (Test-Path -LiteralPath (Join-Path $rolePipelineRoot '04-recurrence-work/report.json'))) `
+    -Message 'Expected role harness pipeline to write stage artifacts from 01 through 04.'
+
 Write-Host 'Rule harness fixture tests passed.'

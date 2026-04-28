@@ -1,0 +1,246 @@
+{
+    "schemaVersion":  "1.0.0",
+    "artifactKind":  "stitch-source-facts",
+    "surfaceId":  "operation-memory-accepted-dark-dock",
+    "source":  {
+                   "htmlPath":  "artifacts/stitch/11729197788183873077/753d889cc0874d69858fd17d98c66f7f/screen.html",
+                   "imagePath":  "artifacts/stitch/11729197788183873077/753d889cc0874d69858fd17d98c66f7f/screen.png",
+                   "title":  "Operation Memory - Accepted Dark Dock",
+                   "image":  {
+                                 "exists":  true,
+                                 "width":  156,
+                                 "height":  512,
+                                 "fileSizeBytes":  32460
+                             }
+               },
+    "target":  {
+                   "kind":  "prefab",
+                   "assetPath":  ""
+               },
+    "facts":  {
+                  "visibleTexts":  [
+                                       "Operation Memory - Accepted Dark Dock",
+                                       "arrow_back",
+                                       "작전 기록",
+                                       "LOCAL LOG / SYNC PENDING",
+                                       "settings",
+                                       "버텨냄",
+                                       "LATEST_OP",
+                                       "security",
+                                       "SURVIVAL TIME",
+                                       "생존 22:45",
+                                       "WAVE",
+                                       "공세 14",
+                                       "CORE INTEGRITY",
+                                       "코어 42%",
+                                       "ELIMINATED",
+                                       "제거 342",
+                                       "SITREP: 동쪽 라인 집중 압박. 방어선 유지됨.",
+                                       "Recent Operations",
+                                       "22:45",
+                                       "HVY-ASSAULT + LIGHT-RECON",
+                                       "CORE 42%",
+                                       "거점 붕괴",
+                                       "21:10",
+                                       "RAIL-GUARD",
+                                       "공세 08",
+                                       "CORE 0%",
+                                       "19:42",
+                                       "HVY-ASSAULT",
+                                       "공세 12",
+                                       "CORE 15%",
+                                       "18:05",
+                                       "LIGHT-RECON",
+                                       "공세 15",
+                                       "CORE 88%",
+                                       "hourglass_empty",
+                                       "전적 기록 대기중",
+                                       "기체 전적",
+                                       "02",
+                                       "FRM-HV / WPN-GAT",
+                                       "CONTRIBUTION",
+                                       "HIGH",
+                                       "04",
+                                       "FRM-LT / WPN-SCT",
+                                       "MED",
+                                       "save",
+                                       "3/5 RECORDS STORED",
+                                       "dns",
+                                       "LOCAL FIRST",
+                                       "cloud_sync",
+                                       "CLOUD SYNC WAITING",
+                                       "home",
+                                       "RETURN TO LOBBY",
+                                       "build",
+                                       "OPEN GARAGE"
+                                   ],
+                  "buttons":  [
+                                  "arrow_back",
+                                  "settings",
+                                  "home RETURN TO LOBBY",
+                                  "build OPEN GARAGE"
+                              ],
+                  "icons":  [
+                                "arrow_back",
+                                "settings",
+                                "security",
+                                "hourglass_empty",
+                                "save",
+                                "dns",
+                                "cloud_sync",
+                                "home",
+                                "build"
+                            ],
+                  "inputs":  [
+
+                             ],
+                  "repeatedCandidates":  [
+                                             {
+                                                 "classSignature":  "text-[10px] text-zinc-500 mb-1",
+                                                 "count":  6
+                                             },
+                                             {
+                                                 "classSignature":  "text-right",
+                                                 "count":  6
+                                             },
+                                             {
+                                                 "classSignature":  "bg-zinc-950 p-2 border border-zinc-800 rounded",
+                                                 "count":  4
+                                             },
+                                             {
+                                                 "classSignature":  "flex gap-2 items-center mb-1",
+                                                 "count":  4
+                                             },
+                                             {
+                                                 "classSignature":  "flex items-center gap-3",
+                                                 "count":  4
+                                             },
+                                             {
+                                                 "classSignature":  "flex items-center justify-between p-3 bg-zinc-900 border border-zinc-800 rounded",
+                                                 "count":  4
+                                             },
+                                             {
+                                                 "classSignature":  "text-[10px] text-zinc-400",
+                                                 "count":  4
+                                             },
+                                             {
+                                                 "classSignature":  "text-zinc-300 text-xs",
+                                                 "count":  4
+                                             },
+                                             {
+                                                 "classSignature":  "text-zinc-500 text-xs",
+                                                 "count":  4
+                                             },
+                                             {
+                                                 "classSignature":  "text-[10px] text-zinc-500",
+                                                 "count":  3
+                                             },
+                                             {
+                                                 "classSignature":  "text-[12px]",
+                                                 "count":  3
+                                             },
+                                             {
+                                                 "classSignature":  "text-blue-400 text-sm",
+                                                 "count":  3
+                                             }
+                                         ],
+                  "colorTokens":  [
+                                      "bg-black",
+                                      "bg-zinc-950",
+                                      "border-x",
+                                      "border-zinc-900",
+                                      "bg-zinc-950/90",
+                                      "border-b-2",
+                                      "border-zinc-800",
+                                      "text-amber-500",
+                                      "text-blue-400",
+                                      "text-zinc-500",
+                                      "bg-zinc-900",
+                                      "border-2",
+                                      "bg-blue-500/10",
+                                      "bg-blue-500/20",
+                                      "border-blue-500/30",
+                                      "text-zinc-100",
+                                      "text-zinc-200",
+                                      "bg-zinc-950/50",
+                                      "border-l-2",
+                                      "border-blue-500",
+                                      "text-zinc-300",
+                                      "border-b",
+                                      "bg-blue-500",
+                                      "text-zinc-400",
+                                      "text-right",
+                                      "bg-red-500",
+                                      "text-red-400",
+                                      "bg-blue-500/50",
+                                      "border-dashed",
+                                      "bg-zinc-950/30",
+                                      "text-zinc-600",
+                                      "bg-zinc-800",
+                                      "border-zinc-700",
+                                      "bg-amber-500/10",
+                                      "border-amber-500/30",
+                                      "bg-zinc-950/95",
+                                      "border-t-2",
+                                      "bg-amber-500",
+                                      "text-zinc-950",
+                                      "bg-transparent"
+                                  ],
+                  "layoutHints":  [
+                                      "flex",
+                                      "justify-center",
+                                      "min-h-screen",
+                                      "w-full",
+                                      "max-w-[390px]",
+                                      "min-h-[844px]",
+                                      "relative",
+                                      "flex-col",
+                                      "overflow-hidden",
+                                      "fixed",
+                                      "justify-between",
+                                      "items-center",
+                                      "px-4",
+                                      "h-14",
+                                      "p-2",
+                                      "flex-1",
+                                      "overflow-y-auto",
+                                      "pt-16",
+                                      "pb-32",
+                                      "space-y-6",
+                                      "p-4",
+                                      "absolute",
+                                      "w-24",
+                                      "h-24",
+                                      "items-start",
+                                      "inline-flex",
+                                      "px-2",
+                                      "py-1",
+                                      "grid",
+                                      "grid-cols-2",
+                                      "gap-3",
+                                      "p-3",
+                                      "space-y-3",
+                                      "pb-1",
+                                      "w-1.5",
+                                      "h-8",
+                                      "gap-2",
+                                      "w-8",
+                                      "flex-wrap",
+                                      "pt-2",
+                                      "pb-6",
+                                      "gap-1",
+                                      "py-4",
+                                      "py-3"
+                                  ]
+              },
+    "request":  {
+                    "task":  "Create a Unity translation contract draft from these Stitch source facts and the paired screenshot.",
+                    "requiredOutput":  "manifest/map/presentation contract draft",
+                    "instructions":  [
+                                         "Use source facts and screenshot evidence for semantic block and CTA judgment.",
+                                         "Do not invent runtime wiring.",
+                                         "Leave uncertain fields explicit instead of hiding them."
+                                     ]
+                },
+    "generatedAt":  "2026-04-28T00:58:50.0052525+09:00"
+}

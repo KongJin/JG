@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Features.Skill.Presentation
 {
-    public sealed class SelfCastEffect : MonoBehaviour, IPoolResetHandler
+    public sealed class SelfCastEffect : MonoBehaviour, IPoolResetHandler, IPoolBindingHandler
     {
         [SerializeField] private float _duration = 1f;
         [SerializeField] private Color _effectColor = new Color(0.3f, 1f, 0.4f, 0.5f);
@@ -16,7 +16,6 @@ namespace Features.Skill.Presentation
 
         private void Awake()
         {
-            _pooledObject = GetComponent<PooledObject>();
             _initialScale = transform.localScale;
         }
 
@@ -43,9 +42,13 @@ namespace Features.Skill.Presentation
             _elapsed = 0f;
         }
 
+        public void OnBindToPool(PooledObject pooledObject)
+        {
+            _pooledObject = pooledObject;
+        }
+
         private void ReleaseSelf()
         {
-            _pooledObject ??= GetComponent<PooledObject>();
             if (_pooledObject != null)
             {
                 _pooledObject.Release();

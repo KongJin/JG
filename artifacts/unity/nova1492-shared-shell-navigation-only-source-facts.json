@@ -1,0 +1,153 @@
+{
+    "schemaVersion":  "1.0.0",
+    "artifactKind":  "stitch-source-facts",
+    "surfaceId":  "nova1492-shared-shell-navigation-only",
+    "source":  {
+                   "htmlPath":  "artifacts/stitch/11729197788183873077/7a083f26ec05412ca84188517d17d13f/screen.html",
+                   "imagePath":  "artifacts/stitch/11729197788183873077/7a083f26ec05412ca84188517d17d13f/screen.png",
+                   "title":  "Nova1492 Shared Shell",
+                   "image":  {
+                                 "exists":  true,
+                                 "width":  226,
+                                 "height":  512,
+                                 "fileSizeBytes":  24736
+                             }
+               },
+    "target":  {
+                   "kind":  "prefab",
+                   "assetPath":  ""
+               },
+    "facts":  {
+                  "visibleTexts":  [
+                                       "Nova1492 Shared Shell",
+                                       "menu",
+                                       "격납고 관리",
+                                       "동기화 완료",
+                                       "settings",
+                                       "BLUE = NAV / ORANGE = PAGE CTA ONLY",
+                                       "space_dashboard",
+                                       "PAGE WORKSPACE",
+                                       "page-owned content starts here",
+                                       "hub",
+                                       "로비",
+                                       "warehouse",
+                                       "차고",
+                                       "receipt_long",
+                                       "기록"
+                                   ],
+                  "buttons":  [
+                                  "menu",
+                                  "settings"
+                              ],
+                  "icons":  [
+                                "menu",
+                                "settings",
+                                "space_dashboard",
+                                "hub",
+                                "warehouse",
+                                "receipt_long"
+                            ],
+                  "inputs":  [
+
+                             ],
+                  "repeatedCandidates":  [
+                                             {
+                                                 "classSignature":  "mb-1 text-[22px]",
+                                                 "count":  3
+                                             },
+                                             {
+                                                 "classSignature":  "flex items-center",
+                                                 "count":  2
+                                             },
+                                             {
+                                                 "classSignature":  "text-[10px]",
+                                                 "count":  2
+                                             },
+                                             {
+                                                 "classSignature":  "text-[20px]",
+                                                 "count":  2
+                                             },
+                                             {
+                                                 "classSignature":  "text-zinc-400 p-1.5 bg-zinc-800 border border-zinc-700 rounded-sm",
+                                                 "count":  2
+                                             },
+                                             {
+                                                 "classSignature":  "w-1.5 h-1.5 rounded-full bg-zinc-500",
+                                                 "count":  2
+                                             },
+                                             {
+                                                 "classSignature":  "w-full h-full flex flex-col items-center justify-center p-2 text-zinc-500",
+                                                 "count":  2
+                                             }
+                                         ],
+                  "colorTokens":  [
+                                      "bg-[#050b14]",
+                                      "border-x",
+                                      "border-zinc-900",
+                                      "bg-zinc-900",
+                                      "border-b-4",
+                                      "border-zinc-700",
+                                      "bg-gradient-to-r",
+                                      "from-zinc-800",
+                                      "via-zinc-600",
+                                      "to-zinc-800",
+                                      "text-zinc-400",
+                                      "bg-zinc-800",
+                                      "text-zinc-200",
+                                      "bg-command-blue",
+                                      "text-command-blue",
+                                      "text-zinc-600",
+                                      "bg-[#02050a]",
+                                      "border-2",
+                                      "border-zinc-800",
+                                      "text-center",
+                                      "border-dashed",
+                                      "bg-zinc-950/50",
+                                      "text-zinc-700",
+                                      "text-4xl",
+                                      "border-t-4",
+                                      "bg-zinc-500",
+                                      "border-r",
+                                      "text-zinc-500",
+                                      "bg-[#0a121c]",
+                                      "text-white"
+                                  ],
+                  "layoutHints":  [
+                                      "h-screen",
+                                      "overflow-hidden",
+                                      "flex",
+                                      "flex-col",
+                                      "w-full",
+                                      "relative",
+                                      "flex-shrink-0",
+                                      "items-center",
+                                      "justify-between",
+                                      "px-3",
+                                      "h-14",
+                                      "absolute",
+                                      "h-1",
+                                      "p-1.5",
+                                      "justify-center",
+                                      "flex-1",
+                                      "px-4",
+                                      "gap-1",
+                                      "w-1.5",
+                                      "h-1.5",
+                                      "p-4",
+                                      "p-6",
+                                      "h-16",
+                                      "h-full",
+                                      "p-2"
+                                  ]
+              },
+    "request":  {
+                    "task":  "Create a Unity translation contract draft from these Stitch source facts and the paired screenshot.",
+                    "requiredOutput":  "manifest/map/presentation contract draft",
+                    "instructions":  [
+                                         "Use source facts and screenshot evidence for semantic block and CTA judgment.",
+                                         "Do not invent runtime wiring.",
+                                         "Leave uncertain fields explicit instead of hiding them."
+                                     ]
+                },
+    "generatedAt":  "2026-04-28T00:58:49.9863807+09:00"
+}

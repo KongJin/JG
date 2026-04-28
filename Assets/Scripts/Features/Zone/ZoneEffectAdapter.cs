@@ -55,9 +55,15 @@ namespace Features.Zone
                 return;
 
             var worldPosition = position.ToVector3();
-            var viewGo = _zonePool.Rent(worldPosition, Quaternion.identity);
-            var view = viewGo.GetComponent<ZoneView>();
-            var detector = viewGo.GetComponent<ZoneCollisionDetector>();
+            if (!_zonePool.RentComponents<ZoneView, ZoneCollisionDetector>(
+                    worldPosition,
+                    Quaternion.identity,
+                    out var view,
+                    out var detector))
+            {
+                Debug.LogError("[ZoneEffectAdapter] Zone prefab is missing ZoneView or ZoneCollisionDetector.", this);
+                return;
+            }
 
             view.Initialize(radius, duration);
             view.SetColor(_zoneColor);

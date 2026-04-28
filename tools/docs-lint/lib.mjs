@@ -1,6 +1,10 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
 
 export const REQUIRED_METADATA_FIELDS = [
   "상태",
@@ -85,6 +89,11 @@ const MUTATING_REPO_SKILL_ENTRIES = new Set([
   ".codex/skills/jg-stitch-workflow/SKILL.md",
   ".codex/skills/jg-stitch-unity-import/SKILL.md",
 ]);
+const ACTIVE_PLAN_BUDGET_EXCLUDING_PROGRESS = 8;
+const PROGRESS_EVIDENCE_ARTIFACT_BUDGET = 2;
+const MODULE_DATA_STRUCTURE_PATH = "docs/design/module_data_structure.md";
+const MODULE_DATA_STRUCTURE_UNIT_SECTION_START = "## ScriptableObject 데이터 정의";
+const MODULE_DATA_STRUCTURE_UNIT_SECTION_END = "## 편성 데이터 (Garage Roster)";
 export const RECURRENCE_CLOSEOUT_PATH = "artifacts/rules/issue-recurrence-closeout.json";
 export const RECURRENCE_CHANGED_FILES_ENV = "RULES_LINT_CHANGED_FILES";
 
@@ -115,6 +124,8 @@ export async function lintRepository(repoRoot, options = {}) {
       errors.push(...validateRepoSkillHistoricalMentions(document));
       errors.push(...validateDocIdPathPrefix(document));
       errors.push(...validateCompletedDraftPlan(document));
+      errors.push(...validateActivePlanReferenceCloseout(document));
+      errors.push(...validateModuleDataStructureStaleOwners(document));
     }
     if (includePolicyChecks) {
       errors.push(...validatePlanModeRouting(document));
@@ -126,6 +137,11 @@ export async function lintRepository(repoRoot, options = {}) {
     errors.push(...validateKnownDocIdReferences(documents));
     errors.push(...validateIndexCoverage(documents, repoRoot));
     errors.push(...validateIndexStatusLabels(documents, repoRoot));
+    errors.push(...validateActivePlanBudget(documents));
+    errors.push(...validateActivePlanMutualReferences(documents, repoRoot));
+    errors.push(...validateActivePlanArtifactOwnerCollisions(documents));
+    errors.push(...validateProgressEvidenceOverload(documents));
+    errors.push(...(await validateDocsMetaArtifacts(repoRoot)));
   }
 
   if (includePolicyChecks) {
@@ -181,6 +197,11 @@ async function discoverManagedDocs(repoRoot) {
     }
   }
 
+  const ruleHarnessPromptsDir = path.join(repoRoot, "tools", "rule-harness", "prompts");
+  for (const markdownFile of await walkMarkdownFiles(ruleHarnessPromptsDir, repoRoot)) {
+    discovered.add(markdownFile);
+  }
+
   const skillsDir = path.join(repoRoot, ".codex", "skills");
   if (await pathExists(skillsDir)) {
     const entries = await fs.readdir(skillsDir, { withFileTypes: true });
@@ -231,6 +252,43 @@ async function walkMarkdownFiles(rootDir, repoRoot) {
     }
 
     if (entry.isFile() && entry.name.endsWith(".md")) {
+      collected.push(absolutePath);
+    }
+  }
+
+  return collected;
+}
+
+async function walkFiles(rootDir, repoRoot, predicate) {
+  if (!(await pathExists(rootDir))) {
+    return [];
+  }
+
+  const collected = [];
+  const entries = await fs.readdir(rootDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const absolutePath = path.join(rootDir, entry.name);
+    const repoRelativePath = toRepoRelative(repoRoot, absolutePath);
+
+    if (repoRelativePath.startsWith("node_modules/")) {
+      continue;
+    }
+
+    if (repoRelativePath.startsWith("Library/") || repoRelativePath.startsWith("Temp/")) {
+      continue;
+    }
+
+    if (/^tools\/.+\/tests\/fixtures\//.test(repoRelativePath)) {
+      continue;
+    }
+
+    if (entry.isDirectory()) {
+      collected.push(...(await walkFiles(absolutePath, repoRoot, predicate)));
+      continue;
+    }
+
+    if (entry.isFile() && predicate(entry, repoRelativePath)) {
       collected.push(absolutePath);
     }
   }
@@ -546,6 +604,84 @@ function validateCompletedDraftPlan(document) {
   ];
 }
 
+function validateActivePlanReferenceCloseout(document) {
+  const status = document.metadata.get("상태");
+  const role = document.metadata.get("role");
+  if (status !== "active" || role !== "plan") {
+    return [];
+  }
+
+  const content = stripFencedCodeBlocks(document.content);
+  const lines = content.split(/\r?\n/);
+  const closeoutPatterns = [
+    /reference\s*전환\s*이유/u,
+    /\bStatus:\s*reference\b/u,
+    /active\s*실행\s*계획에서\s*reference/u,
+  ];
+  const errors = [];
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (!closeoutPatterns.some((pattern) => pattern.test(line))) {
+      continue;
+    }
+
+    errors.push(
+      createError(
+        "active-plan-reference-closeout",
+        document.repoRelativePath,
+        "Active plan contains reference-closeout wording. Move it to `reference` or remove the completed lifecycle wording.",
+        index + 1,
+      ),
+    );
+  }
+
+  return errors;
+}
+
+function validateModuleDataStructureStaleOwners(document) {
+  if (document.repoRelativePath !== MODULE_DATA_STRUCTURE_PATH) {
+    return [];
+  }
+
+  const lines = document.content.split(/\r?\n/);
+  const startIndex = lines.findIndex((line) => line.trim() === MODULE_DATA_STRUCTURE_UNIT_SECTION_START);
+  const endIndex = lines.findIndex((line) => line.trim() === MODULE_DATA_STRUCTURE_UNIT_SECTION_END);
+  if (startIndex < 0 || endIndex < 0 || endIndex <= startIndex) {
+    return [
+      createError(
+        "stale-module-data-structure",
+        document.repoRelativePath,
+        `\`module_data_structure.md\` stale owner guard could not find the expected Unit/Module section anchors (${MODULE_DATA_STRUCTURE_UNIT_SECTION_START} -> ${MODULE_DATA_STRUCTURE_UNIT_SECTION_END}). Keep these anchors stable or update the guard with matching fixtures.`,
+      ),
+    ];
+  }
+
+  const stalePatterns = [
+    /namespace\s+Features\.Garage\.(Domain|Infrastructure)\b/u,
+    /menuName\s*=\s*"Garage\//u,
+  ];
+  const errors = [];
+
+  for (let index = startIndex; index < endIndex; index += 1) {
+    const line = lines[index];
+    if (!stalePatterns.some((pattern) => pattern.test(line))) {
+      continue;
+    }
+
+    errors.push(
+      createError(
+        "stale-module-data-structure",
+        document.repoRelativePath,
+        "`module_data_structure.md` Unit/Module-owned sections must use the current `Features.Unit.*` owner, not stale Garage namespaces or Garage create menus.",
+        index + 1,
+      ),
+    );
+  }
+
+  return errors;
+}
+
 function validatePlanModeRouting(document) {
   if (document.repoRelativePath === "AGENTS.md") {
     return validateDocumentContainsAll(
@@ -602,7 +738,10 @@ function validatePlanModeRouting(document) {
 }
 
 async function validateRulesOnlyRecurrenceCloseout(repoRoot, options) {
-  const changedFiles = getRecurrenceChangedFiles(options);
+  const changedFiles = await getRecurrenceChangedFiles({
+    repoRoot,
+    changedFiles: options.changedFiles,
+  });
   const relevantChangedFiles = changedFiles.filter(
     (filePath) => isRulesOnlyRecurrenceTarget(filePath) && filePath !== RECURRENCE_CLOSEOUT_PATH,
   );
@@ -796,22 +935,53 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
   return errors;
 }
 
-function getRecurrenceChangedFiles(options) {
-  if (Array.isArray(options.changedFiles)) {
-    return options.changedFiles
+export async function getRecurrenceChangedFiles({
+  repoRoot,
+  changedFiles = null,
+} = {}) {
+  if (Array.isArray(changedFiles)) {
+    return changedFiles
       .map((entry) => normalizeRepoRelativePath(entry))
       .filter(Boolean);
   }
 
   const raw = process.env[RECURRENCE_CHANGED_FILES_ENV];
-  if (!raw) {
+  if (raw) {
+    return raw
+      .split(/\r?\n/u)
+      .map((entry) => normalizeRepoRelativePath(entry))
+      .filter(Boolean);
+  }
+
+  return readChangedFilesFromGit(repoRoot);
+}
+
+async function readChangedFilesFromGit(repoRoot) {
+  if (!repoRoot || !(await pathExists(path.join(repoRoot, ".git")))) {
     return [];
   }
 
-  return raw
-    .split(/\r?\n/u)
-    .map((entry) => normalizeRepoRelativePath(entry))
-    .filter(Boolean);
+  const commands = [
+    ["diff", "--name-only", "--diff-filter=ACMRD"],
+    ["diff", "--cached", "--name-only", "--diff-filter=ACMRD"],
+    ["ls-files", "--others", "--exclude-standard"],
+  ];
+  const changedFiles = [];
+
+  for (const args of commands) {
+    try {
+      const { stdout } = await execFileAsync("git", args, { cwd: repoRoot });
+      changedFiles.push(...stdout.split(/\r?\n/u));
+    } catch {
+      return [];
+    }
+  }
+
+  return [...new Set(
+    changedFiles
+      .map((entry) => normalizeRepoRelativePath(entry))
+      .filter(Boolean),
+  )].sort((left, right) => left.localeCompare(right));
 }
 
 
@@ -973,6 +1143,210 @@ function validateIndexStatusLabels(documents, repoRoot) {
   }
 
   return errors;
+}
+
+function validateActivePlanBudget(documents) {
+  const activePlans = getActiveNonProgressPlans(documents)
+    .map((document) => document.repoRelativePath);
+
+  if (activePlans.length <= ACTIVE_PLAN_BUDGET_EXCLUDING_PROGRESS) {
+    return [];
+  }
+
+  return [
+    createError(
+      "active-plan-budget",
+      "docs/index.md",
+      `Too many active non-progress plans (${activePlans.length}/${ACTIVE_PLAN_BUDGET_EXCLUDING_PROGRESS}). Move completed, blocked, or residual-only plans to \`reference\` and keep current execution owners focused. Active plans: ${activePlans.join(", ")}.`,
+    ),
+  ];
+}
+
+function validateActivePlanMutualReferences(documents, repoRoot) {
+  const activePlans = getActiveNonProgressPlans(documents);
+  const activePlanPaths = new Set(activePlans.map((document) => document.repoRelativePath));
+  const activePlanDocIds = new Map(
+    activePlans.map((document) => [document.metadata.get("doc_id"), document.repoRelativePath]),
+  );
+  const referencesByPath = new Map();
+
+  for (const document of activePlans) {
+    const references = new Set();
+
+    for (const target of getDocumentMarkdownTargets(document, repoRoot)) {
+      if (activePlanPaths.has(target) && target !== document.repoRelativePath) {
+        references.add(target);
+      }
+    }
+
+    for (const token of splitMetadataList(document.metadata.get("upstream") || "")) {
+      const target = activePlanDocIds.get(token);
+      if (target && target !== document.repoRelativePath) {
+        references.add(target);
+      }
+    }
+
+    referencesByPath.set(document.repoRelativePath, references);
+  }
+
+  const errors = [];
+  for (const document of activePlans) {
+    const references = referencesByPath.get(document.repoRelativePath) || new Set();
+    for (const target of references) {
+      if (!(referencesByPath.get(target) || new Set()).has(document.repoRelativePath)) {
+        continue;
+      }
+
+      errors.push(
+        createError(
+          "active-plan-mutual-reference",
+          document.repoRelativePath,
+          `Active non-progress plans must not mutually depend on each other. Break the reciprocal reference between \`${document.repoRelativePath}\` and \`${target}\`; keep one owner active and move handoff detail to \`progress.md\`, a reference plan, or a one-way upstream.`,
+        ),
+      );
+    }
+  }
+
+  return errors;
+}
+
+function validateActivePlanArtifactOwnerCollisions(documents) {
+  const ownersByArtifact = new Map();
+
+  for (const document of getActiveNonProgressPlans(documents)) {
+    for (const artifactPath of extractConcreteArtifactMetadataPaths(document.metadata.get("artifacts") || "")) {
+      const owners = ownersByArtifact.get(artifactPath) || [];
+      owners.push(document.repoRelativePath);
+      ownersByArtifact.set(artifactPath, owners);
+    }
+  }
+
+  const errors = [];
+  for (const [artifactPath, owners] of ownersByArtifact.entries()) {
+    if (owners.length < 2) {
+      continue;
+    }
+
+    for (const owner of owners) {
+      errors.push(
+        createError(
+          "active-plan-artifact-owner-collision",
+          owner,
+          `Concrete artifact \`${artifactPath}\` is claimed by multiple active non-progress plans: ${owners.join(", ")}. Keep the concrete file owner in one active plan and use broad directories or reference links elsewhere.`,
+        ),
+      );
+    }
+  }
+
+  return errors;
+}
+
+function validateProgressEvidenceOverload(documents) {
+  const progressDocument = documents.find(
+    (document) => document.repoRelativePath === "docs/plans/progress.md",
+  );
+  if (!progressDocument) {
+    return [];
+  }
+
+  const evidenceArtifacts = extractConcreteProgressEvidenceArtifacts(progressDocument.content);
+  if (evidenceArtifacts.length <= PROGRESS_EVIDENCE_ARTIFACT_BUDGET) {
+    return [];
+  }
+
+  return [
+    createError(
+      "progress-evidence-overload",
+      progressDocument.repoRelativePath,
+      `\`progress.md\` should keep current state and residuals, not detailed evidence logs (${evidenceArtifacts.length}/${PROGRESS_EVIDENCE_ARTIFACT_BUDGET}). Move concrete evidence artifact paths to the active owner plan or reference closeout. Artifacts: ${evidenceArtifacts.join(", ")}.`,
+    ),
+  ];
+}
+
+async function validateDocsMetaArtifacts(repoRoot) {
+  const docsRoot = path.join(repoRoot, "docs");
+  const metaFiles = await walkFiles(docsRoot, repoRoot, (entry) => entry.name.endsWith(".meta"));
+  return metaFiles.map((absolutePath) =>
+    createError(
+      "docs-meta-artifact",
+      toRepoRelative(repoRoot, absolutePath),
+      "Unity `.meta` artifacts must not live under `docs/`. Remove the artifact or move Unity-owned files under Unity asset roots.",
+    ),
+  );
+}
+
+function getActiveNonProgressPlans(documents) {
+  return documents
+    .filter((document) => document.repoRelativePath.startsWith("docs/plans/"))
+    .filter((document) => document.repoRelativePath !== "docs/plans/progress.md")
+    .filter((document) => document.metadata.get("상태") === "active")
+    .filter((document) => document.metadata.get("role") === "plan");
+}
+
+function getDocumentMarkdownTargets(document, repoRoot) {
+  const targets = [];
+  const content = stripFencedCodeBlocks(document.content);
+  for (const line of content.split(/\r?\n/)) {
+    for (const target of extractRelativeMarkdownTargets(line)) {
+      targets.push(toRepoRelative(repoRoot, path.resolve(path.dirname(document.absolutePath), target)));
+    }
+  }
+
+  return targets;
+}
+
+function splitMetadataList(value) {
+  return value
+    .split(",")
+    .map((entry) => entry.trim().replace(/^`|`$/g, ""))
+    .filter(Boolean);
+}
+
+function extractConcreteArtifactMetadataPaths(value) {
+  if (!value || value.trim().toLowerCase() === "none") {
+    return [];
+  }
+
+  const inlineTokens = [...value.matchAll(/`([^`]+)`/gu)].map((match) => match[1]);
+  const candidates = inlineTokens.length > 0
+    ? inlineTokens
+    : value.split(",");
+
+  return [...new Set(
+    candidates
+      .map((candidate) => normalizeArtifactPath(candidate))
+      .filter((candidate) => isConcreteRepoFilePath(candidate)),
+  )].sort();
+}
+
+function extractConcreteProgressEvidenceArtifacts(content) {
+  const artifacts = new Set();
+  const stripped = stripFencedCodeBlocks(content);
+  const pattern = /\b(?:\.\/)?(artifacts\/[^\s`),]+?\.(?:json|png|jpe?g|md|txt|log))\b/giu;
+  for (const match of stripped.matchAll(pattern)) {
+    const normalized = normalizeArtifactPath(match[1]);
+    if (normalized) {
+      artifacts.add(normalized);
+    }
+  }
+
+  return [...artifacts].sort();
+}
+
+function normalizeArtifactPath(value) {
+  return normalizeRepoRelativePath(
+    value
+      .trim()
+      .replace(/^['"`]+|['"`.,;:)]+$/gu, "")
+      .replace(/^\.\//u, ""),
+  );
+}
+
+function isConcreteRepoFilePath(value) {
+  return Boolean(value)
+    && value.includes("/")
+    && !value.endsWith("/")
+    && /\/[^/]+\.[A-Za-z0-9]+$/u.test(value);
 }
 
 function extractRelativeMarkdownTargets(line) {

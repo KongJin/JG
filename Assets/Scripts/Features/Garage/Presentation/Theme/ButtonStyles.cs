@@ -71,7 +71,7 @@ namespace Features.Garage.Presentation.Theme
         {
             if (button == null || preset == null) return;
 
-            var image = button.GetComponent<Image>();
+            var image = button.targetGraphic as Image;
             if (image != null)
             {
                 image.color = preset.BackgroundColor;
@@ -82,11 +82,47 @@ namespace Features.Garage.Presentation.Theme
                 text.color = preset.TextColor;
             }
 
-            // 호버/클릭 시각 피드백 (EventTrigger 기반 — 런타임 전용)
-            if (UnityEngine.Application.isPlaying)
-            {
-                ButtonFeedback.Attach(button, preset);
-            }
+            ApplyRuntimeColors(button, preset);
+        }
+
+        public static void ApplyRuntimeColors(Button button, ButtonPreset preset)
+        {
+            if (button == null || preset == null) return;
+
+            ApplyRuntimeColors(
+                button,
+                preset.BackgroundColor,
+                preset.HoverColor,
+                preset.PressedColor,
+                preset.DisabledColor);
+        }
+
+        public static void ApplyRuntimeColors(Button button, Color baseColor)
+        {
+            if (button == null) return;
+
+            ApplyRuntimeColors(
+                button,
+                baseColor,
+                baseColor * 1.15f,
+                baseColor * 0.85f,
+                ThemeColors.StateDisabled);
+        }
+
+        private static void ApplyRuntimeColors(
+            Button button,
+            Color baseColor,
+            Color hoverColor,
+            Color pressedColor,
+            Color disabledColor)
+        {
+            var colors = button.colors;
+            colors.normalColor = baseColor;
+            colors.highlightedColor = hoverColor;
+            colors.selectedColor = hoverColor;
+            colors.pressedColor = pressedColor;
+            colors.disabledColor = disabledColor;
+            button.colors = colors;
         }
     }
 
@@ -122,62 +158,4 @@ namespace Features.Garage.Presentation.Theme
         }
     }
 
-    /// <summary>
-    /// 런타임 버튼 피드백 (호버/클릭 시 색상 변화).
-    /// Editor 비플레이 모드에서는 작동하지 않음.
-    /// </summary>
-    internal sealed class ButtonFeedback : MonoBehaviour,
-        UnityEngine.EventSystems.IPointerEnterHandler,
-        UnityEngine.EventSystems.IPointerExitHandler,
-        UnityEngine.EventSystems.IPointerDownHandler,
-        UnityEngine.EventSystems.IPointerUpHandler
-    {
-        private Image _image;
-        private ButtonPreset _preset;
-        private Button _button;
-        private Color _baseColor;
-
-        public static void Attach(Button button, ButtonPreset preset)
-        {
-            if (button == null || preset == null) return;
-            if (button.GetComponent<ButtonFeedback>() != null) return;
-
-            var feedback = button.gameObject.AddComponent<ButtonFeedback>();
-            feedback._image = button.GetComponent<Image>();
-            feedback._preset = preset.Clone();
-            feedback._button = button;
-            feedback._baseColor = preset.BackgroundColor;
-        }
-
-        public void OnPointerEnter(UnityEngine.EventSystems.PointerEventData eventData)
-        {
-            if (_button.interactable && _image != null)
-                _image.color = _preset.HoverColor;
-        }
-
-        public void OnPointerExit(UnityEngine.EventSystems.PointerEventData eventData)
-        {
-            if (_button.interactable && _image != null)
-                _image.color = _baseColor;
-        }
-
-        public void OnPointerDown(UnityEngine.EventSystems.PointerEventData eventData)
-        {
-            if (_button.interactable && _image != null)
-                _image.color = _preset.PressedColor;
-        }
-
-        public void OnPointerUp(UnityEngine.EventSystems.PointerEventData eventData)
-        {
-            if (_button.interactable && _image != null)
-                _image.color = _preset.HoverColor;
-        }
-
-        public void UpdateBaseColor(Color color)
-        {
-            _baseColor = color;
-            _preset.HoverColor = color * 1.15f;
-            _preset.PressedColor = color * 0.85f;
-        }
-    }
 }

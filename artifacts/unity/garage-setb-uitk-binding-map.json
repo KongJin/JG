@@ -1,0 +1,94 @@
+{
+  "surfaceId": "garage-setb-workspace",
+  "generatedAt": "2026-04-28",
+  "source": {
+    "uxml": "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml",
+    "uss": "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
+    "previewScene": "Assets/Scenes/GarageSetBUitkPreview.unity"
+  },
+  "phase": "candidate-contract-stabilization",
+  "root": "GarageSetBScreen",
+  "bindings": [
+    {
+      "group": "header",
+      "elements": [
+        { "name": "CommandStatusLabel", "type": "Label", "role": "status text" },
+        { "name": "SettingsButton", "type": "Button", "role": "settings action" }
+      ]
+    },
+    {
+      "group": "slots",
+      "pattern": "01-04",
+      "elements": [
+        { "name": "SlotCard{index}", "type": "Button", "role": "slot select action" },
+        { "name": "SlotCode{index}Label", "type": "Label", "role": "slot code" },
+        { "name": "SlotIcon{index}", "type": "VisualElement", "role": "slot icon host" },
+        { "name": "SlotIcon{index}Label", "type": "Label", "role": "slot icon text" },
+        { "name": "SlotName{index}Label", "type": "Label", "role": "slot display name" }
+      ]
+    },
+    {
+      "group": "part-focus",
+      "elements": [
+        { "name": "FrameTabButton", "type": "Button", "role": "frame tab action" },
+        { "name": "FirepowerTabButton", "type": "Button", "role": "firepower tab action" },
+        { "name": "MobilityTabButton", "type": "Button", "role": "mobility tab action" }
+      ]
+    },
+    {
+      "group": "focused-part",
+      "elements": [
+        { "name": "FocusedPartBadgeLabel", "type": "Label", "role": "focused part slot badge" },
+        { "name": "FocusedPartTitleLabel", "type": "Label", "role": "focused part title" },
+        { "name": "FocusedPartDescriptionLabel", "type": "Label", "role": "focused part description" },
+        { "name": "FocusedPartIconLabel", "type": "Label", "role": "focused part icon text" }
+      ]
+    },
+    {
+      "group": "stats",
+      "elements": [
+        { "name": "AttackStatValueLabel", "type": "Label", "role": "attack value" },
+        { "name": "RangeStatValueLabel", "type": "Label", "role": "range value" },
+        { "name": "RateStatValueLabel", "type": "Label", "role": "rate value" },
+        { "name": "PowerStatValueLabel", "type": "Label", "role": "power value" }
+      ]
+    },
+    {
+      "group": "attachments",
+      "elements": [
+        { "name": "AttachmentUsageLabel", "type": "Label", "role": "attachment usage count" },
+        { "name": "AttachmentChip01", "type": "Button", "role": "attachment action" },
+        { "name": "AttachmentName01Label", "type": "Label", "role": "attachment name" },
+        { "name": "AttachmentEffect01Label", "type": "Label", "role": "attachment effect" },
+        { "name": "AttachmentChip02", "type": "Button", "role": "empty attachment slot action" },
+        { "name": "AttachmentName02Label", "type": "Label", "role": "empty attachment slot label" }
+      ]
+    },
+    {
+      "group": "preview",
+      "elements": [
+        { "name": "PreviewCard", "type": "VisualElement", "role": "preview section" },
+        { "name": "PreviewTitleLabel", "type": "Label", "role": "preview title" },
+        { "name": "PreviewTag01Label", "type": "Label", "role": "preview tag" },
+        { "name": "PreviewTag02Label", "type": "Label", "role": "preview tag" },
+        { "name": "UnitPreviewHost", "type": "VisualElement", "role": "future render texture or scene preview host" },
+        { "name": "UnitPreviewLabel", "type": "Label", "role": "preview fallback label" },
+        { "name": "PreviewPowerFill", "type": "VisualElement", "role": "power fill width/style" },
+        { "name": "PreviewPowerLabel", "type": "Label", "role": "power label" }
+      ]
+    },
+    {
+      "group": "save",
+      "elements": [
+        { "name": "SaveDock", "type": "VisualElement", "role": "persistent save dock" },
+        { "name": "SaveButton", "type": "Button", "role": "save action" }
+      ]
+    }
+  ],
+  "phase1Acceptance": {
+    "sceneReplacement": false,
+    "runtimeBinding": false,
+    "layoutConstantsInCode": false,
+    "nextPhase": "runtime presenter adapter"
+  }
+}
