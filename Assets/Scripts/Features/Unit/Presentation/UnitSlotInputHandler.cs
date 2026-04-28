@@ -1,74 +1,33 @@
 using Features.Unit.Domain;
-using Shared.Attributes;
-using Shared.Logging;
 using Shared.Math;
-using Shared.Runtime;
-using Shared.Runtime.Pooling;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Presentation
 {
-    /// <summary>
-    /// 유닛 슬롯 입력 처리 (클릭 + 드래그 앤 드롭).
-    /// UnitSlotView와 함께 같은 GO에 붙이거나, 별도 컴포넌트로 초기화.
-    /// </summary>
-    public sealed class UnitSlotInputHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public sealed class UnitSlotInputHandler : MonoBehaviour
     {
-        [Header("Configuration")]
-        [Required, SerializeField] private Camera _worldCamera;
+        [SerializeField] private Camera _worldCamera;
         [SerializeField] private float _screenToPlaneY = 0f;
-
-        [Header("Drag")]
-        [Tooltip("드래그 고스트 Prefab (RectTransform + Image + CanvasGroup).")]
-        [Required, SerializeField] private GameObject _dragGhostPrefab;
-
-        [Header("Animation")]
-        [Tooltip("드래그 고스트 Prefab의 CanvasGroup (Prefab 내부에서 연결됨).")]
-        [Required, SerializeField] private CanvasGroup _ghostCanvasGroup;
-        [SerializeField] private Vector2 _dragGhostSize = new Vector2(80f, 80f);
-
-        [Header("Placement")]
-        [Tooltip("배치 영역 판정용 PlacementArea 참조.")]
+        [SerializeField] private GameObject _dragGhostPrefab;
         [SerializeField] private PlacementArea _placementArea;
-        [Tooltip("배치 실패 시 에러 표시 UI View.")]
         [SerializeField] private PlacementErrorView _errorView;
-        [Tooltip("드래그 중 배치 가능 영역을 표시하는 View.")]
         [SerializeField] private PlacementAreaView _placementAreaView;
 
         private UnitSpec _unitSpec;
         private System.Action<UnitSpec, Float3> _onSummonRequested;
-        private Canvas _canvas;
 
-        private RectTransform _dragGhost;
-        private CanvasGroup _canvasGroup;
+        public bool IsDragging { get; private set; }
+        public bool IsInPlacementZone { get; private set; }
 
-        /// <summary>
-        /// 드래그 고스트 Prefab에 포함된 CanvasGroup을 검증합니다.
-        /// Awake 또는 Initialize에서 호출되어야 합니다.
-        /// </summary>
         public void ValidateGhostPrefab()
         {
-            if (_dragGhostPrefab == null) return;
-
-            var ghostCanvasGroup = ComponentAccess.Get<CanvasGroup>(_dragGhostPrefab);
-            if (ghostCanvasGroup == null)
-            {
-                Log.Error("Unit", $"[UnitSlotInputHandler] DragGhostPrefab '{_dragGhostPrefab.name}'에 CanvasGroup이 없습니다. Prefab에 CanvasGroup을 추가하세요.", this);
-            }
-            else
-            {
-                _ghostCanvasGroup = ghostCanvasGroup;
-            }
         }
-        private bool _isDragging;
-        private bool _isInPlacementZone;
 
         public void Initialize(
             UnitSpec unitSpec,
             System.Action<UnitSpec, Float3> onSummonRequested,
-            Canvas canvas,
             Camera worldCamera,
             PlacementArea placementArea,
             PlacementErrorView errorView,
@@ -76,64 +35,84 @@ namespace Features.Unit.Presentation
         {
             _unitSpec = unitSpec;
             _onSummonRequested = onSummonRequested;
-            _canvas = canvas;
             _worldCamera = worldCamera;
             _placementArea = placementArea;
             _errorView = errorView;
             _placementAreaView = placementAreaView;
         }
 
+        public void Initialize(
+            UnitSpec unitSpec,
+            System.Action<UnitSpec, Float3> onSummonRequested,
+            object legacyCanvas,
+            Camera worldCamera,
+            PlacementArea placementArea,
+            PlacementErrorView errorView,
+            PlacementAreaView placementAreaView = null)
+        {
+            Initialize(
+                unitSpec,
+                onSummonRequested,
+                worldCamera,
+                placementArea,
+                errorView,
+                placementAreaView);
+        }
+
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (_unitSpec == null) return;
-            _isDragging = true;
-            _isInPlacementZone = false;
-            UpdatePlacementPreview(eventData.position);
-            CreateDragGhost();
+            if (eventData != null)
+                BeginDrag(eventData.position);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!_isDragging || _dragGhost == null) return;
-
-            // 배치 영역 유효성 체크
-            var worldPos = ScreenToWorldPosition(eventData.position);
-            _isInPlacementZone = _placementArea?.Contains(worldPos) ?? false;
-
-            // 고스트 색상 피드백
-            UpdateDragGhostColor(_isInPlacementZone);
-            UpdatePlacementPreview(eventData.position);
-            _placementAreaView?.SetHighlight(_isInPlacementZone);
+            if (eventData != null)
+                Drag(eventData.position);
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (!_isDragging) return;
-            _isDragging = false;
+            if (eventData != null)
+                EndDrag(eventData.position);
+        }
 
-            var worldPos = ScreenToWorldPosition(eventData.position);
+        public void BeginDrag(Vector2 screenPosition)
+        {
+            if (_unitSpec == null)
+                return;
+
+            IsDragging = true;
+            UpdatePlacementPreview(screenPosition);
+        }
+
+        public void Drag(Vector2 screenPosition)
+        {
+            if (!IsDragging)
+                return;
+
+            var worldPos = ScreenToWorldPosition(screenPosition);
+            IsInPlacementZone = _placementArea?.Contains(worldPos) ?? false;
+            UpdatePlacementPreview(screenPosition);
+            _placementAreaView?.SetHighlight(IsInPlacementZone);
+        }
+
+        public void EndDrag(Vector2 screenPosition)
+        {
+            if (!IsDragging)
+                return;
+
+            IsDragging = false;
+            var worldPos = ScreenToWorldPosition(screenPosition);
             var isInZone = _placementArea?.Contains(worldPos) ?? false;
-
-            DestroyDragGhost();
-
             if (isInZone && _unitSpec != null)
             {
                 var finalPos = _placementArea != null ? _placementArea.ClampToBounds(worldPos) : worldPos;
                 _onSummonRequested?.Invoke(_unitSpec, new Float3(finalPos.x, finalPos.y, finalPos.z));
                 _placementAreaView?.HideUnitPreview();
+                return;
             }
-            else
-            {
-                // 배치 영역 밖 → 에러 피드백
-                OnPlacementFailed();
-            }
-        }
 
-        /// <summary>
-        /// 배치 실패 시 피드백.
-        /// </summary>
-        private void OnPlacementFailed()
-        {
             _errorView?.ShowError("배치 영역 밖");
             _placementAreaView?.HideUnitPreview();
             _placementAreaView?.ShowInvalidPlacementFeedback();
@@ -146,76 +125,7 @@ namespace Features.Unit.Presentation
 
             var worldPos = ScreenToWorldPosition(screenPosition);
             var previewPos = _placementArea != null ? _placementArea.ClampToBounds(worldPos) : worldPos;
-            _placementAreaView?.ShowUnitPreview(
-                previewPos,
-                _unitSpec.FinalAnchorRange,
-                _unitSpec.FinalRange);
-        }
-
-        private void CreateDragGhost()
-        {
-            if (_canvas == null) return;
-            if (_dragGhostPrefab == null) return;
-
-            // Prefab 기반으로 인스턴스화
-            var ghostGo = Instantiate(_dragGhostPrefab, _canvas.transform);
-            ghostGo.name = "DragGhost";
-            _dragGhost = ghostGo.transform as RectTransform;
-            _canvasGroup = ComponentAccess.Get<CanvasGroup>(ghostGo);
-
-            // Prefab에 CanvasGroup이 필수적으로 포함되어야 함
-            if (_canvasGroup == null)
-            {
-                Log.Error("Unit", $"[UnitSlotInputHandler] DragGhostPrefab '{_dragGhostPrefab.name}'에 CanvasGroup이 없습니다. Prefab에 CanvasGroup을 추가하세요.", this);
-                return;
-            }
-
-            _canvasGroup.alpha = 0.7f;
-
-            // 슬롯 이미지 스프라이트 복제
-            var ghostImage = ComponentAccess.Get<UnityEngine.UI.Image>(_dragGhost.gameObject);
-            var slotImage = ComponentAccess.Get<UnityEngine.UI.Image>(gameObject);
-            if (ghostImage != null && slotImage != null)
-            {
-                ghostImage.sprite = slotImage.sprite;
-            }
-
-            if (_dragGhost != null)
-            {
-                _dragGhost.SetAsLastSibling();
-            }
-        }
-
-        private void DestroyDragGhost()
-        {
-            if (_dragGhost != null)
-            {
-                if (UnityEngine.Application.isPlaying)
-                    Destroy(_dragGhost.gameObject);
-                else
-                    DestroyImmediate(_dragGhost.gameObject);
-
-                _dragGhost = null;
-                _canvasGroup = null;
-            }
-        }
-
-        private void UpdateDragGhostColor(bool isValid)
-        {
-            if (_canvasGroup != null)
-            {
-                _canvasGroup.alpha = isValid ? 0.82f : 0.46f;
-            }
-
-            var ghostImage = _dragGhost != null
-                ? ComponentAccess.Get<UnityEngine.UI.Image>(_dragGhost.gameObject)
-                : null;
-            if (ghostImage != null)
-            {
-                ghostImage.color = isValid
-                    ? new Color(0.45f, 0.85f, 1f, 0.9f)
-                    : new Color(1f, 0.32f, 0.28f, 0.75f);
-            }
+            _placementAreaView?.ShowUnitPreview(previewPos, _unitSpec.FinalAnchorRange, _unitSpec.FinalRange);
         }
 
         private Vector3 ScreenToWorldPosition(Vector2 screenPosition)

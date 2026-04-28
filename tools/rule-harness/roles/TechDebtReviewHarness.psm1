@@ -46,6 +46,196 @@ function Get-TechDebtReviewSummaryLines {
     @($lines)
 }
 
+function ConvertTo-TechDebtRelativePath {
+    param(
+        [Parameter(Mandatory)][string]$RepoRoot,
+        [Parameter(Mandatory)][string]$Path
+    )
+
+    $root = (Resolve-Path -LiteralPath $RepoRoot).Path.TrimEnd('\', '/').Replace('\', '/')
+    $resolved = (Resolve-Path -LiteralPath $Path).Path.Replace('\', '/')
+    if ($resolved.StartsWith("$root/", [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $resolved.Substring($root.Length + 1)
+    }
+
+    $resolved
+}
+
+function Test-TechDebtScanFileIncluded {
+    param(
+        [Parameter(Mandatory)][string]$RelativePath
+    )
+
+    $normalized = $RelativePath.Replace('\', '/')
+    if ($normalized -match '(^|/)(Library|Temp|obj|bin|Build|Builds|Logs|UserSettings|\.git|node_modules)/') {
+        return $false
+    }
+    if ($normalized -match '(^|/)tools/rule-harness/tests/') {
+        return $false
+    }
+    if ($normalized -match '(^|/)Assets/Editor/UnityMcp/') {
+        return $false
+    }
+
+    $extension = [System.IO.Path]::GetExtension($normalized).ToLowerInvariant()
+    $extension -in @('.cs', '.asmdef', '.uxml', '.uss', '.json', '.ps1', '.md')
+}
+
+function Get-TechDebtHeuristicPatterns {
+    @(
+        [pscustomobject]@{
+            id = 'runtime-resources-load'
+            title = 'Runtime Resources.Load dependency'
+            severity = 'medium'
+            regex = '\bResources\.Load\s*<'
+            include = @('Assets/Scripts/')
+            message = 'Runtime code is loading assets by string path; prefer injected references, Addressables, or explicit config assets.'
+        },
+        [pscustomobject]@{
+            id = 'runtime-object-lookup'
+            title = 'Runtime object lookup API'
+            severity = 'medium'
+            regex = '\b(GameObject\.Find|FindObjectOfType|FindAnyObjectByType|FindFirstObjectByType|FindObjectsByType)\b'
+            include = @('Assets/Scripts/')
+            message = 'Runtime object lookup creates hidden scene coupling and is fragile under refactors.'
+        },
+        [pscustomobject]@{
+            id = 'runtime-placeholder'
+            title = 'Runtime placeholder or generated stub'
+            severity = 'high'
+            regex = '(?i)\b(TODO|FIXME|HACK|placeholder|temporary stub|generated composition root placeholder)\b'
+            include = @('Assets/Scripts/')
+            message = 'Runtime code still contains placeholder or temporary implementation text.'
+        },
+        [pscustomobject]@{
+            id = 'runtime-legacy-path'
+            title = 'Runtime legacy compatibility path'
+            severity = 'medium'
+            regex = '(?i)\blegacy\b'
+            include = @('Assets/Scripts/')
+            message = 'Runtime code still carries legacy compatibility logic that should be isolated or retired.'
+        },
+        [pscustomobject]@{
+            id = 'blocking-wait'
+            title = 'Blocking wait in project code'
+            severity = 'medium'
+            regex = '\bThread\.Sleep\s*\('
+            include = @('Assets/Scripts/', 'Assets/Editor/', 'tools/')
+            message = 'Blocking waits make automation and runtime behavior brittle.'
+        },
+        [pscustomobject]@{
+            id = 'empty-catch'
+            title = 'Swallowed exception'
+            severity = 'medium'
+            regex = '\bcatch\s*(\([^)]*\))?\s*\{\s*\}'
+            include = @('Assets/Scripts/', 'Assets/Editor/', 'tools/')
+            message = 'Empty catch blocks hide failure signals and make recurrence diagnosis harder.'
+        },
+        [pscustomobject]@{
+            id = 'presentation-getcomponent-fallback'
+            title = 'Presentation GetComponent fallback'
+            severity = 'low'
+            regex = '\bGetComponent\s*<'
+            include = @('Assets/Scripts/Features/')
+            pathRegex = '/Presentation/'
+            message = 'Presentation code falls back to component lookup instead of explicit serialized or setup-time wiring.'
+        },
+        [pscustomobject]@{
+            id = 'active-plan-residual'
+            title = 'Active plan residual debt marker'
+            severity = 'low'
+            regex = '(?i)\b(TODO|FIXME|HACK|placeholder|residual)\b'
+            include = @('docs/plans/')
+            pathRegex = '^docs/plans/progress\.md$'
+            message = 'Active progress tracking still describes residual work or placeholders that need owner follow-up.'
+        }
+    )
+}
+
+function Get-TechDebtHeuristicFindings {
+    param(
+        [Parameter(Mandatory)][string]$RepoRoot
+    )
+
+    $scanRoots = @('Assets/Scripts', 'Assets/Editor', 'tools', 'docs/plans')
+    $patterns = @(Get-TechDebtHeuristicPatterns)
+    $findings = [System.Collections.Generic.List[object]]::new()
+    $seen = @{}
+
+    foreach ($scanRoot in $scanRoots) {
+        $absoluteRoot = Join-Path $RepoRoot $scanRoot
+        if (-not (Test-Path -LiteralPath $absoluteRoot)) {
+            continue
+        }
+
+        $files = @(Get-ChildItem -LiteralPath $absoluteRoot -Recurse -File -ErrorAction SilentlyContinue)
+        foreach ($file in $files) {
+            $relativePath = ConvertTo-TechDebtRelativePath -RepoRoot $RepoRoot -Path $file.FullName
+            $normalizedPath = $relativePath.Replace('\', '/')
+            if (-not (Test-TechDebtScanFileIncluded -RelativePath $normalizedPath)) {
+                continue
+            }
+
+            $contentLines = @(Get-Content -LiteralPath $file.FullName -ErrorAction SilentlyContinue)
+            for ($index = 0; $index -lt $contentLines.Count; $index++) {
+                $line = [string]$contentLines[$index]
+                foreach ($pattern in $patterns) {
+                    $included = $false
+                    foreach ($prefix in @($pattern.include)) {
+                        if ($normalizedPath.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+                            $included = $true
+                            break
+                        }
+                    }
+                    if (-not $included) {
+                        continue
+                    }
+
+                    if ($pattern.PSObject.Properties.Name -contains 'pathRegex') {
+                        if ($normalizedPath -notmatch [string]$pattern.pathRegex) {
+                            continue
+                        }
+                    }
+
+                    if ($line -notmatch [string]$pattern.regex) {
+                        continue
+                    }
+
+                    $key = "$($pattern.id)|$normalizedPath|$($index + 1)"
+                    if ($seen.ContainsKey($key)) {
+                        continue
+                    }
+                    $seen[$key] = $true
+
+                    [void]$findings.Add([pscustomobject]@{
+                        findingType = 'tech_debt'
+                        severity = [string]$pattern.severity
+                        ownerDoc = 'tools/rule-harness/README.md'
+                        title = [string]$pattern.title
+                        message = [string]$pattern.message
+                        confidence = 'medium'
+                        source = 'tech_debt_heuristic_scan'
+                        remediationKind = 'report_only'
+                        heuristicId = [string]$pattern.id
+                        evidence = @([pscustomobject]@{
+                            path = $normalizedPath
+                            line = [int]($index + 1)
+                            snippet = $line.Trim()
+                        })
+                    })
+                }
+            }
+        }
+    }
+
+    $severityRank = @{ high = 3; medium = 2; low = 1 }
+    @(
+        $findings |
+            Sort-Object @{ Expression = { $severityRank[[string]$_.severity] }; Descending = $true }, @{ Expression = { [string]$_.evidence[0].path } }, @{ Expression = { [int]$_.evidence[0].line } } |
+            Select-Object -First 200
+    )
+}
+
 function Invoke-TechDebtReviewHarness {
     param(
         [Parameter(Mandatory)][string]$RepoRoot,
@@ -59,16 +249,22 @@ function Invoke-TechDebtReviewHarness {
 
     $snapshot = Get-RuleHarnessProjectReviewSnapshot -RepoRoot $RepoRoot -ConfigPath $ConfigPath -AllScopes -ReadOnly
     $reviewedFindings = @(ConvertTo-RuleHarnessReviewedFindings -Findings @($snapshot.findings + $snapshot.featureDependencyGate.findings))
+    $heuristicFindings = @(Get-TechDebtHeuristicFindings -RepoRoot $RepoRoot)
+    $allReviewFindings = @($reviewedFindings + $heuristicFindings)
     $highCount = @($reviewedFindings | Where-Object severity -eq 'high').Count
     $mediumCount = @($reviewedFindings | Where-Object severity -eq 'medium').Count
     $lowCount = @($reviewedFindings | Where-Object severity -eq 'low').Count
+    $heuristicHighCount = @($heuristicFindings | Where-Object severity -eq 'high').Count
+    $heuristicMediumCount = @($heuristicFindings | Where-Object severity -eq 'medium').Count
+    $heuristicLowCount = @($heuristicFindings | Where-Object severity -eq 'low').Count
 
-    $findingScore = [Math]::Min(35, ($highCount * 12) + ($mediumCount * 6) + ($lowCount * 2))
-    $dependencyScore = if ([string]$snapshot.featureDependencyGate.status -eq 'failed' -or [int]$snapshot.featureDependencyGate.cycleCount -gt 0) { 25 } else { 0 }
+    $findingScore = [Math]::Min(25, ($highCount * 10) + ($mediumCount * 5) + ($lowCount * 2))
+    $heuristicScore = [Math]::Min(40, ($heuristicHighCount * 10) + ($heuristicMediumCount * 5) + ($heuristicLowCount * 2))
+    $dependencyScore = if ([string]$snapshot.featureDependencyGate.status -eq 'failed' -or [int]$snapshot.featureDependencyGate.cycleCount -gt 0) { 15 } else { 0 }
     $compileScore = switch ([string]$snapshot.compileGate.status) {
-        'failed' { 20; break }
-        'blocked' { 12; break }
-        'unavailable' { 12; break }
+        'failed' { 15; break }
+        'blocked' { 8; break }
+        'unavailable' { 8; break }
         default { 0 }
     }
     $automationScore = 0
@@ -81,14 +277,14 @@ function Invoke-TechDebtReviewHarness {
     $automationScore = [Math]::Min(10, $automationScore)
 
     $evidencePaths = @(
-        $reviewedFindings |
+        $allReviewFindings |
             ForEach-Object { @($_.evidence) } |
             ForEach-Object { [string]$_.path } |
             Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
     )
     $maxPathCount = @($evidencePaths | Group-Object | Sort-Object Count -Descending | Select-Object -First 1).Count
     $concentrationScore = [Math]::Min(10, [int]$maxPathCount * 2)
-    $severityScore = [Math]::Min(100, $findingScore + $dependencyScore + $compileScore + $automationScore + $concentrationScore)
+    $severityScore = [Math]::Min(100, $findingScore + $heuristicScore + $dependencyScore + $compileScore + $automationScore + $concentrationScore)
 
     $blockers = [System.Collections.Generic.List[object]]::new()
     if ([string]$snapshot.compileGate.status -in @('failed', 'blocked', 'unavailable')) {
@@ -117,7 +313,7 @@ function Invoke-TechDebtReviewHarness {
     }
 
     $reviewItems = @(
-        $reviewedFindings | ForEach-Object {
+        $allReviewFindings | ForEach-Object {
             [pscustomobject]@{
                 findingType = [string]$_.findingType
                 severity = [string]$_.severity
@@ -125,13 +321,14 @@ function Invoke-TechDebtReviewHarness {
                 title = [string]$_.title
                 message = [string]$_.message
                 remediationKind = [string]$_.remediationKind
+                source = [string]$_.source
                 evidence = @($_.evidence)
             }
         }
     )
     $severityRank = @{ high = 3; medium = 2; low = 1 }
     $refactorTargets = @(
-        $reviewedFindings |
+        $allReviewFindings |
             ForEach-Object {
                 $finding = $_
                 @($finding.evidence) | ForEach-Object {
@@ -154,6 +351,23 @@ function Invoke-TechDebtReviewHarness {
     )
     $scopeErrors = @($reviewedFindings | Where-Object { $_.severity -in @('high', 'medium') })
     $recommendedBatches = @(Get-RuleHarnessPlannedBatches -ReviewedFindings $scopeErrors -DocEdits @() -RepoRoot $RepoRoot)
+    $actionItems = @($snapshot.compileGate.actionItems + $snapshot.featureDependencyGate.actionItems)
+    if (@($heuristicFindings).Count -gt 0) {
+        $topHeuristicPaths = @(
+            $heuristicFindings |
+                ForEach-Object { [string]$_.evidence[0].path } |
+                Group-Object |
+                Sort-Object Count -Descending |
+                Select-Object -First 5 |
+                ForEach-Object { $_.Name }
+        )
+        $actionItems += [pscustomobject]@{
+            kind = 'triage-tech-debt-heuristics'
+            severity = if ($heuristicHighCount -gt 0) { 'high' } elseif ($heuristicMediumCount -gt 0) { 'medium' } else { 'low' }
+            summary = "Triage $(@($heuristicFindings).Count) heuristic technical debt signal(s)."
+            targetPaths = @($topHeuristicPaths)
+        }
+    }
 
     $report = [pscustomobject]@{
         runId = [string]$snapshot.runId
@@ -163,6 +377,8 @@ function Invoke-TechDebtReviewHarness {
         severityBand = Get-TechDebtSeverityBand -Score ([int]$severityScore)
         scoreBreakdown = [pscustomobject]@{
             findings = [int]$findingScore
+            heuristicDebt = [int]$heuristicScore
+            heuristicFindingCount = [int]@($heuristicFindings).Count
             featureDependency = [int]$dependencyScore
             compileGate = [int]$compileScore
             automationRisk = [int]$automationScore
@@ -175,7 +391,7 @@ function Invoke-TechDebtReviewHarness {
         reviewItems = @($reviewItems)
         refactorTargets = @($refactorTargets)
         recommendedBatches = @($recommendedBatches)
-        actionItems = @($snapshot.compileGate.actionItems + $snapshot.featureDependencyGate.actionItems)
+        actionItems = @($actionItems)
     }
 
     $reportPath = Join-Path $OutputDir 'report.json'

@@ -59,6 +59,7 @@ function Get-ResourceMigrationStatus {
         '^Assets/Resources/PlayerHealthHudView\.prefab$' { return "native-candidate" }
         '^Assets/Resources/(EnemyHealthBar|DamageNumber)\.prefab$' { return "gameplay-feedback-candidate" }
         '^Assets/Resources/(BattleEntity|EnemyCharacter|EnemyCharacterCore|PlayerCharacter|ProjectilePhysicsAdapter|ZoneEffect)\.prefab$' { return "not-ui/gameplay-runtime" }
+        '^Assets/Resources/Shared/Sound/SoundPlayer\.prefab$' { return "not-ui/audio-runtime" }
         default { return "" }
     }
 }

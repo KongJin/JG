@@ -1,3 +1,4 @@
+using Shared.Kernel;
 using UnityEngine;
 
 namespace Shared.Runtime
@@ -16,6 +17,17 @@ namespace Shared.Runtime
 
             var component = gameObject.GetComponent<T>();
             return component != null ? component : gameObject.AddComponent<T>();
+        }
+
+        public static T GetInParent<T>(Component component) where T : Component
+        {
+            return component != null ? component.GetComponentInParent<T>() : null;
+        }
+
+        public static bool TryGetEntityIdHolder(Collider collider, out EntityIdHolder holder)
+        {
+            holder = GetInParent<EntityIdHolder>(collider);
+            return holder != null && holder.IsInitialized;
         }
 
         public static T InstantiateComponent<T>(

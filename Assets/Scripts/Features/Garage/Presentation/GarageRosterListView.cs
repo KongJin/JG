@@ -19,12 +19,11 @@ namespace Features.Garage.Presentation
                 return;
 
             _callbacksHooked = true;
+        }
 
-            for (int i = 0; i < _slotViews.Length; i++)
-            {
-                int slotIndex = i;
-                _slotViews[i].Button.onClick.AddListener(() => SlotSelected?.Invoke(slotIndex));
-            }
+        public void SelectSlot(int slotIndex)
+        {
+            SlotSelected?.Invoke(slotIndex);
         }
 
         public void Render(IReadOnlyList<GarageSlotViewModel> slotViewModels)

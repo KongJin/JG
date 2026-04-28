@@ -1,9 +1,6 @@
 using Features.Account.Domain;
-using Shared.Attributes;
 using Shared.EventBus;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Features.Account.Presentation
 {
@@ -12,54 +9,37 @@ namespace Features.Account.Presentation
     /// </summary>
     public sealed class LoginLoadingView : MonoBehaviour
     {
-        [Header("References")]
-        [Required, SerializeField] private GameObject _loadingPanel;
-        [Required, SerializeField] private TMP_Text _statusText;
-        [Required, SerializeField] private GameObject _errorPanel;
-        [Required, SerializeField] private TMP_Text _errorText;
-        [Required, SerializeField] private Button _retryButton;
-
         private System.Action _onLoginSuccess;
         private System.Action _onRetryRequested;
         private int _retryCount;
+        private string _statusMessage = string.Empty;
+        private string _errorMessage = string.Empty;
         private const int MaxRetries = 3;
 
-        private void Awake()
-        {
-            if (_retryButton != null)
-                _retryButton.onClick.AddListener(OnRetryClicked);
-        }
+        public bool IsShowing { get; private set; }
+        public string StatusMessage => _statusMessage;
+        public string ErrorMessage => _errorMessage;
 
         public void Show()
         {
-            gameObject.SetActive(true);
-            if (_loadingPanel != null)
-                _loadingPanel.SetActive(true);
-            if (_errorPanel != null)
-                _errorPanel.SetActive(false);
-            if (_statusText != null)
-                _statusText.text = "Signing in...";
+            IsShowing = true;
+            _errorMessage = string.Empty;
+            _statusMessage = "Signing in...";
             _retryCount = 0;
         }
 
         public void Hide()
         {
-            if (_loadingPanel != null)
-                _loadingPanel.SetActive(false);
-            if (_errorPanel != null)
-                _errorPanel.SetActive(false);
-            gameObject.SetActive(false);
+            IsShowing = false;
+            _statusMessage = string.Empty;
+            _errorMessage = string.Empty;
         }
 
         public void ShowError(string message)
         {
-            gameObject.SetActive(true);
-            if (_loadingPanel != null)
-                _loadingPanel.SetActive(false);
-            if (_errorPanel != null)
-                _errorPanel.SetActive(true);
-            if (_errorText != null)
-                _errorText.text = message;
+            IsShowing = true;
+            _statusMessage = string.Empty;
+            _errorMessage = message;
         }
 
         public void SetOnLoginSuccess(System.Action callback)
@@ -87,22 +67,15 @@ namespace Features.Account.Presentation
             }
             else
             {
-                if (_statusText != null)
-                    _statusText.text = $"Sign-in failed ({_retryCount}/{MaxRetries})\nRetrying...";
+                _statusMessage = $"Sign-in failed ({_retryCount}/{MaxRetries})\nRetrying...";
             }
         }
 
-        private void OnRetryClicked()
+        public void Retry()
         {
             _retryCount = 0;
             Show();
             _onRetryRequested?.Invoke();
-        }
-
-        private void OnDestroy()
-        {
-            if (_retryButton != null)
-                _retryButton.onClick.RemoveListener(OnRetryClicked);
         }
     }
 }

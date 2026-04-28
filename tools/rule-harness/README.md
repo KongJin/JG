@@ -51,6 +51,18 @@ powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-recurrence-wor
 powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-harness-pipeline.ps1
 ```
 
+2시간 주기 예약 등록:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\register-rule-harness-role-pipeline-scheduled-task.ps1 -IntervalMinutes 120
+```
+
+예약 해제:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\unregister-rule-harness-role-pipeline-scheduled-task.ps1
+```
+
 출력은 `Temp/RuleHarnessRoles/<timestamp>/01-tech-debt-review` 부터 `04-recurrence-work`까지 단계별 폴더에 `report.json`, `summary.md`, `log.txt`로 남는다.
 latest pointer는 `Temp/RuleHarnessRoles/latest-pipeline.txt`, `latest-tech-debt-review.txt`, `latest-recurrence-plan.txt`를 사용한다.
 

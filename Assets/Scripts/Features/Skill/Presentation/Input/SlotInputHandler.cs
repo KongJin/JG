@@ -7,6 +7,7 @@ using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Lifecycle;
 using Shared.Math;
+using Shared.Runtime;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -96,8 +97,7 @@ namespace Features.Skill.Presentation
                 )
             )
             {
-                var holder = hit.collider.GetComponentInParent<EntityIdHolder>();
-                if (holder != null && holder.IsInitialized && holder.Id != _casterId)
+                if (ComponentAccess.TryGetEntityIdHolder(hit.collider, out var holder) && holder.Id != _casterId)
                 {
                     targetPosition = hit.point.ToFloat3();
                     return true;

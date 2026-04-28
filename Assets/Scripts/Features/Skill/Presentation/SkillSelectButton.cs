@@ -1,39 +1,32 @@
-using Shared.Attributes;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Features.Skill.Presentation
 {
     public sealed class SkillSelectButton : MonoBehaviour
     {
-        [Required, SerializeField] private Button button;
-        [Required, SerializeField] private Image iconImage;
-        [Required, SerializeField] private Text nameLabel;
-        [Required, SerializeField] private GameObject selectedFrame;
-
         private bool _selected;
 
-        public Button Button => button;
         public bool IsSelected => _selected;
+        public string DisplayName { get; private set; } = string.Empty;
+        public Sprite Icon { get; private set; }
+        public bool IsVisible { get; private set; }
 
         public void Setup(string displayName, Sprite icon)
         {
-            nameLabel.text = displayName;
-            iconImage.sprite = icon;
-            iconImage.enabled = icon != null;
+            DisplayName = displayName ?? string.Empty;
+            Icon = icon;
             SetSelected(false);
-            gameObject.SetActive(true);
+            IsVisible = true;
         }
 
         public void SetSelected(bool selected)
         {
             _selected = selected;
-            selectedFrame.SetActive(selected);
         }
 
         public void Hide()
         {
-            gameObject.SetActive(false);
+            IsVisible = false;
         }
     }
 }

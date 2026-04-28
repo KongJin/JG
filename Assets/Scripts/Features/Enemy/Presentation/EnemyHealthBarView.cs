@@ -1,17 +1,13 @@
 using System;
 using Features.Enemy.Application.Events;
-using Shared.Attributes;
 using Shared.EventBus;
 using Shared.Kernel;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Features.Enemy.Presentation
 {
     public sealed class EnemyHealthBarView : MonoBehaviour
     {
-        [Required, SerializeField] private Slider healthSlider;
-        [Required, SerializeField] private Image fillImage;
         [SerializeField] private Color normalColor = Color.green;
         [SerializeField] private Color lowColor = Color.red;
         [SerializeField] private float lowHealthThreshold = 0.3f;
@@ -19,13 +15,16 @@ namespace Features.Enemy.Presentation
         private IEventSubscriber _eventBus;
         private DomainEntityId _enemyId;
 
+        public float CurrentHp { get; private set; }
+        public float MaxHp { get; private set; }
+        public Color CurrentColor { get; private set; }
+
         public void Initialize(IEventSubscriber eventBus, DomainEntityId enemyId, float maxHp)
         {
             _eventBus = eventBus;
             _enemyId = enemyId;
-
-            healthSlider.maxValue = maxHp;
-            healthSlider.value = maxHp;
+            MaxHp = maxHp;
+            CurrentHp = maxHp;
             UpdateFillColor(1f);
 
             _eventBus.Subscribe(this, new Action<EnemyHealthChangedEvent>(OnHealthChanged));
@@ -41,21 +40,23 @@ namespace Features.Enemy.Presentation
 
         private void OnHealthChanged(EnemyHealthChangedEvent e)
         {
-            if (!_enemyId.Equals(e.EnemyId)) return;
+            if (!_enemyId.Equals(e.EnemyId))
+                return;
 
-            healthSlider.value = e.CurrentHp;
-            UpdateFillColor(e.CurrentHp / e.MaxHp);
+            MaxHp = e.MaxHp;
+            CurrentHp = e.CurrentHp;
+            UpdateFillColor(e.MaxHp > 0f ? e.CurrentHp / e.MaxHp : 0f);
         }
 
         private void OnDied(EnemyDiedEvent e)
         {
-            if (!_enemyId.Equals(e.EnemyId)) return;
-            gameObject.SetActive(false);
+            if (_enemyId.Equals(e.EnemyId))
+                gameObject.SetActive(false);
         }
 
         private void UpdateFillColor(float healthPercent)
         {
-            fillImage.color = healthPercent <= lowHealthThreshold ? lowColor : normalColor;
+            CurrentColor = healthPercent <= lowHealthThreshold ? lowColor : normalColor;
         }
 
         private void OnDestroy()

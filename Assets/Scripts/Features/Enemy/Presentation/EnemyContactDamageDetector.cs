@@ -1,5 +1,6 @@
 using Features.Enemy.Application.Ports;
 using Shared.Kernel;
+using Shared.Runtime;
 using UnityEngine;
 
 namespace Features.Enemy.Presentation
@@ -27,8 +28,7 @@ namespace Features.Enemy.Presentation
             if (!_initialized) return;
             if (Time.time - _lastDamageTime < _cooldown) return;
 
-            var holder = other.GetComponentInParent<EntityIdHolder>();
-            if (holder == null || !holder.IsInitialized) return;
+            if (!ComponentAccess.TryGetEntityIdHolder(other, out var holder)) return;
 
             var targetId = holder.Id;
             if (targetId.Value != null && targetId.Value.StartsWith("enemy")) return;

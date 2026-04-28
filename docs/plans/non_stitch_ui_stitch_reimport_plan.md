@@ -136,6 +136,35 @@ Residual:
 
 These sources follow the Nova1492 Garage UI flow guide and keep blocked/waiting/manual retry states explicit. They are source candidates only; no runtime replacement or account/cloud acceptance is implied.
 
+## 2026-04-28 Account / Connection UI Toolkit Candidate Pass
+
+- Account/sync candidate:
+  - UXML: `Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml`
+  - USS: `Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uss`
+  - preview scene: `Assets/Scenes/AccountSyncUitkPreview.unity`
+  - panel settings: `Assets/Settings/UI/AccountSyncPanelSettings.asset`
+  - capture: `artifacts/unity/account-sync-uitk-preview-gameview.png`
+- Connection/reconnect candidate:
+  - UXML: `Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml`
+  - USS: `Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uss`
+  - preview scene: `Assets/Scenes/ConnectionReconnectUitkPreview.unity`
+  - panel settings: `Assets/Settings/UI/ConnectionReconnectPanelSettings.asset`
+  - capture: `artifacts/unity/connection-reconnect-uitk-preview-gameview.png`
+- candidate report: `artifacts/unity/account-connection-uitk-candidate-report.md`
+- scoped workflow policy: `artifacts/unity/account-connection-uitk-workflow-policy.json`
+
+Status:
+
+- UI Toolkit candidate surface: passed mechanically
+- preview capture/report: passed mechanically
+- runtime replacement: not started
+- account/cloud/reconnect product acceptance: not started
+
+Notes:
+
+- The preview route used isolated `390x844` GameView captures because these surfaces are screen-space `UIDocument` previews.
+- The current dirty worktree also contains non-UI technical-debt/audio/tooling changes; full-worktree UI policy can report `mixed` or blocked. The candidate pass is therefore recorded with scoped `ChangedFile` evidence and must not be read as whole-worktree UI closeout.
+
 ## Current Runtime Compatibility
 
 - Battle HUD and skill-selection UI are scene-owned runtime surfaces until a UI Toolkit replacement pass owns them.
@@ -162,4 +191,5 @@ These sources follow the Nova1492 Garage UI flow guide and keep blocked/waiting/
 - 2026-04-27 범위 리뷰: runtime-referenced HUD/feedback prefab은 compatibility surface로 남기고, replacement는 별도 pass에서 판단한다.
 - 2026-04-27 부족한점 리뷰: 남은 runtime replacement 대상이 surface inventory에 구분된다.
 - 2026-04-28 source freeze 재리뷰: 과한점은 새 Account/Connection sources를 runtime success로 올리지 않고, source freeze evidence로만 남겼다. 부족한점은 next UITK candidate 기준 화면과 artifact paths를 추가해 해소했다.
+- 2026-04-28 UITK candidate 재리뷰: 과한점은 preview scene/capture/report를 runtime replacement success로 올리지 않고 candidate evidence로만 남겼다. 부족한점은 source candidates 다음 단계였던 UI Toolkit surface, isolated preview scenes, GameView captures, scoped policy evidence를 추가해 해소했다.
 - plan rereview: clean

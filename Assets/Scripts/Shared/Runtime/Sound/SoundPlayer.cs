@@ -14,6 +14,8 @@ namespace Shared.Runtime.Sound
     {
         public const string LobbyOwnerId = "lobby";
 
+        private static SoundPlayer _active;
+
         [Required, SerializeField] private SoundCatalog catalog;
         [SerializeField] private int initialPoolSize = 8;
         [SerializeField] private float defaultBgmFadeSeconds = 0.35f;
@@ -34,21 +36,21 @@ namespace Shared.Runtime.Sound
 
         public bool HasRuntimeDependencies => catalog != null;
 
+        public static bool TryGetActive(out SoundPlayer soundPlayer)
+        {
+            soundPlayer = _active;
+            return soundPlayer != null;
+        }
+
         private void Awake()
         {
-            var players = UnityEngine.Object.FindObjectsByType<SoundPlayer>(
-                FindObjectsInactive.Exclude,
-                FindObjectsSortMode.None);
-            for (int i = 0; i < players.Length; i++)
+            if (_active != null && _active != this)
             {
-                var existing = players[i];
-                if (existing == null || existing == this)
-                    continue;
-
                 Destroy(gameObject);
                 return;
             }
 
+            _active = this;
             DontDestroyOnLoad(gameObject);
         }
 
@@ -178,6 +180,9 @@ namespace Shared.Runtime.Sound
         private void OnDestroy()
         {
             _disposables?.Dispose();
+
+            if (_active == this)
+                _active = null;
         }
 
         private void OnSoundRequested(SoundRequestEvent e)

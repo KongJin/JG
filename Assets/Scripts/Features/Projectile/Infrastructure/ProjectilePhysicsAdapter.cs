@@ -7,6 +7,7 @@ using Features.Status.Application.Events;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Math;
+using Shared.Runtime;
 using Shared.Runtime.Pooling;
 using UnityEngine;
 
@@ -69,8 +70,7 @@ namespace Features.Projectile.Infrastructure
         {
             if (_projectile == null || !_projectile.IsAlive) return;
 
-            var holder = other.GetComponentInParent<EntityIdHolder>();
-            if (holder == null || !holder.IsInitialized) return;
+            if (!ComponentAccess.TryGetEntityIdHolder(other, out var holder)) return;
             if (holder.Id.Equals(_projectile.OwnerId)) return;
 
             var result = _hitResolver.Resolve(_projectile);

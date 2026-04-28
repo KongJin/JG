@@ -1,0 +1,19 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="BattleHudRoot" class="battle-hud">
+        <ui:VisualElement name="TopStrip" class="battle-hud__top">
+            <ui:Label name="WaveLabel" class="battle-hud__wave" text="Wave 1/5" />
+            <ui:Label name="CountdownLabel" class="battle-hud__countdown" text="" />
+            <ui:Label name="CoreHpLabel" class="battle-hud__core" text="CORE HP" />
+        </ui:VisualElement>
+        <ui:VisualElement name="WorldOverlayLayer" class="battle-hud__world-layer" />
+        <ui:VisualElement name="BottomDock" class="battle-hud__dock">
+            <ui:Label name="EnergyLabel" class="battle-hud__energy" text="ENERGY 0 / 0" />
+            <ui:VisualElement name="SummonSlots" class="battle-hud__slots" />
+            <ui:Label name="StatusLabel" class="battle-hud__status" text="" />
+        </ui:VisualElement>
+        <ui:VisualElement name="ResultOverlay" class="battle-hud__result">
+            <ui:Label name="ResultLabel" class="battle-hud__result-title" text="" />
+            <ui:Label name="ResultStatsLabel" class="battle-hud__result-stats" text="" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

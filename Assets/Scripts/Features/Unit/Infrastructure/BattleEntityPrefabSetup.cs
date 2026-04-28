@@ -1,5 +1,4 @@
 using Features.Combat;
-using Features.Combat.Domain;
 using Features.Unit.Application.Ports;
 using Features.Unit.Domain;
 using Features.Wave.Infrastructure;
@@ -21,17 +20,13 @@ namespace Features.Unit.Infrastructure
     {
         [Required, SerializeField] private MonoBehaviour _view;
         [Required, SerializeField] private BattleEntityPhotonController _photonController;
+        [Required, SerializeField] private BattleEntityAttackDriver _attackDriver;
         [Required, SerializeField] private EntityIdHolder _entityIdHolder;
-        [SerializeField] private float _fallbackAttackIntervalSeconds = 1f;
-        [SerializeField] private float _fallbackAttackRangePadding = 0.25f;
 
-        private EventBus _eventBus;
-        private CombatSetup _combatSetup;
         private UnitPositionQueryAdapter _unitPositionQuery;
         private BattleEntity _battleEntity;
         private IBattleEntityViewPort _viewPort;
         private bool _initialized;
-        private float _nextAttackTime;
 
         public DomainEntityId BattleEntityId { get; private set; }
         public bool IsInitialized => _initialized;
@@ -98,8 +93,6 @@ namespace Features.Unit.Infrastructure
         {
             if (_initialized) return;
 
-            _eventBus = eventBus;
-            _combatSetup = combatBootstrap;
             _unitPositionQuery = unitPositionQuery;
             _viewPort = _view as IBattleEntityViewPort;
 
@@ -123,7 +116,7 @@ namespace Features.Unit.Infrastructure
             _entityIdHolder.Set(battleEntityId);
 
             // Combat target으로 등록
-            _combatSetup.RegisterTarget(battleEntityId, new BattleEntityCombatTargetProvider(_battleEntity));
+            combatBootstrap.RegisterTarget(battleEntityId, new BattleEntityCombatTargetProvider(_battleEntity));
 
             // Unit 위치 쿼리에 등록
             unitPositionQuery.RegisterUnit(transform);
@@ -134,86 +127,16 @@ namespace Features.Unit.Infrastructure
             // Photon controller 초기화
             _photonController.SetBattleEntity(_battleEntity, eventBus, eventBus, ownerId);
 
+            // 공격 루프 초기화
+            _attackDriver.Initialize(combatBootstrap, _battleEntity);
+
             _initialized = true;
-        }
-
-        private void Update()
-        {
-            if (!_initialized || _battleEntity == null || _combatSetup == null)
-                return;
-
-            if (!_battleEntity.IsAlive || !PhotonNetwork.IsMasterClient)
-                return;
-
-            if (Time.time < _nextAttackTime)
-                return;
-
-            if (!TryGetNearestEnemyInRange(out var targetId))
-                return;
-
-            _combatSetup.ApplyDamage(
-                targetId,
-                _battleEntity.UnitSpec.FinalAttackDamage,
-                DamageType.Physical,
-                _battleEntity.Id);
-
-            var attackSpeed = _battleEntity.UnitSpec.FinalAttackSpeed;
-            var interval = attackSpeed > 0f ? 1f / attackSpeed : _fallbackAttackIntervalSeconds;
-            _nextAttackTime = Time.time + Mathf.Max(0.1f, interval);
-        }
-
-        private bool TryGetNearestEnemyInRange(out DomainEntityId targetId)
-        {
-            targetId = default;
-
-            var attackRange = Mathf.Max(0.5f, _battleEntity.UnitSpec.FinalRange + _fallbackAttackRangePadding);
-            var anchorRange = _battleEntity.UnitSpec.FinalAnchorRange;
-            var queryRange = anchorRange > 0f ? Mathf.Min(attackRange, anchorRange) : attackRange;
-            var hits = Physics.OverlapSphere(
-                transform.position,
-                queryRange,
-                ~0,
-                QueryTriggerInteraction.Collide);
-
-            var bestDistanceSq = float.MaxValue;
-            var found = false;
-
-            foreach (var hit in hits)
-            {
-                if (hit == null)
-                    continue;
-
-                var holder = hit.GetComponentInParent<EntityIdHolder>();
-                if (holder == null || !holder.IsInitialized)
-                    continue;
-
-                var candidateId = holder.Id;
-                if (string.IsNullOrWhiteSpace(candidateId.Value) || !candidateId.Value.StartsWith("enemy-"))
-                    continue;
-
-                var candidatePosition = hit.transform.position;
-                if (!_battleEntity.IsWithinAnchorRadius(new Float3(
-                        candidatePosition.x,
-                        candidatePosition.y,
-                        candidatePosition.z)))
-                {
-                    continue;
-                }
-
-                var distanceSq = (hit.transform.position - transform.position).sqrMagnitude;
-                if (distanceSq >= bestDistanceSq)
-                    continue;
-
-                bestDistanceSq = distanceSq;
-                targetId = candidateId;
-                found = true;
-            }
-
-            return found;
         }
 
         private void OnDestroy()
         {
+            _attackDriver?.Clear();
+
             if (_unitPositionQuery != null && transform != null)
                 _unitPositionQuery.UnregisterUnit(transform);
         }

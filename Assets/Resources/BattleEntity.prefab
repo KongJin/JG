@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7005732254497697026}
   - component: {fileID: 2307048919711533339}
   - component: {fileID: 4731774347476593272}
+  - component: {fileID: 4175083648201194542}
   m_Layer: 0
   m_Name: BattleEntity
   m_TagString: Untagged
@@ -117,7 +118,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.BattleEntityPrefabSetup
   _view: {fileID: 2307048919711533339}
   _photonController: {fileID: 7005732254497697026}
+  _attackDriver: {fileID: 4175083648201194542}
   _entityIdHolder: {fileID: 5853759358518616398}
+--- !u!114 &4175083648201194542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5198863675711811730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4872394ef7b648b2a05804af9d9607f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.BattleEntityAttackDriver
   _fallbackAttackIntervalSeconds: 1
   _fallbackAttackRangePadding: 0.25
 --- !u!1 &8135152946679333782

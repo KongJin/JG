@@ -1,41 +1,18 @@
-using Shared.Attributes;
 using Shared.ErrorHandling;
 using Shared.EventBus;
 using Shared.Lifecycle;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Shared.Ui
 {
     public sealed class SceneErrorPresenter : MonoBehaviour
     {
-        [Header("Banner")]
-        [Required, SerializeField]
-        private CanvasGroup _bannerGroup;
-
-        [Required, SerializeField]
-        private TMP_Text _bannerMessageText;
-
-        [Header("Modal")]
-        [Required, SerializeField]
-        private CanvasGroup _modalGroup;
-
-        [Required, SerializeField]
-        private TMP_Text _modalMessageText;
-
-        [Required, SerializeField]
-        private Button _modalDismissButton;
-
         private IEventSubscriber _eventBus;
         private Coroutine _bannerCoroutine;
         private DisposableScope _disposables = new DisposableScope();
 
-        private void Awake()
-        {
-            HideGroup(_bannerGroup);
-            HideGroup(_modalGroup);
-        }
+        public UiErrorMessage CurrentBanner { get; private set; }
+        public UiErrorMessage CurrentModal { get; private set; }
 
         public void Initialize(IEventSubscriber eventBus)
         {
@@ -45,8 +22,8 @@ namespace Shared.Ui
                 return;
             }
 
-            HideGroup(_bannerGroup);
-            HideGroup(_modalGroup);
+            CurrentBanner = default;
+            CurrentModal = default;
 
             if (_eventBus != null)
                 _disposables.Dispose();
@@ -55,10 +32,6 @@ namespace Shared.Ui
             _disposables = new DisposableScope();
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, this));
             _eventBus.Subscribe(this, new System.Action<UiErrorRequestedEvent>(OnUiErrorRequested));
-
-            _modalDismissButton.onClick.RemoveListener(HideModal);
-            _modalDismissButton.onClick.AddListener(HideModal);
-            _disposables.Add(() => _modalDismissButton.onClick.RemoveListener(HideModal));
         }
 
         private void OnDestroy()
@@ -82,8 +55,8 @@ namespace Shared.Ui
         private void ShowBanner(UiErrorMessage error)
         {
             EnsurePresenterActive();
-            _bannerMessageText.text = error.Message;
-            ShowBannerGroup(_bannerGroup);
+            CurrentBanner = error;
+            CurrentModal = default;
 
             if (_bannerCoroutine != null)
                 StopCoroutine(_bannerCoroutine);
@@ -94,22 +67,20 @@ namespace Shared.Ui
         {
             var delay = durationSeconds > 0f ? durationSeconds : 3f;
             yield return new WaitForSeconds(delay);
-            HideGroup(_bannerGroup);
+            CurrentBanner = default;
             _bannerCoroutine = null;
         }
 
         private void ShowModal(UiErrorMessage error)
         {
             EnsurePresenterActive();
-            _modalMessageText.text = error.Message;
-            _modalDismissButton.gameObject.SetActive(error.CanDismiss);
-            HideGroup(_bannerGroup);
-            ShowGroup(_modalGroup);
+            CurrentBanner = default;
+            CurrentModal = error;
         }
 
-        private void HideModal()
+        public void HideModal()
         {
-            HideGroup(_modalGroup);
+            CurrentModal = default;
         }
 
         private void EnsurePresenterActive()
@@ -119,30 +90,6 @@ namespace Shared.Ui
 
             if (!enabled)
                 enabled = true;
-        }
-
-        private static void ShowGroup(CanvasGroup group)
-        {
-            group.alpha = 1f;
-            group.interactable = true;
-            group.blocksRaycasts = true;
-            group.gameObject.SetActive(true);
-        }
-
-        private static void ShowBannerGroup(CanvasGroup group)
-        {
-            group.alpha = 1f;
-            group.interactable = false;
-            group.blocksRaycasts = false;
-            group.gameObject.SetActive(true);
-        }
-
-        private static void HideGroup(CanvasGroup group)
-        {
-            group.alpha = 0f;
-            group.interactable = false;
-            group.blocksRaycasts = false;
-            group.gameObject.SetActive(false);
         }
     }
 }

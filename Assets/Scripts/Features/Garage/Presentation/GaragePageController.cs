@@ -5,7 +5,6 @@ using Features.Unit.Application;
 using Shared.Attributes;
 using Shared.EventBus;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Features.Garage.Presentation
 {
@@ -159,25 +158,7 @@ namespace Features.Garage.Presentation
                 _setBUitkAdapter.SettingsRequested += () => SetSettingsOverlayOpen(!_isSettingsOverlayOpen);
             }
 
-            var chromeBindings = GaragePageChromeBindingResolver.Resolve(this, ref _chromeBindings);
-            if (chromeBindings == null)
-                return;
-
-            void AddButtonListener(Button button, UnityEngine.Events.UnityAction action)
-            {
-                if (button == null || action == null)
-                    return;
-
-                button.onClick.AddListener(action);
-            }
-
-            AddButtonListener(chromeBindings.MobileEditTabButton, () => SetMobilePartFocus(MobilePartFocus.Frame));
-            AddButtonListener(chromeBindings.MobileFirepowerTabButton, () => SetMobilePartFocus(MobilePartFocus.Firepower));
-            AddButtonListener(chromeBindings.MobileSummaryTabButton, () => SetMobilePartFocus(MobilePartFocus.Mobility));
-
-            AddButtonListener(chromeBindings.SettingsOpenButton, () => SetSettingsOverlayOpen(!_isSettingsOverlayOpen));
-            AddButtonListener(chromeBindings.SettingsCloseButton, () => SetSettingsOverlayOpen(false));
-            AddButtonListener(chromeBindings.MobileSaveButton, RequestSave);
+            GaragePageChromeBindingResolver.Resolve(this, ref _chromeBindings);
         }
 
         private void OnDisable()
@@ -310,11 +291,9 @@ namespace Features.Garage.Presentation
                 _saveFlow.IsSaving);
 
             SyncChrome(resultViewModel);
-            if (_chromeBindings != null &&
-                _chromeBindings.MobileSaveStateText != null &&
-                !string.IsNullOrWhiteSpace(operationSummary))
+            if (_chromeBindings != null && !string.IsNullOrWhiteSpace(operationSummary))
             {
-                _chromeBindings.MobileSaveStateText.text = operationSummary;
+                _chromeBindings.SetMobileSaveState(operationSummary);
             }
 
             PublishDraftState();
@@ -473,7 +452,6 @@ namespace Features.Garage.Presentation
                 _saveRoster == null ||
                 _eventPublisher == null ||
                 _catalog == null ||
-                _chromeBindings == null ||
                 _state == null)
                 throw new System.InvalidOperationException("GaragePageController.Initialize must be called before interaction.");
         }

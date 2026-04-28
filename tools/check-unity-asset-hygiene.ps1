@@ -92,6 +92,8 @@ if (-not $SkipResourcesAllowlist) {
         "Assets/Resources/PlayerHealthHudView.prefab",
         "Assets/Resources/ProjectilePhysicsAdapter.prefab",
         "Assets/Resources/RoundedRectMaterial.mat",
+        # Direct BattleScene runs need a serialized SoundPlayer host contract; the factory loads this prefab instead of repairing with AddComponent.
+        "Assets/Resources/Shared/Sound/SoundPlayer.prefab",
         "Assets/Resources/Shared/Sound/SoundPlayerRuntimeConfig.asset",
         "Assets/Resources/Wave/DefaultWaveTable.asset",
         "Assets/Resources/ZoneEffect.prefab"

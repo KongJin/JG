@@ -7,7 +7,6 @@ using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Math;
 using UnityEngine;
-using UnityEngine.UI;
 using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Presentation
@@ -17,15 +16,6 @@ namespace Features.Unit.Presentation
         [Header("Input")]
         [SerializeField] private Camera _worldCamera;
         [SerializeField] private float _screenToPlaneY = 0f;
-
-        [Header("Dock Layout")]
-        [SerializeField] private RectTransform _dockRoot;
-        [SerializeField] private RectTransform _slotRowRect;
-        [SerializeField] private RectTransform _energyBarRect;
-        [SerializeField] private RectTransform _feedbackRect;
-        [SerializeField] private HorizontalLayoutGroup _slotRowLayout;
-        [SerializeField] private Image _dockBackgroundImage;
-        [SerializeField] private Color _dockBackgroundColor = new(0.03f, 0.07f, 0.11f, 0.94f);
 
         private IEventSubscriber _eventBus;
         private SummonUnitUseCase _summonUseCase;
@@ -329,15 +319,7 @@ namespace Features.Unit.Presentation
         private void ApplyDockLayout()
         {
             _dockLayoutBinder ??= new SummonDockLayoutBinder(transform);
-            _dockLayoutBinder.Apply(
-                ref _dockRoot,
-                ref _slotRowRect,
-                ref _energyBarRect,
-                ref _feedbackRect,
-                ref _slotRowLayout,
-                ref _dockBackgroundImage,
-                _dockBackgroundColor,
-                ref _worldCamera);
+            _dockLayoutBinder.Apply(ref _worldCamera);
         }
 
         private void OnDestroy()

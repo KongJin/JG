@@ -6,6 +6,7 @@ using Features.Zone.Application.Events;
 using Features.Zone.Domain;
 using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Runtime;
 using Shared.Runtime.Pooling;
 using UnityEngine;
 
@@ -50,8 +51,7 @@ namespace Features.Zone.Presentation
             if (!_initialized || _zoneContactUseCase == null)
                 return;
 
-            var holder = other.GetComponentInParent<EntityIdHolder>();
-            if (holder == null || !holder.IsInitialized)
+            if (!ComponentAccess.TryGetEntityIdHolder(other, out var holder))
                 return;
 
             var targetId = holder.Id;

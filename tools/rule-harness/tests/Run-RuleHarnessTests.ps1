@@ -1622,7 +1622,7 @@ Assert-RuleHarness `
 $roleRepo = Join-Path $scratchRoot 'role-harness'
 Initialize-RuleHarnessScopeRepo -RepoPath $roleRepo -Features @(
     [pscustomobject]@{ Name = 'RoleA'; ApplicationContent = 'namespace Features.RoleA.Application { public sealed class RoleAService { } }' },
-    [pscustomobject]@{ Name = 'RoleB'; ApplicationContent = 'namespace Features.RoleB.Application { public sealed class RoleBService { } }' },
+    [pscustomobject]@{ Name = 'RoleB'; ApplicationContent = 'namespace Features.RoleB.Application { public sealed class RoleBService { public object Load() { return UnityEngine.Resources.Load<object>(""RoleBConfig""); } } }' },
     [pscustomobject]@{ Name = 'RoleC'; ApplicationContent = 'namespace Features.RoleC.Application { public sealed class RoleCService { } }' },
     [pscustomobject]@{ Name = 'RoleD'; ApplicationContent = 'namespace Features.RoleD.Application { public sealed class RoleDService { } }' },
     [pscustomobject]@{ Name = 'RoleE'; ApplicationContent = 'namespace Features.RoleE.Application { public sealed class RoleEService { } }' }
@@ -1642,6 +1642,9 @@ $roleReview = Get-Content -Path $roleReviewPath -Raw | ConvertFrom-Json
 Assert-RuleHarness `
     -Condition (@($roleReview.scannedScopes).Count -eq 5 -and [int]$roleReview.severityScore -ge 0 -and [int]$roleReview.severityScore -le 100 -and $roleReview.PSObject.Properties.Name -contains 'scoreBreakdown' -and $roleReview.PSObject.Properties.Name -contains 'refactorTargets') `
     -Message 'Expected tech debt role review to scan all scopes and emit severity/refactor artifacts.'
+Assert-RuleHarness `
+    -Condition ([int]$roleReview.severityScore -gt 0 -and [int]$roleReview.scoreBreakdown.heuristicFindingCount -ge 1 -and @($roleReview.reviewItems | Where-Object title -eq 'Runtime Resources.Load dependency').Count -ge 1 -and @($roleReview.refactorTargets | Where-Object path -eq 'Assets/Scripts/Features/RoleB/Application/RoleBService.cs').Count -eq 1) `
+    -Message 'Expected tech debt role review to score heuristic debt signals and surface them as review/refactor artifacts.'
 Assert-RuleHarness `
     -Condition (-not (Test-Path -LiteralPath (Join-Path $roleRepo 'Temp/RuleHarnessState/feature-scan-state.json')) -and -not (Test-Path -LiteralPath (Join-Path $roleRepo 'Temp/RuleHarnessState/doc-proposals.json'))) `
     -Message 'Expected tech debt role review to leave feature scan state and doc proposal backlog untouched.'

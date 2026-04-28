@@ -1,18 +1,13 @@
 using System;
 using Features.Skill.Application.Events;
-using Shared.Attributes;
 using Shared.EventBus;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Features.Skill.Presentation
 {
     public sealed class StartSkillSelectionView : MonoBehaviour
     {
-        [Required, SerializeField] private GameObject panel;
-        [Required, SerializeField] private SkillSelectButton[] skillButtons;
-        [Required, SerializeField] private Button confirmButton;
-        [Required, SerializeField] private Text instructionLabel;
+        [SerializeField] private SkillSelectButton[] skillButtons;
 
         private IEventPublisher _publisher;
         private IEventSubscriber _subscriber;
@@ -21,22 +16,16 @@ namespace Features.Skill.Presentation
         private int _pickCount;
         private int _selectedCount;
 
+        public bool IsPanelVisible { get; private set; }
+        public bool CanConfirm => _selectedCount == _pickCount;
+        public string InstructionText { get; private set; } = string.Empty;
+
         public void Initialize(IEventPublisher publisher, IEventSubscriber subscriber, ISkillIconPort iconPort)
         {
             _publisher = publisher;
             _subscriber = subscriber;
             _iconPort = iconPort;
-
-            panel.SetActive(false);
-            confirmButton.interactable = false;
-            confirmButton.onClick.AddListener(OnConfirm);
-
-            for (var i = 0; i < skillButtons.Length; i++)
-            {
-                var index = i;
-                skillButtons[i].Button.onClick.AddListener(() => OnToggle(index));
-            }
-
+            IsPanelVisible = false;
             _subscriber.Subscribe(this, new Action<StartSkillSelectionRequestedEvent>(OnSelectionRequested));
         }
 
@@ -59,33 +48,35 @@ namespace Features.Skill.Presentation
                 }
             }
 
-            confirmButton.interactable = false;
-            instructionLabel.text = $"시작 스킬 {_pickCount}개를 선택하세요";
-            panel.SetActive(true);
+            InstructionText = $"시작 스킬 {_pickCount}개를 선택하세요";
+            IsPanelVisible = true;
         }
 
-        private void OnToggle(int index)
+        public void Toggle(int index)
         {
-            if (index >= _candidates.Length) return;
+            if (_candidates == null || index < 0 || index >= _candidates.Length)
+                return;
 
-            var btn = skillButtons[index];
-            if (btn.IsSelected)
+            var button = skillButtons[index];
+            if (button.IsSelected)
             {
-                btn.SetSelected(false);
+                button.SetSelected(false);
                 _selectedCount--;
-            }
-            else
-            {
-                if (_selectedCount >= _pickCount) return;
-                btn.SetSelected(true);
-                _selectedCount++;
+                return;
             }
 
-            confirmButton.interactable = _selectedCount == _pickCount;
+            if (_selectedCount >= _pickCount)
+                return;
+
+            button.SetSelected(true);
+            _selectedCount++;
         }
 
-        private void OnConfirm()
+        public void Confirm()
         {
+            if (!CanConfirm)
+                return;
+
             var chosen = new string[_pickCount];
             var idx = 0;
             for (var i = 0; i < skillButtons.Length && idx < _pickCount; i++)
@@ -94,16 +85,13 @@ namespace Features.Skill.Presentation
                     chosen[idx++] = _candidates[i].SkillId;
             }
 
-            panel.SetActive(false);
+            IsPanelVisible = false;
             _publisher.Publish(new StartSkillSelectedEvent(chosen));
         }
 
         private void OnDestroy()
         {
             _subscriber?.UnsubscribeAll(this);
-            confirmButton.onClick.RemoveAllListeners();
-            for (var i = 0; i < skillButtons.Length; i++)
-                skillButtons[i].Button.onClick.RemoveAllListeners();
         }
     }
 }

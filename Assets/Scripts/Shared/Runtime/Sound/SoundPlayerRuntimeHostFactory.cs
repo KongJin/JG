@@ -5,11 +5,11 @@ namespace Shared.Runtime.Sound
     public sealed class SoundPlayerRuntimeHostFactory
     {
         private const string RuntimeConfigResourcePath = "Shared/Sound/SoundPlayerRuntimeConfig";
+        private const string RuntimePrefabResourcePath = "Shared/Sound/SoundPlayer";
 
         public bool TryGetOrCreate(out SoundPlayer soundPlayer, out string errorMessage)
         {
-            soundPlayer = UnityEngine.Object.FindFirstObjectByType<SoundPlayer>();
-            if (soundPlayer != null)
+            if (SoundPlayer.TryGetActive(out soundPlayer))
             {
                 if (TryApplyConfig(soundPlayer, out errorMessage))
                     return true;
@@ -18,22 +18,21 @@ namespace Shared.Runtime.Sound
                 return false;
             }
 
-            var config = Resources.Load<SoundPlayerRuntimeConfig>(RuntimeConfigResourcePath);
-            if (config == null)
+            var prefab = Resources.Load<SoundPlayer>(RuntimePrefabResourcePath);
+            if (prefab == null)
             {
                 errorMessage =
-                    $"[SoundPlayer] Missing runtime config at Resources/{RuntimeConfigResourcePath}.asset.";
+                    $"[SoundPlayer] Missing runtime prefab at Resources/{RuntimePrefabResourcePath}.prefab.";
                 return false;
             }
 
-            var host = new GameObject("SoundPlayer");
-            soundPlayer = host.AddComponent<SoundPlayer>();
-            soundPlayer.ApplyRuntimeConfig(config);
+            soundPlayer = UnityEngine.Object.Instantiate(prefab);
+            soundPlayer.name = prefab.name;
 
             if (!soundPlayer.HasRuntimeDependencies)
             {
-                errorMessage = "[SoundPlayer] Runtime host was created, but audio dependencies are still missing.";
-                UnityEngine.Object.Destroy(host);
+                errorMessage = "[SoundPlayer] Runtime prefab was created, but audio dependencies are missing.";
+                UnityEngine.Object.Destroy(soundPlayer.gameObject);
                 soundPlayer = null;
                 return false;
             }

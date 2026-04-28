@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Shared.Runtime;
 using UnityEngine;
 
 namespace Shared.Runtime.Pooling
@@ -10,6 +11,8 @@ namespace Shared.Runtime.Pooling
         private readonly Transform _root;
         private readonly Stack<GameObject> _available = new Stack<GameObject>();
         private readonly HashSet<GameObject> _availableSet = new HashSet<GameObject>();
+        private readonly Dictionary<GameObject, PoolInstanceBinding> _bindings =
+            new Dictionary<GameObject, PoolInstanceBinding>();
 
         public GameObjectPool(GameObject prefab, Transform root = null, int initialSize = 0)
         {
@@ -31,7 +34,7 @@ namespace Shared.Runtime.Pooling
 
             instance.transform.SetPositionAndRotation(position, rotation);
             instance.SetActive(true);
-            Notify(instance, onRent: true);
+            Notify(Bind(instance), onRent: true);
             return instance;
         }
 
@@ -39,7 +42,7 @@ namespace Shared.Runtime.Pooling
             where T : Component
         {
             var instance = Rent(position, rotation, parentOverride);
-            return instance.GetComponent<T>();
+            return ComponentAccess.Get<T>(instance);
         }
 
         public bool RentComponents<TFirst, TSecond>(
@@ -52,8 +55,8 @@ namespace Shared.Runtime.Pooling
             where TSecond : Component
         {
             var instance = Rent(position, rotation, parentOverride);
-            first = instance.GetComponent<TFirst>();
-            second = instance.GetComponent<TSecond>();
+            first = ComponentAccess.Get<TFirst>(instance);
+            second = ComponentAccess.Get<TSecond>(instance);
             return first != null && second != null;
         }
 
@@ -62,8 +65,8 @@ namespace Shared.Runtime.Pooling
             if (instance == null || _availableSet.Contains(instance))
                 return;
 
-            Bind(instance);
-            Notify(instance, onRent: false);
+            var binding = Bind(instance);
+            Notify(binding, onRent: false);
             instance.SetActive(false);
 
             if (_root != null)
@@ -85,35 +88,50 @@ namespace Shared.Runtime.Pooling
             return instance;
         }
 
-        private void Bind(GameObject instance)
+        private PoolInstanceBinding Bind(GameObject instance)
         {
-            var pooledObject = instance.GetComponent<PooledObject>();
-            if (pooledObject == null)
-                pooledObject = instance.AddComponent<PooledObject>();
+            if (_bindings.TryGetValue(instance, out var binding))
+                return binding;
 
+            var pooledObject = ComponentAccess.Ensure<PooledObject>(instance);
             pooledObject.Bind(this);
 
             var behaviours = instance.GetComponentsInChildren<MonoBehaviour>(true);
+            var resetHandlers = new List<IPoolResetHandler>(behaviours.Length);
             for (var i = 0; i < behaviours.Length; i++)
             {
                 if (behaviours[i] is IPoolBindingHandler bindingHandler)
                     bindingHandler.OnBindToPool(pooledObject);
+
+                if (behaviours[i] is IPoolResetHandler resetHandler)
+                    resetHandlers.Add(resetHandler);
+            }
+
+            binding = new PoolInstanceBinding(resetHandlers.ToArray());
+            _bindings[instance] = binding;
+            return binding;
+        }
+
+        private static void Notify(PoolInstanceBinding binding, bool onRent)
+        {
+            var handlers = binding.ResetHandlers;
+            for (var i = 0; i < handlers.Length; i++)
+            {
+                if (onRent)
+                    handlers[i].OnRentFromPool();
+                else
+                    handlers[i].OnReturnToPool();
             }
         }
 
-        private static void Notify(GameObject instance, bool onRent)
+        private sealed class PoolInstanceBinding
         {
-            var behaviours = instance.GetComponentsInChildren<MonoBehaviour>(true);
-            for (var i = 0; i < behaviours.Length; i++)
+            public PoolInstanceBinding(IPoolResetHandler[] resetHandlers)
             {
-                if (behaviours[i] is not IPoolResetHandler handler)
-                    continue;
-
-                if (onRent)
-                    handler.OnRentFromPool();
-                else
-                    handler.OnReturnToPool();
+                ResetHandlers = resetHandlers;
             }
+
+            public IPoolResetHandler[] ResetHandlers { get; }
         }
     }
 }

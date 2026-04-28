@@ -1,38 +1,27 @@
-using Shared.Attributes;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Features.Skill.Presentation
 {
-    public sealed class SlotView : MonoBehaviour, IPointerClickHandler
+    public sealed class SlotView : MonoBehaviour
     {
-        [Required, SerializeField] private Image icon;
-        [Required, SerializeField] private Text keyLabel;
-
         private System.Action _onClick;
+
+        public string KeyLabel { get; private set; } = string.Empty;
+        public Sprite SkillIcon { get; private set; }
 
         public void SetKeyLabel(string label)
         {
-            if (keyLabel != null) keyLabel.text = label;
+            KeyLabel = label ?? string.Empty;
         }
 
         public void SetSkill(Sprite skillIcon)
         {
-            if (icon != null)
-            {
-                icon.sprite = skillIcon;
-                icon.enabled = skillIcon != null;
-            }
+            SkillIcon = skillIcon;
         }
 
         public void ClearSkill()
         {
-            if (icon != null)
-            {
-                icon.sprite = null;
-                icon.enabled = false;
-            }
+            SkillIcon = null;
         }
 
         public void SetClickHandler(System.Action onClick)
@@ -40,11 +29,8 @@ namespace Features.Skill.Presentation
             _onClick = onClick;
         }
 
-        public void OnPointerClick(PointerEventData eventData)
+        public void Click()
         {
-            if (eventData != null && eventData.button != PointerEventData.InputButton.Left)
-                return;
-
             _onClick?.Invoke();
         }
     }

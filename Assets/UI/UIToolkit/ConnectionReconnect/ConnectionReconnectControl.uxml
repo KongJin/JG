@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Shared/TacticalTokens.uss" />
+    <Style src="ConnectionReconnectControl.uss" />
+    <ui:VisualElement name="ConnectionReconnectScreen" class="connection-screen">
+        <ui:VisualElement name="ConnectionTopShell" class="connection-top-shell">
+            <ui:Button name="BackButton" text="&lt;" class="connection-back-button" />
+            <ui:Label text="연결 상태" class="connection-title" />
+            <ui:Label name="SessionBadge" text="SESSION CHECK" class="session-badge" />
+        </ui:VisualElement>
+
+        <ui:ScrollView name="ConnectionScroll" class="connection-scroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
+            <ui:VisualElement name="DominantStatePanel" class="metal-panel dominant-panel">
+                <ui:Label name="ConnectionStateTitleLabel" text="연결 차단" class="dominant-title" />
+                <ui:Label name="ConnectionStateSubtitleLabel" text="계정 인증 필요" class="dominant-subtitle" />
+                <ui:Label name="SessionExpiredLabel" text="SESSION EXPIRED" class="session-expired" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="ConnectionPipelinePanel" class="metal-panel pipeline-panel">
+                <ui:Label text="SYS.PIPELINE" class="panel-kicker" />
+                <ui:VisualElement name="AccountCheckRow" class="pipeline-row pipeline-row--ok">
+                    <ui:Label text="계정 확인" class="pipeline-label" />
+                    <ui:Label name="AccountCheckStateLabel" text="확인됨" class="pipeline-state pipeline-state--ok" />
+                </ui:VisualElement>
+                <ui:VisualElement name="RoomSyncRow" class="pipeline-row pipeline-row--wait">
+                    <ui:Label text="방 동기화" class="pipeline-label" />
+                    <ui:Label name="RoomSyncStateLabel" text="대기" class="pipeline-state pipeline-state--wait" />
+                </ui:VisualElement>
+                <ui:VisualElement name="BattleStateRow" class="pipeline-row pipeline-row--blocked">
+                    <ui:Label text="전투 상태 확인" class="pipeline-label pipeline-label--blocked" />
+                    <ui:Label name="BattleStateLabel" text="차단" class="pipeline-state pipeline-state--blocked" />
+                </ui:VisualElement>
+                <ui:VisualElement name="ReentryReadyRow" class="pipeline-row pipeline-row--dim">
+                    <ui:Label text="재입장 준비" class="pipeline-label" />
+                    <ui:Label name="ReentryReadyLabel" text="재시도 필요" class="pipeline-state" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="BlockedReasonPanel" class="metal-panel blocked-panel">
+                <ui:Label name="BlockedCodeLabel" text="BLOCKED: CLOUD AUTH REQUIRED" class="blocked-code" />
+                <ui:VisualElement class="reason-grid">
+                    <ui:VisualElement class="reason-row">
+                        <ui:Label text="원인:" class="reason-key" />
+                        <ui:Label name="ReasonValueLabel" text="Google 연결 필요" class="reason-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="reason-row">
+                        <ui:Label text="영향:" class="reason-key" />
+                        <ui:Label name="ImpactValueLabel" text="방 재입장 중지" class="reason-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="reason-row">
+                        <ui:Label text="행동:" class="reason-key" />
+                        <ui:Label name="ActionValueLabel" text="계정 확인 후 수동 재시도" class="reason-value reason-value--blue" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="ManualActionDock" class="manual-action-dock">
+                <ui:Button name="ManualRetryButton" text="수동 재시도" class="primary-retry-button" />
+                <ui:Button name="ReturnLobbyButton" text="로비로 돌아가기" class="secondary-return-button" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="DiagnosticsStrip" class="diagnostics-strip">
+                <ui:Label name="PingLabel" text="PING 48ms" class="diag-chip diag-chip--ok" />
+                <ui:Label name="RoomLabel" text="ROOM #A17" class="diag-chip" />
+                <ui:Label name="LastCheckLabel" text="LAST CHECK 02:14" class="diag-chip" />
+                <ui:Label name="RetryCountLabel" text="RETRY 1/3" class="diag-chip diag-chip--warn" />
+            </ui:VisualElement>
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>

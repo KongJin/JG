@@ -1,42 +1,28 @@
-using Shared.Attributes;
 using Features.Player.Application.Events;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Logging;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Features.Player.Presentation
 {
     public sealed class PlayerHealthHudView : MonoBehaviour
     {
-        private static readonly Vector2 HiddenAnchoredPosition = new Vector2(100000f, 100000f);
-
-        [Required, SerializeField]
-        private Slider _healthSlider;
-
-        [Required, SerializeField]
-        private Image _healthFillImage;
-
-        [Required, SerializeField]
-        private Color _normalColor = Color.green;
-
-        [Required, SerializeField]
-        private Color _lowColor = Color.red;
-
-        [Required, SerializeField]
-        private float _lowHealthThreshold = 0.3f;
-
-        [Required, SerializeField]
-        private Vector3 _headOffset = new Vector3(0f, 2.2f, 0f);
+        [SerializeField] private Color _normalColor = Color.green;
+        [SerializeField] private Color _lowColor = Color.red;
+        [SerializeField] private float _lowHealthThreshold = 0.3f;
+        [SerializeField] private Vector3 _headOffset = new(0f, 2.2f, 0f);
 
         private IEventSubscriber _eventBus;
         private DomainEntityId _playerId;
         private Transform _target;
         private Camera _worldCamera;
-        private Canvas _hudCanvas;
-        private RectTransform _rectTransform;
-        private RectTransform _hudCanvasRectTransform;
+
+        public float CurrentHp { get; private set; }
+        public float MaxHp { get; private set; }
+        public Color CurrentColor { get; private set; }
+        public Vector3 ScreenPosition { get; private set; }
+        public bool IsVisible { get; private set; }
 
         public void Initialize(
             IEventSubscriber eventBus,
@@ -44,9 +30,7 @@ namespace Features.Player.Presentation
             float maxHealth,
             bool isLocalPlayer,
             Transform target,
-            Camera worldCamera,
-            Canvas hudCanvas
-        )
+            Camera worldCamera)
         {
             if (eventBus == null)
             {
@@ -66,24 +50,13 @@ namespace Features.Player.Presentation
                 return;
             }
 
-            if (hudCanvas == null)
-            {
-                Log.Error("Player", "[PlayerHealthHudView] Hud canvas is missing.", this);
-                return;
-            }
-
             _eventBus = eventBus;
             _playerId = playerId;
-
-            _healthSlider.maxValue = maxHealth;
-            _healthSlider.value = maxHealth;
-            UpdateFillColor(1f);
-
             _target = target;
             _worldCamera = worldCamera;
-            _hudCanvas = hudCanvas;
-            _rectTransform = transform as RectTransform;
-            _hudCanvasRectTransform = hudCanvas.transform as RectTransform;
+            MaxHp = maxHealth;
+            CurrentHp = maxHealth;
+            UpdateFillColor(1f);
 
             _eventBus.Subscribe(this, new System.Action<PlayerHealthChangedEvent>(OnHealthChanged));
             _eventBus.Subscribe(this, new System.Action<PlayerRespawnedEvent>(OnRespawned));
@@ -96,27 +69,11 @@ namespace Features.Player.Presentation
 
         private void LateUpdate()
         {
-            if (_target == null || _worldCamera == null || _hudCanvas == null || _rectTransform == null || _hudCanvasRectTransform == null)
+            if (_target == null || _worldCamera == null)
                 return;
 
-            var screenPoint = _worldCamera.WorldToScreenPoint(_target.position + _headOffset);
-            if (screenPoint.z <= 0f)
-            {
-                _rectTransform.anchoredPosition = HiddenAnchoredPosition;
-                return;
-            }
-
-            var uiCamera = _hudCanvas.renderMode == RenderMode.ScreenSpaceOverlay
-                ? null
-                : _hudCanvas.worldCamera;
-
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _hudCanvasRectTransform,
-                screenPoint,
-                uiCamera,
-                out var anchoredPosition);
-
-            _rectTransform.anchoredPosition = anchoredPosition;
+            ScreenPosition = _worldCamera.WorldToScreenPoint(_target.position + _headOffset);
+            IsVisible = ScreenPosition.z > 0f;
         }
 
         private void OnHealthChanged(PlayerHealthChangedEvent e)
@@ -124,9 +81,8 @@ namespace Features.Player.Presentation
             if (!e.PlayerId.Equals(_playerId))
                 return;
 
-            _healthSlider.maxValue = e.MaxHp;
-            _healthSlider.value = e.CurrentHp;
-
+            MaxHp = e.MaxHp;
+            CurrentHp = e.CurrentHp;
             var healthPercent = e.MaxHp > 0f ? e.CurrentHp / e.MaxHp : 0f;
             UpdateFillColor(healthPercent);
         }
@@ -136,18 +92,15 @@ namespace Features.Player.Presentation
             if (!e.PlayerId.Equals(_playerId))
                 return;
 
-            _healthSlider.maxValue = e.MaxHp;
-            _healthSlider.value = e.CurrentHp;
-
-            gameObject.SetActive(true);
+            MaxHp = e.MaxHp;
+            CurrentHp = e.CurrentHp;
+            IsVisible = true;
             UpdateFillColor(1f);
         }
 
         private void UpdateFillColor(float healthPercent)
         {
-            _healthFillImage.color = healthPercent <= _lowHealthThreshold
-                ? _lowColor
-                : _normalColor;
+            CurrentColor = healthPercent <= _lowHealthThreshold ? _lowColor : _normalColor;
         }
     }
 }

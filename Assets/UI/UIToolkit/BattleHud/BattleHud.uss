@@ -1,0 +1,77 @@
+.battle-hud {
+    flex-grow: 1;
+    padding: 14px;
+    color: rgb(235, 241, 248);
+}
+
+.battle-hud__top {
+    height: 68px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 14px;
+    padding-right: 14px;
+    background-color: rgba(10, 16, 24, 0.82);
+    border-radius: 8px;
+}
+
+.battle-hud__wave,
+.battle-hud__core {
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.battle-hud__countdown {
+    font-size: 32px;
+    -unity-font-style: bold;
+    color: rgb(102, 205, 238);
+}
+
+.battle-hud__world-layer {
+    flex-grow: 1;
+}
+
+.battle-hud__dock {
+    min-height: 136px;
+    padding: 12px;
+    background-color: rgba(8, 14, 22, 0.88);
+    border-radius: 8px;
+}
+
+.battle-hud__energy {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(129, 217, 242);
+}
+
+.battle-hud__slots {
+    height: 70px;
+    flex-direction: row;
+    margin-top: 8px;
+}
+
+.battle-hud__status {
+    min-height: 22px;
+    margin-top: 6px;
+    color: rgb(208, 220, 232);
+}
+
+.battle-hud__result {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    top: 140px;
+    padding: 18px;
+    background-color: rgba(8, 12, 18, 0.94);
+    border-radius: 8px;
+}
+
+.battle-hud__result-title {
+    font-size: 28px;
+    -unity-font-style: bold;
+}
+
+.battle-hud__result-stats {
+    margin-top: 10px;
+    white-space: normal;
+}

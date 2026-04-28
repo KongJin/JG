@@ -42,8 +42,7 @@ namespace Features.Player
         [SerializeField] private float _spawnRadius = 3f;
         [Required, SerializeField] private Camera _camera;
         [Required, SerializeField] private CameraFollower _cameraFollower;
-        [Required, SerializeField] private GameObject _healthHudPrefab;
-        [Required, SerializeField] private Canvas _hudCanvas;
+        [SerializeField] private GameObject _healthHudPrefab;
         [Required, SerializeField] private ProjectileSpawner _projectileSpawner;
         [Required, SerializeField] private CombatSetup _combatSetup;
         [Required, SerializeField] private ZoneSetup _zoneSetup;
@@ -327,17 +326,19 @@ namespace Features.Player
                 _playerLookup))
                 return;
 
-            var hudView = ComponentAccess.InstantiateComponent<PlayerHealthHudView>(
-                _healthHudPrefab,
-                _hudCanvas.transform);
-            hudView.Initialize(
-                _eventBus,
-                setup.PlayerId,
-                setup.MaxHp,
-                setup.NetworkAdapter.IsMine,
-                setup.transform,
-                _camera,
-                _hudCanvas);
+            if (_healthHudPrefab != null)
+            {
+                var hudView = ComponentAccess.InstantiateComponent<PlayerHealthHudView>(
+                    _healthHudPrefab,
+                    transform);
+                hudView.Initialize(
+                    _eventBus,
+                    setup.PlayerId,
+                    setup.MaxHp,
+                    setup.NetworkAdapter.IsMine,
+                    setup.transform,
+                    _camera);
+            }
 
             _combatSetup.RegisterTarget(setup.PlayerId, setup.CombatTargetProvider);
 

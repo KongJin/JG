@@ -1,9 +1,6 @@
 using System;
-using Features.Garage.Presentation.Theme;
 using Shared.Attributes;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Features.Garage.Presentation
 {
@@ -16,16 +13,14 @@ namespace Features.Garage.Presentation
 
     public sealed class GarageUnitEditorView : MonoBehaviour
     {
-        [Required, SerializeField] private TMP_Text _selectionTitleText;
-        [Required, SerializeField] private TMP_Text _selectionSubtitleText;
         [Required, SerializeField] private GaragePartSelectorView _frameSelectorView;
         [Required, SerializeField] private GaragePartSelectorView _firepowerSelectorView;
         [Required, SerializeField] private GaragePartSelectorView _mobilitySelectorView;
-        [Required, SerializeField] private Button _clearButton;
-        [Required, SerializeField] private TMP_Text _clearButtonText;
 
         private bool _callbacksHooked;
-        private GarageEditorFocus _focusedPart = GarageEditorFocus.Frame;
+
+        public GarageEditorViewModel CurrentViewModel { get; private set; }
+        public GarageEditorFocus FocusedPart { get; private set; } = GarageEditorFocus.Frame;
 
         public event Action<int> FrameCycleRequested;
         public event Action<int> FirepowerCycleRequested;
@@ -39,50 +34,37 @@ namespace Features.Garage.Presentation
 
             _callbacksHooked = true;
 
-            _frameSelectorView.Bind();
-            _firepowerSelectorView.Bind();
-            _mobilitySelectorView.Bind();
+            _frameSelectorView?.Bind();
+            _firepowerSelectorView?.Bind();
+            _mobilitySelectorView?.Bind();
 
-            _frameSelectorView.CycleRequested += delta => FrameCycleRequested?.Invoke(delta);
-            _firepowerSelectorView.CycleRequested += delta => FirepowerCycleRequested?.Invoke(delta);
-            _mobilitySelectorView.CycleRequested += delta => MobilityCycleRequested?.Invoke(delta);
-            _clearButton.onClick.AddListener(() => ClearRequested?.Invoke());
+            if (_frameSelectorView != null)
+                _frameSelectorView.CycleRequested += delta => FrameCycleRequested?.Invoke(delta);
+            if (_firepowerSelectorView != null)
+                _firepowerSelectorView.CycleRequested += delta => FirepowerCycleRequested?.Invoke(delta);
+            if (_mobilitySelectorView != null)
+                _mobilitySelectorView.CycleRequested += delta => MobilityCycleRequested?.Invoke(delta);
         }
 
         public void Render(GarageEditorViewModel viewModel)
         {
+            CurrentViewModel = viewModel;
             if (viewModel == null)
                 return;
 
-            _selectionTitleText.text = viewModel.Title;
-            _selectionTitleText.color = ThemeColors.TextPrimary;
-
-            _selectionSubtitleText.text = viewModel.Subtitle;
-            _selectionSubtitleText.color = ThemeColors.TextSecondary;
-
-            _frameSelectorView.Render(viewModel.FrameValueText, viewModel.FrameHintText);
-            _firepowerSelectorView.Render(viewModel.FirepowerValueText, viewModel.FirepowerHintText);
-            _mobilitySelectorView.Render(viewModel.MobilityValueText, viewModel.MobilityHintText);
-            _clearButton.interactable = viewModel.IsClearInteractable;
-            ApplyFocusedPartState();
-
-            // Clear 버튼 — 파괴적 액션 스타일
-            _clearButton.Apply(ButtonStyles.Secondary, _clearButtonText);
-
-            _clearButtonText.text = "초기화";
+            _frameSelectorView?.Render(viewModel.FrameValueText, viewModel.FrameHintText);
+            _firepowerSelectorView?.Render(viewModel.FirepowerValueText, viewModel.FirepowerHintText);
+            _mobilitySelectorView?.Render(viewModel.MobilityValueText, viewModel.MobilityHintText);
         }
 
         public void SetFocusedPart(GarageEditorFocus focusedPart)
         {
-            _focusedPart = focusedPart;
-            ApplyFocusedPartState();
+            FocusedPart = focusedPart;
         }
 
-        private void ApplyFocusedPartState()
+        public void Clear()
         {
-            _frameSelectorView.gameObject.SetActive(_focusedPart == GarageEditorFocus.Frame);
-            _firepowerSelectorView.gameObject.SetActive(_focusedPart == GarageEditorFocus.Firepower);
-            _mobilitySelectorView.gameObject.SetActive(_focusedPart == GarageEditorFocus.Mobility);
+            ClearRequested?.Invoke();
         }
     }
 }

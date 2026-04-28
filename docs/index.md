@@ -23,14 +23,12 @@
 ## Quick Start
 
 - Unity UI / prefab / scene 작업: [`plans/progress.md`](./plans/progress.md) -> active owner plan -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant contract/prefab
-- LobbyScene UI/prefab 관리 기록 확인: [`plans/lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)
 - Prefab 관리 빈틈 closeout 기록 확인: [`plans/prefab_management_gap_closeout_plan.md`](./plans/prefab_management_gap_closeout_plan.md) -> relevant prefab/tool inventory
 - Stitch / handoff 작업: [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md)
 - Stitch visual/source 기록 확인: [`plans/progress.md`](./plans/progress.md) -> [`design/ui_foundations.md`](./design/ui_foundations.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md)
 - Stitch -> Unity 한 장씩 번역: [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md)
 - 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> `docs/index.md` -> relevant owner doc
 - GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> active GameScene owner plan -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
-- Runtime smoke/tooling closeout 기록 확인: [`plans/runtime_smoke_tooling_stabilization_plan.md`](./plans/runtime_smoke_tooling_stabilization_plan.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant helper
 
 ## 상태 규칙
 
@@ -57,12 +55,10 @@
 | Stitch screen을 Unity로 한 장씩 옮기는 실무 가이드 확인 | [`ops/stitch_to_unity_translation_guide.md`](./ops/stitch_to_unity_translation_guide.md) |
 | Stitch surface 실행 명령과 review capture 루프 확인 | [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) |
 | Stitch 테스트 프롬프트 확인 | [`design/stitch_test_brief.md`](./design/stitch_test_brief.md) |
-| LobbyScene UI/prefab 관리 기록 확인 | [`plans/lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) |
 | Prefab 관리 빈틈 closeout 확인 | [`plans/prefab_management_gap_closeout_plan.md`](./plans/prefab_management_gap_closeout_plan.md) |
 | GameScene 진입 큰 흐름 확인 | [`plans/game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) |
 | GameScene 실제 플로우 검증/closeout 확인 | [`plans/game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) |
 | GameScene Phase 5 multiplayer sync smoke 확인 | [`plans/game_scene_phase5_multiplayer_sync_plan.md`](./plans/game_scene_phase5_multiplayer_sync_plan.md) |
-| Runtime smoke/helper 반복 blocker 확인 | [`plans/runtime_smoke_tooling_stabilization_plan.md`](./plans/runtime_smoke_tooling_stabilization_plan.md) |
 | 계정/차고 복구 상태 확인 | [`plans/account_system_plan.md`](./plans/account_system_plan.md) |
 | Unity MCP 실행 루틴 확인 | [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) |
 | WebGL 실기 절차 확인 | [`playtest/webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) |
@@ -88,24 +84,16 @@
 
 - `active`: [`progress.md`](./plans/progress.md) - 공식 진행률 SSOT
 - `reference`: [`account_system_plan.md`](./plans/account_system_plan.md) - 계정/차고 복구 기준
-- `reference`: [`lobby_scene_ui_prefab_management_plan.md`](./plans/lobby_scene_ui_prefab_management_plan.md) - LobbyScene UI prefab route 정리와 stale helper cleanup 기록
 - `reference`: [`prefab_management_gap_closeout_plan.md`](./plans/prefab_management_gap_closeout_plan.md) - 새 UI prefab 승인, generated prefab lifecycle, review/import tooling, Resources prefab migration closeout 기록
 - `reference`: [`lobby_scene_nova1492_model_application_plan.md`](./plans/lobby_scene_nova1492_model_application_plan.md) - 변환된 Nova1492 GX 모델의 LobbyScene/Garage preview 제한 적용 closeout 기록
 - `reference`: [`nova1492_part_catalog_playable_plan.md`](./plans/nova1492_part_catalog_playable_plan.md) - 변환된 Nova1492 UnitParts 모델의 Garage 부품 catalog/playable 승격 closeout 기록
 - `reference`: [`game_scene_entry_plan.md`](./plans/game_scene_entry_plan.md) - GameScene 진입 상위 흐름
 - `active`: [`game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) - GameScene/BattleScene 실제 플레이 플로우 acceptance, blocker/mismatch closeout 계획
 - `active`: [`game_scene_phase5_multiplayer_sync_plan.md`](./plans/game_scene_phase5_multiplayer_sync_plan.md) - GameScene/BattleScene Phase 5 멀티플레이 동기화 smoke와 blocker closeout 계획
-- `reference`: [`runtime_smoke_tooling_stabilization_plan.md`](./plans/runtime_smoke_tooling_stabilization_plan.md) - Unity MCP runtime smoke helper의 lock/process, timeout/transport, UI path contract, evidence artifact 안정화 closeout 기록
-- `reference`: [`operation_record_world_memory_plan.md`](./plans/operation_record_world_memory_plan.md) - 최근 작전 기록, 세계 기억, Lobby/Garage 기록 표시 closeout 기록
+- `active`: [`technical_debt_recurrence_prevention_plan.md`](./plans/technical_debt_recurrence_prevention_plan.md) - GameScene/BattleScene refactor 후 Setup/Root drift, runtime lookup, dynamic repair 재발 방지 계획
 - `active`: [`non_stitch_ui_stitch_reimport_plan.md`](./plans/non_stitch_ui_stitch_reimport_plan.md) - Stitch source freeze가 없는 Unity-native/mixed UI를 Stitch에서 다시 만든 뒤 UI Toolkit candidate surface로 가져오는 migration plan
 - `reference`: [`nova1492_resource_integration_plan.md`](./plans/nova1492_resource_integration_plan.md) - Nova1492 설치 리소스 staging 결과와 후속 적용 기준
-- `reference`: [`garage_ui_ux_improvement_plan.md`](./plans/garage_ui_ux_improvement_plan.md) - Set B Garage Stitch-to-Unity visual mismatch와 candidate route 기록
 - `reference`: [`garage_setb_uitk_runtime_gap_plan.md`](./plans/garage_setb_uitk_runtime_gap_plan.md) - Set B Garage UI Toolkit runtime acceptance closeout와 shared Account/Garage residual handoff 기록
-
-규칙 routing reference:
-
-- `reference`: [`rule_trigger_skill_extraction_plan.md`](./plans/rule_trigger_skill_extraction_plan.md) - 행동 트리거가 필요한 문서 규칙을 skill로 분리한 결과와 후속 자동화 검토
-- `reference`: [`rule_revision_trace_cleanup_plan.md`](./plans/rule_revision_trace_cleanup_plan.md) - 규칙 개정 후 active old trace 정리와 closeout 강제화 완료 기록
 
 ### `playtest/`
 
@@ -131,7 +119,6 @@
 
 - `reference`: [`discussion_removed_features_rationale.md`](./discussions/discussion_removed_features_rationale.md) - 제외/폐기 근거 메모
 - `reference`: [`discussion_game_fun_personas.md`](./discussions/discussion_game_fun_personas.md) - 재미 토론 보조 문서
-- `historical`: [`discussion_unity.md`](./discussions/discussion_unity.md) - 규칙/도구 한계 검토 기록
 
 ## Owner 요약
 

@@ -5,7 +5,7 @@
 > doc_id: plans.prefab-management-gap-closeout
 > role: plan
 > owner_scope: 새 UI prefab 승인 잔여, generated prefab lifecycle, prefab review/import tooling, scene override drift, Resources prefab migration inventory
-> upstream: plans.progress, ops.unity-ui-authoring-workflow, plans.lobby-scene-ui-prefab-management, plans.non-stitch-ui-stitch-reimport
+> upstream: plans.progress, ops.unity-ui-authoring-workflow, plans.non-stitch-ui-stitch-reimport
 > artifacts: `Assets/Prefabs/`, `Assets/Resources/*.prefab`, `Assets/Editor/SceneTools/`, `tools/unity-mcp/`, `artifacts/unity/`, `artifacts/nova1492/`
 >
 > 진행 상황 SSOT: [`progress.md`](./progress.md)
@@ -150,7 +150,7 @@ Residual:
 - 과한점 리뷰: 기존 `ops.unity-ui-authoring-workflow`의 규칙 본문을 재정의하지 않고, 실행 순서와 acceptance만 담았다. 새 hard-fail은 바로 추가하지 않고 warning/report 단계에서 시작하도록 범위를 낮췄다.
 - 부족한점 리뷰: owner, scope, 배경, 목표, 제외 범위, 판단 기준, 실행 순서, acceptance, blocked/residual, 검증 명령을 포함했다. `docs.index`와 `progress.md` 등록이 필요하다.
 - 수정 후 재리뷰: generated preview, new UI prefab, Resources migration, review tool, destructive helper가 서로 다른 owner로 흩어지지 않도록 이 계획은 조정/closeout owner만 맡고, 실제 규칙 본문은 기존 owner에 남긴다.
-- owner impact: primary `plans.prefab-management-gap-closeout`; secondary `plans.progress`, `docs.index`, `plans.lobby-scene-ui-prefab-management`, `plans.non-stitch-ui-stitch-reimport`; out-of-scope `ops.unity-ui-authoring-workflow` rule rewrite.
+- owner impact: primary `plans.prefab-management-gap-closeout`; secondary `plans.progress`, `docs.index`, `plans.non-stitch-ui-stitch-reimport`; out-of-scope `ops.unity-ui-authoring-workflow` rule rewrite.
 - doc lifecycle checked: 새 active plan이 필요하다. 여러 세션에서 inventory, tooling, policy residual을 이어받아야 하며 `progress.md` 한 줄만으로는 acceptance와 residual을 보존하기 어렵다.
 - plan rereview: clean
 - 2026-04-26 반복 리뷰: 과한점 없음. 새 hard-fail이나 정책 본문을 이 plan에 추가하지 않았고, generated prefab 대량 정리도 실행 범위에서 제외했다.

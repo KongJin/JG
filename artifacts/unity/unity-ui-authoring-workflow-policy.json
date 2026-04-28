@@ -2,56 +2,53 @@
     "success":  true,
     "terminalVerdict":  "",
     "blockedReason":  "",
-    "generatedAt":  "2026-04-28 01:53:38+09:00",
+    "generatedAt":  "2026-04-28 09:57:27+09:00",
     "agent":  "",
-    "route":  "lobby-ui",
+    "route":  "uitk-candidate",
     "changedFiles":  [
-                         "artifacts/unity/garage-setb-uitk-phase5-runtime-acceptance.png",
-                         "artifacts/unity/garage-setb-uitk-phase5-runtime-smoke.json",
-                         "artifacts/unity/garage-setb-uitoolkit-port-report.md",
-                         "Assets/Scenes/GarageSetBUitkPreview.unity",
-                         "Assets/Scenes/LobbyScene.unity",
-                         "Assets/Scripts/Features/Garage/GarageSetup.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkPageController.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkPreviewRenderer.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkRuntimeAdapter.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkSurface.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GarageUnitPreviewAssembly.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/GarageUnitPreviewView.cs",
-                         "Assets/Scripts/Features/Lobby/Presentation/LobbyView.cs",
-                         "Assets/Scripts/Shared/Runtime/ComponentAccess.cs",
-                         "Assets/Scripts/Shared/Runtime/Pooling/PooledObject.cs",
-                         "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml",
-                         "docs/index.md",
-                         "docs/plans/garage_setb_uitk_runtime_gap_plan.md",
-                         "docs/plans/progress.md"
+                         "artifacts/unity/account-connection-uitk-candidate-report.md",
+                         "artifacts/unity/account-sync-uitk-preview-gameview.png",
+                         "artifacts/unity/connection-reconnect-uitk-preview-gameview.png",
+                         "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uss",
+                         "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml",
+                         "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uss",
+                         "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml"
                      ],
-    "allDirtyFileCount":  237,
+    "allDirtyFileCount":  113,
     "unityUiRelevantFiles":  [
-                                 "Assets/Scenes/GarageSetBUitkPreview.unity",
-                                 "Assets/Scenes/LobbyScene.unity",
-                                 "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml"
+                                 "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uss",
+                                 "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml",
+                                 "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uss",
+                                 "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml"
                              ],
     "uitkCandidateFiles":  [
-                               "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml"
+                               "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uss",
+                               "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml",
+                               "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uss",
+                               "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml"
                            ],
     "uitkCandidateEvidenceFiles":  [
-                                       "artifacts/unity/garage-setb-uitk-phase5-runtime-acceptance.png",
-                                       "artifacts/unity/garage-setb-uitk-phase5-runtime-smoke.json",
-                                       "artifacts/unity/garage-setb-uitoolkit-port-report.md"
+                                       "artifacts/unity/account-connection-uitk-candidate-report.md",
+                                       "artifacts/unity/account-sync-uitk-preview-gameview.png",
+                                       "artifacts/unity/connection-reconnect-uitk-preview-gameview.png"
                                    ],
     "uitkCandidatePreviewEvidenceFiles":  [
-                                              "artifacts/unity/garage-setb-uitk-phase5-runtime-acceptance.png"
+                                              "artifacts/unity/account-sync-uitk-preview-gameview.png",
+                                              "artifacts/unity/connection-reconnect-uitk-preview-gameview.png"
                                           ],
     "uitkCandidateReportEvidenceFiles":  [
-                                             "artifacts/unity/garage-setb-uitk-phase5-runtime-smoke.json",
-                                             "artifacts/unity/garage-setb-uitoolkit-port-report.md"
+                                             "artifacts/unity/account-connection-uitk-candidate-report.md"
                                          ],
     "requiredEvidence":  [
                              {
                                  "name":  "compile-reload",
                                  "path":  null,
                                  "message":  "Compile and script reload must settle before Unity UI workflow evidence is trusted."
+                             },
+                             {
+                                 "name":  "preview-capture-report",
+                                 "path":  null,
+                                 "message":  "UI Toolkit candidate surfaces require a fresh preview capture/report before pilot success or runtime acceptance can be claimed."
                              }
                          ],
     "missingEvidence":  [
@@ -90,8 +87,8 @@
                                             "isWaitingForPlayMode":  false,
                                             "projectKey":  "0d8ea703",
                                             "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
-                                            "activeScene":  "GarageSetBUitkPreview",
-                                            "activeScenePath":  "Assets/Scenes/GarageSetBUitkPreview.unity",
+                                            "activeScene":  "ConnectionReconnectUitkPreview",
+                                            "activeScenePath":  "Assets/Scenes/ConnectionReconnectUitkPreview.unity",
                                             "pendingPlayAction":  "",
                                             "pendingPlayAgeMs":  0
                                         }
@@ -99,9 +96,11 @@
     "capabilityExpansionGuard":  {
                                      "allowCapabilityExpansion":  false,
                                      "surfaceOnboardingFiles":  [
-                                                                    "artifacts/unity/garage-setb-uitk-phase5-runtime-acceptance.png",
-                                                                    "artifacts/unity/garage-setb-uitk-phase5-runtime-smoke.json",
-                                                                    "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml"
+                                                                    "artifacts/unity/account-sync-uitk-preview-gameview.png",
+                                                                    "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uss",
+                                                                    "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml",
+                                                                    "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uss",
+                                                                    "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml"
                                                                 ],
                                      "capabilityExpansionFiles":  [
 

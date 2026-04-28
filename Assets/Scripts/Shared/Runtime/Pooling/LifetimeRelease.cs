@@ -2,20 +2,19 @@ using UnityEngine;
 
 namespace Shared.Runtime.Pooling
 {
-    public sealed class LifetimeRelease : MonoBehaviour, IPoolResetHandler
+    public sealed class LifetimeRelease : MonoBehaviour, IPoolResetHandler, IPoolBindingHandler
     {
         private PooledObject _pooledObject;
         private bool _isArmed;
         private float _remaining;
 
-        private void Awake()
+        public void OnBindToPool(PooledObject pooledObject)
         {
-            _pooledObject = GetComponent<PooledObject>();
+            _pooledObject = pooledObject;
         }
 
         public void Arm(float seconds)
         {
-            _pooledObject ??= GetComponent<PooledObject>();
             _remaining = seconds;
             _isArmed = seconds > 0f;
         }

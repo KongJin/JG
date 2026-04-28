@@ -1,0 +1,254 @@
+﻿{
+    "success":  false,
+    "terminalVerdict":  "blocked",
+    "blockedReason":  "Stitch screen onboarding evidence is mixed with common Stitch/Unity MCP capability or policy edits. Stop and split the work: zero-touch onboarding must not mutate shared logic; capability expansion must be declared and validated as a separate lane. | New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Resources/Shared/Sound/SoundPlayer.prefab",
+    "generatedAt":  "2026-04-28 09:53:34+09:00",
+    "agent":  "Any",
+    "route":  "mixed",
+    "changedFiles":  [
+                         "artifacts/rules/issue-recurrence-closeout.json",
+                         "artifacts/unity/account-connection-uitk-workflow-policy.json",
+                         "artifacts/unity/account-sync-uitk-preview-gameview.png",
+                         "artifacts/unity/connection-reconnect-uitk-preview-gameview.png",
+                         "artifacts/unity/unity-ui-authoring-workflow-policy.json",
+                         "Assets/Editor/SceneTools/AccountConnectionUitkPreviewTool.cs",
+                         "Assets/Editor/SceneTools/AccountConnectionUitkPreviewTool.cs.meta",
+                         "Assets/Resources/BattleEntity.prefab",
+                         "Assets/Resources/DamageNumber.prefab",
+                         "Assets/Resources/EnemyHealthBar.prefab",
+                         "Assets/Resources/PlayerHealthHudView.prefab",
+                         "Assets/Resources/Shared/Sound/SoundPlayer.prefab",
+                         "Assets/Resources/Shared/Sound/SoundPlayer.prefab.meta",
+                         "Assets/Scenes/AccountSyncUitkPreview.unity",
+                         "Assets/Scenes/AccountSyncUitkPreview.unity.meta",
+                         "Assets/Scenes/BattleScene.unity",
+                         "Assets/Scenes/ConnectionReconnectUitkPreview.unity",
+                         "Assets/Scenes/ConnectionReconnectUitkPreview.unity.meta",
+                         "Assets/Scripts/Features/Account/Presentation/AccountSettingsView.cs",
+                         "Assets/Scripts/Features/Account/Presentation/LoginLoadingView.cs",
+                         "Assets/Scripts/Features/Combat/Presentation/DamageNumberView.cs",
+                         "Assets/Scripts/Features/Enemy/Presentation/EnemyContactDamageDetector.cs",
+                         "Assets/Scripts/Features/Enemy/Presentation/EnemyHealthBarView.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageNovaPartsPanelRowView.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageNovaPartsPanelView.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePageChromeBindings.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePageChromeController.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePageController.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePageKeyboardShortcuts.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePageKeyboardShortcuts.cs.meta",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePageScrollController.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePartSelectorView.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageResultPanelView.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageRosterListView.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageSlotItemView.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageUnitEditorView.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageUnitPreviewView.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Theme/ButtonStyles.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/LobbyGarageNavBarView.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/LobbyGarageSummaryView.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/LobbyView.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/MemberItemView.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/RoomDetailView.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/RoomItemView.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/RoomListView.cs",
+                         "Assets/Scripts/Features/Player/GameSceneRoot.cs",
+                         "Assets/Scripts/Features/Player/Presentation/EnergyBarView.cs",
+                         "Assets/Scripts/Features/Player/Presentation/PlayerHealthHudView.cs",
+                         "Assets/Scripts/Features/Player/Runtime/PlayerHealthHudFollower.cs",
+                         "Assets/Scripts/Features/Projectile/Infrastructure/ProjectilePhysicsAdapter.cs",
+                         "Assets/Scripts/Features/Skill/Presentation/Input/SlotInputHandler.cs",
+                         "Assets/Scripts/Features/Skill/Presentation/SkillSelectButton.cs",
+                         "Assets/Scripts/Features/Skill/Presentation/StartSkillSelectionView.cs",
+                         "Assets/Scripts/Features/Skill/Presentation/UI/BarView.cs",
+                         "Assets/Scripts/Features/Skill/Presentation/UI/SlotView.cs",
+                         "Assets/Scripts/Features/Status/StatusSetup.cs",
+                         "Assets/Scripts/Features/Status/StatusTickDriver.cs",
+                         "Assets/Scripts/Features/Status/StatusTickDriver.cs.meta",
+                         "Assets/Scripts/Features/Unit/Infrastructure/BattleEntityAttackDriver.cs",
+                         "Assets/Scripts/Features/Unit/Infrastructure/BattleEntityAttackDriver.cs.meta",
+                         "Assets/Scripts/Features/Unit/Infrastructure/BattleEntityPrefabSetup.cs",
+                         "Assets/Scripts/Features/Unit/Presentation/PlacementErrorView.cs",
+                         "Assets/Scripts/Features/Unit/Presentation/SummonCommandController.cs",
+                         "Assets/Scripts/Features/Unit/Presentation/SummonDockLayoutBinder.cs",
+                         "Assets/Scripts/Features/Unit/Presentation/UnitSlotInputHandler.cs",
+                         "Assets/Scripts/Features/Unit/Presentation/UnitSlotsContainer.cs",
+                         "Assets/Scripts/Features/Unit/Presentation/UnitSlotView.cs",
+                         "Assets/Scripts/Features/Wave/Presentation/BattleHudUitkSurface.cs",
+                         "Assets/Scripts/Features/Wave/Presentation/BattleHudUitkSurface.cs.meta",
+                         "Assets/Scripts/Features/Wave/Presentation/CoreHealthHudView.cs",
+                         "Assets/Scripts/Features/Wave/Presentation/WaveEndView.cs",
+                         "Assets/Scripts/Features/Wave/Presentation/WaveHudView.cs",
+                         "Assets/Scripts/Features/Zone/Presentation/ZoneCollisionDetector.cs",
+                         "Assets/Scripts/Shared/Runtime/ComponentAccess.cs",
+                         "Assets/Scripts/Shared/Runtime/Pooling/GameObjectPool.cs",
+                         "Assets/Scripts/Shared/Runtime/Pooling/LifetimeRelease.cs",
+                         "Assets/Scripts/Shared/Runtime/Sound/SoundPlayer.cs",
+                         "Assets/Scripts/Shared/Runtime/Sound/SoundPlayerRuntimeHostFactory.cs",
+                         "Assets/Scripts/Shared/Ui/ButtonSoundEmitter.cs",
+                         "Assets/Scripts/Shared/Ui/RoundedRectGraphic.cs",
+                         "Assets/Scripts/Shared/Ui/SceneErrorPresenter.cs",
+                         "Assets/Settings/UI/AccountSyncPanelSettings.asset",
+                         "Assets/Settings/UI/AccountSyncPanelSettings.asset.meta",
+                         "Assets/Settings/UI/ConnectionReconnectPanelSettings.asset",
+                         "Assets/Settings/UI/ConnectionReconnectPanelSettings.asset.meta",
+                         "Assets/UI/UIToolkit/AccountSync.meta",
+                         "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uss",
+                         "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uss.meta",
+                         "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml",
+                         "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml.meta",
+                         "Assets/UI/UIToolkit/BattleHud.meta",
+                         "Assets/UI/UIToolkit/BattleHud/BattleHud.uss",
+                         "Assets/UI/UIToolkit/BattleHud/BattleHud.uss.meta",
+                         "Assets/UI/UIToolkit/BattleHud/BattleHud.uxml",
+                         "Assets/UI/UIToolkit/BattleHud/BattleHud.uxml.meta",
+                         "Assets/UI/UIToolkit/ConnectionReconnect.meta",
+                         "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uss",
+                         "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uss.meta",
+                         "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml",
+                         "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml.meta",
+                         "docs/index.md",
+                         "docs/plans/progress.md",
+                         "docs/plans/technical_debt_recurrence_prevention_plan.md",
+                         "tools/check-unity-asset-hygiene.ps1",
+                         "tools/rule-harness/README.md",
+                         "tools/rule-harness/register-rule-harness-role-pipeline-scheduled-task.ps1",
+                         "tools/rule-harness/roles/TechDebtReviewHarness.psm1",
+                         "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+                         "tools/rule-harness/unregister-rule-harness-role-pipeline-scheduled-task.ps1",
+                         "tools/unity-mcp/Invoke-PrefabManagementInventory.ps1"
+                     ],
+    "allDirtyFileCount":  110,
+    "unityUiRelevantFiles":  [
+                                 "Assets/Resources/BattleEntity.prefab",
+                                 "Assets/Resources/DamageNumber.prefab",
+                                 "Assets/Resources/EnemyHealthBar.prefab",
+                                 "Assets/Resources/PlayerHealthHudView.prefab",
+                                 "Assets/Resources/Shared/Sound/SoundPlayer.prefab",
+                                 "Assets/Scenes/AccountSyncUitkPreview.unity",
+                                 "Assets/Scenes/BattleScene.unity",
+                                 "Assets/Scenes/ConnectionReconnectUitkPreview.unity",
+                                 "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uss",
+                                 "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml",
+                                 "Assets/UI/UIToolkit/BattleHud/BattleHud.uss",
+                                 "Assets/UI/UIToolkit/BattleHud/BattleHud.uxml",
+                                 "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uss",
+                                 "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml"
+                             ],
+    "uitkCandidateFiles":  [
+                               "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uss",
+                               "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml",
+                               "Assets/UI/UIToolkit/BattleHud/BattleHud.uss",
+                               "Assets/UI/UIToolkit/BattleHud/BattleHud.uxml",
+                               "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uss",
+                               "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml"
+                           ],
+    "uitkCandidateEvidenceFiles":  [
+                                       "artifacts/unity/account-connection-uitk-workflow-policy.json",
+                                       "artifacts/unity/account-sync-uitk-preview-gameview.png",
+                                       "artifacts/unity/connection-reconnect-uitk-preview-gameview.png",
+                                       "artifacts/unity/unity-ui-authoring-workflow-policy.json"
+                                   ],
+    "uitkCandidatePreviewEvidenceFiles":  [
+                                              "artifacts/unity/account-sync-uitk-preview-gameview.png",
+                                              "artifacts/unity/connection-reconnect-uitk-preview-gameview.png"
+                                          ],
+    "uitkCandidateReportEvidenceFiles":  [
+                                             "artifacts/unity/account-connection-uitk-workflow-policy.json",
+                                             "artifacts/unity/unity-ui-authoring-workflow-policy.json"
+                                         ],
+    "requiredEvidence":  [
+                             {
+                                 "name":  "compile-reload",
+                                 "path":  null,
+                                 "message":  "Compile and script reload must settle before Unity UI workflow evidence is trusted."
+                             }
+                         ],
+    "missingEvidence":  [
+
+                        ],
+    "staleEvidence":  [
+
+                      ],
+    "policyViolations":  [
+                             {
+                                 "code":  "stitch-onboarding-mixed-with-capability-expansion",
+                                 "message":  "Stitch screen onboarding evidence is mixed with common Stitch/Unity MCP capability or policy edits. Stop and split the work: zero-touch onboarding must not mutate shared logic; capability expansion must be declared and validated as a separate lane."
+                             },
+                             {
+                                 "code":  "new-prefab-blocked",
+                                 "message":  "New prefab detected. UI prefab creation is blocked by default; author the change in an existing scene/prefab unless the task explicitly requires a new prefab. path=Assets/Resources/Shared/Sound/SoundPlayer.prefab"
+                             }
+                         ],
+    "compile":  {
+                    "success":  true,
+                    "request":  {
+                                    "ok":  true,
+                                    "cleanBuildCacheRequested":  false,
+                                    "isCompiling":  true,
+                                    "message":  "Asset refresh triggered."
+                                },
+                    "wait":  {
+                                 "ok":  true,
+                                 "timedOut":  false,
+                                 "requestedCompilation":  false,
+                                 "waitedMs":  120000,
+                                 "isCompiling":  false
+                             },
+                    "healthAfterWait":  {
+                                            "ok":  true,
+                                            "bridgeRunning":  true,
+                                            "port":  52675,
+                                            "isPlaying":  false,
+                                            "isPlayingOrWillChange":  false,
+                                            "isPlayModeChanging":  false,
+                                            "rawIsPlayingOrWillChange":  false,
+                                            "isCompiling":  false,
+                                            "isWaitingForPlayMode":  false,
+                                            "projectKey":  "0d8ea703",
+                                            "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                            "activeScene":  "ConnectionReconnectUitkPreview",
+                                            "activeScenePath":  "Assets/Scenes/ConnectionReconnectUitkPreview.unity",
+                                            "pendingPlayAction":  "",
+                                            "pendingPlayAgeMs":  0
+                                        }
+                },
+    "capabilityExpansionGuard":  {
+                                     "allowCapabilityExpansion":  false,
+                                     "surfaceOnboardingFiles":  [
+                                                                    "artifacts/unity/account-connection-uitk-workflow-policy.json",
+                                                                    "artifacts/unity/account-sync-uitk-preview-gameview.png",
+                                                                    "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uss",
+                                                                    "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml",
+                                                                    "Assets/UI/UIToolkit/BattleHud/BattleHud.uss",
+                                                                    "Assets/UI/UIToolkit/BattleHud/BattleHud.uxml",
+                                                                    "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uss",
+                                                                    "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml"
+                                                                ],
+                                     "capabilityExpansionFiles":  [
+                                                                      "tools/unity-mcp/Invoke-PrefabManagementInventory.ps1"
+                                                                  ]
+                                 },
+    "prefabManagement":  {
+                             "inventory":  {
+                                               "path":  "artifacts/unity/prefab-management-inventory.json",
+                                               "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                               "totalPrefabs":  9,
+                                               "generatedPreviewPrefabs":  0,
+                                               "resourcesPrefabs":  9,
+                                               "duplicateCandidateGroups":  0,
+                                               "approvedNewPrefabTargets":  0
+                                           },
+                             "approvalManifest":  {
+                                                      "path":  "artifacts/unity/prefab-management-approved-new-prefabs.json",
+                                                      "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                                      "prefabCount":  0,
+                                                      "prefabPaths":  [
+
+                                                                      ]
+                                                  }
+                         },
+    "declaredNewPrefabTargets":  [
+
+                                 ],
+    "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\unity-ui-authoring-workflow-policy-uitk-removal.json"
+}

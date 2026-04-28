@@ -8,7 +8,6 @@ using Shared.Kernel;
 using Shared.Runtime;
 using Shared.Runtime.Pooling;
 using UnityEngine;
-using UnityEngine.UI;
 using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Presentation
@@ -24,8 +23,7 @@ namespace Features.Unit.Presentation
         [SerializeField] private UnitSlotInputHandler _inputHandlerPrefab;
 
         [Header("Layout")]
-        [Required, SerializeField] private RectTransform _slotsParent;
-        [Required, SerializeField] private Canvas _canvas;
+        [SerializeField] private Transform _slotsParent;
         [SerializeField] private Camera _worldCamera;
 
         [Header("Placement")]
@@ -117,13 +115,12 @@ namespace Features.Unit.Presentation
             _activeSlots.Add(slotView);
 
             // 드래그 앤 드롭 핸들러 연결 (고급 입력 전용)
-            if (_inputHandlerPrefab != null && _canvas != null)
+            if (_inputHandlerPrefab != null)
             {
                 var inputHandler = Instantiate(_inputHandlerPrefab, slotView.transform, false);
                 inputHandler.Initialize(
                     _roster[rosterIndex],
                     (_, spawnPosition) => OnSummonRequested(_roster[rosterIndex], rosterIndex, spawnPosition),
-                    _canvas,
                     _worldCamera,
                     _placementArea,
                     _errorView,

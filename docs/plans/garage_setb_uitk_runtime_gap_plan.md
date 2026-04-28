@@ -5,16 +5,16 @@
 > doc_id: plans.garage-setb-uitk-runtime-gap
 > role: plan
 > owner_scope: Garage SetB UI Toolkit pilot을 runtime Garage 후보로 승격하기 위한 binding, interaction, 3D preview, replacement gap 해결 순서
-> upstream: plans.progress, plans.garage-ui-ux-improvement, design.ui-foundations, ops.unity-ui-authoring-workflow, ops.stitch-data-workflow, ops.acceptance-reporting-guardrails
+> upstream: plans.progress, design.ui-foundations, ops.unity-ui-authoring-workflow, ops.stitch-data-workflow, ops.acceptance-reporting-guardrails
 > artifacts: `Assets/UI/UIToolkit/GarageSetB/`, `Assets/Scenes/GarageSetBUitkPreview.unity`, `Assets/Settings/UI/GarageSetBPanelSettings.asset`, `artifacts/unity/garage-setb-uitoolkit-preview.png`, `artifacts/unity/garage-setb-uitoolkit-port-report.md`
 
 이 문서는 현재 static `GarageSetB` UI Toolkit pilot을 실제 Garage runtime replacement 후보로 만들 때 남은 gap과 실행 순서를 소유한다.
-visual fidelity 배경은 `plans.garage-ui-ux-improvement`, 현재 source/evidence 판단은 `plans.progress`와 `design.ui-foundations`가 소유한다.
+visual fidelity 배경과 현재 source/evidence 판단은 `plans.progress`와 `design.ui-foundations`가 소유한다.
 
 ## Primary Owner / Scope
 
 - primary owner: `plans.garage-setb-uitk-runtime-gap`
-- secondary owners: `plans.garage-ui-ux-improvement`, `ops.unity-ui-authoring-workflow`, `ops.stitch-data-workflow`, Garage presentation/runtime scripts
+- secondary owners: `plans.progress`, `design.ui-foundations`, `ops.unity-ui-authoring-workflow`, `ops.stitch-data-workflow`, Garage presentation/runtime scripts
 - out-of-scope: Stitch source 재디자인, 새로운 UI authoring 규칙 추가, GameScene HUD migration, account/Firebase 저장 검증의 최종 acceptance, Nova1492 모델 대량 재분류
 
 ## Current Surface
@@ -150,7 +150,7 @@ Acceptance:
 
 ## Blocked / Residual Handling
 
-- If visual fidelity is still a mismatch, do not start scene replacement; return to `plans.garage-ui-ux-improvement`.
+- If visual fidelity is still a mismatch, do not start scene replacement; return to `plans.progress` and `design.ui-foundations`.
 - If UITK cannot display the RenderTexture path reliably, mark `blocked: preview-hosting-route` and keep 3D preview integration separate from state binding.
 - If existing Garage presenter models do not expose required state, add a small explicit presentation port; do not query runtime children to reconstruct state.
 - If save/load or settings WebGL behavior fails, route final acceptance to shared `Account/Garage` validation rather than closing this plan as success.
@@ -178,7 +178,7 @@ Acceptance:
 - Runtime smoke covered: real Garage state render, slot select, part focus, settings action, save action route, 390x844 GameView capture, console error delta, and real 3D preview hierarchy.
 - Preview hierarchy included promoted Nova Unity model mesh children: `body1_sz`, `arm1_sz`, and `legs1_rdrn`.
 - Validation: `tools/check-compile-errors.ps1` returned 0 errors and 0 warnings after the final route changes.
-- owner impact: primary `plans.garage-setb-uitk-runtime-gap` moved to reference; residual shared validation stays with `plans.progress` `Account/Garage`; visual/source background stays with `plans.garage-ui-ux-improvement` as reference.
+- owner impact: primary `plans.garage-setb-uitk-runtime-gap` moved to reference; residual shared validation stays with `plans.progress` `Account/Garage`; visual/source background stays with `plans.progress` and `design.ui-foundations`.
 - doc lifecycle checked: active -> reference; keep this plan as compact closeout evidence because it records the runtime acceptance route and residual owner handoff.
 - plan rereview: clean
 
@@ -187,6 +187,6 @@ Acceptance:
 - 과한점 리뷰: 새 UI 규칙, 새 artifact schema, 새 hard-fail을 만들지 않고 기존 UI Toolkit candidate route의 runtime gap만 소유한다.
 - 부족한점 리뷰: owner/scope, current surface, phase order, acceptance, validation, blocked/residual, lifecycle을 포함했다.
 - 수정 후 재리뷰: visual fidelity/source redesign은 기존 Set B visual plans에 남기고, 이 문서는 binding/replacement gap으로만 좁혔다.
-- owner impact: primary `plans.garage-setb-uitk-runtime-gap`; secondary `plans.garage-ui-ux-improvement`, `plans.progress`, `ops.unity-ui-authoring-workflow`; out-of-scope `ops.stitch-data-workflow` 규칙 개정.
+- owner impact: primary `plans.garage-setb-uitk-runtime-gap`; secondary `plans.progress`, `design.ui-foundations`, `ops.unity-ui-authoring-workflow`; out-of-scope `ops.stitch-data-workflow` 규칙 개정.
 - doc lifecycle checked: 새 active plan으로 등록하고, runtime verdict 뒤 reference 전환 후보로 본다.
 - plan rereview: clean
