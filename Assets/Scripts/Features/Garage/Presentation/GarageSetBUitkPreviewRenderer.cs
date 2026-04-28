@@ -42,7 +42,7 @@ namespace Features.Garage.Presentation
                 return false;
 
             HasPreview = true;
-            _previewCamera.Render();
+            RenderPreviewFrame();
             return true;
         }
 
@@ -57,12 +57,22 @@ namespace Features.Garage.Presentation
             EnsureCamera();
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             if (_currentPreviewRoot == null)
                 return;
 
             GarageUnitPreviewAssembly.SetYaw(_currentPreviewRoot, Time.unscaledTime * _autoRotationSpeed);
+            RenderPreviewFrame();
+        }
+
+        private void RenderPreviewFrame()
+        {
+            if (_previewCamera == null)
+                return;
+
+            EnsureRenderTexture();
+            _previewCamera.Render();
         }
 
         private void EnsureCamera()

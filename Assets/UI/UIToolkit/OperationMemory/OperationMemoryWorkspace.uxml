@@ -106,11 +106,11 @@
                     <ui:Label text="CLOUD SYNC WAITING" class="memory-chip memory-chip--orange" />
                 </ui:VisualElement>
             </ui:VisualElement>
-        </ui:ScrollView>
 
-        <ui:VisualElement name="ReturnDock" class="memory-return-dock">
-            <ui:Button name="ReturnToLobbyButton" text="RETURN TO LOBBY" class="memory-primary-button" />
-            <ui:Button name="OpenGarageButton" text="OPEN GARAGE" class="memory-secondary-button" />
-        </ui:VisualElement>
+            <ui:VisualElement name="ReturnDock" class="memory-return-dock">
+                <ui:Button name="ReturnToLobbyButton" text="RETURN TO LOBBY" class="memory-primary-button" />
+                <ui:Button name="OpenGarageButton" text="OPEN GARAGE" class="memory-secondary-button" />
+            </ui:VisualElement>
+        </ui:ScrollView>
     </ui:VisualElement>
 </ui:UXML>

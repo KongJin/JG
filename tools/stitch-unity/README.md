@@ -5,7 +5,7 @@
 > doc_id: tools.stitch-unity-readme
 > role: reference
 > owner_scope: Stitch source fact, contract, and presentation profile execution reference
-> upstream: repo.agents, docs.index, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract, ops.stitch-to-unity-translation-guide
+> upstream: repo.agents, docs.index, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract, ops.unity-ui-authoring-workflow
 > artifacts: `tools/stitch-unity/`, `artifacts/stitch/`, `artifacts/unity/`
 
 이 폴더는 Stitch source를 Unity 쪽 후보 구현으로 넘기기 전에 source facts, contract draft, presentation profile을 확인하는 실행 스크립트를 둔다.

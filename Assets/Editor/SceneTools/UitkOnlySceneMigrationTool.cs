@@ -9,6 +9,7 @@ using Features.Player.Presentation;
 using Features.Unit.Presentation;
 using Features.Wave;
 using Features.Wave.Presentation;
+using Shared.Ui;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -21,8 +22,14 @@ namespace ProjectSD.EditorTools.SceneTools
     {
         private const string LobbyScenePath = "Assets/Scenes/LobbyScene.unity";
         private const string BattleScenePath = "Assets/Scenes/BattleScene.unity";
+        private const string TempScenePath = "Assets/Scenes/TempScene.unity";
         private const string SharedPanelSettingsPath = "Assets/Settings/UI/SharedShellPanelSettings.asset";
         private const string BattlePanelSettingsPath = "Assets/Settings/UI/BattleHudPanelSettings.asset";
+        private const string LobbyShellUxmlPath = "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml";
+        private const string GarageSetBUxmlPath = "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml";
+        private const string OperationMemoryUxmlPath = "Assets/UI/UIToolkit/OperationMemory/OperationMemoryWorkspace.uxml";
+        private const string AccountSyncUxmlPath = "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml";
+        private const string ConnectionReconnectUxmlPath = "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml";
         private const string BattleHudUxmlPath = "Assets/UI/UIToolkit/BattleHud/BattleHud.uxml";
         private const string BattleHudUssPath = "Assets/UI/UIToolkit/BattleHud/BattleHud.uss";
 
@@ -34,6 +41,7 @@ namespace ProjectSD.EditorTools.SceneTools
 
             MigrateLobbyScene();
             MigrateBattleScene();
+            MigrateTempSceneIfPresent();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -46,24 +54,40 @@ namespace ProjectSD.EditorTools.SceneTools
             var lobbyDocument = EnsureUidocument(
                 "LobbyUitkDocument",
                 SharedPanelSettingsPath,
-                visualTreePath: null,
+                LobbyShellUxmlPath,
                 sortingOrder: 20);
             var lobbyView = EnsureComponent<LobbyView>(lobbyDocument);
-            AssignObjectReference(lobbyView, "_document", lobbyDocument.GetComponent<UIDocument>());
+            var lobbyUidocument = lobbyDocument.GetComponent<UIDocument>();
+            AssignObjectReference(lobbyView, "_document", lobbyUidocument);
+            AssignObjectReference(lobbyView, "_lobbyShellTree", AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(LobbyShellUxmlPath));
+            AssignObjectReference(lobbyView, "_operationMemoryTree", AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(OperationMemoryUxmlPath));
+            AssignObjectReference(lobbyView, "_accountSyncTree", AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(AccountSyncUxmlPath));
+            AssignObjectReference(lobbyView, "_connectionReconnectTree", AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(ConnectionReconnectUxmlPath));
+            var garageHost = EnsureUidocument(
+                "GarageSetBUitkDocument",
+                SharedPanelSettingsPath,
+                GarageSetBUxmlPath,
+                sortingOrder: 10);
+            var garageDocument = garageHost.GetComponent<UIDocument>();
+            AssignObjectReference(garageDocument, "m_ParentUI", lobbyUidocument);
+            AssignObjectReference(lobbyView, "_garageDocument", garageDocument);
 
             var stateHost = EnsureGameObject("LobbyRuntimeUiState");
             var loadingView = EnsureComponent<LoginLoadingView>(stateHost);
             var accountSettingsView = EnsureComponent<AccountSettingsView>(stateHost);
+            var sceneErrorPresenter = EnsureComponent<SceneErrorPresenter>(stateHost);
 
             var setup = UnityEngine.Object.FindFirstObjectByType<LobbySetup>(FindObjectsInactive.Include);
             if (setup != null)
             {
                 AssignObjectReference(setup, "_view", lobbyView);
+                AssignObjectReference(setup, "_sceneErrorPresenter", sceneErrorPresenter);
                 AssignObjectReference(setup, "_loginLoadingView", loadingView);
                 AssignObjectReference(setup, "_accountSettingsView", accountSettingsView);
             }
 
             RemoveLegacyUiObjects(lobbyDocument, stateHost);
+            RemoveExtraComponents(lobbyView);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
         }
@@ -89,6 +113,7 @@ namespace ProjectSD.EditorTools.SceneTools
             var placementError = EnsureComponent<PlacementErrorView>(stateHost);
             var summonCommand = EnsureComponent<SummonCommandController>(stateHost);
             var slotsContainer = EnsureComponent<UnitSlotsContainer>(stateHost);
+            var sceneErrorPresenter = EnsureComponent<SceneErrorPresenter>(stateHost);
 
             var slotParent = EnsureChild(stateHost.transform, "UnitSlotStateParent");
             var slotPrototype = EnsureComponent<UnitSlotView>(EnsureChild(stateHost.transform, "UnitSlotPrototype").gameObject);
@@ -100,6 +125,7 @@ namespace ProjectSD.EditorTools.SceneTools
             var root = UnityEngine.Object.FindFirstObjectByType<GameSceneRoot>(FindObjectsInactive.Include);
             if (root != null)
             {
+                AssignObjectReference(root, "_sceneErrorPresenter", sceneErrorPresenter);
                 AssignObjectReference(root, "_energyBarView", energy);
                 AssignObjectReference(root, "_unitSlotsContainer", slotsContainer);
             }
@@ -115,6 +141,26 @@ namespace ProjectSD.EditorTools.SceneTools
             RemoveLegacyUiObjects(battleDocument, stateHost);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
+        }
+
+        private static void MigrateTempSceneIfPresent()
+        {
+            if (!File.Exists(TempScenePath))
+                return;
+
+            var scene = EditorSceneManager.OpenScene(TempScenePath, OpenSceneMode.Single);
+            RemoveLegacyUiObjects();
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+        }
+
+        private static void RemoveExtraComponents<T>(T keep) where T : Component
+        {
+            foreach (var component in UnityEngine.Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                if (component != null && component != keep)
+                    UnityEngine.Object.DestroyImmediate(component.gameObject);
+            }
         }
 
         private static GameObject EnsureUidocument(

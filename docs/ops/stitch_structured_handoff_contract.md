@@ -306,5 +306,4 @@ handoff는 아래가 모두 참일 때 complete다.
 2. `shared component catalog` (있다면)
 3. `in-memory unity-map`
 4. 관련 in-memory presentation contract
-5. `ops.stitch-to-unity-translation-guide`
-6. `ops.unity-ui-authoring-workflow`
+5. `ops.unity-ui-authoring-workflow`

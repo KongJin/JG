@@ -74,7 +74,7 @@
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 10px;
-    padding-bottom: 124px;
+    padding-bottom: 16px;
 }
 
 .memory-card {
@@ -307,17 +307,17 @@
 }
 
 .memory-return-dock {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 112px;
-    padding-left: 10px;
-    padding-right: 10px;
+    flex-shrink: 0;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
     padding-top: 9px;
+    padding-bottom: 10px;
     background-color: #06080d;
-    border-top-width: 2px;
-    border-top-color: #1f2937;
+    border-width: 2px;
+    border-color: #1f2937;
+    border-radius: 4px;
 }
 
 .memory-primary-button {

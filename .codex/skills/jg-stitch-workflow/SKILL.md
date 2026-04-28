@@ -1,6 +1,7 @@
 ---
 name: jg-stitch-workflow
-description: Project-specific Stitch workflow for the JG repo. Use whenever Codex works with `.stitch/DESIGN.md`, `.stitch/prompt-briefs`, `.stitch/contracts`, Stitch screen generation/editing, or preparing Stitch outputs for Unity UI Toolkit candidate surfaces in this repository. In JG, this skill is a thin router: it points to the active owner docs for prompt-brief refinement and structured handoff preparation, then hands off Unity implementation to `jg-stitch-unity-import` or `jg-unity-workflow`.
+description: >-
+  Project-specific Stitch workflow for the JG repo. Use whenever Codex works with `.stitch/DESIGN.md`, `.stitch/prompt-briefs`, `.stitch/contracts`, Stitch screen generation/editing, or preparing Stitch outputs for Unity UI Toolkit candidate surfaces in this repository. In JG, this skill is a thin router: it points to the active owner docs for prompt-brief refinement and structured handoff preparation, then hands off Unity implementation to `jg-stitch-unity-import` or `jg-unity-workflow`.
 ---
 
 # JG Stitch Workflow
@@ -25,12 +26,11 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 3. Read owner doc `ops.cohesion-coupling-policy` when the task needs owner boundaries, cohesion/coupling judgment, or responsibility splitting.
 4. Read owner doc `ops.stitch-data-workflow`.
 5. Read owner doc `ops.stitch-structured-handoff-contract` when the task writes, reviews, or translates a contract.
-6. Read reference doc `ops.stitch-handoff-completeness-checklist` when the task validates contract completeness.
-7. Read owner doc `design.ui-reference-workflow` when the task needs Stitch visual principles or reference usage rules.
-8. If the task creates or substantially rewrites a plan doc, read owner doc `ops.plan-authoring-review-workflow` before editing the plan.
-9. If the task needs acceptance, blocked/mismatch wording, or closeout judgment, read owner doc `ops.acceptance-reporting-guardrails`.
-10. Read `plans.progress` when the task touches set-level planning or `.stitch` inventory priority.
-11. Read the accepted source freeze first. Only after that, inspect the execution contracts that were derived from it.
+6. Read owner doc `design.ui-reference-workflow` when the task needs Stitch visual principles or reference usage rules.
+7. If the task creates or substantially rewrites a plan doc, read owner doc `ops.plan-authoring-review-workflow` before editing the plan.
+8. If the task needs acceptance, blocked/mismatch wording, or closeout judgment, read owner doc `ops.acceptance-reporting-guardrails`.
+9. Read `plans.progress` when the task touches set-level planning or `.stitch` inventory priority.
+10. Read the accepted source freeze first. Only after that, inspect the execution contracts that were derived from it.
 
 ## Routed Artifacts
 
@@ -81,7 +81,7 @@ If the screen clearly communicates one of these and the intake/manifest does not
 
 1. The relevant prompt brief matches the current intent.
 2. The active execution contract and its relevant references are updated when needed.
-3. The contract passes `ops.stitch-handoff-completeness-checklist`.
+3. The contract satisfies the completeness criteria in `ops.stitch-structured-handoff-contract`.
 4. If Unity implementation happened, the Unity evidence path is newer than the contract it implements.
 5. If the surface has a review route, the latest SceneView capture is newer than the contract it implements.
 
@@ -91,7 +91,6 @@ If the screen clearly communicates one of these and the intake/manifest does not
 - `ops.cohesion-coupling-policy`
 - `ops.stitch-data-workflow`
 - `ops.stitch-structured-handoff-contract`
-- `ops.stitch-handoff-completeness-checklist`
 - `design.ui-reference-workflow`
 - `plans.progress`
 - `.stitch/DESIGN.md`

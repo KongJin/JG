@@ -833,14 +833,8 @@ namespace ProjectSD.LayerValidation
 #if !LAYER_VALIDATION_NO_UNITY
 namespace Editor
 {
-    [InitializeOnLoad]
     public static class LayerDependencyValidator
     {
-        static LayerDependencyValidator()
-        {
-            Validate(silent: true);
-        }
-
         [MenuItem("Tools/Validate Layer Dependencies")]
         public static void ValidateFromMenu()
         {

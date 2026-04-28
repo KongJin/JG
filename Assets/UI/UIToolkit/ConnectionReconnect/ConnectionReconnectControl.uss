@@ -69,8 +69,8 @@
     flex-grow: 1;
     padding-left: 14px;
     padding-right: 14px;
-    padding-top: 14px;
-    padding-bottom: 22px;
+    padding-top: 10px;
+    padding-bottom: 86px;
 }
 
 .metal-panel {
@@ -78,21 +78,21 @@
     border-width: 2px;
     border-color: var(--connection-line);
     border-radius: 4px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     padding-left: 12px;
     padding-right: 12px;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .dominant-panel {
-    min-height: 128px;
+    min-height: 104px;
     justify-content: center;
 }
 
 .dominant-title {
     color: var(--connection-orange);
-    font-size: 26px;
+    font-size: 23px;
     -unity-font-style: bold;
 }
 
@@ -105,7 +105,7 @@
 
 .session-expired {
     align-self: stretch;
-    min-height: 38px;
+    min-height: 32px;
     color: #f87171;
     background-color: #090b10;
     border-width: 1px;
@@ -123,13 +123,13 @@
 }
 
 .pipeline-row {
-    min-height: 40px;
+    min-height: 34px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     padding-left: 9px;
     padding-right: 9px;
-    margin-bottom: 7px;
+    margin-bottom: 5px;
     background-color: #090b10;
     border-width: 1px;
     border-left-width: 3px;
@@ -227,7 +227,7 @@
 }
 
 .primary-retry-button {
-    height: 46px;
+    height: 42px;
     border-width: 1px;
     border-color: #fbbf24;
     background-color: var(--connection-orange);
@@ -237,8 +237,8 @@
 }
 
 .secondary-return-button {
-    height: 42px;
-    margin-top: 10px;
+    height: 38px;
+    margin-top: 8px;
     border-width: 1px;
     border-color: #334155;
     background-color: #1f2937;

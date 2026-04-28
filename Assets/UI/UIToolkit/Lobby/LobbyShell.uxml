@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Shared/TacticalTokens.uss" />
+    <Style src="LobbyShell.uss" />
+    <ui:Template name="SharedNavigationBarTemplate" src="../Shared/SharedNavigationBar.uxml" />
+    <ui:VisualElement name="LobbyShellScreen" class="lobby-shell-screen">
+        <ui:VisualElement name="SharedTopShell" class="shared-top-shell">
+            <ui:Button name="ShellMenuButton" text="=" class="shared-icon-button" />
+            <ui:VisualElement class="shared-title-stack">
+                <ui:Label name="ShellTitleLabel" text="로비" class="shared-title" />
+                <ui:Label name="ShellStateLabel" text="동기화 대기" class="shared-state" />
+            </ui:VisualElement>
+            <ui:Button name="ShellSettingsButton" text="S" class="shared-icon-button" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="SharedWorkspace" class="shared-workspace">
+            <ui:ScrollView name="LobbyUitkPage" class="uitk-page" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
+                <ui:VisualElement name="LobbyHeaderCard" class="lobby-objective-card">
+                    <ui:VisualElement class="lobby-card-head">
+                        <ui:Label text="CURRENT_OBJECTIVE" class="lobby-objective-kicker" />
+                        <ui:Label text="SEC_LEVEL ALPHA" class="lobby-objective-meta" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="lobby-objective-body">
+                        <ui:VisualElement class="lobby-objective-copy">
+                            <ui:Label text="Sector 7 Extraction: Hold the perimeter until EVAC arrives." class="lobby-objective-title" />
+                            <ui:Label text="ETA: 04:28:11" class="lobby-objective-time" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="lobby-objective-icon">
+                            <ui:Label text="◎" class="lobby-objective-icon-label" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="lobby-objective-stats">
+                        <ui:VisualElement class="lobby-mini-stat">
+                            <ui:Label text="THREAT" class="lobby-mini-label" />
+                            <ui:Label text="CRITICAL" class="lobby-mini-value lobby-mini-value--orange" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="lobby-mini-stat">
+                            <ui:Label text="ENVIRONMENT" class="lobby-mini-label" />
+                            <ui:Label text="VOLCANIC" class="lobby-mini-value lobby-mini-value--blue" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="lobby-mini-stat">
+                            <ui:Label text="REWARD" class="lobby-mini-label" />
+                            <ui:Label text="8.5k CR" class="lobby-mini-value" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement name="RoomsSectionCard" class="uitk-card">
+                    <ui:VisualElement class="lobby-section-head">
+                        <ui:Label text="DEPLOYMENT_QUEUE" class="uitk-section-title" />
+                        <ui:Label name="RoomCountLabel" text="0 ACTIVE INSTANCES" class="lobby-section-count" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="RoomList" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="CreateRoomCard" class="uitk-card create-node-card">
+                    <ui:Label text="ESTABLISH_NEW_NODE" class="uitk-kicker" />
+                    <ui:TextField name="RoomNameInput" label="Room" value="Room" />
+                    <ui:TextField name="DisplayNameInput" label="Pilot" value="Pilot" />
+                    <ui:IntegerField name="CapacityInput" label="Capacity" value="4" />
+                    <ui:IntegerField name="DifficultyInput" label="Difficulty" value="0" />
+                    <ui:Button name="CreateRoomButton" text="방 만들기" class="uitk-primary-button" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="GarageSummaryCard" class="garage-summary-card">
+                    <ui:VisualElement class="garage-preview-chip">
+                        <ui:Label text="GARAGE" class="garage-preview-kicker" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="garage-summary-copy">
+                        <ui:Label text="GARAGE_SUMMARY" class="garage-summary-kicker" />
+                        <ui:Label text="VINDICATOR-MK4" class="garage-summary-title" />
+                        <ui:Label text="Hull 84%  /  Core sync ready" class="garage-summary-meta" />
+                    </ui:VisualElement>
+                    <ui:Button name="GarageSummaryButton" text="차고" class="garage-summary-button" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="RoomDetailCard" class="uitk-card">
+                    <ui:Label name="RoomDetailTitleLabel" text="방을 선택하세요" class="uitk-section-title" />
+                    <ui:Label name="RoomDetailMetaLabel" text="대기 중" class="uitk-body" />
+                    <ui:VisualElement name="MemberList" />
+                    <ui:VisualElement name="RoomActionRow" class="uitk-action-row">
+                        <ui:Button name="RedTeamButton" text="RED" />
+                        <ui:Button name="BlueTeamButton" text="BLUE" />
+                        <ui:Button name="ReadyButton" text="Ready" />
+                        <ui:Button name="StartButton" text="Start" />
+                        <ui:Button name="LeaveRoomButton" text="Leave" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:ScrollView>
+
+            <ui:VisualElement name="GarageUitkHost" class="uitk-page garage-shell-host">
+                <ui:Label text="GARAGE" class="uitk-section-title" />
+                <ui:Label text="Garage workspace is loading." class="uitk-body" />
+            </ui:VisualElement>
+            <ui:VisualElement name="RecordsUitkHost" class="embedded-page-host" />
+            <ui:VisualElement name="AccountUitkHost" class="embedded-page-host" />
+            <ui:VisualElement name="ConnectionUitkHost" class="embedded-page-host" />
+        </ui:VisualElement>
+
+        <ui:Instance template="SharedNavigationBarTemplate" />
+    </ui:VisualElement>
+</ui:UXML>

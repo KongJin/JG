@@ -5,7 +5,7 @@
 > doc_id: plans.game-scene-phase5-multiplayer-sync
 > role: plan
 > owner_scope: GameScene/BattleScene Phase 5 멀티플레이 동기화 smoke와 blocker closeout 실행 계획
-> upstream: plans.progress, plans.game-scene-entry, playtest.runtime-validation-checklist
+> upstream: plans.progress, playtest.runtime-validation-checklist
 > artifacts: `Assets/Scripts/Features/Player/`, `Assets/Scripts/Features/Unit/`, `Assets/Scripts/Features/Wave/`, `Assets/Scenes/BattleScene.unity`, `artifacts/unity/`
 >
 > 진행 상황 SSOT: [`progress.md`](./progress.md)

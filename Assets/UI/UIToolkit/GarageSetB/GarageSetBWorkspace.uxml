@@ -54,6 +54,72 @@
                 <ui:Button name="MobilityTabButton" text="[기동]" class="focus-tab" />
             </ui:VisualElement>
 
+            <ui:VisualElement name="PartListCard" class="part-list-card">
+                <ui:VisualElement class="part-list-head">
+                    <ui:Label name="PartListTitleLabel" text="무장 선택" class="part-list-title" />
+                    <ui:Label name="PartListCountLabel" text="32 PARTS" class="part-list-count" />
+                </ui:VisualElement>
+                <ui:TextField name="PartSearchField" class="part-search-field" value="" />
+                <ui:VisualElement name="PartListRows" class="part-list-rows">
+                    <ui:Button name="PartRow01" class="part-row part-row--selected">
+                        <ui:VisualElement class="part-row-main">
+                            <ui:Label name="PartRow01NameLabel" text="Vulcan Cannon" class="part-row-name" />
+                            <ui:Label name="PartRow01MetaLabel" text="ATK 840 | RNG 12.5 | T3" class="part-row-meta" />
+                        </ui:VisualElement>
+                        <ui:Label name="PartRow01BadgeLabel" text="장착중" class="part-row-badge part-row-badge--selected" />
+                    </ui:Button>
+                    <ui:Button name="PartRow02" class="part-row">
+                        <ui:VisualElement class="part-row-main">
+                            <ui:Label name="PartRow02NameLabel" text="Rail Slug" class="part-row-name" />
+                            <ui:Label name="PartRow02MetaLabel" text="ATK 920 | RNG 15.0 | T3" class="part-row-meta" />
+                        </ui:VisualElement>
+                        <ui:Label name="PartRow02BadgeLabel" text="T3" class="part-row-badge" />
+                    </ui:Button>
+                    <ui:Button name="PartRow03" class="part-row">
+                        <ui:VisualElement class="part-row-main">
+                            <ui:Label name="PartRow03NameLabel" text="Missile Pod" class="part-row-name" />
+                            <ui:Label name="PartRow03MetaLabel" text="ATK 710 | RNG 13.5 | T2" class="part-row-meta" />
+                        </ui:VisualElement>
+                        <ui:Label name="PartRow03BadgeLabel" text="T2" class="part-row-badge" />
+                    </ui:Button>
+                    <ui:Button name="PartRow04" class="part-row">
+                        <ui:VisualElement class="part-row-main">
+                            <ui:Label name="PartRow04NameLabel" text="Plasma Cutter" class="part-row-name" />
+                            <ui:Label name="PartRow04MetaLabel" text="ATK 780 | RNG 9.0 | T2" class="part-row-meta" />
+                        </ui:VisualElement>
+                        <ui:Label name="PartRow04BadgeLabel" text="검토" class="part-row-badge part-row-badge--review" />
+                    </ui:Button>
+                    <ui:Button name="PartRow05" class="part-row">
+                        <ui:VisualElement class="part-row-main">
+                            <ui:Label name="PartRow05NameLabel" text="Arc Discharger" class="part-row-name" />
+                            <ui:Label name="PartRow05MetaLabel" text="ATK 660 | RNG 10.0 | T1" class="part-row-meta" />
+                        </ui:VisualElement>
+                        <ui:Label name="PartRow05BadgeLabel" text="T1" class="part-row-badge" />
+                    </ui:Button>
+                    <ui:Button name="PartRow06" class="part-row">
+                        <ui:VisualElement class="part-row-main">
+                            <ui:Label name="PartRow06NameLabel" text="Scatter Beam" class="part-row-name" />
+                            <ui:Label name="PartRow06MetaLabel" text="ATK 600 | RNG 8.0 | T1" class="part-row-meta" />
+                        </ui:VisualElement>
+                        <ui:Label name="PartRow06BadgeLabel" text="T1" class="part-row-badge" />
+                    </ui:Button>
+                    <ui:Button name="PartRow07" class="part-row">
+                        <ui:VisualElement class="part-row-main">
+                            <ui:Label name="PartRow07NameLabel" text="Needle Launcher" class="part-row-name" />
+                            <ui:Label name="PartRow07MetaLabel" text="ATK 540 | RNG 11.0 | T1" class="part-row-meta" />
+                        </ui:VisualElement>
+                        <ui:Label name="PartRow07BadgeLabel" text="T1" class="part-row-badge" />
+                    </ui:Button>
+                    <ui:Button name="PartRow08" class="part-row">
+                        <ui:VisualElement class="part-row-main">
+                            <ui:Label name="PartRow08NameLabel" text="Burst Rifle" class="part-row-name" />
+                            <ui:Label name="PartRow08MetaLabel" text="ATK 500 | RNG 10.5 | T1" class="part-row-meta" />
+                        </ui:VisualElement>
+                        <ui:Label name="PartRow08BadgeLabel" text="T1" class="part-row-badge" />
+                    </ui:Button>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
             <ui:VisualElement name="EditorCard" class="editor-card">
                 <ui:VisualElement class="editor-head">
                     <ui:VisualElement class="editor-title-stack">
@@ -136,10 +202,10 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
-        </ui:ScrollView>
 
-        <ui:VisualElement name="SaveDock" class="save-dock">
-            <ui:Button name="SaveButton" text="저장 및 배치" class="save-button" />
-        </ui:VisualElement>
+            <ui:VisualElement name="SaveDock" class="save-dock">
+                <ui:Button name="SaveButton" text="저장 및 배치" class="save-button" />
+            </ui:VisualElement>
+        </ui:ScrollView>
     </ui:VisualElement>
 </ui:UXML>

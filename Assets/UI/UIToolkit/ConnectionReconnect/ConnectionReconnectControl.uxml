@@ -16,6 +16,11 @@
                 <ui:Label name="SessionExpiredLabel" text="SESSION EXPIRED" class="session-expired" />
             </ui:VisualElement>
 
+            <ui:VisualElement name="ManualActionDock" class="manual-action-dock">
+                <ui:Button name="ManualRetryButton" text="수동 재시도" class="primary-retry-button" />
+                <ui:Button name="ReturnLobbyButton" text="로비로 돌아가기" class="secondary-return-button" />
+            </ui:VisualElement>
+
             <ui:VisualElement name="ConnectionPipelinePanel" class="metal-panel pipeline-panel">
                 <ui:Label text="SYS.PIPELINE" class="panel-kicker" />
                 <ui:VisualElement name="AccountCheckRow" class="pipeline-row pipeline-row--ok">
@@ -52,11 +57,6 @@
                         <ui:Label name="ActionValueLabel" text="계정 확인 후 수동 재시도" class="reason-value reason-value--blue" />
                     </ui:VisualElement>
                 </ui:VisualElement>
-            </ui:VisualElement>
-
-            <ui:VisualElement name="ManualActionDock" class="manual-action-dock">
-                <ui:Button name="ManualRetryButton" text="수동 재시도" class="primary-retry-button" />
-                <ui:Button name="ReturnLobbyButton" text="로비로 돌아가기" class="secondary-return-button" />
             </ui:VisualElement>
 
             <ui:VisualElement name="DiagnosticsStrip" class="diagnostics-strip">

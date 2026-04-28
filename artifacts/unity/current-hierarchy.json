@@ -1,0 +1,342 @@
+﻿{
+    "sceneName":  "LobbyScene",
+    "nodes":  [
+                  {
+                      "name":  "LobbyRuntime",
+                      "path":  "/LobbyRuntime",
+                      "activeSelf":  true,
+                      "components":  [
+                                         "Transform"
+                                     ],
+                      "childCount":  7,
+                      "children":  [
+                                       {
+                                           "name":  "LobbySetup",
+                                           "path":  "/LobbyRuntime/LobbySetup",
+                                           "activeSelf":  true,
+                                           "components":  [
+                                                              "Transform",
+                                                              "LobbySetup"
+                                                          ],
+                                           "childCount":  0,
+                                           "children":  [
+
+                                                        ]
+                                       },
+                                       {
+                                           "name":  "LobbyPhotonAdapter",
+                                           "path":  "/LobbyRuntime/LobbyPhotonAdapter",
+                                           "activeSelf":  true,
+                                           "components":  [
+                                                              "Transform",
+                                                              "LobbyPhotonAdapter"
+                                                          ],
+                                           "childCount":  0,
+                                           "children":  [
+
+                                                        ]
+                                       },
+                                       {
+                                           "name":  "AccountSetup",
+                                           "path":  "/LobbyRuntime/AccountSetup",
+                                           "activeSelf":  true,
+                                           "components":  [
+                                                              "Transform",
+                                                              "AccountSetup"
+                                                          ],
+                                           "childCount":  0,
+                                           "children":  [
+
+                                                        ]
+                                       },
+                                       {
+                                           "name":  "UnitSetup",
+                                           "path":  "/LobbyRuntime/UnitSetup",
+                                           "activeSelf":  true,
+                                           "components":  [
+                                                              "Transform",
+                                                              "UnitSetup"
+                                                          ],
+                                           "childCount":  0,
+                                           "children":  [
+
+                                                        ]
+                                       },
+                                       {
+                                           "name":  "GarageSetup",
+                                           "path":  "/LobbyRuntime/GarageSetup",
+                                           "activeSelf":  true,
+                                           "components":  [
+                                                              "Transform",
+                                                              "GarageSetup"
+                                                          ],
+                                           "childCount":  0,
+                                           "children":  [
+
+                                                        ]
+                                       },
+                                       {
+                                           "name":  "GarageNetworkAdapter",
+                                           "path":  "/LobbyRuntime/GarageNetworkAdapter",
+                                           "activeSelf":  true,
+                                           "components":  [
+                                                              "Transform",
+                                                              "GarageNetworkAdapter"
+                                                          ],
+                                           "childCount":  0,
+                                           "children":  [
+
+                                                        ]
+                                       },
+                                       {
+                                           "name":  "SoundPlayer",
+                                           "path":  "/LobbyRuntime/SoundPlayer",
+                                           "activeSelf":  true,
+                                           "components":  [
+                                                              "Transform",
+                                                              "SoundPlayer"
+                                                          ],
+                                           "childCount":  8,
+                                           "children":  [
+                                                            {
+                                                                "name":  "SfxAudioSource",
+                                                                "path":  "/LobbyRuntime/SoundPlayer/SfxAudioSource",
+                                                                "activeSelf":  false,
+                                                                "components":  [
+                                                                                   "Transform",
+                                                                                   "AudioSource"
+                                                                               ],
+                                                                "childCount":  0,
+                                                                "children":  [
+
+                                                                             ]
+                                                            },
+                                                            {
+                                                                "name":  "SfxAudioSource",
+                                                                "path":  "/LobbyRuntime/SoundPlayer/SfxAudioSource",
+                                                                "activeSelf":  false,
+                                                                "components":  [
+                                                                                   "Transform",
+                                                                                   "AudioSource"
+                                                                               ],
+                                                                "childCount":  0,
+                                                                "children":  [
+
+                                                                             ]
+                                                            },
+                                                            {
+                                                                "name":  "SfxAudioSource",
+                                                                "path":  "/LobbyRuntime/SoundPlayer/SfxAudioSource",
+                                                                "activeSelf":  false,
+                                                                "components":  [
+                                                                                   "Transform",
+                                                                                   "AudioSource"
+                                                                               ],
+                                                                "childCount":  0,
+                                                                "children":  [
+
+                                                                             ]
+                                                            },
+                                                            {
+                                                                "name":  "SfxAudioSource",
+                                                                "path":  "/LobbyRuntime/SoundPlayer/SfxAudioSource",
+                                                                "activeSelf":  false,
+                                                                "components":  [
+                                                                                   "Transform",
+                                                                                   "AudioSource"
+                                                                               ],
+                                                                "childCount":  0,
+                                                                "children":  [
+
+                                                                             ]
+                                                            },
+                                                            {
+                                                                "name":  "SfxAudioSource",
+                                                                "path":  "/LobbyRuntime/SoundPlayer/SfxAudioSource",
+                                                                "activeSelf":  false,
+                                                                "components":  [
+                                                                                   "Transform",
+                                                                                   "AudioSource"
+                                                                               ],
+                                                                "childCount":  0,
+                                                                "children":  [
+
+                                                                             ]
+                                                            },
+                                                            {
+                                                                "name":  "SfxAudioSource",
+                                                                "path":  "/LobbyRuntime/SoundPlayer/SfxAudioSource",
+                                                                "activeSelf":  false,
+                                                                "components":  [
+                                                                                   "Transform",
+                                                                                   "AudioSource"
+                                                                               ],
+                                                                "childCount":  0,
+                                                                "children":  [
+
+                                                                             ]
+                                                            },
+                                                            {
+                                                                "name":  "SfxAudioSource",
+                                                                "path":  "/LobbyRuntime/SoundPlayer/SfxAudioSource",
+                                                                "activeSelf":  false,
+                                                                "components":  [
+                                                                                   "Transform",
+                                                                                   "AudioSource"
+                                                                               ],
+                                                                "childCount":  0,
+                                                                "children":  [
+
+                                                                             ]
+                                                            },
+                                                            {
+                                                                "name":  "SfxAudioSource",
+                                                                "path":  "/LobbyRuntime/SoundPlayer/SfxAudioSource",
+                                                                "activeSelf":  false,
+                                                                "components":  [
+                                                                                   "Transform",
+                                                                                   "AudioSource"
+                                                                               ],
+                                                                "childCount":  0,
+                                                                "children":  [
+
+                                                                             ]
+                                                            }
+                                                        ]
+                                       }
+                                   ]
+                  },
+                  {
+                      "name":  "LobbyPreviewCamera",
+                      "path":  "/LobbyPreviewCamera",
+                      "activeSelf":  true,
+                      "components":  [
+                                         "Transform",
+                                         "Camera",
+                                         "AudioListener",
+                                         "UniversalAdditionalCameraData"
+                                     ],
+                      "childCount":  0,
+                      "children":  [
+
+                                   ]
+                  },
+                  {
+                      "name":  "PreviewFrameTemplate",
+                      "path":  "/PreviewFrameTemplate",
+                      "activeSelf":  false,
+                      "components":  [
+                                         "Transform",
+                                         "MeshFilter",
+                                         "BoxCollider",
+                                         "MeshRenderer"
+                                     ],
+                      "childCount":  0,
+                      "children":  [
+
+                                   ]
+                  },
+                  {
+                      "name":  "PreviewWeaponTemplate",
+                      "path":  "/PreviewWeaponTemplate",
+                      "activeSelf":  false,
+                      "components":  [
+                                         "Transform",
+                                         "MeshFilter",
+                                         "CapsuleCollider",
+                                         "MeshRenderer"
+                                     ],
+                      "childCount":  0,
+                      "children":  [
+
+                                   ]
+                  },
+                  {
+                      "name":  "PreviewThrusterTemplate",
+                      "path":  "/PreviewThrusterTemplate",
+                      "activeSelf":  false,
+                      "components":  [
+                                         "Transform",
+                                         "MeshFilter",
+                                         "CapsuleCollider",
+                                         "MeshRenderer"
+                                     ],
+                      "childCount":  0,
+                      "children":  [
+
+                                   ]
+                  },
+                  {
+                      "name":  "GarageSetBUitkDocument",
+                      "path":  "/GarageSetBUitkDocument",
+                      "activeSelf":  true,
+                      "components":  [
+                                         "Transform",
+                                         "UIDocument",
+                                         "GarageSetBUitkRuntimeAdapter",
+                                         "GarageSetBUitkPageController"
+                                     ],
+                      "childCount":  0,
+                      "children":  [
+
+                                   ]
+                  },
+                  {
+                      "name":  "GarageSetBPreviewCamera",
+                      "path":  "/GarageSetBPreviewCamera",
+                      "activeSelf":  true,
+                      "components":  [
+                                         "Transform",
+                                         "Camera",
+                                         "GarageSetBUitkPreviewRenderer",
+                                         "UniversalAdditionalCameraData"
+                                     ],
+                      "childCount":  1,
+                      "children":  [
+                                       {
+                                           "name":  "GaragePreviewKeyLight",
+                                           "path":  "/GarageSetBPreviewCamera/GaragePreviewKeyLight",
+                                           "activeSelf":  true,
+                                           "components":  [
+                                                              "Transform",
+                                                              "Light",
+                                                              "UniversalAdditionalLightData"
+                                                          ],
+                                           "childCount":  0,
+                                           "children":  [
+
+                                                        ]
+                                       }
+                                   ]
+                  },
+                  {
+                      "name":  "LobbyUitkDocument",
+                      "path":  "/LobbyUitkDocument",
+                      "activeSelf":  true,
+                      "components":  [
+                                         "Transform",
+                                         "UIDocument",
+                                         "LobbyView"
+                                     ],
+                      "childCount":  0,
+                      "children":  [
+
+                                   ]
+                  },
+                  {
+                      "name":  "LobbyRuntimeUiState",
+                      "path":  "/LobbyRuntimeUiState",
+                      "activeSelf":  true,
+                      "components":  [
+                                         "Transform",
+                                         "LoginLoadingView",
+                                         "AccountSettingsView",
+                                         "SceneErrorPresenter"
+                                     ],
+                      "childCount":  0,
+                      "children":  [
+
+                                   ]
+                  }
+              ]
+}

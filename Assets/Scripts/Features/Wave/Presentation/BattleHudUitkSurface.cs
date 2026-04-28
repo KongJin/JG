@@ -19,6 +19,16 @@ namespace Features.Wave.Presentation
         private Label _resultLabel;
         private Label _resultStatsLabel;
 
+        private void Awake()
+        {
+            Initialize();
+        }
+
+        private void OnEnable()
+        {
+            Initialize();
+        }
+
         public void Initialize()
         {
             _document ??= ComponentAccess.Get<UIDocument>(gameObject);

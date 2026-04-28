@@ -209,9 +209,10 @@ $blockedReason = if ($twoClientRunnerAvailable) {
 } else {
     "two-client runner unavailable"
 }
+$preflightReady = $twoClientRunnerAvailable
 
 $result = [PSCustomObject]@{
-    success = $true
+    success = $preflightReady
     terminalVerdict = if ($twoClientRunnerAvailable) { "ready" } else { "blocked" }
     blockedReason = $blockedReason
     generatedAt = (Get-Date).ToString("yyyy-MM-dd HH:mm:ssK")

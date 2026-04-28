@@ -5,7 +5,7 @@
 > doc_id: plans.non-stitch-ui-stitch-reimport
 > role: plan
 > owner_scope: Stitch source freeze가 없는 Unity-native 또는 mixed UI surface를 Stitch에서 다시 만든 뒤 UI Toolkit candidate surface로 가져오는 실행 순서
-> upstream: plans.progress, design.ui-reference-workflow, ops.stitch-data-workflow, ops.stitch-to-unity-translation-guide, ops.unity-ui-authoring-workflow
+> upstream: plans.progress, design.ui-reference-workflow, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract, ops.unity-ui-authoring-workflow
 > artifacts: `artifacts/stitch/`, `artifacts/unity/`, `Assets/UI/`, `Assets/Scenes/`
 
 이 문서는 현재 Unity에 직접 만든 UI와 Stitch-derived UI가 섞인 상태를 정리하기 위한 migration plan이다.

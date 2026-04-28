@@ -1,0 +1,121 @@
+﻿{
+    "success":  false,
+    "terminalVerdict":  "blocked",
+    "blockedReason":  "No preview report or summary artifact was included with the UI Toolkit surface change. Leave the pass blocked or add a fresh report before claiming pilot success.",
+    "generatedAt":  "2026-04-28 21:04:56+09:00",
+    "agent":  "",
+    "route":  "uitk-candidate",
+    "changedFiles":  [
+                         "artifacts/unity/uitk-lobby-scrollbar-hidden.png",
+                         "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml"
+                     ],
+    "allDirtyFileCount":  118,
+    "unityUiRelevantFiles":  [
+                                 "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml"
+                             ],
+    "uitkCandidateFiles":  [
+                               "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml"
+                           ],
+    "uitkCandidateEvidenceFiles":  [
+                                       "artifacts/unity/uitk-lobby-scrollbar-hidden.png"
+                                   ],
+    "uitkCandidatePreviewEvidenceFiles":  [
+                                              "artifacts/unity/uitk-lobby-scrollbar-hidden.png"
+                                          ],
+    "uitkCandidateReportEvidenceFiles":  [
+
+                                         ],
+    "requiredEvidence":  [
+                             {
+                                 "name":  "compile-reload",
+                                 "path":  null,
+                                 "message":  "Compile and script reload must settle before Unity UI workflow evidence is trusted."
+                             },
+                             {
+                                 "name":  "preview-capture-report",
+                                 "path":  null,
+                                 "message":  "UI Toolkit candidate surfaces require a fresh preview capture/report before pilot success or runtime acceptance can be claimed."
+                             }
+                         ],
+    "missingEvidence":  [
+                            {
+                                "name":  "preview-capture-report",
+                                "path":  "artifacts/unity/*.md|*.json",
+                                "message":  "No preview report or summary artifact was included with the UI Toolkit surface change. Leave the pass blocked or add a fresh report before claiming pilot success."
+                            }
+                        ],
+    "staleEvidence":  [
+
+                      ],
+    "policyViolations":  [
+                             {
+                                 "code":  "missing-evidence",
+                                 "message":  "No preview report or summary artifact was included with the UI Toolkit surface change. Leave the pass blocked or add a fresh report before claiming pilot success."
+                             }
+                         ],
+    "compile":  {
+                    "success":  true,
+                    "request":  {
+                                    "ok":  true,
+                                    "cleanBuildCacheRequested":  false,
+                                    "isCompiling":  false,
+                                    "message":  "Asset refresh triggered."
+                                },
+                    "wait":  {
+                                 "ok":  true,
+                                 "timedOut":  false,
+                                 "requestedCompilation":  false,
+                                 "waitedMs":  120000,
+                                 "isCompiling":  false
+                             },
+                    "healthAfterWait":  {
+                                            "ok":  true,
+                                            "bridgeRunning":  true,
+                                            "port":  52675,
+                                            "isPlaying":  false,
+                                            "isPlayingOrWillChange":  false,
+                                            "isPlayModeChanging":  false,
+                                            "rawIsPlayingOrWillChange":  false,
+                                            "isCompiling":  false,
+                                            "isWaitingForPlayMode":  false,
+                                            "projectKey":  "0d8ea703",
+                                            "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                            "activeScene":  "LobbyScene",
+                                            "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                            "pendingPlayAction":  "",
+                                            "pendingPlayAgeMs":  0
+                                        }
+                },
+    "capabilityExpansionGuard":  {
+                                     "allowCapabilityExpansion":  false,
+                                     "surfaceOnboardingFiles":  [
+                                                                    "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml"
+                                                                ],
+                                     "capabilityExpansionFiles":  [
+
+                                                                  ]
+                                 },
+    "prefabManagement":  {
+                             "inventory":  {
+                                               "path":  "artifacts/unity/prefab-management-inventory.json",
+                                               "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                               "totalPrefabs":  9,
+                                               "generatedPreviewPrefabs":  0,
+                                               "resourcesPrefabs":  9,
+                                               "duplicateCandidateGroups":  0,
+                                               "approvedNewPrefabTargets":  0
+                                           },
+                             "approvalManifest":  {
+                                                      "path":  "artifacts/unity/prefab-management-approved-new-prefabs.json",
+                                                      "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                                      "prefabCount":  0,
+                                                      "prefabPaths":  [
+
+                                                                      ]
+                                                  }
+                         },
+    "declaredNewPrefabTargets":  [
+
+                                 ],
+    "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\unity-ui-authoring-workflow-policy-lobby-scrollbar-hidden.json"
+}

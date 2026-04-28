@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "summary",
+    "batches",
+    "blocked"
+  ],
+  "properties": {
+    "summary": {
+      "type": "string"
+    },
+    "batches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "targetFiles",
+          "reason",
+          "validation",
+          "expectedFindingsResolved",
+          "status",
+          "ownerDocs",
+          "operations"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "code_fix",
+              "rule_fix"
+            ]
+          },
+          "targetFiles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reason": {
+            "type": "string"
+          },
+          "validation": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expectedFindingsResolved": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "planned"
+            ]
+          },
+          "ownerDocs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "operations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "targetPath",
+                "content"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "write_file"
+                  ]
+                },
+                "targetPath": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "blocked": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reasonCode",
+          "summary",
+          "targetFiles"
+        ],
+        "properties": {
+          "reasonCode": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "targetFiles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

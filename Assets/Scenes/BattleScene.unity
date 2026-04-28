@@ -663,7 +663,7 @@ MonoBehaviour:
   _projectileSpawner: {fileID: 258941316}
   _combatSetup: {fileID: 258941330}
   _zoneSetup: {fileID: 258941315}
-  _sceneErrorPresenter: {fileID: 0}
+  _sceneErrorPresenter: {fileID: 609092344}
   _playerSceneRegistry: {fileID: 258941333}
   _energyBarView: {fileID: 609092342}
   _localPlayerSetup: {fileID: 0}
@@ -840,6 +840,7 @@ GameObject:
   - component: {fileID: 609092338}
   - component: {fileID: 609092337}
   - component: {fileID: 609092336}
+  - component: {fileID: 609092344}
   m_Layer: 0
   m_Name: BattleRuntimeHudState
   m_TagString: Untagged
@@ -962,6 +963,18 @@ Transform:
   - {fileID: 79998174}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &609092344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 609092335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b413ddc2d7d14af4aa6b9c5d99f01a11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Shared.Ui.SceneErrorPresenter
 --- !u!1 &672106684
 GameObject:
   m_ObjectHideFlags: 0

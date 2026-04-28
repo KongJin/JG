@@ -231,4 +231,4 @@ target runtime prefab이 없어도 정상 케이스다.
 2. `docs/ops/stitch-structured-handoff-contract.md`
 3. 관련 execution contract 구조
 4. 관련 translation artifact
-5. `docs/ops/stitch-to-unity-translation-guide.md`
+5. `docs/ops/unity_ui_authoring_workflow.md`

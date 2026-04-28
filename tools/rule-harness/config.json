@@ -82,6 +82,14 @@
     "promotionMinHits": 3,
     "promotionMinDistinctCommits": 2
   },
+  "agentRunner": {
+    "enabled": true,
+    "commandPath": "",
+    "model": "gpt-5.4-mini",
+    "reasoningEffort": "low",
+    "timeoutSec": 120,
+    "maxTasksPerRun": 1
+  },
   "risk": {
     "enabled": true,
     "maxAutoApplyScoreByMode": {
@@ -93,6 +101,7 @@
       "brokenReferenceDocFix": 10,
       "featureReadmeContract": 20,
       "featureRootScaffold": 30,
+      "featureRootPlaceholderCleanup": 30,
       "existingCodeFileEdit": 60,
       "mixedRuleCodeBatch": 70,
       "agentDocPenalty": 20

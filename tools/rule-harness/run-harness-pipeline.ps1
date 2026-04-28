@@ -79,34 +79,13 @@ $workReportPath = Join-Path $workDir 'report.json'
     -OutputDir $planDir | Out-Null
 
 $planPath = Join-Path $planDir 'report.json'
-$plan = Get-Content -Path $planPath -Raw | ConvertFrom-Json
-if (@($plan.recommendedBatches).Count -gt 0) {
-    & (Join-Path $PSScriptRoot 'run-recurrence-work.ps1') `
-        -RepoRoot $RepoRoot `
-        -ConfigPath $ConfigPath `
-        -PlanPath $planPath `
-        -OutputRoot $OutputRoot `
-        -OutputDir $recurrenceWorkDir `
-        -DryRun:$DryRun | Out-Null
-}
-else {
-    New-Item -ItemType Directory -Path $recurrenceWorkDir -Force | Out-Null
-    [pscustomobject]@{
-        inputPreventionPlanPath = (Resolve-Path -LiteralPath $planPath).Path
-        baseCommitSha = [string]$plan.baseCommitSha
-        appliedBatches = @()
-        skippedBatches = @()
-        stageResults = @([pscustomobject]@{
-            stage = 'recurrence_work'
-            status = 'skipped'
-            attempted = $false
-            summary = 'No recurrence work batches were recommended.'
-        })
-        failed = $false
-    } | ConvertTo-Json -Depth 20 | Set-Content -Path (Join-Path $recurrenceWorkDir 'report.json') -Encoding UTF8
-    @('# Recurrence Work Harness', '', '- skipped: no recommended batches') | Set-Content -Path (Join-Path $recurrenceWorkDir 'summary.md') -Encoding UTF8
-    Set-Content -Path (Join-Path $recurrenceWorkDir 'log.txt') -Value 'Recurrence work skipped because no batches were recommended.' -Encoding UTF8
-}
+& (Join-Path $PSScriptRoot 'run-recurrence-work.ps1') `
+    -RepoRoot $RepoRoot `
+    -ConfigPath $ConfigPath `
+    -PlanPath $planPath `
+    -OutputRoot $OutputRoot `
+    -OutputDir $recurrenceWorkDir `
+    -DryRun:$DryRun | Out-Null
 
 [pscustomobject]@{
     runRoot = $runRoot

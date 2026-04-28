@@ -4875,7 +4875,20 @@ function Get-RuleHarnessBatchRiskAssessment {
     elseif ($Batch.kind -eq 'code_fix') {
         $allTargetsMissing = @($Batch.targetFiles | Where-Object { Test-Path -LiteralPath (Join-Path $RepoRoot $_) }).Count -eq 0
         $isScaffoldBatch = $allTargetsMissing -and @($Batch.targetFiles | Where-Object { $_ -match '(Setup|Bootstrap)\.cs$' }).Count -eq @($Batch.targetFiles).Count
-        $score = if ($isScaffoldBatch) { [int]$scores.featureRootScaffold } else { [int]$scores.existingCodeFileEdit }
+        $isPlaceholderCleanupBatch = -not $allTargetsMissing -and
+            @($Batch.targetFiles).Count -gt 0 -and
+            @($Batch.targetFiles | Where-Object { $_ -match '(Setup|Bootstrap)\.cs$' }).Count -eq @($Batch.targetFiles).Count -and
+            @($Batch.sourceFindingTypes | Where-Object { $_ -ne 'tech_debt' }).Count -eq 0 -and
+            [string]$Batch.reason -match 'placeholder'
+        if ($isScaffoldBatch) {
+            $score = [int]$scores.featureRootScaffold
+        }
+        elseif ($isPlaceholderCleanupBatch -and $scores.PSObject.Properties.Name -contains 'featureRootPlaceholderCleanup') {
+            $score = [int]$scores.featureRootPlaceholderCleanup
+        }
+        else {
+            $score = [int]$scores.existingCodeFileEdit
+        }
     }
 
     if (@($Batch.targetFiles | Where-Object { Test-RuleHarnessGlobalRuleDoc -RepoRoot $RepoRoot -RelativePath ([string]$_) }).Count -gt 0) {
@@ -6935,6 +6948,7 @@ function Invoke-RuleHarnessBatchValidation {
         [Parameter(Mandatory)]
         [object]$ValidationPlan,
         [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
         [object[]]$BaselineStaticFindings,
         [string]$StaticScanScopeId
     )
@@ -7163,6 +7177,7 @@ function Invoke-RuleHarnessBatchAttemptLoop {
         [Parameter(Mandatory)]
         [object]$Config,
         [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
         [object[]]$BaselineStaticFindings,
         [Parameter(Mandatory)]
         [object]$ValidationPlan,
@@ -8841,6 +8856,328 @@ function Get-RuleHarnessProjectReviewSnapshot {
     }
 }
 
+function Get-RuleHarnessAgentRunnerSettings {
+    param([Parameter(Mandatory)][object]$Config)
+
+    $settings = if ($Config.PSObject.Properties.Name -contains 'agentRunner') { $Config.agentRunner } else { $null }
+    [pscustomobject]@{
+        enabled        = if ($null -ne $settings -and $settings.PSObject.Properties.Name -contains 'enabled') { [bool]$settings.enabled } else { $false }
+        commandPath    = if ($null -ne $settings -and $settings.PSObject.Properties.Name -contains 'commandPath') { [string]$settings.commandPath } else { '' }
+        model          = if ($null -ne $settings -and $settings.PSObject.Properties.Name -contains 'model') { [string]$settings.model } else { '' }
+        reasoningEffort = if ($null -ne $settings -and $settings.PSObject.Properties.Name -contains 'reasoningEffort') { [string]$settings.reasoningEffort } else { 'low' }
+        timeoutSec     = if ($null -ne $settings -and $settings.PSObject.Properties.Name -contains 'timeoutSec') { [int]$settings.timeoutSec } else { 180 }
+        maxTasksPerRun = if ($null -ne $settings -and $settings.PSObject.Properties.Name -contains 'maxTasksPerRun') { [int]$settings.maxTasksPerRun } else { 1 }
+    }
+}
+
+function New-RuleHarnessAgentWorkReport {
+    param(
+        [Parameter(Mandatory)][object]$Task,
+        [Parameter(Mandatory)][string]$Status,
+        [Parameter(Mandatory)][string]$Summary,
+        [string]$BlockedReason = '',
+        [string[]]$ChangedFiles = @(),
+        [string]$OutputPath = '',
+        [string]$LogPath = ''
+    )
+
+    [pscustomobject]@{
+        taskId = [string]$Task.taskId
+        status = $Status
+        changedFiles = @($ChangedFiles)
+        summary = $Summary
+        blockedReason = $BlockedReason
+        validationCommands = @()
+        riskNotes = @()
+        outputPath = $OutputPath
+        logPath = $LogPath
+    }
+}
+
+function Resolve-RuleHarnessCodexCommand {
+    param([string]$ConfiguredPath)
+
+    if (-not [string]::IsNullOrWhiteSpace($ConfiguredPath)) {
+        $resolved = Resolve-Path -LiteralPath $ConfiguredPath -ErrorAction SilentlyContinue
+        if ($null -ne $resolved) {
+            return [string]$resolved.Path
+        }
+    }
+
+    $command = Get-Command codex -ErrorAction SilentlyContinue
+    if ($null -eq $command) {
+        return ''
+    }
+
+    [string]$command.Source
+}
+
+function ConvertTo-RuleHarnessProcessArgument {
+    param([string]$Value)
+
+    if ($null -eq $Value) {
+        return "''"
+    }
+
+    if ($Value -notmatch "[\s'`"]") {
+        return $Value
+    }
+
+    "'" + $Value.Replace("'", "''") + "'"
+}
+
+function Invoke-RuleHarnessProcessWithInput {
+    param(
+        [Parameter(Mandatory)][string]$FileName,
+        [Parameter(Mandatory)][AllowEmptyCollection()][string[]]$Arguments,
+        [Parameter(Mandatory)][string]$WorkingDirectory,
+        [Parameter(Mandatory)][string]$InputText,
+        [Parameter(Mandatory)][int]$TimeoutSec
+    )
+
+    $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
+    $startInfo.FileName = $FileName
+    $startInfo.Arguments = (@($Arguments) | ForEach-Object { ConvertTo-RuleHarnessProcessArgument -Value ([string]$_) }) -join ' '
+    $startInfo.WorkingDirectory = $WorkingDirectory
+    $startInfo.UseShellExecute = $false
+    $startInfo.RedirectStandardInput = $true
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+
+    $process = [System.Diagnostics.Process]::new()
+    $process.StartInfo = $startInfo
+    [void]$process.Start()
+    $process.StandardInput.Write($InputText)
+    $process.StandardInput.Close()
+
+    $completed = $process.WaitForExit([Math]::Max(1, $TimeoutSec) * 1000)
+    if (-not $completed) {
+        try { $process.Kill() } catch { }
+        return [pscustomobject]@{
+            exitCode = -1
+            timedOut = $true
+            stdout = $process.StandardOutput.ReadToEnd()
+            stderr = $process.StandardError.ReadToEnd()
+        }
+    }
+
+    [pscustomobject]@{
+        exitCode = $process.ExitCode
+        timedOut = $false
+        stdout = $process.StandardOutput.ReadToEnd()
+        stderr = $process.StandardError.ReadToEnd()
+    }
+}
+
+function New-RuleHarnessAgentBatchPrompt {
+    param(
+        [Parameter(Mandatory)][string]$RoleName,
+        [Parameter(Mandatory)][object]$Task
+    )
+
+    $taskJson = $Task | ConvertTo-Json -Depth 40
+@"
+You are the rule harness coding-agent batch synthesizer.
+
+Return only JSON that matches the supplied output schema. Do not edit files directly.
+You may inspect the repository in read-only mode, but the final output must be a guarded mutation batch proposal.
+
+Role: $RoleName
+
+Hard constraints:
+- Do not write, move, delete, or commit files.
+- Propose at most one batch for this task.
+- Use only repo-relative paths.
+- Never use absolute paths or '..' path traversal.
+- Target files must be within the task candidateFiles list. If candidateFiles is empty or insufficient, return no batches and add a blocked item.
+- Use operation type 'write_file' with full replacement file content.
+- Set batch status to 'proposed'.
+- Use validation ['rule_harness_tests'] unless this is a rule_fix with a clearer existing validation.
+- If you cannot make a small, safe, exact patch, return no batches and explain the blocker.
+
+Task JSON:
+$taskJson
+"@
+}
+
+function Test-RuleHarnessAgentBatchTargets {
+    param(
+        [Parameter(Mandatory)][object]$Batch,
+        [Parameter(Mandatory)][object]$Task
+    )
+
+    $errors = [System.Collections.Generic.List[string]]::new()
+    $allowed = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($candidate in @($Task.candidateFiles)) {
+        $normalizedCandidate = ([string]$candidate).Replace('\', '/')
+        if (-not [string]::IsNullOrWhiteSpace($normalizedCandidate)) {
+            [void]$allowed.Add($normalizedCandidate)
+        }
+    }
+
+    foreach ($target in @($Batch.targetFiles)) {
+        $normalized = ([string]$target).Replace('\', '/')
+        if (-not (Test-RuleHarnessSafeRelativePath -Path $normalized)) {
+            [void]$errors.Add("Unsafe target path '$target'.")
+            continue
+        }
+        if (-not $allowed.Contains($normalized)) {
+            [void]$errors.Add("Target path '$target' is outside task candidateFiles.")
+        }
+    }
+
+    foreach ($operation in @($Batch.operations)) {
+        $targetPath = ([string]$operation.targetPath).Replace('\', '/')
+        if (-not (Test-RuleHarnessSafeRelativePath -Path $targetPath)) {
+            [void]$errors.Add("Unsafe operation targetPath '$targetPath'.")
+            continue
+        }
+        if (-not $allowed.Contains($targetPath)) {
+            [void]$errors.Add("Operation targetPath '$targetPath' is outside task candidateFiles.")
+        }
+    }
+
+    @($errors)
+}
+
+function Invoke-RuleHarnessAgentBatchRunner {
+    param(
+        [Parameter(Mandatory)][string]$RepoRoot,
+        [Parameter(Mandatory)][string]$ConfigPath,
+        [Parameter(Mandatory)][string]$RoleName,
+        [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$AgentWorkQueue,
+        [Parameter(Mandatory)][string]$OutputDir
+    )
+
+    $reports = [System.Collections.Generic.List[object]]::new()
+    $plannedBatches = [System.Collections.Generic.List[object]]::new()
+    if ($AgentWorkQueue.Count -eq 0) {
+        return [pscustomobject]@{ plannedBatches = @(); agentWorkReports = @() }
+    }
+
+    $config = Get-RuleHarnessConfig -ConfigPath $ConfigPath
+    $settings = Get-RuleHarnessAgentRunnerSettings -Config $config
+    if (-not $settings.enabled) {
+        foreach ($task in @($AgentWorkQueue)) {
+            [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-disabled' -Summary 'Coding agent runner is disabled in rule-harness config.'))
+        }
+        return [pscustomobject]@{ plannedBatches = @(); agentWorkReports = @($reports) }
+    }
+
+    $codexPath = Resolve-RuleHarnessCodexCommand -ConfiguredPath ([string]$settings.commandPath)
+    if ([string]::IsNullOrWhiteSpace($codexPath)) {
+        foreach ($task in @($AgentWorkQueue)) {
+            [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-unavailable' -Summary 'Codex CLI was not found on PATH and no agentRunner.commandPath was configured.'))
+        }
+        return [pscustomobject]@{ plannedBatches = @(); agentWorkReports = @($reports) }
+    }
+
+    $runnerDir = Join-Path $OutputDir 'agent-runner'
+    if (-not (Test-Path -LiteralPath $runnerDir)) {
+        New-Item -ItemType Directory -Path $runnerDir -Force | Out-Null
+    }
+
+    $schemaPath = Join-Path $PSScriptRoot 'schemas/agent-batch.schema.json'
+    $taskLimit = [Math]::Max(1, [int]$settings.maxTasksPerRun)
+    $selectedTasks = @($AgentWorkQueue | Select-Object -First $taskLimit)
+    foreach ($task in @($AgentWorkQueue | Select-Object -Skip $taskLimit)) {
+        [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'skipped' -BlockedReason 'agent-runner-task-limit' -Summary "Agent task was left queued because maxTasksPerRun=$taskLimit."))
+    }
+
+    foreach ($task in @($selectedTasks)) {
+        $taskId = [string]$task.taskId
+        $outputPath = Join-Path $runnerDir "$taskId.output.json"
+        $logPath = Join-Path $runnerDir "$taskId.log.txt"
+        $prompt = New-RuleHarnessAgentBatchPrompt -RoleName $RoleName -Task $task
+        $arguments = @()
+        $fileName = $codexPath
+        if ($codexPath -like '*.ps1') {
+            $codexBaseDir = Split-Path -Parent $codexPath
+            $nodePath = Join-Path $codexBaseDir 'node.exe'
+            if (-not (Test-Path -LiteralPath $nodePath)) {
+                $nodePath = 'node.exe'
+            }
+            $codexJsPath = Join-Path $codexBaseDir 'node_modules/@openai/codex/bin/codex.js'
+            $fileName = $nodePath
+            $arguments += @($codexJsPath)
+        }
+        $arguments += @('exec', '-C', $RepoRoot, '--sandbox', 'read-only', '-c', 'approval_policy="never"', '-c', ("model_reasoning_effort=""{0}""" -f [string]$settings.reasoningEffort), '--output-schema', $schemaPath, '-o', $outputPath)
+        if (-not [string]::IsNullOrWhiteSpace([string]$settings.model)) {
+            $arguments += @('--model', [string]$settings.model)
+        }
+        $arguments += @('-')
+
+        $processResult = Invoke-RuleHarnessProcessWithInput -FileName $fileName -Arguments $arguments -WorkingDirectory $RepoRoot -InputText $prompt -TimeoutSec ([int]$settings.timeoutSec)
+        @(
+            "ExitCode=$($processResult.exitCode)"
+            "TimedOut=$($processResult.timedOut)"
+            ''
+            'STDOUT:'
+            [string]$processResult.stdout
+            ''
+            'STDERR:'
+            [string]$processResult.stderr
+        ) | Set-Content -Path $logPath -Encoding UTF8
+
+        if ($processResult.timedOut) {
+            [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-timeout' -Summary "Codex agent runner timed out after $($settings.timeoutSec) seconds." -OutputPath $outputPath -LogPath $logPath))
+            continue
+        }
+        if ([int]$processResult.exitCode -ne 0) {
+            [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-failed' -Summary "Codex agent runner exited with code $($processResult.exitCode)." -OutputPath $outputPath -LogPath $logPath))
+            continue
+        }
+        if (-not (Test-Path -LiteralPath $outputPath)) {
+            [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-missing-output' -Summary 'Codex agent runner completed without writing structured output.' -OutputPath $outputPath -LogPath $logPath))
+            continue
+        }
+
+        try {
+            $agentOutput = Get-Content -Path $outputPath -Raw | ConvertFrom-Json
+        }
+        catch {
+            [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-invalid-json' -Summary "Codex agent runner output was not valid JSON: $($_.Exception.Message)" -OutputPath $outputPath -LogPath $logPath))
+            continue
+        }
+
+        $acceptedTargets = [System.Collections.Generic.List[string]]::new()
+        foreach ($batch in @($agentOutput.batches)) {
+            $targetErrors = @(Test-RuleHarnessAgentBatchTargets -Batch $batch -Task $task)
+            if ($targetErrors.Count -gt 0) {
+                [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-unsafe-batch' -Summary ($targetErrors -join ' ') -OutputPath $outputPath -LogPath $logPath))
+                continue
+            }
+
+            $batchId = [string]$batch.id
+            if (-not $batchId.StartsWith($taskId, [System.StringComparison]::OrdinalIgnoreCase)) {
+                Set-RuleHarnessObjectProperty -Object $batch -Name 'id' -Value ("{0}-{1}" -f $taskId, $batchId)
+            }
+            Set-RuleHarnessObjectProperty -Object $batch -Name 'status' -Value 'planned'
+            foreach ($target in @($batch.targetFiles)) {
+                [void]$acceptedTargets.Add(([string]$target).Replace('\', '/'))
+            }
+            [void]$plannedBatches.Add($batch)
+        }
+
+        if ($acceptedTargets.Count -gt 0) {
+            [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'proposed' -Summary "Codex agent runner proposed $(@($agentOutput.batches).Count) batch(es)." -ChangedFiles @($acceptedTargets | Sort-Object -Unique) -OutputPath $outputPath -LogPath $logPath))
+        }
+        elseif (@($agentOutput.blocked).Count -gt 0) {
+            $blockedSummary = (@($agentOutput.blocked) | ForEach-Object { [string]$_.summary }) -join ' '
+            $blockedReason = [string](@($agentOutput.blocked) | Select-Object -First 1).reasonCode
+            [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason $blockedReason -Summary $blockedSummary -OutputPath $outputPath -LogPath $logPath))
+        }
+        else {
+            [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-no-batch' -Summary 'Codex agent runner returned no batch and no explicit blocked reason.' -OutputPath $outputPath -LogPath $logPath))
+        }
+    }
+
+    [pscustomobject]@{
+        plannedBatches = @($plannedBatches)
+        agentWorkReports = @($reports)
+    }
+}
+
 function Test-RuleHarnessRoleInput {
     param(
         [Parameter(Mandatory)]
@@ -8946,6 +9283,18 @@ function Invoke-RuleHarnessRoleMutation {
         -RepoRoot $RepoRoot `
         -OwnerDoc $(if ($ownerDoc.Count -gt 0) { [string]$ownerDoc[0] } else { $null }) `
         -TargetFiles $targetFiles
+    $targetFeatureNames = @(
+        $targetFiles |
+            ForEach-Object {
+                $normalized = ([string]$_).Replace('\', '/')
+                if ($normalized -match '^Assets/Scripts/Features/(?<feature>[^/]+)/') {
+                    [string]$Matches['feature']
+                }
+            } |
+            Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+            Sort-Object -Unique
+    )
+    $roleStaticScanScopeId = if ($targetFeatureNames.Count -eq 1) { [string]$targetFeatureNames[0] } else { $null }
     $rulesOnlyCloseout = Get-RuleHarnessRulesOnlyRecurrenceCloseoutStatus `
         -RepoRoot $RepoRoot `
         -ScopeInfo $scopeInfo `
@@ -8959,6 +9308,7 @@ function Invoke-RuleHarnessRoleMutation {
             -Config $config `
             -MutationState $mutationState `
             -ScopeInfo $scopeInfo `
+            -StaticScanScopeId $roleStaticScanScopeId `
             -DryRun:$DryRun
         $combinedStageResults = @($rulesOnlyCloseout.stageResult) + @($emptyResult.stageResults)
         $combinedActionItems = @(Merge-RuleHarnessActionItems -Items (@($rulesOnlyCloseout.actionItems) + @($emptyResult.actionItems)))
@@ -8976,6 +9326,7 @@ function Invoke-RuleHarnessRoleMutation {
         -Config $config `
         -MutationState $mutationState `
         -ScopeInfo $scopeInfo `
+        -StaticScanScopeId $roleStaticScanScopeId `
         -DryRun:$DryRun
 
     $combinedStageResults = @($rulesOnlyCloseout.stageResult) + @($result.stageResults)
@@ -8998,8 +9349,10 @@ Export-ModuleMember -Function `
     Get-RuleHarnessMutationState, `
     Invoke-RuleHarnessMutationPlan, `
     Get-RuleHarnessProjectReviewSnapshot, `
+    Get-RuleHarnessArchitectureOwnerDoc, `
     Test-RuleHarnessRoleInput, `
     ConvertTo-RuleHarnessRoleBatches, `
+    Invoke-RuleHarnessAgentBatchRunner, `
     Invoke-RuleHarnessRoleMutation, `
     Read-RuleHarnessHistoryState, `
     Read-RuleHarnessFeatureScanState, `

@@ -11,12 +11,317 @@ function Get-ReviewWorkSummaryLines {
     [void]$lines.Add("- Skipped batches: $(@($Report.skippedBatches).Count)")
     [void]$lines.Add("- Retry attempts: $($Report.retryAttempts)")
     [void]$lines.Add("- Failed: $($Report.failed)")
+    [void]$lines.Add("- Agent work queue: $(@($Report.agentWorkQueue).Count)")
+    [void]$lines.Add("- Agent work reports: $(@($Report.agentWorkReports).Count)")
     [void]$lines.Add('')
     [void]$lines.Add('## Stage Status')
     foreach ($stage in @($Report.stageResults)) {
         [void]$lines.Add("- $($stage.stage) [$($stage.status)] $($stage.summary)")
     }
     @($lines)
+}
+
+function New-ReviewWorkAgentTask {
+    param(
+        [Parameter(Mandatory)][string]$TaskId,
+        [Parameter(Mandatory)][string]$SourceArtifactPath,
+        [Parameter(Mandatory)][string]$BaseCommitSha,
+        [Parameter(Mandatory)][object[]]$Observations,
+        [string[]]$CandidateFiles = @(),
+        [string]$Goal = 'Resolve the observed technical debt safely.'
+    )
+
+    [pscustomobject]@{
+        taskId = $TaskId
+        sourceArtifactPath = $SourceArtifactPath
+        baseCommitSha = $BaseCommitSha
+        observations = @($Observations)
+        candidateFiles = @($CandidateFiles | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Sort-Object -Unique)
+        goal = $Goal
+        constraints = @(
+            'Do not bypass dirty target guard.'
+            'Do not bypass ownership guard.'
+            'Keep changes scoped to the observed issue.'
+            'Run validation through the rule harness mutation guard before commit.'
+        )
+        status = 'pending'
+    }
+}
+
+function ConvertTo-ReviewWorkAgentQueue {
+    param(
+        [Parameter(Mandatory)][object]$InputObject,
+        [Parameter(Mandatory)][string]$SourceArtifactPath
+    )
+
+    $queue = [System.Collections.Generic.List[object]]::new()
+    $counter = 1
+    $workItems = @(
+        @($InputObject.reviewItems) |
+            Where-Object {
+                [string]$_.severity -in @('high', 'medium') -and
+                [string]$_.title -ne 'Runtime placeholder or generated stub'
+            }
+    )
+
+    foreach ($group in @($workItems | Group-Object title)) {
+        $observations = @($group.Group)
+        $candidateFiles = @(
+            $observations |
+                ForEach-Object { @($_.evidence) } |
+                ForEach-Object { [string]$_.path } |
+                Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) }
+        )
+
+        [void]$queue.Add((New-ReviewWorkAgentTask `
+            -TaskId ('review-work-{0:d3}' -f $counter) `
+            -SourceArtifactPath $SourceArtifactPath `
+            -BaseCommitSha ([string]$InputObject.baseCommitSha) `
+            -Observations $observations `
+            -CandidateFiles $candidateFiles `
+            -Goal ("Investigate and safely resolve review observations: {0}" -f [string]$group.Name)))
+        $counter++
+    }
+
+    @($queue)
+}
+
+function New-ReviewWorkAgentUnavailableReport {
+    param([Parameter(Mandatory)][object]$Task)
+
+    [pscustomobject]@{
+        taskId = [string]$Task.taskId
+        status = 'blocked'
+        changedFiles = @()
+        summary = 'Coding agent runner is not configured for this harness process.'
+        blockedReason = 'agent-runner-unavailable'
+        validationCommands = @()
+        riskNotes = @('No patch was generated; existing mutation guards were not entered for this task.')
+    }
+}
+
+function Add-ReviewWorkAgentBlockedState {
+    param(
+        [Parameter(Mandatory)][object]$Report,
+        [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$AgentWorkQueue,
+        [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$AgentWorkReports
+    )
+
+    $existingSkipped = @($Report.skippedBatches)
+    $agentSkipped = @(
+        $AgentWorkReports |
+            Where-Object { [string]$_.status -eq 'blocked' } |
+            ForEach-Object {
+                $taskId = [string]$_.taskId
+                [pscustomobject]@{
+                    id = $taskId
+                    kind = 'agent_work'
+                    reason = [string]$_.summary
+                    reasonCode = [string]$_.blockedReason
+                    status = 'blocked'
+                    targets = @($AgentWorkQueue | Where-Object { [string]$_.taskId -eq $taskId } | ForEach-Object { @($_.candidateFiles) })
+                }
+            }
+    )
+    $existingStages = @($Report.stageResults)
+    $agentStageStatus = if (@($AgentWorkReports | Where-Object status -eq 'blocked').Count -gt 0) { 'blocked' } else { 'passed' }
+    $agentStageSummary = if ($agentStageStatus -eq 'blocked') {
+        "Coding agent runner unavailable for $(@($AgentWorkQueue).Count) queued review work task(s)."
+    }
+    elseif ($AgentWorkQueue.Count -gt 0) {
+        "Queued $(@($AgentWorkQueue).Count) review work task(s)."
+    }
+    else {
+        'No review agent work was queued.'
+    }
+
+    if ($agentStageStatus -eq 'blocked') {
+        $Report | Add-Member -NotePropertyName 'failed' -NotePropertyValue $true -Force
+    }
+    $Report | Add-Member -NotePropertyName 'skippedBatches' -NotePropertyValue @($existingSkipped + $agentSkipped) -Force
+    $Report | Add-Member -NotePropertyName 'stageResults' -NotePropertyValue @($existingStages + [pscustomobject]@{
+        stage = 'agent_work'
+        status = $agentStageStatus
+        attempted = ($AgentWorkQueue.Count -gt 0)
+        summary = $agentStageSummary
+    }) -Force
+    $Report | Add-Member -NotePropertyName 'agentWorkQueue' -NotePropertyValue @($AgentWorkQueue) -Force
+    $Report | Add-Member -NotePropertyName 'agentWorkReports' -NotePropertyValue @($AgentWorkReports) -Force
+}
+
+function Get-ReviewWorkFindingKey {
+    param([Parameter(Mandatory)][object]$Finding)
+
+    $evidence = @($Finding.evidence | Select-Object -First 1)
+    $path = if ($evidence.Count -gt 0) { [string]$evidence[0].path } else { '' }
+    $line = if ($evidence.Count -gt 0) { [string]$evidence[0].line } else { '' }
+    '{0}|{1}|{2}|{3}' -f [string]$Finding.findingType, [string]$Finding.title, $path, $line
+}
+
+function Test-ReviewWorkSafeRelativePath {
+    param([Parameter(Mandatory)][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $false
+    }
+
+    $normalized = $Path.Replace('\', '/')
+    if ($normalized.StartsWith('/') -or [System.IO.Path]::IsPathRooted($Path)) {
+        return $false
+    }
+
+    foreach ($segment in @($normalized -split '/')) {
+        if ($segment -eq '..') {
+            return $false
+        }
+    }
+
+    $true
+}
+
+function New-ReviewWorkBatch {
+    param(
+        [Parameter(Mandatory)][string]$Id,
+        [Parameter(Mandatory)][string]$Kind,
+        [Parameter(Mandatory)][string[]]$TargetFiles,
+        [Parameter(Mandatory)][string]$Reason,
+        [Parameter(Mandatory)][object[]]$Operations,
+        [string[]]$ExpectedFindingsResolved = @(),
+        [string[]]$FeatureNames = @(),
+        [string[]]$OwnerDocs = @('AGENTS.md'),
+        [string[]]$SourceFindingTypes = @()
+    )
+
+    [pscustomobject]@{
+        id = $Id
+        kind = $Kind
+        targetFiles = @($TargetFiles)
+        reason = $Reason
+        validation = @('rule_harness_tests')
+        expectedFindingsResolved = @($ExpectedFindingsResolved)
+        status = 'planned'
+        featureNames = @($FeatureNames)
+        ownerDocs = @($OwnerDocs)
+        sourceFindingTypes = @($SourceFindingTypes)
+        fingerprint = $null
+        riskScore = $null
+        riskLabel = $null
+        ownershipStatus = 'pending'
+        operations = @($Operations)
+    }
+}
+
+function Get-ReviewWorkArchitectureOwnerDoc {
+    param([Parameter(Mandatory)][string]$RepoRoot)
+
+    $ownerDoc = Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot
+    if ([string]::IsNullOrWhiteSpace([string]$ownerDoc)) {
+        return 'AGENTS.md'
+    }
+
+    [string]$ownerDoc
+}
+
+function Get-ReviewWorkFeatureNameFromPath {
+    param([string]$Path)
+
+    $normalized = $Path.Replace('\', '/')
+    if ($normalized -match '^Assets/Scripts/Features/(?<feature>[^/]+)/') {
+        return $Matches['feature']
+    }
+
+    ''
+}
+
+function Get-ReviewWorkPlaceholderSetupBatch {
+    param(
+        [Parameter(Mandatory)][object]$Finding,
+        [Parameter(Mandatory)][string]$RepoRoot,
+        [Parameter(Mandatory)][string]$Id
+    )
+
+    $evidence = @($Finding.evidence | Select-Object -First 1)
+    if ($evidence.Count -eq 0) {
+        return $null
+    }
+
+    $targetPath = ([string]$evidence[0].path).Replace('\', '/')
+    if (-not (Test-ReviewWorkSafeRelativePath -Path $targetPath)) {
+        return $null
+    }
+    if ($targetPath -notmatch '^Assets/Scripts/Features/[^/]+/[^/]+Setup\.cs$') {
+        return $null
+    }
+
+    $fullPath = Join-Path $RepoRoot $targetPath
+    if (-not (Test-Path -LiteralPath $fullPath)) {
+        return $null
+    }
+
+    $content = Get-Content -LiteralPath $fullPath -Raw
+    if ($content -notmatch '(?is)generated composition root placeholder') {
+        return $null
+    }
+    if ($content -notmatch '(?is)namespace\s+(?<namespace>[A-Za-z0-9_.]+)\s*\{.*?public\s+sealed\s+class\s+(?<class>[A-Za-z0-9_]+)\s*\{\s*\}\s*\}\s*$') {
+        return $null
+    }
+
+    $namespace = $Matches['namespace']
+    $className = $Matches['class']
+    $featureName = Get-ReviewWorkFeatureNameFromPath -Path $targetPath
+    $summaryName = if ([string]::IsNullOrWhiteSpace($featureName)) { $className } else { $featureName }
+    $updatedContent = @"
+namespace $namespace
+{
+    /// <summary>
+    /// Composition root for the $summaryName feature.
+    /// </summary>
+    public sealed class $className
+    {
+    }
+}
+"@
+
+    New-ReviewWorkBatch `
+        -Id $Id `
+        -Kind 'code_fix' `
+        -TargetFiles @($targetPath) `
+        -Reason "Replace generated placeholder text in '$targetPath' with a concrete feature composition-root marker." `
+        -ExpectedFindingsResolved @((Get-ReviewWorkFindingKey -Finding $Finding)) `
+        -Operations @([pscustomobject]@{
+            type = 'write_file'
+            targetPath = $targetPath
+            content = $updatedContent
+        }) `
+        -FeatureNames @($featureName) `
+        -OwnerDocs @((Get-ReviewWorkArchitectureOwnerDoc -RepoRoot $RepoRoot)) `
+        -SourceFindingTypes @([string]$Finding.findingType)
+}
+
+function ConvertTo-ReviewWorkBatchesFromReviewItems {
+    param(
+        [Parameter(Mandatory)][object]$InputObject,
+        [Parameter(Mandatory)][string]$RepoRoot,
+        [Parameter(Mandatory)][int]$StartIndex
+    )
+
+    $batches = [System.Collections.Generic.List[object]]::new()
+    $counter = $StartIndex
+
+    foreach ($finding in @($InputObject.reviewItems)) {
+        $title = [string]$finding.title
+        $batch = $null
+        if ($title -eq 'Runtime placeholder or generated stub') {
+            $batch = Get-ReviewWorkPlaceholderSetupBatch -Finding $finding -RepoRoot $RepoRoot -Id ('batch-{0:d3}' -f $counter)
+        }
+
+        if ($null -ne $batch) {
+            [void]$batches.Add($batch)
+            $counter++
+        }
+    }
+
+    @($batches)
 }
 
 function Invoke-ReviewWorkHarness {
@@ -33,8 +338,20 @@ function Invoke-ReviewWorkHarness {
     }
 
     $input = Test-RuleHarnessRoleInput -RepoRoot $RepoRoot -InputPath $ReviewPath -ThrowOnError
-    $batches = @(ConvertTo-RuleHarnessRoleBatches -InputObject $input.payload)
+    $explicitBatches = @(ConvertTo-RuleHarnessRoleBatches -InputObject $input.payload)
+    $derivedBatches = @(ConvertTo-ReviewWorkBatchesFromReviewItems -InputObject $input.payload -RepoRoot $RepoRoot -StartIndex ($explicitBatches.Count + 1))
+    $agentWorkQueue = @(ConvertTo-ReviewWorkAgentQueue -InputObject $input.payload -SourceArtifactPath $input.path)
+    $agentRun = Invoke-RuleHarnessAgentBatchRunner `
+        -RepoRoot $RepoRoot `
+        -ConfigPath $ConfigPath `
+        -RoleName 'review_work' `
+        -AgentWorkQueue $agentWorkQueue `
+        -OutputDir $OutputDir
+    $agentBatches = @($agentRun.plannedBatches)
+    $agentWorkReports = @($agentRun.agentWorkReports)
+    $batches = @($explicitBatches + $derivedBatches + $agentBatches)
     $mutation = Invoke-RuleHarnessRoleMutation -RepoRoot $RepoRoot -ConfigPath $ConfigPath -PlannedBatches $batches -RoleInputPath $input.path -DryRun:$DryRun
+    Add-ReviewWorkAgentBlockedState -Report $mutation -AgentWorkQueue $agentWorkQueue -AgentWorkReports $agentWorkReports
     $mutation | Add-Member -NotePropertyName 'inputReviewPath' -NotePropertyValue $input.path -Force
     $mutation | Add-Member -NotePropertyName 'baseCommitSha' -NotePropertyValue ([string]$input.payload.baseCommitSha) -Force
 

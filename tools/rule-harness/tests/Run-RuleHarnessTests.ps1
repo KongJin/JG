@@ -1627,9 +1627,25 @@ Initialize-RuleHarnessScopeRepo -RepoPath $roleRepo -Features @(
     [pscustomobject]@{ Name = 'RoleD'; ApplicationContent = 'namespace Features.RoleD.Application { public sealed class RoleDService { } }' },
     [pscustomobject]@{ Name = 'RoleE'; ApplicationContent = 'namespace Features.RoleE.Application { public sealed class RoleEService { } }' }
 )
+Set-Content -Path (Join-Path $roleRepo 'Assets/Scripts/Features/RoleE/RoleESetup.cs') -Value @"
+namespace Features.RoleE
+{
+    /// <summary>
+    /// Rule-harness generated composition root placeholder.
+    /// Replace this scaffold with the real feature setup when wiring the feature.
+    /// </summary>
+    public sealed class RoleESetup
+    {
+    }
+}
+"@ -Encoding UTF8
+Set-Content -Path (Join-Path $roleRepo 'Tests/RoleE/RoleESetupValidation.txt') -Value 'fixture validation asset for RoleE review-work derivation' -Encoding UTF8
+Invoke-RuleHarnessTestGit -RepoPath $roleRepo -Arguments @('add', 'Assets/Scripts/Features/RoleE/RoleESetup.cs', 'Tests/RoleE/RoleESetupValidation.txt') | Out-Null
+Invoke-RuleHarnessTestGit -RepoPath $roleRepo -Arguments @('commit', '-m', 'add placeholder setup fixture') | Out-Null
 $roleConfigPath = Join-Path $roleRepo 'tools/rule-harness/config.json'
 $roleConfig = Get-Content -Path $roleConfigPath -Raw | ConvertFrom-Json
 $roleConfig.scan.maxScopesPerRun = 1
+$roleConfig.agentRunner.enabled = $false
 $roleConfig | ConvertTo-Json -Depth 50 | Set-Content -Path $roleConfigPath -Encoding UTF8
 $roleReviewDir = Join-Path $roleRepo 'Temp/RoleReview'
 & (Join-Path $roleRepo 'tools/rule-harness/run-tech-debt-review.ps1') `
@@ -1646,8 +1662,51 @@ Assert-RuleHarness `
     -Condition ([int]$roleReview.severityScore -gt 0 -and [int]$roleReview.scoreBreakdown.heuristicFindingCount -ge 1 -and @($roleReview.reviewItems | Where-Object title -eq 'Runtime Resources.Load dependency').Count -ge 1 -and @($roleReview.refactorTargets | Where-Object path -eq 'Assets/Scripts/Features/RoleB/Application/RoleBService.cs').Count -eq 1) `
     -Message 'Expected tech debt role review to score heuristic debt signals and surface them as review/refactor artifacts.'
 Assert-RuleHarness `
+    -Condition (@($roleReview.reviewItems | Where-Object { $_.PSObject.Properties.Name -contains 'remediationKind' -or $_.PSObject.Properties.Name -contains 'source' }).Count -eq 0) `
+    -Message 'Expected tech debt role review items to stay observational and omit remediation/source directives.'
+Assert-RuleHarness `
     -Condition (-not (Test-Path -LiteralPath (Join-Path $roleRepo 'Temp/RuleHarnessState/feature-scan-state.json')) -and -not (Test-Path -LiteralPath (Join-Path $roleRepo 'Temp/RuleHarnessState/doc-proposals.json'))) `
     -Message 'Expected tech debt role review to leave feature scan state and doc proposal backlog untouched.'
+
+& (Join-Path $roleRepo 'tools/rule-harness/run-review-work.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -ReviewPath $roleReviewPath `
+    -OutputDir (Join-Path $roleRepo 'Temp/DerivedReviewWork') `
+    -DryRun | Out-Null
+$derivedReviewWork = Get-Content -Path (Join-Path $roleRepo 'Temp/DerivedReviewWork/report.json') -Raw | ConvertFrom-Json
+Assert-RuleHarness `
+    -Condition ((@($derivedReviewWork.decisionTrace | Where-Object { [string]$_ -like '*Batch batch-001 capability discovery*' }).Count -ge 1) -and @($derivedReviewWork.skippedBatches | Where-Object { [string]$_.id -eq 'batch-001' -and [string]$_.reasonCode -eq 'manual-validation-required' }).Count -eq 0) `
+    -Message 'Expected review work role to derive a mutation batch from observational review items instead of relying on review remediation directives.'
+Assert-RuleHarness `
+    -Condition (@($derivedReviewWork.agentWorkQueue | Where-Object { @($_.observations | Where-Object title -eq 'Runtime Resources.Load dependency').Count -ge 1 }).Count -ge 1) `
+    -Message 'Expected review work role to turn non-recipe review observations into coding-agent work queue entries.'
+
+$agentOnlyReview = Join-Path $roleRepo 'Temp/agent-only-review.json'
+[pscustomobject]@{
+    baseCommitSha = [string]$roleReview.baseCommitSha
+    reviewItems = @([pscustomobject]@{
+        findingType = 'code-smell'
+        severity = 'high'
+        title = 'Runtime Resources.Load dependency'
+        evidence = @([pscustomobject]@{
+            path = 'Assets/Scripts/Features/RoleB/Application/RoleBService.cs'
+            line = 1
+            snippet = 'Resources.Load<object>("RoleBConfig")'
+        })
+    })
+    recommendedBatches = @()
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $agentOnlyReview -Encoding UTF8
+& (Join-Path $roleRepo 'tools/rule-harness/run-review-work.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -ReviewPath $agentOnlyReview `
+    -OutputDir (Join-Path $roleRepo 'Temp/AgentOnlyReviewWork') `
+    -DryRun | Out-Null
+$agentOnlyReviewWork = Get-Content -Path (Join-Path $roleRepo 'Temp/AgentOnlyReviewWork/report.json') -Raw | ConvertFrom-Json
+Assert-RuleHarness `
+    -Condition ([bool]$agentOnlyReviewWork.failed -and @($agentOnlyReviewWork.agentWorkQueue).Count -eq 1 -and @($agentOnlyReviewWork.agentWorkReports | Where-Object { $_.status -eq 'blocked' -and $_.blockedReason -eq 'agent-runner-disabled' }).Count -eq 1 -and @($agentOnlyReviewWork.skippedBatches | Where-Object { $_.kind -eq 'agent_work' -and $_.reasonCode -eq 'agent-runner-disabled' }).Count -eq 1) `
+    -Message 'Expected review work role to report agent-work blocked state instead of silently passing when review observations require a coding agent.'
 
 $badPathReview = Join-Path $roleRepo 'Temp/bad-path-review.json'
 [pscustomobject]@{
@@ -1743,6 +1802,32 @@ Assert-RuleHarness `
     -Condition ([bool]$rulesCloseoutWork.failed -and @($rulesCloseoutWork.stageResults | Where-Object { $_.stage -eq 'rules_closeout' -and $_.status -eq 'failed' }).Count -eq 1) `
     -Message 'Expected recurrence work role to block rules-only mutations when closeout artifact does not cover the target.'
 
+$agentOnlyPlanPath = Join-Path $roleRepo 'Temp/agent-only-plan.json'
+[pscustomobject]@{
+    baseCommitSha = [string]$roleReview.baseCommitSha
+    sourceReviewPath = $roleReviewPath
+    sourceWorkReportPath = $roleWorkReportPath
+    preventionItems = @([pscustomobject]@{
+        kind = 'skipped-batch'
+        severity = 'medium'
+        summary = 'Dirty target prevented review work.'
+        targetPaths = @('AGENTS.md')
+    })
+    targetArtifacts = @()
+    recommendedBatches = @()
+    manualValidationRequired = $true
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $agentOnlyPlanPath -Encoding UTF8
+& (Join-Path $roleRepo 'tools/rule-harness/run-recurrence-work.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -PlanPath $agentOnlyPlanPath `
+    -OutputDir (Join-Path $roleRepo 'Temp/AgentOnlyRecurrenceWork') `
+    -DryRun | Out-Null
+$agentOnlyRecurrenceWork = Get-Content -Path (Join-Path $roleRepo 'Temp/AgentOnlyRecurrenceWork/report.json') -Raw | ConvertFrom-Json
+Assert-RuleHarness `
+    -Condition ([bool]$agentOnlyRecurrenceWork.failed -and @($agentOnlyRecurrenceWork.agentWorkQueue).Count -eq 1 -and @($agentOnlyRecurrenceWork.agentWorkReports | Where-Object { $_.status -eq 'blocked' -and $_.blockedReason -eq 'agent-runner-disabled' }).Count -eq 1 -and @($agentOnlyRecurrenceWork.skippedBatches | Where-Object { $_.kind -eq 'agent_work' -and $_.reasonCode -eq 'agent-runner-disabled' }).Count -eq 1) `
+    -Message 'Expected recurrence work role to report agent-work blocked state instead of silently skipping plans without deterministic batches.'
+
 & (Join-Path $roleRepo 'tools/rule-harness/run-harness-pipeline.ps1') `
     -RepoRoot $roleRepo `
     -ConfigPath $roleConfigPath `
@@ -1753,5 +1838,9 @@ $rolePipelineRoot = $rolePipelineRoot.Trim()
 Assert-RuleHarness `
     -Condition ((Test-Path -LiteralPath (Join-Path $rolePipelineRoot '01-tech-debt-review/report.json')) -and (Test-Path -LiteralPath (Join-Path $rolePipelineRoot '04-recurrence-work/report.json'))) `
     -Message 'Expected role harness pipeline to write stage artifacts from 01 through 04.'
+$pipelineRecurrenceWork = Get-Content -Path (Join-Path $rolePipelineRoot '04-recurrence-work/report.json') -Raw | ConvertFrom-Json
+Assert-RuleHarness `
+    -Condition ($pipelineRecurrenceWork.PSObject.Properties.Name -contains 'agentWorkQueue') `
+    -Message 'Expected role harness pipeline to invoke recurrence work role even when the plan has no deterministic recommended batches.'
 
 Write-Host 'Rule harness fixture tests passed.'

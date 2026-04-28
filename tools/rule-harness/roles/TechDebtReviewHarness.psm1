@@ -210,13 +210,7 @@ function Get-TechDebtHeuristicFindings {
                     [void]$findings.Add([pscustomobject]@{
                         findingType = 'tech_debt'
                         severity = [string]$pattern.severity
-                        ownerDoc = 'tools/rule-harness/README.md'
                         title = [string]$pattern.title
-                        message = [string]$pattern.message
-                        confidence = 'medium'
-                        source = 'tech_debt_heuristic_scan'
-                        remediationKind = 'report_only'
-                        heuristicId = [string]$pattern.id
                         evidence = @([pscustomobject]@{
                             path = $normalizedPath
                             line = [int]($index + 1)
@@ -317,11 +311,7 @@ function Invoke-TechDebtReviewHarness {
             [pscustomobject]@{
                 findingType = [string]$_.findingType
                 severity = [string]$_.severity
-                ownerDoc = [string]$_.ownerDoc
                 title = [string]$_.title
-                message = [string]$_.message
-                remediationKind = [string]$_.remediationKind
-                source = [string]$_.source
                 evidence = @($_.evidence)
             }
         }
@@ -352,22 +342,6 @@ function Invoke-TechDebtReviewHarness {
     $scopeErrors = @($reviewedFindings | Where-Object { $_.severity -in @('high', 'medium') })
     $recommendedBatches = @(Get-RuleHarnessPlannedBatches -ReviewedFindings $scopeErrors -DocEdits @() -RepoRoot $RepoRoot)
     $actionItems = @($snapshot.compileGate.actionItems + $snapshot.featureDependencyGate.actionItems)
-    if (@($heuristicFindings).Count -gt 0) {
-        $topHeuristicPaths = @(
-            $heuristicFindings |
-                ForEach-Object { [string]$_.evidence[0].path } |
-                Group-Object |
-                Sort-Object Count -Descending |
-                Select-Object -First 5 |
-                ForEach-Object { $_.Name }
-        )
-        $actionItems += [pscustomobject]@{
-            kind = 'triage-tech-debt-heuristics'
-            severity = if ($heuristicHighCount -gt 0) { 'high' } elseif ($heuristicMediumCount -gt 0) { 'medium' } else { 'low' }
-            summary = "Triage $(@($heuristicFindings).Count) heuristic technical debt signal(s)."
-            targetPaths = @($topHeuristicPaths)
-        }
-    }
 
     $report = [pscustomobject]@{
         runId = [string]$snapshot.runId

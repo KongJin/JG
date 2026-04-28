@@ -132,6 +132,7 @@ public sealed class LobbySetup : MonoBehaviour
                 _loadedAccountData = accountData;
                 if (accountData.Profile != null)
                     _currentAccountProfile = accountData.Profile;
+                _view?.RenderAccountState(_currentAccountProfile, _loadedAccountData);
             }
         }
         catch (System.Exception ex)
@@ -184,6 +185,7 @@ public sealed class LobbySetup : MonoBehaviour
         );
         _accountSettingsView.Initialize(accountSettingsInputHandler);
         _accountSettingsView.Render(_currentAccountProfile);
+        _view?.RenderAccountState(_currentAccountProfile, _loadedAccountData);
     }
 
     private void ApplyLoadedAccountSettings()

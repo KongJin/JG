@@ -227,7 +227,7 @@ $inventory = [ordered]@{
 $approvalManifest = [ordered]@{
     schemaVersion = "1.0.0"
     generatedAt = $inventory.generatedAt
-    ownerPlan = "docs/plans/prefab_management_gap_closeout_plan.md"
+    owner = "docs/ops/unity_ui_authoring_workflow.md"
     prefabs = $approvedRecords
 }
 

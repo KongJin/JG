@@ -40,6 +40,31 @@
                         "status":  "observed"
                     },
                     {
+                        "signature":  "inferred-check-failed|inferred|AGENTS.md|code_fix|Broken owner doc references after apply: docs/index.md -\u003e AGENTS.md; docs/index.md -\u003e docs/index.md; docs/index.md -\u003e progress.md; docs/index.md -\u003e tools/unity-mcp/README.md; docs/index.md -\u003e game_design.md; docs/index.md -\u003e world_design.md; docs/index.md -\u003e ui_foundations.md; docs/index.md -\u003e ui_reference_workflow.md; docs/index.md -\u003e unit_module_design.md; docs/index.md -\u003e module_data_structure.md; docs/index.md -\u003e account_system_plan.md; docs/index.md -\u003e game_scene_flow_validation_closeout_plan.md; docs/index.md -\u003e game_scene_phase#_multiplayer_sync_plan.md; docs/index.md -\u003e technical_debt_recurrence_prevention_plan.md; docs/index.md -\u003e non_stitch_ui_stitch_reimport_plan.md; docs/index.md -\u003e runtime_validation_checklist.md; docs/index.md -\u003e webgl_smoke_checklist.md; docs/index.md -\u003e cohesion_coupling_policy.md; docs/index.md -\u003e unity_ui_authoring_workflow.md; docs/index.md -\u003e stitch_data_workflow.md; docs/index.md -\u003e stitch_structured_handoff_contract.md; docs/index.md -\u003e document_management_workflow.md; docs/index.md -\u003e plan_authoring_review_workflow.md; docs/index.md -\u003e acceptance_reporting_guardrails.md; docs/index.md -\u003e firebase_hosting.md; docs/ops/document_management_workflow.md -\u003e AGENTS.md; docs/ops/document_management_workflow.md -\u003e docs/index.md; docs/ops/document_management_workflow.md -\u003e progress.md; docs/ops/unity_ui_authoring_workflow.md -\u003e AGENTS.md; docs/ops/unity_ui_authoring_workflow.md -\u003e docs/index.md; docs/ops/unity_ui_authoring_workflow.md -\u003e tools/unity-mcp/README.md; docs/plans/progress.md -\u003e design/ui_foundations.md; docs/plans/progress.md -\u003e docs/index.md; tools/unity-mcp/README.md -\u003e docs/index.md",
+                        "scopeType":  "global",
+                        "scopePath":  "AGENTS.md",
+                        "symptoms":  "Broken owner doc references after apply: docs/index.md -\u003e AGENTS.md; docs/index.md -\u003e docs/index.md; docs/index.md -\u003e progress.md; docs/index.md -\u003e tools/unity-mcp/README.md; docs/index.md -\u003e game_design.md; docs/index.md -\u003e world_design.md; docs/index.md -\u003e ui_foundations.md; docs/index.md -\u003e ui_reference_workflow.md; docs/index.md -\u003e unit_module_design.md; docs/index.md -\u003e module_data_structure.md; docs/index.md -\u003e account_system_plan.md; docs/index.md -\u003e game_scene_flow_validation_closeout_plan.md; docs/index.md -\u003e game_scene_phase5_multiplayer_sync_plan.md; docs/index.md -\u003e technical_debt_recurrence_prevention_plan.md; docs/index.md -\u003e non_stitch_ui_stitch_reimport_plan.md; docs/index.md -\u003e runtime_validation_checklist.md; docs/index.md -\u003e webgl_smoke_checklist.md; docs/index.md -\u003e cohesion_coupling_policy.md; docs/index.md -\u003e unity_ui_authoring_workflow.md; docs/index.md -\u003e stitch_data_workflow.md; docs/index.md -\u003e stitch_structured_handoff_contract.md; docs/index.md -\u003e document_management_workflow.md; docs/index.md -\u003e plan_authoring_review_workflow.md; docs/index.md -\u003e acceptance_reporting_guardrails.md; docs/index.md -\u003e firebase_hosting.md; docs/ops/document_management_workflow.md -\u003e AGENTS.md; docs/ops/document_management_workflow.md -\u003e docs/index.md; docs/ops/document_management_workflow.md -\u003e progress.md; docs/ops/unity_ui_authoring_workflow.md -\u003e AGENTS.md; docs/ops/unity_ui_authoring_workflow.md -\u003e docs/index.md; docs/ops/unity_ui_authoring_workflow.md -\u003e tools/unity-mcp/README.md; docs/plans/progress.md -\u003e design/ui_foundations.md; docs/plans/progress.md -\u003e docs/index.md; tools/unity-mcp/README.md -\u003e docs/index.md",
+                        "preferredRepairStrategy":  "Amend the owning global rule doc before retrying.",
+                        "validationHints":  [
+                                                "Tests/Projectile/Run-ProjectileValidation.ps1",
+                                                "target_files_exist",
+                                                "expected_findings_resolved",
+                                                "no_new_high_severity_findings",
+                                                "feature_root_contract_present",
+                                                "owner_doc_references_resolve",
+                                                "feature_test_assets_present"
+                                            ],
+                        "confidence":  "medium",
+                        "hitCount":  1,
+                        "distinctCommitCount":  1,
+                        "commitShas":  [
+                                           "402b840d710f84ba36919938a38befd498681679"
+                                       ],
+                        "lastSeen":  "2026-04-28T05:09:19.2960022Z",
+                        "promotionTarget":  "docs/ops/unity_ui_authoring_workflow.md",
+                        "status":  "observed"
+                    },
+                    {
                         "signature":  "static-scan-failed|static-scan|AGENTS.md|code_fix|Before=# After=# Resolved=# Expected=# NewHigh=#",
                         "scopeType":  "global",
                         "scopePath":  "AGENTS.md",
