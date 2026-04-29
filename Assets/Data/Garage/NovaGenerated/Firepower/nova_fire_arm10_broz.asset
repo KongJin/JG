@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm10_broz
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm10_broz
-  displayName: Arm10 Broz
+  displayName: "\uBE14\uB808\uC774\uC988"
   icon: {fileID: 0}
-  attackDamage: 48
-  attackSpeed: 0.93
-  range: 7
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm10_broz.gx.
-    Tier: 4.'
-  previewPrefab: {fileID: 3963053813527648039, guid: 860705f8606d7f84baa15d5b4cbed6a8, type: 3}
+  attackDamage: 24
+  attackSpeed: 1.32
+  range: 4.75
+  description: datan\common\arm10_broz.gx
+  previewPrefab: {fileID: 6116336503295101196, guid: 860705f8606d7f84baa15d5b4cbed6a8, type: 3}

@@ -99,7 +99,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 case "custom":
                     if (string.IsNullOrEmpty(req.customMethod))
                         throw new ArgumentException("customMethod is required when method=custom");
-                    return ExecuteCustomMethod(gameObject, req.customMethod, req.args, stopwatch);
+                    return ExecuteCustomMethod(gameObject, req.customMethod, ResolveInvokeArgs(req), stopwatch);
 
                 default:
                     throw new ArgumentException($"Unknown method: {method}. Use 'click', 'submit', 'value', or 'custom'.");
@@ -265,6 +265,18 @@ namespace ProjectSD.EditorTools.UnityMcp
                 result = result,
                 durationMs = stopwatch.ElapsedMilliseconds
             };
+        }
+
+        private static string[] ResolveInvokeArgs(UiInvokeRequest req)
+        {
+            var values = new List<string>();
+            if (req.arg0 != null) values.Add(req.arg0);
+            if (req.arg1 != null) values.Add(req.arg1);
+            if (req.arg2 != null) values.Add(req.arg2);
+            if (values.Count > 0)
+                return values.ToArray();
+
+            return req.args ?? Array.Empty<string>();
         }
 
         // =====================================================================

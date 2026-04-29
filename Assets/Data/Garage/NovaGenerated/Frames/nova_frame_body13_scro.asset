@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body13_scro
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body13_scro
-  displayName: Body13 Scro
+  displayName: "\uC13C\uCD94\uB9AC\uC5B8"
   icon: {fileID: 0}
   baseHp: 555
   baseMoveRange: 4
   baseAttackSpeed: 1.1
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 6093793812290155248, guid: 12f9c74bae0e1fc489a9ba3ffb0faef1, type: 3}
+  previewPrefab: {fileID: 7447513980253649883, guid: 06eb8cafae97c3049b6128f57079d707, type: 3}

@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="../Shared/TacticalTokens.uss" />
+    <Style src="../Shared/TacticalIcons.uss" />
     <Style src="ConnectionReconnectControl.uss" />
     <ui:VisualElement name="ConnectionReconnectScreen" class="connection-screen">
         <ui:VisualElement name="ConnectionTopShell" class="connection-top-shell">
-            <ui:Button name="BackButton" text="&lt;" class="connection-back-button" />
+            <ui:Button name="BackButton" class="connection-back-button" tooltip="Back">
+                <ui:VisualElement class="uitk-icon uitk-icon--back uitk-icon--muted" />
+            </ui:Button>
             <ui:Label text="연결 상태" class="connection-title" />
             <ui:Label name="SessionBadge" text="SESSION CHECK" class="session-badge" />
         </ui:VisualElement>

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body24_grbs
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body24_grbs
-  displayName: Body24 Grbs
+  displayName: "\uADF8\uB77C\uBE44\uC2A4"
   icon: {fileID: 0}
   baseHp: 510
   baseMoveRange: 4
   baseAttackSpeed: 1.15
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 947240413425840960, guid: 7f459b5741a626740a88ebe31b576714, type: 3}
+  previewPrefab: {fileID: 9116205956888321813, guid: 0f4bfe2d68107694b9f9f6e4894b54d2, type: 3}

@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_s_legs27_ksor
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_s_legs27_ksor
-  displayName: S Legs27 Ksor
+  displayName: "\uCE74\uC18C\uC640\uB9ACS"
   icon: {fileID: 0}
   hpBonus: 230
   moveRange: 4.55
   anchorRange: 4.55
-  description: 'Generated Nova1492 baseline. Source: datan\common\s_legs27_ksor.gx.
-    Tier: 3.'
-  previewPrefab: {fileID: 4073888999692125120, guid: 3fd6c13869767084abd94bf618d6d416, type: 3}
+  description: datan\common\s_legs27_ksor.gx
+  previewPrefab: {fileID: 615944362430114455, guid: 3fd6c13869767084abd94bf618d6d416, type: 3}

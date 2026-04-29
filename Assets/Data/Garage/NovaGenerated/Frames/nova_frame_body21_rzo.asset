@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body21_rzo
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body21_rzo
-  displayName: Body21 Rzo
+  displayName: "\uB808\uC9C0\uC628"
   icon: {fileID: 0}
   baseHp: 465
   baseMoveRange: 4
   baseAttackSpeed: 1.2
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 6605838590647288779, guid: 2d15ffca441580e4f94531815cc6c981, type: 3}
+  previewPrefab: {fileID: 5267709515660085975, guid: 31f3c25ac4ce07e4aa9b5f4e652f16cb, type: 3}

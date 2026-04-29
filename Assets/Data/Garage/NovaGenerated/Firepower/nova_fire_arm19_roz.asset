@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm19_roz
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm19_roz
-  displayName: Arm19 Roz
+  displayName: "\uB808\uC774\uC800"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm19_roz.gx. Tier:
-    3.'
-  previewPrefab: {fileID: 4938907471146889930, guid: 01c5e1b97a51654409d494fb78688ab2, type: 3}
+  attackDamage: 32
+  attackSpeed: 1.19
+  range: 5.5
+  description: datan\common\arm19_roz.gx
+  previewPrefab: {fileID: 5025663598552520714, guid: 01c5e1b97a51654409d494fb78688ab2, type: 3}

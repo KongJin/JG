@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_legs1_rdrn
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_legs1_rdrn
-  displayName: Legs1 Rdrn
+  displayName: "\uB85C\uB4DC\uB7F0\uB108"
   icon: {fileID: 0}
-  hpBonus: 280
-  moveRange: 4
-  anchorRange: 4
-  description: 'Generated Nova1492 baseline. Source: datan\common\legs1_rdrn.gx.
-    Tier: 4.'
-  previewPrefab: {fileID: 322978047427167363, guid: bfcd5e39524d1244fa8a4a0ed434861d, type: 3}
+  hpBonus: 180
+  moveRange: 5.1
+  anchorRange: 5.1
+  description: datan\common\legs1_rdrn.gx
+  previewPrefab: {fileID: 2557663145192473999, guid: bfcd5e39524d1244fa8a4a0ed434861d, type: 3}

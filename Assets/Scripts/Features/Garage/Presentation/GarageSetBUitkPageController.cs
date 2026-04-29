@@ -16,7 +16,8 @@ namespace Features.Garage.Presentation
         [SerializeField] private string _lastRenderStatus;
         [SerializeField] private string _lastInteractionStatus;
         [SerializeField] private int _selectedSlotIndex;
-        [SerializeField] private GarageEditorFocus _focusedPart = GarageEditorFocus.Frame;
+        [SerializeField] private GarageEditorFocus _focusedPart = GarageEditorFocus.Mobility;
+        [SerializeField] private string _partSearchText = string.Empty;
         [SerializeField] private bool _isSettingsOpen;
 
         private InitializeGarageUseCase _initializeGarage;
@@ -53,6 +54,8 @@ namespace Features.Garage.Presentation
             _recentOperations = recentOperations;
             _presenter = new GaragePagePresenter(_catalog);
             _state ??= new GaragePageState();
+            _focusedPart = GarageEditorFocus.Mobility;
+            _partSearchText = string.Empty;
 
             HookCallbacks();
             _state.Initialize(new GarageRoster());
@@ -91,6 +94,12 @@ namespace Features.Garage.Presentation
             _lastInteractionStatus = "save-requested";
         }
 
+        public void SetPartSearchForMcpSmoke(string value)
+        {
+            SetPartSearchText(value);
+            _lastInteractionStatus = $"part-search:{value}";
+        }
+
         private async System.Threading.Tasks.Task InitializeRosterAsync()
         {
             if (_isInitializingRoster || _initializeGarage == null)
@@ -118,6 +127,8 @@ namespace Features.Garage.Presentation
             _adapter.Bind();
             _adapter.SlotSelected += SelectSlot;
             _adapter.PartFocusSelected += SetFocusedPart;
+            _adapter.PartSearchChanged += SetPartSearchText;
+            _adapter.PartOptionSelected += SelectPartOption;
             _adapter.SaveRequested += () => _ = RunSaveAsync();
             _adapter.SettingsRequested += ToggleSettingsForMcpSmoke;
         }
@@ -128,13 +139,51 @@ namespace Features.Garage.Presentation
                 return;
 
             _state.SelectSlot(slotIndex);
-            _focusedPart = GarageEditorFocus.Frame;
+            _focusedPart = GarageEditorFocus.Mobility;
+            _partSearchText = string.Empty;
             Render();
         }
 
         private void SetFocusedPart(GarageEditorFocus focus)
         {
+            if (_focusedPart != focus)
+                _partSearchText = string.Empty;
+
             _focusedPart = focus;
+            Render();
+        }
+
+        private void SetPartSearchText(string value)
+        {
+            string next = value ?? string.Empty;
+            if (_partSearchText == next)
+                return;
+
+            _partSearchText = next;
+            Render();
+        }
+
+        private void SelectPartOption(GarageNovaPartSelection selection)
+        {
+            if (!CanRender())
+                return;
+
+            _focusedPart = GarageNovaPartsPanelViewModelFactory.ToEditorFocus(selection.Slot);
+            switch (selection.Slot)
+            {
+                case GarageNovaPartPanelSlot.Frame:
+                    _state.SetEditingFrameId(selection.PartId);
+                    break;
+                case GarageNovaPartPanelSlot.Firepower:
+                    _state.SetEditingFirepowerId(selection.PartId);
+                    break;
+                case GarageNovaPartPanelSlot.Mobility:
+                    _state.SetEditingMobilityId(selection.PartId);
+                    break;
+            }
+
+            _state.ClearValidationOverride();
+            _lastInteractionStatus = $"part:{selection.Slot}:{selection.PartId}";
             Render();
         }
 
@@ -175,11 +224,13 @@ namespace Features.Garage.Presentation
             var operationSummary = GarageOperationRecordSummaryFormatter.BuildSummary(_recentOperations);
             var serviceTags = GarageOperationRecordServiceTagMapper.BuildByLoadoutKey(_recentOperations);
             IReadOnlyList<GarageSlotViewModel> slotViewModels = _presenter.BuildSlotViewModels(_state, serviceTags);
+            var partListViewModel = BuildPartListViewModel();
             var editorViewModel = _presenter.BuildEditorViewModel(_state);
             var resultViewModel = _presenter.BuildResultViewModel(_state, evaluation, operationSummary);
 
             _adapter.Render(
                 slotViewModels,
+                partListViewModel,
                 editorViewModel,
                 resultViewModel,
                 _focusedPart,
@@ -190,9 +241,50 @@ namespace Features.Garage.Presentation
             PublishDraftState();
         }
 
+        public void SelectVisiblePartForMcpSmoke(string slot, int visibleIndex)
+        {
+            if (!CanRender())
+                return;
+
+            if (!System.Enum.TryParse(slot, ignoreCase: true, out GarageNovaPartPanelSlot parsedSlot))
+            {
+                _lastInteractionStatus = $"part-slot-invalid:{slot}";
+                return;
+            }
+
+            _focusedPart = GarageNovaPartsPanelViewModelFactory.ToEditorFocus(parsedSlot);
+            var viewModel = BuildPartListViewModel(parsedSlot);
+            if (viewModel.Options == null || viewModel.Options.Count == 0)
+            {
+                _lastInteractionStatus = $"part-empty:{parsedSlot}";
+                Render();
+                return;
+            }
+
+            int index = Mathf.Clamp(visibleIndex, 0, viewModel.Options.Count - 1);
+            SelectPartOption(new GarageNovaPartSelection(parsedSlot, viewModel.Options[index].Id));
+        }
+
         private GarageDraftEvaluation EvaluateDraft()
         {
             return GarageDraftEvaluator.Evaluate(_state, _catalog, _composeUnit, _validateRoster);
+        }
+
+        private GarageNovaPartsPanelViewModel BuildPartListViewModel()
+        {
+            return BuildPartListViewModel(GarageNovaPartsPanelViewModelFactory.ToPanelSlot(_focusedPart));
+        }
+
+        private GarageNovaPartsPanelViewModel BuildPartListViewModel(GarageNovaPartPanelSlot slot)
+        {
+            return GarageNovaPartsPanelViewModelFactory.Build(
+                _catalog,
+                new GarageNovaPartsDraftSelection(
+                    _state.EditingFrameId,
+                    _state.EditingFirepowerId,
+                    _state.EditingMobilityId),
+                slot,
+                _partSearchText);
         }
 
         private bool CanRender()

@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_n_legs42_krr
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_n_legs42_krr
-  displayName: N Legs42 Krr
+  displayName: "\uD06C\uB864\uB7ECN"
   icon: {fileID: 0}
-  hpBonus: 280
-  moveRange: 4
-  anchorRange: 4
-  description: 'Generated Nova1492 baseline. Source: datan\common\n_legs42_krr.gx.
-    Tier: 4.'
-  previewPrefab: {fileID: 1183413113308649347, guid: 8303df47f01b980428d93d1b8f38fdd9, type: 3}
+  hpBonus: 180
+  moveRange: 5.1
+  anchorRange: 5.1
+  description: datan\common\n_legs42_krr.gx
+  previewPrefab: {fileID: 2554766184266811772, guid: 8303df47f01b980428d93d1b8f38fdd9, type: 3}

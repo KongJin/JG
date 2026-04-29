@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_legs49_otrs
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_legs49_otrs
-  displayName: Legs49 Otrs
+  displayName: "\uC635\uD14C\uB9AD\uC2A4"
   icon: {fileID: 0}
-  hpBonus: 130
-  moveRange: 5.65
-  anchorRange: 5.65
-  description: 'Generated Nova1492 baseline. Source: datan\common\legs49_otrs.gx.
-    Tier: 1.'
-  previewPrefab: {fileID: 2706085887139594986, guid: 4c4eed7e6ccca0b4996000606a319365, type: 3}
+  hpBonus: 330
+  moveRange: 3.45
+  anchorRange: 3.45
+  description: datan\common\legs49_otrs.gx
+  previewPrefab: {fileID: 7969414521577593598, guid: 4c4eed7e6ccca0b4996000606a319365, type: 3}

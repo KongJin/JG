@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_g_arm56_prrs
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_g_arm56_prrs
-  displayName: G Arm56 Prrs
+  displayName: "\uD504\uB864\uB9AD\uC2A4G"
   icon: {fileID: 0}
-  attackDamage: 48
-  attackSpeed: 0.93
-  range: 7
-  description: 'Generated Nova1492 baseline. Source: datan\common\g_arm56_prrs.gx.
-    Tier: 4.'
-  previewPrefab: {fileID: 7860565709806036710, guid: 6bfdce0d8f42c4a4ebe8b0c6b435bb54, type: 3}
+  attackDamage: 40
+  attackSpeed: 1.06
+  range: 6.25
+  description: datan\common\g_arm56_prrs.gx
+  previewPrefab: {fileID: 1804256522313481519, guid: 6bfdce0d8f42c4a4ebe8b0c6b435bb54, type: 3}

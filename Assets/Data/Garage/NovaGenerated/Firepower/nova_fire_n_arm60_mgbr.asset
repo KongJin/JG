@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_n_arm60_mgbr
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_n_arm60_mgbr
-  displayName: N Arm60 Mgbr
+  displayName: "\uBA54\uAC00\uBC30\uB7F4N"
   icon: {fileID: 0}
   attackDamage: 40
   attackSpeed: 1.06
   range: 6.25
-  description: 'Generated Nova1492 baseline. Source: datan\common\n_arm60_mgbr.gx.
-    Tier: 3.'
-  previewPrefab: {fileID: 1816110180421543269, guid: 90b4bf59c2b42fd438c6af084f956d1e, type: 3}
+  description: datan\common\n_arm60_mgbr.gx
+  previewPrefab: {fileID: 4324572410192853027, guid: 90b4bf59c2b42fd438c6af084f956d1e, type: 3}

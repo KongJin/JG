@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="TacticalTokens.uss" />
+    <Style src="TacticalIcons.uss" />
     <Style src="SharedShellNavigation.uss" />
     <ui:VisualElement name="SharedShellScreen" class="shared-shell-screen">
         <ui:VisualElement name="SharedTopShell" class="shared-top-shell">
-            <ui:Button name="ShellMenuButton" text="=" class="shared-icon-button" />
+            <ui:Button name="ShellMenuButton" class="shared-icon-button" tooltip="Menu">
+                <ui:VisualElement class="uitk-icon uitk-icon--menu uitk-icon--muted" />
+            </ui:Button>
             <ui:VisualElement class="shared-title-stack">
                 <ui:Label text="격납고 관리" class="shared-title" />
                 <ui:Label text="동기화 완료" class="shared-state" />
             </ui:VisualElement>
-            <ui:Button name="ShellSettingsButton" text="S" class="shared-icon-button" />
+            <ui:Button name="ShellSettingsButton" class="shared-icon-button" tooltip="Settings">
+                <ui:VisualElement class="uitk-icon uitk-icon--settings uitk-icon--muted" />
+            </ui:Button>
         </ui:VisualElement>
 
         <ui:VisualElement name="SharedWorkspacePlaceholder" class="shared-workspace">
@@ -25,9 +30,18 @@
         </ui:VisualElement>
 
         <ui:VisualElement name="SharedNavigationBarReference" class="shared-navigation-bar">
-            <ui:Button name="LobbyNavButton" text="로비" class="shared-nav-item" />
-            <ui:Button name="GarageNavButton" text="차고" class="shared-nav-item shared-nav-item--selected" />
-            <ui:Button name="RecordsNavButton" text="기록" class="shared-nav-item" />
+            <ui:Button name="LobbyNavButton" class="shared-nav-item">
+                <ui:VisualElement class="uitk-icon uitk-icon--radar uitk-icon--small shared-nav-icon" />
+                <ui:Label text="로비" class="shared-nav-label" />
+            </ui:Button>
+            <ui:Button name="GarageNavButton" class="shared-nav-item shared-nav-item--selected">
+                <ui:VisualElement class="uitk-icon uitk-icon--garage uitk-icon--small shared-nav-icon shared-nav-icon--selected" />
+                <ui:Label text="차고" class="shared-nav-label" />
+            </ui:Button>
+            <ui:Button name="RecordsNavButton" class="shared-nav-item">
+                <ui:VisualElement class="uitk-icon uitk-icon--records uitk-icon--small shared-nav-icon" />
+                <ui:Label text="기록" class="shared-nav-label" />
+            </ui:Button>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

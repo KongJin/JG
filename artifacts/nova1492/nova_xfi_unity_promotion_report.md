@@ -1,6 +1,6 @@
 ﻿# Nova1492 XFI Unity Promotion Report
 
-> generated: 2026-04-27 23:49:40
+> generated: 2026-04-29 09:24:55
 
 - input XFI manifest: artifacts/nova1492/nova_unitpart_xfi_manifest.csv
 - input proposal: artifacts/nova1492/nova_xfi_alignment_proposal.csv
@@ -11,15 +11,15 @@
 
 | metric | count |
 |---|---:|
-| asset entries scanned | 321 |
-| XFI metadata promoted | 317 |
-| XFI matched by source path fallback | 9 |
-| entries without parsed XFI | 4 |
-| frame body.top sockets promoted | 65 |
-| mobility legs.body sockets promoted | 61 |
-| named attach sockets preserved | 12 |
-| weapon direction-only metadata preserved | 86 |
-| reference-only metadata preserved | 93 |
+| asset entries scanned | 222 |
+| XFI metadata promoted | 222 |
+| XFI matched by source path fallback | 0 |
+| entries without parsed XFI | 0 |
+| frame body.top sockets promoted | 64 |
+| mobility legs.body sockets promoted | 60 |
+| named attach sockets preserved | 0 |
+| weapon direction-only metadata preserved | 85 |
+| reference-only metadata preserved | 13 |
 
 ## Notes
 

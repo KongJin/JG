@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body35_trbn
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body35_trbn
-  displayName: Body35 Trbn
+  displayName: "\uD2B8\uB9AC\uBDF0\uB110"
   icon: {fileID: 0}
   baseHp: 555
   baseMoveRange: 4
   baseAttackSpeed: 1.1
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 1197388298494267469, guid: c9463f3de45c31544b0b6098c558bd84, type: 3}
+  previewPrefab: {fileID: 3672711793254071341, guid: f98b4874e4520ad4fad1da33129c83a6, type: 3}

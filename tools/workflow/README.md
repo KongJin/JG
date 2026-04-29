@@ -33,3 +33,7 @@ Do not use the shared `unity-ui-authoring-workflow-policy.json` as closeout evid
 
 Do not call `Unity.exe -batchmode -runTests` directly while this repo is open in Unity Editor.
 Use `Invoke-UnityEditModeTests.ps1`; it first checks `Library/EditorInstance.json` and blocks with `open-editor-owns-project` when the active editor already owns the project.
+
+Unity Editor, Play Mode, MCP UI policy, screenshots, and CLI EditMode tests are treated as one shared Unity resource.
+`Invoke-UnityEditModeTests.ps1`, `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`, and MCP runtime smoke helpers acquire `Temp/UnityMcp/unity-resource.lock` before using that resource.
+If another live process owns the lock, treat the workflow as `blocked: unity-resource-lock-held` instead of running a competing Unity operation.

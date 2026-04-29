@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_legs11_strod
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_legs11_strod
-  displayName: Legs11 Strod
+  displayName: "\uC2A4\uD2B8\uB77C\uC774\uB354"
   icon: {fileID: 0}
-  hpBonus: 230
-  moveRange: 4.55
-  anchorRange: 4.55
-  description: 'Generated Nova1492 baseline. Source: datan\common\legs11_strod.gx.
-    Tier: 3.'
-  previewPrefab: {fileID: 7111983640519030623, guid: 1f037207938e0df4ea9d22e2018384c0, type: 3}
+  hpBonus: 180
+  moveRange: 5.1
+  anchorRange: 5.1
+  description: datan\common\legs11_strod.gx
+  previewPrefab: {fileID: 112886290407058377, guid: 1f037207938e0df4ea9d22e2018384c0, type: 3}

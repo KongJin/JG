@@ -59,7 +59,7 @@ If compile errors remain, `play/start`, the workflow gate, and verification help
 Unity Editor Play Mode, MCP scene changes, screenshots, and runtime smoke share one editor state. Only one runtime or UI/UX lane should own those operations at a time.
 Other lanes can continue static review, docs, or compile-readonly work, but they should not start Play Mode or capture smoke evidence until the active MCP lane is finished.
 
-Runtime smoke helpers should take the MCP operation lock unless a human is intentionally running a supervised manual check.
+Runtime smoke helpers should take the shared Unity resource lock plus their lane-specific MCP operation lock unless a human is intentionally running a supervised manual check.
 Use lane-specific evidence paths, for example:
 
 ```powershell
@@ -68,7 +68,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-Gam
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameSceneMobileHudFramingSmoke.ps1 -Owner GameSceneMobileHudFraming -OutputPath artifacts/unity/game-flow/game-scene-mobile-hud-framing-smoke.json -PlacementOutputPath artifacts/unity/game-flow/game-scene-mobile-hud-placement-source.json -ScreenshotPath artifacts/unity/game-flow/game-scene-mobile-hud-framing.png -LeavePlayMode
 ```
 
-If a helper reports that `Temp/UnityMcp/runtime-smoke.lock` is held, treat the smoke as `blocked` for this lane instead of stopping the other lane's Play Mode session.
+If a helper reports that `Temp/UnityMcp/unity-resource.lock` or `Temp/UnityMcp/runtime-smoke.lock` is held, treat the smoke as `blocked` for this lane instead of stopping the other lane's Play Mode session.
 If the lock holder process no longer exists, helpers may clear that stale lock and continue; live process locks remain authoritative.
 Nested helpers must run under the parent helper's lock and record that fact in their artifact instead of competing for the same lock.
 Placement smoke path candidates are centralized in the placement helper and recorded into each artifact as `pathContractVersion`/`pathCandidates`; update that contract map when Lobby/Battle UI hierarchy paths move.

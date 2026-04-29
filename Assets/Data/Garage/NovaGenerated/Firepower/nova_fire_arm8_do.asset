@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm8_do
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm8_do
-  displayName: Arm8 Do
+  displayName: "\uB4C0\uC5BC\uAC74"
   icon: {fileID: 0}
   attackDamage: 32
   attackSpeed: 1.19
   range: 5.5
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm8_do.gx. Tier:
-    2.'
-  previewPrefab: {fileID: 3090134715967014492, guid: 4b3fcac515b20e2478dba31644801915, type: 3}
+  description: datan\common\arm8_do.gx
+  previewPrefab: {fileID: 3070200374333239709, guid: 4b3fcac515b20e2478dba31644801915, type: 3}

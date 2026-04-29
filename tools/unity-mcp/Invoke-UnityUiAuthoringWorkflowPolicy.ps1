@@ -358,6 +358,7 @@ $missingEvidence = @()
 $staleEvidence = @()
 $policyViolations = @()
 $compileSummary = $null
+$unityResourceLock = $null
 $capabilityExpansionGuard = [PSCustomObject]@{
     allowCapabilityExpansion = [bool]$AllowCapabilityExpansion
     surfaceOnboardingFiles = @($stitchSurfaceOnboardingFiles)
@@ -379,6 +380,12 @@ if ($route -ne "no-unity-ui-workflow") {
     }
 
     try {
+        $unityResourceLock = Enter-McpExclusiveOperation `
+            -Name "unity-ui-authoring-workflow-policy" `
+            -Owner $(if ([string]::IsNullOrWhiteSpace($Agent)) { "workflow" } else { $Agent }) `
+            -LockPath "Temp/UnityMcp/unity-resource.lock" `
+            -TimeoutSec $TimeoutSec
+
         $health = Wait-McpBridgeHealthy -Root $root -TimeoutSec $TimeoutSec
         if ($health.State.isPlaying) {
             Invoke-McpPlayStopAndWait -Root $root -TimeoutSec $TimeoutSec | Out-Null
@@ -409,6 +416,9 @@ if ($route -ne "no-unity-ui-workflow") {
             code = "compile-reload-failed"
             message = ("Compile or reload could not be verified. Fix the MCP/editor state and rerun the workflow. Details: {0}" -f $_.Exception.Message)
         }
+    }
+    finally {
+        Exit-McpExclusiveOperation -Lock $unityResourceLock
     }
 
     if (@($newPrefabFiles).Count -gt 0) {
@@ -488,6 +498,16 @@ $report = [PSCustomObject]@{
     staleEvidence = @($staleEvidence)
     policyViolations = @($policyViolations)
     compile = $compileSummary
+    unityResourceLock = if ($null -eq $unityResourceLock) {
+        $null
+    }
+    else {
+        [PSCustomObject]@{
+            owner = $unityResourceLock.Owner
+            path = $unityResourceLock.Path
+            token = $unityResourceLock.Token
+        }
+    }
     capabilityExpansionGuard = $capabilityExpansionGuard
     prefabManagement = $prefabManagementSummary
     declaredNewPrefabTargets = $declaredNewPrefabTargets

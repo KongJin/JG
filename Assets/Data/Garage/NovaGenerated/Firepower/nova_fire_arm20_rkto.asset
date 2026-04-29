@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm20_rkto
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm20_rkto
-  displayName: Arm20 Rkto
+  displayName: "\uB85C\uCF13\uD2F0\uC5B4"
   icon: {fileID: 0}
-  attackDamage: 56
-  attackSpeed: 0.8
-  range: 7.75
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm20_rkto.gx.
-    Tier: 5.'
-  previewPrefab: {fileID: 1292665575779346670, guid: edda299bc1e0ec34da3bc740efebdc23, type: 3}
+  attackDamage: 40
+  attackSpeed: 1.06
+  range: 6.25
+  description: datan\common\arm20_rkto.gx
+  previewPrefab: {fileID: 9075986580650307608, guid: edda299bc1e0ec34da3bc740efebdc23, type: 3}

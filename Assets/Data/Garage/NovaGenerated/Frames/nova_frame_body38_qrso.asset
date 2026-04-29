@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body38_qrso
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body38_qrso
-  displayName: Body38 Qrso
+  displayName: "\uD034\uB7EC\uC2DC\uC5B4"
   icon: {fileID: 0}
   baseHp: 465
   baseMoveRange: 4
   baseAttackSpeed: 1.2
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 2763188838793532591, guid: ad1fc327028e6e2468d62799aed420d6, type: 3}
+  previewPrefab: {fileID: 2742703499400849626, guid: f1ceb95a3c7fbc249bb5722487258303, type: 3}

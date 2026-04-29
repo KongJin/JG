@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body22_kdd
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body22_kdd
-  displayName: Body22 Kdd
+  displayName: "\uCFFC\uD130\uB371"
   icon: {fileID: 0}
   baseHp: 600
   baseMoveRange: 4
   baseAttackSpeed: 1.05
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 4029671841064828644, guid: 67961e9264dcde44f8979ad5a10755e5, type: 3}
+  previewPrefab: {fileID: 5589743074871826839, guid: 9bc7d561cb71b9e409773e0af07dd957, type: 3}

@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm17_prrs
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm17_prrs
-  displayName: Arm17 Prrs
+  displayName: "\uD504\uB864\uB9AD\uC2A4"
   icon: {fileID: 0}
-  attackDamage: 48
-  attackSpeed: 0.93
-  range: 7
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm17_prrs.gx.
-    Tier: 4.'
-  previewPrefab: {fileID: 8403750319170609760, guid: 5e126c458d5ebfb4aaad33b3ee1f3380, type: 3}
+  attackDamage: 32
+  attackSpeed: 1.19
+  range: 5.5
+  description: datan\common\arm17_prrs.gx
+  previewPrefab: {fileID: 6592864882827424568, guid: 5e126c458d5ebfb4aaad33b3ee1f3380, type: 3}

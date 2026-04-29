@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_s_legs28_krz
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_s_legs28_krz
-  displayName: S Legs28 Krz
+  displayName: "\uD06C\uB8E8\uC800S"
   icon: {fileID: 0}
-  hpBonus: 330
-  moveRange: 3.45
-  anchorRange: 3.45
-  description: 'Generated Nova1492 baseline. Source: datan\common\s_legs28_krz.gx.
-    Tier: 5.'
-  previewPrefab: {fileID: 5264432547670440414, guid: 7988943e5623eab40a4620573f54d0db, type: 3}
+  hpBonus: 180
+  moveRange: 5.1
+  anchorRange: 5.1
+  description: datan\common\s_legs28_krz.gx
+  previewPrefab: {fileID: 416396986621302309, guid: 7988943e5623eab40a4620573f54d0db, type: 3}

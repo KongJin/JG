@@ -12,11 +12,11 @@ namespace Features.Player
             EventBus eventBus,
             StatusSetup statusSetup,
             PlayerSceneRegistry playerSceneRegistry,
-            IPlayerLookupPort playerLookup)
+            IPlayerLookupPort playerLookup,
+            DefaultPlayerSpecProvider specProvider)
         {
             if (!setup.IsInitialized)
             {
-                var specProvider = new DefaultPlayerSpecProvider();
                 if (setup.NetworkAdapter.IsMine)
                 {
                     setup.InitializeLocal(

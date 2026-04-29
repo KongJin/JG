@@ -1,6 +1,6 @@
 ﻿# Nova1492 UnitPart XFI Analysis
 
-> generated: 2026-04-27 23:25:41
+> generated: 2026-04-29 09:24:46
 
 - source root: `External/Nova1492Raw/`
 - classification: `artifacts/nova1492/gx_asset_classification.csv`
@@ -15,17 +15,17 @@
 | UnitPart rows | 383 |
 | with XFI | 379 |
 | missing XFI | 4 |
-| mapped Korean name by inferred code | 135 |
+| mapped Korean name by inferred code | 145 |
 
 ## Category Counts
 
 | category | count | with XFI | mapped names |
 |---|---:|---:|---:|
 | UnitParts/Accessories | 62 | 62 | 0 |
-| UnitParts/ArmWeapons | 160 | 160 | 52 |
+| UnitParts/ArmWeapons | 160 | 160 | 53 |
 | UnitParts/Bases | 28 | 24 | 0 |
 | UnitParts/Bodies | 72 | 72 | 43 |
-| UnitParts/Legs | 61 | 61 | 40 |
+| UnitParts/Legs | 61 | 61 | 49 |
 
 ## XFI Header Counts
 

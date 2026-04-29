@@ -1,0 +1,166 @@
+:root {
+    --uitk-icon-tint: var(--jg-text);
+}
+
+.uitk-icon {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--uitk-icon-tint);
+}
+
+.uitk-icon--small {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    min-height: 14px;
+}
+
+.uitk-icon--large {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+}
+
+.uitk-icon--xl {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+}
+
+.uitk-icon--muted {
+    --uitk-icon-tint: var(--jg-muted);
+}
+
+.uitk-icon--text {
+    --uitk-icon-tint: var(--jg-text);
+}
+
+.uitk-icon--blue {
+    --uitk-icon-tint: var(--jg-command-blue);
+}
+
+.uitk-icon--orange {
+    --uitk-icon-tint: var(--jg-signal-orange);
+}
+
+.uitk-icon--danger {
+    --uitk-icon-tint: var(--jg-danger-red);
+}
+
+.uitk-icon--settings {
+    background-image: url("Icons/settings.png");
+}
+
+.uitk-icon--smart-toy {
+    background-image: url("Icons/smart_toy.png");
+}
+
+.uitk-icon--security {
+    background-image: url("Icons/security.png");
+}
+
+.uitk-icon--precision-manufacturing {
+    background-image: url("Icons/precision_manufacturing.png");
+}
+
+.uitk-icon--add {
+    background-image: url("Icons/add.png");
+}
+
+.uitk-icon--save {
+    background-image: url("Icons/save.png");
+}
+
+.uitk-icon--garage {
+    background-image: url("Icons/garage.png");
+}
+
+.uitk-icon--terminal {
+    background-image: url("Icons/terminal.png");
+}
+
+.uitk-icon--group {
+    background-image: url("Icons/group.png");
+}
+
+.uitk-icon--radar {
+    background-image: url("Icons/radar.png");
+}
+
+.uitk-icon--timer {
+    background-image: url("Icons/timer.png");
+}
+
+.uitk-icon--shield {
+    background-image: url("Icons/shield.png");
+}
+
+.uitk-icon--bolt {
+    background-image: url("Icons/bolt.png");
+}
+
+.uitk-icon--menu {
+    background-image: url("Icons/menu.png");
+}
+
+.uitk-icon--back {
+    background-image: url("Icons/back.png");
+}
+
+.uitk-icon--records {
+    background-image: url("Icons/records.png");
+}
+
+.uitk-icon--target {
+    background-image: url("Icons/target.png");
+}
+
+.uitk-icon--swords {
+    background-image: url("Icons/swords.png");
+}
+
+.uitk-icon--speed {
+    background-image: url("Icons/speed.png");
+}
+
+.uitk-icon--cube {
+    background-image: url("Icons/cube.png");
+}
+
+.uitk-icon--inventory-2 {
+    background-image: url("Icons/inventory_2.png");
+}
+
+.uitk-icon--warning {
+    background-image: url("Icons/warning.png");
+}
+
+.uitk-icon--check-circle {
+    background-image: url("Icons/check_circle.png");
+}
+
+.uitk-icon--cloud {
+    background-image: url("Icons/cloud.png");
+}
+
+.uitk-icon--sync {
+    background-image: url("Icons/sync.png");
+}
+
+.uitk-icon--link {
+    background-image: url("Icons/link.png");
+}
+
+.uitk-icon--memory {
+    background-image: url("Icons/memory.png");
+}
+
+.uitk-icon--star {
+    background-image: url("Icons/star.png");
+}

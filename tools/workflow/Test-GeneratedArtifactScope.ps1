@@ -2,6 +2,7 @@ param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path,
     [string[]]$ArtifactPath = @("artifacts/unity/unity-ui-authoring-workflow-policy.json", "artifacts/rules/issue-recurrence-closeout.json"),
     [string[]]$ExpectedPattern = @(),
+    [switch]$ExplicitArtifactPathOnly,
     [switch]$StagedOnly
 )
 
@@ -50,12 +51,30 @@ function Get-ChangedFilesFromJson {
 }
 
 $currentChangedFiles = @(Get-WorkflowChangedFiles -RepoRoot $RepoRoot -StagedOnly:$StagedOnly)
-$artifactPathsToCheck = @(
-    @($ArtifactPath) +
-    @(Get-WorkflowPathsMatching -Paths $currentChangedFiles -Patterns @("^artifacts/(unity|rules)/.*\.json$")) |
-        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
-        Sort-Object -Unique
+$normalizedArtifactPaths = @(
+    foreach ($artifact in @($ArtifactPath)) {
+        if ([string]::IsNullOrWhiteSpace($artifact)) {
+            continue
+        }
+
+        foreach ($part in ([string]$artifact -split ",")) {
+            if (-not [string]::IsNullOrWhiteSpace($part)) {
+                $part.Trim() -replace "\\", "/"
+            }
+        }
+    }
 )
+$artifactPathsToCheck = if ($ExplicitArtifactPathOnly) {
+    @($normalizedArtifactPaths | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique)
+}
+else {
+    @(
+        @($normalizedArtifactPaths) +
+        @(Get-WorkflowPathsMatching -Paths $currentChangedFiles -Patterns @("^artifacts/(unity|rules)/.*\.json$")) |
+            Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+            Sort-Object -Unique
+    )
+}
 $normalizedExpectedPatterns = @(
     foreach ($pattern in @($ExpectedPattern)) {
         if ([string]::IsNullOrWhiteSpace($pattern)) {

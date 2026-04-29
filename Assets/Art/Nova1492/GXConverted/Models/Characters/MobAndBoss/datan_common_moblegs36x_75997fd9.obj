@@ -1,6 +1,6 @@
 # Generated from Nova1492 GX by tools/nova1492/GxObjConverter
 mtllib datan_common_moblegs36x_75997fd9.mtl
-o datan_common_moblegs36x_75997fd9
+o datan_common_moblegs36x_75997fd9_mesh00
 v 0 -0.006226 0.003145
 v 0 0.000063 0.003145
 v 0 0.000063 -0.003145
@@ -38,3 +38,5 @@ f 5/5/5 6/6/6 7/7/7
 f 7/7/7 8/8/8 5/5/5
 f 9/9/9 3/3/3 7/7/7
 f 7/7/7 10/10/10 9/9/9
+f 2/2/2 1/1/1 5/5/5
+f 5/5/5 8/8/8 2/2/2

@@ -48,6 +48,23 @@ function New-ReviewWorkAgentTask {
     }
 }
 
+function Get-ReviewWorkQueuePriority {
+    param([Parameter(Mandatory)][string]$Title)
+
+    $priorityByTitle = @{
+        'Swallowed exception' = 1
+        'Runtime Resources.Load dependency' = 2
+        'Runtime object lookup API' = 3
+        'Runtime legacy compatibility path' = 9
+    }
+
+    if ($priorityByTitle.ContainsKey($Title)) {
+        return [int]$priorityByTitle[$Title]
+    }
+
+    5
+}
+
 function ConvertTo-ReviewWorkAgentQueue {
     param(
         [Parameter(Mandatory)][object]$InputObject,
@@ -64,7 +81,15 @@ function ConvertTo-ReviewWorkAgentQueue {
             }
     )
 
-    foreach ($group in @($workItems | Group-Object title)) {
+    $groups = @(
+        $workItems |
+            Group-Object title |
+            Sort-Object @{ Expression = {
+                Get-ReviewWorkQueuePriority -Title ([string]$_.Name)
+            } }, Name
+    )
+
+    foreach ($group in @($groups)) {
         $observations = @($group.Group)
         $candidateFiles = @(
             $observations |
@@ -84,69 +109,6 @@ function ConvertTo-ReviewWorkAgentQueue {
     }
 
     @($queue)
-}
-
-function New-ReviewWorkAgentUnavailableReport {
-    param([Parameter(Mandatory)][object]$Task)
-
-    [pscustomobject]@{
-        taskId = [string]$Task.taskId
-        status = 'blocked'
-        changedFiles = @()
-        summary = 'Coding agent runner is not configured for this harness process.'
-        blockedReason = 'agent-runner-unavailable'
-        validationCommands = @()
-        riskNotes = @('No patch was generated; existing mutation guards were not entered for this task.')
-    }
-}
-
-function Add-ReviewWorkAgentBlockedState {
-    param(
-        [Parameter(Mandatory)][object]$Report,
-        [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$AgentWorkQueue,
-        [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$AgentWorkReports
-    )
-
-    $existingSkipped = @($Report.skippedBatches)
-    $agentSkipped = @(
-        $AgentWorkReports |
-            Where-Object { [string]$_.status -eq 'blocked' } |
-            ForEach-Object {
-                $taskId = [string]$_.taskId
-                [pscustomobject]@{
-                    id = $taskId
-                    kind = 'agent_work'
-                    reason = [string]$_.summary
-                    reasonCode = [string]$_.blockedReason
-                    status = 'blocked'
-                    targets = @($AgentWorkQueue | Where-Object { [string]$_.taskId -eq $taskId } | ForEach-Object { @($_.candidateFiles) })
-                }
-            }
-    )
-    $existingStages = @($Report.stageResults)
-    $agentStageStatus = if (@($AgentWorkReports | Where-Object status -eq 'blocked').Count -gt 0) { 'blocked' } else { 'passed' }
-    $agentStageSummary = if ($agentStageStatus -eq 'blocked') {
-        "Coding agent runner unavailable for $(@($AgentWorkQueue).Count) queued review work task(s)."
-    }
-    elseif ($AgentWorkQueue.Count -gt 0) {
-        "Queued $(@($AgentWorkQueue).Count) review work task(s)."
-    }
-    else {
-        'No review agent work was queued.'
-    }
-
-    if ($agentStageStatus -eq 'blocked') {
-        $Report | Add-Member -NotePropertyName 'failed' -NotePropertyValue $true -Force
-    }
-    $Report | Add-Member -NotePropertyName 'skippedBatches' -NotePropertyValue @($existingSkipped + $agentSkipped) -Force
-    $Report | Add-Member -NotePropertyName 'stageResults' -NotePropertyValue @($existingStages + [pscustomobject]@{
-        stage = 'agent_work'
-        status = $agentStageStatus
-        attempted = ($AgentWorkQueue.Count -gt 0)
-        summary = $agentStageSummary
-    }) -Force
-    $Report | Add-Member -NotePropertyName 'agentWorkQueue' -NotePropertyValue @($AgentWorkQueue) -Force
-    $Report | Add-Member -NotePropertyName 'agentWorkReports' -NotePropertyValue @($AgentWorkReports) -Force
 }
 
 function Get-ReviewWorkFindingKey {
@@ -351,7 +313,7 @@ function Invoke-ReviewWorkHarness {
     $agentWorkReports = @($agentRun.agentWorkReports)
     $batches = @($explicitBatches + $derivedBatches + $agentBatches)
     $mutation = Invoke-RuleHarnessRoleMutation -RepoRoot $RepoRoot -ConfigPath $ConfigPath -PlannedBatches $batches -RoleInputPath $input.path -DryRun:$DryRun
-    Add-ReviewWorkAgentBlockedState -Report $mutation -AgentWorkQueue $agentWorkQueue -AgentWorkReports $agentWorkReports
+    Add-RuleHarnessAgentWorkState -Report $mutation -AgentWorkQueue $agentWorkQueue -AgentWorkReports $agentWorkReports -WorkLabel 'review work'
     $mutation | Add-Member -NotePropertyName 'inputReviewPath' -NotePropertyValue $input.path -Force
     $mutation | Add-Member -NotePropertyName 'baseCommitSha' -NotePropertyValue ([string]$input.payload.baseCommitSha) -Force
 

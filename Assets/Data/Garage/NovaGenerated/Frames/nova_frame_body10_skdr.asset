@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body10_skdr
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body10_skdr
-  displayName: Body10 Skdr
+  displayName: "\uC2A4\uCFFC\uB4DC\uB860"
   icon: {fileID: 0}
   baseHp: 510
   baseMoveRange: 4
   baseAttackSpeed: 1.15
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 1174934857886730848, guid: 15aee585368f8cd438a7d76d87cc038f, type: 3}
+  previewPrefab: {fileID: 3362547410561680173, guid: 6a4ce69e6b2491d4c8f1e15eb9b43458, type: 3}

@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="../Shared/TacticalTokens.uss" />
+    <Style src="../Shared/TacticalIcons.uss" />
     <Style src="OperationMemoryWorkspace.uss" />
     <ui:VisualElement name="OperationMemoryScreen" class="operation-memory-screen">
         <ui:VisualElement name="MemoryTopShell" class="memory-top-shell">
-            <ui:Button name="BackButton" text="&lt;" class="memory-icon-button" />
+            <ui:Button name="BackButton" class="memory-icon-button" tooltip="Back">
+                <ui:VisualElement class="uitk-icon uitk-icon--back uitk-icon--muted" />
+            </ui:Button>
             <ui:VisualElement class="memory-title-stack">
                 <ui:Label text="작전 기록" class="memory-title" />
                 <ui:Label text="OPERATION MEMORY / LOCAL LOG / SYNC PENDING" class="memory-status" />
             </ui:VisualElement>
-            <ui:Button name="GarageButton" text="G" class="memory-icon-button memory-icon-button--blue" />
+            <ui:Button name="GarageButton" class="memory-icon-button memory-icon-button--blue" tooltip="Garage">
+                <ui:VisualElement class="uitk-icon uitk-icon--garage uitk-icon--blue" />
+            </ui:Button>
         </ui:VisualElement>
 
         <ui:ScrollView name="MemoryScroll" class="memory-scroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
@@ -107,10 +112,6 @@
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:VisualElement name="ReturnDock" class="memory-return-dock">
-                <ui:Button name="ReturnToLobbyButton" text="RETURN TO LOBBY" class="memory-primary-button" />
-                <ui:Button name="OpenGarageButton" text="OPEN GARAGE" class="memory-secondary-button" />
-            </ui:VisualElement>
         </ui:ScrollView>
     </ui:VisualElement>
 </ui:UXML>

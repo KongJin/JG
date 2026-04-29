@@ -64,6 +64,8 @@
     background-color: #132537;
     color: var(--lobby-text);
     -unity-font-style: bold;
+    align-items: center;
+    justify-content: center;
 }
 
 .shared-workspace {
@@ -192,9 +194,8 @@
     background-color: #29313d;
 }
 
-.lobby-objective-icon-label {
-    color: #4aa7ff;
-    font-size: 24px;
+.lobby-objective-icon-glyph {
+    --uitk-icon-tint: #4aa7ff;
 }
 
 .lobby-objective-stats {

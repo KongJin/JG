@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_g_legs58_pps
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_g_legs58_pps
-  displayName: G Legs58 Pps
+  displayName: "\uD3EC\uD37C\uC2A4G"
   icon: {fileID: 0}
-  hpBonus: 130
-  moveRange: 5.65
-  anchorRange: 5.65
-  description: 'Generated Nova1492 baseline. Source: datan\common\g_legs58_pps.gx.
-    Tier: 1.'
-  previewPrefab: {fileID: 5171388645814412468, guid: d65c91ed9700fc8428918f93069cfd01, type: 3}
+  hpBonus: 180
+  moveRange: 5.1
+  anchorRange: 5.1
+  description: datan\common\g_legs58_pps.gx
+  previewPrefab: {fileID: 553664387490827307, guid: d65c91ed9700fc8428918f93069cfd01, type: 3}

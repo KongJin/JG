@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm31_skokr
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm31_skokr
-  displayName: Arm31 Skokr
+  displayName: "\uC2A4\uCE74\uC774\uD0AC\uB7EC"
   icon: {fileID: 0}
-  attackDamage: 56
-  attackSpeed: 0.8
-  range: 7.75
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm31_skokr.gx.
-    Tier: 5.'
-  previewPrefab: {fileID: 6702626119758784373, guid: 8d048075fff69fc41beb47187ece3e5a, type: 3}
+  attackDamage: 40
+  attackSpeed: 1.06
+  range: 6.25
+  description: datan\common\arm31_skokr.gx
+  previewPrefab: {fileID: 716530581907111122, guid: 8d048075fff69fc41beb47187ece3e5a, type: 3}

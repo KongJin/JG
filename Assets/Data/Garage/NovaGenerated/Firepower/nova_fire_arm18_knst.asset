@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm18_knst
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm18_knst
-  displayName: Arm18 Knst
+  displayName: "\uCE90\uB2C8\uC2A4\uD130"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm18_knst.gx.
-    Tier: 3.'
-  previewPrefab: {fileID: 5416630834566249855, guid: c33c662f7a48f69408710751d282bf48, type: 3}
+  attackDamage: 32
+  attackSpeed: 1.19
+  range: 5.5
+  description: datan\common\arm18_knst.gx
+  previewPrefab: {fileID: 9040164870351851694, guid: c33c662f7a48f69408710751d282bf48, type: 3}

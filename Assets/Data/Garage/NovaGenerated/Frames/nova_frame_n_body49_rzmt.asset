@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_n_body49_rzmt
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_n_body49_rzmt
-  displayName: N Body49 Rzmt
+  displayName: "\uB808\uC9C0\uBA3C\uD2B8N"
   icon: {fileID: 0}
-  baseHp: 555
+  baseHp: 510
   baseMoveRange: 4
-  baseAttackSpeed: 1.1
+  baseAttackSpeed: 1.15
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 3512111776960685573, guid: 456c09194e6f5694fb4750975f9a2d07, type: 3}
+  previewPrefab: {fileID: 8236978357892766473, guid: d0f293b486f22364aa1690f5949a8cab, type: 3}

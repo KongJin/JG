@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body12_kt
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body12_kt
-  displayName: Body12 Kt
+  displayName: "\uCEA1\uD2F4"
   icon: {fileID: 0}
-  baseHp: 555
+  baseHp: 600
   baseMoveRange: 4
-  baseAttackSpeed: 1.1
+  baseAttackSpeed: 1.05
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 521711032543327104, guid: 96b9f9e3297f4994c9070b6296a2d13f, type: 3}
+  previewPrefab: {fileID: 8453996272086303061, guid: 2f15d3d581856f343b504da7f21e8c0e, type: 3}

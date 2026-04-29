@@ -1,6 +1,6 @@
 # Generated from Nova1492 GX by tools/nova1492/GxObjConverter
 mtllib datan_common_tree01_38e5a513.mtl
-o datan_common_tree01_38e5a513
+o datan_common_tree01_38e5a513_mesh00
 v 72.54837 0 -0.000003
 v 23.8646 860.4922 -41.3347
 v 47.7292 860.4922 -0
@@ -230,3 +230,4 @@ f 56/56/56 54/54/54 55/55/55
 f 57/57/57 58/58/58 51/51/51
 f 52/52/52 51/51/51 58/58/58
 f 58/58/58 59/59/59 52/52/52
+f 55/55/55 52/52/52 59/59/59

@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm35_ons
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm35_ons
-  displayName: Arm35 Ons
+  displayName: "\uC624\uB2C9\uC2A4"
   icon: {fileID: 0}
-  attackDamage: 48
-  attackSpeed: 0.93
-  range: 7
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm35_ons.gx. Tier:
-    4.'
-  previewPrefab: {fileID: 6415419294022691897, guid: 9ac4bbed5efedb74a9b68a6fd526b05d, type: 3}
+  attackDamage: 40
+  attackSpeed: 1.06
+  range: 6.25
+  description: datan\common\arm35_ons.gx
+  previewPrefab: {fileID: 5978603145346028681, guid: 9ac4bbed5efedb74a9b68a6fd526b05d, type: 3}

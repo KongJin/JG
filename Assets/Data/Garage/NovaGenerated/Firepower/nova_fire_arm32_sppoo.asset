@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm32_sppoo
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm32_sppoo
-  displayName: Arm32 Sppoo
+  displayName: "\uC2A4\uD54F\uD30C\uC774\uC5B4"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm32_sppoo.gx.
-    Tier: 3.'
-  previewPrefab: {fileID: 8476741959318433959, guid: 420f48d6518237b4d8d71509379ab35f, type: 3}
+  attackDamage: 48
+  attackSpeed: 0.93
+  range: 7
+  description: datan\common\arm32_sppoo.gx
+  previewPrefab: {fileID: 3361511567517933925, guid: 420f48d6518237b4d8d71509379ab35f, type: 3}

@@ -70,8 +70,19 @@ namespace ProjectSD.EditorTools.SceneTools
             previewCamera.depth = -10f;
             var previewRenderer = previewCameraObject.AddComponent<GarageSetBUitkPreviewRenderer>();
 
+            var partPreviewCameraObject = new GameObject("GarageSetBPartPreviewCamera");
+            var partPreviewCamera = partPreviewCameraObject.AddComponent<Camera>();
+            partPreviewCamera.clearFlags = CameraClearFlags.SolidColor;
+            partPreviewCamera.backgroundColor = new Color(0.035f, 0.035f, 0.043f, 1f);
+            partPreviewCamera.enabled = false;
+            partPreviewCamera.fieldOfView = 32f;
+            partPreviewCamera.nearClipPlane = 0.01f;
+            partPreviewCamera.farClipPlane = 50f;
+            partPreviewCamera.depth = -11f;
+            var partPreviewRenderer = partPreviewCameraObject.AddComponent<GarageSetBUitkPreviewRenderer>();
+
             var runtimeAdapter = documentObject.AddComponent<GarageSetBUitkRuntimeAdapter>();
-            WireRuntimeAdapter(runtimeAdapter, document, previewRenderer);
+            WireRuntimeAdapter(runtimeAdapter, document, previewRenderer, partPreviewRenderer);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             AssetDatabase.SaveAssets();
@@ -93,11 +104,13 @@ namespace ProjectSD.EditorTools.SceneTools
         private static void WireRuntimeAdapter(
             GarageSetBUitkRuntimeAdapter runtimeAdapter,
             UIDocument document,
-            GarageSetBUitkPreviewRenderer previewRenderer)
+            GarageSetBUitkPreviewRenderer previewRenderer,
+            GarageSetBUitkPreviewRenderer partPreviewRenderer)
         {
             var serializedObject = new SerializedObject(runtimeAdapter);
             serializedObject.FindProperty("_document").objectReferenceValue = document;
             serializedObject.FindProperty("_previewRenderer").objectReferenceValue = previewRenderer;
+            serializedObject.FindProperty("_partPreviewRenderer").objectReferenceValue = partPreviewRenderer;
             serializedObject.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -152,7 +165,7 @@ namespace ProjectSD.EditorTools.SceneTools
                     "",
                     "- Static sample data only; no Garage state binding yet.",
                     "- Blueprint preview is still a UITK placeholder, not the assembled 3D unit preview.",
-                    "- Iconography uses text placeholders instead of Material Symbols or project icon assets.",
+                    "- Iconography uses project-local UITK icon assets mapped from the Stitch Material Symbol names.",
                     "- Runtime replacement needs a separate binding pass and acceptance capture against the active Lobby/Garage flow.",
                     ""));
         }

@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="../Shared/TacticalTokens.uss" />
+    <Style src="../Shared/TacticalIcons.uss" />
     <Style src="LobbyShell.uss" />
     <ui:Template name="SharedNavigationBarTemplate" src="../Shared/SharedNavigationBar.uxml" />
     <ui:VisualElement name="LobbyShellScreen" class="lobby-shell-screen">
         <ui:VisualElement name="SharedTopShell" class="shared-top-shell">
-            <ui:Button name="ShellMenuButton" text="=" class="shared-icon-button" />
+            <ui:Button name="ShellMenuButton" class="shared-icon-button" tooltip="Menu">
+                <ui:VisualElement class="uitk-icon uitk-icon--menu uitk-icon--text" />
+            </ui:Button>
             <ui:VisualElement class="shared-title-stack">
                 <ui:Label name="ShellTitleLabel" text="로비" class="shared-title" />
                 <ui:Label name="ShellStateLabel" text="동기화 대기" class="shared-state" />
             </ui:VisualElement>
-            <ui:Button name="ShellSettingsButton" text="S" class="shared-icon-button" />
+            <ui:Button name="ShellSettingsButton" class="shared-icon-button" tooltip="Settings">
+                <ui:VisualElement class="uitk-icon uitk-icon--settings uitk-icon--text" />
+            </ui:Button>
         </ui:VisualElement>
 
         <ui:VisualElement name="SharedWorkspace" class="shared-workspace">
@@ -26,7 +31,7 @@
                             <ui:Label text="ETA: 04:28:11" class="lobby-objective-time" />
                         </ui:VisualElement>
                         <ui:VisualElement class="lobby-objective-icon">
-                            <ui:Label text="◎" class="lobby-objective-icon-label" />
+                            <ui:VisualElement class="uitk-icon uitk-icon--radar uitk-icon--large uitk-icon--blue lobby-objective-icon-glyph" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement class="lobby-objective-stats">

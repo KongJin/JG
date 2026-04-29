@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body5_skms
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body5_skms
-  displayName: Body5 Skms
+  displayName: "\uC2A4\uCFFC\uBBF8\uC26C"
   icon: {fileID: 0}
-  baseHp: 510
+  baseHp: 465
   baseMoveRange: 4
-  baseAttackSpeed: 1.15
+  baseAttackSpeed: 1.2
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 8835158123093197972, guid: c8d89636a02873b4ab8ea9dde902e87a, type: 3}
+  previewPrefab: {fileID: 6068887282176391569, guid: 2f6f8a35948c83d4a8c174f1e6639799, type: 3}

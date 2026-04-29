@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_n_arm59_dmsz
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_n_arm59_dmsz
-  displayName: N Arm59 Dmsz
+  displayName: "\uB370\uBBF8\uC2DC\uC988N"
   icon: {fileID: 0}
-  attackDamage: 32
-  attackSpeed: 1.19
-  range: 5.5
-  description: 'Generated Nova1492 baseline. Source: datan\common\n_arm59_dmsz.gx.
-    Tier: 2.'
-  previewPrefab: {fileID: 6645201933532845681, guid: 1cb44f3d978e4974987b37bab8a475b1, type: 3}
+  attackDamage: 24
+  attackSpeed: 1.32
+  range: 4.75
+  description: datan\common\n_arm59_dmsz.gx
+  previewPrefab: {fileID: 3899622375307422559, guid: 1cb44f3d978e4974987b37bab8a475b1, type: 3}

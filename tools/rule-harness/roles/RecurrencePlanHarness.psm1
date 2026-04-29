@@ -24,6 +24,16 @@ function Get-RecurrencePlanSummaryLines {
     @($lines)
 }
 
+function Test-RecurrencePlanPreventableSkip {
+    param([Parameter(Mandatory)][object]$SkippedBatch)
+
+    $nonPreventableReasonCodes = @(
+        'agent-runner-task-limit'
+    )
+
+    [string]$SkippedBatch.reasonCode -notin $nonPreventableReasonCodes
+}
+
 function Invoke-RecurrencePlanHarness {
     param(
         [Parameter(Mandatory)][string]$RepoRoot,
@@ -37,10 +47,12 @@ function Invoke-RecurrencePlanHarness {
         New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
     }
 
-    $reviewInput = Test-RuleHarnessRoleInput -RepoRoot $RepoRoot -InputPath $ReviewPath -ThrowOnError
+    $reviewPathResolved = (Resolve-Path -LiteralPath $ReviewPath).Path
+    Get-Content -Path $reviewPathResolved -Raw | ConvertFrom-Json | Out-Null
     $workReport = Get-Content -Path (Resolve-Path -LiteralPath $WorkReportPath).Path -Raw | ConvertFrom-Json
     $config = Get-RuleHarnessConfig -ConfigPath $ConfigPath
     $history = Read-RuleHarnessHistoryState -RepoRoot $RepoRoot -Config $config
+    $currentCommit = ((& git -C $RepoRoot rev-parse HEAD) | Select-Object -First 1).Trim()
 
     $memoryPath = Join-Path $RepoRoot ([string]$config.learning.memoryPath)
     $memory = if (Test-Path -LiteralPath $memoryPath) {
@@ -52,6 +64,9 @@ function Invoke-RecurrencePlanHarness {
 
     $preventionItems = [System.Collections.Generic.List[object]]::new()
     foreach ($skipped in @($workReport.skippedBatches)) {
+        if (-not (Test-RecurrencePlanPreventableSkip -SkippedBatch $skipped)) {
+            continue
+        }
         [void]$preventionItems.Add([pscustomobject]@{
             kind = 'skipped-batch'
             summary = "Batch $($skipped.id) skipped: $($skipped.reasonCode)"
@@ -102,9 +117,9 @@ function Invoke-RecurrencePlanHarness {
 
     $report = [pscustomobject]@{
         runId = [guid]::NewGuid().ToString()
-        baseCommitSha = [string]$reviewInput.payload.baseCommitSha
+        baseCommitSha = [string]$currentCommit
         generatedAtUtc = (Get-Date).ToUniversalTime().ToString('o')
-        sourceReviewPath = [string]$reviewInput.path
+        sourceReviewPath = [string]$reviewPathResolved
         sourceWorkReportPath = (Resolve-Path -LiteralPath $WorkReportPath).Path
         preventionItems = @($preventionItems)
         targetArtifacts = @($targetArtifacts)

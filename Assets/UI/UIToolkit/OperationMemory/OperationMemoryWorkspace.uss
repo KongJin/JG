@@ -46,10 +46,16 @@
     padding-top: 0;
     padding-bottom: 0;
     -unity-font-style: bold;
+    align-items: center;
+    justify-content: center;
 }
 
 .memory-icon-button--blue {
     color: var(--memory-blue);
+}
+
+.memory-icon-button--blue .uitk-icon {
+    --uitk-icon-tint: var(--memory-blue);
 }
 
 .memory-title-stack {
@@ -304,39 +310,4 @@
 
 .memory-chip--blue {
     color: var(--memory-blue);
-}
-
-.memory-return-dock {
-    flex-shrink: 0;
-    margin-top: 8px;
-    margin-bottom: 4px;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 9px;
-    padding-bottom: 10px;
-    background-color: #06080d;
-    border-width: 2px;
-    border-color: #1f2937;
-    border-radius: 4px;
-}
-
-.memory-primary-button {
-    height: 48px;
-    border-width: 0;
-    border-radius: 3px;
-    background-color: var(--memory-orange);
-    color: #05070b;
-    font-size: 13px;
-    -unity-font-style: bold;
-}
-
-.memory-secondary-button {
-    height: 32px;
-    margin-top: 8px;
-    border-width: 1px;
-    border-color: #334155;
-    border-radius: 3px;
-    background-color: #0b1220;
-    color: #cbd5e1;
-    font-size: 10px;
 }

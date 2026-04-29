@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_n_legs44_hord
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_n_legs44_hord
-  displayName: N Legs44 Hord
+  displayName: "\uD558\uC774\uB85C\uB354N"
   icon: {fileID: 0}
-  hpBonus: 130
-  moveRange: 5.65
-  anchorRange: 5.65
-  description: 'Generated Nova1492 baseline. Source: datan\common\n_legs44_hord.gx.
-    Tier: 1.'
-  previewPrefab: {fileID: 1434905248035221891, guid: 82a89c4273862334d99b29a323e2a5b0, type: 3}
+  hpBonus: 230
+  moveRange: 4.55
+  anchorRange: 4.55
+  description: datan\common\n_legs44_hord.gx
+  previewPrefab: {fileID: 4021959559710624126, guid: 82a89c4273862334d99b29a323e2a5b0, type: 3}

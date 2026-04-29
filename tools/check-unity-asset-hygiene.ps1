@@ -79,7 +79,6 @@ if (-not $SkipResourcesAllowlist) {
     $allowedResources = New-Object "System.Collections.Generic.HashSet[string]" ([System.StringComparer]::OrdinalIgnoreCase)
     @(
         "Assets/Resources/BattleEntity.prefab",
-        "Assets/Resources/DamageNumber.prefab",
         "Assets/Resources/DOTweenSettings.asset",
         "Assets/Resources/Enemy/BasicEnemy.asset",
         "Assets/Resources/Enemy/CoreHunterEnemy.asset",
@@ -87,12 +86,11 @@ if (-not $SkipResourcesAllowlist) {
         "Assets/Resources/Enemy/FastEnemy.asset",
         "Assets/Resources/EnemyCharacter.prefab",
         "Assets/Resources/EnemyCharacterCore.prefab",
-        "Assets/Resources/EnemyHealthBar.prefab",
         "Assets/Resources/PlayerCharacter.prefab",
-        "Assets/Resources/PlayerHealthHudView.prefab",
         "Assets/Resources/ProjectilePhysicsAdapter.prefab",
         "Assets/Resources/RoundedRectMaterial.mat",
-        # Direct BattleScene runs need a serialized SoundPlayer host contract; the factory loads this prefab instead of repairing with AddComponent.
+        # Legacy audio Resources assets remain until the audio pool/template migration moves or deletes them.
+        # Runtime host creation now uses Lobby carry-over or a scene-owned SoundPlayer contract.
         "Assets/Resources/Shared/Sound/SoundPlayer.prefab",
         "Assets/Resources/Shared/Sound/SoundPlayerRuntimeConfig.asset",
         "Assets/Resources/Wave/DefaultWaveTable.asset",

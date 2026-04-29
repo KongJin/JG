@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm13_prs
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm13_prs
-  displayName: Arm13 Prs
+  displayName: "\uD314\uB791\uC2A4"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm13_prs.gx. Tier:
-    3.'
-  previewPrefab: {fileID: 5659546308877420288, guid: 3ece0fa75dde9e74cb2db8dff8cff0c3, type: 3}
+  attackDamage: 32
+  attackSpeed: 1.19
+  range: 5.5
+  description: datan\common\arm13_prs.gx
+  previewPrefab: {fileID: 4071695446577159766, guid: 3ece0fa75dde9e74cb2db8dff8cff0c3, type: 3}

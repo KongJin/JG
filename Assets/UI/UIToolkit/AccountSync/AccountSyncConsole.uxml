@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="../Shared/TacticalTokens.uss" />
+    <Style src="../Shared/TacticalIcons.uss" />
     <Style src="AccountSyncConsole.uss" />
     <ui:VisualElement name="AccountSyncScreen" class="account-sync-screen">
         <ui:VisualElement name="AccountTopShell" class="account-top-shell">
             <ui:VisualElement class="account-brand">
-                <ui:Label text="*" class="account-brand-mark" />
+                <ui:VisualElement class="uitk-icon uitk-icon--terminal uitk-icon--blue account-brand-mark" />
                 <ui:Label text="NOVA_SYS" class="account-brand-label" />
             </ui:VisualElement>
             <ui:Label name="ConfigBadge" text="CFG.17" class="account-config-badge" />

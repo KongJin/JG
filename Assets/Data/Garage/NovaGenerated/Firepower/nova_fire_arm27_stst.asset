@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm27_stst
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm27_stst
-  displayName: Arm27 Stst
+  displayName: "\uC288\uD305\uC2A4\uD0C0"
   icon: {fileID: 0}
   attackDamage: 32
   attackSpeed: 1.19
   range: 5.5
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm27_stst.gx.
-    Tier: 2.'
-  previewPrefab: {fileID: 9212187143226398579, guid: 8e73cf2fa03a7514d89f4485820aedd6, type: 3}
+  description: datan\common\arm27_stst.gx
+  previewPrefab: {fileID: 8516858335479527768, guid: 8e73cf2fa03a7514d89f4485820aedd6, type: 3}

@@ -1,6 +1,6 @@
 # Generated from Nova1492 GX by tools/nova1492/GxObjConverter
 mtllib datan_common_tube_bd26a2bc.mtl
-o datan_common_tube_bd26a2bc
+o datan_common_tube_bd26a2bc_mesh00
 v -0.215969 0.091264 -0.297255
 v -0.000012 -0 -0.420119
 v -0.24694 -0 -0.339884
@@ -335,3 +335,6 @@ f 40/40/40 68/68/68 44/44/44
 f 71/71/71 41/41/41 45/45/45
 f 69/69/69 41/41/41 71/71/71
 f 72/72/72 69/69/69 71/71/71
+f 70/70/70 69/69/69 72/72/72
+f 48/48/48 70/70/70 72/72/72
+f 44/44/44 70/70/70 48/48/48

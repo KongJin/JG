@@ -133,6 +133,10 @@ function Get-SmokeBlockedReason {
         return "transport-error"
     }
 
+    if ($Message -match "(?i)(Unity resource lock|unity-resource\.lock)") {
+        return "unity-resource-lock-held"
+    }
+
     if ($Message -match "(?i)(exclusive operation lock|runtime-smoke\.lock)") {
         return "runtime-smoke-lock-held"
     }
@@ -624,6 +628,16 @@ try {
             owner = $operationLock.Owner
             path = $operationLock.Path
             token = $operationLock.Token
+            unityResourceLock = if ($null -ne $operationLock.UnityResourceLock) {
+                @{
+                    owner = $operationLock.UnityResourceLock.Owner
+                    path = $operationLock.UnityResourceLock.Path
+                    token = $operationLock.UnityResourceLock.Token
+                }
+            }
+            else {
+                $null
+            }
         }
         Add-SmokeStep -Name "lock" -Detail $operationLock.Path
     }

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body32_brps
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body32_brps
-  displayName: Body32 Brps
+  displayName: "\uD50C\uB7AB\uD53C\uC26C"
   icon: {fileID: 0}
   baseHp: 555
   baseMoveRange: 4
   baseAttackSpeed: 1.1
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 4265153346552024647, guid: c186220c8d0fd0743a1af002bf264ca0, type: 3}
+  previewPrefab: {fileID: 7521970756631406739, guid: 708ae3ccdaee4e344947a5d9fbb53f98, type: 3}

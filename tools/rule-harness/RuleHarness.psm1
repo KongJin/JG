@@ -8894,6 +8894,57 @@ function New-RuleHarnessAgentWorkReport {
     }
 }
 
+function Add-RuleHarnessAgentWorkState {
+    param(
+        [Parameter(Mandatory)][object]$Report,
+        [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$AgentWorkQueue,
+        [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$AgentWorkReports,
+        [Parameter(Mandatory)][string]$WorkLabel
+    )
+
+    $existingSkipped = @($Report.skippedBatches)
+    $agentSkipped = @(
+        $AgentWorkReports |
+            Where-Object { [string]$_.status -eq 'blocked' } |
+            ForEach-Object {
+                $taskId = [string]$_.taskId
+                [pscustomobject]@{
+                    id = $taskId
+                    kind = 'agent_work'
+                    reason = [string]$_.summary
+                    reasonCode = [string]$_.blockedReason
+                    status = 'blocked'
+                    targets = @($AgentWorkQueue | Where-Object { [string]$_.taskId -eq $taskId } | ForEach-Object { @($_.candidateFiles) })
+                }
+            }
+    )
+
+    $existingStages = @($Report.stageResults)
+    $agentStageStatus = if (@($AgentWorkReports | Where-Object { [string]$_.status -eq 'blocked' }).Count -gt 0) { 'blocked' } else { 'passed' }
+    $agentStageSummary = if ($agentStageStatus -eq 'blocked') {
+        "Coding agent runner blocked for $(@($AgentWorkQueue).Count) queued $WorkLabel task(s)."
+    }
+    elseif ($AgentWorkQueue.Count -gt 0) {
+        "Queued $(@($AgentWorkQueue).Count) $WorkLabel task(s)."
+    }
+    else {
+        "No $WorkLabel agent work was queued."
+    }
+
+    if ($agentStageStatus -eq 'blocked') {
+        $Report | Add-Member -NotePropertyName 'failed' -NotePropertyValue $true -Force
+    }
+    $Report | Add-Member -NotePropertyName 'skippedBatches' -NotePropertyValue @($existingSkipped + $agentSkipped) -Force
+    $Report | Add-Member -NotePropertyName 'stageResults' -NotePropertyValue @($existingStages + [pscustomobject]@{
+        stage = 'agent_work'
+        status = $agentStageStatus
+        attempted = ($AgentWorkQueue.Count -gt 0)
+        summary = $agentStageSummary
+    }) -Force
+    $Report | Add-Member -NotePropertyName 'agentWorkQueue' -NotePropertyValue @($AgentWorkQueue) -Force
+    $Report | Add-Member -NotePropertyName 'agentWorkReports' -NotePropertyValue @($AgentWorkReports) -Force
+}
+
 function Resolve-RuleHarnessCodexCommand {
     param([string]$ConfiguredPath)
 
@@ -8919,68 +8970,96 @@ function ConvertTo-RuleHarnessProcessArgument {
         return "''"
     }
 
-    if ($Value -notmatch "[\s'`"]") {
+    if ($Value -notmatch '[\s"]') {
         return $Value
     }
 
-    "'" + $Value.Replace("'", "''") + "'"
+    '"' + $Value.Replace('"', '\"') + '"'
 }
 
-function Invoke-RuleHarnessProcessWithInput {
+function Invoke-RuleHarnessProcess {
     param(
         [Parameter(Mandatory)][string]$FileName,
         [Parameter(Mandatory)][AllowEmptyCollection()][string[]]$Arguments,
         [Parameter(Mandatory)][string]$WorkingDirectory,
-        [Parameter(Mandatory)][string]$InputText,
         [Parameter(Mandatory)][int]$TimeoutSec
     )
 
-    $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
-    $startInfo.FileName = $FileName
-    $startInfo.Arguments = (@($Arguments) | ForEach-Object { ConvertTo-RuleHarnessProcessArgument -Value ([string]$_) }) -join ' '
-    $startInfo.WorkingDirectory = $WorkingDirectory
-    $startInfo.UseShellExecute = $false
-    $startInfo.RedirectStandardInput = $true
-    $startInfo.RedirectStandardOutput = $true
-    $startInfo.RedirectStandardError = $true
-
-    $process = [System.Diagnostics.Process]::new()
-    $process.StartInfo = $startInfo
-    [void]$process.Start()
-    $process.StandardInput.Write($InputText)
-    $process.StandardInput.Close()
+    $argumentLine = (@($Arguments) | ForEach-Object { ConvertTo-RuleHarnessProcessArgument -Value ([string]$_) }) -join ' '
+    $stdoutPath = [System.IO.Path]::GetTempFileName()
+    $stderrPath = [System.IO.Path]::GetTempFileName()
+    $process = Start-Process `
+        -FilePath $FileName `
+        -ArgumentList $argumentLine `
+        -WorkingDirectory $WorkingDirectory `
+        -RedirectStandardOutput $stdoutPath `
+        -RedirectStandardError $stderrPath `
+        -NoNewWindow `
+        -PassThru
 
     $completed = $process.WaitForExit([Math]::Max(1, $TimeoutSec) * 1000)
+    $stdout = if (Test-Path -LiteralPath $stdoutPath) { Get-Content -Path $stdoutPath -Raw } else { '' }
+    $stderr = if (Test-Path -LiteralPath $stderrPath) { Get-Content -Path $stderrPath -Raw } else { '' }
+    Remove-Item -LiteralPath $stdoutPath, $stderrPath -Force -ErrorAction SilentlyContinue
     if (-not $completed) {
         try { $process.Kill() } catch { }
         return [pscustomobject]@{
             exitCode = -1
             timedOut = $true
-            stdout = $process.StandardOutput.ReadToEnd()
-            stderr = $process.StandardError.ReadToEnd()
+            stdout = $stdout
+            stderr = $stderr
         }
     }
 
     [pscustomobject]@{
         exitCode = $process.ExitCode
         timedOut = $false
-        stdout = $process.StandardOutput.ReadToEnd()
-        stderr = $process.StandardError.ReadToEnd()
+        stdout = $stdout
+        stderr = $stderr
     }
 }
 
 function New-RuleHarnessAgentBatchPrompt {
     param(
+        [Parameter(Mandatory)][string]$RepoRoot,
         [Parameter(Mandatory)][string]$RoleName,
         [Parameter(Mandatory)][object]$Task
     )
 
     $taskJson = $Task | ConvertTo-Json -Depth 40
+    $snapshotLines = [System.Collections.Generic.List[string]]::new()
+    foreach ($candidate in @($Task.candidateFiles | Select-Object -First 4)) {
+        $relativePath = ([string]$candidate).Replace('\', '/')
+        if ([string]::IsNullOrWhiteSpace($relativePath) -or -not (Test-RuleHarnessSafeRelativePath -Path $relativePath)) {
+            continue
+        }
+
+        $fullPath = Join-Path $RepoRoot $relativePath
+        if (-not (Test-Path -LiteralPath $fullPath)) {
+            continue
+        }
+
+        $content = Get-Content -LiteralPath $fullPath -Raw
+        $truncated = $false
+        if ($content.Length -gt 60000) {
+            $content = $content.Substring(0, 60000)
+            $truncated = $true
+        }
+
+        [void]$snapshotLines.Add("### $relativePath")
+        [void]$snapshotLines.Add("truncated: $truncated")
+        [void]$snapshotLines.Add('```')
+        [void]$snapshotLines.Add($content)
+        [void]$snapshotLines.Add('```')
+        [void]$snapshotLines.Add('')
+    }
+    $snapshotText = $snapshotLines -join [Environment]::NewLine
 @"
 You are the rule harness coding-agent batch synthesizer.
 
 Return only JSON that matches the supplied output schema. Do not edit files directly.
-You may inspect the repository in read-only mode, but the final output must be a guarded mutation batch proposal.
+Use only the task JSON and file snapshots below. Do not run shell commands or inspect extra files.
+The final output must be a guarded mutation batch proposal.
 
 Role: $RoleName
 
@@ -8994,9 +9073,13 @@ Hard constraints:
 - Set batch status to 'proposed'.
 - Use validation ['rule_harness_tests'] unless this is a rule_fix with a clearer existing validation.
 - If you cannot make a small, safe, exact patch, return no batches and explain the blocker.
+- `truncated: False` means the full file content is present. Only block for truncation when a snapshot explicitly says `truncated: True` or a required candidate file has no snapshot.
 
 Task JSON:
 $taskJson
+
+Candidate file snapshots:
+$snapshotText
 "@
 }
 
@@ -9076,6 +9159,8 @@ function Invoke-RuleHarnessAgentBatchRunner {
     if (-not (Test-Path -LiteralPath $runnerDir)) {
         New-Item -ItemType Directory -Path $runnerDir -Force | Out-Null
     }
+    $tracePath = Join-Path $runnerDir 'trace.txt'
+    Set-Content -Path $tracePath -Value "Agent runner started role=$RoleName tasks=$($AgentWorkQueue.Count)" -Encoding UTF8
 
     $schemaPath = Join-Path $PSScriptRoot 'schemas/agent-batch.schema.json'
     $taskLimit = [Math]::Max(1, [int]$settings.maxTasksPerRun)
@@ -9086,9 +9171,21 @@ function Invoke-RuleHarnessAgentBatchRunner {
 
     foreach ($task in @($selectedTasks)) {
         $taskId = [string]$task.taskId
+        Add-Content -Path $tracePath -Value "Preparing task $taskId" -Encoding UTF8
         $outputPath = Join-Path $runnerDir "$taskId.output.json"
         $logPath = Join-Path $runnerDir "$taskId.log.txt"
-        $prompt = New-RuleHarnessAgentBatchPrompt -RoleName $RoleName -Task $task
+        $promptPath = Join-Path $runnerDir "$taskId.prompt.md"
+        $prompt = New-RuleHarnessAgentBatchPrompt -RepoRoot $RepoRoot -RoleName $RoleName -Task $task
+        $prompt | Set-Content -Path $promptPath -Encoding UTF8
+        Add-Content -Path $tracePath -Value "Prompt written for task $taskId" -Encoding UTF8
+        $repoRootForPrompt = (Resolve-Path -LiteralPath $RepoRoot).Path.TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
+        $promptFullPath = (Resolve-Path -LiteralPath $promptPath).Path
+        $promptRelativePath = if ($promptFullPath.StartsWith($repoRootForPrompt, [System.StringComparison]::OrdinalIgnoreCase)) {
+            $promptFullPath.Substring($repoRootForPrompt.Length).Replace('\', '/')
+        }
+        else {
+            $promptFullPath
+        }
         $arguments = @()
         $fileName = $codexPath
         if ($codexPath -like '*.ps1') {
@@ -9101,13 +9198,17 @@ function Invoke-RuleHarnessAgentBatchRunner {
             $fileName = $nodePath
             $arguments += @($codexJsPath)
         }
-        $arguments += @('exec', '-C', $RepoRoot, '--sandbox', 'read-only', '-c', 'approval_policy="never"', '-c', ("model_reasoning_effort=""{0}""" -f [string]$settings.reasoningEffort), '--output-schema', $schemaPath, '-o', $outputPath)
+        $arguments += @('exec', '-C', $RepoRoot, '--sandbox', 'read-only', '-c', "approval_policy='never'", '-c', ("model_reasoning_effort='{0}'" -f [string]$settings.reasoningEffort), '--output-schema', $schemaPath, '-o', $outputPath)
         if (-not [string]::IsNullOrWhiteSpace([string]$settings.model)) {
             $arguments += @('--model', [string]$settings.model)
         }
-        $arguments += @('-')
+        $arguments += @("Read and follow the full batch synthesis instructions in '$promptRelativePath'. Return only JSON matching the provided output schema.")
 
-        $processResult = Invoke-RuleHarnessProcessWithInput -FileName $fileName -Arguments $arguments -WorkingDirectory $RepoRoot -InputText $prompt -TimeoutSec ([int]$settings.timeoutSec)
+        $commandName = Split-Path -Leaf $fileName
+        Add-Content -Path $tracePath -Value ("Command: {0} task={1} model={2} output={3}" -f $commandName, $taskId, [string]$settings.model, $outputPath) -Encoding UTF8
+        Add-Content -Path $tracePath -Value "Invoking Codex for task $taskId" -Encoding UTF8
+        $processResult = Invoke-RuleHarnessProcess -FileName $fileName -Arguments $arguments -WorkingDirectory $RepoRoot -TimeoutSec ([int]$settings.timeoutSec)
+        Add-Content -Path $tracePath -Value "Codex finished for task $taskId exit=$($processResult.exitCode) timeout=$($processResult.timedOut)" -Encoding UTF8
         @(
             "ExitCode=$($processResult.exitCode)"
             "TimedOut=$($processResult.timedOut)"
@@ -9353,6 +9454,7 @@ Export-ModuleMember -Function `
     Test-RuleHarnessRoleInput, `
     ConvertTo-RuleHarnessRoleBatches, `
     Invoke-RuleHarnessAgentBatchRunner, `
+    Add-RuleHarnessAgentWorkState, `
     Invoke-RuleHarnessRoleMutation, `
     Read-RuleHarnessHistoryState, `
     Read-RuleHarnessFeatureScanState, `

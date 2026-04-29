@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_n_arm65_bbs
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_n_arm65_bbs
-  displayName: N Arm65 Bbs
+  displayName: "\uBCA0\uBCA0\uC138N"
   icon: {fileID: 0}
-  attackDamage: 24
-  attackSpeed: 1.32
-  range: 4.75
-  description: 'Generated Nova1492 baseline. Source: datan\common\n_arm65_bbs.gx.
-    Tier: 1.'
-  previewPrefab: {fileID: 8106932261289713243, guid: 8958868a4be6eda49aa74e15bce2c8cb, type: 3}
+  attackDamage: 48
+  attackSpeed: 0.93
+  range: 7
+  description: datan\common\n_arm65_bbs.gx
+  previewPrefab: {fileID: 424305702177384087, guid: 8958868a4be6eda49aa74e15bce2c8cb, type: 3}

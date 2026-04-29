@@ -1,6 +1,6 @@
 # Non-Stitch UI Stitch Import Plan
 
-> 마지막 업데이트: 2026-04-28
+> 마지막 업데이트: 2026-04-29
 > 상태: active
 > doc_id: plans.non-stitch-ui-stitch-reimport
 > role: plan
@@ -25,7 +25,7 @@
 
 - `SetA/SetC/SetD/SetE` 이름을 가진 기존 prefabs/captures는 historical Stitch-derived evidence로만 본다.
 - `GaragePageRoot.prefab`과 `LobbyPageRoot.prefab`은 새 import 대상이 아니라 runtime replacement 후보로만 본다. 먼저 UI Toolkit candidate를 만든 뒤 교체 여부를 판단한다.
-- `Assets/Resources`의 전투/스킬 UI prefab은 historical native UI일 가능성이 높고, 재생성 후보로 먼저 inventory 한다.
+- `Assets/Resources`에 남은 전투/스킬 UI prefab은 historical native UI일 가능성이 높고, 재생성 후보로 먼저 inventory 한다. World-space feedback prefab은 `Assets/Prefabs/RuntimeFeedback/` compatibility surface로 본다.
 - Nova1492 generated preview model prefab은 UI source migration 대상이 아니라 Garage content asset으로 본다.
 
 ## Surface Inventory
@@ -37,8 +37,8 @@
 | Account settings overlay | scene-owned inside `LobbyScene.unity` / Garage bindings | historical prefab evidence / new source freeze available | `Nova1492 Compact Sync Console` source freeze를 기준으로 UI Toolkit candidate를 다시 가져오고, runtime integration은 별도 pass로 판단한다 |
 | Skill bar HUD | scene-owned `BattleScene` skill bar wiring | native candidate | GameScene HUD UI Toolkit candidate를 먼저 만든 뒤 runtime replacement를 판단한다 |
 | Start skill selection | scene-owned `BattleScene` start skill selection wiring | native candidate | modal/selection overlay는 Stitch source freeze에서 다시 시작한다 |
-| Player health HUD | `Assets/Resources/PlayerHealthHudView.prefab` | native candidate | 현재 `SetDGameSceneHudFullRoot`와 중복 여부를 확인하고, 남는 기능만 Stitch source로 재작성한다 |
-| Enemy health bar / damage number | `Assets/Resources/EnemyHealthBar.prefab`, `Assets/Resources/DamageNumber.prefab` | gameplay feedback candidate | screen UI가 아니라 world-space feedback이면 low priority로 두고, visual consistency 필요 시 별도 micro-surface로 다룬다 |
+| Player health HUD | `Assets/Prefabs/RuntimeFeedback/PlayerHealthHudView.prefab` | runtime feedback compatibility | screen UI가 아니라 world-space feedback으로 유지한다. visual consistency 필요 시 별도 micro-surface로 다룬다 |
+| Enemy health bar / damage number | `Assets/Prefabs/RuntimeFeedback/EnemyHealthBar.prefab`, `Assets/Prefabs/RuntimeFeedback/DamageNumber.prefab` | runtime feedback compatibility | screen UI가 아니라 world-space feedback으로 유지한다. visual consistency 필요 시 별도 micro-surface로 다룬다 |
 
 ## 실행 순서
 
@@ -165,10 +165,32 @@ Notes:
 - The preview route used isolated `390x844` GameView captures because these surfaces are screen-space `UIDocument` previews.
 - The current dirty worktree also contains non-UI technical-debt/audio/tooling changes; full-worktree UI policy can report `mixed` or blocked. The candidate pass is therefore recorded with scoped `ChangedFile` evidence and must not be read as whole-worktree UI closeout.
 
+## 2026-04-29 Account / Connection Runtime Replacement Probe
+
+Scope:
+
+- Account/sync and Connection/reconnect only.
+- Runtime visibility inside `LobbyScene` / `LobbyView` shell only.
+- WebGL save/load, Google linking, account delete, and real cloud reconnect are not claimed.
+
+Evidence:
+
+- Runtime invocation: MCP `ui/invoke` custom method on `/LobbyUitkDocument` with `OpenAccountPage` and `OpenConnectionPage`.
+- Account runtime screenshot: `artifacts/unity/account-sync-runtime-lobby-shell.png`
+- Connection runtime screenshot: `artifacts/unity/connection-reconnect-runtime-lobby-shell.png`
+- Scoped workflow policy: `artifacts/unity/account-connection-runtime-replacement-policy.json`
+- Console errors after each runtime surface capture: 0.
+
+Status:
+
+- runtime shell visibility: passed
+- candidate preview: still separate evidence
+- account/cloud/reconnect product acceptance: not started
+
 ## Current Runtime Compatibility
 
 - Battle HUD and skill-selection UI are scene-owned runtime surfaces until a UI Toolkit replacement pass owns them.
-- Remaining runtime-referenced Resources UI/feedback prefabs (`PlayerHealthHudView`, `EnemyHealthBar`, `DamageNumber`) stay as compatibility surfaces until a UI Toolkit replacement pass owns them.
+- Runtime feedback prefabs (`PlayerHealthHudView`, `EnemyHealthBar`, `DamageNumber`) live under `Assets/Prefabs/RuntimeFeedback/` and stay as compatibility surfaces. They are not read as screen UI / UI Toolkit replacement success.
 
 ## 검증 명령
 
@@ -192,4 +214,6 @@ Notes:
 - 2026-04-27 부족한점 리뷰: 남은 runtime replacement 대상이 surface inventory에 구분된다.
 - 2026-04-28 source freeze 재리뷰: 과한점은 새 Account/Connection sources를 runtime success로 올리지 않고, source freeze evidence로만 남겼다. 부족한점은 next UITK candidate 기준 화면과 artifact paths를 추가해 해소했다.
 - 2026-04-28 UITK candidate 재리뷰: 과한점은 preview scene/capture/report를 runtime replacement success로 올리지 않고 candidate evidence로만 남겼다. 부족한점은 source candidates 다음 단계였던 UI Toolkit surface, isolated preview scenes, GameView captures, scoped policy evidence를 추가해 해소했다.
+- 2026-04-29 runtime replacement probe 재리뷰: 과한점은 Lobby shell runtime visibility를 WebGL/account/cloud acceptance로 확장하지 않았다. 부족한점은 runtime invocation route, screenshots, policy artifact, console error 기준을 별도 섹션에 남겨 candidate preview와 runtime replacement evidence를 분리했다.
+- 2026-04-29 runtime feedback prefab migration 재리뷰: 과한점은 world-space feedback prefab 이동을 UITK replacement success로 확장하지 않았다. 부족한점은 Resources 밖 compatibility path와 surface inventory를 현재 asset 위치에 맞췄다.
 - plan rereview: clean

@@ -1,6 +1,6 @@
 # Generated from Nova1492 GX by tools/nova1492/GxObjConverter
 mtllib datan_common_shield_cd2e53d4.mtl
-o datan_common_shield_cd2e53d4
+o datan_common_shield_cd2e53d4_mesh00
 v 1.185004 1.917374 3.647063
 v 0.000001 0 4.287379
 v 2.52006 0 3.468562
@@ -172,3 +172,5 @@ f 38/38/38 42/42/42 41/41/41
 f 41/41/41 42/42/42 43/43/43
 f 29/29/29 41/41/41 30/30/30
 f 41/41/41 43/43/43 44/44/44
+f 41/41/41 44/44/44 30/30/30
+f 30/30/30 44/44/44 32/32/32

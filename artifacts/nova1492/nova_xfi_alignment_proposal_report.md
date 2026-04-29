@@ -1,6 +1,6 @@
 ﻿# Nova1492 XFI Alignment Proposal
 
-> generated: 2026-04-27 23:49:38
+> generated: 2026-04-29 09:24:45
 
 - input alignment: `artifacts/nova1492/nova_part_alignment.csv`
 - input xfi manifest: `artifacts/nova1492/nova_unitpart_xfi_manifest.csv`
@@ -10,18 +10,17 @@
 
 | metric | count |
 |---|---:|
-| proposal rows | 312 |
-| rows with proposed socket offset | 138 |
+| proposal rows | 222 |
+| rows with proposed socket offset | 124 |
 
 ## Quality Flags
 
 | quality | count |
 |---|---:|
-| xfi_body_top_socket_candidate | 65 |
-| xfi_leg_body_socket_candidate | 61 |
-| xfi_named_attach_socket_candidate | 12 |
-| xfi_reference_only | 88 |
-| xfi_weapon_direction_only | 86 |
+| xfi_body_top_socket_candidate | 64 |
+| xfi_leg_body_socket_candidate | 60 |
+| xfi_reference_only | 13 |
+| xfi_weapon_direction_only | 85 |
 
 ## Promotion Notes
 

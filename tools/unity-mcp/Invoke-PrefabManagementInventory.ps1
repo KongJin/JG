@@ -56,8 +56,8 @@ function Get-ResourceMigrationStatus {
     param([string]$Path)
 
     switch -Regex ($Path) {
-        '^Assets/Resources/PlayerHealthHudView\.prefab$' { return "native-candidate" }
-        '^Assets/Resources/(EnemyHealthBar|DamageNumber)\.prefab$' { return "gameplay-feedback-candidate" }
+        '^Assets/Prefabs/RuntimeFeedback/PlayerHealthHudView\.prefab$' { return "runtime-feedback-migrated" }
+        '^Assets/Prefabs/RuntimeFeedback/(EnemyHealthBar|DamageNumber)\.prefab$' { return "runtime-feedback-migrated" }
         '^Assets/Resources/(BattleEntity|EnemyCharacter|EnemyCharacterCore|PlayerCharacter|ProjectilePhysicsAdapter|ZoneEffect)\.prefab$' { return "not-ui/gameplay-runtime" }
         '^Assets/Resources/Shared/Sound/SoundPlayer\.prefab$' { return "not-ui/audio-runtime" }
         default { return "" }
@@ -67,8 +67,12 @@ function Get-ResourceMigrationStatus {
 function Get-PrefabClass {
     param([string]$Path)
 
+    $migration = Get-ResourceMigrationStatus -Path $Path
+    if ($migration -eq "runtime-feedback-migrated") {
+        return "runtime-feedback"
+    }
+
     if ($Path -match '^Assets/Resources/.+\.prefab$') {
-        $migration = Get-ResourceMigrationStatus -Path $Path
         if ($migration -match '^native-candidate|^gameplay-feedback') {
             return "resources-native-ui"
         }

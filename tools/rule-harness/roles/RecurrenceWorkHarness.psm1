@@ -78,69 +78,6 @@ function ConvertTo-RecurrenceWorkAgentQueue {
     @($queue)
 }
 
-function New-RecurrenceWorkAgentUnavailableReport {
-    param([Parameter(Mandatory)][object]$Task)
-
-    [pscustomobject]@{
-        taskId = [string]$Task.taskId
-        status = 'blocked'
-        changedFiles = @()
-        summary = 'Coding agent runner is not configured for this harness process.'
-        blockedReason = 'agent-runner-unavailable'
-        validationCommands = @()
-        riskNotes = @('No recurrence-prevention patch was generated; existing mutation guards were not entered for this task.')
-    }
-}
-
-function Add-RecurrenceWorkAgentBlockedState {
-    param(
-        [Parameter(Mandatory)][object]$Report,
-        [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$AgentWorkQueue,
-        [Parameter(Mandatory)][AllowEmptyCollection()][object[]]$AgentWorkReports
-    )
-
-    $existingSkipped = @($Report.skippedBatches)
-    $agentSkipped = @(
-        $AgentWorkReports |
-            Where-Object { [string]$_.status -eq 'blocked' } |
-            ForEach-Object {
-                $taskId = [string]$_.taskId
-                [pscustomobject]@{
-                    id = $taskId
-                    kind = 'agent_work'
-                    reason = [string]$_.summary
-                    reasonCode = [string]$_.blockedReason
-                    status = 'blocked'
-                    targets = @($AgentWorkQueue | Where-Object { [string]$_.taskId -eq $taskId } | ForEach-Object { @($_.candidateFiles) })
-                }
-            }
-    )
-    $existingStages = @($Report.stageResults)
-    $agentStageStatus = if (@($AgentWorkReports | Where-Object status -eq 'blocked').Count -gt 0) { 'blocked' } else { 'passed' }
-    $agentStageSummary = if ($agentStageStatus -eq 'blocked') {
-        "Coding agent runner unavailable for $(@($AgentWorkQueue).Count) queued recurrence work task(s)."
-    }
-    elseif ($AgentWorkQueue.Count -gt 0) {
-        "Queued $(@($AgentWorkQueue).Count) recurrence work task(s)."
-    }
-    else {
-        'No recurrence agent work was queued.'
-    }
-
-    if ($agentStageStatus -eq 'blocked') {
-        $Report | Add-Member -NotePropertyName 'failed' -NotePropertyValue $true -Force
-    }
-    $Report | Add-Member -NotePropertyName 'skippedBatches' -NotePropertyValue @($existingSkipped + $agentSkipped) -Force
-    $Report | Add-Member -NotePropertyName 'stageResults' -NotePropertyValue @($existingStages + [pscustomobject]@{
-        stage = 'agent_work'
-        status = $agentStageStatus
-        attempted = ($AgentWorkQueue.Count -gt 0)
-        summary = $agentStageSummary
-    }) -Force
-    $Report | Add-Member -NotePropertyName 'agentWorkQueue' -NotePropertyValue @($AgentWorkQueue) -Force
-    $Report | Add-Member -NotePropertyName 'agentWorkReports' -NotePropertyValue @($AgentWorkReports) -Force
-}
-
 function Invoke-RecurrenceWorkHarness {
     param(
         [Parameter(Mandatory)][string]$RepoRoot,
@@ -167,7 +104,7 @@ function Invoke-RecurrenceWorkHarness {
     $explicitBatches = @(ConvertTo-RuleHarnessRoleBatches -InputObject $input.payload)
     $batches = @($explicitBatches + $agentBatches)
     $mutation = Invoke-RuleHarnessRoleMutation -RepoRoot $RepoRoot -ConfigPath $ConfigPath -PlannedBatches $batches -RoleInputPath $input.path -DryRun:$DryRun
-    Add-RecurrenceWorkAgentBlockedState -Report $mutation -AgentWorkQueue $agentWorkQueue -AgentWorkReports $agentWorkReports
+    Add-RuleHarnessAgentWorkState -Report $mutation -AgentWorkQueue $agentWorkQueue -AgentWorkReports $agentWorkReports -WorkLabel 'recurrence work'
     $mutation | Add-Member -NotePropertyName 'inputPreventionPlanPath' -NotePropertyValue $input.path -Force
     $mutation | Add-Member -NotePropertyName 'baseCommitSha' -NotePropertyValue ([string]$input.payload.baseCommitSha) -Force
 

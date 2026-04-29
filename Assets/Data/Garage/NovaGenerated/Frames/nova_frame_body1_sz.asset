@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body1_sz
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body1_sz
-  displayName: Body1 Sz
+  displayName: "\uC11C\uC804"
   icon: {fileID: 0}
-  baseHp: 600
+  baseHp: 645
   baseMoveRange: 4
-  baseAttackSpeed: 1.05
+  baseAttackSpeed: 1
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 8113243540648967654, guid: c48e63b790f9a064f8e040e40663d4d6, type: 3}
+  previewPrefab: {fileID: 1219655375176499031, guid: ee90b39e0aa42f449b52e0101f166195, type: 3}

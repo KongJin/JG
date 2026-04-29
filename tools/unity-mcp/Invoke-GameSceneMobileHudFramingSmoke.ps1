@@ -54,6 +54,10 @@ function Test-MobileHudTransportError {
 function Get-MobileHudBlockedReason {
     param([string]$Message)
 
+    if ($Message -match "(?i)(Unity resource lock|unity-resource\.lock)") {
+        return "unity-resource-lock-held"
+    }
+
     if ($Message -match "(?i)(exclusive operation lock|runtime-smoke\.lock)") {
         return "runtime-smoke-lock-held"
     }
@@ -301,6 +305,16 @@ try {
         owner = $operationLock.Owner
         path = $operationLock.Path
         token = $operationLock.Token
+        unityResourceLock = if ($null -ne $operationLock.UnityResourceLock) {
+            [PSCustomObject]@{
+                owner = $operationLock.UnityResourceLock.Owner
+                path = $operationLock.UnityResourceLock.Path
+                token = $operationLock.UnityResourceLock.Token
+            }
+        }
+        else {
+            $null
+        }
     }
     Add-MobileHudSmokeStep -Name "lock" -Detail $operationLock.Path
 

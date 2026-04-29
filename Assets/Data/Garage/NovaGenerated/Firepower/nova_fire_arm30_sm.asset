@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm30_sm
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm30_sm
-  displayName: Arm30 Sm
+  displayName: "\uC11C\uBA3C"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm30_sm.gx. Tier:
-    3.'
-  previewPrefab: {fileID: 2719956582855252785, guid: 3d38becb95ddb994ebbc46176ffaa9da, type: 3}
+  attackDamage: 24
+  attackSpeed: 1.32
+  range: 4.75
+  description: datan\common\arm30_sm.gx
+  previewPrefab: {fileID: 4340201410942488360, guid: 3d38becb95ddb994ebbc46176ffaa9da, type: 3}

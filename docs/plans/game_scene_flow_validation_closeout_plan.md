@@ -1,6 +1,6 @@
 # GameScene Flow Validation Closeout Plan
 
-> 마지막 업데이트: 2026-04-27
+> 마지막 업데이트: 2026-04-29
 > 상태: active
 > doc_id: plans.game-scene-flow-validation-closeout
 > role: plan
@@ -37,6 +37,7 @@ Pass:
 - 2026-04-27 Phase 5 preflight는 `artifacts/unity/game-flow/game-scene-phase5-preflight.json`에서 WebGL build와 single-client baseline을 확인했지만 repo-local 2-client runner 후보가 없어 `blocked: two-client runner unavailable`로 남겼다.
 - 2026-04-27 mobile HUD framing smoke는 `artifacts/unity/game-flow/game-scene-mobile-hud-framing-smoke.json`에서 actual Lobby path -> BattleScene -> placement confirm -> natural victory -> visible Stitch victory overlay까지 `success: true`, screenshot `390x844 portrait`, placement source `newErrorCount: 0`으로 통과했다.
 - 같은 pass에서 숨겨진 `RuntimeBindingLayer/WaveEndOverlay/ResultPanel`만 켜지고 실제 `StitchBattleVisualLayer/MissionVictoryOverlayVisual`이 켜지지 않던 mismatch를 발견했고, `WaveEndView`가 승리/패배 visible overlay와 CTA를 함께 토글하도록 수정했다.
+- 2026-04-29 targeted EditMode 실행은 `SummonUnitUseCaseDirectTests`, `UnitSlotInputHandlerDirectTests`, `GameSceneRuntimeSystemsDirectTests` filter로 시도했지만 Unity Editor가 프로젝트를 소유 중이라 `open-editor-owns-project` preflight에서 blocked다. 따라서 direct test result XML/log는 생성되지 않았고, 실행 acceptance는 아직 남아 있다.
 
 Residual:
 
@@ -60,10 +61,10 @@ Out of scope:
 | F1 Lobby room start UI | single-client pass | Lobby UX | 2-client room flow residual |
 | F2 GameEnd stats | single-client pass | Wave/GameEnd runtime | defeat, actual summon/kill, diagnostic victory, natural victory report 값 일치 |
 | F3 BattleEntity late-join hydration | blocked/residual | Phase 5 sync | preflight artifact는 runner unavailable. entity id별 HP/position/dead state 수렴 증거는 수동 2-client session 또는 runner 구현 필요 |
-| F4 Enemy priority gameplay pressure | test asset added / execution blocked | Battle runtime | core alive, core unavailable, unit present, player fallback, aggro-radius fallback direct tests added. EditMode 실행은 `open-editor-owns-project` 해소 후 확인 |
-| F5 Summon failure cost rollback | test asset added / execution blocked | Summon/Energy runtime | spawn exception과 empty id 실패 path는 refund contract로 고정됨. EditMode 실행은 `open-editor-owns-project` 해소 후 확인 |
+| F4 Enemy priority gameplay pressure | test asset added / execution blocked | Battle runtime | core alive, core unavailable, unit present, player fallback, aggro-radius fallback direct tests added. 2026-04-29 targeted EditMode 실행은 `open-editor-owns-project`로 blocked |
+| F5 Summon failure cost rollback | test asset added / execution blocked | Summon/Energy runtime | spawn exception과 empty id 실패 path는 refund contract로 고정됨. 2026-04-29 targeted EditMode 실행은 `open-editor-owns-project`로 blocked |
 | F6 Victory loop | natural loop pass | Flow closeout + result HUD | final wave clear -> victory overlay -> result report |
-| F7 Placement automation contract | center-confirm pass / mobile framing pass / drag test asset added / execution blocked | GameScene UI/UX | slot select -> preview active -> placement center confirm -> preview inactive는 smoke pass. mobile portrait result overlay visible. drag/drop direct test asset added, EditMode 실행은 residual |
+| F7 Placement automation contract | center-confirm pass / mobile framing pass / drag test asset added / execution blocked | GameScene UI/UX | slot select -> preview active -> placement center confirm -> preview inactive는 smoke pass. mobile portrait result overlay visible. drag/drop direct test asset added. 2026-04-29 targeted EditMode 실행은 `open-editor-owns-project`로 blocked |
 
 ---
 
@@ -287,4 +288,5 @@ BattleScene 미완성 시스템은 아래 순서로 닫는다.
 - 2026-04-27 drag/drop direct test 재리뷰: 과한점은 compile/hygiene과 test asset 추가만 pass로 반영하고, 실행되지 않은 EditMode test와 mobile runtime framing을 success로 올리지 않았다. 부족한점은 cleanup 코드 변경과 blocked 실행 조건을 Current State/Findings/Next Slice에 남겨 해소했다.
 - 2026-04-27 Phase 5 preflight 재리뷰: 과한점은 WebGL build 존재와 single-client baseline을 multiplayer success로 승격하지 않았다. 부족한점은 runner unavailable blocker와 artifact 경로를 Current State/Findings에 반영해 해소했다.
 - 2026-04-27 mobile HUD framing 재리뷰: 과한점은 BattleScene direct Play Mode가 room context 없이 막힌 것을 success로 보지 않고, actual Lobby path smoke만 pass로 반영했다. 부족한점은 visible Stitch overlay 미토글 mismatch와 수정 owner를 Current State/Findings/Closeout Criteria에 남겨 해소했다.
+- 2026-04-29 direct EditMode 재시도 재리뷰: 과한점은 CLI preflight blocked를 test success로 보지 않았고, 부족한점은 targeted filter와 blocked reason을 Current State/Findings에 남겨 다음 실행 조건을 분명히 했다.
 - plan rereview: clean for document shape / residual for execution - owner, scope, next slice, stop conditions, and excluded work are clear; remaining implementation items start at direct EditMode execution, Phase 5 two-client runner, and combat model assembly.

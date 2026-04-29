@@ -88,13 +88,17 @@ foreach ($step in $planned) {
             $results.Add((Invoke-WorkflowCommand -RepoRoot $RepoRoot -Label "unity-ui-policy" -FileName "powershell" -Arguments $policyArguments))
         }
         "generated-artifact-scope" {
+            $artifactFiles = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^artifacts/(unity|rules)/.*\.json$"))
             $expectedPatterns = @(
                 foreach ($file in $changedFiles) {
                     "^$([regex]::Escape($file))$"
                 }
             )
             $scriptPath = Join-Path $RepoRoot "tools\workflow\Test-GeneratedArtifactScope.ps1"
-            $arguments = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $scriptPath, "-ExpectedPattern") + $expectedPatterns
+            $arguments = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $scriptPath, "-ExpectedPattern", ($expectedPatterns -join ","))
+            if ($artifactFiles.Count -gt 0) {
+                $arguments += @("-ArtifactPath", ($artifactFiles -join ","), "-ExplicitArtifactPathOnly")
+            }
             $results.Add((Invoke-WorkflowCommand -RepoRoot $RepoRoot -Label "generated-artifact-scope" -FileName "powershell" -Arguments $arguments))
         }
         "git-diff-check" {

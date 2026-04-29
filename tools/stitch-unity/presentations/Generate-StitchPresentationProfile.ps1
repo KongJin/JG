@@ -356,9 +356,16 @@ function Clean-InnerText {
 }
 
 function Convert-MaterialSymbolToFallbackText {
-    param([string]$Text)
+    param(
+        [string]$Text,
+        [switch]$LegacyPlaceholder
+    )
 
     $normalized = ([string]$Text).Trim()
+    if (-not $LegacyPlaceholder) {
+        return $normalized
+    }
+
     switch ($normalized) {
         "settings" { return "*" }
         "smart_toy" { return "AI" }

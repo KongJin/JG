@@ -1,6 +1,6 @@
 # Generated from Nova1492 GX by tools/nova1492/GxObjConverter
 mtllib datan_common_pow-ba_edb3a05d.mtl
-o datan_common_pow-ba_edb3a05d
+o datan_common_pow-ba_edb3a05d_mesh00
 v -1 0.07391 1
 v -1 0.07391 -1
 v 1 0.07391 -1
@@ -16,3 +16,5 @@ vn -0 1 0
 usemtl datan_common_pow-ba_edb3a05d
 f 1/1/1 2/2/2 3/3/3
 f 3/3/3 4/4/4 1/1/1
+f 1/1/1 4/4/4 3/3/3
+f 3/3/3 2/2/2 1/1/1

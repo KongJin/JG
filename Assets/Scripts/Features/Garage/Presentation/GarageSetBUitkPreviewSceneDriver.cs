@@ -15,7 +15,12 @@ namespace Features.Garage.Presentation
 
         private GaragePageState _state;
         private GaragePagePresenter _presenter;
+        private GaragePanelCatalog _catalog;
         private Coroutine _renderCoroutine;
+        private GarageEditorFocus _focusedPart = GarageEditorFocus.Mobility;
+        private string _partSearchText = string.Empty;
+        private bool _callbacksHooked;
+
 
         private void OnEnable()
         {
@@ -58,38 +63,172 @@ namespace Features.Garage.Presentation
             if (!_adapter.Bind())
                 return false;
 
-            var catalog = new GaragePanelCatalogFactory().Build(
+            HookCallbacks();
+            _catalog ??= new GaragePanelCatalogFactory().Build(
                 _moduleCatalog,
                 _novaPartVisualCatalog,
                 _novaPartAlignmentCatalog);
-            if (!TryPickFrame(catalog, out var frame) ||
-                !TryPickFirepower(catalog, out var firepower) ||
-                !TryPickMobility(catalog, out var mobility))
+
+            if (!TryPickFrame(_catalog, out var frame) ||
+                !TryPickFirepower(_catalog, out var firepower) ||
+                !TryPickMobility(_catalog, out var mobility))
                 return false;
 
-            _state ??= new GaragePageState();
-            var roster = new GarageRoster();
-            roster.SetSlot(0, new GarageRoster.UnitLoadout(
-                frame.Id,
-                firepower.Id,
-                mobility.Id));
-            _state.Initialize(roster);
-            _presenter = new GaragePagePresenter(catalog);
+            if (_state == null)
+            {
+                _state = new GaragePageState();
+                var roster = new GarageRoster();
+                roster.SetSlot(0, new GarageRoster.UnitLoadout(
+                    frame.Id,
+                    firepower.Id,
+                    mobility.Id));
+                _state.Initialize(roster);
+            }
+
+            _presenter ??= new GaragePagePresenter(_catalog);
+            Render();
+            return true;
+        }
+
+        private void HookCallbacks()
+        {
+            if (_callbacksHooked || _adapter == null)
+                return;
+
+            _callbacksHooked = true;
+            _adapter.SlotSelected += SelectSlot;
+            _adapter.PartFocusSelected += SetFocusedPart;
+            _adapter.PartSearchChanged += SetPartSearchText;
+            _adapter.PartOptionSelected += SelectPartOption;
+        }
+
+        private void SelectSlot(int slotIndex)
+        {
+            if (_state == null)
+                return;
+
+            _state.SelectSlot(slotIndex);
+            _focusedPart = GarageEditorFocus.Mobility;
+            _partSearchText = string.Empty;
+            Render();
+        }
+
+        private void SetFocusedPart(GarageEditorFocus focus)
+        {
+            if (_focusedPart != focus)
+                _partSearchText = string.Empty;
+
+            _focusedPart = focus;
+            Render();
+        }
+
+        private void SetPartSearchText(string value)
+        {
+            var next = value ?? string.Empty;
+            if (_partSearchText == next)
+                return;
+
+            _partSearchText = next;
+            Render();
+        }
+
+        private void SelectPartOption(GarageNovaPartSelection selection)
+        {
+            if (_state == null)
+                return;
+
+            _focusedPart = GarageNovaPartsPanelViewModelFactory.ToEditorFocus(selection.Slot);
+            switch (selection.Slot)
+            {
+                case GarageNovaPartPanelSlot.Frame:
+                    _state.SetEditingFrameId(selection.PartId);
+                    break;
+                case GarageNovaPartPanelSlot.Firepower:
+                    _state.SetEditingFirepowerId(selection.PartId);
+                    break;
+                case GarageNovaPartPanelSlot.Mobility:
+                    _state.SetEditingMobilityId(selection.PartId);
+                    break;
+            }
+
+            _state.ClearValidationOverride();
+            Render();
+        }
+
+        public void PreviewSelectFocus(string focus)
+        {
+            if (!TryParseFocus(focus, out var parsedFocus))
+                return;
+
+            EnsurePreviewReady();
+            SetFocusedPart(parsedFocus);
+        }
+
+        public void PreviewSelectPart(string slot, string partId)
+        {
+            if (!TryParsePartSlot(slot, out var parsedSlot) || string.IsNullOrWhiteSpace(partId))
+                return;
+
+            EnsurePreviewReady();
+            SelectPartOption(new GarageNovaPartSelection(parsedSlot, partId));
+        }
+
+        public void PreviewSearchParts(string value)
+        {
+            EnsurePreviewReady();
+            SetPartSearchText(value);
+        }
+
+        private void Render()
+        {
+            if (_adapter == null || _state == null || _presenter == null || _catalog == null)
+                return;
 
             _adapter.Render(
                 _presenter.BuildSlotViewModels(_state),
+                GarageNovaPartsPanelViewModelFactory.Build(
+                    _catalog,
+                    new GarageNovaPartsDraftSelection(
+                        _state.EditingFrameId,
+                        _state.EditingFirepowerId,
+                        _state.EditingMobilityId),
+                    _focusedPart,
+                    _partSearchText),
                 _presenter.BuildEditorViewModel(_state),
                 new GarageResultViewModel(
                     "UITK PREVIEW: 실제 Garage catalog 샘플",
-                    "Preview scene driver가 실제 ModuleCatalog 첫 조합을 렌더링합니다.",
-                    "Runtime smoke 전까지 저장 동작은 비활성입니다.",
+                    "Preview scene driver에서 실제 ModuleCatalog 조합을 선택할 수 있습니다.",
+                    "저장 동작은 preview scene에서 비활성입니다.",
                     isReady: false,
                     isDirty: false,
                     canSave: false,
-                primaryActionLabel: "Preview Only"),
-                GarageEditorFocus.Frame,
+                    primaryActionLabel: "Preview Only"),
+                _focusedPart,
                 isSaving: false);
-            return true;
+        }
+
+        private void EnsurePreviewReady()
+        {
+            if (_state == null || _presenter == null || _catalog == null)
+                RenderPreviewLoadout();
+        }
+
+        private static bool TryParseFocus(string value, out GarageEditorFocus focus)
+        {
+            if (System.Enum.TryParse(value, ignoreCase: true, out focus))
+                return true;
+
+            focus = GarageEditorFocus.Mobility;
+            return false;
+        }
+
+        private static bool TryParsePartSlot(string value, out GarageNovaPartPanelSlot slot)
+        {
+            if (System.Enum.TryParse(value, ignoreCase: true, out slot))
+                return true;
+
+            slot = GarageNovaPartPanelSlot.Mobility;
+            return false;
         }
 
         private static bool TryPickFrame(GaragePanelCatalog catalog, out GaragePanelCatalog.FrameOption frame)
@@ -125,6 +264,16 @@ namespace Features.Garage.Presentation
         private static bool TryPickMobility(GaragePanelCatalog catalog, out GaragePanelCatalog.MobilityOption mobility)
         {
             mobility = null;
+            for (int i = 0; i < catalog.Mobility.Count; i++)
+            {
+                var option = catalog.Mobility[i];
+                if (option.Id == "nova_mob_legs1_rdrn" && option.PreviewPrefab != null)
+                {
+                    mobility = option;
+                    return true;
+                }
+            }
+
             for (int i = 0; i < catalog.Mobility.Count; i++)
             {
                 if (catalog.Mobility[i].PreviewPrefab == null)

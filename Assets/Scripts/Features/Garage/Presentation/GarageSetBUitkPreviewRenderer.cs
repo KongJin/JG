@@ -46,6 +46,39 @@ namespace Features.Garage.Presentation
             return true;
         }
 
+        public bool RenderPart(GarageNovaPartsPanelViewModel viewModel)
+        {
+            EnsureCamera();
+            EnsureRenderTexture();
+            DestroyCurrentPreview();
+            HasPreview = false;
+
+            if (_previewCamera == null ||
+                viewModel == null ||
+                viewModel.SelectedPreviewPrefab == null)
+                return false;
+
+            _currentPreviewRoot = new GameObject("PartPreviewRoot");
+            GaragePreviewAssembler.AttachToPreviewCamera(
+                _currentPreviewRoot,
+                _previewCamera,
+                new Vector3(0f, -0.02f, 4.3f),
+                Vector3.zero);
+
+            var partObj = Instantiate(viewModel.SelectedPreviewPrefab);
+            partObj.SetActive(true);
+            GaragePreviewAssembler.Attach(
+                partObj,
+                _currentPreviewRoot.transform,
+                Vector3.zero,
+                ResolvePartPreviewEuler(viewModel.ActiveSlot, viewModel.SelectedAlignment));
+
+            FitPartToPreviewRoot(_currentPreviewRoot, partObj);
+            HasPreview = true;
+            RenderPreviewFrame();
+            return true;
+        }
+
         private void Awake()
         {
             EnsureCamera();
@@ -73,6 +106,57 @@ namespace Features.Garage.Presentation
 
             EnsureRenderTexture();
             _previewCamera.Render();
+        }
+
+        private static Vector3 ResolvePartPreviewEuler(
+            GarageNovaPartPanelSlot slot,
+            GaragePanelCatalog.PartAlignment alignment)
+        {
+            var euler = alignment != null && alignment.CanApply
+                ? alignment.SocketEuler
+                : Vector3.zero;
+
+            return slot == GarageNovaPartPanelSlot.Firepower
+                ? euler + new Vector3(0f, 0f, -90f)
+                : euler;
+        }
+
+        private static void FitPartToPreviewRoot(GameObject previewRoot, GameObject partObj)
+        {
+            if (previewRoot == null || partObj == null)
+                return;
+
+            if (!TryGetBounds(partObj, out var bounds))
+                return;
+
+            var centerLocal = previewRoot.transform.InverseTransformPoint(bounds.center);
+            partObj.transform.localPosition -= centerLocal;
+
+            float maxExtent = Mathf.Max(bounds.extents.x, bounds.extents.y, bounds.extents.z);
+            if (maxExtent > 0.0001f)
+            {
+                float scale = Mathf.Clamp(0.82f / maxExtent, 0.35f, 2.6f);
+                partObj.transform.localScale *= scale;
+            }
+        }
+
+        private static bool TryGetBounds(GameObject root, out Bounds bounds)
+        {
+            bounds = default;
+            if (root == null)
+                return false;
+
+            var renderers = root.GetComponentsInChildren<Renderer>(includeInactive: false);
+            if (renderers == null || renderers.Length == 0)
+                return false;
+
+            bounds = renderers[0].bounds;
+            for (int i = 1; i < renderers.Length; i++)
+            {
+                bounds.Encapsulate(renderers[i].bounds);
+            }
+
+            return true;
         }
 
         private void EnsureCamera()

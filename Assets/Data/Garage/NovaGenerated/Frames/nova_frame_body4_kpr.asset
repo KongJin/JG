@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body4_kpr
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body4_kpr
-  displayName: Body4 Kpr
+  displayName: "\uCF54\uD3EC\uB7F4"
   icon: {fileID: 0}
-  baseHp: 600
+  baseHp: 555
   baseMoveRange: 4
-  baseAttackSpeed: 1.05
+  baseAttackSpeed: 1.1
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 7192954775493783828, guid: 86c505b3ec0985c499df2a4db29948a4, type: 3}
+  previewPrefab: {fileID: 5729837822201396403, guid: 98696101b9a293a45bee9226f305d658, type: 3}

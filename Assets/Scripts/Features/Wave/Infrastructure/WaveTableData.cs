@@ -19,6 +19,45 @@ namespace Features.Wave.Infrastructure
 
         int IWaveTablePort.GetEnemyCount(int waveIndex) => waves[waveIndex].Count;
 
+        public bool TryGetEnemyDataByNetworkKey(string networkKey, out EnemyData enemyData)
+        {
+            enemyData = null;
+
+            if (waves == null || string.IsNullOrWhiteSpace(networkKey))
+                return false;
+
+            for (var i = 0; i < waves.Length; i++)
+            {
+                var candidate = waves[i]?.EnemyData;
+                if (candidate != null && string.Equals(candidate.ResourcesLoadPath, networkKey, StringComparison.Ordinal))
+                {
+                    enemyData = candidate;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool TryGetFirstEnemyData(out EnemyData enemyData)
+        {
+            enemyData = null;
+
+            if (waves == null)
+                return false;
+
+            for (var i = 0; i < waves.Length; i++)
+            {
+                if (waves[i]?.EnemyData == null)
+                    continue;
+
+                enemyData = waves[i].EnemyData;
+                return true;
+            }
+
+            return false;
+        }
+
         [Serializable]
         public sealed class WaveEntry
         {

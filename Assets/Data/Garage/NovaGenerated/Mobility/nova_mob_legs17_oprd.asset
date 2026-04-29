@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_legs17_oprd
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_legs17_oprd
-  displayName: Legs17 Oprd
+  displayName: "\uC624\uD504\uB85C\uB354"
   icon: {fileID: 0}
-  hpBonus: 230
-  moveRange: 4.55
-  anchorRange: 4.55
-  description: 'Generated Nova1492 baseline. Source: datan\common\legs17_oprd.gx.
-    Tier: 3.'
-  previewPrefab: {fileID: 7439127731342026753, guid: 78ae1864c0b9740498826c154308d200, type: 3}
+  hpBonus: 280
+  moveRange: 4
+  anchorRange: 4
+  description: datan\common\legs17_oprd.gx
+  previewPrefab: {fileID: 9033517704505893628, guid: 78ae1864c0b9740498826c154308d200, type: 3}

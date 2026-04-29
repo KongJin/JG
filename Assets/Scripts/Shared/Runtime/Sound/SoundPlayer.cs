@@ -42,6 +42,12 @@ namespace Shared.Runtime.Sound
             return soundPlayer != null;
         }
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStaticState()
+        {
+            _active = null;
+        }
+
         private void Awake()
         {
             if (_active != null && _active != this)

@@ -29,10 +29,12 @@ namespace Features.Enemy
         private EventBus _eventBus;
 
         public DomainEntityId EnemyId { get; private set; }
+        public string EnemyNetworkKey { get; private set; }
         public bool IsInitialized { get; private set; }
 
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
         {
+            EnemyNetworkKey = ResolveNetworkKeyFromInstantiation();
             GameSceneRuntimeSpawnRegistrar.NotifyEnemyArrived(this);
         }
 
@@ -42,7 +44,7 @@ namespace Features.Enemy
             IPlayerPositionQuery playerQuery,
             ICoreObjectiveQuery coreQuery)
         {
-            Initialize(eventBus, combatBootstrap, ResolveDataFromInstantiation(), playerQuery, coreQuery);
+            Debug.LogError("[EnemySetup] EnemyData must be provided by the wave scene contract.", this);
         }
 
         public void Initialize(
@@ -129,7 +131,7 @@ namespace Features.Enemy
             _eventBus?.UnsubscribeAll(this);
         }
 
-        private EnemyData ResolveDataFromInstantiation()
+        private string ResolveNetworkKeyFromInstantiation()
         {
             var pv = ComponentAccess.Get<PhotonView>(gameObject);
             if (pv != null &&
@@ -138,17 +140,10 @@ namespace Features.Enemy
                 pv.InstantiationData[0] is string path &&
                 !string.IsNullOrWhiteSpace(path))
             {
-                var loaded = Resources.Load<EnemyData>(path);
-                if (loaded != null)
-                    return loaded;
+                return path;
             }
 
-            return LoadDefaultData();
-        }
-
-        private static EnemyData LoadDefaultData()
-        {
-            return Resources.Load<EnemyData>("Enemy/BasicEnemy");
+            return string.Empty;
         }
     }
 }

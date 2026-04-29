@@ -302,11 +302,19 @@ foreach ($row in $classificationRows) {
         $catalog = $catalogBySource[$catalogKey]
     }
 
-    $code = Get-InferredPartCode -Stem $stem -Category $row.category
-    $partName = ""
+    $inferredCode = Get-InferredPartCode -Stem $stem -Category $row.category
+    $code = $inferredCode
+    if ($catalog -and -not [string]::IsNullOrWhiteSpace($catalog.originalCode)) {
+        $code = $catalog.originalCode
+    }
+
+    $partName = if ($catalog -and -not [string]::IsNullOrWhiteSpace($catalog.originalName)) { $catalog.originalName } else { "" }
     $partDescription = ""
     if (-not [string]::IsNullOrWhiteSpace($code) -and $partDescriptions.ContainsKey($code)) {
-        $partName = $partDescriptions[$code].name
+        if ([string]::IsNullOrWhiteSpace($partName)) {
+            $partName = $partDescriptions[$code].name
+        }
+
         $partDescription = $partDescriptions[$code].description
     }
 

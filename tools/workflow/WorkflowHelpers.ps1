@@ -156,6 +156,194 @@ function Write-WorkflowSection {
     Write-Host ("== {0} ==" -f $Title) -ForegroundColor Cyan
 }
 
+function Resolve-WorkflowAbsolutePath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RepoRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    if ([System.IO.Path]::IsPathRooted($Path)) {
+        return [System.IO.Path]::GetFullPath($Path)
+    }
+
+    return [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $Path))
+}
+
+function Ensure-WorkflowParentDirectory {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $directory = Split-Path -Parent $Path
+    if (-not [string]::IsNullOrWhiteSpace($directory) -and -not (Test-Path -LiteralPath $directory)) {
+        New-Item -ItemType Directory -Path $directory -Force | Out-Null
+    }
+}
+
+function Get-WorkflowUnityResourceLock {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RepoRoot,
+
+        [string]$LockPath = "Temp/UnityMcp/unity-resource.lock"
+    )
+
+    $absolutePath = Resolve-WorkflowAbsolutePath -RepoRoot $RepoRoot -Path $LockPath
+    if (-not (Test-Path -LiteralPath $absolutePath)) {
+        return $null
+    }
+
+    $raw = ""
+    $json = $null
+    try {
+        $raw = (Get-Content -LiteralPath $absolutePath -Raw -ErrorAction Stop).Trim()
+        if (-not [string]::IsNullOrWhiteSpace($raw)) {
+            $json = $raw | ConvertFrom-Json
+        }
+    }
+    catch {
+        return [PSCustomObject]@{
+            Exists = $true
+            Path = $LockPath
+            AbsolutePath = $absolutePath
+            ParseError = $_.Exception.Message
+            Raw = $raw
+            Name = $null
+            Owner = $null
+            Mode = $null
+            Token = $null
+            ProcessId = $null
+            ProcessAlive = $false
+            IsCurrentProcess = $false
+            StartedAt = $null
+        }
+    }
+
+    $processId = if ($null -ne $json -and $null -ne $json.PSObject.Properties["pid"]) { [int]$json.pid } else { $null }
+    $process = if ($null -ne $processId) { Get-Process -Id $processId -ErrorAction SilentlyContinue } else { $null }
+
+    return [PSCustomObject]@{
+        Exists = $true
+        Path = $LockPath
+        AbsolutePath = $absolutePath
+        ParseError = $null
+        Raw = $raw
+        Name = if ($null -ne $json.PSObject.Properties["name"]) { [string]$json.name } else { $null }
+        Owner = if ($null -ne $json.PSObject.Properties["owner"]) { [string]$json.owner } else { $null }
+        Mode = if ($null -ne $json.PSObject.Properties["mode"]) { [string]$json.mode } else { $null }
+        Token = if ($null -ne $json.PSObject.Properties["token"]) { [string]$json.token } else { $null }
+        ProcessId = $processId
+        ProcessAlive = $null -ne $process
+        IsCurrentProcess = $null -ne $processId -and $processId -eq $PID
+        StartedAt = if ($null -ne $json.PSObject.Properties["startedAt"]) { [string]$json.startedAt } else { $null }
+    }
+}
+
+function Enter-WorkflowUnityResourceLock {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RepoRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [string]$Owner = $env:USERNAME,
+        [string]$Mode = "exclusive",
+        [string]$LockPath = "Temp/UnityMcp/unity-resource.lock",
+        [int]$TimeoutSec = 0,
+        [double]$PollSec = 0.5,
+        [int]$StaleAfterMinutes = 90
+    )
+
+    $absolutePath = Resolve-WorkflowAbsolutePath -RepoRoot $RepoRoot -Path $LockPath
+    Ensure-WorkflowParentDirectory -Path $absolutePath
+
+    $token = [guid]::NewGuid().ToString("N")
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    $payload = [ordered]@{
+        name = $Name
+        owner = if ([string]::IsNullOrWhiteSpace($Owner)) { "unknown" } else { $Owner }
+        mode = $Mode
+        token = $token
+        pid = $PID
+        startedAt = (Get-Date).ToString("o")
+    }
+
+    while ($true) {
+        try {
+            $stream = [System.IO.File]::Open($absolutePath, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+            try {
+                $writer = New-Object System.IO.StreamWriter($stream, [System.Text.Encoding]::UTF8)
+                try {
+                    $writer.Write(($payload | ConvertTo-Json -Depth 4))
+                    $writer.Flush()
+                }
+                finally {
+                    $writer.Dispose()
+                }
+            }
+            finally {
+                $stream.Dispose()
+            }
+
+            return [PSCustomObject]@{
+                Name = $Name
+                Owner = $payload.owner
+                Mode = $Mode
+                Token = $token
+                Path = $LockPath
+                AbsolutePath = $absolutePath
+            }
+        }
+        catch [System.IO.IOException] {
+            $existing = Get-WorkflowUnityResourceLock -RepoRoot $RepoRoot -LockPath $LockPath
+            if ($null -ne $existing) {
+                if ($existing.ProcessId -gt 0 -and -not $existing.ProcessAlive) {
+                    Remove-Item -LiteralPath $absolutePath -Force
+                    continue
+                }
+
+                $lockItem = Get-Item -LiteralPath $absolutePath
+                if ($StaleAfterMinutes -gt 0 -and $lockItem.LastWriteTimeUtc -lt (Get-Date).ToUniversalTime().AddMinutes(-1 * $StaleAfterMinutes)) {
+                    Remove-Item -LiteralPath $absolutePath -Force
+                    continue
+                }
+            }
+
+            if ($TimeoutSec -le 0 -or (Get-Date) -ge $deadline) {
+                throw ("Unity resource lock is held. lock='{0}' requested='{1}' owner='{2}' existing='{3}'" -f $LockPath, $Name, $Owner, $(if ($null -ne $existing) { $existing.Raw } else { "" }))
+            }
+
+            Start-Sleep -Seconds $PollSec
+        }
+    }
+}
+
+function Exit-WorkflowUnityResourceLock {
+    param([object]$Lock)
+
+    if ($null -eq $Lock -or [string]::IsNullOrWhiteSpace([string]$Lock.AbsolutePath)) {
+        return
+    }
+
+    if (-not (Test-Path -LiteralPath $Lock.AbsolutePath)) {
+        return
+    }
+
+    try {
+        $json = Get-Content -LiteralPath $Lock.AbsolutePath -Raw -ErrorAction Stop | ConvertFrom-Json
+        if ($null -ne $json.PSObject.Properties["token"] -and [string]$json.token -ne [string]$Lock.Token) {
+            return
+        }
+    }
+    catch {
+        return
+    }
+
+    Remove-Item -LiteralPath $Lock.AbsolutePath -Force
+}
+
 function Invoke-WorkflowCommand {
     param(
         [Parameter(Mandatory = $true)]
@@ -239,12 +427,24 @@ function Test-WorkflowUnityCliRunTestsPreflight {
         [string]$RepoRoot
     )
 
+    $unityLock = Get-WorkflowUnityResourceLock -RepoRoot $RepoRoot
+    if ($null -ne $unityLock -and -not $unityLock.IsCurrentProcess) {
+        return [PSCustomObject]@{
+            Allowed = $false
+            Reason = "unity-resource-lock-held"
+            Message = "Unity CLI -runTests is blocked because another workflow owns the Unity resource lock."
+            UnityResourceLock = $unityLock
+            EditorInstance = $null
+        }
+    }
+
     $instance = Get-WorkflowUnityEditorInstance -RepoRoot $RepoRoot
     if ($null -ne $instance -and $instance.ProcessAlive) {
         return [PSCustomObject]@{
             Allowed = $false
             Reason = "open-editor-owns-project"
             Message = "Unity CLI -runTests is blocked because this project is already open in Unity Editor. Use an in-editor/MCP test route or close the editor before running batchmode tests."
+            UnityResourceLock = $unityLock
             EditorInstance = $instance
         }
     }
@@ -253,6 +453,7 @@ function Test-WorkflowUnityCliRunTestsPreflight {
         Allowed = $true
         Reason = ""
         Message = "Unity CLI -runTests preflight passed."
+        UnityResourceLock = $unityLock
         EditorInstance = $instance
     }
 }

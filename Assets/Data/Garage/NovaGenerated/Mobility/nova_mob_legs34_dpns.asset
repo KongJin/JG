@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_legs34_dpns
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_legs34_dpns
-  displayName: Legs34 Dpns
+  displayName: "\uB378\uD53C\uB204\uC2A4"
   icon: {fileID: 0}
-  hpBonus: 180
-  moveRange: 5.1
-  anchorRange: 5.1
-  description: 'Generated Nova1492 baseline. Source: datan\common\legs34_dpns.gx.
-    Tier: 2.'
-  previewPrefab: {fileID: 6128251310654177374, guid: de67b59e2221e3147aef420aa87f3662, type: 3}
+  hpBonus: 130
+  moveRange: 5.65
+  anchorRange: 5.65
+  description: datan\common\legs34_dpns.gx
+  previewPrefab: {fileID: 4273764521313947279, guid: de67b59e2221e3147aef420aa87f3662, type: 3}

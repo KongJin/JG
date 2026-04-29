@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body9_btro
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body9_btro
-  displayName: Body9 Btro
+  displayName: "\uBC14\uD0C8\uB9AC\uC5B8"
   icon: {fileID: 0}
   baseHp: 465
   baseMoveRange: 4
   baseAttackSpeed: 1.2
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 1192821935386154720, guid: f3528db4ef498c84aa012efa5c31d5c0, type: 3}
+  previewPrefab: {fileID: 6685822131785895524, guid: 2bcb41ac0f913c2409448c2e8b389d14, type: 3}

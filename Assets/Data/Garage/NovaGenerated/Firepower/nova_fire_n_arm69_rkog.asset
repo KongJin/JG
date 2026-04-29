@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_n_arm69_rkog
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_n_arm69_rkog
-  displayName: N Arm69 Rkog
+  displayName: "\uB9AC\uCF54\uC77C\uAC74N"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
-  description: 'Generated Nova1492 baseline. Source: datan\common\n_arm69_rkog.gx.
-    Tier: 3.'
-  previewPrefab: {fileID: 5090911374178718527, guid: 724ea3a3a0b690d4d8d5a119873d2d09, type: 3}
+  attackDamage: 48
+  attackSpeed: 0.93
+  range: 7
+  description: datan\common\n_arm69_rkog.gx
+  previewPrefab: {fileID: 6479433312589231555, guid: 724ea3a3a0b690d4d8d5a119873d2d09, type: 3}

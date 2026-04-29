@@ -18,6 +18,12 @@ namespace Shared.Kernel
             return Registry.TryGetValue(id, out holder);
         }
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStaticState()
+        {
+            Registry.Clear();
+        }
+
         public void Set(DomainEntityId id)
         {
             _id = id;

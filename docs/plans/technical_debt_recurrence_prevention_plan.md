@@ -1,6 +1,6 @@
 # Technical Debt Recurrence Prevention Plan
 
-> 마지막 업데이트: 2026-04-28
+> 마지막 업데이트: 2026-04-29
 > 상태: active
 > doc_id: plans.technical-debt-recurrence-prevention
 > role: plan
@@ -38,7 +38,9 @@
 - pool binding seam 도입 후 projectile, skill effect, zone view, lifetime release가 `PooledObject`를 직접 lookup하지 않게 정리
 - `ComponentAccess` seam으로 feature-level component access 분산을 축소
 - `SoundPlayer` duplicate scan을 scene-wide `FindObjectsByType` 대신 active instance reference로 전환
-- `SoundPlayerRuntimeHostFactory`의 host creation을 code-generated `GameObject` 대신 `Assets/Resources/Shared/Sound/SoundPlayer.prefab` contract로 전환
+- `SoundPlayerRuntimeHostFactory`의 `Resources.Load` fallback을 제거하고, Lobby carry-over 또는 scene-owned `SoundPlayer` contract를 사용하도록 전환
+- `DefaultPlayerSpecProvider`와 non-master `EnemySetup` 초기화에서 runtime `Resources.Load` data lookup을 제거하고, `GameSceneRoot`/`WaveTableData` serialized contract에서 data를 전달
+- `PlayerHealthHudView`, `EnemyHealthBar`, `DamageNumber` prefab을 `Assets/Resources`에서 `Assets/Prefabs/RuntimeFeedback/`으로 이동해 world-space feedback compatibility surface로 분리
 
 현재 검증 기준선:
 
@@ -46,6 +48,62 @@
 - static-clean: `tools/validate-rules.ps1`
 - docs-clean: `npm run --silent rules:lint`
 - asset-clean: `npm run --silent unity:asset-hygiene`
+
+### 2026-04-29 Prevention Gate Lock
+
+이번 게이트는 새 hard-fail lint를 늘리지 않고, 기존 owner 문서의 기준을 반복 closeout 체크로 묶는다.
+
+Baseline lock:
+
+- `tools/check-compile-errors.ps1`: `ERRORS: 0`, `WARNINGS: 0`
+- `tools/validate-rules.ps1`: runtime lookup / dynamic repair 위반 0
+- `npm run --silent rules:lint`: pass
+- `npm run --silent unity:asset-hygiene`: pass
+
+Worktree split gate:
+
+| Group | Owner | Review rule |
+|---|---|---|
+| UI Toolkit / shared icons / Lobby-Garage UI | `ops.unity-ui-authoring-workflow`, `design.ui-foundations`, relevant feature presentation code | candidate preview, capture/report, runtime replacement를 같은 success로 묶지 않음 |
+| Nova generated assets / playable part catalog | `design.module-data-structure`, Garage content owner | generated asset inventory와 product balance/rights 판단을 분리 |
+| rule/tooling / recurrence harness | `ops.document-management-workflow`, `ops.acceptance-reporting-guardrails` | `artifacts/rules/issue-recurrence-closeout.json` changedPaths 동기화 필요 |
+| runtime scene contract | `plans.technical-debt-recurrence-prevention`, relevant scene owner | serialized reference, compile/static/asset hygiene, 가능하면 MCP scene smoke 확인 |
+| evidence artifacts | owning active plan or reference checklist | mechanical evidence와 actual acceptance를 분리 |
+
+2026-04-29 3/4/5 priority gate:
+
+| Gate | Verdict | Evidence / handling |
+|---|---|---|
+| Worktree split preflight | pass for reviewability | dirty worktree 1,910 paths were grouped before further closeout: GameScene direct/runtime 2, UI Toolkit/runtime/candidate 116, Nova generated assets 1,772, rule/tooling 6, docs/evidence 32, unassigned 12. No revert, commit, or broad cleanup was performed. |
+| GameScene direct EditMode tests | blocked | `Invoke-UnityEditModeTests.ps1` was attempted for `SummonUnitUseCaseDirectTests`, `UnitSlotInputHandlerDirectTests`, and `GameSceneRuntimeSystemsDirectTests`; preflight returned `open-editor-owns-project`, so no test result XML/log is claimed. |
+| Account/Connection runtime UI | runtime visibility pass / product acceptance blocked | `LobbyView.OpenAccountPage` and `OpenConnectionPage` were invoked through MCP in `LobbyScene`; screenshots `artifacts/unity/account-sync-runtime-lobby-shell.png` and `artifacts/unity/connection-reconnect-runtime-lobby-shell.png` show the surfaces inside the Lobby shell with console error count 0. WebGL/cloud/account acceptance remains out of scope. |
+
+Runtime contract audit:
+
+- Setup/Root production `Update()` scan: 위반 0.
+- feature raw lookup/repair scan은 `tools/validate-rules.ps1` 기준 위반 0이어야 한다.
+- 남은 raw scan 항목은 아래 분류로만 허용한다.
+
+| Class | Current examples | Handling |
+|---|---|---|
+| shared seam | `Shared/Runtime/ComponentAccess.cs` | feature code가 직접 쓰지 않고 seam으로만 접근 |
+| explicit runtime factory | `SoundPlayerRuntimeHostFactory`, scene-owned host lookup | Shared runtime host owner에서만 유지, product audio smoke와 분리 |
+| shared infrastructure residual | `SoundPlayer` AudioSource creation, DDOL | Phase 4 residual로 유지하고 WebGL audio product acceptance와 섞지 않음 |
+| scoped scene registry scan | `GameSceneRoot` entity holder pass | scene contract owner가 설명 가능한 경우만 유지 |
+| config/resource load | remaining `Resources` gameplay prefab paths | Photon prefab/config load로만 유지, dependency repair로 확장 금지 |
+
+Actual acceptance audit:
+
+- GameScene actual flow는 `game_scene_flow_validation_closeout_plan.md`가 소유한다. Direct EditMode 실행, drag/drop direct test 실행, Phase 5 2-client smoke는 아직 separate residual이다.
+- Phase 5 multiplayer는 2-client runner 또는 수동 2-client session 전까지 `code path 완료 / smoke 남음`으로 유지한다.
+- Account/Garage/WebGL은 브라우저 실기 전까지 `코드 경로 존재`와 `동작 검증 완료`를 분리한다.
+- UI Toolkit candidate capture는 runtime replacement success가 아니다.
+
+Doc lifecycle audit:
+
+- 새 plan 문서는 만들지 않는다.
+- active execution owner는 `game_scene_flow_validation_closeout_plan.md`, `game_scene_phase5_multiplayer_sync_plan.md`, `technical_debt_recurrence_prevention_plan.md`, `non_stitch_ui_stitch_reimport_plan.md` 네 개를 유지한다.
+- `account_system_plan.md`는 reference 상태로 유지하고, 실제 진행 판단은 `plans.progress`와 WebGL checklist evidence를 우선한다.
 
 ## Recurrence Risks
 
@@ -123,7 +181,7 @@ Acceptance:
 
 후속 후보:
 
-- `SoundPlayerRuntimeHostFactory`: host prefab contract는 도입됨. 남은 검토는 approval/policy evidence와 WebGL audio product smoke로 분리
+- `SoundPlayerRuntimeHostFactory`: Resources fallback은 제거됨. 남은 검토는 scene-owned host evidence와 WebGL audio product smoke로 분리
 - `SoundPlayer`: SFX/BGM `AudioSource` runtime 생성이 pool prefab contract로 대체 가능한지 검토
 - `RoundedRectGraphic`, `ButtonSoundEmitter`: 실제 사용처가 생기면 serialized reference 또는 editor-time requirement로 정리
 - `GameObjectPool`: `PooledObject` dynamic ensure를 prefab contract로 고정할 수 있는 대상부터 migration
@@ -176,4 +234,6 @@ doc lifecycle checked:
 - Phase 1~3이 반복 closeout 기준으로 정착되고 Phase 4 residual이 다른 owner로 이관되면 reference 압축 보존 또는 삭제 후보로 재검토한다.
 
 - 2026-04-28 실행 후 재리뷰: 과한점은 audio/WebGL acceptance나 UI Toolkit migration을 이 plan 성공 조건으로 끌어오지 않고 residual owner로 분리했다. 부족한점은 SoundPlayer host prefab contract 완료와 남은 AudioSource/template residual을 현재 기준선에 반영해 해소했다.
+- 2026-04-29 예방 게이트 실행 후 재리뷰: 과한점은 새 hard-fail lint나 새 plan 문서를 만들지 않고 baseline/worktree/runtime/acceptance/lifecycle 게이트를 이 active plan 안에만 묶어 해소했다. 부족한점은 worktree split, raw scan exception 분류, actual acceptance 분리, active plan lifecycle 판정을 기록해 해소했다.
+- 2026-04-29 3/4/5 우선 처리 재리뷰: 과한점은 Account/Connection runtime visibility를 WebGL/cloud acceptance로 확장하지 않고, GameScene EditMode blocked를 success로 올리지 않았다. 부족한점은 worktree split 숫자, targeted direct test blocked reason, runtime screenshot/policy evidence를 각 owner plan과 progress에 남겨 해소했다.
 plan rereview: clean

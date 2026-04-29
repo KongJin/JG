@@ -1,9 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="../Shared/TacticalIcons.uss" />
     <Style src="BattleHud.uss" />
     <ui:VisualElement name="BattleHudRoot" class="battle-hud">
         <ui:VisualElement name="FieldStatusBar" class="field-status">
             <ui:VisualElement class="field-status__left">
-                <ui:Label text="▰" class="field-status__mark" />
+                <ui:VisualElement class="uitk-icon uitk-icon--radar uitk-icon--small field-status__mark" />
                 <ui:Label text="SECTOR-04" class="field-status__text" />
                 <ui:Label text="STATUS: ACTIVE" class="field-status__text field-status__text--accent" />
             </ui:VisualElement>
@@ -15,7 +16,7 @@
                 <ui:Label text="CURRENT_OBJECTIVE" class="objective-card__eyebrow" />
                 <ui:Label name="WaveLabel" class="battle-hud__wave" text="WAVE 04/12" />
                 <ui:VisualElement class="countdown-row">
-                    <ui:Label text="◌" class="countdown-row__icon" />
+                    <ui:VisualElement class="uitk-icon uitk-icon--timer uitk-icon--small countdown-row__icon" />
                     <ui:Label name="CountdownLabel" class="battle-hud__countdown" text="0:45" />
                 </ui:VisualElement>
                 <ui:Label name="StatusLabel" class="battle-hud__status" text="LINK_STABLE" />
@@ -36,7 +37,7 @@
         <ui:VisualElement name="WorldOverlayLayer" class="battle-hud__world-layer" />
 
         <ui:VisualElement name="DeployMarker" class="deploy-marker">
-            <ui:Label text="◇" class="deploy-marker__icon" />
+            <ui:VisualElement class="uitk-icon uitk-icon--target uitk-icon--large deploy-marker__icon" />
             <ui:Label text="DEPLOY_01" class="deploy-marker__label" />
         </ui:VisualElement>
 
@@ -47,17 +48,17 @@
             </ui:VisualElement>
             <ui:VisualElement name="SummonSlots" class="battle-hud__slots">
                 <ui:Button class="battle-hud__slot">
-                    <ui:Label text="✦" class="battle-hud__slot-icon" />
+                    <ui:VisualElement class="uitk-icon uitk-icon--precision-manufacturing battle-hud__slot-icon" />
                     <ui:Label class="battle-hud__slot-label" text="STRIDER" />
                     <ui:Label class="battle-hud__slot-cost" text="20EC" />
                 </ui:Button>
                 <ui:Button class="battle-hud__slot battle-hud__slot--active">
-                    <ui:Label text="⬟" class="battle-hud__slot-icon battle-hud__slot-icon--active" />
+                    <ui:VisualElement class="uitk-icon uitk-icon--shield battle-hud__slot-icon battle-hud__slot-icon--active" />
                     <ui:Label class="battle-hud__slot-label" text="DEFENDER" />
                     <ui:Label class="battle-hud__slot-cost" text="25EC" />
                 </ui:Button>
                 <ui:Button class="battle-hud__slot battle-hud__slot--blocked">
-                    <ui:Label text="!" class="battle-hud__slot-icon battle-hud__slot-icon--blocked" />
+                    <ui:VisualElement class="uitk-icon uitk-icon--warning battle-hud__slot-icon battle-hud__slot-icon--blocked" />
                     <ui:Label class="battle-hud__slot-label" text="INSUFFICIENT_ENERGY" />
                     <ui:Label class="battle-hud__slot-cost" text="40EC" />
                 </ui:Button>

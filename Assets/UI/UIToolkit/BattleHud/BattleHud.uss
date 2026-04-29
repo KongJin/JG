@@ -41,8 +41,7 @@
 }
 
 .field-status__mark {
-    color: var(--hud-amber);
-    font-size: 10px;
+    --uitk-icon-tint: var(--hud-amber);
     margin-right: 5px;
 }
 
@@ -118,8 +117,7 @@
 }
 
 .countdown-row__icon {
-    color: var(--hud-blue);
-    font-size: 9px;
+    --uitk-icon-tint: var(--hud-blue);
     margin-right: 4px;
 }
 
@@ -182,10 +180,7 @@
 }
 
 .deploy-marker__icon {
-    color: var(--hud-amber);
-    font-size: 18px;
-    -unity-font-style: bold;
-    -unity-text-align: middle-center;
+    --uitk-icon-tint: var(--hud-amber);
 }
 
 .deploy-marker__label {
@@ -261,17 +256,15 @@
 }
 
 .battle-hud__slot-icon {
-    color: var(--hud-blue);
-    font-size: 15px;
-    -unity-text-align: middle-center;
+    --uitk-icon-tint: var(--hud-blue);
 }
 
 .battle-hud__slot-icon--active {
-    color: var(--hud-amber);
+    --uitk-icon-tint: var(--hud-amber);
 }
 
 .battle-hud__slot-icon--blocked {
-    color: var(--hud-red);
+    --uitk-icon-tint: var(--hud-red);
 }
 
 .battle-hud__slot-label {

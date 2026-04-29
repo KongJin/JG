@@ -1,0 +1,15 @@
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\bin\Debug\net9.0\GxObjConverter.exe
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\bin\Debug\net9.0\GxObjConverter.deps.json
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\bin\Debug\net9.0\GxObjConverter.runtimeconfig.json
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\bin\Debug\net9.0\GxObjConverter.dll
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\bin\Debug\net9.0\GxObjConverter.pdb
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\obj\Debug\net9.0\GxObjConverter.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\obj\Debug\net9.0\GxObjConverter.AssemblyInfoInputs.cache
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\obj\Debug\net9.0\GxObjConverter.AssemblyInfo.cs
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\obj\Debug\net9.0\GxObjConverter.csproj.CoreCompileInputs.cache
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\obj\Debug\net9.0\GxObjConverter.sourcelink.json
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\obj\Debug\net9.0\GxObjConverter.dll
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\obj\Debug\net9.0\refint\GxObjConverter.dll
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\obj\Debug\net9.0\GxObjConverter.pdb
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\obj\Debug\net9.0\GxObjConverter.genruntimeconfig.cache
+C:\Users\SOL\Documents\JG\tools\nova1492\GxObjConverter\obj\Debug\net9.0\ref\GxObjConverter.dll

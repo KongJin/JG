@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_n_body41_kmdo
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_n_body41_kmdo
-  displayName: N Body41 Kmdo
+  displayName: "\uCF54\uBAA8\uB3C4\uC5B4N"
   icon: {fileID: 0}
   baseHp: 600
   baseMoveRange: 4
   baseAttackSpeed: 1.05
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 3472821747990233901, guid: b57810335f6b7294cb3a07e01ee2da68, type: 3}
+  previewPrefab: {fileID: 7274980851063196699, guid: f2f07bdd7e90ee145a5c5c987492815a, type: 3}

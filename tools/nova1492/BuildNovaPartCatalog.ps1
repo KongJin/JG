@@ -1,7 +1,9 @@
 param(
     [string] $ClassificationPath = "artifacts/nova1492/gx_asset_classification.csv",
     [string] $OutputCsvPath = "artifacts/nova1492/nova_part_catalog.csv",
-    [string] $OutputMarkdownPath = "artifacts/nova1492/nova_part_catalog_summary.md"
+    [string] $OutputMarkdownPath = "artifacts/nova1492/nova_part_catalog_summary.md",
+    [string] $PartDescriptionPath = "",
+    [string] $GxDescPath = ""
 )
 
 Set-StrictMode -Version Latest
@@ -11,14 +13,171 @@ if (-not (Test-Path -LiteralPath $ClassificationPath)) {
     throw "Classification CSV not found: $ClassificationPath"
 }
 
-function Get-Slot([string] $category) {
-    switch ($category) {
-        "UnitParts/Bodies" { return "Frame" }
-        "UnitParts/Bases" { return "Frame" }
-        "UnitParts/ArmWeapons" { return "Firepower" }
-        "UnitParts/Legs" { return "Mobility" }
-        default { return $null }
+function Resolve-PartDescriptionPath([string] $explicitPath) {
+    if (-not [string]::IsNullOrWhiteSpace($explicitPath)) {
+        if (-not (Test-Path -LiteralPath $explicitPath)) {
+            throw "Part description file not found: $explicitPath"
+        }
+
+        return $explicitPath
     }
+
+    $candidatePaths = @(
+        "External/Nova1492Raw/datan/kr/nvpartdesc.dat",
+        "C:\Program Files (x86)\Nova1492\datan\kr\nvpartdesc.dat"
+    )
+
+    foreach ($candidatePath in $candidatePaths) {
+        if (Test-Path -LiteralPath $candidatePath) {
+            return $candidatePath
+        }
+    }
+
+    return ""
+}
+
+function Resolve-GxDescPath([string] $explicitPath) {
+    if (-not [string]::IsNullOrWhiteSpace($explicitPath)) {
+        if (-not (Test-Path -LiteralPath $explicitPath)) {
+            throw "GX description file not found: $explicitPath"
+        }
+
+        return $explicitPath
+    }
+
+    $candidatePaths = @(
+        "External/Nova1492Raw/datan/common/gxdesc.ini",
+        "C:\Program Files (x86)\Nova1492\datan\common\gxdesc.ini"
+    )
+
+    foreach ($candidatePath in $candidatePaths) {
+        if (Test-Path -LiteralPath $candidatePath) {
+            return $candidatePath
+        }
+    }
+
+    return ""
+}
+
+function Read-PartDescriptions([string] $path) {
+    $byCode = @{}
+    if ([string]::IsNullOrWhiteSpace($path)) {
+        return $byCode
+    }
+
+    $encoding = [Text.Encoding]::GetEncoding(949)
+    foreach ($line in [IO.File]::ReadAllLines($path, $encoding)) {
+        if ($line.TrimStart().StartsWith("//")) {
+            continue
+        }
+
+        $match = [regex]::Match($line, "^\s*(\d{4})\s+(\S+)\s+(\S+)")
+        if (-not $match.Success) {
+            continue
+        }
+
+        $code = $match.Groups[1].Value
+        $variant = $match.Groups[2].Value
+        $name = $match.Groups[3].Value
+        if ([string]::IsNullOrWhiteSpace($name)) {
+            continue
+        }
+
+        if (-not $byCode.ContainsKey($code) -or $variant -eq "0") {
+            $byCode[$code] = [pscustomobject]@{
+                code = $code
+                variant = $variant
+                name = $name
+            }
+        }
+    }
+
+    return $byCode
+}
+
+function Get-NormalizedStem([string] $stem) {
+    return ($stem.ToLowerInvariant() -replace "^(g_|n_|s_|ss0_)", "")
+}
+
+function Read-GxDescPartCodes([string] $path) {
+    $byStem = @{}
+    if ([string]::IsNullOrWhiteSpace($path)) {
+        return $byStem
+    }
+
+    $encoding = [Text.Encoding]::GetEncoding(949)
+    $currentCode = $null
+    foreach ($rawLine in [IO.File]::ReadAllLines($path, $encoding)) {
+        $line = ($rawLine -replace "//.*$", "").Trim()
+        if ([string]::IsNullOrWhiteSpace($line)) {
+            continue
+        }
+
+        $match = [regex]::Match($line, "^\s*([^\s=]+?\.gx)\s*(?:=\s*(\d+))?", [Text.RegularExpressions.RegexOptions]::IgnoreCase)
+        if (-not $match.Success) {
+            continue
+        }
+
+        $fileName = $match.Groups[1].Value
+        if ($match.Groups[2].Success) {
+            $currentCode = [int]$match.Groups[2].Value
+        }
+        elseif ($null -eq $currentCode) {
+            continue
+        }
+        else {
+            $currentCode++
+        }
+
+        $stem = [System.IO.Path]::GetFileNameWithoutExtension($fileName)
+        $byStem[(Get-NormalizedStem $stem)] = $currentCode.ToString([Globalization.CultureInfo]::InvariantCulture)
+    }
+
+    return $byStem
+}
+
+function Get-MobilityOriginalCode([string] $stem, [int] $number, [hashtable] $gxDescCodes) {
+    $normalizedStem = Get-NormalizedStem $stem
+    if ($gxDescCodes.ContainsKey($normalizedStem)) {
+        return $gxDescCodes[$normalizedStem]
+    }
+
+    return (1000 + $number).ToString([Globalization.CultureInfo]::InvariantCulture)
+}
+
+function Get-CanonicalPartInfo([string] $category, [string] $stem, [hashtable] $gxDescCodes) {
+    $normalizedStem = Get-NormalizedStem $stem
+
+    $match = [regex]::Match($normalizedStem, "^(body|arm|legs)(\d+)")
+    if (-not $match.Success) {
+        return $null
+    }
+
+    $family = $match.Groups[1].Value
+    $number = [int]$match.Groups[2].Value
+
+    if ($category -eq "UnitParts/Bodies" -and $family -eq "body") {
+        return [pscustomobject]@{
+            slot = "Frame"
+            originalCode = (2000 + $number).ToString([Globalization.CultureInfo]::InvariantCulture)
+        }
+    }
+
+    if ($category -eq "UnitParts/ArmWeapons" -and $family -eq "arm") {
+        return [pscustomobject]@{
+            slot = "Firepower"
+            originalCode = (3000 + $number).ToString([Globalization.CultureInfo]::InvariantCulture)
+        }
+    }
+
+    if ($category -eq "UnitParts/Legs" -and $family -eq "legs") {
+        return [pscustomobject]@{
+            slot = "Mobility"
+            originalCode = Get-MobilityOriginalCode -stem $stem -number $number -gxDescCodes $gxDescCodes
+        }
+    }
+
+    return $null
 }
 
 function Get-Prefix([string] $slot) {
@@ -123,27 +282,33 @@ function Get-Stats([string] $slot, [int] $tier) {
 }
 
 $rows = Import-Csv -LiteralPath $ClassificationPath
+$resolvedPartDescriptionPath = Resolve-PartDescriptionPath $PartDescriptionPath
+$resolvedGxDescPath = Resolve-GxDescPath $GxDescPath
+$partDescriptions = Read-PartDescriptions $resolvedPartDescriptionPath
+$gxDescPartCodes = Read-GxDescPartCodes $resolvedGxDescPath
 $candidates = foreach ($row in $rows) {
-    $slot = Get-Slot $row.category
-    if ($null -eq $slot) {
-        continue
-    }
-
     $triangles = [int]$row.triangles
     $vertices = [int]$row.vertices
     $sourcePath = $row.source_relative_path
     $modelPath = $row.model_path
     $stem = [System.IO.Path]::GetFileNameWithoutExtension($sourcePath.Replace("\", "/"))
+    $partInfo = Get-CanonicalPartInfo -category $row.category -stem $stem -gxDescCodes $gxDescPartCodes
+    if ($null -eq $partInfo) {
+        continue
+    }
+
     $needsNameReview = $stem -notmatch "^[A-Za-z0-9._-]+$"
 
     [pscustomobject]@{
-        slot = $slot
+        slot = $partInfo.slot
         category = $row.category
         source_relative_path = $sourcePath
         model_path = $modelPath
         vertices = $vertices
         triangles = $triangles
         sourceStem = $stem
+        originalCode = $partInfo.originalCode
+        originalName = if ($partDescriptions.ContainsKey($partInfo.originalCode)) { $partDescriptions[$partInfo.originalCode].name } else { "" }
         needsNameReview = $needsNameReview
     }
 }
@@ -172,8 +337,14 @@ foreach ($slotGroup in ($candidates | Group-Object slot)) {
             $idCounts[$partId] = 1
         }
 
-        $displayName = ConvertTo-DisplayName $item.sourceStem
-        if ($needsNameReview) {
+        $displayName = if (-not [string]::IsNullOrWhiteSpace($item.originalName)) {
+            $item.originalName
+        }
+        else {
+            ConvertTo-DisplayName $item.sourceStem
+        }
+
+        if ($needsNameReview -and [string]::IsNullOrWhiteSpace($item.originalName)) {
             $displayName = "$($item.slot) $(Get-ShortHash $item.source_relative_path)"
         }
 
@@ -184,6 +355,8 @@ foreach ($slotGroup in ($candidates | Group-Object slot)) {
             slot = $item.slot
             category = $item.category
             source_relative_path = $item.source_relative_path
+            originalCode = $item.originalCode
+            originalName = $item.originalName
             model_path = $item.model_path
             vertices = $item.vertices
             triangles = $item.triangles
@@ -245,6 +418,33 @@ foreach ($group in ($output | Group-Object category | Sort-Object Name)) {
 }
 
 $lines.Add("")
+$lines.Add("## Source Name Coverage")
+$lines.Add("")
+$partDescriptionSourceText = if ([string]::IsNullOrWhiteSpace($resolvedPartDescriptionPath)) {
+    "(not found)"
+}
+else {
+    $resolvedPartDescriptionPath
+}
+$lines.Add("- part description source: ``$partDescriptionSourceText``")
+$gxDescSourceText = if ([string]::IsNullOrWhiteSpace($resolvedGxDescPath)) {
+    "(not found)"
+}
+else {
+    $resolvedGxDescPath
+}
+$lines.Add("- GX description source: ``$gxDescSourceText``")
+$lines.Add("- rows with original Korean name: $(@($output | Where-Object { -not [string]::IsNullOrWhiteSpace($_.originalName) }).Count)")
+$lines.Add("- rows with GX description code mapping: $(@($output | Where-Object { $_.slot -eq "Mobility" -and $gxDescPartCodes.ContainsKey((Get-NormalizedStem ([System.IO.Path]::GetFileNameWithoutExtension($_.source_relative_path.Replace("\", "/")))))}).Count)")
+$lines.Add("")
+$lines.Add("## Playable Filter Policy")
+$lines.Add("")
+$lines.Add('- `Frame` includes canonical `body*` rows from `UnitParts/Bodies` only.')
+$lines.Add('- `Firepower` includes canonical `arm*` rows from `UnitParts/ArmWeapons` only.')
+$lines.Add('- `Mobility` includes canonical `legs*` rows from `UnitParts/Legs` only, with original code ranges from `gxdesc.ini` when available.')
+$lines.Add('- `UnitParts/Bases`, `UnitParts/Accessories`, and detached `front/top/larm/rarm/lback/rback/shoulder` pieces are excluded from playable Garage.')
+
+$lines.Add("")
 $lines.Add("## Generated Stat Policy")
 $lines.Add("")
 $lines.Add('- Tier is generated per slot from triangle-count quantiles, `1..5`.')
@@ -253,7 +453,7 @@ $lines.Add('- `needsNameReview=true` rows keep source-derived IDs but require la
 
 Set-Content -LiteralPath $OutputMarkdownPath -Value $lines -Encoding UTF8
 
-$expectedCount = 321
+$expectedCount = 222
 if ($output.Count -ne $expectedCount) {
     throw "Unexpected Core catalog row count: expected $expectedCount, got $($output.Count)"
 }

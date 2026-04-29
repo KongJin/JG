@@ -13,6 +13,7 @@ using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Lifecycle;
 using Shared.Runtime;
+using Shared.Ui;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -25,6 +26,9 @@ namespace Features.Lobby.Presentation
 
         [SerializeField]
         private UIDocument _garageDocument;
+
+        [SerializeField]
+        private GarageSetBUitkRuntimeAdapter _garageAdapter;
 
         [Header("UXML Surfaces")]
         [SerializeField]
@@ -53,7 +57,6 @@ namespace Features.Lobby.Presentation
         private VisualElement _recordsPage;
         private VisualElement _accountPage;
         private VisualElement _connectionPage;
-        private GarageSetBUitkRuntimeAdapter _garageAdapter;
         private VisualElement _roomList;
         private VisualElement _memberList;
         private Label _shellTitle;
@@ -213,8 +216,10 @@ namespace Features.Lobby.Presentation
 
             var topShell = new VisualElement { name = "SharedTopShell" };
             topShell.AddToClassList("shared-top-shell");
-            topShell.Add(new Button(ShowLobbyPage) { text = "=", name = "ShellMenuButton" });
-            topShell[0].AddToClassList("shared-icon-button");
+            var menuButton = new Button(ShowConnectionPage) { name = "ShellMenuButton" };
+            menuButton.AddToClassList("shared-icon-button");
+            menuButton.Add(IconElement("menu", "uitk-icon--muted"));
+            topShell.Add(menuButton);
             var titleStack = new VisualElement();
             titleStack.AddToClassList("shared-title-stack");
             _shellTitle = new Label("로비");
@@ -224,8 +229,9 @@ namespace Features.Lobby.Presentation
             titleStack.Add(_shellTitle);
             titleStack.Add(_shellState);
             topShell.Add(titleStack);
-            var settings = new Button(ShowGaragePage) { text = "S", name = "ShellSettingsButton" };
+            var settings = new Button(ShowAccountPage) { name = "ShellSettingsButton" };
             settings.AddToClassList("shared-icon-button");
+            settings.Add(IconElement("settings", "uitk-icon--muted"));
             topShell.Add(settings);
             _root.Add(topShell);
 
@@ -241,9 +247,9 @@ namespace Features.Lobby.Presentation
 
             var nav = new VisualElement { name = "SharedNavigationBar" };
             nav.AddToClassList("shared-navigation-bar");
-            _lobbyNav = AddNavButton(nav, "LobbyNavButton", "로비", ShowLobbyPage);
-            _garageNav = AddNavButton(nav, "GarageNavButton", "차고", ShowGaragePage);
-            _recordsNav = AddNavButton(nav, "RecordsNavButton", "기록", ShowRecordsPage);
+            _lobbyNav = AddNavButton(nav, "LobbyNavButton", "radar", "로비", ShowLobbyPage);
+            _garageNav = AddNavButton(nav, "GarageNavButton", "garage", "차고", ShowGaragePage);
+            _recordsNav = AddNavButton(nav, "RecordsNavButton", "records", "기록", ShowRecordsPage);
             _root.Add(nav);
             ApplyRuntimeStyles();
         }
@@ -369,12 +375,31 @@ namespace Features.Lobby.Presentation
             return page;
         }
 
-        private static Button AddNavButton(VisualElement nav, string name, string text, System.Action callback)
+        private static Button AddNavButton(VisualElement nav, string name, string iconId, string text, System.Action callback)
         {
-            var button = new Button(callback) { name = name, text = text };
+            var button = new Button(callback) { name = name };
             button.AddToClassList("shared-nav-item");
+            var icon = IconElement(iconId, "uitk-icon--small", "shared-nav-icon");
+            var label = new Label(text);
+            label.AddToClassList("shared-nav-label");
+            button.Add(icon);
+            button.Add(label);
             nav.Add(button);
             return button;
+        }
+
+        private static VisualElement IconElement(string iconId, params string[] extraClasses)
+        {
+            var icon = new VisualElement();
+            icon.AddToClassList("uitk-icon");
+            foreach (var className in extraClasses)
+            {
+                if (!string.IsNullOrWhiteSpace(className))
+                    icon.AddToClassList(className);
+            }
+
+            UitkIconRegistry.Apply(icon, iconId);
+            return icon;
         }
 
         private void RenderRooms(IReadOnlyList<RoomSnapshot> rooms)
@@ -588,8 +613,6 @@ namespace Features.Lobby.Presentation
 
         private bool SetGarageDocumentVisible(bool isVisible)
         {
-            EnsureGarageReferences();
-
             if (_garageDocument != null)
             {
                 if (_garageAdapter != null && _garageAdapter.SetDocumentRootVisible(isVisible))
@@ -612,25 +635,11 @@ namespace Features.Lobby.Presentation
             if (_garagePage == null)
                 return;
 
-            EnsureGarageReferences();
             if (_garageAdapter == null)
                 return;
 
             _garageAdapter.BindToHost(_garagePage);
             _garageAdapter.SetDocumentRootVisible(false);
-        }
-
-        private void EnsureGarageReferences()
-        {
-            if (_garageDocument == null)
-            {
-                var garageObject = GameObject.Find("GarageSetBUitkDocument");
-                if (garageObject != null)
-                    _garageDocument = garageObject.GetComponent<UIDocument>();
-            }
-
-            if (_garageAdapter == null && _garageDocument != null)
-                _garageAdapter = _garageDocument.GetComponent<GarageSetBUitkRuntimeAdapter>();
         }
 
         private void RegisterClick(string buttonName, System.Action callback)
@@ -650,8 +659,6 @@ namespace Features.Lobby.Presentation
 
             _recordsPage.Q<Button>("BackButton")?.RegisterCallback<ClickEvent>(_ => ShowLobbyPage());
             _recordsPage.Q<Button>("GarageButton")?.RegisterCallback<ClickEvent>(_ => ShowGaragePage());
-            _recordsPage.Q<Button>("ReturnToLobbyButton")?.RegisterCallback<ClickEvent>(_ => ShowLobbyPage());
-            _recordsPage.Q<Button>("OpenGarageButton")?.RegisterCallback<ClickEvent>(_ => ShowGaragePage());
         }
 
         private void EnsureAccountSurface()

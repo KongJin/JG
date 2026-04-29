@@ -38,9 +38,7 @@
 }
 
 .account-brand-mark {
-    color: var(--account-orange);
-    font-size: 18px;
-    -unity-font-style: bold;
+    --uitk-icon-tint: var(--account-orange);
     margin-right: 6px;
 }
 

@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm4_bk
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm4_bk
-  displayName: Arm4 Bk
+  displayName: "\uBC1C\uCE78"
   icon: {fileID: 0}
-  attackDamage: 32
-  attackSpeed: 1.19
-  range: 5.5
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm4_bk.gx. Tier:
-    2.'
-  previewPrefab: {fileID: 5294574235007690708, guid: 19e985ef47f790b4281eb7fbe8000ee7, type: 3}
+  attackDamage: 24
+  attackSpeed: 1.32
+  range: 4.75
+  description: datan\common\arm4_bk.gx
+  previewPrefab: {fileID: 8248113191136564621, guid: 19e985ef47f790b4281eb7fbe8000ee7, type: 3}

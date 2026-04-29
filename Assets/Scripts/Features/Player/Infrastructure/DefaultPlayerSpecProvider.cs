@@ -1,12 +1,9 @@
 using Features.Player.Domain;
-using UnityEngine;
 
 namespace Features.Player.Infrastructure
 {
     /// <summary>
-    /// 기본 플레이어 스펙 제공 구현체.
-    /// Resources/PlayerSpecConfig SO를 로드하여 사용.
-    /// Config가 없으면 기본값 폴백.
+    /// 기본 플레이어 스펙 제공 구현체. Scene/root가 전달한 PlayerSpecConfig를 사용한다.
     /// </summary>
     public sealed class DefaultPlayerSpecProvider : Application.Ports.IPlayerSpecProvider
     {
@@ -26,15 +23,9 @@ namespace Features.Player.Infrastructure
 
         private readonly PlayerSpec _localSpec;
         private readonly PlayerSpec _remoteSpec;
-        public DefaultPlayerSpecProvider()
-            : this(new ResourcesPlayerSpecConfigPort())
-        {
-        }
 
-        public DefaultPlayerSpecProvider(IPlayerSpecConfigPort configPort)
+        public DefaultPlayerSpecProvider(PlayerSpecConfig config)
         {
-            var config = configPort.Load();
-
             if (config != null)
             {
                 _localSpec = new PlayerSpec(
@@ -60,20 +51,5 @@ namespace Features.Player.Infrastructure
 
         public PlayerSpec GetLocalPlayerSpec() => _localSpec;
         public PlayerSpec GetRemotePlayerSpec() => _remoteSpec;
-    }
-
-    public interface IPlayerSpecConfigPort
-    {
-        PlayerSpecConfig Load();
-    }
-
-    internal sealed class ResourcesPlayerSpecConfigPort : IPlayerSpecConfigPort
-    {
-        private const string ConfigResourcePath = "PlayerSpecConfig";
-
-        public PlayerSpecConfig Load()
-        {
-            return Resources.Load<PlayerSpecConfig>(ConfigResourcePath);
-        }
     }
 }

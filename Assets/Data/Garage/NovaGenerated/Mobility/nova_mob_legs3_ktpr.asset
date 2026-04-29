@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_legs3_ktpr
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_legs3_ktpr
-  displayName: Legs3 Ktpr
+  displayName: "\uCE90\uD130\uD544\uB7EC"
   icon: {fileID: 0}
-  hpBonus: 180
-  moveRange: 5.1
-  anchorRange: 5.1
-  description: 'Generated Nova1492 baseline. Source: datan\common\legs3_ktpr.gx.
-    Tier: 2.'
-  previewPrefab: {fileID: 3284387329989949124, guid: e13e08b17c8bbd947a18c33dfbb25a32, type: 3}
+  hpBonus: 130
+  moveRange: 5.65
+  anchorRange: 5.65
+  description: datan\common\legs3_ktpr.gx
+  previewPrefab: {fileID: 1425970781323038560, guid: e13e08b17c8bbd947a18c33dfbb25a32, type: 3}

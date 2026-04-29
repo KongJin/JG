@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body20_prsd
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body20_prsd
-  displayName: Body20 Prsd
+  displayName: "\uD50C\uB7EC\uC2DC\uB371"
   icon: {fileID: 0}
   baseHp: 600
   baseMoveRange: 4
   baseAttackSpeed: 1.05
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 2691342776971474369, guid: 3e65a0b6507a91a40a316b2a7954a4f9, type: 3}
+  previewPrefab: {fileID: 3239318217984490109, guid: 98e353bd7e367014c9c4fe32cede0bab, type: 3}

@@ -13,2892 +13,1308 @@ MonoBehaviour:
   m_Name: NovaPartVisualCatalog
   m_EditorClassIdentifier: Assembly-CSharp::Features.Garage.Infrastructure.NovaPartVisualCatalog
   entries:
-  - partId: nova_fire_01_larm
-    slot: 1
-    displayName: Firepower 63bc6695
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD01_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__01_LArm_bf349a8b.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 3029901637950702574, guid: b39d85837f2b5e4459e97278b92e9d66, type: 3}
-    partAsset: {fileID: 11400000, guid: 34f8cdf4176ebdb43ace414816799dba, type: 2}
-  - partId: nova_fire_01_larm_70738f30
-    slot: 1
-    displayName: Firepower 70738f30
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD01_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__01_LArm_9d4a6f3c.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 7149012098509967550, guid: 736f4d0fafa9b8040a62e2552b3f751a, type: 3}
-    partAsset: {fileID: 11400000, guid: 446a35e1535ed764b95bddd221da73c2, type: 2}
-  - partId: nova_fire_01_larm_a60b1435
-    slot: 1
-    displayName: Firepower a60b1435
-    sourceRelativePath: "datan\\common\\\uC9C0\uB300\uC9C0\uACF501_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__01_LArm_2b6669b6.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 5275634606302367619, guid: 554d9b46fff439046a70d74103720687, type: 3}
-    partAsset: {fileID: 11400000, guid: f3349bb653cdba443a1a93d6abb66ea9, type: 2}
-  - partId: nova_fire_01_larm_b07ca42b
-    slot: 1
-    displayName: Firepower b07ca42b
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD01_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__01_LArm_d1bbaa65.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 6003190179935586172, guid: 5809f01e9112e8046883daa2a7490c01, type: 3}
-    partAsset: {fileID: 11400000, guid: 43eb27680b5e5e44f8131071eaf5976d, type: 2}
-  - partId: nova_fire_01_larm_ba64d7e9
-    slot: 1
-    displayName: Firepower ba64d7e9
-    sourceRelativePath: "datan\\common\\\uC9C0\uB300\uACF501_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__01_LArm_640b5687.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 8003800518905124792, guid: 703365440e9c4b34d87b9b8f86d42731, type: 3}
-    partAsset: {fileID: 11400000, guid: f7bb20cf1d055a24f878bfb5afd57f35, type: 2}
-  - partId: nova_fire_01_larm_fb67c0f6
-    slot: 1
-    displayName: Firepower fb67c0f6
-    sourceRelativePath: "datan\\common\\\uC9C0\uB300\uC9C001_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__01_LArm_94384af1.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 4172533195919321416, guid: c1ef2363c4214484e8272c71c51f75e4, type: 3}
-    partAsset: {fileID: 11400000, guid: ab2603d4d8cf8d14d8512347e15eea7d, type: 2}
-  - partId: nova_fire_01_rarm
-    slot: 1
-    displayName: Firepower 20cff806
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD01_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__01_RArm_d6883bee.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 5159907178192696178, guid: e012171116812984686108597c54c828, type: 3}
-    partAsset: {fileID: 11400000, guid: f0640a1e5397b9e4e8512c12ea19b965, type: 2}
-  - partId: nova_fire_01_rarm_78f1d508
-    slot: 1
-    displayName: Firepower 78f1d508
-    sourceRelativePath: "datan\\common\\\uC9C0\uB300\uC9C001_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__01_RArm_a29b71ff.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 4335053978462515223, guid: 8b1ea02c187cbfe459c5eee07a4e81fb, type: 3}
-    partAsset: {fileID: 11400000, guid: cbadffae6b6397049ade6eb5ad28d8f8, type: 2}
-  - partId: nova_fire_01_rarm_9ba136d9
-    slot: 1
-    displayName: Firepower 9ba136d9
-    sourceRelativePath: "datan\\common\\\uC9C0\uB300\uACF501_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__01_RArm_00e299dc.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 506978499343240834, guid: 643ba945b71129e479c85a275efae6fb, type: 3}
-    partAsset: {fileID: 11400000, guid: b9bfe53a32652db4e9183b19307c5cde, type: 2}
-  - partId: nova_fire_01_rarm_ae65717f
-    slot: 1
-    displayName: Firepower ae65717f
-    sourceRelativePath: "datan\\common\\\uC9C0\uB300\uC9C0\uACF501_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__01_RArm_0667c163.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 1512885767965606771, guid: 4463c307aac5e3b4d9fb72aa22ad59fa, type: 3}
-    partAsset: {fileID: 11400000, guid: 9b372777702e68f439aebaa2ef706857, type: 2}
-  - partId: nova_fire_01_rarm_ba79b34c
-    slot: 1
-    displayName: Firepower ba79b34c
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD01_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__01_RArm_cde00125.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 505442583696577347, guid: 83e074b7b9bd3f0468e1ab82af5f7428, type: 3}
-    partAsset: {fileID: 11400000, guid: ebcad4725b6287b408acc1b26629c0f1, type: 2}
-  - partId: nova_fire_01_rarm_cefde3b6
-    slot: 1
-    displayName: Firepower cefde3b6
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD01_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__01_RArm_8d577a1e.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 8121216599634154958, guid: 6b47febadd4a6584888d434d5f3bf5ab, type: 3}
-    partAsset: {fileID: 11400000, guid: 97b6802397248fd42adced9825c89da4, type: 2}
-  - partId: nova_fire_02_larm
-    slot: 1
-    displayName: Firepower dfaf7b27
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD02_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__02_LArm_775d1e76.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 839833618287784101, guid: c79de790a3228b547b194492d9e1b3f0, type: 3}
-    partAsset: {fileID: 11400000, guid: e573a30204ea8cf44b9b2c235c7d23bc, type: 2}
-  - partId: nova_fire_02_larm_37321bd3
-    slot: 1
-    displayName: Firepower 37321bd3
-    sourceRelativePath: "datan\\common\\\uC9C0\uB300\uACF502_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__02_LArm_1d7c3b10.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 5340397889594284541, guid: 36db90356c54fb04ab46c05d7c5bdf60, type: 3}
-    partAsset: {fileID: 11400000, guid: c67a92729af00bf49b6a994ad64fdfbc, type: 2}
-  - partId: nova_fire_02_larm_8089aa7c
-    slot: 1
-    displayName: Firepower 8089aa7c
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD02_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__02_LArm_d6989778.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 9015701078913480918, guid: 2d9ee55eea39e0b4697232b66b57e3fa, type: 3}
-    partAsset: {fileID: 11400000, guid: 852c05880fc353346816e6c752cd0f01, type: 2}
-  - partId: nova_fire_02_larm_977dfdc1
-    slot: 1
-    displayName: Firepower 977dfdc1
-    sourceRelativePath: "datan\\common\\\uC9C0\uB300\uC9C0\uACF502_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__02_LArm_53c67977.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 4577310744268653655, guid: 5b411cb6e16f64c4fa8313dd1f86a94b, type: 3}
-    partAsset: {fileID: 11400000, guid: adb20d2029c65ff438c9cfb49cbf73e4, type: 2}
-  - partId: nova_fire_02_larm_97fa2bd5
-    slot: 1
-    displayName: Firepower 97fa2bd5
-    sourceRelativePath: "datan\\common\\\uC9C0\uB300\uC9C002_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__02_LArm_7bfb5a2c.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 1117268117561686662, guid: 6dd32c6cc9cc8944eb8a37f01a339592, type: 3}
-    partAsset: {fileID: 11400000, guid: 2ecd6e0b2bf169744aeb29e1659ce2a7, type: 2}
-  - partId: nova_fire_02_larm_b6fa80c6
-    slot: 1
-    displayName: Firepower b6fa80c6
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD02_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__02_LArm_3fc071ce.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 7897494041501555068, guid: 658cf855a46ba29438b90a7cd1553b4e, type: 3}
-    partAsset: {fileID: 11400000, guid: 593c4473fc7ebc44b8f10da89b7802f4, type: 2}
-  - partId: nova_fire_02_rarm
-    slot: 1
-    displayName: Firepower a15ed9bc
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD02_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__02_RArm_cc1e7a29.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 8571591979818024225, guid: c05928a5d5a3aeb4bae1e8b27b7d8503, type: 3}
-    partAsset: {fileID: 11400000, guid: 9fcd6634b461d4342a39df3374607655, type: 2}
-  - partId: nova_fire_02_rarm_0a4c1935
-    slot: 1
-    displayName: Firepower 0a4c1935
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD02_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__02_RArm_09e9b720.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 577795881070180188, guid: ae3e4c9927e4c5546b0505ac30d73cd6, type: 3}
-    partAsset: {fileID: 11400000, guid: 2eab8c7298c71d74b93da3abb358c08e, type: 2}
-  - partId: nova_fire_02_rarm_55b5d821
-    slot: 1
-    displayName: Firepower 55b5d821
-    sourceRelativePath: "datan\\common\\\uC9C0\uB300\uC9C002_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__02_RArm_9486bbf9.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 4909166284728205790, guid: 56f47d42a147b6342812c239eee65f07, type: 3}
-    partAsset: {fileID: 11400000, guid: ff8e99ed848dd2941b67e7884f8f5308, type: 2}
-  - partId: nova_fire_02_rarm_94889939
-    slot: 1
-    displayName: Firepower 94889939
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD02_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__02_RArm_9c74ae70.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 2161802489019024406, guid: cdf42e5b8ddcb974d85badaa6c949200, type: 3}
-    partAsset: {fileID: 11400000, guid: 9a7991a5865708e44a581988044e1da3, type: 2}
-  - partId: nova_fire_02_rarm_967e17ca
-    slot: 1
-    displayName: Firepower 967e17ca
-    sourceRelativePath: "datan\\common\\\uC9C0\uB300\uACF502_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__02_RArm_6ada290d.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 322029574477962175, guid: 7addc94ff9021194d825253b65e471d9, type: 3}
-    partAsset: {fileID: 11400000, guid: ecdafac2d268f044798bfdbdf27799bc, type: 2}
-  - partId: nova_fire_02_rarm_c5fb8c37
-    slot: 1
-    displayName: Firepower c5fb8c37
-    sourceRelativePath: "datan\\common\\\uC9C0\uB300\uC9C0\uACF502_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__02_RArm_f6928141.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 4475223675281718357, guid: 4b1c42311d5939249a5584bd36603c96, type: 3}
-    partAsset: {fileID: 11400000, guid: 7980aca7cf7817e4b99ca375ad61006e, type: 2}
-  - partId: nova_fire_1_lback
-    slot: 1
-    displayName: Firepower c4c4d9cf
-    sourceRelativePath: "datan\\common\\\u0223\uFFFD\uFFFD1_LBack.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__1_LBack_40a0fc5e.obj
-    tier: 3
-    needsNameReview: 1
-    previewPrefab: {fileID: 6912067774957363339, guid: c9981cce7f7a1a84fb70dbddbd237841, type: 3}
-    partAsset: {fileID: 11400000, guid: 3178f0620805b54429b57a1cceb42c13, type: 2}
-  - partId: nova_fire_1_lback_86755cc5
-    slot: 1
-    displayName: Firepower 86755cc5
-    sourceRelativePath: "datan\\common\\\uD638\uBC841_LBack.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__1_LBack_2cbb1743.obj
-    tier: 3
-    needsNameReview: 1
-    previewPrefab: {fileID: 2326918987364325005, guid: ce26d9d6c0700d74a9deda89d1315c5d, type: 3}
-    partAsset: {fileID: 11400000, guid: 9cbfd8bad64391946af9e1e77c930673, type: 2}
-  - partId: nova_fire_1_rback
-    slot: 1
-    displayName: Firepower 1b0c353c
-    sourceRelativePath: "datan\\common\\\u0223\uFFFD\uFFFD1_RBack.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__1_RBack_c8f8683c.obj
-    tier: 3
-    needsNameReview: 1
-    previewPrefab: {fileID: 2451548658383783145, guid: 95414ce3c764b52449761e6c908654df, type: 3}
-    partAsset: {fileID: 11400000, guid: c60e05c076b23034e94643ea73dc89ee, type: 2}
-  - partId: nova_fire_1_rback_fddbd3e1
-    slot: 1
-    displayName: Firepower fddbd3e1
-    sourceRelativePath: "datan\\common\\\uD638\uBC841_RBack.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__1_RBack_24606ad7.obj
-    tier: 3
-    needsNameReview: 1
-    previewPrefab: {fileID: 3619550914688175721, guid: 5fed40a642de44b42be9f667b5d47f8d, type: 3}
-    partAsset: {fileID: 11400000, guid: 79da17e695501a04ab9720075201fee1, type: 2}
-  - partId: nova_fire_2_lback
-    slot: 1
-    displayName: Firepower 7241afa9
-    sourceRelativePath: "datan\\common\\\u0223\uFFFD\uFFFD2_LBack.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__2_LBack_cbda495d.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 1620795980488122798, guid: 1954c0f26e8815546bc2d5f3f4fab431, type: 3}
-    partAsset: {fileID: 11400000, guid: 141305017046af24c9b87558b0794017, type: 2}
-  - partId: nova_fire_2_lback_1a3908fc
-    slot: 1
-    displayName: Firepower 1a3908fc
-    sourceRelativePath: "datan\\common\\\uD638\uBC842_LBack.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__2_LBack_b3fde9da.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 6837663990263527052, guid: 42fdc3e0c0e729c44973d164ebcfc032, type: 3}
-    partAsset: {fileID: 11400000, guid: 08ef78b553cafab409f5a5996412c846, type: 2}
-  - partId: nova_fire_2_rback
-    slot: 1
-    displayName: Firepower bb5f329f
-    sourceRelativePath: "datan\\common\\\u0223\uFFFD\uFFFD2_RBack.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__2_RBack_0173b3cf.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 8344724759326853521, guid: 82813dd4d242bd042818e436d8698a0d, type: 3}
-    partAsset: {fileID: 11400000, guid: 69dbeddc24a2fa243a8cfee46df3b106, type: 2}
-  - partId: nova_fire_2_rback_31cd6d75
-    slot: 1
-    displayName: Firepower 31cd6d75
-    sourceRelativePath: "datan\\common\\\uD638\uBC842_RBack.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__2_RBack_513724c9.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 1379441573095124789, guid: 7ba89dbed2d76504ead7f8629ed15e6c, type: 3}
-    partAsset: {fileID: 11400000, guid: 29ca6e8b2d5cfa0489732154b53ecb88, type: 2}
   - partId: nova_fire_arm1_sz
     slot: 1
-    displayName: Arm1 Sz
+    displayName: "\uC2DC\uC988"
     sourceRelativePath: datan\common\arm1_sz.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm1_sz_5fce3a7e.obj
-    tier: 4
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 1836044004835178028, guid: 855b499fff4f86d4dbe6719082e70496, type: 3}
+    previewPrefab: {fileID: 7298664375990215281, guid: 855b499fff4f86d4dbe6719082e70496, type: 3}
     partAsset: {fileID: 11400000, guid: 5d1fd46378142bd42b6c23bc39a1b480, type: 2}
   - partId: nova_fire_arm10_broz
     slot: 1
-    displayName: Arm10 Broz
+    displayName: "\uBE14\uB808\uC774\uC988"
     sourceRelativePath: datan\common\arm10_broz.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm10_broz_8151f977.obj
-    tier: 4
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 3963053813527648039, guid: 860705f8606d7f84baa15d5b4cbed6a8, type: 3}
+    previewPrefab: {fileID: 6116336503295101196, guid: 860705f8606d7f84baa15d5b4cbed6a8, type: 3}
     partAsset: {fileID: 11400000, guid: 39ebfcbba8df3fa458fec55cdd42cc9d, type: 2}
   - partId: nova_fire_arm11_poms
     slot: 1
-    displayName: Arm11 Poms
+    displayName: "\uD30C\uC6CC\uB9E5\uC2A4"
     sourceRelativePath: datan\common\arm11_poms.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm11_poms_3a4be2f0.obj
-    tier: 3
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 467196372985732173, guid: 94321d0900c159740a9fd751be80cdd9, type: 3}
+    previewPrefab: {fileID: 350400959123766341, guid: 94321d0900c159740a9fd751be80cdd9, type: 3}
     partAsset: {fileID: 11400000, guid: 79c4d7959798c6f48958d9b84126eef4, type: 2}
   - partId: nova_fire_arm12_onms
     slot: 1
-    displayName: Arm12 Onms
+    displayName: "\uC5D0\uB108\uB9E5\uC2A4"
     sourceRelativePath: datan\common\arm12_onms.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm12_onms_efa25324.obj
-    tier: 3
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 8535688115037690299, guid: d090d24316f900a4986cf346a8a6bfbc, type: 3}
+    previewPrefab: {fileID: 5534570683305677972, guid: d090d24316f900a4986cf346a8a6bfbc, type: 3}
     partAsset: {fileID: 11400000, guid: 53d8311d99ab38d4f82d2a0d18462915, type: 2}
   - partId: nova_fire_arm13_prs
     slot: 1
-    displayName: Arm13 Prs
+    displayName: "\uD314\uB791\uC2A4"
     sourceRelativePath: datan\common\arm13_prs.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm13_prs_506c6fbf.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 5659546308877420288, guid: 3ece0fa75dde9e74cb2db8dff8cff0c3, type: 3}
+    previewPrefab: {fileID: 4071695446577159766, guid: 3ece0fa75dde9e74cb2db8dff8cff0c3, type: 3}
     partAsset: {fileID: 11400000, guid: e57d70bea2b8f5241999cc90cc6ff432, type: 2}
-  - partId: nova_fire_arm14_hbsz
-    slot: 1
-    displayName: Arm14 Hbsz
-    sourceRelativePath: datan\common\arm14_hbsz.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm14_hbsz_04ed14da.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 3919250223212917022, guid: a3eab480f9d4b2141a33c49ecc1e44e5, type: 3}
-    partAsset: {fileID: 11400000, guid: cc8fa288dba548141a58f764023a8423, type: 2}
   - partId: nova_fire_arm15_hdkn
     slot: 1
-    displayName: Arm15 Hdkn
+    displayName: "\uD578\uB4DC\uCF00\uB10C"
     sourceRelativePath: datan\common\arm15_hdkn.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm15_hdkn_75ab9b21.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 783729122324820017, guid: 91b219364411950488a07ec66ec96816, type: 3}
-    partAsset: {fileID: 11400000, guid: 2382f899116340f43967e815fb59db7e, type: 2}
-  - partId: nova_fire_arm16_mgbr
-    slot: 1
-    displayName: Arm16 Mgbr
-    sourceRelativePath: datan\common\arm16_mgbr.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm16_mgbr_3f89d892.obj
     tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 4897347517656341753, guid: 6ff28f66b27367544afbbe28ea8e9c2e, type: 3}
-    partAsset: {fileID: 11400000, guid: 98e1a831ce443cf4b9929d6a7408e121, type: 2}
+    previewPrefab: {fileID: 896580795538170050, guid: 91b219364411950488a07ec66ec96816, type: 3}
+    partAsset: {fileID: 11400000, guid: 2382f899116340f43967e815fb59db7e, type: 2}
   - partId: nova_fire_arm17_prrs
     slot: 1
-    displayName: Arm17 Prrs
+    displayName: "\uD504\uB864\uB9AD\uC2A4"
     sourceRelativePath: datan\common\arm17_prrs.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm17_prrs_13e8b933.obj
-    tier: 4
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 8403750319170609760, guid: 5e126c458d5ebfb4aaad33b3ee1f3380, type: 3}
+    previewPrefab: {fileID: 6592864882827424568, guid: 5e126c458d5ebfb4aaad33b3ee1f3380, type: 3}
     partAsset: {fileID: 11400000, guid: b79c189e3bf5d3d489b64d8d87abf74b, type: 2}
   - partId: nova_fire_arm18_knst
     slot: 1
-    displayName: Arm18 Knst
+    displayName: "\uCE90\uB2C8\uC2A4\uD130"
     sourceRelativePath: datan\common\arm18_knst.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm18_knst_c1fdf073.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 5416630834566249855, guid: c33c662f7a48f69408710751d282bf48, type: 3}
+    previewPrefab: {fileID: 9040164870351851694, guid: c33c662f7a48f69408710751d282bf48, type: 3}
     partAsset: {fileID: 11400000, guid: 5c813248db870904e8a9e8c22ef2e061, type: 2}
   - partId: nova_fire_arm19_roz
     slot: 1
-    displayName: Arm19 Roz
+    displayName: "\uB808\uC774\uC800"
     sourceRelativePath: datan\common\arm19_roz.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm19_roz_611f470e.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 4938907471146889930, guid: 01c5e1b97a51654409d494fb78688ab2, type: 3}
+    previewPrefab: {fileID: 5025663598552520714, guid: 01c5e1b97a51654409d494fb78688ab2, type: 3}
     partAsset: {fileID: 11400000, guid: a282ea7d48941f840b11ded58c5c7052, type: 2}
-  - partId: nova_fire_arm2_hbbr
-    slot: 1
-    displayName: Arm2 Hbbr
-    sourceRelativePath: datan\common\arm2_hbbr.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm2_hbbr_b60c5fe0.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 3554724185755269269, guid: 9486fac10568d26498d930610be87ad8, type: 3}
-    partAsset: {fileID: 11400000, guid: cf9df7d175316414fadfeaa8869d5971, type: 2}
   - partId: nova_fire_arm20_rkto
     slot: 1
-    displayName: Arm20 Rkto
+    displayName: "\uB85C\uCF13\uD2F0\uC5B4"
     sourceRelativePath: datan\common\arm20_rkto.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm20_rkto_aae07f0f.obj
-    tier: 5
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 1292665575779346670, guid: edda299bc1e0ec34da3bc740efebdc23, type: 3}
+    previewPrefab: {fileID: 9075986580650307608, guid: edda299bc1e0ec34da3bc740efebdc23, type: 3}
     partAsset: {fileID: 11400000, guid: ea55d0ff8e62f4445b61f984b6616f45, type: 2}
   - partId: nova_fire_arm21_nmsz
     slot: 1
-    displayName: Arm21 Nmsz
+    displayName: "\uB124\uBA54\uC2DC\uC988"
     sourceRelativePath: datan\common\arm21_nmsz.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm21_nmsz_3025b871.obj
-    tier: 4
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 4523982991667998297, guid: d6c6b47cc4bbf1a4a92bbafa73caea1c, type: 3}
+    previewPrefab: {fileID: 1282897815063247816, guid: d6c6b47cc4bbf1a4a92bbafa73caea1c, type: 3}
     partAsset: {fileID: 11400000, guid: 8a41d25b9ac61a145b4d2e89ce800877, type: 2}
   - partId: nova_fire_arm22_bsrsk
     slot: 1
-    displayName: Arm22 Bsrsk
+    displayName: "\uBC14\uC2E4\uB9AC\uC2A4\uD06C"
     sourceRelativePath: datan\common\arm22_bsrsk.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm22_bsrsk_bc100de3.obj
-    tier: 5
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 8740524048354772860, guid: 7a53484b55e7f964fbb038b4f2cec5c3, type: 3}
+    previewPrefab: {fileID: 2740487321095802440, guid: 7a53484b55e7f964fbb038b4f2cec5c3, type: 3}
     partAsset: {fileID: 11400000, guid: 1a4a8cdea663d0543944255c3a41602c, type: 2}
   - partId: nova_fire_arm23_rkog
     slot: 1
-    displayName: Arm23 Rkog
+    displayName: "\uB9AC\uCF54\uC77C\uAC74"
     sourceRelativePath: datan\common\arm23_rkog.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm23_rkog_8b60d926.obj
-    tier: 1
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 6626186471464546066, guid: f875d4a4aeafea442891bbb6d4daa378, type: 3}
+    previewPrefab: {fileID: 2202125172673459520, guid: f875d4a4aeafea442891bbb6d4daa378, type: 3}
     partAsset: {fileID: 11400000, guid: aec6dc3a27c024e448532c22f0ee7c80, type: 2}
   - partId: nova_fire_arm24_bzk
     slot: 1
-    displayName: Arm24 Bzk
+    displayName: "\uBC14\uC8FC\uCE74"
     sourceRelativePath: datan\common\arm24_bzk.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm24_bzk_2d7ab4fb.obj
     tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 843003255107073594, guid: bb860d626844dc34da20b708d0c2decb, type: 3}
+    previewPrefab: {fileID: 1415688609710160345, guid: bb860d626844dc34da20b708d0c2decb, type: 3}
     partAsset: {fileID: 11400000, guid: 530579a6b14bedd4cb11dfc05e8794e6, type: 2}
   - partId: nova_fire_arm25_skoob
     slot: 1
-    displayName: Arm25 Skoob
+    displayName: "\uC1FC\uD06C\uC6E8\uC774\uBE0C"
     sourceRelativePath: datan\common\arm25_skoob.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm25_skoob_229cc6db.obj
-    tier: 3
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 6699696472005374573, guid: 88b1acb90e296ee4fb8fcbf8c67c5337, type: 3}
+    previewPrefab: {fileID: 8853542259950896680, guid: 88b1acb90e296ee4fb8fcbf8c67c5337, type: 3}
     partAsset: {fileID: 11400000, guid: 3e8c3aa2e1fdc8b41b397b1343fc4af2, type: 2}
   - partId: nova_fire_arm26_srmd
     slot: 1
-    displayName: Arm26 Srmd
+    displayName: "\uC0AC\uB77C\uB9CC\uB2E4"
     sourceRelativePath: datan\common\arm26_srmd.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm26_srmd_f4149406.obj
-    tier: 5
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 6858317527207761736, guid: b085deb4acc27c9439a9b9e988afdd3c, type: 3}
+    previewPrefab: {fileID: 1406304644820259131, guid: b085deb4acc27c9439a9b9e988afdd3c, type: 3}
     partAsset: {fileID: 11400000, guid: cfb8c20137737264b8a1112a6611e183, type: 2}
   - partId: nova_fire_arm27_stst
     slot: 1
-    displayName: Arm27 Stst
+    displayName: "\uC288\uD305\uC2A4\uD0C0"
     sourceRelativePath: datan\common\arm27_stst.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm27_stst_62131fa9.obj
     tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 9212187143226398579, guid: 8e73cf2fa03a7514d89f4485820aedd6, type: 3}
+    previewPrefab: {fileID: 8516858335479527768, guid: 8e73cf2fa03a7514d89f4485820aedd6, type: 3}
     partAsset: {fileID: 11400000, guid: 674101a80d03dad43b339931e2c74a55, type: 2}
   - partId: nova_fire_arm28_ozs
     slot: 1
-    displayName: Arm28 Ozs
+    displayName: "\uC774\uC9C0\uC2A4"
     sourceRelativePath: datan\common\arm28_ozs.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm28_ozs_ea482b30.obj
-    tier: 4
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 414453849318409268, guid: 27c9845b8a77abd4783320cf68f89519, type: 3}
+    previewPrefab: {fileID: 7512303651510032457, guid: 27c9845b8a77abd4783320cf68f89519, type: 3}
     partAsset: {fileID: 11400000, guid: a2f8dcc96a3a162419781aafe4c86b88, type: 2}
   - partId: nova_fire_arm29_sdbt
     slot: 1
-    displayName: Arm29 Sdbt
+    displayName: "\uC120\uB354\uBCFC\uD2B8"
     sourceRelativePath: datan\common\arm29_sdbt.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm29_sdbt_291ce62e.obj
     tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 8623373059181458754, guid: 4b41e19df9297794b9f372503fea19e4, type: 3}
+    previewPrefab: {fileID: 1782076559676467549, guid: 4b41e19df9297794b9f372503fea19e4, type: 3}
     partAsset: {fileID: 11400000, guid: 7aa33d0578cde7d49bb4c37c7416af6f, type: 2}
-  - partId: nova_fire_arm3_krst
-    slot: 1
-    displayName: Arm3 Krst
-    sourceRelativePath: datan\common\arm3_krst.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm3_krst_c49c0c78.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 76888999098737156, guid: 72d60ddca67a2054682daaadd80a3774, type: 3}
-    partAsset: {fileID: 11400000, guid: 0716bc8fd93d0f24683ef7103ed89733, type: 2}
   - partId: nova_fire_arm30_sm
     slot: 1
-    displayName: Arm30 Sm
+    displayName: "\uC11C\uBA3C"
     sourceRelativePath: datan\common\arm30_sm.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm30_sm_359935d2.obj
-    tier: 3
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 2719956582855252785, guid: 3d38becb95ddb994ebbc46176ffaa9da, type: 3}
+    previewPrefab: {fileID: 4340201410942488360, guid: 3d38becb95ddb994ebbc46176ffaa9da, type: 3}
     partAsset: {fileID: 11400000, guid: 74828186bb236eb4bb0e91ce9bf205dd, type: 2}
   - partId: nova_fire_arm31_skokr
     slot: 1
-    displayName: Arm31 Skokr
+    displayName: "\uC2A4\uCE74\uC774\uD0AC\uB7EC"
     sourceRelativePath: datan\common\arm31_skokr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm31_skokr_34910848.obj
-    tier: 5
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 6702626119758784373, guid: 8d048075fff69fc41beb47187ece3e5a, type: 3}
+    previewPrefab: {fileID: 716530581907111122, guid: 8d048075fff69fc41beb47187ece3e5a, type: 3}
     partAsset: {fileID: 11400000, guid: 1b47bc9176bae0044b455d5a0cd0df94, type: 2}
   - partId: nova_fire_arm32_sppoo
     slot: 1
-    displayName: Arm32 Sppoo
+    displayName: "\uC2A4\uD54F\uD30C\uC774\uC5B4"
     sourceRelativePath: datan\common\arm32_sppoo.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm32_sppoo_7cc1e4c9.obj
-    tier: 3
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 8476741959318433959, guid: 420f48d6518237b4d8d71509379ab35f, type: 3}
+    previewPrefab: {fileID: 3361511567517933925, guid: 420f48d6518237b4d8d71509379ab35f, type: 3}
     partAsset: {fileID: 11400000, guid: b27f6aa1bfa7aaf428137539741a3586, type: 2}
   - partId: nova_fire_arm33_hkoo
     slot: 1
-    displayName: Arm33 Hkoo
+    displayName: "\uD638\uD06C\uC544\uC774"
     sourceRelativePath: datan\common\arm33_hkoo.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm33_hkoo_2f3221a1.obj
-    tier: 4
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 4564835653357760475, guid: dff5ca640eedc0646942dca7f287d0fc, type: 3}
+    previewPrefab: {fileID: 8466598879646389375, guid: dff5ca640eedc0646942dca7f287d0fc, type: 3}
     partAsset: {fileID: 11400000, guid: e50ed9593a8b9ff48acd14dad45c415f, type: 2}
   - partId: nova_fire_arm34_skpo
     slot: 1
-    displayName: Arm34 Skpo
+    displayName: "\uC2A4\uCF5C\uD53C\uC624"
     sourceRelativePath: datan\common\arm34_skpo.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm34_skpo_66ab9840.obj
-    tier: 5
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 2299368441788311567, guid: cf7241bbe12584248816eea6b7f64416, type: 3}
+    previewPrefab: {fileID: 7185556946068634638, guid: cf7241bbe12584248816eea6b7f64416, type: 3}
     partAsset: {fileID: 11400000, guid: 012b80b5c81dabf4f8ebcabb4cd9cd8a, type: 2}
   - partId: nova_fire_arm35_ons
     slot: 1
-    displayName: Arm35 Ons
+    displayName: "\uC624\uB2C9\uC2A4"
     sourceRelativePath: datan\common\arm35_ons.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm35_ons_8d7b076f.obj
-    tier: 4
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 6415419294022691897, guid: 9ac4bbed5efedb74a9b68a6fd526b05d, type: 3}
+    previewPrefab: {fileID: 5978603145346028681, guid: 9ac4bbed5efedb74a9b68a6fd526b05d, type: 3}
     partAsset: {fileID: 11400000, guid: 8006d2b74c045b543bb3125402df00d3, type: 2}
   - partId: nova_fire_arm36_bnso
     slot: 1
-    displayName: Arm36 Bnso
+    displayName: "\uBC84\uB2DD\uC18C\uC6B8"
     sourceRelativePath: datan\common\arm36_bnso.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm36_bnso_b047ecaf.obj
-    tier: 4
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 1886020066554559394, guid: 34a0ea90769366947876a42f1a0bbf8b, type: 3}
+    previewPrefab: {fileID: 6135332001525135412, guid: 34a0ea90769366947876a42f1a0bbf8b, type: 3}
     partAsset: {fileID: 11400000, guid: b75a4331619c94c4b8d828631ca22079, type: 2}
   - partId: nova_fire_arm37_sts
     slot: 1
-    displayName: Arm37 Sts
+    displayName: "\uC2A4\uD2F1\uC2A4"
     sourceRelativePath: datan\common\arm37_sts.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm37_sts_881e108b.obj
-    tier: 4
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 1512802250275720360, guid: 80c5a4ea047d9dd45b704d4e1019bb3b, type: 3}
+    previewPrefab: {fileID: 3216260002279816660, guid: 80c5a4ea047d9dd45b704d4e1019bb3b, type: 3}
     partAsset: {fileID: 11400000, guid: 9b34615de1b369c42ac8535d8b1dc05d, type: 2}
   - partId: nova_fire_arm39_hmsk
     slot: 1
-    displayName: Arm39 Hmsk
+    displayName: "\uD574\uBA38\uC1FC\uD06C"
     sourceRelativePath: datan\common\arm39_hmsk.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm39_hmsk_40bfb86e.obj
     tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 525539933678560274, guid: a1c7c568888146b46acb16eb0de3db9c, type: 3}
+    previewPrefab: {fileID: 7071682934019196183, guid: a1c7c568888146b46acb16eb0de3db9c, type: 3}
     partAsset: {fileID: 11400000, guid: 045a0b6853e064a40a464e0d06cc6700, type: 2}
   - partId: nova_fire_arm4_bk
     slot: 1
-    displayName: Arm4 Bk
+    displayName: "\uBC1C\uCE78"
     sourceRelativePath: datan\common\arm4_bk.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm4_bk_14ec86a5.obj
-    tier: 2
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 5294574235007690708, guid: 19e985ef47f790b4281eb7fbe8000ee7, type: 3}
+    previewPrefab: {fileID: 8248113191136564621, guid: 19e985ef47f790b4281eb7fbe8000ee7, type: 3}
     partAsset: {fileID: 11400000, guid: 39341b36ee1c7dd41b3e167a099050ef, type: 2}
   - partId: nova_fire_arm41_onoo
     slot: 1
-    displayName: Arm41 Onoo
+    displayName: "\uC544\uB204\uC544\uC774"
     sourceRelativePath: datan\common\arm41_onoo.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm41_onoo_c56a3962.obj
-    tier: 5
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 1787921442112174205, guid: da6a1950d8121d146a153598647a097e, type: 3}
+    previewPrefab: {fileID: 8683336917922974903, guid: da6a1950d8121d146a153598647a097e, type: 3}
     partAsset: {fileID: 11400000, guid: b655faf6f8baaa24294662a14217403a, type: 2}
   - partId: nova_fire_arm43_przso
     slot: 1
-    displayName: Arm43 Przso
+    displayName: "\uD504\uB9AC\uC9D5\uC18C\uC6B8"
     sourceRelativePath: datan\common\arm43_przso.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm43_przso_8b357f45.obj
-    tier: 5
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 7571373645615290290, guid: 9ecf001a9c4997d4fbd3cd3ff46f4bb1, type: 3}
+    previewPrefab: {fileID: 7662100765391011109, guid: 9ecf001a9c4997d4fbd3cd3ff46f4bb1, type: 3}
     partAsset: {fileID: 11400000, guid: 0f561463af7555b41bec4a7cb6085581, type: 2}
   - partId: nova_fire_arm46_dbkr
     slot: 1
-    displayName: Arm46 Dbkr
+    displayName: "\uB370\uBE4C\uD074\uB85C"
     sourceRelativePath: datan\common\arm46_dbkr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm46_dbkr_c141629d.obj
-    tier: 4
+    tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 1457847976969634003, guid: 2b8d2d79782ca8b4bbea244bd76340d2, type: 3}
+    previewPrefab: {fileID: 7111832474070896665, guid: 2b8d2d79782ca8b4bbea244bd76340d2, type: 3}
     partAsset: {fileID: 11400000, guid: 9a2a13d8f4caebc4a90cfd001043a37e, type: 2}
-  - partId: nova_fire_arm5_dmsz
-    slot: 1
-    displayName: Arm5 Dmsz
-    sourceRelativePath: datan\common\arm5_dmsz.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm5_dmsz_470fcf84.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 507290672368505651, guid: 8585125baa8b4b64eb04f95f34870bda, type: 3}
-    partAsset: {fileID: 11400000, guid: 56de5f5767709144fb8cbed2d48ef800, type: 2}
   - partId: nova_fire_arm55_bbs
     slot: 1
-    displayName: Arm55 Bbs
+    displayName: "\uBCA0\uBCA0\uC138"
     sourceRelativePath: datan\common\arm55_bbs.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm55_bbs_a08fbf66.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 438778503764427980, guid: 5ed8a5719f54e5345848d5f74ebd280d, type: 3}
-    partAsset: {fileID: 11400000, guid: a64896d5711207a4da2101f68a35d818, type: 2}
-  - partId: nova_fire_arm6_msg
-    slot: 1
-    displayName: Arm6 Msg
-    sourceRelativePath: datan\common\arm6_msg.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm6_msg_42fcf388.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 16344174429466138, guid: 403a1934780204d40b8df1901817f4df, type: 3}
-    partAsset: {fileID: 11400000, guid: 8d48e9b8c8a4e234d8633e266456bda4, type: 2}
-  - partId: nova_fire_arm7_br
-    slot: 1
-    displayName: Arm7 Br
-    sourceRelativePath: datan\common\arm7_br.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm7_br_167b4a0e.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 7558430134668254447, guid: c086fef94ebf7e942957d144bd0c0e9c, type: 3}
-    partAsset: {fileID: 11400000, guid: 266c61a3dcf10c9488df2a3d2dd6fc29, type: 2}
-  - partId: nova_fire_arm71_toptower
-    slot: 1
-    displayName: Arm71 Toptower
-    sourceRelativePath: datan\common\arm71_toptower.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm71_toptower_dff01294.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 1173510734820124672, guid: 2aa567ca3f6ba5e4b8704dfe166ff087, type: 3}
-    partAsset: {fileID: 11400000, guid: e508ae6a781305e489c5dcd788ee5d92, type: 2}
-  - partId: nova_fire_arm72_larmtower
-    slot: 1
-    displayName: Arm72 Larmtower
-    sourceRelativePath: datan\common\arm72_larmtower.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm72_larmtower_a3bd9541.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 454760503818588004, guid: 8fbc2c92a1956b740bee20c595b68a59, type: 3}
-    partAsset: {fileID: 11400000, guid: 51cda5a51bc8a3548b305a4b6ca5f245, type: 2}
-  - partId: nova_fire_arm73_rarmtower
-    slot: 1
-    displayName: Arm73 Rarmtower
-    sourceRelativePath: datan\common\arm73_rarmtower.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm73_rarmtower_d1d37d59.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 6678753088599000947, guid: dc39ff89306fcb0488625b7989dc45f7, type: 3}
-    partAsset: {fileID: 11400000, guid: a496c2eab3dedfd4396fd5f02f22feb1, type: 2}
-  - partId: nova_fire_arm74_lshdtower
-    slot: 1
-    displayName: Arm74 Lshdtower
-    sourceRelativePath: datan\common\arm74_lshdtower.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm74_lshdtower_2fb1a076.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 6499144221765476567, guid: 5130ff69b4c4dfd42a61c193fc70d813, type: 3}
-    partAsset: {fileID: 11400000, guid: b82ccda7736f13b4cabaebcc43390aaf, type: 2}
-  - partId: nova_fire_arm75_rshdtower
-    slot: 1
-    displayName: Arm75 Rshdtower
-    sourceRelativePath: datan\common\arm75_rshdtower.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm75_rshdtower_064eff20.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 8443419802456859604, guid: 083df1fcc3c2beb46b967256ade42895, type: 3}
-    partAsset: {fileID: 11400000, guid: c6b3b8ebacc165848bea12d4a744b8ec, type: 2}
-  - partId: nova_fire_arm76_orns
-    slot: 1
-    displayName: Arm76 Orns
-    sourceRelativePath: datan\common\arm76_orns.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm76_orns_0e2c75e5.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 5254829635358066319, guid: 6b2274645c9efaa4cb80ce97058c2ee1, type: 3}
-    partAsset: {fileID: 11400000, guid: 0850d5791ae81ca409636d7797b85004, type: 2}
-  - partId: nova_fire_arm77_osdor
-    slot: 1
-    displayName: Arm77 Osdor
-    sourceRelativePath: datan\common\arm77_osdor.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm77_osdor_357035d7.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 731776602000204114, guid: bc6854a341c2cf9418d7727103f9e55f, type: 3}
-    partAsset: {fileID: 11400000, guid: b382651ad8b7508469dd0201a3a43405, type: 2}
-  - partId: nova_fire_arm78_rdoot
-    slot: 1
-    displayName: Arm78 Rdoot
-    sourceRelativePath: datan\common\arm78_rdoot.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm78_rdoot_a5e758cd.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 8412718601582762132, guid: 125625c759ee84f4387de5fc143ef38c, type: 3}
-    partAsset: {fileID: 11400000, guid: 7a33209db15f6144588c37fdfb316a44, type: 2}
-  - partId: nova_fire_arm79_snop
-    slot: 1
-    displayName: Arm79 Snop
-    sourceRelativePath: datan\common\arm79_snop.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm79_snop_6cf17a91.obj
     tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 1633785592757065036, guid: 0417501ae4a65854bbc915279520a8dd, type: 3}
-    partAsset: {fileID: 11400000, guid: 893f67234fb369b4c9fdc00ad9174eba, type: 2}
+    previewPrefab: {fileID: 7864555477813568172, guid: 5ed8a5719f54e5345848d5f74ebd280d, type: 3}
+    partAsset: {fileID: 11400000, guid: a64896d5711207a4da2101f68a35d818, type: 2}
   - partId: nova_fire_arm8_do
     slot: 1
-    displayName: Arm8 Do
+    displayName: "\uB4C0\uC5BC\uAC74"
     sourceRelativePath: datan\common\arm8_do.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm8_do_c62ca52b.obj
     tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 3090134715967014492, guid: 4b3fcac515b20e2478dba31644801915, type: 3}
+    previewPrefab: {fileID: 3070200374333239709, guid: 4b3fcac515b20e2478dba31644801915, type: 3}
     partAsset: {fileID: 11400000, guid: 271ba2dab1357e045a8e89f7790e24bb, type: 2}
-  - partId: nova_fire_arm80_opkrs
-    slot: 1
-    displayName: Arm80 Opkrs
-    sourceRelativePath: datan\common\arm80_opkrs.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm80_opkrs_4f585881.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 2053032959321134522, guid: e552859570cd8f647afd40e4fa2039d9, type: 3}
-    partAsset: {fileID: 11400000, guid: 3eb38e1b93bc1784abe144812e0a93d0, type: 2}
-  - partId: nova_fire_arm81_rtro
-    slot: 1
-    displayName: Arm81 Rtro
-    sourceRelativePath: datan\common\arm81_rtro.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm81_rtro_5b428409.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 1772880260209468940, guid: 1b8237b69a5756648a39bbc7df741c35, type: 3}
-    partAsset: {fileID: 11400000, guid: fb157744a4500914ea3899e9446f2e0b, type: 2}
-  - partId: nova_fire_arm9_omg
-    slot: 1
-    displayName: Arm9 Omg
-    sourceRelativePath: datan\common\arm9_omg.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_arm9_omg_ca67501c.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 8036543814983915220, guid: feb136e7e95db2f4e92c81d89ba25aa0, type: 3}
-    partAsset: {fileID: 11400000, guid: 1505fa2737988ef469d8f2c5bd7575d8, type: 2}
-  - partId: nova_fire_armtowermis
-    slot: 1
-    displayName: Armtowermis
-    sourceRelativePath: datan\common\armtowermis.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_armtowermis_d738b30f.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 238087595385135087, guid: 6d1bc10015a90b64cadbe9c68cde1089, type: 3}
-    partAsset: {fileID: 11400000, guid: 12559bbac0ed8454fa3535bb791ff0dc, type: 2}
-  - partId: nova_fire_front
-    slot: 1
-    displayName: Firepower 6fd33a9c
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\u0133\uFFFD\uFFFD_Front.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___Front_64e84891.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 4805776151007607882, guid: 88d29e46cac947c4f9214878806621f3, type: 3}
-    partAsset: {fileID: 11400000, guid: 7008230548e27fc4493208fee4fe2447, type: 2}
-  - partId: nova_fire_front_25584a9c
-    slot: 1
-    displayName: Firepower 25584a9c
-    sourceRelativePath: "datan\\common\\\uC13C\uC11C_Front.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___Front_9f4ed7ea.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 3151960611713556537, guid: 484f5077395c27e4fa82fb34a0d1b373, type: 3}
-    partAsset: {fileID: 11400000, guid: 80569d054703cb0448edcd947e50f388, type: 2}
-  - partId: nova_fire_front_72f37ed3
-    slot: 1
-    displayName: Firepower 72f37ed3
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\u01AE\uFFFD\uFFFD_Front.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___Front_ed8af927.obj
-    tier: 3
-    needsNameReview: 1
-    previewPrefab: {fileID: 6777165895289699716, guid: 4f0ce4f1ff8c23b498914e2de67d7976, type: 3}
-    partAsset: {fileID: 11400000, guid: adc1381784993124bb1d8a40ce6743a3, type: 2}
-  - partId: nova_fire_front_caad5e5c
-    slot: 1
-    displayName: Firepower caad5e5c
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD_Front.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___Front_9af54d0a.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 6044230294666054819, guid: 8dbe64cfbb4839641ad241a025dde6a0, type: 3}
-    partAsset: {fileID: 11400000, guid: 7f95e492dde92b34893104575b4d0237, type: 2}
-  - partId: nova_fire_front_cbb7fd7f
-    slot: 1
-    displayName: Firepower cbb7fd7f
-    sourceRelativePath: "datan\\common\\\uC2A4\uCE90\uB108_Front.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___Front_3391fcf0.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 2062441138100661381, guid: 17ccb055b5c8d6446aac02ca9336a72b, type: 3}
-    partAsset: {fileID: 11400000, guid: 2fd44579d9a4c7b4ea5d114dac2a3fea, type: 2}
-  - partId: nova_fire_front_cca45776
-    slot: 1
-    displayName: Firepower cca45776
-    sourceRelativePath: "datan\\common\\\uC640\uD2B8\uC140_Front.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___Front_b3b585cc.obj
-    tier: 3
-    needsNameReview: 1
-    previewPrefab: {fileID: 4602476928301244841, guid: cecfcc9b1d231784eb5b2bb0b44575b6, type: 3}
-    partAsset: {fileID: 11400000, guid: aa4c97229a08ae54c8390bea450ff8fa, type: 2}
   - partId: nova_fire_g_arm56_prrs
     slot: 1
-    displayName: G Arm56 Prrs
+    displayName: "\uD504\uB864\uB9AD\uC2A4G"
     sourceRelativePath: datan\common\g_arm56_prrs.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_g_arm56_prrs_6c1c56c2.obj
-    tier: 4
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 7860565709806036710, guid: 6bfdce0d8f42c4a4ebe8b0c6b435bb54, type: 3}
+    previewPrefab: {fileID: 1804256522313481519, guid: 6bfdce0d8f42c4a4ebe8b0c6b435bb54, type: 3}
     partAsset: {fileID: 11400000, guid: e940d4d17a421724887b823979b8dc10, type: 2}
   - partId: nova_fire_g_arm57_prs
     slot: 1
-    displayName: G Arm57 Prs
+    displayName: "\uD314\uB791\uC2A4G"
     sourceRelativePath: datan\common\g_arm57_prs.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_g_arm57_prs_44d72b9d.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 8434796077588743635, guid: 8ddaa1ec85c109d4799a48e6eaea881f, type: 3}
+    previewPrefab: {fileID: 8883242009908762861, guid: 8ddaa1ec85c109d4799a48e6eaea881f, type: 3}
     partAsset: {fileID: 11400000, guid: f9178084cb45f3244ae6ed153e818d61, type: 2}
   - partId: nova_fire_g_arm58_dbkr
     slot: 1
-    displayName: G Arm58 Dbkr
+    displayName: "\uB370\uBE4C\uD074\uB85CG"
     sourceRelativePath: datan\common\g_arm58_dbkr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_g_arm58_dbkr_7cd10af8.obj
-    tier: 4
+    tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 3278478051062675045, guid: 789025c2d58cd884bb193c4601938ced, type: 3}
+    previewPrefab: {fileID: 4344878293980118169, guid: 789025c2d58cd884bb193c4601938ced, type: 3}
     partAsset: {fileID: 11400000, guid: 8d87995a40b4a564384011e0181aa33b, type: 2}
-  - partId: nova_fire_g_arm93_rtro
-    slot: 1
-    displayName: G Arm93 Rtro
-    sourceRelativePath: datan\common\g_arm93_rtro.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_g_arm93_rtro_f416628c.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 4547893649989313570, guid: 031d68ccd481da44dbc2d1d5b7cbbf37, type: 3}
-    partAsset: {fileID: 11400000, guid: dccbe2e1dbd86f04491b8c78f7b2c4a1, type: 2}
-  - partId: nova_fire_g_arm94_rdoot
-    slot: 1
-    displayName: G Arm94 Rdoot
-    sourceRelativePath: datan\common\g_arm94_rdoot.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_g_arm94_rdoot_4fcdfa0d.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 7205078518384858812, guid: ee8348f64c58eed418f5b5be64a8943a, type: 3}
-    partAsset: {fileID: 11400000, guid: d47fba245967edf4bbd111c746e45215, type: 2}
-  - partId: nova_fire_g_arm95_sppoo
-    slot: 1
-    displayName: G Arm95 Sppoo
-    sourceRelativePath: datan\common\g_arm95_sppoo.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_g_arm95_sppoo_e264d51a.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 8290167461073532246, guid: c99ee50c8f4b362499612de525007be3, type: 3}
-    partAsset: {fileID: 11400000, guid: b6c9244c853dc8d4b947d9e448aab071, type: 2}
-  - partId: nova_fire_g_arm96_snop
-    slot: 1
-    displayName: G Arm96 Snop
-    sourceRelativePath: datan\common\g_arm96_snop.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_g_arm96_snop_a7da7dc8.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 7501514256128836152, guid: 87ad6e6a8dfbc6b48a96a2d89d813d7a, type: 3}
-    partAsset: {fileID: 11400000, guid: 03b78a26bd7338745ae813a1d1babed0, type: 2}
-  - partId: nova_fire_g_arm97_rkog
-    slot: 1
-    displayName: G Arm97 Rkog
-    sourceRelativePath: datan\common\g_arm97_rkog.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_g_arm97_rkog_6bb685ea.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 4278600169454510642, guid: bc055e2e00ff2be4bab241ef181b4c10, type: 3}
-    partAsset: {fileID: 11400000, guid: b535f807e09972b45932455305c26352, type: 2}
-  - partId: nova_fire_larm
-    slot: 1
-    displayName: Firepower 3dc4c58d
-    sourceRelativePath: "datan\\common\\\xFC\uFFFD\xB8\uFFFD\uFFFD\uFFFD_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___LArm_44ad0d6a.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 7563832796052878548, guid: 77f56c6ae89b83c4d987efe4971be435, type: 3}
-    partAsset: {fileID: 11400000, guid: c872c160c04a72246a725d4a2290bea9, type: 2}
-  - partId: nova_fire_larm_0731a786
-    slot: 1
-    displayName: Firepower 0731a786
-    sourceRelativePath: "datan\\common\\\uBC29\uC5B4\uC5C5_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___LArm_b21e8b05.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 2691926415787407559, guid: b31f9473ca135fc4ba1932910a068526, type: 3}
-    partAsset: {fileID: 11400000, guid: 40fad7faa8d75634682856bd35754cb9, type: 2}
-  - partId: nova_fire_larm_46c9554a
-    slot: 1
-    displayName: Firepower 46c9554a
-    sourceRelativePath: "datan\\common\\\uCCB4\uB825\uB9AC\uC820_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___LArm_fe1dd94e.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 3087118984826640876, guid: 012d2a35b3ade4748b31178a61895221, type: 3}
-    partAsset: {fileID: 11400000, guid: f572502f9bec2d84e9b2c851bff16d84, type: 2}
-  - partId: nova_fire_larm_cc51d9e0
-    slot: 1
-    displayName: Firepower cc51d9e0
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD_LArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___LArm_6633cfd1.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 3263125581339246698, guid: 80a755b875033d94aa052bc50dcb7d14, type: 3}
-    partAsset: {fileID: 11400000, guid: d93fa7ccef433ee498a715f55030989a, type: 2}
-  - partId: nova_fire_larm81m
-    slot: 1
-    displayName: Larm81m
-    sourceRelativePath: datan\common\larm81m.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_larm81m_b8748ab9.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 8714213480844787176, guid: 50f25ccb602a7234aadaa4390475a68c, type: 3}
-    partAsset: {fileID: 11400000, guid: b3879b326bbeac1439e3c7668b3c459a, type: 2}
-  - partId: nova_fire_lback
-    slot: 1
-    displayName: Firepower 42150aa7
-    sourceRelativePath: "datan\\common\\\uFFFD\u05FF\xB3\uFFFD\uFFFD\uFFFD_LBack.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___LBack_e3b151da.obj
-    tier: 4
-    needsNameReview: 1
-    previewPrefab: {fileID: 6440466479660991347, guid: 0832a08f1ce955245a1f880646d8c123, type: 3}
-    partAsset: {fileID: 11400000, guid: 42566b4c6a0920e499a8a0af6de30ab6, type: 2}
-  - partId: nova_fire_lback_5f1d02d8
-    slot: 1
-    displayName: Firepower 5f1d02d8
-    sourceRelativePath: "datan\\common\\\uB124\uC628\uB0A0\uAC1C_LBack.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___LBack_edc3d983.obj
-    tier: 4
-    needsNameReview: 1
-    previewPrefab: {fileID: 5785829579621559410, guid: 11ec6e7d908f4494c9803920d85c6fc3, type: 3}
-    partAsset: {fileID: 11400000, guid: 378919896b84e254f86fb3be5dd16c76, type: 2}
-  - partId: nova_fire_m
-    slot: 1
-    displayName: Firepower 41311c59
-    sourceRelativePath: "datan\\common\\\uD3EC\uD0D1\uC5B4\uAE68\uD615M.gx"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__M_756cd6a1.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 491010379364676424, guid: 81b017458e7909c4a94b625ee65da1b9, type: 3}
-    partAsset: {fileID: 11400000, guid: 3a348dd82809d37408cecdc8df90a399, type: 2}
-  - partId: nova_fire_m_d46a2a2f
-    slot: 1
-    displayName: Firepower d46a2a2f
-    sourceRelativePath: "datan\\common\\\uD3EC\uD0D1\uD0D1\uD615M.gx"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__M_86291202.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 1863454122249997926, guid: 096103643c144424b8df5b1f58b55928, type: 3}
-    partAsset: {fileID: 11400000, guid: 4b1b2775b0f2ca7468f6e0e6d32cd8f1, type: 2}
-  - partId: nova_fire_m_df76d31f
-    slot: 1
-    displayName: Firepower df76d31f
-    sourceRelativePath: "datan\\common\\\uD3EC\uD0D1\uD314\uD615M.gx"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common__M_14382480.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 9121408989184557897, guid: ee8539fd66f62ee47a01940f37a7a591, type: 3}
-    partAsset: {fileID: 11400000, guid: c5945ba268fc32442b794e82e549f7f4, type: 2}
   - partId: nova_fire_n_arm59_dmsz
     slot: 1
-    displayName: N Arm59 Dmsz
+    displayName: "\uB370\uBBF8\uC2DC\uC988N"
     sourceRelativePath: datan\common\n_arm59_dmsz.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_n_arm59_dmsz_23a50f4e.obj
-    tier: 2
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 6645201933532845681, guid: 1cb44f3d978e4974987b37bab8a475b1, type: 3}
+    previewPrefab: {fileID: 3899622375307422559, guid: 1cb44f3d978e4974987b37bab8a475b1, type: 3}
     partAsset: {fileID: 11400000, guid: b2c536b80932a044ebcc6919b67fc204, type: 2}
   - partId: nova_fire_n_arm60_mgbr
     slot: 1
-    displayName: N Arm60 Mgbr
+    displayName: "\uBA54\uAC00\uBC30\uB7F4N"
     sourceRelativePath: datan\common\n_arm60_mgbr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_n_arm60_mgbr_93f3db04.obj
     tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 1816110180421543269, guid: 90b4bf59c2b42fd438c6af084f956d1e, type: 3}
+    previewPrefab: {fileID: 4324572410192853027, guid: 90b4bf59c2b42fd438c6af084f956d1e, type: 3}
     partAsset: {fileID: 11400000, guid: 4841e8d98f3900441965a8342324a2a9, type: 2}
   - partId: nova_fire_n_arm61_bsrsk
     slot: 1
-    displayName: N Arm61 Bsrsk
+    displayName: "\uBC14\uC2E4\uB9AC\uC2A4\uD06CN"
     sourceRelativePath: datan\common\n_arm61_bsrsk.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_n_arm61_bsrsk_93c34796.obj
-    tier: 5
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 7952136170410938476, guid: 06ec75bb935ff744ab3390dc79bca49e, type: 3}
+    previewPrefab: {fileID: 1705936870322384215, guid: 06ec75bb935ff744ab3390dc79bca49e, type: 3}
     partAsset: {fileID: 11400000, guid: cff60f5135b5ffa47aaf93fcbd5763a1, type: 2}
   - partId: nova_fire_n_arm62_knst
     slot: 1
-    displayName: N Arm62 Knst
+    displayName: "\uCE90\uB2C8\uC2A4\uD130N"
     sourceRelativePath: datan\common\n_arm62_knst.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_n_arm62_knst_ebcd5b3d.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 4118715546709643583, guid: 9f513a09eb7fe3a4fbf1dd7234f56154, type: 3}
+    previewPrefab: {fileID: 115147682290453028, guid: 9f513a09eb7fe3a4fbf1dd7234f56154, type: 3}
     partAsset: {fileID: 11400000, guid: e65034adcc219164eb40038a0da12e53, type: 2}
   - partId: nova_fire_n_arm63_krst
     slot: 1
-    displayName: N Arm63 Krst
+    displayName: "\uD074\uB7EC\uC2A4\uD130N"
     sourceRelativePath: datan\common\n_arm63_krst.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_n_arm63_krst_540a7073.obj
-    tier: 3
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 101692261272801184, guid: 9fe7013ce28c9e3409d1dfd55d393c33, type: 3}
+    previewPrefab: {fileID: 2396059793069005273, guid: 9fe7013ce28c9e3409d1dfd55d393c33, type: 3}
     partAsset: {fileID: 11400000, guid: 3b105c858a999984cbb36a400a5fbd97, type: 2}
   - partId: nova_fire_n_arm64_hdkn
     slot: 1
-    displayName: N Arm64 Hdkn
+    displayName: "\uD578\uB4DC\uCF00\uB10CN"
     sourceRelativePath: datan\common\n_arm64_hdkn.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_n_arm64_hdkn_ebda1fa4.obj
-    tier: 4
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 4506453096733379337, guid: 03c0f7c7166c4924e9d2557ac5ce2458, type: 3}
+    previewPrefab: {fileID: 4351126468441455978, guid: 03c0f7c7166c4924e9d2557ac5ce2458, type: 3}
     partAsset: {fileID: 11400000, guid: 71693088e1306f046b622cfcd2726741, type: 2}
   - partId: nova_fire_n_arm65_bbs
     slot: 1
-    displayName: N Arm65 Bbs
+    displayName: "\uBCA0\uBCA0\uC138N"
     sourceRelativePath: datan\common\n_arm65_bbs.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_n_arm65_bbs_ed56efc7.obj
-    tier: 1
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 8106932261289713243, guid: 8958868a4be6eda49aa74e15bce2c8cb, type: 3}
+    previewPrefab: {fileID: 424305702177384087, guid: 8958868a4be6eda49aa74e15bce2c8cb, type: 3}
     partAsset: {fileID: 11400000, guid: f605b69aa2dae3246bacfa19c0c358a9, type: 2}
   - partId: nova_fire_n_arm66_skpo
     slot: 1
-    displayName: N Arm66 Skpo
+    displayName: "\uC2A4\uCF5C\uD53C\uC624N"
     sourceRelativePath: datan\common\n_arm66_skpo.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_n_arm66_skpo_ba00c879.obj
-    tier: 5
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 5723241578921833846, guid: e3a6dd5d3f1a8bf44b5d45d677cea156, type: 3}
+    previewPrefab: {fileID: 6249222407525657099, guid: e3a6dd5d3f1a8bf44b5d45d677cea156, type: 3}
     partAsset: {fileID: 11400000, guid: b399f2dc9d9130c409a2b41bbdc8d0a9, type: 2}
   - partId: nova_fire_n_arm67_sts
     slot: 1
-    displayName: N Arm67 Sts
+    displayName: "\uC2A4\uD2F1\uC2A4N"
     sourceRelativePath: datan\common\n_arm67_sts.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_n_arm67_sts_11adf732.obj
-    tier: 4
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 5048396374821407385, guid: c54c16ed452a5e042aa6d3f2967bdfc9, type: 3}
+    previewPrefab: {fileID: 4437592858378334914, guid: c54c16ed452a5e042aa6d3f2967bdfc9, type: 3}
     partAsset: {fileID: 11400000, guid: 117f48595bae96b45b5cc66bbc37aa19, type: 2}
   - partId: nova_fire_n_arm68_roz
     slot: 1
-    displayName: N Arm68 Roz
+    displayName: "\uB808\uC774\uC800N"
     sourceRelativePath: datan\common\n_arm68_roz.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_n_arm68_roz_49d884c0.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 1840010528929325222, guid: a0b120b40f2cfe04993773d7207a801a, type: 3}
+    previewPrefab: {fileID: 8893581847362700646, guid: a0b120b40f2cfe04993773d7207a801a, type: 3}
     partAsset: {fileID: 11400000, guid: 1e7e4b48f32cd924397bfded1c11a846, type: 2}
   - partId: nova_fire_n_arm69_rkog
     slot: 1
-    displayName: N Arm69 Rkog
+    displayName: "\uB9AC\uCF54\uC77C\uAC74N"
     sourceRelativePath: datan\common\n_arm69_rkog.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_n_arm69_rkog_58048a89.obj
-    tier: 3
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 5090911374178718527, guid: 724ea3a3a0b690d4d8d5a119873d2d09, type: 3}
+    previewPrefab: {fileID: 6479433312589231555, guid: 724ea3a3a0b690d4d8d5a119873d2d09, type: 3}
     partAsset: {fileID: 11400000, guid: dc6510f95054aec42a834066550cde3a, type: 2}
   - partId: nova_fire_n_arm70_hmsk
     slot: 1
-    displayName: N Arm70 Hmsk
+    displayName: "\uD574\uBA38\uC1FC\uD06CN"
     sourceRelativePath: datan\common\n_arm70_hmsk.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_n_arm70_hmsk_c454bc29.obj
     tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 8689632183560226560, guid: 02ea80b38e1e31c418856579fcedffc6, type: 3}
+    previewPrefab: {fileID: 632665310912481998, guid: 02ea80b38e1e31c418856579fcedffc6, type: 3}
     partAsset: {fileID: 11400000, guid: 746f530bf949bf24f9ea1e1855369bbd, type: 2}
-  - partId: nova_fire_rarm
-    slot: 1
-    displayName: Firepower 53c4faaa
-    sourceRelativePath: "datan\\common\\\xFC\uFFFD\xB8\uFFFD\uFFFD\uFFFD_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___RArm_9ad7bf94.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 9025840494210382911, guid: 7f888a22ae36738458d2306e932abfa8, type: 3}
-    partAsset: {fileID: 11400000, guid: 39f457e141d7aca4c948d197b7a086d7, type: 2}
-  - partId: nova_fire_rarm_0575504b
-    slot: 1
-    displayName: Firepower 0575504b
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___RArm_e21b133a.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 1796215162498930600, guid: 7c49593a15ccdc34fba53160570847bd, type: 3}
-    partAsset: {fileID: 11400000, guid: 199782c25f0ead44e8ff42c73d8fc8af, type: 2}
-  - partId: nova_fire_rarm_647b83b7
-    slot: 1
-    displayName: Firepower 647b83b7
-    sourceRelativePath: "datan\\common\\\uBC29\uC5B4\uC5C5_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___RArm_6a3eb2ba.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 5609671626378341886, guid: 4d9f875c5ada5244c822f79895f0ed41, type: 3}
-    partAsset: {fileID: 11400000, guid: 5ab2aa0e882ed724b8b28b99df30bfb2, type: 2}
-  - partId: nova_fire_rarm_ae592bf0
-    slot: 1
-    displayName: Firepower ae592bf0
-    sourceRelativePath: "datan\\common\\\uCCB4\uB825\uB9AC\uC820_RArm.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___RArm_d4053cff.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 9121598648060579143, guid: c79e1c1b55820124ea44b9c8c2094d6e, type: 3}
-    partAsset: {fileID: 11400000, guid: 4c7cf5524045656468d00c7912f4d3b0, type: 2}
-  - partId: nova_fire_rback
-    slot: 1
-    displayName: Firepower a839fd88
-    sourceRelativePath: "datan\\common\\\uFFFD\u05FF\xB3\uFFFD\uFFFD\uFFFD_RBack.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___RBack_9c3e4337.obj
-    tier: 4
-    needsNameReview: 1
-    previewPrefab: {fileID: 1850727796172263943, guid: 50f6536ee03ef3a44b9fe3065a5ffed5, type: 3}
-    partAsset: {fileID: 11400000, guid: 8a4a515a968b84b479cc6673be36c3b9, type: 2}
-  - partId: nova_fire_rback_9c6bd72c
-    slot: 1
-    displayName: Firepower 9c6bd72c
-    sourceRelativePath: "datan\\common\\\uB124\uC628\uB0A0\uAC1C_RBack.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___RBack_15b0d048.obj
-    tier: 4
-    needsNameReview: 1
-    previewPrefab: {fileID: 3902577520020291184, guid: 5df25acd50398d0418b2fba3a1ecb34b, type: 3}
-    partAsset: {fileID: 11400000, guid: f3755b8e1baed244f90f46249f050c21, type: 2}
-  - partId: nova_fire_review
-    slot: 1
-    displayName: Firepower 6f893987
-    sourceRelativePath: "datan\\common\\\uD314\uD615\uACF5\uC911\uD0C0\uAC9F.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_705e1341.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 4499442514636412109, guid: 6ff31451bcd2c884f9b0a4f19783c4e1, type: 3}
-    partAsset: {fileID: 11400000, guid: 7054af4d183c7ed45b302049f2f8f4a4, type: 2}
-  - partId: nova_fire_review_29e11d45
-    slot: 1
-    displayName: Firepower 29e11d45
-    sourceRelativePath: "datan\\common\\\uD3EC\uD0D1\uD314\uD615.gx"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_a7a22e31.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 8548373618358081069, guid: 5339f1caa0822df4db2b0ce28a178d00, type: 3}
-    partAsset: {fileID: 11400000, guid: 323c43230a925f048a5891978f2f3054, type: 2}
-  - partId: nova_fire_review_58d20138
-    slot: 1
-    displayName: Firepower 58d20138
-    sourceRelativePath: "datan\\common\\\uD3EC\uD0D1\uC5B4\uAE68\uD615.gx"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_6b0e9432.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 8468926776924642150, guid: 57255e1b3e73b4443be2cbb117db8885, type: 3}
-    partAsset: {fileID: 11400000, guid: e2f64791e33ba4741b6ef7c592391f5f, type: 2}
-  - partId: nova_fire_review_70df0174
-    slot: 1
-    displayName: Firepower 70df0174
-    sourceRelativePath: "datan\\common\\\uD0C0\uC6CC\uD314\uD615\uACF5\uC911\uBBF8\uC0AC\uC77C.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_02735106.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 2752102166372780079, guid: 632f53504d275494b8c840a58481ff38, type: 3}
-    partAsset: {fileID: 11400000, guid: b725af746cd2b514b9fbdc1b4f417e3d, type: 2}
-  - partId: nova_fire_review_72000940
-    slot: 1
-    displayName: Firepower 72000940
-    sourceRelativePath: "datan\\common\\\uD0C0\uC6CC\uC5B4\uAE68\uBBF8\uC0AC\uC77C.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_98999013.obj
-    tier: 1
-    needsNameReview: 1
-    previewPrefab: {fileID: 2919644884153050435, guid: d8350a74fb2631047bc4e0993a6c1411, type: 3}
-    partAsset: {fileID: 11400000, guid: e9ef73af2c84fb342835f03efa173fdc, type: 2}
-  - partId: nova_fire_review_921ded0f
-    slot: 1
-    displayName: Firepower 921ded0f
-    sourceRelativePath: "datan\\common\\\uD3EC\uD0D1\uD0D1\uD615.gx"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_7acee974.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 7519619956219757794, guid: 75f61a3a306e88f4797ee9cc063004a8, type: 3}
-    partAsset: {fileID: 11400000, guid: ae4a43f676f79cd4f948c47cd74408b9, type: 2}
-  - partId: nova_fire_review_f7c085c0
-    slot: 1
-    displayName: Firepower f7c085c0
-    sourceRelativePath: "datan\\common\\\uD3EC\uD0D1\uB2E4\uB9AC.gx"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_94ddd9d7.obj
-    tier: 4
-    needsNameReview: 1
-    previewPrefab: {fileID: 2487782990121896069, guid: 4ee512efd77f6b946851e3afedd991b3, type: 3}
-    partAsset: {fileID: 11400000, guid: 1ae87fc49769d7f4dbbd904671454483, type: 2}
-  - partId: nova_fire_review_fe4703c5
-    slot: 1
-    displayName: Firepower fe4703c5
-    sourceRelativePath: "datan\\common\\\uACF5\uC911\uD0C0\uC6CC\uB9C1.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_2635d864.obj
-    tier: 4
-    needsNameReview: 1
-    previewPrefab: {fileID: 4782173698737767862, guid: 7344f74b39d43b84b810c3c4f6dd842d, type: 3}
-    partAsset: {fileID: 11400000, guid: d0f4f5b811b43184ba54ffe0abbd983e, type: 2}
-  - partId: nova_fire_s_arm48_nmsz
-    slot: 1
-    displayName: S Arm48 Nmsz
-    sourceRelativePath: datan\common\s_arm48_nmsz.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_s_arm48_nmsz_03b0ea0b.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 1916303418859118839, guid: 558abc7db062b9244a3aff49a9b151b7, type: 3}
-    partAsset: {fileID: 11400000, guid: fe70bcd6dee8f5045b24d083b5980051, type: 2}
-  - partId: nova_fire_s_arm49_rkog
-    slot: 1
-    displayName: S Arm49 Rkog
-    sourceRelativePath: datan\common\s_arm49_rkog.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_s_arm49_rkog_525451bc.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 7072869410791528831, guid: 63635026bfb315e44815564b8b958410, type: 3}
-    partAsset: {fileID: 11400000, guid: 12fa98dec9a3e1847b2a58fa3d2ffa6f, type: 2}
   - partId: nova_fire_s_arm50_hmsk
     slot: 1
-    displayName: S Arm50 Hmsk
+    displayName: "\uD574\uBA38\uC1FC\uD06CS"
     sourceRelativePath: datan\common\s_arm50_hmsk.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_s_arm50_hmsk_ec006bf8.obj
     tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 3344700455428126357, guid: 331c1fdd7cdb4db419e4dca9a37bd009, type: 3}
+    previewPrefab: {fileID: 706365803846648172, guid: 331c1fdd7cdb4db419e4dca9a37bd009, type: 3}
     partAsset: {fileID: 11400000, guid: 9b987d87e6ae8174ba6d27b8bc73ca3d, type: 2}
-  - partId: nova_fire_s_arm51_roz
-    slot: 1
-    displayName: S Arm51 Roz
-    sourceRelativePath: datan\common\s_arm51_roz.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_s_arm51_roz_6ed5f51f.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 6455136566592120718, guid: c4c561a19878a5b44a82a85b51f099a3, type: 3}
-    partAsset: {fileID: 11400000, guid: 031e2629f5ff3444fb70d0e13d03517a, type: 2}
   - partId: nova_fire_s_arm52_bzk
     slot: 1
-    displayName: S Arm52 Bzk
+    displayName: "\uBC14\uC8FC\uCE74S"
     sourceRelativePath: datan\common\s_arm52_bzk.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_s_arm52_bzk_40a35d86.obj
     tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 3378414186111785450, guid: 1e989ebc556c4af41a2a789c4c53482f, type: 3}
+    previewPrefab: {fileID: 4589638438782774683, guid: 1e989ebc556c4af41a2a789c4c53482f, type: 3}
     partAsset: {fileID: 11400000, guid: cfa6f776ca1b28e48ab0fa8ccc1daac0, type: 2}
   - partId: nova_fire_s_arm53_ons
     slot: 1
-    displayName: S Arm53 Ons
+    displayName: "\uC624\uB2C9\uC2A4S"
     sourceRelativePath: datan\common\s_arm53_ons.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_s_arm53_ons_e0664aa7.obj
-    tier: 4
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 319282537463378334, guid: 4262580231eff7b459a4a6c8ebc4785b, type: 3}
+    previewPrefab: {fileID: 3963494808358787170, guid: 4262580231eff7b459a4a6c8ebc4785b, type: 3}
     partAsset: {fileID: 11400000, guid: 4d8da2f5154b6bd41910f0a9c73614a0, type: 2}
   - partId: nova_fire_s_arm54_onoo
     slot: 1
-    displayName: S Arm54 Onoo
+    displayName: "\uC544\uB204\uC544\uC774S"
     sourceRelativePath: datan\common\s_arm54_onoo.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_s_arm54_onoo_9d8e9730.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 3644108079511481082, guid: bd54b099aed74834f8dc4cb6e9921bd7, type: 3}
-    partAsset: {fileID: 11400000, guid: 694dba7d53746534fb6464d006e00631, type: 2}
-  - partId: nova_fire_ss0_arm82_msg
-    slot: 1
-    displayName: Ss0 Arm82 Msg
-    sourceRelativePath: datan\common\ss0_arm82_msg.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_ss0_arm82_msg_8721b685.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 1618417230850706741, guid: 77e5799c4d2e4364db80b8d182fa64bb, type: 3}
-    partAsset: {fileID: 11400000, guid: 835c78a56c6539d489105426ac8a1697, type: 2}
-  - partId: nova_fire_ss0_arm83_amg
-    slot: 1
-    displayName: Ss0 Arm83 Amg
-    sourceRelativePath: datan\common\ss0_arm83_amg.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_ss0_arm83_amg_06c70060.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 1676865212939939945, guid: 3eabe5975882d894999d1fa0737df25e, type: 3}
-    partAsset: {fileID: 11400000, guid: e5efadf12372fa24082125d712734801, type: 2}
-  - partId: nova_fire_ss0_arm84_skoob
-    slot: 1
-    displayName: Ss0 Arm84 Skoob
-    sourceRelativePath: datan\common\ss0_arm84_skoob.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_ss0_arm84_skoob_5de01f91.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 8294843164132073812, guid: 5cebb2db7a4189841b79f67e8dd1e1b4, type: 3}
-    partAsset: {fileID: 11400000, guid: 67605d67978706f43b9014a2fc25cd14, type: 2}
-  - partId: nova_fire_ss0_arm85_sppoo
-    slot: 1
-    displayName: Ss0 Arm85 Sppoo
-    sourceRelativePath: datan\common\ss0_arm85_sppoo.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_ss0_arm85_sppoo_30c6898f.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 3203775622903759966, guid: 1298f5bdcc8350048bcb86903a169654, type: 3}
-    partAsset: {fileID: 11400000, guid: d89f0fae628218c48a9b6034cc127643, type: 2}
-  - partId: nova_fire_ss0_arm86_hmsk
-    slot: 1
-    displayName: Ss0 Arm86 Hmsk
-    sourceRelativePath: datan\common\ss0_arm86_hmsk.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_ss0_arm86_hmsk_db701dfd.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 3714139032274583238, guid: 6b5b9059a974c6f46bd47a2efb8ed5ba, type: 3}
-    partAsset: {fileID: 11400000, guid: fbbdec124e7bdbf41b05bc0257a90381, type: 2}
-  - partId: nova_fire_ss0_arm87_dbkr
-    slot: 1
-    displayName: Ss0 Arm87 Dbkr
-    sourceRelativePath: datan\common\ss0_arm87_dbkr.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_ss0_arm87_dbkr_180391aa.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 6334576561789470145, guid: 3cad64744c5b6664aa46437e04ed5c58, type: 3}
-    partAsset: {fileID: 11400000, guid: 48b0ee60695879a47b45b8d8e0ddbf63, type: 2}
-  - partId: nova_fire_ss0_arm88_orns
-    slot: 1
-    displayName: Ss0 Arm88 Orns
-    sourceRelativePath: datan\common\ss0_arm88_orns.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_ss0_arm88_orns_52e955fd.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 1937831712997879860, guid: 5e5a7dfe038d5a744815e1665f10792a, type: 3}
-    partAsset: {fileID: 11400000, guid: 0bc12fd0fcae0e04881dcea9c6e16fbe, type: 2}
-  - partId: nova_fire_ss0_arm89_bnso
-    slot: 1
-    displayName: Ss0 Arm89 Bnso
-    sourceRelativePath: datan\common\ss0_arm89_bnso.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_ss0_arm89_bnso_d7d0e9d9.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 1871881989299681893, guid: d747e9975922af248bf032ca00bc334c, type: 3}
-    partAsset: {fileID: 11400000, guid: 806a88e1b45161545baf46b841e23113, type: 2}
-  - partId: nova_fire_ss0_arm90_skokr
-    slot: 1
-    displayName: Ss0 Arm90 Skokr
-    sourceRelativePath: datan\common\ss0_arm90_skokr.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_ss0_arm90_skokr_dd8fb43a.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 8301556164626707089, guid: 2ce2ca5829e8fa54997c6a58cbedc2c1, type: 3}
-    partAsset: {fileID: 11400000, guid: e2df3a5e1e3d33b418673ee6b30fd81e, type: 2}
-  - partId: nova_fire_ss0_arm91_snop
-    slot: 1
-    displayName: Ss0 Arm91 Snop
-    sourceRelativePath: datan\common\ss0_arm91_snop.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_ss0_arm91_snop_365f7d38.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 7116258733031850673, guid: 1047d0231ea2e324aa7660f9eaa3e955, type: 3}
-    partAsset: {fileID: 11400000, guid: 7c439d177d0935f47b827f80f2d2c611, type: 2}
-  - partId: nova_fire_ss0_arm92_ons
-    slot: 1
-    displayName: Ss0 Arm92 Ons
-    sourceRelativePath: datan\common\ss0_arm92_ons.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common_ss0_arm92_ons_787a65af.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 8857028703456237945, guid: 0ee642d94fe84c14a827cef0abcd83c7, type: 3}
-    partAsset: {fileID: 11400000, guid: e18f63bfa68b7b644a779496aba4a5e3, type: 2}
-  - partId: nova_fire_top
-    slot: 1
-    displayName: Firepower b9969187
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD_Top.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___Top_8d43be20.obj
-    tier: 4
-    needsNameReview: 1
-    previewPrefab: {fileID: 777180162900274422, guid: 8a206b46f0665e0408918695a7531d4a, type: 3}
-    partAsset: {fileID: 11400000, guid: f920a0f8fe99558478add99c4856361f, type: 2}
-  - partId: nova_fire_top_06508a33
-    slot: 1
-    displayName: Firepower 06508a33
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD_Top.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___Top_701524d4.obj
-    tier: 5
-    needsNameReview: 1
-    previewPrefab: {fileID: 3760564148847763587, guid: 549b9c0c3611a70479275f93db4e016d, type: 3}
-    partAsset: {fileID: 11400000, guid: 851e278c71fe12c4aa8c13a9f5fa096c, type: 2}
-  - partId: nova_fire_top_547935c6
-    slot: 1
-    displayName: Firepower 547935c6
-    sourceRelativePath: "datan\\common\\\uACF5\uACA9\uC624\uB77C_Top.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___Top_c6ede1c8.obj
-    tier: 5
-    needsNameReview: 1
-    previewPrefab: {fileID: 2400308819064558509, guid: e2d4d2192c433b146a268bd1b017fd0f, type: 3}
-    partAsset: {fileID: 11400000, guid: 690d5fc5333daf94eb9c76a39c5ecb27, type: 2}
-  - partId: nova_fire_top_5524fda7
-    slot: 1
-    displayName: Firepower 5524fda7
-    sourceRelativePath: "datan\\common\\\uC218\uB9AC\uC624\uB77C_Top.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___Top_feef3dc4.obj
-    tier: 4
-    needsNameReview: 1
-    previewPrefab: {fileID: 3388689168609298213, guid: bbdd2cb51a6508e42b17e10dcbee6db3, type: 3}
-    partAsset: {fileID: 11400000, guid: ef8f81c4d23d4b543abdd798ef28233e, type: 2}
-  - partId: nova_fire_top_a719d636
-    slot: 1
-    displayName: Firepower a719d636
-    sourceRelativePath: "datan\\common\\\uBC29\uC5B4\uC624\uB77C_Top.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___Top_044b7b03.obj
-    tier: 5
-    needsNameReview: 1
-    previewPrefab: {fileID: 8691557474830814352, guid: 560609a5a398f2c4e9f6009ce5ccbeb1, type: 3}
-    partAsset: {fileID: 11400000, guid: e8dde62d4a06b41419632e085567ce65, type: 2}
-  - partId: nova_fire_top_ff856aa4
-    slot: 1
-    displayName: Firepower ff856aa4
-    sourceRelativePath: "datan\\common\\\uFFFD\uFFFD\uFFFD\u077F\uFFFD\uFFFD\uFFFD_Top.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/ArmWeapons/datan_common___Top_d75185b2.obj
-    tier: 5
-    needsNameReview: 1
-    previewPrefab: {fileID: 626313269960269534, guid: 205c74b439001ac42be3b7ca2b0ff8c1, type: 3}
-    partAsset: {fileID: 11400000, guid: 8caba5abe88d20543bb1bd0ab8ed554f, type: 2}
-  - partId: nova_frame_0
-    slot: 0
-    displayName: Frame bed8d28a
-    sourceRelativePath: "datan\\common\\\uC911\uB7C9\uD615\uAE30\uC9C0_\uC2A4\uD0A8_0.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_____0_5bb02f75.obj
-    tier: 4
-    needsNameReview: 1
-    previewPrefab: {fileID: 1309524562212019019, guid: 8f02fa26a1e44db45940d74410c6c541, type: 3}
-    partAsset: {fileID: 11400000, guid: 07d054d3ca71f68429857a1bd8fb028e, type: 2}
-  - partId: nova_frame_0_92d68f03
-    slot: 0
-    displayName: Frame 92d68f03
-    sourceRelativePath: "datan\\common\\\uC911\uB7C9\uD615\uAE30\uC9C0_\uC2A4\uD0A80.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common____0_a416252b.obj
-    tier: 4
-    needsNameReview: 1
-    previewPrefab: {fileID: 6759698151847434074, guid: f512a8f5b7a9fbf40863bb7ad56a69cf, type: 3}
-    partAsset: {fileID: 11400000, guid: 42655347b448b4a43910c3511f68f220, type: 2}
-  - partId: nova_frame_a_allinone
-    slot: 0
-    displayName: A Allinone
-    sourceRelativePath: datan\common\A_allinone.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_A_allinone_62ce47d4.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 3833234212117985480, guid: 68a89c442b199c545a35e26fd1dace2d, type: 3}
-    partAsset: {fileID: 11400000, guid: c4366c29c99297a4cb0833bf6f6a4810, type: 2}
-  - partId: nova_frame_all
-    slot: 0
-    displayName: All
-    sourceRelativePath: datan\common\ALL.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_ALL_0a98aeeb.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 1240175716686856248, guid: a5cc12e8c71ec9e4a99047aeab22ef2f, type: 3}
-    partAsset: {fileID: 11400000, guid: 13169a7630d4ad1448463de6b9aa388a, type: 2}
-  - partId: nova_frame_b0001
-    slot: 0
-    displayName: B0001
-    sourceRelativePath: datan\common\B0001.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_B0001_5947bc3a.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 9218461359991129170, guid: d5839008a27ff9648819654445bfbd02, type: 3}
-    partAsset: {fileID: 11400000, guid: 44ece262ae68b82459d54d868839ba2f, type: 2}
-  - partId: nova_frame_b0002
-    slot: 0
-    displayName: B0002
-    sourceRelativePath: datan\common\B0002.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_B0002_951dd839.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 9118836012683414918, guid: 27c4b81c889dd34408b5092286f3e31d, type: 3}
-    partAsset: {fileID: 11400000, guid: 73cda89d4f624d14f9187dd7c5c1f9b6, type: 2}
-  - partId: nova_frame_b0003
-    slot: 0
-    displayName: B0003
-    sourceRelativePath: datan\common\B0003.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_B0003_b3152bc5.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 432605845061540872, guid: 0cc1f59adb71121479f4979c64e09c30, type: 3}
-    partAsset: {fileID: 11400000, guid: c8f0dd770e1f38841826d4c456a91a38, type: 2}
-  - partId: nova_frame_b0004
-    slot: 0
-    displayName: B0004
-    sourceRelativePath: datan\common\B0004.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_B0004_3526e68f.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 379520510038578025, guid: 001e69dbe1180c0488e0b0d967ef1dcc, type: 3}
-    partAsset: {fileID: 11400000, guid: d8b2bdf362e5a3f44aac917d75557f19, type: 2}
-  - partId: nova_frame_b0005
-    slot: 0
-    displayName: B0005
-    sourceRelativePath: datan\common\B0005.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_B0005_60c70117.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 1892068994773823580, guid: 870eb400cd5dbac4680fb2ae557b7b1b, type: 3}
-    partAsset: {fileID: 11400000, guid: c08c9462096044b4ba925a832c4c4059, type: 2}
-  - partId: nova_frame_b0006
-    slot: 0
-    displayName: B0006
-    sourceRelativePath: datan\common\B0006.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_B0006_088d1c26.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 3200618025050966841, guid: e3af0678486289e4cb8d3757d149cd52, type: 3}
-    partAsset: {fileID: 11400000, guid: ef3c8a55ee239b04faf07a19fb5943e9, type: 2}
-  - partId: nova_frame_b0007
-    slot: 0
-    displayName: B0007
-    sourceRelativePath: datan\common\B0007.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_B0007_e009745a.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 6927388334615927932, guid: be000060db452c74fb3766d179921e59, type: 3}
-    partAsset: {fileID: 11400000, guid: f80d73fec36851c4181487af4e656a0e, type: 2}
-  - partId: nova_frame_b0008
-    slot: 0
-    displayName: B0008
-    sourceRelativePath: datan\common\B0008.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_B0008_e0784fb0.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 8228461224398079602, guid: 3ae30a04821e1c34395c798fedf7ae8e, type: 3}
-    partAsset: {fileID: 11400000, guid: 3bb4c7cd801bbda44be13a5c00fc97af, type: 2}
-  - partId: nova_frame_b0009
-    slot: 0
-    displayName: B0009
-    sourceRelativePath: datan\common\B0009.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_B0009_98b7d827.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 4250276619666336916, guid: e7035d20073bcd945a9c2b558488c85e, type: 3}
-    partAsset: {fileID: 11400000, guid: f9596cd81ad214949bfa3bec95a09adc, type: 2}
-  - partId: nova_frame_b0010
-    slot: 0
-    displayName: B0010
-    sourceRelativePath: datan\common\B0010.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_B0010_c1a0447a.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 2607751554487478388, guid: 45c61dbae7a96114181cd443272eb171, type: 3}
-    partAsset: {fileID: 11400000, guid: 3a902ed0990416e49ab288aec579a1ed, type: 2}
-  - partId: nova_frame_base_lab
-    slot: 0
-    displayName: Base Lab
-    sourceRelativePath: datan\common\base_lab.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_base_lab_1ad66751.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 425056596903378593, guid: 76c71d2c0da6dad47b2081def3be9a05, type: 3}
-    partAsset: {fileID: 11400000, guid: b705a8a7caa23f145b8eb790f003fe6a, type: 2}
-  - partId: nova_frame_base_overwork
-    slot: 0
-    displayName: Base Overwork
-    sourceRelativePath: datan\common\base-overwork.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_base-overwork_a9b70116.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 3198260467949480714, guid: 946cb27c511b0f646bb5b9067cae9703, type: 3}
-    partAsset: {fileID: 11400000, guid: 44d0f5228a963fe4a86b2c4fd50f6338, type: 2}
-  - partId: nova_frame_base1
-    slot: 0
-    displayName: Base1
-    sourceRelativePath: datan\common\base1.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_base1_fc08c671.obj
     tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 1104687216736341651, guid: a2d58c4cf7e3db044b8acff31ea0d169, type: 3}
-    partAsset: {fileID: 11400000, guid: 466c596830cbacc469ec90d17294a363, type: 2}
-  - partId: nova_frame_base2
-    slot: 0
-    displayName: Base2
-    sourceRelativePath: datan\common\base2.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_base2_6f7b33b9.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 4106994360533303625, guid: 4ce189ca4a13d6446a94253f79654a5b, type: 3}
-    partAsset: {fileID: 11400000, guid: 69be6fa5a58e88848b29afe408825a24, type: 2}
-  - partId: nova_frame_base3
-    slot: 0
-    displayName: Base3
-    sourceRelativePath: datan\common\base3.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_base3_b5d60631.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 1872848206459938366, guid: 53ca905a320f8384bbd01aa9d025e3c1, type: 3}
-    partAsset: {fileID: 11400000, guid: a9b7a75405280ef4094c544d9eafb025, type: 2}
-  - partId: nova_frame_base4
-    slot: 0
-    displayName: Base4
-    sourceRelativePath: datan\common\base4.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_base4_fce9de4d.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 5540243254258053740, guid: 882a1fb7a743afc419303c9b35c61978, type: 3}
-    partAsset: {fileID: 11400000, guid: fdf36d4f24b4d8949ae2801fd6afd7d0, type: 2}
-  - partId: nova_frame_basebasic
-    slot: 0
-    displayName: Basebasic
-    sourceRelativePath: datan\common\basebasic.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_basebasic_3be39a2a.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 2226545117930997518, guid: 1186a7f4555ee5b44b969d030dd4ee78, type: 3}
-    partAsset: {fileID: 11400000, guid: cbbf2a8064321cb4bb180f274af885f2, type: 2}
-  - partId: nova_frame_baseshop
-    slot: 0
-    displayName: Baseshop
-    sourceRelativePath: datan\common\baseshop.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_baseshop_818cbd73.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 7722996915953950467, guid: dbadbb204ecfcbe4888d292feb29cbc6, type: 3}
-    partAsset: {fileID: 11400000, guid: 33be9d13ceada444bbd799cb2f53e593, type: 2}
-  - partId: nova_frame_d_allinone
-    slot: 0
-    displayName: D Allinone
-    sourceRelativePath: datan\common\D_allinone.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_D_allinone_acb022b9.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 8135254368108486118, guid: 2a7e3ab1b04b7b745ab47fb4cf7593c7, type: 3}
-    partAsset: {fileID: 11400000, guid: 6cce095ef2b71754288f42ec197e0b3b, type: 2}
-  - partId: nova_frame_review
-    slot: 0
-    displayName: Frame d5ff1244
-    sourceRelativePath: "datan\\common\\\uB8EC\uAE30\uC9C0.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_a1eb7191.obj
-    tier: 2
-    needsNameReview: 1
-    previewPrefab: {fileID: 3106610257023846849, guid: bbab754d9218564409388c7c14a898bc, type: 3}
-    partAsset: {fileID: 11400000, guid: f4ce6f1570754b5499f2d0aece056f6e, type: 2}
-  - partId: nova_frame_review_212e1e7a
-    slot: 0
-    displayName: Frame 212e1e7a
-    sourceRelativePath: "datan\\common\\\uAE30\uC9C0.GX"
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_efd836a0.obj
-    tier: 5
-    needsNameReview: 1
-    previewPrefab: {fileID: 3867162551090758225, guid: 7b46369e20195c04fbd6988dbfec1bde, type: 3}
-    partAsset: {fileID: 11400000, guid: ae9ed2da7b7a6be459aa450c76480065, type: 2}
-  - partId: nova_frame_s_allinone
-    slot: 0
-    displayName: S Allinone
-    sourceRelativePath: datan\common\S_allinone.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_S_allinone_ab61e96f.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 4308450278669867264, guid: 6cd805f6baaa6554592136cd8c0ee012, type: 3}
-    partAsset: {fileID: 11400000, guid: 25e8bdcf3c8bf8745b6f92ecb4260a6b, type: 2}
-  - partId: nova_frame_ss0_base5
-    slot: 0
-    displayName: Ss0 Base5
-    sourceRelativePath: datan\common\ss0_base5.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_ss0_base5_44adaa71.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 5189259868677979416, guid: 6e290c5b21def4045b05e49057c0151c, type: 3}
-    partAsset: {fileID: 11400000, guid: 500106b94f28f8d46a595f8234a3240c, type: 2}
-  - partId: nova_frame_ss0_base6
-    slot: 0
-    displayName: Ss0 Base6
-    sourceRelativePath: datan\common\ss0_base6.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bases/datan_common_ss0_base6_7334670a.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 7002984892968534582, guid: 532907f1127d0b148b70632454ccb769, type: 3}
-    partAsset: {fileID: 11400000, guid: c917c706917e62346bf13fd4f97876df, type: 2}
+    previewPrefab: {fileID: 6473678170083216518, guid: bd54b099aed74834f8dc4cb6e9921bd7, type: 3}
+    partAsset: {fileID: 11400000, guid: 694dba7d53746534fb6464d006e00631, type: 2}
   - partId: nova_frame_body1_sz
     slot: 0
-    displayName: Body1 Sz
+    displayName: "\uC11C\uC804"
     sourceRelativePath: datan\common\body1_sz.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body1_sz_206b7fcc.obj
-    tier: 4
+    tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 8113243540648967654, guid: c48e63b790f9a064f8e040e40663d4d6, type: 3}
+    previewPrefab: {fileID: 1219655375176499031, guid: ee90b39e0aa42f449b52e0101f166195, type: 3}
     partAsset: {fileID: 11400000, guid: 887580e1e77a16e46bccdacf7fda99e4, type: 2}
   - partId: nova_frame_body10_skdr
     slot: 0
-    displayName: Body10 Skdr
+    displayName: "\uC2A4\uCFFC\uB4DC\uB860"
     sourceRelativePath: datan\common\body10_skdr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body10_skdr_94005581.obj
     tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 1174934857886730848, guid: 15aee585368f8cd438a7d76d87cc038f, type: 3}
+    previewPrefab: {fileID: 3362547410561680173, guid: 6a4ce69e6b2491d4c8f1e15eb9b43458, type: 3}
     partAsset: {fileID: 11400000, guid: 7fb547f885a828c48a412c3307202163, type: 2}
-  - partId: nova_frame_body101
-    slot: 0
-    displayName: Body101
-    sourceRelativePath: datan\common\body101.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body101_525c056c.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 3642833884062728747, guid: 0bdb08e71e4f0894583a9c8461e63a71, type: 3}
-    partAsset: {fileID: 11400000, guid: 6d13297473caab146a44dcd613b1ebdf, type: 2}
   - partId: nova_frame_body11_kn
     slot: 0
-    displayName: Body11 Kn
+    displayName: "\uCEE4\uB110"
     sourceRelativePath: datan\common\body11_kn.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body11_kn_c249f9d6.obj
     tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 4644129585910364293, guid: c9bbc2837398c8243b95ff74c7aac419, type: 3}
+    previewPrefab: {fileID: 7253996542970646315, guid: b9f92f642a5201a41bd9c34b95e92495, type: 3}
     partAsset: {fileID: 11400000, guid: f716f00b590988442b6dc4699bc2296f, type: 2}
-  - partId: nova_frame_body114
-    slot: 0
-    displayName: Body114
-    sourceRelativePath: datan\common\body114.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body114_8b682541.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 2051004482885713766, guid: ebd78f7d06a750d4a822498bf0d37ae4, type: 3}
-    partAsset: {fileID: 11400000, guid: c6a068967e333ec4d8fed1026619177f, type: 2}
   - partId: nova_frame_body12_kt
     slot: 0
-    displayName: Body12 Kt
+    displayName: "\uCEA1\uD2F4"
     sourceRelativePath: datan\common\body12_kt.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body12_kt_f2fb4a01.obj
-    tier: 3
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 521711032543327104, guid: 96b9f9e3297f4994c9070b6296a2d13f, type: 3}
+    previewPrefab: {fileID: 8453996272086303061, guid: 2f15d3d581856f343b504da7f21e8c0e, type: 3}
     partAsset: {fileID: 11400000, guid: b855621800bf029409df0dc2f6e9aa5c, type: 2}
   - partId: nova_frame_body13_scro
     slot: 0
-    displayName: Body13 Scro
+    displayName: "\uC13C\uCD94\uB9AC\uC5B8"
     sourceRelativePath: datan\common\body13_scro.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body13_scro_2e615f34.obj
     tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 6093793812290155248, guid: 12f9c74bae0e1fc489a9ba3ffb0faef1, type: 3}
+    previewPrefab: {fileID: 7447513980253649883, guid: 06eb8cafae97c3049b6128f57079d707, type: 3}
     partAsset: {fileID: 11400000, guid: 76b50729a1434db49a04bf8978f51659, type: 2}
   - partId: nova_frame_body14_trb
     slot: 0
-    displayName: Body14 Trb
+    displayName: "\uD2B8\uB9AC\uBDF4"
     sourceRelativePath: datan\common\body14_trb.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body14_trb_47ad8aa6.obj
     tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 8309023773931153962, guid: 73f5434f44b0c0c4ab2015855160fb03, type: 3}
+    previewPrefab: {fileID: 7515048155652211250, guid: 497634d03fd18b84884eed9c1457130b, type: 3}
     partAsset: {fileID: 11400000, guid: d6a9c024ba639ff4e8cccb9daeaeb074, type: 2}
   - partId: nova_frame_body15_znr
     slot: 0
-    displayName: Body15 Znr
+    displayName: "\uC81C\uB108\uB7F4"
     sourceRelativePath: datan\common\body15_znr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body15_znr_2ea96416.obj
     tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 3740983303038773699, guid: 224961da59d0d1c439bbd2a789b5a7c1, type: 3}
+    previewPrefab: {fileID: 5499129487574752907, guid: e6df98d2200f95340ab2b25b1657a4e7, type: 3}
     partAsset: {fileID: 11400000, guid: 4ab3dd36a641d4c40b0f9717e655539d, type: 2}
   - partId: nova_frame_body16_kmdo
     slot: 0
-    displayName: Body16 Kmdo
+    displayName: "\uCF54\uBAA8\uB3C4\uC5B4"
     sourceRelativePath: datan\common\body16_kmdo.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body16_kmdo_22f3ff74.obj
     tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 6886322370327508402, guid: 6c9ef8e34c5ecb2458be3ae93adc007d, type: 3}
+    previewPrefab: {fileID: 3172215266509119063, guid: 4f59d7d911781ab4cbe0479bdafecc3e, type: 3}
     partAsset: {fileID: 11400000, guid: d91ce9c36f0b6e3469e9e388e1257ced, type: 2}
   - partId: nova_frame_body17_rzmt
     slot: 0
-    displayName: Body17 Rzmt
+    displayName: "\uB808\uC9C0\uBA3C\uD2B8"
     sourceRelativePath: datan\common\body17_rzmt.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body17_rzmt_bd44b992.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 1100784949370463167, guid: 89202561d0b4ea14d83ef5ae201d7434, type: 3}
+    previewPrefab: {fileID: 2587217992300094271, guid: 3eb1e2ac5bdb5f347879d4620cbaa48f, type: 3}
     partAsset: {fileID: 11400000, guid: 55e8076eb4c4e8b409b68a402d6c7735, type: 2}
   - partId: nova_frame_body18_brgod
     slot: 0
-    displayName: Body18 Brgod
+    displayName: "\uBE0C\uB9AC\uAC8C\uC774\uB4DC"
     sourceRelativePath: datan\common\body18_brgod.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body18_brgod_53f787ed.obj
     tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 5637815545548863671, guid: 988a4ef3966cc5544b8039a5342f0a68, type: 3}
+    previewPrefab: {fileID: 408378645495145473, guid: b9ac81531bf622c459624497f5b7d530, type: 3}
     partAsset: {fileID: 11400000, guid: fa8c26cdf22aca940a188aad45e60291, type: 2}
   - partId: nova_frame_body19_spd
     slot: 0
-    displayName: Body19 Spd
+    displayName: "\uC2A4\uD30C\uB371"
     sourceRelativePath: datan\common\body19_spd.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body19_spd_76e60ddb.obj
-    tier: 3
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 5663779361871738838, guid: 0cb1c39d748eb44408da969b16e1aff9, type: 3}
+    previewPrefab: {fileID: 7222503973749932889, guid: ec8cf717bccbf6f4e98ed9e1e4c3e696, type: 3}
     partAsset: {fileID: 11400000, guid: 6d7a7a7d99e63d34893e67bc4aa49bf6, type: 2}
   - partId: nova_frame_body2_prt
     slot: 0
-    displayName: Body2 Prt
+    displayName: "\uD50C\uB798\uD230"
     sourceRelativePath: datan\common\body2_prt.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body2_prt_ccf3d653.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 6824680439100101644, guid: d167b12572ababf4d83aceec9d323959, type: 3}
+    previewPrefab: {fileID: 6248354730953689356, guid: 673dc4883c58ed54cbeacf5ffbab8e34, type: 3}
     partAsset: {fileID: 11400000, guid: 4df0807758ee6284594f27604cbfcd16, type: 2}
   - partId: nova_frame_body20_prsd
     slot: 0
-    displayName: Body20 Prsd
+    displayName: "\uD50C\uB7EC\uC2DC\uB371"
     sourceRelativePath: datan\common\body20_prsd.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body20_prsd_e606010d.obj
     tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 2691342776971474369, guid: 3e65a0b6507a91a40a316b2a7954a4f9, type: 3}
+    previewPrefab: {fileID: 3239318217984490109, guid: 98e353bd7e367014c9c4fe32cede0bab, type: 3}
     partAsset: {fileID: 11400000, guid: f8e548bbddbe9ed4ba8f948cea71d24d, type: 2}
   - partId: nova_frame_body21_rzo
     slot: 0
-    displayName: Body21 Rzo
+    displayName: "\uB808\uC9C0\uC628"
     sourceRelativePath: datan\common\body21_rzo.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body21_rzo_56411c08.obj
     tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 6605838590647288779, guid: 2d15ffca441580e4f94531815cc6c981, type: 3}
+    previewPrefab: {fileID: 5267709515660085975, guid: 31f3c25ac4ce07e4aa9b5f4e652f16cb, type: 3}
     partAsset: {fileID: 11400000, guid: eb1c708294bd5b5478cc722e9cc10101, type: 2}
   - partId: nova_frame_body22_kdd
     slot: 0
-    displayName: Body22 Kdd
+    displayName: "\uCFFC\uD130\uB371"
     sourceRelativePath: datan\common\body22_kdd.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body22_kdd_64eb6960.obj
     tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 4029671841064828644, guid: 67961e9264dcde44f8979ad5a10755e5, type: 3}
+    previewPrefab: {fileID: 5589743074871826839, guid: 9bc7d561cb71b9e409773e0af07dd957, type: 3}
     partAsset: {fileID: 11400000, guid: 0793f78af98616b4e83d1f87f9199b38, type: 2}
   - partId: nova_frame_body23_ms
     slot: 0
-    displayName: Body23 Ms
+    displayName: "\uB9C8\uC0EC"
     sourceRelativePath: datan\common\body23_ms.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body23_ms_08bb8d65.obj
     tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 7000681566290296544, guid: ec01bd716e6f7c140a63ad1c8f362055, type: 3}
+    previewPrefab: {fileID: 5152268828628581367, guid: a95170cbae97b1844acd144e53ed8e07, type: 3}
     partAsset: {fileID: 11400000, guid: 4b1657c0c432c8f4794d38ed8631e50d, type: 2}
   - partId: nova_frame_body24_grbs
     slot: 0
-    displayName: Body24 Grbs
+    displayName: "\uADF8\uB77C\uBE44\uC2A4"
     sourceRelativePath: datan\common\body24_grbs.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body24_grbs_292161f9.obj
     tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 947240413425840960, guid: 7f459b5741a626740a88ebe31b576714, type: 3}
+    previewPrefab: {fileID: 9116205956888321813, guid: 0f4bfe2d68107694b9f9f6e4894b54d2, type: 3}
     partAsset: {fileID: 11400000, guid: 53905336490c36a4c97c4fede84d3c14, type: 2}
   - partId: nova_frame_body25_bosro
     slot: 0
-    displayName: Body25 Bosro
+    displayName: "\uBC14\uC774\uC2A4\uB85C\uC774"
     sourceRelativePath: datan\common\body25_bosro.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body25_bosro_0459d605.obj
     tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 7739349069018954607, guid: e25f52b166dbeac4795af7a93d43bc19, type: 3}
+    previewPrefab: {fileID: 3649787595548399274, guid: 94eb9f2705043a24f9af3f5e45b6021c, type: 3}
     partAsset: {fileID: 11400000, guid: 4bc9aad1b36025249832fe068c09b6a6, type: 2}
   - partId: nova_frame_body26_kp
     slot: 0
-    displayName: Body26 Kp
+    displayName: "\uD0B9\uD540"
     sourceRelativePath: datan\common\body26_kp.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body26_kp_7fafe886.obj
-    tier: 2
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 3031771759040379194, guid: f3031aa7fe9dcc547ae19f5d474f4368, type: 3}
+    previewPrefab: {fileID: 6965843295074923174, guid: a742b8e3b8229d6498162fefd6789a80, type: 3}
     partAsset: {fileID: 11400000, guid: f7b1b67cf1ed6584ab50d390ba436300, type: 2}
   - partId: nova_frame_body27_zns
     slot: 0
-    displayName: Body27 Zns
+    displayName: "\uC81C\uB2C8\uC2A4"
     sourceRelativePath: datan\common\body27_zns.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body27_zns_072ec40a.obj
-    tier: 4
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 5930244765991941609, guid: 855056a469de00e44ae2ad2d0cc29d9b, type: 3}
+    previewPrefab: {fileID: 2776930126339961517, guid: 6a09148d3b9f17245afe09c5a6b25d40, type: 3}
     partAsset: {fileID: 11400000, guid: 1864c8c2a2247e249997656fa6464fb5, type: 2}
   - partId: nova_frame_body28_kp2
     slot: 0
-    displayName: Body28 Kp2
+    displayName: "\uD0B9\uD540II"
     sourceRelativePath: datan\common\body28_kp2.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body28_kp2_599df616.obj
     tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 3012703574790781087, guid: 2eb7ee13f2f405648959d2f8ba6e4738, type: 3}
+    previewPrefab: {fileID: 7861716132191816314, guid: 263aa35d675f8f348b20fb14775fd1fc, type: 3}
     partAsset: {fileID: 11400000, guid: 65a33839ff83d5e458473a8a2a9b962f, type: 2}
-  - partId: nova_frame_body29_onms
-    slot: 0
-    displayName: Body29 Onms
-    sourceRelativePath: datan\common\body29_onms.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body29_onms_1e41cf45.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 6171851163726843133, guid: 8f62c97e0b7e06d458da989b0fa0905d, type: 3}
-    partAsset: {fileID: 11400000, guid: 731691765eccc5148974748cc7826c03, type: 2}
   - partId: nova_frame_body3_bgd
     slot: 0
-    displayName: Body3 Bgd
+    displayName: "\uBC45\uAC00\uB4DC"
     sourceRelativePath: datan\common\body3_bgd.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body3_bgd_fb4cab73.obj
     tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 1614710422272625990, guid: f22e862f304a3814889793f437a9d68d, type: 3}
+    previewPrefab: {fileID: 3773989696131684779, guid: 7198147b0b965b448a05a30abf10ad2c, type: 3}
     partAsset: {fileID: 11400000, guid: 7555de3fa81f49241a2a95123bc090c6, type: 2}
-  - partId: nova_frame_body30_ozs
-    slot: 0
-    displayName: Body30 Ozs
-    sourceRelativePath: datan\common\body30_ozs.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body30_ozs_fbb4c433.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 1868584605749531017, guid: 9ed32455c952de04fb8143cb09c414aa, type: 3}
-    partAsset: {fileID: 11400000, guid: d7b777d02af2c7e4ca02c67466a917f0, type: 2}
-  - partId: nova_frame_body31_poms
-    slot: 0
-    displayName: Body31 Poms
-    sourceRelativePath: datan\common\body31_poms.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body31_poms_bdd1ace2.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 4579094412090182378, guid: eb35445c0151ceb4fa200e6f0aff2a6d, type: 3}
-    partAsset: {fileID: 11400000, guid: d38e4a04ffb71af4a94f5e58319fd661, type: 2}
   - partId: nova_frame_body32_brps
     slot: 0
-    displayName: Body32 Brps
+    displayName: "\uD50C\uB7AB\uD53C\uC26C"
     sourceRelativePath: datan\common\body32_brps.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body32_brps_5f5b2911.obj
     tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 4265153346552024647, guid: c186220c8d0fd0743a1af002bf264ca0, type: 3}
+    previewPrefab: {fileID: 7521970756631406739, guid: 708ae3ccdaee4e344947a5d9fbb53f98, type: 3}
     partAsset: {fileID: 11400000, guid: ef07d53c9f811184fa227be4d05fba63, type: 2}
-  - partId: nova_frame_body33_hmt
-    slot: 0
-    displayName: Body33 Hmt
-    sourceRelativePath: datan\common\body33_hmt.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body33_hmt_653b38c3.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 7335073654060702959, guid: fbe0bbb11f20135479ae4e428dfef1f8, type: 3}
-    partAsset: {fileID: 11400000, guid: 2ae4f13d5cf312a46afbece2e6d6c3ed, type: 2}
-  - partId: nova_frame_body34_xxx
-    slot: 0
-    displayName: Body34 Xxx
-    sourceRelativePath: datan\common\body34_xxx.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body34_xxx_2d3c9194.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 6919152431769765314, guid: 26244a3bc482a2648b6a4a02de9b15af, type: 3}
-    partAsset: {fileID: 11400000, guid: f1842875e99a96642be8bc05852613f0, type: 2}
   - partId: nova_frame_body35_trbn
     slot: 0
-    displayName: Body35 Trbn
+    displayName: "\uD2B8\uB9AC\uBDF0\uB110"
     sourceRelativePath: datan\common\body35_trbn.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body35_trbn_d1bbed1d.obj
     tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 1197388298494267469, guid: c9463f3de45c31544b0b6098c558bd84, type: 3}
+    previewPrefab: {fileID: 3672711793254071341, guid: f98b4874e4520ad4fad1da33129c83a6, type: 3}
     partAsset: {fileID: 11400000, guid: ae3c17c51b9b0944aa856cdf2a1ac90d, type: 2}
   - partId: nova_frame_body36_rzn
     slot: 0
-    displayName: Body36 Rzn
+    displayName: "\uB808\uC9C0\uB110"
     sourceRelativePath: datan\common\body36_rzn.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body36_rzn_9e3e52b7.obj
-    tier: 2
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 1952882737269856714, guid: 3cd7737d05335e447993dfb10acc72f1, type: 3}
+    previewPrefab: {fileID: 1069483747443630454, guid: 9fc3faab273b7af4c89435be5aef7161, type: 3}
     partAsset: {fileID: 11400000, guid: d1fa4b5cb3ac4d040b8a80fe7ab5cba9, type: 2}
   - partId: nova_frame_body37_ktn
     slot: 0
-    displayName: Body37 Ktn
+    displayName: "\uCEA1\uD2F0\uB110"
     sourceRelativePath: datan\common\body37_ktn.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body37_ktn_c91a1edb.obj
     tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 8263185072424301198, guid: 8362f2055701a714ea338c152ad917c3, type: 3}
+    previewPrefab: {fileID: 8007278029796240521, guid: 1ddd06e5cd891af458af552a4884cf6e, type: 3}
     partAsset: {fileID: 11400000, guid: 7e384b9db7e0d844c8f809b541b74eec, type: 2}
   - partId: nova_frame_body38_qrso
     slot: 0
-    displayName: Body38 Qrso
+    displayName: "\uD034\uB7EC\uC2DC\uC5B4"
     sourceRelativePath: datan\common\body38_qrso.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body38_qrso_221babe8.obj
     tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 2763188838793532591, guid: ad1fc327028e6e2468d62799aed420d6, type: 3}
+    previewPrefab: {fileID: 2742703499400849626, guid: f1ceb95a3c7fbc249bb5722487258303, type: 3}
     partAsset: {fileID: 11400000, guid: 60b13d9cb0e166f47932d2848705e2de, type: 2}
   - partId: nova_frame_body4_kpr
     slot: 0
-    displayName: Body4 Kpr
+    displayName: "\uCF54\uD3EC\uB7F4"
     sourceRelativePath: datan\common\body4_kpr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body4_kpr_b03748d5.obj
-    tier: 4
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 7192954775493783828, guid: 86c505b3ec0985c499df2a4db29948a4, type: 3}
+    previewPrefab: {fileID: 5729837822201396403, guid: 98696101b9a293a45bee9226f305d658, type: 3}
     partAsset: {fileID: 11400000, guid: 668b49e03234a0e4eb47730e0d190a6c, type: 2}
   - partId: nova_frame_body5_skms
     slot: 0
-    displayName: Body5 Skms
+    displayName: "\uC2A4\uCFFC\uBBF8\uC26C"
     sourceRelativePath: datan\common\body5_skms.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body5_skms_dc8d1685.obj
-    tier: 2
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 8835158123093197972, guid: c8d89636a02873b4ab8ea9dde902e87a, type: 3}
+    previewPrefab: {fileID: 6068887282176391569, guid: 2f6f8a35948c83d4a8c174f1e6639799, type: 3}
     partAsset: {fileID: 11400000, guid: b5e3d6da005460443b3a7fb7d11c22df, type: 2}
-  - partId: nova_frame_body51_pomsx
-    slot: 0
-    displayName: Body51 Pomsx
-    sourceRelativePath: datan\common\body51_pomsx.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body51_pomsx_7793cd4c.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 1318812703012059908, guid: dbe4e47f87d35e34d9d1103c95230020, type: 3}
-    partAsset: {fileID: 11400000, guid: 870036f5a3a674b47ac505645ca7d76d, type: 2}
-  - partId: nova_frame_body52_onmsx
-    slot: 0
-    displayName: Body52 Onmsx
-    sourceRelativePath: datan\common\body52_onmsx.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body52_onmsx_9b8c6164.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 4740593184504893381, guid: 94e19f39965b4804eab302da8fe2fbdd, type: 3}
-    partAsset: {fileID: 11400000, guid: af6cbd16d66f9934fa4c93629f7d467a, type: 2}
-  - partId: nova_frame_body53_ozsx
-    slot: 0
-    displayName: Body53 Ozsx
-    sourceRelativePath: datan\common\body53_ozsx.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body53_ozsx_6ec83a29.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 1152858686271281901, guid: 0d677cc4e338c1441bb1af9cc078e11a, type: 3}
-    partAsset: {fileID: 11400000, guid: 0ee122ec74e77d145b8512a955e9cfb2, type: 2}
-  - partId: nova_frame_body54_ooto
-    slot: 0
-    displayName: Body54 Ooto
-    sourceRelativePath: datan\common\body54_ooto.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body54_ooto_e69d99af.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 8319234353614788749, guid: 1a29f7db1091d8e40871e6a1ce92555a, type: 3}
-    partAsset: {fileID: 11400000, guid: 9c58714afec1561438ef63cc1ab97140, type: 2}
-  - partId: nova_frame_body55_sqk
-    slot: 0
-    displayName: Body55 Sqk
-    sourceRelativePath: datan\common\body55_sqk.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body55_sqk_7d042786.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 8365298345270624253, guid: 6db694f06a358234082aeb98b978a29e, type: 3}
-    partAsset: {fileID: 11400000, guid: da50648c2aec94744be45f21f1a94a1b, type: 2}
-  - partId: nova_frame_body56_brk
-    slot: 0
-    displayName: Body56 Brk
-    sourceRelativePath: datan\common\body56_brk.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body56_brk_68f1b1b0.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 7870270591794080641, guid: e39a85a37395df7408d6a127e290b62e, type: 3}
-    partAsset: {fileID: 11400000, guid: 831437170b3393d419651f715a64b6da, type: 2}
-  - partId: nova_frame_body57_kpk
-    slot: 0
-    displayName: Body57 Kpk
-    sourceRelativePath: datan\common\body57_kpk.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body57_kpk_a9410f0b.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 3765490346107889363, guid: 3b9e8d29be5abe54fac08af6a96e835e, type: 3}
-    partAsset: {fileID: 11400000, guid: 14a5aed5de7ca6e44bf6c27beac680a1, type: 2}
-  - partId: nova_frame_body58_scrs
-    slot: 0
-    displayName: Body58 Scrs
-    sourceRelativePath: datan\common\body58_scrs.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body58_scrs_af595b28.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 1809511614396962361, guid: d0cc7479b4191034580252d1e3828aa9, type: 3}
-    partAsset: {fileID: 11400000, guid: 643a5d08c49b99840920e1bcca6628ac, type: 2}
-  - partId: nova_frame_body59_hrot
-    slot: 0
-    displayName: Body59 Hrot
-    sourceRelativePath: datan\common\body59_hrot.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body59_hrot_044b421d.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 1498394501912778030, guid: 8a07de2247d12a649a75700b13c8e942, type: 3}
-    partAsset: {fileID: 11400000, guid: d875db63905651948926708cc6e733f9, type: 2}
   - partId: nova_frame_body6_skd
     slot: 0
-    displayName: Body6 Skd
+    displayName: "\uC2A4\uCFFC\uB4DC"
     sourceRelativePath: datan\common\body6_skd.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body6_skd_9d3557d0.obj
     tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 4632600460384855694, guid: af8d03a2b5849ab44860b99f320f9f0d, type: 3}
+    previewPrefab: {fileID: 3640018899660921684, guid: 087b229bedfbae345a5772f0c054d690, type: 3}
     partAsset: {fileID: 11400000, guid: 6b7a8804bdb474f4b989b550838b9108, type: 2}
-  - partId: nova_frame_body60_optr
-    slot: 0
-    displayName: Body60 Optr
-    sourceRelativePath: datan\common\body60_optr.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body60_optr_c58723e6.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 1741361206254839918, guid: 1d1cdab2377997348bba190857b0c7de, type: 3}
-    partAsset: {fileID: 11400000, guid: 056153dca92af1f4ba7a02e03f46a30c, type: 2}
-  - partId: nova_frame_body61_bsk
-    slot: 0
-    displayName: Body61 Bsk
-    sourceRelativePath: datan\common\body61_bsk.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body61_bsk_9289485e.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 8795581798769643584, guid: c573f8d65cac6a244bd5b97374f4f1eb, type: 3}
-    partAsset: {fileID: 11400000, guid: d5424475db4466a4db315284ed7118b2, type: 2}
-  - partId: nova_frame_body62_cmd
-    slot: 0
-    displayName: Body62 Cmd
-    sourceRelativePath: datan\common\body62_cmd.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body62_cmd_0c0ed0dd.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 694206345202392366, guid: 6f9cc8e441148544bb51ccde35d402aa, type: 3}
-    partAsset: {fileID: 11400000, guid: 47e1135184884f24ca74b96e948fae99, type: 2}
-  - partId: nova_frame_body63_vts
-    slot: 0
-    displayName: Body63 Vts
-    sourceRelativePath: datan\common\body63_vts.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body63_vts_e32b48a2.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 6769070838445506362, guid: e67180170eaae54478672002f75618df, type: 3}
-    partAsset: {fileID: 11400000, guid: 45b039884e6972a49be84dc9ba451099, type: 2}
   - partId: nova_frame_body7_mops
     slot: 0
-    displayName: Body7 Mops
+    displayName: "\uBA54\uC778\uD3EC\uC2A4"
     sourceRelativePath: datan\common\body7_mops.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body7_mops_fb84e207.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 6566036102039831177, guid: 265a669b483db65429c8cd49b14c6b43, type: 3}
+    previewPrefab: {fileID: 5442100201809865951, guid: 13973633f8190494b9f199693fc8a0b7, type: 3}
     partAsset: {fileID: 11400000, guid: 77efdb41374a8464f93301250e34d967, type: 2}
   - partId: nova_frame_body8_brc
     slot: 0
-    displayName: Body8 Brc
+    displayName: "\uBE14\uB9BF\uCE20"
     sourceRelativePath: datan\common\body8_brc.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body8_brc_5793d5d9.obj
     tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 7150141900534034617, guid: 341180dc540b5a44797e01f41c60956d, type: 3}
+    previewPrefab: {fileID: 6305128885600411767, guid: efd19789eb152dc41aaa6b9cfe85bedd, type: 3}
     partAsset: {fileID: 11400000, guid: 5879ed555d0ddc042acc85da248e8a6e, type: 2}
   - partId: nova_frame_body9_btro
     slot: 0
-    displayName: Body9 Btro
+    displayName: "\uBC14\uD0C8\uB9AC\uC5B8"
     sourceRelativePath: datan\common\body9_btro.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_body9_btro_4c6bc349.obj
     tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 1192821935386154720, guid: f3528db4ef498c84aa012efa5c31d5c0, type: 3}
+    previewPrefab: {fileID: 6685822131785895524, guid: 2bcb41ac0f913c2409448c2e8b389d14, type: 3}
     partAsset: {fileID: 11400000, guid: 5011529f0cc9571408c58cfe0ea0ef3e, type: 2}
-  - partId: nova_frame_g_body66_brk
-    slot: 0
-    displayName: G Body66 Brk
-    sourceRelativePath: datan\common\g_body66_brk.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_g_body66_brk_3ae1c994.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 4292345100605687530, guid: 85ac0fe4b1e378445871ad9498a88c93, type: 3}
-    partAsset: {fileID: 11400000, guid: 390e39e3eb92dda42930eb1148d02b48, type: 2}
-  - partId: nova_frame_g_body67_ktn
-    slot: 0
-    displayName: G Body67 Ktn
-    sourceRelativePath: datan\common\g_body67_ktn.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_g_body67_ktn_3c7bc0d9.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 3710912520178776110, guid: 170e5d47475fe05459620d89456b32cf, type: 3}
-    partAsset: {fileID: 11400000, guid: cee9032b09dd6654faa5200fafe1967f, type: 2}
-  - partId: nova_frame_g_body68_vts
-    slot: 0
-    displayName: G Body68 Vts
-    sourceRelativePath: datan\common\g_body68_vts.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_g_body68_vts_bbcb4ca1.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 8079466364838045198, guid: 51d63692a8bd2e946bbf409864fdbae7, type: 3}
-    partAsset: {fileID: 11400000, guid: 4c30c1200cf4fa84dab00335510eefe7, type: 2}
-  - partId: nova_frame_g_body69_kpk
-    slot: 0
-    displayName: G Body69 Kpk
-    sourceRelativePath: datan\common\g_body69_kpk.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_g_body69_kpk_01970fff.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 8052972820492683910, guid: ebc5eabe1d7851445a7e85259d58f32f, type: 3}
-    partAsset: {fileID: 11400000, guid: 64cd252476d71dc4da9cfad9af4b7e5b, type: 2}
   - partId: nova_frame_n_body39_brgod
     slot: 0
-    displayName: N Body39 Brgod
+    displayName: "\uBE0C\uB9AC\uAC8C\uC774\uB4DCN"
     sourceRelativePath: datan\common\n_body39_brgod.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_n_body39_brgod_cc36a338.obj
     tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 9038207214860908502, guid: ceebdbb7c69937f4a892c412cb9f8658, type: 3}
+    previewPrefab: {fileID: 1078774923000850662, guid: 5f62c49a0b867e544b3a62660e397f0e, type: 3}
     partAsset: {fileID: 11400000, guid: 09f66bb45817e9a488cd1a19f5d81a84, type: 2}
   - partId: nova_frame_n_body40_zns
     slot: 0
-    displayName: N Body40 Zns
+    displayName: "\uC81C\uB2C8\uC2A4N"
     sourceRelativePath: datan\common\n_body40_zns.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_n_body40_zns_e288edaa.obj
-    tier: 4
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 3577877719209036210, guid: e9f9ee8f7e0680d489234e84ccfd5ad3, type: 3}
+    previewPrefab: {fileID: 6468730764648037598, guid: 60d252598d0d4324a8da0c7dd7951b40, type: 3}
     partAsset: {fileID: 11400000, guid: b913d7a26f8e4f445b77e90b205e5a9c, type: 2}
   - partId: nova_frame_n_body41_kmdo
     slot: 0
-    displayName: N Body41 Kmdo
+    displayName: "\uCF54\uBAA8\uB3C4\uC5B4N"
     sourceRelativePath: datan\common\n_body41_kmdo.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_n_body41_kmdo_27ea0465.obj
     tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 3472821747990233901, guid: b57810335f6b7294cb3a07e01ee2da68, type: 3}
+    previewPrefab: {fileID: 7274980851063196699, guid: f2f07bdd7e90ee145a5c5c987492815a, type: 3}
     partAsset: {fileID: 11400000, guid: a37d39774540c2b4bac1aa5c7237e968, type: 2}
   - partId: nova_frame_n_body42_kdd
     slot: 0
-    displayName: N Body42 Kdd
+    displayName: "\uCFFC\uB354\uB371N"
     sourceRelativePath: datan\common\n_body42_kdd.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_n_body42_kdd_169db71f.obj
-    tier: 5
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 3323055504157091561, guid: bda717ac3ff75ee4f8162e073ed9ad2b, type: 3}
+    previewPrefab: {fileID: 1609393700845613039, guid: b1883dbf63eed754b8ca73b3dc6d250b, type: 3}
     partAsset: {fileID: 11400000, guid: 5cd6439511700e2428f9b688612f7a4b, type: 2}
   - partId: nova_frame_n_body43_prt
     slot: 0
-    displayName: N Body43 Prt
+    displayName: "\uD50C\uB798\uD230N"
     sourceRelativePath: datan\common\n_body43_prt.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_n_body43_prt_9b3f2468.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 8771561792705665093, guid: 83639cdd7cb3e5643805ce9deb2d11a9, type: 3}
+    previewPrefab: {fileID: 5224624540257461524, guid: af047ac5508ef3146800f96a6c947510, type: 3}
     partAsset: {fileID: 11400000, guid: f9b37fa9e8243b74186c49e916985504, type: 2}
   - partId: nova_frame_n_body44_brps
     slot: 0
-    displayName: N Body44 Brps
+    displayName: "\uD50C\uB7AB\uD53C\uC26CN"
     sourceRelativePath: datan\common\n_body44_brps.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_n_body44_brps_174baa87.obj
     tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 8450725461771111883, guid: 2410f6f1967f4ce4d86060b36543f2db, type: 3}
+    previewPrefab: {fileID: 135689586904276262, guid: b7c7caa682822ca4db0a480d4e6b1c56, type: 3}
     partAsset: {fileID: 11400000, guid: fefda2523b567f6439b61bc7d697899e, type: 2}
-  - partId: nova_frame_n_body45_scro
-    slot: 0
-    displayName: N Body45 Scro
-    sourceRelativePath: datan\common\n_body45_scro.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_n_body45_scro_0f43c585.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 3549576840008556011, guid: dade2632798e6214fa1db80552a589c6, type: 3}
-    partAsset: {fileID: 11400000, guid: 923c007ff9412894693a3def5c450a62, type: 2}
-  - partId: nova_frame_n_body46_spd
-    slot: 0
-    displayName: N Body46 Spd
-    sourceRelativePath: datan\common\n_body46_spd.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_n_body46_spd_0a42ac2a.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 7249048069408256416, guid: 609becc1db62f7942b7d1fdd365228ae, type: 3}
-    partAsset: {fileID: 11400000, guid: 7e1654d144fc0a941a8a30620c4e7265, type: 2}
   - partId: nova_frame_n_body47_kp
     slot: 0
-    displayName: N Body47 Kp
+    displayName: "\uD0B9\uD540N"
     sourceRelativePath: datan\common\n_body47_kp.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_n_body47_kp_43016fc0.obj
-    tier: 2
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 2364657133769232598, guid: c0b62c349764907489eee2dcd4d9874b, type: 3}
+    previewPrefab: {fileID: 4149571528205118150, guid: d2993753e4d638041bf52c21ef7ccb45, type: 3}
     partAsset: {fileID: 11400000, guid: 808b201413d14894182ebf9ff7533c87, type: 2}
   - partId: nova_frame_n_body48_grbs
     slot: 0
-    displayName: N Body48 Grbs
+    displayName: "\uADF8\uB77C\uBE44\uC2A4N"
     sourceRelativePath: datan\common\n_body48_grbs.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_n_body48_grbs_8ef2e67e.obj
     tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 2206984630642072420, guid: a83bb904c2f46fb4bb0a2967584c6e94, type: 3}
+    previewPrefab: {fileID: 1719657215135739461, guid: 9cfb9e336cf268949a672630175b1e4a, type: 3}
     partAsset: {fileID: 11400000, guid: 3ae9a0f6696911d4c99fcd79cc4d8e42, type: 2}
   - partId: nova_frame_n_body49_rzmt
     slot: 0
-    displayName: N Body49 Rzmt
+    displayName: "\uB808\uC9C0\uBA3C\uD2B8N"
     sourceRelativePath: datan\common\n_body49_rzmt.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_n_body49_rzmt_cdf6c63d.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 3512111776960685573, guid: 456c09194e6f5694fb4750975f9a2d07, type: 3}
+    previewPrefab: {fileID: 8236978357892766473, guid: d0f293b486f22364aa1690f5949a8cab, type: 3}
     partAsset: {fileID: 11400000, guid: e177067f09b12e6448223487e196553e, type: 2}
   - partId: nova_frame_n_body50_bgd
     slot: 0
-    displayName: N Body50 Bgd
+    displayName: "\uBC45\uAC00\uB4DCN"
     sourceRelativePath: datan\common\n_body50_bgd.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_n_body50_bgd_50a477e9.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 2407514744279640391, guid: 2bcaaf84ba3487c41ac0cd47bf0f0462, type: 3}
+    previewPrefab: {fileID: 4722068867804503004, guid: 01a434221a9e48f40a3e30038b4de6eb, type: 3}
     partAsset: {fileID: 11400000, guid: 8bc1608383e9a3a4f879fcf2769b38e8, type: 2}
-  - partId: nova_frame_no21_body
-    slot: 0
-    displayName: No21 Body
-    sourceRelativePath: datan\common\no21-body.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_no21-body_fa6f5532.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 7612491466109636423, guid: c5cd2611f14d85047b83647ecc381ec1, type: 3}
-    partAsset: {fileID: 11400000, guid: 0a71803ca6bd7cc42accd54224f63a53, type: 2}
-  - partId: nova_frame_ss0_body64_prt
-    slot: 0
-    displayName: Ss0 Body64 Prt
-    sourceRelativePath: datan\common\ss0_body64_prt.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_ss0_body64_prt_5b4047be.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 4561544303506585908, guid: 308b5c8492bf22f47b550aaa771ac147, type: 3}
-    partAsset: {fileID: 11400000, guid: ab14a107fad230248ad65461aefca7bc, type: 2}
-  - partId: nova_frame_ss0_body65_brk
-    slot: 0
-    displayName: Ss0 Body65 Brk
-    sourceRelativePath: datan\common\ss0_body65_brk.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Bodies/datan_common_ss0_body65_brk_d425d7cb.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 5916820268634266421, guid: f9ef79f9f21eff446a18bea24f681f4b, type: 3}
-    partAsset: {fileID: 11400000, guid: d0c088ae8d099c14c95996ca3d61c575, type: 2}
-  - partId: nova_mob_g_legs35_prg
-    slot: 2
-    displayName: G Legs35 Prg
-    sourceRelativePath: datan\common\g_legs35_prg.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_g_legs35_prg_45c62bcc.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 183179244752476404, guid: 1e32e219bc9b380408228df9d6d096f4, type: 3}
-    partAsset: {fileID: 11400000, guid: 12fc6338fb9262645a0d23ac11024c66, type: 2}
-  - partId: nova_mob_g_legs36_oprd
-    slot: 2
-    displayName: G Legs36 Oprd
-    sourceRelativePath: datan\common\g_legs36_oprd.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_g_legs36_oprd_c566bbe7.obj
-    tier: 3
-    needsNameReview: 0
-    previewPrefab: {fileID: 8892889910116900260, guid: ef4b0d753670f37429bbd356b315a0b0, type: 3}
-    partAsset: {fileID: 11400000, guid: 9d45f521acd6bd44fbe683c0fb365918, type: 2}
   - partId: nova_mob_g_legs37_sts
     slot: 2
-    displayName: G Legs37 Sts
+    displayName: "\uC2A4\uD0C0\uC27DG"
     sourceRelativePath: datan\common\g_legs37_sts.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_g_legs37_sts_a7ad1747.obj
-    tier: 5
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 4175500419758203944, guid: de0a503297f2b1148a11813c8c860e17, type: 3}
+    previewPrefab: {fileID: 3602775364064197037, guid: de0a503297f2b1148a11813c8c860e17, type: 3}
     partAsset: {fileID: 11400000, guid: 522fd80fd945f3545a71413b12dd7c3a, type: 2}
   - partId: nova_mob_g_legs57_ppo
     slot: 2
-    displayName: G Legs57 Ppo
+    displayName: "\uD53C\uD30C\uC6B8G"
     sourceRelativePath: datan\common\g_legs57_ppo.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_g_legs57_ppo_3fb7eb59.obj
-    tier: 3
+    tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 6042772349209553002, guid: 98f7e488b0b6e534385e689a20beff84, type: 3}
+    previewPrefab: {fileID: 8410271349841266205, guid: 98f7e488b0b6e534385e689a20beff84, type: 3}
     partAsset: {fileID: 11400000, guid: 059bbbf35b8714c4e944b9bd22f3d13c, type: 2}
   - partId: nova_mob_g_legs58_pps
     slot: 2
-    displayName: G Legs58 Pps
+    displayName: "\uD3EC\uD37C\uC2A4G"
     sourceRelativePath: datan\common\g_legs58_pps.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_g_legs58_pps_69a83f4e.obj
-    tier: 1
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 5171388645814412468, guid: d65c91ed9700fc8428918f93069cfd01, type: 3}
+    previewPrefab: {fileID: 553664387490827307, guid: d65c91ed9700fc8428918f93069cfd01, type: 3}
     partAsset: {fileID: 11400000, guid: 976d07f052ae2574c8db2bdadbced260, type: 2}
   - partId: nova_mob_g_legs59_hb
     slot: 2
-    displayName: G Legs59 Hb
+    displayName: "\uD638\uBC84G"
     sourceRelativePath: datan\common\g_legs59_hb.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_g_legs59_hb_005ddc58.obj
-    tier: 5
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 1621910261029568323, guid: de7c366197e5dac40897eec9079a2c80, type: 3}
+    previewPrefab: {fileID: 924575171500490658, guid: de7c366197e5dac40897eec9079a2c80, type: 3}
     partAsset: {fileID: 11400000, guid: ce4de3e10bf73ee4d941f82af8854518, type: 2}
   - partId: nova_mob_g_legs60_hord
     slot: 2
-    displayName: G Legs60 Hord
+    displayName: "\uD558\uC774\uB85C\uB354G"
     sourceRelativePath: datan\common\g_legs60_hord.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_g_legs60_hord_e9dbaa85.obj
-    tier: 1
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 6858203933536509969, guid: 8c6f44d98dc27474ab367c5393ae4046, type: 3}
+    previewPrefab: {fileID: 128424342179752090, guid: 8c6f44d98dc27474ab367c5393ae4046, type: 3}
     partAsset: {fileID: 11400000, guid: aa16713c9e0193b4786a0669361a3f8d, type: 2}
   - partId: nova_mob_legs1_rdrn
     slot: 2
-    displayName: Legs1 Rdrn
+    displayName: "\uB85C\uB4DC\uB7F0\uB108"
     sourceRelativePath: datan\common\legs1_rdrn.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs1_rdrn_46fa96e7.obj
-    tier: 4
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 322978047427167363, guid: bfcd5e39524d1244fa8a4a0ed434861d, type: 3}
+    previewPrefab: {fileID: 2557663145192473999, guid: bfcd5e39524d1244fa8a4a0ed434861d, type: 3}
     partAsset: {fileID: 11400000, guid: 1725bfb214c5c1440946950268db032a, type: 2}
   - partId: nova_mob_legs10_prg
     slot: 2
-    displayName: Legs10 Prg
+    displayName: "\uD504\uB9AC\uAE43"
     sourceRelativePath: datan\common\legs10_prg.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs10_prg_a1bd2681.obj
-    tier: 5
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 7379854440054836441, guid: ba41d5d8e1a269d409768e770822b84c, type: 3}
+    previewPrefab: {fileID: 4437121182515619226, guid: ba41d5d8e1a269d409768e770822b84c, type: 3}
     partAsset: {fileID: 11400000, guid: ef2de0f20e34c0644a2540db464acc61, type: 2}
   - partId: nova_mob_legs11_strod
     slot: 2
-    displayName: Legs11 Strod
+    displayName: "\uC2A4\uD2B8\uB77C\uC774\uB354"
     sourceRelativePath: datan\common\legs11_strod.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs11_strod_bd5c7d83.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 7111983640519030623, guid: 1f037207938e0df4ea9d22e2018384c0, type: 3}
+    previewPrefab: {fileID: 112886290407058377, guid: 1f037207938e0df4ea9d22e2018384c0, type: 3}
     partAsset: {fileID: 11400000, guid: 42f4c93612650514396b9e1a5413c501, type: 2}
-  - partId: nova_mob_legs112
-    slot: 2
-    displayName: Legs112
-    sourceRelativePath: datan\common\legs112.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs112_d88263df.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 4683876098163244518, guid: 596d50b5848f6514b835c8f38af08b18, type: 3}
-    partAsset: {fileID: 11400000, guid: a023610c50188b54c8acbc79da9cdfeb, type: 2}
   - partId: nova_mob_legs12_kb
     slot: 2
-    displayName: Legs12 Kb
+    displayName: "\uCF54\uBCB3"
     sourceRelativePath: datan\common\legs12_kb.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs12_kb_8abdf395.obj
-    tier: 4
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 1982837181266124392, guid: 6883747b02d11f24d8c93fb0be14e167, type: 3}
+    previewPrefab: {fileID: 6490447463444801575, guid: 6883747b02d11f24d8c93fb0be14e167, type: 3}
     partAsset: {fileID: 11400000, guid: 749145b1db543204095d27241c93e683, type: 2}
   - partId: nova_mob_legs13_krz
     slot: 2
-    displayName: Legs13 Krz
+    displayName: "\uD06C\uB8E8\uC800"
     sourceRelativePath: datan\common\legs13_krz.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs13_krz_e135c433.obj
-    tier: 5
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 4839474287702747258, guid: 1256f2dd8592ef94f8fbede55ce27b9b, type: 3}
+    previewPrefab: {fileID: 3978252752549459577, guid: 1256f2dd8592ef94f8fbede55ce27b9b, type: 3}
     partAsset: {fileID: 11400000, guid: e28ba189476ae0842922a6b5308d18cd, type: 2}
   - partId: nova_mob_legs14_grp
     slot: 2
-    displayName: Legs14 Grp
+    displayName: "\uAC24\uB85C\uD37C"
     sourceRelativePath: datan\common\legs14_grp.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs14_grp_bf5729fa.obj
-    tier: 2
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 3401929658866880467, guid: 1595303a6a5c45f498b4a6591ade4e28, type: 3}
+    previewPrefab: {fileID: 4495906126155540935, guid: 1595303a6a5c45f498b4a6591ade4e28, type: 3}
     partAsset: {fileID: 11400000, guid: 502bcd61c115c2344884d21db32ed71b, type: 2}
   - partId: nova_mob_legs15_krr
     slot: 2
-    displayName: Legs15 Krr
+    displayName: "\uD06C\uB864\uB7EC"
     sourceRelativePath: datan\common\legs15_krr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs15_krr_7b9bbcfe.obj
-    tier: 4
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 4735786149661210772, guid: c87b0e87ae65f5e43aab3c30eacfa087, type: 3}
+    previewPrefab: {fileID: 5069832731185095728, guid: c87b0e87ae65f5e43aab3c30eacfa087, type: 3}
     partAsset: {fileID: 11400000, guid: 4f492b9a7d0ead24989f5eab56715483, type: 2}
   - partId: nova_mob_legs16_sprt
     slot: 2
-    displayName: Legs16 Sprt
+    displayName: "\uC2A4\uD50C\uB9AC\uD130"
     sourceRelativePath: datan\common\legs16_sprt.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs16_sprt_cd6cb45e.obj
-    tier: 1
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 7718344046596569105, guid: 4ddae01998949a8418c03179346b005b, type: 3}
+    previewPrefab: {fileID: 3625950438388930440, guid: 4ddae01998949a8418c03179346b005b, type: 3}
     partAsset: {fileID: 11400000, guid: 4182063f7f4da4145833ab8f9c3d6e77, type: 2}
   - partId: nova_mob_legs17_oprd
     slot: 2
-    displayName: Legs17 Oprd
+    displayName: "\uC624\uD504\uB85C\uB354"
     sourceRelativePath: datan\common\legs17_oprd.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs17_oprd_e69338b9.obj
-    tier: 3
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 7439127731342026753, guid: 78ae1864c0b9740498826c154308d200, type: 3}
+    previewPrefab: {fileID: 9033517704505893628, guid: 78ae1864c0b9740498826c154308d200, type: 3}
     partAsset: {fileID: 11400000, guid: ffac02257ba74ac4aac2c8e7f2b436e8, type: 2}
   - partId: nova_mob_legs18_hord
     slot: 2
-    displayName: Legs18 Hord
+    displayName: "\uD558\uC774\uB85C\uB354"
     sourceRelativePath: datan\common\legs18_hord.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs18_hord_bf0600c0.obj
-    tier: 1
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 3604815076999461071, guid: f7c33b84a7dee004bb85dbf57440cef5, type: 3}
+    previewPrefab: {fileID: 3211573557779722217, guid: f7c33b84a7dee004bb85dbf57440cef5, type: 3}
     partAsset: {fileID: 11400000, guid: d7c6b08015b1bcb44815ea20626a2ecf, type: 2}
-  - partId: nova_mob_legs19_tower
-    slot: 2
-    displayName: Legs19 Tower
-    sourceRelativePath: datan\common\legs19_tower.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs19_tower_86c6ea02.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 4096261556903823830, guid: c31934bb3295298409f7ef5c529d36cc, type: 3}
-    partAsset: {fileID: 11400000, guid: 442aef6c720956e42b35ed89328a94fa, type: 2}
   - partId: nova_mob_legs2_tdr
     slot: 2
-    displayName: Legs2 Tdr
+    displayName: "\uD1A0\uB4E4\uB7EC"
     sourceRelativePath: datan\common\legs2_tdr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs2_tdr_35825de3.obj
-    tier: 2
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 7881504028353664204, guid: 7525539bedaee49468167b092f954ce2, type: 3}
+    previewPrefab: {fileID: 7884651524282236508, guid: 7525539bedaee49468167b092f954ce2, type: 3}
     partAsset: {fileID: 11400000, guid: 6396fbdc18f7959439de8c0da7af706e, type: 2}
   - partId: nova_mob_legs20_spod
     slot: 2
-    displayName: Legs20 Spod
+    displayName: "\uC2A4\uD30C\uC774\uB354"
     sourceRelativePath: datan\common\legs20_spod.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs20_spod_160594f4.obj
     tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 5390598668138261126, guid: 22a2ecadf3c0b0e4ab648f62b200fc80, type: 3}
+    previewPrefab: {fileID: 6234320529935897531, guid: 22a2ecadf3c0b0e4ab648f62b200fc80, type: 3}
     partAsset: {fileID: 11400000, guid: 693c3e0448d2b4046bfe34378e6f8f22, type: 2}
   - partId: nova_mob_legs21_ksor
     slot: 2
-    displayName: Legs21 Ksor
+    displayName: "\uCE74\uC18C\uC640\uB9AC"
     sourceRelativePath: datan\common\legs21_ksor.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs21_ksor_0e549f78.obj
     tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 3945638807559439201, guid: b9822939a79a2ed429ab55202a547a11, type: 3}
+    previewPrefab: {fileID: 1884456771891405917, guid: b9822939a79a2ed429ab55202a547a11, type: 3}
     partAsset: {fileID: 11400000, guid: 05e13ec5883ed994aad94253779bb0fe, type: 2}
   - partId: nova_mob_legs23_tk
     slot: 2
-    displayName: Legs23 Tk
+    displayName: "\uD0F1\uCEE4"
     sourceRelativePath: datan\common\legs23_tk.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs23_tk_03b41884.obj
-    tier: 4
+    tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 8554347705430574823, guid: 5981168cd48c3804cb30fe00c5916259, type: 3}
+    previewPrefab: {fileID: 4336903402764473262, guid: 5981168cd48c3804cb30fe00c5916259, type: 3}
     partAsset: {fileID: 11400000, guid: 07bab276e70ea184aa7627ea9123ea23, type: 2}
   - partId: nova_mob_legs24_sts
     slot: 2
-    displayName: Legs24 Sts
+    displayName: "\uC2A4\uD0C0\uC27D"
     sourceRelativePath: datan\common\legs24_sts.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs24_sts_3e631676.obj
-    tier: 5
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 6059976409432031750, guid: 35df614f330c4d043a6ba459b8ac7f80, type: 3}
+    previewPrefab: {fileID: 1154424798533629205, guid: 35df614f330c4d043a6ba459b8ac7f80, type: 3}
     partAsset: {fileID: 11400000, guid: 42100866978a6214e8ac9c3cec147aba, type: 2}
   - partId: nova_mob_legs25_kd
     slot: 2
-    displayName: Legs25 Kd
+    displayName: "\uCFFC\uB354"
     sourceRelativePath: datan\common\legs25_kd.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs25_kd_803953d7.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 8777989793214324182, guid: 9b1f71ec8615696448705a68a745e7e7, type: 3}
-    partAsset: {fileID: 11400000, guid: d1b5d4c9db89f9946b536019198f609a, type: 2}
-  - partId: nova_mob_legs26_tower
-    slot: 2
-    displayName: Legs26 Tower
-    sourceRelativePath: datan\common\legs26_tower.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs26_tower_471d1792.obj
     tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 595721371747571421, guid: cd0e2e0045f70e548b2ae7b9c8bacb5b, type: 3}
-    partAsset: {fileID: 11400000, guid: c9b58cf1c1cd11f42a3e35e0e23e9127, type: 2}
+    previewPrefab: {fileID: 6308505267152536235, guid: 9b1f71ec8615696448705a68a745e7e7, type: 3}
+    partAsset: {fileID: 11400000, guid: d1b5d4c9db89f9946b536019198f609a, type: 2}
   - partId: nova_mob_legs3_ktpr
     slot: 2
-    displayName: Legs3 Ktpr
+    displayName: "\uCE90\uD130\uD544\uB7EC"
     sourceRelativePath: datan\common\legs3_ktpr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs3_ktpr_aa64fc50.obj
-    tier: 2
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 3284387329989949124, guid: e13e08b17c8bbd947a18c33dfbb25a32, type: 3}
+    previewPrefab: {fileID: 1425970781323038560, guid: e13e08b17c8bbd947a18c33dfbb25a32, type: 3}
     partAsset: {fileID: 11400000, guid: b7e1dd5224929b448a52f06b3e5b313c, type: 2}
   - partId: nova_mob_legs34_dpns
     slot: 2
-    displayName: Legs34 Dpns
+    displayName: "\uB378\uD53C\uB204\uC2A4"
     sourceRelativePath: datan\common\legs34_dpns.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs34_dpns_c3eae0c2.obj
-    tier: 2
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 6128251310654177374, guid: de67b59e2221e3147aef420aa87f3662, type: 3}
+    previewPrefab: {fileID: 4273764521313947279, guid: de67b59e2221e3147aef420aa87f3662, type: 3}
     partAsset: {fileID: 11400000, guid: 9dc0e98e4bff0cc489b5423405cffb5e, type: 2}
   - partId: nova_mob_legs4_kt
     slot: 2
-    displayName: Legs4 Kt
+    displayName: "\uCE94\uD130"
     sourceRelativePath: datan\common\legs4_kt.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs4_kt_0169395a.obj
-    tier: 4
+    tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 2991646659657472210, guid: 8e191d0af1029cf4988ec46bd8e4767c, type: 3}
+    previewPrefab: {fileID: 1811382055540432700, guid: 8e191d0af1029cf4988ec46bd8e4767c, type: 3}
     partAsset: {fileID: 11400000, guid: a79f09b292bc5204ea2f66fc3ce600c5, type: 2}
-  - partId: nova_mob_legs47_tower2
-    slot: 2
-    displayName: Legs47 Tower2
-    sourceRelativePath: datan\common\legs47_tower2.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs47_tower2_1ec3c768.obj
-    tier: 2
-    needsNameReview: 0
-    previewPrefab: {fileID: 868557743981360270, guid: aa149befeadf82f42b9acf526bf59319, type: 3}
-    partAsset: {fileID: 11400000, guid: 052166aad14cd54439ef2d77c7d95bbb, type: 2}
-  - partId: nova_mob_legs48_tower2
-    slot: 2
-    displayName: Legs48 Tower2
-    sourceRelativePath: datan\common\legs48_tower2.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs48_tower2_9feb06d6.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 7515371239364050556, guid: c7c20020099f47d4c88584c7affe5f99, type: 3}
-    partAsset: {fileID: 11400000, guid: 9729067f44470e24bbcc007be018051b, type: 2}
   - partId: nova_mob_legs49_otrs
     slot: 2
-    displayName: Legs49 Otrs
+    displayName: "\uC635\uD14C\uB9AD\uC2A4"
     sourceRelativePath: datan\common\legs49_otrs.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs49_otrs_c7f057fd.obj
-    tier: 1
+    tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 2706085887139594986, guid: 4c4eed7e6ccca0b4996000606a319365, type: 3}
+    previewPrefab: {fileID: 7969414521577593598, guid: 4c4eed7e6ccca0b4996000606a319365, type: 3}
     partAsset: {fileID: 11400000, guid: d1977a0679b1b1449a931838c7632b18, type: 2}
   - partId: nova_mob_legs5_ko
     slot: 2
-    displayName: Legs5 Ko
+    displayName: "\uD0A4\uC704"
     sourceRelativePath: datan\common\legs5_ko.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs5_ko_cf6d709a.obj
-    tier: 2
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 5823680320192517718, guid: 8032fdfa3ed3f1e40a4cfc1fc40a0b0e, type: 3}
+    previewPrefab: {fileID: 7567358885575076698, guid: 8032fdfa3ed3f1e40a4cfc1fc40a0b0e, type: 3}
     partAsset: {fileID: 11400000, guid: 1cbef7474c2b9c247a462641b8b0454b, type: 2}
   - partId: nova_mob_legs50_pps
     slot: 2
-    displayName: Legs50 Pps
+    displayName: "\uD3EC\uD37C\uC2A4"
     sourceRelativePath: datan\common\legs50_pps.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs50_pps_8af5e808.obj
-    tier: 1
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 4139299555267655038, guid: b91953501c409074d88678b4200d410a, type: 3}
+    previewPrefab: {fileID: 148739666920332693, guid: b91953501c409074d88678b4200d410a, type: 3}
     partAsset: {fileID: 11400000, guid: bd1bc5f65524e874abc89ceba8d0c7fb, type: 2}
   - partId: nova_mob_legs51_ppo
     slot: 2
-    displayName: Legs51 Ppo
+    displayName: "\uD53C\uD30C\uC6B8"
     sourceRelativePath: datan\common\legs51_ppo.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs51_ppo_c6fb22ee.obj
-    tier: 3
+    tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 5966907727103711056, guid: 2b9da7beda09ff04c869d74b19777e9b, type: 3}
+    previewPrefab: {fileID: 6940739033207161666, guid: 2b9da7beda09ff04c869d74b19777e9b, type: 3}
     partAsset: {fileID: 11400000, guid: c0cf36c3395ebd9458f9d49ec396378c, type: 2}
   - partId: nova_mob_legs52_pkk
     slot: 2
-    displayName: Legs52 Pkk
+    displayName: "\uD53C\uCF54\uD06C"
     sourceRelativePath: datan\common\legs52_pkk.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs52_pkk_d393ef61.obj
-    tier: 3
+    tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 591946137527275469, guid: 04f01ade83064d246adcf3cc3d54f66d, type: 3}
+    previewPrefab: {fileID: 5194064284652140149, guid: 04f01ade83064d246adcf3cc3d54f66d, type: 3}
     partAsset: {fileID: 11400000, guid: d7ec0d2923e56c74a823531808864848, type: 2}
   - partId: nova_mob_legs53_rgd
     slot: 2
-    displayName: Legs53 Rgd
+    displayName: "\uB798\uAC70\uB4DC"
     sourceRelativePath: datan\common\legs53_rgd.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs53_rgd_3f073fd8.obj
-    tier: 3
+    tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 1873298375660423941, guid: 2e62399b7041bc64b9310764eac0db3b, type: 3}
+    previewPrefab: {fileID: 2152222614640103584, guid: 2e62399b7041bc64b9310764eac0db3b, type: 3}
     partAsset: {fileID: 11400000, guid: 16d5369634d403a44b42f44434e085fb, type: 2}
-  - partId: nova_mob_legs54_ros
-    slot: 2
-    displayName: Legs54 Ros
-    sourceRelativePath: datan\common\legs54_ros.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs54_ros_0c3d6adf.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 5657729099752448201, guid: 5393c0f52b79a334692a908cfedf0ae3, type: 3}
-    partAsset: {fileID: 11400000, guid: eec84910230e74c4788c6e47031a7f7b, type: 2}
   - partId: nova_mob_legs6_ok
     slot: 2
-    displayName: Legs6 Ok
+    displayName: "\uC6CC\uCEE4"
     sourceRelativePath: datan\common\legs6_ok.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs6_ok_919e17d1.obj
     tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 4361335289461157557, guid: 648014b101e9ce241b73dff46d78fe46, type: 3}
+    previewPrefab: {fileID: 763230164220216984, guid: 648014b101e9ce241b73dff46d78fe46, type: 3}
     partAsset: {fileID: 11400000, guid: 017985b869eaf0a42b6ff59393091e8f, type: 2}
   - partId: nova_mob_legs7_hb
     slot: 2
-    displayName: Legs7 Hb
+    displayName: "\uD638\uBC84"
     sourceRelativePath: datan\common\legs7_hb.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs7_hb_31b3460a.obj
-    tier: 5
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 4945066661324841852, guid: ac8d7ed77d43d8a43adfa519b18925d7, type: 3}
+    previewPrefab: {fileID: 1801403108056043495, guid: ac8d7ed77d43d8a43adfa519b18925d7, type: 3}
     partAsset: {fileID: 11400000, guid: 392033efcc63eb3428cbba71336ef450, type: 2}
   - partId: nova_mob_legs8_obr
     slot: 2
-    displayName: Legs8 Obr
+    displayName: "\uC570\uBE14\uB7EC"
     sourceRelativePath: datan\common\legs8_obr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs8_obr_1aac85f2.obj
-    tier: 2
+    tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 4088600193349682794, guid: c4c8e73cf1392df4fa33db11773708c0, type: 3}
+    previewPrefab: {fileID: 575433341706038870, guid: c4c8e73cf1392df4fa33db11773708c0, type: 3}
     partAsset: {fileID: 11400000, guid: 51fe2e7b6368b564eae11dd32bb7fd90, type: 2}
   - partId: nova_mob_legs9_ptr
     slot: 2
-    displayName: Legs9 Ptr
+    displayName: "\uD328\uD2B8\uB864"
     sourceRelativePath: datan\common\legs9_ptr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_legs9_ptr_262d1fec.obj
-    tier: 3
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 7483787228584540575, guid: 8373a30b81399b746b0cfc8ec5cb5f0e, type: 3}
+    previewPrefab: {fileID: 487939656985198154, guid: 8373a30b81399b746b0cfc8ec5cb5f0e, type: 3}
     partAsset: {fileID: 11400000, guid: cff457f1e0e73a6489fdbb16ece7eb3f, type: 2}
   - partId: nova_mob_n_legs38_grp
     slot: 2
-    displayName: N Legs38 Grp
+    displayName: "\uAC24\uB85C\uD37CN"
     sourceRelativePath: datan\common\n_legs38_grp.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_n_legs38_grp_03f6fc71.obj
-    tier: 2
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 7593709597467205905, guid: b91f79dc7514f6c42920ed07008622a3, type: 3}
+    previewPrefab: {fileID: 3236222170992914530, guid: b91f79dc7514f6c42920ed07008622a3, type: 3}
     partAsset: {fileID: 11400000, guid: aa9808f095afde242a530f202a64b095, type: 2}
   - partId: nova_mob_n_legs39_wk
     slot: 2
-    displayName: N Legs39 Wk
+    displayName: "\uC6CC\uCEE4N"
     sourceRelativePath: datan\common\n_legs39_wk.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_n_legs39_wk_c195f805.obj
     tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 4616360766511028228, guid: 2e657a25c4f658b4c9d52eebe8f838c7, type: 3}
+    previewPrefab: {fileID: 6989520517245989779, guid: 2e657a25c4f658b4c9d52eebe8f838c7, type: 3}
     partAsset: {fileID: 11400000, guid: 4de35115b0d7cdf4baa219a63e36d703, type: 2}
   - partId: nova_mob_n_legs40_krz
     slot: 2
-    displayName: N Legs40 Krz
+    displayName: "\uD06C\uB8E8\uC800N"
     sourceRelativePath: datan\common\n_legs40_krz.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_n_legs40_krz_cc420116.obj
-    tier: 5
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 9162567792004033670, guid: 2de1de4b2bb96af43a8134259866c6fb, type: 3}
+    previewPrefab: {fileID: 7167764685156440676, guid: 2de1de4b2bb96af43a8134259866c6fb, type: 3}
     partAsset: {fileID: 11400000, guid: 967170a5858cf044599bef0bd4944668, type: 2}
   - partId: nova_mob_n_legs41_tdr
     slot: 2
-    displayName: N Legs41 Tdr
+    displayName: "\uD1A0\uB4E4\uB7ECN"
     sourceRelativePath: datan\common\n_legs41_tdr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_n_legs41_tdr_fd9e43f8.obj
-    tier: 2
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 5947523914509835148, guid: 09f89263527375c4c9d52752ea04a0f2, type: 3}
+    previewPrefab: {fileID: 595531654625025936, guid: 09f89263527375c4c9d52752ea04a0f2, type: 3}
     partAsset: {fileID: 11400000, guid: 420930641b44c0b4bb053e2068c8af75, type: 2}
   - partId: nova_mob_n_legs42_krr
     slot: 2
-    displayName: N Legs42 Krr
+    displayName: "\uD06C\uB864\uB7ECN"
     sourceRelativePath: datan\common\n_legs42_krr.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_n_legs42_krr_c6cdc337.obj
-    tier: 4
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 1183413113308649347, guid: 8303df47f01b980428d93d1b8f38fdd9, type: 3}
+    previewPrefab: {fileID: 2554766184266811772, guid: 8303df47f01b980428d93d1b8f38fdd9, type: 3}
     partAsset: {fileID: 11400000, guid: 9817134ec424cf84a877fb68f2d51cdc, type: 2}
-  - partId: nova_mob_n_legs43_ptr
-    slot: 2
-    displayName: N Legs43 Ptr
-    sourceRelativePath: datan\common\n_legs43_ptr.gx
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_n_legs43_ptr_b131512f.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 4304685840585908140, guid: d89790693396bd046baaa0075a69906d, type: 3}
-    partAsset: {fileID: 11400000, guid: f1994f2e1c5a53246ab76242ffaaa2c0, type: 2}
   - partId: nova_mob_n_legs44_hord
     slot: 2
-    displayName: N Legs44 Hord
+    displayName: "\uD558\uC774\uB85C\uB354N"
     sourceRelativePath: datan\common\n_legs44_hord.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_n_legs44_hord_7e40c834.obj
-    tier: 1
+    tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 1434905248035221891, guid: 82a89c4273862334d99b29a323e2a5b0, type: 3}
+    previewPrefab: {fileID: 4021959559710624126, guid: 82a89c4273862334d99b29a323e2a5b0, type: 3}
     partAsset: {fileID: 11400000, guid: 8aa2fac9785ef2f4f89bbbc0746a3f78, type: 2}
   - partId: nova_mob_n_legs45_strod
     slot: 2
-    displayName: N Legs45 Strod
+    displayName: "\uC2A4\uD2B8\uB77C\uC774\uB354N"
     sourceRelativePath: datan\common\n_legs45_strod.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_n_legs45_strod_619581df.obj
-    tier: 3
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 3706733056782474541, guid: 058ea89eda24ed146ac4c86cfe665079, type: 3}
+    previewPrefab: {fileID: 4746793678948763183, guid: 058ea89eda24ed146ac4c86cfe665079, type: 3}
     partAsset: {fileID: 11400000, guid: f0c2cc3e425a7974c82179d715845c4a, type: 2}
   - partId: nova_mob_n_legs46_sprt
     slot: 2
-    displayName: N Legs46 Sprt
+    displayName: "\uC2A4\uD50C\uB9AC\uD130N"
     sourceRelativePath: datan\common\n_legs46_sprt.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_n_legs46_sprt_bda74735.obj
-    tier: 1
-    needsNameReview: 0
-    previewPrefab: {fileID: 3165573496323201573, guid: 1a57e77fd1a56d444bd023f89318b44c, type: 3}
-    partAsset: {fileID: 11400000, guid: afee894528bde6a43a01a0b3539f3f58, type: 2}
-  - partId: nova_mob_no21_legs
-    slot: 2
-    displayName: No21 Legs
-    sourceRelativePath: datan\common\no21-legs.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_no21-legs_c6790259.obj
     tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 6802265001842326096, guid: fca49cdadedbcee4a861b2d75ced9b30, type: 3}
-    partAsset: {fileID: 11400000, guid: dbf0e1dab71c8f245897d8adc3e473b2, type: 2}
+    previewPrefab: {fileID: 5214142471041284319, guid: 1a57e77fd1a56d444bd023f89318b44c, type: 3}
+    partAsset: {fileID: 11400000, guid: afee894528bde6a43a01a0b3539f3f58, type: 2}
   - partId: nova_mob_s_legs27_ksor
     slot: 2
-    displayName: S Legs27 Ksor
+    displayName: "\uCE74\uC18C\uC640\uB9ACS"
     sourceRelativePath: datan\common\s_legs27_ksor.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_s_legs27_ksor_02fe43b0.obj
     tier: 3
     needsNameReview: 0
-    previewPrefab: {fileID: 4073888999692125120, guid: 3fd6c13869767084abd94bf618d6d416, type: 3}
+    previewPrefab: {fileID: 615944362430114455, guid: 3fd6c13869767084abd94bf618d6d416, type: 3}
     partAsset: {fileID: 11400000, guid: c3daa20a2870c604c995474586e08d82, type: 2}
   - partId: nova_mob_s_legs28_krz
     slot: 2
-    displayName: S Legs28 Krz
+    displayName: "\uD06C\uB8E8\uC800S"
     sourceRelativePath: datan\common\s_legs28_krz.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_s_legs28_krz_49aae83c.obj
-    tier: 5
+    tier: 2
     needsNameReview: 0
-    previewPrefab: {fileID: 5264432547670440414, guid: 7988943e5623eab40a4620573f54d0db, type: 3}
+    previewPrefab: {fileID: 416396986621302309, guid: 7988943e5623eab40a4620573f54d0db, type: 3}
     partAsset: {fileID: 11400000, guid: 12404599e0ad25b469af455a625bae42, type: 2}
   - partId: nova_mob_s_legs29_sprt
     slot: 2
-    displayName: S Legs29 Sprt
+    displayName: "\uC2A4\uD50C\uB9AC\uD130S"
     sourceRelativePath: datan\common\s_legs29_sprt.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_s_legs29_sprt_544da1a3.obj
-    tier: 1
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 6418178597526537318, guid: 1b1a897ac8215534ab19c4a1527b43f4, type: 3}
+    previewPrefab: {fileID: 3969544626497927799, guid: 1b1a897ac8215534ab19c4a1527b43f4, type: 3}
     partAsset: {fileID: 11400000, guid: 7a37adfc33c4455489ed8df40bf101e3, type: 2}
   - partId: nova_mob_s_legs30_tk
     slot: 2
-    displayName: S Legs30 Tk
+    displayName: "\uD0F1\uCEE4S"
     sourceRelativePath: datan\common\s_legs30_tk.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_s_legs30_tk_4c94062a.obj
-    tier: 4
+    tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 682154847537810375, guid: 4569f350942f7f842be1ccfc468fb96f, type: 3}
+    previewPrefab: {fileID: 1165956261395945805, guid: 4569f350942f7f842be1ccfc468fb96f, type: 3}
     partAsset: {fileID: 11400000, guid: b7eccb24279f00f40a179544827b69d2, type: 2}
   - partId: nova_mob_s_legs31_ko
     slot: 2
-    displayName: S Legs31 Ko
+    displayName: "\uD0A4\uC704S"
     sourceRelativePath: datan\common\s_legs31_ko.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_s_legs31_ko_99ce2771.obj
-    tier: 2
+    tier: 4
     needsNameReview: 0
-    previewPrefab: {fileID: 6724037382661188615, guid: c22b57aca17b8074580aa4838916b5be, type: 3}
+    previewPrefab: {fileID: 1606322670262288832, guid: c22b57aca17b8074580aa4838916b5be, type: 3}
     partAsset: {fileID: 11400000, guid: 212cbf97f5043684ca7ebea0c2bbc7be, type: 2}
   - partId: nova_mob_s_legs32_kb
     slot: 2
-    displayName: S Legs32 Kb
+    displayName: "\uCF54\uBCB3S"
     sourceRelativePath: datan\common\s_legs32_kb.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_s_legs32_kb_579e95d3.obj
-    tier: 4
+    tier: 1
     needsNameReview: 0
-    previewPrefab: {fileID: 794407430677465399, guid: 8772f283e8821f540b6178cc49c8b030, type: 3}
+    previewPrefab: {fileID: 3681026003090844892, guid: 8772f283e8821f540b6178cc49c8b030, type: 3}
     partAsset: {fileID: 11400000, guid: 8660c9a856f20714faa9169a01920229, type: 2}
   - partId: nova_mob_s_legs33_spod
     slot: 2
-    displayName: S Legs33 Spod
+    displayName: "\uC2A4\uD30C\uC774\uB354S"
     sourceRelativePath: datan\common\s_legs33_spod.gx
     modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_s_legs33_spod_72b4e49f.obj
     tier: 5
     needsNameReview: 0
-    previewPrefab: {fileID: 2062271003970676190, guid: 2b1af7c0c9cd4bc4baf3719848049a70, type: 3}
+    previewPrefab: {fileID: 5617296553609966065, guid: 2b1af7c0c9cd4bc4baf3719848049a70, type: 3}
     partAsset: {fileID: 11400000, guid: 5e16a89c45e8d494c9f61c82ef3d1f8a, type: 2}
-  - partId: nova_mob_ss0_legs55_krz
-    slot: 2
-    displayName: Ss0 Legs55 Krz
-    sourceRelativePath: datan\common\ss0_legs55_krz.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_ss0_legs55_krz_fa5d3655.obj
-    tier: 4
-    needsNameReview: 0
-    previewPrefab: {fileID: 5789391093827571779, guid: f4aefd34987e4ae48a2c6bff60903f88, type: 3}
-    partAsset: {fileID: 11400000, guid: 266063598f044c746b772fe480f4525d, type: 2}
-  - partId: nova_mob_ss0_legs56_otrs
-    slot: 2
-    displayName: Ss0 Legs56 Otrs
-    sourceRelativePath: datan\common\ss0_legs56_otrs.GX
-    modelPath: Assets/Art/Nova1492/GXConverted/Models/UnitParts/Legs/datan_common_ss0_legs56_otrs_721627ae.obj
-    tier: 5
-    needsNameReview: 0
-    previewPrefab: {fileID: 4116744080853603372, guid: 4cc355cc8ad31c640931c9b88bc4ad49, type: 3}
-    partAsset: {fileID: 11400000, guid: 62698ceffb879ee4a8a69ca17ea800e9, type: 2}

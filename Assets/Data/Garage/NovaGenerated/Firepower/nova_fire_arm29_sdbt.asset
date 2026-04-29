@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm29_sdbt
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm29_sdbt
-  displayName: Arm29 Sdbt
+  displayName: "\uC120\uB354\uBCFC\uD2B8"
   icon: {fileID: 0}
   attackDamage: 48
   attackSpeed: 0.93
   range: 7
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm29_sdbt.gx.
-    Tier: 4.'
-  previewPrefab: {fileID: 8623373059181458754, guid: 4b41e19df9297794b9f372503fea19e4, type: 3}
+  description: datan\common\arm29_sdbt.gx
+  previewPrefab: {fileID: 1782076559676467549, guid: 4b41e19df9297794b9f372503fea19e4, type: 3}

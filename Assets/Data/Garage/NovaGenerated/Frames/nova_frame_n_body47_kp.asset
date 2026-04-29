@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_n_body47_kp
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_n_body47_kp
-  displayName: N Body47 Kp
+  displayName: "\uD0B9\uD540N"
   icon: {fileID: 0}
-  baseHp: 510
+  baseHp: 465
   baseMoveRange: 4
-  baseAttackSpeed: 1.15
+  baseAttackSpeed: 1.2
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 2364657133769232598, guid: c0b62c349764907489eee2dcd4d9874b, type: 3}
+  previewPrefab: {fileID: 4149571528205118150, guid: d2993753e4d638041bf52c21ef7ccb45, type: 3}

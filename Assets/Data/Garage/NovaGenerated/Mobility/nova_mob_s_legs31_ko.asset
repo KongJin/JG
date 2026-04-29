@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_s_legs31_ko
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_s_legs31_ko
-  displayName: S Legs31 Ko
+  displayName: "\uD0A4\uC704S"
   icon: {fileID: 0}
-  hpBonus: 180
-  moveRange: 5.1
-  anchorRange: 5.1
-  description: 'Generated Nova1492 baseline. Source: datan\common\s_legs31_ko.gx.
-    Tier: 2.'
-  previewPrefab: {fileID: 6724037382661188615, guid: c22b57aca17b8074580aa4838916b5be, type: 3}
+  hpBonus: 280
+  moveRange: 4
+  anchorRange: 4
+  description: datan\common\s_legs31_ko.gx
+  previewPrefab: {fileID: 1606322670262288832, guid: c22b57aca17b8074580aa4838916b5be, type: 3}

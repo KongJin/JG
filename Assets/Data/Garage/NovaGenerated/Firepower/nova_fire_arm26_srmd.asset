@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm26_srmd
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm26_srmd
-  displayName: Arm26 Srmd
+  displayName: "\uC0AC\uB77C\uB9CC\uB2E4"
   icon: {fileID: 0}
-  attackDamage: 56
-  attackSpeed: 0.8
-  range: 7.75
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm26_srmd.gx.
-    Tier: 5.'
-  previewPrefab: {fileID: 6858317527207761736, guid: b085deb4acc27c9439a9b9e988afdd3c, type: 3}
+  attackDamage: 32
+  attackSpeed: 1.19
+  range: 5.5
+  description: datan\common\arm26_srmd.gx
+  previewPrefab: {fileID: 1406304644820259131, guid: b085deb4acc27c9439a9b9e988afdd3c, type: 3}

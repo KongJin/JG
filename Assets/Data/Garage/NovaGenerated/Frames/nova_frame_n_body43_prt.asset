@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_n_body43_prt
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_n_body43_prt
-  displayName: N Body43 Prt
+  displayName: "\uD50C\uB798\uD230N"
   icon: {fileID: 0}
-  baseHp: 555
+  baseHp: 510
   baseMoveRange: 4
-  baseAttackSpeed: 1.1
+  baseAttackSpeed: 1.15
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 8771561792705665093, guid: 83639cdd7cb3e5643805ce9deb2d11a9, type: 3}
+  previewPrefab: {fileID: 5224624540257461524, guid: af047ac5508ef3146800f96a6c947510, type: 3}

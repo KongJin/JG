@@ -43,6 +43,7 @@ namespace Features.Player
         [Required, SerializeField] private Camera _camera;
         [Required, SerializeField] private CameraFollower _cameraFollower;
         [SerializeField] private GameObject _healthHudPrefab;
+        [Required, SerializeField] private PlayerSpecConfig _playerSpecConfig;
         [Required, SerializeField] private ProjectileSpawner _projectileSpawner;
         [Required, SerializeField] private CombatSetup _combatSetup;
         [Required, SerializeField] private ZoneSetup _zoneSetup;
@@ -178,7 +179,7 @@ namespace Features.Player
 
             _localPlayerSetup.InitializeLocal(
                 _eventBus,
-                new DefaultPlayerSpecProvider(),
+                new DefaultPlayerSpecProvider(_playerSpecConfig),
                 _statusSetup.SpeedModifier,
                 _playerSceneRegistry,
                 _playerLookup);
@@ -323,7 +324,8 @@ namespace Features.Player
                 _eventBus,
                 _statusSetup,
                 _playerSceneRegistry,
-                _playerLookup))
+                _playerLookup,
+                new DefaultPlayerSpecProvider(_playerSpecConfig)))
                 return;
 
             if (_healthHudPrefab != null)

@@ -1,5 +1,6 @@
 using Features.Combat;
 using Features.Enemy;
+using Features.Enemy.Infrastructure;
 using Features.Enemy.Application.Ports;
 using Features.Skill.Infrastructure;
 using Features.Wave.Application;
@@ -227,16 +228,44 @@ namespace Features.Wave
                 return;
 
             // Master는 EnemySpawnAdapter.SpawnEnemy()에서 올바른 EnemyData로 명시적 초기화한다.
-            // 이 콜백은 비-Master 클라이언트 전용 fallback이다.
+            // 이 콜백은 비-Master 클라이언트 전용이며 WaveTableData serialized contract에서 데이터를 해석한다.
             if (PhotonNetwork.IsMasterClient)
                 return;
+
+            var enemyData = ResolveEnemyDataForArrival(enemy);
+            if (enemyData == null)
+            {
+                Debug.LogError("[WaveSetup] Could not resolve EnemyData for arriving enemy from WaveTableData.", enemy);
+                return;
+            }
 
             enemy.Initialize(
                 _eventBus,
                 _combatSetup,
+                enemyData,
                 _hostilePositionQuery,
                 _coreObjectiveQuery
             );
+        }
+
+        private EnemyData ResolveEnemyDataForArrival(EnemySetup enemy)
+        {
+            if (_waveTable == null)
+                return null;
+
+            if (enemy != null &&
+                _waveTable.TryGetEnemyDataByNetworkKey(enemy.EnemyNetworkKey, out var matchedData))
+                return matchedData;
+
+            if (_waveTable.TryGetFirstEnemyData(out var fallbackData))
+            {
+                Debug.LogWarning(
+                    $"[WaveSetup] Enemy network key '{enemy?.EnemyNetworkKey}' did not match WaveTableData. Using first serialized enemy data.",
+                    enemy);
+                return fallbackData;
+            }
+
+            return null;
         }
 
         private void HandleReturnToLobbyRequested()

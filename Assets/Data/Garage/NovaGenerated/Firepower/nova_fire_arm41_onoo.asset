@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm41_onoo
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm41_onoo
-  displayName: Arm41 Onoo
+  displayName: "\uC544\uB204\uC544\uC774"
   icon: {fileID: 0}
-  attackDamage: 56
-  attackSpeed: 0.8
-  range: 7.75
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm41_onoo.gx.
-    Tier: 5.'
-  previewPrefab: {fileID: 1787921442112174205, guid: da6a1950d8121d146a153598647a097e, type: 3}
+  attackDamage: 40
+  attackSpeed: 1.06
+  range: 6.25
+  description: datan\common\arm41_onoo.gx
+  previewPrefab: {fileID: 8683336917922974903, guid: da6a1950d8121d146a153598647a097e, type: 3}

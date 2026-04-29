@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_legs52_pkk
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_legs52_pkk
-  displayName: Legs52 Pkk
+  displayName: "\uD53C\uCF54\uD06C"
   icon: {fileID: 0}
-  hpBonus: 230
-  moveRange: 4.55
-  anchorRange: 4.55
-  description: 'Generated Nova1492 baseline. Source: datan\common\legs52_pkk.gx.
-    Tier: 3.'
-  previewPrefab: {fileID: 591946137527275469, guid: 04f01ade83064d246adcf3cc3d54f66d, type: 3}
+  hpBonus: 330
+  moveRange: 3.45
+  anchorRange: 3.45
+  description: datan\common\legs52_pkk.gx
+  previewPrefab: {fileID: 5194064284652140149, guid: 04f01ade83064d246adcf3cc3d54f66d, type: 3}

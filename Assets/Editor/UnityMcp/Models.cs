@@ -1018,6 +1018,9 @@ namespace ProjectSD.EditorTools.UnityMcp
         public string method;       // "click", "submit", "value", "custom"
         public string customMethod; // 커스텀 메서드 이름 (method="custom"일 때)
         public string[] args;       // 메서드에 전달할 인자
+        public string arg0;         // JsonUtility-safe single argument fields
+        public string arg1;
+        public string arg2;
     }
 
     [Serializable]

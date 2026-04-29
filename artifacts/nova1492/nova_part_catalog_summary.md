@@ -6,18 +6,31 @@
 
 | slot | count | missing models | name review | triangle range |
 |---|---:|---:|---:|---|
-| Firepower | 160 | 0 | 67 | 2-838 |
-| Frame | 100 | 0 | 4 | 2-838 |
-| Mobility | 61 | 0 | 0 | 12-373 |
+| Firepower | 91 | 0 | 0 | 80-1248 |
+| Frame | 71 | 0 | 0 | 20-858 |
+| Mobility | 60 | 0 | 0 | 12-1294 |
 
 ## Category Mapping
 
 | category | slot | count |
 |---|---|---:|
-| UnitParts/ArmWeapons | Firepower | 160 |
-| UnitParts/Bases | Frame | 28 |
-| UnitParts/Bodies | Frame | 72 |
-| UnitParts/Legs | Mobility | 61 |
+| UnitParts/ArmWeapons | Firepower | 91 |
+| UnitParts/Bodies | Frame | 71 |
+| UnitParts/Legs | Mobility | 60 |
+
+## Source Name Coverage
+
+- part description source: `C:\Program Files (x86)\Nova1492\datan\kr\nvpartdesc.dat`
+- GX description source: `C:\Program Files (x86)\Nova1492\datan\common\gxdesc.ini`
+- rows with original Korean name: 145
+- rows with GX description code mapping: 60
+
+## Playable Filter Policy
+
+- `Frame` includes canonical `body*` rows from `UnitParts/Bodies` only.
+- `Firepower` includes canonical `arm*` rows from `UnitParts/ArmWeapons` only.
+- `Mobility` includes canonical `legs*` rows from `UnitParts/Legs` only, with original code ranges from `gxdesc.ini` when available.
+- `UnitParts/Bases`, `UnitParts/Accessories`, and detached `front/top/larm/rarm/lback/rback/shoulder` pieces are excluded from playable Garage.
 
 ## Generated Stat Policy
 

@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm15_hdkn
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm15_hdkn
-  displayName: Arm15 Hdkn
+  displayName: "\uD578\uB4DC\uCF00\uB10C"
   icon: {fileID: 0}
-  attackDamage: 48
-  attackSpeed: 0.93
-  range: 7
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm15_hdkn.gx.
-    Tier: 4.'
-  previewPrefab: {fileID: 783729122324820017, guid: 91b219364411950488a07ec66ec96816, type: 3}
+  attackDamage: 40
+  attackSpeed: 1.06
+  range: 6.25
+  description: datan\common\arm15_hdkn.gx
+  previewPrefab: {fileID: 896580795538170050, guid: 91b219364411950488a07ec66ec96816, type: 3}

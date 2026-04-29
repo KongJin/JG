@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_n_arm63_krst
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_n_arm63_krst
-  displayName: N Arm63 Krst
+  displayName: "\uD074\uB7EC\uC2A4\uD130N"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
-  description: 'Generated Nova1492 baseline. Source: datan\common\n_arm63_krst.gx.
-    Tier: 3.'
-  previewPrefab: {fileID: 101692261272801184, guid: 9fe7013ce28c9e3409d1dfd55d393c33, type: 3}
+  attackDamage: 24
+  attackSpeed: 1.32
+  range: 4.75
+  description: datan\common\n_arm63_krst.gx
+  previewPrefab: {fileID: 2396059793069005273, guid: 9fe7013ce28c9e3409d1dfd55d393c33, type: 3}

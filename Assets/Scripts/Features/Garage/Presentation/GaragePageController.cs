@@ -12,9 +12,9 @@ namespace Features.Garage.Presentation
     {
         private enum MobilePartFocus
         {
+            Mobility,
             Frame,
             Firepower,
-            Mobility,
         }
 
         [Header("Subviews")]
@@ -43,7 +43,8 @@ namespace Features.Garage.Presentation
         private bool _isInitialized;
         private bool _isInitializingRoster;
         private bool _isSettingsOverlayOpen;
-        private MobilePartFocus _mobilePartFocus = MobilePartFocus.Frame;
+        private MobilePartFocus _mobilePartFocus = MobilePartFocus.Mobility;
+        private string _setBUitkPartSearchText = string.Empty;
         private readonly PublishGarageDraftStateUseCase _draftStatePublisher = new();
         private readonly GaragePageScrollController _scrollController = new();
         private readonly GarageSaveFlow _saveFlow = new();
@@ -154,6 +155,12 @@ namespace Features.Garage.Presentation
                 _setBUitkAdapter.Bind();
                 _setBUitkAdapter.SlotSelected += SelectSlot;
                 _setBUitkAdapter.PartFocusSelected += focus => SetMobilePartFocus(ToMobilePartFocus(focus));
+                _setBUitkAdapter.PartSearchChanged += value =>
+                {
+                    _setBUitkPartSearchText = value ?? string.Empty;
+                    Render();
+                };
+                _setBUitkAdapter.PartOptionSelected += ApplyPartSelection;
                 _setBUitkAdapter.SaveRequested += RequestSave;
                 _setBUitkAdapter.SettingsRequested += () => SetSettingsOverlayOpen(!_isSettingsOverlayOpen);
             }
@@ -190,7 +197,8 @@ namespace Features.Garage.Presentation
         private void SelectSlot(int slotIndex)
         {
             _state.SelectSlot(slotIndex);
-            _mobilePartFocus = MobilePartFocus.Frame;
+            _mobilePartFocus = MobilePartFocus.Mobility;
+            _setBUitkPartSearchText = string.Empty;
             Render();
             _scrollController.ScrollBodyToTop(_chromeBindings != null ? _chromeBindings.MobileBodyHost : null);
         }
@@ -285,6 +293,7 @@ namespace Features.Garage.Presentation
             _unitPreviewView.Render(slotViewModels[_state.SelectedSlotIndex]);
             _setBUitkAdapter?.Render(
                 slotViewModels,
+                BuildSetBUitkPartListViewModel(),
                 editorViewModel,
                 resultViewModel,
                 ToEditorFocus(_mobilePartFocus),
@@ -301,7 +310,33 @@ namespace Features.Garage.Presentation
 
         private void SetMobilePartFocus(MobilePartFocus nextFocus)
         {
+            if (_mobilePartFocus != nextFocus)
+                _setBUitkPartSearchText = string.Empty;
+
             _mobilePartFocus = nextFocus;
+            Render();
+        }
+
+        private void ApplyPartSelection(GarageNovaPartSelection selection)
+        {
+            EnsureInitialized();
+            switch (selection.Slot)
+            {
+                case GarageNovaPartPanelSlot.Frame:
+                    _mobilePartFocus = MobilePartFocus.Frame;
+                    _state.SetEditingFrameId(selection.PartId);
+                    break;
+                case GarageNovaPartPanelSlot.Firepower:
+                    _mobilePartFocus = MobilePartFocus.Firepower;
+                    _state.SetEditingFirepowerId(selection.PartId);
+                    break;
+                case GarageNovaPartPanelSlot.Mobility:
+                    _mobilePartFocus = MobilePartFocus.Mobility;
+                    _state.SetEditingMobilityId(selection.PartId);
+                    break;
+            }
+
+            _state.ClearValidationOverride();
             Render();
         }
 
@@ -330,8 +365,8 @@ namespace Features.Garage.Presentation
         {
             return focus switch
             {
-                MobilePartFocus.Frame => GarageEditorFocus.Frame,
                 MobilePartFocus.Firepower => GarageEditorFocus.Firepower,
+                MobilePartFocus.Frame => GarageEditorFocus.Frame,
                 _ => GarageEditorFocus.Mobility,
             };
         }
@@ -442,6 +477,18 @@ namespace Features.Garage.Presentation
         {
             EnsureInitialized();
             return GarageDraftEvaluator.Evaluate(_state, _catalog, _composeUnit, _validateRoster);
+        }
+
+        private GarageNovaPartsPanelViewModel BuildSetBUitkPartListViewModel()
+        {
+            return GarageNovaPartsPanelViewModelFactory.Build(
+                _catalog,
+                new GarageNovaPartsDraftSelection(
+                    _state.EditingFrameId,
+                    _state.EditingFirepowerId,
+                    _state.EditingMobilityId),
+                ToEditorFocus(_mobilePartFocus),
+                _setBUitkPartSearchText);
         }
 
         private void EnsureInitialized()

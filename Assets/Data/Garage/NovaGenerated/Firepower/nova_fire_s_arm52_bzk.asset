@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_s_arm52_bzk
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_s_arm52_bzk
-  displayName: S Arm52 Bzk
+  displayName: "\uBC14\uC8FC\uCE74S"
   icon: {fileID: 0}
   attackDamage: 48
   attackSpeed: 0.93
   range: 7
-  description: 'Generated Nova1492 baseline. Source: datan\common\s_arm52_bzk.gx.
-    Tier: 4.'
-  previewPrefab: {fileID: 3378414186111785450, guid: 1e989ebc556c4af41a2a789c4c53482f, type: 3}
+  description: datan\common\s_arm52_bzk.gx
+  previewPrefab: {fileID: 4589638438782774683, guid: 1e989ebc556c4af41a2a789c4c53482f, type: 3}

@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_legs2_tdr
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_legs2_tdr
-  displayName: Legs2 Tdr
+  displayName: "\uD1A0\uB4E4\uB7EC"
   icon: {fileID: 0}
-  hpBonus: 180
-  moveRange: 5.1
-  anchorRange: 5.1
-  description: 'Generated Nova1492 baseline. Source: datan\common\legs2_tdr.gx. Tier:
-    2.'
-  previewPrefab: {fileID: 7881504028353664204, guid: 7525539bedaee49468167b092f954ce2, type: 3}
+  hpBonus: 230
+  moveRange: 4.55
+  anchorRange: 4.55
+  description: datan\common\legs2_tdr.gx
+  previewPrefab: {fileID: 7884651524282236508, guid: 7525539bedaee49468167b092f954ce2, type: 3}

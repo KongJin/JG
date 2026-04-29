@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body28_kp2
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body28_kp2
-  displayName: Body28 Kp2
+  displayName: "\uD0B9\uD540II"
   icon: {fileID: 0}
   baseHp: 510
   baseMoveRange: 4
   baseAttackSpeed: 1.15
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 3012703574790781087, guid: 2eb7ee13f2f405648959d2f8ba6e4738, type: 3}
+  previewPrefab: {fileID: 7861716132191816314, guid: 263aa35d675f8f348b20fb14775fd1fc, type: 3}

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: nova_frame_body6_skd
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.UnitFrameData
   frameId: nova_frame_body6_skd
-  displayName: Body6 Skd
+  displayName: "\uC2A4\uCFFC\uB4DC"
   icon: {fileID: 0}
   baseHp: 465
   baseMoveRange: 4
   baseAttackSpeed: 1.2
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
-  previewPrefab: {fileID: 4632600460384855694, guid: af8d03a2b5849ab44860b99f320f9f0d, type: 3}
+  previewPrefab: {fileID: 3640018899660921684, guid: 087b229bedfbae345a5772f0c054d690, type: 3}

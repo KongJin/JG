@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_n_legs38_grp
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_n_legs38_grp
-  displayName: N Legs38 Grp
+  displayName: "\uAC24\uB85C\uD37CN"
   icon: {fileID: 0}
-  hpBonus: 180
-  moveRange: 5.1
-  anchorRange: 5.1
-  description: 'Generated Nova1492 baseline. Source: datan\common\n_legs38_grp.gx.
-    Tier: 2.'
-  previewPrefab: {fileID: 7593709597467205905, guid: b91f79dc7514f6c42920ed07008622a3, type: 3}
+  hpBonus: 280
+  moveRange: 4
+  anchorRange: 4
+  description: datan\common\n_legs38_grp.gx
+  previewPrefab: {fileID: 3236222170992914530, guid: b91f79dc7514f6c42920ed07008622a3, type: 3}

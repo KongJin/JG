@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_s_legs29_sprt
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_s_legs29_sprt
-  displayName: S Legs29 Sprt
+  displayName: "\uC2A4\uD50C\uB9AC\uD130S"
   icon: {fileID: 0}
-  hpBonus: 130
-  moveRange: 5.65
-  anchorRange: 5.65
-  description: 'Generated Nova1492 baseline. Source: datan\common\s_legs29_sprt.gx.
-    Tier: 1.'
-  previewPrefab: {fileID: 6418178597526537318, guid: 1b1a897ac8215534ab19c4a1527b43f4, type: 3}
+  hpBonus: 280
+  moveRange: 4
+  anchorRange: 4
+  description: datan\common\s_legs29_sprt.gx
+  previewPrefab: {fileID: 3969544626497927799, guid: 1b1a897ac8215534ab19c4a1527b43f4, type: 3}

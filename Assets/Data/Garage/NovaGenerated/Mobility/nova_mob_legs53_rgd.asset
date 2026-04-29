@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_legs53_rgd
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_legs53_rgd
-  displayName: Legs53 Rgd
+  displayName: "\uB798\uAC70\uB4DC"
   icon: {fileID: 0}
-  hpBonus: 230
-  moveRange: 4.55
-  anchorRange: 4.55
-  description: 'Generated Nova1492 baseline. Source: datan\common\legs53_rgd.gx.
-    Tier: 3.'
-  previewPrefab: {fileID: 1873298375660423941, guid: 2e62399b7041bc64b9310764eac0db3b, type: 3}
+  hpBonus: 330
+  moveRange: 3.45
+  anchorRange: 3.45
+  description: datan\common\legs53_rgd.gx
+  previewPrefab: {fileID: 2152222614640103584, guid: 2e62399b7041bc64b9310764eac0db3b, type: 3}

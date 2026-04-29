@@ -30,6 +30,12 @@ namespace Features.Player
             _active.AnnounceEnemy(enemySetup);
         }
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStaticState()
+        {
+            _active = null;
+        }
+
         private void Awake()
         {
             if (_active != null && _active != this)

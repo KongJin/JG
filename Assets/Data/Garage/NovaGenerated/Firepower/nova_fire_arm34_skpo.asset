@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm34_skpo
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm34_skpo
-  displayName: Arm34 Skpo
+  displayName: "\uC2A4\uCF5C\uD53C\uC624"
   icon: {fileID: 0}
-  attackDamage: 56
-  attackSpeed: 0.8
-  range: 7.75
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm34_skpo.gx.
-    Tier: 5.'
-  previewPrefab: {fileID: 2299368441788311567, guid: cf7241bbe12584248816eea6b7f64416, type: 3}
+  attackDamage: 40
+  attackSpeed: 1.06
+  range: 6.25
+  description: datan\common\arm34_skpo.gx
+  previewPrefab: {fileID: 7185556946068634638, guid: cf7241bbe12584248816eea6b7f64416, type: 3}

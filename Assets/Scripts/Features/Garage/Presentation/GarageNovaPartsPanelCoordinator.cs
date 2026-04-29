@@ -104,6 +104,8 @@ namespace Features.Garage.Presentation
                 selected != null ? selected.DisplayName : "No matching part",
                 selected != null ? BuildSelectedDetailText(selected) : "Try another search term.",
                 selected != null,
+                selected?.PreviewPrefab,
+                selected?.Alignment,
                 visibleOptions));
         }
 

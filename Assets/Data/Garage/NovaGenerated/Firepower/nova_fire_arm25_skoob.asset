@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_arm25_skoob
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_arm25_skoob
-  displayName: Arm25 Skoob
+  displayName: "\uC1FC\uD06C\uC6E8\uC774\uBE0C"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
-  description: 'Generated Nova1492 baseline. Source: datan\common\arm25_skoob.gx.
-    Tier: 3.'
-  previewPrefab: {fileID: 6699696472005374573, guid: 88b1acb90e296ee4fb8fcbf8c67c5337, type: 3}
+  attackDamage: 24
+  attackSpeed: 1.32
+  range: 4.75
+  description: datan\common\arm25_skoob.gx
+  previewPrefab: {fileID: 8853542259950896680, guid: 88b1acb90e296ee4fb8fcbf8c67c5337, type: 3}

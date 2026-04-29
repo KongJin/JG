@@ -647,11 +647,12 @@ function Ensure-McpParentDirectory {
     }
 }
 
-function Enter-McpExclusiveOperation {
+function Enter-McpLockFile {
     param(
         [string]$Name,
         [string]$Owner = "unknown",
-        [string]$LockPath = "Temp/UnityMcp/runtime-operation.lock",
+        [string]$LockPath,
+        [string]$HeldMessagePrefix = "MCP exclusive operation lock",
         [int]$TimeoutSec = 0,
         [double]$PollSec = 0.5,
         [int]$StaleAfterMinutes = 90
@@ -705,7 +706,7 @@ function Enter-McpExclusiveOperation {
                 }
 
                 try {
-                    $existingText = (Get-Content -LiteralPath $absolutePath -Raw).Trim()
+                    $existingText = (Get-Content -LiteralPath $absolutePath -Raw -ErrorAction Stop).Trim()
                 }
                 catch {
                     $existingText = "unable to read lock: $($_.Exception.Message)"
@@ -727,7 +728,7 @@ function Enter-McpExclusiveOperation {
             }
 
             if ($TimeoutSec -le 0 -or (Get-Date) -ge $deadline) {
-                throw ("MCP exclusive operation lock is held. lock='{0}' requested='{1}' owner='{2}' existing='{3}'" -f $LockPath, $Name, $Owner, $existingText)
+                throw ("{0} is held. lock='{1}' requested='{2}' owner='{3}' existing='{4}'" -f $HeldMessagePrefix, $LockPath, $Name, $Owner, $existingText)
             }
 
             Start-Sleep -Seconds $PollSec
@@ -735,7 +736,7 @@ function Enter-McpExclusiveOperation {
     }
 }
 
-function Exit-McpExclusiveOperation {
+function Exit-McpLockFile {
     param([object]$Lock)
 
     if ($null -eq $Lock -or [string]::IsNullOrWhiteSpace([string]$Lock.AbsolutePath)) {
@@ -747,7 +748,7 @@ function Exit-McpExclusiveOperation {
     }
 
     try {
-        $json = Get-Content -LiteralPath $Lock.AbsolutePath -Raw | ConvertFrom-Json
+        $json = Get-Content -LiteralPath $Lock.AbsolutePath -Raw -ErrorAction Stop | ConvertFrom-Json
         if ($null -ne $json.PSObject.Properties["token"] -and [string]$json.token -ne [string]$Lock.Token) {
             return
         }
@@ -757,6 +758,73 @@ function Exit-McpExclusiveOperation {
     }
 
     Remove-Item -LiteralPath $Lock.AbsolutePath -Force
+}
+
+function Enter-McpExclusiveOperation {
+    param(
+        [string]$Name,
+        [string]$Owner = "unknown",
+        [string]$LockPath = "Temp/UnityMcp/runtime-operation.lock",
+        [int]$TimeoutSec = 0,
+        [double]$PollSec = 0.5,
+        [int]$StaleAfterMinutes = 90,
+        [string]$UnityResourceLockPath = "Temp/UnityMcp/unity-resource.lock"
+    )
+
+    $unityResourceLock = $null
+    $operationLock = $null
+
+    try {
+        if ($LockPath -ne $UnityResourceLockPath) {
+            $unityResourceLock = Enter-McpLockFile `
+                -Name $Name `
+                -Owner $Owner `
+                -LockPath $UnityResourceLockPath `
+                -HeldMessagePrefix "Unity resource lock" `
+                -TimeoutSec $TimeoutSec `
+                -PollSec $PollSec `
+                -StaleAfterMinutes $StaleAfterMinutes
+        }
+
+        $operationLock = Enter-McpLockFile `
+            -Name $Name `
+            -Owner $Owner `
+            -LockPath $LockPath `
+            -HeldMessagePrefix "MCP exclusive operation lock" `
+            -TimeoutSec $TimeoutSec `
+            -PollSec $PollSec `
+            -StaleAfterMinutes $StaleAfterMinutes
+
+        return [PSCustomObject]@{
+            Name = $operationLock.Name
+            Owner = $operationLock.Owner
+            Token = $operationLock.Token
+            Path = $operationLock.Path
+            AbsolutePath = $operationLock.AbsolutePath
+            UnityResourceLock = $unityResourceLock
+        }
+    }
+    catch {
+        Exit-McpLockFile -Lock $operationLock
+        Exit-McpLockFile -Lock $unityResourceLock
+        throw
+    }
+}
+
+function Exit-McpExclusiveOperation {
+    param([object]$Lock)
+
+    if ($null -eq $Lock) {
+        return
+    }
+
+    $unityResourceLock = $null
+    if ($null -ne $Lock.PSObject.Properties["UnityResourceLock"]) {
+        $unityResourceLock = $Lock.UnityResourceLock
+    }
+
+    Exit-McpLockFile -Lock $Lock
+    Exit-McpLockFile -Lock $unityResourceLock
 }
 
 function Test-McpResponseSuccess {
@@ -1021,7 +1089,11 @@ function Invoke-McpUiInvoke {
     }
 
     if ($null -ne $Args) {
-        $body.args = @($Args | ForEach-Object { if ($null -eq $_) { "" } else { [string]$_ } })
+        $normalizedArgs = @($Args | ForEach-Object { if ($null -eq $_) { "" } else { [string]$_ } })
+        $body.args = $normalizedArgs
+        for ($i = 0; $i -lt $normalizedArgs.Count -and $i -lt 3; $i++) {
+            $body["arg$i"] = $normalizedArgs[$i]
+        }
     }
 
     return Invoke-McpJson -Root $Root -SubPath "/ui/invoke" -Body $body

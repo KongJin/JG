@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_fire_n_arm70_hmsk
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.FirepowerModuleData
   moduleId: nova_fire_n_arm70_hmsk
-  displayName: N Arm70 Hmsk
+  displayName: "\uD574\uBA38\uC1FC\uD06CN"
   icon: {fileID: 0}
   attackDamage: 56
   attackSpeed: 0.8
   range: 7.75
-  description: 'Generated Nova1492 baseline. Source: datan\common\n_arm70_hmsk.gx.
-    Tier: 5.'
-  previewPrefab: {fileID: 8689632183560226560, guid: 02ea80b38e1e31c418856579fcedffc6, type: 3}
+  description: datan\common\n_arm70_hmsk.gx
+  previewPrefab: {fileID: 632665310912481998, guid: 02ea80b38e1e31c418856579fcedffc6, type: 3}

@@ -1,0 +1,98 @@
+﻿{
+    "success":  false,
+    "terminalVerdict":  "blocked",
+    "owner":  "GameSceneMobileHudFraming",
+    "script":  "tools/unity-mcp/Invoke-GameSceneMobileHudFramingSmoke.ps1",
+    "command":  "C:\\Users\\SOL\\Documents\\JG\\tools\\unity-mcp\\Invoke-GameSceneMobileHudFramingSmoke.ps1",
+    "blockedReason":  "transport-error",
+    "mismatchReason":  "",
+    "generatedAt":  "2026-04-29 20:06:46+09:00",
+    "startedAtUtc":  "2026-04-29T11:06:46.3425630Z",
+    "endedAtUtc":  "2026-04-29T11:08:20.5953295Z",
+    "resultMode":  "NaturalVictory",
+    "battleSceneDirect":  true,
+    "lockOwner":  "GameSceneMobileHudFraming",
+    "playModeStopped":  true,
+    "stepVerdicts":  [
+                         {
+                             "name":  "lock",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-29T11:06:46.4171036Z",
+                             "detail":  "Temp/UnityMcp/runtime-smoke.lock"
+                         },
+                         {
+                             "name":  "mcp-preflight",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-29T11:06:46.5571386Z",
+                             "detail":  "Assets/Scenes/BattleScene.unity"
+                         },
+                         {
+                             "name":  "battle-scene-open",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-29T11:06:46.5596488Z",
+                             "detail":  "already-open"
+                         },
+                         {
+                             "name":  "play-start",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-29T11:06:48.8526219Z",
+                             "detail":  "Assets/Scenes/BattleScene.unity"
+                         },
+                         {
+                             "name":  "blocked",
+                             "verdict":  "blocked",
+                             "atUtc":  "2026-04-29T11:08:19.0880086Z",
+                             "detail":  "transport-error"
+                         },
+                         {
+                             "name":  "play-stop",
+                             "verdict":  "passed",
+                             "atUtc":  "2026-04-29T11:08:20.5702673Z"
+                         }
+                     ],
+    "transportErrors":  [
+                            {
+                                "atUtc":  "2026-04-29T11:08:19.0912531Z",
+                                "message":  "The remote server returned an error: (504) Gateway Timeout."
+                            }
+                        ],
+    "evidenceScopeReason":  "Runtime smoke artifact records mobile framing evidence and nested placement smoke evidence.",
+    "evidence":  {
+                     "mcpLock":  {
+                                     "owner":  "GameSceneMobileHudFraming",
+                                     "path":  "Temp/UnityMcp/runtime-smoke.lock",
+                                     "token":  "f4202a51439a4b2793db242c7200e7b9",
+                                     "unityResourceLock":  {
+                                                               "owner":  "GameSceneMobileHudFraming",
+                                                               "path":  "Temp/UnityMcp/unity-resource.lock",
+                                                               "token":  "63a7afaa55ac44928221d72cc347c53c"
+                                                           }
+                                 },
+                     "preHealth":  {
+                                       "ok":  true,
+                                       "port":  52675,
+                                       "isPlaying":  false,
+                                       "isCompiling":  false,
+                                       "activeScene":  "BattleScene",
+                                       "activeScenePath":  "Assets/Scenes/BattleScene.unity"
+                                   },
+                     "placementSmoke":  null,
+                     "directBattleScene":  {
+                                               "mode":  "battle-scene-direct",
+                                               "startedFromScene":  "Assets/Scenes/BattleScene.unity",
+                                               "sceneOpen":  "already-open",
+                                               "playStart":  "Assets/Scenes/BattleScene.unity",
+                                               "slotClickPath":  null,
+                                               "confirmPath":  null,
+                                               "resultTriggerPath":  null
+                                           },
+                     "screenshot":  null,
+                     "ui":  null,
+                     "exception":  {
+                                       "message":  "The remote server returned an error: (504) Gateway Timeout.",
+                                       "category":  "transport-error"
+                                   },
+                     "stopPlayModeError":  null,
+                     "finalHealthError":  null
+                 }
+}

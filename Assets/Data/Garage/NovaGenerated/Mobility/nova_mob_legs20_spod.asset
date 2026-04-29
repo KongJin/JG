@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: nova_mob_legs20_spod
   m_EditorClassIdentifier: Assembly-CSharp::Features.Unit.Infrastructure.MobilityModuleData
   moduleId: nova_mob_legs20_spod
-  displayName: Legs20 Spod
+  displayName: "\uC2A4\uD30C\uC774\uB354"
   icon: {fileID: 0}
   hpBonus: 330
   moveRange: 3.45
   anchorRange: 3.45
-  description: 'Generated Nova1492 baseline. Source: datan\common\legs20_spod.gx.
-    Tier: 5.'
-  previewPrefab: {fileID: 5390598668138261126, guid: 22a2ecadf3c0b0e4ab648f62b200fc80, type: 3}
+  description: datan\common\legs20_spod.gx
+  previewPrefab: {fileID: 6234320529935897531, guid: 22a2ecadf3c0b0e4ab648f62b200fc80, type: 3}

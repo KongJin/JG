@@ -45,6 +45,12 @@
     padding-right: 0;
     padding-top: 0;
     padding-bottom: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.connection-back-button .uitk-icon {
+    --uitk-icon-tint: var(--connection-orange);
 }
 
 .connection-title {

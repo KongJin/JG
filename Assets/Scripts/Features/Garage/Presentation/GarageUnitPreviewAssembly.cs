@@ -7,7 +7,8 @@ namespace Features.Garage.Presentation
     {
         private static readonly Vector3 FallbackFramePosition = Vector3.zero;
         private static readonly Vector3 FallbackWeaponPosition = new Vector3(0f, 0.62f, 0f);
-        private static readonly Vector3 FallbackWeaponEuler = new Vector3(0f, 0f, 90f);
+        private static readonly Vector3 FallbackWeaponEuler = Vector3.zero;
+        private static readonly Vector3 FirepowerEulerCorrection = new Vector3(0f, 0f, -90f);
         private static readonly Vector3 FallbackMobilityPosition = new Vector3(0f, -0.58f, 0f);
 
         public static bool HasCompleteLoadout(GarageSlotViewModel viewModel)
@@ -51,14 +52,16 @@ namespace Features.Garage.Presentation
 
             var weaponObj = Object.Instantiate(firepowerPrefab);
             weaponObj.SetActive(true);
+            var firepowerEuler = ResolveFirepowerEuler(viewModel.FirepowerAlignment);
             GaragePreviewAssembler.Attach(
                 weaponObj,
                 previewRoot.transform,
                 ResolveAttachedPartPosition(
                     viewModel.FrameAlignment,
                     viewModel.FirepowerAlignment,
+                    firepowerEuler,
                     FallbackWeaponPosition),
-                ResolvePartEuler(viewModel.FirepowerAlignment, FallbackWeaponEuler));
+                firepowerEuler);
 
             var mobilityObj = Object.Instantiate(mobilityPrefab);
             mobilityObj.SetActive(true);
@@ -89,6 +92,7 @@ namespace Features.Garage.Presentation
         private static Vector3 ResolveAttachedPartPosition(
             GaragePanelCatalog.PartAlignment frameAlignment,
             GaragePanelCatalog.PartAlignment partAlignment,
+            Vector3 partEuler,
             Vector3 fallbackPosition)
         {
             if (!CanApply(frameAlignment) || !CanApply(partAlignment))
@@ -98,7 +102,7 @@ namespace Features.Garage.Presentation
             if (!TryResolveFrameTopSocket(frameAlignment, framePosition, out var frameSocket))
                 return fallbackPosition;
 
-            var rotatedSocketOffset = Quaternion.Euler(partAlignment.SocketEuler) * partAlignment.SocketOffset;
+            var rotatedSocketOffset = Quaternion.Euler(partEuler) * partAlignment.SocketOffset;
             return frameSocket - rotatedSocketOffset;
         }
 
@@ -107,12 +111,23 @@ namespace Features.Garage.Presentation
             GaragePanelCatalog.PartAlignment mobilityAlignment,
             Vector3 fallbackPosition)
         {
-            if (!CanApply(frameAlignment) || !CanApply(mobilityAlignment) || !mobilityAlignment.HasXfiAttachSocket)
+            if (!CanApply(frameAlignment) || !CanApply(mobilityAlignment))
                 return fallbackPosition;
 
             var framePosition = ResolveFramePosition(frameAlignment);
-            var rotatedSocketOffset = Quaternion.Euler(mobilityAlignment.SocketEuler) * mobilityAlignment.XfiAttachSocketOffset;
+            var rotatedSocketOffset = Quaternion.Euler(mobilityAlignment.SocketEuler) *
+                                      ResolveMobilitySocketOffset(mobilityAlignment);
             return framePosition - rotatedSocketOffset;
+        }
+
+        private static Vector3 ResolveMobilitySocketOffset(GaragePanelCatalog.PartAlignment mobilityAlignment)
+        {
+            if (mobilityAlignment.SocketOffset.sqrMagnitude > 0.000001f)
+                return mobilityAlignment.SocketOffset;
+
+            return mobilityAlignment.HasXfiAttachSocket
+                ? mobilityAlignment.XfiAttachSocketOffset
+                : Vector3.zero;
         }
 
         private static Vector3 ResolvePartEuler(GaragePanelCatalog.PartAlignment partAlignment, Vector3 fallbackEuler)
@@ -120,6 +135,14 @@ namespace Features.Garage.Presentation
             return CanApply(partAlignment)
                 ? partAlignment.SocketEuler
                 : fallbackEuler;
+        }
+
+        private static Vector3 ResolveFirepowerEuler(GaragePanelCatalog.PartAlignment firepowerAlignment)
+        {
+            if (!CanApply(firepowerAlignment))
+                return FallbackWeaponEuler;
+
+            return firepowerAlignment.SocketEuler + FirepowerEulerCorrection;
         }
 
         private static bool TryResolveFrameTopSocket(
