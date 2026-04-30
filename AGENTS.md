@@ -1,6 +1,6 @@
 # AGENTS.md
 
-> 마지막 업데이트: 2026-04-25
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: repo.agents
 > role: entry
@@ -31,7 +31,7 @@
 
 ## 현재 기준 메모
 
-- Lobby/Garage의 새 UI 작업은 `Stitch source freeze -> UI Toolkit candidate surface -> preview capture/report` 기준으로 진행한다.
+- Lobby/Garage의 새 UI 작업 route 본문은 [`/docs/ops/unity_ui_authoring_workflow.md`](docs/ops/unity_ui_authoring_workflow.md)와 Stitch owner 문서를 따른다.
 - 현재 상태, 우선순위, 검증 기본선은 [`/docs/plans/progress.md`](docs/plans/progress.md)를 우선으로 본다.
 - Plan Mode 또는 규칙/운영/Codex 절차 작업은 [`/docs/index.md`](docs/index.md)에서 current owner path를 확인한 뒤 `rule-operations` owner 문서로 라우팅하고, 그 lane에서는 mutation을 금지한다.
 - 운영 규칙 본문과 current route는 [`/docs/index.md`](docs/index.md)에서 owner 문서를 찾아 확인한다. `AGENTS.md`는 경로 안내와 현재 lane 메모만 유지한다.

@@ -576,7 +576,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                             return $"Coroutine {methodName} started";
                         }
 
-                        return $"{methodName}() invoked successfully";
+                        return result?.ToString() ?? "void";          
                     }
                     catch (TargetInvocationException ex)
                     {

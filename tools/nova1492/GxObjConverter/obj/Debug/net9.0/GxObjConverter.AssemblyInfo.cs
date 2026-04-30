@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GxObjConverter")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+eae56f63b4b28b41d30cc575f10f940d156145b4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c306a53a0bb4b69eb022a2af1180ac1c7bb98db8")]
 [assembly: System.Reflection.AssemblyProductAttribute("GxObjConverter")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GxObjConverter")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

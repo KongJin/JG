@@ -26,7 +26,8 @@ namespace Features.Garage.Presentation
             GameObject mobilityPreviewPrefab = null,
             GaragePanelCatalog.PartAlignment frameAlignment = null,
             GaragePanelCatalog.PartAlignment firepowerAlignment = null,
-            GaragePanelCatalog.PartAlignment mobilityAlignment = null)
+            GaragePanelCatalog.PartAlignment mobilityAlignment = null,
+            bool mobilityUsesAssemblyPivot = false)
         {
             SlotLabel = slotLabel;
             Title = title;
@@ -50,6 +51,7 @@ namespace Features.Garage.Presentation
             FrameAlignment = frameAlignment;
             FirepowerAlignment = firepowerAlignment;
             MobilityAlignment = mobilityAlignment;
+            MobilityUsesAssemblyPivot = mobilityUsesAssemblyPivot;
         }
 
         public string SlotLabel { get; }
@@ -74,6 +76,7 @@ namespace Features.Garage.Presentation
         public GaragePanelCatalog.PartAlignment FrameAlignment { get; }
         public GaragePanelCatalog.PartAlignment FirepowerAlignment { get; }
         public GaragePanelCatalog.PartAlignment MobilityAlignment { get; }
+        public bool MobilityUsesAssemblyPivot { get; }
     }
 
     public sealed class GarageEditorViewModel

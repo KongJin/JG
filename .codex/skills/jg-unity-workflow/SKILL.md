@@ -1,17 +1,18 @@
 ---
 name: jg-unity-workflow
-description: Project-specific Unity workflow for the JG repo. Use when Codex works on Unity scenes, prefabs, UI Toolkit candidate surfaces, Unity UI authoring policy, workflow policy checks, Stitch handoff/translation/source freeze/execution contract/source visual contract work, MCP editor automation, runtime smoke scripts, or Unity-facing docs in this repository, especially under `Assets/Scenes`, `Assets/Resources`, `Assets/Prefabs`, `Assets/UI`, `Assets/Editor/UnityMcp`, `tools/unity-mcp`, or `tools/stitch-unity`.
+description: >-
+  Project-specific Unity workflow for the JG repo. Use when Codex works on Unity scenes, prefabs, UI Toolkit candidate surfaces, Unity UI authoring policy, workflow policy checks, Stitch handoff/translation/source freeze/execution contract/source visual contract work, MCP editor automation, runtime smoke scripts, or Unity-facing docs in this repository, especially under `Assets/Scenes`, `Assets/Resources`, `Assets/Prefabs`, `Assets/UI`, `Assets/Editor/UnityMcp`, `tools/unity-mcp`, or `tools/stitch-unity`. Route cohesion/coupling judgment to `jg-coupling-review`, and route document lifecycle or 문서 응집도 work to `jg-doc-lifecycle`.
 ---
 
 # JG Unity Workflow
 
-> 마지막 업데이트: 2026-04-27
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: skill.jg-unity-workflow
 > role: skill-entry
 > owner_scope: JG Unity lane read order, owner doc routing, MCP and validation entrypoint
 > upstream: repo.agents, docs.index, ops.cohesion-coupling-policy, ops.plan-authoring-review-workflow, ops.acceptance-reporting-guardrails, ops.unity-ui-authoring-workflow
-> artifacts: `tools/unity-mcp/`, `artifacts/unity/`, `Assets/Scenes/`, `Assets/Prefabs/`, `Assets/UI/`
+> artifacts: none
 
 Use this skill for JG-specific Unity execution order and sources of truth.
 Keep generic Unity serialization, MCP/CLI theory, and broad engine rules in `rule-unity`.

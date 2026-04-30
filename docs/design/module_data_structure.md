@@ -1,6 +1,6 @@
 # Module Data Structure
 
-> 마지막 업데이트: 2026-04-28
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: design.module-data-structure
 > role: ssot
@@ -563,4 +563,4 @@ namespace Features.Garage.Infrastructure
 
 - 기존 `SkillData` 자산은 당분간 legacy visual 참조용으로 유지
 - 신규 구현은 Unit/Module 데이터 구조만 사용
-- 완전 제거는 Phase 5에서 진행
+- 완전 제거가 다시 필요해지면 현재 active phase 번호를 재사용하지 않고 별도 migration owner로 연다

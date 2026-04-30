@@ -21,6 +21,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 7298664375990215281, guid: 855b499fff4f86d4dbe6719082e70496, type: 3}
+    assemblyPrefab: {fileID: 1138698183111612142, guid: 20835b2c818e0e04ea81f7458ac17124, type: 3}
     partAsset: {fileID: 11400000, guid: 5d1fd46378142bd42b6c23bc39a1b480, type: 2}
   - partId: nova_fire_arm10_broz
     slot: 1
@@ -30,6 +31,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 6116336503295101196, guid: 860705f8606d7f84baa15d5b4cbed6a8, type: 3}
+    assemblyPrefab: {fileID: 4854676081593883085, guid: aa01b4697febb8b43a6b22dd6450ff88, type: 3}
     partAsset: {fileID: 11400000, guid: 39ebfcbba8df3fa458fec55cdd42cc9d, type: 2}
   - partId: nova_fire_arm11_poms
     slot: 1
@@ -39,6 +41,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 350400959123766341, guid: 94321d0900c159740a9fd751be80cdd9, type: 3}
+    assemblyPrefab: {fileID: 8654502258184837478, guid: 9ae82c939cb34184eb96b1108ab17033, type: 3}
     partAsset: {fileID: 11400000, guid: 79c4d7959798c6f48958d9b84126eef4, type: 2}
   - partId: nova_fire_arm12_onms
     slot: 1
@@ -48,6 +51,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 5534570683305677972, guid: d090d24316f900a4986cf346a8a6bfbc, type: 3}
+    assemblyPrefab: {fileID: 3813465730388717705, guid: 6689bd39230b1404e82d0d773ae44f6d, type: 3}
     partAsset: {fileID: 11400000, guid: 53d8311d99ab38d4f82d2a0d18462915, type: 2}
   - partId: nova_fire_arm13_prs
     slot: 1
@@ -57,6 +61,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 4071695446577159766, guid: 3ece0fa75dde9e74cb2db8dff8cff0c3, type: 3}
+    assemblyPrefab: {fileID: 518076359733618742, guid: bb7c24cf897a3a546ab9dbb1ac8baba3, type: 3}
     partAsset: {fileID: 11400000, guid: e57d70bea2b8f5241999cc90cc6ff432, type: 2}
   - partId: nova_fire_arm15_hdkn
     slot: 1
@@ -66,6 +71,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 896580795538170050, guid: 91b219364411950488a07ec66ec96816, type: 3}
+    assemblyPrefab: {fileID: 7608469538561497648, guid: a212f116c872b7f4687f58cb1f10880c, type: 3}
     partAsset: {fileID: 11400000, guid: 2382f899116340f43967e815fb59db7e, type: 2}
   - partId: nova_fire_arm17_prrs
     slot: 1
@@ -75,6 +81,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 6592864882827424568, guid: 5e126c458d5ebfb4aaad33b3ee1f3380, type: 3}
+    assemblyPrefab: {fileID: 2883492663570395868, guid: d6b6e73c0034c7d4cac41c5607d73d21, type: 3}
     partAsset: {fileID: 11400000, guid: b79c189e3bf5d3d489b64d8d87abf74b, type: 2}
   - partId: nova_fire_arm18_knst
     slot: 1
@@ -84,6 +91,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 9040164870351851694, guid: c33c662f7a48f69408710751d282bf48, type: 3}
+    assemblyPrefab: {fileID: 7433985205828546033, guid: f2ce74d23ee6484489f942bf0ccb4d9a, type: 3}
     partAsset: {fileID: 11400000, guid: 5c813248db870904e8a9e8c22ef2e061, type: 2}
   - partId: nova_fire_arm19_roz
     slot: 1
@@ -93,6 +101,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 5025663598552520714, guid: 01c5e1b97a51654409d494fb78688ab2, type: 3}
+    assemblyPrefab: {fileID: 91532426214835733, guid: 4a9e0938560dc4f439c044ddcedf3a81, type: 3}
     partAsset: {fileID: 11400000, guid: a282ea7d48941f840b11ded58c5c7052, type: 2}
   - partId: nova_fire_arm20_rkto
     slot: 1
@@ -102,6 +111,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 9075986580650307608, guid: edda299bc1e0ec34da3bc740efebdc23, type: 3}
+    assemblyPrefab: {fileID: 417074451779998587, guid: 785004d4aa1901c45afa72cb2e112060, type: 3}
     partAsset: {fileID: 11400000, guid: ea55d0ff8e62f4445b61f984b6616f45, type: 2}
   - partId: nova_fire_arm21_nmsz
     slot: 1
@@ -111,6 +121,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 1282897815063247816, guid: d6c6b47cc4bbf1a4a92bbafa73caea1c, type: 3}
+    assemblyPrefab: {fileID: 5692289430422242602, guid: b4e93a4ff77523543984a71642c9f99d, type: 3}
     partAsset: {fileID: 11400000, guid: 8a41d25b9ac61a145b4d2e89ce800877, type: 2}
   - partId: nova_fire_arm22_bsrsk
     slot: 1
@@ -120,6 +131,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 2740487321095802440, guid: 7a53484b55e7f964fbb038b4f2cec5c3, type: 3}
+    assemblyPrefab: {fileID: 3310122593962875867, guid: 29dccc5415d6dd748bdce44a9da86f6d, type: 3}
     partAsset: {fileID: 11400000, guid: 1a4a8cdea663d0543944255c3a41602c, type: 2}
   - partId: nova_fire_arm23_rkog
     slot: 1
@@ -129,6 +141,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 2202125172673459520, guid: f875d4a4aeafea442891bbb6d4daa378, type: 3}
+    assemblyPrefab: {fileID: 4805759359293432836, guid: b10b62dfc58068844b428893fa77e1ee, type: 3}
     partAsset: {fileID: 11400000, guid: aec6dc3a27c024e448532c22f0ee7c80, type: 2}
   - partId: nova_fire_arm24_bzk
     slot: 1
@@ -138,6 +151,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 1415688609710160345, guid: bb860d626844dc34da20b708d0c2decb, type: 3}
+    assemblyPrefab: {fileID: 1776701079698286498, guid: 911d0dab729dc3543b4e19f90c973544, type: 3}
     partAsset: {fileID: 11400000, guid: 530579a6b14bedd4cb11dfc05e8794e6, type: 2}
   - partId: nova_fire_arm25_skoob
     slot: 1
@@ -147,6 +161,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 8853542259950896680, guid: 88b1acb90e296ee4fb8fcbf8c67c5337, type: 3}
+    assemblyPrefab: {fileID: 615476255838598398, guid: cff0a71c95cf56e4cb12f7bd53830c25, type: 3}
     partAsset: {fileID: 11400000, guid: 3e8c3aa2e1fdc8b41b397b1343fc4af2, type: 2}
   - partId: nova_fire_arm26_srmd
     slot: 1
@@ -156,6 +171,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 1406304644820259131, guid: b085deb4acc27c9439a9b9e988afdd3c, type: 3}
+    assemblyPrefab: {fileID: 2176315246213937958, guid: 2d863c03e58fad746b70cec21d4ac1ce, type: 3}
     partAsset: {fileID: 11400000, guid: cfb8c20137737264b8a1112a6611e183, type: 2}
   - partId: nova_fire_arm27_stst
     slot: 1
@@ -165,6 +181,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 8516858335479527768, guid: 8e73cf2fa03a7514d89f4485820aedd6, type: 3}
+    assemblyPrefab: {fileID: 7084648240282968957, guid: f939c945fbbac344bb1b17feb6bc3ed1, type: 3}
     partAsset: {fileID: 11400000, guid: 674101a80d03dad43b339931e2c74a55, type: 2}
   - partId: nova_fire_arm28_ozs
     slot: 1
@@ -174,6 +191,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 7512303651510032457, guid: 27c9845b8a77abd4783320cf68f89519, type: 3}
+    assemblyPrefab: {fileID: 4296948254182216855, guid: 4c4b85083d05dc74fbc44d06c93e18de, type: 3}
     partAsset: {fileID: 11400000, guid: a2f8dcc96a3a162419781aafe4c86b88, type: 2}
   - partId: nova_fire_arm29_sdbt
     slot: 1
@@ -183,6 +201,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 1782076559676467549, guid: 4b41e19df9297794b9f372503fea19e4, type: 3}
+    assemblyPrefab: {fileID: 2422115304470349656, guid: e29ffa0d3eba3fb47bc02ad53ba7480b, type: 3}
     partAsset: {fileID: 11400000, guid: 7aa33d0578cde7d49bb4c37c7416af6f, type: 2}
   - partId: nova_fire_arm30_sm
     slot: 1
@@ -192,6 +211,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 4340201410942488360, guid: 3d38becb95ddb994ebbc46176ffaa9da, type: 3}
+    assemblyPrefab: {fileID: 1329846335286161429, guid: 2671fc8eecd2d99499282314dc80fd01, type: 3}
     partAsset: {fileID: 11400000, guid: 74828186bb236eb4bb0e91ce9bf205dd, type: 2}
   - partId: nova_fire_arm31_skokr
     slot: 1
@@ -201,6 +221,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 716530581907111122, guid: 8d048075fff69fc41beb47187ece3e5a, type: 3}
+    assemblyPrefab: {fileID: 1862397820892600999, guid: ef978bb67f8a4454a93a3688a7860211, type: 3}
     partAsset: {fileID: 11400000, guid: 1b47bc9176bae0044b455d5a0cd0df94, type: 2}
   - partId: nova_fire_arm32_sppoo
     slot: 1
@@ -210,6 +231,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 3361511567517933925, guid: 420f48d6518237b4d8d71509379ab35f, type: 3}
+    assemblyPrefab: {fileID: 899137608682620419, guid: 8b9586974a07fec42872e62f7b6c4cbf, type: 3}
     partAsset: {fileID: 11400000, guid: b27f6aa1bfa7aaf428137539741a3586, type: 2}
   - partId: nova_fire_arm33_hkoo
     slot: 1
@@ -219,6 +241,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 8466598879646389375, guid: dff5ca640eedc0646942dca7f287d0fc, type: 3}
+    assemblyPrefab: {fileID: 2137825576657250828, guid: 60d8b151c1e8ec74a8a7ff7f3541a96d, type: 3}
     partAsset: {fileID: 11400000, guid: e50ed9593a8b9ff48acd14dad45c415f, type: 2}
   - partId: nova_fire_arm34_skpo
     slot: 1
@@ -228,6 +251,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 7185556946068634638, guid: cf7241bbe12584248816eea6b7f64416, type: 3}
+    assemblyPrefab: {fileID: 3421351696228015309, guid: 0fb70e22f85e36a428aea85d326a2945, type: 3}
     partAsset: {fileID: 11400000, guid: 012b80b5c81dabf4f8ebcabb4cd9cd8a, type: 2}
   - partId: nova_fire_arm35_ons
     slot: 1
@@ -237,6 +261,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 5978603145346028681, guid: 9ac4bbed5efedb74a9b68a6fd526b05d, type: 3}
+    assemblyPrefab: {fileID: 3187680954685317279, guid: 8d2bf02dd81f5234583447894dce0ab3, type: 3}
     partAsset: {fileID: 11400000, guid: 8006d2b74c045b543bb3125402df00d3, type: 2}
   - partId: nova_fire_arm36_bnso
     slot: 1
@@ -246,6 +271,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 6135332001525135412, guid: 34a0ea90769366947876a42f1a0bbf8b, type: 3}
+    assemblyPrefab: {fileID: 2139015806830142081, guid: 5a0756783770b5a47ab717c0b89f1318, type: 3}
     partAsset: {fileID: 11400000, guid: b75a4331619c94c4b8d828631ca22079, type: 2}
   - partId: nova_fire_arm37_sts
     slot: 1
@@ -255,6 +281,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 3216260002279816660, guid: 80c5a4ea047d9dd45b704d4e1019bb3b, type: 3}
+    assemblyPrefab: {fileID: 4150748153488133594, guid: 21134a86ae462c94bb40998fb3c1b85f, type: 3}
     partAsset: {fileID: 11400000, guid: 9b34615de1b369c42ac8535d8b1dc05d, type: 2}
   - partId: nova_fire_arm39_hmsk
     slot: 1
@@ -264,6 +291,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 7071682934019196183, guid: a1c7c568888146b46acb16eb0de3db9c, type: 3}
+    assemblyPrefab: {fileID: 2127187828157963761, guid: 3ca2ae8e84c443a46a27d8f1f5c60e0e, type: 3}
     partAsset: {fileID: 11400000, guid: 045a0b6853e064a40a464e0d06cc6700, type: 2}
   - partId: nova_fire_arm4_bk
     slot: 1
@@ -273,6 +301,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 8248113191136564621, guid: 19e985ef47f790b4281eb7fbe8000ee7, type: 3}
+    assemblyPrefab: {fileID: 6297568599625133546, guid: edcb35985b57fa44d9d0b0fe4fae76f0, type: 3}
     partAsset: {fileID: 11400000, guid: 39341b36ee1c7dd41b3e167a099050ef, type: 2}
   - partId: nova_fire_arm41_onoo
     slot: 1
@@ -282,6 +311,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 8683336917922974903, guid: da6a1950d8121d146a153598647a097e, type: 3}
+    assemblyPrefab: {fileID: 6723001804983441870, guid: 4e624532cf2cd064a8fc13de6efbd601, type: 3}
     partAsset: {fileID: 11400000, guid: b655faf6f8baaa24294662a14217403a, type: 2}
   - partId: nova_fire_arm43_przso
     slot: 1
@@ -291,6 +321,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 7662100765391011109, guid: 9ecf001a9c4997d4fbd3cd3ff46f4bb1, type: 3}
+    assemblyPrefab: {fileID: 5632180236384151692, guid: 7aae7f0640535cd4c9113e9f38e6d56d, type: 3}
     partAsset: {fileID: 11400000, guid: 0f561463af7555b41bec4a7cb6085581, type: 2}
   - partId: nova_fire_arm46_dbkr
     slot: 1
@@ -300,6 +331,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 7111832474070896665, guid: 2b8d2d79782ca8b4bbea244bd76340d2, type: 3}
+    assemblyPrefab: {fileID: 179200622395135402, guid: e4f420269df99414183460e56cde894a, type: 3}
     partAsset: {fileID: 11400000, guid: 9a2a13d8f4caebc4a90cfd001043a37e, type: 2}
   - partId: nova_fire_arm55_bbs
     slot: 1
@@ -309,6 +341,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 7864555477813568172, guid: 5ed8a5719f54e5345848d5f74ebd280d, type: 3}
+    assemblyPrefab: {fileID: 1239661349754408741, guid: ba459673146c33347a3d1495680b6954, type: 3}
     partAsset: {fileID: 11400000, guid: a64896d5711207a4da2101f68a35d818, type: 2}
   - partId: nova_fire_arm8_do
     slot: 1
@@ -318,6 +351,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 3070200374333239709, guid: 4b3fcac515b20e2478dba31644801915, type: 3}
+    assemblyPrefab: {fileID: 2766252932966553684, guid: 011fed38cf866454b9e2babb0775ab43, type: 3}
     partAsset: {fileID: 11400000, guid: 271ba2dab1357e045a8e89f7790e24bb, type: 2}
   - partId: nova_fire_g_arm56_prrs
     slot: 1
@@ -327,6 +361,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 1804256522313481519, guid: 6bfdce0d8f42c4a4ebe8b0c6b435bb54, type: 3}
+    assemblyPrefab: {fileID: 2573402759919217842, guid: 9af4821e447ae7e4f932c3483424b77a, type: 3}
     partAsset: {fileID: 11400000, guid: e940d4d17a421724887b823979b8dc10, type: 2}
   - partId: nova_fire_g_arm57_prs
     slot: 1
@@ -336,6 +371,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 8883242009908762861, guid: 8ddaa1ec85c109d4799a48e6eaea881f, type: 3}
+    assemblyPrefab: {fileID: 1912755657568503472, guid: 26ef2312d7f23914e93a058857f1cf75, type: 3}
     partAsset: {fileID: 11400000, guid: f9178084cb45f3244ae6ed153e818d61, type: 2}
   - partId: nova_fire_g_arm58_dbkr
     slot: 1
@@ -345,6 +381,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 4344878293980118169, guid: 789025c2d58cd884bb193c4601938ced, type: 3}
+    assemblyPrefab: {fileID: 3763107859859480626, guid: 552ea00d43c4c7a40961fb27b7831eca, type: 3}
     partAsset: {fileID: 11400000, guid: 8d87995a40b4a564384011e0181aa33b, type: 2}
   - partId: nova_fire_n_arm59_dmsz
     slot: 1
@@ -354,6 +391,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 3899622375307422559, guid: 1cb44f3d978e4974987b37bab8a475b1, type: 3}
+    assemblyPrefab: {fileID: 4276231400306115573, guid: 1c179edac0e8e714484e0238031953d5, type: 3}
     partAsset: {fileID: 11400000, guid: b2c536b80932a044ebcc6919b67fc204, type: 2}
   - partId: nova_fire_n_arm60_mgbr
     slot: 1
@@ -363,6 +401,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 4324572410192853027, guid: 90b4bf59c2b42fd438c6af084f956d1e, type: 3}
+    assemblyPrefab: {fileID: 2625869100327467904, guid: 8b6c2113932d4fc44afc9bb7d00e7b82, type: 3}
     partAsset: {fileID: 11400000, guid: 4841e8d98f3900441965a8342324a2a9, type: 2}
   - partId: nova_fire_n_arm61_bsrsk
     slot: 1
@@ -372,6 +411,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 1705936870322384215, guid: 06ec75bb935ff744ab3390dc79bca49e, type: 3}
+    assemblyPrefab: {fileID: 5310685680459597758, guid: d0a9422be5e1c3340893397583c118a6, type: 3}
     partAsset: {fileID: 11400000, guid: cff60f5135b5ffa47aaf93fcbd5763a1, type: 2}
   - partId: nova_fire_n_arm62_knst
     slot: 1
@@ -381,6 +421,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 115147682290453028, guid: 9f513a09eb7fe3a4fbf1dd7234f56154, type: 3}
+    assemblyPrefab: {fileID: 1822690586799864723, guid: 064a816959ae5cc428d6720b09218897, type: 3}
     partAsset: {fileID: 11400000, guid: e65034adcc219164eb40038a0da12e53, type: 2}
   - partId: nova_fire_n_arm63_krst
     slot: 1
@@ -390,6 +431,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 2396059793069005273, guid: 9fe7013ce28c9e3409d1dfd55d393c33, type: 3}
+    assemblyPrefab: {fileID: 96893345921757181, guid: 2b4373b45f2707c41937e3c9c3cbbe67, type: 3}
     partAsset: {fileID: 11400000, guid: 3b105c858a999984cbb36a400a5fbd97, type: 2}
   - partId: nova_fire_n_arm64_hdkn
     slot: 1
@@ -399,6 +441,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 4351126468441455978, guid: 03c0f7c7166c4924e9d2557ac5ce2458, type: 3}
+    assemblyPrefab: {fileID: 382832412529725082, guid: 56d573b0686c8434ba44761ec6d1fc24, type: 3}
     partAsset: {fileID: 11400000, guid: 71693088e1306f046b622cfcd2726741, type: 2}
   - partId: nova_fire_n_arm65_bbs
     slot: 1
@@ -408,6 +451,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 424305702177384087, guid: 8958868a4be6eda49aa74e15bce2c8cb, type: 3}
+    assemblyPrefab: {fileID: 8152213057338896021, guid: bcb8e5823fac8fa4795764d53ca5bdc6, type: 3}
     partAsset: {fileID: 11400000, guid: f605b69aa2dae3246bacfa19c0c358a9, type: 2}
   - partId: nova_fire_n_arm66_skpo
     slot: 1
@@ -417,6 +461,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 6249222407525657099, guid: e3a6dd5d3f1a8bf44b5d45d677cea156, type: 3}
+    assemblyPrefab: {fileID: 894053669512920744, guid: 76a98d57d19afc040803229b5b452b57, type: 3}
     partAsset: {fileID: 11400000, guid: b399f2dc9d9130c409a2b41bbdc8d0a9, type: 2}
   - partId: nova_fire_n_arm67_sts
     slot: 1
@@ -426,6 +471,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 4437592858378334914, guid: c54c16ed452a5e042aa6d3f2967bdfc9, type: 3}
+    assemblyPrefab: {fileID: 57250808525261607, guid: 45caa29868ae644449fbf8c5cf8e309e, type: 3}
     partAsset: {fileID: 11400000, guid: 117f48595bae96b45b5cc66bbc37aa19, type: 2}
   - partId: nova_fire_n_arm68_roz
     slot: 1
@@ -435,6 +481,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 8893581847362700646, guid: a0b120b40f2cfe04993773d7207a801a, type: 3}
+    assemblyPrefab: {fileID: 2403593062641341645, guid: 7b2555bbfac8da74a9a81723b11e47e2, type: 3}
     partAsset: {fileID: 11400000, guid: 1e7e4b48f32cd924397bfded1c11a846, type: 2}
   - partId: nova_fire_n_arm69_rkog
     slot: 1
@@ -444,6 +491,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 6479433312589231555, guid: 724ea3a3a0b690d4d8d5a119873d2d09, type: 3}
+    assemblyPrefab: {fileID: 399033762552330161, guid: b921a77e7a2ae484097acce937e1672b, type: 3}
     partAsset: {fileID: 11400000, guid: dc6510f95054aec42a834066550cde3a, type: 2}
   - partId: nova_fire_n_arm70_hmsk
     slot: 1
@@ -453,6 +501,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 632665310912481998, guid: 02ea80b38e1e31c418856579fcedffc6, type: 3}
+    assemblyPrefab: {fileID: 8896618269597698510, guid: 51d60afea3abd9a409ca4643b0e55b72, type: 3}
     partAsset: {fileID: 11400000, guid: 746f530bf949bf24f9ea1e1855369bbd, type: 2}
   - partId: nova_fire_s_arm50_hmsk
     slot: 1
@@ -462,6 +511,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 706365803846648172, guid: 331c1fdd7cdb4db419e4dca9a37bd009, type: 3}
+    assemblyPrefab: {fileID: 8257993763123749620, guid: 3a58700eaca88d74b998f21dda180507, type: 3}
     partAsset: {fileID: 11400000, guid: 9b987d87e6ae8174ba6d27b8bc73ca3d, type: 2}
   - partId: nova_fire_s_arm52_bzk
     slot: 1
@@ -471,6 +521,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 4589638438782774683, guid: 1e989ebc556c4af41a2a789c4c53482f, type: 3}
+    assemblyPrefab: {fileID: 7391053822830159193, guid: 7261baed70fdfe1468f6527a4ac1e67a, type: 3}
     partAsset: {fileID: 11400000, guid: cfa6f776ca1b28e48ab0fa8ccc1daac0, type: 2}
   - partId: nova_fire_s_arm53_ons
     slot: 1
@@ -480,6 +531,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 3963494808358787170, guid: 4262580231eff7b459a4a6c8ebc4785b, type: 3}
+    assemblyPrefab: {fileID: 786872115209453468, guid: 513629c4bedbefc4ba1eb19306a26732, type: 3}
     partAsset: {fileID: 11400000, guid: 4d8da2f5154b6bd41910f0a9c73614a0, type: 2}
   - partId: nova_fire_s_arm54_onoo
     slot: 1
@@ -489,6 +541,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 6473678170083216518, guid: bd54b099aed74834f8dc4cb6e9921bd7, type: 3}
+    assemblyPrefab: {fileID: 7395989143417985743, guid: 078ce9eed37f84247879f9abee16104f, type: 3}
     partAsset: {fileID: 11400000, guid: 694dba7d53746534fb6464d006e00631, type: 2}
   - partId: nova_frame_body1_sz
     slot: 0
@@ -498,6 +551,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 1219655375176499031, guid: ee90b39e0aa42f449b52e0101f166195, type: 3}
+    assemblyPrefab: {fileID: 4985283993627844689, guid: 4eeccf09c9b707a41901dd0405a48e71, type: 3}
     partAsset: {fileID: 11400000, guid: 887580e1e77a16e46bccdacf7fda99e4, type: 2}
   - partId: nova_frame_body10_skdr
     slot: 0
@@ -507,6 +561,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 3362547410561680173, guid: 6a4ce69e6b2491d4c8f1e15eb9b43458, type: 3}
+    assemblyPrefab: {fileID: 7377464961933477826, guid: 137536afb1964de4c8ff63775043fd29, type: 3}
     partAsset: {fileID: 11400000, guid: 7fb547f885a828c48a412c3307202163, type: 2}
   - partId: nova_frame_body11_kn
     slot: 0
@@ -516,6 +571,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 7253996542970646315, guid: b9f92f642a5201a41bd9c34b95e92495, type: 3}
+    assemblyPrefab: {fileID: 8355003693270388036, guid: 85ed3181c7c97074eb841c56f51d9efc, type: 3}
     partAsset: {fileID: 11400000, guid: f716f00b590988442b6dc4699bc2296f, type: 2}
   - partId: nova_frame_body12_kt
     slot: 0
@@ -525,6 +581,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 8453996272086303061, guid: 2f15d3d581856f343b504da7f21e8c0e, type: 3}
+    assemblyPrefab: {fileID: 4507682101863628404, guid: 4fabda077c49be44a9ecbd9f5b0a0590, type: 3}
     partAsset: {fileID: 11400000, guid: b855621800bf029409df0dc2f6e9aa5c, type: 2}
   - partId: nova_frame_body13_scro
     slot: 0
@@ -534,6 +591,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 7447513980253649883, guid: 06eb8cafae97c3049b6128f57079d707, type: 3}
+    assemblyPrefab: {fileID: 2337230615713331366, guid: 622d167ca421c674fa2580252c855565, type: 3}
     partAsset: {fileID: 11400000, guid: 76b50729a1434db49a04bf8978f51659, type: 2}
   - partId: nova_frame_body14_trb
     slot: 0
@@ -543,6 +601,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 7515048155652211250, guid: 497634d03fd18b84884eed9c1457130b, type: 3}
+    assemblyPrefab: {fileID: 1571274856543437332, guid: 904b22fb46c5e4e4aafdd327678d228d, type: 3}
     partAsset: {fileID: 11400000, guid: d6a9c024ba639ff4e8cccb9daeaeb074, type: 2}
   - partId: nova_frame_body15_znr
     slot: 0
@@ -552,6 +611,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 5499129487574752907, guid: e6df98d2200f95340ab2b25b1657a4e7, type: 3}
+    assemblyPrefab: {fileID: 7547590503917668271, guid: 348ca7fa6437c64499dbfad3a5f2cf88, type: 3}
     partAsset: {fileID: 11400000, guid: 4ab3dd36a641d4c40b0f9717e655539d, type: 2}
   - partId: nova_frame_body16_kmdo
     slot: 0
@@ -561,6 +621,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 3172215266509119063, guid: 4f59d7d911781ab4cbe0479bdafecc3e, type: 3}
+    assemblyPrefab: {fileID: 6774035890740562348, guid: 52a11b27186a3c049bce85b76ad65579, type: 3}
     partAsset: {fileID: 11400000, guid: d91ce9c36f0b6e3469e9e388e1257ced, type: 2}
   - partId: nova_frame_body17_rzmt
     slot: 0
@@ -570,6 +631,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 2587217992300094271, guid: 3eb1e2ac5bdb5f347879d4620cbaa48f, type: 3}
+    assemblyPrefab: {fileID: 4275881360031409766, guid: 25e28e2c29e68e04d98c13050a13447a, type: 3}
     partAsset: {fileID: 11400000, guid: 55e8076eb4c4e8b409b68a402d6c7735, type: 2}
   - partId: nova_frame_body18_brgod
     slot: 0
@@ -579,6 +641,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 408378645495145473, guid: b9ac81531bf622c459624497f5b7d530, type: 3}
+    assemblyPrefab: {fileID: 5952486847752525504, guid: c4f58209857c61e4bbdf25213d731986, type: 3}
     partAsset: {fileID: 11400000, guid: fa8c26cdf22aca940a188aad45e60291, type: 2}
   - partId: nova_frame_body19_spd
     slot: 0
@@ -588,6 +651,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 7222503973749932889, guid: ec8cf717bccbf6f4e98ed9e1e4c3e696, type: 3}
+    assemblyPrefab: {fileID: 1451598697794967892, guid: d21ecba93db7822488c641ded730833f, type: 3}
     partAsset: {fileID: 11400000, guid: 6d7a7a7d99e63d34893e67bc4aa49bf6, type: 2}
   - partId: nova_frame_body2_prt
     slot: 0
@@ -597,6 +661,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 6248354730953689356, guid: 673dc4883c58ed54cbeacf5ffbab8e34, type: 3}
+    assemblyPrefab: {fileID: 4358361972764116316, guid: f8f351537b145c84aafa218a7db72baa, type: 3}
     partAsset: {fileID: 11400000, guid: 4df0807758ee6284594f27604cbfcd16, type: 2}
   - partId: nova_frame_body20_prsd
     slot: 0
@@ -606,6 +671,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 3239318217984490109, guid: 98e353bd7e367014c9c4fe32cede0bab, type: 3}
+    assemblyPrefab: {fileID: 7860282895943318955, guid: 031e8717706c66740a2feb653c79d051, type: 3}
     partAsset: {fileID: 11400000, guid: f8e548bbddbe9ed4ba8f948cea71d24d, type: 2}
   - partId: nova_frame_body21_rzo
     slot: 0
@@ -615,6 +681,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 5267709515660085975, guid: 31f3c25ac4ce07e4aa9b5f4e652f16cb, type: 3}
+    assemblyPrefab: {fileID: 9011232390038096992, guid: 8bd115666b2557c4197821f10d52002c, type: 3}
     partAsset: {fileID: 11400000, guid: eb1c708294bd5b5478cc722e9cc10101, type: 2}
   - partId: nova_frame_body22_kdd
     slot: 0
@@ -624,6 +691,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 5589743074871826839, guid: 9bc7d561cb71b9e409773e0af07dd957, type: 3}
+    assemblyPrefab: {fileID: 8964478717141677968, guid: c0520f73226b376418fcd229dc879d31, type: 3}
     partAsset: {fileID: 11400000, guid: 0793f78af98616b4e83d1f87f9199b38, type: 2}
   - partId: nova_frame_body23_ms
     slot: 0
@@ -633,6 +701,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 5152268828628581367, guid: a95170cbae97b1844acd144e53ed8e07, type: 3}
+    assemblyPrefab: {fileID: 6897012911255536209, guid: 5e22b3d685c7abf4196b7d1613701a27, type: 3}
     partAsset: {fileID: 11400000, guid: 4b1657c0c432c8f4794d38ed8631e50d, type: 2}
   - partId: nova_frame_body24_grbs
     slot: 0
@@ -642,6 +711,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 9116205956888321813, guid: 0f4bfe2d68107694b9f9f6e4894b54d2, type: 3}
+    assemblyPrefab: {fileID: 3027217117864614593, guid: 5928d4be5a352314c8358c7142d38d41, type: 3}
     partAsset: {fileID: 11400000, guid: 53905336490c36a4c97c4fede84d3c14, type: 2}
   - partId: nova_frame_body25_bosro
     slot: 0
@@ -651,6 +721,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 3649787595548399274, guid: 94eb9f2705043a24f9af3f5e45b6021c, type: 3}
+    assemblyPrefab: {fileID: 4185923811887426516, guid: 4ca894ca1882a6047a20667f4fc97fdf, type: 3}
     partAsset: {fileID: 11400000, guid: 4bc9aad1b36025249832fe068c09b6a6, type: 2}
   - partId: nova_frame_body26_kp
     slot: 0
@@ -660,6 +731,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 6965843295074923174, guid: a742b8e3b8229d6498162fefd6789a80, type: 3}
+    assemblyPrefab: {fileID: 1931922869383515989, guid: 1452988678a215c44a3d972e6f21ac04, type: 3}
     partAsset: {fileID: 11400000, guid: f7b1b67cf1ed6584ab50d390ba436300, type: 2}
   - partId: nova_frame_body27_zns
     slot: 0
@@ -669,6 +741,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 2776930126339961517, guid: 6a09148d3b9f17245afe09c5a6b25d40, type: 3}
+    assemblyPrefab: {fileID: 2718717466882492001, guid: 97a91338c119a0b48b6c95e2ec444802, type: 3}
     partAsset: {fileID: 11400000, guid: 1864c8c2a2247e249997656fa6464fb5, type: 2}
   - partId: nova_frame_body28_kp2
     slot: 0
@@ -678,6 +751,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 7861716132191816314, guid: 263aa35d675f8f348b20fb14775fd1fc, type: 3}
+    assemblyPrefab: {fileID: 6784468089559682240, guid: 2801201d6b85f1448a1f8705a956387a, type: 3}
     partAsset: {fileID: 11400000, guid: 65a33839ff83d5e458473a8a2a9b962f, type: 2}
   - partId: nova_frame_body3_bgd
     slot: 0
@@ -687,6 +761,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 3773989696131684779, guid: 7198147b0b965b448a05a30abf10ad2c, type: 3}
+    assemblyPrefab: {fileID: 7789527058860413724, guid: 949c472d7ba0bf848b4b5a8e57c2992d, type: 3}
     partAsset: {fileID: 11400000, guid: 7555de3fa81f49241a2a95123bc090c6, type: 2}
   - partId: nova_frame_body32_brps
     slot: 0
@@ -696,6 +771,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 7521970756631406739, guid: 708ae3ccdaee4e344947a5d9fbb53f98, type: 3}
+    assemblyPrefab: {fileID: 8654500167594075067, guid: 05743cd3d855bc541871ad56b836cc49, type: 3}
     partAsset: {fileID: 11400000, guid: ef07d53c9f811184fa227be4d05fba63, type: 2}
   - partId: nova_frame_body35_trbn
     slot: 0
@@ -705,6 +781,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 3672711793254071341, guid: f98b4874e4520ad4fad1da33129c83a6, type: 3}
+    assemblyPrefab: {fileID: 3397617083822834493, guid: aa718c57075f4c947ad37d09b2d8b2c8, type: 3}
     partAsset: {fileID: 11400000, guid: ae3c17c51b9b0944aa856cdf2a1ac90d, type: 2}
   - partId: nova_frame_body36_rzn
     slot: 0
@@ -714,6 +791,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 1069483747443630454, guid: 9fc3faab273b7af4c89435be5aef7161, type: 3}
+    assemblyPrefab: {fileID: 637413470576330082, guid: 743504dbfa9d9154bb6be6f33033bb91, type: 3}
     partAsset: {fileID: 11400000, guid: d1fa4b5cb3ac4d040b8a80fe7ab5cba9, type: 2}
   - partId: nova_frame_body37_ktn
     slot: 0
@@ -723,6 +801,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 8007278029796240521, guid: 1ddd06e5cd891af458af552a4884cf6e, type: 3}
+    assemblyPrefab: {fileID: 3644231994883417776, guid: c721333fde4b6c748bcd8a930850a2c1, type: 3}
     partAsset: {fileID: 11400000, guid: 7e384b9db7e0d844c8f809b541b74eec, type: 2}
   - partId: nova_frame_body38_qrso
     slot: 0
@@ -732,6 +811,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 2742703499400849626, guid: f1ceb95a3c7fbc249bb5722487258303, type: 3}
+    assemblyPrefab: {fileID: 2602140690453113121, guid: 93c8ed7dd8c24d5429b194b18bd55627, type: 3}
     partAsset: {fileID: 11400000, guid: 60b13d9cb0e166f47932d2848705e2de, type: 2}
   - partId: nova_frame_body4_kpr
     slot: 0
@@ -741,6 +821,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 5729837822201396403, guid: 98696101b9a293a45bee9226f305d658, type: 3}
+    assemblyPrefab: {fileID: 5115997375398190291, guid: 27fd41a6869174943a9cc0391a57097a, type: 3}
     partAsset: {fileID: 11400000, guid: 668b49e03234a0e4eb47730e0d190a6c, type: 2}
   - partId: nova_frame_body5_skms
     slot: 0
@@ -750,6 +831,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 6068887282176391569, guid: 2f6f8a35948c83d4a8c174f1e6639799, type: 3}
+    assemblyPrefab: {fileID: 9005347024548096893, guid: 639a872dbb89ee942a912035f15bb118, type: 3}
     partAsset: {fileID: 11400000, guid: b5e3d6da005460443b3a7fb7d11c22df, type: 2}
   - partId: nova_frame_body6_skd
     slot: 0
@@ -759,6 +841,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 3640018899660921684, guid: 087b229bedfbae345a5772f0c054d690, type: 3}
+    assemblyPrefab: {fileID: 8094641985097856321, guid: c42b72ff841658444b7266aab9954c4e, type: 3}
     partAsset: {fileID: 11400000, guid: 6b7a8804bdb474f4b989b550838b9108, type: 2}
   - partId: nova_frame_body7_mops
     slot: 0
@@ -768,6 +851,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 5442100201809865951, guid: 13973633f8190494b9f199693fc8a0b7, type: 3}
+    assemblyPrefab: {fileID: 2029074229023153542, guid: 0ac7cd1cc443ac44280ec56a05feb10c, type: 3}
     partAsset: {fileID: 11400000, guid: 77efdb41374a8464f93301250e34d967, type: 2}
   - partId: nova_frame_body8_brc
     slot: 0
@@ -777,6 +861,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 6305128885600411767, guid: efd19789eb152dc41aaa6b9cfe85bedd, type: 3}
+    assemblyPrefab: {fileID: 8450323961633940817, guid: 94ee9615870f226418c462feeef56260, type: 3}
     partAsset: {fileID: 11400000, guid: 5879ed555d0ddc042acc85da248e8a6e, type: 2}
   - partId: nova_frame_body9_btro
     slot: 0
@@ -786,6 +871,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 6685822131785895524, guid: 2bcb41ac0f913c2409448c2e8b389d14, type: 3}
+    assemblyPrefab: {fileID: 6903929595847458233, guid: c0c212168c6460e479b353623faa85ef, type: 3}
     partAsset: {fileID: 11400000, guid: 5011529f0cc9571408c58cfe0ea0ef3e, type: 2}
   - partId: nova_frame_n_body39_brgod
     slot: 0
@@ -795,6 +881,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 1078774923000850662, guid: 5f62c49a0b867e544b3a62660e397f0e, type: 3}
+    assemblyPrefab: {fileID: 4936524471369295959, guid: 69b594d394439f045a07e0e04502c2c9, type: 3}
     partAsset: {fileID: 11400000, guid: 09f66bb45817e9a488cd1a19f5d81a84, type: 2}
   - partId: nova_frame_n_body40_zns
     slot: 0
@@ -804,6 +891,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 6468730764648037598, guid: 60d252598d0d4324a8da0c7dd7951b40, type: 3}
+    assemblyPrefab: {fileID: 1193120860629458778, guid: 5d7c2b6af4b2b8b4a9f37a8a02cd4d67, type: 3}
     partAsset: {fileID: 11400000, guid: b913d7a26f8e4f445b77e90b205e5a9c, type: 2}
   - partId: nova_frame_n_body41_kmdo
     slot: 0
@@ -813,6 +901,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 7274980851063196699, guid: f2f07bdd7e90ee145a5c5c987492815a, type: 3}
+    assemblyPrefab: {fileID: 3858220944949712271, guid: 8e6c8d9a7579e5e4dbffb502080ec373, type: 3}
     partAsset: {fileID: 11400000, guid: a37d39774540c2b4bac1aa5c7237e968, type: 2}
   - partId: nova_frame_n_body42_kdd
     slot: 0
@@ -822,6 +911,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 1609393700845613039, guid: b1883dbf63eed754b8ca73b3dc6d250b, type: 3}
+    assemblyPrefab: {fileID: 6096407936832045321, guid: f3d7b3d6182bdc14e8c39e4d3eff9356, type: 3}
     partAsset: {fileID: 11400000, guid: 5cd6439511700e2428f9b688612f7a4b, type: 2}
   - partId: nova_frame_n_body43_prt
     slot: 0
@@ -831,6 +921,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 5224624540257461524, guid: af047ac5508ef3146800f96a6c947510, type: 3}
+    assemblyPrefab: {fileID: 6981842506200180109, guid: cf8d2d73853483c47beefb6839eb0706, type: 3}
     partAsset: {fileID: 11400000, guid: f9b37fa9e8243b74186c49e916985504, type: 2}
   - partId: nova_frame_n_body44_brps
     slot: 0
@@ -840,6 +931,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 135689586904276262, guid: b7c7caa682822ca4db0a480d4e6b1c56, type: 3}
+    assemblyPrefab: {fileID: 1929917655056131905, guid: 469cbb9ac8aa9d1479fc666aae8bf7ea, type: 3}
     partAsset: {fileID: 11400000, guid: fefda2523b567f6439b61bc7d697899e, type: 2}
   - partId: nova_frame_n_body47_kp
     slot: 0
@@ -849,6 +941,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 4149571528205118150, guid: d2993753e4d638041bf52c21ef7ccb45, type: 3}
+    assemblyPrefab: {fileID: 6660877309699409381, guid: d7d76726ee57af8408448dd39eccabf1, type: 3}
     partAsset: {fileID: 11400000, guid: 808b201413d14894182ebf9ff7533c87, type: 2}
   - partId: nova_frame_n_body48_grbs
     slot: 0
@@ -858,6 +951,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 1719657215135739461, guid: 9cfb9e336cf268949a672630175b1e4a, type: 3}
+    assemblyPrefab: {fileID: 491460475357320913, guid: f161cb32496c517478d177dd9c03c1d3, type: 3}
     partAsset: {fileID: 11400000, guid: 3ae9a0f6696911d4c99fcd79cc4d8e42, type: 2}
   - partId: nova_frame_n_body49_rzmt
     slot: 0
@@ -867,6 +961,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 8236978357892766473, guid: d0f293b486f22364aa1690f5949a8cab, type: 3}
+    assemblyPrefab: {fileID: 7605947100233244207, guid: 5a7bfa5ad55c5754b8a6207505a09f6f, type: 3}
     partAsset: {fileID: 11400000, guid: e177067f09b12e6448223487e196553e, type: 2}
   - partId: nova_frame_n_body50_bgd
     slot: 0
@@ -876,6 +971,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 4722068867804503004, guid: 01a434221a9e48f40a3e30038b4de6eb, type: 3}
+    assemblyPrefab: {fileID: 8114865559199404692, guid: 3d669a80c2d1ae04dbae3f5f2308dfff, type: 3}
     partAsset: {fileID: 11400000, guid: 8bc1608383e9a3a4f879fcf2769b38e8, type: 2}
   - partId: nova_mob_g_legs37_sts
     slot: 2
@@ -885,6 +981,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 3602775364064197037, guid: de0a503297f2b1148a11813c8c860e17, type: 3}
+    assemblyPrefab: {fileID: 3001237729939926637, guid: aed7dccc93e14344f8222fc77cab4e8a, type: 3}
     partAsset: {fileID: 11400000, guid: 522fd80fd945f3545a71413b12dd7c3a, type: 2}
   - partId: nova_mob_g_legs57_ppo
     slot: 2
@@ -894,6 +991,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 8410271349841266205, guid: 98f7e488b0b6e534385e689a20beff84, type: 3}
+    assemblyPrefab: {fileID: 8459741001737688864, guid: 7469d060371b89b45abda8de431f78f8, type: 3}
     partAsset: {fileID: 11400000, guid: 059bbbf35b8714c4e944b9bd22f3d13c, type: 2}
   - partId: nova_mob_g_legs58_pps
     slot: 2
@@ -903,6 +1001,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 553664387490827307, guid: d65c91ed9700fc8428918f93069cfd01, type: 3}
+    assemblyPrefab: {fileID: 387673570195111330, guid: ae2e9e4cd4289c342b31087ac899d134, type: 3}
     partAsset: {fileID: 11400000, guid: 976d07f052ae2574c8db2bdadbced260, type: 2}
   - partId: nova_mob_g_legs59_hb
     slot: 2
@@ -912,6 +1011,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 924575171500490658, guid: de7c366197e5dac40897eec9079a2c80, type: 3}
+    assemblyPrefab: {fileID: 5725745657647225008, guid: a6147972b4652244cabea09afa85f80b, type: 3}
     partAsset: {fileID: 11400000, guid: ce4de3e10bf73ee4d941f82af8854518, type: 2}
   - partId: nova_mob_g_legs60_hord
     slot: 2
@@ -921,6 +1021,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 128424342179752090, guid: 8c6f44d98dc27474ab367c5393ae4046, type: 3}
+    assemblyPrefab: {fileID: 574701272288481346, guid: ab336eb2cc875c847ae3cf36aa0a8eb3, type: 3}
     partAsset: {fileID: 11400000, guid: aa16713c9e0193b4786a0669361a3f8d, type: 2}
   - partId: nova_mob_legs1_rdrn
     slot: 2
@@ -930,6 +1031,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 2557663145192473999, guid: bfcd5e39524d1244fa8a4a0ed434861d, type: 3}
+    assemblyPrefab: {fileID: 6063813744199038891, guid: 823d5b7b073f0c643a7a2a539e77c399, type: 3}
     partAsset: {fileID: 11400000, guid: 1725bfb214c5c1440946950268db032a, type: 2}
   - partId: nova_mob_legs10_prg
     slot: 2
@@ -939,6 +1041,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 4437121182515619226, guid: ba41d5d8e1a269d409768e770822b84c, type: 3}
+    assemblyPrefab: {fileID: 1338735030597263650, guid: e4f884da4dc76d24789bf6c37be5a8ce, type: 3}
     partAsset: {fileID: 11400000, guid: ef2de0f20e34c0644a2540db464acc61, type: 2}
   - partId: nova_mob_legs11_strod
     slot: 2
@@ -948,6 +1051,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 112886290407058377, guid: 1f037207938e0df4ea9d22e2018384c0, type: 3}
+    assemblyPrefab: {fileID: 679204098216869006, guid: d6e5a3321c221a940b5c14d47a716954, type: 3}
     partAsset: {fileID: 11400000, guid: 42f4c93612650514396b9e1a5413c501, type: 2}
   - partId: nova_mob_legs12_kb
     slot: 2
@@ -957,6 +1061,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 6490447463444801575, guid: 6883747b02d11f24d8c93fb0be14e167, type: 3}
+    assemblyPrefab: {fileID: 8921317127253921768, guid: f1fd145f195058a47b1cc368ae509900, type: 3}
     partAsset: {fileID: 11400000, guid: 749145b1db543204095d27241c93e683, type: 2}
   - partId: nova_mob_legs13_krz
     slot: 2
@@ -966,6 +1071,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 3978252752549459577, guid: 1256f2dd8592ef94f8fbede55ce27b9b, type: 3}
+    assemblyPrefab: {fileID: 4322857147639363888, guid: b4c86963777574b42bb01a1f99316114, type: 3}
     partAsset: {fileID: 11400000, guid: e28ba189476ae0842922a6b5308d18cd, type: 2}
   - partId: nova_mob_legs14_grp
     slot: 2
@@ -975,6 +1081,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 4495906126155540935, guid: 1595303a6a5c45f498b4a6591ade4e28, type: 3}
+    assemblyPrefab: {fileID: 2256960118298449199, guid: 5c735686f7ce9764f8bc76693dfe6149, type: 3}
     partAsset: {fileID: 11400000, guid: 502bcd61c115c2344884d21db32ed71b, type: 2}
   - partId: nova_mob_legs15_krr
     slot: 2
@@ -984,6 +1091,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 5069832731185095728, guid: c87b0e87ae65f5e43aab3c30eacfa087, type: 3}
+    assemblyPrefab: {fileID: 6595646366212967346, guid: 67799c22bf603a64bbc174f8f95846e6, type: 3}
     partAsset: {fileID: 11400000, guid: 4f492b9a7d0ead24989f5eab56715483, type: 2}
   - partId: nova_mob_legs16_sprt
     slot: 2
@@ -993,6 +1101,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 3625950438388930440, guid: 4ddae01998949a8418c03179346b005b, type: 3}
+    assemblyPrefab: {fileID: 595584231022780009, guid: 0019dd8dd34b7cf4785b97cc838f142c, type: 3}
     partAsset: {fileID: 11400000, guid: 4182063f7f4da4145833ab8f9c3d6e77, type: 2}
   - partId: nova_mob_legs17_oprd
     slot: 2
@@ -1002,6 +1111,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 9033517704505893628, guid: 78ae1864c0b9740498826c154308d200, type: 3}
+    assemblyPrefab: {fileID: 4014980694422032735, guid: bf8f1e84c67c63247921a55cf284ffd6, type: 3}
     partAsset: {fileID: 11400000, guid: ffac02257ba74ac4aac2c8e7f2b436e8, type: 2}
   - partId: nova_mob_legs18_hord
     slot: 2
@@ -1011,6 +1121,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 3211573557779722217, guid: f7c33b84a7dee004bb85dbf57440cef5, type: 3}
+    assemblyPrefab: {fileID: 7303863565087017691, guid: 49680067e2917c84a9da99643c8a7399, type: 3}
     partAsset: {fileID: 11400000, guid: d7c6b08015b1bcb44815ea20626a2ecf, type: 2}
   - partId: nova_mob_legs2_tdr
     slot: 2
@@ -1020,6 +1131,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 7884651524282236508, guid: 7525539bedaee49468167b092f954ce2, type: 3}
+    assemblyPrefab: {fileID: 5198585161835454928, guid: d4fe76d0023014843a9a573663026d49, type: 3}
     partAsset: {fileID: 11400000, guid: 6396fbdc18f7959439de8c0da7af706e, type: 2}
   - partId: nova_mob_legs20_spod
     slot: 2
@@ -1029,6 +1141,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 6234320529935897531, guid: 22a2ecadf3c0b0e4ab648f62b200fc80, type: 3}
+    assemblyPrefab: {fileID: 1605704274211247568, guid: 57e29ec57f7ea2c419d76ef5064b417b, type: 3}
     partAsset: {fileID: 11400000, guid: 693c3e0448d2b4046bfe34378e6f8f22, type: 2}
   - partId: nova_mob_legs21_ksor
     slot: 2
@@ -1038,6 +1151,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 1884456771891405917, guid: b9822939a79a2ed429ab55202a547a11, type: 3}
+    assemblyPrefab: {fileID: 6190534457932585345, guid: 947b7498e0663ef469101c5269bc64d6, type: 3}
     partAsset: {fileID: 11400000, guid: 05e13ec5883ed994aad94253779bb0fe, type: 2}
   - partId: nova_mob_legs23_tk
     slot: 2
@@ -1047,6 +1161,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 4336903402764473262, guid: 5981168cd48c3804cb30fe00c5916259, type: 3}
+    assemblyPrefab: {fileID: 5751943024137606418, guid: 0384effa67926674fbcb89bacb38a255, type: 3}
     partAsset: {fileID: 11400000, guid: 07bab276e70ea184aa7627ea9123ea23, type: 2}
   - partId: nova_mob_legs24_sts
     slot: 2
@@ -1056,6 +1171,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 1154424798533629205, guid: 35df614f330c4d043a6ba459b8ac7f80, type: 3}
+    assemblyPrefab: {fileID: 3455193293129114296, guid: 8410f9a2139887a4eb6416b9ed052e2c, type: 3}
     partAsset: {fileID: 11400000, guid: 42100866978a6214e8ac9c3cec147aba, type: 2}
   - partId: nova_mob_legs25_kd
     slot: 2
@@ -1065,6 +1181,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 6308505267152536235, guid: 9b1f71ec8615696448705a68a745e7e7, type: 3}
+    assemblyPrefab: {fileID: 2078751699378305297, guid: 27d098c3378b81d46aea59334a750660, type: 3}
     partAsset: {fileID: 11400000, guid: d1b5d4c9db89f9946b536019198f609a, type: 2}
   - partId: nova_mob_legs3_ktpr
     slot: 2
@@ -1074,6 +1191,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 1425970781323038560, guid: e13e08b17c8bbd947a18c33dfbb25a32, type: 3}
+    assemblyPrefab: {fileID: 3074574522984667732, guid: 41066e750e2071241a36c8c3100da2cb, type: 3}
     partAsset: {fileID: 11400000, guid: b7e1dd5224929b448a52f06b3e5b313c, type: 2}
   - partId: nova_mob_legs34_dpns
     slot: 2
@@ -1083,6 +1201,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 4273764521313947279, guid: de67b59e2221e3147aef420aa87f3662, type: 3}
+    assemblyPrefab: {fileID: 5783495323537097605, guid: da997c17265ae784fab5358b50dbe7c3, type: 3}
     partAsset: {fileID: 11400000, guid: 9dc0e98e4bff0cc489b5423405cffb5e, type: 2}
   - partId: nova_mob_legs4_kt
     slot: 2
@@ -1092,6 +1211,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 1811382055540432700, guid: 8e191d0af1029cf4988ec46bd8e4767c, type: 3}
+    assemblyPrefab: {fileID: 4031837707880639869, guid: 5e84b087d7e890644971834d5df270fc, type: 3}
     partAsset: {fileID: 11400000, guid: a79f09b292bc5204ea2f66fc3ce600c5, type: 2}
   - partId: nova_mob_legs49_otrs
     slot: 2
@@ -1101,6 +1221,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 7969414521577593598, guid: 4c4eed7e6ccca0b4996000606a319365, type: 3}
+    assemblyPrefab: {fileID: 7401958222959327237, guid: 3fbd280fe2532b845b80fb4b314488ba, type: 3}
     partAsset: {fileID: 11400000, guid: d1977a0679b1b1449a931838c7632b18, type: 2}
   - partId: nova_mob_legs5_ko
     slot: 2
@@ -1110,6 +1231,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 7567358885575076698, guid: 8032fdfa3ed3f1e40a4cfc1fc40a0b0e, type: 3}
+    assemblyPrefab: {fileID: 7217003967409602769, guid: 550cacf08ca37724b9ba7abe92cf6aa7, type: 3}
     partAsset: {fileID: 11400000, guid: 1cbef7474c2b9c247a462641b8b0454b, type: 2}
   - partId: nova_mob_legs50_pps
     slot: 2
@@ -1119,6 +1241,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 148739666920332693, guid: b91953501c409074d88678b4200d410a, type: 3}
+    assemblyPrefab: {fileID: 2323032854582053126, guid: feb3d73e2c221d2489c44661ccb0d647, type: 3}
     partAsset: {fileID: 11400000, guid: bd1bc5f65524e874abc89ceba8d0c7fb, type: 2}
   - partId: nova_mob_legs51_ppo
     slot: 2
@@ -1128,6 +1251,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 6940739033207161666, guid: 2b9da7beda09ff04c869d74b19777e9b, type: 3}
+    assemblyPrefab: {fileID: 4906832063473879706, guid: 9014ec7531f92684c9b1f985d1fc8d64, type: 3}
     partAsset: {fileID: 11400000, guid: c0cf36c3395ebd9458f9d49ec396378c, type: 2}
   - partId: nova_mob_legs52_pkk
     slot: 2
@@ -1137,6 +1261,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 5194064284652140149, guid: 04f01ade83064d246adcf3cc3d54f66d, type: 3}
+    assemblyPrefab: {fileID: 9151245198512763196, guid: 46ff6c0e9d96e494fbdcb06948f2bfe9, type: 3}
     partAsset: {fileID: 11400000, guid: d7ec0d2923e56c74a823531808864848, type: 2}
   - partId: nova_mob_legs53_rgd
     slot: 2
@@ -1146,6 +1271,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 2152222614640103584, guid: 2e62399b7041bc64b9310764eac0db3b, type: 3}
+    assemblyPrefab: {fileID: 5397612819023002485, guid: 57541624f04bcca478529ea4e8f594ad, type: 3}
     partAsset: {fileID: 11400000, guid: 16d5369634d403a44b42f44434e085fb, type: 2}
   - partId: nova_mob_legs6_ok
     slot: 2
@@ -1155,6 +1281,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 763230164220216984, guid: 648014b101e9ce241b73dff46d78fe46, type: 3}
+    assemblyPrefab: {fileID: 5062715752185185462, guid: bf938e5c4b6654b4dafbad6ceb50f763, type: 3}
     partAsset: {fileID: 11400000, guid: 017985b869eaf0a42b6ff59393091e8f, type: 2}
   - partId: nova_mob_legs7_hb
     slot: 2
@@ -1164,6 +1291,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 1801403108056043495, guid: ac8d7ed77d43d8a43adfa519b18925d7, type: 3}
+    assemblyPrefab: {fileID: 160660374869358128, guid: 60fa83400cb8cd643b25283916280614, type: 3}
     partAsset: {fileID: 11400000, guid: 392033efcc63eb3428cbba71336ef450, type: 2}
   - partId: nova_mob_legs8_obr
     slot: 2
@@ -1173,6 +1301,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 575433341706038870, guid: c4c8e73cf1392df4fa33db11773708c0, type: 3}
+    assemblyPrefab: {fileID: 6761721597341193388, guid: c6c3af613c41d96408790a438e92a241, type: 3}
     partAsset: {fileID: 11400000, guid: 51fe2e7b6368b564eae11dd32bb7fd90, type: 2}
   - partId: nova_mob_legs9_ptr
     slot: 2
@@ -1182,6 +1311,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 487939656985198154, guid: 8373a30b81399b746b0cfc8ec5cb5f0e, type: 3}
+    assemblyPrefab: {fileID: 537074711221471398, guid: 181191f4eb28a10428235cebbd1e7b65, type: 3}
     partAsset: {fileID: 11400000, guid: cff457f1e0e73a6489fdbb16ece7eb3f, type: 2}
   - partId: nova_mob_n_legs38_grp
     slot: 2
@@ -1191,6 +1321,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 3236222170992914530, guid: b91f79dc7514f6c42920ed07008622a3, type: 3}
+    assemblyPrefab: {fileID: 1888388671611635057, guid: 41ba0e1bcdd608640ae20e890da42cf8, type: 3}
     partAsset: {fileID: 11400000, guid: aa9808f095afde242a530f202a64b095, type: 2}
   - partId: nova_mob_n_legs39_wk
     slot: 2
@@ -1200,6 +1331,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 6989520517245989779, guid: 2e657a25c4f658b4c9d52eebe8f838c7, type: 3}
+    assemblyPrefab: {fileID: 1779728694754924862, guid: ca4590e480ed1d848be75c598e61ed55, type: 3}
     partAsset: {fileID: 11400000, guid: 4de35115b0d7cdf4baa219a63e36d703, type: 2}
   - partId: nova_mob_n_legs40_krz
     slot: 2
@@ -1209,6 +1341,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 7167764685156440676, guid: 2de1de4b2bb96af43a8134259866c6fb, type: 3}
+    assemblyPrefab: {fileID: 3936453092540763209, guid: d71b0a8a0ede0cd43a2fc2c293647831, type: 3}
     partAsset: {fileID: 11400000, guid: 967170a5858cf044599bef0bd4944668, type: 2}
   - partId: nova_mob_n_legs41_tdr
     slot: 2
@@ -1218,6 +1351,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 595531654625025936, guid: 09f89263527375c4c9d52752ea04a0f2, type: 3}
+    assemblyPrefab: {fileID: 875751385404130809, guid: d0297088a93f173468bca30e9611467a, type: 3}
     partAsset: {fileID: 11400000, guid: 420930641b44c0b4bb053e2068c8af75, type: 2}
   - partId: nova_mob_n_legs42_krr
     slot: 2
@@ -1227,6 +1361,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 2554766184266811772, guid: 8303df47f01b980428d93d1b8f38fdd9, type: 3}
+    assemblyPrefab: {fileID: 6941076393246262733, guid: 8a9a7cb006295ef4f96ec9d050f0dea6, type: 3}
     partAsset: {fileID: 11400000, guid: 9817134ec424cf84a877fb68f2d51cdc, type: 2}
   - partId: nova_mob_n_legs44_hord
     slot: 2
@@ -1236,6 +1371,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 4021959559710624126, guid: 82a89c4273862334d99b29a323e2a5b0, type: 3}
+    assemblyPrefab: {fileID: 1945004415875752552, guid: e2782dcc05b2a1b4b96ccd22539277d4, type: 3}
     partAsset: {fileID: 11400000, guid: 8aa2fac9785ef2f4f89bbbc0746a3f78, type: 2}
   - partId: nova_mob_n_legs45_strod
     slot: 2
@@ -1245,6 +1381,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 4746793678948763183, guid: 058ea89eda24ed146ac4c86cfe665079, type: 3}
+    assemblyPrefab: {fileID: 4673478474937969875, guid: 090a54a8a6412574f8b20b6c898a865c, type: 3}
     partAsset: {fileID: 11400000, guid: f0c2cc3e425a7974c82179d715845c4a, type: 2}
   - partId: nova_mob_n_legs46_sprt
     slot: 2
@@ -1254,6 +1391,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 5214142471041284319, guid: 1a57e77fd1a56d444bd023f89318b44c, type: 3}
+    assemblyPrefab: {fileID: 7813489652510693176, guid: 67b127ea385ba204e9a98a5b31241981, type: 3}
     partAsset: {fileID: 11400000, guid: afee894528bde6a43a01a0b3539f3f58, type: 2}
   - partId: nova_mob_s_legs27_ksor
     slot: 2
@@ -1263,6 +1401,7 @@ MonoBehaviour:
     tier: 3
     needsNameReview: 0
     previewPrefab: {fileID: 615944362430114455, guid: 3fd6c13869767084abd94bf618d6d416, type: 3}
+    assemblyPrefab: {fileID: 3455771021166050759, guid: 060972a87dc4e62488f5f3ee7799a583, type: 3}
     partAsset: {fileID: 11400000, guid: c3daa20a2870c604c995474586e08d82, type: 2}
   - partId: nova_mob_s_legs28_krz
     slot: 2
@@ -1272,6 +1411,7 @@ MonoBehaviour:
     tier: 2
     needsNameReview: 0
     previewPrefab: {fileID: 416396986621302309, guid: 7988943e5623eab40a4620573f54d0db, type: 3}
+    assemblyPrefab: {fileID: 2004077141664573256, guid: d25f631ab8068d24bae409eda84f8f8d, type: 3}
     partAsset: {fileID: 11400000, guid: 12404599e0ad25b469af455a625bae42, type: 2}
   - partId: nova_mob_s_legs29_sprt
     slot: 2
@@ -1281,6 +1421,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 3969544626497927799, guid: 1b1a897ac8215534ab19c4a1527b43f4, type: 3}
+    assemblyPrefab: {fileID: 5950210620159396758, guid: 347834bd7af376d42b54968a111c0ee6, type: 3}
     partAsset: {fileID: 11400000, guid: 7a37adfc33c4455489ed8df40bf101e3, type: 2}
   - partId: nova_mob_s_legs30_tk
     slot: 2
@@ -1290,6 +1431,7 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 1165956261395945805, guid: 4569f350942f7f842be1ccfc468fb96f, type: 3}
+    assemblyPrefab: {fileID: 1522597908853482767, guid: c4859fc82c0945a498515e7dff9af838, type: 3}
     partAsset: {fileID: 11400000, guid: b7eccb24279f00f40a179544827b69d2, type: 2}
   - partId: nova_mob_s_legs31_ko
     slot: 2
@@ -1299,6 +1441,7 @@ MonoBehaviour:
     tier: 4
     needsNameReview: 0
     previewPrefab: {fileID: 1606322670262288832, guid: c22b57aca17b8074580aa4838916b5be, type: 3}
+    assemblyPrefab: {fileID: 6835487234528711444, guid: c0ed59f50fed5d44a9e46f5d3ff78773, type: 3}
     partAsset: {fileID: 11400000, guid: 212cbf97f5043684ca7ebea0c2bbc7be, type: 2}
   - partId: nova_mob_s_legs32_kb
     slot: 2
@@ -1308,6 +1451,7 @@ MonoBehaviour:
     tier: 1
     needsNameReview: 0
     previewPrefab: {fileID: 3681026003090844892, guid: 8772f283e8821f540b6178cc49c8b030, type: 3}
+    assemblyPrefab: {fileID: 199626187739690397, guid: 7f2a4a55bf602894792239bbae1f2e06, type: 3}
     partAsset: {fileID: 11400000, guid: 8660c9a856f20714faa9169a01920229, type: 2}
   - partId: nova_mob_s_legs33_spod
     slot: 2
@@ -1317,4 +1461,5 @@ MonoBehaviour:
     tier: 5
     needsNameReview: 0
     previewPrefab: {fileID: 5617296553609966065, guid: 2b1af7c0c9cd4bc4baf3719848049a70, type: 3}
+    assemblyPrefab: {fileID: 6840410311893518359, guid: fa039741dd652ea4abc5d4fc2bd7aa48, type: 3}
     partAsset: {fileID: 11400000, guid: 5e16a89c45e8d494c9f61c82ef3d1f8a, type: 2}

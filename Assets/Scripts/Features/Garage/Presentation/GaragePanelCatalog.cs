@@ -39,6 +39,8 @@ namespace Features.Garage.Presentation
             public float BaseHp { get; set; }
             public float BaseAttackSpeed { get; set; }
             public GameObject PreviewPrefab { get; set; }
+            public GameObject AssemblyPrefab { get; set; }
+            public bool UseAssemblyPivot { get; set; }
             public string SourcePath { get; set; }
             public int Tier { get; set; }
             public bool NeedsNameReview { get; set; }
@@ -53,6 +55,7 @@ namespace Features.Garage.Presentation
             public float AttackSpeed { get; set; }
             public float Range { get; set; }
             public GameObject PreviewPrefab { get; set; }
+            public GameObject AssemblyPrefab { get; set; }
             public string SourcePath { get; set; }
             public int Tier { get; set; }
             public bool NeedsNameReview { get; set; }
@@ -67,6 +70,8 @@ namespace Features.Garage.Presentation
             public float MoveRange { get; set; }
             public float AnchorRange { get; set; }
             public GameObject PreviewPrefab { get; set; }
+            public GameObject AssemblyPrefab { get; set; }
+            public bool UseAssemblyPivot { get; set; }
             public string SourcePath { get; set; }
             public int Tier { get; set; }
             public bool NeedsNameReview { get; set; }

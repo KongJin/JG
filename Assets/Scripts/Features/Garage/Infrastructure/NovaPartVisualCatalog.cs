@@ -25,6 +25,7 @@ namespace Features.Garage.Infrastructure
             [SerializeField] private int tier;
             [SerializeField] private bool needsNameReview;
             [SerializeField] private GameObject previewPrefab;
+            [SerializeField] private GameObject assemblyPrefab;
             [SerializeField] private ScriptableObject partAsset;
 
             public string PartId => partId;
@@ -35,6 +36,7 @@ namespace Features.Garage.Infrastructure
             public int Tier => tier;
             public bool NeedsNameReview => needsNameReview;
             public GameObject PreviewPrefab => previewPrefab;
+            public GameObject AssemblyPrefab => assemblyPrefab;
             public ScriptableObject PartAsset => partAsset;
         }
 

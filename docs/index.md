@@ -1,6 +1,6 @@
 # Docs Index
 
-> 마지막 업데이트: 2026-04-28
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: docs.index
 > role: entry
@@ -15,18 +15,17 @@
 
 현재 검증 기본선은 다음으로 읽으면 된다.
 
-1. `progress.md`
+1. `plans/progress.md`
 2. `ops/unity_ui_authoring_workflow.md`
-3. `tools/unity-mcp/README.md`
+3. `../tools/unity-mcp/README.md`
 4. relevant contract/test code
 
 ## Quick Start
 
 - Unity UI / prefab / scene 작업: [`plans/progress.md`](./plans/progress.md) -> active owner plan -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant contract/prefab
 - Stitch / handoff 작업: [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md)
-- Stitch visual/source 기록 확인: [`plans/progress.md`](./plans/progress.md) -> [`design/ui_foundations.md`](./design/ui_foundations.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md)
-- 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> `docs/index.md` -> relevant owner doc
-- GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> active GameScene owner plan -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
+- GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> actual-flow는 [`plans/game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md), multiplayer는 [`plans/game_scene_multiplayer_sync_closeout_plan.md`](./plans/game_scene_multiplayer_sync_closeout_plan.md) -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
+- 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> relevant owner doc
 
 ## 상태 규칙
 
@@ -51,9 +50,8 @@
 | Stitch 데이터 저장/갱신/Unity handoff 흐름 확인 | [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) |
 | Stitch JSON handoff contract 구조 확인 | [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) |
 | Stitch surface 실행 명령과 review capture 루프 확인 | [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) |
-| GameScene 실제 플로우 검증/closeout 확인 | [`plans/game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) |
-| GameScene Phase 5 multiplayer sync smoke 확인 | [`plans/game_scene_phase5_multiplayer_sync_plan.md`](./plans/game_scene_phase5_multiplayer_sync_plan.md) |
-| 계정/차고 복구 상태 확인 | [`plans/account_system_plan.md`](./plans/account_system_plan.md) |
+| GameScene 실제 플로우 검증/closeout 확인 | actual-flow: [`plans/game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md), multiplayer: [`plans/game_scene_multiplayer_sync_closeout_plan.md`](./plans/game_scene_multiplayer_sync_closeout_plan.md) |
+| Account/Garage WebGL acceptance 확인 | [`plans/account_garage_webgl_closeout_plan.md`](./plans/account_garage_webgl_closeout_plan.md) |
 | Unity MCP 실행 루틴 확인 | [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) |
 | WebGL 실기 절차 확인 | [`playtest/webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) |
 | Firebase 배포 절차 확인 | [`ops/firebase_hosting.md`](./ops/firebase_hosting.md) |
@@ -73,15 +71,17 @@
 ### `plans/`
 
 - `active`: [`progress.md`](./plans/progress.md) - 공식 진행률 SSOT
-- `reference`: [`account_system_plan.md`](./plans/account_system_plan.md) - 계정/차고 복구 기준
-- `active`: [`game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) - GameScene/BattleScene 실제 플레이 플로우 acceptance, blocker/mismatch closeout 계획
-- `active`: [`game_scene_phase5_multiplayer_sync_plan.md`](./plans/game_scene_phase5_multiplayer_sync_plan.md) - GameScene/BattleScene Phase 5 멀티플레이 동기화 smoke와 blocker closeout 계획
-- `active`: [`technical_debt_recurrence_prevention_plan.md`](./plans/technical_debt_recurrence_prevention_plan.md) - GameScene/BattleScene refactor 후 Setup/Root drift, runtime lookup, dynamic repair 재발 방지 계획
-- `active`: [`non_stitch_ui_stitch_reimport_plan.md`](./plans/non_stitch_ui_stitch_reimport_plan.md) - Stitch source freeze가 없는 Unity-native/mixed UI를 Stitch에서 다시 만든 뒤 UI Toolkit candidate surface로 가져오는 migration plan
+- `active`: [`game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) - GameScene/BattleScene single-client 실제 플레이 플로우 closeout 계획
+- `active`: [`game_scene_multiplayer_sync_closeout_plan.md`](./plans/game_scene_multiplayer_sync_closeout_plan.md) - GameScene Phase 5/9 2-client multiplayer sync closeout 계획
+- `active`: [`account_garage_webgl_closeout_plan.md`](./plans/account_garage_webgl_closeout_plan.md) - Account/Garage WebGL product acceptance와 Google linking residual closeout 계획
+- `active`: [`webgl_audio_closeout_plan.md`](./plans/webgl_audio_closeout_plan.md) - WebGL audio product smoke closeout 계획
+- `active`: [`nova1492_content_residual_plan.md`](./plans/nova1492_content_residual_plan.md) - Nova1492 generated content rights/naming gate와 balance/UI/model owner handoff 계획
+- `active`: [`non_stitch_ui_stitch_reimport_plan.md`](./plans/non_stitch_ui_stitch_reimport_plan.md) - Stitch source freeze가 없는 Unity-native/mixed UI source-freeze routing과 candidate handoff 계획
+- `reference`: [`technical_debt_recurrence_prevention_plan.md`](./plans/technical_debt_recurrence_prevention_plan.md) - Setup/Root drift, runtime lookup, dynamic repair 재발 방지 reference gate
 
 ### `playtest/`
 
-- `active`: [`runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) - 런타임 수동 검증 기준
+- `reference`: [`runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) - 런타임 수동 검증 체크리스트
 - `reference`: [`webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) - WebGL 실기 체크리스트
 
 ### `ops/`

@@ -71,6 +71,7 @@ namespace Features.Garage.Presentation
                 ResolveMobilityPosition(
                     viewModel.FrameAlignment,
                     viewModel.MobilityAlignment,
+                    viewModel.MobilityUsesAssemblyPivot,
                     FallbackMobilityPosition),
                 ResolvePartEuler(viewModel.MobilityAlignment, Vector3.zero));
 
@@ -109,6 +110,7 @@ namespace Features.Garage.Presentation
         private static Vector3 ResolveMobilityPosition(
             GaragePanelCatalog.PartAlignment frameAlignment,
             GaragePanelCatalog.PartAlignment mobilityAlignment,
+            bool useAssemblyPivot,
             Vector3 fallbackPosition)
         {
             if (!CanApply(frameAlignment) || !CanApply(mobilityAlignment))
@@ -116,12 +118,17 @@ namespace Features.Garage.Presentation
 
             var framePosition = ResolveFramePosition(frameAlignment);
             var rotatedSocketOffset = Quaternion.Euler(mobilityAlignment.SocketEuler) *
-                                      ResolveMobilitySocketOffset(mobilityAlignment);
+                                      ResolveMobilitySocketOffset(mobilityAlignment, useAssemblyPivot);
             return framePosition - rotatedSocketOffset;
         }
 
-        private static Vector3 ResolveMobilitySocketOffset(GaragePanelCatalog.PartAlignment mobilityAlignment)
+        private static Vector3 ResolveMobilitySocketOffset(
+            GaragePanelCatalog.PartAlignment mobilityAlignment,
+            bool useAssemblyPivot)
         {
+            if (useAssemblyPivot)
+                return Vector3.zero;
+
             if (mobilityAlignment.SocketOffset.sqrMagnitude > 0.000001f)
                 return mobilityAlignment.SocketOffset;
 

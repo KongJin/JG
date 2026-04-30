@@ -336,6 +336,26 @@ test("reports missing cohesion/coupling owner route in repo-local skill", async 
   );
 });
 
+test("reports missing root cause investigation contract in acceptance guardrails", async () => {
+  const result = await lintRepository(getFixturePath("missing-root-cause-investigation-contract"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+  });
+  assert.ok(
+    result.errors.some((error) => error.code === "missing-root-cause-investigation-contract"),
+  );
+});
+
+test("reports missing owner route in issue investigation skill", async () => {
+  const result = await lintRepository(getFixturePath("missing-issue-investigation-owner-route"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+  });
+  assert.ok(
+    result.errors.some((error) => error.code === "missing-issue-investigation-owner-route"),
+  );
+});
+
 test("reports missing recurrence closeout artifact for rules-only changes", async () => {
   const result = await lintRepository(getFixturePath("missing-recurrence-closeout-artifact"), {
     includeGeneralChecks: false,
@@ -445,6 +465,20 @@ test("reports missing required recurrence closeout fields when issueDetected is 
   });
   assert.ok(
     result.errors.some((error) => error.code === "missing-recurrence-closeout-field"),
+  );
+});
+
+test("reports uncertain rootCause without blockedReason", async () => {
+  const result = await lintRepository(getFixturePath("uncertain-root-cause-closeout"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+    changedFiles: [
+      "docs/index.md",
+      "artifacts/rules/issue-recurrence-closeout.json",
+    ],
+  });
+  assert.ok(
+    result.errors.some((error) => error.code === "uncertain-root-cause-without-blocked-reason"),
   );
 });
 

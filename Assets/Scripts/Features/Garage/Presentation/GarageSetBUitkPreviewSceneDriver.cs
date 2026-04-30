@@ -155,28 +155,41 @@ namespace Features.Garage.Presentation
             Render();
         }
 
-        public void PreviewSelectFocus(string focus)
+        public string PreviewSelectFocus(string focus)
         {
             if (!TryParseFocus(focus, out var parsedFocus))
-                return;
+                return "invalid-focus";
 
             EnsurePreviewReady();
             SetFocusedPart(parsedFocus);
+            return BuildPreviewDebugState("focus");
         }
 
-        public void PreviewSelectPart(string slot, string partId)
+        public string PreviewSelectPart(string slot, string partId)
         {
             if (!TryParsePartSlot(slot, out var parsedSlot) || string.IsNullOrWhiteSpace(partId))
-                return;
+                return "invalid-part";
 
             EnsurePreviewReady();
             SelectPartOption(new GarageNovaPartSelection(parsedSlot, partId));
+            return BuildPreviewDebugState("part");
         }
 
-        public void PreviewSearchParts(string value)
+        public string PreviewSearchParts(string value)
         {
             EnsurePreviewReady();
             SetPartSearchText(value);
+            return BuildPreviewDebugState("search");
+        }
+
+        private string BuildPreviewDebugState(string action)
+        {
+            return action +
+                   ":frame=" + (_state?.EditingFrameId ?? "") +
+                   ";fire=" + (_state?.EditingFirepowerId ?? "") +
+                   ";mob=" + (_state?.EditingMobilityId ?? "") +
+                   ";focus=" + _focusedPart +
+                   ";search=" + _partSearchText;
         }
 
         private void Render()

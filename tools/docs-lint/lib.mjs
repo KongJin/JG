@@ -72,7 +72,20 @@ const DOC_ID_REFERENCE_PATTERN =
   /^(repo|docs|ops|design|plans|playtest|discussions|tools|skill|historical)\.[a-z0-9]+(?:[-.][a-z0-9]+)*$/;
 const PLAN_MODE_PATTERNS = [/\bPlan Mode\b/u, /Plan 모드/u];
 const RULE_OPERATIONS_PATTERNS = [/\brule-operations\b/u];
+const ACCEPTANCE_GUARDRAILS_PATH = "docs/ops/acceptance_reporting_guardrails.md";
+const ISSUE_INVESTIGATION_SKILL_PATH = ".codex/skills/jg-issue-investigation/SKILL.md";
 const COHESION_COUPLING_OWNER_PATTERNS = [/\bops\.cohesion-coupling-policy\b/u];
+const ACCEPTANCE_GUARDRAILS_OWNER_PATTERNS = [/\bops\.acceptance-reporting-guardrails\b/u];
+const ROOT_CAUSE_INVESTIGATION_REQUIREMENTS = [
+  { patterns: [/## Root Cause Investigation/u], label: "`Root Cause Investigation` section" },
+  { patterns: [/확인된 사실/u], label: "`확인된 사실` wording" },
+  { patterns: [/가설/u], label: "`가설` wording" },
+  { patterns: [/검증 방법/u], label: "`검증 방법` wording" },
+  { patterns: [/판정/u], label: "`판정` wording" },
+  { patterns: [/rootCause/u], label: "`rootCause` wording" },
+  { patterns: [/blockedReason/u], label: "`blockedReason` wording" },
+];
+const UNCERTAIN_ROOT_CAUSE_PATTERN = /(?:아마|추정|\bprobably\b|\blikely\b|\bseems\b)/iu;
 const MUTATION_FORBIDDEN_PATTERNS = [
   /mutation\s*금지/u,
   /mutation을\s*금지/u,
@@ -96,6 +109,38 @@ const MODULE_DATA_STRUCTURE_UNIT_SECTION_START = "## ScriptableObject 데이터 
 const MODULE_DATA_STRUCTURE_UNIT_SECTION_END = "## 편성 데이터 (Garage Roster)";
 export const RECURRENCE_CLOSEOUT_PATH = "artifacts/rules/issue-recurrence-closeout.json";
 export const RECURRENCE_CHANGED_FILES_ENV = "RULES_LINT_CHANGED_FILES";
+
+function validateRootCauseInvestigationContract(document) {
+  if (document.repoRelativePath !== ACCEPTANCE_GUARDRAILS_PATH) {
+    return [];
+  }
+
+  return validateDocumentContainsAll(
+    document,
+    ROOT_CAUSE_INVESTIGATION_REQUIREMENTS,
+    "missing-root-cause-investigation-contract",
+    `${ACCEPTANCE_GUARDRAILS_PATH} must own the root-cause investigation contract so unverified hypotheses are not reported as rootCause or success.`,
+  );
+}
+
+function validateIssueInvestigationSkillRoute(document) {
+  if (document.repoRelativePath !== ISSUE_INVESTIGATION_SKILL_PATH) {
+    return [];
+  }
+
+  return validateDocumentContainsAll(
+    document,
+    [
+      { patterns: [/docs\/index\.md/u], label: "`docs/index.md` route" },
+      {
+        patterns: ACCEPTANCE_GUARDRAILS_OWNER_PATTERNS,
+        label: "`ops.acceptance-reporting-guardrails` owner route",
+      },
+    ],
+    "missing-issue-investigation-owner-route",
+    "JG issue investigation skill-entry must route root-cause and hypothesis verification reporting through `docs/index.md` and `ops.acceptance-reporting-guardrails`.",
+  );
+}
 
 export async function lintRepository(repoRoot, options = {}) {
   const includeGeneralChecks = options.includeGeneralChecks ?? true;
@@ -129,6 +174,8 @@ export async function lintRepository(repoRoot, options = {}) {
     }
     if (includePolicyChecks) {
       errors.push(...validatePlanModeRouting(document));
+      errors.push(...validateRootCauseInvestigationContract(document));
+      errors.push(...validateIssueInvestigationSkillRoute(document));
     }
   }
 
@@ -912,6 +959,21 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
         "missing-recurrence-closeout-field",
         RECURRENCE_CLOSEOUT_PATH,
         "`blockedReason` must not be empty when `escalationRequired = true`.",
+      ),
+    );
+  }
+
+  if (
+    typeof payload.rootCause === "string" &&
+    UNCERTAIN_ROOT_CAUSE_PATTERN.test(payload.rootCause) &&
+    typeof payload.blockedReason === "string" &&
+    payload.blockedReason.trim() === ""
+  ) {
+    errors.push(
+      createError(
+        "uncertain-root-cause-without-blocked-reason",
+        RECURRENCE_CLOSEOUT_PATH,
+        "`rootCause` must not contain uncertain hypothesis wording unless `blockedReason` explains the missing verification.",
       ),
     );
   }

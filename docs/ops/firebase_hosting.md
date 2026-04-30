@@ -1,12 +1,12 @@
 # Firebase Hosting
 
-> 마지막 업데이트: 2026-04-20
+> 마지막 업데이트: 2026-04-30
 > 상태: reference
 > doc_id: ops.firebase-hosting
 > role: reference
 > owner_scope: Firebase Hosting 배포 절차와 운영 메모
-> upstream: plans.progress
-> artifacts: `firebase.json`, `.firebaserc`, `Build/WebGL`
+> upstream: docs.index
+> artifacts: `firebase.json`, `.firebaserc`, `tools/build-and-deploy-webgl.ps1`
 
 ## 프로젝트 정보
 

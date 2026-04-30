@@ -1,17 +1,18 @@
 ---
 name: jg-stitch-unity-import
-description: Project-specific Stitch-to-Unity UI import workflow for the JG repo. Use this skill whenever the user asks to bring, import, port, translate, reimport, apply, compare, or review a Stitch screen in Unity, especially for UI Toolkit pilots, runtime replacement candidates, Set A/B/C/D/E screens, accepted source html/png, UXML/USS, UIDocument, PanelSettings, preview scenes, capture evidence, scoped workflow policy, or visual fidelity closeout. This skill turns an accepted Stitch source into a Unity candidate surface without confusing pilot success with active runtime acceptance.
+description: >-
+  Project-specific Stitch-to-Unity UI import workflow for the JG repo. Use this skill whenever the user asks to bring, import, port, translate, reimport, apply, compare, or review a Stitch screen in Unity, especially for UI Toolkit pilots, runtime replacement candidates, Set A/B/C/D/E screens, accepted source html/png, UXML/USS, UIDocument, PanelSettings, preview scenes, capture evidence, scoped workflow policy, or visual fidelity closeout. This skill turns an accepted Stitch source into a Unity candidate surface without confusing pilot success with active runtime acceptance. Route cohesion/coupling judgment to `jg-coupling-review`, and route document lifecycle or 문서 응집도 work to `jg-doc-lifecycle`.
 ---
 
 # JG Stitch Unity Import
 
-> 마지막 업데이트: 2026-04-27
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: skill.jg-stitch-unity-import
 > role: skill-entry
 > owner_scope: accepted Stitch screen을 Unity 후보 surface로 가져오는 반복 실행 루틴
 > upstream: repo.agents, docs.index, ops.cohesion-coupling-policy, ops.stitch-data-workflow, ops.unity-ui-authoring-workflow, ops.acceptance-reporting-guardrails
-> artifacts: `.stitch/`, `Assets/UI/`, `Assets/Scenes/`, `artifacts/unity/`
+> artifacts: none
 
 Use this skill for the execution loop that sits between the thin Stitch router and the Unity authoring router.
 It does not own policy, source-freeze rules, or acceptance definitions.

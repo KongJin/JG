@@ -1,14 +1,15 @@
 # Runtime Validation Checklist
 
-> 마지막 업데이트: 2026-04-26
-> 상태: active
+> 마지막 업데이트: 2026-04-30
+> 상태: reference
 > doc_id: playtest.runtime-validation-checklist
-> role: ssot
-> owner_scope: Lobby, Garage, Game/BattleScene 진입과 전투 루프의 수동 runtime validation 기준
-> upstream: plans.progress, ops.unity-ui-authoring-workflow
-> artifacts: `artifacts/unity/`
+> role: reference
+> owner_scope: Lobby, Garage, Game/BattleScene 진입과 전투 루프의 수동 runtime validation checklist template
+> upstream: docs.index, ops.unity-ui-authoring-workflow
+> artifacts: none
 
-하네스는 runtime UI flow를 자동 스모크하지 않는다. 이 문서는 Lobby/Garage/Game 진입 관련 회귀를 수동으로 확인하고 기록하는 현재 SSOT다.
+하네스는 runtime UI flow를 자동 스모크하지 않는다. 이 문서는 Lobby/Garage/Game 진입 관련 회귀를 수동으로 확인하고 기록하는 checklist reference다.
+실제 실행 evidence와 closeout artifact 소유는 관련 active owner plan 또는 검증 artifact가 맡는다.
 
 씬 구조, Inspector wiring, Bootstrap 순서의 SSOT는 `*Setup.cs`, `*Bootstrap.cs`, 실제 scene/prefab serialized contract, MCP contract verification route가 소유한다. 이 문서는 hierarchy path가 아니라 "행동/결과" 기준으로만 적는다.
 
@@ -55,10 +56,10 @@
 
 ---
 
-## GameScene 판정 기준
+## GameScene 기록 기준
 
-- `success`: GameScene/BattleScene acceptance를 실제 실행으로 비교했고 기대 결과와 맞는다.
-- `blocked`: 실행 환경, Photon 2-client setup, scene contract, compile state 때문에 핵심 acceptance를 아직 판정할 수 없다.
+- `success`: 해당 active owner plan의 acceptance를 실제 실행으로 비교했고 기대 결과와 맞는다.
+- `blocked`: 실행 환경, Photon 2-client setup, scene contract, compile state 때문에 해당 owner acceptance를 아직 판정할 수 없다.
 - `mismatch`: 실행은 했지만 결과가 기대와 다르다. 재현 절차와 owner lane을 메모에 남긴다.
 - Runtime owner: summon runtime, BattleEntity, anchor combat, enemy priority, wave/core/victory-defeat, late-join runtime state.
 - UI/UX owner: HUD layout, slot/input, placement preview, error/feedback, Wave/Core/result 표시.

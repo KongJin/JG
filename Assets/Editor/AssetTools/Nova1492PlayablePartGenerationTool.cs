@@ -14,12 +14,15 @@ namespace ProjectSD.EditorTools
     public static class Nova1492PlayablePartGenerationTool
     {
         private const string CatalogCsvPath = "artifacts/nova1492/nova_part_catalog.csv";
+        private const string PipelineStatePath = "artifacts/nova1492/gx_pipeline_state.csv";
         private const string PreviewRootPath = "Assets/Prefabs/Features/Garage/PreviewModels/Generated";
+        private const string AssemblyRootPath = "Assets/Prefabs/Features/Garage/AssemblyModels/Generated";
         private const string DataRootPath = "Assets/Data/Garage/NovaGenerated";
         private const string ModuleCatalogPath = "Assets/Data/Garage/ModuleCatalog.asset";
         private const string VisualCatalogPath = "Assets/Data/Garage/NovaGenerated/NovaPartVisualCatalog.asset";
         private const string AlignmentCatalogPath = "Assets/Data/Garage/NovaGenerated/NovaPartAlignmentCatalog.asset";
         private const string PreviewReportPath = "artifacts/nova1492/nova_part_preview_prefab_report.md";
+        private const string AssemblyReportPath = "artifacts/nova1492/nova_part_assembly_prefab_report.md";
         private const string PlayableReportPath = "artifacts/nova1492/nova_part_playable_asset_report.md";
         private const string RoadRunnerPartId = "nova_mob_legs1_rdrn";
 
@@ -36,6 +39,47 @@ namespace ProjectSD.EditorTools
             AssetDatabase.Refresh();
             WritePreviewReport(rows, created, updated, missingModels, scaleByPartId);
             Debug.Log("[Nova1492] Preview prefab generation complete. rows=" + rows.Count + " deletedStale=" + deleted + " report=" + PreviewReportPath);
+        }
+
+        [MenuItem("Tools/Nova1492/Create Full Part Assembly Prefabs")]
+        public static void CreateFullPartAssemblyPrefabs()
+        {
+            AssetDatabase.Refresh();
+            var rows = ReadCatalogRows();
+            EnsureAssetFolder(AssemblyRootPath);
+            var deleted = DeleteStaleGeneratedAssets(rows, AssemblyRootPath, ".prefab", GetAssemblyPrefabPath);
+            CreateAssemblyPrefabs(rows, out var created, out var updated, out var missingModels, out var scaleByPartId);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            WriteAssemblyReport(rows, created, updated, missingModels, scaleByPartId);
+            Debug.Log("[Nova1492] Assembly prefab generation complete. rows=" + rows.Count + " deletedStale=" + deleted + " report=" + AssemblyReportPath);
+        }
+
+        [MenuItem("Tools/Nova1492/Create Changed Part Prefabs From Pipeline")]
+        public static void CreateChangedPartPrefabsFromPipeline()
+        {
+            AssetDatabase.Refresh();
+            var changedPartIds = ReadChangedPipelinePartIds();
+            if (changedPartIds.Count == 0)
+            {
+                Debug.Log("[Nova1492] No changed pipeline rows found in " + PipelineStatePath);
+                return;
+            }
+
+            var rows = ReadCatalogRows().FindAll(row => changedPartIds.Contains(row.PartId));
+            EnsureAssetFolder(PreviewRootPath);
+            EnsureAssetFolder(AssemblyRootPath);
+            CreatePreviewPrefabs(rows, out var previewCreated, out var previewUpdated, out var previewMissingModels, out var previewScaleByPartId);
+            CreateAssemblyPrefabs(rows, out var assemblyCreated, out var assemblyUpdated, out var assemblyMissingModels, out var assemblyScaleByPartId);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            WritePreviewReport(rows, previewCreated, previewUpdated, previewMissingModels, previewScaleByPartId);
+            WriteAssemblyReport(rows, assemblyCreated, assemblyUpdated, assemblyMissingModels, assemblyScaleByPartId);
+            Debug.Log("[Nova1492] Changed prefab generation complete. rows=" + rows.Count +
+                      " previewUpdated=" + previewUpdated +
+                      " assemblyUpdated=" + assemblyUpdated);
         }
 
         [MenuItem("Tools/Nova1492/Create Road Runner Preview Prefab")]
@@ -88,6 +132,53 @@ namespace ProjectSD.EditorTools
                         child.name = model.name;
                         child.transform.SetParent(root.transform, false);
                         scaleByPartId[row.PartId] = NormalizePreviewChild(root, child);
+                    }
+                }
+
+                PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
+                Object.DestroyImmediate(root);
+                if (hadPrefab)
+                {
+                    updated++;
+                }
+                else
+                {
+                    created++;
+                }
+            }
+        }
+
+        private static void CreateAssemblyPrefabs(
+            IReadOnlyList<PartRow> rows,
+            out int created,
+            out int updated,
+            out List<string> missingModels,
+            out Dictionary<string, float> scaleByPartId)
+        {
+            created = 0;
+            updated = 0;
+            missingModels = new List<string>();
+            scaleByPartId = new Dictionary<string, float>(StringComparer.Ordinal);
+            foreach (var row in rows)
+            {
+                EnsureAssetFolder(GetAssemblyFolder(row.Slot));
+                var prefabPath = GetAssemblyPrefabPath(row);
+                var hadPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath) != null;
+
+                var model = AssetDatabase.LoadAssetAtPath<GameObject>(row.ModelPath);
+                var root = new GameObject(row.PartId);
+                if (model == null)
+                {
+                    missingModels.Add(row.PartId + " -> " + row.ModelPath);
+                }
+                else
+                {
+                    var child = PrefabUtility.InstantiatePrefab(model) as GameObject;
+                    if (child != null)
+                    {
+                        child.name = model.name;
+                        child.transform.SetParent(root.transform, false);
+                        scaleByPartId[row.PartId] = NormalizeAssemblyChild(root, child);
                     }
                 }
 
@@ -257,6 +348,7 @@ namespace ProjectSD.EditorTools
                 SetInt(entry, "tier", row.Tier);
                 SetBool(entry, "needsNameReview", row.NeedsNameReview);
                 SetObject(entry, "previewPrefab", AssetDatabase.LoadAssetAtPath<GameObject>(GetPreviewPrefabPath(row)));
+                SetObject(entry, "assemblyPrefab", AssetDatabase.LoadAssetAtPath<GameObject>(GetAssemblyPrefabPath(row)));
                 SetObject(entry, "partAsset", AssetDatabase.LoadAssetAtPath<ScriptableObject>(GetPartAssetPath(row)));
             }
 
@@ -456,6 +548,51 @@ namespace ProjectSD.EditorTools
             return rows;
         }
 
+        private static HashSet<string> ReadChangedPipelinePartIds()
+        {
+            var partIds = new HashSet<string>(StringComparer.Ordinal);
+            if (!File.Exists(PipelineStatePath))
+            {
+                return partIds;
+            }
+
+            var lines = File.ReadAllLines(PipelineStatePath, Encoding.UTF8);
+            if (lines.Length < 2)
+            {
+                return partIds;
+            }
+
+            var headers = ParseCsvLine(lines[0]);
+            var headerIndex = new Dictionary<string, int>(StringComparer.Ordinal);
+            for (var i = 0; i < headers.Count; i++)
+            {
+                headerIndex[headers[i]] = i;
+            }
+
+            for (var i = 1; i < lines.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(lines[i]))
+                {
+                    continue;
+                }
+
+                var values = ParseCsvLine(lines[i]);
+                var status = Get(values, headerIndex, "status");
+                if (status == "skipped" || status == "failed" || status == "analyzed")
+                {
+                    continue;
+                }
+
+                var partId = Get(values, headerIndex, "part_id");
+                if (!string.IsNullOrWhiteSpace(partId))
+                {
+                    partIds.Add(partId);
+                }
+            }
+
+            return partIds;
+        }
+
         private static float NormalizePreviewChild(GameObject root, GameObject child)
         {
             var renderers = root.GetComponentsInChildren<Renderer>();
@@ -479,6 +616,32 @@ namespace ProjectSD.EditorTools
             var scale = 0.9f / maxDimension;
             child.transform.localScale = Vector3.one * scale;
             child.transform.localPosition = -bounds.center * scale;
+            return scale;
+        }
+
+        private static float NormalizeAssemblyChild(GameObject root, GameObject child)
+        {
+            var renderers = root.GetComponentsInChildren<Renderer>();
+            if (renderers.Length == 0)
+            {
+                return 1f;
+            }
+
+            var bounds = renderers[0].bounds;
+            for (var i = 1; i < renderers.Length; i++)
+            {
+                bounds.Encapsulate(renderers[i].bounds);
+            }
+
+            var maxDimension = Mathf.Max(bounds.size.x, Mathf.Max(bounds.size.y, bounds.size.z));
+            if (maxDimension <= 0.0001f)
+            {
+                return 1f;
+            }
+
+            var scale = 0.9f / maxDimension;
+            child.transform.localScale = Vector3.one * scale;
+            child.transform.localPosition = Vector3.zero;
             return scale;
         }
 
@@ -536,6 +699,16 @@ namespace ProjectSD.EditorTools
         private static string GetPreviewPrefabPath(PartRow row)
         {
             return GetPreviewFolder(row.Slot) + "/" + row.PartId + ".prefab";
+        }
+
+        private static string GetAssemblyFolder(string slot)
+        {
+            return AssemblyRootPath + "/" + slot;
+        }
+
+        private static string GetAssemblyPrefabPath(PartRow row)
+        {
+            return GetAssemblyFolder(row.Slot) + "/" + row.PartId + ".prefab";
         }
 
         private static string GetPartAssetPath(PartRow row)
@@ -697,9 +870,27 @@ namespace ProjectSD.EditorTools
             builder.AppendLine($"- updated prefabs: {updated}");
             builder.AppendLine($"- missing source models: {missingModels.Count}");
             AppendCounts(builder, rows);
-            AppendPreviewScaleTable(builder, rows, scaleByPartId);
+            AppendScaleTable(builder, rows, scaleByPartId, "Preview Scale", GetPreviewPrefabPath);
             AppendList(builder, "Missing Source Models", missingModels);
             WriteReport(PreviewReportPath, builder);
+        }
+
+        private static void WriteAssemblyReport(
+            IReadOnlyList<PartRow> rows,
+            int created,
+            int updated,
+            IReadOnlyList<string> missingModels,
+            IReadOnlyDictionary<string, float> scaleByPartId)
+        {
+            var builder = NewReportBuilder("# Nova1492 Part Assembly Prefab Report");
+            builder.AppendLine($"- catalog rows: {rows.Count}");
+            builder.AppendLine($"- created prefabs: {created}");
+            builder.AppendLine($"- updated prefabs: {updated}");
+            builder.AppendLine($"- missing source models: {missingModels.Count}");
+            AppendCounts(builder, rows);
+            AppendScaleTable(builder, rows, scaleByPartId, "Assembly Scale", GetAssemblyPrefabPath);
+            AppendList(builder, "Missing Source Models", missingModels);
+            WriteReport(AssemblyReportPath, builder);
         }
 
         private static void WritePlayableReport(
@@ -768,13 +959,15 @@ namespace ProjectSD.EditorTools
             }
         }
 
-        private static void AppendPreviewScaleTable(
+        private static void AppendScaleTable(
             StringBuilder builder,
             IReadOnlyList<PartRow> rows,
-            IReadOnlyDictionary<string, float> scaleByPartId)
+            IReadOnlyDictionary<string, float> scaleByPartId,
+            string title,
+            Func<PartRow, string> getPrefabPath)
         {
             builder.AppendLine();
-            builder.AppendLine("## Preview Scale");
+            builder.AppendLine("## " + title);
             builder.AppendLine();
             builder.AppendLine("| slot | id | prefab | scale |");
             builder.AppendLine("|---|---|---|---:|");
@@ -788,7 +981,7 @@ namespace ProjectSD.EditorTools
                 }
 
                 builder.AppendLine(
-                    $"| {row.Slot} | `{row.PartId}` | `{GetPreviewPrefabPath(row)}` | {scale.ToString("0.######", CultureInfo.InvariantCulture)} |");
+                    $"| {row.Slot} | `{row.PartId}` | `{getPrefabPath(row)}` | {scale.ToString("0.######", CultureInfo.InvariantCulture)} |");
             }
         }
 

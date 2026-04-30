@@ -1,12 +1,12 @@
 # UI Foundations
 
-> 마지막 업데이트: 2026-04-28
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: design.ui-foundations
 > role: ssot
 > owner_scope: Lobby와 Garage UI 레이아웃, 토큰, Unity 변환 규칙
-> upstream: design.game-design, ops.unity-ui-authoring-workflow, design.ui-reference-workflow
-> artifacts: `.stitch/contracts/`, `Assets/UI/`, `Assets/Scenes/`, `artifacts/unity/`
+> upstream: design.game-design, ops.unity-ui-authoring-workflow
+> artifacts: `Assets/UI/UIToolkit/Shared/TacticalTokens.uss`
 
 이 문서는 **Lobby/Garage UI 레이아웃과 Unity 변환 규칙의 단일 기준**이다.
 현재 범위는 폐기된 legacy scene이 아니라, 새로 다시 세울 Lobby/Garage baseline surface contract를 포함한다.

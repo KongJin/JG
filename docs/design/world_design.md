@@ -1,6 +1,6 @@
 # World Design — Nova1492 기반 저항 SF
 
-> 마지막 업데이트: 2026-04-26
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: design.world-design
 > role: ssot

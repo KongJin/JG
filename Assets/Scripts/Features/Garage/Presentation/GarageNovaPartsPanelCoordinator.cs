@@ -127,9 +127,9 @@ namespace Features.Garage.Presentation
 
         private void EnsureSelectedFromDraft(GarageNovaPartsDraftSelection draftSelection)
         {
-            _selectedFrameId ??= draftSelection.FrameId;
-            _selectedFirepowerId ??= draftSelection.FirepowerId;
-            _selectedMobilityId ??= draftSelection.MobilityId;
+            _selectedFrameId = (draftSelection.FrameId);
+            _selectedFirepowerId = (draftSelection.FirepowerId);
+            _selectedMobilityId = (draftSelection.MobilityId);
         }
 
         private string GetSelectedId(GarageNovaPartPanelSlot slot)

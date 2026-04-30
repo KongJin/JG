@@ -1,219 +1,58 @@
 # Non-Stitch UI Stitch Import Plan
 
-> 마지막 업데이트: 2026-04-29
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: plans.non-stitch-ui-stitch-reimport
 > role: plan
-> owner_scope: Stitch source freeze가 없는 Unity-native 또는 mixed UI surface를 Stitch에서 다시 만든 뒤 UI Toolkit candidate surface로 가져오는 실행 순서
-> upstream: plans.progress, design.ui-reference-workflow, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract, ops.unity-ui-authoring-workflow
-> artifacts: `artifacts/stitch/`, `artifacts/unity/`, `Assets/UI/`, `Assets/Scenes/`
+> owner_scope: Stitch source freeze가 없는 Unity-native/mixed UI의 source-freeze routing, UI Toolkit candidate handoff, owner split gate
+> upstream: design.ui-reference-workflow, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract, ops.unity-ui-authoring-workflow
+> artifacts: `Assets/UI/UIToolkit/AccountSync/`, `Assets/UI/UIToolkit/ConnectionReconnect/`, `artifacts/unity/*uitk*`, `artifacts/unity/account-*-runtime-lobby-shell.png`, `artifacts/unity/connection-*-runtime-lobby-shell.png`
 
-이 문서는 현재 Unity에 직접 만든 UI와 Stitch-derived UI가 섞인 상태를 정리하기 위한 migration plan이다.
-새 규칙은 만들지 않고, 기존 기준인 `Stitch source freeze -> execution contracts -> Unity candidate surface`와 UI Toolkit pilot route를 따른다.
+이 문서는 native/mixed UI surface를 source freeze와 UI Toolkit candidate route로 넘기는 handoff만 소유한다. Stitch/UITK 운영 규칙 본문은 upstream owner 문서를 따른다.
 
-한 줄 목표:
+## Current Judgment
 
-`Stitch source freeze가 없는 player-facing UI는 먼저 Stitch에서 accepted screen을 만든 뒤, UI Toolkit candidate surface로 다시 가져온다.`
-
-## Primary Owner / Scope
-
-- primary owner: `plans.non-stitch-ui-stitch-reimport`
-- secondary owners: `plans.progress`, `ops.stitch-data-workflow`, `ops.unity-ui-authoring-workflow`, relevant feature presentation code
-- out-of-scope: Stitch/Unity workflow rule 개정, translator capability 확장, gameplay prefab 구조 변경, non-UI model preview asset 대량 정리
-
-## 현재 판단
-
-- `SetA/SetC/SetD/SetE` 이름을 가진 기존 prefabs/captures는 historical Stitch-derived evidence로만 본다.
-- `GaragePageRoot.prefab`과 `LobbyPageRoot.prefab`은 새 import 대상이 아니라 runtime replacement 후보로만 본다. 먼저 UI Toolkit candidate를 만든 뒤 교체 여부를 판단한다.
-- `Assets/Resources`에 남은 전투/스킬 UI prefab은 historical native UI일 가능성이 높고, 재생성 후보로 먼저 inventory 한다. World-space feedback prefab은 `Assets/Prefabs/RuntimeFeedback/` compatibility surface로 본다.
-- Nova1492 generated preview model prefab은 UI source migration 대상이 아니라 Garage content asset으로 본다.
+- Active route는 `Stitch source freeze -> UI Toolkit candidate surface -> isolated preview capture/report -> runtime replacement owner handoff`다.
+- Account/Sync와 Connection/Reconnect는 source candidate, UI Toolkit candidate, Lobby runtime shell visibility까지 확보했다. WebGL/account/cloud acceptance는 account WebGL owner lane에서 확인한다.
+- `SetA/SetC/SetD/SetE` prefabs/captures는 historical Stitch-derived evidence로만 본다.
+- Runtime feedback prefabs under `Assets/Prefabs/RuntimeFeedback/`는 screen UI replacement 대상이 아니라 world-space feedback compatibility surface다.
 
 ## Surface Inventory
 
-| surface | current asset | initial class | migration action |
+| Surface | Current state | This plan owns | Handoff owner |
 |---|---|---|---|
-| Garage main workspace | current runtime `GaragePageRoot` | mixed / Set B residual | Set B source freeze 기준 UI Toolkit candidate를 만들고, runtime 교체는 별도 pass로 판단한다 |
-| Lobby main shell | current runtime `LobbyPageRoot` | mixed / Set A candidate | current source freeze와 scene capture를 대조한 뒤, missing native regions만 Stitch source 후보로 다시 만든다 |
-| Account settings overlay | scene-owned inside `LobbyScene.unity` / Garage bindings | historical prefab evidence / new source freeze available | `Nova1492 Compact Sync Console` source freeze를 기준으로 UI Toolkit candidate를 다시 가져오고, runtime integration은 별도 pass로 판단한다 |
-| Skill bar HUD | scene-owned `BattleScene` skill bar wiring | native candidate | GameScene HUD UI Toolkit candidate를 먼저 만든 뒤 runtime replacement를 판단한다 |
-| Start skill selection | scene-owned `BattleScene` start skill selection wiring | native candidate | modal/selection overlay는 Stitch source freeze에서 다시 시작한다 |
-| Player health HUD | `Assets/Prefabs/RuntimeFeedback/PlayerHealthHudView.prefab` | runtime feedback compatibility | screen UI가 아니라 world-space feedback으로 유지한다. visual consistency 필요 시 별도 micro-surface로 다룬다 |
-| Enemy health bar / damage number | `Assets/Prefabs/RuntimeFeedback/EnemyHealthBar.prefab`, `Assets/Prefabs/RuntimeFeedback/DamageNumber.prefab` | runtime feedback compatibility | screen UI가 아니라 world-space feedback으로 유지한다. visual consistency 필요 시 별도 micro-surface로 다룬다 |
+| Account/Sync | source candidate + UITK candidate + runtime shell visibility | source/candidate handoff status | account WebGL/product owner |
+| Connection/Reconnect | source candidate + UITK candidate + runtime shell visibility | source/candidate handoff status | reconnect/cloud product owner |
+| Battle HUD / Skill selection | BattleScene scene-owned UI, no accepted source freeze yet | source-freeze required marker | BattleScene UI/runtime owner |
+| Player/Enemy health, damage number | RuntimeFeedback compatibility prefab | route exclusion marker | runtime feedback owner if visual consistency work opens |
 
-## 실행 순서
+## Execution Rule
 
-1. **Inventory audit**
-   - UI surface와 scene-owned UI를 `already Stitch-derived`, `mixed`, `native candidate`, `not UI / generated asset`으로 분류한다.
-   - 각 candidate마다 current asset, owning scene/prefab, presentation script, existing source freeze 여부를 기록한다.
+- Stitch source가 없으면 먼저 accepted screen/source freeze를 만든다.
+- `presentation-contract.extractionStatus = resolved` 전에는 active translation success로 보지 않는다.
+- translator capability 밖이면 `blocked: capability-expansion-required`로 남기고 이 plan의 reimport success로 섞지 않는다.
+- preview capture/report, runtime visibility, product acceptance를 같은 success로 묶지 않는다.
 
-2. **Stitch source creation**
-   - native candidate마다 현재 기능과 required states를 짧은 prompt brief로 만든다.
-   - Stitch에서 한 surface당 accepted baseline 하나만 고정한다.
-   - source freeze는 `artifacts/stitch/<project>/<screen>/screen.html`, `screen.png`, `meta.json`으로 남긴다.
+## Validation
 
-3. **Contract readiness**
-   - source freeze에서 in-memory `screen manifest`, `unity-map`, `presentation-contract`를 준비한다.
-   - `presentation-contract.extractionStatus = resolved`가 아니면 active translation success로 보지 않는다.
-   - 기존 translator capability 밖이면 해당 surface는 `blocked`로 남기고 capability expansion을 별도 lane으로 분리한다.
+- Source facts/draft validation: `tools/stitch-unity` collector/validator route.
+- UITK candidate check: isolated preview scene and GameView capture.
+- Runtime check: current host scene에서 surface visibility와 product acceptance를 분리하고, product acceptance는 해당 owner lane으로 넘긴다.
+- Policy lint: `npm run --silent rules:lint`.
 
-4. **Unity import**
-   - 기존 prefab patch가 아니라 UI Toolkit candidate surface 생성을 기본값으로 본다.
-   - scene-owned UI는 runtime 교체 전에 candidate capture로 먼저 비교하고, scene wiring은 별도 pass에서 갱신한다.
-   - presentation code는 state render, event, data binding만 담당하게 유지한다.
+## Residual
 
-5. **Integration and evidence**
-   - preflight, translation, GameView/SceneView capture 또는 route-specific capture, pipeline result를 남긴다.
-   - compile/reload 후 `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`를 실행한다.
-   - runtime smoke가 필요한 HUD/overlay는 mechanical translation과 actual acceptance를 분리해 판정한다.
+- Battle HUD와 skill-selection UI는 source freeze 전까지 native candidate다.
+- Account/Connection product acceptance는 account/cloud product owner lane에 남는다.
+- Runtime feedback visual consistency는 필요할 때 별도 micro-surface로 다시 연다.
 
-## Acceptance
+owner impact:
 
-- non-Stitch UI candidate마다 `Stitch source freeze 있음`, `UI Toolkit candidate 있음`, `blocked`, `not applicable` 중 하나로 분류되어 있다.
-- imported surface는 source freeze와 current candidate capture가 같은 first-read hierarchy로 보인다.
-- runtime replacement가 필요한 경우 required binding은 별도 replacement pass에서 검증된다.
-- presentation code가 geometry, typography, color literal을 새 owner처럼 갖지 않는다.
-- pipeline artifact와 workflow policy evidence가 fresh하다.
-- 기존 native prefab을 대체한 경우 runtime smoke 또는 scene-specific verification에서 console error가 없다.
+- primary: `plans.non-stitch-ui-stitch-reimport`
+- secondary: `plans.progress`, `design.ui-foundations`
+- out-of-scope: Stitch/UITK policy 규칙 개정, translator capability expansion, code/API 변경
 
-## Blocked / Residual 처리
+doc lifecycle checked:
 
-- Stitch에서 아직 만들지 않은 화면은 `blocked: missing-source-freeze`가 아니라 `pending-source-creation`으로 둔다.
-- translator가 지원하지 않는 grammar면 `blocked: capability-expansion-required`로 남기고, 해당 확장은 이 plan의 reimport success로 섞지 않는다.
-- world-space combat feedback처럼 full-screen UI가 아닌 surface는 low priority residual로 두고, visual language 통일이 필요할 때만 Stitch micro-surface로 승격한다.
-- scene override 때문에 prefab source와 runtime view가 달라지면, visual fidelity mismatch와 scene integration mismatch를 분리해 기록한다.
-
-## 2026-04-26 Historical First Pass: Account Settings Overlay
-
-- surfaceId: `set-c-account-settings-overlay`
-- Stitch project/screen: `11729197788183873077` / `bb7b179274c04e85b313b726245da446`
-- source freeze:
-  - `artifacts/stitch/11729197788183873077/bb7b179274c04e85b313b726245da446/screen.html`
-  - `artifacts/stitch/11729197788183873077/bb7b179274c04e85b313b726245da446/screen.png`
-  - `artifacts/stitch/11729197788183873077/bb7b179274c04e85b313b726245da446/meta.json`
-- no-hardcoding draft probe: `Temp/StitchDraftRoute/set-c-account-settings-overlay-draft-no-hardcoding.json`
-
-Status:
-
-- Stitch source creation: passed
-- source freeze fetch: passed
-- no-hardcoding draft validation: blocked as expected for heuristic draft
-- LLM-authored source-derived draft validation: passed (`Temp/StitchDraftRoute/set-c-account-settings-overlay-llm-draft-v2.json`)
-- Unity candidate translation: historical evidence
-- capture review: passed mechanically, with `artifacts/unity/set-c-account-settings-overlay-scene-capture.png`
-- compile check: passed, errors 0 / warnings 0
-- docs/rules lint: passed
-- workflow policy: next pass should use UI Toolkit candidate import
-
-Artifacts:
-
-- Historical Unity prefab: `Assets/Prefabs/Features/Account/Independent/SetCAccountSettingsOverlayRoot.prefab`
-- Unity map declaration: `.stitch/contracts/mappings/set-c-account-settings-overlay.json`
-- pipeline result: `artifacts/unity/set-c-account-settings-overlay-pipeline-result.json`
-- review capture: `artifacts/unity/set-c-account-settings-overlay-scene-capture.png`
-
-No-hardcoding result:
-
-- Script-side/manual text overrides are not allowed in the reimport path.
-- `New-StitchOverlayDraftFromSourceFacts.ps1` now leaves heuristic output at `presentation.extractionStatus = pending-source-derivation`, so validator blocks translation until a real LLM/source-derived draft resolves it.
-- The historical Unity import used the LLM-authored draft as contract input; the translator script did not contain Account Settings literals.
-
-Residual:
-
-- The next pass should create a UI Toolkit candidate from the newer `Nova1492 Compact Sync Console` source candidate.
-- Runtime integration into `LobbyScene` / Garage settings is not started.
-- Visual fidelity is acceptable for first-read hierarchy but still needs final polish against the Stitch source if this becomes the production settings overlay.
-
-## 2026-04-28 Account / Connection Source Candidates
-
-- Account/sync source: `Nova1492 Compact Sync Console` / `7bc5b4ca92ca45559d4207a067057b57`
-  - `artifacts/stitch/11729197788183873077/7bc5b4ca92ca45559d4207a067057b57/screen.html`
-  - `artifacts/stitch/11729197788183873077/7bc5b4ca92ca45559d4207a067057b57/screen.png`
-  - `artifacts/stitch/11729197788183873077/7bc5b4ca92ca45559d4207a067057b57/meta.json`
-- Connection/reconnect source: `JG Connection / Reconnect Control` / `4e2da1df82fe4c619de57a4133a527dc`
-  - `artifacts/stitch/11729197788183873077/4e2da1df82fe4c619de57a4133a527dc/screen.html`
-  - `artifacts/stitch/11729197788183873077/4e2da1df82fe4c619de57a4133a527dc/screen.png`
-  - `artifacts/stitch/11729197788183873077/4e2da1df82fe4c619de57a4133a527dc/meta.json`
-
-These sources follow the Nova1492 Garage UI flow guide and keep blocked/waiting/manual retry states explicit. They are source candidates only; no runtime replacement or account/cloud acceptance is implied.
-
-## 2026-04-28 Account / Connection UI Toolkit Candidate Pass
-
-- Account/sync candidate:
-  - UXML: `Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml`
-  - USS: `Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uss`
-  - preview scene: `Assets/Scenes/AccountSyncUitkPreview.unity`
-  - panel settings: `Assets/Settings/UI/AccountSyncPanelSettings.asset`
-  - capture: `artifacts/unity/account-sync-uitk-preview-gameview.png`
-- Connection/reconnect candidate:
-  - UXML: `Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml`
-  - USS: `Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uss`
-  - preview scene: `Assets/Scenes/ConnectionReconnectUitkPreview.unity`
-  - panel settings: `Assets/Settings/UI/ConnectionReconnectPanelSettings.asset`
-  - capture: `artifacts/unity/connection-reconnect-uitk-preview-gameview.png`
-- candidate report: `artifacts/unity/account-connection-uitk-candidate-report.md`
-- scoped workflow policy: `artifacts/unity/account-connection-uitk-workflow-policy.json`
-
-Status:
-
-- UI Toolkit candidate surface: passed mechanically
-- preview capture/report: passed mechanically
-- runtime replacement: not started
-- account/cloud/reconnect product acceptance: not started
-
-Notes:
-
-- The preview route used isolated `390x844` GameView captures because these surfaces are screen-space `UIDocument` previews.
-- The current dirty worktree also contains non-UI technical-debt/audio/tooling changes; full-worktree UI policy can report `mixed` or blocked. The candidate pass is therefore recorded with scoped `ChangedFile` evidence and must not be read as whole-worktree UI closeout.
-
-## 2026-04-29 Account / Connection Runtime Replacement Probe
-
-Scope:
-
-- Account/sync and Connection/reconnect only.
-- Runtime visibility inside `LobbyScene` / `LobbyView` shell only.
-- WebGL save/load, Google linking, account delete, and real cloud reconnect are not claimed.
-
-Evidence:
-
-- Runtime invocation: MCP `ui/invoke` custom method on `/LobbyUitkDocument` with `OpenAccountPage` and `OpenConnectionPage`.
-- Account runtime screenshot: `artifacts/unity/account-sync-runtime-lobby-shell.png`
-- Connection runtime screenshot: `artifacts/unity/connection-reconnect-runtime-lobby-shell.png`
-- Scoped workflow policy: `artifacts/unity/account-connection-runtime-replacement-policy.json`
-- Console errors after each runtime surface capture: 0.
-
-Status:
-
-- runtime shell visibility: passed
-- candidate preview: still separate evidence
-- account/cloud/reconnect product acceptance: not started
-
-## Current Runtime Compatibility
-
-- Battle HUD and skill-selection UI are scene-owned runtime surfaces until a UI Toolkit replacement pass owns them.
-- Runtime feedback prefabs (`PlayerHealthHudView`, `EnemyHealthBar`, `DamageNumber`) live under `Assets/Prefabs/RuntimeFeedback/` and stay as compatibility surfaces. They are not read as screen UI / UI Toolkit replacement success.
-
-## 검증 명령
-
-- `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\check-compile-errors.ps1`
-- `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
-- UI Toolkit candidate capture command or MCP capture flow for the surface
-- route-specific Play Mode smoke when the surface is runtime-critical
-- `npm run --silent rules:lint`
-
-## 문서 재리뷰
-
-- 과한점 리뷰: 새 Stitch/Unity 규칙, 새 hard-fail, 새 artifact schema를 만들지 않고 기존 owner 문서의 루프를 실행 순서로만 참조한다.
-- 부족한점 리뷰: owner/scope, 현재 판단, surface inventory, 실행 순서, acceptance, blocked/residual, 검증 명령을 포함했다.
-- 수정 후 재리뷰: 이미 Stitch-derived인 `SetA/SetC/SetD/SetE`를 재작업 대상으로 묶지 않고, mixed/native candidate만 migration 대상으로 좁혔다.
-- 반복 재리뷰 반영: generated Nova1492 preview model prefab과 gameplay prefab 구조 변경은 제외 범위로 분리했다.
-- 2026-04-26 first pass 후 재리뷰: Account settings overlay는 Stitch source freeze만 active evidence로 유지한다. Script-side/manual 값을 섞은 debug prefab/capture는 active evidence로 보지 않고, no-hardcoding draft probe는 validator blocked 상태로 남긴다.
-- owner impact: primary `plans.non-stitch-ui-stitch-reimport`; secondary `plans.progress`, `docs.index`; out-of-scope `ops.stitch-data-workflow`, `ops.unity-ui-authoring-workflow` 규칙 개정.
-- doc lifecycle checked: 새 active plan으로 등록한다. 이 plan은 native/mixed UI migration closeout 뒤 reference 전환 후보로 본다.
-- 2026-04-27 route 재리뷰: 다음 migration route는 UI Toolkit candidate surface로 고정했다. plan rereview: clean.
-- 2026-04-27 범위 리뷰: runtime-referenced HUD/feedback prefab은 compatibility surface로 남기고, replacement는 별도 pass에서 판단한다.
-- 2026-04-27 부족한점 리뷰: 남은 runtime replacement 대상이 surface inventory에 구분된다.
-- 2026-04-28 source freeze 재리뷰: 과한점은 새 Account/Connection sources를 runtime success로 올리지 않고, source freeze evidence로만 남겼다. 부족한점은 next UITK candidate 기준 화면과 artifact paths를 추가해 해소했다.
-- 2026-04-28 UITK candidate 재리뷰: 과한점은 preview scene/capture/report를 runtime replacement success로 올리지 않고 candidate evidence로만 남겼다. 부족한점은 source candidates 다음 단계였던 UI Toolkit surface, isolated preview scenes, GameView captures, scoped policy evidence를 추가해 해소했다.
-- 2026-04-29 runtime replacement probe 재리뷰: 과한점은 Lobby shell runtime visibility를 WebGL/account/cloud acceptance로 확장하지 않았다. 부족한점은 runtime invocation route, screenshots, policy artifact, console error 기준을 별도 섹션에 남겨 candidate preview와 runtime replacement evidence를 분리했다.
-- 2026-04-29 runtime feedback prefab migration 재리뷰: 과한점은 world-space feedback prefab 이동을 UITK replacement success로 확장하지 않았다. 부족한점은 Resources 밖 compatibility path와 surface inventory를 현재 asset 위치에 맞췄다.
+- active 유지. 남은 native/mixed candidate가 source freeze/candidate/verdict로 닫히면 reference 압축 또는 삭제 후보로 재검토한다.
 - plan rereview: clean

@@ -1,12 +1,12 @@
 # Acceptance Reporting Guardrails
 
-> 마지막 업데이트: 2026-04-26
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: ops.acceptance-reporting-guardrails
 > role: ssot
 > owner_scope: mechanical status와 actual acceptance 분리, success/blocked/mismatch 판정, 최소 closeout contract
 > upstream: docs.index, ops.document-management-workflow
-> artifacts: `artifacts/unity/*.json`, `artifacts/rules/*.json`, `tools/stitch-unity/*.ps1`, `tools/unity-mcp/*.ps1`, `tools/docs-lint/*.mjs`
+> artifacts: `artifacts/rules/issue-recurrence-closeout.json`
 
 이 문서는 `ops.document-management-workflow`의 Closeout 원칙을 구현/검증 보고에 적용하는 기준만 소유한다.
 목표는 mechanical pass를 actual acceptance처럼 보고하지 않는 것이다.
@@ -67,6 +67,21 @@ mechanical pass만으로 acceptance success를 대신하지 않는다.
 - feature onboarding, visual fidelity, runtime correctness evidence와 공통 policy/tooling 변경을 섞으면 기본값은 `blocked`다.
 - capability expansion이 필요하면 먼저 lane을 capability expansion으로 재선언하고, 기존 onboarding이나 feature closeout과 별도로 검증한다.
 - escalation 여부를 판단하지 못하면 `success` 대신 `blocked`로 보고한다.
+
+## Root Cause Investigation
+
+문제 원인을 파악할 때는 확인된 사실과 아직 검증되지 않은 가설을 분리한다.
+
+- `확인된 사실`: 코드, 로그, 테스트, 실행 결과, owner 문서, artifact로 확인한 내용
+- `가설`: 아직 원인으로 확정하지 않은 후보
+- `검증 방법`: 재현, 로그 확인, 테스트, 코드 추적, artifact 비교처럼 가설을 확인하거나 기각할 방법
+- `판정`: 검증 후 맞음, 아님, 또는 아직 판정 불가인지에 대한 결론
+
+규칙:
+
+- 검증 전 가설을 `rootCause`로 쓰지 않는다.
+- `아마`, `추정`, `probably`, `likely`, `seems`처럼 불확실한 표현이 남아 있으면 원인 확정이 아니다.
+- 원인을 아직 좁히지 못했으면 `blockedReason`으로 닫고 `success` 표현을 쓰지 않는다.
 
 ## Acceptance Lock
 

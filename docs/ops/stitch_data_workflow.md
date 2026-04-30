@@ -6,7 +6,7 @@
 > role: ssot
 > owner_scope: Stitch working data ownership, source freeze, Unity handoff 운영
 > upstream: design.ui-reference-workflow, ops.unity-ui-authoring-workflow
-> artifacts: `artifacts/stitch/`, `artifacts/unity/`, `in-memory://compiled/*`
+> artifacts: `artifacts/stitch/`, `in-memory://compiled/*`
 
 이 문서는 JG에서 `Stitch` 산출물을 어떻게 저장하고 Unity handoff로 넘길지 정하는 단일 운영 기준이다.
 현재 활성 흐름은 `Stitch source freeze -> execution contracts -> Unity translation`이다.

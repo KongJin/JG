@@ -1,11 +1,11 @@
 # Game Design — Nova1492 기반 코옵 PvE 빌드 디펜스
 
-> 마지막 업데이트: 2026-04-26
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: design.game-design
 > role: ssot
 > owner_scope: 게임 방향, MVP 범위, 핵심 재미, 제품 판단 기준
-> upstream: design.world-design
+> upstream: docs.index
 > artifacts: none
 
 이 문서는 현재 게임 방향의 SSOT다.

@@ -1,12 +1,12 @@
 # Unity UI Authoring Workflow
 
-> 마지막 업데이트: 2026-04-28
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: ops.unity-ui-authoring-workflow
 > role: ssot
 > owner_scope: Unity UI/UX authoring route, evidence gate, 금지 경로, 종료 proof
-> upstream: plans.progress
-> artifacts: `artifacts/unity/`, `tools/unity-mcp/*.ps1`
+> upstream: docs.index, ops.cohesion-coupling-policy
+> artifacts: `tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1`
 
 이 문서는 이 레포에서 Unity UI/UX 작업을 시작할 때 에이전트가 가장 먼저 따라야 하는 단일 기준이다.
 정책 본문은 여기 한 곳에만 둔다.

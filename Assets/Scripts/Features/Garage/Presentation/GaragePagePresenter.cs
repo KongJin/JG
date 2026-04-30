@@ -101,10 +101,11 @@ namespace Features.Garage.Presentation
                     mobilityId: hasDraftLoadout ? draft.mobilityModuleId : null,
                     framePreviewPrefab: frame?.PreviewPrefab,
                     firepowerPreviewPrefab: firepower?.PreviewPrefab,
-                    mobilityPreviewPrefab: mobility?.PreviewPrefab,
+                    mobilityPreviewPrefab: mobility?.AssemblyPrefab ?? mobility?.PreviewPrefab,
                     frameAlignment: frame?.Alignment,
                     firepowerAlignment: firepower?.Alignment,
-                    mobilityAlignment: mobility?.Alignment));
+                    mobilityAlignment: mobility?.Alignment,
+                    mobilityUsesAssemblyPivot: mobility?.UseAssemblyPivot ?? false));
             }
 
             return slotViewModels;

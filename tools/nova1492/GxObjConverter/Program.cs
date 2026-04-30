@@ -5,6 +5,12 @@ using System.Text.RegularExpressions;
 
 internal static class Program
 {
+    private const string ConverterVersion = "gx-pipeline-v4";
+    private const string ManifestPath = "artifacts/nova1492/gx_conversion_manifest.csv";
+    private const string SummaryPath = "artifacts/nova1492/gx_conversion_summary.md";
+    private const string PipelineStatePath = "artifacts/nova1492/gx_pipeline_state.csv";
+    private const string HierarchyDiagnosticsCsvPath = "artifacts/nova1492/gx_hierarchy_diagnostics.csv";
+    private const string HierarchyDiagnosticsMdPath = "artifacts/nova1492/gx_hierarchy_diagnostics.md";
     private const int MaxVertexCount = 10000;
     private const int MaxIndexCount = 200000;
     private const float LegHelperSpanThreshold = 0.25f;
@@ -16,11 +22,17 @@ internal static class Program
         var outputRoot = GetArg(args, "--output-root") ?? "Assets/Art/Nova1492/GXConverted";
         var includeRelative = GetArg(args, "--include-relative");
         var catalogPath = GetArg(args, "--catalog");
+        var categoryFilter = GetArg(args, "--category");
+        var partIdFilter = GetArg(args, "--part-id");
+        var stage = ParseStage(GetArg(args, "--stage") ?? GetArg(args, "--mode"), args);
         var catalogOnly = HasArg(args, "--catalog-only");
+        var changedOnly = HasArg(args, "--changed-only");
+        var diagnostics = HasArg(args, "--diagnostics") || stage == PipelineStage.Analyze;
         var limitRaw = GetArg(args, "--limit");
         var limit = int.TryParse(limitRaw, out var parsedLimit) ? parsedLimit : int.MaxValue;
         var clean = HasArg(args, "--clean");
         var writeManifest = !HasArg(args, "--no-manifest");
+        var analyzeOnly = stage == PipelineStage.Analyze;
 
         if (!Directory.Exists(sourceRoot))
         {
@@ -47,7 +59,18 @@ internal static class Program
         Directory.CreateDirectory(textureDir);
         Directory.CreateDirectory("artifacts/nova1492");
 
-        var catalogModelPaths = LoadCatalogModelPaths(catalogPath);
+        var catalogRows = LoadCatalogRows(catalogPath)
+            .Where(row => MatchesCatalogFilters(row, categoryFilter, partIdFilter))
+            .ToArray();
+        var catalogModelPaths = catalogRows.ToDictionary(
+            row => NormalizeRelativePath(row.SourceRelativePath),
+            row => row.ModelPath,
+            StringComparer.OrdinalIgnoreCase);
+        var catalogRowByRelativePath = catalogRows.ToDictionary(
+            row => NormalizeRelativePath(row.SourceRelativePath),
+            row => row,
+            StringComparer.OrdinalIgnoreCase);
+        var previousState = LoadPipelineState(PipelineStatePath);
         var includeKey = NormalizeRelativePath(includeRelative);
         IEnumerable<string> gxFilesQuery = Directory.EnumerateFiles(sourceRoot, "*.gx", SearchOption.AllDirectories)
             .Concat(Directory.EnumerateFiles(sourceRoot, "*.GX", SearchOption.AllDirectories))
@@ -62,11 +85,11 @@ internal static class Program
                     includeKey,
                     StringComparison.OrdinalIgnoreCase));
         }
-        else if (catalogOnly)
+        else if (catalogRows.Length > 0 || catalogOnly)
         {
             if (catalogModelPaths.Count == 0)
             {
-                Console.Error.WriteLine("--catalog-only requires a catalog with source_relative_path/model_path rows.");
+                Console.Error.WriteLine("Catalog filtering requires source_relative_path/model_path rows.");
                 return 2;
             }
 
@@ -79,11 +102,18 @@ internal static class Program
             .ToArray();
 
         var rows = new List<ManifestRow>();
+        var diagnosticsRows = new List<HierarchyDiagnosticRow>();
+        var stateRows = new List<PipelineStateRow>();
         var success = 0;
+        var skipped = 0;
 
         foreach (var gxPath in gxFiles)
         {
             var relative = Path.GetRelativePath(sourceRoot, gxPath);
+            var relativeKey = NormalizeRelativePath(relative);
+            catalogRowByRelativePath.TryGetValue(relativeKey, out var catalogRow);
+            var sourceHash = ComputeFileHash(gxPath);
+            var catalogRowHash = ComputeStringHash(catalogRow?.RawLine ?? "");
             try
             {
                 var bytes = File.ReadAllBytes(gxPath);
@@ -99,18 +129,30 @@ internal static class Program
 
                 if (meshes.Count == 0)
                 {
-                    rows.Add(ManifestRow.Failed(relative, gxPath, bytes.Length, "no_valid_mesh_stream"));
+                    rows.Add(ManifestRow.Failed(relative, gxPath, bytes.Length, sourceHash, catalogRowHash, "no_valid_mesh_stream"));
+                    stateRows.Add(PipelineStateRow.FromManifest(relative, catalogRow?.PartId ?? "", sourceHash, catalogRowHash, "", "failed", "failed"));
                     continue;
                 }
 
-                var nodeTransforms = FindNodeTransforms(bytes);
-                if (nodeTransforms.Count > 0)
+                var nodeTransforms = FindNodeTransforms(relative, bytes);
+                var beforeRepairBounds = "";
+                var afterRepairBounds = "";
+                if (nodeTransforms.OriginalNodes.Count > 0)
                 {
-                    meshes = ApplyNodeTransforms(relative, meshes, nodeTransforms);
+                    if (nodeTransforms.RepairApplied)
+                    {
+                        beforeRepairBounds = FormatBounds(ApplyNodeTransforms(relative, meshes, nodeTransforms.OriginalNodes));
+                    }
+
+                    meshes = ApplyNodeTransforms(relative, meshes, nodeTransforms.Nodes);
+                    if (nodeTransforms.RepairApplied)
+                    {
+                        afterRepairBounds = FormatBounds(meshes);
+                    }
                 }
 
                 var xfiInfo = ReadXfiInfo(gxPath);
-                var selection = SelectMeshesForExport(relative, meshes, xfiInfo);
+                var selection = SelectMeshesForExport(relative, meshes, xfiInfo, nodeTransforms.Nodes);
                 var safeName = BuildSafeName(relative);
                 var objPath = catalogModelPaths.TryGetValue(NormalizeRelativePath(relative), out var catalogModelPath) &&
                               !string.IsNullOrWhiteSpace(catalogModelPath)
@@ -129,16 +171,56 @@ internal static class Program
                 var textureReference = string.IsNullOrWhiteSpace(textureOutputPath)
                     ? ""
                     : Path.GetRelativePath(Path.GetDirectoryName(objPath) ?? ".", textureOutputPath).Replace('\\', '/');
+                var assessment = AssessConversion(selection, texture, nodeTransforms);
+                var status = nodeTransforms.RepairApplied ? "repaired" : "converted";
 
-                WriteObj(objPath, mtlPath, safeName, selection.KeptMeshes, textureReference);
-
-                if (texture is not null)
+                if (diagnostics)
                 {
-                    File.Copy(texture, textureOutputPath, overwrite: true);
+                    diagnosticsRows.AddRange(BuildHierarchyDiagnostics(
+                        relative,
+                        catalogRow?.PartId ?? "",
+                        selection.KeptMeshes,
+                        nodeTransforms,
+                        texture,
+                        assessment));
+                }
+
+                if (!analyzeOnly &&
+                    changedOnly &&
+                    previousState.TryGetValue(relativeKey, out var previous) &&
+                    previous.Status is "converted" or "repaired" or "skipped" &&
+                    previous.SourceHash == sourceHash &&
+                    previous.CatalogRowHash == catalogRowHash &&
+                    previous.ConverterVersion == ConverterVersion &&
+                    File.Exists(objPath))
+                {
+                    skipped++;
+                    rows.Add(ManifestRow.Skipped(
+                        relative,
+                        gxPath,
+                        bytes.Length,
+                        objPath,
+                        sourceHash,
+                        catalogRowHash,
+                        assessment,
+                        "changed_only_cache_hit"));
+                    stateRows.Add(PipelineStateRow.FromManifest(relative, catalogRow?.PartId ?? "", sourceHash, catalogRowHash, objPath, "skipped", assessment));
+                    continue;
+                }
+
+                if (!analyzeOnly)
+                {
+                    WriteObj(objPath, mtlPath, safeName, selection.KeptMeshes, textureReference);
+
+                    if (texture is not null)
+                    {
+                        File.Copy(texture, textureOutputPath, overwrite: true);
+                    }
                 }
 
                 success++;
-                rows.Add(ManifestRow.Converted(
+                rows.Add(ManifestRow.Success(
+                    analyzeOnly ? "analyzed" : status,
                     relative,
                     gxPath,
                     bytes.Length,
@@ -163,26 +245,47 @@ internal static class Program
                     CountLargeDroppedBlocks(selection.DroppedMeshes),
                     FormatBounds(selection.KeptMeshes),
                     xfiInfo.TransformCount,
-                    xfiInfo.DirectionRangeCount));
+                    xfiInfo.DirectionRangeCount,
+                    sourceHash,
+                    catalogRowHash,
+                    assessment,
+                    nodeTransforms.RepairRule,
+                    nodeTransforms.RepairReason,
+                    beforeRepairBounds,
+                    afterRepairBounds));
+                stateRows.Add(PipelineStateRow.FromManifest(relative, catalogRow?.PartId ?? "", sourceHash, catalogRowHash, objPath, analyzeOnly ? "analyzed" : status, assessment));
             }
             catch (Exception ex)
             {
-                rows.Add(ManifestRow.Failed(relative, gxPath, 0, ex.GetType().Name + ": " + ex.Message));
+                rows.Add(ManifestRow.Failed(relative, gxPath, 0, sourceHash, catalogRowHash, ex.GetType().Name + ": " + ex.Message));
+                stateRows.Add(PipelineStateRow.FromManifest(relative, catalogRow?.PartId ?? "", sourceHash, catalogRowHash, "", "failed", "failed"));
             }
         }
 
         if (writeManifest)
         {
-            WriteManifest(rows);
+            WriteManifest(rows, sourceRoot, outputRoot, stage);
+            WritePipelineState(stateRows);
+        }
+
+        if (diagnostics)
+        {
+            WriteHierarchyDiagnostics(diagnosticsRows);
         }
 
         Console.WriteLine($"GX files: {gxFiles.Length}");
-        Console.WriteLine($"Converted: {success}");
-        Console.WriteLine($"Failed: {gxFiles.Length - success}");
+        Console.WriteLine(analyzeOnly ? $"Analyzed: {success}" : $"Converted/Repaired: {success}");
+        Console.WriteLine($"Skipped: {skipped}");
+        Console.WriteLine($"Failed: {rows.Count(row => row.Status == "failed")}");
         Console.WriteLine(writeManifest
-            ? "Manifest: artifacts/nova1492/gx_conversion_manifest.csv"
+            ? "Manifest: " + ManifestPath
             : "Manifest: skipped (--no-manifest)");
-        return success > 0 ? 0 : 1;
+        if (diagnostics)
+        {
+            Console.WriteLine("Diagnostics: " + HierarchyDiagnosticsCsvPath);
+        }
+
+        return success > 0 || skipped > 0 ? 0 : 1;
     }
 
     private static string? GetArg(string[] args, string name)
@@ -203,6 +306,96 @@ internal static class Program
     private static bool HasArg(string[] args, string name)
     {
         return args.Any(arg => string.Equals(arg, name, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static PipelineStage ParseStage(string? value, IReadOnlyCollection<string> args)
+    {
+        if (args.Any(arg => string.Equals(arg, "--analyze", StringComparison.OrdinalIgnoreCase)))
+        {
+            return PipelineStage.Analyze;
+        }
+
+        if (args.Any(arg => string.Equals(arg, "--convert", StringComparison.OrdinalIgnoreCase)))
+        {
+            return PipelineStage.Convert;
+        }
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return PipelineStage.Convert;
+        }
+
+        return value.Trim().ToLowerInvariant() switch
+        {
+            "analyze" => PipelineStage.Analyze,
+            "convert" => PipelineStage.Convert,
+            _ => throw new ArgumentException("Unknown --stage value: " + value + ". Use analyze or convert.")
+        };
+    }
+
+    private static bool MatchesCatalogFilters(CatalogRow row, string? categoryFilter, string? partIdFilter)
+    {
+        if (!string.IsNullOrWhiteSpace(partIdFilter) &&
+            !string.Equals(row.PartId, partIdFilter, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(categoryFilter))
+        {
+            return true;
+        }
+
+        return string.Equals(row.Category, categoryFilter, StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(row.Slot, categoryFilter, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static List<CatalogRow> LoadCatalogRows(string? catalogPath)
+    {
+        var output = new List<CatalogRow>();
+        if (string.IsNullOrWhiteSpace(catalogPath) || !File.Exists(catalogPath))
+        {
+            return output;
+        }
+
+        var lines = File.ReadAllLines(catalogPath);
+        if (lines.Length == 0)
+        {
+            return output;
+        }
+
+        var headers = ParseCsvLine(lines[0]);
+        var headerIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        for (var i = 0; i < headers.Count; i++)
+        {
+            headerIndex[headers[i]] = i;
+        }
+
+        for (var i = 1; i < lines.Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(lines[i]))
+            {
+                continue;
+            }
+
+            var values = ParseCsvLine(lines[i]);
+            var relative = GetCsv(values, headerIndex, "source_relative_path");
+            var modelPath = GetCsv(values, headerIndex, "model_path");
+            if (string.IsNullOrWhiteSpace(relative) || string.IsNullOrWhiteSpace(modelPath))
+            {
+                continue;
+            }
+
+            output.Add(new CatalogRow(
+                GetCsv(values, headerIndex, "partId"),
+                GetCsv(values, headerIndex, "slot"),
+                GetCsv(values, headerIndex, "category"),
+                relative,
+                modelPath,
+                lines[i]));
+        }
+
+        return output;
     }
 
     private static Dictionary<string, string> LoadCatalogModelPaths(string? catalogPath)
@@ -299,12 +492,12 @@ internal static class Program
         return values;
     }
 
-    private static List<NodeTransform> FindNodeTransforms(byte[] bytes)
+    private static NodeTransformResult FindNodeTransforms(string relativePath, byte[] bytes)
     {
         var frameMarkers = FindAsciiMarkers(bytes, "4294901778d{");
         if (frameMarkers.Count == 0)
         {
-            return new List<NodeTransform>();
+            return NodeTransformResult.Empty;
         }
 
         var events = new List<StructureEvent>();
@@ -334,10 +527,13 @@ internal static class Program
                         continue;
                     }
 
+                    var parentIndex = stack.Count == 0
+                        ? -1
+                        : output.FindLastIndex(node => ReferenceEquals(node, stack[^1]));
                     var world = stack.Count == 0
                         ? local.Matrix
                         : MultiplyMatrices(stack[^1].Matrix, local.Matrix);
-                    var node = new NodeTransform(local.Name, local.Start, bytes.Length, world);
+                    var node = new NodeTransform(local.Name, local.Start, bytes.Length, world, local.Matrix, parentIndex);
                     output.Add(node);
                     stack.Add(node);
                     afterMesh = false;
@@ -379,7 +575,160 @@ internal static class Program
             }
         }
 
-        return output;
+        return RepairSeparatedLegHierarchy(relativePath, output);
+    }
+
+    private static NodeTransformResult RepairSeparatedLegHierarchy(
+        string relativePath,
+        List<NodeTransform> nodeTransforms)
+    {
+        if (!NormalizeRelativePath(relativePath).Contains("/legs", StringComparison.OrdinalIgnoreCase) ||
+            nodeTransforms.Count == 0)
+        {
+            return new NodeTransformResult(nodeTransforms, nodeTransforms, "", "");
+        }
+
+        var legsIndex = nodeTransforms.FindIndex(static node => node.Name == "legs");
+        if (legsIndex < 0)
+        {
+            return new NodeTransformResult(nodeTransforms, nodeTransforms, "", "");
+        }
+
+        var parents = nodeTransforms.Select(static node => node.ParentIndex).ToArray();
+        var changed = false;
+        var reasons = new List<string>();
+        for (var i = 0; i < nodeTransforms.Count; i++)
+        {
+            if (i == legsIndex ||
+                parents[i] >= 0 ||
+                IsModelRootNodeName(nodeTransforms[i].Name))
+            {
+                continue;
+            }
+
+            parents[i] = legsIndex;
+            changed = true;
+            reasons.Add(nodeTransforms[i].Name + " orphan->legs");
+        }
+
+        for (var i = 0; i < nodeTransforms.Count; i++)
+        {
+            var local = nodeTransforms[i].LocalMatrix;
+            var tx = local[3];
+            if (Math.Abs(tx) < 0.05f)
+            {
+                continue;
+            }
+
+            for (var j = i - 1; j >= 0; j--)
+            {
+                var candidateLocal = nodeTransforms[j].LocalMatrix;
+                if (Math.Abs(Math.Abs(tx) - Math.Abs(candidateLocal[3])) > 0.0005f ||
+                    tx * candidateLocal[3] >= 0f ||
+                    Math.Abs(local[7] - candidateLocal[7]) > 0.0005f ||
+                    Math.Abs(local[11] - candidateLocal[11]) > 0.0005f)
+                {
+                    continue;
+                }
+
+                var candidateParent = parents[j];
+                if (candidateParent < 0 ||
+                    parents[i] == candidateParent ||
+                    WouldCreateParentCycle(parents, i, candidateParent))
+                {
+                    break;
+                }
+
+                var currentWorld = ComputeNodeWorldMatrix(nodeTransforms, parents, i);
+                var candidateWorld = ComputeNodeWorldMatrix(nodeTransforms, parents, j);
+                if (Math.Abs(currentWorld[7] - candidateWorld[7]) <= 0.05f &&
+                    Math.Abs(currentWorld[11] - candidateWorld[11]) <= 0.05f)
+                {
+                    break;
+                }
+
+                parents[i] = candidateParent;
+                changed = true;
+                reasons.Add(nodeTransforms[i].Name + " mirror-parent->" + nodeTransforms[candidateParent].Name);
+                break;
+            }
+        }
+
+        if (!changed)
+        {
+            return new NodeTransformResult(nodeTransforms, nodeTransforms, "", "");
+        }
+
+        var repaired = new List<NodeTransform>(nodeTransforms.Count);
+        for (var i = 0; i < nodeTransforms.Count; i++)
+        {
+            var matrix = ComputeNodeWorldMatrix(nodeTransforms, parents, i);
+            repaired.Add(nodeTransforms[i] with
+            {
+                Matrix = matrix,
+                ParentIndex = parents[i]
+            });
+        }
+
+        return new NodeTransformResult(
+            repaired,
+            nodeTransforms,
+            "legs_orphan_and_mirror_bounds_repair",
+            string.Join("; ", reasons));
+    }
+
+    private static bool IsModelRootNodeName(string name)
+    {
+        return name.Contains(":\\", StringComparison.Ordinal) ||
+               name.EndsWith(".gx", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static float[] ComputeNodeWorldMatrix(
+        IReadOnlyList<NodeTransform> nodes,
+        IReadOnlyList<int> parents,
+        int index)
+    {
+        var visited = new HashSet<int>();
+        var chain = new Stack<int>();
+        var cursor = index;
+        while (cursor >= 0)
+        {
+            if (!visited.Add(cursor))
+            {
+                return nodes[index].Matrix;
+            }
+
+            chain.Push(cursor);
+            cursor = parents[cursor];
+        }
+
+        float[]? output = null;
+        while (chain.Count > 0)
+        {
+            var item = chain.Pop();
+            output = output is null
+                ? nodes[item].LocalMatrix
+                : MultiplyMatrices(output, nodes[item].LocalMatrix);
+        }
+
+        return output ?? nodes[index].LocalMatrix;
+    }
+
+    private static bool WouldCreateParentCycle(IReadOnlyList<int> parents, int nodeIndex, int candidateParent)
+    {
+        var visited = new HashSet<int>();
+        var cursor = candidateParent;
+        while (cursor >= 0)
+        {
+            if (cursor == nodeIndex || !visited.Add(cursor))
+            {
+                return true;
+            }
+
+            cursor = parents[cursor];
+        }
+
+        return false;
     }
 
     private static NodeTransform? TryReadNodeTransform(byte[] bytes, int marker)
@@ -409,7 +758,7 @@ internal static class Program
             matrix[m] = ReadSingle(bytes, matrixOffset + m * 4);
         }
 
-        return new NodeTransform(name, marker, bytes.Length, matrix);
+        return new NodeTransform(name, marker, bytes.Length, matrix, matrix, -1);
     }
 
     private static List<int> FindAsciiMarkers(byte[] bytes, string marker)
@@ -743,7 +1092,8 @@ internal static class Program
     private static MeshSelection SelectMeshesForExport(
         string relativePath,
         IReadOnlyList<MeshData> meshes,
-        XfiInfo xfiInfo)
+        XfiInfo xfiInfo,
+        IReadOnlyList<NodeTransform> nodeTransforms)
     {
         if (!IsUnitLegsPath(relativePath) || meshes.Count == 0)
         {
@@ -763,7 +1113,8 @@ internal static class Program
         var direction = new List<MeshData>();
         foreach (var mesh in meshes)
         {
-            if (IsLegDirectionHelperMesh(mesh))
+            if (IsLegDirectionHelperMesh(relativePath, mesh) ||
+                IsDetachedUnassignedLegMesh(relativePath, mesh, nodeTransforms))
             {
                 direction.Add(mesh);
                 continue;
@@ -800,10 +1151,52 @@ internal static class Program
         return Regex.IsMatch(stem, @"^(?:g_|n_|s_|ss0_)?legs\d+", RegexOptions.IgnoreCase);
     }
 
-    private static bool IsLegDirectionHelperMesh(MeshData mesh)
+    private static bool IsLegDirectionHelperMesh(string relativePath, MeshData mesh)
     {
         var triangles = mesh.IndexCount / 3;
-        return triangles <= 12 && CalculateSpan(mesh) < LegHelperSpanThreshold;
+        return triangles <= 12 && CalculateSpan(mesh) < LegHelperSpanThreshold ||
+               IsSpiderDetachedHelperPlane(relativePath, mesh);
+    }
+
+    private static bool IsSpiderDetachedHelperPlane(string relativePath, MeshData mesh)
+    {
+        var stem = Path.GetFileNameWithoutExtension(relativePath);
+        if (!stem.Equals("legs20_spod", StringComparison.OrdinalIgnoreCase) &&
+            !stem.Equals("s_legs33_spod", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var triangles = mesh.IndexCount / 3;
+        if (mesh.VertexCount != 4 || triangles != 2)
+        {
+            return false;
+        }
+
+        GetBounds(new[] { mesh }, out var min, out var max);
+        return min.Y <= -0.9f && Math.Abs(max.Z - min.Z) <= 0.0001f;
+    }
+
+    private static bool IsDetachedUnassignedLegMesh(
+        string relativePath,
+        MeshData mesh,
+        IReadOnlyList<NodeTransform> nodeTransforms)
+    {
+        var stem = Path.GetFileNameWithoutExtension(relativePath);
+        if (!stem.Equals("legs23_tk", StringComparison.OrdinalIgnoreCase) &&
+            !stem.Equals("s_legs30_tk", StringComparison.OrdinalIgnoreCase) &&
+            !stem.Equals("legs49_otrs", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (nodeTransforms.Count == 0)
+        {
+            return false;
+        }
+
+        var headerStart = mesh.PositionStart - 16;
+        return !nodeTransforms.Any(node => node.Start < headerStart && headerStart < node.End);
     }
 
     private static string FormatMeshList(IReadOnlyList<MeshData> meshes)
@@ -1174,11 +1567,202 @@ internal static class Program
         return null;
     }
 
-    private static void WriteManifest(List<ManifestRow> rows)
+    private static string AssessConversion(
+        MeshSelection selection,
+        string? texture,
+        NodeTransformResult nodeTransforms)
     {
-        using (var writer = new StreamWriter("artifacts/nova1492/gx_conversion_manifest.csv", false, new UTF8Encoding(false)))
+        if (selection.KeptMeshes.Count == 0)
         {
-            writer.WriteLine("status,source_relative_path,source_path,bytes,obj_path,vertices,triangles,position_offset,normal_offset,uv_offset,index_offset,texture_source,texture_output,parser_mode,mesh_blocks,kept_block_count,assembly_blocks,direction_blocks,dropped_blocks,assembly_block_diagnostics,direction_block_diagnostics,dropped_block_diagnostics,large_dropped_block_count,bounds,xfi_transform_count,xfi_direction_range_count,error");
+            return "failed";
+        }
+
+        if (texture is null)
+        {
+            return "needs_review";
+        }
+
+        if (nodeTransforms.RepairApplied)
+        {
+            return "repair_applied";
+        }
+
+        return "pass";
+    }
+
+    private static List<HierarchyDiagnosticRow> BuildHierarchyDiagnostics(
+        string relativePath,
+        string partId,
+        IReadOnlyList<MeshData> meshes,
+        NodeTransformResult nodeTransforms,
+        string? texture,
+        string assessment)
+    {
+        var rows = new List<HierarchyDiagnosticRow>();
+        var nodes = nodeTransforms.Nodes;
+        foreach (var mesh in meshes)
+        {
+            var headerStart = mesh.PositionStart - 16;
+            var node = nodes.LastOrDefault(item => item.Start < headerStart && headerStart < item.End);
+            rows.Add(new HierarchyDiagnosticRow(
+                relativePath,
+                partId,
+                "0x" + headerStart.ToString("X", Invariant),
+                mesh.VertexCount,
+                mesh.IndexCount / 3,
+                node?.Name ?? "",
+                node is null ? "" : "0x" + node.Start.ToString("X", Invariant),
+                node is null ? "" : "0x" + node.End.ToString("X", Invariant),
+                node?.Matrix[3] ?? 0f,
+                node?.Matrix[7] ?? 0f,
+                node?.Matrix[11] ?? 0f,
+                FormatBounds(new[] { mesh }),
+                nodeTransforms.RepairRule,
+                nodeTransforms.RepairReason,
+                texture ?? "",
+                assessment));
+        }
+
+        return rows;
+    }
+
+    private static Dictionary<string, PipelineStateRow> LoadPipelineState(string path)
+    {
+        var rows = new Dictionary<string, PipelineStateRow>(StringComparer.OrdinalIgnoreCase);
+        if (!File.Exists(path))
+        {
+            return rows;
+        }
+
+        var lines = File.ReadAllLines(path);
+        if (lines.Length == 0)
+        {
+            return rows;
+        }
+
+        var headers = ParseCsvLine(lines[0]);
+        var headerIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        for (var i = 0; i < headers.Count; i++)
+        {
+            headerIndex[headers[i]] = i;
+        }
+
+        for (var i = 1; i < lines.Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(lines[i]))
+            {
+                continue;
+            }
+
+            var values = ParseCsvLine(lines[i]);
+            var row = new PipelineStateRow(
+                GetCsv(values, headerIndex, "source_relative_path"),
+                GetCsv(values, headerIndex, "part_id"),
+                GetCsv(values, headerIndex, "source_hash"),
+                GetCsv(values, headerIndex, "catalog_row_hash"),
+                GetCsv(values, headerIndex, "converter_version"),
+                GetCsv(values, headerIndex, "status"),
+                GetCsv(values, headerIndex, "assessment"),
+                GetCsv(values, headerIndex, "obj_path"),
+                GetCsv(values, headerIndex, "generated_at"));
+            if (!string.IsNullOrWhiteSpace(row.SourceRelativePath))
+            {
+                rows[NormalizeRelativePath(row.SourceRelativePath)] = row;
+            }
+        }
+
+        return rows;
+    }
+
+    private static void WritePipelineState(IReadOnlyList<PipelineStateRow> rows)
+    {
+        var mergedRows = LoadPipelineState(PipelineStatePath);
+        foreach (var row in rows)
+        {
+            mergedRows[NormalizeRelativePath(row.SourceRelativePath)] = row;
+        }
+
+        using var writer = new StreamWriter(PipelineStatePath, false, new UTF8Encoding(false));
+        writer.WriteLine("source_relative_path,part_id,source_hash,catalog_row_hash,converter_version,status,assessment,obj_path,generated_at");
+        foreach (var row in mergedRows.Values.OrderBy(row => row.SourceRelativePath, StringComparer.OrdinalIgnoreCase))
+        {
+            writer.WriteLine(string.Join(",", new[]
+            {
+                Csv(row.SourceRelativePath),
+                Csv(row.PartId),
+                Csv(row.SourceHash),
+                Csv(row.CatalogRowHash),
+                Csv(row.ConverterVersion),
+                Csv(row.Status),
+                Csv(row.Assessment),
+                Csv(row.ObjPath),
+                Csv(row.GeneratedAt)
+            }));
+        }
+    }
+
+    private static void WriteHierarchyDiagnostics(IReadOnlyList<HierarchyDiagnosticRow> rows)
+    {
+        using (var writer = new StreamWriter(HierarchyDiagnosticsCsvPath, false, new UTF8Encoding(false)))
+        {
+            writer.WriteLine("source_relative_path,part_id,mesh_header,vertices,triangles,node,node_start,node_end,tx,ty,tz,bounds,repair_rule,repair_reason,texture_source,assessment");
+            foreach (var row in rows)
+            {
+                writer.WriteLine(string.Join(",", new[]
+                {
+                    Csv(row.SourceRelativePath),
+                    Csv(row.PartId),
+                    Csv(row.MeshHeader),
+                    Csv(row.Vertices.ToString(Invariant)),
+                    Csv(row.Triangles.ToString(Invariant)),
+                    Csv(row.Node),
+                    Csv(row.NodeStart),
+                    Csv(row.NodeEnd),
+                    Csv(row.Tx.ToString("0.######", Invariant)),
+                    Csv(row.Ty.ToString("0.######", Invariant)),
+                    Csv(row.Tz.ToString("0.######", Invariant)),
+                    Csv(row.Bounds),
+                    Csv(row.RepairRule),
+                    Csv(row.RepairReason),
+                    Csv(row.TextureSource),
+                    Csv(row.Assessment)
+                }));
+            }
+        }
+
+        using var md = new StreamWriter(HierarchyDiagnosticsMdPath, false, new UTF8Encoding(false));
+        md.WriteLine("# Nova1492 GX Hierarchy Diagnostics");
+        md.WriteLine();
+        md.WriteLine($"> generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        md.WriteLine();
+        md.WriteLine($"- diagnostic rows: {rows.Count}");
+        md.WriteLine($"- repaired rows: {rows.Count(row => !string.IsNullOrWhiteSpace(row.RepairRule))}");
+        md.WriteLine($"- needs review rows: {rows.Count(row => row.Assessment == "needs_review")}");
+        md.WriteLine($"- csv: `{HierarchyDiagnosticsCsvPath}`");
+    }
+
+    private static string ComputeFileHash(string path)
+    {
+        using var sha1 = SHA1.Create();
+        using var stream = File.OpenRead(path);
+        return Convert.ToHexString(sha1.ComputeHash(stream)).ToLowerInvariant();
+    }
+
+    private static string ComputeStringHash(string value)
+    {
+        using var sha1 = SHA1.Create();
+        return Convert.ToHexString(sha1.ComputeHash(Encoding.UTF8.GetBytes(value))).ToLowerInvariant();
+    }
+
+    private static void WriteManifest(
+        List<ManifestRow> rows,
+        string sourceRoot,
+        string outputRoot,
+        PipelineStage stage)
+    {
+        using (var writer = new StreamWriter(ManifestPath, false, new UTF8Encoding(false)))
+        {
+            writer.WriteLine("status,source_relative_path,source_path,bytes,obj_path,vertices,triangles,position_offset,normal_offset,uv_offset,index_offset,texture_source,texture_output,parser_mode,mesh_blocks,kept_block_count,assembly_blocks,direction_blocks,dropped_blocks,assembly_block_diagnostics,direction_block_diagnostics,dropped_block_diagnostics,large_dropped_block_count,bounds,xfi_transform_count,xfi_direction_range_count,source_hash,catalog_row_hash,converter_version,assessment,repair_rule,repair_reason,before_bounds,after_bounds,error");
             foreach (var row in rows)
             {
                 writer.WriteLine(string.Join(",", new[]
@@ -1209,29 +1793,48 @@ internal static class Program
                     Csv(row.Bounds),
                     Csv(row.XfiTransformCount.ToString(Invariant)),
                     Csv(row.XfiDirectionRangeCount.ToString(Invariant)),
+                    Csv(row.SourceHash),
+                    Csv(row.CatalogRowHash),
+                    Csv(row.ConverterVersion),
+                    Csv(row.Assessment),
+                    Csv(row.RepairRule),
+                    Csv(row.RepairReason),
+                    Csv(row.BeforeBounds),
+                    Csv(row.AfterBounds),
                     Csv(row.Error)
                 }));
             }
         }
 
-        var converted = rows.Count(row => row.Status == "converted");
-        var failed = rows.Count - converted;
-        using var md = new StreamWriter("artifacts/nova1492/gx_conversion_summary.md", false, new UTF8Encoding(false));
+        var converted = rows.Count(row => row.Status is "converted" or "repaired");
+        var analyzed = rows.Count(row => row.Status == "analyzed");
+        var skipped = rows.Count(row => row.Status == "skipped");
+        var failed = rows.Count(row => row.Status == "failed");
+        using var md = new StreamWriter(SummaryPath, false, new UTF8Encoding(false));
         md.WriteLine("# Nova1492 GX Conversion Summary");
         md.WriteLine();
         md.WriteLine($"> generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
         md.WriteLine();
-        md.WriteLine($"- source root: `C:\\Program Files (x86)\\Nova1492`");
-        md.WriteLine($"- output root: `Assets/Art/Nova1492/GXConverted`");
+        md.WriteLine($"- stage: `{stage.ToString().ToLowerInvariant()}`");
+        md.WriteLine($"- converter version: `{ConverterVersion}`");
+        md.WriteLine($"- source root: `{sourceRoot}`");
+        md.WriteLine($"- output root: `{outputRoot}`");
         md.WriteLine($"- total GX files: {rows.Count}");
         md.WriteLine($"- converted: {converted}");
+        md.WriteLine($"- analyzed: {analyzed}");
+        md.WriteLine($"- skipped: {skipped}");
         md.WriteLine($"- failed: {failed}");
-        md.WriteLine("- manifest: `artifacts/nova1492/gx_conversion_manifest.csv`");
+        md.WriteLine($"- repair applied: {rows.Count(row => row.Assessment == "repair_applied")}");
+        md.WriteLine($"- needs review: {rows.Count(row => row.Assessment == "needs_review")}");
+        md.WriteLine($"- manifest: `{ManifestPath}`");
+        md.WriteLine($"- pipeline state: `{PipelineStatePath}`");
         md.WriteLine();
         md.WriteLine("## Notes");
         md.WriteLine();
         md.WriteLine("- Conversion uses a heuristic parser for the confirmed GX layout: split position, normal, UV, and uint16 index streams.");
         md.WriteLine("- Unit legs use an XFI-aware assembly pass that drops tiny direction/helper mesh planes while preserving parsed assembly blocks.");
+        md.WriteLine("- Catalog-driven runs can use --changed-only to skip rows whose source hash, catalog row hash, and converter version are unchanged.");
+        md.WriteLine("- Hierarchy repairs are rule-based and recorded in repair_rule/repair_reason instead of hidden per-part sculpture.");
         md.WriteLine("- UV V is flipped during OBJ export to match the DAE comparison sample.");
         md.WriteLine("- Failed rows are preserved in the manifest for later parser improvements.");
     }
@@ -1293,7 +1896,13 @@ internal static class Program
         public int IndexCount => Indices.Length;
     }
 
-    private sealed record NodeTransform(string Name, int Start, int End, float[] Matrix);
+    private sealed record NodeTransform(
+        string Name,
+        int Start,
+        int End,
+        float[] Matrix,
+        float[] LocalMatrix,
+        int ParentIndex);
 
     private readonly record struct StructureEvent(int Position, StructureEventKind Kind);
 
@@ -1318,6 +1927,86 @@ internal static class Program
     private readonly record struct XfiInfo(bool Exists, int TransformCount, int DirectionRangeCount)
     {
         public static readonly XfiInfo Missing = new(false, 0, 0);
+    }
+
+    private enum PipelineStage
+    {
+        Analyze,
+        Convert,
+    }
+
+    private sealed record CatalogRow(
+        string PartId,
+        string Slot,
+        string Category,
+        string SourceRelativePath,
+        string ModelPath,
+        string RawLine);
+
+    private sealed record NodeTransformResult(
+        IReadOnlyList<NodeTransform> Nodes,
+        IReadOnlyList<NodeTransform> OriginalNodes,
+        string RepairRule,
+        string RepairReason)
+    {
+        public static readonly NodeTransformResult Empty = new(
+            Array.Empty<NodeTransform>(),
+            Array.Empty<NodeTransform>(),
+            "",
+            "");
+
+        public bool RepairApplied => !string.IsNullOrWhiteSpace(RepairRule);
+    }
+
+    private sealed record HierarchyDiagnosticRow(
+        string SourceRelativePath,
+        string PartId,
+        string MeshHeader,
+        int Vertices,
+        int Triangles,
+        string Node,
+        string NodeStart,
+        string NodeEnd,
+        float Tx,
+        float Ty,
+        float Tz,
+        string Bounds,
+        string RepairRule,
+        string RepairReason,
+        string TextureSource,
+        string Assessment);
+
+    private sealed record PipelineStateRow(
+        string SourceRelativePath,
+        string PartId,
+        string SourceHash,
+        string CatalogRowHash,
+        string ConverterVersion,
+        string Status,
+        string Assessment,
+        string ObjPath,
+        string GeneratedAt)
+    {
+        public static PipelineStateRow FromManifest(
+            string sourceRelativePath,
+            string partId,
+            string sourceHash,
+            string catalogRowHash,
+            string objPath,
+            string status,
+            string assessment)
+        {
+            return new PipelineStateRow(
+                sourceRelativePath,
+                partId,
+                sourceHash,
+                catalogRowHash,
+                Program.ConverterVersion,
+                status,
+                assessment,
+                objPath,
+                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", Invariant));
+        }
     }
 
     private sealed record ManifestRow(
@@ -1347,9 +2036,18 @@ internal static class Program
         string Bounds,
         int XfiTransformCount,
         int XfiDirectionRangeCount,
+        string SourceHash,
+        string CatalogRowHash,
+        string ConverterVersion,
+        string Assessment,
+        string RepairRule,
+        string RepairReason,
+        string BeforeBounds,
+        string AfterBounds,
         string Error)
     {
-        public static ManifestRow Converted(
+        public static ManifestRow Success(
+            string status,
             string relativePath,
             string sourcePath,
             long bytes,
@@ -1374,10 +2072,17 @@ internal static class Program
             int largeDroppedBlockCount,
             string bounds,
             int xfiTransformCount,
-            int xfiDirectionRangeCount)
+            int xfiDirectionRangeCount,
+            string sourceHash,
+            string catalogRowHash,
+            string assessment,
+            string repairRule,
+            string repairReason,
+            string beforeBounds,
+            string afterBounds)
         {
             return new ManifestRow(
-                "converted",
+                status,
                 relativePath,
                 sourcePath,
                 bytes,
@@ -1403,12 +2108,74 @@ internal static class Program
                 bounds,
                 xfiTransformCount,
                 xfiDirectionRangeCount,
+                sourceHash,
+                catalogRowHash,
+                Program.ConverterVersion,
+                assessment,
+                repairRule,
+                repairReason,
+                beforeBounds,
+                afterBounds,
                 "");
         }
 
-        public static ManifestRow Failed(string relativePath, string sourcePath, long bytes, string error)
+        public static ManifestRow Skipped(
+            string relativePath,
+            string sourcePath,
+            long bytes,
+            string objPath,
+            string sourceHash,
+            string catalogRowHash,
+            string assessment,
+            string reason)
         {
-            return new ManifestRow("failed", relativePath, sourcePath, bytes, "", 0, 0, "", "", "", "", "", "", "", 0, 0, "", "", "", "", "", "", 0, "", 0, 0, error);
+            return new ManifestRow(
+                "skipped",
+                relativePath,
+                sourcePath,
+                bytes,
+                objPath,
+                0,
+                0,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                0,
+                0,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                0,
+                "",
+                0,
+                0,
+                sourceHash,
+                catalogRowHash,
+                Program.ConverterVersion,
+                assessment,
+                "",
+                "",
+                "",
+                "",
+                reason);
+        }
+
+        public static ManifestRow Failed(
+            string relativePath,
+            string sourcePath,
+            long bytes,
+            string sourceHash,
+            string catalogRowHash,
+            string error)
+        {
+            return new ManifestRow("failed", relativePath, sourcePath, bytes, "", 0, 0, "", "", "", "", "", "", "", 0, 0, "", "", "", "", "", "", 0, "", 0, 0, sourceHash, catalogRowHash, Program.ConverterVersion, "failed", "", "", "", "", error);
         }
     }
 }

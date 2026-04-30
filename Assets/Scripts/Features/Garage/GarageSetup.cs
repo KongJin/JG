@@ -225,6 +225,7 @@ namespace Features.Garage
                     BaseHp = frame.BaseHp,
                     BaseAttackSpeed = frame.BaseAttackSpeed,
                     PreviewPrefab = ResolvePreviewPrefab(frame.PreviewPrefab, metadata),
+                    AssemblyPrefab = ResolveAssemblyPrefab(metadata),
                     SourcePath = metadata?.SourceRelativePath,
                     Tier = metadata?.Tier ?? 0,
                     NeedsNameReview = metadata?.NeedsNameReview ?? false,
@@ -246,6 +247,7 @@ namespace Features.Garage
                     AttackSpeed = module.AttackSpeed,
                     Range = module.Range,
                     PreviewPrefab = ResolvePreviewPrefab(module.PreviewPrefab, metadata),
+                    AssemblyPrefab = ResolveAssemblyPrefab(metadata),
                     SourcePath = metadata?.SourceRelativePath,
                     Tier = metadata?.Tier ?? 0,
                     NeedsNameReview = metadata?.NeedsNameReview ?? false,
@@ -267,6 +269,8 @@ namespace Features.Garage
                     MoveRange = module.MoveRange,
                     AnchorRange = module.AnchorRange,
                     PreviewPrefab = ResolvePreviewPrefab(module.PreviewPrefab, metadata),
+                    AssemblyPrefab = ResolveAssemblyPrefab(metadata),
+                    UseAssemblyPivot = ResolveAssemblyPrefab(metadata) != null,
                     SourcePath = metadata?.SourceRelativePath,
                     Tier = metadata?.Tier ?? 0,
                     NeedsNameReview = metadata?.NeedsNameReview ?? false,
@@ -315,6 +319,11 @@ namespace Features.Garage
 #endif
 
             return null;
+        }
+
+        private static UnityEngine.GameObject ResolveAssemblyPrefab(NovaPartVisualCatalog.Entry metadata)
+        {
+            return metadata?.AssemblyPrefab;
         }
 
         private static System.Collections.Generic.Dictionary<string, NovaPartAlignmentCatalog.Entry> BuildNovaAlignmentByPartId(

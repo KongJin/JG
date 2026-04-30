@@ -1,18 +1,18 @@
 ---
 name: jg-stitch-workflow
 description: >-
-  Project-specific Stitch workflow for the JG repo. Use whenever Codex works with `.stitch/DESIGN.md`, `.stitch/prompt-briefs`, `.stitch/contracts`, Stitch screen generation/editing, or preparing Stitch outputs for Unity UI Toolkit candidate surfaces in this repository. In JG, this skill is a thin router: it points to the active owner docs for prompt-brief refinement and structured handoff preparation, then hands off Unity implementation to `jg-stitch-unity-import` or `jg-unity-workflow`.
+  Project-specific Stitch workflow for the JG repo. Use whenever Codex works with `.stitch/DESIGN.md`, `.stitch/prompt-briefs`, `.stitch/contracts`, Stitch screen generation/editing, or preparing Stitch outputs for Unity UI Toolkit candidate surfaces in this repository. In JG, this skill is a thin router: it points to the active owner docs for prompt-brief refinement and structured handoff preparation, then hands off Unity implementation to `jg-stitch-unity-import` or `jg-unity-workflow`. Route cohesion/coupling judgment to `jg-coupling-review`, and route document lifecycle or 문서 응집도 work to `jg-doc-lifecycle`.
 ---
 
 # JG Stitch Workflow
 
-> 마지막 업데이트: 2026-04-27
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: skill.jg-stitch-workflow
 > role: skill-entry
 > owner_scope: JG Stitch lane read order, owner doc routing, artifact entrypoint
 > upstream: repo.agents, docs.index, ops.cohesion-coupling-policy, ops.plan-authoring-review-workflow, ops.acceptance-reporting-guardrails, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract
-> artifacts: `.stitch/DESIGN.md`, `.stitch/prompt-briefs/`, `.stitch/contracts/`
+> artifacts: none
 
 Use this skill only as a router for the JG Stitch lane.
 Do not restate workflow policy or artifact rules here.
