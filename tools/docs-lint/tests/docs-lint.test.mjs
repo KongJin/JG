@@ -22,6 +22,108 @@ async function writeFile(root, repoRelativePath, content) {
   await fs.writeFile(absolutePath, content, "utf8");
 }
 
+const recurrenceCoverageText = [
+  "active plan artifact owner shape drift",
+  "active plan concrete artifact owner collision",
+  "progress evidence overload",
+].join("; ");
+
+async function writeMinimalRecurrenceRepo(root, {
+  rootCause,
+  blockedReason = "",
+  prevention = `Added owner-doc and lint coverage for ${recurrenceCoverageText}.`,
+  verification = "Ran rules:lint in the same change.",
+}) {
+  await writeFile(
+    root,
+    "AGENTS.md",
+    `# AGENTS
+
+Plan Mode 또는 Codex 운영 작업은 \`docs/index.md\`를 통해 \`rule-operations\` owner 문서로 라우팅한다.
+해당 lane에서는 mutation 금지.
+`,
+  );
+  await writeFile(
+    root,
+    "docs/index.md",
+    `# Docs Index
+
+Plan Mode / Codex 운영 규칙 확인: \`rule-operations\`
+`,
+  );
+  await writeFile(
+    root,
+    "artifacts/rules/issue-recurrence-closeout.json",
+    `${JSON.stringify({
+      schemaVersion: 1,
+      updatedAt: "2026-04-30",
+      scope: "rules-only",
+      issueDetected: true,
+      declaredLane: "rules-only recurrence prevention",
+      observedMutationClass: "docs and lint policy",
+      acceptanceEvidenceClass: "rules-only closeout",
+      escalationRequired: false,
+      rootCause,
+      prevention,
+      verification,
+      blockedReason,
+      changedPaths: [
+        "docs/index.md",
+        "artifacts/rules/issue-recurrence-closeout.json",
+      ],
+    }, null, 2)}\n`,
+  );
+}
+
+async function writeMinimalActivePlanArtifactRepo(root, artifactMetadata) {
+  await writeFile(
+    root,
+    "AGENTS.md",
+    `# AGENTS
+
+> 마지막 업데이트: 2026-04-30
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+  );
+  await writeFile(
+    root,
+    "docs/index.md",
+    `# Docs Index
+
+> 마지막 업데이트: 2026-04-30
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- \`active\`: [demo.md](./plans/demo.md) - active plan
+`,
+  );
+  await writeFile(
+    root,
+    "docs/plans/demo.md",
+    `# Demo Plan
+
+> 마지막 업데이트: 2026-04-30
+> 상태: active
+> doc_id: plans.demo
+> role: plan
+> owner_scope: fixture active plan
+> upstream: docs.index
+> artifacts: ${artifactMetadata}
+
+Fixture active plan.
+`,
+  );
+}
+
 test("reports missing metadata", async () => {
   const result = await lintRepository(getFixturePath("missing-meta"), {
     includeGeneralChecks: true,
@@ -180,12 +282,68 @@ test("reports active plan concrete artifact owner collisions", async () => {
   );
 });
 
-test("accepts shared broad artifact directories across active plans", async () => {
+test("accepts distinct evidence directories across active plans", async () => {
   const result = await lintRepository(getFixturePath("active-plan-artifact-directory-valid"), {
     includeGeneralChecks: true,
     includePolicyChecks: false,
   });
   assert.equal(result.errors.length, 0);
+});
+
+test("reports broad active plan artifact owner shapes", async () => {
+  const rejectedArtifactShapes = [
+    "`docs/plans/*.md`",
+    "`Assets/**`",
+    "`Build/**`",
+    "`Assets/UI/UIToolkit/AccountSync/`",
+    "`artifacts/unity/`",
+    "`artifacts/unity/*uitk*`",
+  ];
+
+  for (const artifactMetadata of rejectedArtifactShapes) {
+    const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-artifact-shape-"));
+    try {
+      await writeMinimalActivePlanArtifactRepo(repoRoot, artifactMetadata);
+      const result = await lintRepository(repoRoot, {
+        includeGeneralChecks: true,
+        includePolicyChecks: false,
+      });
+      assert.ok(
+        result.errors.some((error) => error.code === "active-plan-artifact-shape"),
+        `Expected active-plan-artifact-shape for: ${artifactMetadata}`,
+      );
+    } finally {
+      await fs.rm(repoRoot, { recursive: true, force: true });
+    }
+  }
+});
+
+test("accepts active plan evidence artifact shapes", async () => {
+  const acceptedArtifactShapes = [
+    "`artifacts/unity/game-flow/actual-flow/`",
+    "`artifacts/nova1492/`",
+    "`artifacts/unity/game-flow/*.png`",
+    "`artifacts/unity/account-sync-uitk-preview-gameview.png`",
+    "none",
+  ];
+
+  for (const artifactMetadata of acceptedArtifactShapes) {
+    const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-artifact-shape-valid-"));
+    try {
+      await writeMinimalActivePlanArtifactRepo(repoRoot, artifactMetadata);
+      const result = await lintRepository(repoRoot, {
+        includeGeneralChecks: true,
+        includePolicyChecks: false,
+      });
+      assert.equal(
+        result.errors.length,
+        0,
+        `Expected no lint errors for: ${artifactMetadata}; got ${result.errors.map((error) => error.code).join(", ")}`,
+      );
+    } finally {
+      await fs.rm(repoRoot, { recursive: true, force: true });
+    }
+  }
 });
 
 test("reports progress evidence artifact overload", async () => {
@@ -286,6 +444,110 @@ test("reports inline owner doc_id references that do not resolve", async () => {
   assert.ok(
     result.errors.some((error) => error.code === "missing-doc-id-reference"),
   );
+});
+
+test("reports metadata upstream owner doc_id references that do not resolve", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-upstream-doc-id-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-04-30
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-04-30
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- \`active\`: [Demo](./ops/demo.md) - demo owner
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/ops/demo.md",
+      `# Demo
+
+> 마지막 업데이트: 2026-04-30
+> 상태: active
+> doc_id: ops.demo
+> role: ssot
+> owner_scope: fixture owner
+> upstream: docs.index, ops.missing-owner
+> artifacts: none
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(
+      result.errors.some((error) => error.code === "missing-upstream-doc-id-reference"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports path-style metadata upstream owner references", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-upstream-path-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-04-30
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-04-30
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: \`AGENTS.md\`
+> artifacts: none
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(
+      result.errors.some((error) => error.code === "missing-upstream-doc-id-reference"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
 });
 
 test("ignores valid search-pattern inline code", async () => {
@@ -480,6 +742,98 @@ test("reports uncertain rootCause without blockedReason", async () => {
   assert.ok(
     result.errors.some((error) => error.code === "uncertain-root-cause-without-blocked-reason"),
   );
+});
+
+test("reports recurrence closeout missing hard-fail coverage wording", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-closeout-coverage-"));
+  try {
+    await writeMinimalRecurrenceRepo(repoRoot, {
+      rootCause: "A rules-only change introduced a documentation issue.",
+      prevention: "Added owner-doc and lint coverage.",
+    });
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: false,
+      includePolicyChecks: true,
+      changedFiles: [
+        "docs/index.md",
+        "artifacts/rules/issue-recurrence-closeout.json",
+      ],
+    });
+    assert.ok(
+      result.errors.some((error) => error.code === "missing-recurrence-closeout-coverage"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports recurrence closeout verification without concrete evidence anchor", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-closeout-verification-"));
+  try {
+    await writeMinimalRecurrenceRepo(repoRoot, {
+      rootCause: "A rules-only change introduced a documentation issue.",
+      verification: "Checked the change.",
+    });
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: false,
+      includePolicyChecks: true,
+      changedFiles: [
+        "docs/index.md",
+        "artifacts/rules/issue-recurrence-closeout.json",
+      ],
+    });
+    assert.ok(
+      result.errors.some((error) => error.code === "missing-recurrence-closeout-verification-evidence"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports expanded uncertain rootCause expressions without blockedReason", async () => {
+  const expressions = [
+    "maybe the changed-path sync missed a case",
+    "the route appears to skip the owner doc",
+    "원인이 아직 가능성 수준이다",
+    "로그상 누락으로 보임",
+    "로그상 누락으로 보인다",
+    "로그상 누락으로 보여",
+    "아직 검증 전인 듯하다",
+    "검증이 덜 된 것 같다",
+  ];
+
+  for (const rootCause of expressions) {
+    const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-uncertain-"));
+    try {
+      await writeMinimalRecurrenceRepo(repoRoot, { rootCause });
+      const result = await lintRepository(repoRoot, {
+        includeGeneralChecks: false,
+        includePolicyChecks: true,
+        changedFiles: [
+          "docs/index.md",
+          "artifacts/rules/issue-recurrence-closeout.json",
+        ],
+      });
+      assert.ok(
+        result.errors.some((error) => error.code === "uncertain-root-cause-without-blocked-reason"),
+        `Expected uncertain rootCause error for: ${rootCause}`,
+      );
+    } finally {
+      await fs.rm(repoRoot, { recursive: true, force: true });
+    }
+  }
+});
+
+test("accepts uncertain rootCause when blockedReason explains missing verification", async () => {
+  const result = await lintRepository(getFixturePath("uncertain-root-cause-blocked-valid"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+    changedFiles: [
+      "docs/index.md",
+      "artifacts/rules/issue-recurrence-closeout.json",
+    ],
+  });
+  assert.equal(result.errors.length, 0);
 });
 
 test("accepts valid recurrence closeout artifact for rules-only changes", async () => {

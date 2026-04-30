@@ -1,15 +1,16 @@
 # Plan Authoring Review Workflow
 
-> 마지막 업데이트: 2026-04-28
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: ops.plan-authoring-review-workflow
 > role: ssot
 > owner_scope: plan 문서 작성/수정 후 closeout 원칙을 적용하는 재리뷰 절차
 > upstream: docs.index, ops.document-management-workflow
-> artifacts: `docs/plans/*.md`
+> artifacts: none
 
 이 문서는 `ops.document-management-workflow`의 Closeout 원칙을 plan 문서에 적용하는 절차만 소유한다.
 plan은 규칙 본문을 새로 만드는 곳이 아니라, 실행 순서와 현재 상태를 담는 문서다.
+`docs/plans/*.md`는 적용 대상이지 이 문서가 closeout/evidence owner로 소유하는 artifact가 아니다.
 
 ## 적용 범위
 

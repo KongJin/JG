@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 internal static class Program
 {
-    private const string ConverterVersion = "gx-pipeline-v4";
+    private const string ConverterVersion = "gx-pipeline-v14";
     private const string ManifestPath = "artifacts/nova1492/gx_conversion_manifest.csv";
     private const string SummaryPath = "artifacts/nova1492/gx_conversion_summary.md";
     private const string PipelineStatePath = "artifacts/nova1492/gx_pipeline_state.csv";
@@ -204,7 +204,6 @@ internal static class Program
                         catalogRowHash,
                         assessment,
                         "changed_only_cache_hit"));
-                    stateRows.Add(PipelineStateRow.FromManifest(relative, catalogRow?.PartId ?? "", sourceHash, catalogRowHash, objPath, "skipped", assessment));
                     continue;
                 }
 
@@ -265,7 +264,10 @@ internal static class Program
         if (writeManifest)
         {
             WriteManifest(rows, sourceRoot, outputRoot, stage);
-            WritePipelineState(stateRows);
+            if (!analyzeOnly)
+            {
+                WritePipelineState(stateRows);
+            }
         }
 
         if (diagnostics)
@@ -582,7 +584,7 @@ internal static class Program
         string relativePath,
         List<NodeTransform> nodeTransforms)
     {
-        if (!NormalizeRelativePath(relativePath).Contains("/legs", StringComparison.OrdinalIgnoreCase) ||
+        if (!IsLegPartRelativePath(relativePath) ||
             nodeTransforms.Count == 0)
         {
             return new NodeTransformResult(nodeTransforms, nodeTransforms, "", "");
@@ -609,6 +611,34 @@ internal static class Program
             parents[i] = legsIndex;
             changed = true;
             reasons.Add(nodeTransforms[i].Name + " orphan->legs");
+        }
+
+        for (var i = 0; i < nodeTransforms.Count; i++)
+        {
+            if (!UsesRootChildBelowAssemblyRepair(relativePath))
+            {
+                break;
+            }
+
+            var parentIndex = parents[i];
+            if (i == legsIndex ||
+                parentIndex < 0 ||
+                (!IsModelRootNodeName(nodeTransforms[parentIndex].Name) &&
+                 !UsesAnyBelowAssemblyRepair(relativePath)) ||
+                IsModelRootNodeName(nodeTransforms[i].Name))
+            {
+                continue;
+            }
+
+            var world = ComputeNodeWorldMatrix(nodeTransforms, parents, i);
+            if (world[7] >= -0.5f)
+            {
+                continue;
+            }
+
+            parents[i] = legsIndex;
+            changed = true;
+            reasons.Add(nodeTransforms[i].Name + " root-child-below-assembly->legs");
         }
 
         for (var i = 0; i < nodeTransforms.Count; i++)
@@ -681,6 +711,54 @@ internal static class Program
     {
         return name.Contains(":\\", StringComparison.Ordinal) ||
                name.EndsWith(".gx", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsLegPartRelativePath(string relativePath)
+    {
+        var normalized = NormalizeRelativePath(relativePath);
+        var stem = Path.GetFileNameWithoutExtension(normalized);
+        return normalized.Contains("/legs", StringComparison.OrdinalIgnoreCase) ||
+               stem.Contains("legs", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool UsesRootChildBelowAssemblyRepair(string relativePath)
+    {
+        var stem = Path.GetFileNameWithoutExtension(relativePath);
+        return stem.Equals("legs34_dpns", StringComparison.OrdinalIgnoreCase) ||
+               stem.Equals("n_legs42_krr", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool UsesAnyBelowAssemblyRepair(string relativePath)
+    {
+        var stem = Path.GetFileNameWithoutExtension(relativePath);
+        return stem.Equals("n_legs42_krr", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool UsesUnassignedMeshLegsTransformRepair(string relativePath)
+    {
+        var stem = Path.GetFileNameWithoutExtension(relativePath);
+        return stem.Equals("legs50_pps", StringComparison.OrdinalIgnoreCase) ||
+               stem.Equals("g_legs58_pps", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static float[]? GetBelowAssemblyFallbackTransform(
+        string relativePath,
+        NodeTransform transform,
+        IReadOnlyList<NodeTransform> nodeTransforms)
+    {
+        var stem = Path.GetFileNameWithoutExtension(relativePath);
+        if (!stem.Equals("n_legs42_krr", StringComparison.OrdinalIgnoreCase) ||
+            transform.Matrix[7] >= -0.5f ||
+            transform.Name == "legs" ||
+            IsModelRootNodeName(transform.Name))
+        {
+            return null;
+        }
+
+        var legs = nodeTransforms.FirstOrDefault(static node => node.Name == "legs");
+        return legs == null
+            ? null
+            : MultiplyMatrices(legs.Matrix, transform.LocalMatrix);
     }
 
     private static float[] ComputeNodeWorldMatrix(
@@ -794,18 +872,32 @@ internal static class Program
         IReadOnlyList<NodeTransform> nodeTransforms)
     {
         var output = new List<MeshData>(meshes.Count);
+        var unassignedFallbackTransform = UsesUnassignedMeshLegsTransformRepair(relativePath)
+            ? nodeTransforms.FirstOrDefault(static node => node.Name == "legs")
+            : null;
         foreach (var mesh in meshes)
         {
             var headerStart = mesh.PositionStart - 16;
             var transform = nodeTransforms
                 .LastOrDefault(node => node.Start < headerStart && headerStart < node.End);
+            if (unassignedFallbackTransform != null &&
+                transform != null &&
+                IsModelRootNodeName(transform.Name))
+            {
+                transform = unassignedFallbackTransform;
+            }
+
             if (transform == null)
             {
-                output.Add(mesh);
+                output.Add(unassignedFallbackTransform == null
+                    ? mesh
+                    : ApplyNodeTransform(mesh, unassignedFallbackTransform.Matrix));
                 continue;
             }
 
-            output.Add(ApplyNodeTransform(mesh, transform.Matrix));
+            var matrix = GetBelowAssemblyFallbackTransform(relativePath, transform, nodeTransforms) ??
+                         transform.Matrix;
+            output.Add(ApplyNodeTransform(mesh, matrix));
         }
 
         return output;

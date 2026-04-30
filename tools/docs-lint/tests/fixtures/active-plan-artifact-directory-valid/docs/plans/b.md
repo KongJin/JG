@@ -5,6 +5,6 @@
 > role: plan
 > owner_scope: fixture active plan B
 > upstream: docs.index
-> artifacts: `artifacts/unity/`
+> artifacts: `artifacts/unity/b/`
 
-Uses the same broad artifact directory.
+Uses a separate distinct evidence directory.

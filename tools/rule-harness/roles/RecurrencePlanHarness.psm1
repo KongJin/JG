@@ -29,9 +29,19 @@ function Test-RecurrencePlanPreventableSkip {
 
     $nonPreventableReasonCodes = @(
         'agent-runner-task-limit'
+        'agent-runner-disabled'
+        'agent-runner-unavailable'
+        'agent-runner-timeout'
+        'agent-runner-contract-violation'
+        'insufficient_snapshot'
     )
 
-    [string]$SkippedBatch.reasonCode -notin $nonPreventableReasonCodes
+    $reasonCode = [string]$SkippedBatch.reasonCode
+    if ($reasonCode -like 'insufficient*snapshot*') {
+        return $false
+    }
+
+    $reasonCode -notin $nonPreventableReasonCodes
 }
 
 function Invoke-RecurrencePlanHarness {

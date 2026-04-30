@@ -14,7 +14,7 @@ Phase 5/9 2-client multiplayer sync acceptance는 별도 multiplayer active owne
 ## Current State
 
 - Single-client actual UI path baseline은 pass 상태다: Lobby room create -> ready/start -> BattleScene, placement center confirm, natural victory/defeat/result overlay까지 `newErrorCount: 0` evidence가 있다.
-- Summon rollback, enemy priority, drag/drop direct test asset은 추가됐고 compile-clean은 통과했지만, 2026-04-29 targeted EditMode 실행은 `open-editor-owns-project`로 blocked다.
+- Summon rollback, enemy priority, drag/drop direct tests는 2026-04-30 in-editor MCP test route로 실행됐고 16/16 pass다: `artifacts/unity/game-flow/actual-flow/direct-editmode-tests.xml`.
 - Victory overlay mismatch는 `WaveEndView` visible overlay/CTA toggle 수정으로 닫았다.
 - Phase 5 multiplayer acceptance는 별도 multiplayer active owner로 분리했다. 이 문서는 single-client flow와 direct execution blocker만 닫는다.
 
@@ -24,15 +24,15 @@ Phase 5/9 2-client multiplayer sync acceptance는 별도 multiplayer active owne
 |---|---|---|---|
 | F1 Lobby room start UI | single-client pass | Lobby UX | 2-client room flow는 multiplayer owner에서 확인 |
 | F2 GameEnd stats/result HUD | single-client pass / checklist residual | Wave/GameEnd runtime | actual player-flow checklist 갱신 필요 |
-| F3 Summon rollback | test asset added / execution blocked | Summon/Energy runtime | EditMode execution이 `open-editor-owns-project` 해소 후 필요 |
-| F4 Enemy priority | test asset added / execution blocked | Battle runtime | core/unit/player fallback direct test execution 필요 |
-| F5 Placement drag/drop | center-confirm pass / direct execution blocked | GameScene UI/UX | drag/drop direct test execution 필요 |
+| F3 Summon rollback | direct EditMode pass | Summon/Energy runtime | `SummonUnitUseCaseDirectTests` pass |
+| F4 Enemy priority | direct EditMode pass | Battle runtime | `GameSceneRuntimeSystemsDirectTests` pass |
+| F5 Placement drag/drop | direct EditMode pass | GameScene UI/UX | `UnitSlotInputHandlerDirectTests` pass |
 
 ## Validation
 
 - Compile/static baseline: Unity compile check 또는 targeted EditMode preflight.
 - Actual flow smoke: Lobby actual UI path 기반 placement, victory, defeat, result overlay.
-- Direct tests: `SummonUnitUseCaseDirectTests`, `UnitSlotInputHandlerDirectTests`, `GameSceneRuntimeSystemsDirectTests`.
+- Direct tests: `SummonUnitUseCaseDirectTests`, `UnitSlotInputHandlerDirectTests`, `GameSceneRuntimeSystemsDirectTests`; latest evidence `artifacts/unity/game-flow/actual-flow/direct-editmode-tests.xml` has 16 total, 16 passed, 0 failed.
 
 ## Closeout
 
@@ -48,5 +48,5 @@ owner impact:
 
 doc lifecycle checked:
 
-- 이 문서는 active 유지. Direct execution과 multiplayer residual이 닫히면 reference 압축 또는 삭제 후보로 재검토한다.
+- 이 문서는 active 유지. Direct execution은 닫혔고, actual player-flow checklist residual이 닫히면 reference 압축 또는 삭제 후보로 재검토한다.
 - plan rereview: clean

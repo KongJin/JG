@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Features.Combat;
 using Features.Combat.Application;
@@ -73,6 +72,9 @@ namespace Features.Player
         [Header("Scene Transition")]
         [SerializeField] private string _lobbySceneName = "LobbyScene";
 
+        [Header("Scene Event Consumers")]
+        [SerializeField] private MonoBehaviour[] _eventBusConsumers;
+
         private EventBus _eventBus;
         private DisposableScope _disposables;
         private IAnalyticsPort _analytics;
@@ -90,11 +92,6 @@ namespace Features.Player
         private readonly GameSceneGarageBootstrapFlow _garageBootstrapFlow = new();
         private readonly GameScenePlayerConnector _playerConnector = new();
         private readonly GameSceneAudioBootstrapFlow _audioBootstrapFlow = new();
-#if UNITY_EDITOR
-        private Coroutine _mcpFinalWaveClearRoutine;
-        private bool _mcpFinalWaveClearGameEnded;
-#endif
-
         /// <summary>
         /// Unit/Garage Feature 초기화 및 Unit 스펙 계산.
         /// </summary>
@@ -279,6 +276,7 @@ namespace Features.Player
             _remotePlayerWiringReady = false;
             _eventBus = new EventBus();
             _disposables = new DisposableScope();
+            InitializeEventBusConsumers();
 
             // Analytics
             _analytics = new FirebaseAnalyticsAdapter();
@@ -315,6 +313,18 @@ namespace Features.Player
 
             // PlayerSceneRegistry arrival is raised when the local Photon instance arrives.
             // CompleteLocalPlayerInitialization() runs from OnPlayerArrived.
+        }
+
+        private void InitializeEventBusConsumers()
+        {
+            if (_eventBusConsumers == null)
+                return;
+
+            for (var i = 0; i < _eventBusConsumers.Length; i++)
+            {
+                if (_eventBusConsumers[i] is IGameSceneEventBusConsumer consumer)
+                    consumer.Initialize(_eventBus);
+            }
         }
 
         private void ConnectPlayer(PlayerSetup setup)
@@ -371,9 +381,6 @@ namespace Features.Player
 
         private void OnGameEndReport(Features.Player.Application.Events.GameEndReportRequestedEvent e)
         {
-#if UNITY_EDITOR
-            _mcpFinalWaveClearGameEnded = true;
-#endif
             Debug.Log($"[GameEnd] ===== Game Result =====");
             Debug.Log($"  Result:     {(e.IsVictory ? "Victory" : "Defeat")}");
             Debug.Log($"  Wave:       {e.ReachedWave}");
@@ -397,102 +404,8 @@ namespace Features.Player
             }
         }
 
-#if UNITY_EDITOR
-        public void ForceCoreDefeatForMcpSmoke()
-        {
-            if (_combatSetup == null || _coreObjective == null)
-                return;
-
-            var lethalDamage = _coreObjective.CoreMaxHp + 10000f;
-            _combatSetup.ApplyDamage(
-                _coreObjective.CoreId,
-                lethalDamage,
-                DamageType.Physical,
-                new DomainEntityId("mcp-smoke"));
-        }
-
-        public void ForceVictoryForMcpSmoke()
-        {
-            _eventBus?.Publish(new Features.Wave.Application.Events.WaveVictoryEvent());
-        }
-
-        public void RunFinalWaveClearForMcpSmoke(float timeScale = 8f, float maxRealtimeSeconds = 90f)
-        {
-            if (_mcpFinalWaveClearRoutine != null)
-                StopCoroutine(_mcpFinalWaveClearRoutine);
-
-            var requestedTimeScale = timeScale > 0f ? timeScale : 12f;
-            var requestedMaxRealtimeSeconds = maxRealtimeSeconds > 0f ? maxRealtimeSeconds : 70f;
-            _mcpFinalWaveClearGameEnded = false;
-            Debug.Log($"[McpSmoke] Final wave clear smoke started. timeScale={requestedTimeScale:F1}, maxRealtimeSeconds={requestedMaxRealtimeSeconds:F1}");
-            _mcpFinalWaveClearRoutine = StartCoroutine(RunFinalWaveClearForMcpSmokeRoutine(
-                Mathf.Clamp(requestedTimeScale, 1f, 20f),
-                Mathf.Max(1f, requestedMaxRealtimeSeconds)));
-        }
-
-        private IEnumerator RunFinalWaveClearForMcpSmokeRoutine(float timeScale, float maxRealtimeSeconds)
-        {
-            var previousTimeScale = Time.timeScale;
-            var elapsed = 0f;
-            Time.timeScale = timeScale;
-
-            while (elapsed < maxRealtimeSeconds && !_mcpFinalWaveClearGameEnded)
-            {
-                var cleared = ClearSpawnedEnemiesForMcpSmoke();
-                if (cleared > 0)
-                    Debug.Log($"[McpSmoke] Cleared spawned enemies: {cleared}");
-
-                yield return new WaitForSecondsRealtime(0.25f);
-                elapsed += 0.25f;
-            }
-
-            Time.timeScale = previousTimeScale;
-            Debug.Log("[McpSmoke] Final wave clear smoke finished.");
-            _mcpFinalWaveClearRoutine = null;
-        }
-
-        private int ClearSpawnedEnemiesForMcpSmoke()
-        {
-            if (_combatSetup == null)
-                return 0;
-
-            var holders = FindObjectsByType<EntityIdHolder>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            var attackerId = _localPlayerSetup != null
-                ? _localPlayerSetup.PlayerId
-                : new DomainEntityId("mcp-smoke");
-            var cleared = 0;
-
-            foreach (var holder in holders)
-            {
-                if (holder == null || !holder.IsInitialized)
-                    continue;
-                if (string.IsNullOrWhiteSpace(holder.Id.Value) || !holder.Id.Value.StartsWith("enemy-"))
-                    continue;
-
-                _combatSetup.ApplyDamage(
-                    holder.Id,
-                    100000f,
-                    DamageType.Physical,
-                    attackerId);
-                cleared++;
-            }
-
-            return cleared;
-        }
-#endif
-
         private void OnDestroy()
         {
-#if UNITY_EDITOR
-            if (_mcpFinalWaveClearRoutine != null)
-            {
-                StopCoroutine(_mcpFinalWaveClearRoutine);
-                _mcpFinalWaveClearRoutine = null;
-            }
-
-            Time.timeScale = 1f;
-#endif
-
             if (_playerSceneRegistry != null)
                 _playerSceneRegistry.PlayerArrived -= OnPlayerArrived;
 

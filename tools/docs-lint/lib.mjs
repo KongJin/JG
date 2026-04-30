@@ -85,7 +85,23 @@ const ROOT_CAUSE_INVESTIGATION_REQUIREMENTS = [
   { patterns: [/rootCause/u], label: "`rootCause` wording" },
   { patterns: [/blockedReason/u], label: "`blockedReason` wording" },
 ];
-const UNCERTAIN_ROOT_CAUSE_PATTERN = /(?:아마|추정|\bprobably\b|\blikely\b|\bseems\b)/iu;
+const UNCERTAIN_ROOT_CAUSE_PATTERN = /(?:아마|추정|가능성|보임|보인다|보여|듯|것 같|\bmaybe\b|\bprobably\b|\blikely\b|\bappears\b|\bseems\b)/iu;
+const RECURRENCE_CLOSEOUT_COVERAGE_PATTERNS = [
+  {
+    pattern: /\bactive plan artifact owner shape drift\b/iu,
+    label: "`active plan artifact owner shape drift`",
+  },
+  {
+    pattern: /\bactive plan concrete artifact owner collisions?\b/iu,
+    label: "`active plan concrete artifact owner collision`",
+  },
+  {
+    pattern: /\bprogress evidence (?:artifact )?overload\b/iu,
+    label: "`progress evidence overload`",
+  },
+];
+const RECURRENCE_VERIFICATION_EVIDENCE_PATTERN =
+  /(?:\bnode --test\b|\bnpm run\b|\brules:lint\b|\brules:sync-closeout\b|\brg\b|\bgit\b|\bpwsh\b|\bpowershell\b|\bUnity\b|\bartifacts?\/|\bdocs\/|\btools\/)/iu;
 const MUTATION_FORBIDDEN_PATTERNS = [
   /mutation\s*금지/u,
   /mutation을\s*금지/u,
@@ -186,6 +202,7 @@ export async function lintRepository(repoRoot, options = {}) {
     errors.push(...validateIndexStatusLabels(documents, repoRoot));
     errors.push(...validateActivePlanBudget(documents));
     errors.push(...validateActivePlanMutualReferences(documents, repoRoot));
+    errors.push(...validateActivePlanArtifactShapes(documents));
     errors.push(...validateActivePlanArtifactOwnerCollisions(documents));
     errors.push(...validateProgressEvidenceOverload(documents));
     errors.push(...(await validateDocsMetaArtifacts(repoRoot)));
@@ -978,6 +995,47 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
     );
   }
 
+  if (
+    payload.issueDetected === true &&
+    typeof payload.rootCause === "string" &&
+    payload.rootCause.trim() !== "" &&
+    typeof payload.verification === "string" &&
+    payload.verification.trim() !== "" &&
+    !RECURRENCE_VERIFICATION_EVIDENCE_PATTERN.test(payload.verification)
+  ) {
+    errors.push(
+      createError(
+        "missing-recurrence-closeout-verification-evidence",
+        RECURRENCE_CLOSEOUT_PATH,
+        "`verification` must name a concrete command, artifact path, owner path, or evidence anchor when `rootCause` is populated.",
+      ),
+    );
+  }
+
+  if (payload.issueDetected === true) {
+    const coverageText = [
+      payload.observedMutationClass,
+      payload.rootCause,
+      payload.prevention,
+    ]
+      .filter((value) => typeof value === "string")
+      .join("\n");
+
+    for (const { pattern, label } of RECURRENCE_CLOSEOUT_COVERAGE_PATTERNS) {
+      if (pattern.test(coverageText)) {
+        continue;
+      }
+
+      errors.push(
+        createError(
+          "missing-recurrence-closeout-coverage",
+          RECURRENCE_CLOSEOUT_PATH,
+          `Recurrence closeout artifact must mention hard-fail coverage ${label} in observedMutationClass, rootCause, or prevention.`,
+        ),
+      );
+    }
+  }
+
   const artifactChangedPaths = Array.isArray(payload.changedPaths)
     ? new Set(payload.changedPaths.map((entry) => normalizeRepoRelativePath(entry)))
     : new Set();
@@ -1085,6 +1143,33 @@ function validateKnownDocIdReferences(documents) {
   const errors = [];
 
   for (const document of documents) {
+    for (const token of splitMetadataList(document.metadata.get("upstream") || "")) {
+      if (token.toLowerCase() === "none") {
+        continue;
+      }
+
+      if (!DOC_ID_REFERENCE_PATTERN.test(token)) {
+        errors.push(
+          createError(
+            "missing-upstream-doc-id-reference",
+            document.repoRelativePath,
+            `Metadata upstream owner reference \`${token}\` must use a managed doc_id, not a path or free-form token.`,
+          ),
+        );
+        continue;
+      }
+
+      if (!knownDocIds.has(token)) {
+        errors.push(
+          createError(
+            "missing-upstream-doc-id-reference",
+            document.repoRelativePath,
+            `Metadata upstream owner doc_id reference \`${token}\` does not match any managed document.`,
+          ),
+        );
+      }
+    }
+
     const lines = stripFencedCodeBlocks(document.content).split(/\r?\n/);
     for (let index = 0; index < lines.length; index += 1) {
       const line = lines[index];
@@ -1294,7 +1379,29 @@ function validateActivePlanArtifactOwnerCollisions(documents) {
         createError(
           "active-plan-artifact-owner-collision",
           owner,
-          `Concrete artifact \`${artifactPath}\` is claimed by multiple active non-progress plans: ${owners.join(", ")}. Keep the concrete file owner in one active plan and use broad directories or reference links elsewhere.`,
+          `Concrete artifact \`${artifactPath}\` is claimed by multiple active non-progress plans: ${owners.join(", ")}. Keep the concrete file owner in one active plan and route other plans through distinct evidence directories or reference links.`,
+        ),
+      );
+    }
+  }
+
+  return errors;
+}
+
+function validateActivePlanArtifactShapes(documents) {
+  const errors = [];
+
+  for (const document of getActiveNonProgressPlans(documents)) {
+    for (const artifactPath of extractArtifactMetadataTokens(document.metadata.get("artifacts") || "")) {
+      if (isAllowedActivePlanArtifactShape(artifactPath)) {
+        continue;
+      }
+
+      errors.push(
+        createError(
+          "active-plan-artifact-shape",
+          document.repoRelativePath,
+          `Active plan artifact owner \`${artifactPath}\` is too broad or not an evidence artifact. Use \`artifacts: none\`, a concrete artifact file, a concrete evidence directory, or a narrow glob inside an evidence directory.`,
         ),
       );
     }
@@ -1364,19 +1471,19 @@ function splitMetadataList(value) {
     .filter(Boolean);
 }
 
-function extractConcreteArtifactMetadataPaths(value) {
+function extractArtifactMetadataTokens(value) {
   if (!value || value.trim().toLowerCase() === "none") {
     return [];
   }
 
-  const inlineTokens = [...value.matchAll(/`([^`]+)`/gu)].map((match) => match[1]);
-  const candidates = inlineTokens.length > 0
-    ? inlineTokens
-    : value.split(",");
+  return splitMetadataList(value)
+    .map((candidate) => normalizeArtifactPath(candidate))
+    .filter(Boolean);
+}
 
+function extractConcreteArtifactMetadataPaths(value) {
   return [...new Set(
-    candidates
-      .map((candidate) => normalizeArtifactPath(candidate))
+    extractArtifactMetadataTokens(value)
       .filter((candidate) => isConcreteRepoFilePath(candidate)),
   )].sort();
 }
@@ -1409,6 +1516,59 @@ function isConcreteRepoFilePath(value) {
     && value.includes("/")
     && !value.endsWith("/")
     && /\/[^/]+\.[A-Za-z0-9]+$/u.test(value);
+}
+
+function isAllowedActivePlanArtifactShape(value) {
+  if (!value || value.toLowerCase() === "none") {
+    return true;
+  }
+
+  if (value.includes("*")) {
+    return isNarrowArtifactGlob(value);
+  }
+
+  if (isConcreteRepoFilePath(value)) {
+    return value.startsWith("artifacts/");
+  }
+
+  if (value.endsWith("/")) {
+    return isConcreteEvidenceDirectory(value);
+  }
+
+  return false;
+}
+
+function isNarrowArtifactGlob(value) {
+  if (!value.startsWith("artifacts/") || value.includes("**")) {
+    return false;
+  }
+
+  const wildcardIndex = value.indexOf("*");
+  const slashBeforeWildcard = value.lastIndexOf("/", wildcardIndex);
+  if (slashBeforeWildcard < 0) {
+    return false;
+  }
+
+  return isConcreteEvidenceDirectory(value.slice(0, slashBeforeWildcard + 1));
+}
+
+function isConcreteEvidenceDirectory(value) {
+  if (!value.startsWith("artifacts/") || value.includes("*")) {
+    return false;
+  }
+
+  const normalized = value.replace(/\/+$/u, "");
+  if (!normalized || normalized === "artifacts") {
+    return false;
+  }
+
+  const broadRoots = new Set([
+    "artifacts/rules",
+    "artifacts/stitch",
+    "artifacts/unity",
+    "artifacts/webgl",
+  ]);
+  return !broadRoots.has(normalized);
 }
 
 function extractRelativeMarkdownTargets(line) {

@@ -6,7 +6,7 @@
 > role: plan
 > owner_scope: Account/Garage WebGL product acceptance, Google linking, settings/accessibility residual closeout
 > upstream: playtest.webgl-smoke-checklist, ops.firebase-hosting, ops.acceptance-reporting-guardrails
-> artifacts: `Build/WebGL`, `artifacts/webgl/account/`
+> artifacts: `artifacts/webgl/account/`
 
 이 문서는 Account/Garage WebGL 실기 acceptance의 active residual owner다.
 Firestore/Garage code path, Google linking code path, WebGL smoke 절차의 본문은 각각 구현 코드와 reference checklist를 따른다.

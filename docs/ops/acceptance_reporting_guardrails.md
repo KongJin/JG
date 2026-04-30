@@ -80,7 +80,7 @@ mechanical pass만으로 acceptance success를 대신하지 않는다.
 규칙:
 
 - 검증 전 가설을 `rootCause`로 쓰지 않는다.
-- `아마`, `추정`, `probably`, `likely`, `seems`처럼 불확실한 표현이 남아 있으면 원인 확정이 아니다.
+- `아마`, `추정`, `가능성`, `보임`, `듯`, `것 같`, `maybe`, `probably`, `likely`, `appears`, `seems`처럼 불확실한 표현이 남아 있으면 원인 확정이 아니다.
 - 원인을 아직 좁히지 못했으면 `blockedReason`으로 닫고 `success` 표현을 쓰지 않는다.
 
 ## Acceptance Lock
@@ -139,6 +139,6 @@ visual staged workflow에서만 사용한다.
 - `declaredLane`, `observedMutationClass`, `acceptanceEvidenceClass`는 비어 있으면 안 된다.
 - `escalationRequired = true`이면 `blockedReason` 없이 closeout하지 않는다.
 - 원인을 아직 못 좁혔으면 `blockedReason`으로 닫고 success를 금지한다.
-- closeout artifact를 쓰는 lane에서는 `verification`이 비어 있으면 안 된다.
+- closeout artifact를 쓰는 lane에서는 `verification`이 비어 있으면 안 되며, `rootCause`가 있으면 실행 명령, artifact path, owner path 같은 concrete evidence anchor를 함께 적는다.
 
 lane별 hook/CI는 `changedPaths` 같은 보조 필드를 추가할 수 있지만, success/blocked/mismatch 의미는 이 문서가 소유한다.

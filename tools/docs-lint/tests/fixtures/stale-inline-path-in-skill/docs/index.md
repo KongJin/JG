@@ -4,7 +4,7 @@
 > doc_id: docs.index
 > role: entry
 > owner_scope: fixture docs registry
-> upstream: `AGENTS.md`
+> upstream: repo.agents
 > artifacts: none
 
 이 문서는 fixture다.

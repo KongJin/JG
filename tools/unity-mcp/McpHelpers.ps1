@@ -1076,7 +1076,8 @@ function Invoke-McpUiInvoke {
         [string]$Path,
         [string]$Method = "click",
         [string]$CustomMethod,
-        [object[]]$Args
+        [Alias("Args")]
+        [object[]]$InvokeArgs
     )
 
     $body = @{
@@ -1088,8 +1089,8 @@ function Invoke-McpUiInvoke {
         $body.customMethod = $CustomMethod
     }
 
-    if ($null -ne $Args) {
-        $normalizedArgs = @($Args | ForEach-Object { if ($null -eq $_) { "" } else { [string]$_ } })
+    if ($null -ne $InvokeArgs) {
+        $normalizedArgs = @($InvokeArgs | ForEach-Object { if ($null -eq $_) { "" } else { [string]$_ } })
         $body.args = $normalizedArgs
         for ($i = 0; $i -lt $normalizedArgs.Count -and $i -lt 3; $i++) {
             $body["arg$i"] = $normalizedArgs[$i]

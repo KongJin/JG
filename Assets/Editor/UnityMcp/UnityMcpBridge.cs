@@ -903,6 +903,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 // Manual automation + diagnostics
                 typeof(AsyncMonitorHandlers),
                 typeof(UiStateMonitorHandlers),
+                typeof(TestHandlers),
             };
 
             foreach (var t in handlerTypes)

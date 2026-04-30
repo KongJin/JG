@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="16" result="Passed" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.1216955">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="83" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.121696" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1105" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="83" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.112912" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32552" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1108" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="77" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.111220" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1109" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="77" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.110001" total="16" passed="16" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1014" name="GameSceneRuntimeSystemsDirectTests" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.061289" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1015" name="BattleEntity_MoveTo_UsesSpawnAnchorAsRadiusCenter" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.BattleEntity_MoveTo_UsesSpawnAnchorAsRadiusCenter" methodname="BattleEntity_MoveTo_UsesSpawnAnchorAsRadiusCenter" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="1781261050" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.019565" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1016" name="EnemyMoveTargetResolver_PrioritizesCoreBeforeUnitOrPlayer" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.EnemyMoveTargetResolver_PrioritizesCoreBeforeUnitOrPlayer" methodname="EnemyMoveTargetResolver_PrioritizesCoreBeforeUnitOrPlayer" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="896132307" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.000866" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1017" name="EnemyMoveTargetResolver_UsesHostileQuery_WhenCoreIsUnavailable" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.EnemyMoveTargetResolver_UsesHostileQuery_WhenCoreIsUnavailable" methodname="EnemyMoveTargetResolver_UsesHostileQuery_WhenCoreIsUnavailable" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="172581961" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.000402" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1024" name="GameEndAnalytics_BuildsContributionCardsFromCombatEvents" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.GameEndAnalytics_BuildsContributionCardsFromCombatEvents" methodname="GameEndAnalytics_BuildsContributionCardsFromCombatEvents" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="1151833031" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.013761" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1025" name="GameEndAnalytics_DoesNotClaimCorePreservedWhenCoreCollapsed" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.GameEndAnalytics_DoesNotClaimCorePreservedWhenCoreCollapsed" methodname="GameEndAnalytics_DoesNotClaimCorePreservedWhenCoreCollapsed" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="190206260" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.000483" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1023" name="GameEndAnalytics_ReportsCountedSummonsAndKills" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.GameEndAnalytics_ReportsCountedSummonsAndKills" methodname="GameEndAnalytics_ReportsCountedSummonsAndKills" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="943918572" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.002019" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1019" name="HostilePositionQuery_FallsBackToPlayerWhenNoUnitIsRegistered" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.HostilePositionQuery_FallsBackToPlayerWhenNoUnitIsRegistered" methodname="HostilePositionQuery_FallsBackToPlayerWhenNoUnitIsRegistered" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="1085772357" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.001491" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1021" name="HostilePositionQuery_FallsBackToPlayerWithinAggroRadiusWhenNoUnitMatches" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.HostilePositionQuery_FallsBackToPlayerWithinAggroRadiusWhenNoUnitMatches" methodname="HostilePositionQuery_FallsBackToPlayerWithinAggroRadiusWhenNoUnitMatches" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="1561428061" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.000855" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1018" name="HostilePositionQuery_UsesUnitBeforePlayerWhenCoreIsUnavailable" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.HostilePositionQuery_UsesUnitBeforePlayerWhenCoreIsUnavailable" methodname="HostilePositionQuery_UsesUnitBeforePlayerWhenCoreIsUnavailable" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="85293468" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.000514" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1020" name="HostilePositionQuery_UsesUnitWithinAggroRadiusBeforePlayer" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.HostilePositionQuery_UsesUnitWithinAggroRadiusBeforePlayer" methodname="HostilePositionQuery_UsesUnitWithinAggroRadiusBeforePlayer" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="2122849552" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.000455" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1022" name="WaveGameEndBridge_UsesElapsedTimeAndReachedWave" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.WaveGameEndBridge_UsesElapsedTimeAndReachedWave" methodname="WaveGameEndBridge_UsesElapsedTimeAndReachedWave" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="940936142" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.001411" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1071" name="SummonUnitUseCaseDirectTests" fullname="Tests.Editor.SummonUnitUseCaseDirectTests" classname="Tests.Editor.SummonUnitUseCaseDirectTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.008189" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1072" name="Execute_PublishesCompletedEventOnce_WhenEnergySpendSucceeds" fullname="Tests.Editor.SummonUnitUseCaseDirectTests.Execute_PublishesCompletedEventOnce_WhenEnergySpendSucceeds" methodname="Execute_PublishesCompletedEventOnce_WhenEnergySpendSucceeds" classname="Tests.Editor.SummonUnitUseCaseDirectTests" runstate="Runnable" seed="201854702" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.003516" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1073" name="Execute_PublishesFailedEventWithoutSpawning_WhenEnergyIsInsufficient" fullname="Tests.Editor.SummonUnitUseCaseDirectTests.Execute_PublishesFailedEventWithoutSpawning_WhenEnergyIsInsufficient" methodname="Execute_PublishesFailedEventWithoutSpawning_WhenEnergyIsInsufficient" classname="Tests.Editor.SummonUnitUseCaseDirectTests" runstate="Runnable" seed="959389459" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.001375" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1075" name="Execute_RefundsEnergyAndPublishesFailedEvent_WhenSpawnReturnsEmptyId" fullname="Tests.Editor.SummonUnitUseCaseDirectTests.Execute_RefundsEnergyAndPublishesFailedEvent_WhenSpawnReturnsEmptyId" methodname="Execute_RefundsEnergyAndPublishesFailedEvent_WhenSpawnReturnsEmptyId" classname="Tests.Editor.SummonUnitUseCaseDirectTests" runstate="Runnable" seed="1595808922" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.000617" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1074" name="Execute_RefundsEnergyAndPublishesFailedEvent_WhenSpawnThrows" fullname="Tests.Editor.SummonUnitUseCaseDirectTests.Execute_RefundsEnergyAndPublishesFailedEvent_WhenSpawnThrows" methodname="Execute_RefundsEnergyAndPublishesFailedEvent_WhenSpawnThrows" classname="Tests.Editor.SummonUnitUseCaseDirectTests" runstate="Runnable" seed="1030838273" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.000888" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1079" name="UnitSlotInputHandlerDirectTests" fullname="Tests.Editor.UnitSlotInputHandlerDirectTests" classname="Tests.Editor.UnitSlotInputHandlerDirectTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.034654" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1080" name="DragDropInsidePlacementArea_RequestsSummonAndHidesPreview" fullname="Tests.Editor.UnitSlotInputHandlerDirectTests.DragDropInsidePlacementArea_RequestsSummonAndHidesPreview" methodname="DragDropInsidePlacementArea_RequestsSummonAndHidesPreview" classname="Tests.Editor.UnitSlotInputHandlerDirectTests" runstate="Runnable" seed="689840264" result="Passed" start-time="2026-04-30 02:05:22Z" end-time="2026-04-30 02:05:22Z" duration="0.033853" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\game-flow\actual-flow\direct-editmode-tests.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

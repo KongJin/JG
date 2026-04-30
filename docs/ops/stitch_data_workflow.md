@@ -1,6 +1,6 @@
 # Stitch Data Workflow
 
-> 마지막 업데이트: 2026-04-27
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: ops.stitch-data-workflow
 > role: ssot
@@ -228,7 +228,7 @@ target runtime prefab이 없어도 정상 케이스다.
 ## 읽기 순서
 
 1. `docs/index.md`
-2. `docs/ops/stitch-structured-handoff-contract.md`
+2. `docs/ops/stitch_structured_handoff_contract.md`
 3. 관련 execution contract 구조
 4. 관련 translation artifact
 5. `docs/ops/unity_ui_authoring_workflow.md`

@@ -5,7 +5,7 @@
 > doc_id: docs.index
 > role: entry
 > owner_scope: fixture docs index
-> upstream: `AGENTS.md`
+> upstream: repo.agents
 > artifacts: none
 
 | 상황 | 먼저 볼 문서 |

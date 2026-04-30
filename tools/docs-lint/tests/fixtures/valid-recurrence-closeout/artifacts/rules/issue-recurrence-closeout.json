@@ -7,8 +7,8 @@
   "observedMutationClass": "docs and lint policy",
   "acceptanceEvidenceClass": "rules-only closeout",
   "escalationRequired": false,
-  "rootCause": "A rules-only change introduced a documentation issue.",
-  "prevention": "Added owner-doc and lint coverage.",
+  "rootCause": "A rules-only change introduced a documentation issue covering active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "prevention": "Added owner-doc and lint coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
   "verification": "Ran rules:lint in the same change.",
   "blockedReason": "",
   "changedPaths": [

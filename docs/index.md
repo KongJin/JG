@@ -5,7 +5,7 @@
 > doc_id: docs.index
 > role: entry
 > owner_scope: `docs/` 탐색 경로, 문서 상태 라벨, 현재 owner 문서 진입점
-> upstream: `AGENTS.md`
+> upstream: repo.agents
 > artifacts: none
 
 이 문서는 `docs/` 탐색용 인덱스다. 루트 진입점은 [`../AGENTS.md`](../AGENTS.md), 진행 상황 SSOT는 [`plans/progress.md`](./plans/progress.md)다.
@@ -13,18 +13,11 @@
 
 이 인덱스는 registry 역할만 유지하고, 규칙 본문은 각 owner 문서에만 둔다.
 
-현재 검증 기본선은 다음으로 읽으면 된다.
-
-1. `plans/progress.md`
-2. `ops/unity_ui_authoring_workflow.md`
-3. `../tools/unity-mcp/README.md`
-4. relevant contract/test code
-
 ## Quick Start
 
 - Unity UI / prefab / scene 작업: [`plans/progress.md`](./plans/progress.md) -> active owner plan -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant contract/prefab
 - Stitch / handoff 작업: [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md)
-- GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> actual-flow는 [`plans/game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md), multiplayer는 [`plans/game_scene_multiplayer_sync_closeout_plan.md`](./plans/game_scene_multiplayer_sync_closeout_plan.md) -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
+- GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> active owner plan -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
 - 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> relevant owner doc
 
 ## 상태 규칙
@@ -50,7 +43,7 @@
 | Stitch 데이터 저장/갱신/Unity handoff 흐름 확인 | [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) |
 | Stitch JSON handoff contract 구조 확인 | [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) |
 | Stitch surface 실행 명령과 review capture 루프 확인 | [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) |
-| GameScene 실제 플로우 검증/closeout 확인 | actual-flow: [`plans/game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md), multiplayer: [`plans/game_scene_multiplayer_sync_closeout_plan.md`](./plans/game_scene_multiplayer_sync_closeout_plan.md) |
+| GameScene 검증/closeout owner 확인 | [`plans/progress.md`](./plans/progress.md) |
 | Account/Garage WebGL acceptance 확인 | [`plans/account_garage_webgl_closeout_plan.md`](./plans/account_garage_webgl_closeout_plan.md) |
 | Unity MCP 실행 루틴 확인 | [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) |
 | WebGL 실기 절차 확인 | [`playtest/webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) |
@@ -71,13 +64,13 @@
 ### `plans/`
 
 - `active`: [`progress.md`](./plans/progress.md) - 공식 진행률 SSOT
-- `active`: [`game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) - GameScene/BattleScene single-client 실제 플레이 플로우 closeout 계획
-- `active`: [`game_scene_multiplayer_sync_closeout_plan.md`](./plans/game_scene_multiplayer_sync_closeout_plan.md) - GameScene Phase 5/9 2-client multiplayer sync closeout 계획
-- `active`: [`account_garage_webgl_closeout_plan.md`](./plans/account_garage_webgl_closeout_plan.md) - Account/Garage WebGL product acceptance와 Google linking residual closeout 계획
-- `active`: [`webgl_audio_closeout_plan.md`](./plans/webgl_audio_closeout_plan.md) - WebGL audio product smoke closeout 계획
-- `active`: [`nova1492_content_residual_plan.md`](./plans/nova1492_content_residual_plan.md) - Nova1492 generated content rights/naming gate와 balance/UI/model owner handoff 계획
-- `active`: [`non_stitch_ui_stitch_reimport_plan.md`](./plans/non_stitch_ui_stitch_reimport_plan.md) - Stitch source freeze가 없는 Unity-native/mixed UI source-freeze routing과 candidate handoff 계획
-- `reference`: [`technical_debt_recurrence_prevention_plan.md`](./plans/technical_debt_recurrence_prevention_plan.md) - Setup/Root drift, runtime lookup, dynamic repair 재발 방지 reference gate
+- `active`: [`game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) - GameScene/BattleScene single-client flow closeout owner
+- `active`: [`game_scene_multiplayer_sync_closeout_plan.md`](./plans/game_scene_multiplayer_sync_closeout_plan.md) - GameScene 2-client sync closeout owner
+- `active`: [`account_garage_webgl_closeout_plan.md`](./plans/account_garage_webgl_closeout_plan.md) - Account/Garage WebGL acceptance owner
+- `active`: [`webgl_audio_closeout_plan.md`](./plans/webgl_audio_closeout_plan.md) - WebGL audio smoke owner
+- `active`: [`nova1492_content_residual_plan.md`](./plans/nova1492_content_residual_plan.md) - Nova1492 content handoff owner
+- `active`: [`non_stitch_ui_stitch_reimport_plan.md`](./plans/non_stitch_ui_stitch_reimport_plan.md) - Non-Stitch UI source/candidate handoff owner
+- `reference`: [`technical_debt_recurrence_prevention_plan.md`](./plans/technical_debt_recurrence_prevention_plan.md) - runtime repair recurrence reference
 
 ### `playtest/`
 

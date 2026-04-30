@@ -1,6 +1,6 @@
 # Document Management Workflow
 
-> 마지막 업데이트: 2026-04-28
+> 마지막 업데이트: 2026-04-30
 > 상태: active
 > doc_id: ops.document-management-workflow
 > role: ssot
@@ -29,6 +29,17 @@
 - `reference`: 필요할 때 보는 배경, 예시, 절차다.
 - `historical`: 현재 판단 근거가 아니다.
 - `skill-entry`: 실행 진입점이며, owner 본문을 재서술하지 않는다.
+
+### Artifacts
+
+- `artifacts:`는 참고 경로가 아니라 해당 문서가 closeout/evidence owner로 소유하는 경로다.
+- `entry`, `skill-entry`, checklist/reference 문서의 기본값은 `artifacts: none`이다.
+- active plan은 실제 evidence 전용 하위 경로만 소유한다.
+- design/ops SSOT는 구현 디렉터리를 소유하지 않고, 필요한 경우 concrete schema/token/tool 파일만 소유한다.
+- 예외적으로 실제 구현 구조를 소유하는 design SSOT는 `owner_scope`가 그 역할을 명시할 때 concrete implementation directory를 artifact로 가질 수 있다.
+- 예외적으로 source freeze, generated source, virtual execution contract를 소유하는 ops workflow SSOT는 `owner_scope`와 본문이 경로 역할을 명시할 때 concrete artifact root나 virtual URI namespace를 artifact로 가질 수 있다.
+- 허용 shape는 concrete file, concrete evidence directory, 해당 evidence directory 안의 좁은 glob, workflow가 실제로 만드는 virtual URI로 제한한다.
+- `docs/plans/*.md`, `Assets/**`, `Build/**`처럼 넓은 glob은 closeout/evidence owner가 아니면 `artifacts: none`으로 둔다.
 
 ### Closeout
 

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-04-30",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "rules-only recurrence prevention",
+  "observedMutationClass": "docs and lint policy",
+  "acceptanceEvidenceClass": "rules-only closeout",
+  "escalationRequired": false,
+  "rootCause": "maybe the lint path missed a case.",
+  "prevention": "Keep the investigation blocked until evidence is available, while preserving coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "Ran rules:lint in the same change.",
+  "blockedReason": "Root cause is still a hypothesis because the failing case has not been reproduced.",
+  "changedPaths": [
+    "docs/index.md",
+    "artifacts/rules/issue-recurrence-closeout.json"
+  ]
+}

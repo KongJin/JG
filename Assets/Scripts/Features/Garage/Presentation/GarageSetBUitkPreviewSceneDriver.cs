@@ -168,7 +168,7 @@ namespace Features.Garage.Presentation
         public string PreviewSelectPart(string slot, string partId)
         {
             if (!TryParsePartSlot(slot, out var parsedSlot) || string.IsNullOrWhiteSpace(partId))
-                return "invalid-part";
+                return "invalid-part:slot=" + (slot ?? "") + ";part=" + (partId ?? "");
 
             EnsurePreviewReady();
             SelectPartOption(new GarageNovaPartSelection(parsedSlot, partId));

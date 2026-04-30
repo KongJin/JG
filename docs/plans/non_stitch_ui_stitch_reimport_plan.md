@@ -6,7 +6,7 @@
 > role: plan
 > owner_scope: Stitch source freeze가 없는 Unity-native/mixed UI의 source-freeze routing, UI Toolkit candidate handoff, owner split gate
 > upstream: design.ui-reference-workflow, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract, ops.unity-ui-authoring-workflow
-> artifacts: `Assets/UI/UIToolkit/AccountSync/`, `Assets/UI/UIToolkit/ConnectionReconnect/`, `artifacts/unity/*uitk*`, `artifacts/unity/account-*-runtime-lobby-shell.png`, `artifacts/unity/connection-*-runtime-lobby-shell.png`
+> artifacts: `artifacts/unity/account-sync-uitk-preview-gameview.png`, `artifacts/unity/connection-reconnect-uitk-preview-gameview.png`, `artifacts/unity/account-sync-runtime-lobby-shell.png`, `artifacts/unity/connection-reconnect-runtime-lobby-shell.png`, `artifacts/unity/account-connection-uitk-candidate-report.md`, `artifacts/unity/account-connection-uitk-workflow-policy.json`, `artifacts/unity/account-connection-runtime-replacement-policy.json`
 
 이 문서는 native/mixed UI surface를 source freeze와 UI Toolkit candidate route로 넘기는 handoff만 소유한다. Stitch/UITK 운영 규칙 본문은 upstream owner 문서를 따른다.
 
