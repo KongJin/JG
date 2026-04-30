@@ -32,6 +32,25 @@ namespace Tests.Editor
             @"AddComponent<\s*(?:[\w]+\.)*\w*SceneRegistry\s*>",
             RegexOptions.Compiled);
 
+        private static readonly string[] RemovedGarageLegacyPresentationTypes =
+        {
+            "GaragePageController",
+            "GaragePageChromeBindings",
+            "GaragePageChromeController",
+            "GaragePageChromeBindingResolver",
+            "GaragePageKeyboardShortcuts",
+            "GaragePageScrollController",
+            "GarageRosterListView",
+            "GarageSlotItemView",
+            "GarageUnitEditorView",
+            "GaragePartSelectorView",
+            "GarageResultPanelView",
+            "GarageUnitPreviewView",
+            "GarageNovaPartsPanelView",
+            "GarageNovaPartsPanelRowView",
+            "GarageNovaPartsPanelCoordinator",
+        };
+
         [Test]
         public void SetupAndRootFiles_DoNotDeclareUpdateMethods()
         {
@@ -151,6 +170,49 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void GarageRuntime_UsesSingleUitkPresentationStack()
+        {
+            var offenders = RemovedGarageLegacyPresentationTypes
+                .Select(typeName => new
+                {
+                    TypeName = typeName,
+                    Type = Type.GetType($"Features.Garage.Presentation.{typeName}, Assembly-CSharp"),
+                    FilePath = Path.Combine(
+                        GetRepoRoot(),
+                        "Assets",
+                        "Scripts",
+                        "Features",
+                        "Garage",
+                        "Presentation",
+                        typeName + ".cs"),
+                })
+                .Where(entry => entry.Type != null || File.Exists(entry.FilePath))
+                .Select(entry => entry.TypeName)
+                .OrderBy(typeName => typeName)
+                .ToArray();
+
+            Assert.That(
+                offenders,
+                Is.Empty,
+                BuildFailureMessage("Garage runtime UI는 GarageSetBUitk* 라인 하나만 사용한다. 삭제된 legacy MonoBehaviour presentation stack을 되살리지 않는다.", offenders));
+        }
+
+        [Test]
+        public void GarageSetupScenes_DoNotSerializeLegacyPageControllerField()
+        {
+            var offenders = EnumerateSceneFiles()
+                .Where(path => File.ReadAllText(path).Contains("_pageController:", StringComparison.Ordinal))
+                .Select(ToRepoRelativePath)
+                .OrderBy(path => path)
+                .ToArray();
+
+            Assert.That(
+                offenders,
+                Is.Empty,
+                BuildFailureMessage("GarageSetup scene serialization must not keep the removed legacy _pageController field.", offenders));
+        }
+
+        [Test]
         public void UnityWorkflowSkill_ContainsArchitectureGuardrails()
         {
             string skillPath = Path.Combine(GetRepoRoot(), ".codex", "skills", "jg-unity-workflow", "SKILL.md");
@@ -171,6 +233,12 @@ namespace Tests.Editor
         {
             string scriptsRoot = Path.Combine(GetRepoRoot(), "Assets", "Scripts");
             return Directory.EnumerateFiles(scriptsRoot, "*.cs", SearchOption.AllDirectories);
+        }
+
+        private static IEnumerable<string> EnumerateSceneFiles()
+        {
+            string scenesRoot = Path.Combine(GetRepoRoot(), "Assets", "Scenes");
+            return Directory.EnumerateFiles(scenesRoot, "*.unity", SearchOption.AllDirectories);
         }
 
         private static string BuildFailureMessage(string headline, IReadOnlyCollection<string> offenders)

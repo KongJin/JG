@@ -580,7 +580,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Features.Garage.GarageSetup
   _networkAdapter: {fileID: 258941324}
-  _pageController: {fileID: 0}
   _setBUitkPageController: {fileID: 0}
   _novaPartVisualCatalog: {fileID: 0}
   _novaPartAlignmentCatalog: {fileID: 0}
@@ -723,6 +722,7 @@ MonoBehaviour:
   _waveSetup: {fileID: 258941323}
   _coreObjective: {fileID: 1491977913}
   _lobbySceneName: LobbyScene
+  _eventBusConsumers: []
 --- !u!4 &258941335
 Transform:
   m_ObjectHideFlags: 0

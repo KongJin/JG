@@ -1743,6 +1743,119 @@ Assert-RuleHarness `
     -Condition (@($fakeValidAgentWork.agentWorkReports | Where-Object { $_.status -eq 'proposed' -and @($_.changedFiles | Where-Object { $_ -eq 'Assets/Scripts/Features/RoleB/Application/RoleBService.cs' }).Count -eq 1 }).Count -eq 1) `
     -Message 'Expected enabled fake agent runner to convert valid JSON batches into proposed agent work.'
 
+$successBudgetReview = Join-Path $roleRepo 'Temp/success-budget-review.json'
+[pscustomobject]@{
+    baseCommitSha = [string]$roleReview.baseCommitSha
+    reviewItems = @(
+        [pscustomobject]@{
+            findingType = 'code-smell'
+            severity = 'high'
+            title = 'Runtime Resources.Load dependency'
+            evidence = @([pscustomobject]@{
+                path = 'Assets/Scripts/Features/RoleB/Application/RoleBService.cs'
+                line = 1
+                snippet = 'Resources.Load<object>("RoleBConfig")'
+            })
+        },
+        [pscustomobject]@{
+            findingType = 'tech_debt'
+            severity = 'medium'
+            title = 'Runtime object lookup API'
+            evidence = @([pscustomobject]@{
+                path = 'Assets/Scripts/Features/RoleC/Application/RoleCService.cs'
+                line = 1
+                snippet = 'FindObjectsByType<object>()'
+            })
+        },
+        [pscustomobject]@{
+            findingType = 'tech_debt'
+            severity = 'medium'
+            title = 'Runtime legacy compatibility path'
+            evidence = @([pscustomobject]@{
+                path = 'Assets/Scripts/Features/RoleD/Application/RoleDService.cs'
+                line = 1
+                snippet = '// Legacy shim kept for fixture'
+            })
+        }
+    )
+    recommendedBatches = @()
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $successBudgetReview -Encoding UTF8
+
+$fakeSuccessBudgetAgent = Join-Path $roleRepo 'Temp/fake-success-budget-agent.cmd'
+Set-Content -Path $fakeSuccessBudgetAgent -Value @'
+@echo off
+set "OUTPUT="
+:args
+if "%~1"=="" goto write
+if "%~1"=="-o" goto found_output
+shift
+goto args
+:found_output
+shift
+set "OUTPUT=%~1"
+shift
+goto args
+:write
+if "%OUTPUT%"=="" exit /b 2
+echo %OUTPUT% | findstr /C:"review-work-001" >nul
+if not errorlevel 1 goto blocked_first
+echo %OUTPUT% | findstr /C:"review-work-002" >nul
+if not errorlevel 1 goto proposed_second
+echo %OUTPUT% | findstr /C:"review-work-003" >nul
+if not errorlevel 1 goto proposed_third
+exit /b 3
+:blocked_first
+> "%OUTPUT%" echo {"summary":"fixture insufficient snapshot","batches":[],"blocked":[{"reasonCode":"insufficient_snapshot","summary":"fixture insufficient snapshot","targetFiles":["Assets/Scripts/Features/RoleB/Application/RoleBService.cs"]}]}
+exit /b 0
+:proposed_second
+> "%OUTPUT%" echo {"summary":"fixture second proposed","batches":[{"id":"fake","kind":"code_fix","targetFiles":["Assets/Scripts/Features/RoleC/Application/RoleCService.cs"],"reason":"fixture success budget second task","validation":["rule_harness_tests"],"expectedFindingsResolved":[],"status":"proposed","ownerDocs":[],"operations":[{"type":"write_file","targetPath":"Assets/Scripts/Features/RoleC/Application/RoleCService.cs","content":"namespace Features.RoleC.Application { public sealed class RoleCService { public object Lookup() { return null; } } }"}]}],"blocked":[]}
+exit /b 0
+:proposed_third
+> "%OUTPUT%" echo {"summary":"fixture third should be skipped","batches":[{"id":"fake","kind":"code_fix","targetFiles":["Assets/Scripts/Features/RoleD/Application/RoleDService.cs"],"reason":"fixture success budget third task","validation":["rule_harness_tests"],"expectedFindingsResolved":[],"status":"proposed","ownerDocs":["AGENTS.md"],"operations":[{"type":"write_file","targetPath":"Assets/Scripts/Features/RoleD/Application/RoleDService.cs","content":"namespace Features.RoleD.Application { public sealed class RoleDService { public object Legacy() { return null; } } }"}]}],"blocked":[]}
+exit /b 0
+'@ -Encoding ASCII
+$roleConfig.agentRunner.commandPath = $fakeSuccessBudgetAgent
+$roleConfig.agentRunner.maxTasksPerRun = 1
+$roleConfig | ConvertTo-Json -Depth 50 | Set-Content -Path $roleConfigPath -Encoding UTF8
+$successBudgetWorkDir = Join-Path $roleRepo 'Temp/FakeSuccessBudgetReviewWork'
+& (Join-Path $roleRepo 'tools/rule-harness/run-review-work.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -ReviewPath $successBudgetReview `
+    -OutputDir $successBudgetWorkDir `
+    -DryRun | Out-Null
+$successBudgetWork = Get-Content -Path (Join-Path $successBudgetWorkDir 'report.json') -Raw | ConvertFrom-Json
+Assert-RuleHarness `
+    -Condition (@($successBudgetWork.agentWorkReports | Where-Object { $_.taskId -eq 'review-work-001' -and $_.status -eq 'blocked' -and $_.blockedReason -eq 'insufficient_snapshot' }).Count -eq 1) `
+    -Message 'Expected success-budget runner to record the first task-level blocked result.'
+Assert-RuleHarness `
+    -Condition (@($successBudgetWork.agentWorkReports | Where-Object { $_.taskId -eq 'review-work-002' -and $_.status -eq 'proposed' -and @($_.changedFiles | Where-Object { $_ -eq 'Assets/Scripts/Features/RoleC/Application/RoleCService.cs' }).Count -eq 1 }).Count -eq 1) `
+    -Message 'Expected success-budget runner to continue after a task-level blocked result and propose the second task.'
+Assert-RuleHarness `
+    -Condition (@($successBudgetWork.agentWorkReports | Where-Object { $_.taskId -eq 'review-work-003' -and $_.status -eq 'skipped' -and $_.blockedReason -eq 'agent-runner-task-limit' -and $_.summary -match 'success budget was reached' }).Count -eq 1) `
+    -Message 'Expected success-budget runner to leave only the third task queued after the proposed-task budget is reached.'
+
+$fakeTimeoutAgent = Join-Path $roleRepo 'Temp/fake-timeout-agent.cmd'
+Set-Content -Path $fakeTimeoutAgent -Value @'
+@echo off
+ping -n 6 127.0.0.1 >nul
+'@ -Encoding ASCII
+$roleConfig.agentRunner.commandPath = $fakeTimeoutAgent
+$roleConfig.agentRunner.timeoutSec = 1
+$roleConfig | ConvertTo-Json -Depth 50 | Set-Content -Path $roleConfigPath -Encoding UTF8
+$timeoutAgentWorkDir = Join-Path $roleRepo 'Temp/FakeTimeoutAgentReviewWork'
+& (Join-Path $roleRepo 'tools/rule-harness/run-review-work.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -ReviewPath $successBudgetReview `
+    -OutputDir $timeoutAgentWorkDir `
+    -DryRun | Out-Null
+$timeoutAgentWork = Get-Content -Path (Join-Path $timeoutAgentWorkDir 'report.json') -Raw | ConvertFrom-Json
+Assert-RuleHarness `
+    -Condition (@($timeoutAgentWork.agentWorkReports).Count -eq 1 -and @($timeoutAgentWork.agentWorkReports | Where-Object { $_.taskId -eq 'review-work-001' -and $_.status -eq 'blocked' -and $_.blockedReason -eq 'agent-runner-timeout' }).Count -eq 1) `
+    -Message 'Expected runner-level agent timeout to stop before trying later tasks.'
+$roleConfig.agentRunner.timeoutSec = 30
+
 $fakeReadOnlyAgent = Join-Path $roleRepo 'Temp/fake-read-only-agent.cmd'
 Set-Content -Path $fakeReadOnlyAgent -Value @'
 @echo off
@@ -1812,6 +1925,32 @@ $insufficientSnapshotPlan = Get-Content -Path (Join-Path $insufficientSnapshotPl
 Assert-RuleHarness `
     -Condition (@($insufficientSnapshotPlan.preventionItems | Where-Object { @($_.relatedPaths | Where-Object { $_ -eq 'Assets/Scripts/Features/RoleB/Application/RoleBService.cs' }).Count -gt 0 }).Count -eq 0) `
     -Message 'Expected insufficient_snapshot to avoid re-queuing candidate product files as recurrence prevention targets.'
+
+$insufficientContextReportPath = Join-Path $roleRepo 'Temp/insufficient-context-work-report.json'
+[pscustomobject]@{
+    inputReviewPath = $agentOnlyReview
+    baseCommitSha = [string]$roleReview.baseCommitSha
+    skippedBatches = @([pscustomobject]@{
+        id = 'review-work-001'
+        kind = 'agent_work'
+        reasonCode = 'insufficient_context'
+        targets = @('Assets/Scripts/Features/RoleB/Application/RoleBService.cs')
+    })
+    rollback = [pscustomobject]@{ performed = $false; failedBatches = @() }
+    retryAttempts = 0
+    memoryUpdates = @()
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $insufficientContextReportPath -Encoding UTF8
+$insufficientContextPlanDir = Join-Path $roleRepo 'Temp/InsufficientContextRecurrencePlan'
+& (Join-Path $roleRepo 'tools/rule-harness/run-recurrence-plan.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -ReviewPath $agentOnlyReview `
+    -WorkReportPath $insufficientContextReportPath `
+    -OutputDir $insufficientContextPlanDir | Out-Null
+$insufficientContextPlan = Get-Content -Path (Join-Path $insufficientContextPlanDir 'report.json') -Raw | ConvertFrom-Json
+Assert-RuleHarness `
+    -Condition (@($insufficientContextPlan.preventionItems | Where-Object { @($_.relatedPaths | Where-Object { $_ -eq 'Assets/Scripts/Features/RoleB/Application/RoleBService.cs' }).Count -gt 0 }).Count -eq 0) `
+    -Message 'Expected agent_work insufficient_context to avoid re-queuing candidate product files as recurrence prevention targets.'
 
 $roleConfig.agentRunner.enabled = $false
 $roleConfig.agentRunner.commandPath = ''

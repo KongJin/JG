@@ -228,7 +228,6 @@ public sealed class LobbySetup : MonoBehaviour
     private void OnDestroy()
     {
         _accountSetup?.Cleanup();
-        _garageSetup?.Cleanup();
         _unitSetup?.Cleanup();
     }
 }

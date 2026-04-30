@@ -43,10 +43,10 @@
 ### Scene Ownership
 
 - Stitch import 중에는 legacy scene이 아니라 UI Toolkit candidate surface와 capture evidence가 Layout SSOT 역할을 먼저 맡는다.
-- `LobbyView`와 `GaragePageController`는 layout author가 아니다.
+- `LobbyView`와 `GarageSetBUitkPageController`는 layout author가 아니다.
 - geometry는 MCP prefab/scene authoring으로 수정하고, runtime code는 상태 렌더와 page focus만 담당한다.
 - decorative hierarchy naming은 contract 대상이 아니지만, section root와 serialized refs는 contract에 남긴다.
-- `GaragePageController`는 smoke host가 아니다.
+- `GarageSetBUitkPageController`는 smoke host가 아니다.
 - WebGL/dev smoke 전용 엔트리포인트가 필요할 때도 production controller에 계속 누적하지 말고, 별도 bridge/driver로 분리하는 것을 원칙으로 한다.
 - production `*PageController`는 thin orchestration만 맡는다. page chrome styling, header/save dock skinning, button preset 선택 같은 시각 책임은 dedicated view/controller로 분리한다.
 - 이 lane에서는 값 하드코딩과 fallback 보정을 정답으로 문서화하지 않는다. 숫자, 토큰, 상태 기본값의 owner는 token SSOT, serialized contract, 또는 scene/prefab contract다.
@@ -310,15 +310,15 @@ Figma에서 Unity로 옮길 때 아래 규칙을 따른다.
 - 새 UI를 만들 때 먼저 `block -> shared component` 대응표를 작성한 뒤 구현한다
 - shared component catalog는 vocabulary reference일 뿐이고, UI Toolkit candidate authoring 입력은 source freeze에서 다시 준비된 execution contracts다.
 
-## Current Mapping Targets
+## Current Runtime Targets
 
-1차 컴포넌트 매핑 대상은 아래 현재 구현 기준으로 잡는다.
+현재 Garage runtime surface는 UI Toolkit 라인 하나를 기준으로 잡는다.
+삭제된 legacy MonoBehaviour View 라인은 새 mapping target으로 부활시키지 않는다.
 
-- `GaragePageController`
-- `GarageSlotItemView`
-- `GaragePartSelectorView`
-- `GarageResultPanelView`
-- `GarageUnitEditorView`
+- `GarageSetBUitkPageController`: state orchestration, save/selection command routing
+- `GarageSetBUitkRuntimeAdapter`: UIDocument/host binding and preview texture bridge
+- `GarageSetBUitkSurface`: named UI Toolkit element rendering and UI events
+- `GaragePagePresenter` / `GaragePageState`: presentation view model and draft state
 
 ## Design Tool Note
 

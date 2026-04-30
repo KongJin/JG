@@ -983,7 +983,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Features.Garage.GarageSetup
   _networkAdapter: {fileID: 1993876771}
-  _pageController: {fileID: 0}
   _setBUitkPageController: {fileID: 1812098077}
   _novaPartVisualCatalog: {fileID: 11400000, guid: f1bb24c0fd4c9b24182685bda6fcb85a, type: 2}
   _novaPartAlignmentCatalog: {fileID: 11400000, guid: e188a37499f4f074d931f022970b0b69, type: 2}

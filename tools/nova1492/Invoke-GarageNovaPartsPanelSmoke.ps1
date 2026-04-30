@@ -1,5 +1,7 @@
 param(
     [string]$UnityBridgeUrl,
+    [string]$ScenePath = "Assets/Scenes/LobbyScene.unity",
+    [string]$ControllerPath = "/GarageSetBUitkDocument",
     [string]$FrameSearchText = "body23",
     [string]$FirepowerSearchText = "arm43",
     [string]$MobilitySearchText = "legs24",
@@ -12,54 +14,146 @@ $ErrorActionPreference = "Stop"
 
 . $PSScriptRoot\..\unity-mcp\McpHelpers.ps1
 
+function Convert-ComponentPropertiesToMap {
+    param([object]$Response)
+
+    $map = @{}
+    foreach ($property in @($Response.properties)) {
+        $map[[string]$property.name] = [string]$property.value
+    }
+
+    return $map
+}
+
+function Get-GarageSetBUitkControllerState {
+    param(
+        [string]$Root,
+        [string]$Path
+    )
+
+    $response = Invoke-McpJson -Root $Root -SubPath "/component/get" -Body @{
+        gameObjectPath = $Path
+        componentType = "GarageSetBUitkPageController"
+        propertyNames = @(
+            "_lastRenderStatus",
+            "_lastInteractionStatus",
+            "_selectedSlotIndex",
+            "_focusedPart",
+            "_partSearchText",
+            "_isSettingsOpen"
+        )
+    }
+
+    $fields = Convert-ComponentPropertiesToMap -Response $response
+    return [PSCustomObject]@{
+        lastRenderStatus = [string]$fields["_lastRenderStatus"]
+        lastInteractionStatus = [string]$fields["_lastInteractionStatus"]
+        selectedSlotIndex = [string]$fields["_selectedSlotIndex"]
+        focusedPart = [string]$fields["_focusedPart"]
+        partSearchText = [string]$fields["_partSearchText"]
+        isSettingsOpen = [string]$fields["_isSettingsOpen"]
+        raw = $response
+    }
+}
+
+function Wait-GarageSetBUitkRendered {
+    param(
+        [string]$Root,
+        [string]$Path,
+        [int]$TimeoutSec = 30
+    )
+
+    $state = $null
+    Wait-McpCondition `
+        -Description "GarageSetBUitkPageController render status" `
+        -TimeoutSec $TimeoutSec `
+        -Condition {
+            $script:GarageSetBUitkWaitState = Get-GarageSetBUitkControllerState -Root $Root -Path $Path
+            return -not [string]::IsNullOrWhiteSpace($script:GarageSetBUitkWaitState.lastRenderStatus)
+        }
+
+    $state = $script:GarageSetBUitkWaitState
+    Remove-Variable -Name GarageSetBUitkWaitState -Scope Script -ErrorAction SilentlyContinue
+    return $state
+}
+
+function Invoke-GarageSetBUitkControllerMethod {
+    param(
+        [string]$Root,
+        [string]$Path,
+        [string]$Method,
+        [object[]]$MethodArgs = @()
+    )
+
+    return Invoke-McpUiInvoke `
+        -Root $Root `
+        -Path $Path `
+        -Method "custom" `
+        -CustomMethod $Method `
+        -InvokeArgs $MethodArgs
+}
+
+function Invoke-GaragePartSelectionSmokeStep {
+    param(
+        [string]$Root,
+        [string]$ControllerPath,
+        [string]$Slot,
+        [string]$SearchText
+    )
+
+    Invoke-GarageSetBUitkControllerMethod `
+        -Root $Root `
+        -Path $ControllerPath `
+        -Method "SelectFocusForMcpSmoke" `
+        -MethodArgs @($Slot) | Out-Null
+
+    Invoke-GarageSetBUitkControllerMethod `
+        -Root $Root `
+        -Path $ControllerPath `
+        -Method "SetPartSearchForMcpSmoke" `
+        -MethodArgs @($SearchText) | Out-Null
+
+    Invoke-GarageSetBUitkControllerMethod `
+        -Root $Root `
+        -Path $ControllerPath `
+        -Method "SelectVisiblePartForMcpSmoke" `
+        -MethodArgs @($Slot, 0) | Out-Null
+
+    Start-Sleep -Milliseconds 250
+    $state = Get-GarageSetBUitkControllerState -Root $Root -Path $ControllerPath
+    $expectedPrefix = "part:$Slot`:"
+    if (-not $state.lastInteractionStatus.StartsWith($expectedPrefix, [System.StringComparison]::Ordinal)) {
+        throw "Garage SetB UITK part selection failed for $Slot. Expected interaction prefix '$expectedPrefix', actual '$($state.lastInteractionStatus)'."
+    }
+
+    return [PSCustomObject]@{
+        slot = $Slot
+        searchText = $SearchText
+        state = $state
+    }
+}
+
 $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
 $health = Wait-McpBridgeHealthy -Root $root -TimeoutSec 60
 $root = $health.Root
 
-if (-not $health.State.isPlaying) {
-    Invoke-McpPlayStartAndWaitForBridge -Root $root -TimeoutSec 90 | Out-Null
-}
+$prepare = Invoke-McpPrepareLobbyPlaySession `
+    -Root $root `
+    -ScenePath $ScenePath `
+    -LoginLoadingPanelPath "" `
+    -TimeoutSec 90
 
-Start-Sleep -Seconds 2
+Wait-McpUiComponent `
+    -Root $root `
+    -Path $ControllerPath `
+    -ComponentType "GarageSetBUitkPageController" `
+    -TimeoutMs 30000 | Out-Null
 
-Invoke-McpUiInvoke -Root $root -Path "/LobbyCanvas/LobbyGarageNavBar/GarageTabButton" | Out-Null
-Wait-McpUiActive -Root $root -Path "/LobbyCanvas/GaragePageRoot/MobileContentRoot/MobileBodyHost/GarageNovaPartsPanelView" -TimeoutMs 15000 | Out-Null
-
-$panelRoot = "/LobbyCanvas/GaragePageRoot/MobileContentRoot/MobileBodyHost/GarageNovaPartsPanelView"
-$title = Get-McpUiTextValue -Root $root -Path "$panelRoot/TitleText"
-$countBefore = Get-McpUiTextValue -Root $root -Path "$panelRoot/CountText"
-
-Invoke-McpSetUiValue -Root $root -Path "$panelRoot/SearchInput" -Value $FrameSearchText
-Start-Sleep -Seconds 1
-
-$frameRowName = Get-McpUiTextValue -Root $root -Path "$panelRoot/NovaPartRow1/NameText"
-$frameRowDetail = Get-McpUiTextValue -Root $root -Path "$panelRoot/NovaPartRow1/DetailText"
-
-Invoke-McpUiInvoke -Root $root -Path "$panelRoot/NovaPartRow1" | Out-Null
-Invoke-McpUiInvoke -Root $root -Path "$panelRoot/ApplyButton" | Out-Null
-Start-Sleep -Seconds 1
-
-$frameValue = Get-McpUiTextValue -Root $root -Path "/LobbyCanvas/GaragePageRoot/MobileContentRoot/MobileBodyHost/GarageUnitEditorView/FrameSelectorView/ValueText"
-
-Invoke-McpUiInvoke -Root $root -Path "$panelRoot/FirepowerFilterButton" | Out-Null
-Invoke-McpSetUiValue -Root $root -Path "$panelRoot/SearchInput" -Value $FirepowerSearchText
-Start-Sleep -Seconds 1
-$firepowerRowName = Get-McpUiTextValue -Root $root -Path "$panelRoot/NovaPartRow1/NameText"
-$firepowerRowDetail = Get-McpUiTextValue -Root $root -Path "$panelRoot/NovaPartRow1/DetailText"
-Invoke-McpUiInvoke -Root $root -Path "$panelRoot/NovaPartRow1" | Out-Null
-Invoke-McpUiInvoke -Root $root -Path "$panelRoot/ApplyButton" | Out-Null
-Start-Sleep -Seconds 1
-$firepowerValue = Get-McpUiTextValue -Root $root -Path "/LobbyCanvas/GaragePageRoot/MobileContentRoot/MobileBodyHost/GarageUnitEditorView/FirepowerSelectorView/ValueText"
-
-Invoke-McpUiInvoke -Root $root -Path "$panelRoot/MobilityFilterButton" | Out-Null
-Invoke-McpSetUiValue -Root $root -Path "$panelRoot/SearchInput" -Value $MobilitySearchText
-Start-Sleep -Seconds 1
-$mobilityRowName = Get-McpUiTextValue -Root $root -Path "$panelRoot/NovaPartRow1/NameText"
-$mobilityRowDetail = Get-McpUiTextValue -Root $root -Path "$panelRoot/NovaPartRow1/DetailText"
-Invoke-McpUiInvoke -Root $root -Path "$panelRoot/NovaPartRow1" | Out-Null
-Invoke-McpUiInvoke -Root $root -Path "$panelRoot/ApplyButton" | Out-Null
-Start-Sleep -Seconds 1
-$mobilityValue = Get-McpUiTextValue -Root $root -Path "/LobbyCanvas/GaragePageRoot/MobileContentRoot/MobileBodyHost/GarageUnitEditorView/MobilitySelectorView/ValueText"
+$initialState = Wait-GarageSetBUitkRendered -Root $root -Path $ControllerPath -TimeoutSec 30
+$frameStep = Invoke-GaragePartSelectionSmokeStep -Root $root -ControllerPath $ControllerPath -Slot "Frame" -SearchText $FrameSearchText
+$firepowerStep = Invoke-GaragePartSelectionSmokeStep -Root $root -ControllerPath $ControllerPath -Slot "Firepower" -SearchText $FirepowerSearchText
+$mobilityStep = Invoke-GaragePartSelectionSmokeStep -Root $root -ControllerPath $ControllerPath -Slot "Mobility" -SearchText $MobilitySearchText
+$finalState = Get-GarageSetBUitkControllerState -Root $root -Path $ControllerPath
 
 $screenshot = Invoke-McpJsonWithTransientRetry -Root $root -SubPath "/screenshot/capture" -Body @{
     outputPath = $ScreenshotPath
@@ -69,20 +163,17 @@ $console = Get-McpConsoleSummary -Root $root -LogLimit 80 -ErrorLimit 20
 
 $result = [PSCustomObject]@{
     success = $true
-    title = $title
-    countBefore = $countBefore
+    scenePath = $ScenePath
+    controllerPath = $ControllerPath
+    prepare = $prepare
+    initialState = $initialState
     frameSearchText = $FrameSearchText
-    frameRowNameAfterSearch = $frameRowName
-    frameRowDetailAfterSearch = $frameRowDetail
-    frameValueAfterApply = $frameValue
+    frameStep = $frameStep
     firepowerSearchText = $FirepowerSearchText
-    firepowerRowNameAfterSearch = $firepowerRowName
-    firepowerRowDetailAfterSearch = $firepowerRowDetail
-    firepowerValueAfterApply = $firepowerValue
+    firepowerStep = $firepowerStep
     mobilitySearchText = $MobilitySearchText
-    mobilityRowNameAfterSearch = $mobilityRowName
-    mobilityRowDetailAfterSearch = $mobilityRowDetail
-    mobilityValueAfterApply = $mobilityValue
+    mobilityStep = $mobilityStep
+    finalState = $finalState
     screenshot = $screenshot
     console = $console
 }

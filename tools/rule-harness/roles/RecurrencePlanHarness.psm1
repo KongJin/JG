@@ -27,6 +27,10 @@ function Get-RecurrencePlanSummaryLines {
 function Test-RecurrencePlanPreventableSkip {
     param([Parameter(Mandatory)][object]$SkippedBatch)
 
+    if ([string]$SkippedBatch.kind -eq 'agent_work') {
+        return $false
+    }
+
     $nonPreventableReasonCodes = @(
         'agent-runner-task-limit'
         'agent-runner-disabled'
@@ -42,6 +46,38 @@ function Test-RecurrencePlanPreventableSkip {
     }
 
     $reasonCode -notin $nonPreventableReasonCodes
+}
+
+function Get-RecurrencePlanExistingFilePaths {
+    param(
+        [Parameter(Mandatory)][string]$RepoRoot,
+        [string[]]$Paths = @()
+    )
+
+    @(
+        foreach ($path in @($Paths)) {
+            $relativePath = ([string]$path).Replace('\', '/')
+            if ([string]::IsNullOrWhiteSpace($relativePath) -or [System.IO.Path]::IsPathRooted($relativePath) -or $relativePath -match '(^|/)\.\.(/|$)') {
+                continue
+            }
+
+            $fullPath = Join-Path $RepoRoot $relativePath
+            if (Test-Path -LiteralPath $fullPath -PathType Leaf) {
+                $relativePath
+            }
+        }
+    ) | Sort-Object -Unique
+}
+
+function Test-RecurrencePlanPreventableMemoryEntry {
+    param([Parameter(Mandatory)][object]$Entry)
+
+    $symptoms = [string]$Entry.symptoms
+    if ($symptoms -match 'Status=429|1113|余额不足|无可用资源包|TimeoutSec=|작업 시간이 초과되었습니다') {
+        return $false
+    }
+
+    $true
 }
 
 function Invoke-RecurrencePlanHarness {
@@ -77,10 +113,15 @@ function Invoke-RecurrencePlanHarness {
         if (-not (Test-RecurrencePlanPreventableSkip -SkippedBatch $skipped)) {
             continue
         }
+        $relatedPaths = @(Get-RecurrencePlanExistingFilePaths -RepoRoot $RepoRoot -Paths @($skipped.targets))
+        if (@($relatedPaths).Count -eq 0) {
+            continue
+        }
+
         [void]$preventionItems.Add([pscustomobject]@{
             kind = 'skipped-batch'
             summary = "Batch $($skipped.id) skipped: $($skipped.reasonCode)"
-            relatedPaths = @($skipped.targets)
+            relatedPaths = @($relatedPaths)
         })
     }
     if ([bool]$workReport.rollback.performed) {
@@ -98,27 +139,33 @@ function Invoke-RecurrencePlanHarness {
         })
     }
     foreach ($entry in @($workReport.memoryUpdates)) {
+        $relatedPaths = @(Get-RecurrencePlanExistingFilePaths -RepoRoot $RepoRoot -Paths @([string]$entry.scopePath))
+        if (@($relatedPaths).Count -eq 0) {
+            continue
+        }
+
         [void]$preventionItems.Add([pscustomobject]@{
             kind = 'memory-update'
             summary = "Memory updated for $($entry.scopePath) hitCount=$($entry.hitCount)."
-            relatedPaths = @([string]$entry.scopePath)
+            relatedPaths = @($relatedPaths)
         })
     }
     foreach ($entry in @($memory.entries | Where-Object { [int]$_.hitCount -ge 2 } | Select-Object -First 10)) {
+        if (-not (Test-RecurrencePlanPreventableMemoryEntry -Entry $entry)) {
+            continue
+        }
+
+        $relatedPaths = @(Get-RecurrencePlanExistingFilePaths -RepoRoot $RepoRoot -Paths @([string]$entry.scopePath))
+        if (@($relatedPaths).Count -eq 0) {
+            continue
+        }
+
         [void]$preventionItems.Add([pscustomobject]@{
             kind = 'recurring-memory'
             summary = "Recurring memory entry: $($entry.symptoms)"
-            relatedPaths = @([string]$entry.scopePath)
+            relatedPaths = @($relatedPaths)
         })
     }
-    foreach ($entry in @($history.entries.Values | Where-Object { $_.lastStatus -in @('failed', 'skipped') } | Select-Object -First 10)) {
-        [void]$preventionItems.Add([pscustomobject]@{
-            kind = 'history-state'
-            summary = "History recorded $($entry.lastStatus): $($entry.lastReason)"
-            relatedPaths = @()
-        })
-    }
-
     $targetArtifacts = @(
         @($preventionItems | ForEach-Object { @($_.relatedPaths) }) |
             Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |

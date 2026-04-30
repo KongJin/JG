@@ -4335,7 +4335,7 @@ function Get-RuleHarnessRulesOnlyRecurrenceCloseoutStatus {
     }
     else {
         try {
-            $payload = Get-Content -LiteralPath $artifactAbsolutePath -Raw -Encoding UTF8 | ConvertFrom-Json -Depth 20
+            $payload = Get-Content -LiteralPath $artifactAbsolutePath -Raw -Encoding UTF8 | ConvertFrom-Json
         }
         catch {
             [void]$errors.Add(("Failed to parse `{0}` as JSON. {1}" -f $artifactRelativePath, $_.Exception.Message))
@@ -9036,7 +9036,7 @@ function New-RuleHarnessAgentBatchPrompt {
         }
 
         $fullPath = Join-Path $RepoRoot $relativePath
-        if (-not (Test-Path -LiteralPath $fullPath)) {
+        if (-not (Test-Path -LiteralPath $fullPath -PathType Leaf)) {
             continue
         }
 
@@ -9118,7 +9118,7 @@ function Test-RuleHarnessAgentTaskSnapshotsComplete {
         }
 
         $fullPath = Join-Path $RepoRoot $relativePath
-        if (-not (Test-Path -LiteralPath $fullPath)) {
+        if (-not (Test-Path -LiteralPath $fullPath -PathType Leaf)) {
             return $false
         }
 
@@ -9211,13 +9211,19 @@ function Invoke-RuleHarnessAgentBatchRunner {
     Set-Content -Path $tracePath -Value "Agent runner started role=$RoleName tasks=$($AgentWorkQueue.Count)" -Encoding UTF8
 
     $schemaPath = Join-Path $PSScriptRoot 'schemas/agent-batch.schema.json'
-    $taskLimit = [Math]::Max(1, [int]$settings.maxTasksPerRun)
-    $selectedTasks = @($AgentWorkQueue | Select-Object -First $taskLimit)
-    foreach ($task in @($AgentWorkQueue | Select-Object -Skip $taskLimit)) {
-        [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'skipped' -BlockedReason 'agent-runner-task-limit' -Summary "Agent task was left queued because maxTasksPerRun=$taskLimit."))
-    }
+    $successBudget = [Math]::Max(1, [int]$settings.maxTasksPerRun)
+    $successfulTaskCount = 0
+    $runnerStopped = $false
 
-    foreach ($task in @($selectedTasks)) {
+    foreach ($task in @($AgentWorkQueue)) {
+        if ($runnerStopped) {
+            break
+        }
+        if ($successfulTaskCount -ge $successBudget) {
+            [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'skipped' -BlockedReason 'agent-runner-task-limit' -Summary "Agent task was left queued because maxTasksPerRun success budget was reached ($successBudget proposed task(s))."))
+            continue
+        }
+
         $taskId = [string]$task.taskId
         $snapshotsComplete = Test-RuleHarnessAgentTaskSnapshotsComplete -RepoRoot $RepoRoot -Task $task
         $completedTask = $false
@@ -9279,16 +9285,19 @@ function Invoke-RuleHarnessAgentBatchRunner {
             if ($processResult.timedOut) {
                 [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-timeout' -Summary "Codex agent runner timed out after $($settings.timeoutSec) seconds." -OutputPath $outputPath -LogPath $logPath))
                 $completedTask = $true
+                $runnerStopped = $true
                 continue
             }
             if ([int]$processResult.exitCode -ne 0) {
                 [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-failed' -Summary "Codex agent runner exited with code $($processResult.exitCode)." -OutputPath $outputPath -LogPath $logPath))
                 $completedTask = $true
+                $runnerStopped = $true
                 continue
             }
             if (-not (Test-Path -LiteralPath $outputPath)) {
                 [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-missing-output' -Summary 'Codex agent runner completed without writing structured output.' -OutputPath $outputPath -LogPath $logPath))
                 $completedTask = $true
+                $runnerStopped = $true
                 continue
             }
 
@@ -9298,6 +9307,7 @@ function Invoke-RuleHarnessAgentBatchRunner {
             catch {
                 [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-invalid-json' -Summary "Codex agent runner output was not valid JSON: $($_.Exception.Message)" -OutputPath $outputPath -LogPath $logPath))
                 $completedTask = $true
+                $runnerStopped = $true
                 continue
             }
 
@@ -9333,6 +9343,9 @@ function Invoke-RuleHarnessAgentBatchRunner {
                 if ($batch.PSObject.Properties.Name -notcontains 'sourceFindingTypes') {
                     Set-RuleHarnessObjectProperty -Object $batch -Name 'sourceFindingTypes' -Value @()
                 }
+                if ($batch.PSObject.Properties.Name -notcontains 'ownerDocs' -or @($batch.ownerDocs).Count -eq 0) {
+                    Set-RuleHarnessObjectProperty -Object $batch -Name 'ownerDocs' -Value @((Get-RuleHarnessArchitectureOwnerDoc -RepoRoot $RepoRoot))
+                }
                 if ($batch.PSObject.Properties.Name -notcontains 'fingerprint') {
                     Set-RuleHarnessObjectProperty -Object $batch -Name 'fingerprint' -Value $null
                 }
@@ -9353,6 +9366,7 @@ function Invoke-RuleHarnessAgentBatchRunner {
 
             if ($acceptedTargets.Count -gt 0) {
                 [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'proposed' -Summary "Codex agent runner proposed $(@($agentOutput.batches).Count) batch(es)." -ChangedFiles @($acceptedTargets | Sort-Object -Unique) -OutputPath $outputPath -LogPath $logPath))
+                $successfulTaskCount++
             }
             elseif (@($agentOutput.blocked).Count -gt 0) {
                 $blockedSummary = (@($agentOutput.blocked) | ForEach-Object { [string]$_.summary }) -join ' '

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="11" result="Passed" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.2115599">
+  <test-suite type="TestSuite" id="1119" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="85" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.211560" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1107" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="85" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.209798" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32552" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1110" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="79" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.208512" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1111" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="79" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.207215" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1042" name="GarageSetBUitkSurfaceDirectTests" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.205891" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1047" name="Render_DisablesSaveWhenResultCannotSave" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests.Render_DisablesSaveWhenResultCannotSave" methodname="Render_DisablesSaveWhenResultCannotSave" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" seed="1724754778" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.056828" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1043" name="Render_MapsPresenterViewModelsToNamedElements" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests.Render_MapsPresenterViewModelsToNamedElements" methodname="Render_MapsPresenterViewModelsToNamedElements" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" seed="1213564578" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.016618" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1050" name="RuntimeAdapter_BindToHost_ReplacesLobbyPlaceholderWithGarageScreen" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests.RuntimeAdapter_BindToHost_ReplacesLobbyPlaceholderWithGarageScreen" methodname="RuntimeAdapter_BindToHost_ReplacesLobbyPlaceholderWithGarageScreen" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" seed="500813588" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.032420" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1051" name="RuntimeAdapter_SetDocumentRootVisible_DoesNotHideHostBoundGarageScreen" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests.RuntimeAdapter_SetDocumentRootVisible_DoesNotHideHostBoundGarageScreen" methodname="RuntimeAdapter_SetDocumentRootVisible_DoesNotHideHostBoundGarageScreen" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" seed="2037328186" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.024046" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1049" name="SetPartPreviewTexture_TogglesSelectedPartPreviewImage" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests.SetPartPreviewTexture_TogglesSelectedPartPreviewImage" methodname="SetPartPreviewTexture_TogglesSelectedPartPreviewImage" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" seed="1466947531" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.016915" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1048" name="SetPreviewTexture_TogglesRuntimePreviewImage" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests.SetPreviewTexture_TogglesRuntimePreviewImage" methodname="SetPreviewTexture_TogglesRuntimePreviewImage" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" seed="1269348952" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.013399" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1044" name="Uxml_OrdersPartTabsAsMobilityFrameFirepower" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests.Uxml_OrdersPartTabsAsMobilityFrameFirepower" methodname="Uxml_OrdersPartTabsAsMobilityFrameFirepower" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" seed="101595308" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.010479" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1046" name="Uxml_PartListUsesHiddenScrollerChromeAndSearchField" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests.Uxml_PartListUsesHiddenScrollerChromeAndSearchField" methodname="Uxml_PartListUsesHiddenScrollerChromeAndSearchField" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" seed="833144397" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.010609" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1045" name="Uxml_PlacesSelectedPartPreviewBesidePartList" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests.Uxml_PlacesSelectedPartPreviewBesidePartList" methodname="Uxml_PlacesSelectedPartPreviewBesidePartList" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" seed="1307945190" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.008197" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1052" name="ViewModelFactory_FiltersOptionsBySearchText" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests.ViewModelFactory_FiltersOptionsBySearchText" methodname="ViewModelFactory_FiltersOptionsBySearchText" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" seed="189680386" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.006507" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1053" name="ViewModelFactory_ReturnsAllFilteredOptionsForScrollableList" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests.ViewModelFactory_ReturnsAllFilteredOptionsForScrollableList" methodname="ViewModelFactory_ReturnsAllFilteredOptionsForScrollableList" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" seed="1867375732" result="Passed" start-time="2026-04-30 03:19:32Z" end-time="2026-04-30 03:19:32Z" duration="0.000591" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-setb-uitk-surface-direct-tests.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
