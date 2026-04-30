@@ -10,25 +10,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-function Get-UnityMcpBaseUrl {
-    param([string]$ExplicitBaseUrl)
-
-    if (-not [string]::IsNullOrWhiteSpace($ExplicitBaseUrl)) {
-        return $ExplicitBaseUrl.TrimEnd("/")
-    }
-
-    $portFile = Join-Path $PSScriptRoot "..\ProjectSettings\UnityMcpPort.txt"
-    $defaultPort = 51234
-
-    if (Test-Path $portFile) {
-        $portText = (Get-Content -Path $portFile -Raw).Trim()
-        if ($portText -match '^\d+$') {
-            return "http://127.0.0.1:$portText"
-        }
-    }
-
-    return "http://127.0.0.1:$defaultPort"
-}
+. (Join-Path $PSScriptRoot "unity-mcp\McpHelpers.ps1")
 
 function Invoke-UnityWebGlBuild {
     param(
@@ -38,19 +20,21 @@ function Invoke-UnityWebGlBuild {
     )
 
     Write-Host "[1/2] Building WebGL via Unity MCP..." -ForegroundColor Cyan
-    Write-Host "      Endpoint: $ResolvedBaseUrl/build/webgl"
+    $health = Wait-McpBridgeHealthy -Root $ResolvedBaseUrl -TimeoutSec 60
+    $buildRoot = $health.Root
+    Write-Host "      Endpoint: $buildRoot/build/webgl"
     Write-Host "      Output:   $ResolvedOutputPath"
     Write-Host "      Mode:     $(if ($FastBuild) { 'fast (development + gzip)' } else { 'release' })"
 
-    $payload = @{
+    $response = Invoke-McpJsonWithTransientRetry `
+        -Root $buildRoot `
+        -SubPath "/build/webgl" `
+        -Body @{
         outputPath = $ResolvedOutputPath
         fastBuild = [bool]$FastBuild
-    } | ConvertTo-Json -Compress
-    $response = Invoke-RestMethod `
-        -Method Post `
-        -Uri "$ResolvedBaseUrl/build/webgl" `
-        -ContentType "application/json" `
-        -Body $payload
+    } `
+        -TimeoutSec 3600 `
+        -RequestTimeoutSec 3600
 
     if (-not $response.success) {
         throw "Unity WebGL build failed. $($response.message)"

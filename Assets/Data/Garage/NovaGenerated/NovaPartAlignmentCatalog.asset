@@ -15,9 +15,9 @@ MonoBehaviour:
   entries:
   - partId: nova_fire_arm1_sz
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.0705606, z: 0}
+    socketOffset: {x: 0, y: -0.0510897, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm1_sz.xfi
@@ -39,9 +39,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm10_broz
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.22068414, z: 0}
+    socketOffset: {x: 0, y: -0.0969622, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm10_broz.xfi
@@ -63,9 +63,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm11_poms
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.13526838, z: 0}
+    socketOffset: {x: 0, y: -0.0427981, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm11_poms.xfi
@@ -87,9 +87,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm12_onms
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.13295612, z: 0}
+    socketOffset: {x: 0, y: -0.0426601, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm12_onms.xfi
@@ -111,9 +111,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm13_prs
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.15891403, z: 0}
+    socketOffset: {x: 0, y: -0.1372067, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm13_prs.xfi
@@ -135,9 +135,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm15_hdkn
     slot: 1
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.25282168, z: 0}
+    socketOffset: {x: 0, y: -0.1469099, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm15_hdkn.xfi
@@ -159,9 +159,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm17_prrs
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.18855849, z: 0}
+    socketOffset: {x: 0, y: -0.0936107, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm17_prrs.xfi
@@ -183,9 +183,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm18_knst
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.22955622, z: 0}
+    socketOffset: {x: 0, y: -0.1107614, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm18_knst.xfi
@@ -207,9 +207,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm19_roz
     slot: 1
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.17738953, z: 0}
+    socketOffset: {x: 0, y: -0.0806743, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm19_roz.xfi
@@ -231,9 +231,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm20_rkto
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.1685882, z: 0}
+    socketOffset: {x: 0, y: -0.1085792, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm20_rkto.xfi
@@ -255,9 +255,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm21_nmsz
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.11755086, z: 0}
+    socketOffset: {x: 0, y: -0.0924771, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm21_nmsz.xfi
@@ -279,9 +279,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm22_bsrsk
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.111587085, z: 0}
+    socketOffset: {x: 0, y: -0.0807894, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm22_bsrsk.xfi
@@ -303,9 +303,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm23_rkog
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.40999967, z: 0}
+    socketOffset: {x: 0, y: -0.5259626, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm23_rkog.xfi
@@ -327,9 +327,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm24_bzk
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.13308218, z: 0}
+    socketOffset: {x: 0, y: -0.2894958, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm24_bzk.xfi
@@ -351,9 +351,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm25_skoob
     slot: 1
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.09093888, z: 0}
+    socketOffset: {x: 0, y: -0.0547813, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm25_skoob.xfi
@@ -375,9 +375,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm26_srmd
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.28489375, z: 0}
+    socketOffset: {x: 0, y: -0.1312413, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm26_srmd.xfi
@@ -399,9 +399,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm27_stst
     slot: 1
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.41000003, z: 0}
+    socketOffset: {x: 0, y: -0.2432182, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm27_stst.xfi
@@ -423,9 +423,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm28_ozs
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.1382745, z: 0}
+    socketOffset: {x: 0, y: -0.0520131, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm28_ozs.xfi
@@ -447,9 +447,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm29_sdbt
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.0911347, z: 0}
+    socketOffset: {x: 0, y: -0.1255474, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm29_sdbt.xfi
@@ -471,9 +471,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm30_sm
     slot: 1
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.14707424, z: 0}
+    socketOffset: {x: 0, y: -0.0413302, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm30_sm.xfi
@@ -495,9 +495,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm31_skokr
     slot: 1
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.18498397, z: 0}
+    socketOffset: {x: 0, y: -0.0967378, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm31_skokr.xfi
@@ -519,9 +519,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm32_sppoo
     slot: 1
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.19512585, z: 0}
+    socketOffset: {x: 0, y: -0.1418465, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm32_sppoo.xfi
@@ -543,9 +543,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm33_hkoo
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.15500112, z: 0}
+    socketOffset: {x: 0, y: -0.0545097, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm33_hkoo.xfi
@@ -567,9 +567,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm34_skpo
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.15518397, z: 0}
+    socketOffset: {x: 0, y: -0.0899652, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm34_skpo.xfi
@@ -591,9 +591,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm35_ons
     slot: 1
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.08257003, z: 0}
+    socketOffset: {x: 0, y: -0.0484822, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm35_ons.xfi
@@ -615,9 +615,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm36_bnso
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.1322726, z: 0}
+    socketOffset: {x: 0, y: -0.137656, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm36_bnso.xfi
@@ -639,9 +639,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm37_sts
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.143926, z: 0}
+    socketOffset: {x: 0, y: -0.0852944, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm37_sts.xfi
@@ -663,9 +663,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm39_hmsk
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketOffset: {x: 0, y: -0.3913227, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm39_hmsk.xfi
@@ -687,9 +687,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm4_bk
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.07595962, z: 0}
+    socketOffset: {x: 0, y: -0.0667719, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm4_bk.xfi
@@ -711,9 +711,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm41_onoo
     slot: 1
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.18842109, z: 0}
+    socketOffset: {x: 0, y: -0.1014491, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm41_onoo.xfi
@@ -735,9 +735,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm43_przso
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.1078824, z: 0}
+    socketOffset: {x: 0, y: -0.0787962, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm43_przso.xfi
@@ -759,9 +759,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm46_dbkr
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.33070526, z: 0}
+    socketOffset: {x: 0, y: -0.3597927, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm46_dbkr.xfi
@@ -783,9 +783,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm55_bbs
     slot: 1
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.3332634, z: 0}
+    socketOffset: {x: 0, y: -0.2539963, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm55_bbs.xfi
@@ -807,9 +807,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_arm8_do
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.28615305, z: 0}
+    socketOffset: {x: 0, y: -0.1406163, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/arm8_do.xfi
@@ -831,9 +831,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_g_arm56_prrs
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.18855849, z: 0}
+    socketOffset: {x: 0, y: -0.0936107, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/g_arm56_prrs.xfi
@@ -855,9 +855,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_g_arm57_prs
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.15891403, z: 0}
+    socketOffset: {x: 0, y: -0.1372067, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/g_arm57_prs.xfi
@@ -879,9 +879,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_g_arm58_dbkr
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.33070526, z: 0}
+    socketOffset: {x: 0, y: -0.3597927, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/g_arm58_dbkr.xfi
@@ -903,9 +903,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_n_arm59_dmsz
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.06423001, z: 0}
+    socketOffset: {x: 0, y: -0.048923, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm59_dmsz.xfi
@@ -927,9 +927,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_n_arm60_mgbr
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.26712295, z: 0}
+    socketOffset: {x: 0, y: -0.2274233, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm60_mgbr.xfi
@@ -951,9 +951,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_n_arm61_bsrsk
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.111587085, z: 0}
+    socketOffset: {x: 0, y: -0.0807894, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm61_bsrsk.xfi
@@ -975,9 +975,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_n_arm62_knst
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.22955622, z: 0}
+    socketOffset: {x: 0, y: -0.1107614, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm62_knst.xfi
@@ -999,9 +999,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_n_arm63_krst
     slot: 1
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.113765314, z: 0}
+    socketOffset: {x: 0, y: -0.059933, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm63_krst.xfi
@@ -1023,9 +1023,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_n_arm64_hdkn
     slot: 1
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.25282168, z: 0}
+    socketOffset: {x: 0, y: -0.1538989, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm64_hdkn.xfi
@@ -1047,9 +1047,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_n_arm65_bbs
     slot: 1
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.3332634, z: 0}
+    socketOffset: {x: 0, y: -0.2575901, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm65_bbs.xfi
@@ -1071,9 +1071,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_n_arm66_skpo
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.15518397, z: 0}
+    socketOffset: {x: 0, y: -0.0887396, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm66_skpo.xfi
@@ -1095,9 +1095,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_n_arm67_sts
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.143926, z: 0}
+    socketOffset: {x: 0, y: -0.0852944, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm67_sts.xfi
@@ -1119,9 +1119,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_n_arm68_roz
     slot: 1
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.17738953, z: 0}
+    socketOffset: {x: 0, y: -0.0806743, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm68_roz.xfi
@@ -1143,9 +1143,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_n_arm69_rkog
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.2560323, z: 0}
+    socketOffset: {x: 0, y: -0.2508624, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm69_rkog.xfi
@@ -1167,9 +1167,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_n_arm70_hmsk
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketOffset: {x: 0, y: -0.3584988, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm70_hmsk.xfi
@@ -1191,9 +1191,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_s_arm50_hmsk
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.41, z: 0}
+    socketOffset: {x: 0, y: -0.3913227, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/s_arm50_hmsk.xfi
@@ -1215,9 +1215,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_s_arm52_bzk
     slot: 1
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.13308218, z: 0}
+    socketOffset: {x: 0, y: -0.2894958, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/s_arm52_bzk.xfi
@@ -1239,9 +1239,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_s_arm53_ons
     slot: 1
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.08257003, z: 0}
+    socketOffset: {x: 0, y: -0.0484822, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/s_arm53_ons.xfi
@@ -1263,9 +1263,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_fire_s_arm54_onoo
     slot: 1
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.18842109, z: 0}
+    socketOffset: {x: 0, y: -0.1014491, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
     hasXfiMetadata: 1
     xfiPath: datan/common/s_arm54_onoo.xfi
@@ -1287,9 +1287,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_frame_body1_sz
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.17268178, z: 0}
+    socketOffset: {x: 0, y: 0.0795848, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body1_sz.xfi
@@ -1304,16 +1304,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: 0.32047, z: -0.176588}
+    frameTopSocketOffset: {x: 0, y: 0.107467, z: -0.0592174}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body10_skdr
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.23932475, z: 0}
+    socketOffset: {x: 0, y: 0.0920147, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body10_skdr.xfi
@@ -1328,16 +1328,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: -0.000022, z: -0.000022}
+    frameTopSocketOffset: {x: 0, y: -0.0000074, z: -0.0000074}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body11_kn
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.17959805, z: 0}
+    socketOffset: {x: 0, y: 0.1023958, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body11_kn.xfi
@@ -1352,16 +1352,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: 0.182856, z: 0.323027}
+    frameTopSocketOffset: {x: 0, y: 0.0613193, z: 0.1083245}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body12_kt
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.2260934, z: 0}
+    socketOffset: {x: 0, y: 0.1619919, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body12_kt.xfi
@@ -1376,16 +1376,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.000019, y: 0.135687, z: 0}
+    frameTopSocketOffset: {x: -0.0000064, y: 0.0455015, z: 0}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body13_scro
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.24537012, z: 0}
+    socketOffset: {x: 0, y: 0.1548452, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body13_scro.xfi
@@ -1400,16 +1400,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0.000035, y: 0.313408, z: 0.167848}
+    frameTopSocketOffset: {x: 0.0000117, y: 0.1050988, z: 0.0562865}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body14_trb
     slot: 0
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.15600242, z: 0}
+    socketOffset: {x: 0, y: 0.1195774, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body14_trb.xfi
@@ -1424,16 +1424,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.000052, y: 0.232923, z: 0.214514}
+    frameTopSocketOffset: {x: -0.0000174, y: 0.0781088, z: 0.0719355}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body15_znr
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.16058165, z: 0}
+    socketOffset: {x: 0, y: 0.1138724, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body15_znr.xfi
@@ -1448,16 +1448,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: 0.252702, z: -0.108466}
+    frameTopSocketOffset: {x: 0, y: 0.0847416, z: -0.0363732}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body16_kmdo
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.1676937, z: 0}
+    socketOffset: {x: 0, y: 0.1187521, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body16_kmdo.xfi
@@ -1472,16 +1472,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: 0.263622, z: -0.164758}
+    frameTopSocketOffset: {x: 0, y: 0.0884035, z: -0.0552503}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body17_rzmt
     slot: 0
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.28090566, z: 0}
+    socketOffset: {x: 0, y: 0.0875318, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body17_rzmt.xfi
@@ -1496,16 +1496,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: -0.000336, z: 0}
+    frameTopSocketOffset: {x: 0, y: -0.0001127, z: 0}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body18_brgod
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.23776248, z: 0}
+    socketOffset: {x: 0, y: 0.0911418, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body18_brgod.xfi
@@ -1520,16 +1520,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: -0.000045, z: 0}
+    frameTopSocketOffset: {x: 0, y: -0.0000151, z: 0}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body19_spd
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.18109697, z: 0}
+    socketOffset: {x: 0, y: 0.11005, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body19_spd.xfi
@@ -1544,16 +1544,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: 0.158, z: 0}
+    frameTopSocketOffset: {x: 0, y: 0.052984, z: 0}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body2_prt
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.21983439, z: 0}
+    socketOffset: {x: 0, y: 0.0963153, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body2_prt.xfi
@@ -1568,16 +1568,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0.000838, y: 0.000012, z: 0.000017}
+    frameTopSocketOffset: {x: 0.000281, y: 0.000004, z: 0.0000057}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body20_prsd
     slot: 0
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.23988019, z: 0}
+    socketOffset: {x: 0, y: 0.1530674, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body20_prsd.xfi
@@ -1592,16 +1592,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.000008, y: 0.26465, z: 0.000472}
+    frameTopSocketOffset: {x: -0.0000027, y: 0.0887482, z: 0.0001583}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body21_rzo
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.2783557, z: 0}
+    socketOffset: {x: 0, y: 0.1244213, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body21_rzo.xfi
@@ -1623,9 +1623,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_frame_body22_kdd
     slot: 0
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.20719087, z: 0}
+    socketOffset: {x: 0, y: 0.1380248, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body22_kdd.xfi
@@ -1640,16 +1640,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.012915, y: 0.249314, z: -0.308059}
+    frameTopSocketOffset: {x: -0.0043309, y: 0.0836054, z: -0.1033051}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body23_ms
     slot: 0
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.14102122, z: 0}
+    socketOffset: {x: 0, y: 0.0996486, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body23_ms.xfi
@@ -1664,16 +1664,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: 0.233497, z: 0.012748}
+    frameTopSocketOffset: {x: 0, y: 0.0783013, z: 0.0042749}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body24_grbs
     slot: 0
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.18177383, z: 0}
+    socketOffset: {x: 0, y: 0.1169251, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body24_grbs.xfi
@@ -1688,16 +1688,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.000007, y: 0.262915, z: 0.361663}
+    frameTopSocketOffset: {x: -0.0000023, y: 0.0881664, z: 0.1212808}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body25_bosro
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.19554715, z: 0}
+    socketOffset: {x: 0, y: 0.1347363, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body25_bosro.xfi
@@ -1712,16 +1712,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: 0.259923, z: 0}
+    frameTopSocketOffset: {x: 0, y: 0.0871631, z: 0}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body26_kp
     slot: 0
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.23996092, z: 0}
+    socketOffset: {x: 0, y: 0.1080843, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body26_kp.xfi
@@ -1743,9 +1743,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_frame_body27_zns
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.18573083, z: 0}
+    socketOffset: {x: 0, y: 0.147504, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body27_zns.xfi
@@ -1760,16 +1760,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0.000012, y: 0.307433, z: 0.383402}
+    frameTopSocketOffset: {x: 0.000004, y: 0.1030952, z: 0.1285708}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body28_kp2
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.22030051, z: 0}
+    socketOffset: {x: 0, y: 0.0984724, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body28_kp2.xfi
@@ -1791,9 +1791,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_frame_body3_bgd
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.16525234, z: 0}
+    socketOffset: {x: 0, y: 0.1153729, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body3_bgd.xfi
@@ -1808,16 +1808,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.000006, y: 0.312451, z: 0.16447}
+    frameTopSocketOffset: {x: -0.000002, y: 0.1047779, z: 0.0551537}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body32_brps
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.22303484, z: 0}
+    socketOffset: {x: 0, y: 0.1742857, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body32_brps.xfi
@@ -1832,16 +1832,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.001532, y: 0.334217, z: 0.483486}
+    frameTopSocketOffset: {x: -0.0005137, y: 0.112077, z: 0.1621331}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body35_trbn
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.15707204, z: 0}
+    socketOffset: {x: 0, y: 0.127422, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body35_trbn.xfi
@@ -1856,16 +1856,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.000018, y: 0.308326, z: 0.383402}
+    frameTopSocketOffset: {x: -0.000006, y: 0.1033946, z: 0.1285708}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body36_rzn
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.1850968, z: 0}
+    socketOffset: {x: 0, y: 0.0898266, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body36_rzn.xfi
@@ -1880,16 +1880,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: -0.000967, z: 0}
+    frameTopSocketOffset: {x: 0, y: -0.0003243, z: 0}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body37_ktn
     slot: 0
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.17740665, z: 0}
+    socketOffset: {x: 0, y: 0.1090289, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body37_ktn.xfi
@@ -1904,16 +1904,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: 0.198416, z: -0.019301}
+    frameTopSocketOffset: {x: 0, y: 0.0665372, z: -0.0064724}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body38_qrso
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.196473, z: 0}
+    socketOffset: {x: 0, y: 0.0764207, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body38_qrso.xfi
@@ -1935,9 +1935,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_frame_body4_kpr
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.17508061, z: 0}
+    socketOffset: {x: 0, y: 0.103897, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body4_kpr.xfi
@@ -1952,16 +1952,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: 0.15188, z: 0.146553}
+    frameTopSocketOffset: {x: 0, y: 0.0509317, z: 0.0491454}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body5_skms
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.2684272, z: 0}
+    socketOffset: {x: 0, y: 0.1497332, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body5_skms.xfi
@@ -1976,16 +1976,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.001425, y: 0.285224, z: -0.046139}
+    frameTopSocketOffset: {x: -0.0004779, y: 0.0956476, z: -0.0154723}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body6_skd
     slot: 0
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.22768469, z: 0}
+    socketOffset: {x: 0, y: 0.0770195, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body6_skd.xfi
@@ -2000,16 +2000,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.000003, y: -0.000051, z: 0.000023}
+    frameTopSocketOffset: {x: -0.000001, y: -0.0000171, z: 0.0000077}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body7_mops
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.18254313, z: 0}
+    socketOffset: {x: 0, y: 0.1112538, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body7_mops.xfi
@@ -2024,16 +2024,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.000093, y: 0.241827, z: 0.147312}
+    frameTopSocketOffset: {x: -0.0000312, y: 0.0810947, z: 0.0493999}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body8_brc
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.21267043, z: 0}
+    socketOffset: {x: 0, y: 0.1336315, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body8_brc.xfi
@@ -2048,16 +2048,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0.000125, y: 0.297855, z: 0.271387}
+    frameTopSocketOffset: {x: 0.0000419, y: 0.0998833, z: 0.0910074}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_body9_btro
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.22739062, z: 0}
+    socketOffset: {x: 0, y: 0.0839822, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/body9_btro.xfi
@@ -2072,16 +2072,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: -0.001038, z: 0}
+    frameTopSocketOffset: {x: 0, y: -0.0003481, z: 0}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_n_body39_brgod
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.23776248, z: 0}
+    socketOffset: {x: 0, y: 0.0915839, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body39_brgod.xfi
@@ -2096,16 +2096,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: -0.000045, z: 0}
+    frameTopSocketOffset: {x: 0, y: -0.0000151, z: 0}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_n_body40_zns
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.18573083, z: 0}
+    socketOffset: {x: 0, y: 0.1475737, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body40_zns.xfi
@@ -2120,16 +2120,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0.000012, y: 0.307433, z: 0.383402}
+    frameTopSocketOffset: {x: 0.000004, y: 0.1030952, z: 0.1285708}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_n_body41_kmdo
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.1676937, z: 0}
+    socketOffset: {x: 0, y: 0.1199644, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body41_kmdo.xfi
@@ -2144,16 +2144,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: 0.263622, z: -0.164758}
+    frameTopSocketOffset: {x: 0, y: 0.0884035, z: -0.0552503}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_n_body42_kdd
     slot: 0
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.20719087, z: 0}
+    socketOffset: {x: 0, y: 0.1440811, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body42_kdd.xfi
@@ -2168,16 +2168,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.012915, y: 0.249314, z: -0.308059}
+    frameTopSocketOffset: {x: -0.0043309, y: 0.0836054, z: -0.1033051}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_n_body43_prt
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.21983439, z: 0}
+    socketOffset: {x: 0, y: 0.0961563, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body43_prt.xfi
@@ -2192,16 +2192,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0.000838, y: 0.000012, z: 0.000017}
+    frameTopSocketOffset: {x: 0.000281, y: 0.000004, z: 0.0000057}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_n_body44_brps
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.22303484, z: 0}
+    socketOffset: {x: 0, y: 0.1743885, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body44_brps.xfi
@@ -2216,16 +2216,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.001532, y: 0.334217, z: 0.483486}
+    frameTopSocketOffset: {x: -0.0005137, y: 0.112077, z: 0.1621331}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_n_body47_kp
     slot: 0
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.23996092, z: 0}
+    socketOffset: {x: 0, y: 0.1044781, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body47_kp.xfi
@@ -2247,9 +2247,9 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_frame_n_body48_grbs
     slot: 0
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.18177383, z: 0}
+    socketOffset: {x: 0, y: 0.1169251, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body48_grbs.xfi
@@ -2264,16 +2264,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.000007, y: 0.262915, z: 0.361663}
+    frameTopSocketOffset: {x: -0.0000023, y: 0.0881664, z: 0.1212808}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_n_body49_rzmt
     slot: 0
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.28090566, z: 0}
+    socketOffset: {x: 0, y: 0.0887398, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body49_rzmt.xfi
@@ -2288,16 +2288,16 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: 0, y: -0.000336, z: 0}
+    frameTopSocketOffset: {x: 0, y: -0.0001127, z: 0}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_frame_n_body50_bgd
     slot: 0
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.16525234, z: 0}
+    socketOffset: {x: 0, y: 0.1153729, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body50_bgd.xfi
@@ -2312,17 +2312,20 @@ MonoBehaviour:
     hasXfiAttachSocket: 0
     xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
     hasFrameTopSocket: 1
-    frameTopSocketOffset: {x: -0.000006, y: 0.312451, z: 0.16447}
+    frameTopSocketOffset: {x: -0.000002, y: 0.1047779, z: 0.0551537}
     xfiSocketQuality: xfi_body_top_socket_candidate
     xfiSocketName: body.top
     qualityFlag: auto_ok
     reviewReason: 
   - partId: nova_mob_g_legs37_sts
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.28880036, z: 0}
+    socketOffset: {x: 0, y: 0.276308, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.5118645, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/g_legs37_sts.xfi
     xfiHeader: 0
@@ -2334,7 +2337,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: -0.016189, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: -0.0054289, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2343,10 +2346,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_g_legs57_ppo
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.12625824, z: 0}
+    socketOffset: {x: 0, y: 0.1419496, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0.0000262, y: 0.6074423, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/g_legs57_ppo.xfi
     xfiHeader: 0
@@ -2367,10 +2373,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_g_legs58_pps
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketOffset: {x: 0, y: 0.4912962, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.5369387, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/g_legs58_pps.xfi
     xfiHeader: 0
@@ -2391,10 +2400,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_g_legs59_hb
     slot: 2
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.25004715, z: 0}
+    socketOffset: {x: 0, y: 0.2488645, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.0000097, y: 0.4357057, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/g_legs59_hb.xfi
     xfiHeader: 0
@@ -2415,10 +2427,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_g_legs60_hord
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketOffset: {x: 0, y: 0.2974179, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.5220693, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/g_legs60_hord.xfi
     xfiHeader: 0
@@ -2430,7 +2445,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.000173, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.000058, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2439,10 +2454,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs1_rdrn
     slot: 2
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.1229264, z: 0}
+    socketOffset: {x: 0, y: 0.0837777, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.0000127, y: 0.4333016, z: 0.0000064}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs1_rdrn.xfi
     xfiHeader: 0
@@ -2454,7 +2472,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:100:120|1:15:45|2:0:15|3:90:100|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: -0.000192, z: 0.000328}
+    xfiAttachSocketOffset: {x: 0, y: -0.0000644, z: 0.00011}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2463,10 +2481,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs10_prg
     slot: 2
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.13081817, z: 0}
+    socketOffset: {x: 0, y: 0.1337528, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.2360522, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs10_prg.xfi
     xfiHeader: 0
@@ -2487,10 +2508,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs11_strod
     slot: 2
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.28642726, z: 0}
+    socketOffset: {x: 0, y: 0.1641714, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.5163859, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs11_strod.xfi
     xfiHeader: 0
@@ -2511,10 +2535,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs12_kb
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.09679793, z: 0}
+    socketOffset: {x: 0, y: 0.0810023, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0.0000007, y: 0.1674805, z: -0.0000017}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs12_kb.xfi
     xfiHeader: 0
@@ -2526,7 +2553,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:0:0|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: -0.000117, y: 0.065044, z: 0.095966}
+    xfiAttachSocketOffset: {x: -0.0000392, y: 0.021812, z: 0.0321814}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2535,10 +2562,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs13_krz
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.32825074, z: 0}
+    socketOffset: {x: 0, y: 0.5184219, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.0000466, y: 0.5275401, z: -0.0403373}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs13_krz.xfi
     xfiHeader: 0
@@ -2550,7 +2580,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0.000147, y: 0.051711, z: 0.120287}
+    xfiAttachSocketOffset: {x: 0.0000493, y: 0.0173409, z: 0.0403373}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2559,10 +2589,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs14_grp
     slot: 2
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.45000002, z: 0}
+    socketOffset: {x: 0, y: 0.3889589, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.4699431, z: 0.0000027}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs14_grp.xfi
     xfiHeader: 0
@@ -2574,7 +2607,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: -0.000009, y: 0.002979, z: 0.000017}
+    xfiAttachSocketOffset: {x: -0.000003, y: 0.000999, z: 0.0000057}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2583,10 +2616,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs15_krr
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.27514982, z: 0}
+    socketOffset: {x: 0, y: 0.2323303, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.462077, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs15_krr.xfi
     xfiHeader: 0
@@ -2598,7 +2634,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.00026, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.0000872, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2607,10 +2643,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs16_sprt
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketOffset: {x: 0, y: 0.291585, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.469814, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs16_sprt.xfi
     xfiHeader: 0
@@ -2622,7 +2661,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.000048, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.0000161, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2631,10 +2670,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs17_oprd
     slot: 2
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.14748292, z: 0}
+    socketOffset: {x: 0, y: 0.1379717, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.4647145, z: -0.0000044}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs17_oprd.xfi
     xfiHeader: 0
@@ -2646,7 +2688,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: -0.000023, y: 0.026539, z: 0.001369}
+    xfiAttachSocketOffset: {x: -0.0000077, y: 0.0088996, z: 0.0004591}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2655,10 +2697,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs18_hord
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketOffset: {x: 0, y: 0.2974179, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.5220693, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs18_hord.xfi
     xfiHeader: 0
@@ -2670,7 +2715,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.000173, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.000058, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2679,10 +2724,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs2_tdr
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketOffset: {x: 0, y: 0.2319015, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.0000111, y: 0.463407, z: 0.0000054}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs2_tdr.xfi
     xfiHeader: 0
@@ -2694,7 +2742,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.004239, z: -0.000055}
+    xfiAttachSocketOffset: {x: 0, y: 0.0014215, z: -0.0000184}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2703,10 +2751,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs20_spod
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.341668, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.6222608, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs20_spod.xfi
     xfiHeader: 0
@@ -2718,7 +2769,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.000046, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.0000154, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2727,10 +2778,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs21_ksor
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.15642287, z: 0}
+    socketOffset: {x: 0, y: 0.1331993, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.4530285, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs21_ksor.xfi
     xfiHeader: 0
@@ -2751,10 +2805,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs23_tk
     slot: 2
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.32930857, z: 0}
+    socketOffset: {x: 0, y: 0.4481803, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.5548111, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs23_tk.xfi
     xfiHeader: 0
@@ -2766,7 +2823,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: -0.000001, y: 0.002129, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.0007139, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2775,10 +2832,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs24_sts
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.28880036, z: 0}
+    socketOffset: {x: 0, y: 0.276308, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.5118645, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs24_sts.xfi
     xfiHeader: 0
@@ -2790,7 +2850,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: -0.016189, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: -0.0054289, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2799,10 +2859,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs25_kd
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.16913049, z: 0}
+    socketOffset: {x: 0, y: 0.1923633, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.3048415, z: -0.0000842}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs25_kd.xfi
     xfiHeader: 0
@@ -2823,10 +2886,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs3_ktpr
     slot: 2
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.23444863, z: 0}
+    socketOffset: {x: 0, y: 0.2039512, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0.0000067, y: 0.3362446, z: 0.0000054}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs3_ktpr.xfi
     xfiHeader: 0
@@ -2838,7 +2904,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: -0.000838, y: -0.00238, z: -0.000013}
+    xfiAttachSocketOffset: {x: -0.000281, y: -0.0007981, z: -0.0000044}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2847,10 +2913,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs34_dpns
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.27491534, z: 0}
+    socketOffset: {x: 0, y: 0.2881681, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.3733972, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs34_dpns.xfi
     xfiHeader: 0
@@ -2862,7 +2931,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.000046, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.0000154, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2871,10 +2940,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs4_kt
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.34424475, z: 0}
+    socketOffset: {x: 0, y: 0.2846933, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.0000074, y: 0.4198397, z: 0.0000007}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs4_kt.xfi
     xfiHeader: 0
@@ -2886,7 +2958,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0.000437, y: 0.000005, z: -0.00001}
+    xfiAttachSocketOffset: {x: 0.0001465, y: 0.0000017, z: -0.0000034}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2895,10 +2967,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs49_otrs
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.4101866, z: 0}
+    socketOffset: {x: 0, y: 0.3994151, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.5258812, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs49_otrs.xfi
     xfiHeader: 0
@@ -2919,10 +2994,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs5_ko
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.103333905, z: 0}
+    socketOffset: {x: 0, y: 0.0777489, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.3805852, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs5_ko.xfi
     xfiHeader: 0
@@ -2934,7 +3012,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.016249, z: 0.000022}
+    xfiAttachSocketOffset: {x: 0, y: 0.005449, z: 0.0000074}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -2943,10 +3021,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs50_pps
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketOffset: {x: 0, y: 0.4912962, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.5369387, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs50_pps.xfi
     xfiHeader: 0
@@ -2967,10 +3048,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs51_ppo
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.12625824, z: 0}
+    socketOffset: {x: 0, y: 0.1419496, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0.0000262, y: 0.6074423, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs51_ppo.xfi
     xfiHeader: 0
@@ -2991,10 +3075,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs52_pkk
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.15752634, z: 0}
+    socketOffset: {x: 0, y: 0.1717687, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.4865985, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs52_pkk.xfi
     xfiHeader: 0
@@ -3015,10 +3102,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs53_rgd
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.13952877, z: 0}
+    socketOffset: {x: 0, y: 0.1281472, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.3368358, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs53_rgd.xfi
     xfiHeader: 0
@@ -3030,7 +3120,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.000046, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.0000154, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3039,10 +3129,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs6_ok
     slot: 2
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.44999996, z: 0}
+    socketOffset: {x: 0, y: 0.2463222, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.0000044, y: 0.493353, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs6_ok.xfi
     xfiHeader: 0
@@ -3054,7 +3147,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0.000013, y: -0.00348, z: 0}
+    xfiAttachSocketOffset: {x: 0.0000044, y: -0.001167, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3063,10 +3156,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs7_hb
     slot: 2
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.25004715, z: 0}
+    socketOffset: {x: 0, y: 0.2488645, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.0000097, y: 0.4357057, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs7_hb.xfi
     xfiHeader: 0
@@ -3087,10 +3183,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs8_obr
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.3211289, z: 0}
+    socketOffset: {x: 0, y: 0.2852669, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0.0000312, y: 0.3924201, z: -0.0000027}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs8_obr.xfi
     xfiHeader: 0
@@ -3102,7 +3201,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: -0.000074, y: 0.015665, z: -0.000016}
+    xfiAttachSocketOffset: {x: -0.0000248, y: 0.0052531, z: -0.0000054}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3111,10 +3210,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_legs9_ptr
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.10891569, z: 0}
+    socketOffset: {x: 0, y: 0.0881942, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0.0000667, y: 0.1313806, z: 0.0000037}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/legs9_ptr.xfi
     xfiHeader: 0
@@ -3126,7 +3228,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: -0.000197, y: -0.095746, z: 0.339712}
+    xfiAttachSocketOffset: {x: -0.0000661, y: -0.0321076, z: 0.1139197}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3135,10 +3237,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_n_legs38_grp
     slot: 2
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.45000002, z: 0}
+    socketOffset: {x: 0, y: 0.4490277, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.4699431, z: 0.0000027}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/n_legs38_grp.xfi
     xfiHeader: 0
@@ -3150,7 +3255,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: -0.000009, y: 0.002979, z: 0.000017}
+    xfiAttachSocketOffset: {x: -0.000003, y: 0.000999, z: 0.0000057}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3159,10 +3264,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_n_legs39_wk
     slot: 2
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.44999996, z: 0}
+    socketOffset: {x: 0, y: 0.2463222, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.0000044, y: 0.493353, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/n_legs39_wk.xfi
     xfiHeader: 0
@@ -3174,7 +3282,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0.000013, y: -0.00348, z: 0}
+    xfiAttachSocketOffset: {x: 0.0000044, y: -0.001167, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3183,10 +3291,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_n_legs40_krz
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.32825074, z: 0}
+    socketOffset: {x: 0, y: 0.6027546, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.0005939, y: 0.5289955, z: -0.0403373}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/n_legs40_krz.xfi
     xfiHeader: 0
@@ -3198,7 +3309,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0.000147, y: 0.051711, z: 0.120287}
+    xfiAttachSocketOffset: {x: 0.0000493, y: 0.0173409, z: 0.0403373}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3207,10 +3318,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_n_legs41_tdr
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketOffset: {x: 0, y: 0.2334826, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.0000111, y: 0.4616498, z: 0.0106454}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/n_legs41_tdr.xfi
     xfiHeader: 0
@@ -3222,7 +3336,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.004239, z: -0.000055}
+    xfiAttachSocketOffset: {x: 0, y: 0.0014215, z: -0.0000184}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3231,10 +3345,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_n_legs42_krr
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.27514982, z: 0}
+    socketOffset: {x: 0, y: 0.2326953, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.0026817, y: 0.4621256, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/n_legs42_krr.xfi
     xfiHeader: 0
@@ -3246,7 +3363,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.00026, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.0000872, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3255,10 +3372,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_n_legs44_hord
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketOffset: {x: 0, y: 0.3582288, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.033223, y: 0.4954475, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/n_legs44_hord.xfi
     xfiHeader: 0
@@ -3270,7 +3390,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.000173, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.000058, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3279,10 +3399,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_n_legs45_strod
     slot: 2
-    normalizedScale: 1.0000001
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.28642726, z: 0}
+    socketOffset: {x: 0, y: 0.1641714, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.5163859, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/n_legs45_strod.xfi
     xfiHeader: 0
@@ -3303,10 +3426,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_n_legs46_sprt
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketOffset: {x: 0, y: 0.283629, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.4709126, z: 0.017747}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/n_legs46_sprt.xfi
     xfiHeader: 0
@@ -3318,7 +3444,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.000048, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.0000161, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3327,10 +3453,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_s_legs27_ksor
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.15642287, z: 0}
+    socketOffset: {x: 0, y: 0.1331993, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.4530285, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/s_legs27_ksor.xfi
     xfiHeader: 0
@@ -3351,10 +3480,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_s_legs28_krz
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.32825074, z: 0}
+    socketOffset: {x: 0, y: 0.5184219, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: -0.0000466, y: 0.5275401, z: -0.0403373}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/s_legs28_krz.xfi
     xfiHeader: 0
@@ -3366,7 +3498,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0.000147, y: 0.051711, z: 0.120287}
+    xfiAttachSocketOffset: {x: 0.0000493, y: 0.0173409, z: 0.0403373}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3375,10 +3507,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_s_legs29_sprt
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.45, z: 0}
+    socketOffset: {x: 0, y: 0.291585, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.469814, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/s_legs29_sprt.xfi
     xfiHeader: 0
@@ -3390,7 +3525,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.000048, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.0000161, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3399,10 +3534,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_s_legs30_tk
     slot: 2
-    normalizedScale: 0.99999994
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.32930857, z: 0}
+    socketOffset: {x: 0, y: 0.4481803, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.5548111, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/s_legs30_tk.xfi
     xfiHeader: 0
@@ -3414,7 +3552,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: -0.000001, y: 0.002129, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.0007139, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3423,10 +3561,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_s_legs31_ko
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.103333905, z: 0}
+    socketOffset: {x: 0, y: 0.0777489, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.3805852, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/s_legs31_ko.xfi
     xfiHeader: 0
@@ -3438,7 +3579,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.016249, z: 0.000022}
+    xfiAttachSocketOffset: {x: 0, y: 0.005449, z: 0.0000074}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3447,10 +3588,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_s_legs32_kb
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: 0.09679793, z: 0}
+    socketOffset: {x: 0, y: 0.0810023, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0.0000007, y: 0.1674805, z: -0.0000017}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/s_legs32_kb.xfi
     xfiHeader: 0
@@ -3462,7 +3606,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:0:0|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: -0.000117, y: 0.065044, z: 0.095966}
+    xfiAttachSocketOffset: {x: -0.0000392, y: 0.021812, z: 0.0321814}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate
@@ -3471,10 +3615,13 @@ MonoBehaviour:
     reviewReason: 
   - partId: nova_mob_s_legs33_spod
     slot: 2
-    normalizedScale: 1
+    normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.341668, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 1
+    gxTreeSocketOffset: {x: 0, y: 0.6222608, z: 0}
+    gxTreeSocketName: legs
     hasXfiMetadata: 1
     xfiPath: datan/common/s_legs33_spod.xfi
     xfiHeader: 0
@@ -3486,7 +3633,7 @@ MonoBehaviour:
     xfiDirectionRangeCount: 7
     xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:105:120|4:75:90|5:0:0|6:45:75
     hasXfiAttachSocket: 1
-    xfiAttachSocketOffset: {x: 0, y: 0.000046, z: 0}
+    xfiAttachSocketOffset: {x: 0, y: 0.0000154, z: 0}
     hasFrameTopSocket: 0
     frameTopSocketOffset: {x: 0, y: 0, z: 0}
     xfiSocketQuality: xfi_leg_body_socket_candidate

@@ -1,0 +1,126 @@
+using System;
+using System.Collections.Generic;
+using Shared.Ui;
+using UnityEngine.UIElements;
+
+namespace Features.Garage.Presentation
+{
+    internal sealed class GarageSetBSlotSurface
+    {
+        private const int SlotCount = 4;
+
+        private readonly SlotBinding[] _slots = new SlotBinding[SlotCount];
+
+        public GarageSetBSlotSurface(VisualElement root)
+        {
+            for (int i = 0; i < SlotCount; i++)
+            {
+                int slotNumber = i + 1;
+                _slots[i] = new SlotBinding(
+                    GarageSetBUitkElements.Required<Button>(root, $"SlotCard{slotNumber:00}"),
+                    GarageSetBUitkElements.Required<Label>(root, $"SlotCode{slotNumber:00}Label"),
+                    GarageSetBUitkElements.Required<VisualElement>(root, $"SlotIcon{slotNumber:00}"),
+                    GarageSetBUitkElements.Required<VisualElement>(root, $"SlotIcon{slotNumber:00}Glyph"),
+                    GarageSetBUitkElements.Required<Label>(root, $"SlotName{slotNumber:00}Label"));
+            }
+
+            BindCallbacks();
+        }
+
+        public event Action<int> SlotSelected;
+
+        public void Render(IReadOnlyList<GarageSlotViewModel> slots)
+        {
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                var slot = slots != null && i < slots.Count ? slots[i] : null;
+                RenderSlot(_slots[i], slot, i);
+            }
+        }
+
+        private void BindCallbacks()
+        {
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                int slotIndex = i;
+                _slots[i].Card.clicked += () => SlotSelected?.Invoke(slotIndex);
+            }
+        }
+
+        private static void RenderSlot(SlotBinding binding, GarageSlotViewModel slot, int slotIndex)
+        {
+            bool isEmpty = slot == null || slot.IsEmpty;
+            bool isSelected = slot != null && slot.IsSelected;
+
+            binding.CodeLabel.text = slot?.SlotLabel ?? $"UNIT_{slotIndex + 1:00}";
+            UitkIconRegistry.Apply(binding.IconGlyph, BuildSlotIconId(slot));
+            binding.NameLabel.text = BuildSlotName(slot);
+
+            GarageSetBUitkElements.SetClass(binding.Card, "slot-card--active", isSelected);
+            GarageSetBUitkElements.SetClass(binding.Card, "slot-card--empty", isEmpty);
+            GarageSetBUitkElements.SetClass(binding.CodeLabel, "slot-code--active", isSelected);
+            GarageSetBUitkElements.SetClass(binding.CodeLabel, "slot-code--empty", isEmpty);
+            GarageSetBUitkElements.SetClass(binding.IconHost, "slot-icon--active", isSelected);
+            GarageSetBUitkElements.SetClass(binding.IconHost, "slot-icon--empty", isEmpty);
+            GarageSetBUitkElements.SetClass(binding.IconGlyph, "slot-icon-glyph--active", isSelected);
+            GarageSetBUitkElements.SetClass(binding.IconGlyph, "slot-icon-glyph--empty", isEmpty);
+            GarageSetBUitkElements.SetClass(binding.NameLabel, "slot-name--active", isSelected);
+            GarageSetBUitkElements.SetClass(binding.NameLabel, "slot-name--empty", isEmpty);
+        }
+
+        private static string BuildSlotIconId(GarageSlotViewModel slot)
+        {
+            if (slot == null || slot.IsEmpty)
+                return "add";
+
+            var role = (slot.RoleLabel ?? string.Empty).ToLowerInvariant();
+            var status = (slot.StatusBadgeText ?? string.Empty).ToLowerInvariant();
+            var display = (slot.Title ?? string.Empty).ToLowerInvariant();
+            var combined = string.Concat(role, " ", status, " ", display);
+
+            if (combined.Contains("방어") || combined.Contains("defense") || combined.Contains("guard") || combined.Contains("고정"))
+                return "security";
+
+            if (combined.Contains("지원") || combined.Contains("support") || combined.Contains("정비"))
+                return "precision_manufacturing";
+
+            return "smart_toy";
+        }
+
+        private static string BuildSlotName(GarageSlotViewModel slot)
+        {
+            if (slot == null || slot.IsEmpty)
+                return "EMPTY";
+
+            if (!string.IsNullOrWhiteSpace(slot.RoleLabel))
+                return slot.RoleLabel;
+
+            return !string.IsNullOrWhiteSpace(slot.StatusBadgeText)
+                ? slot.StatusBadgeText
+                : "UNIT";
+        }
+
+        private readonly struct SlotBinding
+        {
+            public SlotBinding(
+                Button card,
+                Label codeLabel,
+                VisualElement iconHost,
+                VisualElement iconGlyph,
+                Label nameLabel)
+            {
+                Card = card;
+                CodeLabel = codeLabel;
+                IconHost = iconHost;
+                IconGlyph = iconGlyph;
+                NameLabel = nameLabel;
+            }
+
+            public Button Card { get; }
+            public Label CodeLabel { get; }
+            public VisualElement IconHost { get; }
+            public VisualElement IconGlyph { get; }
+            public Label NameLabel { get; }
+        }
+    }
+}

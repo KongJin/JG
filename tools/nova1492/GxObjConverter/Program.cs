@@ -5,12 +5,15 @@ using System.Text.RegularExpressions;
 
 internal static class Program
 {
-    private const string ConverterVersion = "gx-pipeline-v14";
+    private const string ConverterVersion = "gx-pipeline-v19";
     private const string ManifestPath = "artifacts/nova1492/gx_conversion_manifest.csv";
     private const string SummaryPath = "artifacts/nova1492/gx_conversion_summary.md";
     private const string PipelineStatePath = "artifacts/nova1492/gx_pipeline_state.csv";
     private const string HierarchyDiagnosticsCsvPath = "artifacts/nova1492/gx_hierarchy_diagnostics.csv";
     private const string HierarchyDiagnosticsMdPath = "artifacts/nova1492/gx_hierarchy_diagnostics.md";
+    private const string LegAuditManifestPath = "artifacts/nova1492/gx_leg_audit_manifest.csv";
+    private const string LegAuditHierarchyPath = "artifacts/nova1492/gx_leg_audit_hierarchy.csv";
+    private const string LegAuditReportPath = "artifacts/nova1492/gx_leg_audit_report.md";
     private const int MaxVertexCount = 10000;
     private const int MaxIndexCount = 200000;
     private const float LegHelperSpanThreshold = 0.25f;
@@ -25,14 +28,22 @@ internal static class Program
         var categoryFilter = GetArg(args, "--category");
         var partIdFilter = GetArg(args, "--part-id");
         var stage = ParseStage(GetArg(args, "--stage") ?? GetArg(args, "--mode"), args);
+        if (stage == PipelineStage.Audit &&
+            string.IsNullOrWhiteSpace(categoryFilter) &&
+            string.IsNullOrWhiteSpace(partIdFilter) &&
+            string.IsNullOrWhiteSpace(includeRelative))
+        {
+            categoryFilter = "UnitParts/Legs";
+        }
+
         var catalogOnly = HasArg(args, "--catalog-only");
         var changedOnly = HasArg(args, "--changed-only");
-        var diagnostics = HasArg(args, "--diagnostics") || stage == PipelineStage.Analyze;
+        var diagnostics = HasArg(args, "--diagnostics") || stage == PipelineStage.Analyze || stage == PipelineStage.Audit;
         var limitRaw = GetArg(args, "--limit");
         var limit = int.TryParse(limitRaw, out var parsedLimit) ? parsedLimit : int.MaxValue;
         var clean = HasArg(args, "--clean");
         var writeManifest = !HasArg(args, "--no-manifest");
-        var analyzeOnly = stage == PipelineStage.Analyze;
+        var analyzeOnly = stage == PipelineStage.Analyze || stage == PipelineStage.Audit;
 
         if (!Directory.Exists(sourceRoot))
         {
@@ -219,7 +230,7 @@ internal static class Program
 
                 success++;
                 rows.Add(ManifestRow.Success(
-                    analyzeOnly ? "analyzed" : status,
+                    stage == PipelineStage.Audit ? "audited" : analyzeOnly ? "analyzed" : status,
                     relative,
                     gxPath,
                     bytes.Length,
@@ -241,7 +252,7 @@ internal static class Program
                     selection.AssemblyBlockDiagnostics,
                     selection.DirectionBlockDiagnostics,
                     selection.DroppedBlockDiagnostics,
-                    CountLargeDroppedBlocks(selection.DroppedMeshes),
+                    CountLargeDroppedBlocks(relative, selection.DroppedMeshes),
                     FormatBounds(selection.KeptMeshes),
                     xfiInfo.TransformCount,
                     xfiInfo.DirectionRangeCount,
@@ -261,7 +272,11 @@ internal static class Program
             }
         }
 
-        if (writeManifest)
+        if (stage == PipelineStage.Audit)
+        {
+            WriteLegAudit(rows, diagnosticsRows, catalogRowByRelativePath);
+        }
+        else if (writeManifest)
         {
             WriteManifest(rows, sourceRoot, outputRoot, stage);
             if (!analyzeOnly)
@@ -270,7 +285,7 @@ internal static class Program
             }
         }
 
-        if (diagnostics)
+        if (diagnostics && stage != PipelineStage.Audit)
         {
             WriteHierarchyDiagnostics(diagnosticsRows);
         }
@@ -279,12 +294,15 @@ internal static class Program
         Console.WriteLine(analyzeOnly ? $"Analyzed: {success}" : $"Converted/Repaired: {success}");
         Console.WriteLine($"Skipped: {skipped}");
         Console.WriteLine($"Failed: {rows.Count(row => row.Status == "failed")}");
-        Console.WriteLine(writeManifest
-            ? "Manifest: " + ManifestPath
-            : "Manifest: skipped (--no-manifest)");
+        var manifestMessage = stage == PipelineStage.Audit
+            ? "Manifest: " + LegAuditManifestPath
+            : writeManifest
+                ? "Manifest: " + ManifestPath
+                : "Manifest: skipped (--no-manifest)";
+        Console.WriteLine(manifestMessage);
         if (diagnostics)
         {
-            Console.WriteLine("Diagnostics: " + HierarchyDiagnosticsCsvPath);
+            Console.WriteLine("Diagnostics: " + (stage == PipelineStage.Audit ? LegAuditHierarchyPath : HierarchyDiagnosticsCsvPath));
         }
 
         return success > 0 || skipped > 0 ? 0 : 1;
@@ -310,6 +328,11 @@ internal static class Program
         return args.Any(arg => string.Equals(arg, name, StringComparison.OrdinalIgnoreCase));
     }
 
+    private static int ParseInt(string value, int fallback)
+    {
+        return int.TryParse(value, NumberStyles.Integer, Invariant, out var parsed) ? parsed : fallback;
+    }
+
     private static PipelineStage ParseStage(string? value, IReadOnlyCollection<string> args)
     {
         if (args.Any(arg => string.Equals(arg, "--analyze", StringComparison.OrdinalIgnoreCase)))
@@ -330,8 +353,9 @@ internal static class Program
         return value.Trim().ToLowerInvariant() switch
         {
             "analyze" => PipelineStage.Analyze,
+            "audit" => PipelineStage.Audit,
             "convert" => PipelineStage.Convert,
-            _ => throw new ArgumentException("Unknown --stage value: " + value + ". Use analyze or convert.")
+            _ => throw new ArgumentException("Unknown --stage value: " + value + ". Use analyze, audit, or convert.")
         };
     }
 
@@ -394,6 +418,10 @@ internal static class Program
                 GetCsv(values, headerIndex, "category"),
                 relative,
                 modelPath,
+                GetCsv(values, headerIndex, "displayName"),
+                GetCsv(values, headerIndex, "originalName"),
+                ParseInt(GetCsv(values, headerIndex, "vertices"), 0),
+                ParseInt(GetCsv(values, headerIndex, "triangles"), 0),
                 lines[i]));
         }
 
@@ -599,18 +627,21 @@ internal static class Program
         var parents = nodeTransforms.Select(static node => node.ParentIndex).ToArray();
         var changed = false;
         var reasons = new List<string>();
-        for (var i = 0; i < nodeTransforms.Count; i++)
+        if (UsesOrphanToLegsRepair(relativePath))
         {
-            if (i == legsIndex ||
-                parents[i] >= 0 ||
-                IsModelRootNodeName(nodeTransforms[i].Name))
+            for (var i = 0; i < nodeTransforms.Count; i++)
             {
-                continue;
-            }
+                if (i == legsIndex ||
+                    parents[i] >= 0 ||
+                    IsModelRootNodeName(nodeTransforms[i].Name))
+                {
+                    continue;
+                }
 
-            parents[i] = legsIndex;
-            changed = true;
-            reasons.Add(nodeTransforms[i].Name + " orphan->legs");
+                parents[i] = legsIndex;
+                changed = true;
+                reasons.Add(nodeTransforms[i].Name + " orphan->legs");
+            }
         }
 
         for (var i = 0; i < nodeTransforms.Count; i++)
@@ -726,6 +757,12 @@ internal static class Program
         var stem = Path.GetFileNameWithoutExtension(relativePath);
         return stem.Equals("legs34_dpns", StringComparison.OrdinalIgnoreCase) ||
                stem.Equals("n_legs42_krr", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool UsesOrphanToLegsRepair(string relativePath)
+    {
+        var stem = Path.GetFileNameWithoutExtension(relativePath);
+        return !stem.Equals("legs49_otrs", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool UsesAnyBelowAssemblyRepair(string relativePath)
@@ -875,6 +912,7 @@ internal static class Program
         var unassignedFallbackTransform = UsesUnassignedMeshLegsTransformRepair(relativePath)
             ? nodeTransforms.FirstOrDefault(static node => node.Name == "legs")
             : null;
+        var opteryxBridgeOffset = ResolveOpteryxBridgeOffset(relativePath, nodeTransforms);
         foreach (var mesh in meshes)
         {
             var headerStart = mesh.PositionStart - 16;
@@ -895,12 +933,69 @@ internal static class Program
                 continue;
             }
 
+            if (TryGetOpteryxBridgeMatrix(opteryxBridgeOffset, transform, out var opteryxBridgeMatrix))
+            {
+                output.Add(ApplyNodeTransform(mesh, opteryxBridgeMatrix));
+                continue;
+            }
+
             var matrix = GetBelowAssemblyFallbackTransform(relativePath, transform, nodeTransforms) ??
                          transform.Matrix;
             output.Add(ApplyNodeTransform(mesh, matrix));
         }
 
         return output;
+    }
+
+    private static float? ResolveOpteryxBridgeOffset(
+        string relativePath,
+        IReadOnlyList<NodeTransform> nodeTransforms)
+    {
+        var stem = Path.GetFileNameWithoutExtension(relativePath);
+        if (!stem.Equals("legs49_otrs", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var leftPod = nodeTransforms.FirstOrDefault(static node => node.Name == "Box68");
+        var rightPod = nodeTransforms.FirstOrDefault(static node => node.Name == "Box89");
+        if (leftPod == null || rightPod == null)
+        {
+            return null;
+        }
+
+        return (leftPod.Matrix[3] + rightPod.Matrix[3]) * 0.5f;
+    }
+
+    private static bool TryGetOpteryxBridgeMatrix(
+        float? bridgeOffset,
+        NodeTransform transform,
+        out float[] matrix)
+    {
+        matrix = Array.Empty<float>();
+        if (bridgeOffset == null ||
+            !IsOpteryxBridgeNode(transform.Name))
+        {
+            return false;
+        }
+
+        matrix = (float[])transform.Matrix.Clone();
+        matrix[3] += bridgeOffset.Value;
+        if (transform.Name == "legs")
+        {
+            matrix[7] = 0f;
+            matrix[11] = 0f;
+        }
+
+        return true;
+    }
+
+    private static bool IsOpteryxBridgeNode(string name)
+    {
+        return name == "legs" ||
+               name == "Box03" ||
+               name == "Object01" ||
+               name == "Box66";
     }
 
     private static float[] MultiplyMatrices(IReadOnlyList<float> parent, IReadOnlyList<float> child)
@@ -1309,9 +1404,16 @@ internal static class Program
             ":bounds" + FormatBounds(new[] { mesh })));
     }
 
-    private static int CountLargeDroppedBlocks(IReadOnlyList<MeshData> meshes)
+    private static int CountLargeDroppedBlocks(string relativePath, IReadOnlyList<MeshData> meshes)
     {
-        return meshes.Count(mesh => CalculateSpan(mesh) >= LegHelperSpanThreshold);
+        return meshes.Count(mesh =>
+            CalculateSpan(mesh) >= LegHelperSpanThreshold &&
+            !IsKnownLargeDirectionHelperMesh(relativePath, mesh));
+    }
+
+    private static bool IsKnownLargeDirectionHelperMesh(string relativePath, MeshData mesh)
+    {
+        return IsSpiderDetachedHelperPlane(relativePath, mesh);
     }
 
     private static string FormatBounds(IReadOnlyList<MeshData> meshes)
@@ -1718,6 +1820,314 @@ internal static class Program
         return rows;
     }
 
+    private static void WriteLegAudit(
+        IReadOnlyList<ManifestRow> rows,
+        IReadOnlyList<HierarchyDiagnosticRow> hierarchyRows,
+        IReadOnlyDictionary<string, CatalogRow> catalogRows)
+    {
+        var hierarchyBySource = hierarchyRows
+            .GroupBy(row => NormalizeRelativePath(row.SourceRelativePath), StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.ToArray(), StringComparer.OrdinalIgnoreCase);
+        var auditRows = rows
+            .Select(row => BuildLegAuditRow(row, catalogRows, hierarchyBySource))
+            .ToList();
+        MarkOutliers(auditRows);
+
+        using (var writer = new StreamWriter(LegAuditManifestPath, false, new UTF8Encoding(false)))
+        {
+            writer.WriteLine("part_id,display_name,source_relative_path,audit_verdict,audit_flags,status,vertices,triangles,catalog_vertices,catalog_triangles,mesh_blocks,kept_block_count,dropped_blocks,large_dropped_block_count,has_legs_marker,repair_rule,bounds,width,height,depth,center_x,center_y,center_z,obj_path,error");
+            foreach (var row in auditRows)
+            {
+                writer.WriteLine(string.Join(",", new[]
+                {
+                    Csv(row.PartId),
+                    Csv(row.DisplayName),
+                    Csv(row.SourceRelativePath),
+                    Csv(row.Verdict),
+                    Csv(string.Join(";", row.Flags)),
+                    Csv(row.Status),
+                    Csv(row.Vertices.ToString(Invariant)),
+                    Csv(row.Triangles.ToString(Invariant)),
+                    Csv(row.CatalogVertices.ToString(Invariant)),
+                    Csv(row.CatalogTriangles.ToString(Invariant)),
+                    Csv(row.MeshBlocks.ToString(Invariant)),
+                    Csv(row.KeptBlockCount.ToString(Invariant)),
+                    Csv(row.DroppedBlocks),
+                    Csv(row.LargeDroppedBlockCount.ToString(Invariant)),
+                    Csv(row.HasLegsMarker ? "true" : "false"),
+                    Csv(row.RepairRule),
+                    Csv(row.Bounds),
+                    Csv(row.Width.ToString("0.######", Invariant)),
+                    Csv(row.Height.ToString("0.######", Invariant)),
+                    Csv(row.Depth.ToString("0.######", Invariant)),
+                    Csv(row.CenterX.ToString("0.######", Invariant)),
+                    Csv(row.CenterY.ToString("0.######", Invariant)),
+                    Csv(row.CenterZ.ToString("0.######", Invariant)),
+                    Csv(row.ObjPath),
+                    Csv(row.Error)
+                }));
+            }
+        }
+
+        using (var writer = new StreamWriter(LegAuditHierarchyPath, false, new UTF8Encoding(false)))
+        {
+            writer.WriteLine("source_relative_path,part_id,mesh_header,vertices,triangles,node,node_start,node_end,tx,ty,tz,bounds,repair_rule,repair_reason,texture_source,assessment");
+            foreach (var row in hierarchyRows)
+            {
+                writer.WriteLine(string.Join(",", new[]
+                {
+                    Csv(row.SourceRelativePath),
+                    Csv(row.PartId),
+                    Csv(row.MeshHeader),
+                    Csv(row.Vertices.ToString(Invariant)),
+                    Csv(row.Triangles.ToString(Invariant)),
+                    Csv(row.Node),
+                    Csv(row.NodeStart),
+                    Csv(row.NodeEnd),
+                    Csv(row.Tx.ToString("0.######", Invariant)),
+                    Csv(row.Ty.ToString("0.######", Invariant)),
+                    Csv(row.Tz.ToString("0.######", Invariant)),
+                    Csv(row.Bounds),
+                    Csv(row.RepairRule),
+                    Csv(row.RepairReason),
+                    Csv(row.TextureSource),
+                    Csv(row.Assessment)
+                }));
+            }
+        }
+
+        using var md = new StreamWriter(LegAuditReportPath, false, new UTF8Encoding(false));
+        md.WriteLine("# Nova1492 Leg GX Audit Report");
+        md.WriteLine();
+        md.WriteLine($"> generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        md.WriteLine();
+        md.WriteLine($"- converter version: `{ConverterVersion}`");
+        md.WriteLine($"- audited rows: {auditRows.Count}");
+        md.WriteLine($"- high risk: {auditRows.Count(row => row.Verdict == "high")}");
+        md.WriteLine($"- review risk: {auditRows.Count(row => row.Verdict == "review")}");
+        md.WriteLine($"- pass: {auditRows.Count(row => row.Verdict == "pass")}");
+        md.WriteLine($"- manifest: `{LegAuditManifestPath}`");
+        md.WriteLine($"- hierarchy: `{LegAuditHierarchyPath}`");
+        md.WriteLine();
+        md.WriteLine("## High Risk");
+        md.WriteLine();
+        WriteAuditTable(md, auditRows.Where(row => row.Verdict == "high"));
+        md.WriteLine();
+        md.WriteLine("## Review Risk");
+        md.WriteLine();
+        WriteAuditTable(md, auditRows.Where(row => row.Verdict == "review"));
+        md.WriteLine();
+        md.WriteLine("## Notes");
+        md.WriteLine();
+        md.WriteLine("- `high` means a mechanical issue must be investigated before visual acceptance.");
+        md.WriteLine("- `review` means the row is mechanically convertible but should be included in manual capture review.");
+        md.WriteLine("- Visual acceptance remains blocked until the capture sheet is manually compared.");
+    }
+
+    private static LegAuditRow BuildLegAuditRow(
+        ManifestRow row,
+        IReadOnlyDictionary<string, CatalogRow> catalogRows,
+        IReadOnlyDictionary<string, HierarchyDiagnosticRow[]> hierarchyRows)
+    {
+        var relativeKey = NormalizeRelativePath(row.SourceRelativePath);
+        catalogRows.TryGetValue(relativeKey, out var catalogRow);
+        hierarchyRows.TryGetValue(relativeKey, out var hierarchy);
+        TryParseBounds(row.Bounds, out var metrics);
+        var hasLegsMarker = hierarchy?.Any(item => item.Node == "legs") ?? false;
+        var flags = new List<string>();
+        if (row.Status == "failed")
+        {
+            flags.Add("mesh_parse_fail");
+        }
+
+        if (row.KeptBlockCount == 0)
+        {
+            flags.Add("kept_block_zero");
+        }
+
+        if (row.LargeDroppedBlockCount > 0)
+        {
+            flags.Add("large_dropped_block");
+        }
+
+        if (catalogRow != null &&
+            ((catalogRow.Vertices > 0 && catalogRow.Vertices != row.Vertices) ||
+             (catalogRow.Triangles > 0 && catalogRow.Triangles != row.Triangles)))
+        {
+            flags.Add("catalog_count_mismatch");
+        }
+
+        if (!hasLegsMarker)
+        {
+            flags.Add("legs_marker_missing");
+        }
+
+        if (!string.IsNullOrWhiteSpace(row.RepairRule))
+        {
+            flags.Add("repair_applied");
+        }
+
+        if (!string.IsNullOrWhiteSpace(row.DroppedBlocks))
+        {
+            flags.Add("dropped_block_present");
+        }
+
+        var verdict = flags.Any(IsHighRiskFlag)
+            ? "high"
+            : flags.Count > 0
+                ? "review"
+                : "pass";
+
+        return new LegAuditRow(
+            catalogRow?.PartId ?? "",
+            string.IsNullOrWhiteSpace(catalogRow?.DisplayName) ? catalogRow?.OriginalName ?? "" : catalogRow.DisplayName,
+            row.SourceRelativePath,
+            verdict,
+            flags,
+            row.Status,
+            row.Vertices,
+            row.Triangles,
+            catalogRow?.Vertices ?? 0,
+            catalogRow?.Triangles ?? 0,
+            row.MeshBlocks,
+            row.KeptBlockCount,
+            row.DroppedBlocks,
+            row.LargeDroppedBlockCount,
+            hasLegsMarker,
+            row.RepairRule,
+            row.Bounds,
+            metrics.Width,
+            metrics.Height,
+            metrics.Depth,
+            metrics.CenterX,
+            metrics.CenterY,
+            metrics.CenterZ,
+            row.ObjPath,
+            row.Error);
+    }
+
+    private static bool IsHighRiskFlag(string flag)
+    {
+        return flag is "mesh_parse_fail" or
+               "kept_block_zero" or
+               "large_dropped_block" or
+               "catalog_count_mismatch" or
+               "legs_marker_missing";
+    }
+
+    private static void MarkOutliers(IReadOnlyList<LegAuditRow> rows)
+    {
+        MarkOutlierMetric(rows, row => row.Width, "width_outlier");
+        MarkOutlierMetric(rows, row => row.Height, "height_outlier");
+        MarkOutlierMetric(rows, row => row.Depth, "depth_outlier");
+        MarkOutlierMetric(rows, row => row.CenterX, "center_x_outlier");
+        MarkOutlierMetric(rows, row => row.CenterY, "center_y_outlier");
+        MarkOutlierMetric(rows, row => row.CenterZ, "center_z_outlier");
+    }
+
+    private static void MarkOutlierMetric(
+        IReadOnlyList<LegAuditRow> rows,
+        Func<LegAuditRow, float> selector,
+        string flag)
+    {
+        var values = rows
+            .Where(row => row.Status != "failed")
+            .Select(selector)
+            .Where(value => !float.IsNaN(value) && !float.IsInfinity(value))
+            .ToArray();
+        if (values.Length < 6)
+        {
+            return;
+        }
+
+        var mean = values.Average();
+        var variance = values.Sum(value => Math.Pow(value - mean, 2)) / values.Length;
+        var stdDev = Math.Sqrt(variance);
+        if (stdDev <= 0.000001)
+        {
+            return;
+        }
+
+        foreach (var row in rows)
+        {
+            var value = selector(row);
+            if (Math.Abs(value - mean) / stdDev < 3.0)
+            {
+                continue;
+            }
+
+            row.Flags.Add(flag);
+            if (row.Verdict == "pass")
+            {
+                row.Verdict = "review";
+            }
+        }
+    }
+
+    private static void WriteAuditTable(TextWriter writer, IEnumerable<LegAuditRow> rows)
+    {
+        writer.WriteLine("| part | name | verdict | flags | counts | dropped | bounds |");
+        writer.WriteLine("|---|---|---|---|---:|---:|---|");
+        foreach (var row in rows.OrderBy(row => row.PartId, StringComparer.OrdinalIgnoreCase))
+        {
+            writer.WriteLine(
+                "| `" + row.PartId + "` | " +
+                CsvMd(row.DisplayName) + " | " +
+                row.Verdict + " | `" +
+                string.Join(";", row.Flags) + "` | " +
+                row.Vertices.ToString(Invariant) + "/" + row.Triangles.ToString(Invariant) + " | " +
+                row.LargeDroppedBlockCount.ToString(Invariant) + " | `" +
+                row.Bounds + "` |");
+        }
+    }
+
+    private static string CsvMd(string value)
+    {
+        return (value ?? "").Replace("|", "\\|");
+    }
+
+    private static bool TryParseBounds(string bounds, out BoundsMetrics metrics)
+    {
+        metrics = BoundsMetrics.Empty;
+        if (string.IsNullOrWhiteSpace(bounds))
+        {
+            return false;
+        }
+
+        var parts = bounds.Split('|');
+        if (parts.Length != 2 ||
+            !TryParseVector(parts[0], out var min) ||
+            !TryParseVector(parts[1], out var max))
+        {
+            return false;
+        }
+
+        metrics = new BoundsMetrics(
+            max.X - min.X,
+            max.Y - min.Y,
+            max.Z - min.Z,
+            (min.X + max.X) * 0.5f,
+            (min.Y + max.Y) * 0.5f,
+            (min.Z + max.Z) * 0.5f);
+        return true;
+    }
+
+    private static bool TryParseVector(string value, out Vector3 vector)
+    {
+        vector = default;
+        var parts = value.Split(';');
+        if (parts.Length != 3 ||
+            !float.TryParse(parts[0], NumberStyles.Float, Invariant, out var x) ||
+            !float.TryParse(parts[1], NumberStyles.Float, Invariant, out var y) ||
+            !float.TryParse(parts[2], NumberStyles.Float, Invariant, out var z))
+        {
+            return false;
+        }
+
+        vector = new Vector3(x, y, z);
+        return true;
+    }
+
     private static Dictionary<string, PipelineStateRow> LoadPipelineState(string path)
     {
         var rows = new Dictionary<string, PipelineStateRow>(StringComparer.OrdinalIgnoreCase);
@@ -2024,6 +2434,7 @@ internal static class Program
     private enum PipelineStage
     {
         Analyze,
+        Audit,
         Convert,
     }
 
@@ -2033,7 +2444,105 @@ internal static class Program
         string Category,
         string SourceRelativePath,
         string ModelPath,
+        string DisplayName,
+        string OriginalName,
+        int Vertices,
+        int Triangles,
         string RawLine);
+
+    private sealed record BoundsMetrics(
+        float Width,
+        float Height,
+        float Depth,
+        float CenterX,
+        float CenterY,
+        float CenterZ)
+    {
+        public static readonly BoundsMetrics Empty = new(0f, 0f, 0f, 0f, 0f, 0f);
+    }
+
+    private sealed class LegAuditRow
+    {
+        public LegAuditRow(
+            string partId,
+            string displayName,
+            string sourceRelativePath,
+            string verdict,
+            List<string> flags,
+            string status,
+            int vertices,
+            int triangles,
+            int catalogVertices,
+            int catalogTriangles,
+            int meshBlocks,
+            int keptBlockCount,
+            string droppedBlocks,
+            int largeDroppedBlockCount,
+            bool hasLegsMarker,
+            string repairRule,
+            string bounds,
+            float width,
+            float height,
+            float depth,
+            float centerX,
+            float centerY,
+            float centerZ,
+            string objPath,
+            string error)
+        {
+            PartId = partId;
+            DisplayName = displayName;
+            SourceRelativePath = sourceRelativePath;
+            Verdict = verdict;
+            Flags = flags;
+            Status = status;
+            Vertices = vertices;
+            Triangles = triangles;
+            CatalogVertices = catalogVertices;
+            CatalogTriangles = catalogTriangles;
+            MeshBlocks = meshBlocks;
+            KeptBlockCount = keptBlockCount;
+            DroppedBlocks = droppedBlocks;
+            LargeDroppedBlockCount = largeDroppedBlockCount;
+            HasLegsMarker = hasLegsMarker;
+            RepairRule = repairRule;
+            Bounds = bounds;
+            Width = width;
+            Height = height;
+            Depth = depth;
+            CenterX = centerX;
+            CenterY = centerY;
+            CenterZ = centerZ;
+            ObjPath = objPath;
+            Error = error;
+        }
+
+        public string PartId { get; }
+        public string DisplayName { get; }
+        public string SourceRelativePath { get; }
+        public string Verdict { get; set; }
+        public List<string> Flags { get; }
+        public string Status { get; }
+        public int Vertices { get; }
+        public int Triangles { get; }
+        public int CatalogVertices { get; }
+        public int CatalogTriangles { get; }
+        public int MeshBlocks { get; }
+        public int KeptBlockCount { get; }
+        public string DroppedBlocks { get; }
+        public int LargeDroppedBlockCount { get; }
+        public bool HasLegsMarker { get; }
+        public string RepairRule { get; }
+        public string Bounds { get; }
+        public float Width { get; }
+        public float Height { get; }
+        public float Depth { get; }
+        public float CenterX { get; }
+        public float CenterY { get; }
+        public float CenterZ { get; }
+        public string ObjPath { get; }
+        public string Error { get; }
+    }
 
     private sealed record NodeTransformResult(
         IReadOnlyList<NodeTransform> Nodes,

@@ -10,14 +10,6 @@ namespace Tests.Editor
 {
     public sealed class ArchitectureGuardrailReflectionTests
     {
-        private static readonly HashSet<string> ResourcesLoadAllowlist = new(StringComparer.OrdinalIgnoreCase)
-        {
-            NormalizeRelativePath("Assets/Scripts/Features/Enemy/EnemySetup.cs"),
-            NormalizeRelativePath("Assets/Scripts/Features/Player/Infrastructure/DefaultPlayerSpecProvider.cs"),
-            NormalizeRelativePath("Assets/Scripts/Shared/Runtime/Sound/SoundPlayerRuntimeHostFactory.cs"),
-            NormalizeRelativePath("Assets/Scripts/Shared/Ui/RoundedRectGraphic.cs"),
-        };
-
         private static readonly HashSet<string> SingletonAllowlist = new(StringComparer.OrdinalIgnoreCase)
         {
             NormalizeRelativePath("Assets/Scripts/Features/Combat/CombatSetup.cs"),
@@ -84,7 +76,7 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void ResourcesLoad_IsRestrictedToAllowlist()
+        public void RuntimeCode_DoesNotUseResourcesLoad()
         {
             var offenders = EnumerateScriptFiles()
                 .Select(path => new
@@ -93,9 +85,8 @@ namespace Tests.Editor
                     Text = File.ReadAllText(path),
                 })
                 .Where(entry =>
-                    (entry.Text.Contains("Resources.Load<", StringComparison.Ordinal) ||
-                     entry.Text.Contains("Resources.Load(", StringComparison.Ordinal)) &&
-                    !ResourcesLoadAllowlist.Contains(NormalizeRelativePath(entry.RelativePath)))
+                    entry.Text.Contains("Resources.Load<", StringComparison.Ordinal) ||
+                    entry.Text.Contains("Resources.Load(", StringComparison.Ordinal))
                 .Select(entry => entry.RelativePath)
                 .OrderBy(path => path)
                 .ToArray();
@@ -103,7 +94,7 @@ namespace Tests.Editor
             Assert.That(
                 offenders,
                 Is.Empty,
-                BuildFailureMessage("Resources.Load usage must stay isolated behind a small allowlist. See .codex/skills/jg-unity-workflow/SKILL.md.", offenders));
+                BuildFailureMessage("Runtime Resources.Load dependencies are blocked. Use explicit scene/prefab references or a feature-owned provider.", offenders));
         }
 
         [Test]
@@ -127,6 +118,20 @@ namespace Tests.Editor
                 offenders,
                 Is.Empty,
                 BuildFailureMessage("New singleton/static scene dependencies are blocked by guardrail. See .codex/skills/jg-unity-workflow/SKILL.md.", offenders));
+        }
+
+        [Test]
+        public void SceneSoundPlayerHosts_AreRootObjects()
+        {
+            var offenders = EnumerateSceneFiles()
+                .SelectMany(path => FindNonRootSoundPlayerHosts(path))
+                .OrderBy(path => path)
+                .ToArray();
+
+            Assert.That(
+                offenders,
+                Is.Empty,
+                BuildFailureMessage("SoundPlayer uses DontDestroyOnLoad and must be serialized as a scene root object.", offenders));
         }
 
         [Test]
@@ -198,6 +203,55 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void GarageSetBUitkPageController_DoesNotHostMcpSmokeEntrypoints()
+        {
+            string controllerPath = Path.Combine(
+                GetRepoRoot(),
+                "Assets",
+                "Scripts",
+                "Features",
+                "Garage",
+                "Presentation",
+                "GarageSetBUitkPageController.cs");
+
+            string text = File.ReadAllText(controllerPath);
+            var offenders = new List<string>();
+            if (text.Contains("ForMcpSmoke", StringComparison.Ordinal))
+                offenders.Add("ForMcpSmoke method");
+            if (text.Contains("Smoke State", StringComparison.Ordinal))
+                offenders.Add("Smoke State serialized fields");
+
+            Assert.That(
+                offenders,
+                Is.Empty,
+                BuildFailureMessage("GarageSetBUitkPageController is production orchestration and must not host MCP smoke entrypoints.", offenders));
+        }
+
+        [Test]
+        public void McpSmokeEntrypoints_AreEditorOrDevelopmentBuildOnly()
+        {
+            var offenders = EnumerateScriptFiles()
+                .Select(path => new
+                {
+                    RelativePath = ToRepoRelativePath(path),
+                    Text = File.ReadAllText(path),
+                })
+                .Where(entry =>
+                    entry.RelativePath.EndsWith("McpSmokeDriver.cs", StringComparison.OrdinalIgnoreCase) ||
+                    entry.RelativePath.EndsWith("SmokeDriver.cs", StringComparison.OrdinalIgnoreCase) ||
+                    entry.Text.Contains("ForMcpSmoke", StringComparison.Ordinal))
+                .Where(entry => !entry.Text.Contains("#if UNITY_EDITOR || DEVELOPMENT_BUILD", StringComparison.Ordinal))
+                .Select(entry => entry.RelativePath)
+                .OrderBy(path => path)
+                .ToArray();
+
+            Assert.That(
+                offenders,
+                Is.Empty,
+                BuildFailureMessage("MCP smoke entrypoints must be compiled only for Editor or Development builds.", offenders));
+        }
+
+        [Test]
         public void GarageSetupScenes_DoNotSerializeLegacyPageControllerField()
         {
             var offenders = EnumerateSceneFiles()
@@ -239,6 +293,38 @@ namespace Tests.Editor
         {
             string scenesRoot = Path.Combine(GetRepoRoot(), "Assets", "Scenes");
             return Directory.EnumerateFiles(scenesRoot, "*.unity", SearchOption.AllDirectories);
+        }
+
+        private static IEnumerable<string> FindNonRootSoundPlayerHosts(string scenePath)
+        {
+            string text = File.ReadAllText(scenePath);
+            string[] documents = Regex.Split(text, @"(?m)^--- ");
+            var soundPlayerObjectIds = new HashSet<string>(StringComparer.Ordinal);
+            var transformParentsByObjectId = new Dictionary<string, string>(StringComparer.Ordinal);
+
+            foreach (string document in documents)
+            {
+                if (document.Contains("m_EditorClassIdentifier: Assembly-CSharp::Shared.Runtime.Sound.SoundPlayer", StringComparison.Ordinal))
+                {
+                    var objectMatch = Regex.Match(document, @"m_GameObject:\s*\{fileID:\s*(\d+)\}");
+                    if (objectMatch.Success)
+                        soundPlayerObjectIds.Add(objectMatch.Groups[1].Value);
+                }
+
+                if (document.StartsWith("!u!4", StringComparison.Ordinal))
+                {
+                    var objectMatch = Regex.Match(document, @"m_GameObject:\s*\{fileID:\s*(\d+)\}");
+                    var parentMatch = Regex.Match(document, @"m_Father:\s*\{fileID:\s*(\d+)\}");
+                    if (objectMatch.Success && parentMatch.Success)
+                        transformParentsByObjectId[objectMatch.Groups[1].Value] = parentMatch.Groups[1].Value;
+                }
+            }
+
+            foreach (string objectId in soundPlayerObjectIds)
+            {
+                if (!transformParentsByObjectId.TryGetValue(objectId, out string parentId) || parentId != "0")
+                    yield return ToRepoRelativePath(scenePath) + "#" + objectId;
+            }
         }
 
         private static string BuildFailureMessage(string headline, IReadOnlyCollection<string> offenders)

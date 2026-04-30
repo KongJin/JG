@@ -26,32 +26,22 @@ namespace Features.Garage.Runtime
             Attach(root, previewCamera.transform, localPosition, localEulerAngles);
         }
 
-        internal static void EnsurePreviewLighting(Camera previewCamera)
+        internal static Light EnsurePreviewLighting(Camera previewCamera, Light keyLight)
         {
             if (previewCamera == null)
-                return;
+                return keyLight;
 
-            var lightTransform = previewCamera.transform.Find(PreviewKeyLightName);
-            Light keyLight;
-            if (lightTransform == null)
+            if (keyLight == null)
             {
                 var lightObject = new GameObject(PreviewKeyLightName);
-                lightObject.transform.SetParent(previewCamera.transform, false);
                 keyLight = ComponentAccess.Ensure<Light>(lightObject);
-                keyLight.type = LightType.Directional;
-            }
-            else
-            {
-                keyLight = ComponentAccess.Get<Light>(lightTransform.gameObject);
-                if (keyLight == null)
-                    keyLight = ComponentAccess.Ensure<Light>(lightTransform.gameObject);
             }
 
+            Attach(keyLight.gameObject, previewCamera.transform, Vector3.zero, new Vector3(38f, -32f, 0f));
             keyLight.type = LightType.Directional;
             keyLight.color = new Color(0.92f, 0.97f, 1f, 1f);
             keyLight.intensity = 2.4f;
-            keyLight.transform.localPosition = Vector3.zero;
-            keyLight.transform.localEulerAngles = new Vector3(38f, -32f, 0f);
+            return keyLight;
         }
 
         internal static void SetYaw(GameObject root, float yawDegrees)

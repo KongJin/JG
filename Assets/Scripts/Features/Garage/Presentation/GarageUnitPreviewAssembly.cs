@@ -129,6 +129,9 @@ namespace Features.Garage.Presentation
             if (useAssemblyPivot)
                 return Vector3.zero;
 
+            if (mobilityAlignment.HasGxTreeSocket)
+                return mobilityAlignment.GxTreeSocketOffset;
+
             if (mobilityAlignment.SocketOffset.sqrMagnitude > 0.000001f)
                 return mobilityAlignment.SocketOffset;
 

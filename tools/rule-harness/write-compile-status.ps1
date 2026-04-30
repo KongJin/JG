@@ -14,52 +14,10 @@ if ([string]::IsNullOrWhiteSpace($OutputPath)) {
     $OutputPath = Join-Path $RepoRoot 'Temp/RuleHarnessState/compile-status.json'
 }
 
-function Get-UnityMcpBaseUrl {
-    param([string]$ExplicitBaseUrl)
-
-    if (-not [string]::IsNullOrWhiteSpace($ExplicitBaseUrl)) {
-        return $ExplicitBaseUrl.TrimEnd("/")
-    }
-
-    $portFile = Join-Path $RepoRoot 'ProjectSettings\UnityMcpPort.txt'
-    if (Test-Path -LiteralPath $portFile) {
-        $portText = (Get-Content -Path $portFile -Raw).Trim()
-        if ($portText -match '^\d+$') {
-            return "http://127.0.0.1:$portText"
-        }
-    }
-
-    return 'http://127.0.0.1:51234'
-}
-
-function Invoke-McpJson {
-    param(
-        [Parameter(Mandatory)]
-        [string]$Root,
-        [Parameter(Mandatory)]
-        [string]$SubPath,
-        [object]$Body = $null
-    )
-
-    $uri = "$Root$SubPath"
-    if ($null -eq $Body) {
-        return Invoke-RestMethod -Method Post -Uri $uri
-    }
-
-    $json = $Body | ConvertTo-Json -Compress
-    return Invoke-RestMethod -Method Post -Uri $uri -ContentType 'application/json' -Body $json
-}
-
-function Invoke-McpGetJson {
-    param(
-        [Parameter(Mandatory)]
-        [string]$Root,
-        [Parameter(Mandatory)]
-        [string]$SubPath
-    )
-
-    $uri = "$Root$SubPath"
-    return Invoke-RestMethod -Method Get -Uri $uri
+$unityMcpHelpersPath = Join-Path $RepoRoot 'tools/unity-mcp/McpHelpers.ps1'
+$unityMcpHelpersAvailable = Test-Path -LiteralPath $unityMcpHelpersPath
+if ($unityMcpHelpersAvailable) {
+    . $unityMcpHelpersPath
 }
 
 function Get-McpPlayModeChanging {
@@ -187,10 +145,22 @@ function Test-IsCompileErrorEntry {
         $combined -match 'The type or namespace name .+ could not be found'
 }
 
+if (-not $unityMcpHelpersAvailable) {
+    $missingHelperRoot = if (-not [string]::IsNullOrWhiteSpace($UnityMcpBaseUrl)) { $UnityMcpBaseUrl.TrimEnd("/") } else { "" }
+    Write-CompileStatusFile `
+        -Status 'unavailable' `
+        -Summary "Unity MCP helper script is missing: $unityMcpHelpersPath" `
+        -ReasonCode 'unity-mcp-helper-missing' `
+        -ExtraFields @{ mcpRoot = $missingHelperRoot }
+    return
+}
+
 $mcpRoot = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityMcpBaseUrl
 
 try {
-    $health = Invoke-McpGetJson -Root $mcpRoot -SubPath "/health"
+    $healthResult = Wait-McpBridgeHealthy -Root $mcpRoot -TimeoutSec ([Math]::Min(60, [Math]::Max(1, $TimeoutSec)))
+    $mcpRoot = $healthResult.Root
+    $health = $healthResult.State
 }
 catch {
     Write-CompileStatusFile `

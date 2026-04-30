@@ -5,8 +5,6 @@ using Features.Combat.Presentation;
 using Features.Garage;
 using Features.Garage.Application;
 using Features.Garage.Domain;
-using Features.Lobby.Infrastructure;
-using Features.Lobby.Application.Ports;
 using Features.Player.Application;
 using Features.Player.Application.Ports;
 using Features.Player.Infrastructure;
@@ -20,7 +18,6 @@ using Features.Unit.Presentation;
 using Features.Wave;
 using Features.Zone;
 using Photon.Pun;
-using Shared.Analytics;
 using Shared.Attributes;
 using Shared.ErrorHandling;
 using Shared.EventBus;
@@ -77,11 +74,7 @@ namespace Features.Player
 
         private EventBus _eventBus;
         private DisposableScope _disposables;
-        private IAnalyticsPort _analytics;
         private IPlayerLookupPort _playerLookup;
-        private string _matchId;
-        private float _sceneStartTime;
-        private bool _dropOffLogged;
         private readonly Queue<PlayerSetup> _pendingRemotePlayers = new();
         private bool _remotePlayerWiringReady;
 
@@ -92,6 +85,7 @@ namespace Features.Player
         private readonly GameSceneGarageBootstrapFlow _garageBootstrapFlow = new();
         private readonly GameScenePlayerConnector _playerConnector = new();
         private readonly GameSceneAudioBootstrapFlow _audioBootstrapFlow = new();
+        private readonly GameSceneEndReportingFlow _endReportingFlow = new();
         /// <summary>
         /// Unit/Garage Feature 초기화 및 Unit 스펙 계산.
         /// </summary>
@@ -199,27 +193,10 @@ namespace Features.Player
             if (_damageNumberSpawner != null)
                 _damageNumberSpawner.Initialize(_eventBus);
 
-            // GameEnd 핸들러 — PvE/PvP 모두에서 GameEndEvent 구독
-            var gameEndHandler = new GameEndEventHandler(_eventBus);
-            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndHandler));
-
-            // GameEndAnalytics — 소환/처치 카운팅 + GameEndReportRequestedEvent 발행
-            var gameEndAnalytics = new GameEndAnalytics(
-                _eventBus,
-                _eventBus,
+            _endReportingFlow.RegisterEndHandlers(
+                _disposables,
                 _coreObjective != null ? _coreObjective.CoreId : default,
                 _coreObjective != null ? _coreObjective.CoreMaxHp : 0f);
-            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, gameEndAnalytics));
-
-            var operationRecordHandler = new OperationRecordGameEndHandler(
-                _eventBus,
-                new SaveOperationRecordUseCase(new OperationRecordJsonStore()),
-                logWarning: Debug.LogWarning);
-            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, operationRecordHandler));
-
-            // GameEnd 리포트 로깅 (Bootstrap 책임 — Debug.Log 허용)
-            _eventBus.Subscribe(this, new System.Action<Features.Player.Application.Events.GameEndReportRequestedEvent>(OnGameEndReport));
-            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, this));
 
             ConnectPlayer(_localPlayerSetup);
 
@@ -278,14 +255,12 @@ namespace Features.Player
             _disposables = new DisposableScope();
             InitializeEventBusConsumers();
 
-            // Analytics
-            _analytics = new FirebaseAnalyticsAdapter();
-            _matchId = PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.Name : "unknown";
-            _sceneStartTime = Time.realtimeSinceStartup;
-            _analytics.LogGameStart(_matchId);
-            RoundCounter.Increment();
-            var analyticsHandler = new GameAnalyticsEventHandler(_analytics, _eventBus, _sceneStartTime, () => Time.realtimeSinceStartup);
-            _disposables.Add(EventBusSubscription.ForOwner(_eventBus, analyticsHandler));
+            _endReportingFlow.StartSession(
+                _eventBus,
+                _disposables,
+                PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.Name : "unknown",
+                Time.realtimeSinceStartup,
+                _lobbySceneName);
 
             _playerLookup = new PlayerLookupAdapter(_playerSceneRegistry);
             _sceneErrorPresenter.Initialize(_eventBus);
@@ -379,63 +354,24 @@ namespace Features.Player
             ConnectPlayer(setup);
         }
 
-        private void OnGameEndReport(Features.Player.Application.Events.GameEndReportRequestedEvent e)
-        {
-            Debug.Log($"[GameEnd] ===== Game Result =====");
-            Debug.Log($"  Result:     {(e.IsVictory ? "Victory" : "Defeat")}");
-            Debug.Log($"  Wave:       {e.ReachedWave}");
-            Debug.Log($"  Play Time:  {e.PlayTimeSeconds:F1}s ({e.PlayTimeSeconds / 60f:F1}m)");
-            Debug.Log($"  Summons:    {e.SummonCount}");
-            Debug.Log($"  Unit Kills: {e.UnitKillCount}");
-            if (e.CoreMaxHealth > 0f)
-                Debug.Log($"  Core HP:    {e.CoreRemainingHealth:F0}/{e.CoreMaxHealth:F0}");
-
-            for (var i = 0; i < e.ContributionCards.Length; i++)
-            {
-                var card = e.ContributionCards[i];
-                Debug.Log($"  Card {i + 1}:   {card.Title} - {card.Body}");
-            }
-            Debug.Log($"[GameEnd] =========================");
-
-            // Firebase Analytics 전송
-            if (_analytics != null)
-            {
-                _analytics.LogGameResult(e.IsVictory, e.ReachedWave, e.PlayTimeSeconds, e.SummonCount, e.UnitKillCount);
-            }
-        }
-
         private void OnDestroy()
         {
             if (_playerSceneRegistry != null)
                 _playerSceneRegistry.PlayerArrived -= OnPlayerArrived;
 
-            var playTime = Time.realtimeSinceStartup - _sceneStartTime;
-            if (_analytics != null)
-                _analytics.LogGameEnd(_matchId, playTime, RoundCounter.Current);
+            _endReportingFlow.Dispose();
 
             _disposables?.Dispose();
         }
 
         public override void OnDisconnected(Photon.Realtime.DisconnectCause cause)
         {
-            if (_dropOffLogged)
-                return;
-            _dropOffLogged = true;
-            if (_analytics != null)
-                _analytics.LogDropOff("game_disconnect", Time.realtimeSinceStartup - _sceneStartTime);
+            _endReportingFlow.HandleDisconnected();
         }
 
         public override void OnLeftRoom()
         {
-            if (_dropOffLogged)
-                return;
-            _dropOffLogged = true;
-            if (_analytics != null)
-                _analytics.LogDropOff("game_leave", Time.realtimeSinceStartup - _sceneStartTime);
-
-            // Lobby 씬으로 전환
-            var sceneLoader = new SceneLoaderAdapter();
-            sceneLoader.LoadScene(_lobbySceneName);
+            _endReportingFlow.HandleLeftRoom();
         }
     }
 }

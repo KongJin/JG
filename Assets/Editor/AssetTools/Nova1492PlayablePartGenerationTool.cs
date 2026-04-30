@@ -25,6 +25,8 @@ namespace ProjectSD.EditorTools
         private const string AssemblyReportPath = "artifacts/nova1492/nova_part_assembly_prefab_report.md";
         private const string PlayableReportPath = "artifacts/nova1492/nova_part_playable_asset_report.md";
         private const string RoadRunnerPartId = "nova_mob_legs1_rdrn";
+        private const float PreviewNormalizedMaxDimension = 0.9f;
+        private const float AssemblyModelScale = 0.3353419f;
 
         [MenuItem("Tools/Nova1492/Create Full Part Preview Prefabs")]
         public static void CreateFullPartPreviewPrefabs()
@@ -613,7 +615,7 @@ namespace ProjectSD.EditorTools
                 return 1f;
             }
 
-            var scale = 0.9f / maxDimension;
+            var scale = PreviewNormalizedMaxDimension / maxDimension;
             child.transform.localScale = Vector3.one * scale;
             child.transform.localPosition = -bounds.center * scale;
             return scale;
@@ -627,22 +629,9 @@ namespace ProjectSD.EditorTools
                 return 1f;
             }
 
-            var bounds = renderers[0].bounds;
-            for (var i = 1; i < renderers.Length; i++)
-            {
-                bounds.Encapsulate(renderers[i].bounds);
-            }
-
-            var maxDimension = Mathf.Max(bounds.size.x, Mathf.Max(bounds.size.y, bounds.size.z));
-            if (maxDimension <= 0.0001f)
-            {
-                return 1f;
-            }
-
-            var scale = 0.9f / maxDimension;
-            child.transform.localScale = Vector3.one * scale;
+            child.transform.localScale = Vector3.one * AssemblyModelScale;
             child.transform.localPosition = Vector3.zero;
-            return scale;
+            return AssemblyModelScale;
         }
 
         private static List<string> ParseCsvLine(string line)
@@ -1022,6 +1011,9 @@ namespace ProjectSD.EditorTools
             public Vector3 PivotOffset;
             public Vector3 SocketOffset;
             public Vector3 SocketEuler;
+            public bool HasGxTreeSocket;
+            public Vector3 GxTreeSocketOffset;
+            public string GxTreeSocketName;
             public bool HasXfiMetadata;
             public string XfiPath;
             public string XfiHeader;
@@ -1051,6 +1043,9 @@ namespace ProjectSD.EditorTools
                     PivotOffset = GetVector3(entry, "pivotOffset"),
                     SocketOffset = GetVector3(entry, "socketOffset"),
                     SocketEuler = GetVector3(entry, "socketEuler"),
+                    HasGxTreeSocket = GetBool(entry, "hasGxTreeSocket"),
+                    GxTreeSocketOffset = GetVector3(entry, "gxTreeSocketOffset"),
+                    GxTreeSocketName = GetString(entry, "gxTreeSocketName"),
                     HasXfiMetadata = GetBool(entry, "hasXfiMetadata"),
                     XfiPath = GetString(entry, "xfiPath"),
                     XfiHeader = GetString(entry, "xfiHeader"),
@@ -1078,7 +1073,7 @@ namespace ProjectSD.EditorTools
                 {
                     PartId = row.PartId,
                     Slot = SlotToIndex(row.Slot),
-                    NormalizedScale = 1f,
+                    NormalizedScale = AssemblyModelScale,
                     QualityFlag = "needs_review",
                     ReviewReason = "Created by playable part cleanup generation."
                 };
@@ -1092,6 +1087,9 @@ namespace ProjectSD.EditorTools
                 Set(entry, "pivotOffset", PivotOffset);
                 Set(entry, "socketOffset", SocketOffset);
                 Set(entry, "socketEuler", SocketEuler);
+                Set(entry, "hasGxTreeSocket", HasGxTreeSocket);
+                Set(entry, "gxTreeSocketOffset", GxTreeSocketOffset);
+                Set(entry, "gxTreeSocketName", GxTreeSocketName);
                 Set(entry, "hasXfiMetadata", HasXfiMetadata);
                 Set(entry, "xfiPath", XfiPath);
                 Set(entry, "xfiHeader", XfiHeader);

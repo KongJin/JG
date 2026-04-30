@@ -1,0 +1,178 @@
+{
+  "status": "mismatch",
+  "blockedReason": "",
+  "generatedAt": "2026-04-30T13:09:04.192Z",
+  "url": "http://127.0.0.1:49211/",
+  "buildRoot": "C:\\Users\\SOL\\Documents\\JG\\Build\\WebGL",
+  "screenshotPath": "C:/Users/SOL/Documents/JG/artifacts/webgl/account/local-webgl-load-smoke-20260430.png",
+  "details": {
+    "title": "MakeSD",
+    "canvasCount": 1,
+    "bodyText": "",
+    "hasUnityCanvas": true,
+    "url": "http://127.0.0.1:49211/"
+  },
+  "consoleErrors": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    }
+  ],
+  "consoleMessages": [
+    {
+      "type": "log",
+      "text": "Audio context resumed after 0.941 seconds."
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x35ec001b2800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x35ec001b2800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x35ec001b2800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x35ec001b2800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] Request succeeded (2113ms): https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] PersistSession uid=ZfeTOpSv0zWOtPB8onFLgpnfhTY2, hasIdToken=True, hasRefreshToken=True, expiryMs=1777558126957.\n"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] Created new anonymous session for uid=ZfeTOpSv0zWOtPB8onFLgpnfhTY2.\n"
+    },
+    {
+      "type": "log",
+      "text": "[LobbyPhotonAdapter] Connecting...\n"
+    },
+    {
+      "type": "warning",
+      "text": "Additional Lights Cookie Format (GrayscaleHigh) is not supported by the platform. Falling back to 32-bit format (RGBA8 UNorm)\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (1037ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/ZfeTOpSv0zWOtPB8onFLgpnfhTY2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "log",
+      "text": "[Firestore] Request succeeded (150ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/ZfeTOpSv0zWOtPB8onFLgpnfhTY2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "log",
+      "text": "[Firestore] Request succeeded (209ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/ZfeTOpSv0zWOtPB8onFLgpnfhTY2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (171ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/ZfeTOpSv0zWOtPB8onFLgpnfhTY2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (151ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/ZfeTOpSv0zWOtPB8onFLgpnfhTY2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (145ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/ZfeTOpSv0zWOtPB8onFLgpnfhTY2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (166ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/ZfeTOpSv0zWOtPB8onFLgpnfhTY2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (166ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/ZfeTOpSv0zWOtPB8onFLgpnfhTY2/operations/recent?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "log",
+      "text": "[Firestore] Request succeeded (146ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/ZfeTOpSv0zWOtPB8onFLgpnfhTY2/operations/recent?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (146ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/ZfeTOpSv0zWOtPB8onFLgpnfhTY2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "warning",
+      "text": "PUN is in development mode (development build). As the 'dev region' is not empty (jp) it overrides the found best region. See PhotonServerSettings.\n"
+    },
+    {
+      "type": "log",
+      "text": "[LobbyPhotonAdapter] Connected to Master. Joining lobby...\n"
+    },
+    {
+      "type": "log",
+      "text": "[LobbyPhotonAdapter] Joined lobby. Ready for matchmaking.\n"
+    }
+  ],
+  "pageErrors": [],
+  "failedRequests": [
+    {
+      "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-5QHE4HB7BL&gtm=45je64s1v9247665353za200zd9247665353&_p=1777554525614&gcd=13l3l3l3l1l1&npa=0&dma=0&_fid=c5AJjwHsFt9gg5gL4JsxoQ&are=1&cid=2025129939.1777554526&frm=0&pscdl=noapi&rcb=9&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B147.0.7727.15%7CNot.A%252FBrand%3B8.0.0.0%7CChromium%3B147.0.7727.15&uam=&uamb=0&uap=Windows&uapv=19.0.0&uaw=0&ul=ko&_s=1&tag_exp=0~115938465~115938468~117266401~117512543~118463262&sid=1777554526&sct=1&seg=0&dl=http%3A%2F%2F127.0.0.1%2F&dt=MakeSD&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&ep.origin=firebase&tfd=3769",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-5QHE4HB7BL&gtm=45je64s1v9247665353za200zd9247665353&_p=1777554525614&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAAAAQ&_fid=c5AJjwHsFt9gg5gL4JsxoQ&are=1&cid=2025129939.1777554526&frm=0&pscdl=noapi&rcb=9&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B147.0.7727.15%7CNot.A%252FBrand%3B8.0.0.0%7CChromium%3B147.0.7727.15&uam=&uamb=0&uap=Windows&uapv=19.0.0&uaw=0&ul=ko&_s=2&tag_exp=0~115938465~115938468~117266401~117512543~118463262&sid=1777554526&sct=1&seg=0&dl=http%3A%2F%2F127.0.0.1%2F&dt=MakeSD&en=session_start&_ee=1&ep.origin=firebase&_et=4&tfd=8914",
+      "failure": "net::ERR_ABORTED"
+    }
+  ]
+}

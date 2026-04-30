@@ -1,5 +1,144 @@
 Set-StrictMode -Version Latest
 
+function Get-UnityMcpProjectRoot {
+    return (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
+}
+
+function Get-UnityMcpPortFilePath {
+    return Join-Path (Get-UnityMcpProjectRoot) "ProjectSettings\UnityMcpPort.txt"
+}
+
+function Get-UnityMcpConfiguredPort {
+    $portFile = Get-UnityMcpPortFilePath
+    if (Test-Path -LiteralPath $portFile) {
+        $portText = (Get-Content -Path $portFile -Raw).Trim()
+        if ($portText -match '^\d+$') {
+            return [int]$portText
+        }
+    }
+
+    return 0
+}
+
+function Get-UnityMcpRootPort {
+    param([string]$Root)
+
+    if ([string]::IsNullOrWhiteSpace($Root)) {
+        return 0
+    }
+
+    try {
+        return ([System.Uri]$Root).Port
+    }
+    catch {
+        return 0
+    }
+}
+
+function Get-UnityMcpNormalizedProjectPath {
+    return [System.IO.Path]::GetFullPath((Get-UnityMcpProjectRoot)).
+        TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar).
+        Replace('\', '/').
+        ToLowerInvariant()
+}
+
+function Get-UnityMcpStableHash {
+    param([string]$Value)
+
+    $hash = [uint32]2166136261
+    for ($i = 0; $i -lt $Value.Length; $i++) {
+        $hash = [uint32]((([uint64]($hash -bxor [uint32][char]$Value[$i])) * 16777619) % 4294967296)
+    }
+
+    return $hash
+}
+
+function Get-UnityMcpProjectKey {
+    return (Get-UnityMcpStableHash -Value (Get-UnityMcpNormalizedProjectPath)).ToString("x8")
+}
+
+function Get-UnityMcpStickyFallbackPorts {
+    param([int]$Count = 8)
+
+    $rangeStart = 52000
+    $rangeSize = 1000
+    $hash = Get-UnityMcpStableHash -Value (Get-UnityMcpNormalizedProjectPath)
+    for ($i = 0; $i -lt $Count; $i++) {
+        $bucket = [int](($hash + [uint32]$i) % $rangeSize)
+        $rangeStart + $bucket
+    }
+}
+
+function New-UnityMcpRootFromPort {
+    param([int]$Port)
+
+    return "http://127.0.0.1:$Port"
+}
+
+function Get-UnityMcpCandidateRoots {
+    param([string]$Root)
+
+    $ports = New-Object System.Collections.Generic.List[int]
+    $rootPort = Get-UnityMcpRootPort -Root $Root
+    if ($rootPort -gt 0) {
+        $ports.Add($rootPort)
+    }
+
+    $configuredPort = Get-UnityMcpConfiguredPort
+    if ($configuredPort -gt 0) {
+        $ports.Add($configuredPort)
+    }
+
+    $ports.Add(51234)
+    foreach ($port in Get-UnityMcpStickyFallbackPorts) {
+        $ports.Add($port)
+    }
+
+    return @(
+        $ports |
+            Where-Object { $_ -gt 0 -and $_ -le 65535 } |
+            Select-Object -Unique |
+            ForEach-Object { New-UnityMcpRootFromPort -Port $_ }
+    )
+}
+
+function Test-UnityMcpHealthMatchesProject {
+    param([object]$State)
+
+    if ($null -eq $State -or -not $State.ok) {
+        return $false
+    }
+
+    if ($null -ne $State.PSObject.Properties["projectKey"] -and -not [string]::IsNullOrWhiteSpace([string]$State.projectKey)) {
+        return [string]::Equals([string]$State.projectKey, (Get-UnityMcpProjectKey), [System.StringComparison]::OrdinalIgnoreCase)
+    }
+
+    if ($null -ne $State.PSObject.Properties["projectRootPath"] -and -not [string]::IsNullOrWhiteSpace([string]$State.projectRootPath)) {
+        $actual = [System.IO.Path]::GetFullPath([string]$State.projectRootPath).
+            TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar).
+            Replace('\', '/').
+            ToLowerInvariant()
+        return [string]::Equals($actual, (Get-UnityMcpNormalizedProjectPath), [System.StringComparison]::Ordinal)
+    }
+
+    return $false
+}
+
+function Test-UnityMcpRootHealthyForProject {
+    param(
+        [string]$Root,
+        [int]$TimeoutSec = 1
+    )
+
+    try {
+        $state = Invoke-RestMethod -Method Get -Uri "$($Root.TrimEnd('/'))/health" -TimeoutSec $TimeoutSec
+        return Test-UnityMcpHealthMatchesProject -State $state
+    }
+    catch {
+        return $false
+    }
+}
+
 function Get-UnityMcpBaseUrl {
     param([string]$ExplicitBaseUrl)
 
@@ -7,15 +146,12 @@ function Get-UnityMcpBaseUrl {
         return $ExplicitBaseUrl.TrimEnd("/")
     }
 
-    $portFile = Join-Path $PSScriptRoot "..\..\ProjectSettings\UnityMcpPort.txt"
-    if (Test-Path -LiteralPath $portFile) {
-        $portText = (Get-Content -Path $portFile -Raw).Trim()
-        if ($portText -match '^\d+$') {
-            return "http://127.0.0.1:$portText"
-        }
+    $configuredPort = Get-UnityMcpConfiguredPort
+    if ($configuredPort -gt 0) {
+        return New-UnityMcpRootFromPort -Port $configuredPort
     }
 
-    return "http://127.0.0.1:51234"
+    return New-UnityMcpRootFromPort -Port 51234
 }
 
 function Test-UnityMcpRootCanFollowProjectPort {
@@ -31,8 +167,24 @@ function Test-UnityMcpRootCanFollowProjectPort {
 function Get-UnityMcpRefreshedRoot {
     param([string]$Root)
 
+    if ([string]::IsNullOrWhiteSpace($Root)) {
+        foreach ($candidateRoot in Get-UnityMcpCandidateRoots -Root "") {
+            if (Test-UnityMcpRootHealthyForProject -Root $candidateRoot) {
+                return $candidateRoot
+            }
+        }
+
+        return Get-UnityMcpBaseUrl -ExplicitBaseUrl ""
+    }
+
     if (-not (Test-UnityMcpRootCanFollowProjectPort -Root $Root)) {
         return $Root
+    }
+
+    foreach ($candidateRoot in Get-UnityMcpCandidateRoots -Root $Root) {
+        if (Test-UnityMcpRootHealthyForProject -Root $candidateRoot) {
+            return $candidateRoot
+        }
     }
 
     $freshRoot = Get-UnityMcpBaseUrl -ExplicitBaseUrl ""
@@ -101,6 +253,10 @@ function Invoke-McpJsonWithTransientRetry {
 
     $deadline = (Get-Date).AddSeconds($TimeoutSec)
     $lastError = $null
+    $refreshedRoot = Get-UnityMcpRefreshedRoot -Root $Root
+    if ($refreshedRoot -ne $Root) {
+        $Root = $refreshedRoot
+    }
 
     while ((Get-Date) -lt $deadline) {
         try {
@@ -119,6 +275,10 @@ function Invoke-McpJsonWithTransientRetry {
             }
 
             $lastError = $_.Exception.Message
+            $refreshedRoot = Get-UnityMcpRefreshedRoot -Root $Root
+            if ($refreshedRoot -ne $Root) {
+                $Root = $refreshedRoot
+            }
             Start-Sleep -Seconds $PollSec
         }
     }
@@ -141,6 +301,10 @@ function Invoke-McpGetJsonWithTransientRetry {
 
     $deadline = (Get-Date).AddSeconds($TimeoutSec)
     $lastError = $null
+    $refreshedRoot = Get-UnityMcpRefreshedRoot -Root $Root
+    if ($refreshedRoot -ne $Root) {
+        $Root = $refreshedRoot
+    }
 
     while ((Get-Date) -lt $deadline) {
         try {
@@ -159,6 +323,10 @@ function Invoke-McpGetJsonWithTransientRetry {
             }
 
             $lastError = $_.Exception.Message
+            $refreshedRoot = Get-UnityMcpRefreshedRoot -Root $Root
+            if ($refreshedRoot -ne $Root) {
+                $Root = $refreshedRoot
+            }
             Start-Sleep -Seconds $PollSec
         }
     }
@@ -192,6 +360,10 @@ function Wait-McpBridgeHealthy {
     $deadline = (Get-Date).AddSeconds($TimeoutSec)
     $lastError = $null
     $currentRoot = $Root
+    $refreshedRoot = Get-UnityMcpRefreshedRoot -Root $currentRoot
+    if ($refreshedRoot -ne $currentRoot) {
+        $currentRoot = $refreshedRoot
+    }
 
     while ((Get-Date) -lt $deadline) {
         try {

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-04-30",
+  "updatedAt": "2026-05-01",
   "scope": "rules-only",
   "issueDetected": true,
   "declaredLane": "documentation lifecycle, plan cleanup/progress slim policy, recurrence closeout false-green prevention, managed prompt coverage, stale-trace hard-fail lint, core cohesion/coupling lint, and issue investigation hypothesis verification guardrail",
@@ -13,11 +13,17 @@
   "blockedReason": "",
   "changedPaths": [
     "artifacts/rules/issue-recurrence-closeout.json",
-    "docs/design/ui_foundations.md",
-    "docs/design/ui_reference_workflow.md",
+    "docs/index.md",
+    "docs/plans/account_garage_webgl_closeout_plan.md",
+    "docs/plans/game_scene_multiplayer_sync_closeout_plan.md",
+    "docs/plans/progress.md",
+    "tools/build-and-deploy-webgl.ps1",
+    "tools/mcp-test-compile.ps1",
     "tools/nova1492/Invoke-GarageNovaPartsPanelSmoke.ps1",
-    "tools/rule-harness/roles/RecurrencePlanHarness.psm1",
-    "tools/rule-harness/RuleHarness.psm1",
-    "tools/rule-harness/tests/Run-RuleHarnessTests.ps1"
+    "tools/nova1492/Invoke-Nova1492LegAuditCapture.ps1",
+    "tools/rule-harness/write-compile-status.ps1",
+    "tools/unity-mcp/Invoke-EditorProjectSync.ps1",
+    "tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1",
+    "tools/unity-mcp/McpHelpers.ps1"
   ]
 }

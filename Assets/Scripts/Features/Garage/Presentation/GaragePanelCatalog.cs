@@ -10,6 +10,9 @@ namespace Features.Garage.Presentation
             public Vector3 PivotOffset { get; set; }
             public Vector3 SocketOffset { get; set; }
             public Vector3 SocketEuler { get; set; }
+            public bool HasGxTreeSocket { get; set; }
+            public Vector3 GxTreeSocketOffset { get; set; }
+            public string GxTreeSocketName { get; set; }
             public bool HasXfiMetadata { get; set; }
             public string XfiPath { get; set; }
             public string XfiHeader { get; set; }

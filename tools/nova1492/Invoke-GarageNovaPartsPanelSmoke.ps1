@@ -25,7 +25,7 @@ function Convert-ComponentPropertiesToMap {
     return $map
 }
 
-function Get-GarageSetBUitkControllerState {
+function Get-GarageSetBUitkSmokeDriverState {
     param(
         [string]$Root,
         [string]$Path
@@ -33,7 +33,7 @@ function Get-GarageSetBUitkControllerState {
 
     $response = Invoke-McpJson -Root $Root -SubPath "/component/get" -Body @{
         gameObjectPath = $Path
-        componentType = "GarageSetBUitkPageController"
+        componentType = "GarageSetBUitkSmokeDriver"
         propertyNames = @(
             "_lastRenderStatus",
             "_lastInteractionStatus",
@@ -65,10 +65,10 @@ function Wait-GarageSetBUitkRendered {
 
     $state = $null
     Wait-McpCondition `
-        -Description "GarageSetBUitkPageController render status" `
+        -Description "GarageSetBUitkSmokeDriver render status" `
         -TimeoutSec $TimeoutSec `
         -Condition {
-            $script:GarageSetBUitkWaitState = Get-GarageSetBUitkControllerState -Root $Root -Path $Path
+            $script:GarageSetBUitkWaitState = Get-GarageSetBUitkSmokeDriverState -Root $Root -Path $Path
             return -not [string]::IsNullOrWhiteSpace($script:GarageSetBUitkWaitState.lastRenderStatus)
         }
 
@@ -77,7 +77,7 @@ function Wait-GarageSetBUitkRendered {
     return $state
 }
 
-function Invoke-GarageSetBUitkControllerMethod {
+function Invoke-GarageSetBUitkSmokeDriverMethod {
     param(
         [string]$Root,
         [string]$Path,
@@ -101,26 +101,26 @@ function Invoke-GaragePartSelectionSmokeStep {
         [string]$SearchText
     )
 
-    Invoke-GarageSetBUitkControllerMethod `
+    Invoke-GarageSetBUitkSmokeDriverMethod `
         -Root $Root `
         -Path $ControllerPath `
         -Method "SelectFocusForMcpSmoke" `
         -MethodArgs @($Slot) | Out-Null
 
-    Invoke-GarageSetBUitkControllerMethod `
+    Invoke-GarageSetBUitkSmokeDriverMethod `
         -Root $Root `
         -Path $ControllerPath `
         -Method "SetPartSearchForMcpSmoke" `
         -MethodArgs @($SearchText) | Out-Null
 
-    Invoke-GarageSetBUitkControllerMethod `
+    Invoke-GarageSetBUitkSmokeDriverMethod `
         -Root $Root `
         -Path $ControllerPath `
         -Method "SelectVisiblePartForMcpSmoke" `
         -MethodArgs @($Slot, 0) | Out-Null
 
     Start-Sleep -Milliseconds 250
-    $state = Get-GarageSetBUitkControllerState -Root $Root -Path $ControllerPath
+    $state = Get-GarageSetBUitkSmokeDriverState -Root $Root -Path $ControllerPath
     $expectedPrefix = "part:$Slot`:"
     if (-not $state.lastInteractionStatus.StartsWith($expectedPrefix, [System.StringComparison]::Ordinal)) {
         throw "Garage SetB UITK part selection failed for $Slot. Expected interaction prefix '$expectedPrefix', actual '$($state.lastInteractionStatus)'."
@@ -146,14 +146,14 @@ $prepare = Invoke-McpPrepareLobbyPlaySession `
 Wait-McpUiComponent `
     -Root $root `
     -Path $ControllerPath `
-    -ComponentType "GarageSetBUitkPageController" `
+    -ComponentType "GarageSetBUitkSmokeDriver" `
     -TimeoutMs 30000 | Out-Null
 
 $initialState = Wait-GarageSetBUitkRendered -Root $root -Path $ControllerPath -TimeoutSec 30
 $frameStep = Invoke-GaragePartSelectionSmokeStep -Root $root -ControllerPath $ControllerPath -Slot "Frame" -SearchText $FrameSearchText
 $firepowerStep = Invoke-GaragePartSelectionSmokeStep -Root $root -ControllerPath $ControllerPath -Slot "Firepower" -SearchText $FirepowerSearchText
 $mobilityStep = Invoke-GaragePartSelectionSmokeStep -Root $root -ControllerPath $ControllerPath -Slot "Mobility" -SearchText $MobilitySearchText
-$finalState = Get-GarageSetBUitkControllerState -Root $root -Path $ControllerPath
+$finalState = Get-GarageSetBUitkSmokeDriverState -Root $root -Path $ControllerPath
 
 $screenshot = Invoke-McpJsonWithTransientRetry -Root $root -SubPath "/screenshot/capture" -Body @{
     outputPath = $ScreenshotPath

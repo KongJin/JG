@@ -44,7 +44,7 @@
 | Stitch JSON handoff contract 구조 확인 | [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) |
 | Stitch surface 실행 명령과 review capture 루프 확인 | [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) |
 | GameScene 검증/closeout owner 확인 | [`plans/progress.md`](./plans/progress.md) |
-| Account/Garage WebGL acceptance 확인 | [`plans/account_garage_webgl_closeout_plan.md`](./plans/account_garage_webgl_closeout_plan.md) |
+| Account/Garage WebGL acceptance 확인 | [`plans/progress.md`](./plans/progress.md)와 [`playtest/webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) |
 | Unity MCP 실행 루틴 확인 | [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) |
 | WebGL 실기 절차 확인 | [`playtest/webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) |
 | Firebase 배포 절차 확인 | [`ops/firebase_hosting.md`](./ops/firebase_hosting.md) |
@@ -65,8 +65,6 @@
 
 - `active`: [`progress.md`](./plans/progress.md) - 공식 진행률 SSOT
 - `active`: [`game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) - GameScene/BattleScene single-client flow closeout owner
-- `active`: [`game_scene_multiplayer_sync_closeout_plan.md`](./plans/game_scene_multiplayer_sync_closeout_plan.md) - GameScene 2-client sync closeout owner
-- `active`: [`account_garage_webgl_closeout_plan.md`](./plans/account_garage_webgl_closeout_plan.md) - Account/Garage WebGL acceptance owner
 - `active`: [`webgl_audio_closeout_plan.md`](./plans/webgl_audio_closeout_plan.md) - WebGL audio smoke owner
 - `active`: [`nova1492_content_residual_plan.md`](./plans/nova1492_content_residual_plan.md) - Nova1492 content handoff owner
 - `active`: [`non_stitch_ui_stitch_reimport_plan.md`](./plans/non_stitch_ui_stitch_reimport_plan.md) - Non-Stitch UI source/candidate handoff owner

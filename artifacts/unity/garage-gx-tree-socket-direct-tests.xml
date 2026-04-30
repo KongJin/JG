@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-04-30 13:47:56Z" end-time="2026-04-30 13:47:56Z" duration="0.3644424">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="89" result="Passed" start-time="2026-04-30 13:47:56Z" end-time="2026-04-30 13:47:56Z" duration="0.364442" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1112" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="89" result="Passed" start-time="2026-04-30 13:47:56Z" end-time="2026-04-30 13:47:56Z" duration="0.357227" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="3968" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1115" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="83" result="Passed" start-time="2026-04-30 13:47:56Z" end-time="2026-04-30 13:47:56Z" duration="0.355269" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1116" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="83" result="Passed" start-time="2026-04-30 13:47:56Z" end-time="2026-04-30 13:47:56Z" duration="0.354296" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1059" name="GarageUnitPreviewAssemblyDirectTests" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-04-30 13:47:56Z" end-time="2026-04-30 13:47:56Z" duration="0.353023" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1060" name="CatalogFactory_DoesNotTreatGeneratedMobilityAssemblyPrefabsAsSocketPivots" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.CatalogFactory_DoesNotTreatGeneratedMobilityAssemblyPrefabsAsSocketPivots" methodname="CatalogFactory_DoesNotTreatGeneratedMobilityAssemblyPrefabsAsSocketPivots" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="2013599311" result="Passed" start-time="2026-04-30 13:47:56Z" end-time="2026-04-30 13:47:56Z" duration="0.335716" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1062" name="TryCreatePreviewRoot_FallsBackToMobilitySocketOffsetWhenGxTreeSocketIsAbsent" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_FallsBackToMobilitySocketOffsetWhenGxTreeSocketIsAbsent" methodname="TryCreatePreviewRoot_FallsBackToMobilitySocketOffsetWhenGxTreeSocketIsAbsent" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="1486670027" result="Passed" start-time="2026-04-30 13:47:56Z" end-time="2026-04-30 13:47:56Z" duration="0.004041" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1061" name="TryCreatePreviewRoot_PrefersMobilityGxTreeSocketForAssemblyPrefab" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_PrefersMobilityGxTreeSocketForAssemblyPrefab" methodname="TryCreatePreviewRoot_PrefersMobilityGxTreeSocketForAssemblyPrefab" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="1623299651" result="Passed" start-time="2026-04-30 13:47:56Z" end-time="2026-04-30 13:47:56Z" duration="0.000598" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-gx-tree-socket-direct-tests.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

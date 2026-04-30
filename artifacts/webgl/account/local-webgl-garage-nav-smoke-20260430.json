@@ -1,0 +1,184 @@
+{
+  "status": "success",
+  "blockedReason": "",
+  "generatedAt": "2026-04-30T13:10:04.113Z",
+  "url": "http://127.0.0.1:52228/",
+  "screenshotPath": "C:/Users/SOL/Documents/JG/artifacts/webgl/account/local-webgl-garage-nav-smoke-20260430.png",
+  "details": {
+    "title": "MakeSD",
+    "canvasCount": 1
+  },
+  "pageErrors": [],
+  "failedRequests": [
+    {
+      "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-5QHE4HB7BL&gtm=45je64s1v9247665353za200zd9247665353&_p=1777554578503&gcd=13l3l3l3l1l1&npa=0&dma=0&_fid=ciMt0hD9SlG0SaFvNVkVAj&are=1&cid=1730105863.1777554579&frm=0&pscdl=noapi&rcb=11&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B147.0.7727.15%7CNot.A%252FBrand%3B8.0.0.0%7CChromium%3B147.0.7727.15&uam=&uamb=0&uap=Windows&uapv=19.0.0&uaw=0&ul=ko&_s=1&tag_exp=0~115938465~115938468~117266400~117512543~118289195~118463261&sid=1777554578&sct=1&seg=0&dl=http%3A%2F%2F127.0.0.1%2F&dt=MakeSD&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&ep.origin=firebase&tfd=2725",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-5QHE4HB7BL&gtm=45je64s1v9247665353za200zd9247665353&_p=1777554578503&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAAAAQ&_fid=ciMt0hD9SlG0SaFvNVkVAj&are=1&cid=1730105863.1777554579&frm=0&pscdl=noapi&rcb=11&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B147.0.7727.15%7CNot.A%252FBrand%3B8.0.0.0%7CChromium%3B147.0.7727.15&uam=&uamb=0&uap=Windows&uapv=19.0.0&uaw=0&ul=ko&_s=2&tag_exp=0~115938465~115938468~117266400~117512543~118289195~118463261&sid=1777554578&sct=1&seg=0&dl=http%3A%2F%2F127.0.0.1%2F&dt=MakeSD&en=session_start&_ee=1&ep.origin=firebase&_et=3&tfd=7891",
+      "failure": "net::ERR_ABORTED"
+    }
+  ],
+  "consoleMessages": [
+    {
+      "type": "log",
+      "text": "Hidden/CoreSRP/CoreCopy shader is not supported on this GPU (none of subshaders/fallbacks are suitable)\n"
+    },
+    {
+      "type": "log",
+      "text": "ERROR: Shader "
+    },
+    {
+      "type": "log",
+      "text": "Hidden/Universal Render Pipeline/StencilDitherMaskSeed shader is not supported on this GPU (none of subshaders/fallbacks are suitable)\n"
+    },
+    {
+      "type": "log",
+      "text": "ERROR: Shader "
+    },
+    {
+      "type": "log",
+      "text": "Hidden/Universal/HDRDebugView shader is not supported on this GPU (none of subshaders/fallbacks are suitable)\n"
+    },
+    {
+      "type": "log",
+      "text": "Input System initialize...\n"
+    },
+    {
+      "type": "log",
+      "text": "UnloadTime: 2.200001 ms\n"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] RestoreSession uid=<empty>, hasIdToken=False, hasRefreshToken=False, expiryMs=0.\n"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] No persisted session snapshot found. Anonymous sign-in will create a new account.\n"
+    },
+    {
+      "type": "warning",
+      "text": "DontDestroyOnLoad only works for root GameObjects or components on root GameObjects.\n"
+    },
+    {
+      "type": "log",
+      "text": "Audio context resumed after 0.948 seconds."
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x4ac4001b2200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x4ac4001b2200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x4ac4001b2200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+    },
+    {
+      "type": "warning",
+      "text": "[.WebGL-0x4ac4001b2200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] Request succeeded (2106ms): https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] PersistSession uid=Y6qRg9elxTRNJEfhlu5axGl9ATG2, hasIdToken=True, hasRefreshToken=True, expiryMs=1777558180264.\n"
+    },
+    {
+      "type": "log",
+      "text": "[FirebaseAuth] Created new anonymous session for uid=Y6qRg9elxTRNJEfhlu5axGl9ATG2.\n"
+    },
+    {
+      "type": "log",
+      "text": "[LobbyPhotonAdapter] Connecting...\n"
+    },
+    {
+      "type": "warning",
+      "text": "Additional Lights Cookie Format (GrayscaleHigh) is not supported by the platform. Falling back to 32-bit format (RGBA8 UNorm)\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (960ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/Y6qRg9elxTRNJEfhlu5axGl9ATG2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "log",
+      "text": "[Firestore] Request succeeded (180ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/Y6qRg9elxTRNJEfhlu5axGl9ATG2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "log",
+      "text": "[Firestore] Request succeeded (166ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/Y6qRg9elxTRNJEfhlu5axGl9ATG2/profile/profile?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (170ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/Y6qRg9elxTRNJEfhlu5axGl9ATG2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (174ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/Y6qRg9elxTRNJEfhlu5axGl9ATG2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (187ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/Y6qRg9elxTRNJEfhlu5axGl9ATG2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (185ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/Y6qRg9elxTRNJEfhlu5axGl9ATG2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (185ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/Y6qRg9elxTRNJEfhlu5axGl9ATG2/operations/recent?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "log",
+      "text": "[Firestore] Request succeeded (253ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/Y6qRg9elxTRNJEfhlu5axGl9ATG2/operations/recent?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "type": "warning",
+      "text": "[Firestore] Document not found (200ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/Y6qRg9elxTRNJEfhlu5axGl9ATG2/garage/roster?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY\n"
+    },
+    {
+      "type": "warning",
+      "text": "PUN is in development mode (development build). As the 'dev region' is not empty (jp) it overrides the found best region. See PhotonServerSettings.\n"
+    },
+    {
+      "type": "log",
+      "text": "[LobbyPhotonAdapter] Connected to Master. Joining lobby...\n"
+    },
+    {
+      "type": "log",
+      "text": "[LobbyPhotonAdapter] Joined lobby. Ready for matchmaking.\n"
+    }
+  ]
+}

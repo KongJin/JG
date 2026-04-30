@@ -387,6 +387,7 @@ if ($route -ne "no-unity-ui-workflow") {
             -TimeoutSec $TimeoutSec
 
         $health = Wait-McpBridgeHealthy -Root $root -TimeoutSec $TimeoutSec
+        $root = $health.Root
         if ($health.State.isPlaying) {
             Invoke-McpPlayStopAndWait -Root $root -TimeoutSec $TimeoutSec | Out-Null
         }

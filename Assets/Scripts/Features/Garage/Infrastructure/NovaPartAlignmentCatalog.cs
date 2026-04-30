@@ -16,6 +16,9 @@ namespace Features.Garage.Infrastructure
             [SerializeField] private Vector3 pivotOffset;
             [SerializeField] private Vector3 socketOffset;
             [SerializeField] private Vector3 socketEuler;
+            [SerializeField] private bool hasGxTreeSocket;
+            [SerializeField] private Vector3 gxTreeSocketOffset;
+            [SerializeField] private string gxTreeSocketName;
             [SerializeField] private bool hasXfiMetadata;
             [SerializeField] private string xfiPath;
             [SerializeField] private string xfiHeader;
@@ -41,6 +44,9 @@ namespace Features.Garage.Infrastructure
             public Vector3 PivotOffset => pivotOffset;
             public Vector3 SocketOffset => socketOffset;
             public Vector3 SocketEuler => socketEuler;
+            public bool HasGxTreeSocket => hasGxTreeSocket;
+            public Vector3 GxTreeSocketOffset => gxTreeSocketOffset;
+            public string GxTreeSocketName => gxTreeSocketName;
             public bool HasXfiMetadata => hasXfiMetadata;
             public string XfiPath => xfiPath;
             public string XfiHeader => xfiHeader;

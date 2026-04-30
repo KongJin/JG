@@ -1,6 +1,10 @@
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
 using System.Collections;
+using System.Collections.Generic;
 using Features.Combat;
 using Features.Combat.Domain;
+using Features.Enemy.Application.Events;
+using Features.Player.Application.Events;
 using Features.Wave;
 using Features.Wave.Application.Events;
 using Shared.Attributes;
@@ -19,14 +23,18 @@ namespace Features.Player
         private EventBus _eventBus;
         private Coroutine _finalWaveClearRoutine;
         private bool _finalWaveClearGameEnded;
+        private readonly HashSet<DomainEntityId> _activeEnemyIds = new();
+        private readonly List<DomainEntityId> _enemyIdBuffer = new();
 
         public void Initialize(EventBus eventBus)
         {
             _eventBus = eventBus;
-            _eventBus?.Subscribe(this, new System.Action<Features.Player.Application.Events.GameEndReportRequestedEvent>(_ =>
+            _eventBus?.Subscribe(this, new System.Action<GameEndReportRequestedEvent>(_ =>
             {
                 _finalWaveClearGameEnded = true;
             }));
+            _eventBus?.Subscribe(this, new System.Action<EnemySpawnedEvent>(OnEnemySpawned));
+            _eventBus?.Subscribe(this, new System.Action<EnemyDiedEvent>(OnEnemyDied));
         }
 
         public void ForceCoreDefeatForMcpSmoke()
@@ -87,26 +95,37 @@ namespace Features.Player
             if (_combatSetup == null)
                 return 0;
 
-            var holders = FindObjectsByType<EntityIdHolder>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var attackerId = ResolveAttackerId();
             var cleared = 0;
 
-            foreach (var holder in holders)
-            {
-                if (holder == null || !holder.IsInitialized)
-                    continue;
-                if (string.IsNullOrWhiteSpace(holder.Id.Value) || !holder.Id.Value.StartsWith("enemy-"))
-                    continue;
+            _enemyIdBuffer.Clear();
+            foreach (var enemyId in _activeEnemyIds)
+                _enemyIdBuffer.Add(enemyId);
 
-                _combatSetup.ApplyDamage(
-                    holder.Id,
+            for (var i = 0; i < _enemyIdBuffer.Count; i++)
+            {
+                var result = _combatSetup.ApplyDamage(
+                    _enemyIdBuffer[i],
                     100000f,
                     DamageType.Physical,
                     attackerId);
-                cleared++;
+                if (result.IsSuccess)
+                    cleared++;
             }
 
             return cleared;
+        }
+
+        private void OnEnemySpawned(EnemySpawnedEvent e)
+        {
+            if (!string.IsNullOrWhiteSpace(e.EnemyId.Value))
+                _activeEnemyIds.Add(e.EnemyId);
+        }
+
+        private void OnEnemyDied(EnemyDiedEvent e)
+        {
+            if (!string.IsNullOrWhiteSpace(e.EnemyId.Value))
+                _activeEnemyIds.Remove(e.EnemyId);
         }
 
         private DomainEntityId ResolveAttackerId()
@@ -125,6 +144,8 @@ namespace Features.Player
 
         private void OnDestroy()
         {
+            _eventBus?.UnsubscribeAll(this);
+
             if (_finalWaveClearRoutine != null)
             {
                 StopCoroutine(_finalWaveClearRoutine);
@@ -135,3 +156,13 @@ namespace Features.Player
         }
     }
 }
+#else
+using UnityEngine;
+
+namespace Features.Player
+{
+    public sealed class GameSceneMcpSmokeDriver : MonoBehaviour
+    {
+    }
+}
+#endif

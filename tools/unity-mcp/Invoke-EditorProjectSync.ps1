@@ -15,6 +15,7 @@ $root = Get-UnityMcpBaseUrl -ExplicitBaseUrl $UnityBridgeUrl
 Write-Host "Using Unity MCP bridge: $root" -ForegroundColor Cyan
 
 $health = Wait-McpBridgeHealthy -Root $root -TimeoutSec ([Math]::Ceiling($TimeoutMs / 1000.0))
+$root = $health.Root
 Write-Host ("Editor healthy. scene={0} playing={1} compiling={2}" -f $health.State.activeScene, $health.State.isPlaying, $health.State.isCompiling) -ForegroundColor DarkGray
 
 $compile = Invoke-McpJsonWithTransientRetry -Root $root -SubPath "/compile/wait" -Body @{

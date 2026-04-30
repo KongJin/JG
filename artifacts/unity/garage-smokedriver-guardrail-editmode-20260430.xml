@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-04-30 13:58:29Z" end-time="2026-04-30 13:58:29Z" duration="0.0329114">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="90" result="Passed" start-time="2026-04-30 13:58:29Z" end-time="2026-04-30 13:58:29Z" duration="0.032911" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1113" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="90" result="Passed" start-time="2026-04-30 13:58:29Z" end-time="2026-04-30 13:58:29Z" duration="0.024796" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="3968" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1116" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="84" result="Passed" start-time="2026-04-30 13:58:29Z" end-time="2026-04-30 13:58:29Z" duration="0.024046" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1117" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="84" result="Passed" start-time="2026-04-30 13:58:29Z" end-time="2026-04-30 13:58:29Z" duration="0.023315" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1085" name="ArchitectureGuardrailReflectionTests" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-04-30 13:58:29Z" end-time="2026-04-30 13:58:29Z" duration="0.022231" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1094" name="GarageSetBUitkPageController_DoesNotHostMcpSmokeEntrypoints" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.GarageSetBUitkPageController_DoesNotHostMcpSmokeEntrypoints" methodname="GarageSetBUitkPageController_DoesNotHostMcpSmokeEntrypoints" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="653048303" result="Passed" start-time="2026-04-30 13:58:29Z" end-time="2026-04-30 13:58:29Z" duration="0.010088" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-smokedriver-guardrail-editmode-20260430.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

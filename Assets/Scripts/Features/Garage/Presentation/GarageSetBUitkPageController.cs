@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Features.Garage.Application;
 using Features.Garage.Domain;
@@ -12,10 +13,6 @@ namespace Features.Garage.Presentation
     {
         [SerializeField] private GarageSetBUitkRuntimeAdapter _adapter;
 
-        [Header("Smoke State")]
-        [SerializeField] private string _lastRenderStatus;
-        [SerializeField] private string _lastInteractionStatus;
-        [SerializeField] private int _selectedSlotIndex;
         [SerializeField] private GarageEditorFocus _focusedPart = GarageEditorFocus.Mobility;
         [SerializeField] private string _partSearchText = string.Empty;
         [SerializeField] private bool _isSettingsOpen;
@@ -33,8 +30,13 @@ namespace Features.Garage.Presentation
         private readonly GarageSaveFlow _saveFlow = new();
         private bool _callbacksHooked;
         private bool _isInitializingRoster;
+        private GarageSetBUitkPageSnapshot _lastSnapshot;
 
         public bool IsInitialized => _state != null && _presenter != null;
+        public GarageSetBUitkPageSnapshot CurrentSnapshot => _lastSnapshot;
+
+        public event Action<GarageSetBUitkPageSnapshot> Rendered;
+        internal event Action<GarageSaveFlowResultKind> SaveCompleted;
 
         public void Initialize(
             InitializeGarageUseCase initializeGarage,
@@ -63,41 +65,71 @@ namespace Features.Garage.Presentation
             _ = InitializeRosterAsync();
         }
 
-        public void SelectSlotForMcpSmoke(int slotIndex)
+        public void SelectSlot(int slotIndex)
         {
-            SelectSlot(slotIndex);
-            _lastInteractionStatus = $"slot:{slotIndex}";
-        }
-
-        public void SelectFocusForMcpSmoke(string focus)
-        {
-            if (System.Enum.TryParse(focus, ignoreCase: true, out GarageEditorFocus parsed))
-            {
-                SetFocusedPart(parsed);
-                _lastInteractionStatus = $"focus:{parsed}";
+            if (!CanRender())
                 return;
-            }
 
-            _lastInteractionStatus = $"focus-invalid:{focus}";
+            _state.SelectSlot(slotIndex);
+            _focusedPart = GarageEditorFocus.Mobility;
+            _partSearchText = string.Empty;
+            Render();
         }
 
-        public void ToggleSettingsForMcpSmoke()
+        public void SetFocusedPart(GarageEditorFocus focus)
+        {
+            if (_focusedPart != focus)
+                _partSearchText = string.Empty;
+
+            _focusedPart = focus;
+            Render();
+        }
+
+        public void SetPartSearchText(string value)
+        {
+            string next = value ?? string.Empty;
+            if (_partSearchText == next)
+                return;
+
+            _partSearchText = next;
+            Render();
+        }
+
+        public void ToggleSettings()
         {
             _isSettingsOpen = !_isSettingsOpen;
             Render();
-            _lastInteractionStatus = $"settings:{_isSettingsOpen}";
         }
 
-        public void RequestSaveForMcpSmoke()
+        public void RequestSave()
         {
             _ = RunSaveAsync();
-            _lastInteractionStatus = "save-requested";
         }
 
-        public void SetPartSearchForMcpSmoke(string value)
+        public bool TrySelectVisiblePart(
+            GarageNovaPartPanelSlot slot,
+            int visibleIndex,
+            out GarageNovaPartSelection selection,
+            out bool hasOptions)
         {
-            SetPartSearchText(value);
-            _lastInteractionStatus = $"part-search:{value}";
+            selection = default;
+            hasOptions = false;
+            if (!CanRender())
+                return false;
+
+            _focusedPart = GarageNovaPartsPanelViewModelFactory.ToEditorFocus(slot);
+            var viewModel = BuildPartListViewModel(slot);
+            if (viewModel.Options == null || viewModel.Options.Count == 0)
+            {
+                Render();
+                return false;
+            }
+
+            hasOptions = true;
+            int index = Mathf.Clamp(visibleIndex, 0, viewModel.Options.Count - 1);
+            selection = new GarageNovaPartSelection(slot, viewModel.Options[index].Id);
+            SelectPartOption(selection);
+            return true;
         }
 
         private async System.Threading.Tasks.Task InitializeRosterAsync()
@@ -129,38 +161,8 @@ namespace Features.Garage.Presentation
             _adapter.PartFocusSelected += SetFocusedPart;
             _adapter.PartSearchChanged += SetPartSearchText;
             _adapter.PartOptionSelected += SelectPartOption;
-            _adapter.SaveRequested += () => _ = RunSaveAsync();
-            _adapter.SettingsRequested += ToggleSettingsForMcpSmoke;
-        }
-
-        private void SelectSlot(int slotIndex)
-        {
-            if (!CanRender())
-                return;
-
-            _state.SelectSlot(slotIndex);
-            _focusedPart = GarageEditorFocus.Mobility;
-            _partSearchText = string.Empty;
-            Render();
-        }
-
-        private void SetFocusedPart(GarageEditorFocus focus)
-        {
-            if (_focusedPart != focus)
-                _partSearchText = string.Empty;
-
-            _focusedPart = focus;
-            Render();
-        }
-
-        private void SetPartSearchText(string value)
-        {
-            string next = value ?? string.Empty;
-            if (_partSearchText == next)
-                return;
-
-            _partSearchText = next;
-            Render();
+            _adapter.SaveRequested += RequestSave;
+            _adapter.SettingsRequested += ToggleSettings;
         }
 
         private void SelectPartOption(GarageNovaPartSelection selection)
@@ -183,7 +185,6 @@ namespace Features.Garage.Presentation
             }
 
             _state.ClearValidationOverride();
-            _lastInteractionStatus = $"part:{selection.Slot}:{selection.PartId}";
             Render();
         }
 
@@ -203,15 +204,14 @@ namespace Features.Garage.Presentation
             {
                 case GarageSaveFlowResultKind.Saved:
                     _state.CommitDraft();
-                    _lastInteractionStatus = "save:saved";
                     break;
                 case GarageSaveFlowResultKind.Blocked:
                 case GarageSaveFlowResultKind.Failed:
                     _state.SetValidationOverride(result.Message);
-                    _lastInteractionStatus = $"save:{result.Kind}";
                     break;
             }
 
+            SaveCompleted?.Invoke(result.Kind);
             Render();
         }
 
@@ -236,33 +236,14 @@ namespace Features.Garage.Presentation
                 _focusedPart,
                 _saveFlow.IsSaving);
 
-            _selectedSlotIndex = _state.SelectedSlotIndex;
-            _lastRenderStatus = BuildRenderStatus(slotViewModels);
+            _lastSnapshot = new GarageSetBUitkPageSnapshot(
+                BuildRenderStatus(slotViewModels),
+                _state.SelectedSlotIndex,
+                _focusedPart,
+                _partSearchText,
+                _isSettingsOpen);
+            Rendered?.Invoke(_lastSnapshot);
             PublishDraftState();
-        }
-
-        public void SelectVisiblePartForMcpSmoke(string slot, int visibleIndex)
-        {
-            if (!CanRender())
-                return;
-
-            if (!System.Enum.TryParse(slot, ignoreCase: true, out GarageNovaPartPanelSlot parsedSlot))
-            {
-                _lastInteractionStatus = $"part-slot-invalid:{slot}";
-                return;
-            }
-
-            _focusedPart = GarageNovaPartsPanelViewModelFactory.ToEditorFocus(parsedSlot);
-            var viewModel = BuildPartListViewModel(parsedSlot);
-            if (viewModel.Options == null || viewModel.Options.Count == 0)
-            {
-                _lastInteractionStatus = $"part-empty:{parsedSlot}";
-                Render();
-                return;
-            }
-
-            int index = Mathf.Clamp(visibleIndex, 0, viewModel.Options.Count - 1);
-            SelectPartOption(new GarageNovaPartSelection(parsedSlot, viewModel.Options[index].Id));
         }
 
         private GarageDraftEvaluation EvaluateDraft()

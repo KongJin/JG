@@ -210,50 +210,13 @@ namespace Features.Lobby.Presentation
                 return;
             }
 
-            _root.Clear();
-            _root.AddToClassList("shared-shell-screen");
-            ApplyRootStyle(_root);
-
-            var topShell = new VisualElement { name = "SharedTopShell" };
-            topShell.AddToClassList("shared-top-shell");
-            var menuButton = new Button(ShowConnectionPage) { name = "ShellMenuButton" };
-            menuButton.AddToClassList("shared-icon-button");
-            menuButton.Add(IconElement("menu", "uitk-icon--muted"));
-            topShell.Add(menuButton);
-            var titleStack = new VisualElement();
-            titleStack.AddToClassList("shared-title-stack");
-            _shellTitle = new Label("로비");
-            _shellTitle.AddToClassList("shared-title");
-            _shellState = new Label("동기화 대기");
-            _shellState.AddToClassList("shared-state");
-            titleStack.Add(_shellTitle);
-            titleStack.Add(_shellState);
-            topShell.Add(titleStack);
-            var settings = new Button(ShowAccountPage) { name = "ShellSettingsButton" };
-            settings.AddToClassList("shared-icon-button");
-            settings.Add(IconElement("settings", "uitk-icon--muted"));
-            topShell.Add(settings);
-            _root.Add(topShell);
-
-            var workspace = new VisualElement { name = "SharedWorkspace" };
-            workspace.AddToClassList("shared-workspace");
-            _lobbyPage = BuildLobbyPage();
-            _garagePage = BuildGarageHostPage();
-            _recordsPage = BuildRecordsPage();
-            workspace.Add(_lobbyPage);
-            workspace.Add(_garagePage);
-            workspace.Add(_recordsPage);
-            _root.Add(workspace);
-
-            var nav = new VisualElement { name = "SharedNavigationBar" };
-            nav.AddToClassList("shared-navigation-bar");
-            _lobbyNav = AddNavButton(nav, "LobbyNavButton", "radar", "로비", ShowLobbyPage);
-            _garageNav = AddNavButton(nav, "GarageNavButton", "garage", "차고", ShowGaragePage);
-            _recordsNav = AddNavButton(nav, "RecordsNavButton", "records", "기록", ShowRecordsPage);
-            _root.Add(nav);
-            ApplyRuntimeStyles();
+            Debug.LogError(
+                "[LobbyView] LobbyShellScreen is missing. Assign LobbyShell UXML instead of using runtime fallback UI.",
+                this);
+            return;
         }
 
+/* Authored LobbyShell UXML is required; runtime builder is removed. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
         private void BindAuthoredTree()
         {
             _lobbyPage = _root.Q<VisualElement>("LobbyUitkPage");
@@ -298,110 +261,7 @@ namespace Features.Lobby.Presentation
             RenderOperationMemory(new OperationRecordJsonStore().Load());
         }
 
-        private VisualElement BuildLobbyPage()
-        {
-            var page = new ScrollView(ScrollViewMode.Vertical) { name = "LobbyUitkPage" };
-            page.AddToClassList("uitk-page");
-
-            var createCard = new VisualElement { name = "CreateRoomCard" };
-            createCard.AddToClassList("uitk-card");
-            createCard.Add(Label("CREATE ROOM", "uitk-kicker"));
-            _roomNameInput = new TextField("Room") { value = "Room" };
-            _displayNameInput = new TextField("Pilot") { value = "Pilot" };
-            _capacityInput = new IntegerField("Capacity") { value = 4 };
-            _difficultyInput = new IntegerField("Difficulty") { value = 0 };
-            createCard.Add(_roomNameInput);
-            createCard.Add(_displayNameInput);
-            createCard.Add(_capacityInput);
-            createCard.Add(_difficultyInput);
-            var createButton = new Button(CreateRoom) { text = "방 만들기" };
-            createButton.AddToClassList("uitk-primary-button");
-            createCard.Add(createButton);
-            page.Add(createCard);
-
-            var roomsCard = new VisualElement { name = "RoomsSectionCard" };
-            roomsCard.AddToClassList("uitk-card");
-            _roomCountLabel = Label("0 open rooms", "uitk-section-title");
-            roomsCard.Add(_roomCountLabel);
-            _roomList = new VisualElement { name = "RoomList" };
-            roomsCard.Add(_roomList);
-            page.Add(roomsCard);
-
-            var detailCard = new VisualElement { name = "RoomDetailCard" };
-            detailCard.AddToClassList("uitk-card");
-            _roomDetailTitle = Label("방을 선택하세요", "uitk-section-title");
-            _roomDetailMeta = Label("대기 중", "uitk-body");
-            _memberList = new VisualElement { name = "MemberList" };
-            detailCard.Add(_roomDetailTitle);
-            detailCard.Add(_roomDetailMeta);
-            detailCard.Add(_memberList);
-            var actions = new VisualElement();
-            actions.AddToClassList("uitk-action-row");
-            actions.Add(new Button(() => ChangeTeam(TeamType.Red)) { text = "RED" });
-            actions.Add(new Button(() => ChangeTeam(TeamType.Blue)) { text = "BLUE" });
-            _readyButton = new Button(ToggleReady) { text = "Ready" };
-            _startButton = new Button(StartGame) { text = "Start" };
-            actions.Add(_readyButton);
-            actions.Add(_startButton);
-            actions.Add(new Button(LeaveRoom) { text = "Leave" });
-            detailCard.Add(actions);
-            page.Add(detailCard);
-
-            return page;
-        }
-
-        private static VisualElement BuildGarageHostPage()
-        {
-            var page = new VisualElement { name = "GarageUitkHost" };
-            page.AddToClassList("uitk-page");
-            page.Add(Label("GARAGE", "uitk-section-title"));
-            page.Add(Label("Garage workspace is loading.", "uitk-body"));
-            return page;
-        }
-
-        private static VisualElement BuildRecordsPage()
-        {
-            var page = new ScrollView(ScrollViewMode.Vertical) { name = "RecordsUitkPage" };
-            page.AddToClassList("uitk-page");
-
-            var card = new VisualElement { name = "RecordsCard" };
-            card.AddToClassList("uitk-card");
-            card.Add(Label("RECENT OPERATIONS", "uitk-kicker"));
-            card.Add(Label("최근 작전 기록", "uitk-section-title"));
-            var body = Label("저장된 작전 결과가 생기면 최근 5개가 여기에 표시됩니다.", "uitk-body");
-            body.style.whiteSpace = WhiteSpace.Normal;
-            card.Add(body);
-            page.Add(card);
-            return page;
-        }
-
-        private static Button AddNavButton(VisualElement nav, string name, string iconId, string text, System.Action callback)
-        {
-            var button = new Button(callback) { name = name };
-            button.AddToClassList("shared-nav-item");
-            var icon = IconElement(iconId, "uitk-icon--small", "shared-nav-icon");
-            var label = new Label(text);
-            label.AddToClassList("shared-nav-label");
-            button.Add(icon);
-            button.Add(label);
-            nav.Add(button);
-            return button;
-        }
-
-        private static VisualElement IconElement(string iconId, params string[] extraClasses)
-        {
-            var icon = new VisualElement();
-            icon.AddToClassList("uitk-icon");
-            foreach (var className in extraClasses)
-            {
-                if (!string.IsNullOrWhiteSpace(className))
-                    icon.AddToClassList(className);
-            }
-
-            UitkIconRegistry.Apply(icon, iconId);
-            return icon;
-        }
-
+/* Removed procedural Lobby fallback builder; LobbyShell UXML owns structure. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
         private void RenderRooms(IReadOnlyList<RoomSnapshot> rooms)
         {
             _visibleRoomIds.Clear();
@@ -426,7 +286,7 @@ namespace Features.Lobby.Presentation
                     text = $"{room.Name}  {room.Members.Count}/{room.Capacity}  {DifficultyPresetFormatter.ToShortLabel(room.DifficultyPresetId)}"
                 };
                 row.AddToClassList("uitk-list-row");
-                StyleButton(row, primary: false);
+                // row style owned by USS.xxxxxxx
                 row.SetEnabled(room.Members.Count < room.Capacity);
                 _roomList.Add(row);
             }
@@ -456,7 +316,7 @@ namespace Features.Lobby.Presentation
                     text = $"{room.RoomName}  {room.PlayerCount}/{room.MaxPlayers}  {DifficultyPresetFormatter.ToShortLabel(room.DifficultyPresetId)}"
                 };
                 row.AddToClassList("uitk-list-row");
-                StyleButton(row, primary: false);
+                // row style owned by USS.xxxxxxx
                 row.SetEnabled(room.PlayerCount < room.MaxPlayers);
                 _roomList.Add(row);
             }
@@ -916,194 +776,6 @@ namespace Features.Lobby.Presentation
                 element.AddToClassList(parts[i]);
         }
 
-        private static void ApplyRootStyle(VisualElement root)
-        {
-            root.style.flexGrow = 1f;
-            root.style.backgroundColor = new Color(0.035f, 0.055f, 0.08f, 1f);
-            root.style.color = new Color(0.9f, 0.94f, 0.98f, 1f);
-            root.style.paddingLeft = 10f;
-            root.style.paddingRight = 10f;
-            root.style.paddingTop = 10f;
-            root.style.paddingBottom = 10f;
-        }
-
-        private void ApplyRuntimeStyles()
-        {
-            StyleShell();
-            StylePage(_lobbyPage);
-            StylePage(_garagePage);
-            StylePage(_recordsPage);
-            foreach (var button in _root.Query<Button>().ToList())
-                StyleButton(button, button.ClassListContains("uitk-primary-button"));
-            foreach (var field in _root.Query<TextInputBaseField<string>>().ToList())
-                StyleTextInput(field);
-            foreach (var field in _root.Query<IntegerField>().ToList())
-                StyleIntegerInput(field);
-        }
-
-        private void StyleShell()
-        {
-            var topShell = _root.Q<VisualElement>("SharedTopShell");
-            if (topShell != null)
-            {
-                topShell.style.height = 58f;
-                topShell.style.minHeight = 58f;
-                topShell.style.maxHeight = 58f;
-                topShell.style.flexShrink = 0f;
-                topShell.style.flexDirection = FlexDirection.Row;
-                topShell.style.alignItems = Align.Center;
-                topShell.style.justifyContent = Justify.SpaceBetween;
-                topShell.style.paddingLeft = 8f;
-                topShell.style.paddingRight = 8f;
-                topShell.style.paddingTop = 0f;
-                topShell.style.paddingBottom = 0f;
-                topShell.style.backgroundColor = new Color(0.07f, 0.1f, 0.14f, 0.96f);
-                topShell.style.borderBottomColor = new Color(0.24f, 0.55f, 0.78f, 1f);
-                topShell.style.borderBottomWidth = 1f;
-            }
-
-            var workspace = _root.Q<VisualElement>("SharedWorkspace");
-            if (workspace != null)
-            {
-                workspace.style.flexGrow = 1f;
-                workspace.style.minHeight = 0f;
-                workspace.style.marginTop = 8f;
-                workspace.style.marginBottom = 12f;
-            }
-
-            var nav = _root.Q<VisualElement>("SharedNavigationBar");
-            if (nav != null)
-            {
-                nav.style.height = 62f;
-                nav.style.minHeight = 62f;
-                nav.style.maxHeight = 62f;
-                nav.style.flexShrink = 0f;
-                nav.style.flexDirection = FlexDirection.Row;
-                nav.style.backgroundColor = new Color(0.055f, 0.08f, 0.11f, 1f);
-                nav.style.borderTopColor = new Color(0.24f, 0.55f, 0.78f, 1f);
-                nav.style.borderTopWidth = 1f;
-            }
-
-            if (_shellTitle != null)
-            {
-                _shellTitle.style.fontSize = 19f;
-                _shellTitle.style.unityFontStyleAndWeight = FontStyle.Bold;
-                _shellTitle.style.color = new Color(0.95f, 0.98f, 1f, 1f);
-            }
-
-            if (_shellState != null)
-            {
-                _shellState.style.fontSize = 11f;
-                _shellState.style.color = new Color(0.48f, 0.78f, 0.92f, 1f);
-            }
-        }
-
-        private static void StylePage(VisualElement page)
-        {
-            if (page == null)
-                return;
-
-            page.style.flexGrow = 1f;
-            page.style.backgroundColor = new Color(0.035f, 0.055f, 0.08f, 1f);
-            foreach (var card in page.Query<VisualElement>(className: "uitk-card").ToList())
-            {
-                card.style.paddingLeft = 12f;
-                card.style.paddingRight = 12f;
-                card.style.paddingTop = 12f;
-                card.style.paddingBottom = 12f;
-                card.style.marginBottom = 10f;
-                card.style.backgroundColor = new Color(0.075f, 0.105f, 0.145f, 0.96f);
-                card.style.borderTopColor = new Color(0.16f, 0.32f, 0.43f, 1f);
-                card.style.borderTopWidth = 1f;
-            }
-        }
-
-        private static void StyleButton(Button button, bool primary)
-        {
-            if (button == null)
-                return;
-
-            button.style.height = 42f;
-            button.style.marginTop = 3f;
-            button.style.marginBottom = 3f;
-            button.style.backgroundColor = primary
-                ? new Color(0.88f, 0.47f, 0.09f, 1f)
-                : new Color(0.09f, 0.14f, 0.19f, 1f);
-            button.style.color = new Color(0.94f, 0.97f, 1f, 1f);
-            button.style.borderTopColor = new Color(0.24f, 0.55f, 0.78f, 1f);
-            button.style.borderBottomColor = new Color(0.24f, 0.55f, 0.78f, 1f);
-            button.style.borderLeftColor = new Color(0.24f, 0.55f, 0.78f, 1f);
-            button.style.borderRightColor = new Color(0.24f, 0.55f, 0.78f, 1f);
-            button.style.borderTopWidth = 1f;
-            button.style.borderBottomWidth = 1f;
-            button.style.borderLeftWidth = 1f;
-            button.style.borderRightWidth = 1f;
-            button.style.unityFontStyleAndWeight = FontStyle.Bold;
-        }
-
-        private static void StyleTextInput(TextInputBaseField<string> field)
-        {
-            if (field == null)
-                return;
-
-            field.style.marginTop = 5f;
-            field.style.marginBottom = 5f;
-            field.style.color = new Color(0.92f, 0.96f, 1f, 1f);
-            field.style.backgroundColor = new Color(0.035f, 0.055f, 0.08f, 1f);
-            StyleBaseField(field);
-        }
-
-        private static void StyleIntegerInput(IntegerField field)
-        {
-            if (field == null)
-                return;
-
-            field.style.marginTop = 5f;
-            field.style.marginBottom = 5f;
-            field.style.color = new Color(0.92f, 0.96f, 1f, 1f);
-            field.style.backgroundColor = new Color(0.035f, 0.055f, 0.08f, 1f);
-            StyleBaseField(field);
-        }
-
-        private static void StyleBaseField(BaseField<int> field)
-        {
-            if (field?.labelElement != null)
-                field.labelElement.style.color = new Color(0.9f, 0.94f, 0.98f, 1f);
-            StyleFieldChildren(field);
-        }
-
-        private static void StyleBaseField(TextInputBaseField<string> field)
-        {
-            if (field?.labelElement != null)
-                field.labelElement.style.color = new Color(0.9f, 0.94f, 0.98f, 1f);
-            StyleFieldChildren(field);
-        }
-
-        private static void StyleFieldChildren(VisualElement field)
-        {
-            if (field == null)
-                return;
-
-            foreach (var child in field.Query<VisualElement>().ToList())
-            {
-                if (!child.ClassListContains("unity-text-input") &&
-                    !child.ClassListContains("unity-base-text-field__input") &&
-                    !child.ClassListContains("unity-text-field__input"))
-                {
-                    continue;
-                }
-
-                child.style.backgroundColor = new Color(0.055f, 0.08f, 0.11f, 1f);
-                child.style.color = new Color(0.92f, 0.96f, 1f, 1f);
-                child.style.borderTopColor = new Color(0.24f, 0.55f, 0.78f, 1f);
-                child.style.borderBottomColor = new Color(0.24f, 0.55f, 0.78f, 1f);
-                child.style.borderLeftColor = new Color(0.24f, 0.55f, 0.78f, 1f);
-                child.style.borderRightColor = new Color(0.24f, 0.55f, 0.78f, 1f);
-                child.style.borderTopWidth = 1f;
-                child.style.borderBottomWidth = 1f;
-                child.style.borderLeftWidth = 1f;
-                child.style.borderRightWidth = 1f;
-            }
-        }
+/* Removed runtime style helpers; LobbyShell USS owns styling. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
     }
 }

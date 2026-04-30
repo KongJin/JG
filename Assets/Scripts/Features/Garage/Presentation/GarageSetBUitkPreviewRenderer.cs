@@ -9,6 +9,7 @@ namespace Features.Garage.Presentation
     public sealed class GarageSetBUitkPreviewRenderer : MonoBehaviour
     {
         [SerializeField] private Camera _previewCamera;
+        [SerializeField] private Light _previewKeyLight;
         [SerializeField] private RenderTexture _renderTexture;
         [SerializeField] private int _textureSize = 512;
         [SerializeField] private float _autoRotationSpeed = 20f;
@@ -169,7 +170,7 @@ namespace Features.Garage.Presentation
 
             _previewCamera.backgroundColor = ThemeColors.PreviewBackground;
             _previewCamera.clearFlags = CameraClearFlags.SolidColor;
-            GaragePreviewAssembler.EnsurePreviewLighting(_previewCamera);
+            _previewKeyLight = GaragePreviewAssembler.EnsurePreviewLighting(_previewCamera, _previewKeyLight);
         }
 
         private void EnsureRenderTexture()

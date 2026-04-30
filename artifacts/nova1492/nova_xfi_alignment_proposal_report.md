@@ -1,6 +1,6 @@
 ﻿# Nova1492 XFI Alignment Proposal
 
-> generated: 2026-04-29 09:24:45
+> generated: 2026-04-30 23:26:35
 
 - input alignment: `artifacts/nova1492/nova_part_alignment.csv`
 - input xfi manifest: `artifacts/nova1492/nova_unitpart_xfi_manifest.csv`
