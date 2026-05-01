@@ -4,12 +4,12 @@
 > 상태: active
 > doc_id: plans.audio-sfx-mcp-pipeline
 > role: plan
-> owner_scope: sandraschi/suno-mcp 기반 SFX 생성, Unity audio asset import, SoundCatalog 등록 파이프라인 실행 순서
+> owner_scope: sandraschi/suno-mcp 기반 SFX 생성, Unity audio asset import, SoundCatalog 등록, manual audition/replacement decision 실행 순서
 > upstream: docs.index, ops.codex-coding-guardrails, ops.unity-ui-authoring-workflow, ops.acceptance-reporting-guardrails
 > artifacts: `artifacts/audio/sfx/`
 
 이 문서는 JG UITK/Unity 효과음 제작 파이프라인의 active owner다.
-오디오 product smoke acceptance는 [`webgl_audio_closeout_plan.md`](./webgl_audio_closeout_plan.md)가 계속 소유하고, 이 문서는 효과음 생성/연결 자동화만 소유한다.
+오디오 product smoke acceptance는 [`webgl_audio_closeout_plan.md`](./webgl_audio_closeout_plan.md)가 계속 소유하고, 이 문서는 효과음 생성/import/catalog-sync와 UITK event wiring 전 manual audition decision만 소유한다.
 
 ## Current Judgment
 
@@ -18,7 +18,8 @@
 - v1 기본 provider는 direct Suno MCP다. `tools/audio-mcp`는 Suno 생성 wrapper가 아니라 JG manifest, downloaded asset import, Unity `SoundCatalog` sync helper로만 둔다.
 - Unity `SoundCatalog` 등록은 다운로드된 audio asset의 Unity `.meta` GUID가 생긴 뒤에 수행한다.
 - Suno credential, browser session, cookies는 repo에 남기지 않는다.
-- 12개 UITK SFX batch keys는 direct Suno Sounds UI/CDP route로 생성, 다운로드, trim, Unity import, `SoundCatalog` sync까지 기계 검증을 통과했다. 실제 음질/길이/볼륨 수용은 Unity에서 수동 audition 후에만 닫는다.
+- 12개 UITK SFX batch keys는 direct Suno Sounds UI/CDP route로 생성, 다운로드, trim, Unity import, `SoundCatalog` sync까지 기계 검증을 통과했다.
+- 남은 active gate는 Unity manual audition으로 실제 음질/길이/볼륨을 확인하고, replacement 또는 volume tweak 여부를 결정하는 것이다.
 
 ## Acceptance
 
@@ -28,6 +29,7 @@
 | SFX batch manifest | 12개 UITK soundKey batch와 prompt list를 dry-run으로 생성 가능 | success - manifest created at `artifacts/audio/sfx/sfx-batch-manifest.json` |
 | Downloaded asset import | `artifacts/audio/inbox`의 soundKey 파일을 Unity audio root로 복사 가능 | success - all 12 batch keys imported to `Assets/Audio/UI` |
 | Unity catalog sync | `.meta` GUID가 있는 다운로드 파일을 `SoundCatalog.asset`에 중복 key 없이 등록/갱신 가능 | success - all 12 batch keys synced; duplicate keys none |
+| Manual audition decision | Unity에서 12개 SFX를 재생 확인하고 reject/replacement/volume tweak 결정을 기록 | success / blocked / mismatch |
 
 ## Execution Rule
 
@@ -67,7 +69,7 @@
 
 - UITK event wiring은 이 plan의 v1 scope 밖이다.
 - WebGL 브라우저 오디오 재생/설정 저장 acceptance는 WebGL audio owner에서 닫는다.
-- 12개 SFX manual audition은 아직 product acceptance가 아니다.
+- 12개 SFX manual audition decision은 이 plan의 남은 active gate다.
 - Manual audition 후 reject된 clips는 `_alt` 후보 또는 재생성 후보로 교체한다.
 
 owner impact:
@@ -78,5 +80,5 @@ owner impact:
 
 doc lifecycle checked:
 
-- active 유지. SFX generation/download/catalog sync가 success/blocked/mismatch로 닫히고 residual이 다른 owner로 이관되면 reference 압축 또는 삭제 후보로 재검토한다.
-- plan rereview: clean - SFX generation/download/catalog sync scope checked
+- active 유지. SFX generation/download/catalog sync는 mechanical success로 닫혔고, manual audition decision이 success/blocked/mismatch로 닫히면 reference 압축 또는 삭제 후보로 재검토한다.
+- plan rereview: clean - SFX generation/download/catalog sync와 manual audition decision scope checked

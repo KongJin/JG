@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { execFile } from "node:child_process";
@@ -221,6 +222,7 @@ export async function lintRepository(repoRoot, options = {}) {
     errors.push(...validateActivePlanArtifactOwnerCollisions(documents));
     errors.push(...validateProgressEvidenceOverload(documents));
     errors.push(...(await validateDocsMetaArtifacts(repoRoot)));
+    errors.push(...(await validateGlobalRuleSkillMarkdownLinks(options)));
   }
 
   if (includePolicyChecks) {
@@ -375,6 +377,29 @@ async function walkFiles(rootDir, repoRoot, predicate) {
   return collected;
 }
 
+async function walkExternalMarkdownFiles(rootDir) {
+  if (!(await pathExists(rootDir))) {
+    return [];
+  }
+
+  const collected = [];
+  const entries = await fs.readdir(rootDir, { withFileTypes: true });
+  for (const entry of entries) {
+    const absolutePath = path.join(rootDir, entry.name);
+
+    if (entry.isDirectory()) {
+      collected.push(...(await walkExternalMarkdownFiles(absolutePath)));
+      continue;
+    }
+
+    if (entry.isFile() && entry.name.endsWith(".md")) {
+      collected.push(absolutePath);
+    }
+  }
+
+  return collected.sort((left, right) => left.localeCompare(right));
+}
+
 function parseMetadata(content) {
   const metadata = new Map();
   const lines = content.split(/\r?\n/).slice(0, 40);
@@ -461,6 +486,49 @@ async function validateLinks(document) {
             index + 1,
           ),
         );
+      }
+    }
+  }
+
+  return errors;
+}
+
+async function validateGlobalRuleSkillMarkdownLinks(options = {}) {
+  const globalRuleSkillsRoot =
+    options.globalRuleSkillsRoot ?? getDefaultGlobalRuleSkillsRoot();
+  if (!(await pathExists(globalRuleSkillsRoot))) {
+    return [];
+  }
+
+  const errors = [];
+  const entries = await fs.readdir(globalRuleSkillsRoot, { withFileTypes: true });
+  const ruleSkillDirs = entries
+    .filter((entry) => entry.isDirectory() && entry.name.startsWith("rule-"))
+    .map((entry) => path.join(globalRuleSkillsRoot, entry.name));
+
+  for (const skillDir of ruleSkillDirs) {
+    const markdownFiles = await walkExternalMarkdownFiles(skillDir);
+    for (const markdownFile of markdownFiles) {
+      const content = await fs.readFile(markdownFile, "utf8");
+      const lines = stripFencedCodeBlocks(content).split(/\r?\n/);
+
+      for (let index = 0; index < lines.length; index += 1) {
+        const line = lines[index];
+        for (const target of extractRelativeMarkdownTargets(line)) {
+          const resolvedPath = path.resolve(path.dirname(markdownFile), target);
+          if (await pathExists(resolvedPath)) {
+            continue;
+          }
+
+          errors.push(
+            createError(
+              "global-rule-broken-relative-link",
+              toGlobalRuleSkillReportPath(globalRuleSkillsRoot, markdownFile),
+              `Global rule skill relative link target \`${target}\` does not exist. Repo lint cannot track external file diffs, but it can guard link integrity here.`,
+              index + 1,
+            ),
+          );
+        }
       }
     }
   }
@@ -2061,6 +2129,20 @@ async function pathExists(absolutePath) {
 
 function toRepoRelative(repoRoot, absolutePath) {
   return toPosixPath(path.relative(repoRoot, absolutePath));
+}
+
+function getDefaultGlobalRuleSkillsRoot() {
+  const codexHome = process.env.CODEX_HOME || path.join(os.homedir(), ".codex");
+  return path.join(codexHome, "skills");
+}
+
+function toGlobalRuleSkillReportPath(globalRuleSkillsRoot, absolutePath) {
+  const relativePath = toPosixPath(path.relative(globalRuleSkillsRoot, absolutePath));
+  if (relativePath && !relativePath.startsWith("..")) {
+    return `global-rule-skills/${relativePath}`;
+  }
+
+  return toPosixPath(absolutePath);
 }
 
 function toPosixPath(targetPath) {

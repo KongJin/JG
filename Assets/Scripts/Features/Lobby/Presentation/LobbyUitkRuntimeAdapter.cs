@@ -1,12 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Features.Account.Application;
-using Features.Account.Domain;
 using Features.Garage.Presentation;
-using Features.Lobby.Application.Events;
-using Features.Lobby.Application.Ports;
 using Features.Lobby.Domain;
-using Features.Player.Domain;
 using Shared.Kernel;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -109,7 +104,7 @@ namespace Features.Lobby.Presentation
             if (_root.Q<VisualElement>("LobbyShellScreen") == null)
             {
                 Debug.LogError(
-                    "[LobbyView] LobbyShellScreen is missing. Assign LobbyShell UXML; runtime generated UI is not available.",
+                    "[LobbyPageController] LobbyShellScreen is missing. Assign LobbyShell UXML; runtime generated UI is not available.",
                     _logContext);
                 _root = null;
                 return false;
@@ -119,92 +114,59 @@ namespace Features.Lobby.Presentation
             return true;
         }
 
-        public void RenderRooms(IReadOnlyList<RoomSnapshot> rooms)
+        public void RenderRooms(LobbyRoomListViewModel viewModel)
         {
             if (!Bind())
                 return;
 
+            viewModel ??= LobbyRoomListViewModel.Empty;
             _roomList?.Clear();
-            var count = rooms?.Count ?? 0;
             if (_roomCountLabel != null)
-                _roomCountLabel.text = count == 1 ? "1 open room" : $"{count} open rooms";
+                _roomCountLabel.text = viewModel.CountText;
 
-            if (rooms == null || rooms.Count == 0)
+            if (viewModel.Rows == null || viewModel.Rows.Count == 0)
             {
-                _roomList?.Add(LobbyUitkElements.Label("열린 방이 없습니다.", "uitk-body"));
+                _roomList?.Add(LobbyUitkElements.Label(viewModel.EmptyText, "uitk-body"));
                 return;
             }
 
-            for (var i = 0; i < rooms.Count; i++)
+            for (var i = 0; i < viewModel.Rows.Count; i++)
             {
-                var room = rooms[i];
-                var row = new Button(() => RoomSelected?.Invoke(room.Id))
-                {
-                    text = $"{room.Name}  {room.Members.Count}/{room.Capacity}  {DifficultyPresetFormatter.ToShortLabel(room.DifficultyPresetId)}"
-                };
-                row.AddToClassList("uitk-list-row");
-                row.SetEnabled(room.Members.Count < room.Capacity);
-                _roomList.Add(row);
-            }
-        }
-
-        public void RenderRooms(IReadOnlyList<RoomListItem> rooms)
-        {
-            if (!Bind())
-                return;
-
-            _roomList?.Clear();
-            var count = rooms?.Count ?? 0;
-            if (_roomCountLabel != null)
-                _roomCountLabel.text = count == 1 ? "1 open room" : $"{count} open rooms";
-
-            if (rooms == null || rooms.Count == 0)
-            {
-                _roomList?.Add(LobbyUitkElements.Label("열린 방이 없습니다.", "uitk-body"));
-                return;
-            }
-
-            for (var i = 0; i < rooms.Count; i++)
-            {
-                var room = rooms[i];
+                var room = viewModel.Rows[i];
                 var row = new Button(() => RoomSelected?.Invoke(room.RoomId))
                 {
-                    text = $"{room.RoomName}  {room.PlayerCount}/{room.MaxPlayers}  {DifficultyPresetFormatter.ToShortLabel(room.DifficultyPresetId)}"
+                    text = room.Text
                 };
                 row.AddToClassList("uitk-list-row");
-                row.SetEnabled(room.PlayerCount < room.MaxPlayers);
+                row.SetEnabled(room.IsEnabled);
                 _roomList.Add(row);
             }
         }
 
-        public bool RenderRoomDetail(RoomSnapshot room, DomainEntityId localMemberId)
+        public void RenderRoomDetail(LobbyRoomDetailViewModel viewModel)
         {
             if (!Bind())
-                return false;
+                return;
+
+            viewModel ??= LobbyRoomDetailViewModel.Empty;
 
             if (_roomDetailTitle != null)
-                _roomDetailTitle.text = room.Name;
+                _roomDetailTitle.text = viewModel.TitleText;
             if (_roomDetailMeta != null)
-                _roomDetailMeta.text = $"{room.Members.Count}/{room.Capacity} | {DifficultyPresetFormatter.ToShortLabel(room.DifficultyPresetId)}";
+                _roomDetailMeta.text = viewModel.MetaText;
 
             _memberList?.Clear();
-            var localIsReady = false;
-            foreach (var member in room.Members)
+            for (var i = 0; i < viewModel.MemberRows.Count; i++)
             {
-                if (member.Id.Equals(localMemberId))
-                    localIsReady = member.IsReady;
-                var state = member.IsReady ? "READY" : "WAIT";
                 _memberList?.Add(LobbyUitkElements.Label(
-                    $"{member.DisplayName} | {member.Team} | {state}",
+                    viewModel.MemberRows[i],
                     "uitk-list-row-label"));
             }
 
             if (_readyButton != null)
-                _readyButton.text = localIsReady ? "Cancel" : "Ready";
+                _readyButton.text = viewModel.ReadyButtonText;
             if (_startButton != null)
-                _startButton.SetEnabled(room.OwnerId.Equals(localMemberId));
-
-            return localIsReady;
+                _startButton.SetEnabled(viewModel.CanStartGame);
         }
 
         public void ShowLobbyPage()
@@ -266,46 +228,32 @@ namespace Features.Lobby.Presentation
             SetShell("연결", "SESSION CHECK");
         }
 
-        public void RenderAccountState(
-            AccountProfile profile,
-            AccountData accountData,
-            int operationCount)
+        public void RenderAccountState(LobbyAccountViewModel viewModel)
         {
             if (!Bind())
                 return;
 
             EnsureAccountSurface();
+            viewModel ??= LobbyAccountViewModel.Empty;
 
-            var displayName = string.IsNullOrWhiteSpace(profile?.displayName)
-                ? "LOCAL PILOT"
-                : profile.displayName.Trim();
-            var authType = string.IsNullOrWhiteSpace(profile?.authType)
-                ? "LOCAL"
-                : profile.authType.Trim().ToUpperInvariant();
-            var uidText = string.IsNullOrWhiteSpace(profile?.uid)
-                ? "UID WAIT"
-                : $"UID {Shorten(profile.uid)}";
-            var garageCount = accountData?.GarageRoster?.Count ?? 0;
-            var settings = accountData?.Settings;
-
-            LobbyUitkElements.SetText(_accountPage, "PilotIdLabel", displayName);
-            LobbyUitkElements.SetText(_accountPage, "GoogleLinkStatusLabel", authType == "GOOGLE" ? "G-LINK OK" : "G-LINK WAIT");
-            LobbyUitkElements.SetText(_accountPage, "UidStatusLabel", uidText);
-            LobbyUitkElements.SetText(_accountPage, "GarageSyncStateLabel", garageCount > 0 ? $"{garageCount}/4" : "로컬");
-            LobbyUitkElements.SetText(_accountPage, "OperationSyncStateLabel", $"{operationCount}/5");
-            LobbyUitkElements.SetText(_accountPage, "CloudSyncStateLabel", authType == "GOOGLE" ? "준비" : "대기");
-            LobbyUitkElements.SetText(_accountPage, "BlockedReasonBodyLabel", authType == "GOOGLE" ? "동기화 가능" : "Google 연결 필요");
-            LobbyUitkElements.SetText(_accountPage, "GarageSummaryLabel", garageCount > 0 ? $"편성 {garageCount}기" : "편성 대기");
-            LobbyUitkElements.SetText(_accountPage, "OperationBufferLabel", $"{operationCount}/5");
-            LobbyUitkElements.SetText(_accountPage, "ConflictStateLabel", "정상");
-            LobbyUitkElements.SetText(_accountPage, "LoadingStateLabel", "READY");
-            LobbyUitkElements.SetText(_accountPage, "BgmValueLabel", $"{Mathf.RoundToInt((settings?.bgmVolume ?? 0.8f) * 100f)}%");
-            LobbyUitkElements.SetText(_accountPage, "SfxValueLabel", $"{Mathf.RoundToInt((settings?.sfxVolume ?? 1f) * 100f)}%");
-            LobbyUitkElements.SetText(_accountPage, "SaveModeLabel", "LOCAL FIRST");
-            LobbyUitkElements.SetText(_accountPage, "CloudModeLabel", authType == "GOOGLE" ? "READY" : "WAIT");
+            LobbyUitkElements.SetText(_accountPage, "PilotIdLabel", viewModel.PilotIdText);
+            LobbyUitkElements.SetText(_accountPage, "GoogleLinkStatusLabel", viewModel.GoogleLinkStatusText);
+            LobbyUitkElements.SetText(_accountPage, "UidStatusLabel", viewModel.UidStatusText);
+            LobbyUitkElements.SetText(_accountPage, "GarageSyncStateLabel", viewModel.GarageSyncStateText);
+            LobbyUitkElements.SetText(_accountPage, "OperationSyncStateLabel", viewModel.OperationSyncStateText);
+            LobbyUitkElements.SetText(_accountPage, "CloudSyncStateLabel", viewModel.CloudSyncStateText);
+            LobbyUitkElements.SetText(_accountPage, "BlockedReasonBodyLabel", viewModel.BlockedReasonBodyText);
+            LobbyUitkElements.SetText(_accountPage, "GarageSummaryLabel", viewModel.GarageSummaryText);
+            LobbyUitkElements.SetText(_accountPage, "OperationBufferLabel", viewModel.OperationBufferText);
+            LobbyUitkElements.SetText(_accountPage, "ConflictStateLabel", viewModel.ConflictStateText);
+            LobbyUitkElements.SetText(_accountPage, "LoadingStateLabel", viewModel.LoadingStateText);
+            LobbyUitkElements.SetText(_accountPage, "BgmValueLabel", viewModel.BgmValueText);
+            LobbyUitkElements.SetText(_accountPage, "SfxValueLabel", viewModel.SfxValueText);
+            LobbyUitkElements.SetText(_accountPage, "SaveModeLabel", viewModel.SaveModeText);
+            LobbyUitkElements.SetText(_accountPage, "CloudModeLabel", viewModel.CloudModeText);
         }
 
-        public void RenderOperationMemory(RecentOperationRecords records)
+        public void RenderOperationMemory(LobbyOperationMemoryViewModel viewModel)
         {
             if (!Bind())
                 return;
@@ -314,11 +262,10 @@ namespace Features.Lobby.Presentation
             if (_recordsPage == null)
                 return;
 
-            records ??= new RecentOperationRecords();
-            var list = records.Records;
-            RenderLatestOperation(_recordsPage.Q<VisualElement>("LatestOperationCard"), list.Count > 0 ? list[0] : null);
-            RenderRecentOperations(_recordsPage.Q<VisualElement>("RecentOperations"), list);
-            RenderUnitTrace(_recordsPage.Q<VisualElement>("UnitTrace"), list);
+            viewModel ??= LobbyOperationMemoryViewModel.Empty;
+            RenderLatestOperation(_recordsPage.Q<VisualElement>("LatestOperationCard"), viewModel.Latest);
+            RenderRecentOperations(_recordsPage.Q<VisualElement>("RecentOperations"), viewModel.RecentRows);
+            RenderUnitTrace(_recordsPage.Q<VisualElement>("UnitTrace"), viewModel.Trace);
         }
 
         private void BindAuthoredTree()
@@ -465,17 +412,18 @@ namespace Features.Lobby.Presentation
                 _shellState.text = state;
         }
 
-        private static void RenderLatestOperation(VisualElement card, OperationRecord record)
+        private static void RenderLatestOperation(VisualElement card, LobbyOperationLatestViewModel viewModel)
         {
             if (card == null)
                 return;
 
+            viewModel ??= LobbyOperationLatestViewModel.Empty;
             card.Clear();
-            if (record == null)
+            if (!viewModel.HasRecord)
             {
                 card.Add(LobbyUitkElements.Label("LATEST_OP", "memory-kicker"));
-                card.Add(LobbyUitkElements.Label("작전 기록 없음", "memory-result"));
-                card.Add(LobbyUitkElements.Label("전투 종료 후 최근 작전 데이터가 여기에 표시됩니다.", "memory-sitrep-text"));
+                card.Add(LobbyUitkElements.Label(viewModel.ResultText, viewModel.ResultClass));
+                card.Add(LobbyUitkElements.Label(viewModel.PressureText, "memory-sitrep-text"));
                 return;
             }
 
@@ -483,38 +431,36 @@ namespace Features.Lobby.Presentation
             header.AddToClassList("memory-card-header");
             var titleStack = new VisualElement();
             titleStack.Add(LobbyUitkElements.Label("LATEST_OP", "memory-kicker"));
-            titleStack.Add(LobbyUitkElements.Label(
-                ResultText(record),
-                record.result == OperationRecordResult.Held
-                    ? "memory-result memory-result--held"
-                    : "memory-result operation-title--danger"));
+            titleStack.Add(LobbyUitkElements.Label(viewModel.ResultText, viewModel.ResultClass));
             header.Add(titleStack);
-            header.Add(LobbyUitkElements.Label(FormatClock(record.endedAtUnixMs), "memory-time"));
+            header.Add(LobbyUitkElements.Label(viewModel.TimeText, "memory-time"));
             card.Add(header);
 
             var stats = new VisualElement();
             stats.AddToClassList("memory-stat-grid");
-            AddStat(stats, "생존", FormatDuration(record.survivalSeconds), "memory-stat-value memory-stat-value--blue");
-            AddStat(stats, "공세", record.reachedWave.ToString(), "memory-stat-value");
-            AddStat(stats, "코어", FormatCore(record), "memory-stat-value memory-stat-value--orange");
-            AddStat(stats, "제거", record.unitKillCount.ToString(), "memory-stat-value");
+            AddStat(stats, "생존", viewModel.SurvivalText, "memory-stat-value memory-stat-value--blue");
+            AddStat(stats, "공세", viewModel.WaveText, "memory-stat-value");
+            AddStat(stats, "코어", viewModel.CoreText, viewModel.CoreClass);
+            AddStat(stats, "제거", viewModel.KillText, "memory-stat-value");
             card.Add(stats);
 
             var sitrep = new VisualElement();
             sitrep.AddToClassList("memory-sitrep");
             sitrep.Add(LobbyUitkElements.Label("SITREP", "memory-sitrep-label"));
-            sitrep.Add(LobbyUitkElements.Label(PressureText(record), "memory-sitrep-text"));
+            sitrep.Add(LobbyUitkElements.Label(viewModel.PressureText, "memory-sitrep-text"));
             card.Add(sitrep);
         }
 
-        private static void RenderRecentOperations(VisualElement section, IReadOnlyList<OperationRecord> records)
+        private static void RenderRecentOperations(
+            VisualElement section,
+            IReadOnlyList<LobbyOperationRowViewModel> rows)
         {
             if (section == null)
                 return;
 
             section.Clear();
             section.Add(LobbyUitkElements.Label("RECENT OPERATIONS", "memory-section-title"));
-            if (records == null || records.Count == 0)
+            if (rows == null || rows.Count == 0)
             {
                 var empty = new VisualElement();
                 LobbyUitkElements.AddClasses(empty, "operation-row operation-row--empty");
@@ -523,58 +469,40 @@ namespace Features.Lobby.Presentation
                 return;
             }
 
-            for (var i = 0; i < records.Count && i < RecentOperationRecords.MaxRecords; i++)
+            for (var i = 0; i < rows.Count; i++)
             {
-                var record = records[i];
+                var viewModel = rows[i];
                 var row = new VisualElement();
-                LobbyUitkElements.AddClasses(
-                    row,
-                    record.result == OperationRecordResult.Held
-                        ? "operation-row operation-row--held"
-                        : "operation-row operation-row--danger");
+                LobbyUitkElements.AddClasses(row, viewModel.RowClass);
 
                 var line = new VisualElement();
-                LobbyUitkElements.AddClasses(
-                    line,
-                    record.result == OperationRecordResult.Held
-                        ? "operation-row-line"
-                        : "operation-row-line operation-row-line--danger");
+                LobbyUitkElements.AddClasses(line, viewModel.LineClass);
                 row.Add(line);
 
                 var main = new VisualElement();
                 main.AddToClassList("operation-row-main");
-                main.Add(LobbyUitkElements.Label(
-                    ResultText(record),
-                    record.result == OperationRecordResult.Held
-                        ? "operation-title operation-title--held"
-                        : "operation-title operation-title--danger"));
-                main.Add(LobbyUitkElements.Label(
-                    $"{FormatClock(record.endedAtUnixMs)} / 공세 {record.reachedWave:00} / {BuildRosterSummary(record)}",
-                    "operation-meta"));
+                main.Add(LobbyUitkElements.Label(viewModel.TitleText, viewModel.TitleClass));
+                main.Add(LobbyUitkElements.Label(viewModel.MetaText, "operation-meta"));
                 row.Add(main);
 
-                row.Add(LobbyUitkElements.Label(
-                    $"CORE {FormatCore(record)}",
-                    record.result == OperationRecordResult.Held
-                        ? "operation-core"
-                        : "operation-core operation-core--danger"));
+                row.Add(LobbyUitkElements.Label(viewModel.CoreText, viewModel.CoreClass));
                 section.Add(row);
             }
         }
 
-        private static void RenderUnitTrace(VisualElement section, IReadOnlyList<OperationRecord> records)
+        private static void RenderUnitTrace(VisualElement section, LobbyOperationTraceViewModel viewModel)
         {
             if (section == null)
                 return;
 
+            viewModel ??= LobbyOperationMemoryViewModel.Empty.Trace;
             section.Clear();
             section.Add(LobbyUitkElements.Label("기체 전적", "memory-section-title"));
             var chips = new VisualElement();
             chips.AddToClassList("memory-chip-row");
-            var count = records?.Count ?? 0;
-            chips.Add(LobbyUitkElements.Label($"{count}/5 RECORDS STORED", "memory-chip"));
+            chips.Add(LobbyUitkElements.Label(viewModel.CountChipText, "memory-chip"));
             chips.Add(LobbyUitkElements.Label("LOCAL FIRST", "memory-chip memory-chip--blue"));
-            chips.Add(LobbyUitkElements.Label(count > 0 ? "RECENT DATA LOADED" : "NO OPERATIONS", "memory-chip memory-chip--orange"));
+            chips.Add(LobbyUitkElements.Label(viewModel.RecentDataChipText, "memory-chip memory-chip--orange"));
             section.Add(chips);
         }
 
@@ -587,66 +515,6 @@ namespace Features.Lobby.Presentation
             parent.Add(cell);
         }
 
-        private static string Shorten(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return "WAIT";
-
-            value = value.Trim();
-            return value.Length <= 8 ? value : value.Substring(0, 8);
-        }
-
-        private static string ResultText(OperationRecord record)
-        {
-            return record?.result == OperationRecordResult.BaseCollapsed ? "거점 붕괴" : "버텨냄";
-        }
-
-        private static string FormatClock(long unixMs)
-        {
-            if (unixMs <= 0L)
-                return "--:--";
-
-            return DateTimeOffset.FromUnixTimeMilliseconds(unixMs).ToLocalTime().ToString("HH:mm");
-        }
-
-        private static string FormatDuration(float seconds)
-        {
-            var totalSeconds = Mathf.Max(0, Mathf.RoundToInt(seconds));
-            return $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
-        }
-
-        private static string FormatCore(OperationRecord record)
-        {
-            if (record == null || !record.hasCoreHealthPercent)
-                return "--";
-
-            return $"{Mathf.RoundToInt(record.coreHealthPercent * 100f)}%";
-        }
-
-        private static string PressureText(OperationRecord record)
-        {
-            if (record == null)
-                return "작전 기록 대기 중";
-
-            if (record.result == OperationRecordResult.BaseCollapsed)
-                return "코어 방어선이 붕괴되었습니다. 다음 편성에서 방어/회복 축을 보강하세요.";
-
-            return record.pressureSummaryKey == "pressure.core-collapsed"
-                ? "거점 압박이 치명 단계까지 상승했습니다."
-                : "방어선 유지. 최근 편성의 성과가 작전 기록에 반영되었습니다.";
-        }
-
-        private static string BuildRosterSummary(OperationRecord record)
-        {
-            if (record?.primaryRosterUnits == null || record.primaryRosterUnits.Count == 0)
-                return "NO ROSTER";
-
-            var units = new List<string>(record.primaryRosterUnits.Count);
-            for (var i = 0; i < record.primaryRosterUnits.Count; i++)
-                units.Add(record.primaryRosterUnits[i].Replace("|", " / "));
-
-            return string.Join(" + ", units);
-        }
     }
 
     internal readonly struct LobbyCreateRoomInput

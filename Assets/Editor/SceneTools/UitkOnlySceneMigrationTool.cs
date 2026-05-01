@@ -56,7 +56,7 @@ namespace ProjectSD.EditorTools.SceneTools
                 SharedPanelSettingsPath,
                 LobbyShellUxmlPath,
                 sortingOrder: 20);
-            var lobbyView = EnsureComponent<LobbyView>(lobbyDocument);
+            var lobbyView = EnsureComponent<LobbyPageController>(lobbyDocument);
             var lobbyUidocument = lobbyDocument.GetComponent<UIDocument>();
             AssignObjectReference(lobbyView, "_document", lobbyUidocument);
             AssignObjectReference(lobbyView, "_lobbyShellTree", AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(LobbyShellUxmlPath));

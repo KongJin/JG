@@ -1,6 +1,6 @@
 ---
 name: jg-unity-workflow
-description: "JG Unity workflow. Triggers: scenes, prefabs, UITK, UI policy, Stitch handoff, MCP, compile, Play Mode, meta GUID, runtime smoke."
+description: "JG Unity owner workflow. Triggers: JG scene/prefab authoring, UITK/UI policy, Stitch handoff, MCP evidence, Unity compile/smoke routing."
 ---
 
 # JG Unity Workflow

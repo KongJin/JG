@@ -6,7 +6,10 @@
 > role: reference
 > owner_scope: Firebase Hosting 배포 절차와 운영 메모
 > upstream: docs.index
-> artifacts: `firebase.json`, `.firebaserc`, `tools/build-and-deploy-webgl.ps1`
+> artifacts: none
+
+이 문서는 Firebase Hosting 배포 절차 reference다.
+`firebase.json`, `.firebaserc`, `tools/build-and-deploy-webgl.ps1`는 실행 대상 경로이지 이 문서가 소유하는 closeout/evidence artifact가 아니다.
 
 ## 프로젝트 정보
 

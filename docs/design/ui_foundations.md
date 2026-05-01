@@ -43,7 +43,7 @@
 ### Scene Ownership
 
 - Stitch import 중에는 legacy scene이 아니라 UI Toolkit candidate surface와 capture evidence가 Layout SSOT 역할을 먼저 맡는다.
-- `LobbyView`와 `GarageSetBUitkPageController`는 layout author가 아니다.
+- `LobbyPageController`와 `GarageSetBUitkPageController`는 layout author가 아니다.
 - geometry는 MCP prefab/scene authoring으로 수정하고, runtime code는 상태 렌더와 page focus만 담당한다.
 - decorative hierarchy naming은 contract 대상이 아니지만, section root와 serialized refs는 contract에 남긴다.
 - `GarageSetBUitkPageController`는 smoke host가 아니다.
@@ -312,14 +312,23 @@ Figma에서 Unity로 옮길 때 아래 규칙을 따른다.
 
 ## Current Runtime Targets
 
-현재 Garage runtime surface는 UI Toolkit 라인 하나를 기준으로 잡는다.
+현재 Garage/Lobby runtime UI는 UI Toolkit 라인 하나를 기준으로 잡는다.
 삭제된 legacy MonoBehaviour View 라인은 새 mapping target으로 부활시키지 않는다.
+
+### Presentation Naming
+
+- `*PageController`: scene-facing MonoBehaviour controller. EventBus 구독, UseCase command routing, page state orchestration만 맡는다.
+- `*UitkRuntimeAdapter`: UIDocument/host binding, named UI Toolkit element query, render, UI event bridge, texture/embedded page bridge를 맡는다. 별도 top-level `*Surface`를 만들지 않는다.
+- `*UitkElements`: feature-local UI Toolkit helper. `SetText`, `SetPage`, class toggle처럼 작은 element 조작만 둔다.
+- `*Surface`: 반복 child component wrapper에만 쓴다. 예: slot list, part list처럼 adapter 내부에서 관리되는 하위 표면.
+- `*Presenter` / `*PageState` / `*PageViewModels`: domain/application state를 UI view model로 바꾸는 순수 presentation 변환이다. RuntimeAdapter가 domain object 포맷을 많이 알기 시작하면 이 층을 추가한다.
 
 - `GarageSetBUitkPageController`: state orchestration, save/selection command routing
 - `GarageSetBUitkRuntimeAdapter`: UIDocument/host binding, named UI Toolkit element rendering, UI events, and preview texture bridge
 - `GaragePagePresenter` / `GaragePageState`: presentation view model and draft state
-- `LobbyView`: lobby event subscription and UseCase command routing; serialized component name is retained for scene reference safety
-- `LobbyUitkRuntimeAdapter`: Lobby UIDocument/UXML binding, embedded page rendering, navigation events, and Garage host bridge
+- `LobbyPageController`: lobby event subscription, UseCase command routing, and Presenter-driven page rendering orchestration
+- `LobbyPagePresenter` / `LobbyPageViewModels`: room/account/operation domain and application state formatting for Lobby UI
+- `LobbyUitkRuntimeAdapter`: Lobby UIDocument/UXML binding, view model rendering, navigation events, and Garage host bridge
 - `LobbyUitkElements`: small UI Toolkit element helpers shared inside the Lobby presentation adapter
 
 ## Design Tool Note

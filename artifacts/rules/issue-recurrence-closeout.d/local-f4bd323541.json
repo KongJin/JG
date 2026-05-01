@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-01",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "documentation and skill-routing metadata cleanup",
+  "observedMutationClass": "skill description narrowing, global rule fallback wording, trigger matrix boundary clarification, reference artifact ownership correction, triage category label normalization, and recurrence closeout shard update",
+  "acceptanceEvidenceClass": "description word-budget check, trigger matrix and registry comparison, rules:sync-closeout, and full rules lint; no gameplay or Unity runtime acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "Several routing descriptions used broad shared trigger tokens instead of the intended owner/lifecycle/fallback boundary, so jg-doc-lifecycle could over-trigger on ordinary plan authoring and jg-unity-workflow could overlap too broadly with generic rule-unity. A reference Firebase Hosting doc also listed runnable/config paths as owned artifacts, and a triage category label looked like a real docs path.",
+  "prevention": "Narrow repo-local skill descriptions to owner/lifecycle/routing signals, keep rule-unity as a generic fallback/reference, mirror the boundary in ops.skill-routing-registry and ops.skill-trigger-matrix, set the Firebase reference doc to artifacts: none with an explicit non-owner note, and replace the path-like triage label with a non-path category label. This change does not alter existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, or progress evidence overload.",
+  "verification": "Description word-budget check for edited skills; npm run --silent rules:sync-closeout with RULES_LINT_CHANGED_FILES scoped to this rules-only change; npm run --silent rules:lint; manual verification of external global skill path C:/Users/SOL/.codex/skills/rule-unity/SKILL.md",
+  "blockedReason": "",
+  "changedPaths": [
+    ".codex/skills/jg-doc-lifecycle/SKILL.md",
+    ".codex/skills/jg-unity-workflow/SKILL.md",
+    "artifacts/rules/issue-recurrence-closeout.d/local-f4bd323541.json",
+    "docs/ops/firebase_hosting.md",
+    "docs/ops/plan_authoring_review_workflow.md",
+    "docs/ops/skill_routing_registry.md",
+    "docs/ops/skill_trigger_matrix.md"
+  ]
+}

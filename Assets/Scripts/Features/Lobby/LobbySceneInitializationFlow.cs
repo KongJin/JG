@@ -17,7 +17,7 @@ internal sealed class LobbySceneInitializationFlow
 {
     public LobbySceneInitializationResult Initialize(
         EventBus eventBus,
-        LobbyView view,
+        LobbyPageController view,
         LobbyPhotonAdapter photonAdapter,
         SoundPlayer soundPlayer,
         UnitSetup unitSetup,

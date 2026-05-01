@@ -1,6 +1,6 @@
 ---
 name: jg-doc-lifecycle
-description: "JG 문서/skill owner lifecycle 라우터. Triggers: docs/plans, skill route/trigger, stale path/doc_id/owner, progress slim, 문서 삭제/압축/병합/분리."
+description: "JG 문서/skill owner lifecycle 라우터. Triggers: owner 이동, stale path/doc_id, skill route/trigger, progress slim, docs/plans 삭제/압축/병합/정리."
 ---
 
 # JG Document Lifecycle

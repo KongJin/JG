@@ -1,5 +1,3 @@
-using Features.Lobby.Application.Events;
-using Features.Lobby.Domain;
 using Features.Lobby.Presentation;
 using NUnit.Framework;
 using Shared.Kernel;
@@ -41,14 +39,20 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void RenderRooms_MapsRoomSnapshotToRows()
+        public void RenderRooms_MapsViewModelToRows()
         {
             var fixture = CreateFixture();
             try
             {
-                var room = CreateRoom("room-1", "Alpha", capacity: 4, ownerId: "pilot-1");
-
-                fixture.Adapter.RenderRooms(new[] { new RoomSnapshot(room) });
+                fixture.Adapter.RenderRooms(new LobbyRoomListViewModel(
+                    "1 open room",
+                    new[]
+                    {
+                        new LobbyRoomRowViewModel(
+                            new DomainEntityId("room-1"),
+                            "Alpha  1/4  Normal",
+                            isEnabled: true)
+                    }));
 
                 var roomList = fixture.Document.rootVisualElement.Q<VisualElement>("RoomList");
                 Assert.AreEqual(1, roomList.childCount);
@@ -64,20 +68,20 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void RenderRoomDetail_ReturnsLocalReadyAndUpdatesActionState()
+        public void RenderRoomDetail_MapsViewModelToActionState()
         {
             var fixture = CreateFixture();
             try
             {
-                var room = CreateRoom("room-1", "Alpha", capacity: 4, ownerId: "pilot-1");
-                room.SetReady(new DomainEntityId("pilot-1"), true);
-
-                bool localReady = fixture.Adapter.RenderRoomDetail(
-                    new RoomSnapshot(room),
-                    new DomainEntityId("pilot-1"));
+                fixture.Adapter.RenderRoomDetail(new LobbyRoomDetailViewModel(
+                    "Alpha",
+                    "1/4 | Normal",
+                    new[] { "Pilot | Red | READY" },
+                    localIsReady: true,
+                    readyButtonText: "Cancel",
+                    canStartGame: true));
 
                 var root = fixture.Document.rootVisualElement;
-                Assert.IsTrue(localReady);
                 Assert.AreEqual("Cancel", root.Q<Button>("ReadyButton").text);
                 Assert.IsTrue(root.Q<Button>("StartButton").enabledSelf);
                 Assert.AreEqual(1, root.Q<VisualElement>("MemberList").childCount);
@@ -110,14 +114,6 @@ namespace Tests.Editor
             var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(path);
             Assert.NotNull(asset, $"UXML not found: {path}");
             return asset;
-        }
-
-        private static Room CreateRoom(string roomId, string roomName, int capacity, string ownerId)
-        {
-            var owner = new RoomMember(new DomainEntityId(ownerId), "Pilot", TeamType.Red, isReady: false);
-            var result = Room.Create(new DomainEntityId(roomId), roomName, capacity, owner);
-            Assert.IsFalse(result.IsFailure, result.Error);
-            return result.Value;
         }
 
         private readonly struct AdapterFixture

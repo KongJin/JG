@@ -164,6 +164,108 @@ test("reports broken relative markdown links", async () => {
   );
 });
 
+test("reports broken relative markdown links in external global rule skills", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-global-rule-links-"));
+  const globalRuleSkillsRoot = await fs.mkdtemp(path.join(os.tmpdir(), "global-rule-skills-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+`,
+    );
+    await writeFile(
+      globalRuleSkillsRoot,
+      "rule-demo/SKILL.md",
+      `# Demo
+
+[Broken](missing.md)
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+      globalRuleSkillsRoot,
+    });
+    assert.ok(
+      result.errors.some((error) => error.code === "global-rule-broken-relative-link"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+    await fs.rm(globalRuleSkillsRoot, { recursive: true, force: true });
+  }
+});
+
+test("accepts valid relative markdown links in external global rule skills", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-global-rule-links-valid-"));
+  const globalRuleSkillsRoot = await fs.mkdtemp(path.join(os.tmpdir(), "global-rule-skills-valid-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+`,
+    );
+    await writeFile(globalRuleSkillsRoot, "rule-demo/SKILL.md", "[Valid](reference.md)\n");
+    await writeFile(globalRuleSkillsRoot, "rule-demo/reference.md", "# Reference\n");
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+      globalRuleSkillsRoot,
+    });
+    assert.equal(result.errors.length, 0);
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+    await fs.rm(globalRuleSkillsRoot, { recursive: true, force: true });
+  }
+});
+
 test("reports docs/index status label mismatches", async () => {
   const result = await lintRepository(getFixturePath("index-status-mismatch"), {
     includeGeneralChecks: true,

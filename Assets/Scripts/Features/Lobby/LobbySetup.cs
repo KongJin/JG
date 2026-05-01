@@ -27,7 +27,7 @@ public sealed class LobbySetup : MonoBehaviour
     private const string BattleSceneName = "BattleScene";
 
     [Required, SerializeField]
-    private LobbyView _view;
+    private LobbyPageController _view;
 
     [Required, SerializeField]
     private LobbyPhotonAdapter _photonAdapter;

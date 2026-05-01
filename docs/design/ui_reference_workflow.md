@@ -91,7 +91,7 @@ Style:
 ## Unity 반영 규칙
 
 - Stitch에서 얻은 결과는 먼저 UI Toolkit candidate surface와 preview capture로 검토한다.
-- `LobbyView`, `GarageSetBUitkPageController`에 runtime layout 보정 코드를 추가해서 해결하지 않는다.
+- `LobbyPageController`, `GarageSetBUitkPageController`에 runtime layout 보정 코드를 추가해서 해결하지 않는다.
 - runtime scene/prefab 교체가 필요하면 candidate evidence 이후 별도 replacement pass로 분리한다.
 
 ## 현재 JG에 가장 잘 맞는 사용법

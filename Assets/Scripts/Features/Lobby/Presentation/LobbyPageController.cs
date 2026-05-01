@@ -14,7 +14,7 @@ using UnityEngine.UIElements;
 
 namespace Features.Lobby.Presentation
 {
-    public sealed class LobbyView : MonoBehaviour
+    public sealed class LobbyPageController : MonoBehaviour
     {
         [SerializeField]
         private UIDocument _document;
@@ -40,6 +40,7 @@ namespace Features.Lobby.Presentation
 
         private LobbyRoomInputHandler _inputHandler;
         private LobbyUitkRuntimeAdapter _uitk;
+        private readonly LobbyPagePresenter _presenter = new();
         private IEventSubscriber _eventBus;
         private DisposableScope _disposables = new();
         private DomainEntityId _currentRoomId;
@@ -73,19 +74,21 @@ namespace Features.Lobby.Presentation
 
         public void RenderLobby(LobbySnapshot lobby)
         {
-            _uitk?.RenderRooms(lobby.Rooms);
+            _uitk?.RenderRooms(_presenter.BuildRooms(lobby.Rooms));
         }
 
         public void RenderRoomList(RoomListReceivedEvent e)
         {
-            _uitk?.RenderRooms(e.Rooms);
+            _uitk?.RenderRooms(_presenter.BuildRooms(e.Rooms));
         }
 
         public void RenderRoom(RoomUpdatedEvent e)
         {
             _currentRoomId = e.Room.Id;
             _localMemberId = e.LocalMemberId;
-            _localIsReady = _uitk?.RenderRoomDetail(e.Room, _localMemberId) == true;
+            var viewModel = _presenter.BuildRoomDetail(e.Room, _localMemberId);
+            _localIsReady = viewModel.LocalIsReady;
+            _uitk?.RenderRoomDetail(viewModel);
             _uitk?.ShowLobbyPage();
         }
 
@@ -118,9 +121,10 @@ namespace Features.Lobby.Presentation
         {
             BindAdapterSurface();
             _uitk?.RenderAccountState(
-                profile,
-                accountData,
-                new OperationRecordJsonStore().Load().Count);
+                _presenter.BuildAccount(
+                    profile,
+                    accountData,
+                    new OperationRecordJsonStore().Load().Count));
         }
 
         private void OnDestroy()
@@ -161,7 +165,7 @@ namespace Features.Lobby.Presentation
             if (_uitk == null || !_uitk.Bind())
                 return;
 
-            _uitk.RenderOperationMemory(new OperationRecordJsonStore().Load());
+            _uitk.RenderOperationMemory(_presenter.BuildOperationMemory(new OperationRecordJsonStore().Load()));
         }
 
         private void BindAdapterEvents(LobbyUitkRuntimeAdapter adapter)
@@ -240,7 +244,7 @@ namespace Features.Lobby.Presentation
         private void ShowRecordsPage()
         {
             BindAdapterSurface();
-            _uitk?.RenderOperationMemory(new OperationRecordJsonStore().Load());
+            _uitk?.RenderOperationMemory(_presenter.BuildOperationMemory(new OperationRecordJsonStore().Load()));
             _uitk?.ShowRecordsPage();
         }
 
