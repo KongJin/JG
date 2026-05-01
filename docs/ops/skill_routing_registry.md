@@ -13,6 +13,7 @@ skill 본문이나 정책 판단은 여기서 재서술하지 않는다.
 Prompt-signal별 기대 trigger coverage는 `ops.skill-trigger-matrix`가 소유한다.
 
 Repo-local `jg-*` skill은 이 repo 안의 `.codex/skills/jg-*/SKILL.md`가 실제 entrypoint다.
+`.codex/skills/jg-*/agents/*.yaml`과 `evals/*.json`은 skill interface/eval 지원 메타데이터이며, route와 trigger 기대값은 이 registry와 `ops.skill-trigger-matrix`를 따른다.
 External/global `rule-*` skill은 사용자 Codex home에 설치된 skill이며 repo 밖에 있으므로, 이 문서는 repo에서 참조하는 이름과 용도만 고정한다.
 현재 owner 판단은 항상 `docs/index.md`와 해당 owner 문서를 우선한다.
 External/global skill body나 description을 직접 수정하면 repo git/lint가 그 파일 변경을 추적하지 못한다. 그런 변경은 closeout에서 absolute path와 검증 한계를 별도로 보고한다.

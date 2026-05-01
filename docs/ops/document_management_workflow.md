@@ -74,6 +74,8 @@
 - `docs/**`
 - `AGENTS.md`
 - `.codex/skills/jg-*/SKILL.md`
+- `.codex/skills/jg-*/agents/*.yaml`
+- `.codex/skills/jg-*/evals/*.json`
 - `.codex/skills/jg-*/references/*.md`
 - `tools/*/README.md`
 - 사람이 직접 읽는 repo-maintained prompt/reference 문서
@@ -104,7 +106,7 @@
 
 작은 문서 작업은 기본 lint와 짧은 변경 요약으로 충분하다.
 큰 문서 작업은 시작 시 변경 이유, primary/secondary owner, 제외 범위를 드러내고 closeout에 `owner impact`와 `doc lifecycle checked`를 남긴다.
-전역 skill trigger나 body를 바꾼 경우 repo lint가 직접 보장하지 않으므로, `ops.skill-routing-registry`의 repo-facing route 이름과 `ops.skill-trigger-matrix`의 prompt-signal fixture를 확인하고 실제 파일 변경 여부를 별도로 확인한 뒤 closeout에 `skill trigger checked`를 남긴다.
+전역 skill trigger나 body를 바꾼 경우 repo lint가 직접 보장하지 않으므로, `ops.skill-routing-registry`의 repo-facing route 이름과 `ops.skill-trigger-matrix`의 prompt-signal fixture, description budget을 확인하고 실제 파일 변경 여부를 별도로 확인한 뒤 closeout에 `skill trigger checked`를 남긴다.
 전역 skill 파일은 repo 밖 사용자 Codex home에 있으므로 repo closeout artifact의 `changedPaths`에 포함되지 않는다. 수정했다면 absolute path, 변경 이유, repo owner 우선순위 유지 여부, 검증 한계를 closeout에 별도 residual/evidence로 적는다.
 
 ## Owner 해석

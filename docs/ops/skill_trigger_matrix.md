@@ -36,4 +36,6 @@ skill 이름과 route 등록은 `ops.skill-routing-registry`가 소유한다.
 - Every repo-local `jg-*` skill should appear in at least one fixture row.
 - Every registered external/global `rule-*` skill from `ops.skill-routing-registry` should appear in at least one fixture row.
 - If a skill description changes, compare it against this matrix and leave `skill trigger checked` when the trigger surface changed.
+- Keep skill descriptions as concise trigger indexes, not policy bodies. Target roughly 25 words or less unless a longer description is explicitly justified.
+- When shortening a description, preserve at least one recognizable prompt signal for each expected route row that depends on that skill.
 - If a fixture starts implying a different owner body, update the owner document or split the route instead of stretching the skill description.

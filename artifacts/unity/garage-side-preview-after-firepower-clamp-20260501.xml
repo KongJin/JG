@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="2" result="Passed" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-01 09:23:39Z" end-time="2026-05-01 09:23:39Z" duration="0.0735911">
+  <test-suite type="TestSuite" id="1155" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="117" result="Passed" start-time="2026-05-01 09:23:39Z" end-time="2026-05-01 09:23:39Z" duration="0.073591" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1143" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="117" result="Passed" start-time="2026-05-01 09:23:39Z" end-time="2026-05-01 09:23:39Z" duration="0.072688" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="3968" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1146" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="111" result="Passed" start-time="2026-05-01 09:23:39Z" end-time="2026-05-01 09:23:39Z" duration="0.072017" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1147" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="111" result="Passed" start-time="2026-05-01 09:23:39Z" end-time="2026-05-01 09:23:39Z" duration="0.071255" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1058" name="GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-05-01 09:23:39Z" end-time="2026-05-01 09:23:39Z" duration="0.070950" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1060" name="Render_FallsBackToSelectedSinglePartWhenSelectedSlotIsIncomplete" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests.Render_FallsBackToSelectedSinglePartWhenSelectedSlotIsIncomplete" methodname="Render_FallsBackToSelectedSinglePartWhenSelectedSlotIsIncomplete" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" runstate="Runnable" seed="1249380149" result="Passed" start-time="2026-05-01 09:23:39Z" end-time="2026-05-01 09:23:39Z" duration="0.054692" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1059" name="Render_UsesCompleteSelectedSlotAssemblyInSidePreviewBeforeSinglePartFallback" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests.Render_UsesCompleteSelectedSlotAssemblyInSidePreviewBeforeSinglePartFallback" methodname="Render_UsesCompleteSelectedSlotAssemblyInSidePreviewBeforeSinglePartFallback" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" runstate="Runnable" seed="734305899" result="Passed" start-time="2026-05-01 09:23:39Z" end-time="2026-05-01 09:23:39Z" duration="0.015043" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-side-preview-after-firepower-clamp-20260501.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

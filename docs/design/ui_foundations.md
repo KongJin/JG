@@ -316,9 +316,11 @@ Figma에서 Unity로 옮길 때 아래 규칙을 따른다.
 삭제된 legacy MonoBehaviour View 라인은 새 mapping target으로 부활시키지 않는다.
 
 - `GarageSetBUitkPageController`: state orchestration, save/selection command routing
-- `GarageSetBUitkRuntimeAdapter`: UIDocument/host binding and preview texture bridge
-- `GarageSetBUitkSurface`: named UI Toolkit element rendering and UI events
+- `GarageSetBUitkRuntimeAdapter`: UIDocument/host binding, named UI Toolkit element rendering, UI events, and preview texture bridge
 - `GaragePagePresenter` / `GaragePageState`: presentation view model and draft state
+- `LobbyView`: lobby event subscription and UseCase command routing; serialized component name is retained for scene reference safety
+- `LobbyUitkRuntimeAdapter`: Lobby UIDocument/UXML binding, embedded page rendering, navigation events, and Garage host bridge
+- `LobbyUitkElements`: small UI Toolkit element helpers shared inside the Lobby presentation adapter
 
 ## Design Tool Note
 

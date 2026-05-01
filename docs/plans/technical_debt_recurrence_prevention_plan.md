@@ -45,7 +45,7 @@
 
 Scope:
 
-- `LobbyView.cs`, `GarageSetBUitkSurface.cs`처럼 Unity/IDE가 source file을 memory-mapped 상태로 잡아 일반 patch가 실패한 경우.
+- Unity/IDE가 source file을 memory-mapped 상태로 잡아 일반 patch가 실패한 경우.
 - 같은 바이트 길이 우회로 제거한 코드가 block comment padding으로 남은 경우.
 
 Prevention:
@@ -107,7 +107,6 @@ Review check:
 - GameScene direct EditMode execution은 GameScene actual-flow active owner가 소유하고, Phase 5 2-client smoke는 `plans.progress` multiplayer residual이 소유한다.
 - Account/Garage/WebGL product acceptance는 `plans.progress` WebGL account residual과 WebGL smoke checklist 기준으로 추적한다.
 - `SoundPlayer` AudioSource/template residual은 runtime contract guard 기준으로 보되, 실행이 필요하면 새 runtime owner pass 또는 해당 feature owner로 연다.
-- `LobbyView.cs`와 `GarageSetBUitkSurface.cs`의 padding 주석은 source lock cleanup residual이다. 에디터가 파일을 놓은 뒤 behavior 변경 없이 제거한다.
 - `WaveSetup.TryGetFirstEnemyData`와 `SummonPhotonAdapter`의 `fallbackInstanceId`는 production fallback residual이다. behavior removal은 별도 runtime contract cleanup으로 연다.
 - `fallback|Fallback` 검색 결과는 review gate다. guardrail allowlist에 없는 production fallback은 다음 cleanup 후보로 승격한다.
 

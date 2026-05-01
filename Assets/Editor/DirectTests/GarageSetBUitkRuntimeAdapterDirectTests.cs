@@ -8,45 +8,51 @@ using System.Linq;
 
 namespace Tests.Editor
 {
-    public sealed class GarageSetBUitkSurfaceDirectTests
+    public sealed class GarageSetBUitkRuntimeAdapterDirectTests
     {
         private const string UxmlPath = "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml";
 
         [Test]
         public void Render_MapsPresenterViewModelsToNamedElements()
         {
-            var root = LoadRoot();
-            var surface = new GarageSetBUitkSurface(root);
+            var fixture = CreateRuntimeAdapterFixture();
+            try
+            {
+                fixture.Adapter.Render(
+                    CreateSlots(),
+                    CreatePartList(),
+                    CreateEditor(),
+                    new GarageResultViewModel(
+                        "기체 편성 갱신 대기",
+                        "저장 시 선택 슬롯과 전체 편성이 동시에 갱신됩니다.",
+                        "ATK 840  |  RNG 12.5m",
+                        isReady: false,
+                        isDirty: true,
+                        canSave: true,
+                        primaryActionLabel: "출격 편성 저장"),
+                    GarageEditorFocus.Firepower,
+                    isSaving: false);
 
-            surface.Render(
-                CreateSlots(),
-                CreatePartList(),
-                CreateEditor(),
-                new GarageResultViewModel(
-                    "기체 편성 갱신 대기",
-                    "저장 시 선택 슬롯과 전체 편성이 동시에 갱신됩니다.",
-                    "ATK 840  |  RNG 12.5m",
-                    isReady: false,
-                    isDirty: true,
-                    canSave: true,
-                    primaryActionLabel: "출격 편성 저장"),
-                GarageEditorFocus.Firepower,
-                isSaving: false);
-
-            Assert.AreEqual("기체 편성 갱신 대기", Label(root, "CommandStatusLabel").text);
-            Assert.AreEqual("A-01", Label(root, "SlotCode01Label").text);
-            Assert.AreEqual("전선 고정", Label(root, "SlotName01Label").text);
-            Assert.IsTrue(Button(root, "SlotCard01").ClassListContains("slot-card--active"));
-            Assert.IsTrue(root.Q<VisualElement>("SlotIcon01Glyph").ClassListContains("uitk-icon--security"));
-            Assert.AreEqual("주무장", Label(root, "FocusedPartBadgeLabel").text);
-            Assert.AreEqual("레일건", Label(root, "FocusedPartTitleLabel").text);
-            Assert.IsTrue(root.Q<VisualElement>("FocusedPartIconGlyph").ClassListContains("uitk-icon--swords"));
-            Assert.IsTrue(Button(root, "FirepowerTabButton").ClassListContains("focus-tab--active"));
-            Assert.AreEqual("무장 선택", Label(root, "PartListTitleLabel").text);
-            Assert.AreEqual("2 PARTS", Label(root, "PartListCountLabel").text);
-            Assert.IsTrue(Button(root, "PartRow01").ClassListContains("part-row--selected"));
-            Assert.AreEqual("출격 편성 저장", Button(root, "SaveButton").text);
-            Assert.IsTrue(Button(root, "SaveButton").enabledSelf);
+                var root = fixture.Host;
+                Assert.AreEqual("기체 편성 갱신 대기", Label(root, "CommandStatusLabel").text);
+                Assert.AreEqual("A-01", Label(root, "SlotCode01Label").text);
+                Assert.AreEqual("전선 고정", Label(root, "SlotName01Label").text);
+                Assert.IsTrue(Button(root, "SlotCard01").ClassListContains("slot-card--active"));
+                Assert.IsTrue(root.Q<VisualElement>("SlotIcon01Glyph").ClassListContains("uitk-icon--security"));
+                Assert.AreEqual("주무장", Label(root, "FocusedPartBadgeLabel").text);
+                Assert.AreEqual("레일건", Label(root, "FocusedPartTitleLabel").text);
+                Assert.IsTrue(root.Q<VisualElement>("FocusedPartIconGlyph").ClassListContains("uitk-icon--swords"));
+                Assert.IsTrue(Button(root, "FirepowerTabButton").ClassListContains("focus-tab--active"));
+                Assert.AreEqual("무장 선택", Label(root, "PartListTitleLabel").text);
+                Assert.AreEqual("2 PARTS", Label(root, "PartListCountLabel").text);
+                Assert.IsTrue(Button(root, "PartRow01").ClassListContains("part-row--selected"));
+                Assert.AreEqual("출격 편성 저장", Button(root, "SaveButton").text);
+                Assert.IsTrue(Button(root, "SaveButton").enabledSelf);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
         }
 
         [Test]
@@ -98,71 +104,109 @@ namespace Tests.Editor
         [Test]
         public void Render_DisablesSaveWhenResultCannotSave()
         {
-            var root = LoadRoot();
-            var surface = new GarageSetBUitkSurface(root);
+            var fixture = CreateRuntimeAdapterFixture();
+            try
+            {
+                fixture.Adapter.Render(
+                    CreateSlots(),
+                    CreatePartList(GarageNovaPartPanelSlot.Frame),
+                    CreateEditor(),
+                    new GarageResultViewModel(
+                        "현역 편성",
+                        "저장본이 최신입니다.",
+                        "최근 작전 기록 없음",
+                        isReady: true,
+                        isDirty: false,
+                        canSave: false,
+                        primaryActionLabel: "현역 편성"),
+                    GarageEditorFocus.Frame,
+                    isSaving: false);
 
-            surface.Render(
-                CreateSlots(),
-                CreatePartList(GarageNovaPartPanelSlot.Frame),
-                CreateEditor(),
-                new GarageResultViewModel(
-                    "현역 편성",
-                    "저장본이 최신입니다.",
-                    "최근 작전 기록 없음",
-                    isReady: true,
-                    isDirty: false,
-                    canSave: false,
-                    primaryActionLabel: "현역 편성"),
-                GarageEditorFocus.Frame,
-                isSaving: false);
-
-            Assert.AreEqual("현역 편성", Button(root, "SaveButton").text);
-            Assert.IsFalse(Button(root, "SaveButton").enabledSelf);
-            Assert.IsTrue(Button(root, "FrameTabButton").ClassListContains("focus-tab--active"));
-            Assert.AreEqual("프레임 선택", Label(root, "PartListTitleLabel").text);
+                var root = fixture.Host;
+                Assert.AreEqual("현역 편성", Button(root, "SaveButton").text);
+                Assert.IsFalse(Button(root, "SaveButton").enabledSelf);
+                Assert.IsTrue(Button(root, "FrameTabButton").ClassListContains("focus-tab--active"));
+                Assert.AreEqual("프레임 선택", Label(root, "PartListTitleLabel").text);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
         }
 
         [Test]
-        public void SetPreviewTexture_TogglesRuntimePreviewImage()
+        public void Render_WithoutPreviewRenderer_HidesRuntimePreviewImage()
         {
-            var root = LoadRoot();
-            var surface = new GarageSetBUitkSurface(root);
-            var texture = new Texture2D(8, 8);
+            var fixture = CreateRuntimeAdapterFixture();
+            try
+            {
+                fixture.Adapter.Render(
+                    CreateSlots(),
+                    CreatePartList(),
+                    CreateEditor(),
+                    new GarageResultViewModel(
+                        "편성 중",
+                        "저장 대기",
+                        "ATK 840",
+                        isReady: false,
+                        isDirty: true,
+                        canSave: true,
+                        primaryActionLabel: "임시 편성"),
+                    GarageEditorFocus.Firepower,
+                    isSaving: false);
 
-            surface.SetPreviewTexture(texture, true);
-
-            var previewImage = root.Q<Image>("RuntimeUnitPreviewImage");
-            Assert.NotNull(previewImage);
-            Assert.AreSame(texture, previewImage.image);
-            Assert.AreEqual(DisplayStyle.Flex, previewImage.style.display.value);
-            Assert.AreEqual(DisplayStyle.None, Label(root, "UnitPreviewLabel").style.display.value);
-            Assert.AreEqual("UNIT PREVIEW", Label(root, "PreviewTitleLabel").text);
-
-            Object.DestroyImmediate(texture);
+                var root = fixture.Host;
+                var previewImage = root.Q<Image>("RuntimeUnitPreviewImage");
+                Assert.NotNull(previewImage);
+                Assert.IsNull(previewImage.image);
+                Assert.AreEqual(DisplayStyle.None, previewImage.style.display.value);
+                Assert.AreEqual(DisplayStyle.Flex, Label(root, "UnitPreviewLabel").style.display.value);
+                Assert.AreEqual("BLUEPRINT VIEW", Label(root, "PreviewTitleLabel").text);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
         }
 
         [Test]
-        public void SetPartPreviewTexture_TogglesSelectedPartPreviewImage()
+        public void Render_WithoutPartPreviewRenderer_HidesSelectedPartPreviewImage()
         {
-            var root = LoadRoot();
-            var surface = new GarageSetBUitkSurface(root);
-            var texture = new Texture2D(8, 8);
+            var fixture = CreateRuntimeAdapterFixture();
+            try
+            {
+                fixture.Adapter.Render(
+                    CreateSlots(),
+                    CreatePartList(),
+                    CreateEditor(),
+                    new GarageResultViewModel(
+                        "편성 중",
+                        "저장 대기",
+                        "ATK 840",
+                        isReady: false,
+                        isDirty: true,
+                        canSave: true,
+                        primaryActionLabel: "임시 편성"),
+                    GarageEditorFocus.Firepower,
+                    isSaving: false);
 
-            surface.SetPartPreviewTexture(texture, true);
-
-            var previewImage = root.Q<Image>("SelectedPartPreviewImage");
-            Assert.NotNull(previewImage);
-            Assert.AreSame(texture, previewImage.image);
-            Assert.AreEqual(DisplayStyle.Flex, previewImage.style.display.value);
-            Assert.AreEqual(DisplayStyle.None, Label(root, "SelectedPartPreviewLabel").style.display.value);
-
-            Object.DestroyImmediate(texture);
+                var root = fixture.Host;
+                var previewImage = root.Q<Image>("SelectedPartPreviewImage");
+                Assert.NotNull(previewImage);
+                Assert.IsNull(previewImage.image);
+                Assert.AreEqual(DisplayStyle.None, previewImage.style.display.value);
+                Assert.AreEqual(DisplayStyle.Flex, Label(root, "SelectedPartPreviewLabel").style.display.value);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
         }
 
         [Test]
         public void RuntimeAdapter_BindToHost_ReplacesLobbyPlaceholderWithGarageScreen()
         {
-            var fixture = CreateRuntimeAdapterFixture();
+            var fixture = CreateRuntimeAdapterFixture(bindToHost: false);
             try
             {
                 var host = new VisualElement { name = "GarageUitkHost" };
@@ -185,12 +229,9 @@ namespace Tests.Editor
             var fixture = CreateRuntimeAdapterFixture();
             try
             {
-                var host = new VisualElement { name = "GarageUitkHost" };
-
-                Assert.IsTrue(fixture.Adapter.BindToHost(host));
                 Assert.IsTrue(fixture.Adapter.SetDocumentRootVisible(false));
 
-                var screen = host.Q<VisualElement>("GarageSetBScreen");
+                var screen = fixture.Host.Q<VisualElement>("GarageSetBScreen");
                 Assert.NotNull(screen);
                 Assert.AreEqual(DisplayStyle.Flex, screen.style.display.value);
             }
@@ -319,7 +360,7 @@ namespace Tests.Editor
             return asset.CloneTree();
         }
 
-        private static RuntimeAdapterFixture CreateRuntimeAdapterFixture()
+        private static RuntimeAdapterFixture CreateRuntimeAdapterFixture(bool bindToHost = true)
         {
             var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(UxmlPath);
             Assert.NotNull(asset, $"UXML not found: {UxmlPath}");
@@ -328,23 +369,37 @@ namespace Tests.Editor
             var document = documentObject.AddComponent<UIDocument>();
             document.visualTreeAsset = asset;
             var adapter = documentObject.AddComponent<GarageSetBUitkRuntimeAdapter>();
-            var serializedAdapter = new SerializedObject(adapter);
-            serializedAdapter.FindProperty("_document").objectReferenceValue = document;
-            serializedAdapter.ApplyModifiedPropertiesWithoutUndo();
+            SetObjectReference(adapter, "_document", document);
 
-            return new RuntimeAdapterFixture(documentObject, adapter);
+            var host = new VisualElement { name = "GarageUitkHost" };
+            if (bindToHost)
+                Assert.IsTrue(adapter.BindToHost(host));
+
+            return new RuntimeAdapterFixture(documentObject, adapter, host);
         }
 
         private readonly struct RuntimeAdapterFixture
         {
-            public RuntimeAdapterFixture(GameObject documentObject, GarageSetBUitkRuntimeAdapter adapter)
+            public RuntimeAdapterFixture(
+                GameObject documentObject,
+                GarageSetBUitkRuntimeAdapter adapter,
+                VisualElement host)
             {
                 DocumentObject = documentObject;
                 Adapter = adapter;
+                Host = host;
             }
 
             public GameObject DocumentObject { get; }
             public GarageSetBUitkRuntimeAdapter Adapter { get; }
+            public VisualElement Host { get; }
+        }
+
+        private static void SetObjectReference(Object target, string propertyName, Object value)
+        {
+            var serialized = new SerializedObject(target);
+            serialized.FindProperty(propertyName).objectReferenceValue = value;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static GarageSlotViewModel[] CreateSlots()

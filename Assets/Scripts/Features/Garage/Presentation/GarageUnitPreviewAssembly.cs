@@ -65,7 +65,8 @@ namespace Features.Garage.Presentation
                 ResolveAttachedPartPosition(
                     viewModel.FrameAlignment,
                     viewModel.FirepowerAlignment,
-                    firepowerEuler),
+                    firepowerEuler,
+                    weaponObj),
                 firepowerEuler);
 
             var mobilityObj = Object.Instantiate(mobilityPrefab);
@@ -95,12 +96,79 @@ namespace Features.Garage.Presentation
         private static Vector3 ResolveAttachedPartPosition(
             GaragePanelCatalog.PartAlignment frameAlignment,
             GaragePanelCatalog.PartAlignment partAlignment,
-            Vector3 partEuler)
+            Vector3 partEuler,
+            GameObject partObject = null)
         {
             var framePosition = ResolveFramePosition(frameAlignment);
-            var frameSocket = framePosition + frameAlignment.FrameTopSocketOffset;
-            var rotatedSocketOffset = Quaternion.Euler(partEuler) * partAlignment.SocketOffset;
+            var frameSocket = framePosition + ResolveFrameTopSocketOffset(frameAlignment);
+            var rotatedSocketOffset = Quaternion.Euler(partEuler) *
+                                      ResolveAttachedPartSocketOffset(partAlignment, partObject);
             return frameSocket - rotatedSocketOffset;
+        }
+
+        private static Vector3 ResolveAttachedPartSocketOffset(
+            GaragePanelCatalog.PartAlignment partAlignment,
+            GameObject partObject)
+        {
+            var socketOffset = partAlignment.SocketOffset;
+            if (partObject == null ||
+                partAlignment.XfiSocketQuality != "xfi_weapon_direction_only" ||
+                !TryGetLocalRendererBounds(partObject.transform, out var bounds))
+                return socketOffset;
+
+            return socketOffset.y < bounds.min.y - 0.02f
+                ? new Vector3(socketOffset.x, bounds.min.y, socketOffset.z)
+                : socketOffset;
+        }
+
+        private static Vector3 ResolveFrameTopSocketOffset(GaragePanelCatalog.PartAlignment frameAlignment)
+        {
+            return frameAlignment.FrameTopSocketOffset.sqrMagnitude > 0.000001f
+                ? frameAlignment.FrameTopSocketOffset
+                : frameAlignment.SocketOffset;
+        }
+
+        private static bool TryGetLocalRendererBounds(Transform root, out Bounds bounds)
+        {
+            bounds = default;
+            var renderers = root != null ? root.GetComponentsInChildren<Renderer>(true) : null;
+            if (renderers == null || renderers.Length == 0)
+                return false;
+
+            var initialized = false;
+            for (var i = 0; i < renderers.Length; i++)
+            {
+                var worldBounds = renderers[i].bounds;
+                var min = worldBounds.min;
+                var max = worldBounds.max;
+                var corners = new[]
+                {
+                    new Vector3(min.x, min.y, min.z),
+                    new Vector3(min.x, min.y, max.z),
+                    new Vector3(min.x, max.y, min.z),
+                    new Vector3(min.x, max.y, max.z),
+                    new Vector3(max.x, min.y, min.z),
+                    new Vector3(max.x, min.y, max.z),
+                    new Vector3(max.x, max.y, min.z),
+                    new Vector3(max.x, max.y, max.z)
+                };
+
+                for (var cornerIndex = 0; cornerIndex < corners.Length; cornerIndex++)
+                {
+                    var local = root.InverseTransformPoint(corners[cornerIndex]);
+                    if (!initialized)
+                    {
+                        bounds = new Bounds(local, Vector3.zero);
+                        initialized = true;
+                    }
+                    else
+                    {
+                        bounds.Encapsulate(local);
+                    }
+                }
+            }
+
+            return initialized;
         }
 
         private static Vector3 ResolveMobilityPosition(

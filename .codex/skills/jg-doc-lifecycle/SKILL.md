@@ -63,7 +63,7 @@ Use this flow for document cleanup, deletion, compression, merge, rename, or rou
 
 6. Search stale traces after delete, rename, merge, or owner movement.
    - Search old path, filename, `doc_id`, and owner id with `rg`.
-   - Check active docs, repo-local skills, tool README files, and managed prompt/reference docs.
+   - Check active docs, repo-local skill entries/support metadata, tool README files, and managed prompt/reference docs.
    - Remove or reroute stale active references before closeout.
 
 7. Validate mechanically.
@@ -90,7 +90,7 @@ Before final response or closeout, confirm:
 - `plan rereview: clean` includes the checked scope instead of a bare label.
 - External/global `rule-*` skill mentions are registered in `ops.skill-routing-registry`.
 - External/global skill file edits report the absolute path and repo-lint tracking limit.
-- Skill trigger changes are checked against `ops.skill-trigger-matrix`.
+- Skill trigger changes are checked against `ops.skill-trigger-matrix`, including description budget and prompt-signal coverage.
 - Large document work includes `owner impact` and `doc lifecycle checked`.
 
 ## Boundaries

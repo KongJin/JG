@@ -24,11 +24,7 @@ namespace Tests.Editor
             @"AddComponent<\s*(?:[\w]+\.)*\w*SceneRegistry\s*>",
             RegexOptions.Compiled);
 
-        private static readonly HashSet<string> LockedSourcePaddingResiduals = new(StringComparer.OrdinalIgnoreCase)
-        {
-            NormalizeRelativePath("Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkSurface.cs"),
-            NormalizeRelativePath("Assets/Scripts/Features/Lobby/Presentation/LobbyView.cs"),
-        };
+        private static readonly HashSet<string> LockedSourcePaddingResiduals = new(StringComparer.OrdinalIgnoreCase);
 
         private static readonly string[] RemovedGarageLegacyPresentationTypes =
         {
@@ -415,12 +411,6 @@ namespace Tests.Editor
 
         private static bool IsReviewedFallbackReference(string relativePath, string line)
         {
-            if (relativePath == NormalizeRelativePath("Assets/Scripts/Features/Lobby/Presentation/LobbyView.cs"))
-            {
-                return line.Contains("runtime fallback UI", StringComparison.Ordinal) ||
-                       line.Contains("Removed procedural Lobby fallback builder", StringComparison.Ordinal);
-            }
-
             if (relativePath == NormalizeRelativePath("Assets/Scripts/Features/Wave/WaveSetup.cs"))
             {
                 return line.Contains("TryGetFirstEnemyData(out var fallbackData)", StringComparison.Ordinal) ||
