@@ -10,7 +10,6 @@ namespace Features.Unit.Presentation
     {
         [SerializeField] private Camera _worldCamera;
         [SerializeField] private float _screenToPlaneY = 0f;
-        [SerializeField] private GameObject _dragGhostPrefab;
         [SerializeField] private PlacementArea _placementArea;
         [SerializeField] private PlacementErrorView _errorView;
         [SerializeField] private PlacementAreaView _placementAreaView;
@@ -20,10 +19,6 @@ namespace Features.Unit.Presentation
 
         public bool IsDragging { get; private set; }
         public bool IsInPlacementZone { get; private set; }
-
-        public void ValidateGhostPrefab()
-        {
-        }
 
         public void Initialize(
             UnitSpec unitSpec,
@@ -39,24 +34,6 @@ namespace Features.Unit.Presentation
             _placementArea = placementArea;
             _errorView = errorView;
             _placementAreaView = placementAreaView;
-        }
-
-        public void Initialize(
-            UnitSpec unitSpec,
-            System.Action<UnitSpec, Float3> onSummonRequested,
-            object legacyCanvas,
-            Camera worldCamera,
-            PlacementArea placementArea,
-            PlacementErrorView errorView,
-            PlacementAreaView placementAreaView = null)
-        {
-            Initialize(
-                unitSpec,
-                onSummonRequested,
-                worldCamera,
-                placementArea,
-                errorView,
-                placementAreaView);
         }
 
         public void OnBeginDrag(PointerEventData eventData)

@@ -1,4 +1,5 @@
 using Features.Garage.Runtime;
+using Features.Unit.Infrastructure;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
@@ -65,6 +66,8 @@ namespace Features.Garage.Presentation
                 ResolveAttachedPartPosition(
                     viewModel.FrameAlignment,
                     viewModel.FirepowerAlignment,
+                    viewModel.FrameAssemblyForm,
+                    viewModel.FirepowerAssemblyForm,
                     firepowerEuler,
                     weaponObj),
                 firepowerEuler);
@@ -96,11 +99,16 @@ namespace Features.Garage.Presentation
         private static Vector3 ResolveAttachedPartPosition(
             GaragePanelCatalog.PartAlignment frameAlignment,
             GaragePanelCatalog.PartAlignment partAlignment,
+            AssemblyForm frameAssemblyForm,
+            AssemblyForm partAssemblyForm,
             Vector3 partEuler,
             GameObject partObject = null)
         {
             var framePosition = ResolveFramePosition(frameAlignment);
-            var frameSocket = framePosition + ResolveFrameTopSocketOffset(frameAlignment);
+            var frameSocket = framePosition + ResolveFrameTopSocketOffset(
+                frameAlignment,
+                frameAssemblyForm,
+                partAssemblyForm);
             var rotatedSocketOffset = Quaternion.Euler(partEuler) *
                                       ResolveAttachedPartSocketOffset(partAlignment, partObject);
             return frameSocket - rotatedSocketOffset;
@@ -121,11 +129,22 @@ namespace Features.Garage.Presentation
                 : socketOffset;
         }
 
-        private static Vector3 ResolveFrameTopSocketOffset(GaragePanelCatalog.PartAlignment frameAlignment)
+        private static Vector3 ResolveFrameTopSocketOffset(
+            GaragePanelCatalog.PartAlignment frameAlignment,
+            AssemblyForm frameAssemblyForm,
+            AssemblyForm partAssemblyForm)
         {
-            return frameAlignment.FrameTopSocketOffset.sqrMagnitude > 0.000001f
-                ? frameAlignment.FrameTopSocketOffset
-                : frameAlignment.SocketOffset;
+            if (frameAlignment.FrameTopSocketOffset.sqrMagnitude > 0.000001f)
+                return frameAlignment.FrameTopSocketOffset;
+
+            if (frameAlignment.HasFrameTopSocket &&
+                frameAssemblyForm == AssemblyForm.Humanoid &&
+                partAssemblyForm == AssemblyForm.Humanoid)
+            {
+                return frameAlignment.FrameTopSocketOffset;
+            }
+
+            return frameAlignment.SocketOffset;
         }
 
         private static bool TryGetLocalRendererBounds(Transform root, out Bounds bounds)

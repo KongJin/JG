@@ -319,17 +319,30 @@ Figma에서 Unity로 옮길 때 아래 규칙을 따른다.
 
 - `*PageController`: scene-facing MonoBehaviour controller. EventBus 구독, UseCase command routing, page state orchestration만 맡는다.
 - `*UitkRuntimeAdapter`: UIDocument/host binding, named UI Toolkit element query, render, UI event bridge, texture/embedded page bridge를 맡는다. 별도 top-level `*Surface`를 만들지 않는다.
-- `*UitkElements`: feature-local UI Toolkit helper. `SetText`, `SetPage`, class toggle처럼 작은 element 조작만 둔다.
+- Shared UITK helper: feature-neutral VisualElement query, display, class toggle, label, and preview-image helpers live in `Shared.Ui.UitkElementUtility`. Feature-local helper classes are only for screen-specific behavior that cannot stay generic.
+- Shell routing helper: feature-specific page host visibility, nav selected state, shell title/state, and route enter callbacks may live in a small `*ShellPageRouter`. It is an adapter-owned helper, not a new application layer or generic framework.
 - `*Surface`: 반복 child component wrapper에만 쓴다. 예: slot list, part list처럼 adapter 내부에서 관리되는 하위 표면.
 - `*Presenter` / `*PageState` / `*PageViewModels`: domain/application state를 UI view model로 바꾸는 순수 presentation 변환이다. RuntimeAdapter가 domain object 포맷을 많이 알기 시작하면 이 층을 추가한다.
+
+### Layer Creation Checklist
+
+새 presentation helper나 얇은 레이어를 만들기 전에 아래를 먼저 확인한다.
+
+- 같은 책임이 `Shared.Ui`, `Shared.Runtime`, 또는 현재 feature 안에 이미 있는지 `rg`로 찾는다.
+- Unity/UI Toolkit API를 감싸기만 하고 feature/domain 단어가 없다면 feature-local helper를 만들지 않고 `Shared.Ui` 후보로 본다.
+- feature 이름 prefix는 screen-specific behavior, scene contract, domain wording이 들어갈 때만 붙인다.
+- 새 클래스가 한 caller의 private method 묶음 수준이면 먼저 caller 내부 private/static helper로 둔다.
+- 다른 feature에서 두 번째로 필요해지는 순간 기존 feature-local helper를 복사하지 말고 shared utility로 승격한다.
+- `*RuntimeAdapter`, `*PageController`, `*Presenter`처럼 의존 방향을 지키는 레이어와 단순 helper를 다이어그램에서 같은 레이어처럼 표현하지 않는다.
 
 - `GarageSetBUitkPageController`: state orchestration, save/selection command routing
 - `GarageSetBUitkRuntimeAdapter`: UIDocument/host binding, named UI Toolkit element rendering, UI events, and preview texture bridge
 - `GaragePagePresenter` / `GaragePageState`: presentation view model and draft state
 - `LobbyPageController`: lobby event subscription, UseCase command routing, and Presenter-driven page rendering orchestration
 - `LobbyPagePresenter` / `LobbyPageViewModels`: room/account/operation domain and application state formatting for Lobby UI
-- `LobbyUitkRuntimeAdapter`: Lobby UIDocument/UXML binding, view model rendering, navigation events, and Garage host bridge
-- `LobbyUitkElements`: small UI Toolkit element helpers shared inside the Lobby presentation adapter
+- `LobbyUitkRuntimeAdapter`: Lobby UIDocument/UXML binding, view model rendering, navigation events, page router registration, and Garage host bridge
+- `LobbyShellPageRouter`: adapter-owned helper for explicit Lobby shell page visibility, nav selected state, shell title/state, and route enter callbacks
+- `Shared.Ui.UitkElementUtility`: shared low-level UI Toolkit element helpers used by Garage and Lobby presentation adapters
 
 ## Design Tool Note
 

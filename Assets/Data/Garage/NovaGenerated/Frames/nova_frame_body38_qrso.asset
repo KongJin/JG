@@ -15,7 +15,7 @@ MonoBehaviour:
   frameId: nova_frame_body38_qrso
   displayName: "\uD034\uB7EC\uC2DC\uC5B4"
   icon: {fileID: 0}
-  assemblyForm: 1
+  assemblyForm: 3
   baseHp: 465
   baseMoveRange: 4
   baseAttackSpeed: 1.2

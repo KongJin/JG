@@ -17,11 +17,11 @@ namespace Features.Garage.Presentation
             {
                 int slotNumber = i + 1;
                 _slots[i] = new SlotBinding(
-                    GarageSetBUitkElements.Required<Button>(root, $"SlotCard{slotNumber:00}"),
-                    GarageSetBUitkElements.Required<Label>(root, $"SlotCode{slotNumber:00}Label"),
-                    GarageSetBUitkElements.Required<VisualElement>(root, $"SlotIcon{slotNumber:00}"),
-                    GarageSetBUitkElements.Required<VisualElement>(root, $"SlotIcon{slotNumber:00}Glyph"),
-                    GarageSetBUitkElements.Required<Label>(root, $"SlotName{slotNumber:00}Label"));
+                    UitkElementUtility.Required<Button>(root, $"SlotCard{slotNumber:00}"),
+                    UitkElementUtility.Required<Label>(root, $"SlotCode{slotNumber:00}Label"),
+                    UitkElementUtility.Required<VisualElement>(root, $"SlotIcon{slotNumber:00}"),
+                    UitkElementUtility.Required<VisualElement>(root, $"SlotIcon{slotNumber:00}Glyph"),
+                    UitkElementUtility.Required<Label>(root, $"SlotName{slotNumber:00}Label"));
             }
 
             BindCallbacks();
@@ -56,16 +56,16 @@ namespace Features.Garage.Presentation
             UitkIconRegistry.Apply(binding.IconGlyph, BuildSlotIconId(slot));
             binding.NameLabel.text = BuildSlotName(slot);
 
-            GarageSetBUitkElements.SetClass(binding.Card, "slot-card--active", isSelected);
-            GarageSetBUitkElements.SetClass(binding.Card, "slot-card--empty", isEmpty);
-            GarageSetBUitkElements.SetClass(binding.CodeLabel, "slot-code--active", isSelected);
-            GarageSetBUitkElements.SetClass(binding.CodeLabel, "slot-code--empty", isEmpty);
-            GarageSetBUitkElements.SetClass(binding.IconHost, "slot-icon--active", isSelected);
-            GarageSetBUitkElements.SetClass(binding.IconHost, "slot-icon--empty", isEmpty);
-            GarageSetBUitkElements.SetClass(binding.IconGlyph, "slot-icon-glyph--active", isSelected);
-            GarageSetBUitkElements.SetClass(binding.IconGlyph, "slot-icon-glyph--empty", isEmpty);
-            GarageSetBUitkElements.SetClass(binding.NameLabel, "slot-name--active", isSelected);
-            GarageSetBUitkElements.SetClass(binding.NameLabel, "slot-name--empty", isEmpty);
+            UitkElementUtility.SetClass(binding.Card, "slot-card--active", isSelected);
+            UitkElementUtility.SetClass(binding.Card, "slot-card--empty", isEmpty);
+            UitkElementUtility.SetClass(binding.CodeLabel, "slot-code--active", isSelected);
+            UitkElementUtility.SetClass(binding.CodeLabel, "slot-code--empty", isEmpty);
+            UitkElementUtility.SetClass(binding.IconHost, "slot-icon--active", isSelected);
+            UitkElementUtility.SetClass(binding.IconHost, "slot-icon--empty", isEmpty);
+            UitkElementUtility.SetClass(binding.IconGlyph, "slot-icon-glyph--active", isSelected);
+            UitkElementUtility.SetClass(binding.IconGlyph, "slot-icon-glyph--empty", isEmpty);
+            UitkElementUtility.SetClass(binding.NameLabel, "slot-name--active", isSelected);
+            UitkElementUtility.SetClass(binding.NameLabel, "slot-name--empty", isEmpty);
         }
 
         private static string BuildSlotIconId(GarageSlotViewModel slot)

@@ -1,0 +1,234 @@
+﻿{
+    "success":  true,
+    "terminalVerdict":  "",
+    "blockedReason":  "",
+    "generatedAt":  "2026-05-01 21:10:35+09:00",
+    "agent":  "",
+    "route":  "lobby-ui",
+    "changedFiles":  [
+                         ".codex/skills/jg-unity-workflow/SKILL.md",
+                         "artifacts/nova1492/nova_part_catalog.csv",
+                         "artifacts/nova1492/nova_part_catalog_summary.md",
+                         "artifacts/nova1492/nova_part_playable_asset_report.md",
+                         "artifacts/nova1492/nova_part_preview_prefab_report.md",
+                         "artifacts/rules/issue-recurrence-closeout.d/local-f4bd323541.json",
+                         "artifacts/unity/humanoid-preview-floating-red.xml",
+                         "artifacts/unity/shared-uitk-element-utility-editmode-tests.xml",
+                         "artifacts/unity/uitk-page-routing-refactor/lobby-page-routing-editmode-tests.xml",
+                         "artifacts/unity/uitk-page-routing-refactor/unity-ui-authoring-workflow-policy.json",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm10_broz.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm15_hdkn.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm17_prrs.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm18_knst.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm19_roz.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm20_rkto.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm24_bzk.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm29_sdbt.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm31_skokr.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm32_sppoo.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm35_ons.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm37_sts.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm39_hmsk.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm41_onoo.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm46_dbkr.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm55_bbs.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_arm8_do.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_g_arm56_prrs.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_g_arm58_dbkr.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_n_arm60_mgbr.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_n_arm62_knst.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_n_arm63_krst.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_n_arm64_hdkn.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_n_arm65_bbs.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_n_arm67_sts.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_n_arm68_roz.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_n_arm69_rkog.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_n_arm70_hmsk.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_s_arm50_hmsk.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_s_arm52_bzk.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_s_arm53_ons.asset",
+                         "Assets/Data/Garage/NovaGenerated/Firepower/nova_fire_s_arm54_onoo.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body10_skdr.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body13_scro.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body14_trb.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body17_rzmt.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body18_brgod.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body2_prt.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body21_rzo.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body24_grbs.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body26_kp.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body27_zns.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body28_kp2.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body3_bgd.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body32_brps.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body35_trbn.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body36_rzn.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body38_qrso.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body5_skms.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body6_skd.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body7_mops.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body8_brc.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_body9_btro.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_n_body39_brgod.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_n_body40_zns.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_n_body43_prt.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_n_body44_brps.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_n_body47_kp.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_n_body48_grbs.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_n_body49_rzmt.asset",
+                         "Assets/Data/Garage/NovaGenerated/Frames/nova_frame_n_body50_bgd.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_g_legs57_ppo.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_g_legs59_hb.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_g_legs60_hord.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_legs10_prg.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_legs12_kb.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_legs13_krz.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_legs18_hord.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_legs34_dpns.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_legs49_otrs.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_legs51_ppo.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_legs52_pkk.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_legs53_rgd.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_legs7_hb.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_legs9_ptr.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_n_legs40_krz.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_n_legs44_hord.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_s_legs28_krz.asset",
+                         "Assets/Data/Garage/NovaGenerated/Mobility/nova_mob_s_legs32_kb.asset",
+                         "Assets/Editor/DirectTests/GarageSetBUitkRuntimeAdapterDirectTests.cs",
+                         "Assets/Editor/DirectTests/GarageUnitPreviewAssemblyFrameTopDirectTests.cs",
+                         "Assets/Editor/DirectTests/LobbyUitkRuntimeAdapterDirectTests.cs",
+                         "Assets/Scenes/LobbyScene.unity",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePagePresenter.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePageViewModels.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBPartListSurface.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBSlotSurface.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkElements.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkElements.cs.meta",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkRuntimeAdapter.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageUnitPreviewAssembly.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/LobbyShellPageRouter.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/LobbyShellPageRouter.cs.meta",
+                         "Assets/Scripts/Features/Lobby/Presentation/LobbyUitkElements.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/LobbyUitkElements.cs.meta",
+                         "Assets/Scripts/Features/Lobby/Presentation/LobbyUitkRuntimeAdapter.cs",
+                         "Assets/Scripts/Shared/Ui/UitkElementUtility.cs",
+                         "Assets/Scripts/Shared/Ui/UitkElementUtility.cs.meta",
+                         "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
+                         "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml",
+                         "docs/design/ui_foundations.md",
+                         "docs/index.md",
+                         "docs/ops/skill_routing_registry.md",
+                         "docs/ops/skill_trigger_matrix.md",
+                         "docs/plans/non_stitch_ui_stitch_reimport_plan.md",
+                         "docs/plans/progress.md",
+                         "docs/plans/uitk_page_routing_refactor_plan.md",
+                         "tools/nova1492/BuildNovaPartCatalog.ps1"
+                     ],
+    "allDirtyFileCount":  118,
+    "unityUiRelevantFiles":  [
+                                 "Assets/Scenes/LobbyScene.unity",
+                                 "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
+                                 "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml"
+                             ],
+    "uitkCandidateFiles":  [
+                               "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
+                               "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml"
+                           ],
+    "uitkCandidateEvidenceFiles":  [
+                                       "artifacts/unity/uitk-page-routing-refactor/unity-ui-authoring-workflow-policy.json"
+                                   ],
+    "uitkCandidatePreviewEvidenceFiles":  [
+
+                                          ],
+    "uitkCandidateReportEvidenceFiles":  [
+                                             "artifacts/unity/uitk-page-routing-refactor/unity-ui-authoring-workflow-policy.json"
+                                         ],
+    "requiredEvidence":  [
+                             {
+                                 "name":  "compile-reload",
+                                 "path":  null,
+                                 "message":  "Compile and script reload must settle before Unity UI workflow evidence is trusted."
+                             }
+                         ],
+    "missingEvidence":  [
+
+                        ],
+    "staleEvidence":  [
+
+                      ],
+    "policyViolations":  [
+
+                         ],
+    "compile":  {
+                    "success":  true,
+                    "request":  {
+                                    "ok":  true,
+                                    "cleanBuildCacheRequested":  false,
+                                    "isCompiling":  false,
+                                    "message":  "Asset refresh triggered."
+                                },
+                    "wait":  {
+                                 "ok":  true,
+                                 "timedOut":  false,
+                                 "requestedCompilation":  false,
+                                 "waitedMs":  120000,
+                                 "isCompiling":  false
+                             },
+                    "healthAfterWait":  {
+                                            "ok":  true,
+                                            "bridgeRunning":  true,
+                                            "port":  52676,
+                                            "isPlaying":  false,
+                                            "isPlayingOrWillChange":  false,
+                                            "isPlayModeChanging":  false,
+                                            "rawIsPlayingOrWillChange":  false,
+                                            "isCompiling":  false,
+                                            "isWaitingForPlayMode":  false,
+                                            "projectKey":  "0d8ea703",
+                                            "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                            "activeScene":  "LobbyScene",
+                                            "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                            "pendingPlayAction":  "",
+                                            "pendingPlayAgeMs":  0
+                                        }
+                },
+    "unityResourceLock":  {
+                              "owner":  "workflow",
+                              "path":  "Temp/UnityMcp/unity-resource.lock",
+                              "token":  "99fd2424d3db439a98184968cd69cccb"
+                          },
+    "capabilityExpansionGuard":  {
+                                     "allowCapabilityExpansion":  false,
+                                     "surfaceOnboardingFiles":  [
+                                                                    "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
+                                                                    "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml"
+                                                                ],
+                                     "capabilityExpansionFiles":  [
+
+                                                                  ]
+                                 },
+    "prefabManagement":  {
+                             "inventory":  {
+                                               "path":  "artifacts/unity/prefab-management-inventory.json",
+                                               "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                               "totalPrefabs":  9,
+                                               "generatedPreviewPrefabs":  0,
+                                               "resourcesPrefabs":  9,
+                                               "duplicateCandidateGroups":  0,
+                                               "approvedNewPrefabTargets":  0
+                                           },
+                             "approvalManifest":  {
+                                                      "path":  "artifacts/unity/prefab-management-approved-new-prefabs.json",
+                                                      "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                                      "prefabCount":  0,
+                                                      "prefabPaths":  [
+
+                                                                      ]
+                                                  }
+                         },
+    "declaredNewPrefabTargets":  [
+
+                                 ],
+    "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\unity-ui-authoring-workflow-policy-garage-compact-preview-20260501.json"
+}

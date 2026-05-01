@@ -39,6 +39,48 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void ShowPages_UpdatesVisibleHostNavShellAndClonesRouteSurfaceOnce()
+        {
+            var fixture = CreateFixture();
+            try
+            {
+                fixture.Adapter.ShowLobbyPage();
+
+                var root = fixture.Document.rootVisualElement;
+                AssertPageVisible(root, "LobbyUitkPage");
+                AssertPageHidden(root, "GarageUitkHost");
+                AssertPageHidden(root, "RecordsUitkHost");
+                Assert.AreEqual("로비", root.Q<Label>("ShellTitleLabel").text);
+                Assert.AreEqual("동기화 대기", root.Q<Label>("ShellStateLabel").text);
+                Assert.IsTrue(root.Q<Button>("LobbyNavButton").ClassListContains("shared-nav-item--selected"));
+
+                fixture.Adapter.ShowRecordsPage();
+                var recordsHost = root.Q<VisualElement>("RecordsUitkHost");
+                var childCountAfterFirstShow = recordsHost.childCount;
+
+                AssertPageHidden(root, "LobbyUitkPage");
+                AssertPageVisible(root, "RecordsUitkHost");
+                Assert.AreEqual("기록", root.Q<Label>("ShellTitleLabel").text);
+                Assert.AreEqual("LOCAL LOG / SYNC PENDING", root.Q<Label>("ShellStateLabel").text);
+                Assert.IsFalse(root.Q<Button>("LobbyNavButton").ClassListContains("shared-nav-item--selected"));
+                Assert.IsTrue(root.Q<Button>("RecordsNavButton").ClassListContains("shared-nav-item--selected"));
+
+                fixture.Adapter.ShowRecordsPage();
+                Assert.AreEqual(childCountAfterFirstShow, recordsHost.childCount);
+
+                fixture.Adapter.ShowAccountPage();
+                AssertPageHidden(root, "RecordsUitkHost");
+                AssertPageVisible(root, "AccountUitkHost");
+                Assert.AreEqual("계정", root.Q<Label>("ShellTitleLabel").text);
+                Assert.IsFalse(root.Q<Button>("RecordsNavButton").ClassListContains("shared-nav-item--selected"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
         public void RenderRooms_MapsViewModelToRows()
         {
             var fixture = CreateFixture();
@@ -114,6 +156,16 @@ namespace Tests.Editor
             var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(path);
             Assert.NotNull(asset, $"UXML not found: {path}");
             return asset;
+        }
+
+        private static void AssertPageVisible(VisualElement root, string pageName)
+        {
+            Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>(pageName).style.display.value);
+        }
+
+        private static void AssertPageHidden(VisualElement root, string pageName)
+        {
+            Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>(pageName).style.display.value);
         }
 
         private readonly struct AdapterFixture

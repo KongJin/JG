@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Shared.Ui;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -24,27 +25,27 @@ namespace Features.Garage.Presentation
 
         public GarageSetBPartListSurface(VisualElement root)
         {
-            _frameTabButton = GarageSetBUitkElements.Required<Button>(root, "FrameTabButton");
-            _firepowerTabButton = GarageSetBUitkElements.Required<Button>(root, "FirepowerTabButton");
-            _mobilityTabButton = GarageSetBUitkElements.Required<Button>(root, "MobilityTabButton");
-            _partListTitleLabel = GarageSetBUitkElements.Required<Label>(root, "PartListTitleLabel");
-            _partListCountLabel = GarageSetBUitkElements.Required<Label>(root, "PartListCountLabel");
-            _partSearchField = GarageSetBUitkElements.Required<TextField>(root, "PartSearchField");
-            _partPreviewTitleLabel = GarageSetBUitkElements.Required<Label>(root, "SelectedPartPreviewTitleLabel");
-            _partPreviewMetaLabel = GarageSetBUitkElements.Required<Label>(root, "SelectedPartPreviewMetaLabel");
-            var partPreviewHost = GarageSetBUitkElements.Required<VisualElement>(root, "SelectedPartPreviewHost");
-            _partPreviewLabel = GarageSetBUitkElements.Required<Label>(root, "SelectedPartPreviewLabel");
-            _partPreviewImage = GarageSetBUitkElements.CreatePreviewImage("SelectedPartPreviewImage");
+            _frameTabButton = UitkElementUtility.Required<Button>(root, "FrameTabButton");
+            _firepowerTabButton = UitkElementUtility.Required<Button>(root, "FirepowerTabButton");
+            _mobilityTabButton = UitkElementUtility.Required<Button>(root, "MobilityTabButton");
+            _partListTitleLabel = UitkElementUtility.Required<Label>(root, "PartListTitleLabel");
+            _partListCountLabel = UitkElementUtility.Required<Label>(root, "PartListCountLabel");
+            _partSearchField = UitkElementUtility.Required<TextField>(root, "PartSearchField");
+            _partPreviewTitleLabel = UitkElementUtility.Required<Label>(root, "SelectedPartPreviewTitleLabel");
+            _partPreviewMetaLabel = UitkElementUtility.Required<Label>(root, "SelectedPartPreviewMetaLabel");
+            var partPreviewHost = UitkElementUtility.Required<VisualElement>(root, "SelectedPartPreviewHost");
+            _partPreviewLabel = UitkElementUtility.Required<Label>(root, "SelectedPartPreviewLabel");
+            _partPreviewImage = UitkElementUtility.CreateAbsoluteImage("SelectedPartPreviewImage");
             partPreviewHost.Insert(0, _partPreviewImage);
-            _partListRows = GarageSetBUitkElements.Required<ScrollView>(root, "PartListRows").contentContainer;
+            _partListRows = UitkElementUtility.Required<ScrollView>(root, "PartListRows").contentContainer;
             for (int i = 0; i < InitialPartRowCount; i++)
             {
                 int rowNumber = i + 1;
                 _partRows.Add(new PartRowBinding(
-                    GarageSetBUitkElements.Required<Button>(root, $"PartRow{rowNumber:00}"),
-                    GarageSetBUitkElements.Required<Label>(root, $"PartRow{rowNumber:00}NameLabel"),
-                    GarageSetBUitkElements.Required<Label>(root, $"PartRow{rowNumber:00}MetaLabel"),
-                    GarageSetBUitkElements.Required<Label>(root, $"PartRow{rowNumber:00}BadgeLabel")));
+                    UitkElementUtility.Required<Button>(root, $"PartRow{rowNumber:00}"),
+                    UitkElementUtility.Required<Label>(root, $"PartRow{rowNumber:00}NameLabel"),
+                    UitkElementUtility.Required<Label>(root, $"PartRow{rowNumber:00}MetaLabel"),
+                    UitkElementUtility.Required<Label>(root, $"PartRow{rowNumber:00}BadgeLabel")));
             }
 
             BindCallbacks();
@@ -160,16 +161,16 @@ namespace Features.Garage.Presentation
             binding.NameLabel.text = string.IsNullOrWhiteSpace(option.DisplayName) ? option.Id : option.DisplayName;
             binding.MetaLabel.text = option.DetailText ?? string.Empty;
             binding.BadgeLabel.text = BuildPartBadgeText(option);
-            GarageSetBUitkElements.SetClass(binding.Row, "part-row--selected", option.IsSelected);
-            GarageSetBUitkElements.SetClass(binding.BadgeLabel, "part-row-badge--selected", option.IsSelected);
-            GarageSetBUitkElements.SetClass(binding.BadgeLabel, "part-row-badge--review", option.NeedsNameReview && !option.IsSelected);
+            UitkElementUtility.SetClass(binding.Row, "part-row--selected", option.IsSelected);
+            UitkElementUtility.SetClass(binding.BadgeLabel, "part-row-badge--selected", option.IsSelected);
+            UitkElementUtility.SetClass(binding.BadgeLabel, "part-row-badge--review", option.NeedsNameReview && !option.IsSelected);
         }
 
         private void RenderFocusTabs(GarageEditorFocus focusedPart)
         {
-            GarageSetBUitkElements.SetClass(_frameTabButton, "focus-tab--active", focusedPart == GarageEditorFocus.Frame);
-            GarageSetBUitkElements.SetClass(_firepowerTabButton, "focus-tab--active", focusedPart == GarageEditorFocus.Firepower);
-            GarageSetBUitkElements.SetClass(_mobilityTabButton, "focus-tab--active", focusedPart == GarageEditorFocus.Mobility);
+            UitkElementUtility.SetClass(_frameTabButton, "focus-tab--active", focusedPart == GarageEditorFocus.Frame);
+            UitkElementUtility.SetClass(_firepowerTabButton, "focus-tab--active", focusedPart == GarageEditorFocus.Firepower);
+            UitkElementUtility.SetClass(_mobilityTabButton, "focus-tab--active", focusedPart == GarageEditorFocus.Mobility);
         }
 
         private static string BuildPartListTitle(GarageNovaPartPanelSlot slot)

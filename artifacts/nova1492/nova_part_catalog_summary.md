@@ -38,5 +38,5 @@
 
 - Tier is generated per slot from triangle-count quantiles, `1..5`.
 - Generated stats are a playable smoke baseline, not final balance.
-- `assemblyForm` maps original top/middle compatibility ranges to `Tower`, `Shoulder`, or `Humanoid`; `mobilitySurface` maps lower parts to `Ground` or `Air` for catalog/UI filtering only.
+- `assemblyForm` and `mobilitySurface` use manually reviewed Nova1492 compatibility/surface code sets; N/S/G/II variants follow their base part unless explicitly overridden.
 - `needsNameReview=true` rows keep source-derived IDs but require later naming review before release.

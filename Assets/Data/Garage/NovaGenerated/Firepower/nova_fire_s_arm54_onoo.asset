@@ -15,7 +15,7 @@ MonoBehaviour:
   moduleId: nova_fire_s_arm54_onoo
   displayName: "\uC544\uB204\uC544\uC774S"
   icon: {fileID: 0}
-  assemblyForm: 1
+  assemblyForm: 2
   attackDamage: 40
   attackSpeed: 1.06
   range: 6.25

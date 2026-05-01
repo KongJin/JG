@@ -25,10 +25,6 @@ namespace Features.Garage.Presentation
         private Button _settingsButton;
         private GarageSetBSlotSurface _slotSurface;
         private GarageSetBPartListSurface _partListSurface;
-        private Label _focusedPartBadgeLabel;
-        private Label _focusedPartTitleLabel;
-        private Label _focusedPartDescriptionLabel;
-        private VisualElement _focusedPartIconGlyph;
         private Label _previewTitleLabel;
         private VisualElement _unitPreviewHost;
         private Label _unitPreviewLabel;
@@ -37,7 +33,6 @@ namespace Features.Garage.Presentation
         private bool _isHostBound;
         private IReadOnlyList<GarageSlotViewModel> _lastSlots;
         private GarageNovaPartsPanelViewModel _lastPartList;
-        private GarageEditorViewModel _lastEditor;
         private GarageResultViewModel _lastResult;
         private GarageEditorFocus _lastFocusedPart;
         private bool _lastIsSaving;
@@ -139,20 +134,16 @@ namespace Features.Garage.Presentation
             if (_surfaceRoot == root && _slotSurface != null && _partListSurface != null)
                 return true;
 
-            _commandStatusLabel = GarageSetBUitkElements.Required<Label>(root, "CommandStatusLabel");
-            _settingsButton = GarageSetBUitkElements.Required<Button>(root, "SettingsButton");
+            _commandStatusLabel = UitkElementUtility.Required<Label>(root, "CommandStatusLabel");
+            _settingsButton = UitkElementUtility.Required<Button>(root, "SettingsButton");
             _slotSurface = new GarageSetBSlotSurface(root);
             _partListSurface = new GarageSetBPartListSurface(root);
-            _focusedPartBadgeLabel = GarageSetBUitkElements.Required<Label>(root, "FocusedPartBadgeLabel");
-            _focusedPartTitleLabel = GarageSetBUitkElements.Required<Label>(root, "FocusedPartTitleLabel");
-            _focusedPartDescriptionLabel = GarageSetBUitkElements.Required<Label>(root, "FocusedPartDescriptionLabel");
-            _focusedPartIconGlyph = GarageSetBUitkElements.Required<VisualElement>(root, "FocusedPartIconGlyph");
-            _previewTitleLabel = GarageSetBUitkElements.Required<Label>(root, "PreviewTitleLabel");
-            _unitPreviewHost = GarageSetBUitkElements.Required<VisualElement>(root, "UnitPreviewHost");
-            _unitPreviewLabel = GarageSetBUitkElements.Required<Label>(root, "UnitPreviewLabel");
-            _unitPreviewImage = GarageSetBUitkElements.CreatePreviewImage();
+            _previewTitleLabel = UitkElementUtility.Required<Label>(root, "PreviewTitleLabel");
+            _unitPreviewHost = UitkElementUtility.Required<VisualElement>(root, "UnitPreviewHost");
+            _unitPreviewLabel = UitkElementUtility.Required<Label>(root, "UnitPreviewLabel");
+            _unitPreviewImage = UitkElementUtility.CreateAbsoluteImage();
             _unitPreviewHost.Insert(0, _unitPreviewImage);
-            _saveButton = GarageSetBUitkElements.Required<Button>(root, "SaveButton");
+            _saveButton = UitkElementUtility.Required<Button>(root, "SaveButton");
             _surfaceRoot = root;
 
             BindCallbacks();
@@ -175,7 +166,6 @@ namespace Features.Garage.Presentation
         {
             _lastSlots = slots;
             _lastPartList = partList;
-            _lastEditor = editor;
             _lastResult = result;
             _lastFocusedPart = focusedPart;
             _lastIsSaving = isSaving;
@@ -249,7 +239,6 @@ namespace Features.Garage.Presentation
 
             _slotSurface.Render(_lastSlots);
             _partListSurface.Render(_lastPartList, _lastFocusedPart);
-            RenderFocusedPart(_lastEditor, _lastFocusedPart);
             RenderResult(_lastResult, _lastIsSaving);
             RenderPreview(_lastSlots);
         }
@@ -280,61 +269,11 @@ namespace Features.Garage.Presentation
             _partListSurface?.SetPreviewTexture(texture, isVisible);
         }
 
-        private void RenderFocusedPart(GarageEditorViewModel editor, GarageEditorFocus focusedPart)
-        {
-            var part = FocusedPartText.From(editor, focusedPart);
-            _focusedPartBadgeLabel.text = part.Badge;
-            _focusedPartTitleLabel.text = part.Title;
-            _focusedPartDescriptionLabel.text = part.Description;
-            UitkIconRegistry.Apply(_focusedPartIconGlyph, part.IconId);
-        }
-
         private void RenderResult(GarageResultViewModel result, bool isSaving)
         {
             _commandStatusLabel.text = result?.RosterStatusText ?? "COMMAND_STATUS: 대기";
             _saveButton.text = isSaving ? "저장 중..." : result?.PrimaryActionLabel ?? "저장 및 배치";
             _saveButton.SetEnabled(!isSaving && result?.CanSave == true);
-        }
-
-        private readonly struct FocusedPartText
-        {
-            public FocusedPartText(string badge, string title, string description, string iconId)
-            {
-                Badge = badge;
-                Title = title;
-                Description = description;
-                IconId = iconId;
-            }
-
-            public string Badge { get; }
-            public string Title { get; }
-            public string Description { get; }
-            public string IconId { get; }
-
-            public static FocusedPartText From(GarageEditorViewModel editor, GarageEditorFocus focusedPart)
-            {
-                if (editor == null)
-                    return new FocusedPartText("편성", "Garage", "런타임 데이터 대기", "garage");
-
-                return focusedPart switch
-                {
-                    GarageEditorFocus.Firepower => new FocusedPartText(
-                        "주무장",
-                        editor.FirepowerValueText,
-                        editor.FirepowerHintText,
-                        "swords"),
-                    GarageEditorFocus.Mobility => new FocusedPartText(
-                        "기동",
-                        editor.MobilityValueText,
-                        editor.MobilityHintText,
-                        "speed"),
-                    _ => new FocusedPartText(
-                        "프레임",
-                        editor.FrameValueText,
-                        editor.FrameHintText,
-                        "security"),
-                };
-            }
         }
     }
 }

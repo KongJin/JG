@@ -4,11 +4,11 @@
 > 상태: reference
 > doc_id: plans.technical-debt-recurrence-prevention
 > role: plan
-> owner_scope: Setup/Root drift, runtime lookup, dynamic repair 재발 방지 reference gate
+> owner_scope: Setup/Root drift, runtime lookup, dynamic repair, dead-code retention 재발 방지 reference gate
 > upstream: ops.cohesion-coupling-policy, ops.document-management-workflow
 > artifacts: none
 
-이 문서는 이미 발생한 GameScene/BattleScene technical debt가 반복되지 않게 하는 reference gate만 소유한다.
+이 문서는 이미 발생한 runtime repair debt와 dead-code retention이 반복되지 않게 하는 reference gate만 소유한다.
 제품 acceptance와 현재 실행 순서는 해당 active owner plan과 `plans.progress`를 우선한다.
 
 ## Baseline
@@ -17,6 +17,7 @@
 - `SoundPlayer` AudioSource/template residual은 WebGL audio product smoke가 아니라 runtime contract debt로 추적한다.
 - `PlayerHealthHudView`, `EnemyHealthBar`, `DamageNumber`는 `Assets/Prefabs/RuntimeFeedback/` compatibility surface로 분리했다.
 - Runtime lookup / dynamic repair 위반은 `tools/validate-rules.ps1` 기준 0이어야 한다.
+- 삭제 후보 정리는 code reference, Unity serialized GUID reference, test private reflection, registered entrypoint를 함께 확인해야 한다.
 - `compile-clean`, `rules-clean`, `asset-clean`은 각각 Unity compile check, `npm run --silent rules:lint`, `npm run --silent unity:asset-hygiene`로 확인한다.
 
 ## Reference Gate
@@ -29,6 +30,7 @@
 | Actual acceptance split | reference guard | GameScene, Account/Garage, UI Toolkit candidate evidence를 서로 다른 success로 묶지 않음 |
 | Locked source padding cleanup | reference guard | file lock 때문에 같은 바이트 길이로 제거한 코드는 임시 padding residual로만 남기고, `ArchitectureGuardrailReflectionTests.SourcePaddingMarkers_AreLimitedToKnownLockedResiduals`가 새 padding marker를 막는다 |
 | Fallback ownership containment | reference guard | fallback/default는 production controller나 setup에 직접 흩뿌리지 않고 domain default, adapter/helper, serialized contract 중 한 owner로 고정하며, `ArchitectureGuardrailReflectionTests.ProductionFallbackReferences_AreExplicitlyReviewed`가 새 production fallback marker를 리뷰 대상으로 만든다 |
+| Dead-code cleanup closeout | reference guard | 삭제 후보는 code grep만으로 닫지 않고 type/name refs, `.meta` GUID refs, scene/prefab refs, test-only reflection, registered tool entrypoints, generated project include를 함께 확인한다 |
 
 ## Recurrence Risks
 
@@ -40,6 +42,7 @@
 | 임시 fallback/default가 contract 누락을 숨기는 runtime repair로 확장 | High | 새 fallback은 이유, owner, 제거 조건을 코드 근처 또는 테스트명에서 드러내고, fallback guardrail test와 `fallback|Fallback` 검색 결과를 리뷰한다 |
 | UI Toolkit preview를 runtime replacement success로 확장 | Medium | candidate preview, runtime visibility, WebGL/product acceptance를 분리 |
 | generated asset inventory를 product/balance approval로 오해 | Medium | Nova generated assets와 gameplay/content 승격 판단을 content owner lane으로 분리 |
+| unused code가 feature cleanup 밖에 남아 다음 리팩터의 전제처럼 보임 | Medium | dead-code cleanup closeout에서 code reference, 등록 entrypoint, 테스트 리플렉션, Unity serialized GUID를 한 번에 닫는다 |
 
 ## Issue 2 Prevention: Locked Source Padding
 
@@ -83,6 +86,46 @@ Review check:
 - 검색 결과마다 `domain default`, `compat adapter`, `test-only`, `residual` 중 하나로 분류한다.
 - 분류가 안 되는 production fallback은 별도 cleanup 후보로 남긴다.
 
+## Issue 6 Prevention: Dead-Code Retention
+
+Scope:
+
+- 코드 이름 검색에는 안 잡히지만 `.meta` GUID, scene/prefab serialization, generated `.csproj`, tool registry, 또는 테스트 리플렉션이 붙잡는 삭제 후보.
+- 새 구조로 대체됐지만 구 adapter/helper/tool 파일이 미등록 상태로 남아 있는 경우.
+- behavior가 없는 compatibility overload, 빈 validation method, 미사용 serialized field가 테스트 fixture 때문에 유지되는 경우.
+
+Confirmed facts from 2026-05-01 cleanup:
+
+- `Shared.Ui`의 UGUI-era stack/palette/graphic/sound helper는 code reference와 scene/prefab GUID reference가 없어서 삭제 가능했다.
+- `UiHandlers.cs`와 `GameObjectHandlers.cs`는 canonical `Improved*Handlers`가 `UnityMcpBridge`에 등록된 뒤 미등록 duplicate handler로 남아 있었다.
+- `UnitSlotInputHandlerDirectTests`가 private `_dragGhostPrefab` field를 reflection으로 세팅해서 production의 빈 `ValidateGhostPrefab`, `legacyCanvas` overload, 미사용 serialized field 제거를 늦췄다.
+- script 삭제 뒤 local `dotnet build`는 generated `.csproj` stale include 때문에 `CS2001`을 냈고, Unity/IDE가 잡은 source lock은 stale comment 정리를 막을 수 있다.
+
+Root cause:
+
+- cleanup closeout 기준이 compile 중심이라 unused-code deletion의 실제 owner surface를 모두 보지 않았다.
+- Unity script는 C# symbol reference, `.meta` GUID serialization, generated project include가 서로 다른 경로로 남는데, 삭제 체크가 한 종류의 참조 검색에 치우쳤다.
+- tests가 public behavior가 아니라 private implementation detail을 고정해 dead field/method를 살아 있게 만들었다.
+- tool handlers는 registry가 canonical entrypoint인데, 파일 존재 자체를 tool availability로 착각하기 쉬운 구조였다.
+
+Prevention:
+
+- 삭제 후보마다 owner surface를 먼저 분류한다: runtime script, MonoBehaviour serialized component, editor tool handler, generated/project-only include, test-only helper.
+- MonoBehaviour/script 삭제 전후로 type/name search와 `.meta` GUID search를 둘 다 실행한다.
+- editor tool handler는 file grep이 아니라 registry/bootstrap entrypoint를 기준으로 live/dead를 판정한다.
+- test가 private field/method를 reflection으로 만지면 production API 유지 근거로 보지 않고, public behavior test로 전환한 뒤 삭제한다.
+- generated `.csproj` stale include는 code regression이 아니라 Unity project-file sync residual로 분리하되, CLI build closeout 전에는 regenerate 또는 local include cleanup으로 빌드를 통과시킨다.
+- file lock 때문에 주석/old reference가 남으면 behavior success로 포장하지 않고 locked residual로 기록하고, 잠금 해제 후 cleanup-only pass로 닫는다.
+
+Closeout check:
+
+- `rg -n "<DeletedType>|<DeletedFile>|<DeletedField>|<DeletedMethod>" Assets/Scripts Assets/Editor Assets/Scenes Assets/Prefabs Assets/UI docs`
+- deleted script `.meta` GUID를 `Assets/Scenes Assets/Prefabs Assets/UI`에서 검색한다.
+- editor tool 삭제는 registry/bootstrap 파일에서 해당 type이 등록되지 않는지 확인한다.
+- tests에서 `BindingFlags.NonPublic`, `SetPrivateField`, 삭제 대상 field/method 문자열을 검색한다.
+- `dotnet build JG.slnx -v:minimal`
+- 필요한 경우 scoped Unity EditMode direct test를 실행하고, Unity Editor가 열려 batchmode가 막히면 blocked evidence를 분리해 보고한다.
+
 ## Applied Guardrails
 
 2026-05-01 적용:
@@ -90,6 +133,7 @@ Review check:
 - `ArchitectureGuardrailReflectionTests`에 locked source padding residual allowlist와 production fallback review allowlist를 추가했다.
 - production 코드의 오탐 fallback 명명은 behavior 변경 없이 `placeholder`, `default`, `current`, `reported`, `catalog missing` 의미로 정리했다.
 - serialized field rename은 `FormerlySerializedAs`로 마이그레이션 경로를 유지했다.
+- dead-code retention cleanup gate를 추가하고, 미사용 `Shared.Ui` 잔여 코드, 미등록 MCP 구 핸들러, `UnitSlotInputHandler` private-field test coupling을 cleanup evidence로 고정했다.
 
 ## Validation
 
@@ -100,6 +144,7 @@ Review check:
 - `tools/unity-mcp/Invoke-UnityMcpEditModeTests.ps1 -TestName Tests.Editor.ArchitectureGuardrailReflectionTests`
 - `rg -n "Padding retained|Removed procedural" Assets/Scripts`
 - `rg -n "fallback|Fallback" Assets/Scripts/Features Assets/Editor/DirectTests`
+- 삭제 후보 closeout 시 type/name search, deleted `.meta` GUID search, registry/bootstrap entrypoint search, private reflection search
 - 관련 runtime owner plan의 smoke evidence
 
 ## Residual
@@ -109,14 +154,15 @@ Review check:
 - `SoundPlayer` AudioSource/template residual은 runtime contract guard 기준으로 보되, 실행이 필요하면 새 runtime owner pass 또는 해당 feature owner로 연다.
 - `WaveSetup.TryGetFirstEnemyData`와 `SummonPhotonAdapter`의 `fallbackInstanceId`는 production fallback residual이다. behavior removal은 별도 runtime contract cleanup으로 연다.
 - `fallback|Fallback` 검색 결과는 review gate다. guardrail allowlist에 없는 production fallback은 다음 cleanup 후보로 승격한다.
+- `Assets/Editor/UnityMcp/Handlers/ImprovedUiHandlers.cs`의 stale `UiHandlers.cs` 주석은 Unity/IDE source lock으로 남은 locked residual이다. 잠금 해제 후 cleanup-only pass로 제거한다.
 
 owner impact:
 
 - primary: `plans.technical-debt-recurrence-prevention`
-- secondary: `Assets/Editor/Tests/ArchitectureGuardrailReflectionTests.cs`, narrow production naming cleanup, `artifacts/rules/issue-recurrence-closeout.json`
-- out-of-scope: `WaveSetup`/`SummonPhotonAdapter` behavior removal, Unity scene/prefab mutation, `plans.progress` 현재 우선순위 변경
+- secondary: `Assets/Editor/Tests/ArchitectureGuardrailReflectionTests.cs`, narrow production naming cleanup, dead-code cleanup files, `artifacts/rules/issue-recurrence-closeout.json`
+- out-of-scope: `WaveSetup`/`SummonPhotonAdapter` behavior removal, Unity scene/prefab mutation beyond deleted GUID checks, `plans.progress` 현재 우선순위 변경
 
 doc lifecycle checked:
 
-- reference 유지. 새 runtime repair 재발이 실제 작업으로 열리면 해당 feature/runtime owner plan 또는 session checklist로 다시 판단한다.
-- plan rereview: clean - reference guard and runtime residual routing checked
+- reference 유지. 새 runtime repair 또는 dead-code cleanup 실행 lane이 열리면 해당 feature/runtime owner plan 또는 session checklist로 다시 판단한다.
+- plan rereview: clean - reference guard, dead-code cleanup gate, residual routing checked

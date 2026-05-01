@@ -15,7 +15,7 @@ MonoBehaviour:
   frameId: nova_frame_body13_scro
   displayName: "\uC13C\uCD94\uB9AC\uC5B8"
   icon: {fileID: 0}
-  assemblyForm: 1
+  assemblyForm: 2
   baseHp: 555
   baseMoveRange: 4
   baseAttackSpeed: 1.1

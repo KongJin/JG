@@ -15,7 +15,7 @@ MonoBehaviour:
   moduleId: nova_mob_legs34_dpns
   displayName: "\uB378\uD53C\uB204\uC2A4"
   icon: {fileID: 0}
-  mobilitySurface: 2
+  mobilitySurface: 1
   hpBonus: 130
   moveRange: 5.65
   anchorRange: 5.65

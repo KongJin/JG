@@ -16,18 +16,13 @@ namespace Tests.Editor
         public void DragDropInsidePlacementArea_RequestsSummonAndHidesPreview()
         {
             var eventSystemGo = new GameObject("EventSystem");
-            var canvasGo = new GameObject("Canvas", typeof(Canvas));
             var cameraGo = new GameObject("WorldCamera", typeof(Camera));
             var slotGo = new GameObject("UnitSlot", typeof(RectTransform), typeof(Image), typeof(UnitSlotInputHandler));
             var viewGo = new GameObject("PlacementAreaView", typeof(PlacementAreaView));
-            var ghostPrefab = new GameObject("DragGhostPrefab", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
 
             try
             {
                 eventSystemGo.AddComponent<EventSystem>();
-
-                var canvas = canvasGo.GetComponent<Canvas>();
-                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
                 var camera = cameraGo.GetComponent<Camera>();
                 camera.orthographic = true;
@@ -47,7 +42,6 @@ namespace Tests.Editor
                 var unit = CreateUnit("unit-1");
 
                 var handler = slotGo.GetComponent<UnitSlotInputHandler>();
-                SetPrivateField(handler, "_dragGhostPrefab", ghostPrefab);
                 handler.Initialize(
                     unit,
                     (spec, position) =>
@@ -56,7 +50,6 @@ namespace Tests.Editor
                         requestedUnit = spec;
                         requestedPosition = position;
                     },
-                    canvas,
                     camera,
                     area,
                     errorView: null,
@@ -78,11 +71,9 @@ namespace Tests.Editor
             }
             finally
             {
-                Object.DestroyImmediate(ghostPrefab);
                 Object.DestroyImmediate(viewGo);
                 Object.DestroyImmediate(slotGo);
                 Object.DestroyImmediate(cameraGo);
-                Object.DestroyImmediate(canvasGo);
                 Object.DestroyImmediate(eventSystemGo);
             }
         }
@@ -104,15 +95,6 @@ namespace Tests.Editor
                 3f,
                 3f,
                 3);
-        }
-
-        private static void SetPrivateField(object target, string name, object value)
-        {
-            var field = target.GetType().GetField(
-                name,
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            Assert.IsNotNull(field, name);
-            field.SetValue(target, value);
         }
     }
 }

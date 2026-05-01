@@ -5,7 +5,7 @@ description: "JG Unity owner workflow. Triggers: JG scene/prefab authoring, UITK
 
 # JG Unity Workflow
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: skill.jg-unity-workflow
 > role: skill-entry

@@ -15,7 +15,7 @@ MonoBehaviour:
   moduleId: nova_fire_arm20_rkto
   displayName: "\uB85C\uCF13\uD2F0\uC5B4"
   icon: {fileID: 0}
-  assemblyForm: 1
+  assemblyForm: 2
   attackDamage: 48
   attackSpeed: 0.93
   range: 7

@@ -39,12 +39,11 @@ namespace Tests.Editor
                 Assert.AreEqual("전선 고정", Label(root, "SlotName01Label").text);
                 Assert.IsTrue(Button(root, "SlotCard01").ClassListContains("slot-card--active"));
                 Assert.IsTrue(root.Q<VisualElement>("SlotIcon01Glyph").ClassListContains("uitk-icon--security"));
-                Assert.AreEqual("주무장", Label(root, "FocusedPartBadgeLabel").text);
-                Assert.AreEqual("레일건", Label(root, "FocusedPartTitleLabel").text);
-                Assert.IsTrue(root.Q<VisualElement>("FocusedPartIconGlyph").ClassListContains("uitk-icon--swords"));
                 Assert.IsTrue(Button(root, "FirepowerTabButton").ClassListContains("focus-tab--active"));
                 Assert.AreEqual("무장 선택", Label(root, "PartListTitleLabel").text);
                 Assert.AreEqual("2 PARTS", Label(root, "PartListCountLabel").text);
+                Assert.AreEqual("레일건", Label(root, "SelectedPartPreviewTitleLabel").text);
+                Assert.AreEqual("ATK 840 | RNG 12.5 | T3", Label(root, "SelectedPartPreviewMetaLabel").text);
                 Assert.IsTrue(Button(root, "PartRow01").ClassListContains("part-row--selected"));
                 Assert.AreEqual("출격 편성 저장", Button(root, "SaveButton").text);
                 Assert.IsTrue(Button(root, "SaveButton").enabledSelf);
@@ -69,21 +68,22 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void Uxml_PlacesSelectedPartPreviewBesidePartList()
+        public void Uxml_DocksSelectedPartPreviewBelowPartList()
         {
             var root = LoadRoot();
             var pane = root.Q<VisualElement>("PartSelectionPane");
-            var inspector = root.Q<VisualElement>("PartInspectorColumn");
             var listCard = root.Q<VisualElement>("PartListCard");
+            var previewCard = root.Q<VisualElement>("SelectedPartPreviewCard");
             var statsPanel = root.Q<VisualElement>("SelectedPartStatsPanel");
             var previewHost = root.Q<VisualElement>("SelectedPartPreviewHost");
 
             Assert.NotNull(pane);
-            Assert.AreSame(pane, inspector.parent);
             Assert.AreSame(pane, listCard.parent);
-            Assert.AreNotSame(listCard, inspector.parent);
-            Assert.AreSame(inspector, statsPanel.parent);
-            Assert.AreSame(inspector, previewHost.parent);
+            Assert.IsNull(root.Q<VisualElement>("PartInspectorColumn"));
+            Assert.IsNull(root.Q<VisualElement>("EditorCard"));
+            Assert.NotNull(previewCard);
+            Assert.AreSame(previewCard, statsPanel.parent);
+            Assert.AreSame(previewCard, previewHost.parent);
             Assert.AreNotSame(listCard, previewHost.parent);
         }
 

@@ -67,20 +67,8 @@
             </ui:VisualElement>
 
             <ui:VisualElement name="PartSelectionPane" class="part-selection-pane">
-                <ui:VisualElement name="PartInspectorColumn" class="part-inspector-column">
-                    <ui:VisualElement name="SelectedPartStatsPanel" class="selected-part-stats-panel">
-                        <ui:Label text="SELECTED PART" class="part-preview-kicker" />
-                        <ui:Label name="SelectedPartPreviewTitleLabel" text="기동 선택" class="part-preview-title" />
-                        <ui:Label name="SelectedPartPreviewMetaLabel" text="HP+ 0 | MOV 0.0 | T1" class="part-preview-meta" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="SelectedPartPreviewHost" class="selected-part-preview-host">
-                        <ui:VisualElement class="reticle-corner reticle-corner--tl" />
-                        <ui:VisualElement class="reticle-corner reticle-corner--tr" />
-                        <ui:VisualElement class="reticle-corner reticle-corner--bl" />
-                        <ui:VisualElement class="reticle-corner reticle-corner--br" />
-                        <ui:Label name="SelectedPartPreviewLabel" text="기동" class="selected-part-preview-label" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
+                <!-- Part preview moved to the compact dock below the list. -->
+
 
                 <ui:VisualElement name="PartListCard" class="part-list-card">
                     <ui:VisualElement class="part-list-head">
@@ -149,57 +137,22 @@
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:VisualElement name="EditorCard" class="editor-card">
-                <ui:VisualElement class="editor-head">
-                    <ui:VisualElement class="editor-title-stack">
-                        <ui:VisualElement class="editor-title-row">
-                            <ui:Label name="FocusedPartBadgeLabel" text="주무장" class="part-badge" />
-                            <ui:Label name="FocusedPartTitleLabel" text="HV-42 레일건" class="part-title" />
-                        </ui:VisualElement>
-                        <ui:Label name="FocusedPartDescriptionLabel" text="고속 관통 탄환을 발사하여 중장갑 목표물 타격에 특화됨." class="part-description" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="part-icon">
-                        <ui:VisualElement name="FocusedPartIconGlyph" class="uitk-icon uitk-icon--swords uitk-icon--blue part-icon-glyph" />
-                    </ui:VisualElement>
+            <ui:VisualElement name="SelectedPartPreviewCard" class="selected-part-compact-card">
+                <ui:VisualElement name="SelectedPartPreviewHost" class="selected-part-preview-host">
+                    <ui:VisualElement class="reticle-corner reticle-corner--tl" />
+                    <ui:VisualElement class="reticle-corner reticle-corner--tr" />
+                    <ui:VisualElement class="reticle-corner reticle-corner--bl" />
+                    <ui:VisualElement class="reticle-corner reticle-corner--br" />
+                    <ui:Label name="SelectedPartPreviewLabel" text="기동" class="selected-part-preview-label" />
                 </ui:VisualElement>
-
-                <ui:VisualElement name="StatGrid" class="stat-grid">
-                    <ui:VisualElement name="AttackStatCell" class="stat-cell">
-                        <ui:Label name="AttackStatLabel" text="공격력 (ATK)" class="stat-label" />
-                        <ui:Label name="AttackStatValueLabel" text="840" class="stat-value" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="RangeStatCell" class="stat-cell">
-                        <ui:Label name="RangeStatLabel" text="사거리 (RNG)" class="stat-label" />
-                        <ui:Label name="RangeStatValueLabel" text="12.5m" class="stat-value" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="RateStatCell" class="stat-cell">
-                        <ui:Label name="RateStatLabel" text="연사력 (RTS)" class="stat-label" />
-                        <ui:Label name="RateStatValueLabel" text="Low" class="stat-value stat-value--warning" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="PowerStatCell" class="stat-cell">
-                        <ui:Label name="PowerStatLabel" text="전력 소모 (PWR)" class="stat-label" />
-                        <ui:Label name="PowerStatValueLabel" text="45kW" class="stat-value" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-
-                <ui:VisualElement name="AttachmentsSection" class="attachments">
-                    <ui:VisualElement class="attachment-head">
-                        <ui:Label text="부착물 슬롯" class="attachment-meta" />
-                        <ui:Label name="AttachmentUsageLabel" text="1/2 사용됨" class="attachment-meta" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="AttachmentRow" class="attachment-row">
-                        <ui:Button name="AttachmentChip01" class="attachment-chip attachment-chip--active">
-                            <ui:Label name="AttachmentName01Label" text="광학 조준경" class="attachment-name attachment-name--active" />
-                            <ui:Label name="AttachmentEffect01Label" text="+ 명중률" class="attachment-effect" />
-                        </ui:Button>
-                        <ui:Button name="AttachmentChip02" class="attachment-chip attachment-chip--empty">
-                            <ui:Label name="AttachmentName02Label" text="+ 빈 슬롯" class="attachment-name attachment-name--empty" />
-                        </ui:Button>
-                    </ui:VisualElement>
+                <ui:VisualElement name="SelectedPartStatsPanel" class="selected-part-stats-panel">
+                    <ui:Label text="SELECTED PART" class="part-preview-kicker" />
+                    <ui:Label name="SelectedPartPreviewTitleLabel" text="기동 선택" class="part-preview-title" />
+                    <ui:Label name="SelectedPartPreviewMetaLabel" text="HP+ 0 | MOV 0.0 | T1" class="part-preview-meta" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:VisualElement name="PreviewCard" class="preview-card">
+            <!--                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                --><ui:VisualElement name="PreviewCard" class="preview-card">
                 <ui:VisualElement class="blueprint-grid">
                     <ui:VisualElement class="grid-line grid-line--v grid-line--v1" />
                     <ui:VisualElement class="grid-line grid-line--v grid-line--v2" />

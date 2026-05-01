@@ -283,15 +283,41 @@ function Get-Stats([string] $slot, [int] $tier) {
 
 function Get-AssemblyForm([string] $slot, [int] $originalCode) {
     if ($slot -eq "Frame") {
-        if ($originalCode -ge 2500 -and $originalCode -lt 2600) { return "Shoulder" }
-        if ($originalCode -ge 2400 -and $originalCode -lt 2500) { return "Humanoid" }
-        if ($originalCode -ge 2000 -and $originalCode -lt 2400) { return "Tower" }
+        $towerCodes = @(
+            2001, 2004, 2011, 2012, 2015, 2016, 2019, 2020, 2022, 2023, 2025, 2037,
+            2041, 2042
+        )
+        $shoulderCodes = @(
+            2003, 2005, 2007, 2008, 2013, 2014, 2024, 2027, 2032, 2035,
+            2040, 2044, 2048, 2050
+        )
+        $humanoidCodes = @(
+            2002, 2006, 2009, 2010, 2017, 2018, 2021, 2026, 2028, 2036, 2038,
+            2039, 2043, 2047, 2049
+        )
+
+        if ($towerCodes -contains $originalCode) { return "Tower" }
+        if ($shoulderCodes -contains $originalCode) { return "Shoulder" }
+        if ($humanoidCodes -contains $originalCode) { return "Humanoid" }
     }
 
     if ($slot -eq "Firepower") {
-        if ($originalCode -ge 3500 -and $originalCode -lt 3600) { return "Shoulder" }
-        if ($originalCode -ge 3400 -and $originalCode -lt 3500) { return "Humanoid" }
-        if ($originalCode -ge 3000 -and $originalCode -lt 3400) { return "Tower" }
+        $towerCodes = @(
+            3001, 3004, 3005, 3011, 3012, 3013, 3021, 3022, 3025, 3026, 3027, 3028,
+            3030, 3033, 3034, 3036, 3043, 3057, 3059, 3061, 3066
+        )
+        $shoulderCodes = @(
+            3003, 3008, 3009, 3010, 3017, 3018, 3019, 3020, 3031, 3035, 3037, 3041,
+            3053, 3054, 3056, 3062, 3063, 3067, 3068
+        )
+        $humanoidCodes = @(
+            3015, 3016, 3023, 3024, 3029, 3032, 3039, 3046, 3049, 3050, 3052, 3055,
+            3058, 3060, 3064, 3065, 3069, 3070
+        )
+
+        if ($towerCodes -contains $originalCode) { return "Tower" }
+        if ($shoulderCodes -contains $originalCode) { return "Shoulder" }
+        if ($humanoidCodes -contains $originalCode) { return "Humanoid" }
     }
 
     return "Unspecified"
@@ -303,8 +329,7 @@ function Get-MobilitySurface([string] $slot, [int] $originalCode) {
     }
 
     $airCodes = @(
-        1007, 1018, 1024, 1034, 1037, 1044,
-        1501, 1502, 1503, 1504, 1505, 1509, 1510, 1511, 1512
+        1009, 1010, 1012, 1013, 1024, 1028, 1032, 1037, 1040, 1502, 1510
     )
 
     if ($airCodes -contains $originalCode) {
@@ -503,7 +528,7 @@ $lines.Add("## Generated Stat Policy")
 $lines.Add("")
 $lines.Add('- Tier is generated per slot from triangle-count quantiles, `1..5`.')
 $lines.Add("- Generated stats are a playable smoke baseline, not final balance.")
-$lines.Add('- `assemblyForm` maps original top/middle compatibility ranges to `Tower`, `Shoulder`, or `Humanoid`; `mobilitySurface` maps lower parts to `Ground` or `Air` for catalog/UI filtering only.')
+$lines.Add('- `assemblyForm` and `mobilitySurface` use manually reviewed Nova1492 compatibility/surface code sets; N/S/G/II variants follow their base part unless explicitly overridden.')
 $lines.Add('- `needsNameReview=true` rows keep source-derived IDs but require later naming review before release.')
 
 Set-Content -LiteralPath $OutputMarkdownPath -Value $lines -Encoding UTF8

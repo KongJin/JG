@@ -15,7 +15,7 @@ MonoBehaviour:
   moduleId: nova_fire_arm24_bzk
   displayName: "\uBC14\uC8FC\uCE74"
   icon: {fileID: 0}
-  assemblyForm: 1
+  assemblyForm: 3
   attackDamage: 56
   attackSpeed: 0.8
   range: 7.75

@@ -19,7 +19,7 @@
 | `WebGL Account/Garage / Product Smoke` | residual: `plans.progress` + [`webgl_smoke_checklist.md`](../playtest/webgl_smoke_checklist.md), no separate active plan | Firestore/Garage 핵심 경로와 Google linking code path는 있으나 WebGL product smoke 전 | Garage save/load, account delete, Google linking, settings/accessibility WebGL smoke |
 | `WebGL Audio / Product Smoke` | [`webgl_audio_closeout_plan.md`](./webgl_audio_closeout_plan.md) | WebGL audio product smoke 전 | 사운드 설정 UI 저장 확장, WebGL 오디오 로드/재생 smoke |
 | `Audio SFX / MCP Pipeline` | [`audio_sfx_mcp_pipeline_plan.md`](./audio_sfx_mcp_pipeline_plan.md) | direct Suno MCP/CDP route generated, trimmed, imported, and catalog-synced all 12 UITK SFX batch keys; manual audition decision remains active | manual audition for all 12 SFX, then decide replacements/volume tweaks before UITK event wiring |
-| `UI / Source Candidate Handoff` | [`non_stitch_ui_stitch_reimport_plan.md`](./non_stitch_ui_stitch_reimport_plan.md) | native/mixed 후보는 source freeze -> UI Toolkit candidate -> owner handoff route로 처리 | Battle HUD/skill-selection source freeze, candidate handoff, runtime/product owner 분리 |
+| `UI / Source Candidate Handoff` | residual: `plans.progress` + reference [`non_stitch_ui_stitch_reimport_plan.md`](./non_stitch_ui_stitch_reimport_plan.md), no separate active plan | Account/Connection source/candidate handoff는 reference로 닫힘; 새 native/mixed UI는 upstream Stitch/Unity owner route로 다시 연다 | Battle HUD/skill-selection 작업이 열릴 때 source freeze, candidate handoff, runtime/product owner 분리 |
 | `Nova1492 Content / Release Gate` | [`nova1492_content_residual_plan.md`](./nova1492_content_residual_plan.md) | UnitParts playable 승격은 닫힘, rights/naming gate와 owner handoff가 남음 | 권리/이름 release gate, 밸런스/UI/model 후보 owner handoff |
 
 ## 완료 baseline
@@ -33,5 +33,5 @@
 - GameScene actual-flow와 WebGL audio acceptance는 각각의 active owner에서 success/blocked/mismatch로 분리해 닫고, multiplayer/WebGL account residual은 `plans.progress`와 관련 playtest checklist 기준으로 추적한다.
 - UI 변경은 Unity UI authoring workflow와 Stitch owner route를 먼저 확인하고, product acceptance와 candidate evidence를 분리한다.
 - Audio SFX pipeline은 12개 SFX의 generation/import/catalog-sync mechanical path와 Unity manual audition decision을 분리한다. WebGL/browser audio product acceptance는 WebGL audio owner에서만 닫는다.
-- `UI / Source Candidate Handoff`와 `Nova1492 Content / Release Gate`는 실행 success owner가 아니라 routing/gate owner로 유지하고, source freeze 또는 rights/naming gate가 닫히면 reference 압축 또는 삭제 후보로 재검토한다.
+- `UI / Source Candidate Handoff`는 reference 압축 보존으로 내렸고, 새 Battle HUD/skill-selection UI 작업이 열리면 upstream Stitch/Unity owner route에서 다시 판단한다. `Nova1492 Content / Release Gate`는 rights/naming gate가 닫히면 reference 압축 또는 삭제 후보로 재검토한다.
 - 새 문서 추가보다 active owner 압축과 residual 이관을 우선한다.

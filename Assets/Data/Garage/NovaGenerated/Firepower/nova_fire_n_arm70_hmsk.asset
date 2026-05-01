@@ -15,7 +15,7 @@ MonoBehaviour:
   moduleId: nova_fire_n_arm70_hmsk
   displayName: "\uD574\uBA38\uC1FC\uD06CN"
   icon: {fileID: 0}
-  assemblyForm: 1
+  assemblyForm: 3
   attackDamage: 56
   attackSpeed: 0.8
   range: 7.75

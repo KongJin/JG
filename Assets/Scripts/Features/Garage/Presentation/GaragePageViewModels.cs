@@ -1,3 +1,4 @@
+using Features.Unit.Infrastructure;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
@@ -27,7 +28,9 @@ namespace Features.Garage.Presentation
             GaragePanelCatalog.PartAlignment frameAlignment = null,
             GaragePanelCatalog.PartAlignment firepowerAlignment = null,
             GaragePanelCatalog.PartAlignment mobilityAlignment = null,
-            bool mobilityUsesAssemblyPivot = false)
+            bool mobilityUsesAssemblyPivot = false,
+            AssemblyForm frameAssemblyForm = AssemblyForm.Unspecified,
+            AssemblyForm firepowerAssemblyForm = AssemblyForm.Unspecified)
         {
             SlotLabel = slotLabel;
             Title = title;
@@ -52,6 +55,8 @@ namespace Features.Garage.Presentation
             FirepowerAlignment = firepowerAlignment;
             MobilityAlignment = mobilityAlignment;
             MobilityUsesAssemblyPivot = mobilityUsesAssemblyPivot;
+            FrameAssemblyForm = frameAssemblyForm;
+            FirepowerAssemblyForm = firepowerAssemblyForm;
         }
 
         public string SlotLabel { get; }
@@ -77,6 +82,8 @@ namespace Features.Garage.Presentation
         public GaragePanelCatalog.PartAlignment FirepowerAlignment { get; }
         public GaragePanelCatalog.PartAlignment MobilityAlignment { get; }
         public bool MobilityUsesAssemblyPivot { get; }
+        public AssemblyForm FrameAssemblyForm { get; }
+        public AssemblyForm FirepowerAssemblyForm { get; }
     }
 
     public sealed class GarageEditorViewModel

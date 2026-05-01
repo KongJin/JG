@@ -15,7 +15,7 @@ MonoBehaviour:
   moduleId: nova_fire_arm31_skokr
   displayName: "\uC2A4\uCE74\uC774\uD0AC\uB7EC"
   icon: {fileID: 0}
-  assemblyForm: 1
+  assemblyForm: 2
   attackDamage: 48
   attackSpeed: 0.93
   range: 7

@@ -15,7 +15,7 @@ MonoBehaviour:
   frameId: nova_frame_body10_skdr
   displayName: "\uC2A4\uCFFC\uB4DC\uB860"
   icon: {fileID: 0}
-  assemblyForm: 1
+  assemblyForm: 3
   baseHp: 555
   baseMoveRange: 4
   baseAttackSpeed: 1.1

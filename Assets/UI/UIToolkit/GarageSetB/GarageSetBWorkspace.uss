@@ -262,41 +262,34 @@
 
 .part-selection-pane {
     flex-direction: row;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
-
-.part-inspector-column {
-    width: 104px;
-    min-width: 104px;
-    height: 422px;
-    flex-shrink: 0;
-    margin-right: 8px;
+.selected-part-compact-card {
+    height: 104px;
+    flex-direction: row;
+    align-items: stretch;
+    padding-left: 9px;
+    padding-right: 9px;
+    padding-top: 9px;
+    padding-bottom: 9px;
     margin-bottom: 12px;
-    padding-left: 6px;
-    padding-right: 6px;
-    padding-top: 10px;
-    padding-bottom: 10px;
     border-radius: 8px;
     border-width: 1px;
-    border-color: rgba(94, 182, 255, 0.26);
-    background-color: #101014;
+    border-color: var(--zinc-800);
+    background-color: var(--zinc-900);
 }
-
 .selected-part-stats-panel {
-    min-height: 132px;
-    flex-shrink: 0;
-    margin-bottom: 10px;
-    padding-left: 7px;
-    padding-right: 7px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    border-radius: 5px;
-    border-width: 1px;
-    border-color: rgba(63, 63, 70, 0.62);
-    background-color: rgba(9, 9, 11, 0.42);
+    flex-grow: 1;
+    min-height: 0;
+    margin-left: 10px;
+    padding-left: 2px;
+    padding-right: 4px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    border-width: 0;
+    background-color: transparent;
+    justify-content: center;
 }
-
 .part-preview-kicker {
     color: var(--zinc-500);
     font-size: 8px;
@@ -306,22 +299,20 @@
 
 .part-preview-title {
     color: var(--zinc-200);
-    font-size: 11px;
+    font-size: 13px;
     -unity-font-style: bold;
     white-space: normal;
-    margin-top: 8px;
+    margin-top: 2px;
 }
-
 .part-preview-meta {
     color: var(--blue-500);
-    font-size: 8px;
+    font-size: 9px;
     white-space: normal;
-    margin-top: 12px;
+    margin-top: 5px;
 }
-
 .selected-part-preview-host {
-    flex-grow: 1;
-    min-height: 224px;
+    width: 86px;
+    height: 86px;
     border-radius: 5px;
     border-width: 1px;
     border-color: rgba(94, 182, 255, 0.35);
@@ -331,14 +322,12 @@
     align-items: center;
     justify-content: center;
 }
-
 .selected-part-preview-label {
     color: rgba(94, 182, 255, 0.78);
-    font-size: 13px;
+    font-size: 11px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
-
 .part-list-card {
     flex-grow: 1;
     min-width: 210px;
@@ -869,3 +858,4 @@
     font-size: 14px;
     -unity-font-style: bold;
 }
+/*                                                                                                                      */

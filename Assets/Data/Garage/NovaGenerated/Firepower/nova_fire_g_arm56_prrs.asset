@@ -15,7 +15,7 @@ MonoBehaviour:
   moduleId: nova_fire_g_arm56_prrs
   displayName: "\uD504\uB864\uB9AD\uC2A4G"
   icon: {fileID: 0}
-  assemblyForm: 1
+  assemblyForm: 2
   attackDamage: 40
   attackSpeed: 1.06
   range: 6.25

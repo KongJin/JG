@@ -15,7 +15,7 @@ MonoBehaviour:
   moduleId: nova_fire_arm19_roz
   displayName: "\uB808\uC774\uC800"
   icon: {fileID: 0}
-  assemblyForm: 1
+  assemblyForm: 2
   attackDamage: 32
   attackSpeed: 1.19
   range: 5.5

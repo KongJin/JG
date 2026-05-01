@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Features.Unit.Infrastructure;
 
 namespace Features.Garage.Presentation
 {
@@ -105,7 +106,9 @@ namespace Features.Garage.Presentation
                     frameAlignment: frame?.Alignment,
                     firepowerAlignment: firepower?.Alignment,
                     mobilityAlignment: mobility?.Alignment,
-                    mobilityUsesAssemblyPivot: mobility?.UseAssemblyPivot ?? false));
+                    mobilityUsesAssemblyPivot: mobility?.UseAssemblyPivot ?? false,
+                    frameAssemblyForm: frame?.AssemblyForm ?? AssemblyForm.Unspecified,
+                    firepowerAssemblyForm: firepower?.AssemblyForm ?? AssemblyForm.Unspecified));
             }
 
             return slotViewModels;

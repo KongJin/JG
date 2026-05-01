@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Features.Garage.Presentation;
 using Features.Lobby.Domain;
 using Shared.Kernel;
+using Shared.Ui;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -41,6 +42,7 @@ namespace Features.Lobby.Presentation
         private Button _lobbyNav;
         private Button _garageNav;
         private Button _recordsNav;
+        private LobbyShellPageRouter _pageRouter;
 
         public LobbyUitkRuntimeAdapter(
             UIDocument document,
@@ -126,7 +128,7 @@ namespace Features.Lobby.Presentation
 
             if (viewModel.Rows == null || viewModel.Rows.Count == 0)
             {
-                _roomList?.Add(LobbyUitkElements.Label(viewModel.EmptyText, "uitk-body"));
+                _roomList?.Add(CreateLabel(viewModel.EmptyText, "uitk-body"));
                 return;
             }
 
@@ -158,7 +160,7 @@ namespace Features.Lobby.Presentation
             _memberList?.Clear();
             for (var i = 0; i < viewModel.MemberRows.Count; i++)
             {
-                _memberList?.Add(LobbyUitkElements.Label(
+                _memberList?.Add(CreateLabel(
                     viewModel.MemberRows[i],
                     "uitk-list-row-label"));
             }
@@ -171,61 +173,36 @@ namespace Features.Lobby.Presentation
 
         public void ShowLobbyPage()
         {
-            if (!Bind())
-                return;
-
-            SetPageVisibility(lobby: true, garage: false, records: false, account: false, connection: false);
-            SetGarageDocumentVisible(false);
-            SetNavState(_lobbyNav);
-            SetShell("로비", "동기화 대기");
+            ShowPage(LobbyShellPageId.Lobby);
         }
 
         public void ShowGaragePage()
         {
-            if (!Bind())
-                return;
-
-            EnsureGarageSurface();
-            SetPageVisibility(lobby: false, garage: true, records: false, account: false, connection: false);
-            SetGarageDocumentVisible(false);
-            SetNavState(_garageNav);
-            SetShell("차고", "출격 편성 동기화");
+            ShowPage(LobbyShellPageId.Garage);
         }
 
         public void ShowRecordsPage()
         {
-            if (!Bind())
-                return;
-
-            EnsureRecordsSurface();
-            SetPageVisibility(lobby: false, garage: false, records: true, account: false, connection: false);
-            SetGarageDocumentVisible(false);
-            SetNavState(_recordsNav);
-            SetShell("기록", "LOCAL LOG / SYNC PENDING");
+            ShowPage(LobbyShellPageId.Records);
         }
 
         public void ShowAccountPage()
         {
-            if (!Bind())
-                return;
-
-            EnsureAccountSurface();
-            SetPageVisibility(lobby: false, garage: false, records: false, account: true, connection: false);
-            SetGarageDocumentVisible(false);
-            SetNavState(null);
-            SetShell("계정", "NOVA_SYS / CFG.17");
+            ShowPage(LobbyShellPageId.Account);
         }
 
         public void ShowConnectionPage()
         {
+            ShowPage(LobbyShellPageId.Connection);
+        }
+
+        private void ShowPage(LobbyShellPageId pageId)
+        {
             if (!Bind())
                 return;
 
-            EnsureConnectionSurface();
-            SetPageVisibility(lobby: false, garage: false, records: false, account: false, connection: true);
+            _pageRouter?.Show(pageId);
             SetGarageDocumentVisible(false);
-            SetNavState(null);
-            SetShell("연결", "SESSION CHECK");
         }
 
         public void RenderAccountState(LobbyAccountViewModel viewModel)
@@ -236,21 +213,21 @@ namespace Features.Lobby.Presentation
             EnsureAccountSurface();
             viewModel ??= LobbyAccountViewModel.Empty;
 
-            LobbyUitkElements.SetText(_accountPage, "PilotIdLabel", viewModel.PilotIdText);
-            LobbyUitkElements.SetText(_accountPage, "GoogleLinkStatusLabel", viewModel.GoogleLinkStatusText);
-            LobbyUitkElements.SetText(_accountPage, "UidStatusLabel", viewModel.UidStatusText);
-            LobbyUitkElements.SetText(_accountPage, "GarageSyncStateLabel", viewModel.GarageSyncStateText);
-            LobbyUitkElements.SetText(_accountPage, "OperationSyncStateLabel", viewModel.OperationSyncStateText);
-            LobbyUitkElements.SetText(_accountPage, "CloudSyncStateLabel", viewModel.CloudSyncStateText);
-            LobbyUitkElements.SetText(_accountPage, "BlockedReasonBodyLabel", viewModel.BlockedReasonBodyText);
-            LobbyUitkElements.SetText(_accountPage, "GarageSummaryLabel", viewModel.GarageSummaryText);
-            LobbyUitkElements.SetText(_accountPage, "OperationBufferLabel", viewModel.OperationBufferText);
-            LobbyUitkElements.SetText(_accountPage, "ConflictStateLabel", viewModel.ConflictStateText);
-            LobbyUitkElements.SetText(_accountPage, "LoadingStateLabel", viewModel.LoadingStateText);
-            LobbyUitkElements.SetText(_accountPage, "BgmValueLabel", viewModel.BgmValueText);
-            LobbyUitkElements.SetText(_accountPage, "SfxValueLabel", viewModel.SfxValueText);
-            LobbyUitkElements.SetText(_accountPage, "SaveModeLabel", viewModel.SaveModeText);
-            LobbyUitkElements.SetText(_accountPage, "CloudModeLabel", viewModel.CloudModeText);
+            UitkElementUtility.SetText(_accountPage, "PilotIdLabel", viewModel.PilotIdText);
+            UitkElementUtility.SetText(_accountPage, "GoogleLinkStatusLabel", viewModel.GoogleLinkStatusText);
+            UitkElementUtility.SetText(_accountPage, "UidStatusLabel", viewModel.UidStatusText);
+            UitkElementUtility.SetText(_accountPage, "GarageSyncStateLabel", viewModel.GarageSyncStateText);
+            UitkElementUtility.SetText(_accountPage, "OperationSyncStateLabel", viewModel.OperationSyncStateText);
+            UitkElementUtility.SetText(_accountPage, "CloudSyncStateLabel", viewModel.CloudSyncStateText);
+            UitkElementUtility.SetText(_accountPage, "BlockedReasonBodyLabel", viewModel.BlockedReasonBodyText);
+            UitkElementUtility.SetText(_accountPage, "GarageSummaryLabel", viewModel.GarageSummaryText);
+            UitkElementUtility.SetText(_accountPage, "OperationBufferLabel", viewModel.OperationBufferText);
+            UitkElementUtility.SetText(_accountPage, "ConflictStateLabel", viewModel.ConflictStateText);
+            UitkElementUtility.SetText(_accountPage, "LoadingStateLabel", viewModel.LoadingStateText);
+            UitkElementUtility.SetText(_accountPage, "BgmValueLabel", viewModel.BgmValueText);
+            UitkElementUtility.SetText(_accountPage, "SfxValueLabel", viewModel.SfxValueText);
+            UitkElementUtility.SetText(_accountPage, "SaveModeLabel", viewModel.SaveModeText);
+            UitkElementUtility.SetText(_accountPage, "CloudModeLabel", viewModel.CloudModeText);
         }
 
         public void RenderOperationMemory(LobbyOperationMemoryViewModel viewModel)
@@ -291,6 +268,46 @@ namespace Features.Lobby.Presentation
             _lobbyNav = _root.Q<Button>("LobbyNavButton");
             _garageNav = _root.Q<Button>("GarageNavButton");
             _recordsNav = _root.Q<Button>("RecordsNavButton");
+            _pageRouter = new LobbyShellPageRouter(
+                new[]
+                {
+                    new LobbyShellPageRoute(
+                        LobbyShellPageId.Lobby,
+                        _lobbyPage,
+                        _lobbyNav,
+                        "로비",
+                        "동기화 대기"),
+                    new LobbyShellPageRoute(
+                        LobbyShellPageId.Garage,
+                        _garagePage,
+                        _garageNav,
+                        "차고",
+                        "출격 편성 동기화",
+                        EnsureGarageSurface),
+                    new LobbyShellPageRoute(
+                        LobbyShellPageId.Records,
+                        _recordsPage,
+                        _recordsNav,
+                        "기록",
+                        "LOCAL LOG / SYNC PENDING",
+                        EnsureRecordsSurface),
+                    new LobbyShellPageRoute(
+                        LobbyShellPageId.Account,
+                        _accountPage,
+                        null,
+                        "계정",
+                        "NOVA_SYS / CFG.17",
+                        EnsureAccountSurface),
+                    new LobbyShellPageRoute(
+                        LobbyShellPageId.Connection,
+                        _connectionPage,
+                        null,
+                        "연결",
+                        "SESSION CHECK",
+                        EnsureConnectionSurface)
+                },
+                _shellTitle,
+                _shellState);
 
             RegisterClick("ShellMenuButton", () => ConnectionPageRequested?.Invoke());
             RegisterClick("ShellSettingsButton", () => AccountPageRequested?.Invoke());
@@ -305,9 +322,6 @@ namespace Features.Lobby.Presentation
             RegisterClick("GarageNavButton", () => GaragePageRequested?.Invoke());
             RegisterClick("RecordsNavButton", () => RecordsPageRequested?.Invoke());
 
-            EnsureRecordsSurface();
-            EnsureAccountSurface();
-            EnsureConnectionSurface();
             EnsureGarageSurface();
         }
 
@@ -383,35 +397,6 @@ namespace Features.Lobby.Presentation
             _connectionPage.Q<Button>("ManualRetryButton")?.RegisterCallback<ClickEvent>(_ => LobbyPageRequested?.Invoke());
         }
 
-        private void SetPageVisibility(
-            bool lobby,
-            bool garage,
-            bool records,
-            bool account,
-            bool connection)
-        {
-            LobbyUitkElements.SetPage(_lobbyPage, lobby);
-            LobbyUitkElements.SetPage(_garagePage, garage);
-            LobbyUitkElements.SetPage(_recordsPage, records);
-            LobbyUitkElements.SetPage(_accountPage, account);
-            LobbyUitkElements.SetPage(_connectionPage, connection);
-        }
-
-        private void SetNavState(Button selected)
-        {
-            LobbyUitkElements.SetSelected(_lobbyNav, selected == _lobbyNav);
-            LobbyUitkElements.SetSelected(_garageNav, selected == _garageNav);
-            LobbyUitkElements.SetSelected(_recordsNav, selected == _recordsNav);
-        }
-
-        private void SetShell(string title, string state)
-        {
-            if (_shellTitle != null)
-                _shellTitle.text = title;
-            if (_shellState != null)
-                _shellState.text = state;
-        }
-
         private static void RenderLatestOperation(VisualElement card, LobbyOperationLatestViewModel viewModel)
         {
             if (card == null)
@@ -421,19 +406,19 @@ namespace Features.Lobby.Presentation
             card.Clear();
             if (!viewModel.HasRecord)
             {
-                card.Add(LobbyUitkElements.Label("LATEST_OP", "memory-kicker"));
-                card.Add(LobbyUitkElements.Label(viewModel.ResultText, viewModel.ResultClass));
-                card.Add(LobbyUitkElements.Label(viewModel.PressureText, "memory-sitrep-text"));
+                card.Add(CreateLabel("LATEST_OP", "memory-kicker"));
+                card.Add(CreateLabel(viewModel.ResultText, viewModel.ResultClass));
+                card.Add(CreateLabel(viewModel.PressureText, "memory-sitrep-text"));
                 return;
             }
 
             var header = new VisualElement();
             header.AddToClassList("memory-card-header");
             var titleStack = new VisualElement();
-            titleStack.Add(LobbyUitkElements.Label("LATEST_OP", "memory-kicker"));
-            titleStack.Add(LobbyUitkElements.Label(viewModel.ResultText, viewModel.ResultClass));
+            titleStack.Add(CreateLabel("LATEST_OP", "memory-kicker"));
+            titleStack.Add(CreateLabel(viewModel.ResultText, viewModel.ResultClass));
             header.Add(titleStack);
-            header.Add(LobbyUitkElements.Label(viewModel.TimeText, "memory-time"));
+            header.Add(CreateLabel(viewModel.TimeText, "memory-time"));
             card.Add(header);
 
             var stats = new VisualElement();
@@ -446,8 +431,8 @@ namespace Features.Lobby.Presentation
 
             var sitrep = new VisualElement();
             sitrep.AddToClassList("memory-sitrep");
-            sitrep.Add(LobbyUitkElements.Label("SITREP", "memory-sitrep-label"));
-            sitrep.Add(LobbyUitkElements.Label(viewModel.PressureText, "memory-sitrep-text"));
+            sitrep.Add(CreateLabel("SITREP", "memory-sitrep-label"));
+            sitrep.Add(CreateLabel(viewModel.PressureText, "memory-sitrep-text"));
             card.Add(sitrep);
         }
 
@@ -459,12 +444,12 @@ namespace Features.Lobby.Presentation
                 return;
 
             section.Clear();
-            section.Add(LobbyUitkElements.Label("RECENT OPERATIONS", "memory-section-title"));
+            section.Add(CreateLabel("RECENT OPERATIONS", "memory-section-title"));
             if (rows == null || rows.Count == 0)
             {
                 var empty = new VisualElement();
-                LobbyUitkElements.AddClasses(empty, "operation-row operation-row--empty");
-                empty.Add(LobbyUitkElements.Label("전적 기록 대기중", "operation-empty-text"));
+                UitkElementUtility.AddClasses(empty, "operation-row operation-row--empty");
+                empty.Add(CreateLabel("전적 기록 대기중", "operation-empty-text"));
                 section.Add(empty);
                 return;
             }
@@ -473,19 +458,19 @@ namespace Features.Lobby.Presentation
             {
                 var viewModel = rows[i];
                 var row = new VisualElement();
-                LobbyUitkElements.AddClasses(row, viewModel.RowClass);
+                UitkElementUtility.AddClasses(row, viewModel.RowClass);
 
                 var line = new VisualElement();
-                LobbyUitkElements.AddClasses(line, viewModel.LineClass);
+                UitkElementUtility.AddClasses(line, viewModel.LineClass);
                 row.Add(line);
 
                 var main = new VisualElement();
                 main.AddToClassList("operation-row-main");
-                main.Add(LobbyUitkElements.Label(viewModel.TitleText, viewModel.TitleClass));
-                main.Add(LobbyUitkElements.Label(viewModel.MetaText, "operation-meta"));
+                main.Add(CreateLabel(viewModel.TitleText, viewModel.TitleClass));
+                main.Add(CreateLabel(viewModel.MetaText, "operation-meta"));
                 row.Add(main);
 
-                row.Add(LobbyUitkElements.Label(viewModel.CoreText, viewModel.CoreClass));
+                row.Add(CreateLabel(viewModel.CoreText, viewModel.CoreClass));
                 section.Add(row);
             }
         }
@@ -497,12 +482,12 @@ namespace Features.Lobby.Presentation
 
             viewModel ??= LobbyOperationMemoryViewModel.Empty.Trace;
             section.Clear();
-            section.Add(LobbyUitkElements.Label("기체 전적", "memory-section-title"));
+            section.Add(CreateLabel("기체 전적", "memory-section-title"));
             var chips = new VisualElement();
             chips.AddToClassList("memory-chip-row");
-            chips.Add(LobbyUitkElements.Label(viewModel.CountChipText, "memory-chip"));
-            chips.Add(LobbyUitkElements.Label("LOCAL FIRST", "memory-chip memory-chip--blue"));
-            chips.Add(LobbyUitkElements.Label(viewModel.RecentDataChipText, "memory-chip memory-chip--orange"));
+            chips.Add(CreateLabel(viewModel.CountChipText, "memory-chip"));
+            chips.Add(CreateLabel("LOCAL FIRST", "memory-chip memory-chip--blue"));
+            chips.Add(CreateLabel(viewModel.RecentDataChipText, "memory-chip memory-chip--orange"));
             section.Add(chips);
         }
 
@@ -510,9 +495,16 @@ namespace Features.Lobby.Presentation
         {
             var cell = new VisualElement();
             cell.AddToClassList("memory-stat-cell");
-            cell.Add(LobbyUitkElements.Label(label, "memory-stat-label"));
-            cell.Add(LobbyUitkElements.Label(value, valueClass));
+            cell.Add(CreateLabel(label, "memory-stat-label"));
+            cell.Add(CreateLabel(value, valueClass));
             parent.Add(cell);
+        }
+
+        private static Label CreateLabel(string text, string className)
+        {
+            var label = UitkElementUtility.CreateLabel(text, className);
+            label.style.color = new Color(0.86f, 0.91f, 0.96f, 1f);
+            return label;
         }
 
     }

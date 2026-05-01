@@ -77,7 +77,7 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void TryCreatePreviewRoot_SeatsCassowaryKingpinSpitfireOnCatalogFrameSocket()
+        public void TryCreatePreviewRoot_SeatsCassowaryKingpinSpitfireOnExplicitHumanoidFrameSocket()
         {
             var moduleCatalog = AssetDatabase.LoadAssetAtPath<ModuleCatalog>(ModuleCatalogPath);
             var visualCatalog = AssetDatabase.LoadAssetAtPath<NovaPartVisualCatalog>(VisualCatalogPath);
@@ -105,6 +105,8 @@ namespace Tests.Editor
                 Assert.NotNull(frame.AssemblyPrefab);
                 Assert.NotNull(firepower.AssemblyPrefab);
                 Assert.NotNull(mobility.AssemblyPrefab);
+                Assert.AreEqual(AssemblyForm.Humanoid, frame.AssemblyForm);
+                Assert.AreEqual(AssemblyForm.Humanoid, firepower.AssemblyForm);
                 Assert.That(frame.Alignment.SocketOffset.y, Is.GreaterThan(0.0001f));
                 Assert.That(frame.Alignment.FrameTopSocketOffset.sqrMagnitude, Is.LessThan(0.000001f));
 
@@ -123,7 +125,9 @@ namespace Tests.Editor
                     frameAlignment: frame.Alignment,
                     firepowerAlignment: firepower.Alignment,
                     mobilityAlignment: mobility.Alignment,
-                    mobilityUsesAssemblyPivot: mobility.UseAssemblyPivot);
+                    mobilityUsesAssemblyPivot: mobility.UseAssemblyPivot,
+                    frameAssemblyForm: frame.AssemblyForm,
+                    firepowerAssemblyForm: firepower.AssemblyForm);
 
                 Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
                     viewModel,
@@ -134,7 +138,7 @@ namespace Tests.Editor
                     out previewRoot));
 
                 var firepowerObject = FindDirectChild(previewRoot.transform, firepower.Id);
-                var expectedY = frame.Alignment.SocketOffset.y - firepower.Alignment.SocketOffset.y;
+                var expectedY = -firepower.Alignment.SocketOffset.y;
 
                 Assert.NotNull(firepowerObject);
                 Assert.That(firepowerObject.localPosition.y, Is.EqualTo(expectedY).Within(0.0001f));

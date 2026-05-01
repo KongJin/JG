@@ -73,9 +73,10 @@
 - `active`: [`webgl_audio_closeout_plan.md`](./plans/webgl_audio_closeout_plan.md) - WebGL audio smoke owner
 - `active`: [`audio_sfx_mcp_pipeline_plan.md`](./plans/audio_sfx_mcp_pipeline_plan.md) - direct Suno MCP SFX generation and Unity SoundCatalog pipeline owner
 - `active`: [`nova1492_content_residual_plan.md`](./plans/nova1492_content_residual_plan.md) - Nova1492 content handoff owner
-- `active`: [`non_stitch_ui_stitch_reimport_plan.md`](./plans/non_stitch_ui_stitch_reimport_plan.md) - Non-Stitch UI source/candidate handoff owner
+- `reference`: [`non_stitch_ui_stitch_reimport_plan.md`](./plans/non_stitch_ui_stitch_reimport_plan.md) - Non-Stitch UI source/candidate handoff closeout and residual route
 - `reference`: [`agent_workflow_skill_adoption_plan.md`](./plans/agent_workflow_skill_adoption_plan.md) - Matt Pocock skills audit and JG owner adoption route
-- `reference`: [`technical_debt_recurrence_prevention_plan.md`](./plans/technical_debt_recurrence_prevention_plan.md) - runtime repair recurrence reference
+- `reference`: [`technical_debt_recurrence_prevention_plan.md`](./plans/technical_debt_recurrence_prevention_plan.md) - runtime repair and dead-code retention recurrence reference
+- `reference`: [`uitk_page_routing_refactor_plan.md`](./plans/uitk_page_routing_refactor_plan.md) - Lobby/Garage UITK Shell/Layout-style explicit page routing refactor closeout reference
 
 ### `playtest/`
 

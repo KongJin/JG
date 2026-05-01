@@ -15,7 +15,7 @@ MonoBehaviour:
   frameId: nova_frame_n_body49_rzmt
   displayName: "\uB808\uC9C0\uBA3C\uD2B8N"
   icon: {fileID: 0}
-  assemblyForm: 1
+  assemblyForm: 3
   baseHp: 510
   baseMoveRange: 4
   baseAttackSpeed: 1.15
