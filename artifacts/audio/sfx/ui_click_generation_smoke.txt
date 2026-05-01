@@ -1,0 +1,14 @@
+Track generation initiated!
+Title: JG_ui_click_sfx_20260501
+Workspace: WARNING: not_found_in_menu:pibrod
+
+Pro Plan|pibrod
+
+Pro Plan|pibrod
+
+Pro Plan|Upgrade to Premier|Home|Explore|Create|Studio|Library|Search
+Style: minimal futuristic game UI sound effect, sci-fi interface, isolated one-shot, no vocals, no melody
+Duration: short
+Instrumental (no lyrics)
+Custom mode: simple mode
+IMPORTANT: Wait for both tracks to appear in suno_library_list before calling generate_track again.

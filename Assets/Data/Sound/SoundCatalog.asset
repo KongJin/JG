@@ -21,21 +21,21 @@ MonoBehaviour:
     channel: 0
     loop: 0
   - key: ui_click
-    clip: {fileID: 8300000, guid: c976574ccc6043c29954eef5c22859c5, type: 3}
-    volume: 0.8
+    clip: {fileID: 8300000, guid: cffa487e334c3f94e9ff2708c9327552, type: 3}
+    volume: 0.75
     spatialBlend: 0
     cooldown: 0.05
     channel: 0
     loop: 0
   - key: ui_confirm
-    clip: {fileID: 8300000, guid: fafe5a43ce4d4d6ebc1b97443298d6c5, type: 3}
-    volume: 0.85
+    clip: {fileID: 8300000, guid: 2451618da2075014e8ed620cd6185d49, type: 3}
+    volume: 0.75
     spatialBlend: 0
     cooldown: 0.05
     channel: 0
     loop: 0
   - key: ui_select
-    clip: {fileID: 8300000, guid: 5cb2d68e7f9c4b5f8a60dc8d2ef50524, type: 3}
+    clip: {fileID: 8300000, guid: d47e2f4c2fcf8d34f8c7807933bbdb56, type: 3}
     volume: 0.75
     spatialBlend: 0
     cooldown: 0.05
@@ -104,3 +104,66 @@ MonoBehaviour:
     cooldown: 0
     channel: 1
     loop: 1
+  - key: garage_save
+    clip: {fileID: 8300000, guid: de69fc5d1e23da946a976bf666df2a82, type: 3}
+    volume: 0.85
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: lobby_ready
+    clip: {fileID: 8300000, guid: 2e505f403b272c44baac097bb8954ffe, type: 3}
+    volume: 0.82
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: ui_back
+    clip: {fileID: 8300000, guid: 96e607f649f5d594d828dc8f8da17b62, type: 3}
+    volume: 0.75
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: ui_error
+    clip: {fileID: 8300000, guid: 796463931c3fbd44092d2f922fed7f16, type: 3}
+    volume: 0.78
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: ui_retry
+    clip: {fileID: 8300000, guid: 24cf2779df059a644902ba2aa9abe4a7, type: 3}
+    volume: 0.75
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: garage_slot_select
+    clip: {fileID: 8300000, guid: dc784df43fcb6ea43a27a753dd86eb4f, type: 3}
+    volume: 0.75
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: garage_part_select
+    clip: {fileID: 8300000, guid: aa8a5d108de21fa4183fa6a7d95d83c3, type: 3}
+    volume: 0.75
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: battle_slot_select
+    clip: {fileID: 8300000, guid: 1a327698b5cd8624a89e763f26f34083, type: 3}
+    volume: 0.72
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0
+  - key: skill_select
+    clip: {fileID: 8300000, guid: b57f6e2cb5c5e984caf64e53934fe0f3, type: 3}
+    volume: 0.75
+    spatialBlend: 0
+    cooldown: 0.05
+    channel: 0
+    loop: 0

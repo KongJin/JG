@@ -1,7 +1,6 @@
 ---
 name: jg-unity-workflow
-description: >-
-  Project-specific Unity workflow for the JG repo. Use when Codex works on Unity scenes, prefabs, UI Toolkit candidate surfaces, Unity UI authoring policy, workflow policy checks, Stitch handoff/translation/source freeze/execution contract/source visual contract work, MCP editor automation, runtime smoke scripts, or Unity-facing docs in this repository, especially under `Assets/Scenes`, `Assets/Resources`, `Assets/Prefabs`, `Assets/UI`, `Assets/Editor/UnityMcp`, `tools/unity-mcp`, or `tools/stitch-unity`. Route cohesion/coupling judgment to `jg-coupling-review`, and route document lifecycle or 문서 응집도 work to `jg-doc-lifecycle`.
+description: "JG Unity workflow. Triggers: scenes, prefabs, UITK, UI policy, Stitch handoff, MCP, compile, Play Mode, meta GUID, runtime smoke."
 ---
 
 # JG Unity Workflow

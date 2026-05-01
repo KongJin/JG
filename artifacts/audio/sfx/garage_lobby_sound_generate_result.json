@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-05-01T04:10:24.582Z",
+  "results": [
+    {
+      "soundKey": "garage_save",
+      "prompt": "short sci-fi garage save and deploy confirm sound, 0.65 seconds, satisfying mechanical lock-in plus energy pulse, no melody, no vocals, isolated one-shot",
+      "before": {
+        "source": "dom",
+        "count": 11
+      },
+      "click": {
+        "ok": true,
+        "index": 74,
+        "text": "Create",
+        "aria": "Create song"
+      },
+      "generated": {
+        "ok": true,
+        "source": "dom",
+        "clips": [
+          {
+            "id": "1a879b42-cef1-4a84-9dd1-a89b367ab89c",
+            "title": "Short Sci-fi Garage Save And Deploy Confirm Sound, 0.65 Seconds, Satisfying M...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/1a879b42-cef1-4a84-9dd1-a89b367ab89c"
+          },
+          {
+            "id": "9a788b3f-debc-4e05-8800-817f65b9eef5",
+            "title": "Short Sci-fi Garage Save And Deploy Confirm Sound, 0.65 Seconds, Satisfying M...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/9a788b3f-debc-4e05-8800-817f65b9eef5"
+          }
+        ],
+        "allNew": [
+          {
+            "id": "1a879b42-cef1-4a84-9dd1-a89b367ab89c",
+            "title": "Short Sci-fi Garage Save And Deploy Confirm Sound, 0.65 Seconds, Satisfying M...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/1a879b42-cef1-4a84-9dd1-a89b367ab89c"
+          },
+          {
+            "id": "9a788b3f-debc-4e05-8800-817f65b9eef5",
+            "title": "Short Sci-fi Garage Save And Deploy Confirm Sound, 0.65 Seconds, Satisfying M...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/9a788b3f-debc-4e05-8800-817f65b9eef5"
+          }
+        ]
+      }
+    },
+    {
+      "soundKey": "lobby_ready",
+      "prompt": "short tactical lobby ready confirm sound, 0.5 seconds, confident digital arming cue, clean and restrained, no melody, no vocals, isolated one-shot",
+      "before": {
+        "source": "dom",
+        "count": 11
+      },
+      "click": {
+        "ok": true,
+        "index": 74,
+        "text": "Create",
+        "aria": "Create song"
+      },
+      "generated": {
+        "ok": true,
+        "source": "dom",
+        "clips": [
+          {
+            "id": "7c5bfbd5-2eca-4e17-92fb-1a2644f8a83e",
+            "title": "Short Tactical Lobby Ready Confirm Sound, 0.5 Seconds, Confident Digital Armi...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/7c5bfbd5-2eca-4e17-92fb-1a2644f8a83e"
+          },
+          {
+            "id": "ff48faac-9335-47e3-9c89-6ebc3cb0d2d2",
+            "title": "Short Tactical Lobby Ready Confirm Sound, 0.5 Seconds, Confident Digital Armi...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/ff48faac-9335-47e3-9c89-6ebc3cb0d2d2"
+          }
+        ],
+        "allNew": [
+          {
+            "id": "7c5bfbd5-2eca-4e17-92fb-1a2644f8a83e",
+            "title": "Short Tactical Lobby Ready Confirm Sound, 0.5 Seconds, Confident Digital Armi...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/7c5bfbd5-2eca-4e17-92fb-1a2644f8a83e"
+          },
+          {
+            "id": "ff48faac-9335-47e3-9c89-6ebc3cb0d2d2",
+            "title": "Short Tactical Lobby Ready Confirm Sound, 0.5 Seconds, Confident Digital Armi...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/ff48faac-9335-47e3-9c89-6ebc3cb0d2d2"
+          }
+        ]
+      }
+    }
+  ]
+}

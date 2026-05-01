@@ -3,6 +3,7 @@ using Features.Player.Domain;
 using NUnit.Framework;
 using Shared.Kernel;
 using System.Collections.Generic;
+using UnityEngine;
 using ComposedUnit = Features.Unit.Domain.Unit;
 
 namespace Tests.Editor
@@ -103,6 +104,69 @@ namespace Tests.Editor
 
             Assert.AreEqual("최근 주요 기여 기체", viewModels[0].ServiceTagText);
             Assert.AreEqual("전적 기록 대기중", viewModels[1].ServiceTagText);
+        }
+
+        [Test]
+        public void SlotViewModel_UsesAssemblyPrefabsForCompletePreviewWhenAvailable()
+        {
+            var framePreview = new GameObject("FramePreview");
+            var frameAssembly = new GameObject("FrameAssembly");
+            var firepowerPreview = new GameObject("FirepowerPreview");
+            var firepowerAssembly = new GameObject("FirepowerAssembly");
+            var mobilityPreview = new GameObject("MobilityPreview");
+            var mobilityAssembly = new GameObject("MobilityAssembly");
+
+            try
+            {
+                var state = CreateInitializedState(1);
+                var catalog = new GaragePanelCatalog(
+                    new[]
+                    {
+                        new GaragePanelCatalog.FrameOption
+                        {
+                            Id = "frame0",
+                            DisplayName = "가디언",
+                            PreviewPrefab = framePreview,
+                            AssemblyPrefab = frameAssembly
+                        },
+                    },
+                    new[]
+                    {
+                        new GaragePanelCatalog.FirepowerOption
+                        {
+                            Id = "fire0",
+                            DisplayName = "단일탄",
+                            PreviewPrefab = firepowerPreview,
+                            AssemblyPrefab = firepowerAssembly
+                        },
+                    },
+                    new[]
+                    {
+                        new GaragePanelCatalog.MobilityOption
+                        {
+                            Id = "mob0",
+                            DisplayName = "중장갑",
+                            PreviewPrefab = mobilityPreview,
+                            AssemblyPrefab = mobilityAssembly
+                        },
+                    });
+                var presenter = new GaragePagePresenter(catalog);
+
+                var viewModels = presenter.BuildSlotViewModels(state);
+
+                Assert.AreSame(frameAssembly, viewModels[0].FramePreviewPrefab);
+                Assert.AreSame(firepowerAssembly, viewModels[0].FirepowerPreviewPrefab);
+                Assert.AreSame(mobilityAssembly, viewModels[0].MobilityPreviewPrefab);
+            }
+            finally
+            {
+                Object.DestroyImmediate(framePreview);
+                Object.DestroyImmediate(frameAssembly);
+                Object.DestroyImmediate(firepowerPreview);
+                Object.DestroyImmediate(firepowerAssembly);
+                Object.DestroyImmediate(mobilityPreview);
+                Object.DestroyImmediate(mobilityAssembly);
+            }
         }
 
         [Test]

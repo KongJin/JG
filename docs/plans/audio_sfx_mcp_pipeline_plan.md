@@ -18,28 +18,57 @@
 - v1 기본 provider는 direct Suno MCP다. `tools/audio-mcp`는 Suno 생성 wrapper가 아니라 JG manifest, downloaded asset import, Unity `SoundCatalog` sync helper로만 둔다.
 - Unity `SoundCatalog` 등록은 다운로드된 audio asset의 Unity `.meta` GUID가 생긴 뒤에 수행한다.
 - Suno credential, browser session, cookies는 repo에 남기지 않는다.
+- 12개 UITK SFX batch keys는 direct Suno Sounds UI/CDP route로 생성, 다운로드, trim, Unity import, `SoundCatalog` sync까지 기계 검증을 통과했다. 실제 음질/길이/볼륨 수용은 Unity에서 수동 audition 후에만 닫는다.
 
 ## Acceptance
 
 | Item | Required evidence | Closeout |
 |---|---|---|
 | Suno MCP route | direct Suno MCP 등록 절차와 session/credential 비커밋 규칙 문서화 | success / blocked / mismatch |
-| SFX batch manifest | 12개 UITK soundKey batch와 prompt list를 dry-run으로 생성 가능 | success / blocked / mismatch |
-| Downloaded asset import | `artifacts/audio/inbox`의 soundKey 파일을 Unity audio root로 복사 가능 | success / blocked / mismatch |
-| Unity catalog sync | `.meta` GUID가 있는 다운로드 파일을 `SoundCatalog.asset`에 중복 key 없이 등록/갱신 가능 | success / blocked / mismatch |
+| SFX batch manifest | 12개 UITK soundKey batch와 prompt list를 dry-run으로 생성 가능 | success - manifest created at `artifacts/audio/sfx/sfx-batch-manifest.json` |
+| Downloaded asset import | `artifacts/audio/inbox`의 soundKey 파일을 Unity audio root로 복사 가능 | success - all 12 batch keys imported to `Assets/Audio/UI` |
+| Unity catalog sync | `.meta` GUID가 있는 다운로드 파일을 `SoundCatalog.asset`에 중복 key 없이 등록/갱신 가능 | success - all 12 batch keys synced; duplicate keys none |
 
 ## Execution Rule
 
 - `.mcp.json` 기본값에는 Suno MCP나 audio helper MCP를 상시 등록하지 않는다.
 - 생성 작업 때는 direct Suno MCP를 등록하고, Unity import/sync가 필요할 때만 `tools/audio-mcp` helper를 optional 등록한다.
-- 실제 Suno 웹 자동화 smoke는 user Suno session이 필요하므로, session이 없으면 generation acceptance를 `blocked`로 남긴다.
+- 실제 Suno 웹 자동화 smoke는 user Suno session이 필요하므로, session이 없으면 generation acceptance를 `blocked`로 남긴다. 현재는 일반 Chrome 로그인 profile을 CDP로 재사용해 `ui_click` generation smoke를 통과했다.
 - 다운로드 asset은 `Assets/Audio/UI` 또는 `Assets/Audio/SFX` 아래로만 허용한다.
+
+## Evidence
+
+- `ui_click` prompt: `short futuristic game UI button click, 0.2 seconds, dry tactile digital tick, clean sci-fi interface, no melody, no vocals, isolated one-shot`
+- `ui_click` Suno generated candidates:
+  - `https://suno.com/song/537d9d97-b242-4e05-83e2-0031df0631f8`
+  - `https://suno.com/song/9cf2ae94-c12d-4f1f-8c94-9709a3b1db89`
+- Imported Unity asset: `Assets/Audio/UI/ui_click.mp3`
+- Catalog entry: `ui_click` -> GUID `cffa487e334c3f94e9ff2708c9327552`, volume `0.75`, spatialBlend `0`, cooldown `0.05`
+- `garage_save` Suno generated candidates:
+  - `https://suno.com/song/1a879b42-cef1-4a84-9dd1-a89b367ab89c`
+  - `https://suno.com/song/9a788b3f-debc-4e05-8800-817f65b9eef5`
+- `lobby_ready` Suno generated candidates:
+  - `https://suno.com/song/7c5bfbd5-2eca-4e17-92fb-1a2644f8a83e`
+  - `https://suno.com/song/ff48faac-9335-47e3-9c89-6ebc3cb0d2d2`
+- Imported Unity assets:
+  - `Assets/Audio/UI/garage_save.mp3` trimmed to about `0.648s`
+  - `Assets/Audio/UI/lobby_ready.mp3` trimmed to about `0.504s`
+- Catalog entries:
+  - `garage_save` -> GUID `de69fc5d1e23da946a976bf666df2a82`, volume `0.85`, spatialBlend `0`, cooldown `0.05`
+  - `lobby_ready` -> GUID `2e505f403b272c44baac097bb8954ffe`, volume `0.82`, spatialBlend `0`, cooldown `0.05`
+- Remaining batch generation evidence:
+  - `artifacts/audio/sfx/remaining_sound_generate_result.json`
+  - `artifacts/audio/sfx/remaining_download_result.json`
+- Remaining imported keys: `ui_select`, `ui_confirm`, `ui_back`, `ui_error`, `ui_retry`, `garage_slot_select`, `garage_part_select`, `battle_slot_select`, `skill_select`
+- Current manifest status: all 12 items are `catalog-synced` with source URL and trimmed duration.
+- Mechanical validation: `audio:mcp:test`, `rules:lint`, Unity asset refresh, and `dotnet build JG.slnx -v:minimal` passed with 0 warnings and 0 errors.
 
 ## Residual
 
 - UITK event wiring은 이 plan의 v1 scope 밖이다.
 - WebGL 브라우저 오디오 재생/설정 저장 acceptance는 WebGL audio owner에서 닫는다.
-- `sandraschi/suno-mcp` 실제 generation/download smoke는 user credential/session 준비 뒤 닫는다.
+- 12개 SFX manual audition은 아직 product acceptance가 아니다.
+- Manual audition 후 reject된 clips는 `_alt` 후보 또는 재생성 후보로 교체한다.
 
 owner impact:
 

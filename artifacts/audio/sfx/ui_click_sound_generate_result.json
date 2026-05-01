@@ -1,0 +1,82 @@
+{
+  "soundKey": "ui_click",
+  "prompt": "short futuristic game UI button click, 0.2 seconds, dry tactile digital tick, clean sci-fi interface, no melody, no vocals, isolated one-shot",
+  "before": [
+    {
+      "href": "https://suno.com/song/7a97f203-f0ad-4223-a4f4-441f83ba0e6d",
+      "text": "track13"
+    },
+    {
+      "href": "https://suno.com/song/ed5886f9-1400-42ec-892f-f4c03ccbd9cd",
+      "text": "track13"
+    },
+    {
+      "href": "https://suno.com/song/26fbb632-539d-4c49-a3d5-0a581bb9aa71",
+      "text": "track13"
+    },
+    {
+      "href": "https://suno.com/song/15cb40de-297b-4125-b43b-1e262f5dac73",
+      "text": "track13"
+    },
+    {
+      "href": "https://suno.com/song/f9f06795-2f47-4ca8-83ba-fab05e6387fa",
+      "text": "track06"
+    }
+  ],
+  "clickedState": {
+    "url": "https://suno.com/create",
+    "text": "pibrod\n\nPro Plan\n\nUpgrade to Premier\nHome\nExplore\nCreate\nStudio\nLibrary\nSearch\nHooks\nCreate\nNotifications\nNotifications\nActivity\n\nNo notifications here yet\n\nLabs\nTerms & Policies\nMore\nArchived\nCreate New Workspace\nMy Workspace\n9 Songs · 2d, 10h ago\nSimple\nAdvanced\nSounds\nv5.5\nCreate short samples — effects, loops, and one-shots. Ready to drop into anything.\nSound\nshort futuristic game UI button click, 0.2 seconds, dry tactile digital tick, clean sci-fi interface, no melody, no vocals, isolated one-shot\n141/500\nAdvanced Options\nOne-Shot\nType\nOne-Shot\nLoop\nBPM\nKey\nAny\nCreate\nWorkspaces\nMy Workspace\nFilters (3)\nNewest\nShort Futuristic Game Ui Button Click, 0.2 Seconds, Dry Tactile Digital Tick,...\nSound\nshort futuristic game UI button click, 0, 2 seconds, dry tactile digital tick, clean sci-fi interface, no melody, no vocals, isolated one-shot\nPublish\nShort Futuristic Game Ui Button Click, 0.2 Seconds, Dry Tactile Digital Tick,...\nSound\nshort futuristic game UI button click, 0, 2 seconds, dry tactile digital tick, clean sci-fi interface, no melody, no vocals, isolated one-shot\nPublish\n2:56\ntrack13\nv5.5\nCover\n장엄한, 비장한\nPublish\n4:49\ntrack13\nv5.5\nCover\n장엄한, 비장한\nPublish\n1:30\ntrack13\nv5.5\n경쾌한\nPublish\n1:39\ntrack13\nv5.5\n경쾌한\nPublish\n4:49\ntrack06\nUpload\nNu-jazz and acid jazz fusion, Features a prominent slap bass guitar playing syncopated sixteenth-note patterns, A clean electric guitar performs rhythmic funk scratches and occasional melodic fills, The drum kit maintains a steady breakbea"
+  },
+  "after": [
+    {
+      "href": "https://suno.com/song/537d9d97-b242-4e05-83e2-0031df0631f8",
+      "text": "Short Futuristic Game Ui Button Click, 0.2 Seconds, Dry Tactile Digital Tick,..."
+    },
+    {
+      "href": "https://suno.com/song/9cf2ae94-c12d-4f1f-8c94-9709a3b1db89",
+      "text": "Short Futuristic Game Ui Button Click, 0.2 Seconds, Dry Tactile Digital Tick,..."
+    },
+    {
+      "href": "https://suno.com/song/7a97f203-f0ad-4223-a4f4-441f83ba0e6d",
+      "text": "track13"
+    },
+    {
+      "href": "https://suno.com/song/ed5886f9-1400-42ec-892f-f4c03ccbd9cd",
+      "text": "track13"
+    },
+    {
+      "href": "https://suno.com/song/26fbb632-539d-4c49-a3d5-0a581bb9aa71",
+      "text": "track13"
+    },
+    {
+      "href": "https://suno.com/song/15cb40de-297b-4125-b43b-1e262f5dac73",
+      "text": "track13"
+    },
+    {
+      "href": "https://suno.com/song/f9f06795-2f47-4ca8-83ba-fab05e6387fa",
+      "text": "track06"
+    },
+    {
+      "href": "https://suno.com/song/6a4198db-28b4-4e6c-88d9-8979f8fdbdb6",
+      "text": "track07"
+    },
+    {
+      "href": "https://suno.com/song/2b0d239f-e9b0-4da1-8e83-c47eaf230c46",
+      "text": "track04 x track09 (Mashup)"
+    },
+    {
+      "href": "https://suno.com/song/b0af5169-68c5-45e3-a2d8-b8f157bd4d5b",
+      "text": "track09"
+    }
+  ],
+  "newItems": [
+    {
+      "href": "https://suno.com/song/537d9d97-b242-4e05-83e2-0031df0631f8",
+      "text": "Short Futuristic Game Ui Button Click, 0.2 Seconds, Dry Tactile Digital Tick,..."
+    },
+    {
+      "href": "https://suno.com/song/9cf2ae94-c12d-4f1f-8c94-9709a3b1db89",
+      "text": "Short Futuristic Game Ui Button Click, 0.2 Seconds, Dry Tactile Digital Tick,..."
+    }
+  ]
+}

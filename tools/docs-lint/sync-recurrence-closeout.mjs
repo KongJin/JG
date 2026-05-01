@@ -1,13 +1,16 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import crypto from "node:crypto";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
 import {
+  RECURRENCE_CLOSEOUT_DIR,
   RECURRENCE_CLOSEOUT_PATH,
   getRecurrenceChangedFiles,
+  isRecurrenceCloseoutArtifactPath,
   isRulesOnlyRecurrenceTarget,
   normalizeRepoRelativePath,
 } from "./lib.mjs";
@@ -18,6 +21,7 @@ export async function getRulesOnlyChangedFiles({
   repoRoot,
   changedFiles = null,
   includeArtifact = true,
+  artifactPath = RECURRENCE_CLOSEOUT_PATH,
 } = {}) {
   const sourceFiles = Array.isArray(changedFiles)
     ? changedFiles
@@ -27,10 +31,10 @@ export async function getRulesOnlyChangedFiles({
     .map((entry) => normalizeRepoRelativePath(entry))
     .filter(Boolean)
     .filter((entry) => isRulesOnlyRecurrenceTarget(entry))
-    .filter((entry) => includeArtifact || entry !== RECURRENCE_CLOSEOUT_PATH);
+    .filter((entry) => includeArtifact || !isRecurrenceCloseoutArtifactPath(entry));
 
   if (includeArtifact) {
-    filtered.push(RECURRENCE_CLOSEOUT_PATH);
+    filtered.push(artifactPath);
   }
 
   return [...new Set(filtered)].sort((left, right) => left.localeCompare(right));
@@ -39,13 +43,20 @@ export async function getRulesOnlyChangedFiles({
 export async function syncRecurrenceCloseoutArtifact({
   repoRoot,
   changedFiles = null,
+  artifactPath = RECURRENCE_CLOSEOUT_PATH,
 } = {}) {
-  const artifactAbsolutePath = path.join(repoRoot, RECURRENCE_CLOSEOUT_PATH);
-  const payload = JSON.parse(await fs.readFile(artifactAbsolutePath, "utf8"));
+  const normalizedArtifactPath = normalizeRepoRelativePath(artifactPath) || RECURRENCE_CLOSEOUT_PATH;
+  const artifactAbsolutePath = path.join(repoRoot, normalizedArtifactPath);
+  const templateAbsolutePath = path.join(repoRoot, RECURRENCE_CLOSEOUT_PATH);
+  const payloadPath = await pathExists(artifactAbsolutePath)
+    ? artifactAbsolutePath
+    : templateAbsolutePath;
+  const payload = JSON.parse(await fs.readFile(payloadPath, "utf8"));
   const changedPaths = await getRulesOnlyChangedFiles({
     repoRoot,
     changedFiles,
     includeArtifact: true,
+    artifactPath: normalizedArtifactPath,
   });
 
   const nextPayload = {
@@ -59,14 +70,37 @@ export async function syncRecurrenceCloseoutArtifact({
   const changed = previousJson !== nextJson;
 
   if (changed) {
+    await fs.mkdir(path.dirname(artifactAbsolutePath), { recursive: true });
     await fs.writeFile(artifactAbsolutePath, `${nextJson}\n`, "utf8");
   }
 
   return {
     changed,
-    artifactPath: RECURRENCE_CLOSEOUT_PATH,
+    artifactPath: normalizedArtifactPath,
     changedPaths,
   };
+}
+
+export async function getDefaultRecurrenceCloseoutShardPath({
+  repoRoot,
+  changedFiles = null,
+} = {}) {
+  const changedPaths = await getRulesOnlyChangedFiles({
+    repoRoot,
+    changedFiles,
+    includeArtifact: false,
+  });
+  if (changedPaths.length === 0) {
+    return RECURRENCE_CLOSEOUT_PATH;
+  }
+
+  const hash = crypto
+    .createHash("sha1")
+    .update(changedPaths.join("\n"))
+    .digest("hex")
+    .slice(0, 10);
+
+  return `${RECURRENCE_CLOSEOUT_DIR}/local-${hash}.json`;
 }
 
 function formatDateForArtifact(value) {
@@ -76,18 +110,34 @@ function formatDateForArtifact(value) {
   return `${year}-${month}-${day}`;
 }
 
-async function stageArtifact(repoRoot) {
-  await execFileAsync("git", ["add", RECURRENCE_CLOSEOUT_PATH], { cwd: repoRoot });
+async function pathExists(absolutePath) {
+  try {
+    await fs.access(absolutePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function stageArtifact(repoRoot, artifactPath) {
+  await execFileAsync("git", ["add", artifactPath], { cwd: repoRoot });
 }
 
 async function main() {
   const repoRoot = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
-  const args = new Set(process.argv.slice(2));
-  const shouldStage = args.has("--stage");
-  const result = await syncRecurrenceCloseoutArtifact({ repoRoot });
+  const args = process.argv.slice(2);
+  const argSet = new Set(args);
+  const shouldStage = argSet.has("--stage");
+  const artifactArgIndex = args.findIndex((arg) => arg === "--artifact");
+  const artifactPath = argSet.has("--primary")
+    ? RECURRENCE_CLOSEOUT_PATH
+    : artifactArgIndex >= 0 && args[artifactArgIndex + 1]
+      ? normalizeRepoRelativePath(args[artifactArgIndex + 1])
+      : await getDefaultRecurrenceCloseoutShardPath({ repoRoot });
+  const result = await syncRecurrenceCloseoutArtifact({ repoRoot, artifactPath });
 
   if (result.changed && shouldStage) {
-    await stageArtifact(repoRoot);
+    await stageArtifact(repoRoot, result.artifactPath);
   }
 
   const summary = result.changed

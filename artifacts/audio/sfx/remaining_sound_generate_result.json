@@ -1,0 +1,527 @@
+{
+  "generatedAt": "2026-05-01T08:28:22.662Z",
+  "results": [
+    {
+      "soundKey": "ui_select",
+      "prompt": "short futuristic UI selection sound, 0.25 seconds, soft bright digital tick with tiny energy lift, no melody, no vocals, isolated one-shot",
+      "before": {
+        "source": "dom",
+        "count": 12
+      },
+      "click": {
+        "ok": true,
+        "index": 74,
+        "text": "Create",
+        "aria": "Create song"
+      },
+      "generated": {
+        "ok": true,
+        "source": "dom",
+        "clips": [
+          {
+            "id": "bc216814-d6f7-4801-ad2d-3d05bc831c50",
+            "title": "Short Futuristic Ui Selection Sound, 0.25 Seconds, Soft Bright Digital Tick W...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/bc216814-d6f7-4801-ad2d-3d05bc831c50"
+          },
+          {
+            "id": "49a2eaa0-8a7d-41e7-b326-c8f4debc2eab",
+            "title": "Short Futuristic Ui Selection Sound, 0.25 Seconds, Soft Bright Digital Tick W...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/49a2eaa0-8a7d-41e7-b326-c8f4debc2eab"
+          }
+        ],
+        "allNew": [
+          {
+            "id": "bc216814-d6f7-4801-ad2d-3d05bc831c50",
+            "title": "Short Futuristic Ui Selection Sound, 0.25 Seconds, Soft Bright Digital Tick W...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/bc216814-d6f7-4801-ad2d-3d05bc831c50"
+          },
+          {
+            "id": "49a2eaa0-8a7d-41e7-b326-c8f4debc2eab",
+            "title": "Short Futuristic Ui Selection Sound, 0.25 Seconds, Soft Bright Digital Tick W...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/49a2eaa0-8a7d-41e7-b326-c8f4debc2eab"
+          }
+        ]
+      }
+    },
+    {
+      "soundKey": "ui_confirm",
+      "prompt": "short futuristic UI confirm sound, 0.45 seconds, compact rising chime with soft mechanical lock, no melody, no vocals, isolated one-shot",
+      "before": {
+        "source": "dom",
+        "count": 11
+      },
+      "click": {
+        "ok": true,
+        "index": 74,
+        "text": "Create",
+        "aria": "Create song"
+      },
+      "generated": {
+        "ok": true,
+        "source": "dom",
+        "clips": [
+          {
+            "id": "d728f39e-50c0-4c06-bd25-141a4cac03b2",
+            "title": "Short Futuristic Ui Confirm Sound, 0.45 Seconds, Compact Rising Chime With So...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/d728f39e-50c0-4c06-bd25-141a4cac03b2"
+          },
+          {
+            "id": "62b0bcc9-d7de-4c5b-860c-f3a8cf220f24",
+            "title": "Short Futuristic Ui Confirm Sound, 0.45 Seconds, Compact Rising Chime With So...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/62b0bcc9-d7de-4c5b-860c-f3a8cf220f24"
+          }
+        ],
+        "allNew": [
+          {
+            "id": "d728f39e-50c0-4c06-bd25-141a4cac03b2",
+            "title": "Short Futuristic Ui Confirm Sound, 0.45 Seconds, Compact Rising Chime With So...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/d728f39e-50c0-4c06-bd25-141a4cac03b2"
+          },
+          {
+            "id": "62b0bcc9-d7de-4c5b-860c-f3a8cf220f24",
+            "title": "Short Futuristic Ui Confirm Sound, 0.45 Seconds, Compact Rising Chime With So...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/62b0bcc9-d7de-4c5b-860c-f3a8cf220f24"
+          }
+        ]
+      }
+    },
+    {
+      "soundKey": "ui_back",
+      "prompt": "short UI back or close sound, 0.3 seconds, low soft digital fold, restrained sci-fi interface, no melody, no vocals, isolated one-shot",
+      "before": {
+        "source": "dom",
+        "count": 11
+      },
+      "click": {
+        "ok": true,
+        "index": 74,
+        "text": "Create",
+        "aria": "Create song"
+      },
+      "generated": {
+        "ok": true,
+        "source": "dom",
+        "clips": [
+          {
+            "id": "df8d6a0a-c3d8-4bf7-8b4e-33a724a44acb",
+            "title": "Short Ui Back Or Close Sound, 0.3 Seconds, Low Soft Digital Fold, Restrained ...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/df8d6a0a-c3d8-4bf7-8b4e-33a724a44acb"
+          },
+          {
+            "id": "e574447f-179c-47db-ad4e-ab3ef7bf6efa",
+            "title": "Short Ui Back Or Close Sound, 0.3 Seconds, Low Soft Digital Fold, Restrained ...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/e574447f-179c-47db-ad4e-ab3ef7bf6efa"
+          }
+        ],
+        "allNew": [
+          {
+            "id": "df8d6a0a-c3d8-4bf7-8b4e-33a724a44acb",
+            "title": "Short Ui Back Or Close Sound, 0.3 Seconds, Low Soft Digital Fold, Restrained ...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/df8d6a0a-c3d8-4bf7-8b4e-33a724a44acb"
+          },
+          {
+            "id": "e574447f-179c-47db-ad4e-ab3ef7bf6efa",
+            "title": "Short Ui Back Or Close Sound, 0.3 Seconds, Low Soft Digital Fold, Restrained ...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/e574447f-179c-47db-ad4e-ab3ef7bf6efa"
+          }
+        ]
+      }
+    },
+    {
+      "soundKey": "ui_error",
+      "prompt": "short restrained UI error beep, 0.35 seconds, tactical soft warning, not harsh, no melody, no vocals, isolated one-shot",
+      "before": {
+        "source": "dom",
+        "count": 11
+      },
+      "click": {
+        "ok": true,
+        "index": 74,
+        "text": "Create",
+        "aria": "Create song"
+      },
+      "generated": {
+        "ok": true,
+        "source": "dom",
+        "clips": [
+          {
+            "id": "a3ced13a-4b3f-42e7-8263-27c97f957dd6",
+            "title": "Short Restrained Ui Error Beep, 0.35 Seconds, Tactical Soft Warning, Not Hars...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/a3ced13a-4b3f-42e7-8263-27c97f957dd6"
+          },
+          {
+            "id": "b9fa97a0-69a2-4708-aafb-bb2876ea6222",
+            "title": "Short Restrained Ui Error Beep, 0.35 Seconds, Tactical Soft Warning, Not Hars...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/b9fa97a0-69a2-4708-aafb-bb2876ea6222"
+          }
+        ],
+        "allNew": [
+          {
+            "id": "a3ced13a-4b3f-42e7-8263-27c97f957dd6",
+            "title": "Short Restrained Ui Error Beep, 0.35 Seconds, Tactical Soft Warning, Not Hars...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/a3ced13a-4b3f-42e7-8263-27c97f957dd6"
+          },
+          {
+            "id": "b9fa97a0-69a2-4708-aafb-bb2876ea6222",
+            "title": "Short Restrained Ui Error Beep, 0.35 Seconds, Tactical Soft Warning, Not Hars...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/b9fa97a0-69a2-4708-aafb-bb2876ea6222"
+          }
+        ]
+      }
+    },
+    {
+      "soundKey": "ui_retry",
+      "prompt": "short network retry UI sound, 0.45 seconds, two clean signal pings, subtle digital scan, no melody, no vocals, isolated one-shot",
+      "before": {
+        "source": "dom",
+        "count": 11
+      },
+      "click": {
+        "ok": true,
+        "index": 74,
+        "text": "Create",
+        "aria": "Create song"
+      },
+      "generated": {
+        "ok": true,
+        "source": "dom",
+        "clips": [
+          {
+            "id": "a75c3c03-6748-4db8-8d79-9b461123aa12",
+            "title": "Short Network Retry Ui Sound, 0.45 Seconds, Two Clean Signal Pings, Subtle Di...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/a75c3c03-6748-4db8-8d79-9b461123aa12"
+          },
+          {
+            "id": "76eb2446-b48d-4d74-9e5f-b42181a7d762",
+            "title": "Short Network Retry Ui Sound, 0.45 Seconds, Two Clean Signal Pings, Subtle Di...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/76eb2446-b48d-4d74-9e5f-b42181a7d762"
+          }
+        ],
+        "allNew": [
+          {
+            "id": "a75c3c03-6748-4db8-8d79-9b461123aa12",
+            "title": "Short Network Retry Ui Sound, 0.45 Seconds, Two Clean Signal Pings, Subtle Di...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/a75c3c03-6748-4db8-8d79-9b461123aa12"
+          },
+          {
+            "id": "76eb2446-b48d-4d74-9e5f-b42181a7d762",
+            "title": "Short Network Retry Ui Sound, 0.45 Seconds, Two Clean Signal Pings, Subtle Di...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/76eb2446-b48d-4d74-9e5f-b42181a7d762"
+          }
+        ]
+      }
+    },
+    {
+      "soundKey": "garage_slot_select",
+      "prompt": "short sci-fi garage unit slot select sound, 0.35 seconds, metallic slot click with soft servo, no melody, no vocals, isolated one-shot",
+      "before": {
+        "source": "dom",
+        "count": 11
+      },
+      "click": {
+        "ok": true,
+        "index": 74,
+        "text": "Create",
+        "aria": "Create song"
+      },
+      "generated": {
+        "ok": true,
+        "source": "dom",
+        "clips": [
+          {
+            "id": "d04d463f-84d1-4377-a67e-35cbd522beb7",
+            "title": "Short Sci-fi Garage Unit Slot Select Sound, 0.35 Seconds, Metallic Slot Click...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/d04d463f-84d1-4377-a67e-35cbd522beb7"
+          },
+          {
+            "id": "c3ebddf6-0c0c-4e5e-840a-5d48434a35c6",
+            "title": "Short Sci-fi Garage Unit Slot Select Sound, 0.35 Seconds, Metallic Slot Click...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/c3ebddf6-0c0c-4e5e-840a-5d48434a35c6"
+          }
+        ],
+        "allNew": [
+          {
+            "id": "d04d463f-84d1-4377-a67e-35cbd522beb7",
+            "title": "Short Sci-fi Garage Unit Slot Select Sound, 0.35 Seconds, Metallic Slot Click...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/d04d463f-84d1-4377-a67e-35cbd522beb7"
+          },
+          {
+            "id": "c3ebddf6-0c0c-4e5e-840a-5d48434a35c6",
+            "title": "Short Sci-fi Garage Unit Slot Select Sound, 0.35 Seconds, Metallic Slot Click...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/c3ebddf6-0c0c-4e5e-840a-5d48434a35c6"
+          }
+        ]
+      }
+    },
+    {
+      "soundKey": "garage_part_select",
+      "prompt": "short sci-fi garage part selection sound, 0.4 seconds, component scan tick with light mechanical texture, no melody, no vocals, isolated one-shot",
+      "before": {
+        "source": "dom",
+        "count": 11
+      },
+      "click": {
+        "ok": true,
+        "index": 74,
+        "text": "Create",
+        "aria": "Create song"
+      },
+      "generated": {
+        "ok": true,
+        "source": "dom",
+        "clips": [
+          {
+            "id": "a9f4ff12-d5b2-4912-b9fb-73d20c17cd6e",
+            "title": "Short Sci-fi Garage Part Selection Sound, 0.4 Seconds, Component Scan Tick Wi...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/a9f4ff12-d5b2-4912-b9fb-73d20c17cd6e"
+          },
+          {
+            "id": "8f7fad0f-3938-48c5-aa13-a1f802acd22c",
+            "title": "Short Sci-fi Garage Part Selection Sound, 0.4 Seconds, Component Scan Tick Wi...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/8f7fad0f-3938-48c5-aa13-a1f802acd22c"
+          }
+        ],
+        "allNew": [
+          {
+            "id": "a9f4ff12-d5b2-4912-b9fb-73d20c17cd6e",
+            "title": "Short Sci-fi Garage Part Selection Sound, 0.4 Seconds, Component Scan Tick Wi...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/a9f4ff12-d5b2-4912-b9fb-73d20c17cd6e"
+          },
+          {
+            "id": "8f7fad0f-3938-48c5-aa13-a1f802acd22c",
+            "title": "Short Sci-fi Garage Part Selection Sound, 0.4 Seconds, Component Scan Tick Wi...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/8f7fad0f-3938-48c5-aa13-a1f802acd22c"
+          }
+        ]
+      }
+    },
+    {
+      "soundKey": "battle_slot_select",
+      "prompt": "short tactical battle HUD slot select sound, 0.25 seconds, crisp immediate interface tick, subtle combat UI energy, no melody, no vocals, isolated one-shot",
+      "before": {
+        "source": "dom",
+        "count": 11
+      },
+      "click": {
+        "ok": true,
+        "index": 74,
+        "text": "Create",
+        "aria": "Create song"
+      },
+      "generated": {
+        "ok": true,
+        "source": "dom",
+        "clips": [
+          {
+            "id": "b7ebea18-02f2-458e-a193-3b2ced28e6f0",
+            "title": "Short Tactical Battle Hud Slot Select Sound, 0.25 Seconds, Crisp Immediate In...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/b7ebea18-02f2-458e-a193-3b2ced28e6f0"
+          },
+          {
+            "id": "cbcdcd62-420b-4ded-9bab-5a0863c201c5",
+            "title": "Short Tactical Battle Hud Slot Select Sound, 0.25 Seconds, Crisp Immediate In...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/cbcdcd62-420b-4ded-9bab-5a0863c201c5"
+          }
+        ],
+        "allNew": [
+          {
+            "id": "b7ebea18-02f2-458e-a193-3b2ced28e6f0",
+            "title": "Short Tactical Battle Hud Slot Select Sound, 0.25 Seconds, Crisp Immediate In...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/b7ebea18-02f2-458e-a193-3b2ced28e6f0"
+          },
+          {
+            "id": "cbcdcd62-420b-4ded-9bab-5a0863c201c5",
+            "title": "Short Tactical Battle Hud Slot Select Sound, 0.25 Seconds, Crisp Immediate In...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/cbcdcd62-420b-4ded-9bab-5a0863c201c5"
+          }
+        ]
+      }
+    },
+    {
+      "soundKey": "skill_select",
+      "prompt": "short skill card select sound, 0.4 seconds, clean energy card pickup with light sparkle, no melody, no vocals, isolated one-shot",
+      "before": {
+        "source": "dom",
+        "count": 11
+      },
+      "click": {
+        "ok": true,
+        "index": 74,
+        "text": "Create",
+        "aria": "Create song"
+      },
+      "generated": {
+        "ok": true,
+        "source": "dom",
+        "clips": [
+          {
+            "id": "f71fad86-928e-4e26-9a1d-912c0b60b25b",
+            "title": "Short Skill Card Select Sound, 0.4 Seconds, Clean Energy Card Pickup With Lig...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/f71fad86-928e-4e26-9a1d-912c0b60b25b"
+          },
+          {
+            "id": "dc0e2a69-a911-45d3-a02f-84b1b82ee527",
+            "title": "Short Skill Card Select Sound, 0.4 Seconds, Clean Energy Card Pickup With Lig...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/dc0e2a69-a911-45d3-a02f-84b1b82ee527"
+          }
+        ],
+        "allNew": [
+          {
+            "id": "f71fad86-928e-4e26-9a1d-912c0b60b25b",
+            "title": "Short Skill Card Select Sound, 0.4 Seconds, Clean Energy Card Pickup With Lig...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/f71fad86-928e-4e26-9a1d-912c0b60b25b"
+          },
+          {
+            "id": "dc0e2a69-a911-45d3-a02f-84b1b82ee527",
+            "title": "Short Skill Card Select Sound, 0.4 Seconds, Clean Energy Card Pickup With Lig...",
+            "duration": null,
+            "created_at": null,
+            "prompt": "",
+            "tags": "",
+            "url": "https://suno.com/song/dc0e2a69-a911-45d3-a02f-84b1b82ee527"
+          }
+        ]
+      }
+    }
+  ]
+}

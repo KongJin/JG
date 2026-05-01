@@ -10,7 +10,10 @@
       "command": ".codex-local/suno-multi-mcp/.venv/Scripts/python.exe",
       "args": ["-m", "suno_mcp.server"],
       "env": {
-        "PYTHONPATH": ".codex-local/suno-multi-mcp/src"
+        "PYTHONPATH": ".codex-local/suno-multi-mcp/src",
+        "SUNO_BROWSER_EXECUTABLE": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+        "SUNO_BROWSER_CDP_URL": "http://127.0.0.1:9223",
+        "SUNO_BROWSER_USER_DATA_DIR": ".codex-local/suno-chrome-profile"
       }
     }
   }

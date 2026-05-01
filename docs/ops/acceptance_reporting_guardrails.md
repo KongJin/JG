@@ -1,6 +1,6 @@
 # Acceptance Reporting Guardrails
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: ops.acceptance-reporting-guardrails
 > role: ssot
@@ -130,6 +130,7 @@ visual staged workflow에서만 사용한다.
 
 문서, repo-local skill, repo-maintained rule/script lane에서 closeout artifact를 운용할 때는 아래 필드를 사용한다.
 모든 docs-only 변경이 이 artifact를 필요로 하는 것은 아니며, 필수 여부는 `ops.document-management-workflow`의 자동 검증 기준을 따른다.
+기본 closeout artifact는 병렬 작업 충돌을 줄이기 위해 `artifacts/rules/issue-recurrence-closeout.d/*.json` shard를 사용하고, legacy aggregate는 `artifacts/rules/issue-recurrence-closeout.json`로 유지한다.
 
 - `issueDetected`
 - `declaredLane`
@@ -150,3 +151,4 @@ visual staged workflow에서만 사용한다.
 - closeout artifact를 쓰는 lane에서는 `verification`이 비어 있으면 안 되며, `rootCause`가 있으면 실행 명령, artifact path, owner path 같은 concrete evidence anchor를 함께 적는다.
 
 lane별 hook/CI는 `changedPaths` 같은 보조 필드를 추가할 수 있지만, success/blocked/mismatch 의미는 이 문서가 소유한다.
+rules-only closeout shard를 쓰는 경우 `changedPaths`에는 shard 파일 자신과 해당 shard가 닫는 rules-only target file을 함께 포함한다.

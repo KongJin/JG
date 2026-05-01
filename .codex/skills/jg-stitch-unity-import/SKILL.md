@@ -1,7 +1,6 @@
 ---
 name: jg-stitch-unity-import
-description: >-
-  Project-specific Stitch-to-Unity UI import workflow for the JG repo. Use this skill whenever the user asks to bring, import, port, translate, reimport, apply, compare, or review a Stitch screen in Unity, especially for UI Toolkit pilots, runtime replacement candidates, Set A/B/C/D/E screens, accepted source html/png, UXML/USS, UIDocument, PanelSettings, preview scenes, capture evidence, scoped workflow policy, or visual fidelity closeout. This skill turns an accepted Stitch source into a Unity candidate surface without confusing pilot success with active runtime acceptance. Route cohesion/coupling judgment to `jg-coupling-review`, and route document lifecycle or 문서 응집도 work to `jg-doc-lifecycle`.
+description: "JG Stitch-to-Unity import workflow. Use for importing/comparing Stitch screens into UITK candidates, UXML/USS, UIDocument, previews, fidelity closeout."
 ---
 
 # JG Stitch Unity Import

@@ -135,4 +135,4 @@
 - `blocked`: 핵심 acceptance를 아직 판정할 수 없다.
 - `mismatch`: 비교가 끝났고 기준과 다르다.
 - closeout에서는 변경 범위, 검증 결과, 남은 리스크를 분리한다.
-- 규칙, owner, skill trigger를 바꾼 작업은 `doc lifecycle checked`와 `skill trigger checked` 필요 여부를 확인한다.
+- 규칙, owner, skill trigger를 바꾼 작업은 `doc lifecycle checked`와 `skill trigger checked` 필요 여부를 확인하고, skill route/trigger 변경이면 `ops.skill-routing-registry`와 `ops.skill-trigger-matrix`를 대조한다.

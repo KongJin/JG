@@ -1,7 +1,6 @@
 ---
 name: jg-game-design
-description: >-
-  Project-specific game and product design router for the JG repo. Use this skill whenever Codex is asked about JG game direction, product judgment, MVP scope, core fun, fun hypotheses, Nova1492 world/tone/story, rights or naming release gates, Garage UX, battle UX, unit/module design, stats, cost, balance, domain language, terminology, glossary, ubiquitous language, Unit/Garage data structure, or Korean requests like "게임 방향", "제품 판단", "MVP 범위", "핵심 재미", "재미 가설", "Nova1492 세계관", "권리", "이름 release gate", "Garage UX", "전투 UX", "유닛/모듈 설계", "스탯", "비용", "밸런스", "도메인 언어", "용어", "용어 정리", "기체/유닛 용어", "로스터/편성", or "Unit/Garage data structure". This skill routes design judgment through the active design SSOT docs before any implementation route.
+description: "JG 게임/제품 디자인 라우터. Triggers: MVP, 핵심 재미, Nova1492 tone/rights, Garage/Battle UX, unit/module stats, balance, terminology."
 ---
 
 # JG Game Design

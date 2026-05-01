@@ -1,7 +1,6 @@
 ---
 name: jg-issue-investigation
-description: >-
-  Project-specific issue investigation guardrail for the JG repo. Use this skill whenever Codex is asked to find a bug cause, diagnose a problem, identify root cause, verify a hypothesis, explain why something failed, prevent recurrence, debug uncertain behavior, investigate performance regressions or slow behavior, or respond to Korean requests like "버그 원인", "문제 원인", "원인 파악", "왜 안 돼", "실패 원인", "가설 검증", "성능 저하", "느림", or "재발 방지". Also use it for uncertain phrases such as "아마", "추정", "가능성", "보임", "보인다", "보여", "듯", "것 같", "maybe", "probably", "likely", "appears", or "seems" in a cause analysis. This skill routes investigation reporting through the repo owner docs so unverified hypotheses are checked before they are treated as rootCause or success.
+description: "JG 원인조사 가드레일. Triggers: 버그 원인, 왜 안 돼, 가설 검증, 성능 저하, 재발 방지, maybe/seems류 추정 표현."
 ---
 
 # JG Issue Investigation

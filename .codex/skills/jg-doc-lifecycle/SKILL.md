@@ -1,7 +1,6 @@
 ---
 name: jg-doc-lifecycle
-description: >-
-  Project-specific document cohesion and lifecycle workflow for the JG repo. Use this skill whenever Codex is asked about 문서 응집도, "응집도 skill" in a documentation context, whether content belongs in an existing document owner, or "이 내용이 어느 문서 owner에 있어야 하나"; and whenever Codex is asked to clean up, delete, compress, merge, split, rename, route, or review repo documentation, update `docs/plans/*`, slim `progress.md`, or remove stale paths/doc_id/owner references. This skill is the primary entrypoint for document lifecycle and document cohesion work; for broad code/scene/prefab/tool cohesion or coupling review, route through `jg-coupling-review`. It is a thin router that reads the active owner docs and applies the repo's SSOT, owner, cohesion, stale-trace, lint, and closeout flow without restating policy as a new source of truth.
+description: "JG 문서/skill owner lifecycle 라우터. Triggers: docs/plans, skill route/trigger, stale path/doc_id/owner, progress slim, 문서 삭제/압축/병합/분리."
 ---
 
 # JG Document Lifecycle
@@ -11,7 +10,7 @@ description: >-
 > doc_id: skill.jg-doc-lifecycle
 > role: skill-entry
 > owner_scope: JG 문서 lifecycle read order, owner routing, stale trace cleanup, closeout entrypoint
-> upstream: repo.agents, docs.index, ops.document-management-workflow, ops.cohesion-coupling-policy, ops.plan-authoring-review-workflow, ops.acceptance-reporting-guardrails
+> upstream: repo.agents, docs.index, ops.document-management-workflow, ops.cohesion-coupling-policy, ops.plan-authoring-review-workflow, ops.acceptance-reporting-guardrails, ops.skill-routing-registry, ops.skill-trigger-matrix
 > artifacts: none
 
 Use this skill as the entrypoint for JG repo document lifecycle work.
@@ -26,8 +25,9 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 4. Read owner doc `ops.cohesion-coupling-policy` before judging whether content belongs together or should be split.
 5. Read owner doc `ops.plan-authoring-review-workflow` when the task creates, deletes, compresses, or substantially changes `docs/plans/*`.
 6. Read owner doc `ops.acceptance-reporting-guardrails` before using `success`, `blocked`, `mismatch`, residual, or closeout language.
-7. Read `plans.progress` when current state, priority, active owner, or next work may change.
-8. Read the specific owner document that owns the topic before changing it.
+7. Read owner docs `ops.skill-routing-registry` and `ops.skill-trigger-matrix` when the task changes or audits repo-local skill routes, external/global `rule-*` skill names, or skill trigger wording.
+8. Read `plans.progress` when current state, priority, active owner, or next work may change.
+9. Read the specific owner document that owns the topic before changing it.
 
 ## Lifecycle Flow
 
@@ -68,7 +68,7 @@ Use this flow for document cleanup, deletion, compression, merge, rename, or rou
 
 7. Validate mechanically.
    - Run `npm run --silent rules:lint` after managed document or repo-local skill changes.
-   - If recurrence-tracked rule/tooling scope requires closeout artifact sync, run `npm run --silent rules:sync-closeout` or leave an explicit blocked/residual reason if the artifact cannot be safely updated.
+   - If recurrence-tracked rule/tooling scope requires closeout artifact sync, run `npm run --silent rules:sync-closeout` to update the current closeout shard, or leave an explicit blocked/residual reason if the artifact cannot be safely updated.
    - Do not report success when lint, policy, stale search, or closeout artifact sync is blocked.
 
 8. Finish with lifecycle judgment.
@@ -88,6 +88,9 @@ Before final response or closeout, confirm:
 - `npm run --silent rules:lint` was run, or the blocked reason is explicit.
 - Closeout wording separates mechanical evidence from actual acceptance.
 - `plan rereview: clean` includes the checked scope instead of a bare label.
+- External/global `rule-*` skill mentions are registered in `ops.skill-routing-registry`.
+- External/global skill file edits report the absolute path and repo-lint tracking limit.
+- Skill trigger changes are checked against `ops.skill-trigger-matrix`.
 - Large document work includes `owner impact` and `doc lifecycle checked`.
 
 ## Boundaries
@@ -105,4 +108,6 @@ Before final response or closeout, confirm:
 - `ops.cohesion-coupling-policy`
 - `ops.plan-authoring-review-workflow`
 - `ops.acceptance-reporting-guardrails`
+- `ops.skill-routing-registry`
+- `ops.skill-trigger-matrix`
 - `plans.progress`

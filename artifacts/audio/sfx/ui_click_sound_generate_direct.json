@@ -1,0 +1,166 @@
+{
+  "ok": false,
+  "step": "create-button-not-found",
+  "buttons": [
+    {
+      "index": 151,
+      "text": "",
+      "aria": "Select clip",
+      "disabled": null,
+      "y": 1053,
+      "x": 665
+    },
+    {
+      "index": 152,
+      "text": "5:14",
+      "aria": "Play track04",
+      "disabled": "false",
+      "y": 1024,
+      "x": 691
+    },
+    {
+      "index": 153,
+      "text": "",
+      "aria": "Edit title",
+      "disabled": null,
+      "y": 1026,
+      "x": 825.8624877929688
+    },
+    {
+      "index": 154,
+      "text": "",
+      "aria": "Like clip",
+      "disabled": null,
+      "y": 1076,
+      "x": 774
+    },
+    {
+      "index": 155,
+      "text": "",
+      "aria": "Dislike clip",
+      "disabled": null,
+      "y": 1076,
+      "x": 814
+    },
+    {
+      "index": 156,
+      "text": "",
+      "aria": "Share clip",
+      "disabled": null,
+      "y": 1076,
+      "x": 854
+    },
+    {
+      "index": 157,
+      "text": "Publish",
+      "aria": "Publish clip",
+      "disabled": null,
+      "y": 1076,
+      "x": 894
+    },
+    {
+      "index": 158,
+      "text": "",
+      "aria": "More options",
+      "disabled": null,
+      "y": 1043,
+      "x": 959.7999877929688
+    },
+    {
+      "index": 159,
+      "text": "Reset filters",
+      "aria": null,
+      "disabled": null,
+      "y": 1191,
+      "x": 788.8875122070312
+    },
+    {
+      "index": 160,
+      "text": "2/7\nUnlock Your Sound\nEarn 50 credits per challenge completed\nTime left\n4 days",
+      "aria": "Close onboarding challenges",
+      "disabled": null,
+      "y": 312.8000183105469,
+      "x": 663
+    },
+    {
+      "index": 161,
+      "text": "",
+      "aria": null,
+      "disabled": null,
+      "y": 28,
+      "x": 1303
+    },
+    {
+      "index": 162,
+      "text": "",
+      "aria": "Playbar: Toggle shuffle button",
+      "disabled": null,
+      "y": 656.4000244140625,
+      "x": 515.9874877929688
+    },
+    {
+      "index": 163,
+      "text": "",
+      "aria": "Playbar: Previous Song button",
+      "disabled": true,
+      "y": 650.4000244140625,
+      "x": 551.9874877929688
+    },
+    {
+      "index": 164,
+      "text": "",
+      "aria": "Playbar: Play button",
+      "disabled": true,
+      "y": 650.4000244140625,
+      "x": 599.9874877929688
+    },
+    {
+      "index": 165,
+      "text": "",
+      "aria": "Playbar: Next Song button",
+      "disabled": true,
+      "y": 650.4000244140625,
+      "x": 647.9874877929688
+    },
+    {
+      "index": 166,
+      "text": "",
+      "aria": "Playbar: Toggle repeat button",
+      "disabled": null,
+      "y": 656.4000244140625,
+      "x": 695.9874877929688
+    },
+    {
+      "index": 167,
+      "text": "Your Privacy Choices",
+      "aria": "Your Privacy Choices, Opens the preference center dialog",
+      "disabled": null,
+      "y": 664.7999877929688,
+      "x": 452.3374938964844
+    },
+    {
+      "index": 168,
+      "text": "Reject All",
+      "aria": null,
+      "disabled": null,
+      "y": 664.7999877929688,
+      "x": 646.8500366210938
+    },
+    {
+      "index": 169,
+      "text": "Accept All Cookies",
+      "aria": null,
+      "disabled": null,
+      "y": 664.7999877929688,
+      "x": 764.3375244140625
+    },
+    {
+      "index": 170,
+      "text": "",
+      "aria": "Close",
+      "disabled": null,
+      "y": 662.1000366210938,
+      "x": 986
+    }
+  ]
+}

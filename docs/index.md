@@ -20,6 +20,7 @@
 - 코딩 구현 / 버그 수정 / 리팩터 / 테스트 보강: [`ops/codex_coding_guardrails.md`](./ops/codex_coding_guardrails.md) -> relevant lane owner doc -> concrete code/tests
 - GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> current owner/residual route -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
 - 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> relevant owner doc
+- Skill route / trigger 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/skill_routing_registry.md`](./ops/skill_routing_registry.md) -> [`ops/skill_trigger_matrix.md`](./ops/skill_trigger_matrix.md) -> relevant skill entry
 
 ## 상태 규칙
 
@@ -35,7 +36,9 @@
 |---|---|
 | 지금 뭐가 진행 중인지 확인 | [`plans/progress.md`](./plans/progress.md) |
 | 응집도/결합도 상위 기준 확인 | [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) |
-| Plan Mode / Codex 운영 규칙 확인 | `rule-operations` owner 문서 (`docs/index.md`로 current path를 해석한 뒤 읽기) |
+| Plan Mode / Codex 운영 규칙 확인 | `rule-operations` route와 repo owner 문서 (`docs/index.md`로 current path를 해석한 뒤 읽기) |
+| Skill route / 전역 skill 이름 확인 | [`ops/skill_routing_registry.md`](./ops/skill_routing_registry.md) |
+| Skill trigger 기대값 확인 | [`ops/skill_trigger_matrix.md`](./ops/skill_trigger_matrix.md) |
 | Codex 코딩 가드레일 확인 | [`ops/codex_coding_guardrails.md`](./ops/codex_coding_guardrails.md) |
 | Unity UI/UX 작업 시작 규칙 확인 | [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) |
 | 게임 방향과 MVP 기준 확인 | [`design/game_design.md`](./design/game_design.md) |
@@ -88,6 +91,8 @@
 - `active`: [`stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) - Stitch 산출물을 JSON 번역 계약으로 고정하는 구조 SSOT
 - `active`: [`document_management_workflow.md`](./ops/document_management_workflow.md) - 문서 운영 상위 원칙과 역할/참조/삭제 관리 기준
 - `active`: [`plan_authoring_review_workflow.md`](./ops/plan_authoring_review_workflow.md) - plan closeout 원칙 적용 절차
+- `active`: [`skill_routing_registry.md`](./ops/skill_routing_registry.md) - repo-local 및 external/global skill route 이름 registry
+- `active`: [`skill_trigger_matrix.md`](./ops/skill_trigger_matrix.md) - skill trigger 기대값 fixture matrix
 - `active`: [`acceptance_reporting_guardrails.md`](./ops/acceptance_reporting_guardrails.md) - mechanical/acceptance 분리와 success/blocked/mismatch 판정 기준
 - `reference`: [`firebase_hosting.md`](./ops/firebase_hosting.md) - Firebase hosting 배포 절차
 

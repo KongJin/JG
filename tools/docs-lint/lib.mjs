@@ -74,8 +74,19 @@ const PLAN_MODE_PATTERNS = [/\bPlan Mode\b/u, /Plan 모드/u];
 const RULE_OPERATIONS_PATTERNS = [/\brule-operations\b/u];
 const ACCEPTANCE_GUARDRAILS_PATH = "docs/ops/acceptance_reporting_guardrails.md";
 const ISSUE_INVESTIGATION_SKILL_PATH = ".codex/skills/jg-issue-investigation/SKILL.md";
+const SKILL_ROUTING_REGISTRY_PATH = "docs/ops/skill_routing_registry.md";
+const SKILL_TRIGGER_MATRIX_PATH = "docs/ops/skill_trigger_matrix.md";
 const COHESION_COUPLING_OWNER_PATTERNS = [/\bops\.cohesion-coupling-policy\b/u];
 const ACCEPTANCE_GUARDRAILS_OWNER_PATTERNS = [/\bops\.acceptance-reporting-guardrails\b/u];
+const GLOBAL_RULE_SKILL_NAMES = new Set([
+  "rule-architecture",
+  "rule-context",
+  "rule-operations",
+  "rule-patterns",
+  "rule-plan-authoring",
+  "rule-unity",
+  "rule-validation",
+]);
 const ROOT_CAUSE_INVESTIGATION_REQUIREMENTS = [
   { patterns: [/## Root Cause Investigation/u], label: "`Root Cause Investigation` section" },
   { patterns: [/확인된 사실/u], label: "`확인된 사실` wording" },
@@ -124,6 +135,7 @@ const MODULE_DATA_STRUCTURE_PATH = "docs/design/module_data_structure.md";
 const MODULE_DATA_STRUCTURE_UNIT_SECTION_START = "## ScriptableObject 데이터 정의";
 const MODULE_DATA_STRUCTURE_UNIT_SECTION_END = "## 편성 데이터 (Garage Roster)";
 export const RECURRENCE_CLOSEOUT_PATH = "artifacts/rules/issue-recurrence-closeout.json";
+export const RECURRENCE_CLOSEOUT_DIR = "artifacts/rules/issue-recurrence-closeout.d";
 export const RECURRENCE_CHANGED_FILES_ENV = "RULES_LINT_CHANGED_FILES";
 
 function validateRootCauseInvestigationContract(document) {
@@ -199,6 +211,8 @@ export async function lintRepository(repoRoot, options = {}) {
   if (includeGeneralChecks) {
     errors.push(...validateUniqueDocIds(documents));
     errors.push(...validateKnownDocIdReferences(documents));
+    errors.push(...validateGlobalSkillRegistry(documents));
+    errors.push(...validateSkillTriggerMatrix(documents));
     errors.push(...validateIndexCoverage(documents, repoRoot));
     errors.push(...validateIndexStatusLabels(documents, repoRoot));
     errors.push(...validateActivePlanBudget(documents));
@@ -837,7 +851,7 @@ async function validateRulesOnlyRecurrenceCloseout(repoRoot, options) {
     changedFiles: options.changedFiles,
   });
   const relevantChangedFiles = changedFiles.filter(
-    (filePath) => isRulesOnlyRecurrenceTarget(filePath) && filePath !== RECURRENCE_CLOSEOUT_PATH,
+    (filePath) => isRulesOnlyRecurrenceTarget(filePath) && !isRecurrenceCloseoutArtifactPath(filePath),
   );
 
   if (relevantChangedFiles.length === 0) {
@@ -845,53 +859,86 @@ async function validateRulesOnlyRecurrenceCloseout(repoRoot, options) {
   }
 
   const errors = [];
-  const artifactAbsolutePath = path.join(repoRoot, RECURRENCE_CLOSEOUT_PATH);
+  const changedCloseoutArtifacts = changedFiles
+    .map((entry) => normalizeRepoRelativePath(entry))
+    .filter((entry) => isRecurrenceCloseoutArtifactPath(entry));
 
-  if (!(await pathExists(artifactAbsolutePath))) {
+  if (changedCloseoutArtifacts.length === 0) {
+    const legacyArtifactExists = await pathExists(path.join(repoRoot, RECURRENCE_CLOSEOUT_PATH));
+    const errorCode = legacyArtifactExists
+      ? "missing-recurrence-closeout-update"
+      : "missing-recurrence-closeout-artifact";
+    const message = legacyArtifactExists
+      ? `Rules-only changed files must update a closeout artifact in the same change: \`${RECURRENCE_CLOSEOUT_PATH}\` or \`${RECURRENCE_CLOSEOUT_DIR}/*.json\`.`
+      : `Rules-only changed files require a tracked closeout artifact: \`${RECURRENCE_CLOSEOUT_PATH}\` or \`${RECURRENCE_CLOSEOUT_DIR}/*.json\`.`;
     return [
       createError(
-        "missing-recurrence-closeout-artifact",
+        errorCode,
         RECURRENCE_CLOSEOUT_PATH,
-        `Rules-only changed files require tracked closeout artifact \`${RECURRENCE_CLOSEOUT_PATH}\`.`,
+        message,
       ),
     ];
   }
 
-  let payload;
-  try {
-    payload = JSON.parse(await fs.readFile(artifactAbsolutePath, "utf8"));
-  } catch (error) {
-    return [
-      createError(
-        "invalid-recurrence-closeout-json",
-        RECURRENCE_CLOSEOUT_PATH,
-        `Failed to parse recurrence closeout artifact JSON. ${error.message}`,
-      ),
-    ];
+  const coveredChangedPaths = new Set();
+  for (const artifactPath of changedCloseoutArtifacts) {
+    const artifactAbsolutePath = path.join(repoRoot, artifactPath);
+    if (!(await pathExists(artifactAbsolutePath))) {
+      errors.push(
+        createError(
+          "missing-recurrence-closeout-artifact",
+          artifactPath,
+          `Rules-only closeout artifact \`${artifactPath}\` does not exist.`,
+        ),
+      );
+      continue;
+    }
+
+    let payload;
+    try {
+      payload = JSON.parse(await fs.readFile(artifactAbsolutePath, "utf8"));
+    } catch (error) {
+      errors.push(
+        createError(
+          "invalid-recurrence-closeout-json",
+          artifactPath,
+          `Failed to parse recurrence closeout artifact JSON. ${error.message}`,
+        ),
+      );
+      continue;
+    }
+
+    errors.push(...validateRecurrenceCloseoutPayload(payload, artifactPath));
+    if (Array.isArray(payload.changedPaths)) {
+      for (const changedPath of payload.changedPaths) {
+        coveredChangedPaths.add(normalizeRepoRelativePath(changedPath));
+      }
+    }
   }
 
-  if (!changedFiles.includes(RECURRENCE_CLOSEOUT_PATH)) {
-    errors.push(
-      createError(
-        "missing-recurrence-closeout-update",
-        RECURRENCE_CLOSEOUT_PATH,
-        `Rules-only changed files must update \`${RECURRENCE_CLOSEOUT_PATH}\` in the same change.`,
-      ),
-    );
+  for (const changedFile of relevantChangedFiles.map((entry) => normalizeRepoRelativePath(entry))) {
+    if (!coveredChangedPaths.has(changedFile)) {
+      errors.push(
+        createError(
+          "recurrence-closeout-missing-changed-path",
+          changedCloseoutArtifacts[0] || RECURRENCE_CLOSEOUT_PATH,
+          `Closeout artifact \`changedPaths\` must include rules-only changed file \`${changedFile}\`.`,
+        ),
+      );
+    }
   }
 
-  errors.push(...validateRecurrenceCloseoutPayload(payload, relevantChangedFiles));
   return errors;
 }
 
-function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
+function validateRecurrenceCloseoutPayload(payload, artifactPath = RECURRENCE_CLOSEOUT_PATH) {
   const errors = [];
 
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
     return [
       createError(
         "invalid-recurrence-closeout-field",
-        RECURRENCE_CLOSEOUT_PATH,
+        artifactPath,
         "Recurrence closeout artifact must be a JSON object.",
       ),
     ];
@@ -901,7 +948,7 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
     errors.push(
       createError(
         "invalid-recurrence-closeout-field",
-        RECURRENCE_CLOSEOUT_PATH,
+        artifactPath,
         "`schemaVersion` must be an integer >= 1.",
       ),
     );
@@ -911,7 +958,7 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
     errors.push(
       createError(
         "invalid-recurrence-closeout-field",
-        RECURRENCE_CLOSEOUT_PATH,
+        artifactPath,
         "`scope` must be `rules-only`.",
       ),
     );
@@ -921,7 +968,7 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
     errors.push(
       createError(
         "invalid-recurrence-closeout-field",
-        RECURRENCE_CLOSEOUT_PATH,
+        artifactPath,
         "`issueDetected` must be a boolean.",
       ),
     );
@@ -942,7 +989,7 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
       errors.push(
         createError(
           "invalid-recurrence-closeout-field",
-          RECURRENCE_CLOSEOUT_PATH,
+          artifactPath,
           `\`${field}\` must be a string.`,
         ),
       );
@@ -953,7 +1000,7 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
     errors.push(
       createError(
         "invalid-recurrence-closeout-field",
-        RECURRENCE_CLOSEOUT_PATH,
+        artifactPath,
         "`escalationRequired` must be a boolean.",
       ),
     );
@@ -963,7 +1010,7 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
     errors.push(
       createError(
         "invalid-recurrence-closeout-field",
-        RECURRENCE_CLOSEOUT_PATH,
+        artifactPath,
         "`changedPaths` must be an array of strings.",
       ),
     );
@@ -973,7 +1020,7 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
     errors.push(
       createError(
         "invalid-recurrence-closeout-field",
-        RECURRENCE_CLOSEOUT_PATH,
+        artifactPath,
         "`verification` must not be empty for rules-only closeout artifacts.",
       ),
     );
@@ -992,7 +1039,7 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
         errors.push(
           createError(
             "missing-recurrence-closeout-field",
-            RECURRENCE_CLOSEOUT_PATH,
+            artifactPath,
             `\`${field}\` must not be empty when \`issueDetected = true\`.`,
           ),
         );
@@ -1004,7 +1051,7 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
     errors.push(
       createError(
         "missing-recurrence-closeout-field",
-        RECURRENCE_CLOSEOUT_PATH,
+        artifactPath,
         "`blockedReason` must not be empty when `escalationRequired = true`.",
       ),
     );
@@ -1019,7 +1066,7 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
     errors.push(
       createError(
         "uncertain-root-cause-without-blocked-reason",
-        RECURRENCE_CLOSEOUT_PATH,
+        artifactPath,
         "`rootCause` must not contain uncertain hypothesis wording unless `blockedReason` explains the missing verification.",
       ),
     );
@@ -1036,7 +1083,7 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
     errors.push(
       createError(
         "missing-recurrence-closeout-verification-evidence",
-        RECURRENCE_CLOSEOUT_PATH,
+        artifactPath,
         "`verification` must name a concrete command, artifact path, owner path, or evidence anchor when `rootCause` is populated.",
       ),
     );
@@ -1059,7 +1106,7 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
       errors.push(
         createError(
           "missing-recurrence-closeout-coverage",
-          RECURRENCE_CLOSEOUT_PATH,
+          artifactPath,
           `Recurrence closeout artifact must mention hard-fail coverage ${label} in observedMutationClass, rootCause, or prevention.`,
         ),
       );
@@ -1070,16 +1117,14 @@ function validateRecurrenceCloseoutPayload(payload, relevantChangedFiles) {
     ? new Set(payload.changedPaths.map((entry) => normalizeRepoRelativePath(entry)))
     : new Set();
 
-  for (const changedFile of relevantChangedFiles.map((entry) => normalizeRepoRelativePath(entry))) {
-    if (!artifactChangedPaths.has(changedFile)) {
-      errors.push(
-        createError(
-          "recurrence-closeout-missing-changed-path",
-          RECURRENCE_CLOSEOUT_PATH,
-          `\`changedPaths\` must include rules-only changed file \`${changedFile}\`.`,
-        ),
-      );
-    }
+  if (!artifactChangedPaths.has(normalizeRepoRelativePath(artifactPath))) {
+    errors.push(
+      createError(
+        "recurrence-closeout-missing-changed-path",
+        artifactPath,
+        `\`changedPaths\` must include closeout artifact \`${artifactPath}\`.`,
+      ),
+    );
   }
 
   return errors;
@@ -1218,6 +1263,121 @@ function validateKnownDocIdReferences(documents) {
         );
       }
     }
+  }
+
+  return errors;
+}
+
+function validateGlobalSkillRegistry(documents) {
+  const registryDocument = documents.find(
+    (document) => document.repoRelativePath === SKILL_ROUTING_REGISTRY_PATH,
+  );
+  if (!registryDocument) {
+    return [];
+  }
+
+  const registeredSkillNames = new Set(
+    extractGlobalRuleSkillNames(registryDocument.content),
+  );
+  const errors = [];
+
+  for (const document of documents) {
+    if (document.repoRelativePath === SKILL_ROUTING_REGISTRY_PATH) {
+      continue;
+    }
+
+    const lines = stripFencedCodeBlocks(document.content).split(/\r?\n/);
+    for (let index = 0; index < lines.length; index += 1) {
+      const line = lines[index];
+      for (const token of extractInlineCodeTokens(line)) {
+        if (!isGlobalRuleSkillToken(token) || registeredSkillNames.has(token)) {
+          continue;
+        }
+
+        errors.push(
+          createError(
+            "missing-global-skill-registry-entry",
+            document.repoRelativePath,
+            `Global rule skill reference \`${token}\` must be registered in \`${SKILL_ROUTING_REGISTRY_PATH}\` before repo docs or skills route to it.`,
+            index + 1,
+          ),
+        );
+      }
+    }
+  }
+
+  return errors;
+}
+
+function validateSkillTriggerMatrix(documents) {
+  const matrixDocument = documents.find(
+    (document) => document.repoRelativePath === SKILL_TRIGGER_MATRIX_PATH,
+  );
+  if (!matrixDocument) {
+    return [];
+  }
+
+  const repoLocalSkillNames = new Set(getRepoLocalSkillNames(documents));
+  const registryDocument = documents.find(
+    (document) => document.repoRelativePath === SKILL_ROUTING_REGISTRY_PATH,
+  );
+  const registeredGlobalSkillNames = new Set(
+    registryDocument ? extractGlobalRuleSkillNames(registryDocument.content) : [],
+  );
+  const matrixSkillNames = new Set(extractSkillRouteNames(matrixDocument.content));
+  const errors = [];
+
+  const lines = stripFencedCodeBlocks(matrixDocument.content).split(/\r?\n/);
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    for (const token of extractInlineCodeTokens(line)) {
+      if (!isSkillRouteToken(token)) {
+        continue;
+      }
+
+      const knownRepoLocalSkill = token.startsWith("jg-") && repoLocalSkillNames.has(token);
+      const knownGlobalSkill = token.startsWith("rule-") && registeredGlobalSkillNames.has(token);
+      if (knownRepoLocalSkill || knownGlobalSkill) {
+        continue;
+      }
+
+      errors.push(
+        createError(
+          "unknown-skill-trigger-route",
+          matrixDocument.repoRelativePath,
+          `Skill trigger fixture references unknown or unregistered skill route \`${token}\`.`,
+          index + 1,
+        ),
+      );
+    }
+  }
+
+  for (const skillName of [...repoLocalSkillNames].sort((left, right) => left.localeCompare(right))) {
+    if (matrixSkillNames.has(skillName)) {
+      continue;
+    }
+
+    errors.push(
+      createError(
+        "missing-skill-trigger-fixture",
+        matrixDocument.repoRelativePath,
+        `Skill trigger matrix must include at least one fixture for repo-local skill \`${skillName}\`.`,
+      ),
+    );
+  }
+
+  for (const skillName of [...registeredGlobalSkillNames].sort((left, right) => left.localeCompare(right))) {
+    if (matrixSkillNames.has(skillName)) {
+      continue;
+    }
+
+    errors.push(
+      createError(
+        "missing-skill-trigger-fixture",
+        matrixDocument.repoRelativePath,
+        `Skill trigger matrix must include at least one fixture for registered global skill \`${skillName}\`.`,
+      ),
+    );
   }
 
   return errors;
@@ -1685,6 +1845,50 @@ function stripFencedCodeBlocks(content) {
   return stripped.join("\n");
 }
 
+function extractGlobalRuleSkillNames(content) {
+  const names = new Set();
+  const lines = stripFencedCodeBlocks(content).split(/\r?\n/);
+
+  for (const line of lines) {
+    for (const token of extractInlineCodeTokens(line)) {
+      if (isGlobalRuleSkillToken(token)) {
+        names.add(token);
+      }
+    }
+  }
+
+  return [...names].sort((left, right) => left.localeCompare(right));
+}
+
+function getRepoLocalSkillNames(documents) {
+  return documents
+    .map((document) => {
+      const match = document.repoRelativePath.match(/^\.codex\/skills\/(jg-[^/]+)\/SKILL\.md$/u);
+      return match ? match[1] : null;
+    })
+    .filter(Boolean)
+    .sort((left, right) => left.localeCompare(right));
+}
+
+function extractSkillRouteNames(content) {
+  const names = new Set();
+  const lines = stripFencedCodeBlocks(content).split(/\r?\n/);
+
+  for (const line of lines) {
+    for (const token of extractInlineCodeTokens(line)) {
+      if (isSkillRouteToken(token)) {
+        names.add(token);
+      }
+    }
+  }
+
+  return [...names].sort((left, right) => left.localeCompare(right));
+}
+
+function isSkillRouteToken(token) {
+  return /^jg-[a-z0-9-]+$/u.test(token) || isGlobalRuleSkillToken(token);
+}
+
 function isRelativeTarget(target) {
   if (!target || target.startsWith("#") || target.startsWith("/")) {
     return false;
@@ -1695,6 +1899,10 @@ function isRelativeTarget(target) {
 
 function isRepoLocalSkillEntry(repoRelativePath) {
   return /^\.codex\/skills\/jg-[^/]+\/SKILL\.md$/.test(repoRelativePath);
+}
+
+function isGlobalRuleSkillToken(token) {
+  return GLOBAL_RULE_SKILL_NAMES.has(token);
 }
 
 function isConcreteContractArtifactPath(target) {
@@ -1882,10 +2090,19 @@ export function isRulesOnlyRecurrenceTarget(repoRelativePath) {
     normalized.startsWith("tools/docs-lint/") ||
     normalized.startsWith("tools/rule-harness/") ||
     normalized === ".github/workflows/docs-lint.yml" ||
-    normalized === RECURRENCE_CLOSEOUT_PATH
+    isRecurrenceCloseoutArtifactPath(normalized)
   ) {
     return true;
   }
 
   return false;
+}
+
+export function isRecurrenceCloseoutArtifactPath(repoRelativePath) {
+  const normalized = normalizeRepoRelativePath(repoRelativePath);
+  return normalized === RECURRENCE_CLOSEOUT_PATH
+    || (
+      normalized.startsWith(`${RECURRENCE_CLOSEOUT_DIR}/`) &&
+      /^[a-z0-9][a-z0-9._-]*\.json$/u.test(normalized.slice(RECURRENCE_CLOSEOUT_DIR.length + 1))
+    );
 }

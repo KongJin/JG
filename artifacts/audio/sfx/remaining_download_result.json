@@ -1,0 +1,185 @@
+{
+  "downloadedAt": "2026-05-01T08:29:24.305Z",
+  "downloads": [
+    {
+      "soundKey": "ui_select",
+      "index": 0,
+      "id": "bc216814-d6f7-4801-ad2d-3d05bc831c50",
+      "url": "https://suno.com/song/bc216814-d6f7-4801-ad2d-3d05bc831c50",
+      "source": "artifacts\\audio\\inbox\\bc216814-d6f7-4801-ad2d-3d05bc831c50.mp3",
+      "alias": "artifacts\\audio\\inbox\\ui_select.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: bc216814-d6f7-4801-ad2d-3d05bc831c50\nPath: artifacts\\audio\\inbox\\bc216814-d6f7-4801-ad2d-3d05bc831c50.mp3\nSize: 33,222 bytes (32 KB)"
+    },
+    {
+      "soundKey": "ui_select",
+      "index": 1,
+      "id": "49a2eaa0-8a7d-41e7-b326-c8f4debc2eab",
+      "url": "https://suno.com/song/49a2eaa0-8a7d-41e7-b326-c8f4debc2eab",
+      "source": "artifacts\\audio\\inbox\\49a2eaa0-8a7d-41e7-b326-c8f4debc2eab.mp3",
+      "alias": "artifacts\\audio\\inbox\\ui_select_alt.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: 49a2eaa0-8a7d-41e7-b326-c8f4debc2eab\nPath: artifacts\\audio\\inbox\\49a2eaa0-8a7d-41e7-b326-c8f4debc2eab.mp3\nSize: 12,150 bytes (11 KB)"
+    },
+    {
+      "soundKey": "ui_confirm",
+      "index": 0,
+      "id": "d728f39e-50c0-4c06-bd25-141a4cac03b2",
+      "url": "https://suno.com/song/d728f39e-50c0-4c06-bd25-141a4cac03b2",
+      "source": "artifacts\\audio\\inbox\\d728f39e-50c0-4c06-bd25-141a4cac03b2.mp3",
+      "alias": "artifacts\\audio\\inbox\\ui_confirm.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: d728f39e-50c0-4c06-bd25-141a4cac03b2\nPath: artifacts\\audio\\inbox\\d728f39e-50c0-4c06-bd25-141a4cac03b2.mp3\nSize: 40,110 bytes (39 KB)"
+    },
+    {
+      "soundKey": "ui_confirm",
+      "index": 1,
+      "id": "62b0bcc9-d7de-4c5b-860c-f3a8cf220f24",
+      "url": "https://suno.com/song/62b0bcc9-d7de-4c5b-860c-f3a8cf220f24",
+      "source": "artifacts\\audio\\inbox\\62b0bcc9-d7de-4c5b-860c-f3a8cf220f24.mp3",
+      "alias": "artifacts\\audio\\inbox\\ui_confirm_alt.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: 62b0bcc9-d7de-4c5b-860c-f3a8cf220f24\nPath: artifacts\\audio\\inbox\\62b0bcc9-d7de-4c5b-860c-f3a8cf220f24.mp3\nSize: 42,246 bytes (41 KB)"
+    },
+    {
+      "soundKey": "ui_back",
+      "index": 0,
+      "id": "df8d6a0a-c3d8-4bf7-8b4e-33a724a44acb",
+      "url": "https://suno.com/song/df8d6a0a-c3d8-4bf7-8b4e-33a724a44acb",
+      "source": "artifacts\\audio\\inbox\\df8d6a0a-c3d8-4bf7-8b4e-33a724a44acb.mp3",
+      "alias": "artifacts\\audio\\inbox\\ui_back.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: df8d6a0a-c3d8-4bf7-8b4e-33a724a44acb\nPath: artifacts\\audio\\inbox\\df8d6a0a-c3d8-4bf7-8b4e-33a724a44acb.mp3\nSize: 36,822 bytes (35 KB)"
+    },
+    {
+      "soundKey": "ui_back",
+      "index": 1,
+      "id": "e574447f-179c-47db-ad4e-ab3ef7bf6efa",
+      "url": "https://suno.com/song/e574447f-179c-47db-ad4e-ab3ef7bf6efa",
+      "source": "artifacts\\audio\\inbox\\e574447f-179c-47db-ad4e-ab3ef7bf6efa.mp3",
+      "alias": "artifacts\\audio\\inbox\\ui_back_alt.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: e574447f-179c-47db-ad4e-ab3ef7bf6efa\nPath: artifacts\\audio\\inbox\\e574447f-179c-47db-ad4e-ab3ef7bf6efa.mp3\nSize: 14,214 bytes (13 KB)"
+    },
+    {
+      "soundKey": "ui_error",
+      "index": 0,
+      "id": "a3ced13a-4b3f-42e7-8263-27c97f957dd6",
+      "url": "https://suno.com/song/a3ced13a-4b3f-42e7-8263-27c97f957dd6",
+      "source": "artifacts\\audio\\inbox\\a3ced13a-4b3f-42e7-8263-27c97f957dd6.mp3",
+      "alias": "artifacts\\audio\\inbox\\ui_error.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: a3ced13a-4b3f-42e7-8263-27c97f957dd6\nPath: artifacts\\audio\\inbox\\a3ced13a-4b3f-42e7-8263-27c97f957dd6.mp3\nSize: 23,022 bytes (22 KB)"
+    },
+    {
+      "soundKey": "ui_error",
+      "index": 1,
+      "id": "b9fa97a0-69a2-4708-aafb-bb2876ea6222",
+      "url": "https://suno.com/song/b9fa97a0-69a2-4708-aafb-bb2876ea6222",
+      "source": "artifacts\\audio\\inbox\\b9fa97a0-69a2-4708-aafb-bb2876ea6222.mp3",
+      "alias": "artifacts\\audio\\inbox\\ui_error_alt.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: b9fa97a0-69a2-4708-aafb-bb2876ea6222\nPath: artifacts\\audio\\inbox\\b9fa97a0-69a2-4708-aafb-bb2876ea6222.mp3\nSize: 12,990 bytes (12 KB)"
+    },
+    {
+      "soundKey": "ui_retry",
+      "index": 0,
+      "id": "a75c3c03-6748-4db8-8d79-9b461123aa12",
+      "url": "https://suno.com/song/a75c3c03-6748-4db8-8d79-9b461123aa12",
+      "source": "artifacts\\audio\\inbox\\a75c3c03-6748-4db8-8d79-9b461123aa12.mp3",
+      "alias": "artifacts\\audio\\inbox\\ui_retry.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: a75c3c03-6748-4db8-8d79-9b461123aa12\nPath: artifacts\\audio\\inbox\\a75c3c03-6748-4db8-8d79-9b461123aa12.mp3\nSize: 34,614 bytes (33 KB)"
+    },
+    {
+      "soundKey": "ui_retry",
+      "index": 1,
+      "id": "76eb2446-b48d-4d74-9e5f-b42181a7d762",
+      "url": "https://suno.com/song/76eb2446-b48d-4d74-9e5f-b42181a7d762",
+      "source": "artifacts\\audio\\inbox\\76eb2446-b48d-4d74-9e5f-b42181a7d762.mp3",
+      "alias": "artifacts\\audio\\inbox\\ui_retry_alt.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: 76eb2446-b48d-4d74-9e5f-b42181a7d762\nPath: artifacts\\audio\\inbox\\76eb2446-b48d-4d74-9e5f-b42181a7d762.mp3\nSize: 36,630 bytes (35 KB)"
+    },
+    {
+      "soundKey": "garage_slot_select",
+      "index": 0,
+      "id": "d04d463f-84d1-4377-a67e-35cbd522beb7",
+      "url": "https://suno.com/song/d04d463f-84d1-4377-a67e-35cbd522beb7",
+      "source": "artifacts\\audio\\inbox\\d04d463f-84d1-4377-a67e-35cbd522beb7.mp3",
+      "alias": "artifacts\\audio\\inbox\\garage_slot_select.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: d04d463f-84d1-4377-a67e-35cbd522beb7\nPath: artifacts\\audio\\inbox\\d04d463f-84d1-4377-a67e-35cbd522beb7.mp3\nSize: 37,734 bytes (36 KB)"
+    },
+    {
+      "soundKey": "garage_slot_select",
+      "index": 1,
+      "id": "c3ebddf6-0c0c-4e5e-840a-5d48434a35c6",
+      "url": "https://suno.com/song/c3ebddf6-0c0c-4e5e-840a-5d48434a35c6",
+      "source": "artifacts\\audio\\inbox\\c3ebddf6-0c0c-4e5e-840a-5d48434a35c6.mp3",
+      "alias": "artifacts\\audio\\inbox\\garage_slot_select_alt.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: c3ebddf6-0c0c-4e5e-840a-5d48434a35c6\nPath: artifacts\\audio\\inbox\\c3ebddf6-0c0c-4e5e-840a-5d48434a35c6.mp3\nSize: 13,758 bytes (13 KB)"
+    },
+    {
+      "soundKey": "garage_part_select",
+      "index": 0,
+      "id": "a9f4ff12-d5b2-4912-b9fb-73d20c17cd6e",
+      "url": "https://suno.com/song/a9f4ff12-d5b2-4912-b9fb-73d20c17cd6e",
+      "source": "artifacts\\audio\\inbox\\a9f4ff12-d5b2-4912-b9fb-73d20c17cd6e.mp3",
+      "alias": "artifacts\\audio\\inbox\\garage_part_select.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: a9f4ff12-d5b2-4912-b9fb-73d20c17cd6e\nPath: artifacts\\audio\\inbox\\a9f4ff12-d5b2-4912-b9fb-73d20c17cd6e.mp3\nSize: 22,542 bytes (22 KB)"
+    },
+    {
+      "soundKey": "garage_part_select",
+      "index": 1,
+      "id": "8f7fad0f-3938-48c5-aa13-a1f802acd22c",
+      "url": "https://suno.com/song/8f7fad0f-3938-48c5-aa13-a1f802acd22c",
+      "source": "artifacts\\audio\\inbox\\8f7fad0f-3938-48c5-aa13-a1f802acd22c.mp3",
+      "alias": "artifacts\\audio\\inbox\\garage_part_select_alt.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: 8f7fad0f-3938-48c5-aa13-a1f802acd22c\nPath: artifacts\\audio\\inbox\\8f7fad0f-3938-48c5-aa13-a1f802acd22c.mp3\nSize: 33,126 bytes (32 KB)"
+    },
+    {
+      "soundKey": "battle_slot_select",
+      "index": 0,
+      "id": "b7ebea18-02f2-458e-a193-3b2ced28e6f0",
+      "url": "https://suno.com/song/b7ebea18-02f2-458e-a193-3b2ced28e6f0",
+      "source": "artifacts\\audio\\inbox\\b7ebea18-02f2-458e-a193-3b2ced28e6f0.mp3",
+      "alias": "artifacts\\audio\\inbox\\battle_slot_select.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: b7ebea18-02f2-458e-a193-3b2ced28e6f0\nPath: artifacts\\audio\\inbox\\b7ebea18-02f2-458e-a193-3b2ced28e6f0.mp3\nSize: 22,350 bytes (21 KB)"
+    },
+    {
+      "soundKey": "battle_slot_select",
+      "index": 1,
+      "id": "cbcdcd62-420b-4ded-9bab-5a0863c201c5",
+      "url": "https://suno.com/song/cbcdcd62-420b-4ded-9bab-5a0863c201c5",
+      "source": "artifacts\\audio\\inbox\\cbcdcd62-420b-4ded-9bab-5a0863c201c5.mp3",
+      "alias": "artifacts\\audio\\inbox\\battle_slot_select_alt.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: cbcdcd62-420b-4ded-9bab-5a0863c201c5\nPath: artifacts\\audio\\inbox\\cbcdcd62-420b-4ded-9bab-5a0863c201c5.mp3\nSize: 27,462 bytes (26 KB)"
+    },
+    {
+      "soundKey": "skill_select",
+      "index": 0,
+      "id": "f71fad86-928e-4e26-9a1d-912c0b60b25b",
+      "url": "https://suno.com/song/f71fad86-928e-4e26-9a1d-912c0b60b25b",
+      "source": "artifacts\\audio\\inbox\\f71fad86-928e-4e26-9a1d-912c0b60b25b.mp3",
+      "alias": "artifacts\\audio\\inbox\\skill_select.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: f71fad86-928e-4e26-9a1d-912c0b60b25b\nPath: artifacts\\audio\\inbox\\f71fad86-928e-4e26-9a1d-912c0b60b25b.mp3\nSize: 27,366 bytes (26 KB)"
+    },
+    {
+      "soundKey": "skill_select",
+      "index": 1,
+      "id": "dc0e2a69-a911-45d3-a02f-84b1b82ee527",
+      "url": "https://suno.com/song/dc0e2a69-a911-45d3-a02f-84b1b82ee527",
+      "source": "artifacts\\audio\\inbox\\dc0e2a69-a911-45d3-a02f-84b1b82ee527.mp3",
+      "alias": "artifacts\\audio\\inbox\\skill_select_alt.mp3",
+      "ok": true,
+      "text": "Download completed!\nTrack ID: dc0e2a69-a911-45d3-a02f-84b1b82ee527\nPath: artifacts\\audio\\inbox\\dc0e2a69-a911-45d3-a02f-84b1b82ee527.mp3\nSize: 34,998 bytes (34 KB)"
+    }
+  ]
+}

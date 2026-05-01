@@ -176,30 +176,22 @@ namespace Features.Garage.Presentation
 
         private void RenderPreview(IReadOnlyList<GarageSlotViewModel> slots)
         {
-            if (_previewRenderer == null)
-            {
-                _surface.SetPreviewTexture(null, false);
-            }
+            var selectedSlot=FindSelectedSlot(slots);
+            if(_previewRenderer==null)
+                _surface.SetPreviewTexture(null,false);
             else
             {
-                var selectedSlot = FindSelectedSlot(slots);
-                bool hasPreview = _previewRenderer.Render(selectedSlot);
-                _surface.SetPreviewTexture(_previewRenderer.PreviewTexture, hasPreview);
+                bool hasPreview=_previewRenderer.Render(selectedSlot);
+                _surface.SetPreviewTexture(_previewRenderer.PreviewTexture,hasPreview);
             }
-
-            RenderPartPreview();
+            RenderPartPreview(selectedSlot);
         }
 
-        private void RenderPartPreview()
+        private void RenderPartPreview(GarageSlotViewModel selectedSlot)
         {
-            if (_partPreviewRenderer == null)
-            {
-                _surface.SetPartPreviewTexture(null, false);
-                return;
-            }
-
-            bool hasPreview = _partPreviewRenderer.RenderPart(_lastPartList);
-            _surface.SetPartPreviewTexture(_partPreviewRenderer.PreviewTexture, hasPreview);
+            if(_partPreviewRenderer==null) {_surface.SetPartPreviewTexture(null,false); return; }
+            bool hasPreview=selectedSlot!=null&&_partPreviewRenderer.Render(selectedSlot)||_partPreviewRenderer.RenderPart(_lastPartList);
+            _surface.SetPartPreviewTexture(_partPreviewRenderer.PreviewTexture,hasPreview);
         }
 
         private static GarageSlotViewModel FindSelectedSlot(IReadOnlyList<GarageSlotViewModel> slots)

@@ -44,7 +44,7 @@ category는 정확한 route 본문이 아니라 첫 분류 신호다.
 
 - `bug/regression`: 깨진 동작, 성능 저하, 재현 가능한 실패. 구현 전 `jg-issue-investigation` route로 최소 재현 또는 feedback loop를 먼저 만든다.
 - `feature/design`: 새 동작, UX, 제품 판단. `design/*`, active owner plan, 또는 `plans.progress` current focus로 보낸다.
-- `docs/workflow/rule/skill`: 문서 운영, 규칙, owner route, repo-local skill trigger 변경. `ops.document-management-workflow`, `ops.cohesion-coupling-policy`, 관련 owner skill을 먼저 본다.
+- `docs/workflow/rule/skill`: 문서 운영, 규칙, owner route, repo-local skill trigger 변경. `ops.document-management-workflow`, `ops.cohesion-coupling-policy`, 관련 owner skill을 먼저 보고, skill route/trigger 변경이면 `ops.skill-routing-registry`와 `ops.skill-trigger-matrix`도 확인한다.
 - `Unity/Stitch/validation`: Unity scene/prefab/UI, Stitch handoff, build/smoke/test 검증. `docs/index.md`의 lane route와 active owner plan을 따른다.
 
 next action은 실행 준비 상태를 뜻한다.

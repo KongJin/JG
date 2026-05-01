@@ -1,7 +1,6 @@
 ---
 name: jg-coding-guardrails
-description: >-
-  Project-specific coding guardrails for the JG repo. Use this skill whenever Codex is asked to implement code, fix bugs, refactor, plan a refactor, split refactoring work into safe incremental steps, add or adjust tests, write regression tests, use TDD/test-first/RED-GREEN-refactor, define validation criteria, clarify ambiguous requirements, ask clarification questions, lock success criteria, reduce LLM coding errors, handle assumptions before coding, keep changes simple, make surgical edits, or respond to Korean requests involving "LLM coding 오류", "가정", "명확화", "질문 루프", "성공 기준", "단순함", "외과적 변화", "검증 기준", "코딩 오류", "과잉 구현", "추측 구현", "리팩터 계획", "리팩터 slice", "점진적 리팩터", "작은 리팩터 단계", "안전한 리팩터", "TDD", "테스트 우선", "행동 기준 테스트", "회귀 테스트", or "테스트/검증". This skill routes implementation work through the repo's coding guardrails SSOT before following the relevant architecture, Unity, document, or feature owner docs.
+description: "JG 구현/버그수정/리팩터/테스트 가드레일. Triggers: 코딩 오류, 가정, 명확화, 성공 기준, 단순한 변경, TDD, 회귀 테스트, 검증 기준."
 ---
 
 # JG Coding Guardrails
@@ -25,9 +24,10 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection 
 2. Read `docs/index.md` to resolve current owner paths.
 3. Read owner doc `docs/ops/codex_coding_guardrails.md`.
 4. Read `docs/ops/document_management_workflow.md` if the task changes docs, rules, skill triggers, or closeout language.
-5. Read `docs/ops/acceptance_reporting_guardrails.md` before using `success`, `blocked`, `mismatch`, root-cause, or acceptance language.
-6. Read the relevant lane owner docs for architecture, Unity, Stitch, validation, product design, or feature-local contracts.
-7. Read the concrete files, tests, logs, scene/prefab contracts, or artifacts being changed.
+5. If the task changes skill route or trigger wording, read `docs/ops/skill_routing_registry.md` and `docs/ops/skill_trigger_matrix.md`.
+6. Read `docs/ops/acceptance_reporting_guardrails.md` before using `success`, `blocked`, `mismatch`, root-cause, or acceptance language.
+7. Read the relevant lane owner docs for architecture, Unity, Stitch, validation, product design, or feature-local contracts.
+8. Read the concrete files, tests, logs, scene/prefab contracts, or artifacts being changed.
 
 ## Working Flow
 

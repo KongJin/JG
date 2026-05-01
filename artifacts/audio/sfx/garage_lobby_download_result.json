@@ -1,0 +1,29 @@
+{
+  "downloadedAt": "2026-05-01T04:10:53.604Z",
+  "downloads": [
+    {
+      "soundKey": "garage_save",
+      "index": 0,
+      "id": "1a879b42-cef1-4a84-9dd1-a89b367ab89c",
+      "text": "Download completed!\nTrack ID: 1a879b42-cef1-4a84-9dd1-a89b367ab89c\nPath: artifacts\\audio\\inbox\\1a879b42-cef1-4a84-9dd1-a89b367ab89c.mp3\nSize: 28,902 bytes (28 KB)"
+    },
+    {
+      "soundKey": "garage_save",
+      "index": 1,
+      "id": "9a788b3f-debc-4e05-8800-817f65b9eef5",
+      "text": "Download completed!\nTrack ID: 9a788b3f-debc-4e05-8800-817f65b9eef5\nPath: artifacts\\audio\\inbox\\9a788b3f-debc-4e05-8800-817f65b9eef5.mp3\nSize: 35,094 bytes (34 KB)"
+    },
+    {
+      "soundKey": "lobby_ready",
+      "index": 0,
+      "id": "7c5bfbd5-2eca-4e17-92fb-1a2644f8a83e",
+      "text": "Download completed!\nTrack ID: 7c5bfbd5-2eca-4e17-92fb-1a2644f8a83e\nPath: artifacts\\audio\\inbox\\7c5bfbd5-2eca-4e17-92fb-1a2644f8a83e.mp3\nSize: 15,510 bytes (15 KB)"
+    },
+    {
+      "soundKey": "lobby_ready",
+      "index": 1,
+      "id": "ff48faac-9335-47e3-9c89-6ebc3cb0d2d2",
+      "text": "Download completed!\nTrack ID: ff48faac-9335-47e3-9c89-6ebc3cb0d2d2\nPath: artifacts\\audio\\inbox\\ff48faac-9335-47e3-9c89-6ebc3cb0d2d2.mp3\nSize: 31,422 bytes (30 KB)"
+    }
+  ]
+}

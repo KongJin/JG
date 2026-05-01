@@ -5,8 +5,11 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { RECURRENCE_CLOSEOUT_PATH } from "../lib.mjs";
-import { syncRecurrenceCloseoutArtifact } from "../sync-recurrence-closeout.mjs";
+import { RECURRENCE_CLOSEOUT_DIR, RECURRENCE_CLOSEOUT_PATH } from "../lib.mjs";
+import {
+  getDefaultRecurrenceCloseoutShardPath,
+  syncRecurrenceCloseoutArtifact,
+} from "../sync-recurrence-closeout.mjs";
 
 const fixturesRoot = fileURLToPath(new URL("./fixtures", import.meta.url));
 
@@ -64,4 +67,57 @@ test("syncRecurrenceCloseoutArtifact is a no-op when changedPaths already match"
     RECURRENCE_CLOSEOUT_PATH,
     "docs/index.md",
   ]);
+});
+
+test("default recurrence closeout shard path is stable for the changed rules-only set", async () => {
+  const repoRoot = await createFixtureWorkspace("valid-recurrence-closeout");
+
+  const artifactPath = await getDefaultRecurrenceCloseoutShardPath({
+    repoRoot,
+    changedFiles: [
+      "docs/index.md",
+      "tools/docs-lint/lib.mjs",
+    ],
+  });
+
+  assert.match(
+    artifactPath,
+    new RegExp(`^${RECURRENCE_CLOSEOUT_DIR.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/local-[a-f0-9]{10}\\.json$`),
+  );
+
+  const secondArtifactPath = await getDefaultRecurrenceCloseoutShardPath({
+    repoRoot,
+    changedFiles: [
+      "tools/docs-lint/lib.mjs",
+      "docs/index.md",
+    ],
+  });
+
+  assert.equal(secondArtifactPath, artifactPath);
+});
+
+test("syncRecurrenceCloseoutArtifact can write a shard closeout artifact", async () => {
+  const repoRoot = await createFixtureWorkspace("valid-recurrence-closeout");
+  const artifactPath = `${RECURRENCE_CLOSEOUT_DIR}/local-fixture.json`;
+
+  const result = await syncRecurrenceCloseoutArtifact({
+    repoRoot,
+    artifactPath,
+    changedFiles: [
+      "docs/index.md",
+      "tools/docs-lint/lib.mjs",
+    ],
+  });
+
+  assert.equal(result.changed, true);
+  assert.deepEqual(result.changedPaths, [
+    artifactPath,
+    "docs/index.md",
+    "tools/docs-lint/lib.mjs",
+  ]);
+
+  const payload = JSON.parse(
+    await fs.readFile(path.join(repoRoot, artifactPath), "utf8"),
+  );
+  assert.deepEqual(payload.changedPaths, result.changedPaths);
 });

@@ -1,7 +1,6 @@
 ---
 name: jg-stitch-workflow
-description: >-
-  Project-specific Stitch workflow for the JG repo. Use whenever Codex works with `.stitch/DESIGN.md`, `.stitch/prompt-briefs`, `.stitch/contracts`, Stitch screen generation/editing, or preparing Stitch outputs for Unity UI Toolkit candidate surfaces in this repository. In JG, this skill is a thin router: it points to the active owner docs for prompt-brief refinement and structured handoff preparation, then hands off Unity implementation to `jg-stitch-unity-import` or `jg-unity-workflow`. Route cohesion/coupling judgment to `jg-coupling-review`, and route document lifecycle or 문서 응집도 work to `jg-doc-lifecycle`.
+description: "JG Stitch workflow. Use for .stitch/DESIGN.md, prompt briefs, contracts, screen generation, and Unity handoff preparation."
 ---
 
 # JG Stitch Workflow

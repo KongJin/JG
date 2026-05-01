@@ -1,7 +1,6 @@
 ---
 name: jg-coupling-review
-description: >-
-  Project-specific cohesion and coupling review router for the JG repo. Use this skill whenever Codex is asked to review 응집도, 결합도, coupling, cohesion, owner boundaries, responsibility splits, ripple effects, hidden dependencies, seams, interface design, public API shape, test seams, mocks/mocking, deep modules, shallow modules, runtime lookup/fallback, `Setup`/`Root` responsibility, controller overreach, document/code/scene/prefab/tool boundaries, architecture improvement, testability, unfamiliar code areas, caller maps, or whether things should stay together or be split. This skill judges boundaries and recommended routing across docs, code, scenes, prefabs, and tools; if the work becomes document deletion, compression, cleanup, registry updates, stale trace removal, or other document lifecycle execution, route that execution through `jg-doc-lifecycle`. It reads the active owner docs and applies the repo's cohesion/coupling policy without creating a new policy source of truth.
+description: "JG 응집도/결합도 리뷰 라우터. Triggers: owner boundary, responsibility split, dependency, interface/API shape, test seam, mock, split/merge 판단."
 ---
 
 # JG Coupling Review
