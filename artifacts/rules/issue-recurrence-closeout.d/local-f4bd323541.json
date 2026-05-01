@@ -3,19 +3,16 @@
   "updatedAt": "2026-05-01",
   "scope": "rules-only",
   "issueDetected": true,
-  "declaredLane": "documentation and skill-routing metadata cleanup",
-  "observedMutationClass": "skill description narrowing, global rule fallback wording, trigger matrix boundary split, registry boundary clarification, active plan lifecycle compression, and recurrence closeout shard resync",
-  "acceptanceEvidenceClass": "description word-budget check, trigger matrix and registry comparison, active plan budget recount, closeout changedPaths resync, and full rules lint; no gameplay or Unity runtime acceptance evidence",
+  "declaredLane": "documentation and rule-harness operational metadata cleanup",
+  "observedMutationClass": "rule-harness advisory memory stale trace pruning and recurrence closeout scope wording correction",
+  "acceptanceEvidenceClass": "stale advisory token scan, closeout changedPaths resync, and full rules lint; no gameplay or Unity runtime acceptance evidence",
   "escalationRequired": false,
-  "rootCause": "Several routing descriptions and fixtures used broad shared trigger tokens instead of the intended owner/lifecycle/fallback boundary, so jg-unity-workflow could overlap too broadly with generic rule-unity and rule-context could compete with jg-game-design on product/UX judgment. The closeout shard also retained changedPaths from earlier cleanup that were no longer part of the current rules-only patch, and a completed UI source/candidate handoff remained active even though its residual work now belongs to progress or a future UI/runtime owner.",
-  "prevention": "Keep repo-local skill descriptions scoped to owner/lifecycle/routing signals, keep rule-unity as a generic fallback/reference, keep rule-context as project background instead of product/UX judgment, mirror the boundaries in ops.skill-routing-registry and ops.skill-trigger-matrix, split mixed trigger fixture rows instead of accepting overlapping routes, compress completed or residual-only plans to reference when the active plan budget is at risk, and resync closeout changedPaths to the current patch scope. This change does not alter existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, or progress evidence overload.",
-  "verification": "Description word-budget check for edited skills; trigger matrix split review against ops.skill-routing-registry; active plan recount confirmed four non-progress active plans; npm run --silent rules:sync-closeout -- --artifact artifacts/rules/issue-recurrence-closeout.d/local-f4bd323541.json synced five rules-only changed paths; npm run --silent rules:lint; manual verification of external global skill paths C:/Users/SOL/.codex/skills/rule-unity/SKILL.md and C:/Users/SOL/.codex/skills/rule-context/SKILL.md; repo lint cannot track external global skill file diffs",
+  "rootCause": "The rule-harness advisory memory retained observed entries that embedded old owner paths and removed plan names, and the recurrence closeout shard used ambiguous 'current patch scope' wording while its changedPaths are intentionally limited to rules-only targets.",
+  "prevention": "Prune advisory memory entries that reference removed owner paths before they can feed recurrence planning, keep closeout language explicit about rules-only changedPaths scope, and resync the shard to the current rules-only target set. This change does not alter existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, or progress evidence overload.",
+  "verification": "Pruned three stale advisory memory entries; rg stale token scan for agent/architecture.md, account_system_plan.md, game_scene_phase#_multiplayer_sync_plan.md, and game_scene_phase5_multiplayer_sync_plan.md; npm run --silent rules:sync-closeout -- --artifact artifacts/rules/issue-recurrence-closeout.d/local-f4bd323541.json; npm run --silent rules:lint",
   "blockedReason": "",
   "changedPaths": [
-    ".codex/skills/jg-unity-workflow/SKILL.md",
     "artifacts/rules/issue-recurrence-closeout.d/local-f4bd323541.json",
-    "docs/index.md",
-    "docs/ops/skill_routing_registry.md",
-    "docs/ops/skill_trigger_matrix.md"
+    "tools/rule-harness/memory/advisory-memory.json"
   ]
 }

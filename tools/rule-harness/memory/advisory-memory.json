@@ -1,247 +1,157 @@
-﻿{
-    "schemaVersion":  1,
-    "entries":  [
-                    {
-                        "signature":  "static-scan-failed|static-scan|agent/architecture.md|code_fix|Before=# After=# Resolved=# Expected=# NewHigh=#",
-                        "scopeType":  "global",
-                        "scopePath":  "agent/architecture.md",
-                        "symptoms":  "Before=8 After=7 Resolved=0 Expected=1 NewHigh=0",
-                        "preferredRepairStrategy":  "Amend the owning global rule doc before retrying.",
-                        "validationHints":  [
-                                                "target_files_exist",
-                                                "expected_findings_resolved",
-                                                "no_new_high_severity_findings",
-                                                "feature_root_contract_present",
-                                                "owner_doc_references_resolve",
-                                                "Tests/Projectile/Run-ProjectileValidation.ps1",
-                                                "feature_test_assets_present"
-                                            ],
-                        "confidence":  "medium",
-                        "hitCount":  14,
-                        "distinctCommitCount":  14,
-                        "commitShas":  [
-                                           "eebb079f5e56493dc34bbc1193ac950e5737bab8",
-                                           "792f1531d72ef229713a376d365ad4f854ded97e",
-                                           "1a3b12fb53a11e67eb90a5b19bb5ce6c59df45fe",
-                                           "acf26ba54a80aea4e34715082db3473c551f0468",
-                                           "91dcf5411717f95253b4bda479e79c39ba55e10a",
-                                           "4aec761640dfeba8fb3d7485ff8158f240c4d5bd",
-                                           "9401a9eb1458253a772a914ecb82c084191dcfdd",
-                                           "1779f6e8e45124fdba0b691ee27fc75d5a4302c0",
-                                           "0544720ea0a92417da2e7065c533624b887a8106",
-                                           "83b7c054c18a5531d7dea277e576a32fc38d0c25",
-                                           "5ee866e1d9ae7655c791afa7bc35a1567fef1f6c",
-                                           "b57e439f99b4d2105d2658133f243c4878515af3",
-                                           "ea3a17c738039ac58380b0610e6fe81f65807bf4",
-                                           "439f28d16ddf51dac80d5fa73340de4c65d259ba"
-                                       ],
-                        "lastSeen":  "2026-04-14T20:00:56.6153324Z",
-                        "promotionTarget":  "docs/design/unit_module_design.md",
-                        "status":  "observed"
-                    },
-                    {
-                        "signature":  "inferred-check-failed|inferred|AGENTS.md|code_fix|Broken owner doc references after apply: docs/index.md -\u003e AGENTS.md; docs/index.md -\u003e docs/index.md; docs/index.md -\u003e progress.md; docs/index.md -\u003e tools/unity-mcp/README.md; docs/index.md -\u003e game_design.md; docs/index.md -\u003e world_design.md; docs/index.md -\u003e ui_foundations.md; docs/index.md -\u003e ui_reference_workflow.md; docs/index.md -\u003e unit_module_design.md; docs/index.md -\u003e module_data_structure.md; docs/index.md -\u003e account_system_plan.md; docs/index.md -\u003e game_scene_flow_validation_closeout_plan.md; docs/index.md -\u003e game_scene_phase#_multiplayer_sync_plan.md; docs/index.md -\u003e technical_debt_recurrence_prevention_plan.md; docs/index.md -\u003e non_stitch_ui_stitch_reimport_plan.md; docs/index.md -\u003e runtime_validation_checklist.md; docs/index.md -\u003e webgl_smoke_checklist.md; docs/index.md -\u003e cohesion_coupling_policy.md; docs/index.md -\u003e unity_ui_authoring_workflow.md; docs/index.md -\u003e stitch_data_workflow.md; docs/index.md -\u003e stitch_structured_handoff_contract.md; docs/index.md -\u003e document_management_workflow.md; docs/index.md -\u003e plan_authoring_review_workflow.md; docs/index.md -\u003e acceptance_reporting_guardrails.md; docs/index.md -\u003e firebase_hosting.md; docs/ops/document_management_workflow.md -\u003e AGENTS.md; docs/ops/document_management_workflow.md -\u003e docs/index.md; docs/ops/document_management_workflow.md -\u003e progress.md; docs/ops/unity_ui_authoring_workflow.md -\u003e AGENTS.md; docs/ops/unity_ui_authoring_workflow.md -\u003e docs/index.md; docs/ops/unity_ui_authoring_workflow.md -\u003e tools/unity-mcp/README.md; docs/plans/progress.md -\u003e design/ui_foundations.md; docs/plans/progress.md -\u003e docs/index.md; tools/unity-mcp/README.md -\u003e docs/index.md",
-                        "scopeType":  "global",
-                        "scopePath":  "AGENTS.md",
-                        "symptoms":  "Broken owner doc references after apply: docs/index.md -\u003e AGENTS.md; docs/index.md -\u003e docs/index.md; docs/index.md -\u003e progress.md; docs/index.md -\u003e tools/unity-mcp/README.md; docs/index.md -\u003e game_design.md; docs/index.md -\u003e world_design.md; docs/index.md -\u003e ui_foundations.md; docs/index.md -\u003e ui_reference_workflow.md; docs/index.md -\u003e unit_module_design.md; docs/index.md -\u003e module_data_structure.md; docs/index.md -\u003e account_system_plan.md; docs/index.md -\u003e game_scene_flow_validation_closeout_plan.md; docs/index.md -\u003e game_scene_phase5_multiplayer_sync_plan.md; docs/index.md -\u003e technical_debt_recurrence_prevention_plan.md; docs/index.md -\u003e non_stitch_ui_stitch_reimport_plan.md; docs/index.md -\u003e runtime_validation_checklist.md; docs/index.md -\u003e webgl_smoke_checklist.md; docs/index.md -\u003e cohesion_coupling_policy.md; docs/index.md -\u003e unity_ui_authoring_workflow.md; docs/index.md -\u003e stitch_data_workflow.md; docs/index.md -\u003e stitch_structured_handoff_contract.md; docs/index.md -\u003e document_management_workflow.md; docs/index.md -\u003e plan_authoring_review_workflow.md; docs/index.md -\u003e acceptance_reporting_guardrails.md; docs/index.md -\u003e firebase_hosting.md; docs/ops/document_management_workflow.md -\u003e AGENTS.md; docs/ops/document_management_workflow.md -\u003e docs/index.md; docs/ops/document_management_workflow.md -\u003e progress.md; docs/ops/unity_ui_authoring_workflow.md -\u003e AGENTS.md; docs/ops/unity_ui_authoring_workflow.md -\u003e docs/index.md; docs/ops/unity_ui_authoring_workflow.md -\u003e tools/unity-mcp/README.md; docs/plans/progress.md -\u003e design/ui_foundations.md; docs/plans/progress.md -\u003e docs/index.md; tools/unity-mcp/README.md -\u003e docs/index.md",
-                        "preferredRepairStrategy":  "Amend the owning global rule doc before retrying.",
-                        "validationHints":  [
-                                                "Tests/Projectile/Run-ProjectileValidation.ps1",
-                                                "target_files_exist",
-                                                "expected_findings_resolved",
-                                                "no_new_high_severity_findings",
-                                                "feature_root_contract_present",
-                                                "owner_doc_references_resolve",
-                                                "feature_test_assets_present"
-                                            ],
-                        "confidence":  "medium",
-                        "hitCount":  1,
-                        "distinctCommitCount":  1,
-                        "commitShas":  [
-                                           "402b840d710f84ba36919938a38befd498681679"
-                                       ],
-                        "lastSeen":  "2026-04-28T05:09:19.2960022Z",
-                        "promotionTarget":  "docs/ops/unity_ui_authoring_workflow.md",
-                        "status":  "observed"
-                    },
-                    {
-                        "signature":  "static-scan-failed|static-scan|AGENTS.md|code_fix|Before=# After=# Resolved=# Expected=# NewHigh=#",
-                        "scopeType":  "global",
-                        "scopePath":  "AGENTS.md",
-                        "symptoms":  "Before=8 After=7 Resolved=0 Expected=1 NewHigh=0",
-                        "preferredRepairStrategy":  "Amend the owning global rule doc before retrying.",
-                        "validationHints":  [
-                                                "Tests/Projectile/Run-ProjectileValidation.ps1",
-                                                "target_files_exist",
-                                                "expected_findings_resolved",
-                                                "no_new_high_severity_findings",
-                                                "feature_root_contract_present",
-                                                "owner_doc_references_resolve",
-                                                "feature_test_assets_present"
-                                            ],
-                        "confidence":  "medium",
-                        "hitCount":  1,
-                        "distinctCommitCount":  1,
-                        "commitShas":  [
-                                           "985bdeb62e2c4676c86deb3b7b650502f675ac67"
-                                       ],
-                        "lastSeen":  "2026-04-16T05:01:46.7756380Z",
-                        "promotionTarget":  "AGENTS.md",
-                        "status":  "observed"
-                    },
-                    {
-                        "signature":  "feature-cycle-unsupported|Account-\u003eGarage",
-                        "scopeType":  "feature",
-                        "scopePath":  "Assets/Scripts/Features/Account",
-                        "symptoms":  "Expected exactly one injected dependency field typed as GarageRoster in Assets/Scripts/Features/Account/Application/LoadAccountUseCase.cs.",
-                        "preferredRepairStrategy":  "Add a narrower structural repair recipe or strengthen owner-doc guidance before retrying.",
-                        "validationHints":  [
-                                                "tools/rule-harness/write-feature-dependency-report.ps1",
-                                                "tools/rule-harness/tests/Run-RuleHarnessTests.ps1"
-                                            ],
-                        "confidence":  "high",
-                        "hitCount":  7,
-                        "distinctCommitCount":  1,
-                        "commitShas":  [
-                                           "2e837a8e0808d8f10d017e3f8826212c886f105d"
-                                       ],
-                        "lastSeen":  "2026-04-12T00:58:59.6841428Z",
-                        "promotionTarget":  "agent/architecture.md",
-                        "status":  "observed",
-                        "selectedRecipe":  null,
-                        "blockedByDocRules":  [
-
-                                              ],
-                        "blockedByCodeAmbiguity":  [
-                                                       "consumer-dependency-field-not-unique"
-                                                   ]
-                    },
-                    {
-                        "signature":  "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Garage Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
-                        "scopeType":  "harness",
-                        "scopePath":  "tools/rule-harness/README.md",
-                        "symptoms":  "Scope=Garage Stage=diagnose TimeoutSec=120 HTTP request failed. Status=429 Body={\"error\":{\"code\":\"1113\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
-                        "preferredRepairStrategy":  "Improve harness prompts, config, tests, or docs before retrying.",
-                        "validationHints":  [
-                                                "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
-                                                "tools/rule-harness/README.md"
-                                            ],
-                        "confidence":  "high",
-                        "hitCount":  19,
-                        "distinctCommitCount":  5,
-                        "commitShas":  [
-                                           "e29481e41f7eaccf721822c371c6fc104b051ca8",
-                                           "30dc33652a4a5fd6af870e8f3fa82c9432c152b0",
-                                           "07280adb8463f2db23b61b725842bbfcd87e9ee6",
-                                           "a7a67c62ba755719bd7175817aa04fcc0a744782",
-                                           "2cfb4262ffe14ef208f9d2e6afd7361343b80e61"
-                                       ],
-                        "lastSeen":  "2026-04-24T23:58:56.8555456Z",
-                        "promotionTarget":  "tools/rule-harness/README.md",
-                        "status":  "observed"
-                    },
-                    {
-                        "signature":  "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Player Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"网络错误，错误id：#d#c#，请联系客服。\"}}",
-                        "scopeType":  "harness",
-                        "scopePath":  "tools/rule-harness/README.md",
-                        "symptoms":  "Scope=Player Stage=diagnose TimeoutSec=120 HTTP request failed. Status=500 Body={\"error\":{\"code\":\"1234\",\"message\":\"网络错误，错误id：202604091658502d37196539294c63，请联系客服。\"}}",
-                        "preferredRepairStrategy":  "Improve harness prompts, config, tests, or docs before retrying.",
-                        "validationHints":  [
-                                                "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
-                                                "tools/rule-harness/README.md"
-                                            ],
-                        "confidence":  "high",
-                        "hitCount":  1,
-                        "distinctCommitCount":  1,
-                        "commitShas":  [
-                                           "fc091217c45872e329ed51b4c53db0b977afbd71"
-                                       ],
-                        "lastSeen":  "2026-04-09T08:59:46.0603672Z",
-                        "promotionTarget":  "tools/rule-harness/README.md",
-                        "status":  "observed"
-                    },
-                    {
-                        "signature":  "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Player Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
-                        "scopeType":  "harness",
-                        "scopePath":  "tools/rule-harness/README.md",
-                        "symptoms":  "Scope=Player Stage=diagnose TimeoutSec=120 HTTP request failed. Status=429 Body={\"error\":{\"code\":\"1113\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
-                        "preferredRepairStrategy":  "Improve harness prompts, config, tests, or docs before retrying.",
-                        "validationHints":  [
-                                                "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
-                                                "tools/rule-harness/README.md"
-                                            ],
-                        "confidence":  "high",
-                        "hitCount":  4,
-                        "distinctCommitCount":  2,
-                        "commitShas":  [
-                                           "b143862db76cf5cd6178fa36ee9f8dd15a45ff90",
-                                           "65484128f8e9d53768fec7a7075d6bc5df63e07a"
-                                       ],
-                        "lastSeen":  "2026-04-25T21:58:55.0991819Z",
-                        "promotionTarget":  "tools/rule-harness/README.md",
-                        "status":  "observed"
-                    },
-                    {
-                        "signature":  "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Projectile Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
-                        "scopeType":  "harness",
-                        "scopePath":  "tools/rule-harness/README.md",
-                        "symptoms":  "Scope=Projectile Stage=diagnose TimeoutSec=120 HTTP request failed. Status=429 Body={\"error\":{\"code\":\"1113\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
-                        "preferredRepairStrategy":  "Improve harness prompts, config, tests, or docs before retrying.",
-                        "validationHints":  [
-                                                "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
-                                                "tools/rule-harness/README.md"
-                                            ],
-                        "confidence":  "high",
-                        "hitCount":  15,
-                        "distinctCommitCount":  2,
-                        "commitShas":  [
-                                           "439f28d16ddf51dac80d5fa73340de4c65d259ba",
-                                           "985bdeb62e2c4676c86deb3b7b650502f675ac67"
-                                       ],
-                        "lastSeen":  "2026-04-17T06:58:56.0189161Z",
-                        "promotionTarget":  "tools/rule-harness/README.md",
-                        "status":  "observed"
-                    },
-                    {
-                        "signature":  "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Projectile Stage=diagnose TimeoutSec=# 작업 시간이 초과되었습니다.",
-                        "scopeType":  "harness",
-                        "scopePath":  "tools/rule-harness/README.md",
-                        "symptoms":  "Scope=Projectile Stage=diagnose TimeoutSec=120 작업 시간이 초과되었습니다.",
-                        "preferredRepairStrategy":  "Improve harness prompts, config, tests, or docs before retrying.",
-                        "validationHints":  [
-                                                "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
-                                                "tools/rule-harness/README.md"
-                                            ],
-                        "confidence":  "high",
-                        "hitCount":  3,
-                        "distinctCommitCount":  2,
-                        "commitShas":  [
-                                           "0544720ea0a92417da2e7065c533624b887a8106",
-                                           "ea3a17c738039ac58380b0610e6fe81f65807bf4"
-                                       ],
-                        "lastSeen":  "2026-04-14T14:00:55.1946745Z",
-                        "promotionTarget":  "tools/rule-harness/README.md",
-                        "status":  "observed"
-                    },
-                    {
-                        "signature":  "harness-stage-failed|Rule harness doc sync failed|tools/rule-harness/README.md|harness|Stage=doc_sync TimeoutSec=# 작업 시간이 초과되었습니다.",
-                        "scopeType":  "harness",
-                        "scopePath":  "tools/rule-harness/README.md",
-                        "symptoms":  "Stage=doc_sync TimeoutSec=120 작업 시간이 초과되었습니다.",
-                        "preferredRepairStrategy":  "Improve harness prompts, config, tests, or docs before retrying.",
-                        "validationHints":  [
-                                                "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
-                                                "tools/rule-harness/README.md"
-                                            ],
-                        "confidence":  "high",
-                        "hitCount":  1,
-                        "distinctCommitCount":  1,
-                        "commitShas":  [
-                                           "47b32576ff40b57bf8639585bed400512349e4d3"
-                                       ],
-                        "lastSeen":  "2026-04-08T15:01:39.3367418Z",
-                        "promotionTarget":  "tools/rule-harness/README.md",
-                        "status":  "observed"
-                    }
-                ]
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "signature": "static-scan-failed|static-scan|AGENTS.md|code_fix|Before=# After=# Resolved=# Expected=# NewHigh=#",
+      "scopeType": "global",
+      "scopePath": "AGENTS.md",
+      "symptoms": "Before=8 After=7 Resolved=0 Expected=1 NewHigh=0",
+      "preferredRepairStrategy": "Amend the owning global rule doc before retrying.",
+      "validationHints": [
+        "Tests/Projectile/Run-ProjectileValidation.ps1",
+        "target_files_exist",
+        "expected_findings_resolved",
+        "no_new_high_severity_findings",
+        "feature_root_contract_present",
+        "owner_doc_references_resolve",
+        "feature_test_assets_present"
+      ],
+      "confidence": "medium",
+      "hitCount": 1,
+      "distinctCommitCount": 1,
+      "commitShas": [
+        "985bdeb62e2c4676c86deb3b7b650502f675ac67"
+      ],
+      "lastSeen": "2026-04-16T05:01:46.7756380Z",
+      "promotionTarget": "AGENTS.md",
+      "status": "observed"
+    },
+    {
+      "signature": "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Garage Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
+      "scopeType": "harness",
+      "scopePath": "tools/rule-harness/README.md",
+      "symptoms": "Scope=Garage Stage=diagnose TimeoutSec=120 HTTP request failed. Status=429 Body={\"error\":{\"code\":\"1113\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
+      "preferredRepairStrategy": "Improve harness prompts, config, tests, or docs before retrying.",
+      "validationHints": [
+        "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+        "tools/rule-harness/README.md"
+      ],
+      "confidence": "high",
+      "hitCount": 19,
+      "distinctCommitCount": 5,
+      "commitShas": [
+        "e29481e41f7eaccf721822c371c6fc104b051ca8",
+        "30dc33652a4a5fd6af870e8f3fa82c9432c152b0",
+        "07280adb8463f2db23b61b725842bbfcd87e9ee6",
+        "a7a67c62ba755719bd7175817aa04fcc0a744782",
+        "2cfb4262ffe14ef208f9d2e6afd7361343b80e61"
+      ],
+      "lastSeen": "2026-04-24T23:58:56.8555456Z",
+      "promotionTarget": "tools/rule-harness/README.md",
+      "status": "observed"
+    },
+    {
+      "signature": "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Player Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"网络错误，错误id：#d#c#，请联系客服。\"}}",
+      "scopeType": "harness",
+      "scopePath": "tools/rule-harness/README.md",
+      "symptoms": "Scope=Player Stage=diagnose TimeoutSec=120 HTTP request failed. Status=500 Body={\"error\":{\"code\":\"1234\",\"message\":\"网络错误，错误id：202604091658502d37196539294c63，请联系客服。\"}}",
+      "preferredRepairStrategy": "Improve harness prompts, config, tests, or docs before retrying.",
+      "validationHints": [
+        "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+        "tools/rule-harness/README.md"
+      ],
+      "confidence": "high",
+      "hitCount": 1,
+      "distinctCommitCount": 1,
+      "commitShas": [
+        "fc091217c45872e329ed51b4c53db0b977afbd71"
+      ],
+      "lastSeen": "2026-04-09T08:59:46.0603672Z",
+      "promotionTarget": "tools/rule-harness/README.md",
+      "status": "observed"
+    },
+    {
+      "signature": "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Player Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
+      "scopeType": "harness",
+      "scopePath": "tools/rule-harness/README.md",
+      "symptoms": "Scope=Player Stage=diagnose TimeoutSec=120 HTTP request failed. Status=429 Body={\"error\":{\"code\":\"1113\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
+      "preferredRepairStrategy": "Improve harness prompts, config, tests, or docs before retrying.",
+      "validationHints": [
+        "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+        "tools/rule-harness/README.md"
+      ],
+      "confidence": "high",
+      "hitCount": 4,
+      "distinctCommitCount": 2,
+      "commitShas": [
+        "b143862db76cf5cd6178fa36ee9f8dd15a45ff90",
+        "65484128f8e9d53768fec7a7075d6bc5df63e07a"
+      ],
+      "lastSeen": "2026-04-25T21:58:55.0991819Z",
+      "promotionTarget": "tools/rule-harness/README.md",
+      "status": "observed"
+    },
+    {
+      "signature": "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Projectile Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
+      "scopeType": "harness",
+      "scopePath": "tools/rule-harness/README.md",
+      "symptoms": "Scope=Projectile Stage=diagnose TimeoutSec=120 HTTP request failed. Status=429 Body={\"error\":{\"code\":\"1113\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
+      "preferredRepairStrategy": "Improve harness prompts, config, tests, or docs before retrying.",
+      "validationHints": [
+        "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+        "tools/rule-harness/README.md"
+      ],
+      "confidence": "high",
+      "hitCount": 15,
+      "distinctCommitCount": 2,
+      "commitShas": [
+        "439f28d16ddf51dac80d5fa73340de4c65d259ba",
+        "985bdeb62e2c4676c86deb3b7b650502f675ac67"
+      ],
+      "lastSeen": "2026-04-17T06:58:56.0189161Z",
+      "promotionTarget": "tools/rule-harness/README.md",
+      "status": "observed"
+    },
+    {
+      "signature": "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Projectile Stage=diagnose TimeoutSec=# 작업 시간이 초과되었습니다.",
+      "scopeType": "harness",
+      "scopePath": "tools/rule-harness/README.md",
+      "symptoms": "Scope=Projectile Stage=diagnose TimeoutSec=120 작업 시간이 초과되었습니다.",
+      "preferredRepairStrategy": "Improve harness prompts, config, tests, or docs before retrying.",
+      "validationHints": [
+        "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+        "tools/rule-harness/README.md"
+      ],
+      "confidence": "high",
+      "hitCount": 3,
+      "distinctCommitCount": 2,
+      "commitShas": [
+        "0544720ea0a92417da2e7065c533624b887a8106",
+        "ea3a17c738039ac58380b0610e6fe81f65807bf4"
+      ],
+      "lastSeen": "2026-04-14T14:00:55.1946745Z",
+      "promotionTarget": "tools/rule-harness/README.md",
+      "status": "observed"
+    },
+    {
+      "signature": "harness-stage-failed|Rule harness doc sync failed|tools/rule-harness/README.md|harness|Stage=doc_sync TimeoutSec=# 작업 시간이 초과되었습니다.",
+      "scopeType": "harness",
+      "scopePath": "tools/rule-harness/README.md",
+      "symptoms": "Stage=doc_sync TimeoutSec=120 작업 시간이 초과되었습니다.",
+      "preferredRepairStrategy": "Improve harness prompts, config, tests, or docs before retrying.",
+      "validationHints": [
+        "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+        "tools/rule-harness/README.md"
+      ],
+      "confidence": "high",
+      "hitCount": 1,
+      "distinctCommitCount": 1,
+      "commitShas": [
+        "47b32576ff40b57bf8639585bed400512349e4d3"
+      ],
+      "lastSeen": "2026-04-08T15:01:39.3367418Z",
+      "promotionTarget": "tools/rule-harness/README.md",
+      "status": "observed"
+    }
+  ]
 }

@@ -10,6 +10,11 @@ namespace Features.Garage.Presentation
 {
     public sealed class GarageSetBUitkRuntimeAdapter : MonoBehaviour
     {
+        private const float HeroPreviewHeight = 164f;
+        private const float PartListRowsHeight = 168f;
+        private const float SelectedPartPreviewHeight = 96f;
+        private const float SelectedPartPreviewHostSize = 76f;
+
         [SerializeField]
         private UIDocument _document;
 
@@ -21,6 +26,14 @@ namespace Features.Garage.Presentation
 
         private VisualElement _surfaceRoot;
         private VisualElement _hostScreenRoot;
+        private ScrollView _workspaceScroll;
+        private VisualElement _slotStrip;
+        private VisualElement _partFocusBar;
+        private VisualElement _partSelectionPane;
+        private VisualElement _previewCard;
+        private VisualElement _selectedPartPreviewCard;
+        private VisualElement _selectedPartPreviewHost;
+        private ScrollView _partListRowsScroll;
         private Label _commandStatusLabel;
         private Button _settingsButton;
         private GarageSetBSlotSurface _slotSurface;
@@ -132,8 +145,19 @@ namespace Features.Garage.Presentation
                 return false;
 
             if (_surfaceRoot == root && _slotSurface != null && _partListSurface != null)
+            {
+                ApplyCompactAssemblyLayout();
                 return true;
+            }
 
+            _workspaceScroll = UitkElementUtility.Required<ScrollView>(root, "WorkspaceScroll");
+            _slotStrip = UitkElementUtility.Required<VisualElement>(root, "SlotStrip");
+            _partFocusBar = UitkElementUtility.Required<VisualElement>(root, "PartFocusBar");
+            _partSelectionPane = UitkElementUtility.Required<VisualElement>(root, "PartSelectionPane");
+            _previewCard = UitkElementUtility.Required<VisualElement>(root, "PreviewCard");
+            _selectedPartPreviewCard = UitkElementUtility.Required<VisualElement>(root, "SelectedPartPreviewCard");
+            _selectedPartPreviewHost = UitkElementUtility.Required<VisualElement>(root, "SelectedPartPreviewHost");
+            _partListRowsScroll = UitkElementUtility.Required<ScrollView>(root, "PartListRows");
             _commandStatusLabel = UitkElementUtility.Required<Label>(root, "CommandStatusLabel");
             _settingsButton = UitkElementUtility.Required<Button>(root, "SettingsButton");
             _slotSurface = new GarageSetBSlotSurface(root);
@@ -146,6 +170,7 @@ namespace Features.Garage.Presentation
             _saveButton = UitkElementUtility.Required<Button>(root, "SaveButton");
             _surfaceRoot = root;
 
+            ApplyCompactAssemblyLayout();
             BindCallbacks();
             SetPreviewTexture(null, false);
             SetPartPreviewTexture(null, false);
@@ -274,6 +299,58 @@ namespace Features.Garage.Presentation
             _commandStatusLabel.text = result?.RosterStatusText ?? "COMMAND_STATUS: 대기";
             _saveButton.text = isSaving ? "저장 중..." : result?.PrimaryActionLabel ?? "저장 및 배치";
             _saveButton.SetEnabled(!isSaving && result?.CanSave == true);
+        }
+
+        private void ApplyCompactAssemblyLayout()
+        {
+            var content = _workspaceScroll?.contentContainer;
+            if (content == null)
+                return;
+
+            MoveAfter(content, _previewCard, _slotStrip);
+            MoveAfter(content, _selectedPartPreviewCard, _partFocusBar);
+
+            if (_previewCard != null)
+                _previewCard.style.height = HeroPreviewHeight;
+            if (_selectedPartPreviewCard != null)
+                _selectedPartPreviewCard.style.height = SelectedPartPreviewHeight;
+            if (_selectedPartPreviewHost != null)
+            {
+                _selectedPartPreviewHost.style.width = SelectedPartPreviewHostSize;
+                _selectedPartPreviewHost.style.height = SelectedPartPreviewHostSize;
+            }
+            if (_partListRowsScroll != null)
+                _partListRowsScroll.style.height = PartListRowsHeight;
+        }
+
+        private static void MoveAfter(VisualElement parent, VisualElement element, VisualElement anchor)
+        {
+            if (parent == null || element == null || anchor == null || element.parent != parent || anchor.parent != parent)
+                return;
+
+            parent.Remove(element);
+            int anchorIndex = FindChildIndex(parent, anchor);
+            if (anchorIndex < 0)
+            {
+                parent.Add(element);
+                return;
+            }
+
+            parent.Insert(anchorIndex + 1, element);
+        }
+
+        private static int FindChildIndex(VisualElement parent, VisualElement child)
+        {
+            int index = 0;
+            foreach (var candidate in parent.Children())
+            {
+                if (ReferenceEquals(candidate, child))
+                    return index;
+
+                index++;
+            }
+
+            return -1;
         }
     }
 }
