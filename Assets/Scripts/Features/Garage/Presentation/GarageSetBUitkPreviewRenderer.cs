@@ -27,7 +27,7 @@ namespace Features.Garage.Presentation
             HasPreview = false;
 
             if (_previewCamera == null ||
-                !GarageUnitPreviewAssembly.HasCompleteLoadout(viewModel) ||
+                !GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel) ||
                 viewModel.FramePreviewPrefab == null ||
                 viewModel.FirepowerPreviewPrefab == null ||
                 viewModel.MobilityPreviewPrefab == null)

@@ -82,13 +82,13 @@ namespace Features.Skill.Presentation
             PublishCastSound(e.SkillId.Value, e.Position, e.CasterId.Value);
         }
 
-        private GameObject ResolveEffectPrefab(string skillId, GameObject fallback)
+        private GameObject ResolveEffectPrefab(string skillId, GameObject defaultPrefab)
         {
             if (_effectPort == null)
-                return fallback;
+                return defaultPrefab;
 
             var prefab = _effectPort.GetEffectPrefab(skillId);
-            return prefab != null ? prefab : fallback;
+            return prefab != null ? prefab : defaultPrefab;
         }
 
         private void PublishCastSound(string skillId, Float3 position, string ownerId)

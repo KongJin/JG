@@ -12,18 +12,22 @@
   "verification": "node --test tools/docs-lint/tests/docs-lint.test.mjs; npm run --silent rules:sync-closeout; npm run --silent rules:lint",
   "blockedReason": "",
   "changedPaths": [
+    ".codex/skills/jg-coding-guardrails/agents/openai.yaml",
+    ".codex/skills/jg-coding-guardrails/SKILL.md",
+    ".codex/skills/jg-coupling-review/SKILL.md",
+    ".codex/skills/jg-game-design/agents/openai.yaml",
+    ".codex/skills/jg-game-design/SKILL.md",
+    ".codex/skills/jg-issue-investigation/SKILL.md",
+    "AGENTS.md",
     "artifacts/rules/issue-recurrence-closeout.json",
     "docs/index.md",
-    "docs/plans/account_garage_webgl_closeout_plan.md",
-    "docs/plans/game_scene_multiplayer_sync_closeout_plan.md",
-    "docs/plans/progress.md",
-    "tools/build-and-deploy-webgl.ps1",
-    "tools/mcp-test-compile.ps1",
-    "tools/nova1492/Invoke-GarageNovaPartsPanelSmoke.ps1",
-    "tools/nova1492/Invoke-Nova1492LegAuditCapture.ps1",
-    "tools/rule-harness/write-compile-status.ps1",
-    "tools/unity-mcp/Invoke-EditorProjectSync.ps1",
-    "tools/unity-mcp/Invoke-UnityUiAuthoringWorkflowPolicy.ps1",
-    "tools/unity-mcp/McpHelpers.ps1"
+    "docs/ops/acceptance_reporting_guardrails.md",
+    "docs/ops/codex_coding_guardrails.md",
+    "docs/ops/plan_authoring_review_workflow.md",
+    "docs/plans/agent_workflow_skill_adoption_plan.md",
+    "docs/plans/technical_debt_recurrence_prevention_plan.md",
+    "tools/generate_lobby_layers_diagram.ps1",
+    "tools/nova1492/Invoke-Nova1492ArmAuditCapture.ps1",
+    "tools/nova1492/Invoke-Nova1492BodyAuditCapture.ps1"
   ]
 }

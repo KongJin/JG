@@ -1,0 +1,5 @@
+interface:
+  display_name: "JG Coding Guardrails"
+  short_description: "Route JG coding work through conservative implementation guardrails"
+  default_prompt: "Use $jg-coding-guardrails for this JG implementation, bugfix, refactor, or validation task."
+

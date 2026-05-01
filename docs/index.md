@@ -1,6 +1,6 @@
 # Docs Index
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: docs.index
 > role: entry
@@ -17,6 +17,7 @@
 
 - Unity UI / prefab / scene 작업: [`plans/progress.md`](./plans/progress.md) -> active owner plan -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant contract/prefab
 - Stitch / handoff 작업: [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md)
+- 코딩 구현 / 버그 수정 / 리팩터 / 테스트 보강: [`ops/codex_coding_guardrails.md`](./ops/codex_coding_guardrails.md) -> relevant lane owner doc -> concrete code/tests
 - GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> active owner plan -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
 - 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> relevant owner doc
 
@@ -35,6 +36,7 @@
 | 지금 뭐가 진행 중인지 확인 | [`plans/progress.md`](./plans/progress.md) |
 | 응집도/결합도 상위 기준 확인 | [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) |
 | Plan Mode / Codex 운영 규칙 확인 | `rule-operations` owner 문서 (`docs/index.md`로 current path를 해석한 뒤 읽기) |
+| Codex 코딩 가드레일 확인 | [`ops/codex_coding_guardrails.md`](./ops/codex_coding_guardrails.md) |
 | Unity UI/UX 작업 시작 규칙 확인 | [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) |
 | 게임 방향과 MVP 기준 확인 | [`design/game_design.md`](./design/game_design.md) |
 | 세계관 / Nova1492 원전 기반 정서 기준 확인 | [`design/world_design.md`](./design/world_design.md) |
@@ -68,6 +70,7 @@
 - `active`: [`webgl_audio_closeout_plan.md`](./plans/webgl_audio_closeout_plan.md) - WebGL audio smoke owner
 - `active`: [`nova1492_content_residual_plan.md`](./plans/nova1492_content_residual_plan.md) - Nova1492 content handoff owner
 - `active`: [`non_stitch_ui_stitch_reimport_plan.md`](./plans/non_stitch_ui_stitch_reimport_plan.md) - Non-Stitch UI source/candidate handoff owner
+- `reference`: [`agent_workflow_skill_adoption_plan.md`](./plans/agent_workflow_skill_adoption_plan.md) - Matt Pocock skills audit and JG owner adoption route
 - `reference`: [`technical_debt_recurrence_prevention_plan.md`](./plans/technical_debt_recurrence_prevention_plan.md) - runtime repair recurrence reference
 
 ### `playtest/`
@@ -78,6 +81,7 @@
 ### `ops/`
 
 - `active`: [`cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) - 문서/코드/씬/프리팹/자동화 공통 응집도/결합도 상위 기준
+- `active`: [`codex_coding_guardrails.md`](./ops/codex_coding_guardrails.md) - Codex 구현/리팩터/버그 수정/검증 작업의 일반 코딩 가드레일
 - `active`: [`unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) - Unity UI/UX 작업 진입 SSOT
 - `active`: [`stitch_data_workflow.md`](./ops/stitch_data_workflow.md) - Stitch working data와 Unity handoff 운영 기준
 - `active`: [`stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) - Stitch 산출물을 JSON 번역 계약으로 고정하는 구조 SSOT

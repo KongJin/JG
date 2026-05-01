@@ -1,12 +1,12 @@
 # Nova1492 Part Assembly Prefab Report
 
-> generated: 2026-04-30 23:26:25
+> generated: 2026-05-01 10:17:48
 
 ## Summary
 
 - catalog rows: 145
 - created prefabs: 0
-- updated prefabs: 143
+- updated prefabs: 145
 - missing source models: 0
 
 ## Slot Counts

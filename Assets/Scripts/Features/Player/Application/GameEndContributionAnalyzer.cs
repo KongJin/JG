@@ -103,15 +103,15 @@ namespace Features.Player.Application
                 attackerOwner.Kills++;
         }
 
-        public ResultContributionCard[] BuildContributionCards(int fallbackSummonCount, int fallbackKillCount)
+        public ResultContributionCard[] BuildContributionCards(int reportedSummonCount, int reportedKillCount)
         {
             var cards = new List<ResultContributionCard>(3);
             AddCoreCard(cards);
 
             var candidates = new List<ResultContributionCard>(3);
-            AddPressureCard(candidates, Math.Max(0, fallbackKillCount));
+            AddPressureCard(candidates, Math.Max(0, reportedKillCount));
             AddHoldPositionCard(candidates);
-            AddDeployCard(candidates, Math.Max(0, fallbackSummonCount));
+            AddDeployCard(candidates, Math.Max(0, reportedSummonCount));
             candidates.Sort((left, right) => right.PrimaryValue.CompareTo(left.PrimaryValue));
 
             for (var i = 0; i < candidates.Count && cards.Count < 3; i++)
@@ -145,10 +145,10 @@ namespace Features.Player.Application
                 percent));
         }
 
-        private void AddPressureCard(List<ResultContributionCard> candidates, int fallbackKillCount)
+        private void AddPressureCard(List<ResultContributionCard> candidates, int reportedKillCount)
         {
             var bucket = FindBestOwnerBucket(value => value.Kills > 0 ? value.Kills : value.DamageDealt);
-            var teamKills = Math.Max(_teamBucket.Kills, fallbackKillCount);
+            var teamKills = Math.Max(_teamBucket.Kills, reportedKillCount);
             var value = bucket != null
                 ? Math.Max((float)bucket.Kills, bucket.DamageDealt)
                 : Math.Max((float)teamKills, _teamBucket.DamageDealt);
@@ -190,10 +190,10 @@ namespace Features.Player.Application
                 bucket != null ? bucket.RepresentativeLoadoutKey : null));
         }
 
-        private void AddDeployCard(List<ResultContributionCard> candidates, int fallbackSummonCount)
+        private void AddDeployCard(List<ResultContributionCard> candidates, int reportedSummonCount)
         {
             var bucket = FindBestOwnerBucket(value => value.Summons);
-            var teamSummons = _teamBucket.Summons > 0 ? _teamBucket.Summons : fallbackSummonCount;
+            var teamSummons = _teamBucket.Summons > 0 ? _teamBucket.Summons : reportedSummonCount;
             var value = bucket != null ? bucket.Summons : teamSummons;
             if (value <= 0f)
                 return;

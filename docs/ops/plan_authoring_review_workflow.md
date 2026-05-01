@@ -1,6 +1,6 @@
 # Plan Authoring Review Workflow
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: ops.plan-authoring-review-workflow
 > role: ssot
@@ -33,6 +33,44 @@ plan은 규칙 본문을 새로 만드는 곳이 아니라, 실행 순서와 현
 작업 시작 전 계획의 기본값은 채팅 또는 세션 체크리스트다.
 `docs/plans/*.md`는 multi-session handoff, persistent acceptance/residual/blocked 판단, 여러 owner scope 고정이 필요할 때만 만든다.
 `progress.md` 한 줄이나 기존 owner 문서의 짧은 섹션으로 충분하면 새 plan 문서를 만들지 않는다.
+
+## 요청 Triage Lite
+
+새 요청이 들어왔을 때 issue tracker를 만들거나 label workflow를 흉내 내지 않는다.
+먼저 `docs/index.md`의 current route를 기준으로 category 하나와 next action 하나를 고른다.
+요청이 여러 변경 이유를 섞으면 하나의 plan으로 합치지 말고, owner별로 나누거나 이번 세션의 primary owner와 out-of-scope를 밝힌다.
+
+category는 정확한 route 본문이 아니라 첫 분류 신호다.
+
+- `bug/regression`: 깨진 동작, 성능 저하, 재현 가능한 실패. 구현 전 `jg-issue-investigation` route로 최소 재현 또는 feedback loop를 먼저 만든다.
+- `feature/design`: 새 동작, UX, 제품 판단. `design/*`, active owner plan, 또는 `plans.progress` current focus로 보낸다.
+- `docs/workflow/rule/skill`: 문서 운영, 규칙, owner route, repo-local skill trigger 변경. `ops.document-management-workflow`, `ops.cohesion-coupling-policy`, 관련 owner skill을 먼저 본다.
+- `Unity/Stitch/validation`: Unity scene/prefab/UI, Stitch handoff, build/smoke/test 검증. `docs/index.md`의 lane route와 active owner plan을 따른다.
+
+next action은 실행 준비 상태를 뜻한다.
+
+- `ready-AFK`: 기존 owner 규칙과 코드 선례로 진행 가능하고, 제품/UX/아키텍처 판단이나 외부 권한이 필요 없다.
+- `HITL`: 사용자 판단, 수동 smoke, credential, 외부 서비스, 제품 선택, UX 선택, 아키텍처 결정이 필요하다.
+- `needs-info`: repo 탐색과 최소 재현을 해도 안전하게 진행할 정보가 부족하다. 이미 확인한 사실과 필요한 질문을 구분하고, 질문은 구체적이어야 한다.
+- `defer/no-action`: 현재 owner 체계에 들이지 않기로 판단한다. durable residual이면 owner plan이나 `plans.progress`에 짧게 남기고, 세션성 판단이면 채팅에만 둔다.
+
+bug/regression 요청은 `ready-AFK`로 넘기기 전에 reporter가 준 단계, 관련 코드 path, 가능한 test/tool/smoke 중 가장 좁은 feedback loop를 먼저 확인한다.
+재현 실패나 정보 부족은 실패가 아니라 `needs-info` 또는 `HITL` 판단의 근거다.
+GitHub issue comment, label, close action, `.out-of-scope/` 지식베이스 생성은 JG 기본 triage-lite 범위가 아니다.
+
+## 실행 Slice 작성
+
+broad plan, spec, PRD 성격의 내용을 repo에 남길 때는 layer별 TODO보다 검증 가능한 vertical slice를 우선한다.
+목표는 issue tracker를 새로 만드는 것이 아니라, `docs/plans/*`나 기존 owner 문서의 실행 항목이 독립적으로 검토, 구현, 검증될 수 있게 하는 것이다.
+
+- 각 slice는 얇지만 완결된 사용자/시스템 동작을 담는다. schema/API/UI/test 같은 layer 이름을 나열하는 horizontal slice는 피한다.
+- 완료된 slice는 자체 acceptance, 검증 방법, blocked/residual 판정이 가능해야 한다.
+- slice마다 `HITL` 또는 `AFK` 성격을 구분한다.
+  - `HITL`: 제품 판단, UX 선택, 아키텍처 결정, 수동 smoke처럼 사람 판단이 필요한 항목.
+  - `AFK`: 기존 owner 규칙과 코드 선례로 구현/검증 가능한 항목.
+- dependency가 있으면 blocker를 먼저 둔다. blocker 없이 시작 가능한 slice는 명확히 표시한다.
+- 너무 큰 slice는 end-to-end path를 유지한 채 더 얇게 나누고, 너무 작은 layer-only 항목은 동작 기준으로 합친다.
+- product-facing PRD 요약이 필요하면 문제, 사용자 관점의 해결, 주요 user story, implementation/testing decision, out-of-scope를 기존 `design/*` 또는 owner plan에 맞춰 짧게 합성한다. 별도 issue tracker publish는 JG 기본 흐름이 아니다.
 
 ## 핵심 루프
 

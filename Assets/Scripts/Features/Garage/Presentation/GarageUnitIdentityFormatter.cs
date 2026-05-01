@@ -95,13 +95,13 @@ namespace Features.Garage.Presentation
         public static string BuildSlotSummary(
             GaragePanelCatalog.FirepowerOption firepower,
             GaragePanelCatalog.MobilityOption mobility,
-            string fallbackFirepowerName = null,
-            string fallbackMobilityName = null)
+            string firepowerNameWhenCatalogMissing = null,
+            string mobilityNameWhenCatalogMissing = null)
         {
             var role = BuildRoleLabel(firepower, mobility);
             var modules = BuildModuleShorthand(
-                firepower?.DisplayName ?? fallbackFirepowerName,
-                mobility?.DisplayName ?? fallbackMobilityName);
+                firepower?.DisplayName ?? firepowerNameWhenCatalogMissing,
+                mobility?.DisplayName ?? mobilityNameWhenCatalogMissing);
             return $"{role} | {modules}";
         }
 

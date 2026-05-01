@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 internal static class Program
 {
-    private const string ConverterVersion = "gx-pipeline-v19";
+    private const string ConverterVersion = "gx-pipeline-v20";
     private const string ManifestPath = "artifacts/nova1492/gx_conversion_manifest.csv";
     private const string SummaryPath = "artifacts/nova1492/gx_conversion_summary.md";
     private const string PipelineStatePath = "artifacts/nova1492/gx_pipeline_state.csv";
@@ -14,10 +14,19 @@ internal static class Program
     private const string LegAuditManifestPath = "artifacts/nova1492/gx_leg_audit_manifest.csv";
     private const string LegAuditHierarchyPath = "artifacts/nova1492/gx_leg_audit_hierarchy.csv";
     private const string LegAuditReportPath = "artifacts/nova1492/gx_leg_audit_report.md";
+    private const string BodyAuditManifestPath = "artifacts/nova1492/gx_body_audit_manifest.csv";
+    private const string BodyAuditHierarchyPath = "artifacts/nova1492/gx_body_audit_hierarchy.csv";
+    private const string BodyAuditReportPath = "artifacts/nova1492/gx_body_audit_report.md";
+    private const string ArmAuditManifestPath = "artifacts/nova1492/gx_arm_audit_manifest.csv";
+    private const string ArmAuditHierarchyPath = "artifacts/nova1492/gx_arm_audit_hierarchy.csv";
+    private const string ArmAuditReportPath = "artifacts/nova1492/gx_arm_audit_report.md";
     private const int MaxVertexCount = 10000;
     private const int MaxIndexCount = 200000;
     private const float LegHelperSpanThreshold = 0.25f;
     private static readonly CultureInfo Invariant = CultureInfo.InvariantCulture;
+    private static int? PoseFrameOverride;
+    private static GxPoseMode GxPoseModeOverride = GxPoseMode.Verified;
+    private static HierarchyRepairMode HierarchyRepairModeOverride = HierarchyRepairMode.Verified;
 
     public static int Main(string[] args)
     {
@@ -41,9 +50,16 @@ internal static class Program
         var diagnostics = HasArg(args, "--diagnostics") || stage == PipelineStage.Analyze || stage == PipelineStage.Audit;
         var limitRaw = GetArg(args, "--limit");
         var limit = int.TryParse(limitRaw, out var parsedLimit) ? parsedLimit : int.MaxValue;
+        var poseFrameRaw = GetArg(args, "--pose-frame");
+        PoseFrameOverride = int.TryParse(poseFrameRaw, NumberStyles.Integer, Invariant, out var parsedPoseFrame)
+            ? parsedPoseFrame
+            : null;
+        GxPoseModeOverride = ParseGxPoseMode(GetArg(args, "--gx-pose-mode"));
+        HierarchyRepairModeOverride = ParseHierarchyRepairMode(GetArg(args, "--hierarchy-repair-mode"));
         var clean = HasArg(args, "--clean");
         var writeManifest = !HasArg(args, "--no-manifest");
         var analyzeOnly = stage == PipelineStage.Analyze || stage == PipelineStage.Audit;
+        var auditPaths = ResolveAuditPaths(categoryFilter);
 
         if (!Directory.Exists(sourceRoot))
         {
@@ -70,9 +86,17 @@ internal static class Program
         Directory.CreateDirectory(textureDir);
         Directory.CreateDirectory("artifacts/nova1492");
 
-        var catalogRows = LoadCatalogRows(catalogPath)
-            .Where(row => MatchesCatalogFilters(row, categoryFilter, partIdFilter))
-            .ToArray();
+        var catalogRowsQuery = LoadCatalogRows(catalogPath)
+            .Where(row => MatchesCatalogFilters(row, categoryFilter, partIdFilter));
+        if (stage == PipelineStage.Audit &&
+            IsUnitPartsLegsFilter(categoryFilter) &&
+            string.IsNullOrWhiteSpace(partIdFilter) &&
+            string.IsNullOrWhiteSpace(includeRelative))
+        {
+            catalogRowsQuery = catalogRowsQuery.Where(IsPrimaryLegAuditCatalogRow);
+        }
+
+        var catalogRows = catalogRowsQuery.ToArray();
         var catalogModelPaths = catalogRows.ToDictionary(
             row => NormalizeRelativePath(row.SourceRelativePath),
             row => row.ModelPath,
@@ -128,6 +152,7 @@ internal static class Program
             try
             {
                 var bytes = File.ReadAllBytes(gxPath);
+                var gxPoseBlockCount = CountAsciiMarkers(bytes, "4294901782d{");
                 var meshes = FindMeshes(bytes);
                 if (meshes.Count == 0)
                 {
@@ -256,6 +281,9 @@ internal static class Program
                     FormatBounds(selection.KeptMeshes),
                     xfiInfo.TransformCount,
                     xfiInfo.DirectionRangeCount,
+                    gxPoseBlockCount,
+                    GetActiveGxPoseModeName(relative, gxPoseBlockCount),
+                    IsGxPoseApplied(relative, gxPoseBlockCount) ? "true" : "false",
                     sourceHash,
                     catalogRowHash,
                     assessment,
@@ -274,7 +302,7 @@ internal static class Program
 
         if (stage == PipelineStage.Audit)
         {
-            WriteLegAudit(rows, diagnosticsRows, catalogRowByRelativePath);
+            WritePartAudit(rows, diagnosticsRows, catalogRowByRelativePath, auditPaths);
         }
         else if (writeManifest)
         {
@@ -295,14 +323,14 @@ internal static class Program
         Console.WriteLine($"Skipped: {skipped}");
         Console.WriteLine($"Failed: {rows.Count(row => row.Status == "failed")}");
         var manifestMessage = stage == PipelineStage.Audit
-            ? "Manifest: " + LegAuditManifestPath
+            ? "Manifest: " + auditPaths.ManifestPath
             : writeManifest
                 ? "Manifest: " + ManifestPath
                 : "Manifest: skipped (--no-manifest)";
         Console.WriteLine(manifestMessage);
         if (diagnostics)
         {
-            Console.WriteLine("Diagnostics: " + (stage == PipelineStage.Audit ? LegAuditHierarchyPath : HierarchyDiagnosticsCsvPath));
+            Console.WriteLine("Diagnostics: " + (stage == PipelineStage.Audit ? auditPaths.HierarchyPath : HierarchyDiagnosticsCsvPath));
         }
 
         return success > 0 || skipped > 0 ? 0 : 1;
@@ -357,6 +385,43 @@ internal static class Program
             "convert" => PipelineStage.Convert,
             _ => throw new ArgumentException("Unknown --stage value: " + value + ". Use analyze, audit, or convert.")
         };
+    }
+
+    private static GxPoseMode ParseGxPoseMode(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value) ||
+            string.Equals(value, "verified", StringComparison.OrdinalIgnoreCase))
+        {
+            return GxPoseMode.Verified;
+        }
+
+        if (string.Equals(value, "off", StringComparison.OrdinalIgnoreCase))
+        {
+            return GxPoseMode.Off;
+        }
+
+        if (string.Equals(value, "force", StringComparison.OrdinalIgnoreCase))
+        {
+            return GxPoseMode.Force;
+        }
+
+        throw new ArgumentException("Unknown --gx-pose-mode value: " + value + ". Use off, verified, or force.");
+    }
+
+    private static HierarchyRepairMode ParseHierarchyRepairMode(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value) ||
+            string.Equals(value, "verified", StringComparison.OrdinalIgnoreCase))
+        {
+            return HierarchyRepairMode.Verified;
+        }
+
+        if (string.Equals(value, "off", StringComparison.OrdinalIgnoreCase))
+        {
+            return HierarchyRepairMode.Off;
+        }
+
+        throw new ArgumentException("Unknown --hierarchy-repair-mode value: " + value + ". Use off or verified.");
     }
 
     private static bool MatchesCatalogFilters(CatalogRow row, string? categoryFilter, string? partIdFilter)
@@ -524,6 +589,11 @@ internal static class Program
 
     private static NodeTransformResult FindNodeTransforms(string relativePath, byte[] bytes)
     {
+        if (UsesGxPoseFrame(relativePath))
+        {
+            return FindStructuredNodeTransforms(relativePath, bytes);
+        }
+
         var frameMarkers = FindAsciiMarkers(bytes, "4294901778d{");
         if (frameMarkers.Count == 0)
         {
@@ -608,12 +678,186 @@ internal static class Program
         return RepairSeparatedLegHierarchy(relativePath, output);
     }
 
+    private static NodeTransformResult FindStructuredNodeTransforms(string relativePath, byte[] bytes)
+    {
+        var frameMarkers = FindAsciiMarkers(bytes, "4294901778d{");
+        if (frameMarkers.Count == 0)
+        {
+            return NodeTransformResult.Empty;
+        }
+
+        var events = new List<StructureEvent>();
+        events.AddRange(frameMarkers.Select(position => new StructureEvent(position, StructureEventKind.Frame)));
+        events.AddRange(FindAsciiMarkers(bytes, "4294901773d{")
+            .Select(position => new StructureEvent(position, StructureEventKind.Open)));
+        events.AddRange(FindAsciiMarkers(bytes, "4294901779d{")
+            .Select(position => new StructureEvent(position, StructureEventKind.Open)));
+        events.AddRange(FindAsciiMarkers(bytes, "4294901781d{")
+            .Select(position => new StructureEvent(position, StructureEventKind.Open)));
+        events.AddRange(FindAsciiMarkers(bytes, "4294901782d{")
+            .Select(position => new StructureEvent(position, StructureEventKind.Open)));
+        events.AddRange(FindAsciiMarkers(bytes, "4294901783d{")
+            .Select(position => new StructureEvent(position, StructureEventKind.Open)));
+        events.AddRange(FindAsciiMarkers(bytes, "4294901766d")
+            .Select(position => new StructureEvent(position, StructureEventKind.Close)));
+        events.Sort(static (left, right) => left.Position.CompareTo(right.Position));
+
+        var output = new List<NodeTransform>();
+        var stack = new List<StructureStackItem>();
+        var poseFrame = GetGxPreviewPoseFrame(relativePath);
+
+        foreach (var structureEvent in events)
+        {
+            switch (structureEvent.Kind)
+            {
+                case StructureEventKind.Frame:
+                {
+                    var local = TryReadNodeTransform(bytes, structureEvent.Position);
+                    if (local == null)
+                    {
+                        stack.Add(new StructureStackItem(StructureEventKind.Open, -1));
+                        break;
+                    }
+
+                    if (TryReadPoseMatrix(bytes, structureEvent.Position, poseFrame, out var poseMatrix))
+                    {
+                        local = local with
+                        {
+                            Matrix = poseMatrix,
+                            LocalMatrix = poseMatrix
+                        };
+                    }
+
+                    var parentIndex = stack
+                        .Where(item => item.Kind == StructureEventKind.Frame && item.NodeIndex >= 0)
+                        .Select(item => item.NodeIndex)
+                        .LastOrDefault(-1);
+                    var parentMatrix = parentIndex >= 0 ? output[parentIndex].Matrix : null;
+                    var world = parentMatrix == null
+                        ? local.Matrix
+                        : MultiplyMatrices(parentMatrix, local.Matrix);
+                    var node = new NodeTransform(local.Name, local.Start, bytes.Length, world, local.Matrix, parentIndex);
+                    output.Add(node);
+                    stack.Add(new StructureStackItem(StructureEventKind.Frame, output.Count - 1));
+                    break;
+                }
+
+                case StructureEventKind.Open:
+                    stack.Add(new StructureStackItem(StructureEventKind.Open, -1));
+                    break;
+
+                case StructureEventKind.Close:
+                    if (stack.Count == 0)
+                    {
+                        break;
+                    }
+
+                    var closed = stack[^1];
+                    stack.RemoveAt(stack.Count - 1);
+                    if (closed.Kind == StructureEventKind.Frame && closed.NodeIndex >= 0)
+                    {
+                        var node = output[closed.NodeIndex];
+                        output[closed.NodeIndex] = node with { End = structureEvent.Position };
+                    }
+
+                    break;
+            }
+        }
+
+        if (TryApplyGxPoseSemanticHierarchy(relativePath, output, out var semanticHierarchy))
+        {
+            return semanticHierarchy;
+        }
+
+        return RepairSeparatedLegHierarchy(relativePath, output);
+    }
+
+    private static bool TryApplyGxPoseSemanticHierarchy(
+        string relativePath,
+        IReadOnlyList<NodeTransform> nodeTransforms,
+        out NodeTransformResult result)
+    {
+        result = NodeTransformResult.Empty;
+        if (!UsesGxPoseFrame(relativePath) || nodeTransforms.Count == 0)
+        {
+            return false;
+        }
+
+        var nameToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        for (var i = 0; i < nodeTransforms.Count; i++)
+        {
+            nameToIndex[nodeTransforms[i].Name] = i;
+        }
+
+        var parents = nodeTransforms.Select(static node => node.ParentIndex).ToArray();
+        var reasons = new List<string>();
+        for (var i = 0; i < nodeTransforms.Count; i++)
+        {
+            if (!TryGetGxPoseSemanticParent(relativePath, nodeTransforms[i].Name, out var parentName) ||
+                (parentName.Length > 0 &&
+                 (!nameToIndex.TryGetValue(parentName, out var parentIndex) ||
+                  parentIndex == i ||
+                  WouldCreateParentCycle(parents, i, parentIndex))))
+            {
+                continue;
+            }
+
+            if (parentName.Length == 0)
+            {
+                if (parents[i] < 0)
+                {
+                    continue;
+                }
+
+                parents[i] = -1;
+                reasons.Add(nodeTransforms[i].Name + "->preview-root");
+                continue;
+            }
+
+            var semanticParentIndex = nameToIndex[parentName];
+            if (parents[i] == semanticParentIndex)
+            {
+                continue;
+            }
+
+            parents[i] = semanticParentIndex;
+            reasons.Add(nodeTransforms[i].Name + "->" + parentName);
+        }
+
+        if (reasons.Count == 0)
+        {
+            return false;
+        }
+
+        var rebuilt = new List<NodeTransform>(nodeTransforms.Count);
+        for (var i = 0; i < nodeTransforms.Count; i++)
+        {
+            rebuilt.Add(nodeTransforms[i] with
+            {
+                Matrix = ComputeNodeWorldMatrix(nodeTransforms, parents, i),
+                ParentIndex = parents[i]
+            });
+        }
+
+        result = new NodeTransformResult(
+            rebuilt,
+            nodeTransforms,
+            "gx_pose_frame_semantic_hierarchy",
+            string.Join("; ", reasons));
+        return true;
+    }
+
     private static NodeTransformResult RepairSeparatedLegHierarchy(
         string relativePath,
         List<NodeTransform> nodeTransforms)
     {
         if (!IsLegPartRelativePath(relativePath) ||
             nodeTransforms.Count == 0)
+        {
+            return new NodeTransformResult(nodeTransforms, nodeTransforms, "", "");
+        }
+
+        if (HierarchyRepairModeOverride == HierarchyRepairMode.Off)
         {
             return new NodeTransformResult(nodeTransforms, nodeTransforms, "", "");
         }
@@ -778,6 +1022,94 @@ internal static class Program
                stem.Equals("g_legs58_pps", StringComparison.OrdinalIgnoreCase);
     }
 
+    private static bool UsesGxPoseFrame(string relativePath)
+    {
+        if (GxPoseModeOverride == GxPoseMode.Off)
+        {
+            return false;
+        }
+
+        if (GxPoseModeOverride == GxPoseMode.Force)
+        {
+            return IsUnitLegsPath(relativePath);
+        }
+
+        return UsesVerifiedGxPoseFrame(relativePath);
+    }
+
+    private static bool UsesVerifiedGxPoseFrame(string relativePath)
+    {
+        var stem = Path.GetFileNameWithoutExtension(relativePath);
+        return stem.Equals("legs20_spod", StringComparison.OrdinalIgnoreCase) ||
+               stem.Equals("s_legs33_spod", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsGxPoseApplied(string relativePath, int gxPoseBlockCount)
+    {
+        return gxPoseBlockCount > 0 && UsesGxPoseFrame(relativePath);
+    }
+
+    private static string GetActiveGxPoseModeName(string relativePath, int gxPoseBlockCount)
+    {
+        if (gxPoseBlockCount <= 0)
+        {
+            return "none";
+        }
+
+        if (GxPoseModeOverride == GxPoseMode.Off)
+        {
+            return "off";
+        }
+
+        if (GxPoseModeOverride == GxPoseMode.Force)
+        {
+            return IsUnitLegsPath(relativePath) ? "force" : "ignored";
+        }
+
+        return UsesVerifiedGxPoseFrame(relativePath) ? "verified" : "detected";
+    }
+
+    private static bool TryGetGxPoseSemanticParent(
+        string relativePath,
+        string nodeName,
+        out string parentName)
+    {
+        parentName = "";
+        var stem = Path.GetFileNameWithoutExtension(relativePath);
+        if (!stem.Equals("legs20_spod", StringComparison.OrdinalIgnoreCase) &&
+            !stem.Equals("s_legs33_spod", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        parentName = nodeName switch
+        {
+            "legs" => "",
+            "Box30224833" => "legs",
+            "Box30224834" => "Box30224833",
+            "Box30224829" => "Box30224834",
+            "Box30224822" => "legs",
+            "Box30224825" => "Box30224822",
+            "Box30224831" => "Box30224825",
+            "Box109" => "legs",
+            "Box220" => "Box109",
+            "Box216" => "Box220",
+            "Box30224817" => "legs",
+            "Box30224819" => "Box30224817",
+            "Box30224835" => "Box30224819",
+            "Box30224836" => "Box30224819",
+            "Box206" => "Box30224836",
+            _ => ""
+        };
+        return nodeName.Equals("legs", StringComparison.OrdinalIgnoreCase) ||
+               parentName.Length > 0;
+    }
+
+    private static int GetGxPreviewPoseFrame(string relativePath)
+    {
+        return PoseFrameOverride ?? 7;
+    }
+
     private static float[]? GetBelowAssemblyFallbackTransform(
         string relativePath,
         NodeTransform transform,
@@ -874,6 +1206,140 @@ internal static class Program
         }
 
         return new NodeTransform(name, marker, bytes.Length, matrix, matrix, -1);
+    }
+
+    private static bool TryReadPoseMatrix(byte[] bytes, int frameMarker, int poseFrame, out float[] matrix)
+    {
+        matrix = Array.Empty<float>();
+        var poseMarker = FindNextAsciiMarker(bytes, "4294901782d{", frameMarker, Math.Min(bytes.Length, frameMarker + 512));
+        if (poseMarker < 0)
+        {
+            return false;
+        }
+
+        var cursor = poseMarker + 12;
+        if (!TryReadAsciiIntToken(bytes, ref cursor, out var matrixCount) ||
+            matrixCount <= 0 ||
+            cursor + matrixCount * 64 > bytes.Length)
+        {
+            return false;
+        }
+
+        var matricesStart = cursor;
+        var matrixIndex = Math.Clamp(poseFrame, 0, matrixCount - 1);
+        var mappingCursor = matricesStart + matrixCount * 64;
+        if (TryReadAsciiIntToken(bytes, ref mappingCursor, out var mappingCount) &&
+            mappingCount > 0 &&
+            mappingCursor + mappingCount * 2 <= bytes.Length &&
+            poseFrame >= 0 &&
+            poseFrame < mappingCount)
+        {
+            var mapped = ReadUInt16(bytes, mappingCursor + poseFrame * 2);
+            if (mapped < matrixCount)
+            {
+                matrixIndex = mapped;
+            }
+        }
+
+        matrix = new float[16];
+        var matrixOffset = matricesStart + matrixIndex * 64;
+        for (var i = 0; i < matrix.Length; i++)
+        {
+            matrix[i] = ReadSingle(bytes, matrixOffset + i * 4);
+        }
+
+        return IsUsableMatrix(matrix);
+    }
+
+    private static bool TryReadAsciiIntToken(byte[] bytes, ref int cursor, out int value)
+    {
+        value = 0;
+        var start = cursor;
+        while (cursor < bytes.Length && bytes[cursor] is >= (byte)'0' and <= (byte)'9')
+        {
+            value = value * 10 + bytes[cursor] - (byte)'0';
+            cursor++;
+        }
+
+        if (cursor == start || cursor >= bytes.Length || bytes[cursor] != (byte)'d')
+        {
+            return false;
+        }
+
+        cursor++;
+        return true;
+    }
+
+    private static bool IsUsableMatrix(IReadOnlyList<float> matrix)
+    {
+        if (matrix.Count != 16)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < matrix.Count; i++)
+        {
+            if (!IsFinite(matrix[i]) || Math.Abs(matrix[i]) > 10000f)
+            {
+                return false;
+            }
+        }
+
+        return Math.Abs(matrix[15]) > 0.5f;
+    }
+
+    private static int FindNextAsciiMarker(byte[] bytes, string marker, int startInclusive, int endExclusive)
+    {
+        var markerBytes = Encoding.ASCII.GetBytes(marker);
+        var end = Math.Min(endExclusive, bytes.Length - markerBytes.Length + 1);
+        for (var i = Math.Max(0, startInclusive); i < end; i++)
+        {
+            var matches = true;
+            for (var j = 0; j < markerBytes.Length; j++)
+            {
+                if (bytes[i + j] == markerBytes[j])
+                {
+                    continue;
+                }
+
+                matches = false;
+                break;
+            }
+
+            if (matches)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private static int CountAsciiMarkers(byte[] bytes, string marker)
+    {
+        var markerBytes = Encoding.ASCII.GetBytes(marker);
+        var count = 0;
+        for (var i = 0; i <= bytes.Length - markerBytes.Length; i++)
+        {
+            var matches = true;
+            for (var j = 0; j < markerBytes.Length; j++)
+            {
+                if (bytes[i + j] == markerBytes[j])
+                {
+                    continue;
+                }
+
+                matches = false;
+                break;
+            }
+
+            if (matches)
+            {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     private static List<int> FindAsciiMarkers(byte[] bytes, string marker)
@@ -988,6 +1454,62 @@ internal static class Program
         }
 
         return true;
+    }
+
+    private static bool IsUnitPartsLegsFilter(string? categoryFilter) =>
+        string.Equals(categoryFilter, "UnitParts/Legs", StringComparison.OrdinalIgnoreCase);
+
+    private static AuditArtifactPaths ResolveAuditPaths(string? categoryFilter)
+    {
+        if (string.Equals(categoryFilter, "UnitParts/Bodies", StringComparison.OrdinalIgnoreCase))
+        {
+            return new AuditArtifactPaths(
+                "Body",
+                "body",
+                "body",
+                BodyAuditManifestPath,
+                BodyAuditHierarchyPath,
+                BodyAuditReportPath);
+        }
+
+        if (string.Equals(categoryFilter, "UnitParts/ArmWeapons", StringComparison.OrdinalIgnoreCase))
+        {
+            return new AuditArtifactPaths(
+                "Arm Weapon",
+                "arm",
+                "",
+                ArmAuditManifestPath,
+                ArmAuditHierarchyPath,
+                ArmAuditReportPath);
+        }
+
+        return new AuditArtifactPaths(
+            "Leg",
+            "leg",
+            "legs",
+            LegAuditManifestPath,
+            LegAuditHierarchyPath,
+            LegAuditReportPath);
+    }
+
+    private static bool IsPrimaryLegAuditCatalogRow(CatalogRow row)
+    {
+        var stem = Path.GetFileNameWithoutExtension(NormalizeRelativePath(row.SourceRelativePath));
+        return stem switch
+        {
+            "g_legs35_prg" or
+            "g_legs36_oprd" or
+            "legs112" or
+            "legs19_tower" or
+            "legs26_tower" or
+            "legs47_tower2" or
+            "legs48_tower2" or
+            "legs54_ros" or
+            "n_legs43_ptr" or
+            "ss0_legs55_krz" or
+            "ss0_legs56_otrs" => false,
+            _ => true
+        };
     }
 
     private static bool IsOpteryxBridgeNode(string name)
@@ -1341,27 +1863,7 @@ internal static class Program
     private static bool IsLegDirectionHelperMesh(string relativePath, MeshData mesh)
     {
         var triangles = mesh.IndexCount / 3;
-        return triangles <= 12 && CalculateSpan(mesh) < LegHelperSpanThreshold ||
-               IsSpiderDetachedHelperPlane(relativePath, mesh);
-    }
-
-    private static bool IsSpiderDetachedHelperPlane(string relativePath, MeshData mesh)
-    {
-        var stem = Path.GetFileNameWithoutExtension(relativePath);
-        if (!stem.Equals("legs20_spod", StringComparison.OrdinalIgnoreCase) &&
-            !stem.Equals("s_legs33_spod", StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
-        var triangles = mesh.IndexCount / 3;
-        if (mesh.VertexCount != 4 || triangles != 2)
-        {
-            return false;
-        }
-
-        GetBounds(new[] { mesh }, out var min, out var max);
-        return min.Y <= -0.9f && Math.Abs(max.Z - min.Z) <= 0.0001f;
+        return triangles <= 12 && CalculateSpan(mesh) < LegHelperSpanThreshold;
     }
 
     private static bool IsDetachedUnassignedLegMesh(
@@ -1371,8 +1873,7 @@ internal static class Program
     {
         var stem = Path.GetFileNameWithoutExtension(relativePath);
         if (!stem.Equals("legs23_tk", StringComparison.OrdinalIgnoreCase) &&
-            !stem.Equals("s_legs30_tk", StringComparison.OrdinalIgnoreCase) &&
-            !stem.Equals("legs49_otrs", StringComparison.OrdinalIgnoreCase))
+            !stem.Equals("s_legs30_tk", StringComparison.OrdinalIgnoreCase))
         {
             return false;
         }
@@ -1413,7 +1914,7 @@ internal static class Program
 
     private static bool IsKnownLargeDirectionHelperMesh(string relativePath, MeshData mesh)
     {
-        return IsSpiderDetachedHelperPlane(relativePath, mesh);
+        return false;
     }
 
     private static string FormatBounds(IReadOnlyList<MeshData> meshes)
@@ -1798,6 +2299,9 @@ internal static class Program
         {
             var headerStart = mesh.PositionStart - 16;
             var node = nodes.LastOrDefault(item => item.Start < headerStart && headerStart < item.End);
+            var parent = node != null && node.ParentIndex >= 0 && node.ParentIndex < nodes.Count
+                ? nodes[node.ParentIndex]
+                : null;
             rows.Add(new HierarchyDiagnosticRow(
                 relativePath,
                 partId,
@@ -1807,6 +2311,12 @@ internal static class Program
                 node?.Name ?? "",
                 node is null ? "" : "0x" + node.Start.ToString("X", Invariant),
                 node is null ? "" : "0x" + node.End.ToString("X", Invariant),
+                parent?.Name ?? "",
+                parent is null ? "" : "0x" + parent.Start.ToString("X", Invariant),
+                parent is null ? "" : "0x" + parent.End.ToString("X", Invariant),
+                node?.LocalMatrix[3] ?? 0f,
+                node?.LocalMatrix[7] ?? 0f,
+                node?.LocalMatrix[11] ?? 0f,
                 node?.Matrix[3] ?? 0f,
                 node?.Matrix[7] ?? 0f,
                 node?.Matrix[11] ?? 0f,
@@ -1820,22 +2330,23 @@ internal static class Program
         return rows;
     }
 
-    private static void WriteLegAudit(
+    private static void WritePartAudit(
         IReadOnlyList<ManifestRow> rows,
         IReadOnlyList<HierarchyDiagnosticRow> hierarchyRows,
-        IReadOnlyDictionary<string, CatalogRow> catalogRows)
+        IReadOnlyDictionary<string, CatalogRow> catalogRows,
+        AuditArtifactPaths paths)
     {
         var hierarchyBySource = hierarchyRows
             .GroupBy(row => NormalizeRelativePath(row.SourceRelativePath), StringComparer.OrdinalIgnoreCase)
             .ToDictionary(group => group.Key, group => group.ToArray(), StringComparer.OrdinalIgnoreCase);
         var auditRows = rows
-            .Select(row => BuildLegAuditRow(row, catalogRows, hierarchyBySource))
+            .Select(row => BuildLegAuditRow(row, catalogRows, hierarchyBySource, paths))
             .ToList();
         MarkOutliers(auditRows);
 
-        using (var writer = new StreamWriter(LegAuditManifestPath, false, new UTF8Encoding(false)))
+        using (var writer = new StreamWriter(paths.ManifestPath, false, new UTF8Encoding(false)))
         {
-            writer.WriteLine("part_id,display_name,source_relative_path,audit_verdict,audit_flags,status,vertices,triangles,catalog_vertices,catalog_triangles,mesh_blocks,kept_block_count,dropped_blocks,large_dropped_block_count,has_legs_marker,repair_rule,bounds,width,height,depth,center_x,center_y,center_z,obj_path,error");
+            writer.WriteLine("part_id,display_name,source_relative_path,audit_verdict,audit_flags,status,vertices,triangles,catalog_vertices,catalog_triangles,mesh_blocks,kept_block_count,dropped_blocks,large_dropped_block_count,has_root_marker,repair_rule,gx_pose_block_count,gx_pose_mode,gx_pose_applied,bounds,width,height,depth,center_x,center_y,center_z,obj_path,error");
             foreach (var row in auditRows)
             {
                 writer.WriteLine(string.Join(",", new[]
@@ -1856,6 +2367,9 @@ internal static class Program
                     Csv(row.LargeDroppedBlockCount.ToString(Invariant)),
                     Csv(row.HasLegsMarker ? "true" : "false"),
                     Csv(row.RepairRule),
+                    Csv(row.GxPoseBlockCount.ToString(Invariant)),
+                    Csv(row.GxPoseMode),
+                    Csv(row.GxPoseApplied),
                     Csv(row.Bounds),
                     Csv(row.Width.ToString("0.######", Invariant)),
                     Csv(row.Height.ToString("0.######", Invariant)),
@@ -1869,9 +2383,9 @@ internal static class Program
             }
         }
 
-        using (var writer = new StreamWriter(LegAuditHierarchyPath, false, new UTF8Encoding(false)))
+        using (var writer = new StreamWriter(paths.HierarchyPath, false, new UTF8Encoding(false)))
         {
-            writer.WriteLine("source_relative_path,part_id,mesh_header,vertices,triangles,node,node_start,node_end,tx,ty,tz,bounds,repair_rule,repair_reason,texture_source,assessment");
+            writer.WriteLine("source_relative_path,part_id,mesh_header,vertices,triangles,node,node_start,node_end,parent_node,parent_start,parent_end,local_tx,local_ty,local_tz,tx,ty,tz,bounds,repair_rule,repair_reason,texture_source,assessment");
             foreach (var row in hierarchyRows)
             {
                 writer.WriteLine(string.Join(",", new[]
@@ -1884,6 +2398,12 @@ internal static class Program
                     Csv(row.Node),
                     Csv(row.NodeStart),
                     Csv(row.NodeEnd),
+                    Csv(row.ParentNode),
+                    Csv(row.ParentStart),
+                    Csv(row.ParentEnd),
+                    Csv(row.LocalTx.ToString("0.######", Invariant)),
+                    Csv(row.LocalTy.ToString("0.######", Invariant)),
+                    Csv(row.LocalTz.ToString("0.######", Invariant)),
                     Csv(row.Tx.ToString("0.######", Invariant)),
                     Csv(row.Ty.ToString("0.######", Invariant)),
                     Csv(row.Tz.ToString("0.######", Invariant)),
@@ -1896,8 +2416,8 @@ internal static class Program
             }
         }
 
-        using var md = new StreamWriter(LegAuditReportPath, false, new UTF8Encoding(false));
-        md.WriteLine("# Nova1492 Leg GX Audit Report");
+        using var md = new StreamWriter(paths.ReportPath, false, new UTF8Encoding(false));
+        md.WriteLine("# Nova1492 " + paths.Title + " GX Audit Report");
         md.WriteLine();
         md.WriteLine($"> generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
         md.WriteLine();
@@ -1906,8 +2426,8 @@ internal static class Program
         md.WriteLine($"- high risk: {auditRows.Count(row => row.Verdict == "high")}");
         md.WriteLine($"- review risk: {auditRows.Count(row => row.Verdict == "review")}");
         md.WriteLine($"- pass: {auditRows.Count(row => row.Verdict == "pass")}");
-        md.WriteLine($"- manifest: `{LegAuditManifestPath}`");
-        md.WriteLine($"- hierarchy: `{LegAuditHierarchyPath}`");
+        md.WriteLine($"- manifest: `{paths.ManifestPath}`");
+        md.WriteLine($"- hierarchy: `{paths.HierarchyPath}`");
         md.WriteLine();
         md.WriteLine("## High Risk");
         md.WriteLine();
@@ -1917,23 +2437,31 @@ internal static class Program
         md.WriteLine();
         WriteAuditTable(md, auditRows.Where(row => row.Verdict == "review"));
         md.WriteLine();
+        md.WriteLine("## GX Pose Recovery Candidates");
+        md.WriteLine();
+        WriteAuditTable(md, auditRows.Where(row => row.Flags.Contains("gx_pose_unapplied_candidate")));
+        md.WriteLine();
         md.WriteLine("## Notes");
         md.WriteLine();
         md.WriteLine("- `high` means a mechanical issue must be investigated before visual acceptance.");
         md.WriteLine("- `review` means the row is mechanically convertible but should be included in manual capture review.");
+        md.WriteLine("- `gx_pose_unapplied_candidate` means the GX has 1782 pose blocks, but the default converter did not apply them because that part still needs visual proof or a part-specific hierarchy rule.");
+        md.WriteLine("- `--gx-pose-mode force` is an investigation option only; do not promote it to default until capture comparison passes.");
         md.WriteLine("- Visual acceptance remains blocked until the capture sheet is manually compared.");
     }
 
     private static LegAuditRow BuildLegAuditRow(
         ManifestRow row,
         IReadOnlyDictionary<string, CatalogRow> catalogRows,
-        IReadOnlyDictionary<string, HierarchyDiagnosticRow[]> hierarchyRows)
+        IReadOnlyDictionary<string, HierarchyDiagnosticRow[]> hierarchyRows,
+        AuditArtifactPaths paths)
     {
         var relativeKey = NormalizeRelativePath(row.SourceRelativePath);
         catalogRows.TryGetValue(relativeKey, out var catalogRow);
         hierarchyRows.TryGetValue(relativeKey, out var hierarchy);
         TryParseBounds(row.Bounds, out var metrics);
-        var hasLegsMarker = hierarchy?.Any(item => item.Node == "legs") ?? false;
+        var hasRootMarker = string.IsNullOrWhiteSpace(paths.RootNodeName) ||
+            (hierarchy?.Any(item => string.Equals(item.Node, paths.RootNodeName, StringComparison.OrdinalIgnoreCase)) ?? false);
         var flags = new List<string>();
         if (row.Status == "failed")
         {
@@ -1957,9 +2485,9 @@ internal static class Program
             flags.Add("catalog_count_mismatch");
         }
 
-        if (!hasLegsMarker)
+        if (!hasRootMarker)
         {
-            flags.Add("legs_marker_missing");
+            flags.Add(paths.ShortName + "_marker_missing");
         }
 
         if (!string.IsNullOrWhiteSpace(row.RepairRule))
@@ -1970,6 +2498,11 @@ internal static class Program
         if (!string.IsNullOrWhiteSpace(row.DroppedBlocks))
         {
             flags.Add("dropped_block_present");
+        }
+
+        if (IsGxPoseUnappliedCandidate(row, catalogRow))
+        {
+            flags.Add("gx_pose_unapplied_candidate");
         }
 
         var verdict = flags.Any(IsHighRiskFlag)
@@ -1993,8 +2526,11 @@ internal static class Program
             row.KeptBlockCount,
             row.DroppedBlocks,
             row.LargeDroppedBlockCount,
-            hasLegsMarker,
+            hasRootMarker,
             row.RepairRule,
+            row.GxPoseBlockCount,
+            row.GxPoseMode,
+            row.GxPoseApplied,
             row.Bounds,
             metrics.Width,
             metrics.Height,
@@ -2012,7 +2548,27 @@ internal static class Program
                "kept_block_zero" or
                "large_dropped_block" or
                "catalog_count_mismatch" or
-               "legs_marker_missing";
+               "legs_marker_missing" or
+               "body_marker_missing" or
+               "arm_marker_missing";
+    }
+
+    private static bool IsGxPoseUnappliedCandidate(ManifestRow row, CatalogRow? catalogRow)
+    {
+        if (row.GxPoseBlockCount <= 0 ||
+            string.Equals(row.GxPoseApplied, "true", StringComparison.OrdinalIgnoreCase) ||
+            row.Status == "failed")
+        {
+            return false;
+        }
+
+        var catalogMismatch = catalogRow != null &&
+            ((catalogRow.Vertices > 0 && catalogRow.Vertices != row.Vertices) ||
+             (catalogRow.Triangles > 0 && catalogRow.Triangles != row.Triangles));
+        return catalogMismatch ||
+               row.LargeDroppedBlockCount > 0 ||
+               !string.IsNullOrWhiteSpace(row.RepairRule) ||
+               !string.IsNullOrWhiteSpace(row.DroppedBlocks);
     }
 
     private static void MarkOutliers(IReadOnlyList<LegAuditRow> rows)
@@ -2066,8 +2622,8 @@ internal static class Program
 
     private static void WriteAuditTable(TextWriter writer, IEnumerable<LegAuditRow> rows)
     {
-        writer.WriteLine("| part | name | verdict | flags | counts | dropped | bounds |");
-        writer.WriteLine("|---|---|---|---|---:|---:|---|");
+        writer.WriteLine("| part | name | verdict | flags | counts | pose | dropped | bounds |");
+        writer.WriteLine("|---|---|---|---|---:|---|---:|---|");
         foreach (var row in rows.OrderBy(row => row.PartId, StringComparer.OrdinalIgnoreCase))
         {
             writer.WriteLine(
@@ -2076,6 +2632,7 @@ internal static class Program
                 row.Verdict + " | `" +
                 string.Join(";", row.Flags) + "` | " +
                 row.Vertices.ToString(Invariant) + "/" + row.Triangles.ToString(Invariant) + " | " +
+                row.GxPoseBlockCount.ToString(Invariant) + "/" + row.GxPoseMode + "/" + row.GxPoseApplied + " | " +
                 row.LargeDroppedBlockCount.ToString(Invariant) + " | `" +
                 row.Bounds + "` |");
         }
@@ -2207,7 +2764,7 @@ internal static class Program
     {
         using (var writer = new StreamWriter(HierarchyDiagnosticsCsvPath, false, new UTF8Encoding(false)))
         {
-            writer.WriteLine("source_relative_path,part_id,mesh_header,vertices,triangles,node,node_start,node_end,tx,ty,tz,bounds,repair_rule,repair_reason,texture_source,assessment");
+            writer.WriteLine("source_relative_path,part_id,mesh_header,vertices,triangles,node,node_start,node_end,parent_node,parent_start,parent_end,local_tx,local_ty,local_tz,tx,ty,tz,bounds,repair_rule,repair_reason,texture_source,assessment");
             foreach (var row in rows)
             {
                 writer.WriteLine(string.Join(",", new[]
@@ -2220,6 +2777,12 @@ internal static class Program
                     Csv(row.Node),
                     Csv(row.NodeStart),
                     Csv(row.NodeEnd),
+                    Csv(row.ParentNode),
+                    Csv(row.ParentStart),
+                    Csv(row.ParentEnd),
+                    Csv(row.LocalTx.ToString("0.######", Invariant)),
+                    Csv(row.LocalTy.ToString("0.######", Invariant)),
+                    Csv(row.LocalTz.ToString("0.######", Invariant)),
                     Csv(row.Tx.ToString("0.######", Invariant)),
                     Csv(row.Ty.ToString("0.######", Invariant)),
                     Csv(row.Tz.ToString("0.######", Invariant)),
@@ -2264,7 +2827,7 @@ internal static class Program
     {
         using (var writer = new StreamWriter(ManifestPath, false, new UTF8Encoding(false)))
         {
-            writer.WriteLine("status,source_relative_path,source_path,bytes,obj_path,vertices,triangles,position_offset,normal_offset,uv_offset,index_offset,texture_source,texture_output,parser_mode,mesh_blocks,kept_block_count,assembly_blocks,direction_blocks,dropped_blocks,assembly_block_diagnostics,direction_block_diagnostics,dropped_block_diagnostics,large_dropped_block_count,bounds,xfi_transform_count,xfi_direction_range_count,source_hash,catalog_row_hash,converter_version,assessment,repair_rule,repair_reason,before_bounds,after_bounds,error");
+            writer.WriteLine("status,source_relative_path,source_path,bytes,obj_path,vertices,triangles,position_offset,normal_offset,uv_offset,index_offset,texture_source,texture_output,parser_mode,mesh_blocks,kept_block_count,assembly_blocks,direction_blocks,dropped_blocks,assembly_block_diagnostics,direction_block_diagnostics,dropped_block_diagnostics,large_dropped_block_count,bounds,xfi_transform_count,xfi_direction_range_count,gx_pose_block_count,gx_pose_mode,gx_pose_applied,source_hash,catalog_row_hash,converter_version,assessment,repair_rule,repair_reason,before_bounds,after_bounds,error");
             foreach (var row in rows)
             {
                 writer.WriteLine(string.Join(",", new[]
@@ -2295,6 +2858,9 @@ internal static class Program
                     Csv(row.Bounds),
                     Csv(row.XfiTransformCount.ToString(Invariant)),
                     Csv(row.XfiDirectionRangeCount.ToString(Invariant)),
+                    Csv(row.GxPoseBlockCount.ToString(Invariant)),
+                    Csv(row.GxPoseMode),
+                    Csv(row.GxPoseApplied),
                     Csv(row.SourceHash),
                     Csv(row.CatalogRowHash),
                     Csv(row.ConverterVersion),
@@ -2408,10 +2974,13 @@ internal static class Program
 
     private readonly record struct StructureEvent(int Position, StructureEventKind Kind);
 
+    private readonly record struct StructureStackItem(StructureEventKind Kind, int NodeIndex);
+
     private enum StructureEventKind
     {
         Frame,
         Mesh,
+        Open,
         Close,
     }
 
@@ -2431,11 +3000,32 @@ internal static class Program
         public static readonly XfiInfo Missing = new(false, 0, 0);
     }
 
+    private sealed record AuditArtifactPaths(
+        string Title,
+        string ShortName,
+        string RootNodeName,
+        string ManifestPath,
+        string HierarchyPath,
+        string ReportPath);
+
     private enum PipelineStage
     {
         Analyze,
         Audit,
         Convert,
+    }
+
+    private enum GxPoseMode
+    {
+        Off,
+        Verified,
+        Force,
+    }
+
+    private enum HierarchyRepairMode
+    {
+        Off,
+        Verified,
     }
 
     private sealed record CatalogRow(
@@ -2480,6 +3070,9 @@ internal static class Program
             int largeDroppedBlockCount,
             bool hasLegsMarker,
             string repairRule,
+            int gxPoseBlockCount,
+            string gxPoseMode,
+            string gxPoseApplied,
             string bounds,
             float width,
             float height,
@@ -2506,6 +3099,9 @@ internal static class Program
             LargeDroppedBlockCount = largeDroppedBlockCount;
             HasLegsMarker = hasLegsMarker;
             RepairRule = repairRule;
+            GxPoseBlockCount = gxPoseBlockCount;
+            GxPoseMode = gxPoseMode;
+            GxPoseApplied = gxPoseApplied;
             Bounds = bounds;
             Width = width;
             Height = height;
@@ -2533,6 +3129,9 @@ internal static class Program
         public int LargeDroppedBlockCount { get; }
         public bool HasLegsMarker { get; }
         public string RepairRule { get; }
+        public int GxPoseBlockCount { get; }
+        public string GxPoseMode { get; }
+        public string GxPoseApplied { get; }
         public string Bounds { get; }
         public float Width { get; }
         public float Height { get; }
@@ -2568,6 +3167,12 @@ internal static class Program
         string Node,
         string NodeStart,
         string NodeEnd,
+        string ParentNode,
+        string ParentStart,
+        string ParentEnd,
+        float LocalTx,
+        float LocalTy,
+        float LocalTz,
         float Tx,
         float Ty,
         float Tz,
@@ -2637,6 +3242,9 @@ internal static class Program
         string Bounds,
         int XfiTransformCount,
         int XfiDirectionRangeCount,
+        int GxPoseBlockCount,
+        string GxPoseMode,
+        string GxPoseApplied,
         string SourceHash,
         string CatalogRowHash,
         string ConverterVersion,
@@ -2674,6 +3282,9 @@ internal static class Program
             string bounds,
             int xfiTransformCount,
             int xfiDirectionRangeCount,
+            int gxPoseBlockCount,
+            string gxPoseMode,
+            string gxPoseApplied,
             string sourceHash,
             string catalogRowHash,
             string assessment,
@@ -2709,6 +3320,9 @@ internal static class Program
                 bounds,
                 xfiTransformCount,
                 xfiDirectionRangeCount,
+                gxPoseBlockCount,
+                gxPoseMode,
+                gxPoseApplied,
                 sourceHash,
                 catalogRowHash,
                 Program.ConverterVersion,
@@ -2757,6 +3371,9 @@ internal static class Program
                 "",
                 0,
                 0,
+                0,
+                "",
+                "false",
                 sourceHash,
                 catalogRowHash,
                 Program.ConverterVersion,
@@ -2776,7 +3393,7 @@ internal static class Program
             string catalogRowHash,
             string error)
         {
-            return new ManifestRow("failed", relativePath, sourcePath, bytes, "", 0, 0, "", "", "", "", "", "", "", 0, 0, "", "", "", "", "", "", 0, "", 0, 0, sourceHash, catalogRowHash, Program.ConverterVersion, "failed", "", "", "", "", error);
+            return new ManifestRow("failed", relativePath, sourcePath, bytes, "", 0, 0, "", "", "", "", "", "", "", 0, 0, "", "", "", "", "", "", 0, "", 0, 0, 0, "", "false", sourceHash, catalogRowHash, Program.ConverterVersion, "failed", "", "", "", "", error);
         }
     }
 }

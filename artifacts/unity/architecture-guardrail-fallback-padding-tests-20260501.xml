@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="14" result="Passed" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:07Z" duration="1.3260306">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="102" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:07Z" duration="1.326031" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1126" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="102" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:07Z" duration="1.315909" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="3968" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1129" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="96" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:07Z" duration="1.314815" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1130" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="96" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:07Z" duration="1.314067" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1095" name="ArchitectureGuardrailReflectionTests" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:07Z" duration="1.312516" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1097" name="Codebase_DoesNotUseAsyncVoidHandlers" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.Codebase_DoesNotUseAsyncVoidHandlers" methodname="Codebase_DoesNotUseAsyncVoidHandlers" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="382114443" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:06Z" duration="0.131531" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1103" name="GarageRuntime_UsesSingleUitkPresentationStack" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.GarageRuntime_UsesSingleUitkPresentationStack" methodname="GarageRuntime_UsesSingleUitkPresentationStack" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="1196231120" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:06Z" duration="0.002103" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1104" name="GarageSetBUitkPageController_DoesNotHostMcpSmokeEntrypoints" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.GarageSetBUitkPageController_DoesNotHostMcpSmokeEntrypoints" methodname="GarageSetBUitkPageController_DoesNotHostMcpSmokeEntrypoints" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="136570758" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:06Z" duration="0.001381" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1108" name="GarageSetupScenes_DoNotSerializeLegacyPageControllerField" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.GarageSetupScenes_DoNotSerializeLegacyPageControllerField" methodname="GarageSetupScenes_DoNotSerializeLegacyPageControllerField" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="1646025244" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:06Z" duration="0.068986" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1105" name="McpSmokeEntrypoints_AreEditorOrDevelopmentBuildOnly" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.McpSmokeEntrypoints_AreEditorOrDevelopmentBuildOnly" methodname="McpSmokeEntrypoints_AreEditorOrDevelopmentBuildOnly" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="623233092" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:06Z" duration="0.129679" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1107" name="ProductionFallbackReferences_AreExplicitlyReviewed" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.ProductionFallbackReferences_AreExplicitlyReviewed" methodname="ProductionFallbackReferences_AreExplicitlyReviewed" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="328937796" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:06Z" duration="0.144382" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1098" name="RuntimeCode_DoesNotUseResourcesLoad" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.RuntimeCode_DoesNotUseResourcesLoad" methodname="RuntimeCode_DoesNotUseResourcesLoad" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="1357618551" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:06Z" duration="0.131274" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1102" name="SceneRegistries_AreNotCreatedViaRuntimeAddComponent" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SceneRegistries_AreNotCreatedViaRuntimeAddComponent" methodname="SceneRegistries_AreNotCreatedViaRuntimeAddComponent" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="1353110070" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:06Z" duration="0.165022" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1101" name="SceneRegistries_AreNotFoundViaRuntimeGlobalLookup" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SceneRegistries_AreNotFoundViaRuntimeGlobalLookup" methodname="SceneRegistries_AreNotFoundViaRuntimeGlobalLookup" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="1501300387" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:06Z" duration="0.131418" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1100" name="SceneSoundPlayerHosts_AreRootObjects" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SceneSoundPlayerHosts_AreRootObjects" methodname="SceneSoundPlayerHosts_AreRootObjects" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="1358886200" result="Passed" start-time="2026-05-01 01:05:06Z" end-time="2026-05-01 01:05:07Z" duration="0.010702" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1096" name="SetupAndRootFiles_DoNotDeclareUpdateMethods" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SetupAndRootFiles_DoNotDeclareUpdateMethods" methodname="SetupAndRootFiles_DoNotDeclareUpdateMethods" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="478749750" result="Passed" start-time="2026-05-01 01:05:07Z" end-time="2026-05-01 01:05:07Z" duration="0.020781" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1099" name="SingletonPatterns_AreRestrictedToAllowlist" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SingletonPatterns_AreRestrictedToAllowlist" methodname="SingletonPatterns_AreRestrictedToAllowlist" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="1312321707" result="Passed" start-time="2026-05-01 01:05:07Z" end-time="2026-05-01 01:05:07Z" duration="0.171677" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1106" name="SourcePaddingMarkers_AreLimitedToKnownLockedResiduals" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SourcePaddingMarkers_AreLimitedToKnownLockedResiduals" methodname="SourcePaddingMarkers_AreLimitedToKnownLockedResiduals" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="649725714" result="Passed" start-time="2026-05-01 01:05:07Z" end-time="2026-05-01 01:05:07Z" duration="0.175933" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1109" name="UnityWorkflowSkill_ContainsArchitectureGuardrails" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.UnityWorkflowSkill_ContainsArchitectureGuardrails" methodname="UnityWorkflowSkill_ContainsArchitectureGuardrails" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="220198131" result="Passed" start-time="2026-05-01 01:05:07Z" end-time="2026-05-01 01:05:07Z" duration="0.004906" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\architecture-guardrail-fallback-padding-tests-20260501.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

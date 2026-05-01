@@ -24,6 +24,12 @@ namespace Tests.Editor
             @"AddComponent<\s*(?:[\w]+\.)*\w*SceneRegistry\s*>",
             RegexOptions.Compiled);
 
+        private static readonly HashSet<string> LockedSourcePaddingResiduals = new(StringComparer.OrdinalIgnoreCase)
+        {
+            NormalizeRelativePath("Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkSurface.cs"),
+            NormalizeRelativePath("Assets/Scripts/Features/Lobby/Presentation/LobbyView.cs"),
+        };
+
         private static readonly string[] RemovedGarageLegacyPresentationTypes =
         {
             "GaragePageController",
@@ -252,6 +258,45 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void SourcePaddingMarkers_AreLimitedToKnownLockedResiduals()
+        {
+            var offenders = EnumerateScriptFiles()
+                .Select(path => new
+                {
+                    RelativePath = NormalizeRelativePath(ToRepoRelativePath(path)),
+                    Text = File.ReadAllText(path),
+                })
+                .Where(entry =>
+                    entry.Text.Contains("Padding retained", StringComparison.Ordinal) ||
+                    entry.Text.Contains("Removed procedural", StringComparison.Ordinal))
+                .Where(entry => !LockedSourcePaddingResiduals.Contains(entry.RelativePath))
+                .Select(entry => entry.RelativePath)
+                .OrderBy(path => path)
+                .ToArray();
+
+            Assert.That(
+                offenders,
+                Is.Empty,
+                BuildFailureMessage("Length-preserving source padding markers are blocked outside the known locked cleanup residuals.", offenders));
+        }
+
+        [Test]
+        public void ProductionFallbackReferences_AreExplicitlyReviewed()
+        {
+            var offenders = EnumerateFeatureScriptFiles()
+                .SelectMany(path => EnumerateFallbackLines(path))
+                .Where(entry => !IsReviewedFallbackReference(entry.RelativePath, entry.Line))
+                .Select(entry => $"{entry.RelativePath}:{entry.LineNumber}: {entry.Line.Trim()}")
+                .OrderBy(line => line)
+                .ToArray();
+
+            Assert.That(
+                offenders,
+                Is.Empty,
+                BuildFailureMessage("Production fallback references must be reviewed and contained before they are added.", offenders));
+        }
+
+        [Test]
         public void GarageSetupScenes_DoNotSerializeLegacyPageControllerField()
         {
             var offenders = EnumerateSceneFiles()
@@ -287,6 +332,12 @@ namespace Tests.Editor
         {
             string scriptsRoot = Path.Combine(GetRepoRoot(), "Assets", "Scripts");
             return Directory.EnumerateFiles(scriptsRoot, "*.cs", SearchOption.AllDirectories);
+        }
+
+        private static IEnumerable<string> EnumerateFeatureScriptFiles()
+        {
+            string featuresRoot = Path.Combine(GetRepoRoot(), "Assets", "Scripts", "Features");
+            return Directory.EnumerateFiles(featuresRoot, "*.cs", SearchOption.AllDirectories);
         }
 
         private static IEnumerable<string> EnumerateSceneFiles()
@@ -349,6 +400,44 @@ namespace Tests.Editor
         private static string NormalizeRelativePath(string path)
         {
             return path.Replace('\\', '/');
+        }
+
+        private static IEnumerable<(string RelativePath, int LineNumber, string Line)> EnumerateFallbackLines(string path)
+        {
+            string relativePath = NormalizeRelativePath(ToRepoRelativePath(path));
+            string[] lines = File.ReadAllLines(path);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].IndexOf("fallback", StringComparison.OrdinalIgnoreCase) >= 0)
+                    yield return (relativePath, i + 1, lines[i]);
+            }
+        }
+
+        private static bool IsReviewedFallbackReference(string relativePath, string line)
+        {
+            if (relativePath == NormalizeRelativePath("Assets/Scripts/Features/Lobby/Presentation/LobbyView.cs"))
+            {
+                return line.Contains("runtime fallback UI", StringComparison.Ordinal) ||
+                       line.Contains("Removed procedural Lobby fallback builder", StringComparison.Ordinal);
+            }
+
+            if (relativePath == NormalizeRelativePath("Assets/Scripts/Features/Wave/WaveSetup.cs"))
+            {
+                return line.Contains("TryGetFirstEnemyData(out var fallbackData)", StringComparison.Ordinal) ||
+                       line.Contains("return fallbackData;", StringComparison.Ordinal);
+            }
+
+            if (relativePath == NormalizeRelativePath("Assets/Scripts/Features/Unit/Infrastructure/BattleEntityAttackDriver.cs"))
+            {
+                return line.Contains("[FormerlySerializedAs(\"_fallbackAttack", StringComparison.Ordinal);
+            }
+
+            if (relativePath == NormalizeRelativePath("Assets/Scripts/Features/Unit/Infrastructure/SummonPhotonAdapter.cs"))
+            {
+                return line.Contains("fallbackInstanceId", StringComparison.Ordinal);
+            }
+
+            return false;
         }
     }
 }

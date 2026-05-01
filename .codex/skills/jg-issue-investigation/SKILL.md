@@ -1,12 +1,12 @@
 ---
 name: jg-issue-investigation
 description: >-
-  Project-specific issue investigation guardrail for the JG repo. Use this skill whenever Codex is asked to find a bug cause, diagnose a problem, identify root cause, verify a hypothesis, explain why something failed, prevent recurrence, debug uncertain behavior, or respond to Korean requests like "버그 원인", "문제 원인", "원인 파악", "왜 안 돼", "실패 원인", "가설 검증", or "재발 방지". Also use it for uncertain phrases such as "아마", "추정", "가능성", "보임", "보인다", "보여", "듯", "것 같", "maybe", "probably", "likely", "appears", or "seems" in a cause analysis. This skill routes investigation reporting through the repo owner docs so unverified hypotheses are checked before they are treated as rootCause or success.
+  Project-specific issue investigation guardrail for the JG repo. Use this skill whenever Codex is asked to find a bug cause, diagnose a problem, identify root cause, verify a hypothesis, explain why something failed, prevent recurrence, debug uncertain behavior, investigate performance regressions or slow behavior, or respond to Korean requests like "버그 원인", "문제 원인", "원인 파악", "왜 안 돼", "실패 원인", "가설 검증", "성능 저하", "느림", or "재발 방지". Also use it for uncertain phrases such as "아마", "추정", "가능성", "보임", "보인다", "보여", "듯", "것 같", "maybe", "probably", "likely", "appears", or "seems" in a cause analysis. This skill routes investigation reporting through the repo owner docs so unverified hypotheses are checked before they are treated as rootCause or success.
 ---
 
 # JG Issue Investigation
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: skill.jg-issue-investigation
 > role: skill-entry
@@ -15,6 +15,7 @@ description: >-
 > artifacts: none
 
 Use this skill when investigating causes, root causes, regressions, recurrence, or uncertain hypotheses in the JG repo.
+Every cause-finding task must run the hypothesis verification loop from `ops.acceptance-reporting-guardrails` before reporting a cause.
 Do not restate the reporting policy here. Resolve current paths through `docs/index.md`, then read owner doc `ops.acceptance-reporting-guardrails`.
 
 ## Read First
@@ -26,10 +27,30 @@ Do not restate the reporting policy here. Resolve current paths through `docs/in
 
 ## Investigation Flow
 
-1. Separate observed facts from hypotheses.
-2. Verify each non-obvious hypothesis with local evidence before treating it as cause.
-3. If the evidence is insufficient, report the result as `blocked` with the missing verification path.
-4. Keep mechanical checks, acceptance verdict, and root-cause verdict separate.
+1. Build a feedback loop before making cause claims.
+   - Prefer the narrowest repeatable signal that reaches the symptom: direct/EditMode test, CLI/tool invocation, captured artifact replay, scene/prefab contract probe, Playwright/browser check, or a documented manual/HITL checklist.
+   - Make the loop sharper before debugging: assert the exact symptom, reduce unrelated setup, and make time/random/network/scene state as deterministic as practical.
+   - If no believable loop can be built, stop the cause claim and report `blocked` with the missing environment, captured artifact, access, or temporary instrumentation needed.
+2. Reproduce the user-described failure.
+   - Confirm the loop shows the same symptom, not a nearby different failure.
+   - Capture the concrete evidence: error text, wrong output, timing baseline, artifact diff, log line, scene/prefab state, or test failure.
+   - For nondeterministic issues, raise the reproduction rate enough to test hypotheses, or report the remaining flake rate as uncertainty.
+3. Separate observed facts from hypotheses.
+4. Generate plausible hypotheses before testing the first one.
+   - For each plausible hypothesis, state what evidence would confirm or reject it.
+   - Prefer ranked hypotheses when the issue is broad, flaky, or performance-related.
+5. Instrument narrowly.
+   - Each probe must map to a hypothesis prediction.
+   - Prefer debugger/inspection or targeted boundary logs over broad logging.
+   - Temporary debug logs must have a unique searchable prefix and be removed before closeout.
+6. Fix only after evidence points to a cause.
+   - If a correct regression seam exists, turn the minimized repro into a failing check before or alongside the fix.
+   - If no correct seam exists, report that as an architecture/testability finding rather than creating a shallow false-confidence test.
+   - Re-run the original feedback loop after the fix path.
+7. Cleanup and close out.
+   - Remove temporary instrumentation and throwaway harnesses unless they are intentionally moved to a clearly owned debug artifact.
+   - State which hypothesis was confirmed or rejected.
+   - Keep mechanical checks, acceptance verdict, and root-cause verdict separate.
 
 ## Report Shape
 

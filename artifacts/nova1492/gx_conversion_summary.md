@@ -1,13 +1,13 @@
 # Nova1492 GX Conversion Summary
 
-> generated: 2026-05-01 00:31:55
+> generated: 2026-05-01 10:17:18
 
 - stage: `convert`
-- converter version: `gx-pipeline-v19`
+- converter version: `gx-pipeline-v20`
 - source root: `C:\Program Files (x86)\Nova1492`
-- output root: `Assets\Art\Nova1492\GXConverted`
-- total GX files: 1
-- converted: 1
+- output root: `Assets/Art/Nova1492/GXConverted`
+- total GX files: 53
+- converted: 53
 - analyzed: 0
 - skipped: 0
 - failed: 0

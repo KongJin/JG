@@ -37,6 +37,49 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void CatalogFactory_ProvidesAssemblyDataForGeneratedSampleLoadout()
+        {
+            var moduleCatalog = AssetDatabase.LoadAssetAtPath<ModuleCatalog>(ModuleCatalogPath);
+            var visualCatalog = AssetDatabase.LoadAssetAtPath<NovaPartVisualCatalog>(VisualCatalogPath);
+            var alignmentCatalog = AssetDatabase.LoadAssetAtPath<NovaPartAlignmentCatalog>(AlignmentCatalogPath);
+
+            Assert.NotNull(moduleCatalog);
+            Assert.NotNull(visualCatalog);
+            Assert.NotNull(alignmentCatalog);
+
+            var catalog = new GaragePanelCatalogFactory().Build(
+                moduleCatalog,
+                visualCatalog,
+                alignmentCatalog);
+            var frame = catalog.FindFrame("nova_frame_body25_bosro");
+            var firepower = catalog.FindFirepower("nova_fire_arm13_prs");
+            var mobility = catalog.FindMobility("nova_mob_legs1_rdrn");
+
+            Assert.NotNull(frame);
+            Assert.NotNull(firepower);
+            Assert.NotNull(mobility);
+
+            var viewModel = new GarageSlotViewModel(
+                "A-01",
+                "A-01",
+                "test",
+                "test",
+                hasCommittedLoadout: true,
+                hasDraftChanges: false,
+                isEmpty: false,
+                isSelected: true,
+                frameId: frame?.Id,
+                firepowerId: firepower?.Id,
+                mobilityId: mobility?.Id,
+                frameAlignment: frame?.Alignment,
+                firepowerAlignment: firepower?.Alignment,
+                mobilityAlignment: mobility?.Alignment,
+                mobilityUsesAssemblyPivot: mobility?.UseAssemblyPivot ?? false);
+
+            Assert.IsTrue(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
+        }
+
+        [Test]
         public void TryCreatePreviewRoot_PrefersMobilityGxTreeSocketForAssemblyPrefab()
         {
             var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
@@ -59,8 +102,8 @@ namespace Tests.Editor
                     frameId: "frame",
                     firepowerId: "fire",
                     mobilityId: "mobility",
-                    frameAlignment: AutoOkAlignment(Vector3.zero),
-                    firepowerAlignment: AutoOkAlignment(Vector3.zero, hasFrameTopSocket: true),
+                    frameAlignment: AutoOkAlignment(Vector3.zero, hasFrameTopSocket: true),
+                    firepowerAlignment: AutoOkAlignment(Vector3.zero),
                     mobilityAlignment: AutoOkAlignment(
                         new Vector3(0f, 0.34f, 0f),
                         hasGxTreeSocket: true,
@@ -116,8 +159,8 @@ namespace Tests.Editor
                     frameId: "frame",
                     firepowerId: "fire",
                     mobilityId: "mobility",
-                    frameAlignment: AutoOkAlignment(Vector3.zero),
-                    firepowerAlignment: AutoOkAlignment(Vector3.zero, hasFrameTopSocket: true),
+                    frameAlignment: AutoOkAlignment(Vector3.zero, hasFrameTopSocket: true),
+                    firepowerAlignment: AutoOkAlignment(Vector3.zero),
                     mobilityAlignment: AutoOkAlignment(new Vector3(0f, 0.34f, 0f)),
                     mobilityUsesAssemblyPivot: false);
 
@@ -133,6 +176,79 @@ namespace Tests.Editor
 
                 Assert.NotNull(mobility);
                 Assert.That(mobility.localPosition.y, Is.EqualTo(-0.34f).Within(0.0001f));
+            }
+            finally
+            {
+                if (previewRoot != null)
+                    Object.DestroyImmediate(previewRoot);
+
+                Object.DestroyImmediate(cameraObject);
+                Object.DestroyImmediate(framePrefab);
+                Object.DestroyImmediate(firepowerPrefab);
+                Object.DestroyImmediate(mobilityPrefab);
+            }
+        }
+
+        [Test]
+        public void HasPreviewAssemblyData_RequiresFrameTopSocket()
+        {
+            var viewModel = new GarageSlotViewModel(
+                "A-01",
+                "A-01",
+                "test",
+                "test",
+                hasCommittedLoadout: true,
+                hasDraftChanges: false,
+                isEmpty: false,
+                isSelected: true,
+                frameId: "frame",
+                firepowerId: "fire",
+                mobilityId: "mobility",
+                frameAlignment: AutoOkAlignment(Vector3.zero, hasFrameTopSocket: false),
+                firepowerAlignment: AutoOkAlignment(Vector3.zero),
+                mobilityAlignment: AutoOkAlignment(new Vector3(0f, 0.34f, 0f)),
+                mobilityUsesAssemblyPivot: false);
+
+            Assert.IsFalse(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
+        }
+
+        [Test]
+        public void TryCreatePreviewRoot_DoesNotUseImplicitPoseWhenAssemblyDataIsMissing()
+        {
+            var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
+            var framePrefab = new GameObject("FramePrefab");
+            var firepowerPrefab = new GameObject("FirepowerPrefab");
+            var mobilityPrefab = new GameObject("MobilityPrefab");
+            GameObject previewRoot = null;
+
+            try
+            {
+                var viewModel = new GarageSlotViewModel(
+                    "A-01",
+                    "A-01",
+                    "test",
+                    "test",
+                    hasCommittedLoadout: true,
+                    hasDraftChanges: false,
+                    isEmpty: false,
+                    isSelected: true,
+                    frameId: "frame",
+                    firepowerId: "fire",
+                    mobilityId: "mobility",
+                    frameAlignment: AutoOkAlignment(Vector3.zero, hasFrameTopSocket: true),
+                    firepowerAlignment: AutoOkAlignment(Vector3.zero),
+                    mobilityAlignment: AutoOkAlignment(Vector3.zero),
+                    mobilityUsesAssemblyPivot: false);
+
+                Assert.IsFalse(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
+                    viewModel,
+                    cameraObject.GetComponent<Camera>(),
+                    framePrefab,
+                    firepowerPrefab,
+                    mobilityPrefab,
+                    out previewRoot));
+
+                Assert.IsNull(previewRoot);
             }
             finally
             {

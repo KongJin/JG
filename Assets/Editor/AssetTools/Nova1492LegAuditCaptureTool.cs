@@ -15,26 +15,49 @@ namespace ProjectSD.EditorTools
         private const string AuditManifestPath = "artifacts/nova1492/gx_leg_audit_manifest.csv";
         private const string CaptureRootPath = "artifacts/nova1492/leg-captures";
         private const string ManualReviewPath = "artifacts/nova1492/gx_leg_manual_review.csv";
+        private const string BodyAuditManifestPath = "artifacts/nova1492/gx_body_audit_manifest.csv";
+        private const string BodyCaptureRootPath = "artifacts/nova1492/body-captures";
+        private const string BodyManualReviewPath = "artifacts/nova1492/gx_body_manual_review.csv";
+        private const string ArmAuditManifestPath = "artifacts/nova1492/gx_arm_audit_manifest.csv";
+        private const string ArmCaptureRootPath = "artifacts/nova1492/arm-captures";
+        private const string ArmManualReviewPath = "artifacts/nova1492/gx_arm_manual_review.csv";
         private const int CaptureSize = 384;
         private const int SheetCellSize = 256;
 
         [MenuItem("Tools/Nova1492/Capture Leg Audit Contact Sheet")]
         public static void CaptureLegAuditContactSheet()
         {
+            CaptureAuditContactSheet(AuditCaptureConfig.Leg);
+        }
+
+        [MenuItem("Tools/Nova1492/Capture Body Audit Contact Sheet")]
+        public static void CaptureBodyAuditContactSheet()
+        {
+            CaptureAuditContactSheet(AuditCaptureConfig.Body);
+        }
+
+        [MenuItem("Tools/Nova1492/Capture Arm Audit Contact Sheet")]
+        public static void CaptureArmAuditContactSheet()
+        {
+            CaptureAuditContactSheet(AuditCaptureConfig.Arm);
+        }
+
+        private static void CaptureAuditContactSheet(AuditCaptureConfig config)
+        {
             AssetDatabase.Refresh();
-            if (!File.Exists(AuditManifestPath))
+            if (!File.Exists(config.AuditManifestPath))
             {
-                throw new FileNotFoundException("Leg audit manifest was not found. Run GxObjConverter --stage audit first.", AuditManifestPath);
+                throw new FileNotFoundException(config.Title + " audit manifest was not found. Run GxObjConverter --stage audit first.", config.AuditManifestPath);
             }
 
-            Directory.CreateDirectory(CaptureRootPath);
-            var rows = ReadAuditRows(AuditManifestPath)
+            Directory.CreateDirectory(config.CaptureRootPath);
+            var rows = ReadAuditRows(config.AuditManifestPath)
                 .Where(row => !string.IsNullOrWhiteSpace(row.PartId))
                 .OrderBy(row => row.PartId, StringComparer.Ordinal)
                 .ToList();
             if (rows.Count == 0)
             {
-                throw new InvalidOperationException("Leg audit manifest contains no rows to capture.");
+                throw new InvalidOperationException(config.Title + " audit manifest contains no rows to capture.");
             }
 
             var context = CreateRenderContext();
@@ -47,7 +70,7 @@ namespace ProjectSD.EditorTools
                     var perView = new List<Texture2D>();
                     foreach (var view in CaptureView.Views)
                     {
-                        var capture = CaptureRow(context, row, view, failures);
+                        var capture = CaptureRow(context, row, view, failures, config);
                         if (capture != null)
                         {
                             perView.Add(capture);
@@ -65,14 +88,14 @@ namespace ProjectSD.EditorTools
                 DestroyRenderContext(context);
             }
 
-            WriteContactSheet(sheetRows);
-            WriteManualReviewTemplate(rows);
-            WriteCaptureReport(rows, failures);
+            WriteContactSheet(sheetRows, config);
+            WriteManualReviewTemplate(rows, config);
+            WriteCaptureReport(rows, failures, config);
             AssetDatabase.Refresh();
-            Debug.Log("[Nova1492] Leg audit captures complete. rows=" + rows.Count + " failures=" + failures.Count + " root=" + CaptureRootPath);
+            Debug.Log("[Nova1492] " + config.Title + " audit captures complete. rows=" + rows.Count + " failures=" + failures.Count + " root=" + config.CaptureRootPath);
         }
 
-        private static Texture2D CaptureRow(RenderContext context, AuditRow row, CaptureView view, List<string> failures)
+        private static Texture2D CaptureRow(RenderContext context, AuditRow row, CaptureView view, List<string> failures, AuditCaptureConfig config)
         {
             var model = AssetDatabase.LoadAssetAtPath<GameObject>(row.ObjPath);
             if (model == null)
@@ -106,7 +129,7 @@ namespace ProjectSD.EditorTools
                 texture.Apply();
                 RenderTexture.active = null;
 
-                var path = Path.Combine(CaptureRootPath, row.PartId + "-" + view.Name + ".png");
+                var path = Path.Combine(config.CaptureRootPath, row.PartId + "-" + view.Name + ".png");
                 File.WriteAllBytes(path, texture.EncodeToPNG());
                 return texture;
             }
@@ -244,7 +267,7 @@ namespace ProjectSD.EditorTools
             return output;
         }
 
-        private static void WriteContactSheet(IReadOnlyList<Texture2D[]> rows)
+        private static void WriteContactSheet(IReadOnlyList<Texture2D[]> rows, AuditCaptureConfig config)
         {
             if (rows.Count == 0)
             {
@@ -277,13 +300,13 @@ namespace ProjectSD.EditorTools
             }
 
             sheet.Apply();
-            File.WriteAllBytes(Path.Combine(CaptureRootPath, "gx-leg-contact-sheet.png"), sheet.EncodeToPNG());
+            File.WriteAllBytes(Path.Combine(config.CaptureRootPath, config.ContactSheetFileName), sheet.EncodeToPNG());
             Object.DestroyImmediate(sheet);
         }
 
-        private static void WriteManualReviewTemplate(IReadOnlyList<AuditRow> rows)
+        private static void WriteManualReviewTemplate(IReadOnlyList<AuditRow> rows, AuditCaptureConfig config)
         {
-            using var writer = new StreamWriter(ManualReviewPath, false, new UTF8Encoding(false));
+            using var writer = new StreamWriter(config.ManualReviewPath, false, new UTF8Encoding(false));
             writer.WriteLine("part_id,display_name,source_relative_path,audit_verdict,audit_flags,review_result,notes");
             foreach (var row in rows)
             {
@@ -300,18 +323,18 @@ namespace ProjectSD.EditorTools
             }
         }
 
-        private static void WriteCaptureReport(IReadOnlyList<AuditRow> rows, IReadOnlyList<string> failures)
+        private static void WriteCaptureReport(IReadOnlyList<AuditRow> rows, IReadOnlyList<string> failures, AuditCaptureConfig config)
         {
-            var path = Path.Combine(CaptureRootPath, "gx-leg-capture-report.md");
+            var path = Path.Combine(config.CaptureRootPath, config.CaptureReportFileName);
             using var writer = new StreamWriter(path, false, new UTF8Encoding(false));
-            writer.WriteLine("# Nova1492 Leg Capture Report");
+            writer.WriteLine("# Nova1492 " + config.Title + " Capture Report");
             writer.WriteLine();
             writer.WriteLine($"> generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
             writer.WriteLine();
             writer.WriteLine($"- audit rows: {rows.Count}");
             writer.WriteLine($"- capture failures: {failures.Count}");
-            writer.WriteLine($"- contact sheet: `{Path.Combine(CaptureRootPath, "gx-leg-contact-sheet.png").Replace('\\', '/')}`");
-            writer.WriteLine($"- manual review: `{ManualReviewPath}`");
+            writer.WriteLine($"- contact sheet: `{Path.Combine(config.CaptureRootPath, config.ContactSheetFileName).Replace('\\', '/')}`");
+            writer.WriteLine($"- manual review: `{config.ManualReviewPath}`");
             if (failures.Count == 0)
             {
                 return;
@@ -439,6 +462,56 @@ namespace ProjectSD.EditorTools
             public Camera Camera { get; }
             public RenderTexture RenderTexture { get; }
             public TextMesh Overlay { get; }
+        }
+
+        private sealed class AuditCaptureConfig
+        {
+            private AuditCaptureConfig(
+                string title,
+                string auditManifestPath,
+                string captureRootPath,
+                string manualReviewPath,
+                string contactSheetFileName,
+                string captureReportFileName)
+            {
+                Title = title;
+                AuditManifestPath = auditManifestPath;
+                CaptureRootPath = captureRootPath;
+                ManualReviewPath = manualReviewPath;
+                ContactSheetFileName = contactSheetFileName;
+                CaptureReportFileName = captureReportFileName;
+            }
+
+            public string Title { get; }
+            public string AuditManifestPath { get; }
+            public string CaptureRootPath { get; }
+            public string ManualReviewPath { get; }
+            public string ContactSheetFileName { get; }
+            public string CaptureReportFileName { get; }
+
+            public static readonly AuditCaptureConfig Leg = new(
+                "Leg",
+                Nova1492LegAuditCaptureTool.AuditManifestPath,
+                Nova1492LegAuditCaptureTool.CaptureRootPath,
+                Nova1492LegAuditCaptureTool.ManualReviewPath,
+                "gx-leg-contact-sheet.png",
+                "gx-leg-capture-report.md");
+
+            public static readonly AuditCaptureConfig Body = new(
+                "Body",
+                Nova1492LegAuditCaptureTool.BodyAuditManifestPath,
+                Nova1492LegAuditCaptureTool.BodyCaptureRootPath,
+                Nova1492LegAuditCaptureTool.BodyManualReviewPath,
+                "gx-body-contact-sheet.png",
+                "gx-body-capture-report.md");
+
+            public static readonly AuditCaptureConfig Arm = new(
+                "Arm",
+                Nova1492LegAuditCaptureTool.ArmAuditManifestPath,
+                Nova1492LegAuditCaptureTool.ArmCaptureRootPath,
+                Nova1492LegAuditCaptureTool.ArmManualReviewPath,
+                "gx-arm-contact-sheet.png",
+                "gx-arm-capture-report.md");
         }
 
         private sealed class CaptureView

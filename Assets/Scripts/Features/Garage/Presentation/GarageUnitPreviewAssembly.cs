@@ -5,11 +5,7 @@ namespace Features.Garage.Presentation
 {
     internal static class GarageUnitPreviewAssembly
     {
-        private static readonly Vector3 FallbackFramePosition = Vector3.zero;
-        private static readonly Vector3 FallbackWeaponPosition = new Vector3(0f, 0.62f, 0f);
-        private static readonly Vector3 FallbackWeaponEuler = Vector3.zero;
         private static readonly Vector3 FirepowerEulerCorrection = new Vector3(0f, 0f, -90f);
-        private static readonly Vector3 FallbackMobilityPosition = new Vector3(0f, -0.58f, 0f);
 
         public static bool HasCompleteLoadout(GarageSlotViewModel viewModel)
         {
@@ -17,6 +13,16 @@ namespace Features.Garage.Presentation
                    !string.IsNullOrWhiteSpace(viewModel.FrameId) &&
                    !string.IsNullOrWhiteSpace(viewModel.FirepowerId) &&
                    !string.IsNullOrWhiteSpace(viewModel.MobilityId);
+        }
+
+        public static bool HasPreviewAssemblyData(GarageSlotViewModel viewModel)
+        {
+            return HasCompleteLoadout(viewModel) &&
+                   CanApply(viewModel.FrameAlignment) &&
+                   CanApply(viewModel.FirepowerAlignment) &&
+                   CanApply(viewModel.MobilityAlignment) &&
+                   viewModel.FrameAlignment.HasFrameTopSocket &&
+                   HasMobilitySocket(viewModel.MobilityAlignment, viewModel.MobilityUsesAssemblyPivot);
         }
 
         public static bool TryCreatePreviewRoot(
@@ -28,7 +34,7 @@ namespace Features.Garage.Presentation
             out GameObject previewRoot)
         {
             previewRoot = null;
-            if (!HasCompleteLoadout(viewModel) ||
+            if (!HasPreviewAssemblyData(viewModel) ||
                 previewCamera == null ||
                 framePrefab == null ||
                 firepowerPrefab == null ||
@@ -59,8 +65,7 @@ namespace Features.Garage.Presentation
                 ResolveAttachedPartPosition(
                     viewModel.FrameAlignment,
                     viewModel.FirepowerAlignment,
-                    firepowerEuler,
-                    FallbackWeaponPosition),
+                    firepowerEuler),
                 firepowerEuler);
 
             var mobilityObj = Object.Instantiate(mobilityPrefab);
@@ -71,9 +76,8 @@ namespace Features.Garage.Presentation
                 ResolveMobilityPosition(
                     viewModel.FrameAlignment,
                     viewModel.MobilityAlignment,
-                    viewModel.MobilityUsesAssemblyPivot,
-                    FallbackMobilityPosition),
-                ResolvePartEuler(viewModel.MobilityAlignment, Vector3.zero));
+                    viewModel.MobilityUsesAssemblyPivot),
+                viewModel.MobilityAlignment.SocketEuler);
 
             return true;
         }
@@ -85,24 +89,16 @@ namespace Features.Garage.Presentation
 
         private static Vector3 ResolveFramePosition(GaragePanelCatalog.PartAlignment frameAlignment)
         {
-            return CanApply(frameAlignment)
-                ? frameAlignment.PivotOffset
-                : FallbackFramePosition;
+            return frameAlignment.PivotOffset;
         }
 
         private static Vector3 ResolveAttachedPartPosition(
             GaragePanelCatalog.PartAlignment frameAlignment,
             GaragePanelCatalog.PartAlignment partAlignment,
-            Vector3 partEuler,
-            Vector3 fallbackPosition)
+            Vector3 partEuler)
         {
-            if (!CanApply(frameAlignment) || !CanApply(partAlignment))
-                return fallbackPosition;
-
             var framePosition = ResolveFramePosition(frameAlignment);
-            if (!TryResolveFrameTopSocket(frameAlignment, framePosition, out var frameSocket))
-                return fallbackPosition;
-
+            var frameSocket = framePosition + frameAlignment.FrameTopSocketOffset;
             var rotatedSocketOffset = Quaternion.Euler(partEuler) * partAlignment.SocketOffset;
             return frameSocket - rotatedSocketOffset;
         }
@@ -110,12 +106,8 @@ namespace Features.Garage.Presentation
         private static Vector3 ResolveMobilityPosition(
             GaragePanelCatalog.PartAlignment frameAlignment,
             GaragePanelCatalog.PartAlignment mobilityAlignment,
-            bool useAssemblyPivot,
-            Vector3 fallbackPosition)
+            bool useAssemblyPivot)
         {
-            if (!CanApply(frameAlignment) || !CanApply(mobilityAlignment))
-                return fallbackPosition;
-
             var framePosition = ResolveFramePosition(frameAlignment);
             var rotatedSocketOffset = Quaternion.Euler(mobilityAlignment.SocketEuler) *
                                       ResolveMobilitySocketOffset(mobilityAlignment, useAssemblyPivot);
@@ -140,39 +132,24 @@ namespace Features.Garage.Presentation
                 : Vector3.zero;
         }
 
-        private static Vector3 ResolvePartEuler(GaragePanelCatalog.PartAlignment partAlignment, Vector3 fallbackEuler)
-        {
-            return CanApply(partAlignment)
-                ? partAlignment.SocketEuler
-                : fallbackEuler;
-        }
-
         private static Vector3 ResolveFirepowerEuler(GaragePanelCatalog.PartAlignment firepowerAlignment)
         {
-            if (!CanApply(firepowerAlignment))
-                return FallbackWeaponEuler;
-
             return firepowerAlignment.SocketEuler + FirepowerEulerCorrection;
-        }
-
-        private static bool TryResolveFrameTopSocket(
-            GaragePanelCatalog.PartAlignment alignment,
-            Vector3 framePosition,
-            out Vector3 frameSocket)
-        {
-            if (alignment.HasFrameTopSocket)
-            {
-                frameSocket = framePosition + alignment.FrameTopSocketOffset;
-                return true;
-            }
-
-            frameSocket = default;
-            return false;
         }
 
         private static bool CanApply(GaragePanelCatalog.PartAlignment alignment)
         {
             return alignment != null && alignment.CanApply;
+        }
+
+        private static bool HasMobilitySocket(
+            GaragePanelCatalog.PartAlignment mobilityAlignment,
+            bool useAssemblyPivot)
+        {
+            return useAssemblyPivot ||
+                   mobilityAlignment.HasGxTreeSocket ||
+                   mobilityAlignment.SocketOffset.sqrMagnitude > 0.000001f ||
+                   mobilityAlignment.HasXfiAttachSocket;
         }
     }
 }

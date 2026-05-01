@@ -7,7 +7,7 @@ namespace Tests.Editor
     public sealed class FirebaseAuthResponseMapperDirectTests
     {
         [Test]
-        public void FromTokenResponse_UsesFallbackUid_AndComputesExpiry()
+        public void FromTokenResponse_UsesCurrentUidWhenRefreshResponseOmitsUid_AndComputesExpiry()
         {
             var response = new TokenResponse
             {
@@ -17,11 +17,11 @@ namespace Tests.Editor
                 user_id = string.Empty
             };
 
-            var snapshot = FirebaseAuthResponseMapper.FromTokenResponse(response, "fallback-uid");
+            var snapshot = FirebaseAuthResponseMapper.FromTokenResponse(response, "current-uid");
 
             Assert.AreEqual("id-token", snapshot.IdToken);
             Assert.AreEqual("refresh-token", snapshot.RefreshToken);
-            Assert.AreEqual("fallback-uid", snapshot.Uid);
+            Assert.AreEqual("current-uid", snapshot.Uid);
             Assert.Greater(snapshot.ExpiryUnixMs, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         }
     }

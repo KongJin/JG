@@ -132,13 +132,13 @@ namespace Features.Account.Infrastructure
             };
         }
 
-        public static AccountSessionSnapshot FromTokenResponse(TokenResponse response, string fallbackUid)
+        public static AccountSessionSnapshot FromTokenResponse(TokenResponse response, string currentUid)
         {
             return new AccountSessionSnapshot
             {
                 IdToken = response.id_token,
                 RefreshToken = response.refresh_token,
-                Uid = string.IsNullOrWhiteSpace(response.user_id) ? fallbackUid : response.user_id,
+                Uid = string.IsNullOrWhiteSpace(response.user_id) ? currentUid : response.user_id,
                 ExpiryUnixMs = ComputeExpiry(response.expires_in)
             };
         }

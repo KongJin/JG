@@ -6,13 +6,16 @@ using Shared.Kernel;
 using Shared.Math;
 using Shared.Runtime;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Features.Unit.Infrastructure
 {
     public sealed class BattleEntityAttackDriver : MonoBehaviour
     {
-        [SerializeField] private float _fallbackAttackIntervalSeconds = 1f;
-        [SerializeField] private float _fallbackAttackRangePadding = 0.25f;
+        [FormerlySerializedAs("_fallbackAttackIntervalSeconds")]
+        [SerializeField] private float _attackIntervalWhenSpeedMissingSeconds = 1f;
+        [FormerlySerializedAs("_fallbackAttackRangePadding")]
+        [SerializeField] private float _attackRangePadding = 0.25f;
 
         private CombatSetup _combatSetup;
         private BattleEntity _battleEntity;
@@ -52,7 +55,7 @@ namespace Features.Unit.Infrastructure
                 _battleEntity.Id);
 
             var attackSpeed = _battleEntity.UnitSpec.FinalAttackSpeed;
-            var interval = attackSpeed > 0f ? 1f / attackSpeed : _fallbackAttackIntervalSeconds;
+            var interval = attackSpeed > 0f ? 1f / attackSpeed : _attackIntervalWhenSpeedMissingSeconds;
             _nextAttackTime = Time.time + Mathf.Max(0.1f, interval);
         }
 
@@ -60,7 +63,7 @@ namespace Features.Unit.Infrastructure
         {
             targetId = default;
 
-            var attackRange = Mathf.Max(0.5f, _battleEntity.UnitSpec.FinalRange + _fallbackAttackRangePadding);
+            var attackRange = Mathf.Max(0.5f, _battleEntity.UnitSpec.FinalRange + _attackRangePadding);
             var anchorRange = _battleEntity.UnitSpec.FinalAnchorRange;
             var queryRange = anchorRange > 0f ? Mathf.Min(attackRange, anchorRange) : attackRange;
             var hits = Physics.OverlapSphere(

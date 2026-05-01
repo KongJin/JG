@@ -1,0 +1,5 @@
+interface:
+  display_name: "JG Game Design"
+  short_description: "Route JG game, world, unit/module, and MVP design decisions"
+  default_prompt: "Use $jg-game-design for JG product/game-design judgment before implementation."
+

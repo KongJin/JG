@@ -4,7 +4,7 @@ namespace Features.Wave.Infrastructure
 {
     /// <summary>
     /// Combined hostile target position query that checks BattleEntities before Players.
-    /// Used as the unit -> player fallback after core targeting.
+    /// Used as the unit-first target chain after core targeting.
     /// </summary>
     public sealed class HostilePositionQuery : IPlayerPositionQuery
     {

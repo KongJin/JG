@@ -17,12 +17,6 @@ namespace Features.Player.Infrastructure
         private Vector3 _networkPosition;
         private Quaternion _networkRotation;
 
-        private const string HealthKey = "hp";
-        private const string MaxHealthKey = "maxHp";
-        private const string EnergyKey = "energy";
-        private const string MaxEnergyKey = "maxEnergy";
-        private const string LifeStateKey = "lifeState";
-
         public bool IsMine => photonView.IsMine;
         public DomainEntityId StablePlayerId => new DomainEntityId(GetStablePlayerIdValue());
 
@@ -70,35 +64,24 @@ namespace Features.Player.Infrastructure
         {
             if (photonView == null || !photonView.IsMine) return;
 
-            var props = new Hashtable
-            {
-                { HealthKey, currentHp },
-                { MaxHealthKey, maxHp }
-            };
-            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(
+                PlayerNetworkPropertyReader.CreateHealthProperties(currentHp, maxHp));
         }
 
         public void SyncEnergy(DomainEntityId targetId, float currentEnergy, float maxEnergy)
         {
             if (photonView == null || !photonView.IsMine) return;
 
-            var props = new Hashtable
-            {
-                { EnergyKey, currentEnergy },
-                { MaxEnergyKey, maxEnergy }
-            };
-            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(
+                PlayerNetworkPropertyReader.CreateEnergyProperties(currentEnergy, maxEnergy));
         }
 
         public void SyncLifeState(DomainEntityId playerId, LifeState state)
         {
             if (photonView == null || !photonView.IsMine) return;
 
-            var props = new Hashtable
-            {
-                { LifeStateKey, (int)state }
-            };
-            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(
+                PlayerNetworkPropertyReader.CreateLifeStateProperties(state));
         }
 
         public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, Hashtable changedProps)
@@ -111,30 +94,20 @@ namespace Features.Player.Infrastructure
 
             var playerId = new DomainEntityId("player-" + targetPlayer.ActorNumber);
 
-            if (changedProps.TryGetValue(HealthKey, out var hpRaw) && hpRaw is float hp
-                && changedProps.TryGetValue(MaxHealthKey, out var maxHpRaw) && maxHpRaw is float maxHp)
-            {
-                OnHealthSynced?.Invoke(playerId, hp, maxHp);
-            }
-            else if (targetPlayer.CustomProperties.TryGetValue(HealthKey, out var hpFallback) && hpFallback is float hpF
-                     && changedProps.ContainsKey(HealthKey))
-            {
-                var mhp = targetPlayer.CustomProperties.TryGetValue(MaxHealthKey, out var mhpRaw) && mhpRaw is float mhpF ? mhpF : 100f;
-                OnHealthSynced?.Invoke(playerId, hpF, mhp);
-            }
+            if (PlayerNetworkPropertyReader.TryReadHealthChange(
+                    changedProps,
+                    targetPlayer.CustomProperties,
+                    out var health))
+                OnHealthSynced?.Invoke(playerId, health.Current, health.Max);
 
-            if (changedProps.TryGetValue(EnergyKey, out var energyRaw) && energyRaw is float energy)
-            {
-                var maxEnergy = changedProps.TryGetValue(MaxEnergyKey, out var maxEnergyRaw) && maxEnergyRaw is float me
-                    ? me
-                    : (targetPlayer.CustomProperties.TryGetValue(MaxEnergyKey, out var meFallback) && meFallback is float meF ? meF : 100f);
-                OnEnergySynced?.Invoke(playerId, energy, maxEnergy);
-            }
+            if (PlayerNetworkPropertyReader.TryReadEnergyChange(
+                    changedProps,
+                    targetPlayer.CustomProperties,
+                    out var energy))
+                OnEnergySynced?.Invoke(playerId, energy.Current, energy.Max);
 
-            if (changedProps.TryGetValue(LifeStateKey, out var lsRaw) && lsRaw is int lsInt)
-            {
-                OnLifeStateSynced?.Invoke(playerId, (LifeState)lsInt);
-            }
+            if (PlayerNetworkPropertyReader.TryReadLifeState(changedProps, out var lifeState))
+                OnLifeStateSynced?.Invoke(playerId, lifeState);
         }
 
         [PunRPC]
@@ -183,22 +156,14 @@ namespace Features.Player.Infrastructure
             var props = photonView.Owner.CustomProperties;
             var playerId = StablePlayerId;
 
-            if (props.TryGetValue(HealthKey, out var hpRaw) && hpRaw is float hp
-                && props.TryGetValue(MaxHealthKey, out var maxHpRaw) && maxHpRaw is float maxHp)
-            {
-                OnHealthSynced?.Invoke(playerId, hp, maxHp);
-            }
+            if (PlayerNetworkPropertyReader.TryReadHydratedHealth(props, out var health))
+                OnHealthSynced?.Invoke(playerId, health.Current, health.Max);
 
-            if (props.TryGetValue(EnergyKey, out var energyRaw) && energyRaw is float energy)
-            {
-                var maxEnergy = props.TryGetValue(MaxEnergyKey, out var meRaw) && meRaw is float me ? me : 100f;
-                OnEnergySynced?.Invoke(playerId, energy, maxEnergy);
-            }
+            if (PlayerNetworkPropertyReader.TryReadHydratedEnergy(props, out var energy))
+                OnEnergySynced?.Invoke(playerId, energy.Current, energy.Max);
 
-            if (props.TryGetValue(LifeStateKey, out var lsRaw) && lsRaw is int lsInt)
-            {
-                OnLifeStateSynced?.Invoke(playerId, (LifeState)lsInt);
-            }
+            if (PlayerNetworkPropertyReader.TryReadLifeState(props, out var lifeState))
+                OnLifeStateSynced?.Invoke(playerId, lifeState);
         }
 
         private string GetStablePlayerIdValue()

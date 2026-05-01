@@ -105,7 +105,7 @@ namespace Features.Garage.Presentation
                 ? BuildPartListTitle(slot)
                 : partList.SelectedNameText;
             _partPreviewMetaLabel.text = BuildPartPreviewMeta(slot, partList?.SelectedDetailText);
-            _partPreviewLabel.text = BuildPartPreviewFallbackText(slot);
+            _partPreviewLabel.text = BuildPartPreviewPlaceholderText(slot);
         }
 
         private void EnsurePartRowCapacity(int requiredCount)
@@ -206,7 +206,7 @@ namespace Features.Garage.Presentation
             return lineBreak >= 0 ? selectedDetailText.Substring(0, lineBreak) : selectedDetailText;
         }
 
-        private static string BuildPartPreviewFallbackText(GarageNovaPartPanelSlot slot)
+        private static string BuildPartPreviewPlaceholderText(GarageNovaPartPanelSlot slot)
         {
             return slot switch
             {

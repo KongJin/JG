@@ -116,8 +116,6 @@ $bootstrap = Draw-Group "Bootstrap" "Lobby / Bootstrap" @(
 
 $presentation = Draw-Group "Presentation" "Lobby / Presentation" @(
     "1:1 LobbyView -> LobbyInputHandler",
-    "1:1 LobbyView -> RoomListView",
-    "1:1 LobbyView -> RoomDetailView",
     "1:N LobbyInputHandler -> UseCases"
 ) 50 500 490 220
 
