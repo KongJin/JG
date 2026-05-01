@@ -19,6 +19,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0510897, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm1_sz.xfi
     xfiHeader: 4
@@ -43,6 +46,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0969622, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm10_broz.xfi
     xfiHeader: 4
@@ -67,6 +73,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0427981, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm11_poms.xfi
     xfiHeader: 4
@@ -91,6 +100,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0426601, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm12_onms.xfi
     xfiHeader: 4
@@ -115,6 +127,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1372067, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm13_prs.xfi
     xfiHeader: 4
@@ -139,6 +154,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1469099, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm15_hdkn.xfi
     xfiHeader: 4
@@ -163,6 +181,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0936107, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm17_prrs.xfi
     xfiHeader: 4
@@ -187,6 +208,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1107614, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm18_knst.xfi
     xfiHeader: 4
@@ -211,6 +235,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0806743, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm19_roz.xfi
     xfiHeader: 4
@@ -235,6 +262,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1085792, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm20_rkto.xfi
     xfiHeader: 4
@@ -259,6 +289,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0924771, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm21_nmsz.xfi
     xfiHeader: 4
@@ -283,6 +316,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0807894, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm22_bsrsk.xfi
     xfiHeader: 4
@@ -301,36 +337,15 @@ MonoBehaviour:
     xfiSocketName: weapon.direction
     qualityFlag: auto_ok
     reviewReason: 
-  - partId: nova_fire_arm23_rkog
-    slot: 1
-    normalizedScale: 0.3353419
-    pivotOffset: {x: 0, y: 0, z: 0}
-    socketOffset: {x: 0, y: -0.5259626, z: 0}
-    socketEuler: {x: 0, y: 0, z: 90}
-    hasXfiMetadata: 1
-    xfiPath: datan/common/arm23_rkog.xfi
-    xfiHeader: 4
-    xfiHeaderKind: numeric_slot_code
-    xfiAttachSlot: 
-    xfiAttachVariant: 
-    xfiTransformCount: 0
-    xfiTransformTranslations: 
-    xfiDirectionRangeCount: 7
-    xfiDirectionRanges: 0:90:105|1:15:45|2:0:15|3:110:120|4:75:90|5:105:110|6:45:75
-    hasXfiAttachSocket: 0
-    xfiAttachSocketOffset: {x: 0, y: 0, z: 0}
-    hasFrameTopSocket: 0
-    frameTopSocketOffset: {x: 0, y: 0, z: 0}
-    xfiSocketQuality: xfi_weapon_direction_only
-    xfiSocketName: weapon.direction
-    qualityFlag: auto_ok
-    reviewReason: 
   - partId: nova_fire_arm24_bzk
     slot: 1
     normalizedScale: 0.3353419
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.2894958, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm24_bzk.xfi
     xfiHeader: 4
@@ -355,6 +370,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0547813, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm25_skoob.xfi
     xfiHeader: 4
@@ -379,6 +397,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1312413, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm26_srmd.xfi
     xfiHeader: 4
@@ -403,6 +424,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.2432182, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm27_stst.xfi
     xfiHeader: 4
@@ -427,6 +451,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0520131, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm28_ozs.xfi
     xfiHeader: 4
@@ -451,6 +478,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1255474, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm29_sdbt.xfi
     xfiHeader: 4
@@ -475,6 +505,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0413302, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm30_sm.xfi
     xfiHeader: 4
@@ -499,6 +532,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0967378, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm31_skokr.xfi
     xfiHeader: 4
@@ -523,6 +559,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1418465, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm32_sppoo.xfi
     xfiHeader: 4
@@ -547,6 +586,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0545097, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm33_hkoo.xfi
     xfiHeader: 4
@@ -571,6 +613,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0899652, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm34_skpo.xfi
     xfiHeader: 4
@@ -595,6 +640,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0484822, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm35_ons.xfi
     xfiHeader: 4
@@ -619,6 +667,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.137656, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm36_bnso.xfi
     xfiHeader: 4
@@ -643,6 +694,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0852944, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm37_sts.xfi
     xfiHeader: 4
@@ -667,6 +721,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.3913227, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm39_hmsk.xfi
     xfiHeader: 4
@@ -691,6 +748,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0667719, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm4_bk.xfi
     xfiHeader: 4
@@ -715,6 +775,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1014491, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm41_onoo.xfi
     xfiHeader: 4
@@ -739,6 +802,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0787962, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm43_przso.xfi
     xfiHeader: 4
@@ -763,6 +829,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.3597927, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm46_dbkr.xfi
     xfiHeader: 4
@@ -787,6 +856,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.2539963, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm55_bbs.xfi
     xfiHeader: 4
@@ -811,6 +883,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1406163, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/arm8_do.xfi
     xfiHeader: 4
@@ -835,6 +910,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0936107, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/g_arm56_prrs.xfi
     xfiHeader: 4
@@ -859,6 +937,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1372067, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/g_arm57_prs.xfi
     xfiHeader: 4
@@ -883,6 +964,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.3597927, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/g_arm58_dbkr.xfi
     xfiHeader: 4
@@ -907,6 +991,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.048923, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm59_dmsz.xfi
     xfiHeader: 4
@@ -931,6 +1018,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.2274233, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm60_mgbr.xfi
     xfiHeader: 4
@@ -955,6 +1045,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0807894, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm61_bsrsk.xfi
     xfiHeader: 4
@@ -979,6 +1072,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1107614, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm62_knst.xfi
     xfiHeader: 4
@@ -1003,6 +1099,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.059933, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm63_krst.xfi
     xfiHeader: 4
@@ -1027,6 +1126,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1538989, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm64_hdkn.xfi
     xfiHeader: 4
@@ -1051,6 +1153,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.2575901, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm65_bbs.xfi
     xfiHeader: 4
@@ -1075,6 +1180,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0887396, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm66_skpo.xfi
     xfiHeader: 4
@@ -1099,6 +1207,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0852944, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm67_sts.xfi
     xfiHeader: 4
@@ -1123,6 +1234,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0806743, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm68_roz.xfi
     xfiHeader: 4
@@ -1147,6 +1261,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.2508624, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm69_rkog.xfi
     xfiHeader: 4
@@ -1171,6 +1288,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.3584988, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_arm70_hmsk.xfi
     xfiHeader: 4
@@ -1195,6 +1315,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.3913227, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/s_arm50_hmsk.xfi
     xfiHeader: 4
@@ -1219,6 +1342,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.2894958, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/s_arm52_bzk.xfi
     xfiHeader: 4
@@ -1243,6 +1369,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.0484822, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/s_arm53_ons.xfi
     xfiHeader: 4
@@ -1267,6 +1396,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: -0.1014491, z: 0}
     socketEuler: {x: 0, y: 0, z: 90}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/s_arm54_onoo.xfi
     xfiHeader: 4
@@ -1291,6 +1423,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0795848, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body1_sz.xfi
     xfiHeader: 1
@@ -1315,6 +1450,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0920147, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body10_skdr.xfi
     xfiHeader: 1
@@ -1339,6 +1477,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1023958, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body11_kn.xfi
     xfiHeader: 1
@@ -1363,6 +1504,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1619919, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body12_kt.xfi
     xfiHeader: 1
@@ -1387,6 +1531,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1548452, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body13_scro.xfi
     xfiHeader: 1
@@ -1411,6 +1558,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1195774, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body14_trb.xfi
     xfiHeader: 1
@@ -1435,6 +1585,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1138724, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body15_znr.xfi
     xfiHeader: 1
@@ -1459,6 +1612,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1187521, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body16_kmdo.xfi
     xfiHeader: 1
@@ -1483,6 +1639,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0875318, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body17_rzmt.xfi
     xfiHeader: 1
@@ -1507,6 +1666,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0911418, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body18_brgod.xfi
     xfiHeader: 1
@@ -1531,6 +1693,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.11005, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body19_spd.xfi
     xfiHeader: 1
@@ -1555,6 +1720,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0963153, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body2_prt.xfi
     xfiHeader: 1
@@ -1579,6 +1747,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1530674, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body20_prsd.xfi
     xfiHeader: 1
@@ -1603,6 +1774,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1244213, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body21_rzo.xfi
     xfiHeader: 1
@@ -1627,6 +1801,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1380248, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body22_kdd.xfi
     xfiHeader: 1
@@ -1651,6 +1828,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0996486, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body23_ms.xfi
     xfiHeader: 1
@@ -1675,6 +1855,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1169251, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body24_grbs.xfi
     xfiHeader: 1
@@ -1699,6 +1882,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1347363, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body25_bosro.xfi
     xfiHeader: 1
@@ -1723,6 +1909,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1080843, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body26_kp.xfi
     xfiHeader: 1
@@ -1747,6 +1936,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.147504, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body27_zns.xfi
     xfiHeader: 1
@@ -1771,6 +1963,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0984724, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body28_kp2.xfi
     xfiHeader: 1
@@ -1795,6 +1990,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1153729, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body3_bgd.xfi
     xfiHeader: 1
@@ -1819,6 +2017,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1742857, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body32_brps.xfi
     xfiHeader: 1
@@ -1843,6 +2044,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.127422, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body35_trbn.xfi
     xfiHeader: 1
@@ -1867,6 +2071,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0898266, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body36_rzn.xfi
     xfiHeader: 1
@@ -1891,6 +2098,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1090289, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body37_ktn.xfi
     xfiHeader: 1
@@ -1915,6 +2125,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0764207, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body38_qrso.xfi
     xfiHeader: 1
@@ -1939,6 +2152,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.103897, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body4_kpr.xfi
     xfiHeader: 1
@@ -1963,6 +2179,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1497332, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body5_skms.xfi
     xfiHeader: 1
@@ -1987,6 +2206,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0770195, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body6_skd.xfi
     xfiHeader: 1
@@ -2011,6 +2233,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1112538, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body7_mops.xfi
     xfiHeader: 1
@@ -2035,6 +2260,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1336315, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body8_brc.xfi
     xfiHeader: 1
@@ -2059,6 +2287,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0839822, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/body9_btro.xfi
     xfiHeader: 1
@@ -2083,6 +2314,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0915839, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body39_brgod.xfi
     xfiHeader: 1
@@ -2107,6 +2341,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1475737, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body40_zns.xfi
     xfiHeader: 1
@@ -2131,6 +2368,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1199644, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body41_kmdo.xfi
     xfiHeader: 1
@@ -2155,6 +2395,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1440811, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body42_kdd.xfi
     xfiHeader: 1
@@ -2179,6 +2422,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0961563, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body43_prt.xfi
     xfiHeader: 1
@@ -2203,6 +2449,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1743885, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body44_brps.xfi
     xfiHeader: 1
@@ -2227,6 +2476,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1044781, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body47_kp.xfi
     xfiHeader: 1
@@ -2251,6 +2503,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1169251, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body48_grbs.xfi
     xfiHeader: 1
@@ -2275,6 +2530,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.0887398, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body49_rzmt.xfi
     xfiHeader: 1
@@ -2299,6 +2557,9 @@ MonoBehaviour:
     pivotOffset: {x: 0, y: 0, z: 0}
     socketOffset: {x: 0, y: 0.1153729, z: 0}
     socketEuler: {x: 0, y: 0, z: 0}
+    hasGxTreeSocket: 0
+    gxTreeSocketOffset: {x: 0, y: 0, z: 0}
+    gxTreeSocketName: 
     hasXfiMetadata: 1
     xfiPath: datan/common/n_body50_bgd.xfi
     xfiHeader: 1

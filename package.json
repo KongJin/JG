@@ -19,6 +19,8 @@
     "workflow:unity-test-preflight": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\workflow\\Test-UnityCliRunTestsPreflight.ps1",
     "workflow:unity-editmode-tests": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\workflow\\Invoke-UnityEditModeTests.ps1",
     "workflow:next": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\workflow\\Get-NextWorkSuggestion.ps1",
+    "audio:mcp:build": "tsc -p tools/audio-mcp/tsconfig.json",
+    "audio:mcp:test": "npm run --silent audio:mcp:build && node --test tools/audio-mcp/tests/audioPipeline.test.mjs",
     "stitch:help": "node ./tools/stitch/stitch-inspect.mjs help",
     "stitch:list:projects": "node ./tools/stitch/stitch-inspect.mjs list-projects",
     "stitch:create:project": "node ./tools/stitch/stitch-inspect.mjs create-project",
@@ -35,6 +37,10 @@
   "description": "",
   "devDependencies": {
     "@google/stitch-sdk": "^0.1.0",
-    "playwright": "^1.59.1"
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@types/node": "^25.6.0",
+    "playwright": "^1.59.1",
+    "typescript": "^6.0.3",
+    "zod": "^4.4.1"
   }
 }

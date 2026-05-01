@@ -118,7 +118,7 @@ const MUTATING_REPO_SKILL_ENTRIES = new Set([
   ".codex/skills/jg-stitch-workflow/SKILL.md",
   ".codex/skills/jg-stitch-unity-import/SKILL.md",
 ]);
-const ACTIVE_PLAN_BUDGET_EXCLUDING_PROGRESS = 8;
+const ACTIVE_PLAN_BUDGET_EXCLUDING_PROGRESS = 5;
 const PROGRESS_EVIDENCE_ARTIFACT_BUDGET = 2;
 const MODULE_DATA_STRUCTURE_PATH = "docs/design/module_data_structure.md";
 const MODULE_DATA_STRUCTURE_UNIT_SECTION_START = "## ScriptableObject 데이터 정의";
@@ -185,6 +185,7 @@ export async function lintRepository(repoRoot, options = {}) {
       errors.push(...validateRepoSkillHistoricalMentions(document));
       errors.push(...validateDocIdPathPrefix(document));
       errors.push(...validateCompletedDraftPlan(document));
+      errors.push(...validatePlanRereviewCleanScope(document));
       errors.push(...validateActivePlanReferenceCloseout(document));
       errors.push(...validateModuleDataStructureStaleOwners(document));
     }
@@ -666,6 +667,35 @@ function validateCompletedDraftPlan(document) {
       "Draft plan contains closeout/final-decision wording. Move it to `reference`, `historical`, or remove the completion wording.",
     ),
   ];
+}
+
+function validatePlanRereviewCleanScope(document) {
+  const role = document.metadata.get("role");
+  if (role !== "plan") {
+    return [];
+  }
+
+  const content = stripFencedCodeBlocks(document.content);
+  const lines = content.split(/\r?\n/);
+  const errors = [];
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (!/^\s*-?\s*plan rereview:\s*clean\s*$/u.test(line)) {
+      continue;
+    }
+
+    errors.push(
+      createError(
+        "bare-plan-rereview-clean",
+        document.repoRelativePath,
+        "`plan rereview: clean` must name the checked scope, for example `plan rereview: clean - owner/scope/residual checked`.",
+        index + 1,
+      ),
+    );
+  }
+
+  return errors;
 }
 
 function validateActivePlanReferenceCloseout(document) {
@@ -1845,22 +1875,17 @@ export function isRulesOnlyRecurrenceTarget(repoRelativePath) {
 
   if (
     normalized === "AGENTS.md" ||
-    normalized.startsWith("docs/") ||
+    normalized === "docs/index.md" ||
+    normalized.startsWith("docs/ops/") ||
     /^\.codex\/skills\/jg-[^/]+\//u.test(normalized) ||
     normalized.startsWith(".githooks/") ||
     normalized.startsWith("tools/docs-lint/") ||
     normalized.startsWith("tools/rule-harness/") ||
     normalized === ".github/workflows/docs-lint.yml" ||
-    normalized === "package.json" ||
-    normalized === "package-lock.json" ||
     normalized === RECURRENCE_CLOSEOUT_PATH
   ) {
     return true;
   }
 
-  if (/^tools\/.+\/README\.md$/u.test(normalized)) {
-    return true;
-  }
-
-  return /^tools\/.+\.(ps1|mjs|js|py)$/u.test(normalized);
+  return false;
 }

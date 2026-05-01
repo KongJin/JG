@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_fire_arm55_bbs
   displayName: "\uBCA0\uBCA0\uC138"
   icon: {fileID: 0}
-  attackDamage: 48
-  attackSpeed: 0.93
-  range: 7
+  assemblyForm: 1
+  attackDamage: 56
+  attackSpeed: 0.8
+  range: 7.75
   description: datan\common\arm55_bbs.gx
   previewPrefab: {fileID: 7864555477813568172, guid: 5ed8a5719f54e5345848d5f74ebd280d, type: 3}

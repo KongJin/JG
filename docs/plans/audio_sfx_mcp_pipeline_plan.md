@@ -1,0 +1,53 @@
+# Audio SFX MCP Pipeline Plan
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: plans.audio-sfx-mcp-pipeline
+> role: plan
+> owner_scope: sandraschi/suno-mcp 기반 SFX 생성, Unity audio asset import, SoundCatalog 등록 파이프라인 실행 순서
+> upstream: docs.index, ops.codex-coding-guardrails, ops.unity-ui-authoring-workflow, ops.acceptance-reporting-guardrails
+> artifacts: `artifacts/audio/sfx/`
+
+이 문서는 JG UITK/Unity 효과음 제작 파이프라인의 active owner다.
+오디오 product smoke acceptance는 [`webgl_audio_closeout_plan.md`](./webgl_audio_closeout_plan.md)가 계속 소유하고, 이 문서는 효과음 생성/연결 자동화만 소유한다.
+
+## Current Judgment
+
+- 기본 MCP surface는 lean하게 유지하되, 오디오 생성 세션에서는 `sandraschi/suno-mcp` 계열 MCP를 직접 등록한다.
+- 현재 로컬 설치는 원본 `sandraschi/suno-mcp` clone/raw endpoint가 404를 반환해서, 공개 fork인 `MeroZemory/suno-multi-mcp`를 `.codex-local/` 아래에 둔다.
+- v1 기본 provider는 direct Suno MCP다. `tools/audio-mcp`는 Suno 생성 wrapper가 아니라 JG manifest, downloaded asset import, Unity `SoundCatalog` sync helper로만 둔다.
+- Unity `SoundCatalog` 등록은 다운로드된 audio asset의 Unity `.meta` GUID가 생긴 뒤에 수행한다.
+- Suno credential, browser session, cookies는 repo에 남기지 않는다.
+
+## Acceptance
+
+| Item | Required evidence | Closeout |
+|---|---|---|
+| Suno MCP route | direct Suno MCP 등록 절차와 session/credential 비커밋 규칙 문서화 | success / blocked / mismatch |
+| SFX batch manifest | 12개 UITK soundKey batch와 prompt list를 dry-run으로 생성 가능 | success / blocked / mismatch |
+| Downloaded asset import | `artifacts/audio/inbox`의 soundKey 파일을 Unity audio root로 복사 가능 | success / blocked / mismatch |
+| Unity catalog sync | `.meta` GUID가 있는 다운로드 파일을 `SoundCatalog.asset`에 중복 key 없이 등록/갱신 가능 | success / blocked / mismatch |
+
+## Execution Rule
+
+- `.mcp.json` 기본값에는 Suno MCP나 audio helper MCP를 상시 등록하지 않는다.
+- 생성 작업 때는 direct Suno MCP를 등록하고, Unity import/sync가 필요할 때만 `tools/audio-mcp` helper를 optional 등록한다.
+- 실제 Suno 웹 자동화 smoke는 user Suno session이 필요하므로, session이 없으면 generation acceptance를 `blocked`로 남긴다.
+- 다운로드 asset은 `Assets/Audio/UI` 또는 `Assets/Audio/SFX` 아래로만 허용한다.
+
+## Residual
+
+- UITK event wiring은 이 plan의 v1 scope 밖이다.
+- WebGL 브라우저 오디오 재생/설정 저장 acceptance는 WebGL audio owner에서 닫는다.
+- `sandraschi/suno-mcp` 실제 generation/download smoke는 user credential/session 준비 뒤 닫는다.
+
+owner impact:
+
+- primary: `plans.audio-sfx-mcp-pipeline`
+- secondary: `ops.unity-ui-authoring-workflow`, `plans.webgl-audio-closeout`
+- out-of-scope: UITK click event wiring, WebGL autoplay/product smoke, Suno credential storage, broad audio UX redesign
+
+doc lifecycle checked:
+
+- active 유지. SFX generation/download/catalog sync가 success/blocked/mismatch로 닫히고 residual이 다른 owner로 이관되면 reference 압축 또는 삭제 후보로 재검토한다.
+- plan rereview: clean - SFX generation/download/catalog sync scope checked

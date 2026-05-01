@@ -71,7 +71,7 @@ namespace Features.Garage.Presentation
                 _novaPartAlignmentCatalog);
 
             if (!TryPickFrame(_catalog, out var frame) ||
-                !TryPickFirepower(_catalog, out var firepower) ||
+                !TryPickFirepower(_catalog, frame, out var firepower) ||
                 !TryPickMobility(_catalog, out var mobility))
                 return false;
 
@@ -143,6 +143,7 @@ namespace Features.Garage.Presentation
             {
                 case GarageNovaPartPanelSlot.Frame:
                     _state.SetEditingFrameId(selection.PartId);
+                    ClearIncompatibleFirepower();
                     break;
                 case GarageNovaPartPanelSlot.Firepower:
                     _state.SetEditingFirepowerId(selection.PartId);
@@ -154,6 +155,20 @@ namespace Features.Garage.Presentation
 
             _state.ClearValidationOverride();
             Render();
+        }
+
+        private void ClearIncompatibleFirepower()
+        {
+            var frame = _catalog.FindFrame(_state.EditingFrameId);
+            var firepower = _catalog.FindFirepower(_state.EditingFirepowerId);
+            if (frame == null ||
+                firepower == null ||
+                UnitPartCompatibility.AreAssemblyFormsCompatible(frame.AssemblyForm, firepower.AssemblyForm))
+            {
+                return;
+            }
+
+            _state.SetEditingFirepowerId(null);
         }
 
         public string PreviewSelectFocus(string focus)
@@ -260,15 +275,22 @@ namespace Features.Garage.Presentation
             return false;
         }
 
-        private static bool TryPickFirepower(GaragePanelCatalog catalog, out GaragePanelCatalog.FirepowerOption firepower)
+        private static bool TryPickFirepower(
+            GaragePanelCatalog catalog,
+            GaragePanelCatalog.FrameOption frame,
+            out GaragePanelCatalog.FirepowerOption firepower)
         {
             firepower = null;
             for (int i = 0; i < catalog.Firepower.Count; i++)
             {
-                if (catalog.Firepower[i].PreviewPrefab == null)
+                var option = catalog.Firepower[i];
+                if (option.PreviewPrefab == null ||
+                    !UnitPartCompatibility.AreAssemblyFormsCompatible(frame.AssemblyForm, option.AssemblyForm))
+                {
                     continue;
+                }
 
-                firepower = catalog.Firepower[i];
+                firepower = option;
                 return true;
             }
 

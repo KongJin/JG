@@ -230,6 +230,16 @@ test("reports reference closeout wording left in active plans", async () => {
   );
 });
 
+test("reports bare plan rereview clean without checked scope", async () => {
+  const result = await lintRepository(getFixturePath("bare-plan-rereview-clean"), {
+    includeGeneralChecks: true,
+    includePolicyChecks: false,
+  });
+  assert.ok(
+    result.errors.some((error) => error.code === "bare-plan-rereview-clean"),
+  );
+});
+
 test("reports Unity meta artifacts under docs", async () => {
   const result = await lintRepository(getFixturePath("docs-meta-artifact"), {
     includeGeneralChecks: true,
@@ -638,6 +648,28 @@ test("reports recurrence closeout artifact that was not updated in the same chan
   assert.ok(
     result.errors.some((error) => error.code === "missing-recurrence-closeout-update"),
   );
+});
+
+test("does not require recurrence closeout for ordinary plan document changes", async () => {
+  const result = await lintRepository(getFixturePath("valid-recurrence-closeout"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+    changedFiles: ["docs/plans/progress.md"],
+  });
+  assert.equal(result.errors.length, 0);
+});
+
+test("does not require recurrence closeout for feature tool implementation changes", async () => {
+  const result = await lintRepository(getFixturePath("valid-recurrence-closeout"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+    changedFiles: [
+      "tools/audio-mcp/server.mjs",
+      "tools/audio-mcp/README.md",
+      "package-lock.json",
+    ],
+  });
+  assert.equal(result.errors.length, 0);
 });
 
 test("auto-detects dirty recurrence closeout changes without changedFiles or env", async () => {

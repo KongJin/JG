@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_mob_g_legs37_sts
   displayName: "\uC2A4\uD0C0\uC27DG"
   icon: {fileID: 0}
-  hpBonus: 230
-  moveRange: 4.55
-  anchorRange: 4.55
+  mobilitySurface: 2
+  hpBonus: 180
+  moveRange: 5.1
+  anchorRange: 5.1
   description: datan\common\g_legs37_sts.gx
   previewPrefab: {fileID: 3602775364064197037, guid: de0a503297f2b1148a11813c8c860e17, type: 3}

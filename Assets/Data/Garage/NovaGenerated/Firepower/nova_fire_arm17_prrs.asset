@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_fire_arm17_prrs
   displayName: "\uD504\uB864\uB9AD\uC2A4"
   icon: {fileID: 0}
-  attackDamage: 32
-  attackSpeed: 1.19
-  range: 5.5
+  assemblyForm: 1
+  attackDamage: 40
+  attackSpeed: 1.06
+  range: 6.25
   description: datan\common\arm17_prrs.gx
   previewPrefab: {fileID: 6592864882827424568, guid: 5e126c458d5ebfb4aaad33b3ee1f3380, type: 3}

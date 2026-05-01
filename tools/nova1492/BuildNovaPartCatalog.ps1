@@ -281,6 +281,43 @@ function Get-Stats([string] $slot, [int] $tier) {
     }
 }
 
+function Get-AssemblyForm([string] $slot, [int] $originalCode) {
+    if ($slot -eq "Frame") {
+        if ($originalCode -ge 2500 -and $originalCode -lt 2600) { return "Shoulder" }
+        if ($originalCode -ge 2400 -and $originalCode -lt 2500) { return "Humanoid" }
+        if ($originalCode -ge 2000 -and $originalCode -lt 2400) { return "Tower" }
+    }
+
+    if ($slot -eq "Firepower") {
+        if ($originalCode -ge 3500 -and $originalCode -lt 3600) { return "Shoulder" }
+        if ($originalCode -ge 3400 -and $originalCode -lt 3500) { return "Humanoid" }
+        if ($originalCode -ge 3000 -and $originalCode -lt 3400) { return "Tower" }
+    }
+
+    return "Unspecified"
+}
+
+function Get-MobilitySurface([string] $slot, [int] $originalCode) {
+    if ($slot -ne "Mobility") {
+        return ""
+    }
+
+    $airCodes = @(
+        1007, 1018, 1024, 1034, 1037, 1044,
+        1501, 1502, 1503, 1504, 1505, 1509, 1510, 1511, 1512
+    )
+
+    if ($airCodes -contains $originalCode) {
+        return "Air"
+    }
+
+    return "Ground"
+}
+
+$excludedPlayableSources = @(
+    "datan\common\arm23_rkog.gx"
+)
+
 $rows = Import-Csv -LiteralPath $ClassificationPath
 $resolvedPartDescriptionPath = Resolve-PartDescriptionPath $PartDescriptionPath
 $resolvedGxDescPath = Resolve-GxDescPath $GxDescPath
@@ -290,6 +327,11 @@ $candidates = foreach ($row in $rows) {
     $triangles = [int]$row.triangles
     $vertices = [int]$row.vertices
     $sourcePath = $row.source_relative_path
+    $normalizedSourcePath = $sourcePath.Replace("/", "\").ToLowerInvariant()
+    if ($excludedPlayableSources -contains $normalizedSourcePath) {
+        continue
+    }
+
     $modelPath = $row.model_path
     $stem = [System.IO.Path]::GetFileNameWithoutExtension($sourcePath.Replace("\", "/"))
     $partInfo = Get-CanonicalPartInfo -category $row.category -stem $stem -gxDescCodes $gxDescPartCodes
@@ -298,6 +340,12 @@ $candidates = foreach ($row in $rows) {
     }
 
     $needsNameReview = $stem -notmatch "^[A-Za-z0-9._-]+$"
+    $originalName = if ($partDescriptions.ContainsKey($partInfo.originalCode)) { $partDescriptions[$partInfo.originalCode].name } else { "" }
+    if ([string]::IsNullOrWhiteSpace($originalName)) {
+        continue
+    }
+
+    $originalCode = [int]$partInfo.originalCode
 
     [pscustomobject]@{
         slot = $partInfo.slot
@@ -308,7 +356,9 @@ $candidates = foreach ($row in $rows) {
         triangles = $triangles
         sourceStem = $stem
         originalCode = $partInfo.originalCode
-        originalName = if ($partDescriptions.ContainsKey($partInfo.originalCode)) { $partDescriptions[$partInfo.originalCode].name } else { "" }
+        originalName = $originalName
+        assemblyForm = Get-AssemblyForm -slot $partInfo.slot -originalCode $originalCode
+        mobilitySurface = Get-MobilitySurface -slot $partInfo.slot -originalCode $originalCode
         needsNameReview = $needsNameReview
     }
 }
@@ -365,6 +415,8 @@ foreach ($slotGroup in ($candidates | Group-Object slot)) {
             needsNameReview = $needsNameReview
             modelExists = $modelExists
             playableStatus = if ($modelExists) { "generated" } else { "blocked_missing_model" }
+            assemblyForm = $item.assemblyForm
+            mobilitySurface = $item.mobilitySurface
             baseHp = $stats.baseHp
             baseAttackSpeed = $stats.baseAttackSpeed
             baseMoveRange = $stats.baseMoveRange
@@ -442,6 +494,8 @@ $lines.Add("")
 $lines.Add('- `Frame` includes canonical `body*` rows from `UnitParts/Bodies` only.')
 $lines.Add('- `Firepower` includes canonical `arm*` rows from `UnitParts/ArmWeapons` only.')
 $lines.Add('- `Mobility` includes canonical `legs*` rows from `UnitParts/Legs` only, with original code ranges from `gxdesc.ini` when available.')
+$lines.Add('- Rows without an original Korean part name are excluded from the playable catalog until naming and assembly eligibility are reviewed.')
+$lines.Add('- `datan\common\arm23_rkog.gx` is excluded from playable Garage after manual visual review; source and converted artifacts may remain for diagnosis.')
 $lines.Add('- `UnitParts/Bases`, `UnitParts/Accessories`, and detached `front/top/larm/rarm/lback/rback/shoulder` pieces are excluded from playable Garage.')
 
 $lines.Add("")
@@ -449,11 +503,12 @@ $lines.Add("## Generated Stat Policy")
 $lines.Add("")
 $lines.Add('- Tier is generated per slot from triangle-count quantiles, `1..5`.')
 $lines.Add("- Generated stats are a playable smoke baseline, not final balance.")
+$lines.Add('- `assemblyForm` maps original top/middle compatibility ranges to `Tower`, `Shoulder`, or `Humanoid`; `mobilitySurface` maps lower parts to `Ground` or `Air` for catalog/UI filtering only.')
 $lines.Add('- `needsNameReview=true` rows keep source-derived IDs but require later naming review before release.')
 
 Set-Content -LiteralPath $OutputMarkdownPath -Value $lines -Encoding UTF8
 
-$expectedCount = 222
+$expectedCount = 144
 if ($output.Count -ne $expectedCount) {
     throw "Unexpected Core catalog row count: expected $expectedCount, got $($output.Count)"
 }

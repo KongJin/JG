@@ -15,6 +15,7 @@ MonoBehaviour:
   moduleId: nova_fire_n_arm59_dmsz
   displayName: "\uB370\uBBF8\uC2DC\uC988N"
   icon: {fileID: 0}
+  assemblyForm: 1
   attackDamage: 24
   attackSpeed: 1.32
   range: 4.75

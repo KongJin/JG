@@ -23,12 +23,25 @@ namespace Features.Garage.Infrastructure
             string mobilityModuleId,
             out string errorMessage)
         {
+            var frame = _catalog.GetUnitFrame(frameId);
             var firepower = _catalog.GetFirepowerModule(firepowerModuleId);
             var mobility = _catalog.GetMobilityModule(mobilityModuleId);
 
+            if (frame == null)
+            {
+                errorMessage = "중단(프레임) 데이터를 찾을 수 없습니다.";
+                return false;
+            }
+
             if (firepower == null || mobility == null)
             {
-                errorMessage = "모듈 데이터를 찾을 수 없습니다.";
+                errorMessage = "상단(무장) 또는 하단(기동) 데이터를 찾을 수 없습니다.";
+                return false;
+            }
+
+            if (!UnitPartCompatibility.AreAssemblyFormsCompatible(frame.AssemblyForm, firepower.AssemblyForm))
+            {
+                errorMessage = "상단(무장)과 중단(프레임)의 조립 형태가 맞지 않습니다.";
                 return false;
             }
 

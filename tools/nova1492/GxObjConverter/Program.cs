@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 internal static class Program
 {
-    private const string ConverterVersion = "gx-pipeline-v20";
+    private const string ConverterVersion = "gx-pipeline-v22";
     private const string ManifestPath = "artifacts/nova1492/gx_conversion_manifest.csv";
     private const string SummaryPath = "artifacts/nova1492/gx_conversion_summary.md";
     private const string PipelineStatePath = "artifacts/nova1492/gx_pipeline_state.csv";
@@ -2218,6 +2218,12 @@ internal static class Program
     {
         var directory = Path.GetDirectoryName(gxPath) ?? "";
         var baseName = Path.GetFileNameWithoutExtension(gxPath);
+        var overrideTexture = ResolvePartTextureOverride(directory, baseName);
+        if (overrideTexture is not null)
+        {
+            return overrideTexture;
+        }
+
         foreach (var ext in new[] { ".BMP", ".bmp", ".TGA", ".tga", ".PNG", ".png", ".JPG", ".jpg" })
         {
             var sameBase = Path.Combine(directory, baseName + ext);
@@ -2236,6 +2242,16 @@ internal static class Program
             {
                 return candidate;
             }
+        }
+
+        return null;
+    }
+
+    private static string? ResolvePartTextureOverride(string directory, string baseName)
+    {
+        if (string.Equals(baseName, "arm23_rkog", StringComparison.OrdinalIgnoreCase))
+        {
+            return ResolveTexturePath(directory, "n_topn3.tga");
         }
 
         return null;

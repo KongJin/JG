@@ -15,6 +15,7 @@ MonoBehaviour:
   moduleId: nova_mob_legs3_ktpr
   displayName: "\uCE90\uD130\uD544\uB7EC"
   icon: {fileID: 0}
+  mobilitySurface: 1
   hpBonus: 130
   moveRange: 5.65
   anchorRange: 5.65

@@ -1,6 +1,6 @@
 # Runtime Validation Checklist
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: reference
 > doc_id: playtest.runtime-validation-checklist
 > role: reference
@@ -9,7 +9,7 @@
 > artifacts: none
 
 하네스는 runtime UI flow를 자동 스모크하지 않는다. 이 문서는 Lobby/Garage/Game 진입 관련 회귀를 수동으로 확인하고 기록하는 checklist reference다.
-실제 실행 evidence와 closeout artifact 소유는 관련 active owner plan 또는 검증 artifact가 맡는다.
+실제 실행 evidence와 closeout artifact 소유는 `plans.progress`에서 해석한 current owner, residual route, 또는 검증 artifact가 맡는다.
 
 씬 구조, Inspector wiring, Bootstrap 순서의 SSOT는 `*Setup.cs`, `*Bootstrap.cs`, 실제 scene/prefab serialized contract, MCP contract verification route가 소유한다. 이 문서는 hierarchy path가 아니라 "행동/결과" 기준으로만 적는다.
 
@@ -58,12 +58,12 @@
 
 ## GameScene 기록 기준
 
-- `success`: 해당 active owner plan의 acceptance를 실제 실행으로 비교했고 기대 결과와 맞는다.
-- `blocked`: 실행 환경, Photon 2-client setup, scene contract, compile state 때문에 해당 owner acceptance를 아직 판정할 수 없다.
-- `mismatch`: 실행은 했지만 결과가 기대와 다르다. 재현 절차와 owner lane을 메모에 남긴다.
+- `success`: current owner나 residual route의 acceptance를 실제 실행으로 비교했고 기대 결과와 맞는다.
+- `blocked`: 실행 환경, Photon 2-client setup, scene contract, compile state 때문에 해당 owner/residual acceptance를 아직 판정할 수 없다.
+- `mismatch`: 실행은 했지만 결과가 기대와 다르다. 재현 절차와 owner/residual lane을 메모에 남긴다.
 - Runtime owner: summon runtime, BattleEntity, anchor combat, enemy priority, wave/core/victory-defeat, late-join runtime state.
 - UI/UX owner: HUD layout, slot/input, placement preview, error/feedback, Wave/Core/result 표시.
-- Phase 5 owner: 2-client session, late-join hydration, BattleEntity/Energy/WaveState sync smoke.
+- Phase 5 residual: 별도 active multiplayer plan 없이 `plans.progress` multiplayer residual이 2-client session, late-join hydration, BattleEntity/Energy/WaveState sync smoke를 추적한다.
 
 ---
 
@@ -71,6 +71,6 @@
 
 - 재현 절차:
 - 실제 결과:
-- owner lane:
+- owner/residual lane:
 - 관련 로그/스크린샷 경로:
 - 후속 조치:

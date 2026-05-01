@@ -118,9 +118,10 @@ closeout 표현은 아래 둘 중 하나일 때만 쓴다.
 
 권장 표현:
 
-- `plan rereview: clean`
+- `plan rereview: clean - <checked scope>`
 - `plan rereview: residual - <reason>`
 
+`clean`은 bare label로 남기지 않고 owner/scope, acceptance, residual/lifecycle 중 실제 확인한 범위를 짧게 붙인다.
 새 plan 생성이나 큰 plan 수정이라도 owner/scope, acceptance, residual/lifecycle 판단이 보이면 위 한 줄 closeout으로 충분하다.
 반복 리뷰 로그는 실행 판단을 바꾼 경우나 residual 근거가 될 때만 남긴다.
 완료된 plan의 `doc lifecycle checked`에는 delete 후보인지, reference 압축 보존이 필요한지, 또는 아직 active 유지가 필요한지 드러나야 한다.

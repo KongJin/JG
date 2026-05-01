@@ -15,6 +15,6 @@
 - `active`: [`p3.md`](./plans/p3.md) - fixture plan
 - `active`: [`p4.md`](./plans/p4.md) - fixture plan
 - `active`: [`p5.md`](./plans/p5.md) - fixture plan
-- `active`: [`p6.md`](./plans/p6.md) - fixture plan
-- `active`: [`p7.md`](./plans/p7.md) - fixture plan
-- `active`: [`p8.md`](./plans/p8.md) - fixture plan
+- `reference`: [`p6.md`](./plans/p6.md) - fixture archived plan
+- `reference`: [`p7.md`](./plans/p7.md) - fixture archived plan
+- `reference`: [`p8.md`](./plans/p8.md) - fixture archived plan

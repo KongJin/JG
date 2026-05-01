@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_fire_s_arm52_bzk
   displayName: "\uBC14\uC8FC\uCE74S"
   icon: {fileID: 0}
-  attackDamage: 48
-  attackSpeed: 0.93
-  range: 7
+  assemblyForm: 1
+  attackDamage: 56
+  attackSpeed: 0.8
+  range: 7.75
   description: datan\common\s_arm52_bzk.gx
   previewPrefab: {fileID: 4589638438782774683, guid: 1e989ebc556c4af41a2a789c4c53482f, type: 3}

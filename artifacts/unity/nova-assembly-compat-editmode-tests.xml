@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-01 03:26:33Z" end-time="2026-05-01 03:26:33Z" duration="0.0059686">
+  <test-suite type="TestSuite" id="1141" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="105" result="Passed" start-time="2026-05-01 03:26:33Z" end-time="2026-05-01 03:26:33Z" duration="0.005969" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1129" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="105" result="Passed" start-time="2026-05-01 03:26:33Z" end-time="2026-05-01 03:26:33Z" duration="0.005227" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="3968" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1132" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="99" result="Passed" start-time="2026-05-01 03:26:33Z" end-time="2026-05-01 03:26:33Z" duration="0.004307" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1133" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="99" result="Passed" start-time="2026-05-01 03:26:33Z" end-time="2026-05-01 03:26:33Z" duration="0.003616" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1035" name="GarageRosterDirectTests" fullname="Tests.Editor.GarageRosterDirectTests" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-05-01 03:26:33Z" end-time="2026-05-01 03:26:33Z" duration="0.002344" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1042" name="ValidationProvider_AllowsMatchingFrameAndFirepowerAssemblyForm" fullname="Tests.Editor.GarageRosterDirectTests.ValidationProvider_AllowsMatchingFrameAndFirepowerAssemblyForm" methodname="ValidationProvider_AllowsMatchingFrameAndFirepowerAssemblyForm" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" seed="108690468" result="Passed" start-time="2026-05-01 03:26:33Z" end-time="2026-05-01 03:26:33Z" duration="0.000959" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1043" name="ValidationProvider_BlocksMismatchedFrameAndFirepowerAssemblyForm" fullname="Tests.Editor.GarageRosterDirectTests.ValidationProvider_BlocksMismatchedFrameAndFirepowerAssemblyForm" methodname="ValidationProvider_BlocksMismatchedFrameAndFirepowerAssemblyForm" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" seed="1532906038" result="Passed" start-time="2026-05-01 03:26:33Z" end-time="2026-05-01 03:26:33Z" duration="0.000528" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1044" name="GarageSetBUitkSurfaceDirectTests" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-05-01 03:26:33Z" end-time="2026-05-01 03:26:33Z" duration="0.000667" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1056" name="ViewModelFactory_FiltersFirepowerBySelectedFrameAssemblyForm" fullname="Tests.Editor.GarageSetBUitkSurfaceDirectTests.ViewModelFactory_FiltersFirepowerBySelectedFrameAssemblyForm" methodname="ViewModelFactory_FiltersFirepowerBySelectedFrameAssemblyForm" classname="Tests.Editor.GarageSetBUitkSurfaceDirectTests" runstate="Runnable" seed="506778562" result="Passed" start-time="2026-05-01 03:26:33Z" end-time="2026-05-01 03:26:33Z" duration="0.000150" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\nova-assembly-compat-editmode-tests.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

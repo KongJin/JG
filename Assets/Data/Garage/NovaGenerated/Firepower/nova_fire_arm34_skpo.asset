@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_fire_arm34_skpo
   displayName: "\uC2A4\uCF5C\uD53C\uC624"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
+  assemblyForm: 1
+  attackDamage: 48
+  attackSpeed: 0.93
+  range: 7
   description: datan\common\arm34_skpo.gx
   previewPrefab: {fileID: 7185556946068634638, guid: cf7241bbe12584248816eea6b7f64416, type: 3}

@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_fire_arm15_hdkn
   displayName: "\uD578\uB4DC\uCF00\uB10C"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
+  assemblyForm: 1
+  attackDamage: 48
+  attackSpeed: 0.93
+  range: 7
   description: datan\common\arm15_hdkn.gx
   previewPrefab: {fileID: 896580795538170050, guid: 91b219364411950488a07ec66ec96816, type: 3}

@@ -1,6 +1,6 @@
 # Module Data Structure
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: design.module-data-structure
 > role: ssot
@@ -39,8 +39,8 @@
 ### 데이터 흐름
 
 ```
-1. 차고에서 프레임 선택 → UnitFrameData 로드
-2. 상/하단 모듈 선택 → FirepowerModuleData + MobilityModuleData 로드
+1. 차고에서 중단(프레임) 선택 → UnitFrameData 로드
+2. 선택형 상단(무장)/하단(기동) 선택 → FirepowerModuleData + MobilityModuleData 로드
 3. UnitComposition이 조합 계산 → 최종 스탯 + 비용 산출
 4. 전투에서 소환 시 → 계산된 스탯으로 Unit 인스턴스 생성
 ```
@@ -54,6 +54,14 @@
 ```csharp
 namespace Features.Unit.Infrastructure
 {
+    public enum AssemblyForm
+    {
+        Unspecified,
+        Tower,
+        Shoulder,
+        Humanoid
+    }
+
     [CreateAssetMenu(fileName = "NewUnitFrame", menuName = "Unit/UnitFrame")]
     public sealed class UnitFrameData : ScriptableObject
     {
@@ -61,6 +69,9 @@ namespace Features.Unit.Infrastructure
         [SerializeField] private string frameId;      // "guardian_01"
         [SerializeField] private string displayName;  // "가디언"
         [SerializeField] private Sprite icon;
+
+        [Header("Assembly")]
+        [SerializeField] private AssemblyForm assemblyForm; // 상단(무장) 호환 형태
 
         [Header("Base Stats (프레임 기본 스탯)")]
         [SerializeField] private float baseHp;         // 300
@@ -75,6 +86,7 @@ namespace Features.Unit.Infrastructure
 
         public string FrameId => frameId;
         public string DisplayName => displayName;
+        public AssemblyForm AssemblyForm => assemblyForm;
         public float BaseHp => baseHp;
         public float BaseMoveRange => baseMoveRange;
         public float BaseAttackSpeed => baseAttackSpeed;
@@ -84,7 +96,7 @@ namespace Features.Unit.Infrastructure
 }
 ```
 
-### 2. FirepowerModuleData (상단 모듈)
+### 2. FirepowerModuleData (상단/무장)
 
 ```csharp
 namespace Features.Unit.Infrastructure
@@ -97,6 +109,9 @@ namespace Features.Unit.Infrastructure
         [SerializeField] private string displayName;  // "단일탄"
         [SerializeField] private Sprite icon;
 
+        [Header("Assembly")]
+        [SerializeField] private AssemblyForm assemblyForm; // 중단(프레임) 호환 형태
+
         [Header("Combat Stats")]
         [SerializeField] private float attackDamage;   // 공격력 보정 (절대값)
         [SerializeField] private float attackSpeed;    // 공격속도 (초당 횟수)
@@ -107,6 +122,7 @@ namespace Features.Unit.Infrastructure
 
         public string ModuleId => moduleId;
         public string DisplayName => displayName;
+        public AssemblyForm AssemblyForm => assemblyForm;
         public float AttackDamage => attackDamage;
         public float AttackSpeed => attackSpeed;
         public float Range => range;
@@ -114,11 +130,18 @@ namespace Features.Unit.Infrastructure
 }
 ```
 
-### 3. MobilityModuleData (하단 모듈)
+### 3. MobilityModuleData (하단/기동)
 
 ```csharp
 namespace Features.Unit.Infrastructure
 {
+    public enum MobilitySurface
+    {
+        Unspecified,
+        Ground,
+        Air
+    }
+
     [CreateAssetMenu(fileName = "NewMobilityModule", menuName = "Unit/MobilityModule")]
     public sealed class MobilityModuleData : ScriptableObject
     {
@@ -126,6 +149,9 @@ namespace Features.Unit.Infrastructure
         [SerializeField] private string moduleId;     // "mob_armor_01"
         [SerializeField] private string displayName;  // "중장갑"
         [SerializeField] private Sprite icon;
+
+        [Header("Assembly")]
+        [SerializeField] private MobilitySurface mobilitySurface; // 지상/공중 태그
 
         [Header("Defense Stats")]
         [SerializeField] private float hpBonus;        // HP 보정값 (+500)
@@ -139,6 +165,7 @@ namespace Features.Unit.Infrastructure
 
         public string ModuleId => moduleId;
         public string DisplayName => displayName;
+        public MobilitySurface MobilitySurface => mobilitySurface;
         public float HpBonus => hpBonus;
         public float MoveRange => moveRange;
         public float AnchorRange => anchorRange;
@@ -490,7 +517,7 @@ namespace Features.Garage.Domain
 
         public List<UnitLoadout> loadout = new();
 
-        public bool IsValid => loadout.Count >= 3 && loadout.Count <= 5;
+        public bool IsValid => loadout.Count >= 3 && loadout.Count <= 6;
     }
 }
 ```
@@ -545,6 +572,17 @@ namespace Features.Garage.Infrastructure
 ```
 
 ---
+
+## 원본 구조와 코드명 대응
+
+사용자-facing 조립 구조는 `하단(기동) / 중단(프레임) / 상단(무장)`을 기준으로 쓴다.
+기존 C# 타입명과 저장 키는 호환성 때문에 유지한다.
+
+| 원본/화면 기준 | C# legacy/code 기준 | 비고 |
+|---|---|---|
+| 중단(프레임) | `Frame`, `UnitFrameData`, `frameId` | `AssemblyForm`으로 상단 호환 형태를 가진다 |
+| 상단(무장) | `Firepower`, `FirepowerModuleData`, `firepowerModuleId` | 중단과 `Tower/Shoulder/Humanoid` 형태가 같아야 저장 가능 |
+| 하단(기동) | `Mobility`, `MobilityModuleData`, `mobilityModuleId` | `Ground/Air`는 현재 카탈로그/필터용 태그이며 전투 규칙은 아니다 |
 
 ## 기존 SkillData와의 관계
 

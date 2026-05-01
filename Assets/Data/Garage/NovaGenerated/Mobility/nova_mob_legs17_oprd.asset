@@ -15,6 +15,7 @@ MonoBehaviour:
   moduleId: nova_mob_legs17_oprd
   displayName: "\uC624\uD504\uB85C\uB354"
   icon: {fileID: 0}
+  mobilitySurface: 1
   hpBonus: 280
   moveRange: 4
   anchorRange: 4

@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-05-01T03:21:11.028Z",
+  "updatedAt": "2026-05-01T03:21:11.029Z",
+  "providerDefault": "sandraschi-suno-mcp",
+  "items": [
+    {
+      "soundKey": "ui_click",
+      "prompt": "short futuristic game UI button click, 0.2 seconds, dry tactile digital tick, clean sci-fi interface, no melody, no vocals, isolated one-shot",
+      "provider": "sandraschi-suno-mcp",
+      "targetPath": "Assets/Audio/UI/ui_click.mp3",
+      "status": "planned",
+      "volume": 0.75,
+      "spatialBlend": 0,
+      "cooldown": 0.05
+    },
+    {
+      "soundKey": "ui_select",
+      "prompt": "short futuristic UI selection sound, 0.25 seconds, soft bright digital tick with tiny energy lift, no melody, no vocals, isolated one-shot",
+      "provider": "sandraschi-suno-mcp",
+      "targetPath": "Assets/Audio/UI/ui_select.mp3",
+      "status": "planned",
+      "volume": 0.75,
+      "spatialBlend": 0,
+      "cooldown": 0.05
+    },
+    {
+      "soundKey": "ui_confirm",
+      "prompt": "short futuristic UI confirm sound, 0.45 seconds, compact rising chime with soft mechanical lock, no melody, no vocals, isolated one-shot",
+      "provider": "sandraschi-suno-mcp",
+      "targetPath": "Assets/Audio/UI/ui_confirm.mp3",
+      "status": "planned",
+      "volume": 0.75,
+      "spatialBlend": 0,
+      "cooldown": 0.05
+    },
+    {
+      "soundKey": "ui_back",
+      "prompt": "short UI back or close sound, 0.3 seconds, low soft digital fold, restrained sci-fi interface, no melody, no vocals, isolated one-shot",
+      "provider": "sandraschi-suno-mcp",
+      "targetPath": "Assets/Audio/UI/ui_back.mp3",
+      "status": "planned",
+      "volume": 0.75,
+      "spatialBlend": 0,
+      "cooldown": 0.05
+    },
+    {
+      "soundKey": "ui_error",
+      "prompt": "short restrained UI error beep, 0.35 seconds, tactical soft warning, not harsh, no melody, no vocals, isolated one-shot",
+      "provider": "sandraschi-suno-mcp",
+      "targetPath": "Assets/Audio/UI/ui_error.mp3",
+      "status": "planned",
+      "volume": 0.78,
+      "spatialBlend": 0,
+      "cooldown": 0.05
+    },
+    {
+      "soundKey": "ui_retry",
+      "prompt": "short network retry UI sound, 0.45 seconds, two clean signal pings, subtle digital scan, no melody, no vocals, isolated one-shot",
+      "provider": "sandraschi-suno-mcp",
+      "targetPath": "Assets/Audio/UI/ui_retry.mp3",
+      "status": "planned",
+      "volume": 0.75,
+      "spatialBlend": 0,
+      "cooldown": 0.05
+    },
+    {
+      "soundKey": "garage_slot_select",
+      "prompt": "short sci-fi garage unit slot select sound, 0.35 seconds, metallic slot click with soft servo, no melody, no vocals, isolated one-shot",
+      "provider": "sandraschi-suno-mcp",
+      "targetPath": "Assets/Audio/UI/garage_slot_select.mp3",
+      "status": "planned",
+      "volume": 0.75,
+      "spatialBlend": 0,
+      "cooldown": 0.05
+    },
+    {
+      "soundKey": "garage_part_select",
+      "prompt": "short sci-fi garage part selection sound, 0.4 seconds, component scan tick with light mechanical texture, no melody, no vocals, isolated one-shot",
+      "provider": "sandraschi-suno-mcp",
+      "targetPath": "Assets/Audio/UI/garage_part_select.mp3",
+      "status": "planned",
+      "volume": 0.75,
+      "spatialBlend": 0,
+      "cooldown": 0.05
+    },
+    {
+      "soundKey": "garage_save",
+      "prompt": "short sci-fi garage save and deploy confirm sound, 0.65 seconds, satisfying mechanical lock-in plus energy pulse, no melody, no vocals, isolated one-shot",
+      "provider": "sandraschi-suno-mcp",
+      "targetPath": "Assets/Audio/UI/garage_save.mp3",
+      "status": "planned",
+      "volume": 0.85,
+      "spatialBlend": 0,
+      "cooldown": 0.05
+    },
+    {
+      "soundKey": "lobby_ready",
+      "prompt": "short tactical lobby ready confirm sound, 0.5 seconds, confident digital arming cue, clean and restrained, no melody, no vocals, isolated one-shot",
+      "provider": "sandraschi-suno-mcp",
+      "targetPath": "Assets/Audio/UI/lobby_ready.mp3",
+      "status": "planned",
+      "volume": 0.82,
+      "spatialBlend": 0,
+      "cooldown": 0.05
+    },
+    {
+      "soundKey": "battle_slot_select",
+      "prompt": "short tactical battle HUD slot select sound, 0.25 seconds, crisp immediate interface tick, subtle combat UI energy, no melody, no vocals, isolated one-shot",
+      "provider": "sandraschi-suno-mcp",
+      "targetPath": "Assets/Audio/UI/battle_slot_select.mp3",
+      "status": "planned",
+      "volume": 0.72,
+      "spatialBlend": 0,
+      "cooldown": 0.05
+    },
+    {
+      "soundKey": "skill_select",
+      "prompt": "short skill card select sound, 0.4 seconds, clean energy card pickup with light sparkle, no melody, no vocals, isolated one-shot",
+      "provider": "sandraschi-suno-mcp",
+      "targetPath": "Assets/Audio/UI/skill_select.mp3",
+      "status": "planned",
+      "volume": 0.75,
+      "spatialBlend": 0,
+      "cooldown": 0.05
+    }
+  ]
+}

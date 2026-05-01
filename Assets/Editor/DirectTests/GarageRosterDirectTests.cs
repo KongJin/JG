@@ -1,6 +1,11 @@
 using Features.Garage.Domain;
+using Features.Garage.Infrastructure;
+using Features.Unit.Infrastructure;
 using NUnit.Framework;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Tests.Editor
 {
@@ -88,6 +93,126 @@ namespace Tests.Editor
             Assert.AreEqual(2, filled.Length);
             Assert.AreEqual("frame1", filled[0].frameId);
             Assert.AreEqual("frame3", filled[1].frameId);
+        }
+
+        [Test]
+        public void ValidationProvider_AllowsMatchingFrameAndFirepowerAssemblyForm()
+        {
+            var fixture = CreateValidationFixture(AssemblyForm.Tower, AssemblyForm.Tower);
+            try
+            {
+                var provider = new RosterValidationProvider(fixture.Catalog);
+
+                Assert.IsTrue(provider.TryValidateComposition("frame", "fire", "mob", out var errorMessage), errorMessage);
+            }
+            finally
+            {
+                fixture.Destroy();
+            }
+        }
+
+        [Test]
+        public void ValidationProvider_BlocksMismatchedFrameAndFirepowerAssemblyForm()
+        {
+            var fixture = CreateValidationFixture(AssemblyForm.Tower, AssemblyForm.Shoulder);
+            try
+            {
+                var provider = new RosterValidationProvider(fixture.Catalog);
+
+                Assert.IsFalse(provider.TryValidateComposition("frame", "fire", "mob", out var errorMessage));
+                StringAssert.Contains("조립 형태", errorMessage);
+            }
+            finally
+            {
+                fixture.Destroy();
+            }
+        }
+
+        private static ValidationFixture CreateValidationFixture(AssemblyForm frameForm, AssemblyForm firepowerForm)
+        {
+            var frame = ScriptableObject.CreateInstance<UnitFrameData>();
+            var firepower = ScriptableObject.CreateInstance<FirepowerModuleData>();
+            var mobility = ScriptableObject.CreateInstance<MobilityModuleData>();
+            var catalog = ScriptableObject.CreateInstance<ModuleCatalog>();
+
+            SetString(frame, "frameId", "frame");
+            SetEnum(frame, "assemblyForm", (int)frameForm);
+            SetString(firepower, "moduleId", "fire");
+            SetEnum(firepower, "assemblyForm", (int)firepowerForm);
+            SetFloat(firepower, "range", 6f);
+            SetString(mobility, "moduleId", "mob");
+            SetFloat(mobility, "moveRange", 4f);
+            SetCatalog(catalog, frame, firepower, mobility);
+
+            return new ValidationFixture(catalog, frame, firepower, mobility);
+        }
+
+        private static void SetCatalog(
+            ModuleCatalog catalog,
+            UnitFrameData frame,
+            FirepowerModuleData firepower,
+            MobilityModuleData mobility)
+        {
+            var serialized = new SerializedObject(catalog);
+            SetObjectArray(serialized.FindProperty("unitFrames"), frame);
+            SetObjectArray(serialized.FindProperty("firepowerModules"), firepower);
+            SetObjectArray(serialized.FindProperty("mobilityModules"), mobility);
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetString(Object target, string propertyName, string value)
+        {
+            var serialized = new SerializedObject(target);
+            serialized.FindProperty(propertyName).stringValue = value;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetFloat(Object target, string propertyName, float value)
+        {
+            var serialized = new SerializedObject(target);
+            serialized.FindProperty(propertyName).floatValue = value;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetEnum(Object target, string propertyName, int value)
+        {
+            var serialized = new SerializedObject(target);
+            serialized.FindProperty(propertyName).enumValueIndex = value;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetObjectArray(SerializedProperty property, Object value)
+        {
+            property.arraySize = 1;
+            property.GetArrayElementAtIndex(0).objectReferenceValue = value;
+        }
+
+        private readonly struct ValidationFixture
+        {
+            public ValidationFixture(
+                ModuleCatalog catalog,
+                UnitFrameData frame,
+                FirepowerModuleData firepower,
+                MobilityModuleData mobility)
+            {
+                Catalog = catalog;
+                Frame = frame;
+                Firepower = firepower;
+                Mobility = mobility;
+            }
+
+            public ModuleCatalog Catalog { get; }
+            private UnitFrameData Frame { get; }
+            private FirepowerModuleData Firepower { get; }
+            private MobilityModuleData Mobility { get; }
+
+            public void Destroy()
+            {
+                Object.DestroyImmediate(Catalog);
+                Object.DestroyImmediate(Frame);
+                Object.DestroyImmediate(Firepower);
+                Object.DestroyImmediate(Mobility);
+            }
         }
     }
 }

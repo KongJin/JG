@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_mob_legs4_kt
   displayName: "\uCE94\uD130"
   icon: {fileID: 0}
-  hpBonus: 330
-  moveRange: 3.45
-  anchorRange: 3.45
+  mobilitySurface: 1
+  hpBonus: 280
+  moveRange: 4
+  anchorRange: 4
   description: datan\common\legs4_kt.gx
   previewPrefab: {fileID: 1811382055540432700, guid: 8e191d0af1029cf4988ec46bd8e4767c, type: 3}

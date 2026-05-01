@@ -116,4 +116,4 @@ owner impact:
 doc lifecycle checked:
 
 - reference 유지. 이 문서는 audit closeout과 residual/deferred 판단만 보존한다. 다음 개선은 해당 primary owner 문서나 repo-local skill을 직접 바꾸고, 이 문서는 stale residual status를 막을 때만 짧게 맞춘다.
-- plan rereview: clean
+- plan rereview: clean - audit closeout and residual/deferred routing checked

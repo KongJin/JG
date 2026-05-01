@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_mob_s_legs28_krz
   displayName: "\uD06C\uB8E8\uC800S"
   icon: {fileID: 0}
-  hpBonus: 180
-  moveRange: 5.1
-  anchorRange: 5.1
+  mobilitySurface: 1
+  hpBonus: 130
+  moveRange: 5.65
+  anchorRange: 5.65
   description: datan\common\s_legs28_krz.gx
   previewPrefab: {fileID: 416396986621302309, guid: 7988943e5623eab40a4620573f54d0db, type: 3}

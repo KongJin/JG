@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_fire_arm31_skokr
   displayName: "\uC2A4\uCE74\uC774\uD0AC\uB7EC"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
+  assemblyForm: 1
+  attackDamage: 48
+  attackSpeed: 0.93
+  range: 7
   description: datan\common\arm31_skokr.gx
   previewPrefab: {fileID: 716530581907111122, guid: 8d048075fff69fc41beb47187ece3e5a, type: 3}

@@ -15,6 +15,7 @@ MonoBehaviour:
   moduleId: nova_mob_s_legs33_spod
   displayName: "\uC2A4\uD30C\uC774\uB354S"
   icon: {fileID: 0}
+  mobilitySurface: 1
   hpBonus: 330
   moveRange: 3.45
   anchorRange: 3.45

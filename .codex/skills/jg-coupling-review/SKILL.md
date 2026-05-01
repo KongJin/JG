@@ -1,7 +1,7 @@
 ---
 name: jg-coupling-review
 description: >-
-  Project-specific cohesion and coupling review router for the JG repo. Use this skill whenever Codex is asked to review 응집도, 결합도, coupling, cohesion, owner boundaries, responsibility splits, ripple effects, hidden dependencies, seams, runtime lookup/fallback, `Setup`/`Root` responsibility, controller overreach, document/code/scene/prefab/tool boundaries, architecture improvement, shallow modules, testability, unfamiliar code areas, caller maps, or whether things should stay together or be split. This skill judges boundaries and recommended routing across docs, code, scenes, prefabs, and tools; if the work becomes document deletion, compression, cleanup, registry updates, stale trace removal, or other document lifecycle execution, route that execution through `jg-doc-lifecycle`. It reads the active owner docs and applies the repo's cohesion/coupling policy without creating a new policy source of truth.
+  Project-specific cohesion and coupling review router for the JG repo. Use this skill whenever Codex is asked to review 응집도, 결합도, coupling, cohesion, owner boundaries, responsibility splits, ripple effects, hidden dependencies, seams, interface design, public API shape, test seams, mocks/mocking, deep modules, shallow modules, runtime lookup/fallback, `Setup`/`Root` responsibility, controller overreach, document/code/scene/prefab/tool boundaries, architecture improvement, testability, unfamiliar code areas, caller maps, or whether things should stay together or be split. This skill judges boundaries and recommended routing across docs, code, scenes, prefabs, and tools; if the work becomes document deletion, compression, cleanup, registry updates, stale trace removal, or other document lifecycle execution, route that execution through `jg-doc-lifecycle`. It reads the active owner docs and applies the repo's cohesion/coupling policy without creating a new policy source of truth.
 ---
 
 # JG Coupling Review
@@ -63,10 +63,14 @@ Use this flow for owner boundary, cohesion, and coupling review.
    - Document seams: registry, owner doc, stable `doc_id`, reference link.
    - If no seam exists, treat the relationship as direct coupling.
 
-7. Check interface depth and test surface.
+7. Check interface design, module depth, and test surface.
    - Treat an interface as everything a caller or test must know: type shape, ordering, invariants, error modes, config, and performance expectations.
+   - Before adding or moving a seam, name the caller-facing behavior it hides and the invariants, error modes, and ownership boundary it makes explicit.
+   - A deep module has a small, stable public surface that hides meaningful rules or integration complexity. A shallow module mostly forwards provider vocabulary, config knobs, or call order to its callers.
    - If a module looks shallow, run the deletion test: deleting it should either remove unnecessary pass-through complexity or reveal that its rules would spread across callers.
    - The best test surface is the same interface callers use. If tests must reach past the interface to verify behavior, flag a seam or owner-shape problem.
+   - Prefer mocks at hard external boundaries: network, filesystem, time, randomness, Unity runtime, third-party SDKs, or external services.
+   - If tests mainly mock internal collaborators or verify call order between same-owner classes, review whether the module is too shallow, the interface is leaking implementation details, or the behavior belongs behind a different seam.
    - One concrete adapter is usually a hypothetical seam; prefer adding seams when direct coupling is real and variation, tests, or ownership justify the extra surface.
 
 8. Detect hidden coupling.
@@ -102,7 +106,7 @@ When reporting, prefer this compact structure:
 - `Verdict`: keep together / split owner / add seam / blocked
 - `Reason-to-change`: one sentence
 - `Owner`: primary owner plus secondary/out-of-scope if useful
-- `Map`: caller/owner/interface/test-surface context when the area was unfamiliar or architecture-oriented
+- `Map`: caller/owner/interface/test-surface/mocking context when the area was unfamiliar or architecture-oriented
 - `Coupling observed`: explicit references, ripple, hidden lookup, fallback, duplicate docs, or controller/setup overreach
 - `Recommended move`: what to keep, split, or route through a seam
 - `Validation`: what was checked and what remains unverified

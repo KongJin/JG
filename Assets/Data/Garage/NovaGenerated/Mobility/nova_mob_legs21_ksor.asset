@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_mob_legs21_ksor
   displayName: "\uCE74\uC18C\uC640\uB9AC"
   icon: {fileID: 0}
-  hpBonus: 230
-  moveRange: 4.55
-  anchorRange: 4.55
+  mobilitySurface: 1
+  hpBonus: 180
+  moveRange: 5.1
+  anchorRange: 5.1
   description: datan\common\legs21_ksor.gx
   previewPrefab: {fileID: 1884456771891405917, guid: b9822939a79a2ed429ab55202a547a11, type: 3}

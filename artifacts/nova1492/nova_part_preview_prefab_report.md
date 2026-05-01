@@ -1,17 +1,17 @@
 # Nova1492 Part Preview Prefab Report
 
-> generated: 2026-05-01 10:17:48
+> generated: 2026-05-01 12:22:11
 
 ## Summary
 
-- catalog rows: 145
+- catalog rows: 144
 - created prefabs: 0
-- updated prefabs: 145
+- updated prefabs: 144
 - missing source models: 0
 
 ## Slot Counts
 
-- Firepower: 53
+- Firepower: 52
 - Frame: 43
 - Mobility: 49
 
@@ -31,7 +31,6 @@
 | Firepower | `nova_fire_arm20_rkto` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm20_rkto.prefab` | 0.520677 |
 | Firepower | `nova_fire_arm21_nmsz` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm21_nmsz.prefab` | 0.426265 |
 | Firepower | `nova_fire_arm22_bsrsk` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm22_bsrsk.prefab` | 0.463177 |
-| Firepower | `nova_fire_arm23_rkog` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm23_rkog.prefab` | 0.261407 |
 | Firepower | `nova_fire_arm24_bzk` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm24_bzk.prefab` | 0.154158 |
 | Firepower | `nova_fire_arm25_skoob` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm25_skoob.prefab` | 0.55668 |
 | Firepower | `nova_fire_arm26_srmd` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm26_srmd.prefab` | 0.727948 |

@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_fire_arm33_hkoo
   displayName: "\uD638\uD06C\uC544\uC774"
   icon: {fileID: 0}
-  attackDamage: 32
-  attackSpeed: 1.19
-  range: 5.5
+  assemblyForm: 1
+  attackDamage: 40
+  attackSpeed: 1.06
+  range: 6.25
   description: datan\common\arm33_hkoo.gx
   previewPrefab: {fileID: 8466598879646389375, guid: dff5ca640eedc0646942dca7f287d0fc, type: 3}

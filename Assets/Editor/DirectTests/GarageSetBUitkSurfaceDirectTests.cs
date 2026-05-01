@@ -1,4 +1,5 @@
 using Features.Garage.Presentation;
+using Features.Unit.Infrastructure;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -267,6 +268,48 @@ namespace Tests.Editor
             Assert.AreEqual("12 PARTS", viewModel.CountText);
             Assert.AreEqual(12, viewModel.Options.Count);
             Assert.AreEqual("arm11", viewModel.Options[11].Id);
+        }
+
+        [Test]
+        public void ViewModelFactory_FiltersFirepowerBySelectedFrameAssemblyForm()
+        {
+            var catalog = new GaragePanelCatalog(
+                frames: new[]
+                {
+                    new GaragePanelCatalog.FrameOption
+                    {
+                        Id = "tower-frame",
+                        DisplayName = "타워 프레임",
+                        AssemblyForm = AssemblyForm.Tower,
+                    },
+                },
+                firepower: new[]
+                {
+                    new GaragePanelCatalog.FirepowerOption
+                    {
+                        Id = "tower-arm",
+                        DisplayName = "타워 무장",
+                        AssemblyForm = AssemblyForm.Tower,
+                    },
+                    new GaragePanelCatalog.FirepowerOption
+                    {
+                        Id = "shoulder-arm",
+                        DisplayName = "어깨 무장",
+                        AssemblyForm = AssemblyForm.Shoulder,
+                    },
+                },
+                mobility: System.Array.Empty<GaragePanelCatalog.MobilityOption>());
+
+            var viewModel = GarageNovaPartsPanelViewModelFactory.Build(
+                catalog,
+                new GarageNovaPartsDraftSelection("tower-frame", "shoulder-arm", null),
+                GarageEditorFocus.Firepower,
+                string.Empty);
+
+            Assert.AreEqual("1 PARTS", viewModel.CountText);
+            Assert.AreEqual(1, viewModel.Options.Count);
+            Assert.AreEqual("tower-arm", viewModel.Options[0].Id);
+            Assert.AreEqual("선택 대기", viewModel.SelectedNameText);
         }
 
         private static VisualElement LoadRoot()

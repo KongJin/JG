@@ -15,6 +15,7 @@ MonoBehaviour:
   moduleId: nova_fire_arm27_stst
   displayName: "\uC288\uD305\uC2A4\uD0C0"
   icon: {fileID: 0}
+  assemblyForm: 1
   attackDamage: 32
   attackSpeed: 1.19
   range: 5.5

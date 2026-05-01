@@ -1,12 +1,12 @@
 # Nova1492 Arm Weapon GX Audit Report
 
-> generated: 2026-05-01 10:20:27
+> generated: 2026-05-01 11:21:43
 
-- converter version: `gx-pipeline-v20`
-- audited rows: 53
+- converter version: `gx-pipeline-v22`
+- audited rows: 52
 - high risk: 0
 - review risk: 3
-- pass: 50
+- pass: 49
 - manifest: `artifacts/nova1492/gx_arm_audit_manifest.csv`
 - hierarchy: `artifacts/nova1492/gx_arm_audit_hierarchy.csv`
 

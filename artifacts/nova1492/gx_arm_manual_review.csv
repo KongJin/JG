@@ -11,7 +11,6 @@ part_id,display_name,source_relative_path,audit_verdict,audit_flags,review_resul
 "nova_fire_arm20_rkto","로켓티어","datan\common\arm20_rkto.gx","pass","","",""
 "nova_fire_arm21_nmsz","네메시즈","datan\common\arm21_nmsz.gx","pass","","",""
 "nova_fire_arm22_bsrsk","바실리스크","datan\common\arm22_bsrsk.gx","pass","","",""
-"nova_fire_arm23_rkog","리코일건","datan\common\arm23_rkog.gx","pass","","",""
 "nova_fire_arm24_bzk","바주카","datan\common\arm24_bzk.gx","review","depth_outlier;center_z_outlier","",""
 "nova_fire_arm25_skoob","쇼크웨이브","datan\common\arm25_skoob.gx","pass","","",""
 "nova_fire_arm26_srmd","사라만다","datan\common\arm26_srmd.gx","pass","","",""

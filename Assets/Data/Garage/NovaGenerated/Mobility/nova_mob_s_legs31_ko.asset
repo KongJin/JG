@@ -15,6 +15,7 @@ MonoBehaviour:
   moduleId: nova_mob_s_legs31_ko
   displayName: "\uD0A4\uC704S"
   icon: {fileID: 0}
+  mobilitySurface: 1
   hpBonus: 280
   moveRange: 4
   anchorRange: 4

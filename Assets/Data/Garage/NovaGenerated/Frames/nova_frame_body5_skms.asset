@@ -15,9 +15,10 @@ MonoBehaviour:
   frameId: nova_frame_body5_skms
   displayName: "\uC2A4\uCFFC\uBBF8\uC26C"
   icon: {fileID: 0}
-  baseHp: 465
+  assemblyForm: 1
+  baseHp: 510
   baseMoveRange: 4
-  baseAttackSpeed: 1.2
+  baseAttackSpeed: 1.15
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
   previewPrefab: {fileID: 6068887282176391569, guid: 2f6f8a35948c83d4a8c174f1e6639799, type: 3}

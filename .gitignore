@@ -105,6 +105,7 @@ InitTestScene*.unity*
 # Local agent / IDE session cache (do not commit)
 .codex-local/
 node_modules/
+artifacts/audio/inbox/
 
 # Cloned external AI skills source (skills themselves are tracked in .qwen/skills/)
 .qwen/anthropic-skills/

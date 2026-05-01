@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_mob_legs7_hb
   displayName: "\uD638\uBC84"
   icon: {fileID: 0}
-  hpBonus: 280
-  moveRange: 4
-  anchorRange: 4
+  mobilitySurface: 2
+  hpBonus: 230
+  moveRange: 4.55
+  anchorRange: 4.55
   description: datan\common\legs7_hb.gx
   previewPrefab: {fileID: 1801403108056043495, guid: ac8d7ed77d43d8a43adfa519b18925d7, type: 3}

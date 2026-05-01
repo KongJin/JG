@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_fire_n_arm60_mgbr
   displayName: "\uBA54\uAC00\uBC30\uB7F4N"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
+  assemblyForm: 1
+  attackDamage: 48
+  attackSpeed: 0.93
+  range: 7
   description: datan\common\n_arm60_mgbr.gx
   previewPrefab: {fileID: 4324572410192853027, guid: 90b4bf59c2b42fd438c6af084f956d1e, type: 3}

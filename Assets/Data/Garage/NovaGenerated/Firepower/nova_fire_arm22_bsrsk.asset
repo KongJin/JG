@@ -15,6 +15,7 @@ MonoBehaviour:
   moduleId: nova_fire_arm22_bsrsk
   displayName: "\uBC14\uC2E4\uB9AC\uC2A4\uD06C"
   icon: {fileID: 0}
+  assemblyForm: 1
   attackDamage: 32
   attackSpeed: 1.19
   range: 5.5

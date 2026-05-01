@@ -15,6 +15,7 @@ MonoBehaviour:
   moduleId: nova_fire_arm32_sppoo
   displayName: "\uC2A4\uD54F\uD30C\uC774\uC5B4"
   icon: {fileID: 0}
+  assemblyForm: 1
   attackDamage: 48
   attackSpeed: 0.93
   range: 7

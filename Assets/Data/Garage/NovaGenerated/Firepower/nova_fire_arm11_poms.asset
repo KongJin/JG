@@ -15,6 +15,7 @@ MonoBehaviour:
   moduleId: nova_fire_arm11_poms
   displayName: "\uD30C\uC6CC\uB9E5\uC2A4"
   icon: {fileID: 0}
+  assemblyForm: 1
   attackDamage: 24
   attackSpeed: 1.32
   range: 4.75

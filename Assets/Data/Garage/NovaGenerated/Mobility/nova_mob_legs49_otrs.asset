@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_mob_legs49_otrs
   displayName: "\uC635\uD14C\uB9AD\uC2A4"
   icon: {fileID: 0}
-  hpBonus: 330
-  moveRange: 3.45
-  anchorRange: 3.45
+  mobilitySurface: 2
+  hpBonus: 280
+  moveRange: 4
+  anchorRange: 4
   description: datan\common\legs49_otrs.gx
   previewPrefab: {fileID: 7969414521577593598, guid: 4c4eed7e6ccca0b4996000606a319365, type: 3}

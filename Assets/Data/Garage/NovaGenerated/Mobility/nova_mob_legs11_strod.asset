@@ -15,6 +15,7 @@ MonoBehaviour:
   moduleId: nova_mob_legs11_strod
   displayName: "\uC2A4\uD2B8\uB77C\uC774\uB354"
   icon: {fileID: 0}
+  mobilitySurface: 1
   hpBonus: 180
   moveRange: 5.1
   anchorRange: 5.1

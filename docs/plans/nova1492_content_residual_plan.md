@@ -1,6 +1,6 @@
 # Nova1492 Content Residual Plan
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: plans.nova1492-content-residual
 > role: plan
@@ -46,4 +46,4 @@ owner impact:
 doc lifecycle checked:
 
 - active 유지. Rights/naming gate가 닫히고 balance/UI/model 후보가 각 owner로 이관되면 reference 압축 또는 삭제 후보로 재검토한다.
-- plan rereview: clean
+- plan rereview: clean - rights/naming gate and owner handoff residual checked

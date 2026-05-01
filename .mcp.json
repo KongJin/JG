@@ -4,6 +4,14 @@
       "type": "stdio",
       "command": "node",
       "args": ["tools/unity-mcp/server.js"]
+    },
+    "suno": {
+      "type": "stdio",
+      "command": ".codex-local/suno-multi-mcp/.venv/Scripts/python.exe",
+      "args": ["-m", "suno_mcp.server"],
+      "env": {
+        "PYTHONPATH": ".codex-local/suno-multi-mcp/src"
+      }
     }
   }
 }

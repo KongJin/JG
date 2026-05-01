@@ -257,6 +257,7 @@ namespace ProjectSD.EditorTools
             var serialized = new SerializedObject(asset);
             SetString(serialized, "frameId", row.PartId);
             SetString(serialized, "displayName", row.DisplayName);
+            SetEnum(serialized, "assemblyForm", AssemblyFormToIndex(row.AssemblyForm));
             SetFloat(serialized, "baseHp", row.BaseHp, 120f);
             SetFloat(serialized, "baseMoveRange", row.BaseMoveRange, 3f);
             SetFloat(serialized, "baseAttackSpeed", row.BaseAttackSpeed, 1f);
@@ -272,6 +273,7 @@ namespace ProjectSD.EditorTools
             var serialized = new SerializedObject(asset);
             SetString(serialized, "moduleId", row.PartId);
             SetString(serialized, "displayName", row.DisplayName);
+            SetEnum(serialized, "assemblyForm", AssemblyFormToIndex(row.AssemblyForm));
             SetFloat(serialized, "attackDamage", row.AttackDamage, 24f);
             SetFloat(serialized, "attackSpeed", row.AttackSpeed, 1f);
             SetFloat(serialized, "range", row.Range, 4.5f);
@@ -288,6 +290,7 @@ namespace ProjectSD.EditorTools
             var serialized = new SerializedObject(asset);
             SetString(serialized, "moduleId", row.PartId);
             SetString(serialized, "displayName", row.DisplayName);
+            SetEnum(serialized, "mobilitySurface", MobilitySurfaceToIndex(row.MobilitySurface));
             SetFloat(serialized, "hpBonus", row.HpBonus, 25f);
             SetFloat(serialized, "moveRange", row.MoveRange, 3f);
             SetFloat(serialized, "anchorRange", row.AnchorRange, 4f);
@@ -534,6 +537,8 @@ namespace ProjectSD.EditorTools
                     Tier = ParseInt(Get(values, headerIndex, "tier"), 1),
                     DisplayName = Get(values, headerIndex, "displayName"),
                     NeedsNameReview = ParseBool(Get(values, headerIndex, "needsNameReview")),
+                    AssemblyForm = Get(values, headerIndex, "assemblyForm"),
+                    MobilitySurface = Get(values, headerIndex, "mobilitySurface"),
                     BaseHp = ParseFloat(Get(values, headerIndex, "baseHp"), 0f),
                     BaseAttackSpeed = ParseFloat(Get(values, headerIndex, "baseAttackSpeed"), 0f),
                     BaseMoveRange = ParseFloat(Get(values, headerIndex, "baseMoveRange"), 0f),
@@ -755,6 +760,15 @@ namespace ProjectSD.EditorTools
             }
         }
 
+        private static void SetEnum(SerializedObject serialized, string name, int value)
+        {
+            var property = serialized.FindProperty(name);
+            if (property != null)
+            {
+                property.enumValueIndex = value;
+            }
+        }
+
         private static void SetObject(SerializedObject serialized, string name, Object value)
         {
             var property = serialized.FindProperty(name);
@@ -827,6 +841,20 @@ namespace ProjectSD.EditorTools
             }
 
             throw new InvalidOperationException("Unknown Nova part slot: " + slot);
+        }
+
+        private static int AssemblyFormToIndex(string value)
+        {
+            return Enum.TryParse<AssemblyForm>(value, ignoreCase: true, out var parsed)
+                ? (int)parsed
+                : (int)AssemblyForm.Unspecified;
+        }
+
+        private static int MobilitySurfaceToIndex(string value)
+        {
+            return Enum.TryParse<MobilitySurface>(value, ignoreCase: true, out var parsed)
+                ? (int)parsed
+                : (int)MobilitySurface.Unspecified;
         }
 
         private static int ParseInt(string value, int fallback)
@@ -992,6 +1020,8 @@ namespace ProjectSD.EditorTools
             public int Tier;
             public string DisplayName;
             public bool NeedsNameReview;
+            public string AssemblyForm;
+            public string MobilitySurface;
             public float BaseHp;
             public float BaseAttackSpeed;
             public float BaseMoveRange;

@@ -25,6 +25,7 @@ namespace Features.Garage
                     DisplayName = frame.DisplayName,
                     BaseHp = frame.BaseHp,
                     BaseAttackSpeed = frame.BaseAttackSpeed,
+                    AssemblyForm = frame.AssemblyForm,
                     PreviewPrefab = ResolvePreviewPrefab(frame.PreviewPrefab, metadata),
                     AssemblyPrefab = ResolveAssemblyPrefab(metadata),
                     SourcePath = metadata?.SourceRelativePath,
@@ -47,6 +48,7 @@ namespace Features.Garage
                     AttackDamage = module.AttackDamage,
                     AttackSpeed = module.AttackSpeed,
                     Range = module.Range,
+                    AssemblyForm = module.AssemblyForm,
                     PreviewPrefab = ResolvePreviewPrefab(module.PreviewPrefab, metadata),
                     AssemblyPrefab = ResolveAssemblyPrefab(metadata),
                     SourcePath = metadata?.SourceRelativePath,
@@ -69,6 +71,7 @@ namespace Features.Garage
                     HpBonus = module.HpBonus,
                     MoveRange = module.MoveRange,
                     AnchorRange = module.AnchorRange,
+                    MobilitySurface = module.MobilitySurface,
                     PreviewPrefab = ResolvePreviewPrefab(module.PreviewPrefab, metadata),
                     AssemblyPrefab = ResolveAssemblyPrefab(metadata),
                     // Generated assembly prefabs keep the source model pivot; catalog alignment owns the body socket.

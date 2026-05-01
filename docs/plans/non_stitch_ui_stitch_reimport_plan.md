@@ -1,6 +1,6 @@
 # Non-Stitch UI Stitch Import Plan
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: plans.non-stitch-ui-stitch-reimport
 > role: plan
@@ -13,7 +13,7 @@
 ## Current Judgment
 
 - Active route는 `Stitch source freeze -> UI Toolkit candidate surface -> isolated preview capture/report -> runtime replacement owner handoff`다.
-- Account/Sync와 Connection/Reconnect는 source candidate, UI Toolkit candidate, Lobby runtime shell visibility까지 확보했다. WebGL/account/cloud acceptance는 account WebGL owner lane에서 확인한다.
+- Account/Sync와 Connection/Reconnect는 source candidate, UI Toolkit candidate, Lobby runtime shell visibility까지 확보했다. WebGL/account/cloud acceptance는 `plans.progress` WebGL account residual과 WebGL smoke checklist에서 확인한다.
 - `SetA/SetC/SetD/SetE` prefabs/captures는 historical Stitch-derived evidence로만 본다.
 - Runtime feedback prefabs under `Assets/Prefabs/RuntimeFeedback/`는 screen UI replacement 대상이 아니라 world-space feedback compatibility surface다.
 
@@ -21,7 +21,7 @@
 
 | Surface | Current state | This plan owns | Handoff owner |
 |---|---|---|---|
-| Account/Sync | source candidate + UITK candidate + runtime shell visibility | source/candidate handoff status | account WebGL/product owner |
+| Account/Sync | source candidate + UITK candidate + runtime shell visibility | source/candidate handoff status | `plans.progress` WebGL account residual |
 | Connection/Reconnect | source candidate + UITK candidate + runtime shell visibility | source/candidate handoff status | reconnect/cloud product owner |
 | Battle HUD / Skill selection | BattleScene scene-owned UI, no accepted source freeze yet | source-freeze required marker | BattleScene UI/runtime owner |
 | Player/Enemy health, damage number | RuntimeFeedback compatibility prefab | route exclusion marker | runtime feedback owner if visual consistency work opens |
@@ -37,13 +37,13 @@
 
 - Source facts/draft validation: `tools/stitch-unity` collector/validator route.
 - UITK candidate check: isolated preview scene and GameView capture.
-- Runtime check: current host scene에서 surface visibility와 product acceptance를 분리하고, product acceptance는 해당 owner lane으로 넘긴다.
+- Runtime check: current host scene에서 surface visibility와 product acceptance를 분리하고, product acceptance는 `plans.progress` residual 또는 새 product owner가 열릴 때 그쪽으로 넘긴다.
 - Policy lint: `npm run --silent rules:lint`.
 
 ## Residual
 
 - Battle HUD와 skill-selection UI는 source freeze 전까지 native candidate다.
-- Account/Connection product acceptance는 account/cloud product owner lane에 남는다.
+- Account/Connection product acceptance는 `plans.progress` WebGL account residual과 reconnect/cloud follow-up route에 남는다.
 - Runtime feedback visual consistency는 필요할 때 별도 micro-surface로 다시 연다.
 
 owner impact:
@@ -55,4 +55,4 @@ owner impact:
 doc lifecycle checked:
 
 - active 유지. 남은 native/mixed candidate가 source freeze/candidate/verdict로 닫히면 reference 압축 또는 삭제 후보로 재검토한다.
-- plan rereview: clean
+- plan rereview: clean - source/candidate handoff and product residual routing checked

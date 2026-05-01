@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_fire_arm20_rkto
   displayName: "\uB85C\uCF13\uD2F0\uC5B4"
   icon: {fileID: 0}
-  attackDamage: 40
-  attackSpeed: 1.06
-  range: 6.25
+  assemblyForm: 1
+  attackDamage: 48
+  attackSpeed: 0.93
+  range: 7
   description: datan\common\arm20_rkto.gx
   previewPrefab: {fileID: 9075986580650307608, guid: edda299bc1e0ec34da3bc740efebdc23, type: 3}

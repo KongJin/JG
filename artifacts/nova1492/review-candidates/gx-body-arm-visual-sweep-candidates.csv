@@ -1,0 +1,4 @@
+category,part_id,display_name,precheck_result,reason,evidence
+"arm","nova_fire_arm23_rkog","리코일건","excluded","grid texture was removed by topn3/n_topn3 overrides but a severe black plate remained, so the part is excluded from playable catalog while source/model artifacts stay preserved","artifacts/nova1492/review-candidates/rkog-variant-comparison-after.png"
+"body","nova_frame_body24_grbs","그라비스","unsure","small separated-looking lower shard in iso view; same family pattern and no mechanical audit issue","artifacts/nova1492/review-candidates/body-pages/body-page-02.png"
+"body","nova_frame_n_body48_grbs","그라비스N","unsure","same small lower shard pattern as base Gravis; no mechanical audit issue","artifacts/nova1492/review-candidates/body-pages/body-page-06.png"

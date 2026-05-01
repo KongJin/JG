@@ -4,6 +4,7 @@ using Features.Garage.Application;
 using Features.Garage.Domain;
 using Features.Player.Domain;
 using Features.Unit.Application;
+using Features.Unit.Infrastructure;
 using Shared.EventBus;
 using UnityEngine;
 
@@ -175,6 +176,7 @@ namespace Features.Garage.Presentation
             {
                 case GarageNovaPartPanelSlot.Frame:
                     _state.SetEditingFrameId(selection.PartId);
+                    ClearIncompatibleFirepower();
                     break;
                 case GarageNovaPartPanelSlot.Firepower:
                     _state.SetEditingFirepowerId(selection.PartId);
@@ -186,6 +188,20 @@ namespace Features.Garage.Presentation
 
             _state.ClearValidationOverride();
             Render();
+        }
+
+        private void ClearIncompatibleFirepower()
+        {
+            var frame = _catalog.FindFrame(_state.EditingFrameId);
+            var firepower = _catalog.FindFirepower(_state.EditingFirepowerId);
+            if (frame == null ||
+                firepower == null ||
+                UnitPartCompatibility.AreAssemblyFormsCompatible(frame.AssemblyForm, firepower.AssemblyForm))
+            {
+                return;
+            }
+
+            _state.SetEditingFirepowerId(null);
         }
 
         private async System.Threading.Tasks.Task RunSaveAsync()

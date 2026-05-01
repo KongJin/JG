@@ -1,6 +1,6 @@
 # WebGL Smoke Checklist
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: reference
 > doc_id: playtest.webgl-smoke-checklist
 > role: reference
@@ -9,11 +9,11 @@
 > artifacts: none
 >
 > 생성일: 2026-04-17
-> active closeout owner: resolve through `plans.progress` and `docs.index`
+> active closeout owner: `plans.progress` residual; no separate WebGL account active plan currently exists
 
 이 문서는 Phase 10/11의 WebGL 실기 검증을 위한 **수동 smoke 체크리스트**다.
-Active residual과 closeout 판정은 `plans.progress`에 등록된 current WebGL account owner가 소유한다.
-WebGL build와 smoke evidence artifact 소유도 active closeout owner 문서를 따른다.
+Active residual과 closeout 판정은 별도 WebGL account active plan 없이 `plans.progress` residual과 이 checklist 기준을 따른다.
+WebGL build와 smoke evidence artifact 소유는 별도 active plan이 열릴 때 그 plan으로 넘기고, 현재는 smoke 기록에 evidence 경로를 남긴다.
 
 목적은 깊은 테스트가 아니라, 배포 직전 가장 중요한 사용자 여정이 **브라우저에서 끊기지 않는지** 빠르게 확인하는 것이다.
 
@@ -24,7 +24,7 @@ WebGL build와 smoke evidence artifact 소유도 active closeout owner 문서를
 - Editor Play Mode 결과와 WebGL 결과를 섞어 기록하지 않는다.
 - 각 smoke는 `실행 일시`, `빌드 경로`, `성공/실패`, `실패 지점`, `증거`를 함께 남긴다.
 - 실패 시 바로 고치려 하지 말고, 먼저 **어느 단계에서 끊겼는지**를 기록한다.
-- active WebGL account owner와 `progress.md` 상태 변경은 이 문서의 실기 결과를 기준으로 한다.
+- `plans.progress` WebGL account residual과 상태 변경은 이 문서의 실기 결과를 기준으로 한다.
 
 ---
 
@@ -140,7 +140,7 @@ WebGL build와 smoke evidence artifact 소유도 active closeout owner 문서를
 
 ## 6. 결과 기록 형식
 
-아래 형식으로 active WebGL account owner 또는 관련 계획 문서에 남긴다.
+아래 형식으로 `plans.progress` WebGL account residual 또는 이후 열리는 관련 계획 문서에 남긴다.
 
 ```md
 - done|blocked: Garage save/load WebGL smoke 1회 실행

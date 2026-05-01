@@ -1,6 +1,6 @@
 # 진행 상황
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: plans.progress
 > role: plan
@@ -12,12 +12,13 @@
 
 ## 현재 포커스
 
-| Lane | Active owner | 현재 verdict | 다음 blocker |
+| Lane | Current owner | 현재 verdict | 다음 blocker |
 |---|---|---|---|
 | `GameScene / Actual Flow` | [`game_scene_flow_validation_closeout_plan.md`](./game_scene_flow_validation_closeout_plan.md) | single-client baseline과 targeted direct EditMode tests는 통과 | result HUD actual player-flow checklist |
-| `GameScene / Multiplayer Sync` | `plans.progress` residual | Phase 5/9 code path는 있으나 2-client acceptance는 `blocked: two-client runner unavailable` | 수동 2-client session 또는 runner 구현으로 late-join, BattleEntity, Energy, Wave sync 확인 |
-| `WebGL Account/Garage / Product Smoke` | `plans.progress` residual + [`webgl_smoke_checklist.md`](../playtest/webgl_smoke_checklist.md) | Firestore/Garage 핵심 경로와 Google linking code path는 있으나 WebGL product smoke 전 | Garage save/load, account delete, Google linking, settings/accessibility WebGL smoke |
+| `GameScene / Multiplayer Sync` | residual: `plans.progress` (no separate active plan) | Phase 5/9 code path는 있으나 2-client acceptance는 `blocked: two-client runner unavailable` | 수동 2-client session 또는 runner 구현으로 late-join, BattleEntity, Energy, Wave sync 확인 |
+| `WebGL Account/Garage / Product Smoke` | residual: `plans.progress` + [`webgl_smoke_checklist.md`](../playtest/webgl_smoke_checklist.md), no separate active plan | Firestore/Garage 핵심 경로와 Google linking code path는 있으나 WebGL product smoke 전 | Garage save/load, account delete, Google linking, settings/accessibility WebGL smoke |
 | `WebGL Audio / Product Smoke` | [`webgl_audio_closeout_plan.md`](./webgl_audio_closeout_plan.md) | WebGL audio product smoke 전 | 사운드 설정 UI 저장 확장, WebGL 오디오 로드/재생 smoke |
+| `Audio SFX / MCP Pipeline` | [`audio_sfx_mcp_pipeline_plan.md`](./audio_sfx_mcp_pipeline_plan.md) | direct Suno MCP route installed via `.codex-local/suno-multi-mcp`; browser open smoke passed; no saved Suno session yet | Suno login/session smoke, first `ui_click` generation/download, inbox import, Unity refresh, SoundCatalog sync validation |
 | `UI / Source Candidate Handoff` | [`non_stitch_ui_stitch_reimport_plan.md`](./non_stitch_ui_stitch_reimport_plan.md) | native/mixed 후보는 source freeze -> UI Toolkit candidate -> owner handoff route로 처리 | Battle HUD/skill-selection source freeze, candidate handoff, runtime/product owner 분리 |
 | `Nova1492 Content / Release Gate` | [`nova1492_content_residual_plan.md`](./nova1492_content_residual_plan.md) | UnitParts playable 승격은 닫힘, rights/naming gate와 owner handoff가 남음 | 권리/이름 release gate, 밸런스/UI/model 후보 owner handoff |
 

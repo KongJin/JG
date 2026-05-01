@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Features.Unit.Infrastructure;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
@@ -41,6 +42,7 @@ namespace Features.Garage.Presentation
             public string DisplayName { get; set; }
             public float BaseHp { get; set; }
             public float BaseAttackSpeed { get; set; }
+            public AssemblyForm AssemblyForm { get; set; }
             public GameObject PreviewPrefab { get; set; }
             public GameObject AssemblyPrefab { get; set; }
             public bool UseAssemblyPivot { get; set; }
@@ -57,6 +59,7 @@ namespace Features.Garage.Presentation
             public float AttackDamage { get; set; }
             public float AttackSpeed { get; set; }
             public float Range { get; set; }
+            public AssemblyForm AssemblyForm { get; set; }
             public GameObject PreviewPrefab { get; set; }
             public GameObject AssemblyPrefab { get; set; }
             public string SourcePath { get; set; }
@@ -72,6 +75,7 @@ namespace Features.Garage.Presentation
             public float HpBonus { get; set; }
             public float MoveRange { get; set; }
             public float AnchorRange { get; set; }
+            public MobilitySurface MobilitySurface { get; set; }
             public GameObject PreviewPrefab { get; set; }
             public GameObject AssemblyPrefab { get; set; }
             public bool UseAssemblyPivot { get; set; }

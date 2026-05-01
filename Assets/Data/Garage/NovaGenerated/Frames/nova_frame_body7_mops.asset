@@ -15,9 +15,10 @@ MonoBehaviour:
   frameId: nova_frame_body7_mops
   displayName: "\uBA54\uC778\uD3EC\uC2A4"
   icon: {fileID: 0}
-  baseHp: 510
+  assemblyForm: 1
+  baseHp: 555
   baseMoveRange: 4
-  baseAttackSpeed: 1.15
+  baseAttackSpeed: 1.1
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
   previewPrefab: {fileID: 5442100201809865951, guid: 13973633f8190494b9f199693fc8a0b7, type: 3}

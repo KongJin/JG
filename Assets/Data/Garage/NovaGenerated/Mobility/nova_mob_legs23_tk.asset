@@ -15,6 +15,7 @@ MonoBehaviour:
   moduleId: nova_mob_legs23_tk
   displayName: "\uD0F1\uCEE4"
   icon: {fileID: 0}
+  mobilitySurface: 1
   hpBonus: 330
   moveRange: 3.45
   anchorRange: 3.45

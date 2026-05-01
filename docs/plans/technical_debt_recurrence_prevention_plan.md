@@ -104,8 +104,8 @@ Review check:
 
 ## Residual
 
-- GameScene direct EditMode execution과 Phase 5 2-client smoke는 각각의 GameScene active owner lane이 소유한다.
-- Account/Garage/WebGL product acceptance는 account WebGL owner lane이 소유하고, 실행 절차는 WebGL smoke checklist를 따른다.
+- GameScene direct EditMode execution은 GameScene actual-flow active owner가 소유하고, Phase 5 2-client smoke는 `plans.progress` multiplayer residual이 소유한다.
+- Account/Garage/WebGL product acceptance는 `plans.progress` WebGL account residual과 WebGL smoke checklist 기준으로 추적한다.
 - `SoundPlayer` AudioSource/template residual은 runtime contract guard 기준으로 보되, 실행이 필요하면 새 runtime owner pass 또는 해당 feature owner로 연다.
 - `LobbyView.cs`와 `GarageSetBUitkSurface.cs`의 padding 주석은 source lock cleanup residual이다. 에디터가 파일을 놓은 뒤 behavior 변경 없이 제거한다.
 - `WaveSetup.TryGetFirstEnemyData`와 `SummonPhotonAdapter`의 `fallbackInstanceId`는 production fallback residual이다. behavior removal은 별도 runtime contract cleanup으로 연다.
@@ -120,4 +120,4 @@ owner impact:
 doc lifecycle checked:
 
 - reference 유지. 새 runtime repair 재발이 실제 작업으로 열리면 해당 feature/runtime owner plan 또는 session checklist로 다시 판단한다.
-- plan rereview: clean
+- plan rereview: clean - reference guard and runtime residual routing checked

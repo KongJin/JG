@@ -15,8 +15,9 @@ MonoBehaviour:
   moduleId: nova_fire_arm43_przso
   displayName: "\uD504\uB9AC\uC9D5\uC18C\uC6B8"
   icon: {fileID: 0}
-  attackDamage: 48
-  attackSpeed: 0.93
-  range: 7
+  assemblyForm: 1
+  attackDamage: 56
+  attackSpeed: 0.8
+  range: 7.75
   description: datan\common\arm43_przso.gx
   previewPrefab: {fileID: 7662100765391011109, guid: 9ecf001a9c4997d4fbd3cd3ff46f4bb1, type: 3}

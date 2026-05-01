@@ -1,12 +1,12 @@
 ---
 name: jg-coding-guardrails
 description: >-
-  Project-specific coding guardrails for the JG repo. Use this skill whenever Codex is asked to implement code, fix bugs, refactor, add or adjust tests, define validation criteria, reduce LLM coding errors, handle assumptions before coding, keep changes simple, make surgical edits, or respond to Korean requests involving "LLM coding 오류", "가정", "단순함", "외과적 변화", "검증 기준", "코딩 오류", "과잉 구현", "추측 구현", or "테스트/검증". This skill routes implementation work through the repo's coding guardrails SSOT before following the relevant architecture, Unity, document, or feature owner docs.
+  Project-specific coding guardrails for the JG repo. Use this skill whenever Codex is asked to implement code, fix bugs, refactor, plan a refactor, split refactoring work into safe incremental steps, add or adjust tests, write regression tests, use TDD/test-first/RED-GREEN-refactor, define validation criteria, clarify ambiguous requirements, ask clarification questions, lock success criteria, reduce LLM coding errors, handle assumptions before coding, keep changes simple, make surgical edits, or respond to Korean requests involving "LLM coding 오류", "가정", "명확화", "질문 루프", "성공 기준", "단순함", "외과적 변화", "검증 기준", "코딩 오류", "과잉 구현", "추측 구현", "리팩터 계획", "리팩터 slice", "점진적 리팩터", "작은 리팩터 단계", "안전한 리팩터", "TDD", "테스트 우선", "행동 기준 테스트", "회귀 테스트", or "테스트/검증". This skill routes implementation work through the repo's coding guardrails SSOT before following the relevant architecture, Unity, document, or feature owner docs.
 ---
 
 # JG Coding Guardrails
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: skill.jg-coding-guardrails
 > role: skill-entry
@@ -34,11 +34,12 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection 
 1. Lock the target and success criteria.
 2. Identify assumptions that are already answerable from repo evidence.
 3. Ask only when unresolved ambiguity would affect product direction, architecture, API/schema, scene contract, UX, or another hard-to-reverse choice.
-4. Choose the smallest cohesive change that satisfies the target.
-5. Make surgical edits only inside the affected owner boundary.
-6. Clean up only unused code created by this change.
-7. Validate with the narrowest meaningful compile, lint, test, smoke, or static check.
-8. Report mechanical status separately from actual acceptance.
+4. For refactors, split the work into small behavior-preserving steps with a feedback loop before editing.
+5. Choose the smallest cohesive change that satisfies the target.
+6. Make surgical edits only inside the affected owner boundary.
+7. Clean up only unused code created by this change.
+8. Validate with the narrowest meaningful compile, lint, test, smoke, or static check.
+9. Report mechanical status separately from actual acceptance.
 
 ## Boundaries
 

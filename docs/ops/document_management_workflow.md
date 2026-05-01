@@ -1,6 +1,6 @@
 # Document Management Workflow
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: ops.document-management-workflow
 > role: ssot
@@ -143,6 +143,7 @@
 `plans.progress`는 현재 상태, 현재 포커스, active owner, 미완료 TODO, 다음 작업만 짧게 소유한다.
 dated implementation log, 긴 evidence 목록, 완료된 pass의 세부 기록은 해당 owner plan/reference로 넘긴다.
 현재 포커스가 오래된 active plan 목록에 묻히면, 진행률 본문을 늘리기보다 plan lifecycle을 먼저 재검토한다.
+`progress.md`를 제외한 active plan budget은 5개이며, 초과하면 먼저 완료/blocked/residual-only plan을 reference 압축 또는 삭제 후보로 판정한다.
 active execution 판단은 `plans.progress`와 active owner plan이 맡고, 세부 acceptance는 해당 active owner plan에 둔다.
 완료 증거와 닫힌 blocker 설명은 reference plan이나 closeout artifact에 남기며, `plans.progress`에는 현재 판단을 바꾸는 residual만 짧게 남긴다.
 reference로 닫힌 lane은 `plans.progress`에서 상세 evidence를 반복하지 않고 남은 residual owner 또는 다음 active owner만 한 줄로 남긴다.
@@ -212,8 +213,9 @@ reference로 보존할 때는 `Closeout`, `Residual owner`, `Evidence links` 수
 
 - 문서 관리 변경 후 기본 검증은 `npm run --silent rules:lint`다.
 - `rules:lint`는 metadata, relative links, `doc_id`, index registry, status mismatch, owner reference, Plan Mode routing, repo-local skill routing, recurrence closeout, presentation/stitch policy lint를 함께 본다.
-- 단순 docs-only plan 작성, 작은 문서 보정, 상태 한두 줄 갱신은 `rules:lint`와 authoring review로 충분하다.
-- rules/policy/tooling recurrence 예방 자체가 작업 대상이면 `artifacts/rules/issue-recurrence-closeout.json`도 같은 변경에서 갱신한다. 예: `docs/ops/*`의 운영 기준 변경, repo-local skill routing 변경, `tools/docs-lint/**`, `tools/rule-harness/**`, `.githooks/**`, 관련 workflow/script 변경.
+- 단순 docs-only plan 작성, playtest/checklist/design/reference 보정, 상태 한두 줄 갱신은 `rules:lint`와 authoring review로 충분하다.
+- recurrence closeout artifact는 recurrence-tracked rule/tooling scope에만 요구한다: `AGENTS.md`, `docs/index.md`, `docs/ops/*`, `.codex/skills/jg-*`, `tools/docs-lint/*`, `tools/rule-harness/*`, `.githooks/*`, `.github/workflows/docs-lint.yml`, `artifacts/rules/issue-recurrence-closeout.json`.
+- feature tool implementation, 일반 `tools/*/README.md`, `docs/plans/*`, `docs/playtest/*`, `docs/design/*` 변경은 그 변경 자체가 rule/tooling recurrence 예방을 건드리지 않는 한 closeout artifact를 요구하지 않는다.
 - closeout artifact는 declared lane, mutation class, acceptance evidence class, escalation 필요 여부를 함께 남겨 silent lane escalation을 기계적으로 점검할 수 있어야 한다.
 - closeout artifact 동기화는 `npm run --silent rules:sync-closeout`를 사용한다.
 - `rules:lint`와 `rules:sync-closeout`는 `RULES_LINT_CHANGED_FILES`가 없으면 unstaged, staged, untracked 변경 목록을 git에서 직접 계산한다. plain `npm run --silent rules:lint`가 closeout artifact 누락을 잡아야 한다.
@@ -230,3 +232,4 @@ reference로 보존할 때는 `Closeout`, `Residual owner`, `Evidence links` 수
 5. closeout 표현에 기준, 증거, 남은 리스크가 맞게 붙어 있는가?
 6. 큰 문서 작업이면 `owner impact`(여러 owner 영향)와 `doc lifecycle checked`(상태/삭제 후보 확인)를 남겼는가?
 7. active plan을 새로 만들거나 phase를 분리했다면 기존 active parent가 여전히 직접 실행 owner인지 확인했는가?
+8. `plan rereview: clean`을 남긴다면 실제 확인한 scope를 한 줄에 붙였는가?

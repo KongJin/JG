@@ -2,6 +2,13 @@ using UnityEngine;
 
 namespace Features.Unit.Infrastructure
 {
+    public enum MobilitySurface
+    {
+        Unspecified,
+        Ground,
+        Air
+    }
+
     /// <summary>
     /// 기동 모듈 데이터 (ScriptableObject).
     /// 하단 슬롯: HP, 이동범위, 방어 결정.
@@ -13,6 +20,9 @@ namespace Features.Unit.Infrastructure
         [SerializeField] private string moduleId;
         [SerializeField] private string displayName;
         [SerializeField] private Sprite icon;
+
+        [Header("Assembly")]
+        [SerializeField] private MobilitySurface mobilitySurface;
 
         [Header("Defense Stats")]
         [SerializeField] private float hpBonus;
@@ -30,6 +40,7 @@ namespace Features.Unit.Infrastructure
         public string ModuleId => moduleId;
         public string DisplayName => displayName;
         public Sprite Icon => icon;
+        public MobilitySurface MobilitySurface => mobilitySurface;
         public float HpBonus => hpBonus;
         public float MoveRange => moveRange;
         public float AnchorRange => anchorRange;

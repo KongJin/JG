@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Features.Unit.Infrastructure;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
@@ -125,7 +126,7 @@ namespace Features.Garage.Presentation
             string searchText)
         {
             var normalizedSearch = searchText ?? string.Empty;
-            var allOptions = BuildOptions(catalog, activeSlot);
+            var allOptions = BuildOptions(catalog, activeSlot, draftSelection);
             var filteredOptions = FilterOptions(allOptions, normalizedSearch);
             string selectedId = GetSelectedId(draftSelection, activeSlot);
             var visibleOptions = new List<GarageNovaPartOptionViewModel>(filteredOptions.Count);
@@ -186,12 +187,13 @@ namespace Features.Garage.Presentation
             };
         }
 
-        private static List<Candidate> BuildOptions(GaragePanelCatalog catalog, GarageNovaPartPanelSlot slot)
+        private static List<Candidate> BuildOptions(GaragePanelCatalog catalog, GarageNovaPartPanelSlot slot, GarageNovaPartsDraftSelection draftSelection)
         {
             var options = new List<Candidate>();
             if (catalog == null)
                 return options;
 
+            var selectedFrame = catalog.FindFrame(draftSelection.FrameId);
             switch (slot)
             {
                 case GarageNovaPartPanelSlot.Frame:
@@ -213,6 +215,9 @@ namespace Features.Garage.Presentation
                     for (int i = 0; i < catalog.Firepower.Count; i++)
                     {
                         var part = catalog.Firepower[i];
+                        if (selectedFrame != null && !UnitPartCompatibility.AreAssemblyFormsCompatible(selectedFrame.AssemblyForm, part.AssemblyForm))
+                            continue;
+
                         options.Add(new Candidate(
                             slot,
                             part.Id,

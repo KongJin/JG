@@ -6,7 +6,7 @@ description: >-
 
 # JG Stitch Unity Import
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: skill.jg-stitch-unity-import
 > role: skill-entry
@@ -66,7 +66,7 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
    - Inspect Unity console errors after capture or Play Mode evidence.
    - Run `Invoke-UnityUiAuthoringWorkflowPolicy.ps1` with an explicit `-ChangedFile` list for this pass so unrelated dirty worktree state does not pollute the verdict.
    - Run `npm run --silent rules:lint` when docs, skills, or managed artifacts changed.
-   - If a plan doc changed, run the plan rereview loop and leave `plan rereview: clean` or an explicit residual.
+   - If a plan doc changed, run the plan rereview loop and leave `plan rereview: clean - <checked scope>` or an explicit residual.
 
 ## Acceptance Language
 

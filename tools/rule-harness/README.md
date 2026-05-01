@@ -1,6 +1,6 @@
 # Rule Harness
 
-> 마지막 업데이트: 2026-04-28
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: tools.rule-harness-readme
 > role: reference
@@ -127,7 +127,7 @@ runtime 검증 운영 모델은 아래로 고정한다.
 - 하네스는 scene-specific runtime smoke를 자동 실행하지 않는다.
 - Unity MCP는 compile/status refresh와 generic console/hierarchy 진단에만 사용한다.
 - runtime 확인이 필요한 변경은 `manual-validation-required` 또는 `docs/playtest/runtime_validation_checklist.md` 기록으로 남긴다.
-- scope가 `AGENTS.md`, `docs/*`, `.codex/skills/jg-*`, `.githooks/*`, `tools/docs-lint/*`, `tools/rule-harness/*`로 시작하면 하네스는 이를 `rules-only scope`로 취급한다.
+- scope가 `AGENTS.md`, `docs/index.md`, `docs/ops/*`, `.codex/skills/jg-*`, `.githooks/*`, `.github/workflows/docs-lint.yml`, `tools/docs-lint/*`, `tools/rule-harness/*`, `artifacts/rules/issue-recurrence-closeout.json`로 시작하면 하네스는 이를 `rules-only scope`로 취급한다.
 - `rules-only scope`에서 feature code, scene/prefab, generated `.csproj` 같은 비규칙 target이 batch에 섞이면 `rules-scope-mutation-violation`으로 즉시 stop한다.
 - `rules-only scope`에서 patch plan target이 남으면 하네스는 `artifacts/rules/issue-recurrence-closeout.json`을 함께 검사한다.
   - `verification`은 항상 비어 있으면 안 된다.

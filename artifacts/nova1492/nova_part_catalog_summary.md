@@ -6,34 +6,37 @@
 
 | slot | count | missing models | name review | triangle range |
 |---|---:|---:|---:|---|
-| Firepower | 91 | 0 | 0 | 80-1248 |
-| Frame | 71 | 0 | 0 | 20-858 |
-| Mobility | 60 | 0 | 0 | 12-1294 |
+| Firepower | 52 | 0 | 0 | 80-658 |
+| Frame | 43 | 0 | 0 | 40-321 |
+| Mobility | 49 | 0 | 0 | 128-724 |
 
 ## Category Mapping
 
 | category | slot | count |
 |---|---|---:|
-| UnitParts/ArmWeapons | Firepower | 91 |
-| UnitParts/Bodies | Frame | 71 |
-| UnitParts/Legs | Mobility | 60 |
+| UnitParts/ArmWeapons | Firepower | 52 |
+| UnitParts/Bodies | Frame | 43 |
+| UnitParts/Legs | Mobility | 49 |
 
 ## Source Name Coverage
 
 - part description source: `C:\Program Files (x86)\Nova1492\datan\kr\nvpartdesc.dat`
 - GX description source: `C:\Program Files (x86)\Nova1492\datan\common\gxdesc.ini`
-- rows with original Korean name: 145
-- rows with GX description code mapping: 60
+- rows with original Korean name: 144
+- rows with GX description code mapping: 49
 
 ## Playable Filter Policy
 
 - `Frame` includes canonical `body*` rows from `UnitParts/Bodies` only.
 - `Firepower` includes canonical `arm*` rows from `UnitParts/ArmWeapons` only.
 - `Mobility` includes canonical `legs*` rows from `UnitParts/Legs` only, with original code ranges from `gxdesc.ini` when available.
+- Rows without an original Korean part name are excluded from the playable catalog until naming and assembly eligibility are reviewed.
+- `datan\common\arm23_rkog.gx` is excluded from playable Garage after manual visual review; source and converted artifacts may remain for diagnosis.
 - `UnitParts/Bases`, `UnitParts/Accessories`, and detached `front/top/larm/rarm/lback/rback/shoulder` pieces are excluded from playable Garage.
 
 ## Generated Stat Policy
 
 - Tier is generated per slot from triangle-count quantiles, `1..5`.
 - Generated stats are a playable smoke baseline, not final balance.
+- `assemblyForm` maps original top/middle compatibility ranges to `Tower`, `Shoulder`, or `Humanoid`; `mobilitySurface` maps lower parts to `Ground` or `Air` for catalog/UI filtering only.
 - `needsNameReview=true` rows keep source-derived IDs but require later naming review before release.

@@ -6,7 +6,7 @@ description: >-
 
 # JG Document Lifecycle
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-01
 > 상태: active
 > doc_id: skill.jg-doc-lifecycle
 > role: skill-entry
@@ -41,7 +41,7 @@ Use this flow for document cleanup, deletion, compression, merge, rename, or rou
    - Execution closeout belongs in `plans/*`.
 
 2. State the change reason in one sentence.
-   - Example: `Merge Phase 5 multiplayer residual into GameScene actual-flow closeout.`
+   - Example: `Reroute stale active-owner wording to the current plans.progress residual.`
    - If that sentence naturally splits into multiple reasons, split the work or keep separate owners.
 
 3. Choose the change boundary.
@@ -68,7 +68,7 @@ Use this flow for document cleanup, deletion, compression, merge, rename, or rou
 
 7. Validate mechanically.
    - Run `npm run --silent rules:lint` after managed document or repo-local skill changes.
-   - If rules-only or document lifecycle changes require closeout artifact sync, run `npm run --silent rules:sync-closeout` or leave an explicit blocked/residual reason if the artifact cannot be safely updated.
+   - If recurrence-tracked rule/tooling scope requires closeout artifact sync, run `npm run --silent rules:sync-closeout` or leave an explicit blocked/residual reason if the artifact cannot be safely updated.
    - Do not report success when lint, policy, stale search, or closeout artifact sync is blocked.
 
 8. Finish with lifecycle judgment.
@@ -87,6 +87,7 @@ Before final response or closeout, confirm:
 - Deleted or merged paths have no active stale references.
 - `npm run --silent rules:lint` was run, or the blocked reason is explicit.
 - Closeout wording separates mechanical evidence from actual acceptance.
+- `plan rereview: clean` includes the checked scope instead of a bare label.
 - Large document work includes `owner impact` and `doc lifecycle checked`.
 
 ## Boundaries

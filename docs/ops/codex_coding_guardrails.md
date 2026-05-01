@@ -78,6 +78,28 @@
 - 미래 유연성, 새 설정, 새 fallback, 새 extension point는 현재 성공 기준에 필요할 때만 추가한다.
 - 줄 수, 파일 수, DRY는 보조 기준이다. 응집도 판단은 `ops.cohesion-coupling-policy`를 따른다.
 
+## Refactor Slice Lite
+
+리팩터는 동작을 바꾸지 않는 정리와 동작 변경을 분리한다.
+목표는 GitHub issue나 긴 RFC를 만드는 것이 아니라, 각 단계가 작고 검증 가능한 상태로 남게 하는 것이다.
+
+1. 현재 상태를 먼저 확인한다.
+   - 사용자 설명을 그대로 가정하지 말고 관련 코드, caller, tests, owner 문서로 실제 문제를 확인한다.
+   - 리팩터가 해결할 friction과 바꾸지 않을 동작을 한 문장씩 분리한다.
+2. scope와 out-of-scope를 잠근다.
+   - API/schema/scene contract/UX/product judgment가 바뀌면 리팩터가 아니라 별도 behavior or design change로 분리한다.
+   - 같은 이유로 바뀌지 않는 cleanup, rename, dead-code removal은 섞지 않는다.
+3. test coverage와 feedback loop를 확인한다.
+   - 기존 compile/test/static/smoke 중 refactor regression을 잡을 수 있는 가장 좁은 check를 고른다.
+   - 테스트 표면이 부족하면 먼저 behavior check를 만들거나, 불가능한 이유를 testability residual로 남긴다.
+4. 작은 reviewable step으로 나눈다.
+   - 각 step은 끝났을 때 codebase가 동작 가능한 상태여야 한다.
+   - rename/move, seam extraction, behavior-preserving cleanup, behavior change를 한 step에 섞지 않는다.
+   - path 목록보다 책임, interface, caller impact, validation decision을 우선 기록한다.
+5. 단계마다 검증한다.
+   - 큰 리팩터를 한 번에 구현한 뒤 마지막에만 검증하지 않는다.
+   - 실패하면 마지막 안전한 step 기준으로 원인과 남은 residual을 분리한다.
+
 ## Surgical Edits
 
 - 꼭 필요한 기존 코드만 수정하고, 주변 코드의 스타일 개선이나 unrelated cleanup을 섞지 않는다.

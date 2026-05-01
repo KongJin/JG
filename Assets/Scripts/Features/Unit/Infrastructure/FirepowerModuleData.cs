@@ -14,6 +14,9 @@ namespace Features.Unit.Infrastructure
         [SerializeField] private string displayName;
         [SerializeField] private Sprite icon;
 
+        [Header("Assembly")]
+        [SerializeField] private AssemblyForm assemblyForm;
+
         [Header("Combat Stats")]
         [SerializeField] private float attackDamage;
         [SerializeField] private float attackSpeed;
@@ -28,6 +31,7 @@ namespace Features.Unit.Infrastructure
         public string ModuleId => moduleId;
         public string DisplayName => displayName;
         public Sprite Icon => icon;
+        public AssemblyForm AssemblyForm => assemblyForm;
         public float AttackDamage => attackDamage;
         public float AttackSpeed => attackSpeed;
         public float Range => range;
