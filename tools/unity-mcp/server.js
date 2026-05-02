@@ -201,7 +201,7 @@ const tools = [
         },
         path: {
           type: "string",
-          description: "Optional: only return hierarchy under this GameObject path (e.g. '/Canvas/Panel')."
+          description: "Optional: only return hierarchy under this GameObject path (e.g. '/GarageSetBUitkDocument')."
         },
         includeComponents: {
           type: "boolean",
@@ -225,7 +225,7 @@ const tools = [
         },
         path: {
           type: "string",
-          description: "Full hierarchy path (e.g. '/Canvas/Panel/Button'). More precise than name."
+          description: "Full hierarchy path (e.g. '/GarageSetBUitkDocument'). More precise than name."
         },
         lightweight: {
           type: "boolean",
@@ -254,12 +254,12 @@ const tools = [
         },
         parent: {
           type: "string",
-          description: "Parent GameObject path (e.g. '/Canvas'). If omitted, created at scene root."
+          description: "Parent GameObject path (e.g. '/SceneRoot'). If omitted, created at scene root."
         },
         components: {
           type: "array",
           items: { type: "string" },
-          description: "Component types to add (e.g. ['Image', 'Button', 'TextMeshProUGUI'])."
+          description: "Component types to add (e.g. ['UIDocument', 'AudioSource'])."
         }
       },
       required: ["name"],
@@ -299,10 +299,34 @@ const tools = [
       properties: {
         path: {
           type: "string",
-          description: "GameObject path to destroy (e.g. '/Canvas/OldPanel')."
+          description: "GameObject path to destroy (e.g. '/TemporaryProbe')."
         }
       },
       required: ["path"],
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_gameobject_invoke",
+    description: "Invoke a MonoBehaviour method on a GameObject by path. Use this for smoke-driver methods, not /ui/*.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        path: {
+          type: "string",
+          description: "Full hierarchy path to the GameObject."
+        },
+        method: {
+          type: "string",
+          description: "MonoBehaviour method name."
+        },
+        args: {
+          type: "array",
+          items: {},
+          description: "Optional method arguments."
+        }
+      },
+      required: ["path", "method"],
       additionalProperties: false
     }
   },
@@ -391,115 +415,103 @@ const tools = [
     }
   },
   {
-    name: "unity_ui_state",
-    description: "Get the current UI snapshot across loaded canvases while the scene is running.",
-    inputSchema: {
-      type: "object",
-      properties: {},
-      additionalProperties: false
-    }
-  },
-  {
-    name: "unity_ui_get_state",
-    description: "Read the state of a specific UI element by hierarchy path.",
+    name: "unity_uitk_state",
+    description: "List UI Toolkit UIDocuments and VisualElement trees. UGUI Canvas routes are disabled in this project.",
     inputSchema: {
       type: "object",
       properties: {
-        path: {
+        documentPath: {
           type: "string",
-          description: "Full hierarchy path to the target UI element."
+          description: "Optional UIDocument GameObject path, for example '/LobbyUitkDocument'."
+        },
+        documentName: {
+          type: "string",
+          description: "Optional UIDocument GameObject name."
+        },
+        maxDepth: {
+          type: "integer",
+          minimum: 1,
+          maximum: 50,
+          description: "Maximum VisualElement tree depth. Default is 6."
         }
       },
-      required: ["path"],
       additionalProperties: false
     }
   },
   {
-    name: "unity_ui_invoke",
-    description: "Invoke a UI element action such as click, submit, value, or a custom method.",
+    name: "unity_uitk_get_state",
+    description: "Read a UI Toolkit VisualElement state by UIDocument and element name/path.",
     inputSchema: {
       type: "object",
       properties: {
-        path: {
+        documentPath: {
           type: "string",
-          description: "Full hierarchy path to the target UI element."
+          description: "UIDocument GameObject path, for example '/LobbyUitkDocument'."
         },
+        documentName: { type: "string" },
+        elementName: { type: "string" },
+        elementPath: { type: "string", description: "Slash-separated VisualElement name path under the document root." }
+      },
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_uitk_set_value",
+    description: "Set a UI Toolkit field or text value by UIDocument and element name/path.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        documentPath: {
+          type: "string",
+          description: "UIDocument GameObject path, for example '/LobbyUitkDocument'."
+        },
+        documentName: { type: "string" },
+        elementName: { type: "string" },
+        elementPath: { type: "string" },
+        value: { type: "string" }
+      },
+      required: ["value"],
+      additionalProperties: false
+    }
+  },
+  {
+    name: "unity_uitk_invoke",
+    description: "Invoke a UI Toolkit VisualElement action such as click, focus, or value.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        documentPath: {
+          type: "string",
+          description: "UIDocument GameObject path, for example '/LobbyUitkDocument'."
+        },
+        documentName: { type: "string" },
+        elementName: { type: "string" },
+        elementPath: { type: "string" },
         method: {
           type: "string",
-          enum: ["click", "submit", "value", "custom"],
+          enum: ["click", "focus", "value"],
           description: "Invocation mode. Defaults to 'click'."
         },
-        customMethod: {
-          type: "string",
-          description: "Method name to call when method='custom'."
-        },
-        args: {
-          type: "array",
-          items: {},
-          description: "Optional method arguments."
-        }
-      },
-      required: ["path"],
-      additionalProperties: false
-    }
-  },
-  {
-    name: "unity_ui_wait_for_active",
-    description: "Wait until a UI element becomes active in hierarchy.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        path: { type: "string" },
-        name: { type: "string" },
-        timeoutMs: { type: "integer", minimum: 100, maximum: 600000 },
-        pollIntervalMs: { type: "integer", minimum: 20, maximum: 5000 }
+        value: { type: "string", description: "Value used when method='value'." }
       },
       additionalProperties: false
     }
   },
   {
-    name: "unity_ui_wait_for_inactive",
-    description: "Wait until a UI element becomes inactive in hierarchy.",
+    name: "unity_uitk_wait_for_element",
+    description: "Wait until a UI Toolkit VisualElement exists or its text matches.",
     inputSchema: {
       type: "object",
       properties: {
-        path: { type: "string" },
-        name: { type: "string" },
-        timeoutMs: { type: "integer", minimum: 100, maximum: 600000 },
-        pollIntervalMs: { type: "integer", minimum: 20, maximum: 5000 }
-      },
-      additionalProperties: false
-    }
-  },
-  {
-    name: "unity_ui_wait_for_text",
-    description: "Wait until a UI text element matches or contains expected text.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        path: { type: "string" },
-        name: { type: "string" },
+        documentPath: { type: "string" },
+        documentName: { type: "string" },
+        elementName: { type: "string" },
+        elementPath: { type: "string" },
         expectedText: { type: "string" },
         exact: { type: "boolean" },
         timeoutMs: { type: "integer", minimum: 100, maximum: 600000 },
         pollIntervalMs: { type: "integer", minimum: 20, maximum: 5000 }
       },
-      required: ["expectedText"],
-      additionalProperties: false
-    }
-  },
-  {
-    name: "unity_ui_wait_for_component",
-    description: "Wait until a GameObject exposes a specific component type.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        path: { type: "string" },
-        componentType: { type: "string" },
-        timeoutMs: { type: "integer", minimum: 100, maximum: 600000 },
-        pollIntervalMs: { type: "integer", minimum: 20, maximum: 5000 }
-      },
-      required: ["path", "componentType"],
       additionalProperties: false
     }
   },
@@ -758,6 +770,8 @@ async function callTool(name, args) {
       return requestUnityJsonWithBody("POST", "/gameobject/create-primitive", args);
     case "unity_gameobject_destroy":
       return requestUnityJsonWithBody("POST", "/gameobject/destroy", { path: args.path });
+    case "unity_gameobject_invoke":
+      return requestUnityJsonWithBody("POST", "/gameobject/invoke", args);
     case "unity_component_add":
       return requestUnityJsonWithBody("POST", "/component/add", args);
     case "unity_component_set":
@@ -766,32 +780,28 @@ async function callTool(name, args) {
       return requestUnityJsonWithBody("POST", "/component/get", args);
     case "unity_scene_save":
       return requestUnityJsonWithBody("POST", "/scene/save", {});
-    case "unity_ui_state":
-      return requestUnityJson("GET", "/ui/state");
-    case "unity_ui_get_state":
-      return requestUnityJsonWithBody("POST", "/ui/get-state", { path: args.path });
-    case "unity_ui_invoke":
-      return requestUnityJsonWithBody("POST", "/ui/invoke", args);
-    case "unity_ui_wait_for_active":
-      return requestUnityJsonWithBody("POST", "/ui/wait-for-active", buildUiWaitBody(args));
-    case "unity_ui_wait_for_inactive":
-      return requestUnityJsonWithBody("POST", "/ui/wait-for-inactive", buildUiWaitBody(args));
-    case "unity_ui_wait_for_text":
-      return requestUnityJsonWithBody("POST", "/ui/wait-for-text", {
-        path: args.path,
-        name: args.name,
-        expectedText: args.expectedText,
-        exact: Boolean(args.exact),
-        timeoutMs: parsePositiveInt(args.timeoutMs, 10000),
-        pollIntervalMs: parsePositiveInt(args.pollIntervalMs, 100)
-      });
-    case "unity_ui_wait_for_component":
-      return requestUnityJsonWithBody("POST", "/ui/wait-for-component", {
-        path: args.path,
-        componentType: args.componentType,
-        timeoutMs: parsePositiveInt(args.timeoutMs, 10000),
-        pollIntervalMs: parsePositiveInt(args.pollIntervalMs, 100)
-      });
+    case "unity_uitk_state": {
+      const params = new URLSearchParams();
+      if (args.documentPath) params.set("documentPath", args.documentPath);
+      if (args.documentName) params.set("documentName", args.documentName);
+      if (args.maxDepth) params.set("maxDepth", String(parsePositiveInt(args.maxDepth, 6)));
+      const suffix = params.toString() ? `?${params.toString()}` : "";
+      return requestUnityJson("GET", `/uitk/state${suffix}`);
+    }
+    case "unity_uitk_get_state":
+      return requestUnityJsonWithBody("POST", "/uitk/get-state", buildUitkElementBody(args));
+    case "unity_uitk_set_value":
+      return requestUnityJsonWithBody("POST", "/uitk/set-value", buildUitkElementBody(args));
+    case "unity_uitk_invoke":
+      return requestUnityJsonWithBody("POST", "/uitk/invoke", buildUitkElementBody(args));
+    case "unity_uitk_wait_for_element": {
+      const timeoutMs = parsePositiveInt(args.timeoutMs, 10000);
+      const body = buildUitkElementBody(args);
+      body.timeoutMs = timeoutMs;
+      body.pollIntervalMs = parsePositiveInt(args.pollIntervalMs, 100);
+      const httpTimeoutMs = Math.min(660000, Math.max(requestTimeoutMs, timeoutMs + 30000));
+      return requestUnityJsonWithBody("POST", "/uitk/wait-for-element", body, httpTimeoutMs);
+    }
     case "unity_screenshot_capture":
       return requestUnityJsonWithBody("POST", "/screenshot/capture", {
         outputPath: args.outputPath,
@@ -1019,13 +1029,25 @@ function parsePositiveInt(value, fallbackValue) {
   return fallbackValue;
 }
 
-function buildUiWaitBody(args) {
-  return {
-    path: args.path,
-    name: args.name,
-    timeoutMs: parsePositiveInt(args.timeoutMs, 10000),
-    pollIntervalMs: parsePositiveInt(args.pollIntervalMs, 100)
-  };
+function buildUitkElementBody(args) {
+  const body = {};
+  for (const key of [
+    "documentPath",
+    "documentName",
+    "elementName",
+    "elementPath",
+    "method",
+    "value",
+    "expectedText"
+  ]) {
+    if (args[key] !== undefined && args[key] !== null) {
+      body[key] = String(args[key]);
+    }
+  }
+  if (args.exact !== undefined) {
+    body.exact = Boolean(args.exact);
+  }
+  return body;
 }
 
 function truncate(value, maxLength) {

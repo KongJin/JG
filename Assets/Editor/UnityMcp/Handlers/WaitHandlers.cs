@@ -89,7 +89,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 {
                     code = "NOT_FOUND",
                     message = "path is required",
-                    detail = "Expected: { path: \"/Canvas/MyButton\", timeoutMs: 10000 }"
+                    detail = "Expected: { path: \"/GarageSetBUitkDocument\", timeoutMs: 10000 }"
                 });
                 return;
             }
@@ -128,7 +128,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 {
                     code = "NOT_FOUND",
                     message = "path and componentType are required",
-                    detail = "Expected: { path: \"/Canvas/MyButton\", componentType: \"Button\" }"
+                    detail = "Expected: { path: \"/GarageSetBUitkDocument\", componentType: \"UIDocument\" }"
                 });
                 return;
             }
@@ -221,7 +221,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 {
                     code = "NOT_FOUND",
                     message = "path is required",
-                    detail = "Expected: { path: \"/Canvas/LoadingPanel\", timeoutMs: 10000 }"
+                    detail = "Expected: { path: \"/GarageSetBUitkDocument\", timeoutMs: 10000 }"
                 });
                 return;
             }

@@ -32,10 +32,30 @@ namespace Tests.Editor
         [Test]
         public void GarageWorkflow_PublicMethods_AreAvailable()
         {
-            Assert.NotNull(GaragePagePresenterType.GetMethod("BuildResultViewModel", BindingFlags.Instance | BindingFlags.Public));
-            Assert.NotNull(GaragePageStateType.GetMethod("Initialize", BindingFlags.Instance | BindingFlags.Public));
-            Assert.NotNull(GarageDraftEvaluationType.GetMethod("Create", BindingFlags.Public | BindingFlags.Static));
-            Assert.NotNull(ValidateRosterUseCaseType.GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public));
+            Assert.NotNull(GaragePagePresenterType.GetMethod(
+                "BuildResultViewModel",
+                BindingFlags.Instance | BindingFlags.Public,
+                null,
+                new[] { GaragePageStateType, GarageDraftEvaluationType, typeof(string) },
+                null));
+            Assert.NotNull(GaragePageStateType.GetMethod(
+                "Initialize",
+                BindingFlags.Instance | BindingFlags.Public,
+                null,
+                new[] { GarageRosterType },
+                null));
+            Assert.NotNull(GarageDraftEvaluationType.GetMethod(
+                "Create",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new[] { GaragePageStateType, typeof(bool), ResultOfUnitType, ResultOfUnitType, ResultType },
+                null));
+            Assert.NotNull(ValidateRosterUseCaseType.GetMethod(
+                "Execute",
+                BindingFlags.Instance | BindingFlags.Public,
+                null,
+                new[] { GarageRosterType, typeof(string).MakeByRefType() },
+                null));
         }
     }
 }

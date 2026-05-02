@@ -1,4 +1,5 @@
 using System;
+using Shared.Gameplay;
 
 namespace Features.Wave.Application
 {
@@ -7,9 +8,9 @@ namespace Features.Wave.Application
     /// </summary>
     public static class DifficultySpawnScale
     {
-        public const int PresetNormal = 0;
-        public const int PresetEasy = 1;
-        public const int PresetHard = 2;
+        public const int PresetNormal = DifficultyPreset.Normal;
+        public const int PresetEasy = DifficultyPreset.Easy;
+        public const int PresetHard = DifficultyPreset.Hard;
 
         public static float MultiplierForPreset(int presetId)
         {

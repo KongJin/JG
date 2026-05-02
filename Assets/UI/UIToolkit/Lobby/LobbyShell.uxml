@@ -22,13 +22,13 @@
             <ui:ScrollView name="LobbyUitkPage" class="uitk-page" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
                 <ui:VisualElement name="LobbyHeaderCard" class="lobby-objective-card">
                     <ui:VisualElement class="lobby-card-head">
-                        <ui:Label text="CURRENT_OBJECTIVE" class="lobby-objective-kicker" />
-                        <ui:Label text="SEC_LEVEL ALPHA" class="lobby-objective-meta" />
+                        <ui:Label text="작전 브리핑" class="lobby-objective-kicker" />
+                        <ui:Label text="거점 방어" class="lobby-objective-meta" />
                     </ui:VisualElement>
                     <ui:VisualElement class="lobby-objective-body">
                         <ui:VisualElement class="lobby-objective-copy">
-                            <ui:Label text="Sector 7 Extraction: Hold the perimeter until EVAC arrives." class="lobby-objective-title" />
-                            <ui:Label text="ETA: 04:28:11" class="lobby-objective-time" />
+                            <ui:Label text="지원 도착 전까지 공용 거점을 지키세요." class="lobby-objective-title" />
+                            <ui:Label text="예상 교전 5분" class="lobby-objective-time" />
                         </ui:VisualElement>
                         <ui:VisualElement class="lobby-objective-icon">
                             <ui:VisualElement class="uitk-icon uitk-icon--radar uitk-icon--large uitk-icon--blue lobby-objective-icon-glyph" />
@@ -36,45 +36,45 @@
                     </ui:VisualElement>
                     <ui:VisualElement class="lobby-objective-stats">
                         <ui:VisualElement class="lobby-mini-stat">
-                            <ui:Label text="THREAT" class="lobby-mini-label" />
-                            <ui:Label text="CRITICAL" class="lobby-mini-value lobby-mini-value--orange" />
+                            <ui:Label text="공세" class="lobby-mini-label" />
+                            <ui:Label text="대기" class="lobby-mini-value lobby-mini-value--orange" />
                         </ui:VisualElement>
                         <ui:VisualElement class="lobby-mini-stat">
-                            <ui:Label text="ENVIRONMENT" class="lobby-mini-label" />
-                            <ui:Label text="VOLCANIC" class="lobby-mini-value lobby-mini-value--blue" />
+                            <ui:Label text="전장" class="lobby-mini-label" />
+                            <ui:Label text="반개방" class="lobby-mini-value lobby-mini-value--blue" />
                         </ui:VisualElement>
                         <ui:VisualElement class="lobby-mini-stat">
-                            <ui:Label text="REWARD" class="lobby-mini-label" />
-                            <ui:Label text="8.5k CR" class="lobby-mini-value" />
+                            <ui:Label text="목표" class="lobby-mini-label" />
+                            <ui:Label text="코어 방어" class="lobby-mini-value" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
 
                 <ui:VisualElement name="RoomsSectionCard" class="uitk-card">
                     <ui:VisualElement class="lobby-section-head">
-                        <ui:Label text="DEPLOYMENT_QUEUE" class="uitk-section-title" />
-                        <ui:Label name="RoomCountLabel" text="0 ACTIVE INSTANCES" class="lobby-section-count" />
+                        <ui:Label text="열린 방" class="uitk-section-title" />
+                        <ui:Label name="RoomCountLabel" text="열린 방 0개" class="lobby-section-count" />
                     </ui:VisualElement>
                     <ui:VisualElement name="RoomList" />
                 </ui:VisualElement>
 
                 <ui:VisualElement name="CreateRoomCard" class="uitk-card create-node-card">
-                    <ui:Label text="ESTABLISH_NEW_NODE" class="uitk-kicker" />
-                    <ui:TextField name="RoomNameInput" label="Room" value="Room" />
-                    <ui:TextField name="DisplayNameInput" label="Pilot" value="Pilot" />
-                    <ui:IntegerField name="CapacityInput" label="Capacity" value="4" />
-                    <ui:IntegerField name="DifficultyInput" label="Difficulty" value="0" />
+                    <ui:Label text="방 만들기" class="uitk-kicker" />
+                    <ui:TextField name="RoomNameInput" label="방 이름" value="Room" />
+                    <ui:TextField name="DisplayNameInput" label="지휘자" value="Pilot" />
+                    <ui:IntegerField name="CapacityInput" label="인원" value="4" />
+                    <ui:IntegerField name="DifficultyInput" label="난이도" value="0" />
                     <ui:Button name="CreateRoomButton" text="방 만들기" class="uitk-primary-button" />
                 </ui:VisualElement>
 
                 <ui:VisualElement name="GarageSummaryCard" class="garage-summary-card">
                     <ui:VisualElement class="garage-preview-chip">
-                        <ui:Label text="GARAGE" class="garage-preview-kicker" />
+                        <ui:Label text="차고" class="garage-preview-kicker" />
                     </ui:VisualElement>
                     <ui:VisualElement class="garage-summary-copy">
-                        <ui:Label text="GARAGE_SUMMARY" class="garage-summary-kicker" />
-                        <ui:Label text="VINDICATOR-MK4" class="garage-summary-title" />
-                        <ui:Label text="Hull 84%  /  Core sync ready" class="garage-summary-meta" />
+                        <ui:Label text="출격 편성" class="garage-summary-kicker" />
+                        <ui:Label text="현역 기체 동기화" class="garage-summary-title" />
+                        <ui:Label text="저장 상태와 준비 가능 여부 확인" class="garage-summary-meta" />
                     </ui:VisualElement>
                     <ui:Button name="GarageSummaryButton" text="차고" class="garage-summary-button" />
                 </ui:VisualElement>

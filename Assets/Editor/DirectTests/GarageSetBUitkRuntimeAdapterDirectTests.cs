@@ -41,7 +41,7 @@ namespace Tests.Editor
                 Assert.IsTrue(root.Q<VisualElement>("SlotIcon01Glyph").ClassListContains("uitk-icon--security"));
                 Assert.IsTrue(Button(root, "FirepowerTabButton").ClassListContains("focus-tab--active"));
                 Assert.AreEqual("무장 선택", Label(root, "PartListTitleLabel").text);
-                Assert.AreEqual("2 PARTS", Label(root, "PartListCountLabel").text);
+                Assert.AreEqual("부품 2개", Label(root, "PartListCountLabel").text);
                 Assert.AreEqual("레일건", Label(root, "SelectedPartPreviewTitleLabel").text);
                 Assert.AreEqual("ATK 840 | RNG 12.5 | T3", Label(root, "SelectedPartPreviewMetaLabel").text);
                 Assert.IsTrue(Button(root, "PartRow01").ClassListContains("part-row--selected"));
@@ -82,6 +82,8 @@ namespace Tests.Editor
                 var listCard = root.Q<VisualElement>("PartListCard");
                 var rows = root.Q<ScrollView>("PartListRows");
                 var unitPreviewHost = root.Q<VisualElement>("UnitPreviewHost");
+                var workspace = root.Q<VisualElement>("WorkspaceScroll");
+                var saveDock = root.Q<VisualElement>("SaveDock");
                 var content = slotStrip.parent;
 
                 Assert.Less(IndexOfChild(content, slotStrip), IndexOfChild(content, unitPreview));
@@ -91,9 +93,17 @@ namespace Tests.Editor
                 Assert.AreSame(pane, listCard.parent);
                 Assert.IsNull(root.Q<VisualElement>("PartInspectorColumn"));
                 Assert.IsNull(root.Q<VisualElement>("EditorCard"));
-                Assert.AreEqual(250f, unitPreview.style.height.value.value);
-                Assert.AreEqual(178f, unitPreviewHost.style.width.value.value);
-                Assert.AreEqual(124f, rows.style.height.value.value);
+                Assert.AreEqual(128f, unitPreview.style.height.value.value);
+                Assert.AreEqual(76f, unitPreviewHost.style.width.value.value);
+                Assert.AreEqual(StyleKeyword.Auto, rows.style.height.keyword);
+                Assert.AreEqual(0f, rows.style.flexGrow.value);
+                Assert.AreEqual(78f, workspace.style.paddingBottom.value.value);
+                Assert.AreEqual(0f, workspace.style.marginBottom.value.value);
+                Assert.AreEqual(62f, root.style.marginBottom.value.value);
+                Assert.AreSame(root.Q<VisualElement>("GarageSetBScreen"), saveDock.parent);
+                Assert.AreEqual(Position.Absolute, saveDock.style.position.value);
+                Assert.AreEqual(0f, saveDock.style.bottom.value.value);
+                Assert.AreEqual(0f, saveDock.style.marginBottom.value.value);
             }
             finally
             {
@@ -116,7 +126,7 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void Render_DisablesSaveWhenResultCannotSave()
+        public void Render_KeepsSaveDockVisibleWhenResultCannotSave()
         {
             var fixture = CreateRuntimeAdapterFixture();
             try
@@ -139,8 +149,43 @@ namespace Tests.Editor
                 var root = fixture.Host;
                 Assert.AreEqual("현역 편성", Button(root, "SaveButton").text);
                 Assert.IsFalse(Button(root, "SaveButton").enabledSelf);
+                Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>("SaveDock").style.display.value);
+                Assert.AreEqual(78f, root.Q<VisualElement>("WorkspaceScroll").style.paddingBottom.value.value);
                 Assert.IsTrue(Button(root, "FrameTabButton").ClassListContains("focus-tab--active"));
                 Assert.AreEqual("프레임 선택", Label(root, "PartListTitleLabel").text);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void Render_ShowsSaveDockWhenResultCanSave()
+        {
+            var fixture = CreateRuntimeAdapterFixture();
+            try
+            {
+                fixture.Adapter.Render(
+                    CreateSlots(),
+                    CreatePartList(GarageNovaPartPanelSlot.Frame),
+                    CreateEditor(),
+                    new GarageResultViewModel(
+                        "편성 변경 있음",
+                        "저장 대기",
+                        "최근 작전 기록 없음",
+                        isReady: false,
+                        isDirty: true,
+                        canSave: true,
+                        primaryActionLabel: "출격 편성 저장"),
+                    GarageEditorFocus.Frame,
+                    isSaving: false);
+
+                var root = fixture.Host;
+                Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>("SaveDock").style.display.value);
+                Assert.AreEqual(78f, root.Q<VisualElement>("WorkspaceScroll").style.paddingBottom.value.value);
+                Assert.AreEqual("출격 편성 저장", Button(root, "SaveButton").text);
+                Assert.IsTrue(Button(root, "SaveButton").enabledSelf);
             }
             finally
             {
@@ -175,7 +220,7 @@ namespace Tests.Editor
                 Assert.IsNull(previewImage.image);
                 Assert.AreEqual(DisplayStyle.None, previewImage.style.display.value);
                 Assert.AreEqual(DisplayStyle.Flex, Label(root, "UnitPreviewLabel").style.display.value);
-                Assert.AreEqual("BLUEPRINT VIEW", Label(root, "PreviewTitleLabel").text);
+                Assert.AreEqual("설계도 확인", Label(root, "PreviewTitleLabel").text);
             }
             finally
             {
@@ -287,7 +332,7 @@ namespace Tests.Editor
                 GarageEditorFocus.Firepower,
                 "rail");
 
-            Assert.AreEqual("1/2 PARTS", viewModel.CountText);
+            Assert.AreEqual("부품 1/2개", viewModel.CountText);
             Assert.AreEqual(1, viewModel.Options.Count);
             Assert.AreEqual("railgun", viewModel.Options[0].Id);
             Assert.IsTrue(viewModel.Options[0].IsSelected);
@@ -320,7 +365,7 @@ namespace Tests.Editor
                 GarageEditorFocus.Firepower,
                 string.Empty);
 
-            Assert.AreEqual("12 PARTS", viewModel.CountText);
+            Assert.AreEqual("부품 12개", viewModel.CountText);
             Assert.AreEqual(12, viewModel.Options.Count);
             Assert.AreEqual("arm11", viewModel.Options[11].Id);
         }
@@ -361,7 +406,7 @@ namespace Tests.Editor
                 GarageEditorFocus.Firepower,
                 string.Empty);
 
-            Assert.AreEqual("1 PARTS", viewModel.CountText);
+            Assert.AreEqual("부품 1개", viewModel.CountText);
             Assert.AreEqual(1, viewModel.Options.Count);
             Assert.AreEqual("tower-arm", viewModel.Options[0].Id);
             Assert.AreEqual("선택 대기", viewModel.SelectedNameText);
@@ -481,10 +526,9 @@ namespace Tests.Editor
             return new GarageNovaPartsPanelViewModel(
                 slot,
                 searchText: string.Empty,
-                countText: "2 PARTS",
+                countText: "부품 2개",
                 selectedNameText: "레일건",
                 selectedDetailText: "ATK 840 | RNG 12.5 | T3",
-                canApply: true,
                 selectedPreviewPrefab: null,
                 selectedAlignment: null,
                 new[]

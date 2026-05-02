@@ -225,10 +225,9 @@ namespace Tests.Editor
             return new GarageNovaPartsPanelViewModel(
                 GarageNovaPartPanelSlot.Firepower,
                 searchText: string.Empty,
-                countText: "1 PARTS",
+                countText: "부품 1개",
                 selectedNameText: "레일건",
                 selectedDetailText: "ATK 840 | RNG 12.5 | T3",
-                canApply: true,
                 selectedPreviewPrefab: null,
                 selectedAlignment: null,
                 System.Array.Empty<GarageNovaPartOptionViewModel>());
@@ -239,10 +238,9 @@ namespace Tests.Editor
             return new GarageNovaPartsPanelViewModel(
                 GarageNovaPartPanelSlot.Firepower,
                 searchText: string.Empty,
-                countText: "1 PARTS",
+                countText: "부품 1개",
                 selectedNameText: "레일건",
                 selectedDetailText: "ATK 840 | RNG 12.5 | T3",
-                canApply: true,
                 selectedPreviewPrefab: previewPrefab,
                 selectedAlignment: AutoOkAlignment(Vector3.zero),
                 System.Array.Empty<GarageNovaPartOptionViewModel>());

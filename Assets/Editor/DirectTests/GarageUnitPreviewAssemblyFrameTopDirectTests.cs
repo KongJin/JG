@@ -508,6 +508,80 @@ namespace Tests.Editor
             }
         }
 
+        [Test]
+        public void TryCreatePreviewRoot_SeatsShoulderPairWeaponOnFrameSocket()
+        {
+            var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
+            var framePrefab = new GameObject("FramePrefab");
+            var firepowerPrefab = new GameObject("FirepowerPrefab");
+            var mobilityPrefab = new GameObject("MobilityPrefab");
+            GameObject previewRoot = null;
+
+            try
+            {
+                var viewModel = new GarageSlotViewModel(
+                    "A-01",
+                    "A-01",
+                    "test",
+                    "test",
+                    hasCommittedLoadout: true,
+                    hasDraftChanges: false,
+                    isEmpty: false,
+                    isSelected: true,
+                    frameId: "frame",
+                    firepowerId: "firepower",
+                    mobilityId: "mobility",
+                    frameAlignment: AutoOkAlignment(
+                        socketOffset: Vector3.zero,
+                        hasFrameTopSocket: true,
+                        frameTopSocketOffset: new Vector3(0f, 0.2f, 0f),
+                        hasVisualBounds: true,
+                        visualBoundsCenter: new Vector3(0f, 0.1f, 0f),
+                        visualBoundsMin: new Vector3(-0.2f, 0f, -0.2f),
+                        visualBoundsMax: new Vector3(0.2f, 0.2f, 0.2f),
+                        assemblyAnchorMode: "ShoulderPair"),
+                    firepowerAlignment: AutoOkAlignment(
+                        socketOffset: new Vector3(0f, -0.1f, 0f),
+                        socketEuler: new Vector3(0f, 0f, 90f),
+                        hasVisualBounds: true,
+                        visualBoundsCenter: new Vector3(0f, 0.15f, 0f),
+                        visualBoundsMin: new Vector3(-0.2f, 0f, -0.2f),
+                        visualBoundsMax: new Vector3(0.2f, 0.3f, 0.2f),
+                        assemblyAnchorMode: "ShoulderPair"),
+                    mobilityAlignment: AutoOkAlignment(
+                        socketOffset: Vector3.zero,
+                        hasGxTreeSocket: true,
+                        gxTreeSocketOffset: Vector3.zero),
+                    mobilityUsesAssemblyPivot: true,
+                    frameAssemblyForm: AssemblyForm.Shoulder,
+                    firepowerAssemblyForm: AssemblyForm.Shoulder);
+
+                Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
+                    viewModel,
+                    cameraObject.GetComponent<Camera>(),
+                    framePrefab,
+                    firepowerPrefab,
+                    mobilityPrefab,
+                    out previewRoot));
+
+                var frame = previewRoot.transform.Find("FramePrefab(Clone)");
+                var firepower = previewRoot.transform.Find("FirepowerPrefab(Clone)");
+                Assert.NotNull(frame);
+                Assert.NotNull(firepower);
+                Assert.That(firepower.localPosition.y, Is.EqualTo(frame.localPosition.y + 0.2f).Within(0.0001f));
+            }
+            finally
+            {
+                if (previewRoot != null)
+                    Object.DestroyImmediate(previewRoot);
+
+                Object.DestroyImmediate(cameraObject);
+                Object.DestroyImmediate(framePrefab);
+                Object.DestroyImmediate(firepowerPrefab);
+                Object.DestroyImmediate(mobilityPrefab);
+            }
+        }
+
         private static GaragePanelCatalog.PartAlignment AutoOkAlignment(
             Vector3 socketOffset,
             Vector3 socketEuler = default,

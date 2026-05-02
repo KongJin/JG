@@ -85,11 +85,10 @@ function Invoke-GarageSetBUitkSmokeDriverMethod {
         [object[]]$MethodArgs = @()
     )
 
-    return Invoke-McpUiInvoke `
+    return Invoke-McpGameObjectMethod `
         -Root $Root `
         -Path $Path `
-        -Method "custom" `
-        -CustomMethod $Method `
+        -Method $Method `
         -InvokeArgs $MethodArgs
 }
 
@@ -143,7 +142,7 @@ $prepare = Invoke-McpPrepareLobbyPlaySession `
     -LoginLoadingPanelPath "" `
     -TimeoutSec 90
 
-Wait-McpUiComponent `
+Wait-McpComponent `
     -Root $root `
     -Path $ControllerPath `
     -ComponentType "GarageSetBUitkSmokeDriver" `

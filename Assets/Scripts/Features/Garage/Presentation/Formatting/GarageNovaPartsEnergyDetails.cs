@@ -39,7 +39,6 @@ namespace Features.Garage.Presentation
                 source.CountText,
                 source.SelectedNameText,
                 selected != null ? BuildSelectedDetailText(selected) : source.SelectedDetailText,
-                source.CanApply,
                 source.SelectedPreviewPrefab,
                 source.SelectedAlignment,
                 options);

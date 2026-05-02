@@ -7,7 +7,7 @@ namespace Features.Lobby.Presentation
     internal sealed class LobbyRoomListViewModel
     {
         public static readonly LobbyRoomListViewModel Empty = new(
-            "0 open rooms",
+            "열린 방 0개",
             Array.Empty<LobbyRoomRowViewModel>());
 
         public LobbyRoomListViewModel(
@@ -15,7 +15,7 @@ namespace Features.Lobby.Presentation
             IReadOnlyList<LobbyRoomRowViewModel> rows,
             string emptyText = "열린 방이 없습니다.")
         {
-            CountText = string.IsNullOrWhiteSpace(countText) ? "0 open rooms" : countText;
+            CountText = string.IsNullOrWhiteSpace(countText) ? "열린 방 0개" : countText;
             Rows = rows ?? Array.Empty<LobbyRoomRowViewModel>();
             EmptyText = string.IsNullOrWhiteSpace(emptyText) ? "열린 방이 없습니다." : emptyText;
         }

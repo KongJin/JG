@@ -43,7 +43,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 {
                     code = "INVALID_SELECTOR",
                     message = "selector is required",
-                    detail = "Expected format: component:Button, name:SaveButton, or path:/Canvas/SaveButton"
+                    detail = "Expected format: component:UIDocument, name:SaveButton, or path:/GarageSetBUitkDocument"
                 });
                 return;
             }
@@ -85,7 +85,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 {
                     code = "INVALID_SELECTOR",
                     message = "selector is required",
-                    detail = "Expected format: component:Button, name:SaveButton, or path:/Canvas/SaveButton"
+                    detail = "Expected format: component:UIDocument, name:SaveButton, or path:/GarageSetBUitkDocument"
                 });
                 return;
             }

@@ -12,7 +12,7 @@ namespace Features.Garage.Presentation
         private const string FrameTopSocketAnchorMode = "FrameTopSocket";
         private const string ShoulderPairAnchorMode = "ShoulderPair";
 
-        public static bool HasCompleteLoadout(GarageSlotViewModel viewModel)
+        private static bool HasCompleteLoadout(GarageSlotViewModel viewModel)
         {
             return viewModel != null &&
                    !string.IsNullOrWhiteSpace(viewModel.FrameId) &&
@@ -53,9 +53,9 @@ namespace Features.Garage.Presentation
                 return false;
 
             previewRoot = new GameObject("PreviewRoot");
-            GaragePreviewAssembler.AttachToPreviewCamera(
+            GaragePreviewAssembler.Attach(
                 previewRoot,
-                previewCamera,
+                previewCamera.transform,
                 new Vector3(0f, -0.04f, 6f),
                 Vector3.zero);
 
@@ -95,7 +95,10 @@ namespace Features.Garage.Presentation
 
         public static void SetYaw(GameObject root, float yawDegrees)
         {
-            GaragePreviewAssembler.SetYaw(root, yawDegrees);
+            if (root == null)
+                return;
+
+            root.transform.localEulerAngles = new Vector3(0f, yawDegrees, 0f);
         }
 
         private static Vector3 ResolveFramePosition(GaragePanelCatalog.PartAlignment frameAlignment)
@@ -119,7 +122,9 @@ namespace Features.Garage.Presentation
 
         private static Vector3 ResolveAttachedPartSocketOffset(GaragePanelCatalog.PartAlignment partAlignment)
         {
-            if (partAlignment.AssemblyAnchorMode == FrameTopSocketAnchorMode && partAlignment.HasVisualBounds)
+            if ((partAlignment.AssemblyAnchorMode == FrameTopSocketAnchorMode ||
+                 partAlignment.AssemblyAnchorMode == ShoulderPairAnchorMode) &&
+                partAlignment.HasVisualBounds)
             {
                 return new Vector3(
                     partAlignment.VisualBoundsCenter.x,

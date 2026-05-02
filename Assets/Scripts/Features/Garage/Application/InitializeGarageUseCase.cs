@@ -1,7 +1,5 @@
 using Features.Garage.Application.Ports;
 using Features.Garage.Domain;
-using Shared.EventBus;
-using Shared.Kernel;
 
 namespace Features.Garage.Application
 {
@@ -19,18 +17,15 @@ namespace Features.Garage.Application
         private readonly ICloudGarageLoadPort _cloudPort;
         private readonly IGaragePersistencePort _persistence;
         private readonly IGarageNetworkPort _networkPort;
-        private readonly IEventPublisher _eventBus;
 
         public InitializeGarageUseCase(
             IGaragePersistencePort persistence,
             IGarageNetworkPort networkPort,
-            ICloudGarageLoadPort cloudPort,
-            IEventPublisher eventBus)
+            ICloudGarageLoadPort cloudPort)
         {
             _persistence = persistence;
             _networkPort = networkPort;
             _cloudPort = cloudPort;
-            _eventBus = eventBus;
         }
 
         /// <summary>
@@ -64,7 +59,6 @@ namespace Features.Garage.Application
             roster.Normalize();
             _networkPort?.SyncRoster(roster);
             _networkPort?.SyncReady(roster.IsValid);
-            _eventBus.Publish(new GarageInitializedEvent(roster));
             return roster;
         }
     }

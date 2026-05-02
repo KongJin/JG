@@ -29,11 +29,22 @@
 ## 기본 순서
 
 1. 현재 collaboration mode가 mutation을 허용하는지 먼저 확인한다.
-2. `AGENTS.md -> docs/index.md -> 이 문서 -> 관련 lane owner 문서 -> 실제 코드/테스트` 순서로 읽는다.
-3. 요청을 검증 가능한 target, success, failure, comparison으로 바꾼다.
-4. 모호한 결정은 Clarification Loop로 잠그고, repo evidence로 답할 수 있는 질문은 먼저 탐색한다.
-5. 같은 이유로 바뀌는 최소 범위를 정한다.
-6. 구현 후 mechanical status와 actual acceptance를 분리해 보고한다.
+2. 요청의 기술 표면을 먼저 분류하고 Skill Routing Gate를 적용한다.
+3. `AGENTS.md -> docs/index.md -> 이 문서 -> 관련 lane owner 문서 -> 실제 코드/테스트` 순서로 읽는다.
+4. 요청을 검증 가능한 target, success, failure, comparison으로 바꾼다.
+5. 모호한 결정은 Clarification Loop로 잠그고, repo evidence로 답할 수 있는 질문은 먼저 탐색한다.
+6. 같은 이유로 바뀌는 최소 범위를 정한다.
+7. 구현 후 mechanical status와 actual acceptance를 분리해 보고한다.
+
+## Skill Routing Gate
+
+새 요청을 받으면 직전 작업 파일이나 진행 중인 수정 흐름보다 사용자 문장의 기술 표면을 우선한다.
+
+- 사용자가 `UXML`, `USS`, `UI Toolkit`, `UITK`, `VisualElement`, `ScrollView`, `UIDocument`, `PanelSettings`, `navigation bar` 같은 UI Toolkit 표면을 말하면 `jg-unity-workflow`와 함께 `unity-uitoolkit`을 먼저 읽고 구조/스타일 owner를 확인한다.
+- 사용자가 특정 global/external skill 이름을 직접 언급하면, 해당 skill을 읽기 전까지 같은 문제를 코드 추정으로 해결하지 않는다.
+- 이미 만지던 C# adapter, smoke helper, runtime repair 흐름이 있어도 새 요청이 layout/style/scene/prefab/data contract 표면이면 해당 domain skill과 owner 문서로 다시 라우팅한다.
+- domain-specific skill과 일반 skill이 함께 걸리면 domain-specific skill을 먼저 읽고, 일반 skill은 검증/가드레일로 붙인다.
+- 적용하지 않은 obvious skill이 있으면 작업 전 사용자 업데이트나 closeout에 이유를 짧게 남긴다.
 
 ## Mutation Gate
 

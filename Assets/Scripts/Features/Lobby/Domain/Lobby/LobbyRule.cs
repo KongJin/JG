@@ -1,3 +1,4 @@
+using Shared.Gameplay;
 using Shared.Kernel;
 
 namespace Features.Lobby.Domain
@@ -35,10 +36,10 @@ namespace Features.Lobby.Domain
             return Result.Success();
         }
 
-        /// <summary>0 Normal, 1 Easy, 2 Hard — Wave DifficultySpawnScale와 동기화.</summary>
+        /// <summary>0 Normal, 1 Easy, 2 Hard.</summary>
         public static Result ValidateDifficultyPreset(int presetId)
         {
-            if (presetId < 0 || presetId > 2)
+            if (!DifficultyPreset.IsDefined(presetId))
                 return Result.Failure("Difficulty preset must be 0 (Normal), 1 (Easy), or 2 (Hard).");
             return Result.Success();
         }

@@ -3,6 +3,7 @@ using Features.Enemy.Application.Events;
 using Features.Player.Application.Events;
 using Features.Unit.Application.Events;
 using Shared.EventBus;
+using Shared.Gameplay;
 using Shared.Kernel;
 using System;
 
@@ -56,7 +57,7 @@ namespace Features.Player.Application
             var unitSpec = e.UnitSpec;
             var loadoutKey = unitSpec == null
                 ? string.Empty
-                : $"{NormalizeKeyPart(unitSpec.FrameId)}|{NormalizeKeyPart(unitSpec.FirepowerModuleId)}|{NormalizeKeyPart(unitSpec.MobilityModuleId)}";
+                : LoadoutKey.Build(unitSpec.FrameId, unitSpec.FirepowerModuleId, unitSpec.MobilityModuleId);
 
             _contributionAnalyzer.RecordUnitDeployed(
                 e.PlayerId,
@@ -97,11 +98,6 @@ namespace Features.Player.Application
         private void OnDamageApplied(DamageAppliedEvent e)
         {
             _contributionAnalyzer.RecordDamageApplied(e);
-        }
-
-        private static string NormalizeKeyPart(string value)
-        {
-            return string.IsNullOrWhiteSpace(value) ? "unknown" : value.Trim();
         }
 
         public void Dispose()

@@ -1,27 +1,9 @@
 using Features.Unit.Domain;
 using Shared.Kernel;
-using Shared.Math;
 using UnitSpec = Features.Unit.Domain.Unit;
 
 namespace Features.Unit.Application.Events
 {
-    /// <summary>
-    /// 유닛 소환 요청 이벤트.
-    /// </summary>
-    public readonly struct UnitSummonRequestedEvent
-    {
-        public DomainEntityId PlayerId { get; }
-        public UnitSpec UnitSpec { get; }
-        public Float3 SpawnPosition { get; }
-
-        public UnitSummonRequestedEvent(DomainEntityId playerId, UnitSpec unitSpec, Float3 spawnPosition)
-        {
-            PlayerId = playerId;
-            UnitSpec = unitSpec;
-            SpawnPosition = spawnPosition;
-        }
-    }
-
     /// <summary>
     /// 유닛 소환 완료 이벤트.
     /// </summary>

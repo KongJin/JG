@@ -10,7 +10,7 @@
                 </ui:VisualElement>
                 <ui:VisualElement class="top-title-stack">
                     <ui:Label text="격납고 관리" class="screen-title" />
-                    <ui:Label name="CommandStatusLabel" text="COMMAND_STATUS: ACTIVE | UNITS: 3/4" class="command-status" />
+                    <ui:Label name="CommandStatusLabel" text="편성 상태 대기 | 기체 3/4" class="command-status" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:Button name="SettingsButton" class="icon-button settings-button" tooltip="Settings">
@@ -22,32 +22,32 @@
             <ui:VisualElement name="SlotStrip" class="slot-strip">
                 <ui:Button name="SlotCard01" class="slot-card slot-card--active">
                     <ui:VisualElement class="slot-active-line" />
-                    <ui:Label name="SlotCode01Label" text="UNIT_01" class="slot-code slot-code--active" />
+                    <ui:Label name="SlotCode01Label" text="A-01" class="slot-code slot-code--active" />
                     <ui:VisualElement name="SlotIcon01" class="slot-icon slot-icon--active">
                         <ui:VisualElement name="SlotIcon01Glyph" class="uitk-icon uitk-icon--smart-toy uitk-icon--blue slot-icon-glyph slot-icon-glyph--active" />
                     </ui:VisualElement>
-                    <ui:Label name="SlotName01Label" text="ASSAULT" class="slot-name slot-name--active" />
+                    <ui:Label name="SlotName01Label" text="전선 유지" class="slot-name slot-name--active" />
                 </ui:Button>
                 <ui:Button name="SlotCard02" class="slot-card">
-                    <ui:Label name="SlotCode02Label" text="UNIT_02" class="slot-code" />
+                    <ui:Label name="SlotCode02Label" text="A-02" class="slot-code" />
                     <ui:VisualElement name="SlotIcon02" class="slot-icon">
                         <ui:VisualElement name="SlotIcon02Glyph" class="uitk-icon uitk-icon--security uitk-icon--muted slot-icon-glyph" />
                     </ui:VisualElement>
-                    <ui:Label name="SlotName02Label" text="DEFENSE" class="slot-name" />
+                    <ui:Label name="SlotName02Label" text="방어" class="slot-name" />
                 </ui:Button>
                 <ui:Button name="SlotCard03" class="slot-card">
-                    <ui:Label name="SlotCode03Label" text="UNIT_03" class="slot-code" />
+                    <ui:Label name="SlotCode03Label" text="A-03" class="slot-code" />
                     <ui:VisualElement name="SlotIcon03" class="slot-icon">
                         <ui:VisualElement name="SlotIcon03Glyph" class="uitk-icon uitk-icon--precision-manufacturing uitk-icon--muted slot-icon-glyph" />
                     </ui:VisualElement>
-                    <ui:Label name="SlotName03Label" text="SUPPORT" class="slot-name" />
+                    <ui:Label name="SlotName03Label" text="지원" class="slot-name" />
                 </ui:Button>
                 <ui:Button name="SlotCard04" class="slot-card slot-card--empty">
-                    <ui:Label name="SlotCode04Label" text="UNIT_04" class="slot-code slot-code--empty" />
+                    <ui:Label name="SlotCode04Label" text="A-04" class="slot-code slot-code--empty" />
                     <ui:VisualElement name="SlotIcon04" class="slot-icon slot-icon--empty">
                         <ui:VisualElement name="SlotIcon04Glyph" class="uitk-icon uitk-icon--add uitk-icon--muted slot-icon-glyph slot-icon-glyph--empty" />
                     </ui:VisualElement>
-                    <ui:Label name="SlotName04Label" text="EMPTY" class="slot-name slot-name--empty" />
+                    <ui:Label name="SlotName04Label" text="빈 슬롯" class="slot-name slot-name--empty" />
                 </ui:Button>
             </ui:VisualElement>
 
@@ -73,7 +73,7 @@
                 <ui:VisualElement name="PartListCard" class="part-list-card">
                     <ui:VisualElement class="part-list-head">
                         <ui:Label name="PartListTitleLabel" text="기동 선택" class="part-list-title" />
-                        <ui:Label name="PartListCountLabel" text="32 PARTS" class="part-list-count" />
+                        <ui:Label name="PartListCountLabel" text="부품 32개" class="part-list-count" />
                     </ui:VisualElement>
                     <ui:TextField name="PartSearchField" label="부품 검색" class="part-search-field" value="" />
                     <ui:ScrollView name="PartListRows" class="part-list-rows" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
@@ -146,7 +146,7 @@
                     <ui:Label name="SelectedPartPreviewLabel" text="기동" class="selected-part-preview-label" />
                 </ui:VisualElement>
                 <ui:VisualElement name="SelectedPartStatsPanel" class="selected-part-stats-panel">
-                    <ui:Label text="SELECTED PART" class="part-preview-kicker" />
+                    <ui:Label text="선택 부품" class="part-preview-kicker" />
                     <ui:Label name="SelectedPartPreviewTitleLabel" text="기동 선택" class="part-preview-title" />
                     <ui:Label name="SelectedPartPreviewMetaLabel" text="HP+ 0 | MOV 0.0 | T1" class="part-preview-meta" />
                 </ui:VisualElement>
@@ -163,7 +163,7 @@
                 </ui:VisualElement>
                 <ui:VisualElement class="preview-content">
                     <ui:VisualElement class="preview-head">
-                        <ui:Label name="PreviewTitleLabel" text="BLUEPRINT VIEW" class="preview-title" />
+                        <ui:Label name="PreviewTitleLabel" text="설계도 확인" class="preview-title" />
                         <ui:VisualElement name="PreviewTagRow" class="tag-row">
                             <ui:Label name="PreviewTag01Label" text="대장갑" class="mini-tag" />
                             <ui:Label name="PreviewTag02Label" text="장거리" class="mini-tag" />
@@ -174,7 +174,7 @@
                         <ui:VisualElement class="reticle-corner reticle-corner--tr" />
                         <ui:VisualElement class="reticle-corner reticle-corner--bl" />
                         <ui:VisualElement class="reticle-corner reticle-corner--br" />
-                        <ui:Label name="UnitPreviewLabel" text="UNIT_01" class="unit-core-label" />
+                        <ui:Label name="UnitPreviewLabel" text="기체 A-01" class="unit-core-label" />
                     </ui:VisualElement>
                     <ui:VisualElement name="PreviewPowerBar" class="power-bar">
                         <ui:VisualElement class="power-track">

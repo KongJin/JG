@@ -22,6 +22,10 @@ namespace Features.Garage.Presentation
         private readonly Image _partPreviewImage;
         private readonly VisualElement _partListRows;
         private readonly List<PartRowBinding> _partRows = new();
+        private GarageNovaPartsPanelViewModel _lastPartList;
+        private GarageNovaPartPanelSlot _lastSlot;
+        private string _lastSearchText = string.Empty;
+        private int _visibleStartIndex;
 
         public GarageSetBPartListSurface(VisualElement root)
         {
@@ -63,6 +67,21 @@ namespace Features.Garage.Presentation
             RenderFocusTabs(focusedPart);
         }
 
+        public bool ScrollVisibleOptions(int deltaRows)
+        {
+            if (_lastPartList?.Options == null || _lastPartList.Options.Count <= _partRows.Count)
+                return false;
+
+            int maxStart = Math.Max(0, _lastPartList.Options.Count - _partRows.Count);
+            int nextStart = Mathf.Clamp(_visibleStartIndex + deltaRows, 0, maxStart);
+            if (nextStart == _visibleStartIndex)
+                return false;
+
+            _visibleStartIndex = nextStart;
+            RenderVisiblePartRows(_lastPartList);
+            return true;
+        }
+
         public void SetPreviewTexture(Texture texture, bool isVisible)
         {
             if (_partPreviewImage == null || _partPreviewLabel == null)
@@ -85,18 +104,37 @@ namespace Features.Garage.Presentation
 
         private void RenderPartList(GarageNovaPartsPanelViewModel partList)
         {
+            ResetScrollIfListChanged(partList);
+            _lastPartList = partList;
             _partListTitleLabel.text = BuildPartListTitle(partList?.ActiveSlot ?? GarageNovaPartPanelSlot.Frame);
-            _partListCountLabel.text = partList?.CountText ?? "0 PARTS";
+            _partListCountLabel.text = partList?.CountText ?? "부품 0개";
             _partSearchField.SetValueWithoutNotify(partList?.SearchText ?? string.Empty);
-            EnsurePartRowCapacity(partList?.Options?.Count ?? 0);
+            EnsurePartRowCapacity(Math.Min(InitialPartRowCount, partList?.Options?.Count ?? 0));
+            RenderVisiblePartRows(partList);
+        }
 
+        private void RenderVisiblePartRows(GarageNovaPartsPanelViewModel partList)
+        {
             for (int i = 0; i < _partRows.Count; i++)
             {
-                var option = partList != null && partList.Options != null && i < partList.Options.Count
-                    ? partList.Options[i]
+                var optionIndex = _visibleStartIndex + i;
+                var option = partList != null && partList.Options != null && optionIndex < partList.Options.Count
+                    ? partList.Options[optionIndex]
                     : null;
                 RenderPartRow(_partRows[i], option);
             }
+        }
+
+        private void ResetScrollIfListChanged(GarageNovaPartsPanelViewModel partList)
+        {
+            var nextSlot = partList?.ActiveSlot ?? GarageNovaPartPanelSlot.Frame;
+            var nextSearch = partList?.SearchText ?? string.Empty;
+            if (nextSlot == _lastSlot && string.Equals(nextSearch, _lastSearchText, StringComparison.Ordinal))
+                return;
+
+            _lastSlot = nextSlot;
+            _lastSearchText = nextSearch;
+            _visibleStartIndex = 0;
         }
 
         private void RenderPartPreviewInfo(GarageNovaPartsPanelViewModel partList)

@@ -87,11 +87,6 @@ namespace Features.Garage.Presentation
             return $"{CompactPartName(firepowerName)} / {CompactPartName(mobilityName)}";
         }
 
-        public static string BuildLoadoutKey(string frameId, string firepowerId, string mobilityId)
-        {
-            return $"{NormalizeKeyPart(frameId)}|{NormalizeKeyPart(firepowerId)}|{NormalizeKeyPart(mobilityId)}";
-        }
-
         public static string BuildSlotSummary(
             GaragePanelCatalog.FirepowerOption firepower,
             GaragePanelCatalog.MobilityOption mobility,
@@ -158,10 +153,5 @@ namespace Features.Garage.Presentation
         }
 
         private static int ClampNonNegative(int value) => value < 0 ? 0 : value;
-
-        private static string NormalizeKeyPart(string value)
-        {
-            return string.IsNullOrWhiteSpace(value) ? "-" : value.Trim();
-        }
     }
 }

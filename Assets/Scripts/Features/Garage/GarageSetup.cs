@@ -74,15 +74,13 @@ namespace Features.Garage
             InitializeGarage = new InitializeGarageUseCase(
                 localPersistence,
                 _networkAdapter,
-                accountDataPort as InitializeGarageUseCase.ICloudGarageLoadPort,
-                eventBus);
+                accountDataPort as InitializeGarageUseCase.ICloudGarageLoadPort);
             ValidateRoster = new ValidateRosterUseCase(rosterValidationProvider);
 
             SaveRoster = new SaveRosterUseCase(
                 accountDataPort as SaveRosterUseCase.ICloudGaragePort,
                 localPersistence,
-                _networkAdapter,
-                eventBus);
+                _networkAdapter);
 
             InitializeControllers(recentOperations);
 

@@ -58,15 +58,5 @@ namespace Tests.Editor
                     0)));
         }
 
-        [Test]
-        public void BuildLoadoutKey_IsStableAndTrimmed()
-        {
-            Assert.AreEqual(
-                "guardian|single|heavy",
-                GarageUnitIdentityFormatter.BuildLoadoutKey(" guardian ", "single", "heavy"));
-            Assert.AreEqual(
-                "-|single|-",
-                GarageUnitIdentityFormatter.BuildLoadoutKey(null, "single", " "));
-        }
     }
 }

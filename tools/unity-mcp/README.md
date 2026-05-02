@@ -35,12 +35,16 @@ These are the routes the current workflow depends on.
 - `POST /play/stop`
 - `POST /play/wait-for-play`
 - `POST /play/wait-for-stop`
-- `POST /ui/invoke`
-- `POST /ui/get-state`
-- `POST /ui/wait-for-active`
-- `POST /ui/wait-for-inactive`
+- `GET /uitk/state`
+- `POST /uitk/get-state`
+- `POST /uitk/set-value`
+- `POST /uitk/invoke`
+- `POST /uitk/wait-for-element`
 - `POST /sceneview/capture`
 `/menu/execute` still exists, but it is manual-only and non-authoritative for Lobby/Garage recovery.
+
+UGUI/Canvas automation routes under `/ui/*`, `/snapshot/ui`, and `/explore/interactive` are disabled for this project.
+Use the `/uitk/*` routes for `UIDocument` and `VisualElement` inspection or interaction.
 
 ## MCP Preflight
 
@@ -68,11 +72,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-Gam
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameSceneMobileHudFramingSmoke.ps1 -Owner GameSceneMobileHudFraming -OutputPath artifacts/unity/game-flow/game-scene-mobile-hud-framing-smoke.json -PlacementOutputPath artifacts/unity/game-flow/game-scene-mobile-hud-placement-source.json -ScreenshotPath artifacts/unity/game-flow/game-scene-mobile-hud-framing.png -LeavePlayMode
 ```
 
+`Invoke-GameScenePlacementSmoke.ps1` and `Invoke-GameSceneMobileHudFramingSmoke.ps1` are now fail-closed legacy artifacts.
+They still document the old `/LobbyCanvas` and `/BattleHudCanvas` contract, but return `blockedReason = ugui-smoke-contract-disabled` until a UI Toolkit runtime smoke replaces them.
+
 If a helper reports that `Temp/UnityMcp/unity-resource.lock` or `Temp/UnityMcp/runtime-smoke.lock` is held, treat the smoke as `blocked` for this lane instead of stopping the other lane's Play Mode session.
 If the lock holder process no longer exists, helpers may clear that stale lock and continue; live process locks remain authoritative.
 Nested helpers must run under the parent helper's lock and record that fact in their artifact instead of competing for the same lock.
-Placement smoke path candidates are centralized in the placement helper and recorded into each artifact as `pathContractVersion`/`pathCandidates`; update that contract map when Lobby/Battle UI hierarchy paths move.
-Mobile HUD framing snapshots should use bounded `/ui/get-state` requests so a stuck UI query does not hold the runtime smoke lock indefinitely.
+The old placement and mobile HUD smoke path contracts are not accepted evidence anymore; build replacement checks against UIDocument/VisualElement selectors.
+Mobile HUD framing snapshots should use bounded `/uitk/get-state` requests so a stuck UI query does not hold the runtime smoke lock indefinitely.
 
 ## Recommended Workflow
 
@@ -101,21 +108,22 @@ Use this order for current Lobby/Garage UI Toolkit candidate work:
 - `Wait-McpBridgeHealthy`
 - `Invoke-EditorProjectSync.ps1`
 - `Invoke-McpCompileRequestAndWait`
+- `Invoke-UnityMcpEditModeTests.ps1`
 - `Invoke-McpSceneOpenAndWait`
 - `Invoke-McpPlayStartAndWaitForBridge`
 - `Invoke-McpPlayStopAndWait`
 - `Assert-McpNoOpenSceneDiskWrite`
 - `Invoke-McpPrepareLobbyPlaySession`
-- `Get-McpPageStateSnapshot`
 - `Wait-McpPhotonLobbyReady`
 - `Get-McpConsoleSummary`
-- `Get-McpUiTextValue`
-- `Get-McpUiButtonInfo`
-- `Get-McpUiActiveInHierarchy`
-- `Invoke-McpSetUiValue`
-- `Invoke-McpUiInvoke`
-- `Wait-McpUiActive`
-- `Wait-McpUiInactive`
+- `Get-McpUitkState`
+- `Get-McpUitkElementState`
+- `Set-McpUitkElementValue`
+- `Invoke-McpUitkElement`
+- `Wait-McpUitkElement`
+
+The older `Get-McpUi*`, `Invoke-McpUi*`, and `Wait-McpUi*` helpers are disabled UGUI-era compatibility traces.
+They fail fast instead of calling `/ui/*`; use UITK helpers or `Invoke-McpGameObjectMethod`.
 
 Current UI translation stance:
 
@@ -168,6 +176,14 @@ This uses the current editor instance through MCP and performs:
 2. compile/reload stabilization
 3. `Assets/Open C# Project` menu execution
 
+When Unity is already open and you need targeted EditMode tests, use:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityMcpEditModeTests.ps1 -TestName Tests.Editor.ArchitectureGuardrailReflectionTests -OutputPath artifacts/unity/architecture-guardrail-reflection-tests.xml
+```
+
+The wrapper owns the Unity resource lock, stops an existing Play Mode session before running EditMode tests, and waits for compile to settle. Pass `-PreservePlayMode` only when the current Play Mode session must not be interrupted; in that case the test run blocks instead of stopping the editor.
+
 ## Workflow Policy Check
 
 Run the workflow policy check like this:
@@ -216,5 +232,5 @@ Recommended runtime proof order:
 
 - The bridge is editor-only and auto-starts on script reload.
 - Screenshot capture requires Play Mode and a project-relative output path.
-- `ui/button/invoke` remains as a legacy alias, but new consumers should use `ui/invoke`.
+- `ui/button/invoke` and the rest of the UGUI `/ui/*` automation surface are disabled; use `/uitk/*`.
 - `server.js` continues to expose the stable manual-automation routes as MCP tools.

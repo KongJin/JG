@@ -1,5 +1,6 @@
 using Features.Wave.Application;
 using Photon.Pun;
+using Shared.Gameplay;
 
 namespace Features.Wave.Infrastructure
 {
@@ -11,7 +12,7 @@ namespace Features.Wave.Infrastructure
             if (room == null)
                 return DifficultySpawnScale.PresetNormal;
 
-            if (!room.CustomProperties.TryGetValue(WaveRoomPropertyKeys.DifficultyPreset, out var raw) ||
+            if (!room.CustomProperties.TryGetValue(DifficultyPreset.RoomPropertyKey, out var raw) ||
                 raw == null)
                 return DifficultySpawnScale.PresetNormal;
 

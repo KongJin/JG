@@ -369,8 +369,8 @@ $facts = [PSCustomObject][ordered]@{
         layoutHints = @(Get-TokenSubset -Tokens $classTokens -Pattern '^(fixed|sticky|absolute|relative|grid|flex|inline-flex|overflow|space-[xy]-|gap-|grid-cols-|col-span-|row-span-|items-|justify-|content-|h-|w-|min-h-|max-h-|min-w-|max-w-|p[trblxy]?-)')
     }
     request = [PSCustomObject][ordered]@{
-        task = "Create a Unity translation contract draft from these Stitch source facts and the paired screenshot."
-        requiredOutput = "manifest/map/presentation contract draft"
+        task = "Create a UI Toolkit candidate implementation brief from these Stitch source facts and the paired screenshot."
+        requiredOutput = "UXML/USS candidate brief, UIDocument selector notes, and visual acceptance notes"
         instructions = @(
             "Use source facts and screenshot evidence for semantic block and CTA judgment.",
             "Do not invent runtime wiring.",

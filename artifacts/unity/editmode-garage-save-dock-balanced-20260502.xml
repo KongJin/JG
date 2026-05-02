@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Failed(Child)" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-02 07:55:15Z" end-time="2026-05-02 07:55:15Z" duration="0.1568896">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="156" result="Failed" site="Child" start-time="2026-05-02 07:55:15Z" end-time="2026-05-02 07:55:15Z" duration="0.156890" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1191" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="156" result="Failed" site="Child" start-time="2026-05-02 07:55:15Z" end-time="2026-05-02 07:55:15Z" duration="0.137114" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32204" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1194" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="150" result="Failed" site="Child" start-time="2026-05-02 07:55:15Z" end-time="2026-05-02 07:55:15Z" duration="0.135906" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1195" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="150" result="Failed" site="Child" start-time="2026-05-02 07:55:15Z" end-time="2026-05-02 07:55:15Z" duration="0.134966" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestFixture" id="1049" name="GarageSetBUitkRuntimeAdapterDirectTests" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" testcasecount="12" result="Failed" site="Child" start-time="2026-05-02 07:55:15Z" end-time="2026-05-02 07:55:15Z" duration="0.133796" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1052" name="RuntimeLayout_PrioritizesAssemblyPreviewBeforePartPicker" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.RuntimeLayout_PrioritizesAssemblyPreviewBeforePartPicker" methodname="RuntimeLayout_PrioritizesAssemblyPreviewBeforePartPicker" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1545325281" result="Failed" start-time="2026-05-02 07:55:15Z" end-time="2026-05-02 07:55:15Z" duration="0.119471" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[  Expected: 250.0f
+  But was:  210.0f
+]]></message>
+                <stack-trace><![CDATA[at Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.RuntimeLayout_PrioritizesAssemblyPreviewBeforePartPicker () [0x00133] in C:\Users\SOL\Documents\JG\Assets\Editor\DirectTests\GarageSetBUitkRuntimeAdapterDirectTests.cs:96
+]]></stack-trace>
+              </failure>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\editmode-garage-save-dock-balanced-20260502.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

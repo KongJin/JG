@@ -81,7 +81,6 @@ namespace Features.Garage.Presentation
             string countText,
             string selectedNameText,
             string selectedDetailText,
-            bool canApply,
             GameObject selectedPreviewPrefab,
             GaragePanelCatalog.PartAlignment selectedAlignment,
             IReadOnlyList<GarageNovaPartOptionViewModel> options)
@@ -91,7 +90,6 @@ namespace Features.Garage.Presentation
             CountText = countText;
             SelectedNameText = selectedNameText;
             SelectedDetailText = selectedDetailText;
-            CanApply = canApply;
             SelectedPreviewPrefab = selectedPreviewPrefab;
             SelectedAlignment = selectedAlignment;
             Options = options;
@@ -102,7 +100,6 @@ namespace Features.Garage.Presentation
         public string CountText { get; }
         public string SelectedNameText { get; }
         public string SelectedDetailText { get; }
-        public bool CanApply { get; }
         public GameObject SelectedPreviewPrefab { get; }
         public GaragePanelCatalog.PartAlignment SelectedAlignment { get; }
         public IReadOnlyList<GarageNovaPartOptionViewModel> Options { get; }
@@ -161,7 +158,6 @@ namespace Features.Garage.Presentation
                 BuildCountText(filteredOptions.Count, allOptions.Count),
                 selected != null ? selected.DisplayName : "선택 대기",
                 selected != null ? BuildSelectedDetailText(selected) : "탭 아래 리스트에서 부품을 선택하세요.",
-                filteredOptions.Count > 0,
                 selected?.PreviewPrefab,
                 selected?.Alignment,
                 visibleOptions);
@@ -314,8 +310,8 @@ namespace Features.Garage.Presentation
         private static string BuildCountText(int filteredCount, int totalCount)
         {
             return filteredCount == totalCount
-                ? $"{totalCount} PARTS"
-                : $"{filteredCount}/{totalCount} PARTS";
+                ? $"부품 {totalCount}개"
+                : $"부품 {filteredCount}/{totalCount}개";
         }
 
         private static string BuildSelectedDetailText(GarageNovaPartOptionViewModel selected)

@@ -6,6 +6,7 @@ using Features.Lobby.Application.Ports;
 using Features.Lobby.Domain;
 using Photon.Pun;
 using Photon.Realtime;
+using Shared.Gameplay;
 using UnityEngine;
 using DomainRoom = Features.Lobby.Domain.Room;
 using PhotonPlayer = Photon.Realtime.Player;
@@ -79,12 +80,12 @@ namespace Features.Lobby.Infrastructure.Photon
                 CustomRoomProperties = new Hashtable
                 {
                     [LobbyPhotonConstants.RoomDisplayNameKey] = room.Name,
-                    [LobbyPhotonConstants.DifficultyPresetKey] = room.DifficultyPresetId,
+                    [DifficultyPreset.RoomPropertyKey] = room.DifficultyPresetId,
                 },
                 CustomRoomPropertiesForLobby = new[]
                 {
                     LobbyPhotonConstants.RoomDisplayNameKey,
-                    LobbyPhotonConstants.DifficultyPresetKey,
+                    DifficultyPreset.RoomPropertyKey,
                 },
             };
 

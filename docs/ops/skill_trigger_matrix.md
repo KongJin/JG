@@ -32,11 +32,13 @@ skill 이름과 route 등록은 `ops.skill-routing-registry`가 소유한다.
 | T14 | "배포 전략", "Firebase", "WebGL", "팀 규모", "출시/수익화", "자동화 우선순위", "제품 전략 배경" | `rule-context` | `plans.progress`, `ops.firebase-hosting`; route product/UX judgment to `jg-game-design` | Do not let background context override current progress or design owner docs. |
 | T15 | "meta GUID", "scene serialization", "Unity API", "batchmode build", "compile diagnostics fallback" | `rule-unity` | `jg-unity-workflow` only when JG owner workflow, scene/prefab authoring, or UI policy is in scope | Do not let generic Unity mechanics own JG acceptance. |
 | T16 | "fallback으로 덮지 마", "silent fail", "runtime repair", "hidden lookup", "contract 누락", "pending/review인데 성공 처리", "조용히 정상처럼 보임" | `jg-no-silent-fallback` | `jg-coding-guardrails` for implementation; `jg-coupling-review` for owner boundary; `jg-issue-investigation` for verified root cause | Do not let missing contracts become normal preview, gameplay, data promotion, or acceptance success. |
+| T17 | "UXML", "USS", "UI Toolkit/UITK", "VisualElement", "ScrollView", "UIDocument", "PanelSettings", "navigationBar까지 스크롤 영역" | `unity-uitoolkit`, `jg-unity-workflow` | `jg-coding-guardrails` for script edits; `rule-unity` only for generic Unity mechanics | Do not solve UI Toolkit layout/style requests first through runtime adapter math when UXML/USS/flex ownership is the real surface. |
 
 ## Maintenance Rule
 
 - Every repo-local `jg-*` skill should appear in at least one fixture row.
 - Every registered external/global `rule-*` skill from `ops.skill-routing-registry` should appear in at least one fixture row.
+- Every registered external/global Unity skill from `ops.skill-routing-registry` should appear in at least one fixture row when repo prompts depend on that skill.
 - If a skill description changes, compare it against this matrix and leave `skill trigger checked` when the trigger surface changed.
 - Keep skill descriptions as concise trigger indexes, not policy bodies. Target roughly 25 words or less unless a longer description is explicitly justified.
 - When shortening a description, preserve at least one recognizable prompt signal for each expected route row that depends on that skill.

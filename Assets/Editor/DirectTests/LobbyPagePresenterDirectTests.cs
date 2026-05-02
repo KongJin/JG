@@ -22,7 +22,7 @@ namespace Tests.Editor
 
             var viewModel = presenter.BuildRooms(new[] { new RoomSnapshot(room) });
 
-            Assert.AreEqual("1 open room", viewModel.CountText);
+            Assert.AreEqual("열린 방 1개", viewModel.CountText);
             Assert.AreEqual(1, viewModel.Rows.Count);
             Assert.AreEqual(new DomainEntityId("room-1"), viewModel.Rows[0].RoomId);
             Assert.AreEqual("Alpha  1/4  Normal", viewModel.Rows[0].Text);
@@ -44,7 +44,7 @@ namespace Tests.Editor
                     isOpen: false)
             });
 
-            Assert.AreEqual("1 open room", viewModel.CountText);
+            Assert.AreEqual("열린 방 1개", viewModel.CountText);
             Assert.IsFalse(viewModel.Rows[0].IsEnabled);
         }
 

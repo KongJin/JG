@@ -87,7 +87,7 @@ namespace Tests.Editor
             try
             {
                 fixture.Adapter.RenderRooms(new LobbyRoomListViewModel(
-                    "1 open room",
+                    "열린 방 1개",
                     new[]
                     {
                         new LobbyRoomRowViewModel(

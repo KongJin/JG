@@ -162,8 +162,7 @@ namespace Features.Account.Infrastructure
 
             if (json[valueStart] == '"')
             {
-                string rawString = ReadQuotedValue(json, valueStart, out _);
-                return unescapeString ? UnescapeJsonString(rawString) : rawString;
+                return ReadQuotedValue(json, valueStart, out _, unescapeString);
             }
 
             int valueEnd = valueStart;
@@ -181,7 +180,7 @@ namespace Features.Account.Infrastructure
             return index;
         }
 
-        private static string ReadQuotedValue(string text, int quoteIndex, out int nextIndex)
+        private static string ReadQuotedValue(string text, int quoteIndex, out int nextIndex, bool decodeEscapes)
         {
             var builder = new StringBuilder();
             bool escaping = false;
@@ -191,8 +190,16 @@ namespace Features.Account.Infrastructure
                 char c = text[i];
                 if (escaping)
                 {
-                    builder.Append('\\');
-                    builder.Append(c);
+                    if (decodeEscapes)
+                    {
+                        AppendDecodedEscape(builder, c, text, ref i);
+                    }
+                    else
+                    {
+                        builder.Append('\\');
+                        builder.Append(c);
+                    }
+
                     escaping = false;
                     continue;
                 }
@@ -216,17 +223,55 @@ namespace Features.Account.Infrastructure
             return builder.ToString();
         }
 
-        private static string UnescapeJsonString(string value)
+        private static void AppendDecodedEscape(StringBuilder builder, char escapeCode, string text, ref int index)
         {
-            if (string.IsNullOrEmpty(value))
-                return string.Empty;
+            switch (escapeCode)
+            {
+                case '"':
+                case '\\':
+                case '/':
+                    builder.Append(escapeCode);
+                    break;
+                case 'b':
+                    builder.Append('\b');
+                    break;
+                case 'f':
+                    builder.Append('\f');
+                    break;
+                case 'n':
+                    builder.Append('\n');
+                    break;
+                case 'r':
+                    builder.Append('\r');
+                    break;
+                case 't':
+                    builder.Append('\t');
+                    break;
+                case 'u':
+                    if (TryReadUnicodeEscape(text, index + 1, out var decoded))
+                    {
+                        builder.Append(decoded);
+                        index += 4;
+                    }
+                    break;
+                default:
+                    builder.Append(escapeCode);
+                    break;
+            }
+        }
 
-            return value
-                .Replace("\\\"", "\"")
-                .Replace("\\n", "\n")
-                .Replace("\\r", "\r")
-                .Replace("\\t", "\t")
-                .Replace("\\\\", "\\");
+        private static bool TryReadUnicodeEscape(string text, int startIndex, out char decoded)
+        {
+            decoded = default;
+            if (startIndex + 4 > text.Length)
+                return false;
+
+            string hex = text.Substring(startIndex, 4);
+            if (!int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var codePoint))
+                return false;
+
+            decoded = (char)codePoint;
+            return true;
         }
     }
 }

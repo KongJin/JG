@@ -1,6 +1,5 @@
 using Features.Garage.Application.Ports;
 using Features.Garage.Domain;
-using Shared.EventBus;
 using Shared.Kernel;
 
 namespace Features.Garage.Application
@@ -22,18 +21,15 @@ namespace Features.Garage.Application
         private readonly ICloudGaragePort _cloudPort;
         private readonly IGaragePersistencePort _persistence;
         private readonly IGarageNetworkPort _network;
-        private readonly IEventPublisher _eventBus;
 
         public SaveRosterUseCase(
             ICloudGaragePort cloudPort,
             IGaragePersistencePort persistence,
-            IGarageNetworkPort network,
-            IEventPublisher eventBus)
+            IGarageNetworkPort network)
         {
             _cloudPort = cloudPort;
             _persistence = persistence;
             _network = network;
-            _eventBus = eventBus;
         }
 
         /// <summary>
@@ -70,8 +66,6 @@ namespace Features.Garage.Application
             // 네트워크 동기화 (실제 전투 진입용 데이터)
             _network.SyncRoster(roster);
             _network.SyncReady(roster.IsValid);
-
-            _eventBus.Publish(new RosterSavedEvent(roster));
 
             if (errorMessage != null)
                 return Result.Failure(errorMessage);

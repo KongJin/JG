@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Features.Unit.Infrastructure;
+using Shared.Gameplay;
 
 namespace Features.Garage.Presentation
 {
@@ -30,7 +31,7 @@ namespace Features.Garage.Presentation
                     committed.mobilityModuleId != draft.mobilityModuleId;
                 bool isEmpty = !draft.HasAnySelection;
                 string loadoutKey = hasDraftLoadout
-                    ? GarageUnitIdentityFormatter.BuildLoadoutKey(
+                    ? LoadoutKey.Build(
                         draft.frameId,
                         draft.firepowerModuleId,
                         draft.mobilityModuleId)

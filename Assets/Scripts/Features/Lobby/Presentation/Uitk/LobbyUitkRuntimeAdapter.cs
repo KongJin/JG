@@ -128,7 +128,7 @@ namespace Features.Lobby.Presentation
 
             if (viewModel.Rows == null || viewModel.Rows.Count == 0)
             {
-                _roomList?.Add(CreateLabel(viewModel.EmptyText, "uitk-body"));
+                _roomList?.Add(CreateLabel(viewModel.EmptyText, "uitk-body lobby-room-empty"));
                 return;
             }
 

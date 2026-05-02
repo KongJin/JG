@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using ExitGames.Client.Photon;
 using Features.Lobby.Domain;
 using Photon.Realtime;
+using Shared.Gameplay;
 using Shared.Kernel;
 using PhotonPlayer = Photon.Realtime.Player;
 using PhotonRoom = Photon.Realtime.Room;
@@ -13,7 +14,7 @@ namespace Features.Lobby.Infrastructure.Photon
         public static int ReadDifficultyPresetFromProps(Hashtable props)
         {
             if (props == null ||
-                !props.TryGetValue(LobbyPhotonConstants.DifficultyPresetKey, out var raw) ||
+                !props.TryGetValue(DifficultyPreset.RoomPropertyKey, out var raw) ||
                 raw == null)
                 return 0;
 

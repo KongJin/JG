@@ -516,5 +516,16 @@ $report = [PSCustomObject]@{
 }
 
 Ensure-McpParentDirectory -PathValue $resultAbsolutePath
-($report | ConvertTo-Json -Depth 8) | Set-Content -Path $resultAbsolutePath -Encoding UTF8
-$report | ConvertTo-Json -Depth 8
+$reportJson = $report | ConvertTo-Json -Depth 8
+$writeResult = Write-McpTextFileWithRetry -PathValue $resultAbsolutePath -Content $reportJson
+if ($writeResult.fallbackUsed) {
+    $report | Add-Member -NotePropertyName resultWriteFallback -NotePropertyValue ([PSCustomObject]@{
+        requestedPath = $resultAbsolutePath
+        actualPath = [string]$writeResult.path
+        warning = [string]$writeResult.warning
+    }) -Force
+    $reportJson = $report | ConvertTo-Json -Depth 8
+    Write-McpTextFileWithRetry -PathValue ([string]$writeResult.path) -Content $reportJson | Out-Null
+}
+
+$reportJson

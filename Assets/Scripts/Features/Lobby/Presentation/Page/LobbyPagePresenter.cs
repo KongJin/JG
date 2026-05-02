@@ -5,6 +5,7 @@ using Features.Account.Domain;
 using Features.Lobby.Application.Events;
 using Features.Lobby.Application.Ports;
 using Features.Player.Domain;
+using Shared.Gameplay;
 using Shared.Kernel;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ namespace Features.Lobby.Presentation
                     var memberCount = room.Members?.Count ?? 0;
                     rows.Add(new LobbyRoomRowViewModel(
                         room.Id,
-                        $"{room.Name}  {memberCount}/{room.Capacity}  {DifficultyPresetFormatter.ToShortLabel(room.DifficultyPresetId)}",
+                        $"{room.Name}  {memberCount}/{room.Capacity}  {DifficultyPreset.ToShortLabel(room.DifficultyPresetId)}",
                         memberCount < room.Capacity));
                 }
             }
@@ -43,7 +44,7 @@ namespace Features.Lobby.Presentation
                     var room = rooms[i];
                     rows.Add(new LobbyRoomRowViewModel(
                         room.RoomId,
-                        $"{room.RoomName}  {room.PlayerCount}/{room.MaxPlayers}  {DifficultyPresetFormatter.ToShortLabel(room.DifficultyPresetId)}",
+                        $"{room.RoomName}  {room.PlayerCount}/{room.MaxPlayers}  {DifficultyPreset.ToShortLabel(room.DifficultyPresetId)}",
                         room.IsOpen && room.PlayerCount < room.MaxPlayers));
                 }
             }
@@ -68,7 +69,7 @@ namespace Features.Lobby.Presentation
 
             return new LobbyRoomDetailViewModel(
                 room.Name,
-                $"{members.Count}/{room.Capacity} | {DifficultyPresetFormatter.ToShortLabel(room.DifficultyPresetId)}",
+                $"{members.Count}/{room.Capacity} | {DifficultyPreset.ToShortLabel(room.DifficultyPresetId)}",
                 memberRows,
                 localIsReady,
                 localIsReady ? "Cancel" : "Ready",
@@ -167,7 +168,7 @@ namespace Features.Lobby.Presentation
 
         private static string FormatRoomCount(int count)
         {
-            return count == 1 ? "1 open room" : $"{count} open rooms";
+            return $"열린 방 {count}개";
         }
 
         private static string Shorten(string value)

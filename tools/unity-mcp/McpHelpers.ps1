@@ -840,6 +840,78 @@ function Ensure-McpParentDirectory {
     }
 }
 
+function Write-McpTextFileWithRetry {
+    param(
+        [string]$PathValue,
+        [string]$Content,
+        [int]$TimeoutSec = 8,
+        [double]$PollSec = 0.25
+    )
+
+    $absolutePath = Resolve-McpAbsolutePath -PathValue $PathValue
+    Ensure-McpParentDirectory -PathValue $absolutePath
+
+    $directory = Split-Path -Parent $absolutePath
+    $fileName = Split-Path -Leaf $absolutePath
+    $encoding = [System.Text.UTF8Encoding]::new($false)
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    $lastError = $null
+
+    while ($true) {
+        $tempPath = Join-Path $directory (".{0}.{1}.{2}.tmp" -f $fileName, $PID, [guid]::NewGuid().ToString("N"))
+        $backupPath = Join-Path $directory (".{0}.{1}.{2}.bak" -f $fileName, $PID, [guid]::NewGuid().ToString("N"))
+
+        try {
+            [System.IO.File]::WriteAllText($tempPath, $Content, $encoding)
+
+            if (Test-Path -LiteralPath $absolutePath) {
+                [System.IO.File]::Replace($tempPath, $absolutePath, $backupPath)
+            }
+            else {
+                [System.IO.File]::Move($tempPath, $absolutePath)
+            }
+
+            if (Test-Path -LiteralPath $backupPath) {
+                Remove-Item -LiteralPath $backupPath -Force -ErrorAction SilentlyContinue
+            }
+
+            return [PSCustomObject]@{
+                path = $absolutePath
+                fallbackUsed = $false
+                warning = ""
+            }
+        }
+        catch [System.IO.IOException] {
+            $lastError = $_.Exception.Message
+        }
+        catch [System.UnauthorizedAccessException] {
+            $lastError = $_.Exception.Message
+        }
+        finally {
+            if (Test-Path -LiteralPath $tempPath) {
+                Remove-Item -LiteralPath $tempPath -Force -ErrorAction SilentlyContinue
+            }
+
+            if (Test-Path -LiteralPath $backupPath) {
+                Remove-Item -LiteralPath $backupPath -Force -ErrorAction SilentlyContinue
+            }
+        }
+
+        if ((Get-Date) -ge $deadline) {
+            $fallbackPath = Join-Path $directory ("{0}.{1}.{2}.json" -f [System.IO.Path]::GetFileNameWithoutExtension($fileName), $PID, [guid]::NewGuid().ToString("N"))
+            [System.IO.File]::WriteAllText($fallbackPath, $Content, $encoding)
+
+            return [PSCustomObject]@{
+                path = $fallbackPath
+                fallbackUsed = $true
+                warning = ("Target file remained locked; wrote fallback artifact. target='{0}' error='{1}'" -f $absolutePath, $lastError)
+            }
+        }
+
+        Start-Sleep -Seconds $PollSec
+    }
+}
+
 function Enter-McpLockFile {
     param(
         [string]$Name,
@@ -1069,14 +1141,7 @@ function Invoke-McpSetUiValue {
         [string]$Value
     )
 
-    Invoke-RestMethod `
-        -Method Post `
-        -Uri "$Root/ui/set-value" `
-        -ContentType "application/json" `
-        -Body (@{
-            path = $Path
-            value = $Value
-        } | ConvertTo-Json -Compress) | Out-Null
+    throw "UGUI helper Invoke-McpSetUiValue is disabled. Use Set-McpUitkElementValue for UIDocument/VisualElement state."
 }
 
 function Write-McpRecentConsole {
@@ -1119,9 +1184,7 @@ function Get-McpUiElementState {
         [string]$Path
     )
 
-    return Invoke-McpJson -Root $Root -SubPath "/ui/get-state" -Body @{
-        path = $Path
-    }
+    throw "UGUI helper Get-McpUiElementState is disabled. Use Get-McpUitkElementState."
 }
 
 function Convert-McpUiStateEntriesToMap {
@@ -1143,7 +1206,7 @@ function Get-McpUiStateMap {
         [string]$Path
     )
 
-    return Convert-McpUiStateEntriesToMap (Get-McpUiElementState -Root $Root -Path $Path)
+    throw "UGUI helper Get-McpUiStateMap is disabled. Use Get-McpUitkElementState."
 }
 
 function Get-McpUiTextValue {
@@ -1152,8 +1215,7 @@ function Get-McpUiTextValue {
         [string]$Path
     )
 
-    $state = Get-McpUiStateMap -Root $Root -Path $Path
-    return [string]$state["text"]
+    throw "UGUI helper Get-McpUiTextValue is disabled. Use Get-McpUitkElementState."
 }
 
 function Get-McpUiButtonInfo {
@@ -1162,13 +1224,7 @@ function Get-McpUiButtonInfo {
         [string]$Path
     )
 
-    $state = Get-McpUiStateMap -Root $Root -Path $Path
-
-    return [PSCustomObject]@{
-        path = [string]$state["path"]
-        activeInHierarchy = ([string]$state["activeInHierarchy"]) -eq "True"
-        interactable = ([string]$state["interactable"]) -eq "True"
-    }
+    throw "UGUI helper Get-McpUiButtonInfo is disabled. Use Get-McpUitkElementState."
 }
 
 function Get-McpUiActiveInHierarchy {
@@ -1177,8 +1233,7 @@ function Get-McpUiActiveInHierarchy {
         [string]$Path
     )
 
-    $state = Get-McpUiStateMap -Root $Root -Path $Path
-    return ([string]$state["activeInHierarchy"]) -eq "True"
+    throw "UGUI helper Get-McpUiActiveInHierarchy is disabled. Use Get-McpUitkElementState."
 }
 
 function Get-McpPageStateSnapshot {
@@ -1188,17 +1243,14 @@ function Get-McpPageStateSnapshot {
         [string]$GarageRootPath
     )
 
-    return [PSCustomObject]@{
-        lobbyActive = Get-McpUiActiveInHierarchy -Root $Root -Path $LobbyRootPath
-        garageActive = Get-McpUiActiveInHierarchy -Root $Root -Path $GarageRootPath
-    }
+    throw "UGUI page snapshot helper is disabled. Use Get-McpUitkState or explicit UITK element state checks."
 }
 
 function Invoke-McpPrepareLobbyPlaySession {
     param(
         [string]$Root,
         [string]$ScenePath = "Assets/Scenes/LobbyScene.unity",
-        [string]$LoginLoadingPanelPath = "/Canvas/LoginLoadingOverlay/LoadingPanel",
+        [string]$LoginLoadingPanelPath = "",
         [int]$TimeoutSec = 90,
         [double]$PollSec = 0.5
     )
@@ -1223,15 +1275,7 @@ function Invoke-McpPrepareLobbyPlaySession {
     $loadingPanelWait = $null
 
     if (-not [string]::IsNullOrWhiteSpace($LoginLoadingPanelPath)) {
-        try {
-            $loadingPanelWait = Wait-McpUiInactive -Root $Root -Path $LoginLoadingPanelPath -TimeoutMs ($TimeoutSec * 1000)
-        }
-        catch {
-            $loadingPanelWait = [PSCustomObject]@{
-                ok = $false
-                message = $_.Exception.Message
-            }
-        }
+        throw "LoginLoadingPanelPath is a disabled UGUI wait hook. Use Wait-McpUitkElement with an explicit UIDocument selector."
     }
 
     return [PSCustomObject]@{
@@ -1273,13 +1317,21 @@ function Invoke-McpUiInvoke {
         [object[]]$InvokeArgs
     )
 
+    throw "UGUI helper Invoke-McpUiInvoke is disabled. Use Invoke-McpUitkElement for VisualElement events or Invoke-McpGameObjectMethod for MonoBehaviour smoke-driver methods."
+}
+
+function Invoke-McpGameObjectMethod {
+    param(
+        [string]$Root,
+        [string]$Path,
+        [string]$Method,
+        [Alias("Args")]
+        [object[]]$InvokeArgs
+    )
+
     $body = @{
         path = $Path
         method = $Method
-    }
-
-    if (-not [string]::IsNullOrWhiteSpace($CustomMethod)) {
-        $body.customMethod = $CustomMethod
     }
 
     if ($null -ne $InvokeArgs) {
@@ -1290,7 +1342,24 @@ function Invoke-McpUiInvoke {
         }
     }
 
-    return Invoke-McpJson -Root $Root -SubPath "/ui/invoke" -Body $body
+    return Invoke-McpJson -Root $Root -SubPath "/gameobject/invoke" -Body $body
+}
+
+function Wait-McpComponent {
+    param(
+        [string]$Root,
+        [string]$Path,
+        [string]$ComponentType,
+        [int]$TimeoutMs = 10000,
+        [int]$PollIntervalMs = 100
+    )
+
+    return Invoke-McpJson -Root $Root -SubPath "/wait/for-component" -Body @{
+        path = $Path
+        componentType = $ComponentType
+        timeoutMs = $TimeoutMs
+        pollIntervalMs = $PollIntervalMs
+    }
 }
 
 function Wait-McpUiActive {
@@ -1301,11 +1370,7 @@ function Wait-McpUiActive {
         [int]$PollIntervalMs = 100
     )
 
-    return Invoke-McpJson -Root $Root -SubPath "/ui/wait-for-active" -Body @{
-        path = $Path
-        timeoutMs = $TimeoutMs
-        pollIntervalMs = $PollIntervalMs
-    }
+    throw "UGUI helper Wait-McpUiActive is disabled. Use Wait-McpUitkElement."
 }
 
 function Wait-McpUiInactive {
@@ -1316,11 +1381,7 @@ function Wait-McpUiInactive {
         [int]$PollIntervalMs = 100
     )
 
-    return Invoke-McpJson -Root $Root -SubPath "/ui/wait-for-inactive" -Body @{
-        path = $Path
-        timeoutMs = $TimeoutMs
-        pollIntervalMs = $PollIntervalMs
-    }
+    throw "UGUI helper Wait-McpUiInactive is disabled. Use Wait-McpUitkElement or Get-McpUitkElementState."
 }
 
 function Wait-McpUiText {
@@ -1333,13 +1394,7 @@ function Wait-McpUiText {
         [int]$PollIntervalMs = 100
     )
 
-    return Invoke-McpJson -Root $Root -SubPath "/ui/wait-for-text" -Body @{
-        path = $Path
-        expectedText = $ExpectedText
-        exact = $Exact
-        timeoutMs = $TimeoutMs
-        pollIntervalMs = $PollIntervalMs
-    }
+    throw "UGUI helper Wait-McpUiText is disabled. Use Wait-McpUitkElement with expectedText."
 }
 
 function Wait-McpUiComponent {
@@ -1351,12 +1406,130 @@ function Wait-McpUiComponent {
         [int]$PollIntervalMs = 100
     )
 
-    return Invoke-McpJson -Root $Root -SubPath "/ui/wait-for-component" -Body @{
-        path = $Path
-        componentType = $ComponentType
-        timeoutMs = $TimeoutMs
-        pollIntervalMs = $PollIntervalMs
+    throw "UGUI helper Wait-McpUiComponent is disabled. Use Wait-McpComponent for GameObject components."
+}
+
+function Get-McpUitkState {
+    param(
+        [string]$Root,
+        [string]$DocumentPath,
+        [string]$DocumentName,
+        [int]$MaxDepth = 6
+    )
+
+    $query = [System.Collections.Generic.List[string]]::new()
+    if (-not [string]::IsNullOrWhiteSpace($DocumentPath)) {
+        $query.Add("documentPath=$([uri]::EscapeDataString($DocumentPath))")
     }
+    if (-not [string]::IsNullOrWhiteSpace($DocumentName)) {
+        $query.Add("documentName=$([uri]::EscapeDataString($DocumentName))")
+    }
+    if ($MaxDepth -gt 0) {
+        $query.Add("maxDepth=$MaxDepth")
+    }
+
+    $subPath = "/uitk/state"
+    if ($query.Count -gt 0) {
+        $subPath = "$subPath?$($query -join '&')"
+    }
+
+    return Invoke-McpGetJson -Root $Root -SubPath $subPath
+}
+
+function New-McpUitkElementBody {
+    param(
+        [string]$DocumentPath,
+        [string]$DocumentName,
+        [string]$ElementName,
+        [string]$ElementPath,
+        [string]$Method,
+        [string]$Value,
+        [string]$ExpectedText,
+        [bool]$Exact = $false,
+        [int]$TimeoutMs = 0,
+        [int]$PollIntervalMs = 0
+    )
+
+    $body = @{}
+    if (-not [string]::IsNullOrWhiteSpace($DocumentPath)) { $body.documentPath = $DocumentPath }
+    if (-not [string]::IsNullOrWhiteSpace($DocumentName)) { $body.documentName = $DocumentName }
+    if (-not [string]::IsNullOrWhiteSpace($ElementName)) { $body.elementName = $ElementName }
+    if (-not [string]::IsNullOrWhiteSpace($ElementPath)) { $body.elementPath = $ElementPath }
+    if (-not [string]::IsNullOrWhiteSpace($Method)) { $body.method = $Method }
+    if ($PSBoundParameters.ContainsKey("Value")) { $body.value = $Value }
+    if (-not [string]::IsNullOrWhiteSpace($ExpectedText)) { $body.expectedText = $ExpectedText }
+    if ($Exact) { $body.exact = $true }
+    if ($TimeoutMs -gt 0) { $body.timeoutMs = $TimeoutMs }
+    if ($PollIntervalMs -gt 0) { $body.pollIntervalMs = $PollIntervalMs }
+    return $body
+}
+
+function Get-McpUitkElementState {
+    param(
+        [string]$Root,
+        [string]$DocumentPath,
+        [string]$DocumentName,
+        [string]$ElementName,
+        [string]$ElementPath
+    )
+
+    $body = New-McpUitkElementBody -DocumentPath $DocumentPath -DocumentName $DocumentName -ElementName $ElementName -ElementPath $ElementPath
+    return Invoke-McpJson -Root $Root -SubPath "/uitk/get-state" -Body $body
+}
+
+function Set-McpUitkElementValue {
+    param(
+        [string]$Root,
+        [string]$Value,
+        [string]$DocumentPath,
+        [string]$DocumentName,
+        [string]$ElementName,
+        [string]$ElementPath
+    )
+
+    $body = New-McpUitkElementBody -DocumentPath $DocumentPath -DocumentName $DocumentName -ElementName $ElementName -ElementPath $ElementPath -Value $Value
+    return Invoke-McpJson -Root $Root -SubPath "/uitk/set-value" -Body $body
+}
+
+function Invoke-McpUitkElement {
+    param(
+        [string]$Root,
+        [string]$DocumentPath,
+        [string]$DocumentName,
+        [string]$ElementName,
+        [string]$ElementPath,
+        [string]$Method = "click",
+        [string]$Value
+    )
+
+    $body = New-McpUitkElementBody -DocumentPath $DocumentPath -DocumentName $DocumentName -ElementName $ElementName -ElementPath $ElementPath -Method $Method -Value $Value
+    return Invoke-McpJson -Root $Root -SubPath "/uitk/invoke" -Body $body
+}
+
+function Wait-McpUitkElement {
+    param(
+        [string]$Root,
+        [string]$DocumentPath,
+        [string]$DocumentName,
+        [string]$ElementName,
+        [string]$ElementPath,
+        [string]$ExpectedText,
+        [bool]$Exact = $false,
+        [int]$TimeoutMs = 10000,
+        [int]$PollIntervalMs = 100
+    )
+
+    $body = New-McpUitkElementBody `
+        -DocumentPath $DocumentPath `
+        -DocumentName $DocumentName `
+        -ElementName $ElementName `
+        -ElementPath $ElementPath `
+        -ExpectedText $ExpectedText `
+        -Exact $Exact `
+        -TimeoutMs $TimeoutMs `
+        -PollIntervalMs $PollIntervalMs
+
+    return Invoke-McpJson -Root $Root -SubPath "/uitk/wait-for-element" -Body $body
 }
 
 function Invoke-McpScreenshotCapture {

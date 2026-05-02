@@ -117,14 +117,14 @@
 }
 
 .lobby-objective-card {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     padding-left: 12px;
     padding-right: 12px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    background-color: #171a20;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: #111821;
     border-width: 1px;
-    border-color: #303844;
+    border-color: #263443;
     border-radius: 6px;
 }
 
@@ -175,7 +175,7 @@
 
 .lobby-objective-title {
     color: #ffffff;
-    font-size: 13px;
+    font-size: 12px;
     -unity-font-style: bold;
     white-space: normal;
 }
@@ -186,8 +186,8 @@
 }
 
 .lobby-objective-icon {
-    width: 54px;
-    height: 54px;
+    width: 38px;
+    height: 38px;
     margin-left: 10px;
     align-items: center;
     justify-content: center;
@@ -199,7 +199,7 @@
 }
 
 .lobby-objective-stats {
-    margin-top: 10px;
+    display: none;
 }
 
 .lobby-mini-stat {
@@ -217,8 +217,33 @@
 }
 
 .create-node-card {
-    border-left-width: 2px;
-    border-left-color: var(--lobby-orange);
+    border-left-width: 1px;
+    border-left-color: #29516e;
+    opacity: 0.92;
+}
+
+#RoomsSectionCard {
+    min-height: 106px;
+    border-width: 1px;
+    border-color: rgba(94, 182, 255, 0.45);
+    background-color: #0f1a24;
+}
+
+#RoomList {
+    min-height: 54px;
+    justify-content: center;
+}
+
+.lobby-room-empty {
+    color: #d9e6f2;
+    font-size: 13px;
+    -unity-font-style: bold;
+}
+
+.uitk-list-row {
+    min-height: 46px;
+    background-color: #132537;
+    border-color: var(--lobby-line);
 }
 
 .garage-summary-card {
@@ -288,8 +313,9 @@
 
 TextField,
 IntegerField {
-    margin-top: 5px;
-    margin-bottom: 5px;
+    height: 35px;
+    margin-top: 3px;
+    margin-bottom: 3px;
     color: var(--lobby-text);
     background-color: var(--lobby-input);
 }
@@ -310,7 +336,7 @@ IntegerField .unity-base-text-field__input {
 }
 
 Button {
-    height: 42px;
+    height: 40px;
     margin-top: 3px;
     margin-bottom: 3px;
     border-width: 1px;

@@ -895,14 +895,14 @@ namespace ProjectSD.EditorTools.UnityMcp
                 typeof(WaitHandlers),
                 typeof(EvalHandlers),
                 typeof(SnapshotHandlers),
-                typeof(ExploreHandlers),
                 // Canonical handlers
                 typeof(ImprovedConsoleHandlers),
-                typeof(ImprovedUiHandlers),
                 typeof(ImprovedGameObjectHandlers),
+                typeof(GameObjectInvokeHandlers),
                 // Manual automation + diagnostics
                 typeof(AsyncMonitorHandlers),
-                typeof(UiStateMonitorHandlers),
+                typeof(UitkHandlers),
+                typeof(DisabledUguiHandlers),
                 typeof(TestHandlers),
             };
 

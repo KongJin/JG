@@ -2,7 +2,6 @@ using System;
 using Features.Garage.Presentation.Theme;
 using Features.Garage.Runtime;
 using Shared.Runtime;
-using Shared.Runtime.Pooling;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
@@ -21,11 +20,11 @@ namespace Features.Garage.Presentation
 
         private GameObject _currentPreviewRoot;
 
-        public Texture PreviewTexture => _renderTexture;
-        public bool HasPreview { get; private set; }
-        public GameObject CurrentPreviewRoot => _currentPreviewRoot;
+        internal Texture PreviewTexture => _renderTexture;
+        internal bool HasPreview { get; private set; }
+        internal GameObject CurrentPreviewRoot => _currentPreviewRoot;
 
-        public bool Render(GarageSlotViewModel viewModel)
+        internal bool Render(GarageSlotViewModel viewModel)
         {
             EnsureCamera();
             EnsureRenderTexture();
@@ -55,7 +54,7 @@ namespace Features.Garage.Presentation
             return true;
         }
 
-        public bool RenderPart(GarageNovaPartsPanelViewModel viewModel)
+        internal bool RenderPart(GarageNovaPartsPanelViewModel viewModel)
         {
             EnsureCamera();
             EnsureRenderTexture();
@@ -68,9 +67,9 @@ namespace Features.Garage.Presentation
                 return false;
 
             _currentPreviewRoot = new GameObject("PartPreviewRoot");
-            GaragePreviewAssembler.AttachToPreviewCamera(
+            GaragePreviewAssembler.Attach(
                 _currentPreviewRoot,
-                _previewCamera,
+                _previewCamera.transform,
                 new Vector3(0f, -0.02f, 4.3f),
                 Vector3.zero);
 

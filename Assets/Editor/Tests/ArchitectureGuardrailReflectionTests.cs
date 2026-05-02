@@ -214,6 +214,7 @@ namespace Tests.Editor
                 "Features",
                 "Garage",
                 "Presentation",
+                "Page",
                 "GarageSetBUitkPageController.cs");
 
             string text = File.ReadAllText(controllerPath);

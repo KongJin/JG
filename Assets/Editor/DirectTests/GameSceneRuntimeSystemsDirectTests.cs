@@ -354,6 +354,34 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void GameEndAnalytics_UsesSharedLoadoutKeyForMissingParts()
+        {
+            var eventBus = new EventBus();
+            var analytics = new GameEndAnalytics(eventBus, eventBus);
+            GameEndReportRequestedEvent report = default;
+
+            eventBus.Subscribe(this, new System.Action<GameEndReportRequestedEvent>(e => report = e));
+
+            eventBus.Publish(new UnitSummonCompletedEvent(
+                new DomainEntityId("player-1"),
+                new DomainEntityId("battle-unit-1"),
+                CreateUnit(null, "single", " ", 3f)));
+            eventBus.Publish(new EnemyDiedEvent(
+                new DomainEntityId("enemy-1"),
+                new DomainEntityId("battle-unit-1")));
+            eventBus.Publish(new GameEndEvent(
+                isVictory: true,
+                message: "Victory!",
+                reachedWave: 1,
+                playTimeSeconds: 9f));
+
+            Assert.IsTrue(System.Array.Exists(
+                report.ContributionCards,
+                card => card.LoadoutKey == "-|single|-"));
+            analytics.Dispose();
+        }
+
+        [Test]
         public void GameEndAnalytics_DoesNotClaimCorePreservedWhenCoreCollapsed()
         {
             var eventBus = new EventBus();

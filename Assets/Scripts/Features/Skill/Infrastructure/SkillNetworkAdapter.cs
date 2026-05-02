@@ -125,7 +125,9 @@ namespace Features.Skill.Infrastructure
                     var duration = r.ReadSingle();
                     var range = r.ReadSingle();
 
-                    if (!IsFinite(damage) || !IsFinite(duration) || !IsFinite(range))
+                    if (!FloatValidation.IsFinite(damage) ||
+                        !FloatValidation.IsFinite(duration) ||
+                        !FloatValidation.IsFinite(range))
                     {
                         Debug.LogWarning($"[{Tag}] Non-finite numeric field (damage={damage}, duration={duration}, range={range}).");
                         return false;
@@ -162,7 +164,7 @@ namespace Features.Skill.Infrastructure
                     var speed = r.ReadSingle();
                     var radius = r.ReadSingle();
 
-                    if (!IsFinite(speed) || !IsFinite(radius))
+                    if (!FloatValidation.IsFinite(speed) || !FloatValidation.IsFinite(radius))
                     {
                         Debug.LogWarning($"[{Tag}] Non-finite numeric field (speed={speed}, radius={radius}).");
                         return false;
@@ -178,7 +180,9 @@ namespace Features.Skill.Infrastructure
                     var direction = new Float3(r.ReadSingle(), r.ReadSingle(), r.ReadSingle());
                     var targetPosition = new Float3(r.ReadSingle(), r.ReadSingle(), r.ReadSingle());
 
-                    if (!IsFiniteFloat3(position) || !IsFiniteFloat3(direction) || !IsFiniteFloat3(targetPosition))
+                    if (!FloatValidation.IsFinite(position) ||
+                        !FloatValidation.IsFinite(direction) ||
+                        !FloatValidation.IsFinite(targetPosition))
                     {
                         Debug.LogWarning($"[{Tag}] Non-finite vector field.");
                         return false;
@@ -190,7 +194,9 @@ namespace Features.Skill.Infrastructure
                     var statusDuration = r.ReadSingle();
                     var statusTickInterval = r.ReadSingle();
 
-                    if (!IsFinite(statusMagnitude) || !IsFinite(statusDuration) || !IsFinite(statusTickInterval))
+                    if (!FloatValidation.IsFinite(statusMagnitude) ||
+                        !FloatValidation.IsFinite(statusDuration) ||
+                        !FloatValidation.IsFinite(statusTickInterval))
                     {
                         Debug.LogWarning($"[{Tag}] Non-finite status field (magnitude={statusMagnitude}, duration={statusDuration}, tickInterval={statusTickInterval}).");
                         return false;
@@ -220,7 +226,7 @@ namespace Features.Skill.Infrastructure
                     }
 
                     var allyDamageScale = r.ReadSingle();
-                    if (!IsFinite(allyDamageScale))
+                    if (!FloatValidation.IsFinite(allyDamageScale))
                     {
                         Debug.LogWarning($"[{Tag}] Non-finite allyDamageScale: {allyDamageScale}");
                         return false;
@@ -258,16 +264,6 @@ namespace Features.Skill.Infrastructure
                 Debug.LogWarning($"[{Tag}] IO error during deserialization: {ex.Message}");
                 return false;
             }
-        }
-
-        private static bool IsFinite(float v)
-        {
-            return !float.IsNaN(v) && !float.IsInfinity(v);
-        }
-
-        private static bool IsFiniteFloat3(Float3 v)
-        {
-            return IsFinite(v.X) && IsFinite(v.Y) && IsFinite(v.Z);
         }
     }
 }

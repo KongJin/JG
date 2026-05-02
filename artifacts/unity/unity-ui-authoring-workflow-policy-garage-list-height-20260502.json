@@ -1,0 +1,114 @@
+﻿{
+    "success":  true,
+    "terminalVerdict":  "",
+    "blockedReason":  "",
+    "generatedAt":  "2026-05-02 16:25:40+09:00",
+    "agent":  "",
+    "route":  "lobby-ui",
+    "changedFiles":  [
+                         "Assets/Editor/DirectTests/GarageSetBUitkRuntimeAdapterDirectTests.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkRuntimeAdapter.cs"
+                     ],
+    "allDirtyFileCount":  15,
+    "unityUiRelevantFiles":  [
+
+                             ],
+    "uitkCandidateFiles":  [
+
+                           ],
+    "uitkCandidateEvidenceFiles":  [
+
+                                   ],
+    "uitkCandidatePreviewEvidenceFiles":  [
+
+                                          ],
+    "uitkCandidateReportEvidenceFiles":  [
+
+                                         ],
+    "requiredEvidence":  [
+                             {
+                                 "name":  "compile-reload",
+                                 "path":  null,
+                                 "message":  "Compile and script reload must settle before Unity UI workflow evidence is trusted."
+                             }
+                         ],
+    "missingEvidence":  [
+
+                        ],
+    "staleEvidence":  [
+
+                      ],
+    "policyViolations":  [
+
+                         ],
+    "compile":  {
+                    "success":  true,
+                    "request":  {
+                                    "ok":  true,
+                                    "cleanBuildCacheRequested":  false,
+                                    "isCompiling":  false,
+                                    "message":  "Asset refresh triggered."
+                                },
+                    "wait":  {
+                                 "ok":  true,
+                                 "timedOut":  false,
+                                 "requestedCompilation":  false,
+                                 "waitedMs":  120000,
+                                 "isCompiling":  false
+                             },
+                    "healthAfterWait":  {
+                                            "ok":  true,
+                                            "bridgeRunning":  true,
+                                            "port":  52676,
+                                            "isPlaying":  false,
+                                            "isPlayingOrWillChange":  false,
+                                            "isPlayModeChanging":  false,
+                                            "rawIsPlayingOrWillChange":  false,
+                                            "isCompiling":  false,
+                                            "isWaitingForPlayMode":  false,
+                                            "projectKey":  "0d8ea703",
+                                            "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                            "activeScene":  "LobbyScene",
+                                            "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                            "pendingPlayAction":  "",
+                                            "pendingPlayAgeMs":  0
+                                        }
+                },
+    "unityResourceLock":  {
+                              "owner":  "workflow",
+                              "path":  "Temp/UnityMcp/unity-resource.lock",
+                              "token":  "67ccd87c2bfe4ffe960456dfe3d70cf4"
+                          },
+    "capabilityExpansionGuard":  {
+                                     "allowCapabilityExpansion":  false,
+                                     "surfaceOnboardingFiles":  [
+
+                                                                ],
+                                     "capabilityExpansionFiles":  [
+
+                                                                  ]
+                                 },
+    "prefabManagement":  {
+                             "inventory":  {
+                                               "path":  "artifacts/unity/prefab-management-inventory.json",
+                                               "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                               "totalPrefabs":  9,
+                                               "generatedPreviewPrefabs":  0,
+                                               "resourcesPrefabs":  9,
+                                               "duplicateCandidateGroups":  0,
+                                               "approvedNewPrefabTargets":  0
+                                           },
+                             "approvalManifest":  {
+                                                      "path":  "artifacts/unity/prefab-management-approved-new-prefabs.json",
+                                                      "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                                      "prefabCount":  0,
+                                                      "prefabPaths":  [
+
+                                                                      ]
+                                                  }
+                         },
+    "declaredNewPrefabTargets":  [
+
+                                 ],
+    "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\unity-ui-authoring-workflow-policy-garage-list-height-20260502.json"
+}

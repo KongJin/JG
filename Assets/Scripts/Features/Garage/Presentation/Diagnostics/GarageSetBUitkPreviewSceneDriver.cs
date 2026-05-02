@@ -3,6 +3,7 @@ using Features.Garage;
 using Features.Garage.Domain;
 using Features.Garage.Infrastructure;
 using Features.Unit.Infrastructure;
+using Shared.Runtime;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
@@ -21,6 +22,7 @@ namespace Features.Garage.Presentation
         private GarageEditorFocus _focusedPart = GarageEditorFocus.Mobility;
         private string _partSearchText = string.Empty;
         private bool _callbacksHooked;
+        private const string PreferredPreviewMobilityId = "nova_mob_legs1_rdrn";
 
 
         private void OnEnable()
@@ -143,7 +145,7 @@ namespace Features.Garage.Presentation
             {
                 case GarageNovaPartPanelSlot.Frame:
                     _state.SetEditingFrameId(selection.PartId);
-                    ClearIncompatibleFirepower();
+                    _state.ClearIncompatibleFirepower(_catalog);
                     break;
                 case GarageNovaPartPanelSlot.Firepower:
                     _state.SetEditingFirepowerId(selection.PartId);
@@ -155,20 +157,6 @@ namespace Features.Garage.Presentation
 
             _state.ClearValidationOverride();
             Render();
-        }
-
-        private void ClearIncompatibleFirepower()
-        {
-            var frame = _catalog.FindFrame(_state.EditingFrameId);
-            var firepower = _catalog.FindFirepower(_state.EditingFirepowerId);
-            if (frame == null ||
-                firepower == null ||
-                UnitPartCompatibility.AreAssemblyFormsCompatible(frame.AssemblyForm, firepower.AssemblyForm))
-            {
-                return;
-            }
-
-            _state.SetEditingFirepowerId(null);
         }
 
         public string PreviewSelectFocus(string focus)
@@ -264,17 +252,10 @@ namespace Features.Garage.Presentation
 
         private static bool TryPickFrame(GaragePanelCatalog catalog, out GaragePanelCatalog.FrameOption frame)
         {
-            frame = null;
-            for (int i = 0; i < catalog.Frames.Count; i++)
-            {
-                if (catalog.Frames[i].PreviewPrefab == null)
-                    continue;
-
-                frame = catalog.Frames[i];
-                return true;
-            }
-
-            return false;
+            return SampleOptionPicker.TryPickFirst(
+                catalog?.Frames,
+                option => option.PreviewPrefab != null,
+                out frame);
         }
 
         private static bool TryPickFirepower(
@@ -282,46 +263,21 @@ namespace Features.Garage.Presentation
             GaragePanelCatalog.FrameOption frame,
             out GaragePanelCatalog.FirepowerOption firepower)
         {
-            firepower = null;
-            for (int i = 0; i < catalog.Firepower.Count; i++)
-            {
-                var option = catalog.Firepower[i];
-                if (option.PreviewPrefab == null ||
-                    !UnitPartCompatibility.AreAssemblyFormsCompatible(frame.AssemblyForm, option.AssemblyForm))
-                {
-                    continue;
-                }
-
-                firepower = option;
-                return true;
-            }
-
-            return false;
+            return SampleOptionPicker.TryPickFirst(
+                catalog?.Firepower,
+                option => option.PreviewPrefab != null &&
+                          frame != null &&
+                          UnitPartCompatibility.AreAssemblyFormsCompatible(frame.AssemblyForm, option.AssemblyForm),
+                out firepower);
         }
 
         private static bool TryPickMobility(GaragePanelCatalog catalog, out GaragePanelCatalog.MobilityOption mobility)
         {
-            mobility = null;
-            for (int i = 0; i < catalog.Mobility.Count; i++)
-            {
-                var option = catalog.Mobility[i];
-                if (option.Id == "nova_mob_legs1_rdrn" && option.PreviewPrefab != null)
-                {
-                    mobility = option;
-                    return true;
-                }
-            }
-
-            for (int i = 0; i < catalog.Mobility.Count; i++)
-            {
-                if (catalog.Mobility[i].PreviewPrefab == null)
-                    continue;
-
-                mobility = catalog.Mobility[i];
-                return true;
-            }
-
-            return false;
+            return SampleOptionPicker.TryPickPreferredOrFirst(
+                catalog?.Mobility,
+                option => option.Id == PreferredPreviewMobilityId && option.PreviewPrefab != null,
+                option => option.PreviewPrefab != null,
+                out mobility);
         }
     }
 }
