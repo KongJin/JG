@@ -1,6 +1,6 @@
 # Acceptance Reporting Guardrails
 
-> 마지막 업데이트: 2026-05-01
+> 마지막 업데이트: 2026-05-02
 > 상태: active
 > doc_id: ops.acceptance-reporting-guardrails
 > role: ssot
@@ -91,6 +91,17 @@ mechanical pass만으로 acceptance success를 대신하지 않는다.
 - `아마`, `추정`, `가능성`, `보임`, `듯`, `것 같`, `maybe`, `probably`, `likely`, `appears`, `seems`처럼 불확실한 표현이 남아 있으면 원인 확정이 아니다.
 - 원인을 아직 좁히지 못했으면 `blockedReason`으로 닫고 `success` 표현을 쓰지 않는다.
 
+## Recurrence Check
+
+버그 수정, 회귀 수정, 기술부채 cleanup, 규칙/파이프라인 수정처럼 같은 문제가 다시 날 수 있는 작업은 closeout 전에 세 가지를 확인한다.
+
+- 증상을 실제 feedback loop로 재현했거나, 재현 불가 이유를 `blocked`로 남겼는가?
+- 원인을 코드, 로그, 테스트, 실행 결과, owner 문서, artifact 중 하나 이상의 증거로 확인했는가?
+- 재발방지를 final, owner 문서/plan/progress, recurrence closeout shard 중 어디에 남길지 판단했는가?
+
+증상 재현 또는 원인 검증이 없으면 원인 확정이나 예방 완료로 보고하지 않는다.
+저장 위치 판단은 `ops.document-management-workflow`의 Recurrence Carryover를 따른다.
+
 ## Acceptance Lock
 
 필요한 작업에서는 시작 시 최소 네 가지를 잠근다.
@@ -101,6 +112,18 @@ mechanical pass만으로 acceptance success를 대신하지 않는다.
 - 무엇과 비교할지
 
 lock 없이도 명확한 작은 작업은 이 템플릿을 생략할 수 있지만, closeout 전에는 실제 비교 기준을 설명할 수 있어야 한다.
+
+## Fresh Evidence Discipline
+
+visual fidelity, capture, runtime smoke, generated artifact처럼 evidence가 시간에 따라 바뀌는 작업은 현재 판정 기준과 과거 비교 자료를 분리한다.
+
+규칙:
+
+- 수정 후 판정은 현재 코드/현재 scene/현재 데이터로 생성한 최신 실행, 최신 캡쳐, 최신 artifact만 기준으로 한다.
+- 최신 evidence를 아직 만들지 못했으면 `blocked: fresh evidence pending`으로 보고하고, 시각 판단이나 acceptance 판정을 하지 않는다.
+- 과거 캡쳐나 이전 artifact는 사용자가 비교를 요청했거나 regression 범위를 설명할 때만 열고, `old`와 `current` 경로를 명시한다.
+- 과거 evidence를 본 경우에도 현재 판정 문장에 섞지 않고, 참고 비교 결과와 현재 acceptance verdict를 분리한다.
+- 새 evidence를 만들었으면 중간 보고와 closeout에 기준 파일 또는 실행 artifact 경로를 적어 어떤 자료를 보고 판단했는지 추적 가능하게 한다.
 
 ## Reporting
 

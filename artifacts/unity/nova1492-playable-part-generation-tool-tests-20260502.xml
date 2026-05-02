@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="2" result="Passed" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-02 00:57:54Z" end-time="2026-05-02 00:57:54Z" duration="0.0360941">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="140" result="Passed" start-time="2026-05-02 00:57:54Z" end-time="2026-05-02 00:57:54Z" duration="0.036094" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1171" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="140" result="Passed" start-time="2026-05-02 00:57:54Z" end-time="2026-05-02 00:57:54Z" duration="0.027523" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32204" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1174" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="134" result="Passed" start-time="2026-05-02 00:57:54Z" end-time="2026-05-02 00:57:54Z" duration="0.026427" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1175" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="134" result="Passed" start-time="2026-05-02 00:57:54Z" end-time="2026-05-02 00:57:54Z" duration="0.025404" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1108" name="Nova1492PlayablePartGenerationToolDirectTests" fullname="Tests.Editor.Nova1492PlayablePartGenerationToolDirectTests" classname="Tests.Editor.Nova1492PlayablePartGenerationToolDirectTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-05-02 00:57:54Z" end-time="2026-05-02 00:57:54Z" duration="0.024288" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1109" name="IsGeneratedEffectRendererNameForTest_FiltersKnownBazookaBeamOnly" fullname="Tests.Editor.Nova1492PlayablePartGenerationToolDirectTests.IsGeneratedEffectRendererNameForTest_FiltersKnownBazookaBeamOnly" methodname="IsGeneratedEffectRendererNameForTest_FiltersKnownBazookaBeamOnly" classname="Tests.Editor.Nova1492PlayablePartGenerationToolDirectTests" runstate="Runnable" seed="1129365864" result="Passed" start-time="2026-05-02 00:57:54Z" end-time="2026-05-02 00:57:54Z" duration="0.010646" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1110" name="IsGeneratedEffectRendererNameForTest_FiltersKnownCruiserBeamOnly" fullname="Tests.Editor.Nova1492PlayablePartGenerationToolDirectTests.IsGeneratedEffectRendererNameForTest_FiltersKnownCruiserBeamOnly" methodname="IsGeneratedEffectRendererNameForTest_FiltersKnownCruiserBeamOnly" classname="Tests.Editor.Nova1492PlayablePartGenerationToolDirectTests" runstate="Runnable" seed="883148764" result="Passed" start-time="2026-05-02 00:57:54Z" end-time="2026-05-02 00:57:54Z" duration="0.000267" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\nova1492-playable-part-generation-tool-tests-20260502.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

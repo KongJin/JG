@@ -1,3 +1,4 @@
+using System;
 using Features.Garage.Presentation.Theme;
 using Features.Garage.Runtime;
 using Shared.Runtime;
@@ -8,11 +9,15 @@ namespace Features.Garage.Presentation
 {
     public sealed class GarageSetBUitkPreviewRenderer : MonoBehaviour
     {
+        private const int AssemblyPreviewLayer = 29;
+        private const int PartPreviewLayer = 30;
+
         [SerializeField] private Camera _previewCamera;
         [SerializeField] private Light _previewKeyLight;
         [SerializeField] private RenderTexture _renderTexture;
         [SerializeField] private int _textureSize = 512;
         [SerializeField] private float _autoRotationSpeed = 20f;
+        [SerializeField] private int _previewLayer = -1;
 
         private GameObject _currentPreviewRoot;
 
@@ -42,6 +47,8 @@ namespace Features.Garage.Presentation
                     out _currentPreviewRoot))
                 return false;
 
+            AssignPreviewLayer(_currentPreviewRoot);
+            FitAssemblyToPreviewRoot(_currentPreviewRoot);
             HasPreview = true;
             RenderPreviewFrame();
             return true;
@@ -74,6 +81,7 @@ namespace Features.Garage.Presentation
                 Vector3.zero,
                 ResolvePartPreviewEuler(viewModel.ActiveSlot, viewModel.SelectedAlignment));
 
+            AssignPreviewLayer(_currentPreviewRoot);
             FitPartToPreviewRoot(_currentPreviewRoot, partObj);
             HasPreview = true;
             RenderPreviewFrame();
@@ -141,6 +149,29 @@ namespace Features.Garage.Presentation
             }
         }
 
+        private static void FitAssemblyToPreviewRoot(GameObject previewRoot)
+        {
+            if (previewRoot == null)
+                return;
+
+            if (!TryGetBounds(previewRoot, out var bounds))
+                return;
+
+            var centerLocal = previewRoot.transform.InverseTransformPoint(bounds.center);
+            for (int i = 0; i < previewRoot.transform.childCount; i++)
+            {
+                var child = previewRoot.transform.GetChild(i);
+                child.localPosition -= centerLocal;
+            }
+
+            float maxExtent = Mathf.Max(bounds.extents.x, bounds.extents.y, bounds.extents.z);
+            if (maxExtent > 0.0001f)
+            {
+                float scale = Mathf.Clamp(1.32f / maxExtent, 0.55f, 3.1f);
+                previewRoot.transform.localScale *= scale;
+            }
+        }
+
         private static bool TryGetBounds(GameObject root, out Bounds bounds)
         {
             bounds = default;
@@ -168,9 +199,44 @@ namespace Features.Garage.Presentation
             if (_previewCamera == null)
                 return;
 
+            var mask = 1 << ResolvePreviewLayer();
+            _previewCamera.cullingMask = mask;
             _previewCamera.backgroundColor = ThemeColors.PreviewBackground;
             _previewCamera.clearFlags = CameraClearFlags.SolidColor;
             _previewKeyLight = GaragePreviewAssembler.EnsurePreviewLighting(_previewCamera, _previewKeyLight);
+            if (_previewKeyLight != null)
+                _previewKeyLight.cullingMask = mask;
+        }
+
+        private int ResolvePreviewLayer()
+        {
+            if (_previewLayer >= 0 && _previewLayer <= 30)
+                return _previewLayer;
+
+            return gameObject != null &&
+                   gameObject.name.IndexOf("Part", StringComparison.OrdinalIgnoreCase) >= 0
+                ? PartPreviewLayer
+                : AssemblyPreviewLayer;
+        }
+
+        private void AssignPreviewLayer(GameObject root)
+        {
+            if (root == null)
+                return;
+
+            SetLayerRecursively(root.transform, ResolvePreviewLayer());
+        }
+
+        private static void SetLayerRecursively(Transform root, int layer)
+        {
+            if (root == null)
+                return;
+
+            root.gameObject.layer = layer;
+            for (var i = 0; i < root.childCount; i++)
+            {
+                SetLayerRecursively(root.GetChild(i), layer);
+            }
         }
 
         private void EnsureRenderTexture()

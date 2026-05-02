@@ -14,6 +14,10 @@ namespace Features.Garage.Infrastructure
             [SerializeField] private NovaPartSlot slot;
             [SerializeField] private float normalizedScale;
             [SerializeField] private Vector3 pivotOffset;
+            [SerializeField] private bool hasVisualBounds;
+            [SerializeField] private Vector3 visualBoundsCenter;
+            [SerializeField] private Vector3 visualBoundsMin;
+            [SerializeField] private Vector3 visualBoundsMax;
             [SerializeField] private Vector3 socketOffset;
             [SerializeField] private Vector3 socketEuler;
             [SerializeField] private bool hasGxTreeSocket;
@@ -37,11 +41,24 @@ namespace Features.Garage.Infrastructure
             [SerializeField] private string xfiSocketName;
             [SerializeField] private string qualityFlag;
             [SerializeField] private string reviewReason;
+            [SerializeField] private string assemblySourceSlotCode;
+            [SerializeField] private string assemblySlotMode;
+            [SerializeField] private string assemblyAnchorMode;
+            [SerializeField] private Vector3 assemblyLocalOffset;
+            [SerializeField] private Vector3 assemblyLocalEuler;
+            [SerializeField] private Vector3 assemblyLocalScale = Vector3.one;
+            [SerializeField] private string assemblyConfidence;
+            [SerializeField] private string assemblyEvidencePath;
+            [SerializeField] private string assemblyReviewResult;
 
             public string PartId => partId;
             public NovaPartSlot Slot => slot;
             public float NormalizedScale => normalizedScale;
             public Vector3 PivotOffset => pivotOffset;
+            public bool HasVisualBounds => hasVisualBounds;
+            public Vector3 VisualBoundsCenter => visualBoundsCenter;
+            public Vector3 VisualBoundsMin => visualBoundsMin;
+            public Vector3 VisualBoundsMax => visualBoundsMax;
             public Vector3 SocketOffset => socketOffset;
             public Vector3 SocketEuler => socketEuler;
             public bool HasGxTreeSocket => hasGxTreeSocket;
@@ -65,6 +82,15 @@ namespace Features.Garage.Infrastructure
             public string XfiSocketName => xfiSocketName;
             public string QualityFlag => qualityFlag;
             public string ReviewReason => reviewReason;
+            public string AssemblySourceSlotCode => assemblySourceSlotCode;
+            public string AssemblySlotMode => assemblySlotMode;
+            public string AssemblyAnchorMode => assemblyAnchorMode;
+            public Vector3 AssemblyLocalOffset => assemblyLocalOffset;
+            public Vector3 AssemblyLocalEuler => assemblyLocalEuler;
+            public Vector3 AssemblyLocalScale => assemblyLocalScale;
+            public string AssemblyConfidence => assemblyConfidence;
+            public string AssemblyEvidencePath => assemblyEvidencePath;
+            public string AssemblyReviewResult => assemblyReviewResult;
         }
 
         [SerializeField] private List<Entry> entries = new List<Entry>();

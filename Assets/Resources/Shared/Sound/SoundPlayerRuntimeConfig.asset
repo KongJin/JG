@@ -13,4 +13,3 @@ MonoBehaviour:
   m_Name: SoundPlayerRuntimeConfig
   m_EditorClassIdentifier: 
   _catalog: {fileID: 11400000, guid: ce12d1d3fadb19541b6cf905025c8794, type: 2}
-  _initialPoolSize: 8

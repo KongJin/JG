@@ -21,7 +21,7 @@ Do not restate the reporting policy here. Resolve current paths through `docs/in
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md` to resolve the current owner path.
-3. Read owner doc `ops.acceptance-reporting-guardrails` before reporting causes, hypotheses, `success`, `blocked`, `mismatch`, or `rootCause`.
+3. Read owner doc `ops.acceptance-reporting-guardrails` before reporting causes, hypotheses, `success`, `blocked`, `mismatch`, `rootCause`, or Fresh Evidence Discipline judgments; for visual/capture issues, use that route to separate current evidence from historical comparison.
 4. Read the concrete code, docs, logs, tests, artifacts, or scene/prefab contracts involved in the issue.
 
 ## Investigation Flow

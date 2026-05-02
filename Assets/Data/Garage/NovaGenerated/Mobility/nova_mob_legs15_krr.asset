@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -16,8 +16,7 @@ MonoBehaviour:
   displayName: "\uD06C\uB864\uB7EC"
   icon: {fileID: 0}
   mobilitySurface: 1
-  hpBonus: 130
+  moveSpeed: 4.74
   moveRange: 5.65
-  anchorRange: 5.65
   description: datan\common\legs15_krr.gx
   previewPrefab: {fileID: 5069832731185095728, guid: c87b0e87ae65f5e43aab3c30eacfa087, type: 3}

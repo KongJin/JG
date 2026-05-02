@@ -1,6 +1,6 @@
 # Nova1492 Part Preview Prefab Report
 
-> generated: 2026-05-01 19:16:00
+> generated: 2026-05-02 09:56:28
 
 ## Summary
 
@@ -31,7 +31,7 @@
 | Firepower | `nova_fire_arm20_rkto` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm20_rkto.prefab` | 0.520677 |
 | Firepower | `nova_fire_arm21_nmsz` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm21_nmsz.prefab` | 0.426265 |
 | Firepower | `nova_fire_arm22_bsrsk` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm22_bsrsk.prefab` | 0.463177 |
-| Firepower | `nova_fire_arm24_bzk` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm24_bzk.prefab` | 0.154158 |
+| Firepower | `nova_fire_arm24_bzk` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm24_bzk.prefab` | 0.316361 |
 | Firepower | `nova_fire_arm25_skoob` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm25_skoob.prefab` | 0.55668 |
 | Firepower | `nova_fire_arm26_srmd` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm26_srmd.prefab` | 0.727948 |
 | Firepower | `nova_fire_arm27_stst` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_arm27_stst.prefab` | 0.565296 |
@@ -68,7 +68,7 @@
 | Firepower | `nova_fire_n_arm69_rkog` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_n_arm69_rkog.prefab` | 0.342253 |
 | Firepower | `nova_fire_n_arm70_hmsk` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_n_arm70_hmsk.prefab` | 0.383517 |
 | Firepower | `nova_fire_s_arm50_hmsk` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_s_arm50_hmsk.prefab` | 0.351347 |
-| Firepower | `nova_fire_s_arm52_bzk` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_s_arm52_bzk.prefab` | 0.154158 |
+| Firepower | `nova_fire_s_arm52_bzk` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_s_arm52_bzk.prefab` | 0.316361 |
 | Firepower | `nova_fire_s_arm53_ons` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_s_arm53_ons.prefab` | 0.571121 |
 | Firepower | `nova_fire_s_arm54_onoo` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Firepower/nova_fire_s_arm54_onoo.prefab` | 0.62283 |
 | Frame | `nova_frame_body1_sz` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Frame/nova_frame_body1_sz.prefab` | 0.72762 |
@@ -123,7 +123,7 @@
 | Mobility | `nova_mob_legs10_prg` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_legs10_prg.prefab` | 0.327984 |
 | Mobility | `nova_mob_legs11_strod` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_legs11_strod.prefab` | 0.585066 |
 | Mobility | `nova_mob_legs12_kb` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_legs12_kb.prefab` | 0.400734 |
-| Mobility | `nova_mob_legs13_krz` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_legs13_krz.prefab` | 0.212329 |
+| Mobility | `nova_mob_legs13_krz` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_legs13_krz.prefab` | 0.368243 |
 | Mobility | `nova_mob_legs14_grp` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_legs14_grp.prefab` | 0.387969 |
 | Mobility | `nova_mob_legs15_krr` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_legs15_krr.prefab` | 0.397147 |
 | Mobility | `nova_mob_legs16_sprt` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_legs16_sprt.prefab` | 0.51753 |
@@ -150,14 +150,14 @@
 | Mobility | `nova_mob_legs9_ptr` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_legs9_ptr.prefab` | 0.414131 |
 | Mobility | `nova_mob_n_legs38_grp` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_n_legs38_grp.prefab` | 0.336068 |
 | Mobility | `nova_mob_n_legs39_wk` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_n_legs39_wk.prefab` | 0.612628 |
-| Mobility | `nova_mob_n_legs40_krz` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_n_legs40_krz.prefab` | 0.182622 |
+| Mobility | `nova_mob_n_legs40_krz` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_n_legs40_krz.prefab` | 0.283619 |
 | Mobility | `nova_mob_n_legs41_tdr` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_n_legs41_tdr.prefab` | 0.646317 |
 | Mobility | `nova_mob_n_legs42_krr` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_n_legs42_krr.prefab` | 0.396524 |
 | Mobility | `nova_mob_n_legs44_hord` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_n_legs44_hord.prefab` | 0.42125 |
 | Mobility | `nova_mob_n_legs45_strod` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_n_legs45_strod.prefab` | 0.585066 |
 | Mobility | `nova_mob_n_legs46_sprt` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_n_legs46_sprt.prefab` | 0.532047 |
 | Mobility | `nova_mob_s_legs27_ksor` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_s_legs27_ksor.prefab` | 0.393809 |
-| Mobility | `nova_mob_s_legs28_krz` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_s_legs28_krz.prefab` | 0.212329 |
+| Mobility | `nova_mob_s_legs28_krz` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_s_legs28_krz.prefab` | 0.368243 |
 | Mobility | `nova_mob_s_legs29_sprt` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_s_legs29_sprt.prefab` | 0.51753 |
 | Mobility | `nova_mob_s_legs30_tk` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_s_legs30_tk.prefab` | 0.246399 |
 | Mobility | `nova_mob_s_legs31_ko` | `Assets/Prefabs/Features/Garage/PreviewModels/Generated/Mobility/nova_mob_s_legs31_ko.prefab` | 0.445694 |

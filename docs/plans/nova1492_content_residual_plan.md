@@ -32,6 +32,15 @@
 - 권리 또는 이름 판단이 불명확하면 `blocked: rights-or-naming-unresolved`로 남긴다.
 - Balance, UI decoration, model replacement 실행은 해당 owner로 넘기고, 이 문서에서는 handoff 상태만 남긴다.
 
+## Release Gate Checklist
+
+| Gate | Verdict | Required owner/evidence |
+|---|---|---|
+| Rights/naming | blocked: rights-or-naming-unresolved | release/legal decision or explicit rename policy |
+| Manual visual audit | blocked | arm/body/leg comparison record against source-derived expectations |
+| Balance handoff | blocked | balance owner accepts candidate IDs and stat review scope |
+| UI/model handoff | blocked | UI/runtime owner accepts replacement candidate scope |
+
 ## Residual
 
 - Rights/naming release gate가 남아 있다.

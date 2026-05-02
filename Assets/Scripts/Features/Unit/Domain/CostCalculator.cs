@@ -9,76 +9,145 @@ namespace Features.Unit.Domain
     /// </summary>
     public static class CostCalculator
     {
-        // 가중치 상수 (unit_module_design.md 공식)
-        private const float WeightHp = 0.02f;
-        private const float WeightAttackDamage = 0.5f;
-        private const float WeightAttackSpeed = 3.0f;
-        private const float WeightRange = 2.0f;
-        private const float WeightMoveRange = 1.5f;
+        public readonly struct StatCostTuning
+        {
+            public StatCostTuning(
+                float hpWeight,
+                float defenseWeight,
+                float attackDamageWeight,
+                float attackSpeedWeight,
+                float rangeWeight,
+                float moveSpeedWeight,
+                float moveRangeWeight,
+                float dispersionPenaltyFactor)
+            {
+                HpWeight = hpWeight;
+                DefenseWeight = defenseWeight;
+                AttackDamageWeight = attackDamageWeight;
+                AttackSpeedWeight = attackSpeedWeight;
+                RangeWeight = rangeWeight;
+                MoveSpeedWeight = moveSpeedWeight;
+                MoveRangeWeight = moveRangeWeight;
+                DispersionPenaltyFactor = dispersionPenaltyFactor;
+            }
 
-        // 분산 페널티 계수
-        private const float DispersionPenaltyFactor = 0.3f;
+            public float HpWeight { get; }
+            public float DefenseWeight { get; }
+            public float AttackDamageWeight { get; }
+            public float AttackSpeedWeight { get; }
+            public float RangeWeight { get; }
+            public float MoveSpeedWeight { get; }
+            public float MoveRangeWeight { get; }
+            public float DispersionPenaltyFactor { get; }
 
-        // 비용 범위
-        private const int MinCost = 15;
-        private const int MaxCost = 80;
+            public bool HasAnyWeight =>
+                HpWeight != 0f ||
+                DefenseWeight != 0f ||
+                AttackDamageWeight != 0f ||
+                AttackSpeedWeight != 0f ||
+                RangeWeight != 0f ||
+                MoveSpeedWeight != 0f ||
+                MoveRangeWeight != 0f;
+
+            public static StatCostTuning Default => new(
+                hpWeight: 0.02f,
+                defenseWeight: 2.0f,
+                attackDamageWeight: 0.5f,
+                attackSpeedWeight: 3.0f,
+                rangeWeight: 2.0f,
+                moveSpeedWeight: 3.0f,
+                moveRangeWeight: 1.5f,
+                dispersionPenaltyFactor: 0.3f);
+        }
+
+        public readonly struct PartEnergyCosts
+        {
+            public PartEnergyCosts(int frame, int firepower, int mobility)
+            {
+                Frame = frame;
+                Firepower = firepower;
+                Mobility = mobility;
+            }
+
+            public int Frame { get; }
+            public int Firepower { get; }
+            public int Mobility { get; }
+            public int Total => Frame + Firepower + Mobility;
+        }
 
         /// <summary>
         /// ComposedStats로부터 소환 비용 계산.
         /// </summary>
         public static int Calculate(UnitComposition.ComposedStats stats)
         {
-            return Calculate(
+            return CalculateParts(
                 stats.Hp,
+                stats.Defense,
+                stats.PassiveTraitCostBonus,
                 stats.AttackDamage,
                 stats.AttackSpeed,
                 stats.Range,
+                stats.MoveSpeed,
                 stats.MoveRange,
-                stats.PassiveTraitCostBonus);
+                stats.CostTuning).Total;
         }
 
         /// <summary>
-        /// 개별 스탯 값으로부터 소환 비용 계산.
+        /// 프레임, 화력, 기동 부품별 에너지 비용을 계산한다.
         /// </summary>
-        public static int Calculate(
+        public static PartEnergyCosts CalculateParts(
             float hp,
+            float defense,
+            int passiveTraitCost,
             float attackDamage,
             float attackSpeed,
             float range,
+            float moveSpeed,
             float moveRange,
-            int passiveTraitCost)
+            StatCostTuning tuning)
         {
-            // 1. 가중치 적용된 값 계산
-            float weightedHp = hp * WeightHp;
-            float weightedDamage = attackDamage * WeightAttackDamage;
-            float weightedSpeed = attackSpeed * WeightAttackSpeed;
-            float weightedRange = range * WeightRange;
-            float weightedMoveRange = moveRange * WeightMoveRange;
+            tuning = ResolveTuning(tuning);
 
-            // 2. 기본 비용
-            float baseCost = weightedHp + weightedDamage + weightedSpeed + weightedRange + weightedMoveRange;
+            int frameCost = CalculatePart(
+                tuning.DispersionPenaltyFactor,
+                passiveTraitCost,
+                hp * tuning.HpWeight,
+                defense * tuning.DefenseWeight);
 
-            // 3. 분산 페널티 (표준편차 기반)
-            Span<float> values = stackalloc float[5];
-            values[0] = weightedHp;
-            values[1] = weightedDamage;
-            values[2] = weightedSpeed;
-            values[3] = weightedRange;
-            values[4] = weightedMoveRange;
-            float dispersionPenalty = CalculateStandardDeviation(values) * DispersionPenaltyFactor;
+            int firepowerCost = CalculatePart(
+                tuning.DispersionPenaltyFactor,
+                fixedBonus: 0,
+                attackDamage * tuning.AttackDamageWeight,
+                attackSpeed * tuning.AttackSpeedWeight,
+                range * tuning.RangeWeight);
 
-            // 4. 최종 비용
-            int finalCost = (int)Math.Round(baseCost + dispersionPenalty + passiveTraitCost);
+            int mobilityCost = CalculatePart(
+                tuning.DispersionPenaltyFactor,
+                fixedBonus: 0,
+                moveSpeed * tuning.MoveSpeedWeight,
+                moveRange * tuning.MoveRangeWeight);
 
-            // 5. 범위 제한
-            if (finalCost < MinCost) return MinCost;
-            if (finalCost > MaxCost) return MaxCost;
-            return finalCost;
+            return new PartEnergyCosts(frameCost, firepowerCost, mobilityCost);
+        }
+
+        public static int CalculatePart(float dispersionPenaltyFactor, int fixedBonus, params float[] weightedValues)
+        {
+            float baseCost = 0f;
+            for (int i = 0; i < weightedValues.Length; i++)
+                baseCost += weightedValues[i];
+
+            float dispersionPenalty = CalculateStandardDeviation(weightedValues) * dispersionPenaltyFactor;
+            return (int)Math.Round(baseCost + dispersionPenalty + fixedBonus);
         }
 
         /// <summary>
         /// 배열의 표준편차 계산.
         /// </summary>
+        private static StatCostTuning ResolveTuning(StatCostTuning tuning)
+        {
+            return tuning.HasAnyWeight ? tuning : StatCostTuning.Default;
+        }
+
         private static float CalculateStandardDeviation(ReadOnlySpan<float> values)
         {
             if (values.Length == 0) return 0f;

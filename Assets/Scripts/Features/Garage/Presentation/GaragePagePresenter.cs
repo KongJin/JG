@@ -173,15 +173,15 @@ namespace Features.Garage.Presentation
                 subtitle,
                 frame != null ? frame.DisplayName : "< 프레임 >",
                 frame != null
-                    ? $"HP {frame.BaseHp:0}  |  ASPD {frame.BaseAttackSpeed:0.00}"
+                    ? $"EN {frame.EnergyCost}  |  HP {frame.BaseHp:0}  |  DEF {frame.Defense:0}"
                     : "차체를 선택하세요",
                 firepower != null ? firepower.DisplayName : "< 무장 >",
                 firepower != null
-                    ? $"ATK {firepower.AttackDamage:0}  |  RNG {firepower.Range:0.0}"
+                    ? $"EN {firepower.EnergyCost}  |  ATK {firepower.AttackDamage:0}  |  RNG {firepower.Range:0.0}"
                     : "주 무장을 선택하세요",
                 mobility != null ? mobility.DisplayName : "< 기동 >",
                 mobility != null
-                    ? $"MOV {mobility.MoveRange:0.0}  |  ANC {mobility.AnchorRange:0.0}"
+                    ? $"EN {mobility.EnergyCost}  |  SPD {mobility.MoveSpeed:0.0}  |  MOV {mobility.MoveRange:0.0}"
                     : "기동 키트를 선택하세요",
                 hasCommittedUnit || hasAnyDraftSelection);
         }
@@ -207,7 +207,8 @@ namespace Features.Garage.Presentation
                 isReady: readyEligible,
                 isDirty: evaluation.HasDraftChanges,
                 canSave: evaluation.CanSave,
-                primaryActionLabel: GarageUnitIdentityFormatter.BuildPrimaryActionLabel(evaluation));
+                primaryActionLabel: GarageUnitIdentityFormatter.BuildPrimaryActionLabel(evaluation),
+                radar: BuildRadarViewModel(evaluation));
         }
 
         private static string BuildValidationText(GaragePageState state, GarageDraftEvaluation evaluation)
@@ -258,9 +259,50 @@ namespace Features.Garage.Presentation
 
             var unit = evaluation.ComposeResult.Value;
             return
-                $"ATK {unit.FinalAttackDamage:0}  |  RNG {unit.FinalRange:0.0}m  |  COST {unit.SummonCost}\n" +
-                $"HP {unit.FinalHp:0}  |  ASPD {unit.FinalAttackSpeed:0.00}  |  MOV {unit.FinalMoveRange:0.0}\n" +
+                $"ENERGY {unit.SummonCost}  |  FRAME {unit.FrameEnergyCost}  |  FIRE {unit.FirepowerEnergyCost}  |  MOB {unit.MobilityEnergyCost}\n" +
+                $"ATK {unit.FinalAttackDamage:0}  |  ASPD {unit.FinalAttackSpeed:0.00}  |  RNG {unit.FinalRange:0.0}m\n" +
                 operationSummary;
+        }
+
+        private GarageStatRadarViewModel BuildRadarViewModel(GarageDraftEvaluation evaluation)
+        {
+            if (evaluation == null || !evaluation.HasComposedUnit)
+                return null;
+
+            var current = evaluation.ComposeResult.Value;
+            float[] previousValues = null;
+            if (evaluation.HasDraftChanges && evaluation.CommittedComposeResult.IsSuccess)
+                previousValues = BuildRadarValues(evaluation.CommittedComposeResult.Value);
+
+            return new GarageStatRadarViewModel(
+                BuildRadarValues(current),
+                previousValues,
+                current.SummonCost);
+        }
+
+        private float[] BuildRadarValues(Features.Unit.Domain.Unit unit)
+        {
+            var scale = Catalog?.RadarScale ?? new GaragePanelCatalog.StatRadarScale();
+            return new[]
+            {
+                Normalize(unit.FinalAttackDamage, scale.AttackDamageMax),
+                Normalize(unit.FinalAttackSpeed, scale.AttackSpeedMax),
+                Normalize(unit.FinalRange, scale.RangeMax),
+                Normalize(unit.FinalHp, scale.HpMax),
+                Normalize(unit.FinalDefense, scale.DefenseMax),
+                Normalize(unit.FinalMoveSpeed, scale.MoveSpeedMax),
+                Normalize(unit.FinalMoveRange, scale.MoveRangeMax)
+            };
+        }
+
+        private static float Normalize(float value, float max)
+        {
+            if (max <= 0f)
+                return 0f;
+
+            var normalized = value / max;
+            if (normalized < 0f) return 0f;
+            return normalized > 1f ? 1f : normalized;
         }
 
     }

@@ -12,6 +12,7 @@ namespace Features.Garage.Application.Ports
         ModuleStats GetFrameBaseStats(string frameId);
         ModuleStats GetFirepowerStats(string moduleId);
         ModuleStats GetMobilityStats(string moduleId);
+        CostCalculator.StatCostTuning GetCostTuning();
         string GetPassiveTraitId(string frameId);
         int GetPassiveTraitCostBonus(string frameId);
     }

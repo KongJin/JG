@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -16,8 +16,7 @@ MonoBehaviour:
   displayName: "\uC2A4\uD2B8\uB77C\uC774\uB354"
   icon: {fileID: 0}
   mobilitySurface: 1
-  hpBonus: 180
+  moveSpeed: 4.5
   moveRange: 5.1
-  anchorRange: 5.1
   description: datan\common\legs11_strod.gx
   previewPrefab: {fileID: 112886290407058377, guid: 1f037207938e0df4ea9d22e2018384c0, type: 3}

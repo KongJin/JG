@@ -27,7 +27,7 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 5. If the task depends on Stitch handoff, source freeze, execution contracts, source visual contracts, translation, or `.stitch` artifacts, read owner doc `ops.stitch-data-workflow` before translating them into Unity work.
 6. If the task touches Unity MCP, Play Mode automation, or runtime smoke, read `tools/unity-mcp/README.md` as execution reference.
 7. If the task creates or substantially rewrites a plan doc, read owner doc `ops.plan-authoring-review-workflow` before editing the plan.
-8. If the task needs acceptance, blocked/mismatch wording, or closeout judgment, read owner doc `ops.acceptance-reporting-guardrails`.
+8. If the task needs acceptance, blocked/mismatch wording, closeout judgment, or Fresh Evidence Discipline for capture/visual evidence, read owner doc `ops.acceptance-reporting-guardrails`.
 9. If the task depends on current project priorities or recent recovery work, skim the relevant plan in `docs/plans/`.
 10. If a task clearly needs extra architecture or initialization docs and they exist, read them. Do not stop if they are absent.
 

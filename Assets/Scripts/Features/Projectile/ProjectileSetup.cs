@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Features.Projectile
 {
-    public sealed class ProjectileSpawner : MonoBehaviour
+    public sealed class ProjectileSetup : MonoBehaviour
     {
         [Required, SerializeField]
         private ProjectilePhysicsAdapter _projectilePrefab;
@@ -29,7 +29,7 @@ namespace Features.Projectile
         {
             if (_projectilePrefab == null)
             {
-                Debug.LogError("[ProjectileSpawner] Projectile prefab is missing.", this);
+                Debug.LogError("[ProjectileSetup] Projectile prefab is missing.", this);
                 return;
             }
 
@@ -74,7 +74,7 @@ namespace Features.Projectile
             var physicsAdapter = _projectilePool.RentComponent<ProjectilePhysicsAdapter>(spawnPosition, rotation);
             if (physicsAdapter == null)
             {
-                Debug.LogError("[ProjectileSpawner] ProjectilePhysicsAdapter is missing on pooled projectile.", this);
+                Debug.LogError("[ProjectileSetup] ProjectilePhysicsAdapter is missing on pooled projectile.", this);
                 return;
             }
 

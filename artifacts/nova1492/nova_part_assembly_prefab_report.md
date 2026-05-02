@@ -1,6 +1,6 @@
 # Nova1492 Part Assembly Prefab Report
 
-> generated: 2026-05-01 11:22:15
+> generated: 2026-05-02 09:59:32
 
 ## Summary
 
@@ -8,6 +8,8 @@
 - created prefabs: 0
 - updated prefabs: 144
 - missing source models: 0
+- measured visual bounds: 144
+- bounds audit: `artifacts/nova1492/assembly-profile/nova_assembly_bounds_audit.csv`
 
 ## Slot Counts
 

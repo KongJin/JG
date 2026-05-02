@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="6" result="Passed" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-01 14:28:25Z" end-time="2026-05-01 14:28:25Z" duration="0.0574621">
+  <test-suite type="TestSuite" id="1176" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="134" result="Passed" start-time="2026-05-01 14:28:25Z" end-time="2026-05-01 14:28:25Z" duration="0.057462" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1163" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="134" result="Passed" start-time="2026-05-01 14:28:25Z" end-time="2026-05-01 14:28:25Z" duration="0.055682" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="3968" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1166" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="128" result="Passed" start-time="2026-05-01 14:28:25Z" end-time="2026-05-01 14:28:25Z" duration="0.053494" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1167" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="128" result="Passed" start-time="2026-05-01 14:28:25Z" end-time="2026-05-01 14:28:25Z" duration="0.051973" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1156" name="SoundSystemReflectionTests" fullname="Tests.Editor.SoundSystemReflectionTests" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-05-01 14:28:25Z" end-time="2026-05-01 14:28:25Z" duration="0.051332" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1157" name="SoundCatalog_ReportsDuplicateKeys" fullname="Tests.Editor.SoundSystemReflectionTests.SoundCatalog_ReportsDuplicateKeys" methodname="SoundCatalog_ReportsDuplicateKeys" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" seed="218890594" result="Passed" start-time="2026-05-01 14:28:25Z" end-time="2026-05-01 14:28:25Z" duration="0.000630" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1158" name="SoundPlayer_ComputesClampedChannelVolumes" fullname="Tests.Editor.SoundSystemReflectionTests.SoundPlayer_ComputesClampedChannelVolumes" methodname="SoundPlayer_ComputesClampedChannelVolumes" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" seed="1266101284" result="Passed" start-time="2026-05-01 14:28:25Z" end-time="2026-05-01 14:28:25Z" duration="0.000406" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1160" name="SoundPlayer_DoesNotCreateRuntimeAudioSources" fullname="Tests.Editor.SoundSystemReflectionTests.SoundPlayer_DoesNotCreateRuntimeAudioSources" methodname="SoundPlayer_DoesNotCreateRuntimeAudioSources" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" seed="654561833" result="Passed" start-time="2026-05-01 14:28:25Z" end-time="2026-05-01 14:28:25Z" duration="0.001822" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1159" name="SoundPlayer_RequiresSceneOwnedAudioSources" fullname="Tests.Editor.SoundSystemReflectionTests.SoundPlayer_RequiresSceneOwnedAudioSources" methodname="SoundPlayer_RequiresSceneOwnedAudioSources" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" seed="873842855" result="Passed" start-time="2026-05-01 14:28:25Z" end-time="2026-05-01 14:28:25Z" duration="0.000258" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1162" name="SoundPlayer_RespectsSfxCooldown" fullname="Tests.Editor.SoundSystemReflectionTests.SoundPlayer_RespectsSfxCooldown" methodname="SoundPlayer_RespectsSfxCooldown" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" seed="1140826045" result="Passed" start-time="2026-05-01 14:28:25Z" end-time="2026-05-01 14:28:25Z" duration="0.039582" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1161" name="SoundPlayer_SceneHostsDeclareSerializedAudioSources" fullname="Tests.Editor.SoundSystemReflectionTests.SoundPlayer_SceneHostsDeclareSerializedAudioSources" methodname="SoundPlayer_SceneHostsDeclareSerializedAudioSources" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" seed="995879814" result="Passed" start-time="2026-05-01 14:28:25Z" end-time="2026-05-01 14:28:25Z" duration="0.004522" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\sound-system-contract-techdebt-20260501-r2.xml
+Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\sound-system-contract-techdebt-20260501-r2.xml
+Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\sound-system-contract-techdebt-20260501-r2.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

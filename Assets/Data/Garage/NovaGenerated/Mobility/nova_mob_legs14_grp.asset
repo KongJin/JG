@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -16,8 +16,7 @@ MonoBehaviour:
   displayName: "\uAC24\uB85C\uD37C"
   icon: {fileID: 0}
   mobilitySurface: 1
-  hpBonus: 280
+  moveSpeed: 4
   moveRange: 4
-  anchorRange: 4
   description: datan\common\legs14_grp.gx
   previewPrefab: {fileID: 4495906126155540935, guid: 1595303a6a5c45f498b4a6591ade4e28, type: 3}

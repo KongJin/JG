@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="6" result="Passed" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-01 16:03:01Z" end-time="2026-05-01 16:03:01Z" duration="0.2031368">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="135" result="Passed" start-time="2026-05-01 16:03:01Z" end-time="2026-05-01 16:03:01Z" duration="0.203137" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1164" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="135" result="Passed" start-time="2026-05-01 16:03:01Z" end-time="2026-05-01 16:03:01Z" duration="0.182898" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32204" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1167" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="129" result="Passed" start-time="2026-05-01 16:03:01Z" end-time="2026-05-01 16:03:01Z" duration="0.180970" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1168" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="129" result="Passed" start-time="2026-05-01 16:03:01Z" end-time="2026-05-01 16:03:01Z" duration="0.179421" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1083" name="GarageUnitPreviewAssemblyFrameTopDirectTests" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-05-01 16:03:01Z" end-time="2026-05-01 16:03:01Z" duration="0.177623" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1086" name="TryCreatePreviewRoot_IgnoresDirectionOnlyFirepowerSocketOffset" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_IgnoresDirectionOnlyFirepowerSocketOffset" methodname="TryCreatePreviewRoot_IgnoresDirectionOnlyFirepowerSocketOffset" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1702029410" result="Passed" start-time="2026-05-01 16:03:01Z" end-time="2026-05-01 16:03:01Z" duration="0.024271" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1089" name="TryCreatePreviewRoot_IgnoresDirectionOnlyHammerShockSocketForSquadron" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_IgnoresDirectionOnlyHammerShockSocketForSquadron" methodname="TryCreatePreviewRoot_IgnoresDirectionOnlyHammerShockSocketForSquadron" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1246521085" result="Passed" start-time="2026-05-01 16:03:01Z" end-time="2026-05-01 16:03:01Z" duration="0.128442" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1088" name="TryCreatePreviewRoot_IgnoresDirectionOnlyHandcannonSocketForRegiment" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_IgnoresDirectionOnlyHandcannonSocketForRegiment" methodname="TryCreatePreviewRoot_IgnoresDirectionOnlyHandcannonSocketForRegiment" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1749483035" result="Passed" start-time="2026-05-01 16:03:01Z" end-time="2026-05-01 16:03:01Z" duration="0.001933" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1085" name="TryCreatePreviewRoot_IgnoresDirectionOnlySpitfireSocketForKingpin" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_IgnoresDirectionOnlySpitfireSocketForKingpin" methodname="TryCreatePreviewRoot_IgnoresDirectionOnlySpitfireSocketForKingpin" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="146328387" result="Passed" start-time="2026-05-01 16:03:01Z" end-time="2026-05-01 16:03:01Z" duration="0.003577" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1087" name="TryCreatePreviewRoot_SeatsCenturionProlixOnVisibleFirepowerBottom" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_SeatsCenturionProlixOnVisibleFirepowerBottom" methodname="TryCreatePreviewRoot_SeatsCenturionProlixOnVisibleFirepowerBottom" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="468531336" result="Passed" start-time="2026-05-01 16:03:01Z" end-time="2026-05-01 16:03:01Z" duration="0.001489" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1084" name="TryCreatePreviewRoot_UsesFrameSocketOffsetWhenFrameTopSocketIsZero" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesFrameSocketOffsetWhenFrameTopSocketIsZero" methodname="TryCreatePreviewRoot_UsesFrameSocketOffsetWhenFrameTopSocketIsZero" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="421819389" result="Passed" start-time="2026-05-01 16:03:01Z" end-time="2026-05-01 16:03:01Z" duration="0.000613" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-humanoid-weapon-current-tests-20260502-r5.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

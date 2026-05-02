@@ -19,14 +19,24 @@ namespace ProjectSD.EditorTools
         private const string AssemblyRootPath = "Assets/Prefabs/Features/Garage/AssemblyModels/Generated";
         private const string DataRootPath = "Assets/Data/Garage/NovaGenerated";
         private const string ModuleCatalogPath = "Assets/Data/Garage/ModuleCatalog.asset";
+        private const string UnitStatTuningPath = "Assets/Data/Garage/Tuning/UnitStatTuning.asset";
         private const string VisualCatalogPath = "Assets/Data/Garage/NovaGenerated/NovaPartVisualCatalog.asset";
         private const string AlignmentCatalogPath = "Assets/Data/Garage/NovaGenerated/NovaPartAlignmentCatalog.asset";
         private const string PreviewReportPath = "artifacts/nova1492/nova_part_preview_prefab_report.md";
         private const string AssemblyReportPath = "artifacts/nova1492/nova_part_assembly_prefab_report.md";
+        private const string AssemblyBoundsAuditPath = "artifacts/nova1492/assembly-profile/nova_assembly_bounds_audit.csv";
         private const string PlayableReportPath = "artifacts/nova1492/nova_part_playable_asset_report.md";
         private const string RoadRunnerPartId = "nova_mob_legs1_rdrn";
         private const float PreviewNormalizedMaxDimension = 0.9f;
         private const float AssemblyModelScale = 0.3353419f;
+        private static readonly Dictionary<string, string[]> GeneratedEffectRendererSuffixesByPartId = new Dictionary<string, string[]>(StringComparer.Ordinal)
+        {
+            ["nova_fire_arm24_bzk"] = new[] { "_mesh06" },
+            ["nova_fire_s_arm52_bzk"] = new[] { "_mesh06" },
+            ["nova_mob_legs13_krz"] = new[] { "_mesh01" },
+            ["nova_mob_n_legs40_krz"] = new[] { "_mesh01" },
+            ["nova_mob_s_legs28_krz"] = new[] { "_mesh01" }
+        };
 
         [MenuItem("Tools/Nova1492/Create Full Part Preview Prefabs")]
         public static void CreateFullPartPreviewPrefabs()
@@ -50,11 +60,12 @@ namespace ProjectSD.EditorTools
             var rows = ReadCatalogRows();
             EnsureAssetFolder(AssemblyRootPath);
             var deleted = DeleteStaleGeneratedAssets(rows, AssemblyRootPath, ".prefab", GetAssemblyPrefabPath);
-            CreateAssemblyPrefabs(rows, out var created, out var updated, out var missingModels, out var scaleByPartId);
+            CreateAssemblyPrefabs(rows, out var created, out var updated, out var missingModels, out var scaleByPartId, out var boundsByPartId);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            WriteAssemblyReport(rows, created, updated, missingModels, scaleByPartId);
+            WriteAssemblyReport(rows, created, updated, missingModels, scaleByPartId, boundsByPartId);
+            WriteAssemblyBoundsAudit(rows, scaleByPartId, boundsByPartId);
             Debug.Log("[Nova1492] Assembly prefab generation complete. rows=" + rows.Count + " deletedStale=" + deleted + " report=" + AssemblyReportPath);
         }
 
@@ -73,12 +84,13 @@ namespace ProjectSD.EditorTools
             EnsureAssetFolder(PreviewRootPath);
             EnsureAssetFolder(AssemblyRootPath);
             CreatePreviewPrefabs(rows, out var previewCreated, out var previewUpdated, out var previewMissingModels, out var previewScaleByPartId);
-            CreateAssemblyPrefabs(rows, out var assemblyCreated, out var assemblyUpdated, out var assemblyMissingModels, out var assemblyScaleByPartId);
+            CreateAssemblyPrefabs(rows, out var assemblyCreated, out var assemblyUpdated, out var assemblyMissingModels, out var assemblyScaleByPartId, out var assemblyBoundsByPartId);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             WritePreviewReport(rows, previewCreated, previewUpdated, previewMissingModels, previewScaleByPartId);
-            WriteAssemblyReport(rows, assemblyCreated, assemblyUpdated, assemblyMissingModels, assemblyScaleByPartId);
+            WriteAssemblyReport(rows, assemblyCreated, assemblyUpdated, assemblyMissingModels, assemblyScaleByPartId, assemblyBoundsByPartId);
+            WriteAssemblyBoundsAudit(rows, assemblyScaleByPartId, assemblyBoundsByPartId);
             Debug.Log("[Nova1492] Changed prefab generation complete. rows=" + rows.Count +
                       " previewUpdated=" + previewUpdated +
                       " assemblyUpdated=" + assemblyUpdated);
@@ -133,6 +145,7 @@ namespace ProjectSD.EditorTools
                     {
                         child.name = model.name;
                         child.transform.SetParent(root.transform, false);
+                        DisableGeneratedEffectRenderers(row, child);
                         scaleByPartId[row.PartId] = NormalizePreviewChild(root, child);
                     }
                 }
@@ -155,12 +168,14 @@ namespace ProjectSD.EditorTools
             out int created,
             out int updated,
             out List<string> missingModels,
-            out Dictionary<string, float> scaleByPartId)
+            out Dictionary<string, float> scaleByPartId,
+            out Dictionary<string, AssemblyBoundsSnapshot> boundsByPartId)
         {
             created = 0;
             updated = 0;
             missingModels = new List<string>();
             scaleByPartId = new Dictionary<string, float>(StringComparer.Ordinal);
+            boundsByPartId = new Dictionary<string, AssemblyBoundsSnapshot>(StringComparer.Ordinal);
             foreach (var row in rows)
             {
                 EnsureAssetFolder(GetAssemblyFolder(row.Slot));
@@ -180,7 +195,13 @@ namespace ProjectSD.EditorTools
                     {
                         child.name = model.name;
                         child.transform.SetParent(root.transform, false);
+                        var excludedEffectRenderers = DisableGeneratedEffectRenderers(row, child);
                         scaleByPartId[row.PartId] = NormalizeAssemblyChild(root, child);
+                        if (TryCreateAssemblyBoundsSnapshot(root, child, out var bounds))
+                        {
+                            bounds.ExcludedEffectRendererCount = excludedEffectRenderers;
+                            boundsByPartId[row.PartId] = bounds;
+                        }
                     }
                 }
 
@@ -259,8 +280,7 @@ namespace ProjectSD.EditorTools
             SetString(serialized, "displayName", row.DisplayName);
             SetEnum(serialized, "assemblyForm", AssemblyFormToIndex(row.AssemblyForm));
             SetFloat(serialized, "baseHp", row.BaseHp, 120f);
-            SetFloat(serialized, "baseMoveRange", row.BaseMoveRange, 3f);
-            SetFloat(serialized, "baseAttackSpeed", row.BaseAttackSpeed, 1f);
+            SetFloat(serialized, "defense", row.Defense, ResolveFrameDefense(row.BaseHp, row.Tier));
             SetObject(serialized, "previewPrefab", previewPrefab);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(asset);
@@ -291,9 +311,8 @@ namespace ProjectSD.EditorTools
             SetString(serialized, "moduleId", row.PartId);
             SetString(serialized, "displayName", row.DisplayName);
             SetEnum(serialized, "mobilitySurface", MobilitySurfaceToIndex(row.MobilitySurface));
-            SetFloat(serialized, "hpBonus", row.HpBonus, 25f);
+            SetFloat(serialized, "moveSpeed", row.MoveSpeed, ResolveMoveSpeed(row.MoveRange, row.Tier));
             SetFloat(serialized, "moveRange", row.MoveRange, 3f);
-            SetFloat(serialized, "anchorRange", row.AnchorRange, 4f);
             SetString(serialized, "description", row.SourceRelativePath);
             SetObject(serialized, "previewPrefab", previewPrefab);
             serialized.ApplyModifiedPropertiesWithoutUndo();
@@ -324,6 +343,11 @@ namespace ProjectSD.EditorTools
             ReplaceReferences(
                 serialized.FindProperty("mobilityModules"),
                 ToObjectList(mobility));
+            var statTuning = serialized.FindProperty("statTuning");
+            if (statTuning != null && statTuning.objectReferenceValue == null)
+            {
+                statTuning.objectReferenceValue = AssetDatabase.LoadAssetAtPath<UnitStatTuningData>(UnitStatTuningPath);
+            }
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(catalog);
         }
@@ -363,6 +387,7 @@ namespace ProjectSD.EditorTools
 
         private static void FilterAlignmentCatalog(IReadOnlyList<PartRow> rows)
         {
+            var assemblyBoundsByPartId = ReadAssemblyBoundsAudit();
             var catalog = AssetDatabase.LoadAssetAtPath<NovaPartAlignmentCatalog>(AlignmentCatalogPath);
             if (catalog == null)
             {
@@ -393,6 +418,15 @@ namespace ProjectSD.EditorTools
                 if (!snapshots.TryGetValue(row.PartId, out snapshot))
                 {
                     snapshot = AlignmentSnapshot.CreateDefault(row);
+                }
+
+                AssemblyBoundsSnapshot bounds;
+                if (assemblyBoundsByPartId.TryGetValue(row.PartId, out bounds))
+                {
+                    snapshot.HasVisualBounds = true;
+                    snapshot.VisualBoundsCenter = bounds.BoundsCenter;
+                    snapshot.VisualBoundsMin = bounds.BoundsMin;
+                    snapshot.VisualBoundsMax = bounds.BoundsMax;
                 }
 
                 snapshot.Slot = SlotToIndex(row.Slot);
@@ -540,15 +574,17 @@ namespace ProjectSD.EditorTools
                     AssemblyForm = Get(values, headerIndex, "assemblyForm"),
                     MobilitySurface = Get(values, headerIndex, "mobilitySurface"),
                     BaseHp = ParseFloat(Get(values, headerIndex, "baseHp"), 0f),
-                    BaseAttackSpeed = ParseFloat(Get(values, headerIndex, "baseAttackSpeed"), 0f),
-                    BaseMoveRange = ParseFloat(Get(values, headerIndex, "baseMoveRange"), 0f),
+                    Defense = ParseFloat(Get(values, headerIndex, "defense"), 0f),
                     AttackDamage = ParseFloat(Get(values, headerIndex, "attackDamage"), 0f),
                     AttackSpeed = ParseFloat(Get(values, headerIndex, "attackSpeed"), 0f),
                     Range = ParseFloat(Get(values, headerIndex, "range"), 0f),
-                    HpBonus = ParseFloat(Get(values, headerIndex, "hpBonus"), 0f),
-                    MoveRange = ParseFloat(Get(values, headerIndex, "moveRange"), 0f),
-                    AnchorRange = ParseFloat(Get(values, headerIndex, "anchorRange"), 0f)
+                    MoveSpeed = ParseFloat(Get(values, headerIndex, "moveSpeed"), 0f),
+                    MoveRange = ParseFloat(Get(values, headerIndex, "moveRange"), 0f)
                 };
+                if (row.Defense <= 0f)
+                    row.Defense = ResolveFrameDefense(row.BaseHp, row.Tier);
+                if (row.MoveSpeed <= 0f)
+                    row.MoveSpeed = ResolveMoveSpeed(row.MoveRange, row.Tier);
                 rows.Add(row);
             }
 
@@ -637,6 +673,127 @@ namespace ProjectSD.EditorTools
             child.transform.localScale = Vector3.one * AssemblyModelScale;
             child.transform.localPosition = Vector3.zero;
             return AssemblyModelScale;
+        }
+
+        private static int DisableGeneratedEffectRenderers(PartRow row, GameObject child)
+        {
+            if (row == null || child == null)
+                return 0;
+
+            if (!GeneratedEffectRendererSuffixesByPartId.TryGetValue(row.PartId, out var suffixes))
+                return 0;
+
+            var disabled = 0;
+            var renderers = child.GetComponentsInChildren<Renderer>(includeInactive: true);
+            for (var i = 0; i < renderers.Length; i++)
+            {
+                var renderer = renderers[i];
+                if (renderer == null)
+                    continue;
+
+                var meshName = string.Empty;
+                if (renderer is MeshRenderer)
+                {
+                    var filter = renderer.GetComponent<MeshFilter>();
+                    meshName = filter != null && filter.sharedMesh != null ? filter.sharedMesh.name : string.Empty;
+                }
+
+                if (!IsGeneratedEffectRendererName(row.PartId, renderer.gameObject.name, meshName))
+                    continue;
+
+                renderer.gameObject.SetActive(false);
+                disabled++;
+            }
+
+            return disabled;
+        }
+
+        internal static bool IsGeneratedEffectRendererNameForTest(string partId, string objectName, string meshName)
+        {
+            return IsGeneratedEffectRendererName(partId, objectName, meshName);
+        }
+
+        private static bool IsGeneratedEffectRendererName(string partId, string objectName, string meshName)
+        {
+            if (string.IsNullOrWhiteSpace(partId))
+                return false;
+
+            if (!GeneratedEffectRendererSuffixesByPartId.TryGetValue(partId, out var suffixes))
+                return false;
+
+            var candidateObjectName = objectName ?? string.Empty;
+            var candidateMeshName = meshName ?? string.Empty;
+            for (var i = 0; i < suffixes.Length; i++)
+            {
+                var suffix = suffixes[i];
+                if (candidateObjectName.EndsWith(suffix, StringComparison.Ordinal) ||
+                    candidateMeshName.EndsWith(suffix, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool TryCreateAssemblyBoundsSnapshot(
+            GameObject root,
+            GameObject child,
+            out AssemblyBoundsSnapshot snapshot)
+        {
+            snapshot = null;
+            if (root == null || child == null)
+                return false;
+
+            var renderers = child.GetComponentsInChildren<Renderer>(includeInactive: false);
+            if (renderers == null || renderers.Length == 0)
+                return false;
+
+            var initialized = false;
+            var bounds = new Bounds();
+            for (var i = 0; i < renderers.Length; i++)
+            {
+                var worldBounds = renderers[i].bounds;
+                var min = worldBounds.min;
+                var max = worldBounds.max;
+                var corners = new[]
+                {
+                    new Vector3(min.x, min.y, min.z),
+                    new Vector3(min.x, min.y, max.z),
+                    new Vector3(min.x, max.y, min.z),
+                    new Vector3(min.x, max.y, max.z),
+                    new Vector3(max.x, min.y, min.z),
+                    new Vector3(max.x, min.y, max.z),
+                    new Vector3(max.x, max.y, min.z),
+                    new Vector3(max.x, max.y, max.z)
+                };
+
+                for (var cornerIndex = 0; cornerIndex < corners.Length; cornerIndex++)
+                {
+                    var local = root.transform.InverseTransformPoint(corners[cornerIndex]);
+                    if (!initialized)
+                    {
+                        bounds = new Bounds(local, Vector3.zero);
+                        initialized = true;
+                    }
+                    else
+                    {
+                        bounds.Encapsulate(local);
+                    }
+                }
+            }
+
+            if (!initialized)
+                return false;
+
+            snapshot = new AssemblyBoundsSnapshot
+            {
+                ChildLocalPosition = child.transform.localPosition,
+                BoundsCenter = bounds.center,
+                BoundsMin = bounds.min,
+                BoundsMax = bounds.max
+            };
+            return true;
         }
 
         private static List<string> ParseCsvLine(string line)
@@ -758,6 +915,21 @@ namespace ProjectSD.EditorTools
             {
                 property.floatValue = value > 0f ? value : fallback;
             }
+        }
+
+        private static float ResolveFrameDefense(float baseHp, int tier)
+        {
+            if (baseHp >= 630f) return 6f;
+            if (baseHp >= 590f) return 5f;
+            if (baseHp >= 540f) return 4f;
+            return tier >= 3 ? 3f : 2f;
+        }
+
+        private static float ResolveMoveSpeed(float moveRange, int tier)
+        {
+            var normalizedRange = moveRange > 0f ? moveRange : 3f;
+            var tierBonus = Math.Max(0, tier - 1) * 0.05f;
+            return (float)Math.Round(2.2f + normalizedRange * 0.45f + tierBonus, 2);
         }
 
         private static void SetEnum(SerializedObject serialized, string name, int value)
@@ -897,17 +1069,72 @@ namespace ProjectSD.EditorTools
             int created,
             int updated,
             IReadOnlyList<string> missingModels,
-            IReadOnlyDictionary<string, float> scaleByPartId)
+            IReadOnlyDictionary<string, float> scaleByPartId,
+            IReadOnlyDictionary<string, AssemblyBoundsSnapshot> boundsByPartId)
         {
             var builder = NewReportBuilder("# Nova1492 Part Assembly Prefab Report");
             builder.AppendLine($"- catalog rows: {rows.Count}");
             builder.AppendLine($"- created prefabs: {created}");
             builder.AppendLine($"- updated prefabs: {updated}");
             builder.AppendLine($"- missing source models: {missingModels.Count}");
+            builder.AppendLine($"- measured visual bounds: {boundsByPartId.Count}");
+            builder.AppendLine($"- bounds audit: `{AssemblyBoundsAuditPath}`");
             AppendCounts(builder, rows);
             AppendScaleTable(builder, rows, scaleByPartId, "Assembly Scale", GetAssemblyPrefabPath);
             AppendList(builder, "Missing Source Models", missingModels);
             WriteReport(AssemblyReportPath, builder);
+        }
+
+        private static void WriteAssemblyBoundsAudit(
+            IReadOnlyList<PartRow> rows,
+            IReadOnlyDictionary<string, float> scaleByPartId,
+            IReadOnlyDictionary<string, AssemblyBoundsSnapshot> boundsByPartId)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(AssemblyBoundsAuditPath));
+            var builder = new StringBuilder();
+            builder.AppendLine("part_id,slot,prefab_path,child_local_position,bounds_center,bounds_min,bounds_max,bottom_anchor,top_anchor,normalized_scale,excluded_prefab_effect_renderers");
+            for (var i = 0; i < rows.Count; i++)
+            {
+                var row = rows[i];
+                AssemblyBoundsSnapshot bounds;
+                float scale;
+                if (!scaleByPartId.TryGetValue(row.PartId, out scale))
+                    scale = 1f;
+
+                if (!boundsByPartId.TryGetValue(row.PartId, out bounds))
+                {
+                    builder.AppendLine(string.Join(",",
+                        Csv(row.PartId),
+                        Csv(row.Slot),
+                        Csv(GetAssemblyPrefabPath(row)),
+                        Csv(""),
+                        Csv(""),
+                        Csv(""),
+                        Csv(""),
+                        Csv(""),
+                        Csv(""),
+                        Csv(scale.ToString("0.######", CultureInfo.InvariantCulture)),
+                        Csv("0")));
+                    continue;
+                }
+
+                var bottomAnchor = new Vector3(bounds.BoundsCenter.x, bounds.BoundsMin.y, bounds.BoundsCenter.z);
+                var topAnchor = new Vector3(bounds.BoundsCenter.x, bounds.BoundsMax.y, bounds.BoundsCenter.z);
+                builder.AppendLine(string.Join(",",
+                    Csv(row.PartId),
+                    Csv(row.Slot),
+                    Csv(GetAssemblyPrefabPath(row)),
+                    Csv(FormatVector(bounds.ChildLocalPosition)),
+                    Csv(FormatVector(bounds.BoundsCenter)),
+                    Csv(FormatVector(bounds.BoundsMin)),
+                    Csv(FormatVector(bounds.BoundsMax)),
+                    Csv(FormatVector(bottomAnchor)),
+                    Csv(FormatVector(topAnchor)),
+                    Csv(scale.ToString("0.######", CultureInfo.InvariantCulture)),
+                    Csv(bounds.ExcludedEffectRendererCount.ToString(CultureInfo.InvariantCulture))));
+            }
+
+            File.WriteAllText(AssemblyBoundsAuditPath, builder.ToString(), new UTF8Encoding(false));
         }
 
         private static void WritePlayableReport(
@@ -1008,6 +1235,82 @@ namespace ProjectSD.EditorTools
             File.WriteAllText(path, builder.ToString(), new UTF8Encoding(false));
         }
 
+        private static Dictionary<string, AssemblyBoundsSnapshot> ReadAssemblyBoundsAudit()
+        {
+            var byPartId = new Dictionary<string, AssemblyBoundsSnapshot>(StringComparer.Ordinal);
+            if (!File.Exists(AssemblyBoundsAuditPath))
+                return byPartId;
+
+            var lines = File.ReadAllLines(AssemblyBoundsAuditPath, Encoding.UTF8);
+            if (lines.Length < 2)
+                return byPartId;
+
+            var headers = ParseCsvLine(lines[0]);
+            var headerIndex = new Dictionary<string, int>(StringComparer.Ordinal);
+            for (var i = 0; i < headers.Count; i++)
+            {
+                headerIndex[headers[i]] = i;
+            }
+
+            for (var i = 1; i < lines.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(lines[i]))
+                    continue;
+
+                var values = ParseCsvLine(lines[i]);
+                var partId = Get(values, headerIndex, "part_id");
+                var center = Get(values, headerIndex, "bounds_center");
+                var min = Get(values, headerIndex, "bounds_min");
+                var max = Get(values, headerIndex, "bounds_max");
+                if (string.IsNullOrWhiteSpace(partId) ||
+                    string.IsNullOrWhiteSpace(center) ||
+                    string.IsNullOrWhiteSpace(min) ||
+                    string.IsNullOrWhiteSpace(max))
+                    continue;
+
+                byPartId[partId] = new AssemblyBoundsSnapshot
+                {
+                    BoundsCenter = ParseVector(center),
+                    BoundsMin = ParseVector(min),
+                    BoundsMax = ParseVector(max)
+                };
+            }
+
+            return byPartId;
+        }
+
+        private static string Csv(string value)
+        {
+            return "\"" + (value ?? string.Empty).Replace("\"", "\"\"") + "\"";
+        }
+
+        private static string FormatVector(Vector3 value)
+        {
+            return value.x.ToString("0.######", CultureInfo.InvariantCulture) + ";" +
+                   value.y.ToString("0.######", CultureInfo.InvariantCulture) + ";" +
+                   value.z.ToString("0.######", CultureInfo.InvariantCulture);
+        }
+
+        private static Vector3 ParseVector(string value)
+        {
+            var parts = (value ?? string.Empty).Split(';');
+            if (parts.Length != 3)
+                return Vector3.zero;
+
+            return new Vector3(
+                ParseFloat(parts[0]),
+                ParseFloat(parts[1]),
+                ParseFloat(parts[2]));
+        }
+
+        private static float ParseFloat(string value)
+        {
+            float parsed;
+            return float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out parsed)
+                ? parsed
+                : 0f;
+        }
+
         private sealed class PartRow
         {
             public string PartId;
@@ -1023,14 +1326,21 @@ namespace ProjectSD.EditorTools
             public string AssemblyForm;
             public string MobilitySurface;
             public float BaseHp;
-            public float BaseAttackSpeed;
-            public float BaseMoveRange;
+            public float Defense;
             public float AttackDamage;
             public float AttackSpeed;
             public float Range;
-            public float HpBonus;
+            public float MoveSpeed;
             public float MoveRange;
-            public float AnchorRange;
+        }
+
+        private sealed class AssemblyBoundsSnapshot
+        {
+            public Vector3 ChildLocalPosition;
+            public Vector3 BoundsCenter;
+            public Vector3 BoundsMin;
+            public Vector3 BoundsMax;
+            public int ExcludedEffectRendererCount;
         }
 
         private sealed class AlignmentSnapshot
@@ -1039,6 +1349,10 @@ namespace ProjectSD.EditorTools
             public int Slot;
             public float NormalizedScale;
             public Vector3 PivotOffset;
+            public bool HasVisualBounds;
+            public Vector3 VisualBoundsCenter;
+            public Vector3 VisualBoundsMin;
+            public Vector3 VisualBoundsMax;
             public Vector3 SocketOffset;
             public Vector3 SocketEuler;
             public bool HasGxTreeSocket;
@@ -1062,6 +1376,15 @@ namespace ProjectSD.EditorTools
             public string XfiSocketName;
             public string QualityFlag;
             public string ReviewReason;
+            public string AssemblySourceSlotCode;
+            public string AssemblySlotMode;
+            public string AssemblyAnchorMode;
+            public Vector3 AssemblyLocalOffset;
+            public Vector3 AssemblyLocalEuler;
+            public Vector3 AssemblyLocalScale;
+            public string AssemblyConfidence;
+            public string AssemblyEvidencePath;
+            public string AssemblyReviewResult;
 
             public static AlignmentSnapshot From(SerializedProperty entry)
             {
@@ -1071,6 +1394,10 @@ namespace ProjectSD.EditorTools
                     Slot = GetEnum(entry, "slot"),
                     NormalizedScale = GetFloat(entry, "normalizedScale", 1f),
                     PivotOffset = GetVector3(entry, "pivotOffset"),
+                    HasVisualBounds = GetBool(entry, "hasVisualBounds"),
+                    VisualBoundsCenter = GetVector3(entry, "visualBoundsCenter"),
+                    VisualBoundsMin = GetVector3(entry, "visualBoundsMin"),
+                    VisualBoundsMax = GetVector3(entry, "visualBoundsMax"),
                     SocketOffset = GetVector3(entry, "socketOffset"),
                     SocketEuler = GetVector3(entry, "socketEuler"),
                     HasGxTreeSocket = GetBool(entry, "hasGxTreeSocket"),
@@ -1093,7 +1420,16 @@ namespace ProjectSD.EditorTools
                     XfiSocketQuality = GetString(entry, "xfiSocketQuality"),
                     XfiSocketName = GetString(entry, "xfiSocketName"),
                     QualityFlag = GetString(entry, "qualityFlag"),
-                    ReviewReason = GetString(entry, "reviewReason")
+                    ReviewReason = GetString(entry, "reviewReason"),
+                    AssemblySourceSlotCode = GetString(entry, "assemblySourceSlotCode"),
+                    AssemblySlotMode = GetString(entry, "assemblySlotMode"),
+                    AssemblyAnchorMode = GetString(entry, "assemblyAnchorMode"),
+                    AssemblyLocalOffset = GetVector3(entry, "assemblyLocalOffset"),
+                    AssemblyLocalEuler = GetVector3(entry, "assemblyLocalEuler"),
+                    AssemblyLocalScale = GetVector3(entry, "assemblyLocalScale", Vector3.one),
+                    AssemblyConfidence = GetString(entry, "assemblyConfidence"),
+                    AssemblyEvidencePath = GetString(entry, "assemblyEvidencePath"),
+                    AssemblyReviewResult = GetString(entry, "assemblyReviewResult")
                 };
             }
 
@@ -1104,6 +1440,7 @@ namespace ProjectSD.EditorTools
                     PartId = row.PartId,
                     Slot = SlotToIndex(row.Slot),
                     NormalizedScale = AssemblyModelScale,
+                    AssemblyLocalScale = Vector3.one,
                     QualityFlag = "needs_review",
                     ReviewReason = "Created by playable part cleanup generation."
                 };
@@ -1115,6 +1452,10 @@ namespace ProjectSD.EditorTools
                 SetEnumValue(entry, "slot", Slot);
                 Set(entry, "normalizedScale", NormalizedScale);
                 Set(entry, "pivotOffset", PivotOffset);
+                Set(entry, "hasVisualBounds", HasVisualBounds);
+                Set(entry, "visualBoundsCenter", VisualBoundsCenter);
+                Set(entry, "visualBoundsMin", VisualBoundsMin);
+                Set(entry, "visualBoundsMax", VisualBoundsMax);
                 Set(entry, "socketOffset", SocketOffset);
                 Set(entry, "socketEuler", SocketEuler);
                 Set(entry, "hasGxTreeSocket", HasGxTreeSocket);
@@ -1138,6 +1479,15 @@ namespace ProjectSD.EditorTools
                 Set(entry, "xfiSocketName", XfiSocketName);
                 Set(entry, "qualityFlag", QualityFlag);
                 Set(entry, "reviewReason", ReviewReason);
+                Set(entry, "assemblySourceSlotCode", AssemblySourceSlotCode);
+                Set(entry, "assemblySlotMode", AssemblySlotMode);
+                Set(entry, "assemblyAnchorMode", AssemblyAnchorMode);
+                Set(entry, "assemblyLocalOffset", AssemblyLocalOffset);
+                Set(entry, "assemblyLocalEuler", AssemblyLocalEuler);
+                Set(entry, "assemblyLocalScale", AssemblyLocalScale == Vector3.zero ? Vector3.one : AssemblyLocalScale);
+                Set(entry, "assemblyConfidence", AssemblyConfidence);
+                Set(entry, "assemblyEvidencePath", AssemblyEvidencePath);
+                Set(entry, "assemblyReviewResult", AssemblyReviewResult);
             }
 
             private static string GetString(SerializedProperty parent, string name)
@@ -1172,8 +1522,13 @@ namespace ProjectSD.EditorTools
 
             private static Vector3 GetVector3(SerializedProperty parent, string name)
             {
+                return GetVector3(parent, name, Vector3.zero);
+            }
+
+            private static Vector3 GetVector3(SerializedProperty parent, string name, Vector3 fallback)
+            {
                 var property = parent.FindPropertyRelative(name);
-                return property == null ? Vector3.zero : property.vector3Value;
+                return property == null ? fallback : property.vector3Value;
             }
 
             private static void Set(SerializedProperty parent, string name, string value)

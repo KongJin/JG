@@ -2025,6 +2025,49 @@ Assert-RuleHarness `
     -Condition (@($rolePlan.preventionItems | Where-Object kind -in @('skipped-batch', 'rollback', 'retry', 'memory-update')).Count -ge 4 -and [bool]$rolePlan.manualValidationRequired) `
     -Message 'Expected recurrence plan role to convert work report failure signals into prevention items.'
 
+$roleMemoryDir = Join-Path $roleRepo 'tools/rule-harness/memory'
+New-Item -ItemType Directory -Path $roleMemoryDir -Force | Out-Null
+[pscustomobject]@{
+    schemaVersion = 1
+    entries = @(
+        [pscustomobject]@{
+            signature = 'fixture-operational-blocked'
+            scopeType = 'harness-ops'
+            scopePath = 'tools/rule-harness/README.md'
+            symptoms = 'External LLM quota unavailable during diagnose; static-only review remains the canonical fallback.'
+            hitCount = 3
+            status = 'blocked-operational'
+        },
+        [pscustomobject]@{
+            signature = 'fixture-preventable-memory'
+            scopeType = 'harness'
+            scopePath = 'tools/rule-harness/README.md'
+            symptoms = 'Preventable fixture recurrence.'
+            hitCount = 3
+            status = 'observed'
+        }
+    )
+} | ConvertTo-Json -Depth 20 | Set-Content -Path (Join-Path $roleMemoryDir 'advisory-memory.json') -Encoding UTF8
+$memoryOnlyWorkReportPath = Join-Path $roleRepo 'Temp/memory-only-work-report.json'
+[pscustomobject]@{
+    inputReviewPath = $roleReviewPath
+    baseCommitSha = [string]$roleReview.baseCommitSha
+    skippedBatches = @()
+    rollback = [pscustomobject]@{ performed = $false; failedBatches = @() }
+    retryAttempts = 0
+    memoryUpdates = @()
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $memoryOnlyWorkReportPath -Encoding UTF8
+& (Join-Path $roleRepo 'tools/rule-harness/run-recurrence-plan.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -ReviewPath $roleReviewPath `
+    -WorkReportPath $memoryOnlyWorkReportPath `
+    -OutputDir (Join-Path $roleRepo 'Temp/OperationalMemoryRecurrencePlan') | Out-Null
+$operationalMemoryPlan = Get-Content -Path (Join-Path $roleRepo 'Temp/OperationalMemoryRecurrencePlan/report.json') -Raw | ConvertFrom-Json
+Assert-RuleHarness `
+    -Condition (@($operationalMemoryPlan.preventionItems | Where-Object { $_.kind -eq 'recurring-memory' -and $_.summary -match 'Preventable fixture recurrence' }).Count -eq 1 -and @($operationalMemoryPlan.preventionItems | Where-Object { $_.summary -match 'LLM quota' }).Count -eq 0) `
+    -Message 'Expected recurrence plan role to keep harness operations failures out of product prevention items.'
+
 $rulesCloseoutPlanPath = Join-Path $roleRepo 'Temp/rules-closeout-plan.json'
 [pscustomobject]@{
     baseCommitSha = [string]$roleReview.baseCommitSha

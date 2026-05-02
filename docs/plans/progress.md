@@ -1,6 +1,6 @@
 # 진행 상황
 
-> 마지막 업데이트: 2026-05-01
+> 마지막 업데이트: 2026-05-02
 > 상태: active
 > doc_id: plans.progress
 > role: plan
@@ -17,10 +17,11 @@
 | `GameScene / Actual Flow` | [`game_scene_flow_validation_closeout_plan.md`](./game_scene_flow_validation_closeout_plan.md) | single-client baseline과 targeted direct EditMode tests는 통과 | result HUD actual player-flow checklist |
 | `GameScene / Multiplayer Sync` | residual: `plans.progress` (no separate active plan) | Phase 5/9 code path는 있으나 2-client acceptance는 `blocked: two-client runner unavailable` | 수동 2-client session 또는 runner 구현으로 late-join, BattleEntity, Energy, Wave sync 확인 |
 | `WebGL Account/Garage / Product Smoke` | residual: `plans.progress` + [`webgl_smoke_checklist.md`](../playtest/webgl_smoke_checklist.md), no separate active plan | Firestore/Garage 핵심 경로와 Google linking code path는 있으나 WebGL product smoke 전 | Garage save/load, account delete, Google linking, settings/accessibility WebGL smoke |
-| `WebGL Audio / Product Smoke` | [`webgl_audio_closeout_plan.md`](./webgl_audio_closeout_plan.md) | WebGL audio product smoke 전 | 사운드 설정 UI 저장 확장, WebGL 오디오 로드/재생 smoke |
+| `WebGL Audio / Product Smoke` | [`webgl_audio_closeout_plan.md`](./webgl_audio_closeout_plan.md) | SoundPlayer runtime contract는 scene-owned AudioSource host로 전환, WebGL audio product smoke 전 | 사운드 설정 UI 저장 확장, WebGL 오디오 로드/재생 smoke |
 | `Audio SFX / MCP Pipeline` | [`audio_sfx_mcp_pipeline_plan.md`](./audio_sfx_mcp_pipeline_plan.md) | direct Suno MCP/CDP route generated, trimmed, imported, and catalog-synced all 12 UITK SFX batch keys; manual audition decision remains active | manual audition for all 12 SFX, then decide replacements/volume tweaks before UITK event wiring |
 | `UI / Source Candidate Handoff` | residual: `plans.progress` + reference [`non_stitch_ui_stitch_reimport_plan.md`](./non_stitch_ui_stitch_reimport_plan.md), no separate active plan | Account/Connection source/candidate handoff는 reference로 닫힘; 새 native/mixed UI는 upstream Stitch/Unity owner route로 다시 연다 | Battle HUD/skill-selection 작업이 열릴 때 source freeze, candidate handoff, runtime/product owner 분리 |
 | `Nova1492 Content / Release Gate` | [`nova1492_content_residual_plan.md`](./nova1492_content_residual_plan.md) | UnitParts playable 승격은 닫힘, rights/naming gate와 owner handoff가 남음 | 권리/이름 release gate, 밸런스/UI/model 후보 owner handoff |
+| `Nova1492 Assembly / Profile Recovery` | [`nova1492_assembly_profile_recovery_plan.md`](./nova1492_assembly_profile_recovery_plan.md) | 144개 assembly profile seed와 Unity metadata promotion은 mechanical pass, 최신 인간형 capture 생성됨 | manual review CSV와 최신 capture 기준 match/mismatch/unsure 분리 |
 
 ## 완료 baseline
 
@@ -34,4 +35,5 @@
 - UI 변경은 Unity UI authoring workflow와 Stitch owner route를 먼저 확인하고, product acceptance와 candidate evidence를 분리한다.
 - Audio SFX pipeline은 12개 SFX의 generation/import/catalog-sync mechanical path와 Unity manual audition decision을 분리한다. WebGL/browser audio product acceptance는 WebGL audio owner에서만 닫는다.
 - `UI / Source Candidate Handoff`는 reference 압축 보존으로 내렸고, 새 Battle HUD/skill-selection UI 작업이 열리면 upstream Stitch/Unity owner route에서 다시 판단한다. `Nova1492 Content / Release Gate`는 rights/naming gate가 닫히면 reference 압축 또는 삭제 후보로 재검토한다.
+- Nova1492 조립 위치 문제는 원본 evidence를 runtime hardcoding이 아니라 assembly profile data로 복원하고, 최신 capture와 수동 검수 결과가 나오기 전에는 visual success로 닫지 않는다.
 - 새 문서 추가보다 active owner 압축과 residual 이관을 우선한다.

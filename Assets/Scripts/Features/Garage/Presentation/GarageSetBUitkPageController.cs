@@ -274,7 +274,7 @@ namespace Features.Garage.Presentation
 
         private GarageNovaPartsPanelViewModel BuildPartListViewModel(GarageNovaPartPanelSlot slot)
         {
-            return GarageNovaPartsPanelViewModelFactory.Build(
+            var viewModel = GarageNovaPartsPanelViewModelFactory.Build(
                 _catalog,
                 new GarageNovaPartsDraftSelection(
                     _state.EditingFrameId,
@@ -282,6 +282,7 @@ namespace Features.Garage.Presentation
                     _state.EditingMobilityId),
                 slot,
                 _partSearchText);
+            return GarageNovaPartsEnergyDetails.Apply(_catalog, viewModel);
         }
 
         private bool CanRender()

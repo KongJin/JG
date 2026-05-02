@@ -1,6 +1,6 @@
 # Document Management Workflow
 
-> 마지막 업데이트: 2026-05-01
+> 마지막 업데이트: 2026-05-02
 > 상태: active
 > doc_id: ops.document-management-workflow
 > role: ssot
@@ -51,6 +51,17 @@
 - 작업 중 기준/도구/policy를 바꿔 blocked lane을 success로 만들지 않는다.
 - 규칙을 개정했으면 active/current 기준에 남은 old trace를 수정, 제거, 또는 historical/reference로 격리하기 전에는 success로 닫지 않는다.
 - 문서/skill/script 문제를 발견했으면 원인, 예방, 검증을 함께 남긴다.
+
+### Recurrence Carryover
+
+문제 해결 후 재발방지를 새 세션까지 이어야 할 때는 저장 위치를 단계별로 고른다.
+목표는 모든 문제를 새 문서로 남기는 것이 아니라, 다음 세션이 필요한 예방 정보만 owner 경로에서 다시 찾게 하는 것이다.
+
+- 세션 안에서만 필요한 판단은 최종 응답에 남긴다.
+- 다음 세션의 작업 판단을 바꾸는 예방 정보는 해당 owner 문서, active plan, 또는 `plans.progress` residual에 짧게 남긴다.
+- 규칙, repo-local skill, docs-lint, rule-harness, closeout artifact처럼 governance surface가 바뀐 경우에만 recurrence closeout shard를 함께 사용한다.
+- 같은 예방 정보를 final, plan, ops 문서에 장문으로 중복하지 않는다.
+- 새 문서가 필요할 때도 먼저 `plans.progress` 한 줄, 기존 owner 문서의 짧은 섹션, reference plan 압축 보존으로 충분한지 확인한다.
 
 ### Instruction Fit
 
@@ -216,6 +227,10 @@ reference로 보존할 때는 `Closeout`, `Residual owner`, `Evidence links` 수
 
 - 문서 관리 변경 후 기본 검증은 `npm run --silent rules:lint`다.
 - `rules:lint`는 metadata, relative links, `doc_id`, index registry, status mismatch, owner reference, Plan Mode routing, repo-local skill routing, external/global `rule-*` skill registry, global `rule-*` markdown link integrity, skill trigger matrix coverage, recurrence closeout, presentation/stitch policy lint를 함께 본다.
+- `rules:lint`의 hard-fail은 broken link, stale owner path, `doc_id` 문제, active plan budget 초과, entry 문서의 owner policy body (`entry-policy-body`), recurrence closeout 누락처럼 SSOT나 자동 판정을 깨는 항목에 둔다.
+- `rules:lint` advisory는 오래된 active 문서 (`stale-active-plan`, `stale-active-doc`), 긴 active plan/progress/entry, skill-entry policy density 후보 (`*-size-advisory`)처럼 즉시 실패는 아니지만 lifecycle 재검토가 필요한 항목에 둔다.
+- advisory가 있어도 lint exit code는 실패가 아니며, closeout에서는 필요한 경우 남은 문서 lifecycle risk로 분리해 보고한다.
+- `npm run --silent docs:health`는 blocking issue와 advisory를 text 또는 `-- --json` 출력으로 보여주는 비차단 리포트이며, 정리 후보를 보는 용도이지 acceptance gate가 아니다.
 - 단순 docs-only plan 작성, playtest/checklist/design/reference 보정, 상태 한두 줄 갱신은 `rules:lint`와 authoring review로 충분하다.
 - recurrence closeout artifact는 recurrence-tracked rule/tooling scope에만 요구한다: `AGENTS.md`, `docs/index.md`, `docs/ops/*`, `.codex/skills/jg-*`, `tools/docs-lint/*`, `tools/rule-harness/*`, `.githooks/*`, `.github/workflows/docs-lint.yml`, `artifacts/rules/issue-recurrence-closeout.json`, `artifacts/rules/issue-recurrence-closeout.d/*.json`.
 - feature tool implementation, 일반 `tools/*/README.md`, `docs/plans/*`, `docs/playtest/*`, `docs/design/*` 변경은 그 변경 자체가 rule/tooling recurrence 예방을 건드리지 않는 한 closeout artifact를 요구하지 않는다.

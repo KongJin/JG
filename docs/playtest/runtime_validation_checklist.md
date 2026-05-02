@@ -49,7 +49,9 @@
 | BattleEntity 상태 전이 | target acquire -> move/attack -> damage/death 또는 target switch 흐름이 최소 1회 재현되고 dead/despawn target을 다시 물지 않는다. | | |
 | Wave/Core runtime loop | wave start -> enemy spawn -> core damage -> victory/defeat 중 하나의 종료 상태까지 runtime event가 이어진다. | | |
 | Wave/Core HUD 유지 | wave 시작, core damage, victory/defeat까지 wave/core/result HUD가 사라지거나 겹치지 않는다. | | |
+| Result HUD actual player-flow | actual player-flow에서 victory 또는 defeat 이후 result HUD 통계/CTA가 보이고 lobby return이 동작한다. direct/EditMode test만으로 success 처리하지 않는다. | | |
 | late-join hydration | 2-client 검증 시 joiner가 기존 BattleEntity HP/position/dead state, Energy, WaveState를 복구하거나 blocked owner를 남긴다. | | |
+| 2-client sync evidence | host/joiner 2개 클라이언트에서 late-join, BattleEntity, Energy, WaveState 결과를 각각 기록한다. runner가 없으면 `blocked: two-client runner unavailable`을 유지한다. | | |
 | 중복 event 방지 | summon, damage, death, reward/result가 같은 입력 1회에 중복 발행되지 않는다. | | |
 | GameScene blocker owner 분리 | 실패 시 runtime event/state 문제인지 HUD/input/prefab 문제인지 메모에 분리한다. | | |
 | 신규 console error 없음 | 검증 중 새 `Error/Exception/Assert`가 발생하지 않는다. | | |
@@ -64,6 +66,7 @@
 - Runtime owner: summon runtime, BattleEntity, anchor combat, enemy priority, wave/core/victory-defeat, late-join runtime state.
 - UI/UX owner: HUD layout, slot/input, placement preview, error/feedback, Wave/Core/result 표시.
 - Phase 5 residual: 별도 active multiplayer plan 없이 `plans.progress` multiplayer residual이 2-client session, late-join hydration, BattleEntity/Energy/WaveState sync smoke를 추적한다.
+- 2-client evidence는 single-client actual flow, direct EditMode tests, Phase 5 preflight JSON만으로 대체하지 않는다.
 
 ---
 

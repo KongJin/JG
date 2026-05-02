@@ -89,11 +89,16 @@ namespace Tests.Editor
                 "",
                 0,
                 100f,
+                2f,
                 10f,
                 1f,
                 5f,
+                4f,
                 3f,
                 3f,
+                1,
+                1,
+                1,
                 3);
         }
     }

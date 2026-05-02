@@ -2,13 +2,36 @@
   "schemaVersion": 1,
   "entries": [
     {
+      "signature": "inferred-check-failed|inferred|AGENTS.md|code_fix|owner-doc-references-after-apply",
+      "scopeType": "global",
+      "scopePath": "AGENTS.md",
+      "symptoms": "Owner-doc reference repair produced stale references; details are collapsed because docs-lint now validates scopePath, promotionTarget, and path-like validationHints.",
+      "preferredRepairStrategy": "Run rules:lint and repair the concrete stale advisory/doc reference before retrying.",
+      "validationHints": [
+        "target_files_exist",
+        "expected_findings_resolved",
+        "no_new_high_severity_findings",
+        "feature_root_contract_present",
+        "owner_doc_references_resolve",
+        "feature_test_assets_present"
+      ],
+      "confidence": "medium",
+      "hitCount": 1,
+      "distinctCommitCount": 1,
+      "commitShas": [
+        "8179b81eea74d97c59de43f575261dc24235ffdc"
+      ],
+      "lastSeen": "2026-05-01T14:12:47.1968265Z",
+      "promotionTarget": "docs/ops/unity_ui_authoring_workflow.md",
+      "status": "observed"
+    },
+    {
       "signature": "static-scan-failed|static-scan|AGENTS.md|code_fix|Before=# After=# Resolved=# Expected=# NewHigh=#",
       "scopeType": "global",
       "scopePath": "AGENTS.md",
-      "symptoms": "Before=8 After=7 Resolved=0 Expected=1 NewHigh=0",
-      "preferredRepairStrategy": "Amend the owning global rule doc before retrying.",
+      "symptoms": "Static scan reduced findings but did not resolve the expected count.",
+      "preferredRepairStrategy": "Amend the owning rule doc or fix the expected finding before retrying.",
       "validationHints": [
-        "Tests/Projectile/Run-ProjectileValidation.ps1",
         "target_files_exist",
         "expected_findings_resolved",
         "no_new_high_severity_findings",
@@ -27,35 +50,39 @@
       "status": "observed"
     },
     {
-      "signature": "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Garage Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
-      "scopeType": "harness",
+      "signature": "harness-stage-failed|agent-review-quota|tools/rule-harness/README.md|harness-ops",
+      "scopeType": "harness-ops",
       "scopePath": "tools/rule-harness/README.md",
-      "symptoms": "Scope=Garage Stage=diagnose TimeoutSec=120 HTTP request failed. Status=429 Body={\"error\":{\"code\":\"1113\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
-      "preferredRepairStrategy": "Improve harness prompts, config, tests, or docs before retrying.",
+      "symptoms": "External LLM quota unavailable during diagnose. Treat this as static-only review blocked by harness operations, not product code debt.",
+      "preferredRepairStrategy": "Use the Codex CLI agentRunner route or run static-only review until quota is restored.",
       "validationHints": [
         "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
         "tools/rule-harness/README.md"
       ],
       "confidence": "high",
-      "hitCount": 19,
-      "distinctCommitCount": 5,
+      "hitCount": 38,
+      "distinctCommitCount": 9,
       "commitShas": [
         "e29481e41f7eaccf721822c371c6fc104b051ca8",
         "30dc33652a4a5fd6af870e8f3fa82c9432c152b0",
         "07280adb8463f2db23b61b725842bbfcd87e9ee6",
         "a7a67c62ba755719bd7175817aa04fcc0a744782",
-        "2cfb4262ffe14ef208f9d2e6afd7361343b80e61"
+        "2cfb4262ffe14ef208f9d2e6afd7361343b80e61",
+        "b143862db76cf5cd6178fa36ee9f8dd15a45ff90",
+        "65484128f8e9d53768fec7a7075d6bc5df63e07a",
+        "439f28d16ddf51dac80d5fa73340de4c65d259ba",
+        "985bdeb62e2c4676c86deb3b7b650502f675ac67"
       ],
-      "lastSeen": "2026-04-24T23:58:56.8555456Z",
+      "lastSeen": "2026-04-25T21:58:55.0991819Z",
       "promotionTarget": "tools/rule-harness/README.md",
-      "status": "observed"
+      "status": "blocked-operational"
     },
     {
-      "signature": "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Player Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"网络错误，错误id：#d#c#，请联系客服。\"}}",
-      "scopeType": "harness",
+      "signature": "harness-stage-failed|agent-review-network|tools/rule-harness/README.md|harness-ops",
+      "scopeType": "harness-ops",
       "scopePath": "tools/rule-harness/README.md",
-      "symptoms": "Scope=Player Stage=diagnose TimeoutSec=120 HTTP request failed. Status=500 Body={\"error\":{\"code\":\"1234\",\"message\":\"网络错误，错误id：202604091658502d37196539294c63，请联系客服。\"}}",
-      "preferredRepairStrategy": "Improve harness prompts, config, tests, or docs before retrying.",
+      "symptoms": "External LLM network failure during diagnose. Treat this as static-only review blocked by harness operations, not product code debt.",
+      "preferredRepairStrategy": "Use the Codex CLI agentRunner route or run static-only review until provider connectivity is restored.",
       "validationHints": [
         "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
         "tools/rule-harness/README.md"
@@ -68,90 +95,29 @@
       ],
       "lastSeen": "2026-04-09T08:59:46.0603672Z",
       "promotionTarget": "tools/rule-harness/README.md",
-      "status": "observed"
+      "status": "blocked-operational"
     },
     {
-      "signature": "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Player Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
-      "scopeType": "harness",
+      "signature": "harness-stage-failed|timeout|tools/rule-harness/README.md|harness-ops",
+      "scopeType": "harness-ops",
       "scopePath": "tools/rule-harness/README.md",
-      "symptoms": "Scope=Player Stage=diagnose TimeoutSec=120 HTTP request failed. Status=429 Body={\"error\":{\"code\":\"1113\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
-      "preferredRepairStrategy": "Improve harness prompts, config, tests, or docs before retrying.",
+      "symptoms": "Harness diagnose or doc sync timed out. Treat this as static-only review blocked by harness operations unless a deterministic script failure also exists.",
+      "preferredRepairStrategy": "Keep static-only review evidence and retry the timed stage separately.",
       "validationHints": [
         "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
         "tools/rule-harness/README.md"
       ],
       "confidence": "high",
       "hitCount": 4,
-      "distinctCommitCount": 2,
-      "commitShas": [
-        "b143862db76cf5cd6178fa36ee9f8dd15a45ff90",
-        "65484128f8e9d53768fec7a7075d6bc5df63e07a"
-      ],
-      "lastSeen": "2026-04-25T21:58:55.0991819Z",
-      "promotionTarget": "tools/rule-harness/README.md",
-      "status": "observed"
-    },
-    {
-      "signature": "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Projectile Stage=diagnose TimeoutSec=# HTTP request failed. Status=# Body={\"error\":{\"code\":\"#\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
-      "scopeType": "harness",
-      "scopePath": "tools/rule-harness/README.md",
-      "symptoms": "Scope=Projectile Stage=diagnose TimeoutSec=120 HTTP request failed. Status=429 Body={\"error\":{\"code\":\"1113\",\"message\":\"余额不足或无可用资源包,请充值。\"}}",
-      "preferredRepairStrategy": "Improve harness prompts, config, tests, or docs before retrying.",
-      "validationHints": [
-        "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
-        "tools/rule-harness/README.md"
-      ],
-      "confidence": "high",
-      "hitCount": 15,
-      "distinctCommitCount": 2,
-      "commitShas": [
-        "439f28d16ddf51dac80d5fa73340de4c65d259ba",
-        "985bdeb62e2c4676c86deb3b7b650502f675ac67"
-      ],
-      "lastSeen": "2026-04-17T06:58:56.0189161Z",
-      "promotionTarget": "tools/rule-harness/README.md",
-      "status": "observed"
-    },
-    {
-      "signature": "harness-stage-failed|Rule harness agent review failed|tools/rule-harness/README.md|harness|Scope=Projectile Stage=diagnose TimeoutSec=# 작업 시간이 초과되었습니다.",
-      "scopeType": "harness",
-      "scopePath": "tools/rule-harness/README.md",
-      "symptoms": "Scope=Projectile Stage=diagnose TimeoutSec=120 작업 시간이 초과되었습니다.",
-      "preferredRepairStrategy": "Improve harness prompts, config, tests, or docs before retrying.",
-      "validationHints": [
-        "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
-        "tools/rule-harness/README.md"
-      ],
-      "confidence": "high",
-      "hitCount": 3,
-      "distinctCommitCount": 2,
+      "distinctCommitCount": 3,
       "commitShas": [
         "0544720ea0a92417da2e7065c533624b887a8106",
-        "ea3a17c738039ac58380b0610e6fe81f65807bf4"
+        "ea3a17c738039ac58380b0610e6fe81f65807bf4",
+        "47b32576ff40b57bf8639585bed400512349e4d3"
       ],
       "lastSeen": "2026-04-14T14:00:55.1946745Z",
       "promotionTarget": "tools/rule-harness/README.md",
-      "status": "observed"
-    },
-    {
-      "signature": "harness-stage-failed|Rule harness doc sync failed|tools/rule-harness/README.md|harness|Stage=doc_sync TimeoutSec=# 작업 시간이 초과되었습니다.",
-      "scopeType": "harness",
-      "scopePath": "tools/rule-harness/README.md",
-      "symptoms": "Stage=doc_sync TimeoutSec=120 작업 시간이 초과되었습니다.",
-      "preferredRepairStrategy": "Improve harness prompts, config, tests, or docs before retrying.",
-      "validationHints": [
-        "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
-        "tools/rule-harness/README.md"
-      ],
-      "confidence": "high",
-      "hitCount": 1,
-      "distinctCommitCount": 1,
-      "commitShas": [
-        "47b32576ff40b57bf8639585bed400512349e4d3"
-      ],
-      "lastSeen": "2026-04-08T15:01:39.3367418Z",
-      "promotionTarget": "tools/rule-harness/README.md",
-      "status": "observed"
+      "status": "blocked-operational"
     }
   ]
 }

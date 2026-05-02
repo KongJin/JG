@@ -1,0 +1,367 @@
+﻿{
+    "success":  true,
+    "scenePath":  "Assets/Scenes/LobbyScene.unity",
+    "controllerPath":  "/GarageSetBUitkDocument",
+    "prepare":  {
+                    "stoppedPreExistingPlay":  true,
+                    "play":  {
+                                 "Response":  {
+                                                  "success":  true,
+                                                  "action":  "start",
+                                                  "isPlaying":  true,
+                                                  "isPlayingOrWillChange":  false,
+                                                  "isPlayModeChanging":  false,
+                                                  "rawIsPlayingOrWillChange":  true,
+                                                  "isCompiling":  false,
+                                                  "activeScene":  "LobbyScene",
+                                                  "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                                  "waitedMs":  983
+                                              },
+                                 "Wait":  {
+                                              "success":  true,
+                                              "action":  "wait-for-play",
+                                              "isPlaying":  true,
+                                              "isPlayingOrWillChange":  false,
+                                              "isPlayModeChanging":  false,
+                                              "rawIsPlayingOrWillChange":  true,
+                                              "isCompiling":  false,
+                                              "activeScene":  "LobbyScene",
+                                              "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                              "waitedMs":  314
+                                          },
+                                 "Health":  {
+                                                "ok":  true,
+                                                "bridgeRunning":  true,
+                                                "port":  52676,
+                                                "isPlaying":  true,
+                                                "isPlayingOrWillChange":  false,
+                                                "isPlayModeChanging":  false,
+                                                "rawIsPlayingOrWillChange":  true,
+                                                "isCompiling":  false,
+                                                "isWaitingForPlayMode":  false,
+                                                "projectKey":  "0d8ea703",
+                                                "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                                "activeScene":  "LobbyScene",
+                                                "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                                "pendingPlayAction":  "",
+                                                "pendingPlayAgeMs":  0
+                                            },
+                                 "ReadyState":  {
+                                                    "ok":  true,
+                                                    "bridgeRunning":  true,
+                                                    "port":  52676,
+                                                    "isPlaying":  true,
+                                                    "isPlayingOrWillChange":  false,
+                                                    "isPlayModeChanging":  false,
+                                                    "rawIsPlayingOrWillChange":  true,
+                                                    "isCompiling":  false,
+                                                    "isWaitingForPlayMode":  false,
+                                                    "projectKey":  "0d8ea703",
+                                                    "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                                    "activeScene":  "LobbyScene",
+                                                    "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                                    "pendingPlayAction":  "",
+                                                    "pendingPlayAgeMs":  0
+                                                },
+                                 "ElapsedMs":  63
+                             },
+                    "loadingPanelWait":  null
+                },
+    "initialState":  {
+                         "lastRenderStatus":  "rendered:frame_bastion/fire_scatter/mob_burst",
+                         "lastInteractionStatus":  "",
+                         "selectedSlotIndex":  "0",
+                         "focusedPart":  "Mobility",
+                         "partSearchText":  "",
+                         "isSettingsOpen":  "False",
+                         "raw":  {
+                                     "gameObjectPath":  "/GarageSetBUitkDocument",
+                                     "componentType":  "GarageSetBUitkSmokeDriver",
+                                     "properties":  [
+                                                        {
+                                                            "name":  "_lastRenderStatus",
+                                                            "type":  "String",
+                                                            "value":  "rendered:frame_bastion/fire_scatter/mob_burst"
+                                                        },
+                                                        {
+                                                            "name":  "_lastInteractionStatus",
+                                                            "type":  "String",
+                                                            "value":  ""
+                                                        },
+                                                        {
+                                                            "name":  "_selectedSlotIndex",
+                                                            "type":  "Integer",
+                                                            "value":  "0"
+                                                        },
+                                                        {
+                                                            "name":  "_focusedPart",
+                                                            "type":  "Enum",
+                                                            "value":  "Mobility"
+                                                        },
+                                                        {
+                                                            "name":  "_partSearchText",
+                                                            "type":  "String",
+                                                            "value":  ""
+                                                        },
+                                                        {
+                                                            "name":  "_isSettingsOpen",
+                                                            "type":  "Boolean",
+                                                            "value":  "False"
+                                                        }
+                                                    ]
+                                 }
+                     },
+    "frameSearchText":  "body10",
+    "frameStep":  {
+                      "slot":  "Frame",
+                      "searchText":  "body10",
+                      "state":  {
+                                    "lastRenderStatus":  "rendered:nova_frame_body10_skdr/fire_scatter/mob_burst",
+                                    "lastInteractionStatus":  "part:Frame:nova_frame_body10_skdr",
+                                    "selectedSlotIndex":  "0",
+                                    "focusedPart":  "Frame",
+                                    "partSearchText":  "body10",
+                                    "isSettingsOpen":  "False",
+                                    "raw":  {
+                                                "gameObjectPath":  "/GarageSetBUitkDocument",
+                                                "componentType":  "GarageSetBUitkSmokeDriver",
+                                                "properties":  [
+                                                                   {
+                                                                       "name":  "_lastRenderStatus",
+                                                                       "type":  "String",
+                                                                       "value":  "rendered:nova_frame_body10_skdr/fire_scatter/mob_burst"
+                                                                   },
+                                                                   {
+                                                                       "name":  "_lastInteractionStatus",
+                                                                       "type":  "String",
+                                                                       "value":  "part:Frame:nova_frame_body10_skdr"
+                                                                   },
+                                                                   {
+                                                                       "name":  "_selectedSlotIndex",
+                                                                       "type":  "Integer",
+                                                                       "value":  "0"
+                                                                   },
+                                                                   {
+                                                                       "name":  "_focusedPart",
+                                                                       "type":  "Enum",
+                                                                       "value":  "Frame"
+                                                                   },
+                                                                   {
+                                                                       "name":  "_partSearchText",
+                                                                       "type":  "String",
+                                                                       "value":  "body10"
+                                                                   },
+                                                                   {
+                                                                       "name":  "_isSettingsOpen",
+                                                                       "type":  "Boolean",
+                                                                       "value":  "False"
+                                                                   }
+                                                               ]
+                                            }
+                                }
+                  },
+    "firepowerSearchText":  "arm39",
+    "firepowerStep":  {
+                          "slot":  "Firepower",
+                          "searchText":  "arm39",
+                          "state":  {
+                                        "lastRenderStatus":  "rendered:nova_frame_body10_skdr/nova_fire_arm39_hmsk/mob_burst",
+                                        "lastInteractionStatus":  "part:Firepower:nova_fire_arm39_hmsk",
+                                        "selectedSlotIndex":  "0",
+                                        "focusedPart":  "Firepower",
+                                        "partSearchText":  "arm39",
+                                        "isSettingsOpen":  "False",
+                                        "raw":  {
+                                                    "gameObjectPath":  "/GarageSetBUitkDocument",
+                                                    "componentType":  "GarageSetBUitkSmokeDriver",
+                                                    "properties":  [
+                                                                       {
+                                                                           "name":  "_lastRenderStatus",
+                                                                           "type":  "String",
+                                                                           "value":  "rendered:nova_frame_body10_skdr/nova_fire_arm39_hmsk/mob_burst"
+                                                                       },
+                                                                       {
+                                                                           "name":  "_lastInteractionStatus",
+                                                                           "type":  "String",
+                                                                           "value":  "part:Firepower:nova_fire_arm39_hmsk"
+                                                                       },
+                                                                       {
+                                                                           "name":  "_selectedSlotIndex",
+                                                                           "type":  "Integer",
+                                                                           "value":  "0"
+                                                                       },
+                                                                       {
+                                                                           "name":  "_focusedPart",
+                                                                           "type":  "Enum",
+                                                                           "value":  "Firepower"
+                                                                       },
+                                                                       {
+                                                                           "name":  "_partSearchText",
+                                                                           "type":  "String",
+                                                                           "value":  "arm39"
+                                                                       },
+                                                                       {
+                                                                           "name":  "_isSettingsOpen",
+                                                                           "type":  "Boolean",
+                                                                           "value":  "False"
+                                                                       }
+                                                                   ]
+                                                }
+                                    }
+                      },
+    "mobilitySearchText":  "legs24",
+    "mobilityStep":  {
+                         "slot":  "Mobility",
+                         "searchText":  "legs24",
+                         "state":  {
+                                       "lastRenderStatus":  "rendered:nova_frame_body10_skdr/nova_fire_arm39_hmsk/nova_mob_legs24_sts",
+                                       "lastInteractionStatus":  "part:Mobility:nova_mob_legs24_sts",
+                                       "selectedSlotIndex":  "0",
+                                       "focusedPart":  "Mobility",
+                                       "partSearchText":  "legs24",
+                                       "isSettingsOpen":  "False",
+                                       "raw":  {
+                                                   "gameObjectPath":  "/GarageSetBUitkDocument",
+                                                   "componentType":  "GarageSetBUitkSmokeDriver",
+                                                   "properties":  [
+                                                                      {
+                                                                          "name":  "_lastRenderStatus",
+                                                                          "type":  "String",
+                                                                          "value":  "rendered:nova_frame_body10_skdr/nova_fire_arm39_hmsk/nova_mob_legs24_sts"
+                                                                      },
+                                                                      {
+                                                                          "name":  "_lastInteractionStatus",
+                                                                          "type":  "String",
+                                                                          "value":  "part:Mobility:nova_mob_legs24_sts"
+                                                                      },
+                                                                      {
+                                                                          "name":  "_selectedSlotIndex",
+                                                                          "type":  "Integer",
+                                                                          "value":  "0"
+                                                                      },
+                                                                      {
+                                                                          "name":  "_focusedPart",
+                                                                          "type":  "Enum",
+                                                                          "value":  "Mobility"
+                                                                      },
+                                                                      {
+                                                                          "name":  "_partSearchText",
+                                                                          "type":  "String",
+                                                                          "value":  "legs24"
+                                                                      },
+                                                                      {
+                                                                          "name":  "_isSettingsOpen",
+                                                                          "type":  "Boolean",
+                                                                          "value":  "False"
+                                                                      }
+                                                                  ]
+                                               }
+                                   }
+                     },
+    "finalState":  {
+                       "lastRenderStatus":  "rendered:nova_frame_body10_skdr/nova_fire_arm39_hmsk/nova_mob_legs24_sts",
+                       "lastInteractionStatus":  "part:Mobility:nova_mob_legs24_sts",
+                       "selectedSlotIndex":  "0",
+                       "focusedPart":  "Mobility",
+                       "partSearchText":  "legs24",
+                       "isSettingsOpen":  "False",
+                       "raw":  {
+                                   "gameObjectPath":  "/GarageSetBUitkDocument",
+                                   "componentType":  "GarageSetBUitkSmokeDriver",
+                                   "properties":  [
+                                                      {
+                                                          "name":  "_lastRenderStatus",
+                                                          "type":  "String",
+                                                          "value":  "rendered:nova_frame_body10_skdr/nova_fire_arm39_hmsk/nova_mob_legs24_sts"
+                                                      },
+                                                      {
+                                                          "name":  "_lastInteractionStatus",
+                                                          "type":  "String",
+                                                          "value":  "part:Mobility:nova_mob_legs24_sts"
+                                                      },
+                                                      {
+                                                          "name":  "_selectedSlotIndex",
+                                                          "type":  "Integer",
+                                                          "value":  "0"
+                                                      },
+                                                      {
+                                                          "name":  "_focusedPart",
+                                                          "type":  "Enum",
+                                                          "value":  "Mobility"
+                                                      },
+                                                      {
+                                                          "name":  "_partSearchText",
+                                                          "type":  "String",
+                                                          "value":  "legs24"
+                                                      },
+                                                      {
+                                                          "name":  "_isSettingsOpen",
+                                                          "type":  "Boolean",
+                                                          "value":  "False"
+                                                      }
+                                                  ]
+                               }
+                   },
+    "screenshot":  {
+                       "success":  true,
+                       "message":  "Screenshot captured.",
+                       "relativePath":  "artifacts/unity/garage-humanoid-hammershock-starship-squadron-before-20260501-lobby.png",
+                       "absolutePath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\garage-humanoid-hammershock-starship-squadron-before-20260501-lobby.png",
+                       "fileSizeBytes":  49347,
+                       "sourceView":  "GameView",
+                       "width":  0,
+                       "height":  0,
+                       "prefabStageAssetPath":  ""
+                   },
+    "console":  {
+                    "warningCount":  6,
+                    "errorCount":  0,
+                    "warnings":  [
+                                     {
+                                         "type":  "Warning",
+                                         "message":  "[Firestore] Document not found (51ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                         "count":  2,
+                                         "latestTimestampUtc":  "2026-05-01 14:32:59.471",
+                                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
+                                     },
+                                     {
+                                         "type":  "Warning",
+                                         "message":  "PUN is in development mode (development build). As the \u0027dev region\u0027 is not empty (jp) it overrides the found best region. See PhotonServerSettings.",
+                                         "count":  4,
+                                         "latestTimestampUtc":  "2026-05-01 14:33:00.410",
+                                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nPhoton.Pun.PhotonNetwork:OnRegionsPinged (Photon.Realtime.RegionHandler) (at Assets/FromStore/Photon/PhotonUnityNetworking/Code/PhotonNetworkPart.cs:2546)\nPhoton.Realtime.MonoBehaviourEmpty:Update () (at Assets/FromStore/Photon/PhotonRealtime/Code/RegionHandler.cs:884)\n"
+                                     },
+                                     {
+                                         "type":  "Warning",
+                                         "message":  "[Firestore] Document not found (35ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                         "count":  2,
+                                         "latestTimestampUtc":  "2026-05-01 14:32:59.508",
+                                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
+                                     },
+                                     {
+                                         "type":  "Warning",
+                                         "message":  "[Firestore] Document not found (48ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/stats/stats?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                         "count":  2,
+                                         "latestTimestampUtc":  "2026-05-01 14:29:58.969",
+                                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
+                                     },
+                                     {
+                                         "type":  "Warning",
+                                         "message":  "[SoundPlayer] initialPoolSize=8 exceeds configured SFX AudioSource count=1. Runtime source creation is disabled.",
+                                         "count":  4,
+                                         "latestTimestampUtc":  "2026-05-01 14:32:59.555",
+                                         "stackTrace":  "UnityEngine.Debug:LogWarning (object,UnityEngine.Object)\nShared.Runtime.Sound.SoundPlayer:WarmSfxPool () (at Assets/Scripts/Shared/Runtime/Sound/SoundPlayer.cs:278)\nShared.Runtime.Sound.SoundPlayer:Initialize (Shared.EventBus.IEventSubscriber,string) (at Assets/Scripts/Shared/Runtime/Sound/SoundPlayer.cs:95)\nLobbySceneInitializationFlow:Initialize (Shared.EventBus.EventBus,Features.Lobby.Presentation.LobbyPageController,Features.Lobby.Infrastructure.Photon.LobbyPhotonAdapter,Shared.Runtime.Sound.SoundPlayer,Features.Unit.UnitSetup,Features.Garage.GarageSetup,Features.Lobby.Application.Ports.ISceneLoaderPort,string,Features.Account.Application.Ports.IAccountDataPort,System.Action) (at Assets/Scripts/Features/Lobby/LobbySceneInitializationFlow.cs:36)\nLobbySetup:InitializeLobby () (at Assets/Scripts/Features/Lobby/LobbySetup.cs:156)\nLobbySetup:OnAccountLoginSuccess () (at Assets/Scripts/Features/Lobby/LobbySetup.cs:146)\nFeatures.Account.Presentation.LoginLoadingView:OnLoginSuccess () (at Assets/Scripts/Features/Account/Presentation/LoginLoadingView.cs:58)\nLobbySetup/\u003c\u003cRunAnonymousSignIn\u003eb__22_0\u003ed:MoveNext () (at Assets/Scripts/Features/Lobby/LobbySetup.cs:110)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder:SetResult ()\nLobbySetup/\u003cLoadSignedInAccount\u003ed__23:MoveNext () (at Assets/Scripts/Features/Lobby/LobbySetup.cs:142)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder`1\u003cFeatures.Account.Application.AccountData\u003e:SetResult (Features.Account.Application.AccountData)\nFeatures.Account.Application.LoadAccountUseCase/\u003cExecute\u003ed__3:MoveNext () (at Assets/Scripts/Features/Account/Application/LoadAccountUseCase.cs:37)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder`1\u003cFeatures.Garage.Domain.GarageRoster\u003e:SetResult (Features.Garage.Domain.GarageRoster)\nFeatures.Account.Infrastructure.FirestoreRestPort/\u003cLoadGarage\u003ed__8:MoveNext () (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRestPort.cs:74)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder`1\u003cstring\u003e:SetResult (string)\nFeatures.Account.Infrastructure.FirestoreRestPort/\u003cReadDocument\u003ed__18:MoveNext () (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRestPort.cs:172)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder`1\u003cFeatures.Account.Infrastructure.SendResult\u003e:SetResult (Features.Account.Infrastructure.SendResult)\nFeatures.Account.Infrastructure.FirestoreDocumentClient/\u003cReadDocumentAsync\u003ed__4:MoveNext () (at Assets/Scripts/Features/Account/Infrastructure/FirestoreDocumentClient.cs:33)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder`1\u003cFeatures.Account.Infrastructure.SendResult\u003e:SetResult (Features.Account.Infrastructure.SendResult)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003cSendRequestSafeAsync\u003ed__0:MoveNext () (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:53)\nSystem.Threading.Tasks.TaskCompletionSource`1\u003cFeatures.Account.Infrastructure.SendResult\u003e:TrySetResult (Features.Account.Infrastructure.SendResult)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:37)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
+                                     },
+                                     {
+                                         "type":  "Warning",
+                                         "message":  "[Firestore] Document not found (41ms): https://firestore.googleapis.com/v1/projects/projectsd-51439/databases/(default)/documents/accounts/NaPzrfRlDPapqZRBTFpsMpuc7Zz2/settings/settings?key=AIzaSyDh9nMMyymwChqBgeeBPonlU3vt-jw8syY",
+                                         "count":  2,
+                                         "latestTimestampUtc":  "2026-05-01 14:29:59.012",
+                                         "stackTrace":  "UnityEngine.Debug:LogWarning (object)\nFeatures.Account.Infrastructure.FirestoreRequestDispatcher/\u003c\u003ec__DisplayClass0_0:\u003cSendRequestSafeAsync\u003eb__0 (UnityEngine.AsyncOperation) (at Assets/Scripts/Features/Account/Infrastructure/FirestoreRequestDispatcher.cs:25)\nUnityEngine.AsyncOperation:InvokeCompletionEvent ()\n"
+                                     }
+                                 ],
+                    "errors":  [
+
+                               ]
+                }
+}

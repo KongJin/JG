@@ -9,7 +9,7 @@
   "escalationRequired": false,
   "rootCause": "The rule-harness advisory memory retained observed entries that embedded old owner paths and removed plan names, and the recurrence closeout shard used ambiguous 'current patch scope' wording while its changedPaths are intentionally limited to rules-only targets.",
   "prevention": "Prune advisory memory entries that reference removed owner paths before they can feed recurrence planning, keep closeout language explicit about rules-only changedPaths scope, and resync the shard to the current rules-only target set. This change does not alter existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, or progress evidence overload.",
-  "verification": "Pruned three stale advisory memory entries; rg stale token scan for agent/architecture.md, account_system_plan.md, game_scene_phase#_multiplayer_sync_plan.md, and game_scene_phase5_multiplayer_sync_plan.md; npm run --silent rules:sync-closeout -- --artifact artifacts/rules/issue-recurrence-closeout.d/local-f4bd323541.json; npm run --silent rules:lint",
+  "verification": "Pruned three stale advisory memory entries; rg stale token scan for removed owner-path tokens; npm run --silent rules:sync-closeout -- --artifact artifacts/rules/issue-recurrence-closeout.d/local-f4bd323541.json; npm run --silent rules:lint",
   "blockedReason": "",
   "changedPaths": [
     "artifacts/rules/issue-recurrence-closeout.d/local-f4bd323541.json",

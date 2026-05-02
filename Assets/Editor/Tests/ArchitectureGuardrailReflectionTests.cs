@@ -411,20 +411,9 @@ namespace Tests.Editor
 
         private static bool IsReviewedFallbackReference(string relativePath, string line)
         {
-            if (relativePath == NormalizeRelativePath("Assets/Scripts/Features/Wave/WaveSetup.cs"))
-            {
-                return line.Contains("TryGetFirstEnemyData(out var fallbackData)", StringComparison.Ordinal) ||
-                       line.Contains("return fallbackData;", StringComparison.Ordinal);
-            }
-
             if (relativePath == NormalizeRelativePath("Assets/Scripts/Features/Unit/Infrastructure/BattleEntityAttackDriver.cs"))
             {
                 return line.Contains("[FormerlySerializedAs(\"_fallbackAttack", StringComparison.Ordinal);
-            }
-
-            if (relativePath == NormalizeRelativePath("Assets/Scripts/Features/Unit/Infrastructure/SummonPhotonAdapter.cs"))
-            {
-                return line.Contains("fallbackInstanceId", StringComparison.Ordinal);
             }
 
             return false;

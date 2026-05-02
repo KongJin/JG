@@ -23,8 +23,7 @@ namespace Features.Unit.Infrastructure
 
             return new ModuleStats(
                 hpBonus: frame.BaseHp,
-                attackSpeed: frame.BaseAttackSpeed,
-                moveRange: frame.BaseMoveRange);
+                defense: frame.Defense);
         }
 
         public ModuleStats GetFirepowerStats(string moduleId)
@@ -44,9 +43,15 @@ namespace Features.Unit.Infrastructure
             if (m == null) return default;
 
             return new ModuleStats(
-                hpBonus: m.HpBonus,
-                moveRange: m.MoveRange,
-                anchorRange: m.AnchorRange);
+                moveSpeed: m.MoveSpeed,
+                moveRange: m.MoveRange);
+        }
+
+        public CostCalculator.StatCostTuning GetCostTuning()
+        {
+            return _catalog != null && _catalog.StatTuning != null
+                ? _catalog.StatTuning.ToCostTuning()
+                : CostCalculator.StatCostTuning.Default;
         }
 
         public string GetPassiveTraitId(string frameId)

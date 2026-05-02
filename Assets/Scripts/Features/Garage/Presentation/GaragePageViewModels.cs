@@ -130,7 +130,8 @@ namespace Features.Garage.Presentation
             bool isReady,
             bool isDirty,
             bool canSave,
-            string primaryActionLabel)
+            string primaryActionLabel,
+            GarageStatRadarViewModel radar = null)
         {
             RosterStatusText = rosterStatusText;
             ValidationText = validationText;
@@ -139,6 +140,7 @@ namespace Features.Garage.Presentation
             IsDirty = isDirty;
             CanSave = canSave;
             PrimaryActionLabel = primaryActionLabel;
+            Radar = radar;
         }
 
         public string RosterStatusText { get; }
@@ -148,5 +150,35 @@ namespace Features.Garage.Presentation
         public bool IsDirty { get; }
         public bool CanSave { get; }
         public string PrimaryActionLabel { get; }
+        public GarageStatRadarViewModel Radar { get; }
+    }
+
+    public sealed class GarageStatRadarViewModel
+    {
+        public static readonly string[] AxisLabels =
+        {
+            "공격력",
+            "공격속도",
+            "사거리",
+            "HP",
+            "방어",
+            "이동속도",
+            "이동범위"
+        };
+
+        public GarageStatRadarViewModel(
+            float[] currentValues,
+            float[] previousValues,
+            int summonCost)
+        {
+            CurrentValues = currentValues ?? new float[AxisLabels.Length];
+            PreviousValues = previousValues;
+            SummonCost = summonCost;
+        }
+
+        public float[] CurrentValues { get; }
+        public float[] PreviousValues { get; }
+        public int SummonCost { get; }
+        public bool HasPrevious => PreviousValues != null && PreviousValues.Length == AxisLabels.Length;
     }
 }

@@ -33,28 +33,31 @@ namespace Features.Unit.Domain
     public readonly struct ModuleStats
     {
         public float HpBonus { get; }
+        public float Defense { get; }
         public float AttackDamage { get; }
         public float AttackSpeed { get; }
         public float Range { get; }
+        public float MoveSpeed { get; }
         public float MoveRange { get; }
-        public float AnchorRange { get; }  // 앵커 반경
         public int CostBonus { get; }
 
         public ModuleStats(
             float hpBonus = 0f,
+            float defense = 0f,
             float attackDamage = 0f,
             float attackSpeed = 0f,
             float range = 0f,
+            float moveSpeed = 0f,
             float moveRange = 0f,
-            float anchorRange = 0f,
             int costBonus = 0)
         {
             HpBonus = hpBonus;
+            Defense = defense;
             AttackDamage = attackDamage;
             AttackSpeed = attackSpeed;
             Range = range;
+            MoveSpeed = moveSpeed;
             MoveRange = moveRange;
-            AnchorRange = anchorRange;
             CostBonus = costBonus;
         }
     }

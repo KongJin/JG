@@ -576,7 +576,17 @@ namespace ProjectSD.EditorTools.UnityMcp
                             return $"Coroutine {methodName} started";
                         }
 
-                        return result?.ToString() ?? "void";          
+                        return result?.ToString() ?? "void";
+
+
+
+
+
+
+
+
+
+
                     }
                     catch (TargetInvocationException ex)
                     {
@@ -650,7 +660,8 @@ namespace ProjectSD.EditorTools.UnityMcp
             };
         }
 
-        // 나머지 legacy 핸들러는 기존 UiHandlers.cs 그대로 사용
+        // Remaining UI commands live here.
+        // Canonical handler owns.
         public static async Task HandleUiCreatePanelAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             var body = await UnityMcpBridge.ReadRequestBodyAsync(request);

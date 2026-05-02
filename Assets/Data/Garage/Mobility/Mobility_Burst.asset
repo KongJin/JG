@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -15,8 +15,7 @@ MonoBehaviour:
   moduleId: mob_burst
   displayName: Burst Thrusters
   icon: {fileID: 0}
-  hpBonus: 120
+  moveSpeed: 4.68
   moveRange: 5.5
-  anchorRange: 6.5
   description: Fast chassis for dive or flanking melee builds.
   previewPrefab: {fileID: 1141816666252315615, guid: e3a779489187f2641a42b52be7db1192, type: 3}

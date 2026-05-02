@@ -163,6 +163,8 @@ GameObject:
   m_Component:
   - component: {fileID: 41396811}
   - component: {fileID: 41396810}
+  - component: {fileID: 41396812}
+  - component: {fileID: 41396813}
   m_Layer: 0
   m_Name: SoundPlayer
   m_TagString: Untagged
@@ -183,8 +185,64 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::Shared.Runtime.Sound.SoundPlayer
   catalog: {fileID: 11400000, guid: ce12d1d3fadb19541b6cf905025c8794, type: 2}
-  initialPoolSize: 8
+  bgmAudioSource: {fileID: 41396812}
+  sfxAudioSources:
+  - {fileID: 41396813}
   defaultBgmFadeSeconds: 0.35
+--- !u!82 &41396812
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 41396809}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+--- !u!82 &41396813
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 41396809}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
 --- !u!4 &41396811
 Transform:
   m_ObjectHideFlags: 0
@@ -457,7 +515,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a4f7c393eb8a914aa9e21122efa6746, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Projectile.ProjectileSpawner
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Projectile.ProjectileSetup
   _projectilePrefab: {fileID: 5356106495440724216, guid: 77881e01953b45d44ab3ddfb6c0b8977, type: 3}
   _spawnRoot: {fileID: 672106685}
 --- !u!114 &258941317
@@ -707,7 +765,7 @@ MonoBehaviour:
   _cameraFollower: {fileID: 1357863259}
   _healthHudPrefab: {fileID: 344910089319044117, guid: 7534d9d27e022f3458fb2fb4abf6ccee, type: 3}
   _playerSpecConfig: {fileID: 11400000, guid: cb23e6191c004b0cb5b6eec29efabc84, type: 2}
-  _projectileSpawner: {fileID: 258941316}
+  _projectileSetup: {fileID: 258941316}
   _combatSetup: {fileID: 258941330}
   _zoneSetup: {fileID: 258941315}
   _sceneErrorPresenter: {fileID: 609092344}

@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -16,8 +16,7 @@ MonoBehaviour:
   displayName: "\uD558\uC774\uB85C\uB354"
   icon: {fileID: 0}
   mobilitySurface: 1
-  hpBonus: 230
+  moveSpeed: 4.25
   moveRange: 4.55
-  anchorRange: 4.55
   description: datan\common\legs18_hord.gx
   previewPrefab: {fileID: 3211573557779722217, guid: f7c33b84a7dee004bb85dbf57440cef5, type: 3}

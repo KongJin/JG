@@ -159,3 +159,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 212cbf97f5043684ca7ebea0c2bbc7be, type: 2}
   - {fileID: 11400000, guid: 8660c9a856f20714faa9169a01920229, type: 2}
   - {fileID: 11400000, guid: 5e16a89c45e8d494c9f61c82ef3d1f8a, type: 2}
+  statTuning: {fileID: 11400000, guid: 44ad4a57ce5742039cce42af119d0f31, type: 2}

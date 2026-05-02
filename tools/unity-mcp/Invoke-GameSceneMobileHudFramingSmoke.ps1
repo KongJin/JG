@@ -217,6 +217,7 @@ function Wait-UiActivePath {
     )
 
     $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    $lastError = $null
     while ((Get-Date) -lt $deadline) {
         try {
             $state = Get-UiStateMapWithTimeout -Root $Root -Path $Path -TimeoutSec $RequestTimeoutSec
@@ -227,12 +228,18 @@ function Wait-UiActivePath {
                 }
             }
         }
-        catch { }
+        catch {
+            $lastError = $_.Exception.Message
+        }
 
         Start-Sleep -Milliseconds 250
     }
 
-    throw "Timed out waiting for active UI path: ${Path}"
+    if ([string]::IsNullOrWhiteSpace($lastError)) {
+        $lastError = "No UI state response reported activeInHierarchy=True."
+    }
+
+    throw "Timed out waiting for active UI path: ${Path}. Last error: $lastError"
 }
 
 function Invoke-McpPlayStartLenient {

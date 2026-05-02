@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Failed(Child)" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-01 15:16:25Z" end-time="2026-05-01 15:16:25Z" duration="0.4074986">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="135" result="Failed" site="Child" start-time="2026-05-01 15:16:25Z" end-time="2026-05-01 15:16:25Z" duration="0.407499" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1164" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="135" result="Failed" site="Child" start-time="2026-05-01 15:16:25Z" end-time="2026-05-01 15:16:25Z" duration="0.393171" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32204" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1167" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="129" result="Failed" site="Child" start-time="2026-05-01 15:16:25Z" end-time="2026-05-01 15:16:25Z" duration="0.390941" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1168" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="129" result="Failed" site="Child" start-time="2026-05-01 15:16:25Z" end-time="2026-05-01 15:16:25Z" duration="0.389155" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestFixture" id="1083" name="GarageUnitPreviewAssemblyFrameTopDirectTests" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" testcasecount="6" result="Failed" site="Child" start-time="2026-05-01 15:16:25Z" end-time="2026-05-01 15:16:25Z" duration="0.387126" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1089" name="TryCreatePreviewRoot_UsesHumanoidRigForForwardHeavyDirectionOnlyWeapon" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesHumanoidRigForForwardHeavyDirectionOnlyWeapon" methodname="TryCreatePreviewRoot_UsesHumanoidRigForForwardHeavyDirectionOnlyWeapon" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1912608493" result="Failed" start-time="2026-05-01 15:16:25Z" end-time="2026-05-01 15:16:25Z" duration="0.361776" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[  Expected: 0.0650251359f +/- 0.0199999996f
+  But was:  0.429493159f
+]]></message>
+                <stack-trace><![CDATA[at Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesHumanoidRigForForwardHeavyDirectionOnlyWeapon () [0x00220] in C:\Users\SOL\Documents\JG\Assets\Editor\DirectTests\GarageUnitPreviewAssemblyFrameTopDirectTests.cs:438
+]]></stack-trace>
+              </failure>
+              <output><![CDATA[hmsk bounds center=(0.00, 0.43, 0.08) size=(0.66, 0.86, 0.75) quality=xfi_weapon_direction_only
+Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-humanoid-hammershock-diagnostic-20260502-r2.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -17,7 +17,8 @@ namespace Shared.Runtime.Sound
         private static SoundPlayer _active;
 
         [Required, SerializeField] private SoundCatalog catalog;
-        [SerializeField] private int initialPoolSize = 8;
+        [Required, SerializeField] private AudioSource bgmAudioSource;
+        [Required, SerializeField] private AudioSource[] sfxAudioSources = Array.Empty<AudioSource>();
         [SerializeField] private float defaultBgmFadeSeconds = 0.35f;
 
         private IEventSubscriber _eventBus;
@@ -29,12 +30,13 @@ namespace Shared.Runtime.Sound
         private AudioSource _bgmSource;
         private string _currentBgmKey;
         private Coroutine _bgmFadeRoutine;
+        private bool _loggedSfxPoolExhausted;
 
         private readonly Dictionary<string, float> _lastPlayTime = new Dictionary<string, float>();
         private readonly Queue<AudioSource> _availableSfxSources = new Queue<AudioSource>();
         private readonly List<AudioSource> _sfxSources = new List<AudioSource>();
 
-        public bool HasRuntimeDependencies => catalog != null;
+        public bool HasRuntimeDependencies => catalog != null && bgmAudioSource != null && HasConfiguredSfxSources;
 
         public static bool TryGetActive(out SoundPlayer soundPlayer)
         {
@@ -69,18 +71,17 @@ namespace Shared.Runtime.Sound
             }
 
             catalog = config.Catalog;
-            initialPoolSize = config.InitialPoolSize;
         }
 
         public void Initialize(IEventSubscriber eventBus, string localPlayerId)
         {
             if (!HasRuntimeDependencies)
             {
-                Debug.LogError("[SoundPlayer] Audio dependencies are missing. Assign serialized references or apply a runtime config before Initialize.", this);
+                Debug.LogError("[SoundPlayer] Missing scene-owned audio sources.", this);
                 return;
             }
 
-            ReleasePooledChildrenAndClearState();
+            ResetSceneOwnedSourcesAndClearState();
 
             _eventBus = eventBus;
             _localPlayerId = localPlayerId;
@@ -107,17 +108,19 @@ namespace Shared.Runtime.Sound
 
         public bool PlayBgm(string key, float fadeSeconds)
         {
-            var entry = catalog.Get(key);
+            var entry = catalog != null ? catalog.Get(key) : null;
             if (entry == null || entry.Clip == null || entry.Channel != SoundChannel.Bgm)
                 return false;
 
-            if (_bgmSource != null && _bgmSource.isPlaying && string.Equals(_currentBgmKey, key, StringComparison.Ordinal))
+            if (!EnsureBgmSource())
+                return false;
+
+            if (_bgmSource.isPlaying && string.Equals(_currentBgmKey, key, StringComparison.Ordinal))
             {
                 RefreshBgmVolume();
                 return true;
             }
 
-            EnsureBgmSource();
             if (_bgmFadeRoutine != null)
                 StopCoroutine(_bgmFadeRoutine);
 
@@ -164,23 +167,39 @@ namespace Shared.Runtime.Sound
             return entry.Volume * _masterVolume * channelVolume;
         }
 
-        private void ReleasePooledChildrenAndClearState()
+        private bool HasConfiguredSfxSources
+        {
+            get
+            {
+                if (sfxAudioSources == null)
+                    return false;
+
+                for (var i = 0; i < sfxAudioSources.Length; i++)
+                {
+                    if (sfxAudioSources[i] != null)
+                        return true;
+                }
+
+                return false;
+            }
+        }
+
+        private void ResetSceneOwnedSourcesAndClearState()
         {
             _disposables?.Dispose();
             _disposables = null;
             StopAllCoroutines();
             _bgmFadeRoutine = null;
 
-            for (int i = transform.childCount - 1; i >= 0; i--)
-            {
-                Destroy(transform.GetChild(i).gameObject);
-            }
-
             _availableSfxSources.Clear();
             _sfxSources.Clear();
             _lastPlayTime.Clear();
-            _bgmSource = null;
+            _loggedSfxPoolExhausted = false;
             _currentBgmKey = null;
+            _bgmSource = bgmAudioSource;
+
+            PrepareBgmSource();
+            PrepareSfxSources();
         }
 
         private void OnDestroy()
@@ -198,7 +217,7 @@ namespace Shared.Runtime.Sound
             if (!ShouldPlay(req.Policy, req.OwnerId))
                 return;
 
-            var entry = catalog.Get(req.SoundKey);
+            var entry = catalog != null ? catalog.Get(req.SoundKey) : null;
             if (entry == null || entry.Clip == null)
                 return;
 
@@ -234,7 +253,12 @@ namespace Shared.Runtime.Sound
         private void PlaySfx(string soundKey, SoundEntry entry, Float3 position)
         {
             var source = RentSfxSource();
-            source.transform.position = position.ToVector3();
+            if (source == null)
+                return;
+
+            if (source.transform != transform)
+                source.transform.position = position.ToVector3();
+
             source.clip = entry.Clip;
             source.loop = false;
             source.volume = GetEffectiveVolume(entry);
@@ -242,39 +266,65 @@ namespace Shared.Runtime.Sound
             source.Play();
 
             StartCoroutine(ReturnSfxSourceWhenDone(source, entry.Clip.length + 0.1f));
-
             _lastPlayTime[soundKey] = UnityEngine.Time.time;
         }
 
         private void WarmSfxPool()
         {
-            var count = Mathf.Max(0, initialPoolSize);
-            for (var i = 0; i < count; i++)
+            for (var i = 0; i < _sfxSources.Count; i++)
             {
-                var source = CreateSfxSource();
-                ReturnSfxSource(source);
+                ReturnSfxSource(_sfxSources[i]);
             }
         }
 
         private AudioSource RentSfxSource()
         {
-            var source = _availableSfxSources.Count > 0
-                ? _availableSfxSources.Dequeue()
-                : CreateSfxSource();
+            if (_availableSfxSources.Count == 0)
+            {
+                if (!_loggedSfxPoolExhausted)
+                {
+                    Debug.LogWarning("[SoundPlayer] No configured SFX AudioSource is available.", this);
+                    _loggedSfxPoolExhausted = true;
+                }
 
-            source.gameObject.SetActive(true);
+                return null;
+            }
+
+            var source = _availableSfxSources.Dequeue();
+            source.enabled = true;
             return source;
         }
 
-        private AudioSource CreateSfxSource()
+        private void PrepareBgmSource()
         {
-            var go = new GameObject("SfxAudioSource");
-            go.transform.SetParent(transform, false);
-            var source = go.AddComponent<AudioSource>();
-            source.playOnAwake = false;
-            source.loop = false;
-            _sfxSources.Add(source);
-            return source;
+            if (_bgmSource == null)
+                return;
+
+            _bgmSource.Stop();
+            _bgmSource.clip = null;
+            _bgmSource.playOnAwake = false;
+            _bgmSource.loop = true;
+            _bgmSource.spatialBlend = 0f;
+            _bgmSource.enabled = true;
+        }
+
+        private void PrepareSfxSources()
+        {
+            if (sfxAudioSources == null)
+                return;
+
+            for (var i = 0; i < sfxAudioSources.Length; i++)
+            {
+                var source = sfxAudioSources[i];
+                if (source == null || _sfxSources.Contains(source))
+                    continue;
+
+                source.Stop();
+                source.clip = null;
+                source.playOnAwake = false;
+                source.loop = false;
+                _sfxSources.Add(source);
+            }
         }
 
         private void ReturnSfxSource(AudioSource source)
@@ -284,7 +334,7 @@ namespace Shared.Runtime.Sound
 
             source.Stop();
             source.clip = null;
-            source.gameObject.SetActive(false);
+            source.enabled = false;
             _availableSfxSources.Enqueue(source);
         }
 
@@ -294,17 +344,17 @@ namespace Shared.Runtime.Sound
             ReturnSfxSource(source);
         }
 
-        private void EnsureBgmSource()
+        private bool EnsureBgmSource()
         {
             if (_bgmSource != null)
-                return;
+                return true;
 
-            var go = new GameObject("BgmAudioSource");
-            go.transform.SetParent(transform, false);
-            _bgmSource = go.AddComponent<AudioSource>();
-            _bgmSource.playOnAwake = false;
-            _bgmSource.loop = true;
-            _bgmSource.spatialBlend = 0f;
+            _bgmSource = bgmAudioSource;
+            if (_bgmSource != null)
+                return true;
+
+            Debug.LogError("[SoundPlayer] BGM AudioSource is missing.", this);
+            return false;
         }
 
         private void ApplyBgmEntry(SoundEntry entry, string key)
@@ -320,7 +370,7 @@ namespace Shared.Runtime.Sound
             if (_bgmSource == null || string.IsNullOrEmpty(_currentBgmKey))
                 return;
 
-            var entry = catalog.Get(_currentBgmKey);
+            var entry = catalog != null ? catalog.Get(_currentBgmKey) : null;
             if (entry != null)
                 _bgmSource.volume = GetEffectiveVolume(entry);
         }

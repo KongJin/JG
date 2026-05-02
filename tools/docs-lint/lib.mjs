@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { accessSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import process from "node:process";
@@ -75,6 +76,7 @@ const PLAN_MODE_PATTERNS = [/\bPlan Mode\b/u, /Plan 모드/u];
 const RULE_OPERATIONS_PATTERNS = [/\brule-operations\b/u];
 const ACCEPTANCE_GUARDRAILS_PATH = "docs/ops/acceptance_reporting_guardrails.md";
 const ISSUE_INVESTIGATION_SKILL_PATH = ".codex/skills/jg-issue-investigation/SKILL.md";
+const UNITY_WORKFLOW_SKILL_PATH = ".codex/skills/jg-unity-workflow/SKILL.md";
 const SKILL_ROUTING_REGISTRY_PATH = "docs/ops/skill_routing_registry.md";
 const SKILL_TRIGGER_MATRIX_PATH = "docs/ops/skill_trigger_matrix.md";
 const COHESION_COUPLING_OWNER_PATTERNS = [/\bops\.cohesion-coupling-policy\b/u];
@@ -96,6 +98,21 @@ const ROOT_CAUSE_INVESTIGATION_REQUIREMENTS = [
   { patterns: [/판정/u], label: "`판정` wording" },
   { patterns: [/rootCause/u], label: "`rootCause` wording" },
   { patterns: [/blockedReason/u], label: "`blockedReason` wording" },
+];
+const FRESH_EVIDENCE_DISCIPLINE_REQUIREMENTS = [
+  { patterns: [/## Fresh Evidence Discipline/u], label: "`Fresh Evidence Discipline` section" },
+  { patterns: [/blocked:\s*fresh evidence pending/u], label: "`blocked: fresh evidence pending` wording" },
+  { patterns: [/최신 실행/u, /\blatest run\b/iu], label: "latest run wording" },
+  { patterns: [/최신 캡쳐/u, /\bfresh capture\b/iu, /\blatest capture\b/iu], label: "latest/fresh capture wording" },
+  { patterns: [/최신 artifact/u, /\bcurrent artifact\b/iu, /\blatest artifact\b/iu], label: "latest/current artifact wording" },
+  { patterns: [/`old`와 `current`/u, /\bold\b.*\bcurrent\b/isu], label: "`old`/`current` path separation" },
+];
+const FRESH_EVIDENCE_SKILL_ROUTE_REQUIREMENTS = [
+  {
+    patterns: ACCEPTANCE_GUARDRAILS_OWNER_PATTERNS,
+    label: "`ops.acceptance-reporting-guardrails` owner route",
+  },
+  { patterns: [/Fresh Evidence Discipline/u], label: "`Fresh Evidence Discipline` route" },
 ];
 const UNCERTAIN_ROOT_CAUSE_PATTERN = /(?:아마|추정|가능성|보임|보인다|보여|듯|것 같|\bmaybe\b|\bprobably\b|\blikely\b|\bappears\b|\bseems\b)/iu;
 const RECURRENCE_CLOSEOUT_COVERAGE_PATTERNS = [
@@ -132,9 +149,27 @@ const MUTATING_REPO_SKILL_ENTRIES = new Set([
 ]);
 const ACTIVE_PLAN_BUDGET_EXCLUDING_PROGRESS = 5;
 const PROGRESS_EVIDENCE_ARTIFACT_BUDGET = 2;
+const ACTIVE_PLAN_STALE_DAYS = 14;
+const ACTIVE_DOC_STALE_DAYS = 45;
+const PROGRESS_NONBLANK_LINE_WARNING_BUDGET = 80;
+const ACTIVE_PLAN_NONBLANK_LINE_WARNING_BUDGET = 120;
+const AGENTS_NONBLANK_LINE_WARNING_BUDGET = 80;
+const INDEX_NONBLANK_LINE_WARNING_BUDGET = 180;
+const SKILL_ENTRY_NONBLANK_LINE_WARNING_BUDGET = 160;
+const ENTRY_POLICY_BODY_PATHS = new Set(["AGENTS.md", "docs/index.md"]);
+const ENTRY_POLICY_BODY_HEADINGS = new Set([
+  "상위 원칙",
+  "적용 범위",
+  "자동 검증",
+  "완료 plan lifecycle",
+  "Root Cause Investigation",
+  "Fresh Evidence Discipline",
+  "Behavior-First Test Loop",
+]);
 const MODULE_DATA_STRUCTURE_PATH = "docs/design/module_data_structure.md";
 const MODULE_DATA_STRUCTURE_UNIT_SECTION_START = "## ScriptableObject 데이터 정의";
 const MODULE_DATA_STRUCTURE_UNIT_SECTION_END = "## 편성 데이터 (Garage Roster)";
+const RULE_HARNESS_ADVISORY_MEMORY_PATH = "tools/rule-harness/memory/advisory-memory.json";
 export const RECURRENCE_CLOSEOUT_PATH = "artifacts/rules/issue-recurrence-closeout.json";
 export const RECURRENCE_CLOSEOUT_DIR = "artifacts/rules/issue-recurrence-closeout.d";
 export const RECURRENCE_CHANGED_FILES_ENV = "RULES_LINT_CHANGED_FILES";
@@ -171,12 +206,43 @@ function validateIssueInvestigationSkillRoute(document) {
   );
 }
 
+function validateFreshEvidenceDisciplineContract(document) {
+  if (document.repoRelativePath !== ACCEPTANCE_GUARDRAILS_PATH) {
+    return [];
+  }
+
+  return validateDocumentContainsAll(
+    document,
+    FRESH_EVIDENCE_DISCIPLINE_REQUIREMENTS,
+    "missing-fresh-evidence-discipline-contract",
+    `${ACCEPTANCE_GUARDRAILS_PATH} must own Fresh Evidence Discipline so visual/capture judgments cannot mix stale evidence with current acceptance.`,
+  );
+}
+
+function validateFreshEvidenceSkillRoutes(document) {
+  if (
+    document.repoRelativePath !== ISSUE_INVESTIGATION_SKILL_PATH
+    && document.repoRelativePath !== UNITY_WORKFLOW_SKILL_PATH
+  ) {
+    return [];
+  }
+
+  return validateDocumentContainsAll(
+    document,
+    FRESH_EVIDENCE_SKILL_ROUTE_REQUIREMENTS,
+    "missing-fresh-evidence-skill-route",
+    "Repo-local investigation/Unity skill entries must route visual/capture evidence judgments through Fresh Evidence Discipline in `ops.acceptance-reporting-guardrails`.",
+  );
+}
+
 export async function lintRepository(repoRoot, options = {}) {
   const includeGeneralChecks = options.includeGeneralChecks ?? true;
   const includePolicyChecks = options.includePolicyChecks ?? true;
+  const now = normalizeNowOption(options.now);
   const managedDocPaths = await discoverManagedDocs(repoRoot);
   const documents = [];
   const errors = [];
+  const warnings = [];
 
   for (const absolutePath of managedDocPaths) {
     const content = await fs.readFile(absolutePath, "utf8");
@@ -201,11 +267,16 @@ export async function lintRepository(repoRoot, options = {}) {
       errors.push(...validatePlanRereviewCleanScope(document));
       errors.push(...validateActivePlanReferenceCloseout(document));
       errors.push(...validateModuleDataStructureStaleOwners(document));
+      errors.push(...validateEntryPolicyBody(document));
+      warnings.push(...validateStaleActiveDocumentWarnings(document, now));
+      warnings.push(...validateDocumentSizeWarnings(document));
     }
     if (includePolicyChecks) {
       errors.push(...validatePlanModeRouting(document));
       errors.push(...validateRootCauseInvestigationContract(document));
       errors.push(...validateIssueInvestigationSkillRoute(document));
+      errors.push(...validateFreshEvidenceDisciplineContract(document));
+      errors.push(...validateFreshEvidenceSkillRoutes(document));
     }
   }
 
@@ -221,6 +292,7 @@ export async function lintRepository(repoRoot, options = {}) {
     errors.push(...validateActivePlanArtifactShapes(documents));
     errors.push(...validateActivePlanArtifactOwnerCollisions(documents));
     errors.push(...validateProgressEvidenceOverload(documents));
+    errors.push(...(await validateRuleHarnessAdvisoryMemory(repoRoot, documents)));
     errors.push(...(await validateDocsMetaArtifacts(repoRoot)));
     errors.push(...(await validateGlobalRuleSkillMarkdownLinks(options)));
   }
@@ -235,12 +307,21 @@ export async function lintRepository(repoRoot, options = {}) {
     ),
     documents,
     errors: sortErrors(errors),
+    warnings: sortDiagnostics(warnings),
   };
 }
 
 export function formatLintReport(result) {
+  const warnings = result.warnings || [];
+
   if (result.errors.length === 0) {
-    return `Docs lint passed. Checked ${result.managedDocPaths.length} managed document(s).`;
+    const lines = [
+      warnings.length === 0
+        ? `Docs lint passed. Checked ${result.managedDocPaths.length} managed document(s).`
+        : `Docs lint passed with ${warnings.length} warning(s). Checked ${result.managedDocPaths.length} managed document(s).`,
+    ];
+    appendWarningReportLines(lines, warnings);
+    return lines.join("\n");
   }
 
   const lines = [
@@ -253,6 +334,67 @@ export function formatLintReport(result) {
       : error.path;
     lines.push(`- [${error.code}] ${location} - ${error.message}`);
   }
+
+  appendWarningReportLines(lines, warnings);
+  return lines.join("\n");
+}
+
+export function buildDocsHealthReport(result) {
+  const documents = Array.isArray(result.documents) ? result.documents : [];
+  const activeNonProgressPlans = getActiveNonProgressPlans(documents)
+    .map((document) => document.repoRelativePath)
+    .sort((left, right) => left.localeCompare(right));
+  const errors = Array.isArray(result.errors) ? sortDiagnostics(result.errors) : [];
+  const warnings = Array.isArray(result.warnings) ? sortDiagnostics(result.warnings) : [];
+
+  return {
+    schemaVersion: 1,
+    managedDocumentCount: Array.isArray(result.managedDocPaths)
+      ? result.managedDocPaths.length
+      : documents.length,
+    blockingIssueCount: errors.length,
+    warningCount: warnings.length,
+    activeNonProgressPlanBudget: {
+      current: activeNonProgressPlans.length,
+      limit: ACTIVE_PLAN_BUDGET_EXCLUDING_PROGRESS,
+      status: activeNonProgressPlans.length <= ACTIVE_PLAN_BUDGET_EXCLUDING_PROGRESS
+        ? "ok"
+        : "over-budget",
+      paths: activeNonProgressPlans,
+    },
+    errorsByCode: countDiagnosticsByCode(errors),
+    warningsByCode: countDiagnosticsByCode(warnings),
+    errors,
+    warnings,
+  };
+}
+
+export function formatDocsHealthReport(report) {
+  const budget = report.activeNonProgressPlanBudget || {
+    current: 0,
+    limit: ACTIVE_PLAN_BUDGET_EXCLUDING_PROGRESS,
+    status: "ok",
+    paths: [],
+  };
+  const lines = [
+    "Docs health report",
+    `Managed docs: ${report.managedDocumentCount}`,
+    `Blocking lint issues: ${report.blockingIssueCount}`,
+    `Warnings: ${report.warningCount}`,
+    `Active non-progress plans: ${budget.current}/${budget.limit} (${budget.status})`,
+  ];
+
+  if (budget.paths.length > 0) {
+    lines.push("Active plan owners:");
+    for (const planPath of budget.paths) {
+      lines.push(`- ${planPath}`);
+    }
+  }
+
+  appendDiagnosticsSummary(lines, "Blocking issue codes", report.errorsByCode);
+  appendDiagnosticsSummary(lines, "Warning codes", report.warningsByCode);
+  appendDiagnosticsList(lines, "Blocking issues", report.errors);
+  appendDiagnosticsList(lines, "Warnings", report.warnings, "warning:");
 
   return lines.join("\n");
 }
@@ -856,6 +998,150 @@ function validateModuleDataStructureStaleOwners(document) {
   }
 
   return errors;
+}
+
+function validateEntryPolicyBody(document) {
+  if (!ENTRY_POLICY_BODY_PATHS.has(document.repoRelativePath)) {
+    return [];
+  }
+
+  const lines = stripFencedCodeBlocks(document.content).split(/\r?\n/);
+  const errors = [];
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const match = lines[index].match(/^##\s+(.+?)\s*$/u);
+    if (!match || !ENTRY_POLICY_BODY_HEADINGS.has(match[1].trim())) {
+      continue;
+    }
+
+    errors.push(
+      createError(
+        "entry-policy-body",
+        document.repoRelativePath,
+        `Entry documents must route to owner docs instead of owning policy body heading \`${match[1].trim()}\`. Keep short route notes or sharp-edge reminders only.`,
+        index + 1,
+      ),
+    );
+  }
+
+  return errors;
+}
+
+function validateStaleActiveDocumentWarnings(document, now) {
+  if (document.metadata.get("상태") !== "active") {
+    return [];
+  }
+
+  const lastUpdated = parseMetadataDate(document.metadata.get("마지막 업데이트"));
+  if (!lastUpdated) {
+    return [];
+  }
+
+  const ageDays = getWholeUtcAgeDays(lastUpdated, now);
+  const role = document.metadata.get("role");
+
+  if (
+    role === "plan"
+    && document.repoRelativePath.startsWith("docs/plans/")
+    && document.repoRelativePath !== "docs/plans/progress.md"
+    && ageDays > ACTIVE_PLAN_STALE_DAYS
+  ) {
+    return [
+      createWarning(
+        "stale-active-plan",
+        document.repoRelativePath,
+        `Active plan was last updated ${ageDays} day(s) ago. Reconfirm whether it should stay active, move to reference, or hand residuals to progress.md.`,
+      ),
+    ];
+  }
+
+  if (role !== "plan" && ageDays > ACTIVE_DOC_STALE_DAYS) {
+    return [
+      createWarning(
+        "stale-active-doc",
+        document.repoRelativePath,
+        `Active non-plan document was last updated ${ageDays} day(s) ago. Reconfirm whether the owner route and current judgment are still fresh.`,
+      ),
+    ];
+  }
+
+  return [];
+}
+
+function validateDocumentSizeWarnings(document) {
+  const nonblankLineCount = countNonblankLines(document.content);
+  const role = document.metadata.get("role");
+  const status = document.metadata.get("상태");
+
+  if (
+    document.repoRelativePath === "docs/plans/progress.md"
+    && nonblankLineCount > PROGRESS_NONBLANK_LINE_WARNING_BUDGET
+  ) {
+    return [
+      createWarning(
+        "progress-size-advisory",
+        document.repoRelativePath,
+        `progress.md has ${nonblankLineCount} nonblank line(s). Keep current state and residuals here; move detailed evidence or history to owner plans/reference docs.`,
+      ),
+    ];
+  }
+
+  if (
+    status === "active"
+    && role === "plan"
+    && document.repoRelativePath.startsWith("docs/plans/")
+    && document.repoRelativePath !== "docs/plans/progress.md"
+    && nonblankLineCount > ACTIVE_PLAN_NONBLANK_LINE_WARNING_BUDGET
+  ) {
+    return [
+      createWarning(
+        "active-plan-size-advisory",
+        document.repoRelativePath,
+        `Active plan has ${nonblankLineCount} nonblank line(s). Consider compressing logs, closed phases, and evidence detail into reference closeout links.`,
+      ),
+    ];
+  }
+
+  if (
+    document.repoRelativePath === "AGENTS.md"
+    && nonblankLineCount > AGENTS_NONBLANK_LINE_WARNING_BUDGET
+  ) {
+    return [
+      createWarning(
+        "entry-size-advisory",
+        document.repoRelativePath,
+        `AGENTS.md has ${nonblankLineCount} nonblank line(s). Keep entry content to routes and short sharp-edge reminders.`,
+      ),
+    ];
+  }
+
+  if (
+    document.repoRelativePath === "docs/index.md"
+    && nonblankLineCount > INDEX_NONBLANK_LINE_WARNING_BUDGET
+  ) {
+    return [
+      createWarning(
+        "entry-size-advisory",
+        document.repoRelativePath,
+        `docs/index.md has ${nonblankLineCount} nonblank line(s). Keep the index as a registry and move policy body to owner docs.`,
+      ),
+    ];
+  }
+
+  if (
+    isRepoLocalSkillEntry(document.repoRelativePath)
+    && nonblankLineCount > SKILL_ENTRY_NONBLANK_LINE_WARNING_BUDGET
+  ) {
+    return [
+      createWarning(
+        "skill-entry-size-advisory",
+        document.repoRelativePath,
+        `Skill entry has ${nonblankLineCount} nonblank line(s). Check whether policy body belongs in the owner docs instead of the skill route.`,
+      ),
+    ];
+  }
+
+  return [];
 }
 
 function validatePlanModeRouting(document) {
@@ -1702,6 +1988,128 @@ async function validateDocsMetaArtifacts(repoRoot) {
   );
 }
 
+async function validateRuleHarnessAdvisoryMemory(repoRoot, documents) {
+  const memoryAbsolutePath = path.join(repoRoot, RULE_HARNESS_ADVISORY_MEMORY_PATH);
+  if (!(await pathExists(memoryAbsolutePath))) {
+    return [];
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(await fs.readFile(memoryAbsolutePath, "utf8"));
+  } catch (error) {
+    return [
+      createError(
+        "invalid-advisory-memory-json",
+        RULE_HARNESS_ADVISORY_MEMORY_PATH,
+        `Rule harness advisory memory must be valid JSON. ${error.message}`,
+      ),
+    ];
+  }
+
+  const entries = Array.isArray(payload?.entries) ? payload.entries : [];
+  const knownDocIds = new Set(
+    documents
+      .map((document) => document.metadata.get("doc_id"))
+      .filter(Boolean),
+  );
+  const errors = [];
+
+  entries.forEach((entry, index) => {
+    for (const field of ["scopePath", "promotionTarget"]) {
+      const value = typeof entry?.[field] === "string" ? entry[field].trim() : "";
+      if (!value) {
+        continue;
+      }
+
+      const staleReason = getStaleAdvisoryMemoryReferenceReason(repoRoot, knownDocIds, value);
+      if (!staleReason) {
+        continue;
+      }
+
+      errors.push(
+        createError(
+          "stale-advisory-memory-reference",
+          RULE_HARNESS_ADVISORY_MEMORY_PATH,
+          `Advisory memory entry #${index + 1} field \`${field}\` references stale ${staleReason}: \`${value}\`. Prune or reroute the advisory entry before it feeds recurrence planning.`,
+        ),
+      );
+    }
+
+    const validationHints = Array.isArray(entry?.validationHints) ? entry.validationHints : [];
+    validationHints.forEach((hint) => {
+      if (typeof hint !== "string" || !isPathLikeAdvisoryMemoryReference(hint)) {
+        return;
+      }
+
+      const normalizedHint = normalizeRepoRelativePath(hint);
+      if (isUnsafeRepoRelativeReference(normalizedHint)) {
+        errors.push(
+          createError(
+            "stale-advisory-memory-reference",
+            RULE_HARNESS_ADVISORY_MEMORY_PATH,
+            `Advisory memory entry #${index + 1} validation hint uses unsafe path \`${hint}\`.`,
+          ),
+        );
+        return;
+      }
+
+      if (!fsSyncPathExists(path.join(repoRoot, normalizedHint))) {
+        errors.push(
+          createError(
+            "stale-advisory-memory-reference",
+            RULE_HARNESS_ADVISORY_MEMORY_PATH,
+            `Advisory memory entry #${index + 1} validation hint references missing path \`${hint}\`.`,
+          ),
+        );
+      }
+    });
+  });
+
+  return errors;
+}
+
+function getStaleAdvisoryMemoryReferenceReason(repoRoot, knownDocIds, value) {
+  if (DOC_ID_REFERENCE_PATTERN.test(value)) {
+    return knownDocIds.has(value) ? null : "doc_id";
+  }
+
+  if (!isPathLikeAdvisoryMemoryReference(value)) {
+    return null;
+  }
+
+  const normalized = normalizeRepoRelativePath(value);
+  if (isUnsafeRepoRelativeReference(normalized)) {
+    return "path";
+  }
+
+  return fsSyncPathExists(path.join(repoRoot, normalized)) ? null : "path";
+}
+
+function isPathLikeAdvisoryMemoryReference(value) {
+  const normalized = normalizeRepoRelativePath(value);
+  if (!normalized || normalized.includes("*")) {
+    return false;
+  }
+
+  return REPO_PATH_PREFIXES.some(
+    (prefix) => normalized === prefix || normalized.startsWith(prefix),
+  );
+}
+
+function isUnsafeRepoRelativeReference(value) {
+  return !value || path.isAbsolute(value) || value.split("/").includes("..");
+}
+
+function fsSyncPathExists(absolutePath) {
+  try {
+    accessSync(absolutePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function getActiveNonProgressPlans(documents) {
   return documents
     .filter((document) => document.repoRelativePath.startsWith("docs/plans/"))
@@ -2074,6 +2482,15 @@ function createError(code, repoRelativePath, message, line = null) {
   };
 }
 
+function createWarning(code, repoRelativePath, message, line = null) {
+  return {
+    code,
+    line,
+    message,
+    path: repoRelativePath,
+  };
+}
+
 function validateDocumentContainsAll(document, requirements, errorCode, message) {
   const missingLabels = requirements
     .filter((requirement) => !documentHasAnyPattern(document.content, requirement.patterns))
@@ -2097,7 +2514,11 @@ function documentHasAnyPattern(content, patterns) {
 }
 
 function sortErrors(errors) {
-  return [...errors].sort((left, right) => {
+  return sortDiagnostics(errors);
+}
+
+function sortDiagnostics(diagnostics) {
+  return [...diagnostics].sort((left, right) => {
     const pathComparison = left.path.localeCompare(right.path);
     if (pathComparison !== 0) {
       return pathComparison;
@@ -2110,6 +2531,114 @@ function sortErrors(errors) {
 
     return left.code.localeCompare(right.code);
   });
+}
+
+function appendWarningReportLines(lines, warnings) {
+  if (warnings.length === 0) {
+    return;
+  }
+
+  lines.push(`Docs lint warnings (${warnings.length}):`);
+  for (const warning of warnings) {
+    const location = warning.line
+      ? `${warning.path}:${warning.line}`
+      : warning.path;
+    lines.push(`- [warning:${warning.code}] ${location} - ${warning.message}`);
+  }
+}
+
+function appendDiagnosticsSummary(lines, label, countsByCode) {
+  const entries = Object.entries(countsByCode || {});
+  if (entries.length === 0) {
+    return;
+  }
+
+  lines.push(`${label}:`);
+  for (const [code, count] of entries) {
+    lines.push(`- ${code}: ${count}`);
+  }
+}
+
+function appendDiagnosticsList(lines, label, diagnostics, codePrefix = "") {
+  if (!Array.isArray(diagnostics) || diagnostics.length === 0) {
+    return;
+  }
+
+  lines.push(label);
+  for (const diagnostic of diagnostics) {
+    const location = diagnostic.line
+      ? `${diagnostic.path}:${diagnostic.line}`
+      : diagnostic.path;
+    lines.push(`- [${codePrefix}${diagnostic.code}] ${location} - ${diagnostic.message}`);
+  }
+}
+
+function countDiagnosticsByCode(diagnostics) {
+  return [...diagnostics]
+    .sort((left, right) => left.code.localeCompare(right.code))
+    .reduce((counts, diagnostic) => {
+      counts[diagnostic.code] = (counts[diagnostic.code] || 0) + 1;
+      return counts;
+    }, {});
+}
+
+function normalizeNowOption(now) {
+  if (now instanceof Date && !Number.isNaN(now.getTime())) {
+    return now;
+  }
+
+  if (typeof now === "string") {
+    const parsed = new Date(now);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed;
+    }
+  }
+
+  return new Date();
+}
+
+function parseMetadataDate(value) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const match = value.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/u);
+  if (!match) {
+    return null;
+  }
+
+  const year = Number.parseInt(match[1], 10);
+  const month = Number.parseInt(match[2], 10);
+  const day = Number.parseInt(match[3], 10);
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+  if (
+    parsed.getUTCFullYear() !== year
+    || parsed.getUTCMonth() !== month - 1
+    || parsed.getUTCDate() !== day
+  ) {
+    return null;
+  }
+
+  return parsed;
+}
+
+function getWholeUtcAgeDays(startDate, now) {
+  const startDay = Date.UTC(
+    startDate.getUTCFullYear(),
+    startDate.getUTCMonth(),
+    startDate.getUTCDate(),
+  );
+  const nowDay = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+  );
+
+  return Math.max(0, Math.floor((nowDay - startDay) / (24 * 60 * 60 * 1000)));
+}
+
+function countNonblankLines(content) {
+  return content.split(/\r?\n/u).filter((line) => line.trim() !== "").length;
 }
 
 async function addIfExists(collection, absolutePath) {

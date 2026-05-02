@@ -1,6 +1,6 @@
 # Codex Coding Guardrails
 
-> 마지막 업데이트: 2026-05-01
+> 마지막 업데이트: 2026-05-02
 > 상태: active
 > doc_id: ops.codex-coding-guardrails
 > role: ssot
@@ -78,6 +78,18 @@
 - 미래 유연성, 새 설정, 새 fallback, 새 extension point는 현재 성공 기준에 필요할 때만 추가한다.
 - 줄 수, 파일 수, DRY는 보조 기준이다. 응집도 판단은 `ops.cohesion-coupling-policy`를 따른다.
 
+## Fail-Closed Contract Rule
+
+contract 누락을 fallback으로 덮는 구현은 작은 편의가 아니라 acceptance를 거짓으로 만드는 문제다.
+scene/prefab wiring, asset catalog/profile, network payload, UI token, visual preview, generated metadata처럼 owner가 따로 있는 값이 없거나 `pending/review/unsure` 상태이면 production 경로는 fail-closed로 동작해야 한다.
+
+- `direction-only`, bounds, generated default, `pending`, `review`, `unsure` 같은 불완전한 신호를 `auto_ok`, normal preview, normal gameplay, 또는 acceptance success로 승격하지 않는다.
+- 필수 contract가 없으면 정상 결과를 흉내 내지 말고 `blocked`, `mismatch`, explicit unavailable state, validation failure, 또는 test failure로 드러낸다.
+- fallback이 필요한 경우 먼저 `domain default`, `compat adapter`, `explicit unavailable state` 중 하나로 분류하고 owner, 이유, 제거 조건, regression check를 남긴다.
+- production controller, setup, page controller는 contract 누락 보정 owner가 아니다. truth owner는 serialized contract, asset/profile data, adapter/helper, 또는 domain rule이어야 한다.
+- UI/preview 경로에서는 깨진 결과를 그럴듯하게 배치하지 않는다. 승인되지 않은 data/profile은 placeholder, disabled state, review-required state처럼 사용자가 실패를 볼 수 있는 상태로 렌더한다.
+- 새 code change가 fallback, hidden lookup, runtime repair, `auto_ok` promotion, review/pending success path를 건드리면 `jg-no-silent-fallback` route를 적용하고 fail-closed regression check를 우선한다.
+
 ## Refactor Slice Lite
 
 리팩터는 동작을 바꾸지 않는 정리와 동작 변경을 분리한다.
@@ -128,6 +140,12 @@
 - 리팩터는 전후 테스트, compile, lint, static check 중 해당 owner에 맞는 기준으로 회귀를 확인한다.
 - 테스트가 비현실적이면 이유와 대체 검증을 남긴다.
 - mechanical pass를 actual acceptance success처럼 보고하지 않는다.
+
+## Recurrence Carryover Lite
+
+버그 수정, 회귀 수정, 기술부채 cleanup, 규칙/파이프라인 수정은 closeout 전에 `ops.acceptance-reporting-guardrails`의 Recurrence Check를 적용한다.
+체크는 세 문항으로 충분하다: 증상을 재현했는가, 원인을 증거로 확인했는가, 재발방지를 어디에 남길 것인가.
+저장 위치는 `ops.document-management-workflow`의 Recurrence Carryover를 따르고, 모든 문제를 새 문서나 새 hard-fail로 만들지 않는다.
 
 ## Reporting
 

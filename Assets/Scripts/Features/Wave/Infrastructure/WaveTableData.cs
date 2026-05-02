@@ -39,25 +39,6 @@ namespace Features.Wave.Infrastructure
             return false;
         }
 
-        public bool TryGetFirstEnemyData(out EnemyData enemyData)
-        {
-            enemyData = null;
-
-            if (waves == null)
-                return false;
-
-            for (var i = 0; i < waves.Length; i++)
-            {
-                if (waves[i]?.EnemyData == null)
-                    continue;
-
-                enemyData = waves[i].EnemyData;
-                return true;
-            }
-
-            return false;
-        }
-
         [Serializable]
         public sealed class WaveEntry
         {

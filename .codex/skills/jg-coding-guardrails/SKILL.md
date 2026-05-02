@@ -5,7 +5,7 @@ description: "JG 구현/버그수정/리팩터/테스트 가드레일. Triggers:
 
 # JG Coding Guardrails
 
-> 마지막 업데이트: 2026-05-01
+> 마지막 업데이트: 2026-05-02
 > 상태: active
 > doc_id: skill.jg-coding-guardrails
 > role: skill-entry
@@ -27,7 +27,8 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection 
 5. If the task changes skill route or trigger wording, read `docs/ops/skill_routing_registry.md` and `docs/ops/skill_trigger_matrix.md`.
 6. Read `docs/ops/acceptance_reporting_guardrails.md` before using `success`, `blocked`, `mismatch`, root-cause, or acceptance language.
 7. Read the relevant lane owner docs for architecture, Unity, Stitch, validation, product design, or feature-local contracts.
-8. Read the concrete files, tests, logs, scene/prefab contracts, or artifacts being changed.
+8. If the task mentions fallback, silent fail, runtime repair, hidden lookup, missing contract, or pending/review data being treated as success, read `.codex/skills/jg-no-silent-fallback/SKILL.md`.
+9. Read the concrete files, tests, logs, scene/prefab contracts, or artifacts being changed.
 
 ## Working Flow
 
@@ -48,6 +49,7 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection 
 - Route cohesion/coupling review through `jg-coupling-review`.
 - Route Unity scene, prefab, UI Toolkit, MCP, or runtime smoke work through `jg-unity-workflow` and the relevant Unity skills.
 - Route root-cause investigation through `jg-issue-investigation`.
+- Route silent fallback, runtime repair, missing-contract masking, and pending/review success claims through `jg-no-silent-fallback`.
 
 ## References
 
@@ -56,3 +58,4 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection 
 - `docs/ops/codex_coding_guardrails.md`
 - `docs/ops/document_management_workflow.md`
 - `docs/ops/acceptance_reporting_guardrails.md`
+- `.codex/skills/jg-no-silent-fallback/SKILL.md`

@@ -24,12 +24,12 @@ namespace Tests.Editor
             var shortAnchor = new GaragePanelCatalog.MobilityOption
             {
                 DisplayName = "고정포대",
-                AnchorRange = 2f,
+                MoveRange = 2f,
             };
             var wideAnchor = new GaragePanelCatalog.MobilityOption
             {
                 DisplayName = "경량",
-                AnchorRange = 7f,
+                MoveRange = 7f,
             };
 
             Assert.AreEqual("고정 화력", GarageUnitIdentityFormatter.BuildRoleLabel(longRange, shortAnchor));

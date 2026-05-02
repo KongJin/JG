@@ -1,0 +1,187 @@
+﻿{
+    "success":  false,
+    "terminalVerdict":  "blocked",
+    "blockedReason":  "Stitch screen onboarding evidence is mixed with common Stitch/Unity MCP capability or policy edits. Stop and split the work: zero-touch onboarding must not mutate shared logic; capability expansion must be declared and validated as a separate lane.",
+    "generatedAt":  "2026-05-01 23:04:52+09:00",
+    "agent":  "",
+    "route":  "mixed",
+    "changedFiles":  [
+                         "artifacts/unity/garage-assembly-first-layout-editmode-20260501-rerun2.xml",
+                         "artifacts/unity/garage-assembly-first-live-20260501-221627.png",
+                         "artifacts/unity/garage-assembly-first-side-preview-editmode-20260501-rerun.xml",
+                         "artifacts/unity/garage-humanoid-layer-isolated-live-20260501-224704.png",
+                         "artifacts/unity/garage-humanoid-rig-tests.xml",
+                         "artifacts/unity/garage-humanoid-seat-editmode-20260501.xml",
+                         "artifacts/unity/garage-humanoid-seat-editmode-20260501-r2.xml",
+                         "artifacts/unity/garage-humanoid-seat-final-editmode-20260501.xml",
+                         "artifacts/unity/garage-humanoid-seat-live-20260501-223947.png",
+                         "artifacts/unity/garage-preview-layer-isolation-editmode-20260501.xml",
+                         "artifacts/unity/garage-preview-layer-isolation-editmode-20260501-r2.xml",
+                         "artifacts/unity/garage-preview-layer-isolation-final-editmode-20260501.xml",
+                         "artifacts/unity/garage-preview-layout-final-editmode-20260501.xml",
+                         "artifacts/unity/garage-preview-size-layout-editmode-20260501.xml",
+                         "artifacts/unity/garage-preview-size-layout-editmode-20260501-r2.xml",
+                         "artifacts/unity/garage-selected-part-preview-editmode-20260501.xml",
+                         "artifacts/unity/garage-selected-part-preview-editmode-20260501-r2.xml",
+                         "artifacts/unity/garage-starship-bigger-separated-garagepage-live-20260501-223912.png",
+                         "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.json",
+                         "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.png",
+                         "artifacts/unity/garage-starship-layer-isolated-live-20260501-224704.png",
+                         "artifacts/unity/garage-unit-preview-assembly-direct-editmode-20260501.xml",
+                         "artifacts/unity/garage-unit-preview-assembly-direct-editmode-20260501-r2.xml",
+                         "artifacts/unity/unity-ui-authoring-workflow-policy-garage-assembly-first-20260501.json",
+                         "artifacts/unity/unity-ui-authoring-workflow-policy-garage-preview-layer-isolation-20260501.json",
+                         "Assets/Editor/DirectTests/BattleEntityNetworkIdDirectTests.cs",
+                         "Assets/Editor/DirectTests/BattleEntityNetworkIdDirectTests.cs.meta",
+                         "Assets/Editor/DirectTests/GarageSetBUitkRuntimeAdapterDirectTests.cs",
+                         "Assets/Editor/DirectTests/GarageSetBUitkRuntimeAdapterSidePreviewDirectTests.cs",
+                         "Assets/Editor/DirectTests/GarageUnitPreviewAssemblyFrameTopDirectTests.cs",
+                         "Assets/Editor/Tests/ArchitectureGuardrailReflectionTests.cs",
+                         "Assets/Editor/UnityMcp/Handlers/ImprovedUiHandlers.cs",
+                         "Assets/Scripts/Features/Garage/GaragePanelCatalogFactory.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GaragePanelCatalog.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkPreviewRenderer.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkRuntimeAdapter.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageUnitPreviewAssembly.cs",
+                         "Assets/Scripts/Features/Unit/Infrastructure/BattleEntityPrefabSetup.cs",
+                         "Assets/Scripts/Features/Unit/Infrastructure/SummonPhotonAdapter.cs",
+                         "Assets/Scripts/Features/Wave/Infrastructure/WaveTableData.cs",
+                         "Assets/Scripts/Features/Wave/WaveSetup.cs",
+                         "docs/plans/audio_sfx_mcp_pipeline_plan.md",
+                         "docs/plans/game_scene_flow_validation_closeout_plan.md",
+                         "docs/plans/nova1492_content_residual_plan.md",
+                         "docs/plans/webgl_audio_closeout_plan.md",
+                         "docs/playtest/runtime_validation_checklist.md",
+                         "docs/playtest/webgl_smoke_checklist.md",
+                         "tools/docs-lint/lib.mjs",
+                         "tools/docs-lint/tests/docs-lint.test.mjs",
+                         "tools/rule-harness/memory/advisory-memory.json",
+                         "tools/rule-harness/README.md"
+                     ],
+    "allDirtyFileCount":  51,
+    "unityUiRelevantFiles":  [
+
+                             ],
+    "uitkCandidateFiles":  [
+
+                           ],
+    "uitkCandidateEvidenceFiles":  [
+                                       "artifacts/unity/garage-assembly-first-live-20260501-221627.png",
+                                       "artifacts/unity/garage-humanoid-layer-isolated-live-20260501-224704.png",
+                                       "artifacts/unity/garage-humanoid-seat-live-20260501-223947.png",
+                                       "artifacts/unity/garage-starship-bigger-separated-garagepage-live-20260501-223912.png",
+                                       "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.json",
+                                       "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.png",
+                                       "artifacts/unity/garage-starship-layer-isolated-live-20260501-224704.png",
+                                       "artifacts/unity/unity-ui-authoring-workflow-policy-garage-assembly-first-20260501.json",
+                                       "artifacts/unity/unity-ui-authoring-workflow-policy-garage-preview-layer-isolation-20260501.json"
+                                   ],
+    "uitkCandidatePreviewEvidenceFiles":  [
+                                              "artifacts/unity/garage-assembly-first-live-20260501-221627.png",
+                                              "artifacts/unity/garage-humanoid-layer-isolated-live-20260501-224704.png",
+                                              "artifacts/unity/garage-humanoid-seat-live-20260501-223947.png",
+                                              "artifacts/unity/garage-starship-bigger-separated-garagepage-live-20260501-223912.png",
+                                              "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.png",
+                                              "artifacts/unity/garage-starship-layer-isolated-live-20260501-224704.png"
+                                          ],
+    "uitkCandidateReportEvidenceFiles":  [
+                                             "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.json",
+                                             "artifacts/unity/unity-ui-authoring-workflow-policy-garage-assembly-first-20260501.json",
+                                             "artifacts/unity/unity-ui-authoring-workflow-policy-garage-preview-layer-isolation-20260501.json"
+                                         ],
+    "requiredEvidence":  [
+                             {
+                                 "name":  "compile-reload",
+                                 "path":  null,
+                                 "message":  "Compile and script reload must settle before Unity UI workflow evidence is trusted."
+                             }
+                         ],
+    "missingEvidence":  [
+
+                        ],
+    "staleEvidence":  [
+
+                      ],
+    "policyViolations":  [
+                             {
+                                 "code":  "stitch-onboarding-mixed-with-capability-expansion",
+                                 "message":  "Stitch screen onboarding evidence is mixed with common Stitch/Unity MCP capability or policy edits. Stop and split the work: zero-touch onboarding must not mutate shared logic; capability expansion must be declared and validated as a separate lane."
+                             }
+                         ],
+    "compile":  {
+                    "success":  true,
+                    "request":  {
+                                    "ok":  true,
+                                    "cleanBuildCacheRequested":  false,
+                                    "isCompiling":  false,
+                                    "message":  "Asset refresh triggered."
+                                },
+                    "wait":  {
+                                 "ok":  true,
+                                 "timedOut":  false,
+                                 "requestedCompilation":  false,
+                                 "waitedMs":  120000,
+                                 "isCompiling":  false
+                             },
+                    "healthAfterWait":  {
+                                            "ok":  true,
+                                            "bridgeRunning":  true,
+                                            "port":  52676,
+                                            "isPlaying":  false,
+                                            "isPlayingOrWillChange":  false,
+                                            "isPlayModeChanging":  false,
+                                            "rawIsPlayingOrWillChange":  false,
+                                            "isCompiling":  false,
+                                            "isWaitingForPlayMode":  false,
+                                            "projectKey":  "0d8ea703",
+                                            "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                            "activeScene":  "LobbyScene",
+                                            "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                            "pendingPlayAction":  "",
+                                            "pendingPlayAgeMs":  0
+                                        }
+                },
+    "unityResourceLock":  {
+                              "owner":  "workflow",
+                              "path":  "Temp/UnityMcp/unity-resource.lock",
+                              "token":  "748379933e8c4320a9d8583a3a91824d"
+                          },
+    "capabilityExpansionGuard":  {
+                                     "allowCapabilityExpansion":  false,
+                                     "surfaceOnboardingFiles":  [
+                                                                    "artifacts/unity/garage-assembly-first-live-20260501-221627.png",
+                                                                    "artifacts/unity/garage-humanoid-layer-isolated-live-20260501-224704.png",
+                                                                    "artifacts/unity/garage-humanoid-seat-live-20260501-223947.png",
+                                                                    "artifacts/unity/garage-starship-bigger-separated-garagepage-live-20260501-223912.png",
+                                                                    "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.json",
+                                                                    "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.png",
+                                                                    "artifacts/unity/garage-starship-layer-isolated-live-20260501-224704.png"
+                                                                ],
+                                     "capabilityExpansionFiles":  [
+                                                                      "Assets/Editor/UnityMcp/Handlers/ImprovedUiHandlers.cs"
+                                                                  ]
+                                 },
+    "prefabManagement":  {
+                             "inventory":  {
+                                               "path":  "artifacts/unity/prefab-management-inventory.json",
+                                               "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                               "totalPrefabs":  9,
+                                               "generatedPreviewPrefabs":  0,
+                                               "resourcesPrefabs":  9,
+                                               "duplicateCandidateGroups":  0,
+                                               "approvedNewPrefabTargets":  0
+                                           },
+                             "approvalManifest":  {
+                                                      "path":  "artifacts/unity/prefab-management-approved-new-prefabs.json",
+                                                      "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                                      "prefabCount":  0,
+                                                      "prefabPaths":  [
+
+                                                                      ]
+                                                  }
+                         },
+    "declaredNewPrefabTargets":  [
+
+                                 ],
+    "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\unity-ui-authoring-workflow-policy-humanoid-rig.json"
+}

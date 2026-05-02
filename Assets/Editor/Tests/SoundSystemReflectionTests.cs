@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using NUnit.Framework;
 using Shared.EventBus;
@@ -16,6 +17,15 @@ namespace Tests.Editor
 
         private static readonly FieldInfo LastPlayTimeField =
             typeof(SoundPlayer).GetField("_lastPlayTime", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private static readonly FieldInfo SoundPlayerCatalogField =
+            typeof(SoundPlayer).GetField("catalog", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private static readonly FieldInfo SoundPlayerBgmSourceField =
+            typeof(SoundPlayer).GetField("bgmAudioSource", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private static readonly FieldInfo SoundPlayerSfxSourcesField =
+            typeof(SoundPlayer).GetField("sfxAudioSources", BindingFlags.Instance | BindingFlags.NonPublic);
 
         [Test]
         public void SoundCatalog_ReportsDuplicateKeys()
@@ -53,6 +63,62 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void SoundPlayer_RequiresSceneOwnedAudioSources()
+        {
+            var go = new GameObject("SoundPlayerTest");
+            var player = go.AddComponent<SoundPlayer>();
+
+            Assert.IsFalse(player.HasRuntimeDependencies);
+
+            Object.DestroyImmediate(go);
+        }
+
+        [Test]
+        public void SoundPlayer_DoesNotCreateRuntimeAudioSources()
+        {
+            var sourcePath = Path.Combine(
+                Application.dataPath,
+                "Scripts",
+                "Shared",
+                "Runtime",
+                "Sound",
+                "SoundPlayer.cs");
+            var source = File.ReadAllText(sourcePath);
+
+            StringAssert.DoesNotContain("AddComponent<AudioSource>", source);
+            StringAssert.DoesNotContain("new GameObject(\"SfxAudioSource\"", source);
+            StringAssert.DoesNotContain("new GameObject(\"BgmAudioSource\"", source);
+        }
+
+        [Test]
+        public void SoundPlayer_SceneHostsDeclareSerializedAudioSources()
+        {
+            foreach (var relativePath in new[]
+                     {
+                         "Scenes/LobbyScene.unity",
+                         "Scenes/BattleScene.unity",
+                         "Resources/Shared/Sound/SoundPlayer.prefab",
+                     })
+            {
+                var source = File.ReadAllText(Path.Combine(Application.dataPath, relativePath));
+
+                StringAssert.Contains("bgmAudioSource: {fileID:", source, relativePath);
+                StringAssert.Contains("sfxAudioSources:", source, relativePath);
+                StringAssert.Contains("--- !u!82 &", source, relativePath);
+                StringAssert.DoesNotContain("initialPoolSize", source, relativePath);
+            }
+
+            var runtimeConfig = File.ReadAllText(Path.Combine(
+                Application.dataPath,
+                "Resources",
+                "Shared",
+                "Sound",
+                "SoundPlayerRuntimeConfig.asset"));
+
+            StringAssert.DoesNotContain("_initialPoolSize", runtimeConfig);
+        }
+
+        [Test]
         public void SoundPlayer_RespectsSfxCooldown()
         {
             var catalog = ScriptableObject.CreateInstance<SoundCatalog>();
@@ -64,9 +130,7 @@ namespace Tests.Editor
 
             var go = new GameObject("SoundPlayerTest");
             var player = go.AddComponent<SoundPlayer>();
-            typeof(SoundPlayer)
-                .GetField("catalog", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(player, catalog);
+            ConfigureSoundPlayer(player, catalog, go.AddComponent<AudioSource>(), go.AddComponent<AudioSource>());
 
             var eventBus = new EventBus();
             player.Initialize(eventBus, "local");
@@ -86,6 +150,17 @@ namespace Tests.Editor
             Object.DestroyImmediate(go);
             Object.DestroyImmediate(catalog);
             Object.DestroyImmediate(clip);
+        }
+
+        private static void ConfigureSoundPlayer(
+            SoundPlayer player,
+            SoundCatalog catalog,
+            AudioSource bgmAudioSource,
+            params AudioSource[] sfxAudioSources)
+        {
+            SoundPlayerCatalogField.SetValue(player, catalog);
+            SoundPlayerBgmSourceField.SetValue(player, bgmAudioSource);
+            SoundPlayerSfxSourcesField.SetValue(player, sfxAudioSources);
         }
     }
 }

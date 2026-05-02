@@ -7,9 +7,15 @@ import { execFile } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
-import { lintRepository } from "../lib.mjs";
+import {
+  buildDocsHealthReport,
+  formatDocsHealthReport,
+  formatLintReport,
+  lintRepository,
+} from "../lib.mjs";
 
 const fixturesRoot = fileURLToPath(new URL("./fixtures", import.meta.url));
+const docsLintToolRoot = fileURLToPath(new URL("..", import.meta.url));
 const execFileAsync = promisify(execFile);
 
 function getFixturePath(name) {
@@ -348,6 +354,576 @@ test("reports Unity meta artifacts under docs", async () => {
     includePolicyChecks: false,
   });
   assert.ok(result.errors.some((error) => error.code === "docs-meta-artifact"));
+});
+
+test("reports owner-only policy body headings in entry documents", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-entry-policy-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+
+## 상위 원칙
+
+Fixture policy body that belongs in an owner document.
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(result.errors.some((error) => error.code === "entry-policy-body"));
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("accepts sharp-edge reminders in entry documents", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-entry-sharp-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+
+## Sharp edges
+
+- Entry docs route only.
+- Mechanical pass and actual acceptance stay separate.
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.equal(result.errors.length, 0);
+    assert.ok(!result.warnings.some((warning) => warning.code === "entry-policy-body"));
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports stale active documents as warnings only", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-stale-active-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- \`active\`: [demo.md](./plans/demo.md) - demo plan
+- \`active\`: [demo_ops.md](./ops/demo_ops.md) - demo ops
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/plans/demo.md",
+      `# Demo Plan
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: plans.demo
+> role: plan
+> owner_scope: fixture plan
+> upstream: docs.index
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/ops/demo_ops.md",
+      `# Demo Ops
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: ops.demo-ops
+> role: ssot
+> owner_scope: fixture ops
+> upstream: docs.index
+> artifacts: none
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+      now: "2026-06-20T00:00:00Z",
+    });
+    assert.equal(result.errors.length, 0);
+    assert.ok(result.warnings.some((warning) => warning.code === "stale-active-plan"));
+    assert.ok(result.warnings.some((warning) => warning.code === "stale-active-doc"));
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports oversized managed documents as warnings only", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-size-warning-"));
+  const agentsPadding = Array.from({ length: 82 }, (_, index) => `- route reminder ${index + 1}`).join("\n");
+  const progressPadding = Array.from({ length: 82 }, (_, index) => `- current state ${index + 1}`).join("\n");
+  const planPadding = Array.from({ length: 122 }, (_, index) => `- execution note ${index + 1}`).join("\n");
+
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+
+${agentsPadding}
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+
+- \`active\`: [progress.md](./plans/progress.md) - progress
+- \`active\`: [demo.md](./plans/demo.md) - demo plan
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/plans/progress.md",
+      `# Progress
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: plans.progress
+> role: plan
+> owner_scope: fixture progress
+> upstream: docs.index
+> artifacts: none
+
+${progressPadding}
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/plans/demo.md",
+      `# Demo Plan
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: plans.demo
+> role: plan
+> owner_scope: fixture plan
+> upstream: docs.index
+> artifacts: none
+
+${planPadding}
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+      now: "2026-05-20T00:00:00Z",
+    });
+    assert.equal(result.errors.length, 0);
+    assert.ok(result.warnings.some((warning) => warning.code === "entry-size-advisory"));
+    assert.ok(result.warnings.some((warning) => warning.code === "progress-size-advisory"));
+    assert.ok(result.warnings.some((warning) => warning.code === "active-plan-size-advisory"));
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("formats warning-only results as passed", () => {
+  const report = formatLintReport({
+    managedDocPaths: ["AGENTS.md"],
+    errors: [],
+    warnings: [
+      {
+        code: "entry-size-advisory",
+        line: null,
+        message: "Fixture warning.",
+        path: "AGENTS.md",
+      },
+    ],
+  });
+
+  assert.match(report, /Docs lint passed with 1 warning/);
+  assert.match(report, /\[warning:entry-size-advisory\]/);
+});
+
+test("CLI wrappers exit zero for warning-only reports", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-cli-warning-"));
+  const tempToolRoot = path.join(repoRoot, "tools/docs-lint");
+  const stubLib = `export async function lintRepository() {
+  return {
+    managedDocPaths: ["AGENTS.md"],
+    documents: [],
+    errors: [],
+    warnings: [
+      {
+        code: "fixture-warning",
+        line: null,
+        message: "Fixture warning only.",
+        path: "AGENTS.md",
+      },
+    ],
+  };
+}
+
+export function formatLintReport(result) {
+  return \`stub pass with \${result.warnings.length} warning(s)\`;
+}
+`;
+
+  try {
+    await fs.mkdir(tempToolRoot, { recursive: true });
+    await fs.copyFile(
+      path.join(docsLintToolRoot, "docs-lint.mjs"),
+      path.join(tempToolRoot, "docs-lint.mjs"),
+    );
+    await fs.copyFile(
+      path.join(docsLintToolRoot, "policy-lint.mjs"),
+      path.join(tempToolRoot, "policy-lint.mjs"),
+    );
+    await writeFile(repoRoot, "tools/docs-lint/lib.mjs", stubLib);
+
+    for (const scriptName of ["docs-lint.mjs", "policy-lint.mjs"]) {
+      const { stdout } = await execFileAsync(
+        process.execPath,
+        [path.join(tempToolRoot, scriptName)],
+        { cwd: repoRoot },
+      );
+      assert.match(stdout, /stub pass with 1 warning/);
+    }
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports oversized skill entries as warnings only", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-skill-entry-size-"));
+  const skillPadding = Array.from({ length: 162 }, (_, index) => `- route note ${index + 1}`).join("\n");
+
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      ".codex/skills/jg-demo/SKILL.md",
+      `# Demo Skill
+
+> 마지막 업데이트: 2026-05-20
+> 상태: active
+> doc_id: skill.demo
+> role: skill-entry
+> owner_scope: fixture skill
+> upstream: repo.agents
+> artifacts: none
+
+${skillPadding}
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+      now: "2026-05-20T00:00:00Z",
+    });
+    assert.equal(result.errors.length, 0);
+    assert.ok(result.warnings.some((warning) => warning.code === "skill-entry-size-advisory"));
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("builds docs health summaries from lint results", () => {
+  const result = {
+    managedDocPaths: [
+      "AGENTS.md",
+      "docs/index.md",
+      "docs/plans/progress.md",
+      "docs/plans/demo.md",
+    ],
+    documents: [
+      {
+        repoRelativePath: "docs/plans/progress.md",
+        metadata: new Map([
+          ["상태", "active"],
+          ["role", "plan"],
+        ]),
+      },
+      {
+        repoRelativePath: "docs/plans/demo.md",
+        metadata: new Map([
+          ["상태", "active"],
+          ["role", "plan"],
+        ]),
+      },
+    ],
+    errors: [
+      {
+        code: "fixture-error",
+        line: null,
+        message: "Fixture error.",
+        path: "AGENTS.md",
+      },
+    ],
+    warnings: [
+      {
+        code: "fixture-warning",
+        line: null,
+        message: "Fixture warning.",
+        path: "docs/plans/demo.md",
+      },
+    ],
+  };
+
+  const report = buildDocsHealthReport(result);
+  assert.equal(report.managedDocumentCount, 4);
+  assert.equal(report.blockingIssueCount, 1);
+  assert.equal(report.warningCount, 1);
+  assert.equal(report.activeNonProgressPlanBudget.current, 1);
+  assert.deepEqual(report.activeNonProgressPlanBudget.paths, ["docs/plans/demo.md"]);
+  assert.deepEqual(report.errorsByCode, { "fixture-error": 1 });
+  assert.deepEqual(report.warningsByCode, { "fixture-warning": 1 });
+  assert.match(formatDocsHealthReport(report), /Docs health report/);
+});
+
+test("docs health CLI prints text and JSON without failing on diagnostics", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-health-cli-"));
+  const tempToolRoot = path.join(repoRoot, "tools/docs-lint");
+  const stubLib = `export async function lintRepository() {
+  return {
+    managedDocPaths: ["AGENTS.md"],
+    documents: [],
+    errors: [
+      {
+        code: "fixture-error",
+        line: null,
+        message: "Fixture error.",
+        path: "AGENTS.md",
+      },
+    ],
+    warnings: [
+      {
+        code: "fixture-warning",
+        line: null,
+        message: "Fixture warning.",
+        path: "AGENTS.md",
+      },
+    ],
+  };
+}
+
+export function buildDocsHealthReport(result) {
+  return {
+    schemaVersion: 1,
+    managedDocumentCount: result.managedDocPaths.length,
+    blockingIssueCount: result.errors.length,
+    warningCount: result.warnings.length,
+    activeNonProgressPlanBudget: { current: 0, limit: 5, status: "ok", paths: [] },
+    errorsByCode: { "fixture-error": 1 },
+    warningsByCode: { "fixture-warning": 1 },
+    errors: result.errors,
+    warnings: result.warnings,
+  };
+}
+
+export function formatDocsHealthReport(report) {
+  return \`stub health errors=\${report.blockingIssueCount} warnings=\${report.warningCount}\`;
+}
+`;
+
+  try {
+    await fs.mkdir(tempToolRoot, { recursive: true });
+    await fs.copyFile(
+      path.join(docsLintToolRoot, "docs-health.mjs"),
+      path.join(tempToolRoot, "docs-health.mjs"),
+    );
+    await writeFile(repoRoot, "tools/docs-lint/lib.mjs", stubLib);
+
+    const textResult = await execFileAsync(
+      process.execPath,
+      [path.join(tempToolRoot, "docs-health.mjs")],
+      { cwd: repoRoot },
+    );
+    assert.match(textResult.stdout, /stub health errors=1 warnings=1/);
+
+    const jsonResult = await execFileAsync(
+      process.execPath,
+      [path.join(tempToolRoot, "docs-health.mjs"), "--json"],
+      { cwd: repoRoot },
+    );
+    const payload = JSON.parse(jsonResult.stdout);
+    assert.equal(payload.blockingIssueCount, 1);
+    assert.equal(payload.warningCount, 1);
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports stale rule harness advisory memory references", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-advisory-memory-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "tools/rule-harness/memory/advisory-memory.json",
+      `${JSON.stringify({
+        schemaVersion: 1,
+        entries: [
+          {
+            scopePath: "docs/missing.md",
+            promotionTarget: "ops.missing",
+            validationHints: ["Tests/Missing/Run.ps1"],
+          },
+        ],
+      }, null, 2)}\n`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(
+      result.errors.some((error) => error.code === "stale-advisory-memory-reference"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
 });
 
 test("reports too many active non-progress plans", async () => {
@@ -1081,6 +1657,26 @@ test("reports missing owner route in issue investigation skill", async () => {
   });
   assert.ok(
     result.errors.some((error) => error.code === "missing-issue-investigation-owner-route"),
+  );
+});
+
+test("reports missing Fresh Evidence Discipline contract in acceptance guardrails", async () => {
+  const result = await lintRepository(getFixturePath("missing-fresh-evidence-discipline-contract"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+  });
+  assert.ok(
+    result.errors.some((error) => error.code === "missing-fresh-evidence-discipline-contract"),
+  );
+});
+
+test("reports missing Fresh Evidence route in repo-local evidence skills", async () => {
+  const result = await lintRepository(getFixturePath("missing-fresh-evidence-skill-route"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+  });
+  assert.ok(
+    result.errors.some((error) => error.code === "missing-fresh-evidence-skill-route"),
   );
 });
 

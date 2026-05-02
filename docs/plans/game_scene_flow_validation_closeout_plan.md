@@ -17,6 +17,7 @@ Phase 5/9 2-client multiplayer sync acceptance는 별도 active plan 없이 `pla
 - Summon rollback, enemy priority, drag/drop direct tests는 2026-04-30 in-editor MCP test route로 실행됐고 16/16 pass다: `artifacts/unity/game-flow/actual-flow/direct-editmode-tests.xml`.
 - Victory overlay mismatch는 `WaveEndView` visible overlay/CTA toggle 수정으로 닫았다.
 - Phase 5 multiplayer acceptance는 `plans.progress` residual로 분리했다. 이 문서는 single-client flow와 direct execution blocker만 닫는다.
+- 남은 closeout blocker는 result HUD actual player-flow checklist이며, direct/EditMode pass만으로 이 blocker를 success 처리하지 않는다.
 
 ## Findings
 

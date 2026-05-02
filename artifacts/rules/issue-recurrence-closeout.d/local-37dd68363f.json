@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-02",
+  "scope": "rules-only",
+  "issueDetected": false,
+  "declaredLane": "entry documentation",
+  "observedMutationClass": "AGENTS.md sharp-edge summary added without moving owner policy bodies.",
+  "acceptanceEvidenceClass": "Scoped rules lint only; no Unity runtime or gameplay acceptance evidence.",
+  "escalationRequired": false,
+  "rootCause": "",
+  "prevention": "Keep the root entrypoint focused on route guidance and short high-risk reminders while preserving owner documents as the rule SSOT.",
+  "verification": "RULES_LINT_CHANGED_FILES=\"AGENTS.md\\nartifacts/rules/issue-recurrence-closeout.d/local-37dd68363f.json\" npm run --silent rules:lint",
+  "blockedReason": "",
+  "changedPaths": [
+    "AGENTS.md",
+    "artifacts/rules/issue-recurrence-closeout.d/local-37dd68363f.json"
+  ]
+}

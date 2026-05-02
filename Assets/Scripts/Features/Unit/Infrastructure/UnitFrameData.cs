@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.Serialization;
+using System;
 
 namespace Features.Unit.Infrastructure
 {
@@ -37,8 +39,11 @@ namespace Features.Unit.Infrastructure
 
         [Header("Base Stats")]
         [SerializeField] private float baseHp;
-        [SerializeField] private float baseMoveRange;
-        [SerializeField] private float baseAttackSpeed;
+        [SerializeField] private float defense;
+        [FormerlySerializedAs("baseMoveRange")]
+        [SerializeField, HideInInspector] private float legacyBaseMoveRange;
+        [FormerlySerializedAs("baseAttackSpeed")]
+        [SerializeField, HideInInspector] private float legacyBaseAttackSpeed;
 
         [Header("Passive Trait")]
         [SerializeField] private PassiveTraitData passiveTrait;
@@ -52,8 +57,11 @@ namespace Features.Unit.Infrastructure
         public Sprite Icon => icon;
         public AssemblyForm AssemblyForm => assemblyForm;
         public float BaseHp => baseHp;
-        public float BaseMoveRange => baseMoveRange;
-        public float BaseAttackSpeed => baseAttackSpeed;
+        public float Defense => defense;
+        [Obsolete("Frame no longer owns attack speed; use FirepowerModuleData.AttackSpeed.")]
+        public float BaseAttackSpeed => 1f;
+        [Obsolete("Frame no longer owns move range; use MobilityModuleData.MoveRange.")]
+        public float BaseMoveRange => 0f;
         public PassiveTraitData PassiveTrait => passiveTrait;
         public GameObject UnitPrefab => unitPrefab;
         public GameObject PreviewPrefab => previewPrefab;

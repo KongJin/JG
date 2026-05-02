@@ -250,23 +250,54 @@ namespace Features.Wave
 
         private EnemyData ResolveEnemyDataForArrival(EnemySetup enemy)
         {
-            if (_waveTable == null)
-                return null;
-
-            if (enemy != null &&
-                _waveTable.TryGetEnemyDataByNetworkKey(enemy.EnemyNetworkKey, out var matchedData))
-                return matchedData;
-
-            if (_waveTable.TryGetFirstEnemyData(out var fallbackData))
+            if (_waveTable == null || enemy == null || string.IsNullOrWhiteSpace(enemy.EnemyNetworkKey))
             {
-                Debug.LogWarning(
-                    $"[WaveSetup] Enemy network key '{enemy?.EnemyNetworkKey}' did not match WaveTableData. Using first serialized enemy data.",
-                    enemy);
-                return fallbackData;
+                Debug.LogError("[WaveSetup] EnemyData network contract is missing for the arriving enemy.", enemy);
+                return null;
             }
 
+            if (_waveTable.TryGetEnemyDataByNetworkKey(enemy.EnemyNetworkKey, out var matchedData))
+                return matchedData;
+
+            Debug.LogError($"[WaveSetup] Enemy network key '{enemy.EnemyNetworkKey}' is not present in WaveTableData.", enemy);
             return null;
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         private void HandleReturnToLobbyRequested()
         {

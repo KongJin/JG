@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -15,8 +15,7 @@ MonoBehaviour:
   moduleId: mob_treads
   displayName: Siege Treads
   icon: {fileID: 0}
-  hpBonus: 260
+  moveSpeed: 3.32
   moveRange: 2.5
-  anchorRange: 2
   description: Heavy but stable. Great for long range artillery.
   previewPrefab: {fileID: 6901450388720024572, guid: 0841bc7274d237b44a2c36d393dc6a30, type: 3}

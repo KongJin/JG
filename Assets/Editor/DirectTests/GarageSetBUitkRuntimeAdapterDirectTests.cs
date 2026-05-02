@@ -68,23 +68,37 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void Uxml_DocksSelectedPartPreviewBelowPartList()
+        public void RuntimeLayout_PrioritizesAssemblyPreviewBeforePartPicker()
         {
-            var root = LoadRoot();
-            var pane = root.Q<VisualElement>("PartSelectionPane");
-            var listCard = root.Q<VisualElement>("PartListCard");
-            var previewCard = root.Q<VisualElement>("SelectedPartPreviewCard");
-            var statsPanel = root.Q<VisualElement>("SelectedPartStatsPanel");
-            var previewHost = root.Q<VisualElement>("SelectedPartPreviewHost");
+            var fixture = CreateRuntimeAdapterFixture();
+            try
+            {
+                var root = fixture.Host;
+                var slotStrip = root.Q<VisualElement>("SlotStrip");
+                var unitPreview = root.Q<VisualElement>("PreviewCard");
+                var focusBar = root.Q<VisualElement>("PartFocusBar");
+                var selectedPreview = root.Q<VisualElement>("SelectedPartPreviewCard");
+                var pane = root.Q<VisualElement>("PartSelectionPane");
+                var listCard = root.Q<VisualElement>("PartListCard");
+                var rows = root.Q<ScrollView>("PartListRows");
+                var unitPreviewHost = root.Q<VisualElement>("UnitPreviewHost");
+                var content = slotStrip.parent;
 
-            Assert.NotNull(pane);
-            Assert.AreSame(pane, listCard.parent);
-            Assert.IsNull(root.Q<VisualElement>("PartInspectorColumn"));
-            Assert.IsNull(root.Q<VisualElement>("EditorCard"));
-            Assert.NotNull(previewCard);
-            Assert.AreSame(previewCard, statsPanel.parent);
-            Assert.AreSame(previewCard, previewHost.parent);
-            Assert.AreNotSame(listCard, previewHost.parent);
+                Assert.Less(IndexOfChild(content, slotStrip), IndexOfChild(content, unitPreview));
+                Assert.Less(IndexOfChild(content, unitPreview), IndexOfChild(content, focusBar));
+                Assert.Less(IndexOfChild(content, focusBar), IndexOfChild(content, selectedPreview));
+                Assert.Less(IndexOfChild(content, selectedPreview), IndexOfChild(content, pane));
+                Assert.AreSame(pane, listCard.parent);
+                Assert.IsNull(root.Q<VisualElement>("PartInspectorColumn"));
+                Assert.IsNull(root.Q<VisualElement>("EditorCard"));
+                Assert.AreEqual(250f, unitPreview.style.height.value.value);
+                Assert.AreEqual(178f, unitPreviewHost.style.width.value.value);
+                Assert.AreEqual(124f, rows.style.height.value.value);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
         }
 
         [Test]
@@ -506,6 +520,24 @@ namespace Tests.Editor
             var element = root.Q<Button>(name);
             Assert.NotNull(element, name);
             return element;
+        }
+
+        private static int IndexOfChild(VisualElement parent, VisualElement child)
+        {
+            Assert.NotNull(parent);
+            Assert.NotNull(child);
+
+            int index = 0;
+            foreach (var candidate in parent.Children())
+            {
+                if (ReferenceEquals(candidate, child))
+                    return index;
+
+                index++;
+            }
+
+            Assert.Fail($"Child {child.name} was not under {parent.name}.");
+            return -1;
         }
     }
 }

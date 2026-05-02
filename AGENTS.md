@@ -1,6 +1,6 @@
 # AGENTS.md
 
-> 마지막 업데이트: 2026-04-30
+> 마지막 업데이트: 2026-05-02
 > 상태: active
 > doc_id: repo.agents
 > role: entry
@@ -37,5 +37,13 @@
 - 구현, 버그 수정, 리팩터, 테스트/검증 작업은 [`/docs/ops/codex_coding_guardrails.md`](docs/ops/codex_coding_guardrails.md)를 먼저 확인한 뒤 관련 owner 문서를 따른다.
 - Plan Mode 또는 규칙/운영/Codex 절차 작업은 [`/docs/index.md`](docs/index.md)에서 current owner path를 확인한 뒤 `rule-operations` route와 repo owner 문서로 라우팅하고, 그 lane에서는 mutation을 금지한다.
 - 운영 규칙 본문과 current route는 [`/docs/index.md`](docs/index.md)에서 owner 문서를 찾아 확인한다. `AGENTS.md`는 경로 안내와 현재 lane 메모만 유지한다.
+
+## Sharp edges
+
+- Entry 문서는 길 안내와 현재 lane 메모만 맡고, 규칙 본문은 owner 문서에 둔다.
+- Plan Mode나 운영 lane에서는 repo mutation을 하지 않는다.
+- Mechanical pass와 actual acceptance를 분리해서 보고한다.
+- Unity UI/scene/prefab 작업은 전용 workflow owner를 먼저 따른다.
+- 외부 agent/prompt 템플릿은 reference로만 보고, JG owner 문서 역할에 맞는 내용만 흡수한다.
 
 ---

@@ -1,0 +1,160 @@
+﻿{
+    "success":  true,
+    "terminalVerdict":  "",
+    "blockedReason":  "",
+    "generatedAt":  "2026-05-01 22:48:21+09:00",
+    "agent":  "",
+    "route":  "lobby-ui",
+    "changedFiles":  [
+                         "artifacts/unity/garage-assembly-first-layout-editmode-20260501-rerun2.xml",
+                         "artifacts/unity/garage-assembly-first-live-20260501-221627.png",
+                         "artifacts/unity/garage-assembly-first-side-preview-editmode-20260501-rerun.xml",
+                         "artifacts/unity/garage-humanoid-layer-isolated-live-20260501-224704.png",
+                         "artifacts/unity/garage-humanoid-seat-editmode-20260501.xml",
+                         "artifacts/unity/garage-humanoid-seat-editmode-20260501-r2.xml",
+                         "artifacts/unity/garage-humanoid-seat-final-editmode-20260501.xml",
+                         "artifacts/unity/garage-humanoid-seat-live-20260501-223947.png",
+                         "artifacts/unity/garage-preview-layer-isolation-editmode-20260501.xml",
+                         "artifacts/unity/garage-preview-layer-isolation-editmode-20260501-r2.xml",
+                         "artifacts/unity/garage-preview-layer-isolation-final-editmode-20260501.xml",
+                         "artifacts/unity/garage-preview-layout-final-editmode-20260501.xml",
+                         "artifacts/unity/garage-preview-size-layout-editmode-20260501.xml",
+                         "artifacts/unity/garage-preview-size-layout-editmode-20260501-r2.xml",
+                         "artifacts/unity/garage-selected-part-preview-editmode-20260501.xml",
+                         "artifacts/unity/garage-selected-part-preview-editmode-20260501-r2.xml",
+                         "artifacts/unity/garage-starship-bigger-separated-garagepage-live-20260501-223912.png",
+                         "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.json",
+                         "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.png",
+                         "artifacts/unity/garage-starship-layer-isolated-live-20260501-224704.png",
+                         "artifacts/unity/garage-unit-preview-assembly-direct-editmode-20260501.xml",
+                         "artifacts/unity/garage-unit-preview-assembly-direct-editmode-20260501-r2.xml",
+                         "artifacts/unity/unity-ui-authoring-workflow-policy-garage-assembly-first-20260501.json",
+                         "Assets/Editor/DirectTests/GarageSetBUitkRuntimeAdapterDirectTests.cs",
+                         "Assets/Editor/DirectTests/GarageSetBUitkRuntimeAdapterSidePreviewDirectTests.cs",
+                         "Assets/Editor/DirectTests/GarageUnitPreviewAssemblyFrameTopDirectTests.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkPreviewRenderer.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageSetBUitkRuntimeAdapter.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/GarageUnitPreviewAssembly.cs"
+                     ],
+    "allDirtyFileCount":  29,
+    "unityUiRelevantFiles":  [
+
+                             ],
+    "uitkCandidateFiles":  [
+
+                           ],
+    "uitkCandidateEvidenceFiles":  [
+                                       "artifacts/unity/garage-assembly-first-live-20260501-221627.png",
+                                       "artifacts/unity/garage-humanoid-layer-isolated-live-20260501-224704.png",
+                                       "artifacts/unity/garage-humanoid-seat-live-20260501-223947.png",
+                                       "artifacts/unity/garage-starship-bigger-separated-garagepage-live-20260501-223912.png",
+                                       "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.json",
+                                       "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.png",
+                                       "artifacts/unity/garage-starship-layer-isolated-live-20260501-224704.png",
+                                       "artifacts/unity/unity-ui-authoring-workflow-policy-garage-assembly-first-20260501.json"
+                                   ],
+    "uitkCandidatePreviewEvidenceFiles":  [
+                                              "artifacts/unity/garage-assembly-first-live-20260501-221627.png",
+                                              "artifacts/unity/garage-humanoid-layer-isolated-live-20260501-224704.png",
+                                              "artifacts/unity/garage-humanoid-seat-live-20260501-223947.png",
+                                              "artifacts/unity/garage-starship-bigger-separated-garagepage-live-20260501-223912.png",
+                                              "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.png",
+                                              "artifacts/unity/garage-starship-layer-isolated-live-20260501-224704.png"
+                                          ],
+    "uitkCandidateReportEvidenceFiles":  [
+                                             "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.json",
+                                             "artifacts/unity/unity-ui-authoring-workflow-policy-garage-assembly-first-20260501.json"
+                                         ],
+    "requiredEvidence":  [
+                             {
+                                 "name":  "compile-reload",
+                                 "path":  null,
+                                 "message":  "Compile and script reload must settle before Unity UI workflow evidence is trusted."
+                             }
+                         ],
+    "missingEvidence":  [
+
+                        ],
+    "staleEvidence":  [
+
+                      ],
+    "policyViolations":  [
+
+                         ],
+    "compile":  {
+                    "success":  true,
+                    "request":  {
+                                    "ok":  true,
+                                    "cleanBuildCacheRequested":  false,
+                                    "isCompiling":  false,
+                                    "message":  "Asset refresh triggered."
+                                },
+                    "wait":  {
+                                 "ok":  true,
+                                 "timedOut":  false,
+                                 "requestedCompilation":  false,
+                                 "waitedMs":  120000,
+                                 "isCompiling":  false
+                             },
+                    "healthAfterWait":  {
+                                            "ok":  true,
+                                            "bridgeRunning":  true,
+                                            "port":  52676,
+                                            "isPlaying":  false,
+                                            "isPlayingOrWillChange":  false,
+                                            "isPlayModeChanging":  false,
+                                            "rawIsPlayingOrWillChange":  false,
+                                            "isCompiling":  false,
+                                            "isWaitingForPlayMode":  false,
+                                            "projectKey":  "0d8ea703",
+                                            "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                            "activeScene":  "LobbyScene",
+                                            "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                            "pendingPlayAction":  "",
+                                            "pendingPlayAgeMs":  0
+                                        }
+                },
+    "unityResourceLock":  {
+                              "owner":  "workflow",
+                              "path":  "Temp/UnityMcp/unity-resource.lock",
+                              "token":  "0f524fcea843408195e1eef5f8da58aa"
+                          },
+    "capabilityExpansionGuard":  {
+                                     "allowCapabilityExpansion":  false,
+                                     "surfaceOnboardingFiles":  [
+                                                                    "artifacts/unity/garage-assembly-first-live-20260501-221627.png",
+                                                                    "artifacts/unity/garage-humanoid-layer-isolated-live-20260501-224704.png",
+                                                                    "artifacts/unity/garage-humanoid-seat-live-20260501-223947.png",
+                                                                    "artifacts/unity/garage-starship-bigger-separated-garagepage-live-20260501-223912.png",
+                                                                    "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.json",
+                                                                    "artifacts/unity/garage-starship-bigger-separated-live-20260501-223847.png",
+                                                                    "artifacts/unity/garage-starship-layer-isolated-live-20260501-224704.png"
+                                                                ],
+                                     "capabilityExpansionFiles":  [
+
+                                                                  ]
+                                 },
+    "prefabManagement":  {
+                             "inventory":  {
+                                               "path":  "artifacts/unity/prefab-management-inventory.json",
+                                               "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                               "totalPrefabs":  9,
+                                               "generatedPreviewPrefabs":  0,
+                                               "resourcesPrefabs":  9,
+                                               "duplicateCandidateGroups":  0,
+                                               "approvedNewPrefabTargets":  0
+                                           },
+                             "approvalManifest":  {
+                                                      "path":  "artifacts/unity/prefab-management-approved-new-prefabs.json",
+                                                      "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                                      "prefabCount":  0,
+                                                      "prefabPaths":  [
+
+                                                                      ]
+                                                  }
+                         },
+    "declaredNewPrefabTargets":  [
+
+                                 ],
+    "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\unity-ui-authoring-workflow-policy-garage-preview-layer-isolation-20260501.json"
+}

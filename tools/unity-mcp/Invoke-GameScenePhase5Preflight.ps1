@@ -230,6 +230,28 @@ $result = [PSCustomObject]@{
         twoClientRunnerAvailable = $twoClientRunnerAvailable
         manualMultiplayerSessionRequired = -not $twoClientRunnerAvailable
         actualMultiplayerAcceptance = if ($twoClientRunnerAvailable) { "not-run" } else { "blocked" }
+        manualEvidenceChecklist = @(
+            [PSCustomObject]@{
+                item = "late-join hydration"
+                requiredEvidence = "joiner restores existing BattleEntity HP/position/dead state after joining an active host session"
+                verdict = if ($twoClientRunnerAvailable) { "not-run" } else { "blocked" }
+            },
+            [PSCustomObject]@{
+                item = "BattleEntity sync"
+                requiredEvidence = "host and joiner logs/screenshots show the same spawned battle entity ids and state transition result"
+                verdict = if ($twoClientRunnerAvailable) { "not-run" } else { "blocked" }
+            },
+            [PSCustomObject]@{
+                item = "Energy sync"
+                requiredEvidence = "host and joiner observe the same post-summon energy change and no duplicate spend"
+                verdict = if ($twoClientRunnerAvailable) { "not-run" } else { "blocked" }
+            },
+            [PSCustomObject]@{
+                item = "WaveState sync"
+                requiredEvidence = "host and joiner observe the same active wave/core/result state through victory or defeat"
+                verdict = if ($twoClientRunnerAvailable) { "not-run" } else { "blocked" }
+            }
+        )
     }
 }
 
@@ -244,8 +266,26 @@ if (-not (Test-Path -LiteralPath $outputDirectory)) {
     New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
 }
 
-$result | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $resolvedOutputPath -Encoding UTF8
-$result | ConvertTo-Json -Depth 12
+$resultJson = $result | ConvertTo-Json -Depth 12
+try {
+    $resultJson | Set-Content -LiteralPath $resolvedOutputPath -Encoding UTF8
+}
+catch [System.IO.IOException] {
+    $fallbackName = [System.IO.Path]::GetFileNameWithoutExtension($resolvedOutputPath) +
+        "-locked-" +
+        (Get-Date).ToString("yyyyMMdd-HHmmss") +
+        [System.IO.Path]::GetExtension($resolvedOutputPath)
+    $fallbackPath = Join-Path $outputDirectory $fallbackName
+    $result | Add-Member -NotePropertyName outputWriteFallback -NotePropertyValue ([PSCustomObject]@{
+        requestedPath = ConvertTo-RepoRelativePath -RepoRoot $repoRoot -Path $resolvedOutputPath
+        writtenPath = ConvertTo-RepoRelativePath -RepoRoot $repoRoot -Path $fallbackPath
+        reason = "requested output file is locked by a user-mapped section"
+    }) -Force
+    $resultJson = $result | ConvertTo-Json -Depth 12
+    [System.IO.File]::WriteAllText($fallbackPath, $resultJson + [Environment]::NewLine, [System.Text.UTF8Encoding]::new($false))
+}
+
+$resultJson
 
 if ($FailOnBlocked -and -not $twoClientRunnerAvailable) {
     exit 2

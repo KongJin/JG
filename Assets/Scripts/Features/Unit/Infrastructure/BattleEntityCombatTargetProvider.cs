@@ -12,7 +12,7 @@ namespace Features.Unit.Infrastructure
             _entity = entity;
         }
 
-        public float GetDefense() => 0f; // Defense not yet modeled in UnitSpec
+        public float GetDefense() => _entity.UnitSpec.FinalDefense;
 
         public float GetCurrentHealth() => _entity.CurrentHp;
 

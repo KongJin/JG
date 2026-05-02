@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 internal static class Program
 {
-    private const string ConverterVersion = "gx-pipeline-v22";
+    private const string ConverterVersion = "gx-pipeline-v23";
     private const string ManifestPath = "artifacts/nova1492/gx_conversion_manifest.csv";
     private const string SummaryPath = "artifacts/nova1492/gx_conversion_summary.md";
     private const string PipelineStatePath = "artifacts/nova1492/gx_pipeline_state.csv";
@@ -24,6 +24,14 @@ internal static class Program
     private const int MaxIndexCount = 200000;
     private const float LegHelperSpanThreshold = 0.25f;
     private static readonly CultureInfo Invariant = CultureInfo.InvariantCulture;
+    private static readonly Dictionary<string, int[]> VisualEffectMeshIndicesByPartId = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["nova_fire_arm24_bzk"] = new[] { 6 },
+        ["nova_fire_s_arm52_bzk"] = new[] { 6 },
+        ["nova_mob_legs13_krz"] = new[] { 1 },
+        ["nova_mob_n_legs40_krz"] = new[] { 1 },
+        ["nova_mob_s_legs28_krz"] = new[] { 1 }
+    };
     private static int? PoseFrameOverride;
     private static GxPoseMode GxPoseModeOverride = GxPoseMode.Verified;
     private static HierarchyRepairMode HierarchyRepairModeOverride = HierarchyRepairMode.Verified;
@@ -189,6 +197,7 @@ internal static class Program
 
                 var xfiInfo = ReadXfiInfo(gxPath);
                 var selection = SelectMeshesForExport(relative, meshes, xfiInfo, nodeTransforms.Nodes);
+                selection = StripKnownVisualEffectMeshes(catalogRow?.PartId, selection);
                 var safeName = BuildSafeName(relative);
                 var objPath = catalogModelPaths.TryGetValue(NormalizeRelativePath(relative), out var catalogModelPath) &&
                               !string.IsNullOrWhiteSpace(catalogModelPath)
@@ -1852,6 +1861,63 @@ internal static class Program
             FormatMeshDiagnostics(direction),
             FormatMeshDiagnostics(direction),
             direction);
+    }
+
+    private static MeshSelection StripKnownVisualEffectMeshes(string? partId, MeshSelection selection)
+    {
+        if (string.IsNullOrWhiteSpace(partId) ||
+            !VisualEffectMeshIndicesByPartId.TryGetValue(partId, out var meshIndices) ||
+            meshIndices.Length == 0)
+        {
+            return selection;
+        }
+
+        var excluded = new HashSet<int>(meshIndices);
+        var kept = new List<MeshData>();
+        var stripped = new List<MeshData>();
+        for (var i = 0; i < selection.KeptMeshes.Count; i++)
+        {
+            var mesh = selection.KeptMeshes[i];
+            if (excluded.Contains(i))
+            {
+                stripped.Add(mesh);
+            }
+            else
+            {
+                kept.Add(mesh);
+            }
+        }
+
+        if (stripped.Count == 0 || kept.Count == 0)
+        {
+            return selection;
+        }
+
+        var dropped = selection.DroppedMeshes.Concat(stripped).ToArray();
+        return selection with
+        {
+            KeptMeshes = kept,
+            AssemblyBlocks = FormatMeshList(kept),
+            DroppedBlocks = AppendDiagnostics(selection.DroppedBlocks, "visual_effect_mesh:" + FormatMeshList(stripped)),
+            AssemblyBlockDiagnostics = FormatMeshDiagnostics(kept),
+            DroppedBlockDiagnostics = AppendDiagnostics(selection.DroppedBlockDiagnostics, "visual_effect_mesh:" + FormatMeshDiagnostics(stripped)),
+            DroppedMeshes = dropped
+        };
+    }
+
+    private static string AppendDiagnostics(string existing, string addition)
+    {
+        if (string.IsNullOrWhiteSpace(addition))
+        {
+            return existing;
+        }
+
+        if (string.IsNullOrWhiteSpace(existing))
+        {
+            return addition;
+        }
+
+        return existing + ";" + addition;
     }
 
     private static bool IsUnitLegsPath(string relativePath)

@@ -66,7 +66,7 @@ namespace ProjectSD.EditorTools
                     report.Failures.Add($"Generated frame has no preview prefab: {frame.FrameId}");
                 }
 
-                if (IsGeneratedFrame(frame) && (frame.BaseHp <= 0f || frame.BaseAttackSpeed <= 0f || frame.BaseMoveRange <= 0f))
+                if (IsGeneratedFrame(frame) && (frame.BaseHp <= 0f || frame.Defense < 0f))
                 {
                     report.Failures.Add($"Generated frame has non-positive stats: {frame.FrameId}");
                 }
@@ -106,7 +106,7 @@ namespace ProjectSD.EditorTools
                     report.Failures.Add($"Generated mobility has no preview prefab: {mobility.ModuleId}");
                 }
 
-                if (IsGeneratedMobility(mobility) && (mobility.HpBonus <= 0f || mobility.MoveRange <= 0f || mobility.AnchorRange <= 0f))
+                if (IsGeneratedMobility(mobility) && (mobility.MoveSpeed <= 0f || mobility.MoveRange <= 0f))
                 {
                     report.Failures.Add($"Generated mobility has non-positive stats: {mobility.ModuleId}");
                 }

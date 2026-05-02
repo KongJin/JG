@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -15,8 +15,7 @@ MonoBehaviour:
   moduleId: mob_vector
   displayName: Vector Legs
   icon: {fileID: 0}
-  hpBonus: 160
+  moveSpeed: 3.78
   moveRange: 3.5
-  anchorRange: 4
   description: Mid-line option suited for hybrid pressure.
   previewPrefab: {fileID: 4819424358495046404, guid: 8e718cdc50cf1bf4c868fe53b10f7244, type: 3}

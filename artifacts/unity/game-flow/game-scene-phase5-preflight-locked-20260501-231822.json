@@ -1,0 +1,121 @@
+{
+    "success":  false,
+    "terminalVerdict":  "blocked",
+    "blockedReason":  "two-client runner unavailable",
+    "generatedAt":  "2026-05-01 23:18:22+09:00",
+    "evidence":  {
+                     "mcpHealth":  {
+                                       "ok":  true,
+                                       "port":  52676,
+                                       "isPlaying":  true,
+                                       "isCompiling":  false,
+                                       "activeScene":  "LobbyScene",
+                                       "activeScenePath":  "Assets/Scenes/LobbyScene.unity"
+                                   },
+                     "editorInstance":  {
+                                            "exists":  true,
+                                            "path":  "Library/EditorInstance.json",
+                                            "processId":  3968,
+                                            "processAlive":  true,
+                                            "version":  "6000.3.9f1",
+                                            "appPath":  "C:/Program Files/Unity/Hub/Editor/6000.3.9f1/Editor/Unity.exe"
+                                        },
+                     "webGlBuild":  {
+                                        "exists":  true,
+                                        "path":  "Build/WebGL",
+                                        "files":  [
+                                                      {
+                                                          "exists":  true,
+                                                          "path":  "C:/Users/SOL/Documents/JG/Build/WebGL/index.html",
+                                                          "length":  1432,
+                                                          "lastWriteTime":  "2026-04-17T23:29:07.2986671+09:00"
+                                                      },
+                                                      {
+                                                          "exists":  true,
+                                                          "path":  "C:/Users/SOL/Documents/JG/Build/WebGL/Build/WebGL.loader.js",
+                                                          "length":  58349,
+                                                          "lastWriteTime":  "2026-04-30T22:28:30.0467558+09:00"
+                                                      },
+                                                      {
+                                                          "exists":  true,
+                                                          "path":  "C:/Users/SOL/Documents/JG/Build/WebGL/Build/WebGL.framework.js",
+                                                          "length":  865298,
+                                                          "lastWriteTime":  "2026-04-30T22:28:30.0452491+09:00"
+                                                      },
+                                                      {
+                                                          "exists":  true,
+                                                          "path":  "C:/Users/SOL/Documents/JG/Build/WebGL/Build/WebGL.data",
+                                                          "length":  25579998,
+                                                          "lastWriteTime":  "2026-04-30T22:28:28.8838156+09:00"
+                                                      },
+                                                      {
+                                                          "exists":  true,
+                                                          "path":  "C:/Users/SOL/Documents/JG/Build/WebGL/Build/WebGL.wasm",
+                                                          "length":  112335711,
+                                                          "lastWriteTime":  "2026-04-30T22:28:28.9721451+09:00"
+                                                      }
+                                                  ]
+                                    },
+                     "twoClientRunnerCandidates":  [
+
+                                                   ],
+                     "singleClientBaseline":  {
+                                                  "exists":  true,
+                                                  "path":  "C:/Users/SOL/Documents/JG/artifacts/unity/game-flow/game-scene-natural-victory-flow-closeout.json",
+                                                  "success":  true,
+                                                  "terminalVerdict":  "success",
+                                                  "resultMode":  "NaturalVictory",
+                                                  "generatedAt":  "2026-04-27 09:21:32+09:00",
+                                                  "newErrorCount":  0,
+                                                  "hasSummonLog":  true,
+                                                  "hasUnitKillLog":  true,
+                                                  "hasVictoryResultLog":  true
+                                              },
+                     "placementContract":  {
+                                               "exists":  true,
+                                               "path":  "C:/Users/SOL/Documents/JG/artifacts/unity/game-flow/game-scene-placement-contract-smoke.json",
+                                               "success":  true,
+                                               "terminalVerdict":  "success",
+                                               "resultMode":  "None",
+                                               "generatedAt":  "2026-04-27 09:20:30+09:00",
+                                               "newErrorCount":  0,
+                                               "hasSummonLog":  false,
+                                               "hasUnitKillLog":  false,
+                                               "hasVictoryResultLog":  false
+                                           }
+                 },
+    "acceptance":  {
+                       "singleClientBaselineAvailable":  true,
+                       "placementContractAvailable":  true,
+                       "twoClientRunnerAvailable":  false,
+                       "manualMultiplayerSessionRequired":  true,
+                       "actualMultiplayerAcceptance":  "blocked",
+                       "manualEvidenceChecklist":  [
+                                                       {
+                                                           "item":  "late-join hydration",
+                                                           "requiredEvidence":  "joiner restores existing BattleEntity HP/position/dead state after joining an active host session",
+                                                           "verdict":  "blocked"
+                                                       },
+                                                       {
+                                                           "item":  "BattleEntity sync",
+                                                           "requiredEvidence":  "host and joiner logs/screenshots show the same spawned battle entity ids and state transition result",
+                                                           "verdict":  "blocked"
+                                                       },
+                                                       {
+                                                           "item":  "Energy sync",
+                                                           "requiredEvidence":  "host and joiner observe the same post-summon energy change and no duplicate spend",
+                                                           "verdict":  "blocked"
+                                                       },
+                                                       {
+                                                           "item":  "WaveState sync",
+                                                           "requiredEvidence":  "host and joiner observe the same active wave/core/result state through victory or defeat",
+                                                           "verdict":  "blocked"
+                                                       }
+                                                   ]
+                   },
+    "outputWriteFallback":  {
+                                "requestedPath":  "artifacts/unity/game-flow/game-scene-phase5-preflight.json",
+                                "writtenPath":  "artifacts/unity/game-flow/game-scene-phase5-preflight-locked-20260501-231822.json",
+                                "reason":  "requested output file is locked by a user-mapped section"
+                            }
+}

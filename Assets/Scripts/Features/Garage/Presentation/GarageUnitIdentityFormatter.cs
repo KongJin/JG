@@ -68,7 +68,7 @@ namespace Features.Garage.Presentation
             if (mobility == null)
                 return "역할 산출 대기";
 
-            if (mobility.AnchorRange <= 3.1f)
+            if (mobility.MoveRange <= 3.1f)
             {
                 if (firepower != null && firepower.Range >= 6f)
                     return "고정 화력";
@@ -76,7 +76,7 @@ namespace Features.Garage.Presentation
                 return "전선 고정";
             }
 
-            if (mobility.AnchorRange >= 6f)
+            if (mobility.MoveRange >= 6f)
                 return "침투 추적";
 
             return "균형 지원";

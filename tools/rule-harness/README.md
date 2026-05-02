@@ -73,6 +73,14 @@ latest pointer는 `Temp/RuleHarnessRoles/latest-pipeline.txt`, `latest-tech-debt
 - `run-recurrence-plan.ps1`: 리뷰/작업 report, `history.json`, `advisory-memory.json`를 읽어 `preventionItems`를 만든다.
 - `run-recurrence-work.ps1`: 재발 방지 계획 JSON의 `recommendedBatches`만 기존 mutation guard로 적용한다.
 
+Coding agent route:
+
+- 이 repo에는 별도 `codingplan` harness mode를 두지 않는다.
+- 자동 coding-agent 검토는 `agentRunner` 설정을 사용하는 Codex CLI route가 canonical이다.
+- legacy LLM diagnose의 quota/network/timeout failure는 product code debt가 아니라 harness 운영 debt로 보고, recurrence plan은 static-only report와 `blockedReason`을 남긴다.
+- advisory memory에서 `scopeType=harness-ops` 또는 `status=blocked-operational`인 항목은 product prevention item으로 재큐잉하지 않는다.
+- `advisory-memory.json`은 SSOT가 아니며, stale `scopePath`, `promotionTarget`, path-like `validationHints`, 또는 doc_id가 남으면 `rules:lint`에서 정리 대상으로 잡는다.
+
 입력 artifact의 `baseCommitSha`가 현재 `HEAD`와 다르거나 target path가 repo-relative path가 아니면 작업형 하네스는 실패한다.
 절대 경로, `..`, 입력 artifact 밖 target은 허용하지 않는다.
 

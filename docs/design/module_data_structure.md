@@ -1,6 +1,6 @@
 # Module Data Structure
 
-> 마지막 업데이트: 2026-05-01
+> 마지막 업데이트: 2026-05-02
 > 상태: active
 > doc_id: design.module-data-structure
 > role: ssot
@@ -32,7 +32,8 @@
 ├─────────────────────────────────────────────────────┤
 │  ScriptableObject Data (Infrastructure)             │
 │  - UnitFrameData, FirepowerModuleData,               │
-│    MobilityModuleData, PassiveTraitData              │
+│    MobilityModuleData, PassiveTraitData,             │
+│    UnitStatTuningData                                │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -73,10 +74,9 @@ namespace Features.Unit.Infrastructure
         [Header("Assembly")]
         [SerializeField] private AssemblyForm assemblyForm; // 상단(무장) 호환 형태
 
-        [Header("Base Stats (프레임 기본 스탯)")]
+        [Header("Base Stats")]
         [SerializeField] private float baseHp;         // 300
-        [SerializeField] private float baseMoveRange;  // 4.0m
-        [SerializeField] private float baseAttackSpeed; // 1.0 (초당)
+        [SerializeField] private float defense;        // 고정 피해 감소값
 
         [Header("Passive Trait")]
         [SerializeField] private PassiveTraitData passiveTrait; // 고유 특성 (고정)
@@ -88,8 +88,7 @@ namespace Features.Unit.Infrastructure
         public string DisplayName => displayName;
         public AssemblyForm AssemblyForm => assemblyForm;
         public float BaseHp => baseHp;
-        public float BaseMoveRange => baseMoveRange;
-        public float BaseAttackSpeed => baseAttackSpeed;
+        public float Defense => defense;
         public PassiveTraitData PassiveTrait => passiveTrait;
         public GameObject UnitPrefab => unitPrefab;
     }
@@ -153,12 +152,9 @@ namespace Features.Unit.Infrastructure
         [Header("Assembly")]
         [SerializeField] private MobilitySurface mobilitySurface; // 지상/공중 태그
 
-        [Header("Defense Stats")]
-        [SerializeField] private float hpBonus;        // HP 보정값 (+500)
-        [SerializeField] private float moveRange;      // 이동범위 (m) (절대값)
-
-        [Header("Anchor")]
-        [SerializeField] private float anchorRange;    // 앵커 반경 (m) (전투 중 교전 가능 범위)
+        [Header("Movement Stats")]
+        [SerializeField] private float moveSpeed;      // 이동속도
+        [SerializeField] private float moveRange;      // 이동범위 및 앵커 반경
 
         [Header("Description")]
         [SerializeField, TextArea] private string description;
@@ -166,14 +162,45 @@ namespace Features.Unit.Infrastructure
         public string ModuleId => moduleId;
         public string DisplayName => displayName;
         public MobilitySurface MobilitySurface => mobilitySurface;
-        public float HpBonus => hpBonus;
+        public float MoveSpeed => moveSpeed;
         public float MoveRange => moveRange;
-        public float AnchorRange => anchorRange;
     }
 }
 ```
 
-### 4. PassiveTraitData (중단 - 고유 특성)
+### 4. UnitStatTuningData (스탯 비용/그래프 튜닝)
+
+튜닝은 CSV 레이어 없이 ScriptableObject를 직접 수정한다. 런타임은 이 SO만 소비한다.
+
+```csharp
+namespace Features.Unit.Infrastructure
+{
+    [CreateAssetMenu(fileName = "UnitStatTuning", menuName = "Unit/UnitStatTuning")]
+    public sealed class UnitStatTuningData : ScriptableObject
+    {
+        [Header("Energy Cost Weights")]
+        [SerializeField] private float hpEnergyWeight = 0.02f;
+        [SerializeField] private float defenseEnergyWeight = 2.0f;
+        [SerializeField] private float attackDamageEnergyWeight = 0.5f;
+        [SerializeField] private float attackSpeedEnergyWeight = 3.0f;
+        [SerializeField] private float rangeEnergyWeight = 2.0f;
+        [SerializeField] private float moveSpeedEnergyWeight = 3.0f;
+        [SerializeField] private float moveRangeEnergyWeight = 1.5f;
+        [SerializeField] private float dispersionPenaltyFactor = 0.3f;
+
+        [Header("Radar Normalization Max")]
+        [SerializeField] private float attackDamageRadarMax;
+        [SerializeField] private float attackSpeedRadarMax;
+        [SerializeField] private float rangeRadarMax;
+        [SerializeField] private float hpRadarMax;
+        [SerializeField] private float defenseRadarMax;
+        [SerializeField] private float moveSpeedRadarMax;
+        [SerializeField] private float moveRangeRadarMax;
+    }
+}
+```
+
+### 5. PassiveTraitData (프레임 고정 특성)
 
 ```csharp
 namespace Features.Unit.Infrastructure
@@ -222,37 +249,19 @@ namespace Features.Unit.Domain
     public sealed class Unit
     {
         public DomainEntityId Id { get; }
-        public UnitFrameData FrameData { get; }
-        public FirepowerModuleData FirepowerModule { get; }
-        public MobilityModuleData MobilityModule { get; }
-
         // 조합 결과 스탯 (계산된 값)
         public float FinalHp { get; }
+        public float FinalDefense { get; }
         public float FinalAttackDamage { get; }
         public float FinalAttackSpeed { get; }
         public float FinalRange { get; }
+        public float FinalMoveSpeed { get; }
         public float FinalMoveRange { get; }
+        public float FinalAnchorRange { get; }
+        public int FrameEnergyCost { get; }
+        public int FirepowerEnergyCost { get; }
+        public int MobilityEnergyCost { get; }
         public int SummonCost { get; }
-
-        public Unit(
-            DomainEntityId id,
-            UnitFrameData frame,
-            FirepowerModuleData firepower,
-            MobilityModuleData mobility)
-        {
-            Id = id;
-            FrameData = frame;
-            FirepowerModule = firepower;
-            MobilityModule = mobility;
-
-            // 조합 결과 계산
-            FinalHp = frame.BaseHp + mobility.HpBonus;
-            FinalAttackDamage = firepower.AttackDamage;
-            FinalAttackSpeed = firepower.AttackSpeed * frame.BaseAttackSpeed;
-            FinalRange = firepower.Range;
-            FinalMoveRange = mobility.MoveRange;
-            SummonCost = CostCalculator.Calculate(this);
-        }
     }
 }
 ```
@@ -306,11 +315,14 @@ namespace Features.Unit.Domain
         {
             return new ComposedStats
             {
-                Hp = frame.BaseHp + mobility.HpBonus,
+                Hp = frame.BaseHp,
+                Defense = frame.Defense,
                 AttackDamage = firepower.AttackDamage,
-                AttackSpeed = firepower.AttackSpeed * frame.BaseAttackSpeed,
+                AttackSpeed = firepower.AttackSpeed,
                 Range = firepower.Range,
+                MoveSpeed = mobility.MoveSpeed,
                 MoveRange = mobility.MoveRange,
+                AnchorRange = mobility.MoveRange,
                 PassiveTraitCost = frame.PassiveTrait.CostBonus
             };
         }
@@ -319,10 +331,13 @@ namespace Features.Unit.Domain
     public struct ComposedStats
     {
         public float Hp;
+        public float Defense;
         public float AttackDamage;
         public float AttackSpeed;
         public float Range;
+        public float MoveSpeed;
         public float MoveRange;
+        public float AnchorRange;
         public int PassiveTraitCost;
     }
 }

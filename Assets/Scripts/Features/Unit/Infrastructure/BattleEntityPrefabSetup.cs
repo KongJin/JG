@@ -102,10 +102,11 @@ namespace Features.Unit.Infrastructure
                 return;
             }
 
-            var battleEntityId = BattleEntityNetworkId.Build(
-                unitSpec,
-                photonView,
-                gameObject.GetInstanceID());
+            if (!BattleEntityNetworkId.TryBuild(unitSpec, photonView, out var battleEntityId))
+            {
+                Debug.LogError("[BattleEntityPrefabSetup] BattleEntity requires a PhotonView with an allocated ViewID before initialization.", this);
+                return;
+            }
             BattleEntityId = battleEntityId;
 
             // BattleEntity 도메인 생성 (실제 UnitSpec 사용, late-join 시 초기HP 보정)

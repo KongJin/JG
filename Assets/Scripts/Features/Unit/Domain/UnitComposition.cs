@@ -17,35 +17,35 @@ namespace Features.Unit.Domain
         public readonly struct CompositionInput
         {
             public float BaseHp { get; }
-            public float BaseAttackSpeed { get; }
+            public float BaseDefense { get; }
             public float FirepowerDamage { get; }
             public float FirepowerAttackSpeed { get; }
             public float FirepowerRange { get; }
-            public float MobilityHpBonus { get; }
+            public float MobilityMoveSpeed { get; }
             public float MobilityMoveRange { get; }
-            public float MobilityAnchorRange { get; }  // 앵커 반경 추가
             public int PassiveTraitCostBonus { get; }
+            public CostCalculator.StatCostTuning CostTuning { get; }
 
             public CompositionInput(
                 float baseHp,
-                float baseAttackSpeed,
+                float baseDefense,
                 float firepowerDamage,
                 float firepowerAttackSpeed,
                 float firepowerRange,
-                float mobilityHpBonus,
+                float mobilityMoveSpeed,
                 float mobilityMoveRange,
-                float mobilityAnchorRange,
-                int passiveTraitCostBonus)
+                int passiveTraitCostBonus,
+                CostCalculator.StatCostTuning costTuning = default)
             {
                 BaseHp = baseHp;
-                BaseAttackSpeed = baseAttackSpeed;
+                BaseDefense = baseDefense;
                 FirepowerDamage = firepowerDamage;
                 FirepowerAttackSpeed = firepowerAttackSpeed;
                 FirepowerRange = firepowerRange;
-                MobilityHpBonus = mobilityHpBonus;
+                MobilityMoveSpeed = mobilityMoveSpeed;
                 MobilityMoveRange = mobilityMoveRange;
-                MobilityAnchorRange = mobilityAnchorRange;
                 PassiveTraitCostBonus = passiveTraitCostBonus;
+                CostTuning = costTuning;
             }
         }
 
@@ -58,12 +58,19 @@ namespace Features.Unit.Domain
             public string FirepowerModuleId { get; }
             public string MobilityModuleId { get; }
             public float Hp { get; }
+            public float Defense { get; }
             public float AttackDamage { get; }
             public float AttackSpeed { get; }
             public float Range { get; }
+            public float MoveSpeed { get; }
             public float MoveRange { get; }
-            public float AnchorRange { get; }  // 앵커 반경 추가
+            public float AnchorRange => MoveRange;
             public int PassiveTraitCostBonus { get; }
+            public int FrameEnergyCost { get; }
+            public int FirepowerEnergyCost { get; }
+            public int MobilityEnergyCost { get; }
+            public int SummonCost => FrameEnergyCost + FirepowerEnergyCost + MobilityEnergyCost;
+            public CostCalculator.StatCostTuning CostTuning { get; }
             public UnitRole Role { get; }
 
             public ComposedStats(
@@ -71,24 +78,34 @@ namespace Features.Unit.Domain
                 string firepowerModuleId,
                 string mobilityModuleId,
                 float hp,
+                float defense,
                 float attackDamage,
                 float attackSpeed,
                 float range,
+                float moveSpeed,
                 float moveRange,
-                float anchorRange,
                 int passiveTraitCostBonus,
+                int frameEnergyCost,
+                int firepowerEnergyCost,
+                int mobilityEnergyCost,
+                CostCalculator.StatCostTuning costTuning,
                 UnitRole role)
             {
                 FrameId = frameId;
                 FirepowerModuleId = firepowerModuleId;
                 MobilityModuleId = mobilityModuleId;
                 Hp = hp;
+                Defense = defense;
                 AttackDamage = attackDamage;
                 AttackSpeed = attackSpeed;
                 Range = range;
+                MoveSpeed = moveSpeed;
                 MoveRange = moveRange;
-                AnchorRange = anchorRange;
                 PassiveTraitCostBonus = passiveTraitCostBonus;
+                FrameEnergyCost = frameEnergyCost;
+                FirepowerEnergyCost = firepowerEnergyCost;
+                MobilityEnergyCost = mobilityEnergyCost;
+                CostTuning = costTuning;
                 Role = role;
             }
 
@@ -104,12 +121,17 @@ namespace Features.Unit.Domain
                 string.Empty,  // passiveTraitId - 프레임에서 조회
                 PassiveTraitCostBonus,
                 Hp,
+                Defense,
                 AttackDamage,
                 AttackSpeed,
                 Range,
+                MoveSpeed,
                 MoveRange,
                 AnchorRange,
-                CostCalculator.Calculate(Hp, AttackDamage, AttackSpeed, Range, MoveRange, PassiveTraitCostBonus));
+                FrameEnergyCost,
+                FirepowerEnergyCost,
+                MobilityEnergyCost,
+                SummonCost);
         }
 
         /// <summary>
@@ -150,27 +172,42 @@ namespace Features.Unit.Domain
             string mobilityModuleId,
             CompositionInput input)
         {
-            float hp = input.BaseHp + input.MobilityHpBonus;
+            float hp = input.BaseHp;
+            float defense = input.BaseDefense;
             float attackDamage = input.FirepowerDamage;
-            // 공격속도: 모듈 배율 × 프레임 기본값
-            float attackSpeed = input.FirepowerAttackSpeed * input.BaseAttackSpeed;
+            float attackSpeed = input.FirepowerAttackSpeed;
             float range = input.FirepowerRange;
+            float moveSpeed = input.MobilityMoveSpeed;
             float moveRange = input.MobilityMoveRange;
-            float anchorRange = input.MobilityAnchorRange;
 
-            UnitRole role = ClassifyRole(hp, attackDamage, attackSpeed, range, moveRange);
+            var costs = CostCalculator.CalculateParts(
+                hp,
+                defense,
+                input.PassiveTraitCostBonus,
+                attackDamage,
+                attackSpeed,
+                range,
+                moveSpeed,
+                moveRange,
+                input.CostTuning);
+            UnitRole role = ClassifyRole(hp, defense, attackDamage, attackSpeed, range, moveRange);
 
             return new ComposedStats(
                 frameId,
                 firepowerModuleId,
                 mobilityModuleId,
                 hp,
+                defense,
                 attackDamage,
                 attackSpeed,
                 range,
+                moveSpeed,
                 moveRange,
-                anchorRange,
                 input.PassiveTraitCostBonus,
+                costs.Frame,
+                costs.Firepower,
+                costs.Mobility,
+                input.CostTuning,
                 role);
         }
 
@@ -179,6 +216,7 @@ namespace Features.Unit.Domain
         /// </summary>
         private static UnitRole ClassifyRole(
             float hp,
+            float defense,
             float attackDamage,
             float attackSpeed,
             float range,
@@ -187,7 +225,7 @@ namespace Features.Unit.Domain
             float dps = attackDamage * attackSpeed;
 
             // 탱커: 좁은 이동범위, 짧은 사거리, 높은 HP
-            if (moveRange <= 4f && range <= 3f && hp >= 800f)
+            if (moveRange <= 4f && range <= 3f && (hp >= 800f || defense >= 6f))
                 return UnitRole.Tanker;
 
             // 근접딜러: 넓은 이동범위, 짧은 사거리, 높은 DPS

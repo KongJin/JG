@@ -1,6 +1,6 @@
 # Technical Debt Recurrence Prevention Plan
 
-> 마지막 업데이트: 2026-05-01
+> 마지막 업데이트: 2026-05-02
 > 상태: reference
 > doc_id: plans.technical-debt-recurrence-prevention
 > role: plan
@@ -14,7 +14,7 @@
 ## Baseline
 
 - `DefaultPlayerSpecProvider`, non-master `EnemySetup`, `SoundPlayerRuntimeHostFactory`의 runtime `Resources.Load` dependency repair는 serialized/scene-owned contract로 옮겼다.
-- `SoundPlayer` AudioSource/template residual은 WebGL audio product smoke가 아니라 runtime contract debt로 추적한다.
+- `SoundPlayer` AudioSource/template residual은 scene-owned BGM/SFX AudioSource contract로 전환했고, WebGL audio product smoke와 분리해 추적한다.
 - `PlayerHealthHudView`, `EnemyHealthBar`, `DamageNumber`는 `Assets/Prefabs/RuntimeFeedback/` compatibility surface로 분리했다.
 - Runtime lookup / dynamic repair 위반은 `tools/validate-rules.ps1` 기준 0이어야 한다.
 - 삭제 후보 정리는 code reference, Unity serialized GUID reference, test private reflection, registered entrypoint를 함께 확인해야 한다.
@@ -39,7 +39,7 @@
 | scene/prefab reference 누락을 runtime `AddComponent`나 lookup으로 복구 | High | scene/prefab contract 또는 setup owner에 serialized reference로 연결 |
 | single-client smoke를 multiplayer success로 확장 | High | Phase 5는 2-client evidence 전까지 blocked/residual 유지 |
 | file lock 우회 과정에서 제거된 코드가 padding 주석으로 장기 잔류 | Medium | guardrail test와 `Padding retained`, `Removed procedural` 검색을 closeout checklist에 포함하고, 잠금 해제 후 별도 cleanup pass로 정상 diff를 만든다 |
-| 임시 fallback/default가 contract 누락을 숨기는 runtime repair로 확장 | High | 새 fallback은 이유, owner, 제거 조건을 코드 근처 또는 테스트명에서 드러내고, fallback guardrail test와 `fallback|Fallback` 검색 결과를 리뷰한다 |
+| 임시 fallback/default가 contract 누락을 숨기는 runtime repair로 확장 | High | 새 fallback은 fail-closed 분류, 이유, owner, 제거 조건을 코드 근처 또는 테스트명에서 드러내고, fallback guardrail test와 `fallback|Fallback` 검색 결과를 리뷰한다 |
 | UI Toolkit preview를 runtime replacement success로 확장 | Medium | candidate preview, runtime visibility, WebGL/product acceptance를 분리 |
 | generated asset inventory를 product/balance approval로 오해 | Medium | Nova generated assets와 gameplay/content 승격 판단을 content owner lane으로 분리 |
 | unused code가 feature cleanup 밖에 남아 다음 리팩터의 전제처럼 보임 | Medium | dead-code cleanup closeout에서 code reference, 등록 entrypoint, 테스트 리플렉션, Unity serialized GUID를 한 번에 닫는다 |
@@ -75,6 +75,8 @@ Prevention:
 
 - 새 fallback은 세 가지 중 하나로만 허용한다: domain default, feature-owned adapter/helper, serialized/asset contract.
 - production controller, setup, page controller는 fallback owner가 되지 않는다.
+- required contract가 없거나 `pending/review/unsure` 상태이면 normal preview/gameplay/promotion으로 성공 처리하지 않는다. explicit unavailable state, validation failure, `blocked`, 또는 `mismatch`로 드러낸다.
+- metadata promotion에서 `direction-only`, generated bounds, unreviewed profile을 `auto_ok`처럼 취급하지 않는다.
 - fallback이 transport/protocol 호환 목적이면 key/default parsing을 helper로 빼고 direct test를 둔다.
 - fallback이 visual/prefab 목적이면 catalog/contract completeness test를 우선하고, preview 실패를 조용한 success로 보고하지 않는다.
 - fallback이 combat/stat 목적이면 도메인 default인지 runtime contract repair인지 테스트명에서 구분한다.
@@ -82,9 +84,10 @@ Prevention:
 Review check:
 
 - `rg -n "fallback|Fallback" Assets/Scripts/Features Assets/Editor/DirectTests`
+- `rg -n "pending|review|unsure|auto_ok|direction_only|direction-only" Assets/Scripts/Features Assets/Editor/DirectTests Assets/Data/Garage/NovaGenerated`
 - `ArchitectureGuardrailReflectionTests.ProductionFallbackReferences_AreExplicitlyReviewed`
 - 검색 결과마다 `domain default`, `compat adapter`, `test-only`, `residual` 중 하나로 분류한다.
-- 분류가 안 되는 production fallback은 별도 cleanup 후보로 남긴다.
+- 분류가 안 되는 production fallback이나 unreviewed success promotion은 별도 cleanup 후보로 남긴다.
 
 ## Issue 6 Prevention: Dead-Code Retention
 
@@ -151,16 +154,16 @@ Closeout check:
 
 - GameScene direct EditMode execution은 GameScene actual-flow active owner가 소유하고, Phase 5 2-client smoke는 `plans.progress` multiplayer residual이 소유한다.
 - Account/Garage/WebGL product acceptance는 `plans.progress` WebGL account residual과 WebGL smoke checklist 기준으로 추적한다.
-- `SoundPlayer` AudioSource/template residual은 runtime contract guard 기준으로 보되, 실행이 필요하면 새 runtime owner pass 또는 해당 feature owner로 연다.
-- `WaveSetup.TryGetFirstEnemyData`와 `SummonPhotonAdapter`의 `fallbackInstanceId`는 production fallback residual이다. behavior removal은 별도 runtime contract cleanup으로 연다.
+- `SoundPlayer` AudioSource/template residual은 scene-owned AudioSource contract로 전환했고, legacy `initialPoolSize` serialized contract는 제거했다. WebGL 오디오 product smoke는 별도 acceptance evidence가 필요하다.
+- `WaveSetup.TryGetFirstEnemyData`와 `SummonPhotonAdapter`의 `fallbackInstanceId` production fallback residual은 제거됐다. 새 fallback은 guardrail allowlist 없이 실패해야 한다.
 - `fallback|Fallback` 검색 결과는 review gate다. guardrail allowlist에 없는 production fallback은 다음 cleanup 후보로 승격한다.
-- `Assets/Editor/UnityMcp/Handlers/ImprovedUiHandlers.cs`의 stale `UiHandlers.cs` 주석은 Unity/IDE source lock으로 남은 locked residual이다. 잠금 해제 후 cleanup-only pass로 제거한다.
+- `Assets/Editor/UnityMcp/Handlers/ImprovedUiHandlers.cs`의 stale `UiHandlers.cs` 주석은 제거됐다. `WaveSetup.cs`와 `ImprovedUiHandlers.cs`에 Unity/IDE source lock 때문에 남은 fixed-length blank padding은 잠금 해제 후 cleanup-only pass로 정규화한다.
 
 owner impact:
 
 - primary: `plans.technical-debt-recurrence-prevention`
 - secondary: `Assets/Editor/Tests/ArchitectureGuardrailReflectionTests.cs`, narrow production naming cleanup, dead-code cleanup files, `artifacts/rules/issue-recurrence-closeout.json`
-- out-of-scope: `WaveSetup`/`SummonPhotonAdapter` behavior removal, Unity scene/prefab mutation beyond deleted GUID checks, `plans.progress` 현재 우선순위 변경
+- out-of-scope: WebGL/2-client/manual audition product acceptance evidence, `plans.progress` 현재 우선순위 변경
 
 doc lifecycle checked:
 

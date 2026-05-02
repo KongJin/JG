@@ -28,6 +28,7 @@ using Shared.Runtime.Pooling;
 using Shared.Runtime.Sound;
 using Shared.Ui;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Features.Player
 {
@@ -40,7 +41,8 @@ namespace Features.Player
         [Required, SerializeField] private CameraFollower _cameraFollower;
         [SerializeField] private GameObject _healthHudPrefab;
         [Required, SerializeField] private PlayerSpecConfig _playerSpecConfig;
-        [Required, SerializeField] private ProjectileSpawner _projectileSpawner;
+        [FormerlySerializedAs("_projectileSpawner")]
+        [Required, SerializeField] private ProjectileSetup _projectileSetup;
         [Required, SerializeField] private CombatSetup _combatSetup;
         [Required, SerializeField] private ZoneSetup _zoneSetup;
         [Required, SerializeField] private SceneErrorPresenter _sceneErrorPresenter;
@@ -207,11 +209,11 @@ namespace Features.Player
                 _localPlayerSetup.MaxEnergy,
                 _localPlayerSetup.EnergyAdapterInstance);
 
-            // SoundPlayer is usually carried from LobbyScene; direct BattleScene runs create a runtime host.
+            // SoundPlayer is usually carried from LobbyScene; direct BattleScene runs use the scene-owned host.
             _audioBootstrapFlow.InitializeOrReport(_eventBus, _localPlayerSetup.PlayerId.Value);
 
-            // ProjectileSpawner, ZoneSetup은 EventBus만 필요
-            _projectileSpawner.Initialize(_eventBus, _eventBus);
+            // ProjectileSetup, ZoneSetup은 EventBus만 필요
+            _projectileSetup.Initialize(_eventBus, _eventBus);
             _zoneSetup.Initialize(_eventBus);
 
             // 원격 플레이어 wiring도 선택 전에 완료 — Status RPC 유실 방지

@@ -1,5 +1,6 @@
 using Features.Garage.Infrastructure;
 using Features.Garage.Presentation;
+using Features.Unit.Domain;
 using Features.Unit.Infrastructure;
 
 namespace Features.Garage
@@ -13,18 +14,27 @@ namespace Features.Garage
         {
             var novaMetadata = BuildNovaMetadataByPartId(novaPartVisualCatalog);
             var novaAlignment = BuildNovaAlignmentByPartId(novaPartAlignmentCatalog);
+            var costTuning = unitCatalog.StatTuning != null
+                ? unitCatalog.StatTuning.ToCostTuning()
+                : CostCalculator.StatCostTuning.Default;
             var frames = new System.Collections.Generic.List<GaragePanelCatalog.FrameOption>();
             for (int i = 0; i < unitCatalog.UnitFrames.Count; i++)
             {
                 var frame = unitCatalog.UnitFrames[i];
                 novaMetadata.TryGetValue(frame.FrameId, out var metadata);
                 novaAlignment.TryGetValue(frame.FrameId, out var alignment);
+                int energyCost = CostCalculator.CalculatePart(
+                    costTuning.DispersionPenaltyFactor,
+                    frame.PassiveTrait != null ? frame.PassiveTrait.CostBonus : 0,
+                    frame.BaseHp * costTuning.HpWeight,
+                    frame.Defense * costTuning.DefenseWeight);
                 frames.Add(new GaragePanelCatalog.FrameOption
                 {
                     Id = frame.FrameId,
                     DisplayName = frame.DisplayName,
                     BaseHp = frame.BaseHp,
-                    BaseAttackSpeed = frame.BaseAttackSpeed,
+                    Defense = frame.Defense,
+                    EnergyCost = energyCost,
                     AssemblyForm = frame.AssemblyForm,
                     PreviewPrefab = ResolvePreviewPrefab(frame.PreviewPrefab, metadata),
                     AssemblyPrefab = ResolveAssemblyPrefab(metadata),
@@ -41,6 +51,12 @@ namespace Features.Garage
                 var module = unitCatalog.FirepowerModules[i];
                 novaMetadata.TryGetValue(module.ModuleId, out var metadata);
                 novaAlignment.TryGetValue(module.ModuleId, out var alignment);
+                int energyCost = CostCalculator.CalculatePart(
+                    costTuning.DispersionPenaltyFactor,
+                    fixedBonus: 0,
+                    module.AttackDamage * costTuning.AttackDamageWeight,
+                    module.AttackSpeed * costTuning.AttackSpeedWeight,
+                    module.Range * costTuning.RangeWeight);
                 firepower.Add(new GaragePanelCatalog.FirepowerOption
                 {
                     Id = module.ModuleId,
@@ -48,6 +64,7 @@ namespace Features.Garage
                     AttackDamage = module.AttackDamage,
                     AttackSpeed = module.AttackSpeed,
                     Range = module.Range,
+                    EnergyCost = energyCost,
                     AssemblyForm = module.AssemblyForm,
                     PreviewPrefab = ResolvePreviewPrefab(module.PreviewPrefab, metadata),
                     AssemblyPrefab = ResolveAssemblyPrefab(metadata),
@@ -64,13 +81,18 @@ namespace Features.Garage
                 var module = unitCatalog.MobilityModules[i];
                 novaMetadata.TryGetValue(module.ModuleId, out var metadata);
                 novaAlignment.TryGetValue(module.ModuleId, out var alignment);
+                int energyCost = CostCalculator.CalculatePart(
+                    costTuning.DispersionPenaltyFactor,
+                    fixedBonus: 0,
+                    module.MoveSpeed * costTuning.MoveSpeedWeight,
+                    module.MoveRange * costTuning.MoveRangeWeight);
                 mobility.Add(new GaragePanelCatalog.MobilityOption
                 {
                     Id = module.ModuleId,
                     DisplayName = module.DisplayName,
-                    HpBonus = module.HpBonus,
+                    MoveSpeed = module.MoveSpeed,
                     MoveRange = module.MoveRange,
-                    AnchorRange = module.AnchorRange,
+                    EnergyCost = energyCost,
                     MobilitySurface = module.MobilitySurface,
                     PreviewPrefab = ResolvePreviewPrefab(module.PreviewPrefab, metadata),
                     AssemblyPrefab = ResolveAssemblyPrefab(metadata),
@@ -83,7 +105,24 @@ namespace Features.Garage
                 });
             }
 
-            return new GaragePanelCatalog(frames, firepower, mobility);
+            return new GaragePanelCatalog(frames, firepower, mobility, BuildRadarScale(unitCatalog.StatTuning));
+        }
+
+        private static GaragePanelCatalog.StatRadarScale BuildRadarScale(UnitStatTuningData statTuning)
+        {
+            if (statTuning == null)
+                return new GaragePanelCatalog.StatRadarScale();
+
+            return new GaragePanelCatalog.StatRadarScale
+            {
+                AttackDamageMax = statTuning.AttackDamageRadarMax,
+                AttackSpeedMax = statTuning.AttackSpeedRadarMax,
+                RangeMax = statTuning.RangeRadarMax,
+                HpMax = statTuning.HpRadarMax,
+                DefenseMax = statTuning.DefenseRadarMax,
+                MoveSpeedMax = statTuning.MoveSpeedRadarMax,
+                MoveRangeMax = statTuning.MoveRangeRadarMax
+            };
         }
 
         private static System.Collections.Generic.Dictionary<string, NovaPartVisualCatalog.Entry> BuildNovaMetadataByPartId(
@@ -177,7 +216,12 @@ namespace Features.Garage
 
             return new GaragePanelCatalog.PartAlignment
             {
+                NormalizedScale = entry.NormalizedScale,
                 PivotOffset = entry.PivotOffset,
+                HasVisualBounds = entry.HasVisualBounds,
+                VisualBoundsCenter = entry.VisualBoundsCenter,
+                VisualBoundsMin = entry.VisualBoundsMin,
+                VisualBoundsMax = entry.VisualBoundsMax,
                 SocketOffset = entry.SocketOffset,
                 SocketEuler = entry.SocketEuler,
                 HasGxTreeSocket = entry.HasGxTreeSocket,
@@ -200,7 +244,16 @@ namespace Features.Garage
                 XfiSocketQuality = entry.XfiSocketQuality,
                 XfiSocketName = entry.XfiSocketName,
                 QualityFlag = entry.QualityFlag,
-                ReviewReason = entry.ReviewReason
+                ReviewReason = entry.ReviewReason,
+                AssemblySourceSlotCode = entry.AssemblySourceSlotCode,
+                AssemblySlotMode = entry.AssemblySlotMode,
+                AssemblyAnchorMode = entry.AssemblyAnchorMode,
+                AssemblyLocalOffset = entry.AssemblyLocalOffset,
+                AssemblyLocalEuler = entry.AssemblyLocalEuler,
+                AssemblyLocalScale = entry.AssemblyLocalScale,
+                AssemblyConfidence = entry.AssemblyConfidence,
+                AssemblyEvidencePath = entry.AssemblyEvidencePath,
+                AssemblyReviewResult = entry.AssemblyReviewResult
             };
         }
     }

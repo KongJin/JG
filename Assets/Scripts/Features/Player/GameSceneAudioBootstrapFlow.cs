@@ -15,7 +15,7 @@ namespace Features.Player
 
         public bool TryInitialize(IEventSubscriber eventBus, string playerId, out string errorMessage)
         {
-            if (!_hostFactory.TryGetOrCreate(out var soundPlayer, out errorMessage))
+            if (!_hostFactory.TryGetHostOnly(out var soundPlayer, out errorMessage))
                 return false;
 
             soundPlayer.Initialize(eventBus, playerId);

@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -16,8 +16,7 @@ MonoBehaviour:
   displayName: "\uD0A4\uC704"
   icon: {fileID: 0}
   mobilitySurface: 1
-  hpBonus: 280
+  moveSpeed: 4
   moveRange: 4
-  anchorRange: 4
   description: datan\common\legs5_ko.gx
   previewPrefab: {fileID: 7567358885575076698, guid: 8032fdfa3ed3f1e40a4cfc1fc40a0b0e, type: 3}

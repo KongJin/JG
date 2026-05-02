@@ -233,7 +233,7 @@ namespace Tests.Editor
                 },
                 new[]
                 {
-                    new GaragePanelCatalog.MobilityOption { Id = "mob0", DisplayName = "중장갑", AnchorRange = 3f },
+                    new GaragePanelCatalog.MobilityOption { Id = "mob0", DisplayName = "중장갑", MoveRange = 3f },
                 });
         }
 

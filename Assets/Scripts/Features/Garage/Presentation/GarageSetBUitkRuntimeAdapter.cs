@@ -10,10 +10,11 @@ namespace Features.Garage.Presentation
 {
     public sealed class GarageSetBUitkRuntimeAdapter : MonoBehaviour
     {
-        private const float HeroPreviewHeight = 164f;
-        private const float PartListRowsHeight = 168f;
-        private const float SelectedPartPreviewHeight = 96f;
-        private const float SelectedPartPreviewHostSize = 76f;
+        private const float HeroPreviewHeight = 250f;
+        private const float UnitPreviewHostSize = 178f;
+        private const float PartListRowsHeight = 124f;
+        private const float SelectedPartPreviewHeight = 82f;
+        private const float SelectedPartPreviewHostSize = 62f;
 
         [SerializeField]
         private UIDocument _document;
@@ -42,6 +43,9 @@ namespace Features.Garage.Presentation
         private VisualElement _unitPreviewHost;
         private Label _unitPreviewLabel;
         private Image _unitPreviewImage;
+        private VisualElement _previewPowerFill;
+        private Label _previewPowerLabel;
+        private GarageStatRadarElement _statRadar;
         private Button _saveButton;
         private bool _isHostBound;
         private IReadOnlyList<GarageSlotViewModel> _lastSlots;
@@ -167,6 +171,11 @@ namespace Features.Garage.Presentation
             _unitPreviewLabel = UitkElementUtility.Required<Label>(root, "UnitPreviewLabel");
             _unitPreviewImage = UitkElementUtility.CreateAbsoluteImage();
             _unitPreviewHost.Insert(0, _unitPreviewImage);
+            _previewPowerFill = UitkElementUtility.Required<VisualElement>(root, "PreviewPowerFill");
+            _previewPowerLabel = UitkElementUtility.Required<Label>(root, "PreviewPowerLabel");
+            _statRadar = new GarageStatRadarElement { name = "StatRadarGraph" };
+            _statRadar.AddToClassList("stat-radar-graph");
+            _previewCard.Add(_statRadar);
             _saveButton = UitkElementUtility.Required<Button>(root, "SaveButton");
             _surfaceRoot = root;
 
@@ -237,9 +246,7 @@ namespace Features.Garage.Presentation
                 return;
             }
 
-            bool hasPreview =
-                selectedSlot != null && _partPreviewRenderer.Render(selectedSlot) ||
-                _partPreviewRenderer.RenderPart(_lastPartList);
+            bool hasPreview = _partPreviewRenderer.RenderPart(_lastPartList);
             SetPartPreviewTexture(_partPreviewRenderer.PreviewTexture, hasPreview);
         }
 
@@ -299,19 +306,54 @@ namespace Features.Garage.Presentation
             _commandStatusLabel.text = result?.RosterStatusText ?? "COMMAND_STATUS: 대기";
             _saveButton.text = isSaving ? "저장 중..." : result?.PrimaryActionLabel ?? "저장 및 배치";
             _saveButton.SetEnabled(!isSaving && result?.CanSave == true);
+            _statRadar?.Render(result?.Radar);
+
+            if (_previewPowerLabel != null)
+                _previewPowerLabel.text = result?.Radar != null ? $"EN {result.Radar.SummonCost}" : "EN --";
+            if (_previewPowerFill != null)
+                _previewPowerFill.style.width = Length.Percent(result?.Radar != null ? Mathf.Clamp(result.Radar.SummonCost, 0, 100) : 0);
         }
 
         private void ApplyCompactAssemblyLayout()
         {
-            var content = _workspaceScroll?.contentContainer;
-            if (content == null)
+            if (_workspaceScroll?.contentContainer == null)
                 return;
 
-            MoveAfter(content, _previewCard, _slotStrip);
-            MoveAfter(content, _selectedPartPreviewCard, _partFocusBar);
+            MoveAfter(_previewCard, _slotStrip);
+            MoveAfter(_selectedPartPreviewCard, _partFocusBar);
 
             if (_previewCard != null)
                 _previewCard.style.height = HeroPreviewHeight;
+            if (_unitPreviewHost != null)
+            {
+                _unitPreviewHost.style.alignSelf = Align.FlexStart;
+                _unitPreviewHost.style.marginLeft = 18;
+                _unitPreviewHost.style.marginTop = 16;
+                _unitPreviewHost.style.width = UnitPreviewHostSize;
+                _unitPreviewHost.style.height = UnitPreviewHostSize;
+            }
+            if (_statRadar != null)
+            {
+                _statRadar.style.position = Position.Absolute;
+                _statRadar.style.right = 14;
+                _statRadar.style.top = 46;
+                _statRadar.style.width = 118;
+                _statRadar.style.height = 118;
+                _statRadar.style.backgroundColor = new Color(0.035f, 0.035f, 0.045f, 0.34f);
+                _statRadar.style.borderTopWidth = 1;
+                _statRadar.style.borderRightWidth = 1;
+                _statRadar.style.borderBottomWidth = 1;
+                _statRadar.style.borderLeftWidth = 1;
+                var radarBorder = new Color(0.37f, 0.71f, 1f, 0.24f);
+                _statRadar.style.borderTopColor = radarBorder;
+                _statRadar.style.borderRightColor = radarBorder;
+                _statRadar.style.borderBottomColor = radarBorder;
+                _statRadar.style.borderLeftColor = radarBorder;
+                _statRadar.style.borderTopLeftRadius = 6;
+                _statRadar.style.borderTopRightRadius = 6;
+                _statRadar.style.borderBottomLeftRadius = 6;
+                _statRadar.style.borderBottomRightRadius = 6;
+            }
             if (_selectedPartPreviewCard != null)
                 _selectedPartPreviewCard.style.height = SelectedPartPreviewHeight;
             if (_selectedPartPreviewHost != null)
@@ -323,34 +365,13 @@ namespace Features.Garage.Presentation
                 _partListRowsScroll.style.height = PartListRowsHeight;
         }
 
-        private static void MoveAfter(VisualElement parent, VisualElement element, VisualElement anchor)
+        private static void MoveAfter(VisualElement element, VisualElement anchor)
         {
+            var parent = anchor?.parent;
             if (parent == null || element == null || anchor == null || element.parent != parent || anchor.parent != parent)
                 return;
 
-            parent.Remove(element);
-            int anchorIndex = FindChildIndex(parent, anchor);
-            if (anchorIndex < 0)
-            {
-                parent.Add(element);
-                return;
-            }
-
-            parent.Insert(anchorIndex + 1, element);
-        }
-
-        private static int FindChildIndex(VisualElement parent, VisualElement child)
-        {
-            int index = 0;
-            foreach (var candidate in parent.Children())
-            {
-                if (ReferenceEquals(candidate, child))
-                    return index;
-
-                index++;
-            }
-
-            return -1;
+            element.PlaceInFront(anchor);
         }
     }
 }

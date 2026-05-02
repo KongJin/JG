@@ -149,11 +149,16 @@ namespace Tests.Editor
                 "",
                 0,
                 100f,
+                2f,
                 10f,
                 1f,
                 5f,
+                4f,
                 3f,
                 3f,
+                summonCost,
+                0,
+                0,
                 summonCost);
         }
 

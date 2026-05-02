@@ -1,0 +1,777 @@
+{
+    "generatedAtLocal": "2026-05-02 10:13:04 +09:00",
+    "generatedAtUtc": "2026-05-02 01:13:04 UTC",
+    "outputRoot": "artifacts/unity/garage-humanoid-weapon-current",
+    "samples": [
+        {
+            "sampleId": "hammershock-starship-squadron",
+            "mobilityId": "nova_mob_legs24_sts",
+            "frameId": "nova_frame_body10_skdr",
+            "firepowerId": "nova_fire_arm39_hmsk",
+            "mobilityName": "스타쉽",
+            "frameName": "스쿼드론",
+            "firepowerName": "해머쇼크",
+            "frameAssemblyForm": "Humanoid",
+            "firepowerAssemblyForm": "Humanoid",
+            "firepowerSocketQuality": "xfi_weapon_direction_only",
+            "firepowerSocketName": "weapon.direction",
+            "frameTopSocketY": 0.09201470017433167,
+            "rawFirepowerBottomVsFrameTop": -0.5215152502059937,
+            "success": true,
+            "error": "",
+            "imagePaths": [
+                "artifacts/unity/garage-humanoid-weapon-current/hammershock-starship-squadron-front.png",
+                "artifacts/unity/garage-humanoid-weapon-current/hammershock-starship-squadron-iso.png",
+                "artifacts/unity/garage-humanoid-weapon-current/hammershock-starship-squadron-side.png"
+            ],
+            "rawFrame": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.07457199692726135,
+                    "z": -0.025520000606775285
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.06638293713331223,
+                    "y": -0.08717180043458939,
+                    "z": -0.17301464080810548
+                },
+                "boundsMax": {
+                    "x": 0.06638293713331223,
+                    "y": 0.08717178553342819,
+                    "z": 0.17301368713378907
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -7.450580596923828e-9,
+                    "z": -4.76837158203125e-7
+                },
+                "boundsSize": {
+                    "x": 0.13276587426662446,
+                    "y": 0.17434358596801759,
+                    "z": 0.34602832794189455
+                }
+            },
+            "rawFirepower": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0033415257930755617,
+                    "y": -0.18381935358047486,
+                    "z": -0.08229461312294007
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.3316710889339447,
+                    "y": -0.4295005798339844,
+                    "z": -0.3751850128173828
+                },
+                "boundsMax": {
+                    "x": 0.3316710889339447,
+                    "y": 0.4295005202293396,
+                    "z": 0.3751840591430664
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -2.9802322387695315e-8,
+                    "z": -4.76837158203125e-7
+                },
+                "boundsSize": {
+                    "x": 0.6633421778678894,
+                    "y": 0.859001100063324,
+                    "z": 0.7503690719604492
+                }
+            },
+            "rawMobility": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.5864365100860596,
+                    "z": -0.025520000606775285
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.23169377446174622,
+                    "y": -0.5854076743125916,
+                    "z": -0.6882615089416504
+                },
+                "boundsMax": {
+                    "x": 0.23647472262382508,
+                    "y": 0.030197560787200929,
+                    "z": 0.17280817031860352
+                },
+                "boundsCenter": {
+                    "x": 0.0023904740810394289,
+                    "y": -0.2776050567626953,
+                    "z": -0.25772666931152346
+                },
+                "boundsSize": {
+                    "x": 0.4681684970855713,
+                    "y": 0.6156052350997925,
+                    "z": 0.8610696792602539
+                }
+            },
+            "fittedAssembly": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.03999999910593033,
+                    "z": 6.0
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.3316710591316223,
+                    "y": -0.5074540972709656,
+                    "z": -0.5317224860191345
+                },
+                "boundsMax": {
+                    "x": 0.3316711187362671,
+                    "y": 0.507453978061676,
+                    "z": 0.5317228436470032
+                },
+                "boundsCenter": {
+                    "x": 2.9802322387695315e-8,
+                    "y": -5.960464477539063e-8,
+                    "z": 1.7881393432617188e-7
+                },
+                "boundsSize": {
+                    "x": 0.6633421778678894,
+                    "y": 1.0149080753326417,
+                    "z": 1.0634453296661378
+                }
+            }
+        },
+        {
+            "sampleId": "spitfire-cassowary-kingpin",
+            "mobilityId": "nova_mob_legs21_ksor",
+            "frameId": "nova_frame_body26_kp",
+            "firepowerId": "nova_fire_arm32_sppoo",
+            "mobilityName": "카소와리",
+            "frameName": "킹핀",
+            "firepowerName": "스핏파이어",
+            "frameAssemblyForm": "Humanoid",
+            "firepowerAssemblyForm": "Humanoid",
+            "firepowerSocketQuality": "xfi_weapon_direction_only",
+            "firepowerSocketName": "weapon.direction",
+            "frameTopSocketY": 0.1080842986702919,
+            "rawFirepowerBottomVsFrameTop": -0.345568984746933,
+            "success": true,
+            "error": "",
+            "imagePaths": [
+                "artifacts/unity/garage-humanoid-weapon-current/spitfire-cassowary-kingpin-front.png",
+                "artifacts/unity/garage-humanoid-weapon-current/spitfire-cassowary-kingpin-iso.png",
+                "artifacts/unity/garage-humanoid-weapon-current/spitfire-cassowary-kingpin-side.png"
+            ],
+            "rawFrame": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.08474499732255936,
+                    "z": 0.0022589999716728927
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.0404382087290287,
+                    "y": -0.10239572077989578,
+                    "z": -0.20269107818603517
+                },
+                "boundsMax": {
+                    "x": 0.0404382087290287,
+                    "y": 0.10239555686712265,
+                    "z": 0.20269107818603517
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -8.195638656616211e-8,
+                    "z": 0.0
+                },
+                "boundsSize": {
+                    "x": 0.0808764174580574,
+                    "y": 0.20479127764701844,
+                    "z": 0.4053821563720703
+                }
+            },
+            "rawFirepower": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": -0.0849645733833313,
+                    "y": -0.056786052882671359,
+                    "z": -0.05329252779483795
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.2848692536354065,
+                    "y": -0.23748469352722169,
+                    "z": -0.32712697982788088
+                },
+                "boundsMax": {
+                    "x": 0.2848692536354065,
+                    "y": 0.23748451471328736,
+                    "z": 0.32712697982788088
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -8.940696716308594e-8,
+                    "z": 0.0
+                },
+                "boundsSize": {
+                    "x": 0.569738507270813,
+                    "y": 0.47496920824050906,
+                    "z": 0.6542539596557617
+                }
+            },
+            "rawMobility": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.5377734899520874,
+                    "z": 0.0022589999716728927
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.2600210905075073,
+                    "y": -0.5407597422599793,
+                    "z": -0.5532350540161133
+                },
+                "boundsMax": {
+                    "x": 0.2600210905075073,
+                    "y": -0.030553102493286134,
+                    "z": 0.21314525604248048
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -0.2856564223766327,
+                    "z": -0.1700448989868164
+                },
+                "boundsSize": {
+                    "x": 0.5200421810150147,
+                    "y": 0.5102066397666931,
+                    "z": 0.7663803100585938
+                }
+            },
+            "fittedAssembly": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.03999999910593033,
+                    "z": 6.0
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.2848692834377289,
+                    "y": -0.3891220688819885,
+                    "z": -0.4401806890964508
+                },
+                "boundsMax": {
+                    "x": 0.2848692834377289,
+                    "y": 0.3891221880912781,
+                    "z": 0.44018134474754336
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": 5.960464477539063e-8,
+                    "z": 3.2782554626464846e-7
+                },
+                "boundsSize": {
+                    "x": 0.5697385668754578,
+                    "y": 0.7782442569732666,
+                    "z": 0.8803620338439941
+                }
+            }
+        },
+        {
+            "sampleId": "bazooka-cassowary-kingpin",
+            "mobilityId": "nova_mob_legs21_ksor",
+            "frameId": "nova_frame_body26_kp",
+            "firepowerId": "nova_fire_arm24_bzk",
+            "mobilityName": "카소와리",
+            "frameName": "킹핀",
+            "firepowerName": "바주카",
+            "frameAssemblyForm": "Humanoid",
+            "firepowerAssemblyForm": "Humanoid",
+            "firepowerSocketQuality": "xfi_weapon_direction_only",
+            "firepowerSocketName": "weapon.direction",
+            "frameTopSocketY": 0.1080842986702919,
+            "rawFirepowerBottomVsFrameTop": -0.39113321900367739,
+            "success": true,
+            "error": "",
+            "imagePaths": [
+                "artifacts/unity/garage-humanoid-weapon-current/bazooka-cassowary-kingpin-front.png",
+                "artifacts/unity/garage-humanoid-weapon-current/bazooka-cassowary-kingpin-iso.png",
+                "artifacts/unity/garage-humanoid-weapon-current/bazooka-cassowary-kingpin-side.png"
+            ],
+            "rawFrame": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.08474499732255936,
+                    "z": 0.0022589999716728927
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.0404382087290287,
+                    "y": -0.10239572077989578,
+                    "z": -0.20269107818603517
+                },
+                "boundsMax": {
+                    "x": 0.0404382087290287,
+                    "y": 0.10239555686712265,
+                    "z": 0.20269107818603517
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -8.195638656616211e-8,
+                    "z": 0.0
+                },
+                "boundsSize": {
+                    "x": 0.0808764174580574,
+                    "y": 0.20479127764701844,
+                    "z": 0.4053821563720703
+                }
+            },
+            "rawFirepower": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.02337852120399475,
+                    "y": -0.13997498154640199,
+                    "z": 0.4896228015422821
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.2945604622364044,
+                    "y": -0.28304892778396609,
+                    "z": 0.20269107818603517
+                },
+                "boundsMax": {
+                    "x": 0.2945604622364044,
+                    "y": 0.28304874897003176,
+                    "z": 1.1566896438598633
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -8.940696716308594e-8,
+                    "z": 0.6796903610229492
+                },
+                "boundsSize": {
+                    "x": 0.5891209244728088,
+                    "y": 0.5660976767539978,
+                    "z": 0.9539985656738281
+                }
+            },
+            "rawMobility": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.5377734899520874,
+                    "z": 0.0022589999716728927
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.2600210905075073,
+                    "y": -0.5407597422599793,
+                    "z": -0.5532350540161133
+                },
+                "boundsMax": {
+                    "x": 0.2600210905075073,
+                    "y": -0.030553102493286134,
+                    "z": 0.21314525604248048
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -0.2856564223766327,
+                    "z": -0.1700448989868164
+                },
+                "boundsSize": {
+                    "x": 0.5200421810150147,
+                    "y": 0.5102066397666931,
+                    "z": 0.7663803100585938
+                }
+            },
+            "fittedAssembly": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.03999999910593033,
+                    "z": 6.0
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.2945604920387268,
+                    "y": -0.4119042456150055,
+                    "z": -0.8549624681472778
+                },
+                "boundsMax": {
+                    "x": 0.2945604920387268,
+                    "y": 0.41190430521965029,
+                    "z": 0.8549627065658569
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": 2.9802322387695315e-8,
+                    "z": 1.1920928955078126e-7
+                },
+                "boundsSize": {
+                    "x": 0.5891209840774536,
+                    "y": 0.8238085508346558,
+                    "z": 1.7099251747131348
+                }
+            }
+        },
+        {
+            "sampleId": "thunderbolt-cassowary-kingpin",
+            "mobilityId": "nova_mob_legs21_ksor",
+            "frameId": "nova_frame_body26_kp",
+            "firepowerId": "nova_fire_arm29_sdbt",
+            "mobilityName": "카소와리",
+            "frameName": "킹핀",
+            "firepowerName": "선더볼트",
+            "frameAssemblyForm": "Humanoid",
+            "firepowerAssemblyForm": "Humanoid",
+            "firepowerSocketQuality": "xfi_weapon_direction_only",
+            "firepowerSocketName": "weapon.direction",
+            "frameTopSocketY": 0.1080842986702919,
+            "rawFirepowerBottomVsFrameTop": -0.2842523753643036,
+            "success": true,
+            "error": "",
+            "imagePaths": [
+                "artifacts/unity/garage-humanoid-weapon-current/thunderbolt-cassowary-kingpin-front.png",
+                "artifacts/unity/garage-humanoid-weapon-current/thunderbolt-cassowary-kingpin-iso.png",
+                "artifacts/unity/garage-humanoid-weapon-current/thunderbolt-cassowary-kingpin-side.png"
+            ],
+            "rawFrame": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.08474499732255936,
+                    "z": 0.0022589999716728927
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.0404382087290287,
+                    "y": -0.10239572077989578,
+                    "z": -0.20269107818603517
+                },
+                "boundsMax": {
+                    "x": 0.0404382087290287,
+                    "y": 0.10239555686712265,
+                    "z": 0.20269107818603517
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -8.195638656616211e-8,
+                    "z": 0.0
+                },
+                "boundsSize": {
+                    "x": 0.0808764174580574,
+                    "y": 0.20479127764701844,
+                    "z": 0.4053821563720703
+                }
+            },
+            "rawFirepower": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": -0.002980530261993408,
+                    "y": -0.15182092785835267,
+                    "z": 0.46276161074638369
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.3269556760787964,
+                    "y": -0.17616808414459229,
+                    "z": 0.20269107818603517
+                },
+                "boundsMax": {
+                    "x": 0.3269556760787964,
+                    "y": 0.17616796493530274,
+                    "z": 1.4425325393676758
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -5.960464477539063e-8,
+                    "z": 0.8226118087768555
+                },
+                "boundsSize": {
+                    "x": 0.6539113521575928,
+                    "y": 0.352336049079895,
+                    "z": 1.2398414611816407
+                }
+            },
+            "rawMobility": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.5377734899520874,
+                    "z": 0.0022589999716728927
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.2600210905075073,
+                    "y": -0.5407597422599793,
+                    "z": -0.5532350540161133
+                },
+                "boundsMax": {
+                    "x": 0.2600210905075073,
+                    "y": -0.030553102493286134,
+                    "z": 0.21314525604248048
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -0.2856564223766327,
+                    "z": -0.1700448989868164
+                },
+                "boundsSize": {
+                    "x": 0.5200421810150147,
+                    "y": 0.5102066397666931,
+                    "z": 0.7663803100585938
+                }
+            },
+            "fittedAssembly": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.03999999910593033,
+                    "z": 6.0
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.326955646276474,
+                    "y": -0.3584637939929962,
+                    "z": -0.9978835582733154
+                },
+                "boundsMax": {
+                    "x": 0.326955646276474,
+                    "y": 0.358463853597641,
+                    "z": 0.9978842735290527
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": 2.9802322387695315e-8,
+                    "z": 3.5762786865234377e-7
+                },
+                "boundsSize": {
+                    "x": 0.653911292552948,
+                    "y": 0.7169276475906372,
+                    "z": 1.9957678318023682
+                }
+            }
+        },
+        {
+            "sampleId": "bazooka-s-cassowary-kingpin",
+            "mobilityId": "nova_mob_legs21_ksor",
+            "frameId": "nova_frame_body26_kp",
+            "firepowerId": "nova_fire_s_arm52_bzk",
+            "mobilityName": "카소와리",
+            "frameName": "킹핀",
+            "firepowerName": "바주카S",
+            "frameAssemblyForm": "Humanoid",
+            "firepowerAssemblyForm": "Humanoid",
+            "firepowerSocketQuality": "xfi_weapon_direction_only",
+            "firepowerSocketName": "weapon.direction",
+            "frameTopSocketY": 0.1080842986702919,
+            "rawFirepowerBottomVsFrameTop": -0.39113321900367739,
+            "success": true,
+            "error": "",
+            "imagePaths": [
+                "artifacts/unity/garage-humanoid-weapon-current/bazooka-s-cassowary-kingpin-front.png",
+                "artifacts/unity/garage-humanoid-weapon-current/bazooka-s-cassowary-kingpin-iso.png",
+                "artifacts/unity/garage-humanoid-weapon-current/bazooka-s-cassowary-kingpin-side.png"
+            ],
+            "rawFrame": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.08474499732255936,
+                    "z": 0.0022589999716728927
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.0404382087290287,
+                    "y": -0.10239572077989578,
+                    "z": -0.20269107818603517
+                },
+                "boundsMax": {
+                    "x": 0.0404382087290287,
+                    "y": 0.10239555686712265,
+                    "z": 0.20269107818603517
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -8.195638656616211e-8,
+                    "z": 0.0
+                },
+                "boundsSize": {
+                    "x": 0.0808764174580574,
+                    "y": 0.20479127764701844,
+                    "z": 0.4053821563720703
+                }
+            },
+            "rawFirepower": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.02337852120399475,
+                    "y": -0.13997498154640199,
+                    "z": 0.4896228015422821
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.2945604622364044,
+                    "y": -0.28304892778396609,
+                    "z": 0.20269107818603517
+                },
+                "boundsMax": {
+                    "x": 0.2945604622364044,
+                    "y": 0.28304874897003176,
+                    "z": 1.1566896438598633
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -8.940696716308594e-8,
+                    "z": 0.6796903610229492
+                },
+                "boundsSize": {
+                    "x": 0.5891209244728088,
+                    "y": 0.5660976767539978,
+                    "z": 0.9539985656738281
+                }
+            },
+            "rawMobility": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.5377734899520874,
+                    "z": 0.0022589999716728927
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.2600210905075073,
+                    "y": -0.5407597422599793,
+                    "z": -0.5532350540161133
+                },
+                "boundsMax": {
+                    "x": 0.2600210905075073,
+                    "y": -0.030553102493286134,
+                    "z": 0.21314525604248048
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": -0.2856564223766327,
+                    "z": -0.1700448989868164
+                },
+                "boundsSize": {
+                    "x": 0.5200421810150147,
+                    "y": 0.5102066397666931,
+                    "z": 0.7663803100585938
+                }
+            },
+            "fittedAssembly": {
+                "hasBounds": true,
+                "localPosition": {
+                    "x": 0.0,
+                    "y": -0.03999999910593033,
+                    "z": 6.0
+                },
+                "localEulerAngles": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "boundsMin": {
+                    "x": -0.2945604920387268,
+                    "y": -0.4119042456150055,
+                    "z": -0.8549624681472778
+                },
+                "boundsMax": {
+                    "x": 0.2945604920387268,
+                    "y": 0.41190430521965029,
+                    "z": 0.8549627065658569
+                },
+                "boundsCenter": {
+                    "x": 0.0,
+                    "y": 2.9802322387695315e-8,
+                    "z": 1.1920928955078126e-7
+                },
+                "boundsSize": {
+                    "x": 0.5891209840774536,
+                    "y": 0.8238085508346558,
+                    "z": 1.7099251747131348
+                }
+            }
+        }
+    ]
+}

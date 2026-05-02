@@ -215,14 +215,16 @@ namespace Features.Garage.Presentation
 
             _adapter.Render(
                 _presenter.BuildSlotViewModels(_state),
-                GarageNovaPartsPanelViewModelFactory.Build(
+                GarageNovaPartsEnergyDetails.Apply(
                     _catalog,
-                    new GarageNovaPartsDraftSelection(
-                        _state.EditingFrameId,
-                        _state.EditingFirepowerId,
-                        _state.EditingMobilityId),
-                    _focusedPart,
-                    _partSearchText),
+                    GarageNovaPartsPanelViewModelFactory.Build(
+                        _catalog,
+                        new GarageNovaPartsDraftSelection(
+                            _state.EditingFrameId,
+                            _state.EditingFirepowerId,
+                            _state.EditingMobilityId),
+                        _focusedPart,
+                        _partSearchText)),
                 _presenter.BuildEditorViewModel(_state),
                 new GarageResultViewModel(
                     "UITK PREVIEW: 실제 Garage catalog 샘플",

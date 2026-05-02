@@ -17,6 +17,7 @@ namespace Features.Garage.Presentation
             bool matchesCommittedSelection,
             bool wasComposeEvaluated,
             Result<ComposedUnit> composeResult,
+            Result<ComposedUnit> committedComposeResult,
             Result rosterValidationResult)
         {
             HasCatalogData = hasCatalogData;
@@ -25,6 +26,7 @@ namespace Features.Garage.Presentation
             MatchesCommittedSelection = matchesCommittedSelection;
             WasComposeEvaluated = wasComposeEvaluated;
             ComposeResult = composeResult;
+            CommittedComposeResult = committedComposeResult;
             RosterValidationResult = rosterValidationResult;
         }
 
@@ -34,6 +36,7 @@ namespace Features.Garage.Presentation
         public bool MatchesCommittedSelection { get; }
         public bool WasComposeEvaluated { get; }
         public Result<ComposedUnit> ComposeResult { get; }
+        public Result<ComposedUnit> CommittedComposeResult { get; }
         public Result RosterValidationResult { get; }
         public bool HasComposedUnit => WasComposeEvaluated && ComposeResult.IsSuccess;
         public string ComposeError => WasComposeEvaluated ? ComposeResult.Error : "Garage catalog is unavailable.";
@@ -49,6 +52,7 @@ namespace Features.Garage.Presentation
             GaragePageState state,
             bool hasCatalogData,
             Result<ComposedUnit> composeResult,
+            Result<ComposedUnit> committedComposeResult,
             Result rosterValidationResult)
         {
             bool hasCompleteDraft = state != null && state.HasCompleteDraft();
@@ -60,6 +64,21 @@ namespace Features.Garage.Presentation
                 state != null && state.DraftMatchesCommittedSelection(),
                 hasCatalogData && hasCompleteDraft,
                 composeResult,
+                committedComposeResult,
+                rosterValidationResult);
+        }
+
+        public static GarageDraftEvaluation Create(
+            GaragePageState state,
+            bool hasCatalogData,
+            Result<ComposedUnit> composeResult,
+            Result rosterValidationResult)
+        {
+            return Create(
+                state,
+                hasCatalogData,
+                composeResult,
+                Result<ComposedUnit>.Failure("Committed composition was not evaluated."),
                 rosterValidationResult);
         }
     }
@@ -78,6 +97,7 @@ namespace Features.Garage.Presentation
                                   catalog.Mobility.Count > 0;
 
             Result<ComposedUnit> composeResult = Result<ComposedUnit>.Failure("Draft composition was not evaluated.");
+            Result<ComposedUnit> committedComposeResult = Result<ComposedUnit>.Failure("Committed composition was not evaluated.");
             if (hasCatalogData && state != null && state.HasCompleteDraft())
             {
                 composeResult = composeUnit.Execute(
@@ -85,6 +105,16 @@ namespace Features.Garage.Presentation
                     state.EditingFrameId,
                     state.EditingFirepowerId,
                     state.EditingMobilityId);
+            }
+
+            var committed = state?.GetSelectedCommittedSlot();
+            if (hasCatalogData && committed != null && committed.IsComplete)
+            {
+                committedComposeResult = composeUnit.Execute(
+                    DomainEntityId.New(),
+                    committed.frameId,
+                    committed.firepowerModuleId,
+                    committed.mobilityModuleId);
             }
 
             Result rosterValidation = Result.Success();
@@ -99,7 +129,7 @@ namespace Features.Garage.Presentation
                 }
             }
 
-            return GarageDraftEvaluation.Create(state, hasCatalogData, composeResult, rosterValidation);
+            return GarageDraftEvaluation.Create(state, hasCatalogData, composeResult, committedComposeResult, rosterValidation);
         }
     }
 }

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-02",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "documentation lifecycle and acceptance reporting recurrence carryover policy",
+  "observedMutationClass": "ops owner document update for problem-solving recurrence carryover, lightweight closeout checklist, and scoped recurrence closeout shard",
+  "acceptanceEvidenceClass": "scoped rules:sync-closeout and rules:lint; no gameplay or Unity runtime acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "Problem-solving guidance already required root-cause verification and document lifecycle ownership, but it did not explicitly say how to carry recurrence prevention into a future session without over-creating plan documents or hard-fail gates.",
+  "prevention": "Add a lightweight Recurrence Check to acceptance reporting, route implementation closeout through that check from coding guardrails, and define staged storage in document management: final-only for session-local facts, owner/progress for future-session judgment changes, and recurrence closeout shards only for governance-surface changes. Preserve existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "RULES_LINT_CHANGED_FILES scoped to docs/ops/acceptance_reporting_guardrails.md, docs/ops/codex_coding_guardrails.md, docs/ops/document_management_workflow.md, and artifacts/rules/issue-recurrence-closeout.d/local-c3a8142695.json; npm run --silent rules:sync-closeout; npm run --silent rules:lint",
+  "blockedReason": "",
+  "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-c3a8142695.json",
+    "docs/ops/acceptance_reporting_guardrails.md",
+    "docs/ops/codex_coding_guardrails.md",
+    "docs/ops/document_management_workflow.md"
+  ]
+}

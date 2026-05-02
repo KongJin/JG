@@ -17,11 +17,16 @@ namespace Features.Unit.Domain
 
         // 조합 결과 스탯 (계산된 값)
         public float FinalHp { get; }
+        public float FinalDefense { get; }
         public float FinalAttackDamage { get; }
         public float FinalAttackSpeed { get; }
         public float FinalRange { get; }
+        public float FinalMoveSpeed { get; }
         public float FinalMoveRange { get; }
         public float FinalAnchorRange { get; }  // 앵커 반경 (기동 모듈이 결정)
+        public int FrameEnergyCost { get; }
+        public int FirepowerEnergyCost { get; }
+        public int MobilityEnergyCost { get; }
         public int SummonCost { get; }
         public string PassiveTraitId { get; }
         public int PassiveTraitCostBonus { get; }
@@ -35,11 +40,16 @@ namespace Features.Unit.Domain
             string passiveTraitId,
             int passiveTraitCostBonus,
             float finalHp,
+            float finalDefense,
             float finalAttackDamage,
             float finalAttackSpeed,
             float finalRange,
+            float finalMoveSpeed,
             float finalMoveRange,
             float finalAnchorRange,
+            int frameEnergyCost,
+            int firepowerEnergyCost,
+            int mobilityEnergyCost,
             int summonCost)
         {
             Id = id;
@@ -50,11 +60,16 @@ namespace Features.Unit.Domain
             PassiveTraitId = passiveTraitId;
             PassiveTraitCostBonus = passiveTraitCostBonus;
             FinalHp = finalHp;
+            FinalDefense = finalDefense;
             FinalAttackDamage = finalAttackDamage;
             FinalAttackSpeed = finalAttackSpeed;
             FinalRange = finalRange;
+            FinalMoveSpeed = finalMoveSpeed;
             FinalMoveRange = finalMoveRange;
             FinalAnchorRange = finalAnchorRange;
+            FrameEnergyCost = frameEnergyCost;
+            FirepowerEnergyCost = firepowerEnergyCost;
+            MobilityEnergyCost = mobilityEnergyCost;
             SummonCost = summonCost;
         }
     }

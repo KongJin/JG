@@ -5,7 +5,7 @@ description: "JG 응집도/결합도 리뷰 라우터. Triggers: owner boundary,
 
 # JG Coupling Review
 
-> 마지막 업데이트: 2026-05-01
+> 마지막 업데이트: 2026-05-02
 > 상태: active
 > doc_id: skill.jg-coupling-review
 > role: skill-entry
@@ -26,7 +26,8 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 5. If the review needs success, blocked, mismatch, or residual language, read `ops.acceptance-reporting-guardrails`.
 6. If the review touches Unity scene/prefab/runtime/UI work, read `jg-unity-workflow` and the relevant owner docs it routes to.
 7. If the review touches Stitch source/handoff/import work, read `jg-stitch-workflow` or `jg-stitch-unity-import`.
-8. Read the concrete files, docs, scripts, scene/prefab contracts, or tool entrypoints being reviewed.
+8. If hidden coupling appears as fallback, runtime repair, hidden lookup, or missing-contract masking, read `.codex/skills/jg-no-silent-fallback/SKILL.md`.
+9. Read the concrete files, docs, scripts, scene/prefab contracts, or tool entrypoints being reviewed.
 
 ## Coupling Review Flow
 
@@ -114,6 +115,7 @@ When reporting, prefer this compact structure:
 
 - This skill reviews coupling and cohesion. It does not own document deletion/compression mechanics; use `jg-doc-lifecycle` for document lifecycle execution.
 - This skill may recommend code, scene, prefab, or docs changes, but it should route implementation through the relevant workflow skill.
+- This skill should route silent fallback or missing-contract masking through `jg-no-silent-fallback` before recommending a production fallback.
 - Do not create a generalized coupling score. The repo policy treats meaning-based owner judgment as a review gate, not a broad hard-fail metric.
 
 ## References
@@ -126,3 +128,4 @@ When reporting, prefer this compact structure:
 - `.codex/skills/jg-doc-lifecycle/SKILL.md`
 - `.codex/skills/jg-unity-workflow/SKILL.md`
 - `.codex/skills/jg-stitch-workflow/SKILL.md`
+- `.codex/skills/jg-no-silent-fallback/SKILL.md`

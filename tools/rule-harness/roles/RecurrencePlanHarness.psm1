@@ -72,6 +72,16 @@ function Get-RecurrencePlanExistingFilePaths {
 function Test-RecurrencePlanPreventableMemoryEntry {
     param([Parameter(Mandatory)][object]$Entry)
 
+    $scopeType = [string]$Entry.scopeType
+    if ($scopeType -eq 'harness-ops') {
+        return $false
+    }
+
+    $status = [string]$Entry.status
+    if ($status -in @('blocked-operational', 'external-blocked', 'operational-blocked')) {
+        return $false
+    }
+
     $symptoms = [string]$Entry.symptoms
     if ($symptoms -match 'Status=429|1113|余额不足|无可用资源包|TimeoutSec=|작업 시간이 초과되었습니다') {
         return $false

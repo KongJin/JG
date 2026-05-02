@@ -2,7 +2,7 @@ namespace Shared.Runtime.Sound
 {
     public sealed class SoundPlayerRuntimeHostFactory
     {
-        public bool TryGetOrCreate(out SoundPlayer soundPlayer, out string errorMessage)
+        public bool TryGetHostOnly(out SoundPlayer soundPlayer, out string errorMessage)
         {
             if (SoundPlayer.TryGetActive(out soundPlayer))
             {

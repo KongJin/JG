@@ -19,9 +19,13 @@ namespace Features.Unit.Infrastructure
         [Header("Mobility Modules")]
         [SerializeField] private List<MobilityModuleData> mobilityModules = new List<MobilityModuleData>();
 
+        [Header("Tuning")]
+        [SerializeField] private UnitStatTuningData statTuning;
+
         public IReadOnlyList<UnitFrameData> UnitFrames => unitFrames;
         public IReadOnlyList<FirepowerModuleData> FirepowerModules => firepowerModules;
         public IReadOnlyList<MobilityModuleData> MobilityModules => mobilityModules;
+        public UnitStatTuningData StatTuning => statTuning;
 
         public FirepowerModuleData GetFirepowerModule(string id) =>
             firepowerModules.Find(m => m.ModuleId == id);

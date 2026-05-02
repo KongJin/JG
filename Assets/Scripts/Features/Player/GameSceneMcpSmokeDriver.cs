@@ -132,10 +132,10 @@ namespace Features.Player
         {
             if (_playerSceneRegistry != null)
             {
-                foreach (var player in _playerSceneRegistry.All)
+                foreach (var playerSetup in _playerSceneRegistry.All)
                 {
-                    if (player != null && player.NetworkAdapter != null && player.NetworkAdapter.IsMine)
-                        return player.PlayerId;
+                    if (playerSetup != null && playerSetup.NetworkAdapter != null && playerSetup.NetworkAdapter.IsMine)
+                        return playerSetup.PlayerId;
                 }
             }
 

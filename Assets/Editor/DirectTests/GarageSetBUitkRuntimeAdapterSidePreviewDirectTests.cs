@@ -1,3 +1,4 @@
+using System.Reflection;
 using Features.Garage.Presentation;
 using NUnit.Framework;
 using UnityEditor;
@@ -11,7 +12,7 @@ namespace Tests.Editor
         private const string UxmlPath = "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml";
 
         [Test]
-        public void Render_UsesCompleteSelectedSlotAssemblyInSidePreviewBeforeSinglePartFallback()
+        public void Render_DoesNotReuseCompleteSelectedSlotAssemblyForSelectedPartPreview()
         {
             var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(UxmlPath);
             var documentObject = new GameObject("GarageSetBUitkRuntimeAdapterTest");
@@ -52,10 +53,10 @@ namespace Tests.Editor
 
                 var previewImage = host.Q<Image>("SelectedPartPreviewImage");
 
-                Assert.IsTrue(partPreviewRenderer.HasPreview);
+                Assert.IsFalse(partPreviewRenderer.HasPreview);
                 Assert.NotNull(previewImage);
-                Assert.AreSame(partPreviewRenderer.PreviewTexture, previewImage.image);
-                Assert.AreEqual(DisplayStyle.Flex, previewImage.style.display.value);
+                Assert.IsNull(previewImage.image);
+                Assert.AreEqual(DisplayStyle.None, previewImage.style.display.value);
             }
             finally
             {
@@ -117,6 +118,56 @@ namespace Tests.Editor
                 Object.DestroyImmediate(singlePartPrefab);
                 Object.DestroyImmediate(rendererObject);
                 Object.DestroyImmediate(documentObject);
+            }
+        }
+
+        [Test]
+        public void Renderers_UseSeparatePreviewLayersForUnitAndSelectedPart()
+        {
+            var unitRendererObject = new GameObject(
+                "GarageSetBPreviewCamera",
+                typeof(Camera),
+                typeof(GarageSetBUitkPreviewRenderer));
+            var partRendererObject = new GameObject(
+                "GarageSetBPartPreviewCamera",
+                typeof(Camera),
+                typeof(GarageSetBUitkPreviewRenderer));
+            var framePrefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var firepowerPrefab = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            var mobilityPrefab = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            var selectedPartPrefab = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+
+            try
+            {
+                var unitRenderer = unitRendererObject.GetComponent<GarageSetBUitkPreviewRenderer>();
+                var partRenderer = partRendererObject.GetComponent<GarageSetBUitkPreviewRenderer>();
+                var unitCamera = unitRendererObject.GetComponent<Camera>();
+                var partCamera = partRendererObject.GetComponent<Camera>();
+
+                Assert.IsTrue(unitRenderer.Render(CreateCompletePreviewSlot(framePrefab, firepowerPrefab, mobilityPrefab)));
+                Assert.IsTrue(partRenderer.RenderPart(CreatePartListWithSinglePartPreview(selectedPartPrefab)));
+
+                var unitRoot = GetCurrentPreviewRoot(unitRenderer);
+                var partRoot = GetCurrentPreviewRoot(partRenderer);
+
+                Assert.NotNull(unitRoot);
+                Assert.NotNull(partRoot);
+                Assert.AreNotEqual(unitCamera.cullingMask, partCamera.cullingMask);
+                Assert.AreEqual(1 << unitRoot.layer, unitCamera.cullingMask);
+                Assert.AreEqual(1 << partRoot.layer, partCamera.cullingMask);
+                Assert.AreEqual(0, unitCamera.cullingMask & (1 << partRoot.layer));
+                Assert.AreEqual(0, partCamera.cullingMask & (1 << unitRoot.layer));
+                AssertAllChildrenUseLayer(unitRoot.transform, unitRoot.layer);
+                AssertAllChildrenUseLayer(partRoot.transform, partRoot.layer);
+            }
+            finally
+            {
+                Object.DestroyImmediate(selectedPartPrefab);
+                Object.DestroyImmediate(mobilityPrefab);
+                Object.DestroyImmediate(firepowerPrefab);
+                Object.DestroyImmediate(framePrefab);
+                Object.DestroyImmediate(partRendererObject);
+                Object.DestroyImmediate(unitRendererObject);
             }
         }
 
@@ -228,6 +279,25 @@ namespace Tests.Editor
                 GxTreeSocketName = gxTreeSocketName,
                 QualityFlag = "auto_ok"
             };
+        }
+
+        private static GameObject GetCurrentPreviewRoot(GarageSetBUitkPreviewRenderer renderer)
+        {
+            var field = typeof(GarageSetBUitkPreviewRenderer).GetField(
+                "_currentPreviewRoot",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.NotNull(field);
+            return field.GetValue(renderer) as GameObject;
+        }
+
+        private static void AssertAllChildrenUseLayer(Transform root, int layer)
+        {
+            Assert.NotNull(root);
+            Assert.AreEqual(layer, root.gameObject.layer);
+            for (var i = 0; i < root.childCount; i++)
+            {
+                AssertAllChildrenUseLayer(root.GetChild(i), layer);
+            }
         }
     }
 }

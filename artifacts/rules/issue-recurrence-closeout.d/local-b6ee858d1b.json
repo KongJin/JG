@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-01",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "rule-harness operational metadata cleanup and stale advisory memory recurrence prevention",
+  "observedMutationClass": "advisory-memory stale path/doc_id hard-fail lint, rule-harness coding agent route documentation, legacy LLM quota/network/timeout failure classification, stale validation hint pruning, and sharded recurrence closeout update",
+  "acceptanceEvidenceClass": "docs-lint fixture tests, stale advisory memory scan, rule-harness tests, rules:sync-closeout, and full rules lint; no gameplay or Unity runtime acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "Rule-harness advisory memory was treated as low-stakes cache text, so missing path-like validation hints and owner/doc_id references could survive after docs or tools moved. The harness docs also did not clearly separate the canonical Codex CLI agentRunner path from legacy LLM diagnose failures, causing quota, network, and timeout errors to look like product/code debt instead of automation operations debt.",
+  "prevention": "Validate advisory memory scopePath, promotionTarget, path-like validationHints, and doc_id-looking references in rules:lint; prune stale advisory entries before recurrence planning; document that this repo has no separate codingplan mode and uses Codex CLI agentRunner for coding-agent review; classify legacy LLM quota/network/timeout failures as harness operations debt with static-only review plus blockedReason. Preserve the existing hard-fail checks for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "node --test tools/docs-lint/tests/docs-lint.test.mjs; powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\rule-harness\\tests\\Run-RuleHarnessTests.ps1; npm run --silent rules:sync-closeout; npm run --silent rules:lint",
+  "blockedReason": "",
+  "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-b6ee858d1b.json",
+    "artifacts/rules/issue-recurrence-closeout.d/local-f4bd323541.json",
+    "tools/docs-lint/lib.mjs",
+    "tools/docs-lint/tests/docs-lint.test.mjs",
+    "tools/rule-harness/memory/advisory-memory.json",
+    "tools/rule-harness/README.md"
+  ]
+}

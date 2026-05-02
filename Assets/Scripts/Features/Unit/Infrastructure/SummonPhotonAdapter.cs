@@ -1,3 +1,4 @@
+using System;
 using Features.Combat;
 using Features.Unit.Application.Events;
 using Features.Unit.Application.Ports;
@@ -76,19 +77,35 @@ namespace Features.Unit.Infrastructure
             }
 
             var view = ComponentAccess.Get<PhotonView>(spawnedGo);
-            var fallbackInstanceId = spawnedGo != null ? spawnedGo.GetInstanceID() : 0;
-            return BattleEntityNetworkId.Build(unitSpec, view, fallbackInstanceId);
+            if (!BattleEntityNetworkId.TryBuild(unitSpec, view, out var battleEntityId))
+            {
+                Debug.LogError("[SummonPhotonAdapter] BattleEntity requires a PhotonView with an allocated ViewID before domain id creation.", spawnedGo);
+                return default;
+            }
+
+            return battleEntityId;
         }
     }
 
     internal static class BattleEntityNetworkId
     {
-        public static DomainEntityId Build(UnitSpec unitSpec, PhotonView photonView, int fallbackInstanceId)
+        public static DomainEntityId Build(UnitSpec unitSpec, PhotonView photonView)
         {
-            if (photonView != null && photonView.ViewID > 0)
-                return new DomainEntityId($"battle-{unitSpec.Id.Value}-view-{photonView.ViewID}");
+            if (TryBuild(unitSpec, photonView, out var battleEntityId))
+                return battleEntityId;
 
-            return new DomainEntityId($"battle-{unitSpec.Id.Value}-{fallbackInstanceId}");
+            throw new InvalidOperationException("BattleEntity requires a PhotonView with an allocated ViewID.");
+        }
+
+        public static bool TryBuild(UnitSpec unitSpec, PhotonView photonView, out DomainEntityId battleEntityId)
+        {
+            battleEntityId = default;
+
+            if (unitSpec == null || photonView == null || photonView.ViewID <= 0)
+                return false;
+
+            battleEntityId = new DomainEntityId($"battle-{unitSpec.Id.Value}-view-{photonView.ViewID}");
+            return true;
         }
     }
 }

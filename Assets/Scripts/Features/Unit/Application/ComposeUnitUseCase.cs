@@ -33,6 +33,7 @@ namespace Features.Unit.Application
             var frameBase = _port.GetFrameBaseStats(frameId);
             var firepower = _port.GetFirepowerStats(firepowerModuleId);
             var mobility = _port.GetMobilityStats(mobilityModuleId);
+            var costTuning = _port.GetCostTuning();
 
             // 검증
             if (!UnitComposition.Validate(mobility.MoveRange, firepower.Range, out var error))
@@ -46,14 +47,14 @@ namespace Features.Unit.Application
             // CompositionInput 구성
             var input = new UnitComposition.CompositionInput(
                 baseHp: frameBase.HpBonus,
-                baseAttackSpeed: frameBase.AttackSpeed,
+                baseDefense: frameBase.Defense,
                 firepowerDamage: firepower.AttackDamage,
                 firepowerAttackSpeed: firepower.AttackSpeed,
                 firepowerRange: firepower.Range,
-                mobilityHpBonus: mobility.HpBonus,
+                mobilityMoveSpeed: mobility.MoveSpeed,
                 mobilityMoveRange: mobility.MoveRange,
-                mobilityAnchorRange: mobility.AnchorRange,
-                passiveTraitCostBonus: passiveCostBonus);
+                passiveTraitCostBonus: passiveCostBonus,
+                costTuning: costTuning);
 
             // 조합
             var composed = UnitComposition.Compose(

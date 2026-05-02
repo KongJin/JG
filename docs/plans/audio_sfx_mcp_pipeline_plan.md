@@ -37,6 +37,24 @@
 - 생성 작업 때는 direct Suno MCP를 등록하고, Unity import/sync가 필요할 때만 `tools/audio-mcp` helper를 optional 등록한다.
 - 실제 Suno 웹 자동화 smoke는 user Suno session이 필요하므로, session이 없으면 generation acceptance를 `blocked`로 남긴다. 현재는 일반 Chrome 로그인 profile을 CDP로 재사용해 `ui_click` generation smoke를 통과했다.
 - 다운로드 asset은 `Assets/Audio/UI` 또는 `Assets/Audio/SFX` 아래로만 허용한다.
+- Manual audition은 `keep`, `replace`, `volume-tweak`, `blocked` 중 하나로 각 soundKey verdict를 남겨야 닫힌다.
+
+## Manual Audition Verdict Template
+
+| soundKey | Verdict | Notes |
+|---|---|---|
+| `ui_click` | blocked | audition not recorded |
+| `ui_select` | blocked | audition not recorded |
+| `ui_confirm` | blocked | audition not recorded |
+| `ui_back` | blocked | audition not recorded |
+| `ui_error` | blocked | audition not recorded |
+| `ui_retry` | blocked | audition not recorded |
+| `garage_save` | blocked | audition not recorded |
+| `garage_slot_select` | blocked | audition not recorded |
+| `garage_part_select` | blocked | audition not recorded |
+| `lobby_ready` | blocked | audition not recorded |
+| `battle_slot_select` | blocked | audition not recorded |
+| `skill_select` | blocked | audition not recorded |
 
 ## Evidence
 

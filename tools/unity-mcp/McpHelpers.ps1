@@ -453,6 +453,7 @@ function Wait-McpPlayModeReady {
 
     $sw = [System.Diagnostics.Stopwatch]::StartNew()
     $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    $lastError = $null
     while ((Get-Date) -lt $deadline) {
         try {
             $state = Invoke-McpGetJson -Root $Root -SubPath "/health"
@@ -464,13 +465,19 @@ function Wait-McpPlayModeReady {
                 }
             }
         }
-        catch { }
+        catch {
+            $lastError = $_.Exception.Message
+        }
 
         Start-Sleep -Seconds $PollSec
     }
 
     $sw.Stop()
-    throw "Play mode did not stabilize within ${TimeoutSec}s."
+    if ([string]::IsNullOrWhiteSpace($lastError)) {
+        $lastError = "No health response met the ready condition."
+    }
+
+    throw "Play mode did not stabilize within ${TimeoutSec}s. Last error: $lastError"
 }
 
 function Wait-McpPlayModeStopped {
@@ -482,6 +489,7 @@ function Wait-McpPlayModeStopped {
 
     $sw = [System.Diagnostics.Stopwatch]::StartNew()
     $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    $lastError = $null
     while ((Get-Date) -lt $deadline) {
         try {
             $state = Invoke-McpGetJson -Root $Root -SubPath "/health"
@@ -493,13 +501,19 @@ function Wait-McpPlayModeStopped {
                 }
             }
         }
-        catch { }
+        catch {
+            $lastError = $_.Exception.Message
+        }
 
         Start-Sleep -Seconds $PollSec
     }
 
     $sw.Stop()
-    throw "Play mode did not stop within ${TimeoutSec}s."
+    if ([string]::IsNullOrWhiteSpace($lastError)) {
+        $lastError = "No health response met the stopped condition."
+    }
+
+    throw "Play mode did not stop within ${TimeoutSec}s. Last error: $lastError"
 }
 
 function Invoke-McpSceneOpenAndWait {
@@ -628,6 +642,7 @@ function Wait-McpSceneActive {
 
     $sw = [System.Diagnostics.Stopwatch]::StartNew()
     $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    $lastError = $null
     while ((Get-Date) -lt $deadline) {
         try {
             $state = Invoke-McpGetJson -Root $Root -SubPath "/health"
@@ -639,13 +654,19 @@ function Wait-McpSceneActive {
                 }
             }
         }
-        catch { }
+        catch {
+            $lastError = $_.Exception.Message
+        }
 
         Start-Sleep -Seconds $PollSec
     }
 
     $sw.Stop()
-    throw "Active scene did not become '${SceneName}' within ${TimeoutSec}s."
+    if ([string]::IsNullOrWhiteSpace($lastError)) {
+        $lastError = "No health response reported the expected active scene."
+    }
+
+    throw "Active scene did not become '${SceneName}' within ${TimeoutSec}s. Last error: $lastError"
 }
 
 function Assert-McpNoOpenSceneDiskWrite {
