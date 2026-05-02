@@ -16,7 +16,7 @@ skill 이름과 route 등록은 `ops.skill-routing-registry`가 소유한다.
 
 | ID | User prompt signal | Expected skill routes | Companion / handoff | Boundary |
 |---|---|---|---|---|
-| T01 | "구현해줘", "버그 고쳐줘", "리팩터 시작", "TDD/테스트 우선으로" | `jg-coding-guardrails` | `jg-issue-investigation` when cause is uncertain; lane owner docs after guardrails | Do not skip repo evidence and validation criteria. |
+| T01 | "구현해줘", "버그 고쳐줘", "리팩터 시작", "빼자/제외/비활성/삭제/되돌려", "제거한 흔적도 없게", "TDD/테스트 우선으로" | `jg-coding-guardrails` | `jg-issue-investigation` when cause is uncertain; lane owner docs after guardrails | Do not skip repo evidence, validation criteria, scope clarification for product/data/pipeline ambiguity, or absence semantics for removals. |
 | T02 | "문서/skills 관리방법 기술부채", "stale owner 정리", "docs/plans 정리" | `jg-doc-lifecycle`, `rule-operations` | `jg-coupling-review` when owner boundary judgment is needed | Do not treat skill-entry text as policy body. |
 | T03 | "응집도/결합도 봐줘", "interface design", "mocking", "deep module", "owner boundary" | `jg-coupling-review` | `jg-doc-lifecycle` if the output becomes document lifecycle execution | Do not create a generalized score or hard-fail from meaning judgment. |
 | T04 | "왜 실패했어", "원인 파악", "가설 검증", "예전 캡쳐를 보고 판단", "visual mismatch", "아마/추정/가능성" | `jg-issue-investigation` | `jg-coding-guardrails` when a verified fix starts; `jg-unity-workflow` when Unity capture evidence is involved | Do not report unverified hypotheses or stale visual evidence as current root cause. |

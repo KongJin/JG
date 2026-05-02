@@ -21,7 +21,7 @@
 | `Audio SFX / MCP Pipeline` | [`audio_sfx_mcp_pipeline_plan.md`](./audio_sfx_mcp_pipeline_plan.md) | direct Suno MCP/CDP route generated, trimmed, imported, and catalog-synced all 12 UITK SFX batch keys; manual audition decision remains active | manual audition for all 12 SFX, then decide replacements/volume tweaks before UITK event wiring |
 | `UI / Source Candidate Handoff` | residual: `plans.progress` + reference [`non_stitch_ui_stitch_reimport_plan.md`](./non_stitch_ui_stitch_reimport_plan.md), no separate active plan | Account/Connection source/candidate handoff는 reference로 닫힘; 새 native/mixed UI는 upstream Stitch/Unity owner route로 다시 연다 | Battle HUD/skill-selection 작업이 열릴 때 source freeze, candidate handoff, runtime/product owner 분리 |
 | `Nova1492 Content / Release Gate` | [`nova1492_content_residual_plan.md`](./nova1492_content_residual_plan.md) | UnitParts playable 승격은 닫힘, rights/naming gate와 owner handoff가 남음 | 권리/이름 release gate, 밸런스/UI/model 후보 owner handoff |
-| `Nova1492 Assembly / Profile Recovery` | [`nova1492_assembly_profile_recovery_plan.md`](./nova1492_assembly_profile_recovery_plan.md) | 144개 assembly profile seed와 Unity metadata promotion은 mechanical pass, 최신 인간형 capture 생성됨 | manual review CSV와 최신 capture 기준 match/mismatch/unsure 분리 |
+| `Nova1492 Assembly / Profile Recovery` | historical: [`nova1492_assembly_profile_recovery_plan.md`](./nova1492_assembly_profile_recovery_plan.md) | generated playable catalog와 assembly profile은 114개 지원 행 기준으로 정리됨 | 새 조립 형태를 제품 범위로 열 때만 새 owner 생성 |
 
 ## 완료 baseline
 
@@ -35,5 +35,5 @@
 - UI 변경은 Unity UI authoring workflow와 Stitch owner route를 먼저 확인하고, product acceptance와 candidate evidence를 분리한다.
 - Audio SFX pipeline은 12개 SFX의 generation/import/catalog-sync mechanical path와 Unity manual audition decision을 분리한다. WebGL/browser audio product acceptance는 WebGL audio owner에서만 닫는다.
 - `UI / Source Candidate Handoff`는 reference 압축 보존으로 내렸고, 새 Battle HUD/skill-selection UI 작업이 열리면 upstream Stitch/Unity owner route에서 다시 판단한다. `Nova1492 Content / Release Gate`는 rights/naming gate가 닫히면 reference 압축 또는 삭제 후보로 재검토한다.
-- Nova1492 조립 위치 문제는 원본 evidence를 runtime hardcoding이 아니라 assembly profile data로 복원하고, 최신 capture와 수동 검수 결과가 나오기 전에는 visual success로 닫지 않는다.
+- Nova1492 조립 위치 복구 기록은 historical로 내렸고, 새 조립 형태를 제품 범위로 열 때만 새 owner에서 다시 판단한다.
 - 새 문서 추가보다 active owner 압축과 residual 이관을 우선한다.

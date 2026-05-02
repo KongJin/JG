@@ -1,6 +1,6 @@
 ---
 name: jg-coding-guardrails
-description: "JG 구현/버그수정/리팩터/테스트 가드레일. Triggers: 코딩 오류, 가정, 명확화, 성공 기준, 단순한 변경, TDD, 회귀 테스트, 검증 기준."
+description: "JG 구현/버그수정/리팩터/테스트 가드레일. Triggers: 코딩 오류, 모호한 제품 범위, 가정, 명확화, 성공 기준, TDD, 회귀 테스트."
 ---
 
 # JG Coding Guardrails

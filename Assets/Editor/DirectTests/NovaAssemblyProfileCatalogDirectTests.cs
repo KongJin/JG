@@ -1,7 +1,6 @@
 using Features.Garage.Infrastructure;
 using NUnit.Framework;
 using UnityEditor;
-using UnityEngine;
 
 namespace Tests.Editor
 {
@@ -9,30 +8,17 @@ namespace Tests.Editor
     {
         private const string AlignmentCatalogPath = "Assets/Data/Garage/NovaGenerated/NovaPartAlignmentCatalog.asset";
 
-        [Test]
-        public void AlignmentCatalog_KeepsHumanoidDirectionOnlyWeaponsDisabledUntilOriginalProfileExists()
+        [TestCase("nova_frame_body26_kp")]
+        [TestCase("nova_frame_body10_skdr")]
+        [TestCase("nova_fire_arm15_hdkn")]
+        [TestCase("nova_fire_arm29_sdbt")]
+        [TestCase("nova_fire_arm32_sppoo")]
+        [TestCase("nova_fire_arm39_hmsk")]
+        public void AlignmentCatalog_ContainsOnlySupportedGeneratedAssemblyForms(string partId)
         {
             var catalog = LoadCatalog();
-            var handcannon = FindEntry(catalog, "nova_fire_arm15_hdkn");
-            var spitfire = FindEntry(catalog, "nova_fire_arm32_sppoo");
-            var hammerShock = FindEntry(catalog, "nova_fire_arm39_hmsk");
 
-            AssertDisabledHumanoidProfile(handcannon, "pending");
-            AssertDisabledHumanoidProfile(spitfire, "pending");
-            AssertDisabledHumanoidProfile(hammerShock, "pending");
-        }
-
-        [TestCase("nova_fire_arm29_sdbt", "mismatch")]
-        public void AlignmentCatalog_KeepsReviewedHumanoidFrameWeaponMobilityEvidenceDisabled(
-            string firepowerId,
-            string reviewResult)
-        {
-            var catalog = LoadCatalog();
-            var firepower = FindEntry(catalog, firepowerId);
-
-            AssertDisabledHumanoidProfile(firepower, reviewResult);
-            Assert.That(firepower.AssemblyLocalOffset.sqrMagnitude, Is.EqualTo(0f).Within(0.000001f));
-            StringAssert.Contains("original-oracle/oracle-lab-assembled-current-20260502.png", firepower.AssemblyEvidencePath);
+            Assert.IsNull(TryFindEntry(catalog, partId));
         }
 
         [Test]
@@ -59,6 +45,16 @@ namespace Tests.Editor
 
         private static NovaPartAlignmentCatalog.Entry FindEntry(NovaPartAlignmentCatalog catalog, string partId)
         {
+            var entry = TryFindEntry(catalog, partId);
+            if (entry != null)
+                return entry;
+
+            Assert.Fail("Missing alignment entry: " + partId);
+            return null;
+        }
+
+        private static NovaPartAlignmentCatalog.Entry TryFindEntry(NovaPartAlignmentCatalog catalog, string partId)
+        {
             for (var i = 0; i < catalog.Entries.Count; i++)
             {
                 var entry = catalog.Entries[i];
@@ -66,18 +62,7 @@ namespace Tests.Editor
                     return entry;
             }
 
-            Assert.Fail("Missing alignment entry: " + partId);
             return null;
-        }
-
-        private static void AssertDisabledHumanoidProfile(NovaPartAlignmentCatalog.Entry entry, string reviewResult)
-        {
-            Assert.That(entry.AssemblyAnchorMode, Is.EqualTo("Disabled"));
-            Assert.That(entry.AssemblySlotMode, Is.EqualTo("disabled"));
-            Assert.That(entry.AssemblyConfidence, Is.EqualTo("blocked"));
-            Assert.That(entry.AssemblyReviewResult, Is.EqualTo(reviewResult));
-            Assert.That(entry.AssemblyLocalOffset.sqrMagnitude, Is.EqualTo(0f).Within(0.000001f));
-            StringAssert.Contains("nova_part_catalog.csv", entry.AssemblyEvidencePath);
         }
     }
 }

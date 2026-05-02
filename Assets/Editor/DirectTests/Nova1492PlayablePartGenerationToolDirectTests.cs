@@ -32,5 +32,15 @@ namespace Tests.Editor
                 string.Empty,
                 "datan_common_n_legs40_krz_cc420116_mesh02"));
         }
+
+        [Test]
+        public void IsPlayableCatalogRowForTest_KeepsOnlySupportedGeneratedAssemblyForms()
+        {
+            Assert.IsFalse(Nova1492PlayablePartGenerationTool.IsPlayableCatalogRowForTest("Frame", "Humanoid"));
+            Assert.IsFalse(Nova1492PlayablePartGenerationTool.IsPlayableCatalogRowForTest("Firepower", "Humanoid"));
+            Assert.IsTrue(Nova1492PlayablePartGenerationTool.IsPlayableCatalogRowForTest("Frame", "Tower"));
+            Assert.IsTrue(Nova1492PlayablePartGenerationTool.IsPlayableCatalogRowForTest("Firepower", "Shoulder"));
+            Assert.IsTrue(Nova1492PlayablePartGenerationTool.IsPlayableCatalogRowForTest("Mobility", string.Empty));
+        }
     }
 }

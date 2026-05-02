@@ -35,10 +35,6 @@ function Get-SlotMode {
         [string] $AssemblyForm
     )
 
-    if ($AssemblyForm -eq "Humanoid") {
-        return "disabled"
-    }
-
     if ($AssemblyForm -eq "Shoulder") {
         return "pair"
     }
@@ -83,15 +79,17 @@ function Get-AnchorMode {
         return "LegBodySocket"
     }
 
-    if ($AssemblyForm -eq "Humanoid") {
-        return "Disabled"
-    }
-
     switch ($AssemblyForm) {
         "Tower" { return "FrameTopSocket" }
         "Shoulder" { return "ShoulderPair" }
         default { return "ManualOffset" }
     }
+}
+
+function Test-PlayableCatalogRow {
+    param([object] $Catalog)
+
+    return $Catalog.assemblyForm -ne "Humanoid"
 }
 
 function Get-Confidence {
@@ -100,7 +98,7 @@ function Get-Confidence {
         [object] $Proposal
     )
 
-    if ($AnchorMode -eq "ManualOffset" -or $AnchorMode -eq "Disabled") {
+    if ($AnchorMode -eq "ManualOffset") {
         return "blocked"
     }
 
@@ -177,10 +175,6 @@ function Get-Notes {
 
     if ($AnchorMode -eq "ManualOffset") {
         $notes.Add("No generic anchor mode was inferred; requires source or visual review before use.") | Out-Null
-    }
-
-    if ($AnchorMode -eq "Disabled" -and $Catalog.assemblyForm -eq "Humanoid") {
-        $notes.Add("Humanoid is a part assembly form; keep disabled until original UnitModel evidence defines an approved profile.") | Out-Null
     }
 
     if ($XfiClass -eq "direction-only") {
@@ -274,16 +268,12 @@ $highRiskByPartId = @{
     "nova_mob_g_legs57_ppo" = "Known leg single-part visual quality risk; route to GX audit if unit capture still mismatches."
 }
 
-$reviewOverrideByPartId = @{
-    "nova_fire_arm29_sdbt" = @{
-        review_result = "mismatch"
-        evidence = "original-lab:artifacts/nova1492/original-oracle/oracle-lab-assembled-current-20260502.png"
-        notes = "Original lab preview evidence invalidates the previous manual humanoid offset."
-    }
-}
-
 $profiles = New-Object System.Collections.Generic.List[object]
-foreach ($catalog in (Import-Csv -LiteralPath $PartCatalogPath)) {
+$catalogRows = @(
+    Import-Csv -LiteralPath $PartCatalogPath |
+        Where-Object { Test-PlayableCatalogRow -Catalog $_ }
+)
+foreach ($catalog in $catalogRows) {
     $sourceKey = Normalize-RelativePath $catalog.source_relative_path
     $xfi = $null
     if ($xfiByPartId.ContainsKey($catalog.partId)) {
@@ -307,13 +297,6 @@ foreach ($catalog in (Import-Csv -LiteralPath $PartCatalogPath)) {
     ) -join "; "
     $reviewResult = "pending"
     $notes = Get-Notes -Catalog $catalog -Proposal $proposal -XfiClass $xfiClass -AnchorMode $anchorMode -HighRiskByPartId $highRiskByPartId
-
-    if ($reviewOverrideByPartId.ContainsKey($catalog.partId)) {
-        $override = $reviewOverrideByPartId[$catalog.partId]
-        $reviewResult = [string]$override["review_result"]
-        $evidence = "$evidence; $($override["evidence"])"
-        $notes = "$notes $($override["notes"])".Trim()
-    }
 
     $profiles.Add([pscustomobject]@{
         part_id = $catalog.partId
@@ -370,7 +353,6 @@ $lines.Add(("| pending manual review | {0} |" -f @($profiles | Where-Object { $_
 $lines.Add(("| review confidence | {0} |" -f @($profiles | Where-Object { $_.confidence -eq "review" }).Count)) | Out-Null
 $lines.Add(("| derived confidence | {0} |" -f @($profiles | Where-Object { $_.confidence -eq "derived" }).Count)) | Out-Null
 $lines.Add(("| blocked confidence | {0} |" -f @($profiles | Where-Object { $_.confidence -eq "blocked" }).Count)) | Out-Null
-$lines.Add(("| humanoid form rows blocked | {0} |" -f @($profiles | Where-Object { $_.assembly_form -eq "Humanoid" -and $_.anchor_mode -eq "Disabled" -and $_.confidence -eq "blocked" }).Count)) | Out-Null
 $lines.Add("") | Out-Null
 $lines.Add("## Anchor Modes") | Out-Null
 $lines.Add("") | Out-Null
@@ -392,13 +374,13 @@ foreach ($group in ($profiles | Group-Object xfi_class | Sort-Object Name)) {
 $lines.Add("") | Out-Null
 $lines.Add("## Guardrail") | Out-Null
 $lines.Add("") | Out-Null
-$lines.Add("- Direction-only firepower XFI rows are not source placement truth; humanoid rows stay Disabled/blocked until original UnitModel evidence defines an approved profile. Do not use unproven adapters or shell/bounds fallback.") | Out-Null
+$lines.Add("- Direction-only firepower XFI rows are not source placement truth. Do not use unproven adapters or shell/bounds fallback.") | Out-Null
 $lines.Add("- Known broken-looking single parts stay in the profile with review notes, but their visual acceptance belongs to GX audit if the part is broken before assembly.") | Out-Null
 $lines.Add("- Actual acceptance remains blocked until latest capture and manual visual review record `match`.") | Out-Null
 
 Set-Content -LiteralPath $reportPath -Value $lines -Encoding UTF8
 
-$expectedRows = 144
+$expectedRows = 114
 if ($profiles.Count -ne $expectedRows) {
     throw "Unexpected assembly profile row count: expected $expectedRows, got $($profiles.Count)"
 }
@@ -411,15 +393,6 @@ $manualOffsetsWithoutEvidence = @(
 )
 if ($manualOffsetsWithoutEvidence.Count -gt 0) {
     throw "ManualOffset row without evidence: $($manualOffsetsWithoutEvidence[0].part_id)"
-}
-
-$humanoidRows = @($profiles | Where-Object { $_.assembly_form -eq "Humanoid" })
-$nonBlockedHumanoid = @(
-    $humanoidRows |
-        Where-Object { $_.anchor_mode -ne "Disabled" -or $_.slot_mode -ne "disabled" -or $_.confidence -ne "blocked" }
-)
-if ($nonBlockedHumanoid.Count -gt 0) {
-    throw "Expected all humanoid frame/firepower profiles to stay Disabled/blocked before original UnitModel evidence: $($nonBlockedHumanoid[0].part_id)"
 }
 
 [pscustomobject]@{

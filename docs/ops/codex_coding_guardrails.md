@@ -70,6 +70,26 @@
    - 되돌리기 어렵고 나중에 다시 제안될 가능성이 있는 trade-off는 새 문서보다 기존 ops/design/plan owner에 짧게 남길 수 있는지 먼저 판단한다.
    - `CONTEXT.md`, `docs/adr/`, `docs/agents/`를 JG의 새 기본 구조로 만들지 않는다.
 
+## Ambiguous Product Scope Gate
+
+`빼다`, `제외`, `숨기다`, `비활성`, `삭제`, `되돌리다`, `정리`, `막다`처럼 제품 노출, 데이터 소유권, 저장/전투 동작, 생성 파이프라인 중 둘 이상으로 해석될 수 있는 지시는 바로 mutation하지 않는다.
+
+- 먼저 UI 노출, playable catalog, 저장/전투 유효성, 생성 파이프라인, 원본 asset 보존 여부를 분리한다.
+- repo evidence만으로 범위를 확정할 수 없으면 질문 하나로 scope를 잠근 뒤 실행한다.
+- 질문 없이 진행할 수 있는 최대치는 명시적으로 되돌리기 쉬운 비파괴 변경이어야 하며, 데이터 삭제, generated owner 변경, pipeline 제외, save/load contract 변경은 포함하지 않는다.
+- 사용자가 조급하거나 결론처럼 말해도, 제품 방향이나 UX 범위가 달라지는 해석이면 Clarification Loop를 우선한다.
+- 이미 잘못 해석했다고 판단되면 추가 mutation으로 만회하지 말고 멈춘 뒤 현재 변경, 되돌릴 최소 범위, 필요한 사용자 결정을 짧게 보고한다.
+
+## Removal Means Absence
+
+사용자가 `A를 제거`, `A를 빼`, `A 없애`라고 지시한 뒤 범위가 잠겼다면 기본 결과는 "A가 제거됐다는 설명이 보이는 상태"가 아니라 "대상 표면에서 A가 있었는지 모르는 상태"다.
+
+- 제품 UI, 선택 목록, generated catalog, 사용자-facing report, 테스트 이름, 문서의 현재 기준 문장에 `removed A`, `A excluded`, `A blocked` 같은 tombstone 표현을 남기지 않는다.
+- 제거 사실을 남겨야 할 때는 사용자-facing 표면이 아니라 closeout, changelog, historical/reference artifact, migration note처럼 추적 전용 owner에만 둔다.
+- 회귀 테스트는 "A가 제거됐다는 문구가 보인다"가 아니라 "A가 조회/선택/생성/표시되지 않는다"를 검증한다.
+- 생성 파이프라인은 제거 대상 asset을 계속 재생성하거나 catalog/report에 다시 노출하지 않아야 한다.
+- 예외는 법적 고지, 저장 데이터 migration, 호환성 오류 메시지처럼 사용자가 알아야 안전한 경우뿐이며, 그 경우에도 owner와 제거 조건을 명시한다.
+
 ## Minimal Cohesive Changes
 
 - 요청된 목표를 만족하는 최소 동작을 구현한다.

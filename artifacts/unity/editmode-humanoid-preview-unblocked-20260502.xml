@@ -1,0 +1,1104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="151" result="Failed(Child)" total="151" passed="147" failed="4" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:29Z" duration="3.2266217">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="151" result="Failed" site="Child" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:29Z" duration="3.226622" total="151" passed="147" failed="4" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1187" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="151" result="Failed" site="Child" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:29Z" duration="3.208876" total="151" passed="147" failed="4" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32204" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1188" name="Editor" fullname="Editor" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:25Z" duration="0.054969" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1189" name="DirectTests" fullname="Editor.DirectTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:25Z" duration="0.054720" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1001" name="OperationRecordDirectTests" fullname="Editor.DirectTests.OperationRecordDirectTests" classname="Editor.DirectTests.OperationRecordDirectTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:25Z" duration="0.053064" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1004" name="OperationRecordFactory_BuildsNormalizedRecordFromGameEndReport" fullname="Editor.DirectTests.OperationRecordDirectTests.OperationRecordFactory_BuildsNormalizedRecordFromGameEndReport" methodname="OperationRecordFactory_BuildsNormalizedRecordFromGameEndReport" classname="Editor.DirectTests.OperationRecordDirectTests" runstate="Runnable" seed="339589524" result="Passed" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:25Z" duration="0.023428" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1006" name="OperationRecordGameEndHandler_SavesOnlyOncePerSession" fullname="Editor.DirectTests.OperationRecordDirectTests.OperationRecordGameEndHandler_SavesOnlyOncePerSession" methodname="OperationRecordGameEndHandler_SavesOnlyOncePerSession" classname="Editor.DirectTests.OperationRecordDirectTests" runstate="Runnable" seed="607525234" result="Passed" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:25Z" duration="0.003259" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1005" name="OperationRecordJsonStore_RoundTripsRecords" fullname="Editor.DirectTests.OperationRecordDirectTests.OperationRecordJsonStore_RoundTripsRecords" methodname="OperationRecordJsonStore_RoundTripsRecords" classname="Editor.DirectTests.OperationRecordDirectTests" runstate="Runnable" seed="1402068933" result="Passed" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:25Z" duration="0.004456" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1003" name="RecentOperationRecords_ReplacesDuplicateOperationId" fullname="Editor.DirectTests.OperationRecordDirectTests.RecentOperationRecords_ReplacesDuplicateOperationId" methodname="RecentOperationRecords_ReplacesDuplicateOperationId" classname="Editor.DirectTests.OperationRecordDirectTests" runstate="Runnable" seed="1089753179" result="Passed" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:25Z" duration="0.000568" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1002" name="RecentOperationRecords_TrimsToLatestFive" fullname="Editor.DirectTests.OperationRecordDirectTests.RecentOperationRecords_TrimsToLatestFive" methodname="RecentOperationRecords_TrimsToLatestFive" classname="Editor.DirectTests.OperationRecordDirectTests" runstate="Runnable" seed="1901567527" result="Passed" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:25Z" duration="0.000380" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1007" name="SyncOperationRecordsUseCase_MergesLocalAndCloudRecords" fullname="Editor.DirectTests.OperationRecordDirectTests.SyncOperationRecordsUseCase_MergesLocalAndCloudRecords" methodname="SyncOperationRecordsUseCase_MergesLocalAndCloudRecords" classname="Editor.DirectTests.OperationRecordDirectTests" runstate="Runnable" seed="2100320683" result="Passed" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:25Z" duration="0.003865" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+      <test-suite type="TestSuite" id="1190" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="145" result="Failed" site="Child" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:29Z" duration="3.151953" total="145" passed="141" failed="4" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1191" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="145" result="Failed" site="Child" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:29Z" duration="3.149623" total="145" passed="141" failed="4" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestFixture" id="1153" name="ArchitectureGuardrailReflectionTests" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" testcasecount="14" result="Failed" site="Child" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:27Z" duration="1.638267" total="14" passed="13" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1155" name="Codebase_DoesNotUseAsyncVoidHandlers" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.Codebase_DoesNotUseAsyncVoidHandlers" methodname="Codebase_DoesNotUseAsyncVoidHandlers" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="2127080504" result="Passed" start-time="2026-05-02 06:29:25Z" end-time="2026-05-02 06:29:26Z" duration="0.286199" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1161" name="GarageRuntime_UsesSingleUitkPresentationStack" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.GarageRuntime_UsesSingleUitkPresentationStack" methodname="GarageRuntime_UsesSingleUitkPresentationStack" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="2121013539" result="Passed" start-time="2026-05-02 06:29:26Z" end-time="2026-05-02 06:29:26Z" duration="0.002618" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1162" name="GarageSetBUitkPageController_DoesNotHostMcpSmokeEntrypoints" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.GarageSetBUitkPageController_DoesNotHostMcpSmokeEntrypoints" methodname="GarageSetBUitkPageController_DoesNotHostMcpSmokeEntrypoints" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="1302919191" result="Failed" label="Error" start-time="2026-05-02 06:29:26Z" end-time="2026-05-02 06:29:26Z" duration="0.005019" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[System.IO.FileNotFoundException : Could not find file "C:\Users\SOL\Documents\JG\Assets\Scripts\Features\Garage\Presentation\GarageSetBUitkPageController.cs"]]></message>
+                <stack-trace><![CDATA[  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.IO.FileOptions options) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.FileStream..ctor(string,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,int,System.IO.FileOptions)
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks, System.Int32 bufferSize) [0x00055] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, System.Boolean detectEncodingFromByteOrderMarks) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at (wrapper remoting-invoke-with-check) System.IO.StreamReader..ctor(string,System.Text.Encoding,bool)
+  at System.IO.File.InternalReadAllText (System.String path, System.Text.Encoding encoding) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.IO.File.ReadAllText (System.String path) [0x0002c] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Tests.Editor.ArchitectureGuardrailReflectionTests.GarageSetBUitkPageController_DoesNotHostMcpSmokeEntrypoints () [0x00045] in C:\Users\SOL\Documents\JG\Assets\Editor\Tests\ArchitectureGuardrailReflectionTests.cs:219 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1166" name="GarageSetupScenes_DoNotSerializeLegacyPageControllerField" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.GarageSetupScenes_DoNotSerializeLegacyPageControllerField" methodname="GarageSetupScenes_DoNotSerializeLegacyPageControllerField" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="788318691" result="Passed" start-time="2026-05-02 06:29:26Z" end-time="2026-05-02 06:29:26Z" duration="0.008874" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1163" name="McpSmokeEntrypoints_AreEditorOrDevelopmentBuildOnly" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.McpSmokeEntrypoints_AreEditorOrDevelopmentBuildOnly" methodname="McpSmokeEntrypoints_AreEditorOrDevelopmentBuildOnly" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="56799074" result="Passed" start-time="2026-05-02 06:29:26Z" end-time="2026-05-02 06:29:26Z" duration="0.183823" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1165" name="ProductionFallbackReferences_AreExplicitlyReviewed" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.ProductionFallbackReferences_AreExplicitlyReviewed" methodname="ProductionFallbackReferences_AreExplicitlyReviewed" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="537906835" result="Passed" start-time="2026-05-02 06:29:26Z" end-time="2026-05-02 06:29:26Z" duration="0.210666" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1156" name="RuntimeCode_DoesNotUseResourcesLoad" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.RuntimeCode_DoesNotUseResourcesLoad" methodname="RuntimeCode_DoesNotUseResourcesLoad" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="472634535" result="Passed" start-time="2026-05-02 06:29:26Z" end-time="2026-05-02 06:29:26Z" duration="0.221555" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1160" name="SceneRegistries_AreNotCreatedViaRuntimeAddComponent" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SceneRegistries_AreNotCreatedViaRuntimeAddComponent" methodname="SceneRegistries_AreNotCreatedViaRuntimeAddComponent" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="152793328" result="Passed" start-time="2026-05-02 06:29:26Z" end-time="2026-05-02 06:29:26Z" duration="0.159368" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1159" name="SceneRegistries_AreNotFoundViaRuntimeGlobalLookup" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SceneRegistries_AreNotFoundViaRuntimeGlobalLookup" methodname="SceneRegistries_AreNotFoundViaRuntimeGlobalLookup" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="2113458374" result="Passed" start-time="2026-05-02 06:29:26Z" end-time="2026-05-02 06:29:27Z" duration="0.147313" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1158" name="SceneSoundPlayerHosts_AreRootObjects" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SceneSoundPlayerHosts_AreRootObjects" methodname="SceneSoundPlayerHosts_AreRootObjects" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="223317777" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.012165" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1154" name="SetupAndRootFiles_DoNotDeclareUpdateMethods" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SetupAndRootFiles_DoNotDeclareUpdateMethods" methodname="SetupAndRootFiles_DoNotDeclareUpdateMethods" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="37777968" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.018270" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1157" name="SingletonPatterns_AreRestrictedToAllowlist" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SingletonPatterns_AreRestrictedToAllowlist" methodname="SingletonPatterns_AreRestrictedToAllowlist" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="1009204909" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.189436" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1164" name="SourcePaddingMarkers_AreLimitedToKnownLockedResiduals" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SourcePaddingMarkers_AreLimitedToKnownLockedResiduals" methodname="SourcePaddingMarkers_AreLimitedToKnownLockedResiduals" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="712693390" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.180964" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1167" name="UnityWorkflowSkill_ContainsArchitectureGuardrails" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.UnityWorkflowSkill_ContainsArchitectureGuardrails" methodname="UnityWorkflowSkill_ContainsArchitectureGuardrails" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="264918523" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.005021" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1008" name="BattleEntityNetworkIdDirectTests" fullname="Tests.Editor.BattleEntityNetworkIdDirectTests" classname="Tests.Editor.BattleEntityNetworkIdDirectTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.031869" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1011" name="TryBuild_RejectsMissingPhotonView" fullname="Tests.Editor.BattleEntityNetworkIdDirectTests.TryBuild_RejectsMissingPhotonView" methodname="TryBuild_RejectsMissingPhotonView" classname="Tests.Editor.BattleEntityNetworkIdDirectTests" runstate="Runnable" seed="686941827" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000966" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1010" name="TryBuild_RejectsMissingPhotonViewId" fullname="Tests.Editor.BattleEntityNetworkIdDirectTests.TryBuild_RejectsMissingPhotonViewId" methodname="TryBuild_RejectsMissingPhotonViewId" classname="Tests.Editor.BattleEntityNetworkIdDirectTests" runstate="Runnable" seed="54651525" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000461" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1009" name="TryBuild_UsesPhotonViewId_WhenAllocated" fullname="Tests.Editor.BattleEntityNetworkIdDirectTests.TryBuild_UsesPhotonViewId_WhenAllocated" methodname="TryBuild_UsesPhotonViewId_WhenAllocated" classname="Tests.Editor.BattleEntityNetworkIdDirectTests" runstate="Runnable" seed="1489437940" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.029127" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1012" name="FirebaseAuthResponseMapperDirectTests" fullname="Tests.Editor.FirebaseAuthResponseMapperDirectTests" classname="Tests.Editor.FirebaseAuthResponseMapperDirectTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.003816" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1013" name="FromTokenResponse_UsesCurrentUidWhenRefreshResponseOmitsUid_AndComputesExpiry" fullname="Tests.Editor.FirebaseAuthResponseMapperDirectTests.FromTokenResponse_UsesCurrentUidWhenRefreshResponseOmitsUid_AndComputesExpiry" methodname="FromTokenResponse_UsesCurrentUidWhenRefreshResponseOmitsUid_AndComputesExpiry" classname="Tests.Editor.FirebaseAuthResponseMapperDirectTests" runstate="Runnable" seed="1735737045" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.003038" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1014" name="FirestoreMapperDirectTests" fullname="Tests.Editor.FirestoreMapperDirectTests" classname="Tests.Editor.FirestoreMapperDirectTests" runstate="Runnable" testcasecount="3" result="Failed" site="Child" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.007431" total="3" passed="2" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1015" name="BuildRawJsonDocument_RoundTripsEscapedStringField" fullname="Tests.Editor.FirestoreMapperDirectTests.BuildRawJsonDocument_RoundTripsEscapedStringField" methodname="BuildRawJsonDocument_RoundTripsEscapedStringField" classname="Tests.Editor.FirestoreMapperDirectTests" runstate="Runnable" seed="288022843" result="Failed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.003865" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[  String lengths are both 41. Strings differ at index 15.
+  Expected: "{"name":"Alpha\\nBeta","quote":"\\"test\\""}"
+  But was:  "{"name":"Alpha\\\nBeta","quote":"\\"test\\""}"
+  ---------------------------^
+]]></message>
+                <stack-trace><![CDATA[at Tests.Editor.FirestoreMapperDirectTests.BuildRawJsonDocument_RoundTripsEscapedStringField () [0x00018] in C:\Users\SOL\Documents\JG\Assets\Editor\DirectTests\FirestoreMapperDirectTests.cs:17
+]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1017" name="OperationRecordMapper_RoundTripsRecentRecords" fullname="Tests.Editor.FirestoreMapperDirectTests.OperationRecordMapper_RoundTripsRecentRecords" methodname="OperationRecordMapper_RoundTripsRecentRecords" classname="Tests.Editor.FirestoreMapperDirectTests" runstate="Runnable" seed="1270794871" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.001124" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1016" name="Reader_ParsesNumericFields_FromFirestoreDocument" fullname="Tests.Editor.FirestoreMapperDirectTests.Reader_ParsesNumericFields_FromFirestoreDocument" methodname="Reader_ParsesNumericFields_FromFirestoreDocument" classname="Tests.Editor.FirestoreMapperDirectTests" runstate="Runnable" seed="1917808919" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000755" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1018" name="GameSceneRuntimeSystemsDirectTests" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.031626" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1019" name="BattleEntity_MoveTo_UsesSpawnAnchorAsRadiusCenter" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.BattleEntity_MoveTo_UsesSpawnAnchorAsRadiusCenter" methodname="BattleEntity_MoveTo_UsesSpawnAnchorAsRadiusCenter" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="1683652938" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.001761" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1020" name="EnemyMoveTargetResolver_PrioritizesCoreBeforeUnitOrPlayer" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.EnemyMoveTargetResolver_PrioritizesCoreBeforeUnitOrPlayer" methodname="EnemyMoveTargetResolver_PrioritizesCoreBeforeUnitOrPlayer" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="2109276922" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000692" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1021" name="EnemyMoveTargetResolver_UsesHostileQuery_WhenCoreIsUnavailable" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.EnemyMoveTargetResolver_UsesHostileQuery_WhenCoreIsUnavailable" methodname="EnemyMoveTargetResolver_UsesHostileQuery_WhenCoreIsUnavailable" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="2021356055" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000381" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1028" name="GameEndAnalytics_BuildsContributionCardsFromCombatEvents" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.GameEndAnalytics_BuildsContributionCardsFromCombatEvents" methodname="GameEndAnalytics_BuildsContributionCardsFromCombatEvents" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="1564815648" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.015672" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1029" name="GameEndAnalytics_DoesNotClaimCorePreservedWhenCoreCollapsed" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.GameEndAnalytics_DoesNotClaimCorePreservedWhenCoreCollapsed" methodname="GameEndAnalytics_DoesNotClaimCorePreservedWhenCoreCollapsed" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="75374147" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000498" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1027" name="GameEndAnalytics_ReportsCountedSummonsAndKills" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.GameEndAnalytics_ReportsCountedSummonsAndKills" methodname="GameEndAnalytics_ReportsCountedSummonsAndKills" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="831725914" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.002283" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1023" name="HostilePositionQuery_FallsBackToPlayerWhenNoUnitIsRegistered" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.HostilePositionQuery_FallsBackToPlayerWhenNoUnitIsRegistered" methodname="HostilePositionQuery_FallsBackToPlayerWhenNoUnitIsRegistered" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="448054120" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.001687" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1025" name="HostilePositionQuery_FallsBackToPlayerWithinAggroRadiusWhenNoUnitMatches" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.HostilePositionQuery_FallsBackToPlayerWithinAggroRadiusWhenNoUnitMatches" methodname="HostilePositionQuery_FallsBackToPlayerWithinAggroRadiusWhenNoUnitMatches" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="326455124" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.001295" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1022" name="HostilePositionQuery_UsesUnitBeforePlayerWhenCoreIsUnavailable" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.HostilePositionQuery_UsesUnitBeforePlayerWhenCoreIsUnavailable" methodname="HostilePositionQuery_UsesUnitBeforePlayerWhenCoreIsUnavailable" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="1820343669" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000477" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1024" name="HostilePositionQuery_UsesUnitWithinAggroRadiusBeforePlayer" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.HostilePositionQuery_UsesUnitWithinAggroRadiusBeforePlayer" methodname="HostilePositionQuery_UsesUnitWithinAggroRadiusBeforePlayer" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="88625153" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000556" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1026" name="WaveGameEndBridge_UsesElapsedTimeAndReachedWave" fullname="Tests.Editor.GameSceneRuntimeSystemsDirectTests.WaveGameEndBridge_UsesElapsedTimeAndReachedWave" methodname="WaveGameEndBridge_UsesElapsedTimeAndReachedWave" classname="Tests.Editor.GameSceneRuntimeSystemsDirectTests" runstate="Runnable" seed="580391618" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.001136" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1030" name="GaragePagePresenterDirectTests" fullname="Tests.Editor.GaragePagePresenterDirectTests" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.018289" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1033" name="CommitDraft_RestoresReadyState" fullname="Tests.Editor.GaragePagePresenterDirectTests.CommitDraft_RestoresReadyState" methodname="CommitDraft_RestoresReadyState" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="1242774914" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.004155" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1032" name="DraftChanges_BlockReady_AndSwitchPrimaryActionToSave" fullname="Tests.Editor.GaragePagePresenterDirectTests.DraftChanges_BlockReady_AndSwitchPrimaryActionToSave" methodname="DraftChanges_BlockReady_AndSwitchPrimaryActionToSave" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="1315345311" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000335" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1036" name="OperationRecordServiceTagMapper_MapsPrimaryRosterUnitsToLoadoutTags" fullname="Tests.Editor.GaragePagePresenterDirectTests.OperationRecordServiceTagMapper_MapsPrimaryRosterUnitsToLoadoutTags" methodname="OperationRecordServiceTagMapper_MapsPrimaryRosterUnitsToLoadoutTags" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="1948566555" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.006325" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1031" name="ReadyUnlocked_WhenCommittedRosterIsValidAndDraftIsClean" fullname="Tests.Editor.GaragePagePresenterDirectTests.ReadyUnlocked_WhenCommittedRosterIsValidAndDraftIsClean" methodname="ReadyUnlocked_WhenCommittedRosterIsValidAndDraftIsClean" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="735985030" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000256" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1039" name="ResultViewModel_FallsBackWhenNoOperationRecordExists" fullname="Tests.Editor.GaragePagePresenterDirectTests.ResultViewModel_FallsBackWhenNoOperationRecordExists" methodname="ResultViewModel_FallsBackWhenNoOperationRecordExists" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="1274024940" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000222" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1038" name="ResultViewModel_ShowsLatestOperationSummaryWhenNoDraftStats" fullname="Tests.Editor.GaragePagePresenterDirectTests.ResultViewModel_ShowsLatestOperationSummaryWhenNoDraftStats" methodname="ResultViewModel_ShowsLatestOperationSummaryWhenNoDraftStats" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="1708346363" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000670" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1037" name="SlotViewModel_UsesAssemblyPrefabsForCompletePreviewWhenAvailable" fullname="Tests.Editor.GaragePagePresenterDirectTests.SlotViewModel_UsesAssemblyPrefabsForCompletePreviewWhenAvailable" methodname="SlotViewModel_UsesAssemblyPrefabsForCompletePreviewWhenAvailable" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="1795460779" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.001514" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1034" name="SlotViewModel_UsesDeterministicCallsignAndIdentityCopy" fullname="Tests.Editor.GaragePagePresenterDirectTests.SlotViewModel_UsesDeterministicCallsignAndIdentityCopy" methodname="SlotViewModel_UsesDeterministicCallsignAndIdentityCopy" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="1142164512" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000517" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1035" name="SlotViewModel_UsesServiceTagByLoadoutKeyWhenProvided" fullname="Tests.Editor.GaragePagePresenterDirectTests.SlotViewModel_UsesServiceTagByLoadoutKeyWhenProvided" methodname="SlotViewModel_UsesServiceTagByLoadoutKeyWhenProvided" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="588877076" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000420" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1040" name="GarageRosterDirectTests" fullname="Tests.Editor.GarageRosterDirectTests" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.011632" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1044" name="ClearSlot_RemovesOnlySelectedSlot" fullname="Tests.Editor.GarageRosterDirectTests.ClearSlot_RemovesOnlySelectedSlot" methodname="ClearSlot_RemovesOnlySelectedSlot" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" seed="248169594" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000461" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1045" name="Clone_CreatesIndependentRoster" fullname="Tests.Editor.GarageRosterDirectTests.Clone_CreatesIndependentRoster" methodname="Clone_CreatesIndependentRoster" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" seed="734091107" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000204" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1046" name="GetFilledLoadouts_ReturnsOnlyCompleteLoadoutsInOrder" fullname="Tests.Editor.GarageRosterDirectTests.GetFilledLoadouts_ReturnsOnlyCompleteLoadoutsInOrder" methodname="GetFilledLoadouts_ReturnsOnlyCompleteLoadoutsInOrder" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" seed="484024324" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000882" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1043" name="Normalize_TrimsOverMaxSlots" fullname="Tests.Editor.GarageRosterDirectTests.Normalize_TrimsOverMaxSlots" methodname="Normalize_TrimsOverMaxSlots" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" seed="764651324" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000694" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1042" name="SetSlot_SixCompleteUnits_AreValid" fullname="Tests.Editor.GarageRosterDirectTests.SetSlot_SixCompleteUnits_AreValid" methodname="SetSlot_SixCompleteUnits_AreValid" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" seed="1361104971" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000254" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1041" name="SetSlot_ThreeCompleteUnits_AreValid" fullname="Tests.Editor.GarageRosterDirectTests.SetSlot_ThreeCompleteUnits_AreValid" methodname="SetSlot_ThreeCompleteUnits_AreValid" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" seed="460638727" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000387" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1047" name="ValidationProvider_AllowsMatchingFrameAndFirepowerAssemblyForm" fullname="Tests.Editor.GarageRosterDirectTests.ValidationProvider_AllowsMatchingFrameAndFirepowerAssemblyForm" methodname="ValidationProvider_AllowsMatchingFrameAndFirepowerAssemblyForm" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" seed="205999924" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.005029" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1048" name="ValidationProvider_BlocksMismatchedFrameAndFirepowerAssemblyForm" fullname="Tests.Editor.GarageRosterDirectTests.ValidationProvider_BlocksMismatchedFrameAndFirepowerAssemblyForm" methodname="ValidationProvider_BlocksMismatchedFrameAndFirepowerAssemblyForm" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" seed="888224146" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000736" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1168" name="GarageRosterReflectionTests" fullname="Tests.Editor.GarageRosterReflectionTests" classname="Tests.Editor.GarageRosterReflectionTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.001786" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1170" name="GarageRoster_PublicApiSurface_IsAvailable" fullname="Tests.Editor.GarageRosterReflectionTests.GarageRoster_PublicApiSurface_IsAvailable" methodname="GarageRoster_PublicApiSurface_IsAvailable" classname="Tests.Editor.GarageRosterReflectionTests" runstate="Runnable" seed="140306176" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000327" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1169" name="GarageRosterType_IsAvailableFromAssemblyCSharp" fullname="Tests.Editor.GarageRosterReflectionTests.GarageRosterType_IsAvailableFromAssemblyCSharp" methodname="GarageRosterType_IsAvailableFromAssemblyCSharp" classname="Tests.Editor.GarageRosterReflectionTests" runstate="Runnable" seed="406988498" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000390" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1049" name="GarageSetBUitkRuntimeAdapterDirectTests" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.204582" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1054" name="Render_DisablesSaveWhenResultCannotSave" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.Render_DisablesSaveWhenResultCannotSave" methodname="Render_DisablesSaveWhenResultCannotSave" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="308535271" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.101646" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1050" name="Render_MapsPresenterViewModelsToNamedElements" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.Render_MapsPresenterViewModelsToNamedElements" methodname="Render_MapsPresenterViewModelsToNamedElements" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="41117209" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.011613" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1056" name="Render_WithoutPartPreviewRenderer_HidesSelectedPartPreviewImage" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.Render_WithoutPartPreviewRenderer_HidesSelectedPartPreviewImage" methodname="Render_WithoutPartPreviewRenderer_HidesSelectedPartPreviewImage" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1557932811" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.012279" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1055" name="Render_WithoutPreviewRenderer_HidesRuntimePreviewImage" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.Render_WithoutPreviewRenderer_HidesRuntimePreviewImage" methodname="Render_WithoutPreviewRenderer_HidesRuntimePreviewImage" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="311882457" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.012962" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1057" name="RuntimeAdapter_BindToHost_ReplacesLobbyPlaceholderWithGarageScreen" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.RuntimeAdapter_BindToHost_ReplacesLobbyPlaceholderWithGarageScreen" methodname="RuntimeAdapter_BindToHost_ReplacesLobbyPlaceholderWithGarageScreen" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="58873819" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.015712" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1058" name="RuntimeAdapter_SetDocumentRootVisible_DoesNotHideHostBoundGarageScreen" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.RuntimeAdapter_SetDocumentRootVisible_DoesNotHideHostBoundGarageScreen" methodname="RuntimeAdapter_SetDocumentRootVisible_DoesNotHideHostBoundGarageScreen" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="285032401" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.015924" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1052" name="RuntimeLayout_PrioritizesAssemblyPreviewBeforePartPicker" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.RuntimeLayout_PrioritizesAssemblyPreviewBeforePartPicker" methodname="RuntimeLayout_PrioritizesAssemblyPreviewBeforePartPicker" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="883048999" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.014115" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1051" name="Uxml_OrdersPartTabsAsMobilityFrameFirepower" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.Uxml_OrdersPartTabsAsMobilityFrameFirepower" methodname="Uxml_OrdersPartTabsAsMobilityFrameFirepower" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1169920287" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.005384" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1053" name="Uxml_PartListUsesHiddenScrollerChromeAndSearchField" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.Uxml_PartListUsesHiddenScrollerChromeAndSearchField" methodname="Uxml_PartListUsesHiddenScrollerChromeAndSearchField" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1469279247" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.004873" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1061" name="ViewModelFactory_FiltersFirepowerBySelectedFrameAssemblyForm" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.ViewModelFactory_FiltersFirepowerBySelectedFrameAssemblyForm" methodname="ViewModelFactory_FiltersFirepowerBySelectedFrameAssemblyForm" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1718573268" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.003227" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1059" name="ViewModelFactory_FiltersOptionsBySearchText" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.ViewModelFactory_FiltersOptionsBySearchText" methodname="ViewModelFactory_FiltersOptionsBySearchText" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="739543255" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.001056" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1060" name="ViewModelFactory_ReturnsAllFilteredOptionsForScrollableList" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.ViewModelFactory_ReturnsAllFilteredOptionsForScrollableList" methodname="ViewModelFactory_ReturnsAllFilteredOptionsForScrollableList" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="712160173" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000546" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1062" name="GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.060630" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1063" name="Render_DoesNotReuseCompleteSelectedSlotAssemblyForSelectedPartPreview" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests.Render_DoesNotReuseCompleteSelectedSlotAssemblyForSelectedPartPreview" methodname="Render_DoesNotReuseCompleteSelectedSlotAssemblyForSelectedPartPreview" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" runstate="Runnable" seed="1247887089" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.017241" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1064" name="Render_ShowsSelectedSinglePartWhenSelectedSlotIsIncomplete" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests.Render_ShowsSelectedSinglePartWhenSelectedSlotIsIncomplete" methodname="Render_ShowsSelectedSinglePartWhenSelectedSlotIsIncomplete" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" runstate="Runnable" seed="760646807" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.029153" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1065" name="Renderers_UseSeparatePreviewLayersForUnitAndSelectedPart" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests.Renderers_UseSeparatePreviewLayersForUnitAndSelectedPart" methodname="Renderers_UseSeparatePreviewLayersForUnitAndSelectedPart" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" runstate="Runnable" seed="1115889109" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.012465" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1066" name="GarageUnitIdentityFormatterDirectTests" fullname="Tests.Editor.GarageUnitIdentityFormatterDirectTests" classname="Tests.Editor.GarageUnitIdentityFormatterDirectTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.002553" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1067" name="BuildCallsign_IsDeterministicBySlot" fullname="Tests.Editor.GarageUnitIdentityFormatterDirectTests.BuildCallsign_IsDeterministicBySlot" methodname="BuildCallsign_IsDeterministicBySlot" classname="Tests.Editor.GarageUnitIdentityFormatterDirectTests" runstate="Runnable" seed="146673898" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000227" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1070" name="BuildLoadoutKey_IsStableAndTrimmed" fullname="Tests.Editor.GarageUnitIdentityFormatterDirectTests.BuildLoadoutKey_IsStableAndTrimmed" methodname="BuildLoadoutKey_IsStableAndTrimmed" classname="Tests.Editor.GarageUnitIdentityFormatterDirectTests" runstate="Runnable" seed="1714343253" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000172" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1068" name="BuildRoleLabel_UsesAnchorAndRange" fullname="Tests.Editor.GarageUnitIdentityFormatterDirectTests.BuildRoleLabel_UsesAnchorAndRange" methodname="BuildRoleLabel_UsesAnchorAndRange" classname="Tests.Editor.GarageUnitIdentityFormatterDirectTests" runstate="Runnable" seed="1245063004" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000241" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1069" name="BuildServiceTagText_FormatsRememberedUnitTags" fullname="Tests.Editor.GarageUnitIdentityFormatterDirectTests.BuildServiceTagText_FormatsRememberedUnitTags" methodname="BuildServiceTagText_FormatsRememberedUnitTags" classname="Tests.Editor.GarageUnitIdentityFormatterDirectTests" runstate="Runnable" seed="1315326014" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:27Z" duration="0.000339" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1071" name="GarageUnitPreviewAssemblyDirectTests" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:28Z" duration="0.386346" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1072" name="CatalogFactory_DoesNotTreatGeneratedMobilityAssemblyPrefabsAsSocketPivots" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.CatalogFactory_DoesNotTreatGeneratedMobilityAssemblyPrefabsAsSocketPivots" methodname="CatalogFactory_DoesNotTreatGeneratedMobilityAssemblyPrefabsAsSocketPivots" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="63522991" result="Passed" start-time="2026-05-02 06:29:27Z" end-time="2026-05-02 06:29:28Z" duration="0.363210" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1073" name="CatalogFactory_ProvidesAssemblyPrefabAndSocketsForEveryGeneratedMobilityPart" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.CatalogFactory_ProvidesAssemblyPrefabAndSocketsForEveryGeneratedMobilityPart" methodname="CatalogFactory_ProvidesAssemblyPrefabAndSocketsForEveryGeneratedMobilityPart" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="555753669" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.002210" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1082" name="HasPreviewAssemblyData_RejectsMobilityVisualBoundsOnlySocket" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.HasPreviewAssemblyData_RejectsMobilityVisualBoundsOnlySocket" methodname="HasPreviewAssemblyData_RejectsMobilityVisualBoundsOnlySocket" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="134643840" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000391" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1081" name="HasPreviewAssemblyData_RequiresFrameTopSocket" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.HasPreviewAssemblyData_RequiresFrameTopSocket" methodname="HasPreviewAssemblyData_RequiresFrameTopSocket" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="858275950" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000244" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1083" name="TryCreatePreviewRoot_DoesNotUseImplicitPoseWhenAssemblyDataIsMissing" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_DoesNotUseImplicitPoseWhenAssemblyDataIsMissing" methodname="TryCreatePreviewRoot_DoesNotUseImplicitPoseWhenAssemblyDataIsMissing" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="1329555191" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000510" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1077" name="TryCreatePreviewRoot_UsesExpectedMobilitySocket" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_UsesExpectedMobilitySocket" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.003601" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1074" name="TryCreatePreviewRoot_UsesExpectedMobilitySocket(True,True,0.62f,0.02f,0.62f)" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_UsesExpectedMobilitySocket(True,True,0.62f,0.02f,0.62f)" methodname="TryCreatePreviewRoot_UsesExpectedMobilitySocket" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="1938015620" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001805" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1075" name="TryCreatePreviewRoot_UsesExpectedMobilitySocket(True,False,0.62f,0.0f,0.62f)" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_UsesExpectedMobilitySocket(True,False,0.62f,0.0f,0.62f)" methodname="TryCreatePreviewRoot_UsesExpectedMobilitySocket" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="352123747" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000299" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1076" name="TryCreatePreviewRoot_UsesExpectedMobilitySocket(False,False,0.0f,0.0f,0.34f)" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_UsesExpectedMobilitySocket(False,False,0.0f,0.0f,0.34f)" methodname="TryCreatePreviewRoot_UsesExpectedMobilitySocket" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="835829482" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000259" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1079" name="TryCreatePreviewRoot_UsesProfileAnchorForRoadRunnerKomodoNemesisDirectionOnlyTowerLoadout" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_UsesProfileAnchorForRoadRunnerKomodoNemesisDirectionOnlyTowerLoadout" methodname="TryCreatePreviewRoot_UsesProfileAnchorForRoadRunnerKomodoNemesisDirectionOnlyTowerLoadout" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="1084452928" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.005633" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1080" name="TryCreatePreviewRoot_UsesPromotedGxTreeSocketForEveryGeneratedMobilityPart" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_UsesPromotedGxTreeSocketForEveryGeneratedMobilityPart" methodname="TryCreatePreviewRoot_UsesPromotedGxTreeSocketForEveryGeneratedMobilityPart" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="2024395477" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.005545" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1078" name="TryCreatePreviewRoot_UsesPromotedSpiderGxTreeSocket" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_UsesPromotedSpiderGxTreeSocket" methodname="TryCreatePreviewRoot_UsesPromotedSpiderGxTreeSocket" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="1619752423" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001391" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1084" name="GarageUnitPreviewAssemblyFrameTopDirectTests" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.021646" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1097" name="TryCreatePreviewRoot_RejectsDirectionOnlyFirepowerWithoutExplicitAssemblyAnchor" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RejectsDirectionOnlyFirepowerWithoutExplicitAssemblyAnchor" methodname="TryCreatePreviewRoot_RejectsDirectionOnlyFirepowerWithoutExplicitAssemblyAnchor" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="582262438" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001186" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1088" name="TryCreatePreviewRoot_RejectsDisabledHumanoidDirectionOnlyFirepower" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RejectsDisabledHumanoidDirectionOnlyFirepower" methodname="TryCreatePreviewRoot_RejectsDisabledHumanoidDirectionOnlyFirepower" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1586948982" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000976" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1098" name="TryCreatePreviewRoot_RejectsHumanoidDirectionOnlyFirepowerWithoutApprovedOriginalProfile" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RejectsHumanoidDirectionOnlyFirepowerWithoutApprovedOriginalProfile" methodname="TryCreatePreviewRoot_RejectsHumanoidDirectionOnlyFirepowerWithoutApprovedOriginalProfile" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="2068898540" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000902" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1087" name="TryCreatePreviewRoot_RejectsLegacyHumanoidHandRigAdapterForDirectionOnlyFirepower" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RejectsLegacyHumanoidHandRigAdapterForDirectionOnlyFirepower" methodname="TryCreatePreviewRoot_RejectsLegacyHumanoidHandRigAdapterForDirectionOnlyFirepower" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="2080243871" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000804" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1094" name="TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.007722" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1089" name="TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview(&quot;nova_frame_body26_kp&quot;,&quot;nova_fire_arm32_sppoo&quot;,&quot;nova_mob_legs21_ksor&quot;)" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview(&quot;nova_frame_body26_kp&quot;,&quot;nova_fire_arm32_sppoo&quot;,&quot;nova_mob_legs21_ksor&quot;)" methodname="TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1918395235" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001909" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1090" name="TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview(&quot;nova_frame_body26_kp&quot;,&quot;nova_fire_arm24_bzk&quot;,&quot;nova_mob_legs21_ksor&quot;)" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview(&quot;nova_frame_body26_kp&quot;,&quot;nova_fire_arm24_bzk&quot;,&quot;nova_mob_legs21_ksor&quot;)" methodname="TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="437828434" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001042" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1091" name="TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview(&quot;nova_frame_body26_kp&quot;,&quot;nova_fire_s_arm52_bzk&quot;,&quot;nova_mob_legs21_ksor&quot;)" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview(&quot;nova_frame_body26_kp&quot;,&quot;nova_fire_s_arm52_bzk&quot;,&quot;nova_mob_legs21_ksor&quot;)" methodname="TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="833990913" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000990" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1092" name="TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview(&quot;nova_frame_body17_rzmt&quot;,&quot;nova_fire_arm15_hdkn&quot;,&quot;nova_mob_legs16_sprt&quot;)" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview(&quot;nova_frame_body17_rzmt&quot;,&quot;nova_fire_arm15_hdkn&quot;,&quot;nova_mob_legs16_sprt&quot;)" methodname="TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1512147698" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000980" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1093" name="TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview(&quot;nova_frame_body10_skdr&quot;,&quot;nova_fire_arm39_hmsk&quot;,&quot;nova_mob_legs24_sts&quot;)" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview(&quot;nova_frame_body10_skdr&quot;,&quot;nova_fire_arm39_hmsk&quot;,&quot;nova_mob_legs24_sts&quot;)" methodname="TryCreatePreviewRoot_RendersHumanoidFrameWeaponMobilityCatalogSamplesForReview" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="376079034" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000909" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="ParameterizedMethod" id="1096" name="TryCreatePreviewRoot_RendersReviewedHumanoidFrameWeaponMobilityProfileForTesting" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RendersReviewedHumanoidFrameWeaponMobilityProfileForTesting" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.002153" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1095" name="TryCreatePreviewRoot_RendersReviewedHumanoidFrameWeaponMobilityProfileForTesting(&quot;nova_frame_body10_skdr&quot;,&quot;nova_fire_arm29_sdbt&quot;,&quot;nova_mob_legs7_hb&quot;,&quot;mismatch&quot;)" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RendersReviewedHumanoidFrameWeaponMobilityProfileForTesting(&quot;nova_frame_body10_skdr&quot;,&quot;nova_fire_arm29_sdbt&quot;,&quot;nova_mob_legs7_hb&quot;,&quot;mismatch&quot;)" methodname="TryCreatePreviewRoot_RendersReviewedHumanoidFrameWeaponMobilityProfileForTesting" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1071683100" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001659" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1085" name="TryCreatePreviewRoot_UsesFrameSocketOffsetWhenFrameTopSocketIsZero" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesFrameSocketOffsetWhenFrameTopSocketIsZero" methodname="TryCreatePreviewRoot_UsesFrameSocketOffsetWhenFrameTopSocketIsZero" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1175552923" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000745" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1099" name="TryCreatePreviewRoot_UsesProfileAnchorForCenturionProlixDirectionOnlyShoulderLoadout" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesProfileAnchorForCenturionProlixDirectionOnlyShoulderLoadout" methodname="TryCreatePreviewRoot_UsesProfileAnchorForCenturionProlixDirectionOnlyShoulderLoadout" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1028163139" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001542" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1086" name="TryCreatePreviewRoot_UsesVisualBoundsWhenPrefabPivotsAreOffset" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesVisualBoundsWhenPrefabPivotsAreOffset" methodname="TryCreatePreviewRoot_UsesVisualBoundsWhenPrefabPivotsAreOffset" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1355843746" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.002045" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1171" name="GarageWorkflowReflectionTests" fullname="Tests.Editor.GarageWorkflowReflectionTests" classname="Tests.Editor.GarageWorkflowReflectionTests" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.002425" total="2" passed="1" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1173" name="GarageWorkflow_PublicMethods_AreAvailable" fullname="Tests.Editor.GarageWorkflowReflectionTests.GarageWorkflow_PublicMethods_AreAvailable" methodname="GarageWorkflow_PublicMethods_AreAvailable" classname="Tests.Editor.GarageWorkflowReflectionTests" runstate="Runnable" seed="1759407490" result="Failed" label="Error" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000607" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[System.Reflection.AmbiguousMatchException : Ambiguous match found.]]></message>
+                <stack-trace><![CDATA[  at System.RuntimeType.GetMethodImplCommon (System.String name, System.Int32 genericParameterCount, System.Reflection.BindingFlags bindingAttr, System.Reflection.Binder binder, System.Reflection.CallingConventions callConv, System.Type[] types, System.Reflection.ParameterModifier[] modifiers) [0x00050] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.RuntimeType.GetMethodImpl (System.String name, System.Reflection.BindingFlags bindingAttr, System.Reflection.Binder binder, System.Reflection.CallingConventions callConv, System.Type[] types, System.Reflection.ParameterModifier[] modifiers) [0x00000] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at System.Type.GetMethod (System.String name, System.Reflection.BindingFlags bindingAttr) [0x0000e] in <1eb9db207454431c84a47bcd81e79c37>:0 
+  at Tests.Editor.GarageWorkflowReflectionTests.GarageWorkflow_PublicMethods_AreAvailable () [0x0002f] in C:\Users\SOL\Documents\JG\Assets\Editor\Tests\GarageWorkflowReflectionTests.cs:37 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <1eb9db207454431c84a47bcd81e79c37>:0 ]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1172" name="GarageWorkflowTypes_AreAvailable" fullname="Tests.Editor.GarageWorkflowReflectionTests.GarageWorkflowTypes_AreAvailable" methodname="GarageWorkflowTypes_AreAvailable" classname="Tests.Editor.GarageWorkflowReflectionTests" runstate="Runnable" seed="754703146" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000432" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1174" name="InfrastructureMapperReflectionTests" fullname="Tests.Editor.InfrastructureMapperReflectionTests" classname="Tests.Editor.InfrastructureMapperReflectionTests" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.002018" total="2" passed="1" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1176" name="InfrastructureReflection_PublicAndInternalEntryPoints_AreAvailable" fullname="Tests.Editor.InfrastructureMapperReflectionTests.InfrastructureReflection_PublicAndInternalEntryPoints_AreAvailable" methodname="InfrastructureReflection_PublicAndInternalEntryPoints_AreAvailable" classname="Tests.Editor.InfrastructureMapperReflectionTests" runstate="Runnable" seed="420245658" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000291" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1175" name="InfrastructureReflectionTypes_AreAvailable" fullname="Tests.Editor.InfrastructureMapperReflectionTests.InfrastructureReflectionTypes_AreAvailable" methodname="InfrastructureReflectionTypes_AreAvailable" classname="Tests.Editor.InfrastructureMapperReflectionTests" runstate="Runnable" seed="1397373594" result="Failed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000646" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[  Expected: not null
+  But was:  null
+]]></message>
+                <stack-trace><![CDATA[at Tests.Editor.InfrastructureMapperReflectionTests.InfrastructureReflectionTypes_AreAvailable () [0x00022] in C:\Users\SOL\Documents\JG\Assets\Editor\Tests\InfrastructureMapperReflectionTests.cs:23
+]]></stack-trace>
+              </failure>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1100" name="LayerDependencyAnalyzerDirectTests" fullname="Tests.Editor.LayerDependencyAnalyzerDirectTests" classname="Tests.Editor.LayerDependencyAnalyzerDirectTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.477368" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1101" name="Analyze_CurrentScriptsRoot_HasNoLayerViolations_AndNoFeatureCycles" fullname="Tests.Editor.LayerDependencyAnalyzerDirectTests.Analyze_CurrentScriptsRoot_HasNoLayerViolations_AndNoFeatureCycles" methodname="Analyze_CurrentScriptsRoot_HasNoLayerViolations_AndNoFeatureCycles" classname="Tests.Editor.LayerDependencyAnalyzerDirectTests" runstate="Runnable" seed="1864191375" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.476689" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1177" name="LobbyAndGameValidationReflectionTests" fullname="Tests.Editor.LobbyAndGameValidationReflectionTests" classname="Tests.Editor.LobbyAndGameValidationReflectionTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001852" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1179" name="LobbyAndGameValidation_PublicApiSurface_IsAvailable" fullname="Tests.Editor.LobbyAndGameValidationReflectionTests.LobbyAndGameValidation_PublicApiSurface_IsAvailable" methodname="LobbyAndGameValidation_PublicApiSurface_IsAvailable" classname="Tests.Editor.LobbyAndGameValidationReflectionTests" runstate="Runnable" seed="280181361" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000322" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1178" name="LobbyAndGameValidationTypes_AreAvailable" fullname="Tests.Editor.LobbyAndGameValidationReflectionTests.LobbyAndGameValidationTypes_AreAvailable" methodname="LobbyAndGameValidationTypes_AreAvailable" classname="Tests.Editor.LobbyAndGameValidationReflectionTests" runstate="Runnable" seed="1662043686" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000221" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1102" name="LobbyPagePresenterDirectTests" fullname="Tests.Editor.LobbyPagePresenterDirectTests" classname="Tests.Editor.LobbyPagePresenterDirectTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.012853" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1106" name="BuildAccount_MapsProfileSettingsAndOperationCount" fullname="Tests.Editor.LobbyPagePresenterDirectTests.BuildAccount_MapsProfileSettingsAndOperationCount" methodname="BuildAccount_MapsProfileSettingsAndOperationCount" classname="Tests.Editor.LobbyPagePresenterDirectTests" runstate="Runnable" seed="2120887516" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001730" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1107" name="BuildOperationMemory_FormatsLatestAndRecentRows" fullname="Tests.Editor.LobbyPagePresenterDirectTests.BuildOperationMemory_FormatsLatestAndRecentRows" methodname="BuildOperationMemory_FormatsLatestAndRecentRows" classname="Tests.Editor.LobbyPagePresenterDirectTests" runstate="Runnable" seed="467451969" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.002161" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1105" name="BuildRoomDetail_MapsLocalReadyAndOwnerState" fullname="Tests.Editor.LobbyPagePresenterDirectTests.BuildRoomDetail_MapsLocalReadyAndOwnerState" methodname="BuildRoomDetail_MapsLocalReadyAndOwnerState" classname="Tests.Editor.LobbyPagePresenterDirectTests" runstate="Runnable" seed="1003426219" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.003360" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1104" name="BuildRooms_DisablesClosedNetworkRoomRows" fullname="Tests.Editor.LobbyPagePresenterDirectTests.BuildRooms_DisablesClosedNetworkRoomRows" methodname="BuildRooms_DisablesClosedNetworkRoomRows" classname="Tests.Editor.LobbyPagePresenterDirectTests" runstate="Runnable" seed="897153703" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001575" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1103" name="BuildRooms_MapsRoomSnapshotRows" fullname="Tests.Editor.LobbyPagePresenterDirectTests.BuildRooms_MapsRoomSnapshotRows" methodname="BuildRooms_MapsRoomSnapshotRows" classname="Tests.Editor.LobbyPagePresenterDirectTests" runstate="Runnable" seed="1155104347" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.002024" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1108" name="LobbyReadyPolicyDirectTests" fullname="Tests.Editor.LobbyReadyPolicyDirectTests" classname="Tests.Editor.LobbyReadyPolicyDirectTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.002177" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1111" name="BuildReadyButtonLabel_ReflectsDraftAndRosterState" fullname="Tests.Editor.LobbyReadyPolicyDirectTests.BuildReadyButtonLabel_ReflectsDraftAndRosterState" methodname="BuildReadyButtonLabel_ReflectsDraftAndRosterState" classname="Tests.Editor.LobbyReadyPolicyDirectTests" runstate="Runnable" seed="1914008912" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000339" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1109" name="ComputeReadyEligible_RequiresValidSavedRoster" fullname="Tests.Editor.LobbyReadyPolicyDirectTests.ComputeReadyEligible_RequiresValidSavedRoster" methodname="ComputeReadyEligible_RequiresValidSavedRoster" classname="Tests.Editor.LobbyReadyPolicyDirectTests" runstate="Runnable" seed="1626635048" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000331" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1110" name="ShouldForceRelock_WhenSavedRosterBecomesIneligible" fullname="Tests.Editor.LobbyReadyPolicyDirectTests.ShouldForceRelock_WhenSavedRosterBecomesIneligible" methodname="ShouldForceRelock_WhenSavedRosterBecomesIneligible" classname="Tests.Editor.LobbyReadyPolicyDirectTests" runstate="Runnable" seed="838617081" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000229" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1112" name="LobbyUitkRuntimeAdapterDirectTests" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.084959" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1113" name="Bind_ClonesShellAndAuxiliarySurfaces" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.Bind_ClonesShellAndAuxiliarySurfaces" methodname="Bind_ClonesShellAndAuxiliarySurfaces" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="273003995" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.042971" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1116" name="RenderRoomDetail_MapsViewModelToActionState" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.RenderRoomDetail_MapsViewModelToActionState" methodname="RenderRoomDetail_MapsViewModelToActionState" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1796000012" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.010815" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1115" name="RenderRooms_MapsViewModelToRows" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.RenderRooms_MapsViewModelToRows" methodname="RenderRooms_MapsViewModelToRows" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="958868461" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.010648" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1114" name="ShowPages_UpdatesVisibleHostNavShellAndClonesRouteSurfaceOnce" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.ShowPages_UpdatesVisibleHostNavShellAndClonesRouteSurfaceOnce" methodname="ShowPages_UpdatesVisibleHostNavShellAndClonesRouteSurfaceOnce" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1664973228" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.018053" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1117" name="Nova1492PlayablePartGenerationToolDirectTests" fullname="Tests.Editor.Nova1492PlayablePartGenerationToolDirectTests" classname="Tests.Editor.Nova1492PlayablePartGenerationToolDirectTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.002665" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1118" name="IsGeneratedEffectRendererNameForTest_FiltersKnownBazookaBeamOnly" fullname="Tests.Editor.Nova1492PlayablePartGenerationToolDirectTests.IsGeneratedEffectRendererNameForTest_FiltersKnownBazookaBeamOnly" methodname="IsGeneratedEffectRendererNameForTest_FiltersKnownBazookaBeamOnly" classname="Tests.Editor.Nova1492PlayablePartGenerationToolDirectTests" runstate="Runnable" seed="2117978507" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000613" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1119" name="IsGeneratedEffectRendererNameForTest_FiltersKnownCruiserBeamOnly" fullname="Tests.Editor.Nova1492PlayablePartGenerationToolDirectTests.IsGeneratedEffectRendererNameForTest_FiltersKnownCruiserBeamOnly" methodname="IsGeneratedEffectRendererNameForTest_FiltersKnownCruiserBeamOnly" classname="Tests.Editor.Nova1492PlayablePartGenerationToolDirectTests" runstate="Runnable" seed="380413721" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000173" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1120" name="NovaAssemblyProfileCatalogDirectTests" fullname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" classname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.004683" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1121" name="AlignmentCatalog_KeepsHumanoidDirectionOnlyWeaponsPreviewableForReview" fullname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests.AlignmentCatalog_KeepsHumanoidDirectionOnlyWeaponsPreviewableForReview" methodname="AlignmentCatalog_KeepsHumanoidDirectionOnlyWeaponsPreviewableForReview" classname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" runstate="Runnable" seed="458529126" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000963" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1124" name="AlignmentCatalog_KeepsKnownLegProblemPartsInGxAuditReviewQueue" fullname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests.AlignmentCatalog_KeepsKnownLegProblemPartsInGxAuditReviewQueue" methodname="AlignmentCatalog_KeepsKnownLegProblemPartsInGxAuditReviewQueue" classname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" runstate="Runnable" seed="1934188079" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000318" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1123" name="AlignmentCatalog_KeepsReviewedHumanoidFrameWeaponMobilityEvidencePreviewable" fullname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests.AlignmentCatalog_KeepsReviewedHumanoidFrameWeaponMobilityEvidencePreviewable" classname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001274" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1122" name="AlignmentCatalog_KeepsReviewedHumanoidFrameWeaponMobilityEvidencePreviewable(&quot;nova_fire_arm29_sdbt&quot;,&quot;mismatch&quot;)" fullname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests.AlignmentCatalog_KeepsReviewedHumanoidFrameWeaponMobilityEvidencePreviewable(&quot;nova_fire_arm29_sdbt&quot;,&quot;mismatch&quot;)" methodname="AlignmentCatalog_KeepsReviewedHumanoidFrameWeaponMobilityEvidencePreviewable" classname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" runstate="Runnable" seed="1616285793" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000880" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestFixture" id="1125" name="PlacementAreaViewDirectTests" fullname="Tests.Editor.PlacementAreaViewDirectTests" classname="Tests.Editor.PlacementAreaViewDirectTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.014140" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1127" name="UnitPreview_HideClearsStateAndVisuals" fullname="Tests.Editor.PlacementAreaViewDirectTests.UnitPreview_HideClearsStateAndVisuals" methodname="UnitPreview_HideClearsStateAndVisuals" classname="Tests.Editor.PlacementAreaViewDirectTests" runstate="Runnable" seed="1123350423" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.011827" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1126" name="UnitPreview_ShowsExpectedSpawnAnchorAndAttackRangeVisuals" fullname="Tests.Editor.PlacementAreaViewDirectTests.UnitPreview_ShowsExpectedSpawnAnchorAndAttackRangeVisuals" methodname="UnitPreview_ShowsExpectedSpawnAnchorAndAttackRangeVisuals" classname="Tests.Editor.PlacementAreaViewDirectTests" runstate="Runnable" seed="1590430207" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001261" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1128" name="PlayerNetworkPropertyReaderDirectTests" fullname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests" classname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.005301" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1134" name="CreateLifeStateProperties_RoundTripsLifeState" fullname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests.CreateLifeStateProperties_RoundTripsLifeState" methodname="CreateLifeStateProperties_RoundTripsLifeState" classname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests" runstate="Runnable" seed="1090807929" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000518" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1132" name="TryReadEnergyChange_UsesCurrentMaxEnergyForPartialUpdate" fullname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests.TryReadEnergyChange_UsesCurrentMaxEnergyForPartialUpdate" methodname="TryReadEnergyChange_UsesCurrentMaxEnergyForPartialUpdate" classname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests" runstate="Runnable" seed="2016420187" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000507" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1129" name="TryReadHealthChange_UsesCurrentMaxHealthForPartialUpdate" fullname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests.TryReadHealthChange_UsesCurrentMaxHealthForPartialUpdate" methodname="TryReadHealthChange_UsesCurrentMaxHealthForPartialUpdate" classname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests" runstate="Runnable" seed="1499247374" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000331" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1130" name="TryReadHealthChange_UsesDefaultMaxHealthOnlyWhenNoMaxExists" fullname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests.TryReadHealthChange_UsesDefaultMaxHealthOnlyWhenNoMaxExists" methodname="TryReadHealthChange_UsesDefaultMaxHealthOnlyWhenNoMaxExists" classname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests" runstate="Runnable" seed="1193178225" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000210" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1133" name="TryReadHydratedEnergy_UsesDefaultMaxEnergyForLegacySnapshot" fullname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests.TryReadHydratedEnergy_UsesDefaultMaxEnergyForLegacySnapshot" methodname="TryReadHydratedEnergy_UsesDefaultMaxEnergyForLegacySnapshot" classname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests" runstate="Runnable" seed="47091964" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000270" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1131" name="TryReadHydratedHealth_RequiresCompleteHealthSnapshot" fullname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests.TryReadHydratedHealth_RequiresCompleteHealthSnapshot" methodname="TryReadHydratedHealth_RequiresCompleteHealthSnapshot" classname="Tests.Editor.PlayerNetworkPropertyReaderDirectTests" runstate="Runnable" seed="869849220" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000274" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1135" name="SceneRegistryDirectTests" fullname="Tests.Editor.SceneRegistryDirectTests" classname="Tests.Editor.SceneRegistryDirectTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.008264" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1137" name="EnemySceneRegistry_OnlyReplaysArrivalsWithoutSubscriber" fullname="Tests.Editor.SceneRegistryDirectTests.EnemySceneRegistry_OnlyReplaysArrivalsWithoutSubscriber" methodname="EnemySceneRegistry_OnlyReplaysArrivalsWithoutSubscriber" classname="Tests.Editor.SceneRegistryDirectTests" runstate="Runnable" seed="556751907" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.006015" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1136" name="PlayerSceneRegistry_OnlyReplaysArrivalsWithoutSubscriber" fullname="Tests.Editor.SceneRegistryDirectTests.PlayerSceneRegistry_OnlyReplaysArrivalsWithoutSubscriber" methodname="PlayerSceneRegistry_OnlyReplaysArrivalsWithoutSubscriber" classname="Tests.Editor.SceneRegistryDirectTests" runstate="Runnable" seed="1521835067" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001248" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1180" name="SoundSystemReflectionTests" fullname="Tests.Editor.SoundSystemReflectionTests" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.047551" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1181" name="SoundCatalog_ReportsDuplicateKeys" fullname="Tests.Editor.SoundSystemReflectionTests.SoundCatalog_ReportsDuplicateKeys" methodname="SoundCatalog_ReportsDuplicateKeys" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" seed="1363203066" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.005833" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1182" name="SoundPlayer_ComputesClampedChannelVolumes" fullname="Tests.Editor.SoundSystemReflectionTests.SoundPlayer_ComputesClampedChannelVolumes" methodname="SoundPlayer_ComputesClampedChannelVolumes" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" seed="1416447682" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000865" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1184" name="SoundPlayer_DoesNotCreateRuntimeAudioSources" fullname="Tests.Editor.SoundSystemReflectionTests.SoundPlayer_DoesNotCreateRuntimeAudioSources" methodname="SoundPlayer_DoesNotCreateRuntimeAudioSources" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" seed="1880442496" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001489" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1183" name="SoundPlayer_RequiresSceneOwnedAudioSources" fullname="Tests.Editor.SoundSystemReflectionTests.SoundPlayer_RequiresSceneOwnedAudioSources" methodname="SoundPlayer_RequiresSceneOwnedAudioSources" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" seed="1991254893" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000389" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1186" name="SoundPlayer_RespectsSfxCooldown" fullname="Tests.Editor.SoundSystemReflectionTests.SoundPlayer_RespectsSfxCooldown" methodname="SoundPlayer_RespectsSfxCooldown" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" seed="610107807" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.028540" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1185" name="SoundPlayer_SceneHostsDeclareSerializedAudioSources" fullname="Tests.Editor.SoundSystemReflectionTests.SoundPlayer_SceneHostsDeclareSerializedAudioSources" methodname="SoundPlayer_SceneHostsDeclareSerializedAudioSources" classname="Tests.Editor.SoundSystemReflectionTests" runstate="Runnable" seed="854725876" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.007848" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1138" name="SummonUnitUseCaseDirectTests" fullname="Tests.Editor.SummonUnitUseCaseDirectTests" classname="Tests.Editor.SummonUnitUseCaseDirectTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.008681" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1139" name="Execute_PublishesCompletedEventOnce_WhenEnergySpendSucceeds" fullname="Tests.Editor.SummonUnitUseCaseDirectTests.Execute_PublishesCompletedEventOnce_WhenEnergySpendSucceeds" methodname="Execute_PublishesCompletedEventOnce_WhenEnergySpendSucceeds" classname="Tests.Editor.SummonUnitUseCaseDirectTests" runstate="Runnable" seed="1571300800" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001784" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1140" name="Execute_PublishesFailedEventWithoutSpawning_WhenEnergyIsInsufficient" fullname="Tests.Editor.SummonUnitUseCaseDirectTests.Execute_PublishesFailedEventWithoutSpawning_WhenEnergyIsInsufficient" methodname="Execute_PublishesFailedEventWithoutSpawning_WhenEnergyIsInsufficient" classname="Tests.Editor.SummonUnitUseCaseDirectTests" runstate="Runnable" seed="1345253462" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.002245" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1142" name="Execute_RefundsEnergyAndPublishesFailedEvent_WhenSpawnReturnsEmptyId" fullname="Tests.Editor.SummonUnitUseCaseDirectTests.Execute_RefundsEnergyAndPublishesFailedEvent_WhenSpawnReturnsEmptyId" methodname="Execute_RefundsEnergyAndPublishesFailedEvent_WhenSpawnReturnsEmptyId" classname="Tests.Editor.SummonUnitUseCaseDirectTests" runstate="Runnable" seed="473283959" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.000753" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1141" name="Execute_RefundsEnergyAndPublishesFailedEvent_WhenSpawnThrows" fullname="Tests.Editor.SummonUnitUseCaseDirectTests.Execute_RefundsEnergyAndPublishesFailedEvent_WhenSpawnThrows" methodname="Execute_RefundsEnergyAndPublishesFailedEvent_WhenSpawnThrows" classname="Tests.Editor.SummonUnitUseCaseDirectTests" runstate="Runnable" seed="580295729" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001238" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1143" name="UitkIconRegistryDirectTests" fullname="Tests.Editor.UitkIconRegistryDirectTests" classname="Tests.Editor.UitkIconRegistryDirectTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.007561" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1145" name="ApplyRejectsUnknownIconId" fullname="Tests.Editor.UitkIconRegistryDirectTests.ApplyRejectsUnknownIconId" methodname="ApplyRejectsUnknownIconId" classname="Tests.Editor.UitkIconRegistryDirectTests" runstate="Runnable" seed="1184595819" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.001029" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1144" name="RegisteredIconsHaveUssClassAndPngAsset" fullname="Tests.Editor.UitkIconRegistryDirectTests.RegisteredIconsHaveUssClassAndPngAsset" methodname="RegisteredIconsHaveUssClassAndPngAsset" classname="Tests.Editor.UitkIconRegistryDirectTests" runstate="Runnable" seed="544065444" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.005044" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1146" name="UnitSlotInputHandlerDirectTests" fullname="Tests.Editor.UnitSlotInputHandlerDirectTests" classname="Tests.Editor.UnitSlotInputHandlerDirectTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.027114" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1147" name="DragDropInsidePlacementArea_RequestsSummonAndHidesPreview" fullname="Tests.Editor.UnitSlotInputHandlerDirectTests.DragDropInsidePlacementArea_RequestsSummonAndHidesPreview" methodname="DragDropInsidePlacementArea_RequestsSummonAndHidesPreview" classname="Tests.Editor.UnitSlotInputHandlerDirectTests" runstate="Runnable" seed="1405551846" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:28Z" duration="0.026086" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1148" name="UnitStatOwnershipAndCostDirectTests" fullname="Tests.Editor.UnitStatOwnershipAndCostDirectTests" classname="Tests.Editor.UnitStatOwnershipAndCostDirectTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-05-02 06:29:28Z" end-time="2026-05-02 06:29:29Z" duration="0.008909" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1152" name="BattleEntityDefenseFeedsFixedDamageReduction" fullname="Tests.Editor.UnitStatOwnershipAndCostDirectTests.BattleEntityDefenseFeedsFixedDamageReduction" methodname="BattleEntityDefenseFeedsFixedDamageReduction" classname="Tests.Editor.UnitStatOwnershipAndCostDirectTests" runstate="Runnable" seed="1355635925" result="Passed" start-time="2026-05-02 06:29:29Z" end-time="2026-05-02 06:29:29Z" duration="0.001097" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1150" name="CalculatePart_AddsHigherPenaltyForImbalancedStats" fullname="Tests.Editor.UnitStatOwnershipAndCostDirectTests.CalculatePart_AddsHigherPenaltyForImbalancedStats" methodname="CalculatePart_AddsHigherPenaltyForImbalancedStats" classname="Tests.Editor.UnitStatOwnershipAndCostDirectTests" runstate="Runnable" seed="1537803555" result="Passed" start-time="2026-05-02 06:29:29Z" end-time="2026-05-02 06:29:29Z" duration="0.000442" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1149" name="CalculateParts_UsesOwnedStats_AndTotalIsPartSum" fullname="Tests.Editor.UnitStatOwnershipAndCostDirectTests.CalculateParts_UsesOwnedStats_AndTotalIsPartSum" methodname="CalculateParts_UsesOwnedStats_AndTotalIsPartSum" classname="Tests.Editor.UnitStatOwnershipAndCostDirectTests" runstate="Runnable" seed="1960481180" result="Passed" start-time="2026-05-02 06:29:29Z" end-time="2026-05-02 06:29:29Z" duration="0.001118" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1151" name="ComposeUnit_MapsStatsToNewOwners" fullname="Tests.Editor.UnitStatOwnershipAndCostDirectTests.ComposeUnit_MapsStatsToNewOwners" methodname="ComposeUnit_MapsStatsToNewOwners" classname="Tests.Editor.UnitStatOwnershipAndCostDirectTests" runstate="Runnable" seed="708340078" result="Passed" start-time="2026-05-02 06:29:29Z" end-time="2026-05-02 06:29:29Z" duration="0.002781" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\editmode-humanoid-preview-unblocked-20260502.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

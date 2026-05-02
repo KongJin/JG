@@ -38,6 +38,13 @@ namespace ProjectSD.EditorTools
             ["nova_mob_s_legs28_krz"] = new[] { "_mesh01" }
         };
 
+        public static bool IsPlayableCatalogRowForTest(string slot, string assemblyForm) =>
+            IsPlayableCatalogRow(new PartRow
+            {
+                Slot = slot,
+                AssemblyForm = assemblyForm
+            });
+
         [MenuItem("Tools/Nova1492/Create Full Part Preview Prefabs")]
         public static void CreateFullPartPreviewPrefabs()
         {
@@ -585,10 +592,21 @@ namespace ProjectSD.EditorTools
                     row.Defense = ResolveFrameDefense(row.BaseHp, row.Tier);
                 if (row.MoveSpeed <= 0f)
                     row.MoveSpeed = ResolveMoveSpeed(row.MoveRange, row.Tier);
+                if (!IsPlayableCatalogRow(row))
+                    continue;
+
                 rows.Add(row);
             }
 
             return rows;
+        }
+
+        private static bool IsPlayableCatalogRow(PartRow row)
+        {
+            if (row == null)
+                return false;
+
+            return !string.Equals(row.AssemblyForm, "Humanoid", StringComparison.Ordinal);
         }
 
         private static HashSet<string> ReadChangedPipelinePartIds()
