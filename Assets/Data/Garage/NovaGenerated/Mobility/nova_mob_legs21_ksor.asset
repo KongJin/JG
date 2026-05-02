@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -16,7 +16,9 @@ MonoBehaviour:
   displayName: "\uCE74\uC18C\uC640\uB9AC"
   icon: {fileID: 0}
   mobilitySurface: 1
-  moveSpeed: 4.5
+  legacyHpBonus: 0
+  moveSpeed: 4.54
   moveRange: 5.1
+  legacyAnchorRange: 0
   description: datan\common\legs21_ksor.gx
   previewPrefab: {fileID: 1884456771891405917, guid: b9822939a79a2ed429ab55202a547a11, type: 3}

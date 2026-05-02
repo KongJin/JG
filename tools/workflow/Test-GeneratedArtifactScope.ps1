@@ -1,6 +1,6 @@
 param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path,
-    [string[]]$ArtifactPath = @("artifacts/unity/unity-ui-authoring-workflow-policy.json", "artifacts/rules/issue-recurrence-closeout.json"),
+    [string[]]$ArtifactPath = @("artifacts/rules/issue-recurrence-closeout.json"),
     [string[]]$ExpectedPattern = @(),
     [switch]$ExplicitArtifactPathOnly,
     [switch]$StagedOnly

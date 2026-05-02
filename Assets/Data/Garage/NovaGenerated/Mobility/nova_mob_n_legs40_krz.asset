@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -16,7 +16,9 @@ MonoBehaviour:
   displayName: "\uD06C\uB8E8\uC800N"
   icon: {fileID: 0}
   mobilitySurface: 2
+  legacyHpBonus: 0
   moveSpeed: 4.74
   moveRange: 5.65
+  legacyAnchorRange: 0
   description: datan\common\n_legs40_krz.gx
   previewPrefab: {fileID: 7167764685156440676, guid: 2de1de4b2bb96af43a8134259866c6fb, type: 3}

@@ -1,6 +1,6 @@
 # Workflow Helpers
 
-> 마지막 업데이트: 2026-04-26
+> 마지막 업데이트: 2026-05-02
 > 상태: active
 > doc_id: tools.workflow-readme
 > role: reference
@@ -23,6 +23,10 @@ These helpers do not define new repo policy. They only automate checks already d
 .\tools\workflow\Invoke-CloseoutPack.ps1 -PlanOnly
 .\tools\workflow\Find-SimplificationCandidates.ps1
 .\tools\workflow\Test-GeneratedArtifactScope.ps1
+.\tools\workflow\Test-FeaturePresentationStructure.ps1
+.\tools\workflow\Test-GaragePresentationStructure.ps1
+npm run --silent feature:presentation:lint
+npm run --silent garage:presentation:lint
 .\tools\workflow\Get-NextWorkSuggestion.ps1
 .\tools\workflow\Test-UnityCliRunTestsPreflight.ps1
 .\tools\workflow\Invoke-UnityEditModeTests.ps1 -TestFilter Tests.Editor.PlacementAreaViewDirectTests -ResultName placement-area-view-direct-tests

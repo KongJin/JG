@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-02 04:00:25Z" end-time="2026-05-02 04:00:25Z" duration="0.0732393">
+  <test-suite type="TestSuite" id="1196" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="149" result="Passed" start-time="2026-05-02 04:00:25Z" end-time="2026-05-02 04:00:25Z" duration="0.073239" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1182" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="149" result="Passed" start-time="2026-05-02 04:00:25Z" end-time="2026-05-02 04:00:25Z" duration="0.072321" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32204" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1185" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="143" result="Passed" start-time="2026-05-02 04:00:25Z" end-time="2026-05-02 04:00:25Z" duration="0.071536" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1186" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="143" result="Passed" start-time="2026-05-02 04:00:25Z" end-time="2026-05-02 04:00:25Z" duration="0.070737" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1062" name="GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-05-02 04:00:25Z" end-time="2026-05-02 04:00:25Z" duration="0.070417" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1063" name="Render_DoesNotReuseCompleteSelectedSlotAssemblyForSelectedPartPreview" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests.Render_DoesNotReuseCompleteSelectedSlotAssemblyForSelectedPartPreview" methodname="Render_DoesNotReuseCompleteSelectedSlotAssemblyForSelectedPartPreview" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" runstate="Runnable" seed="1048704601" result="Passed" start-time="2026-05-02 04:00:25Z" end-time="2026-05-02 04:00:25Z" duration="0.036760" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1064" name="Render_FallsBackToSelectedSinglePartWhenSelectedSlotIsIncomplete" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests.Render_FallsBackToSelectedSinglePartWhenSelectedSlotIsIncomplete" methodname="Render_FallsBackToSelectedSinglePartWhenSelectedSlotIsIncomplete" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" runstate="Runnable" seed="1179346723" result="Passed" start-time="2026-05-02 04:00:25Z" end-time="2026-05-02 04:00:25Z" duration="0.023547" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1065" name="Renderers_UseSeparatePreviewLayersForUnitAndSelectedPart" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests.Renderers_UseSeparatePreviewLayersForUnitAndSelectedPart" methodname="Renderers_UseSeparatePreviewLayersForUnitAndSelectedPart" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterSidePreviewDirectTests" runstate="Runnable" seed="23796264" result="Passed" start-time="2026-05-02 04:00:25Z" end-time="2026-05-02 04:00:25Z" duration="0.008513" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-side-preview-private-reflection-cleanup-20260502.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

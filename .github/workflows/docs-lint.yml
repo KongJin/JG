@@ -8,6 +8,8 @@ on:
       - ".codex/skills/jg-*/**"
       - ".githooks/**"
       - "artifacts/rules/**"
+      - "Assets/Scripts/Features/**/Presentation/**"
+      - "Assembly-CSharp.csproj"
       - "tools/**/*.ps1"
       - "tools/**/*.mjs"
       - "tools/**/*.js"

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-02 05:31:58Z" end-time="2026-05-02 05:31:58Z" duration="0.0090783">
+  <test-suite type="TestSuite" id="1197" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="151" result="Passed" start-time="2026-05-02 05:31:58Z" end-time="2026-05-02 05:31:58Z" duration="0.009078" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1185" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="151" result="Passed" start-time="2026-05-02 05:31:58Z" end-time="2026-05-02 05:31:58Z" duration="0.008171" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32204" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1188" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="145" result="Passed" start-time="2026-05-02 05:31:58Z" end-time="2026-05-02 05:31:58Z" duration="0.007363" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1189" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="145" result="Passed" start-time="2026-05-02 05:31:58Z" end-time="2026-05-02 05:31:58Z" duration="0.006463" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1119" name="NovaAssemblyProfileCatalogDirectTests" fullname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" classname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-05-02 05:31:58Z" end-time="2026-05-02 05:31:58Z" duration="0.006125" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1122" name="AlignmentCatalog_KeepsKnownLegProblemPartsInGxAuditReviewQueue" fullname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests.AlignmentCatalog_KeepsKnownLegProblemPartsInGxAuditReviewQueue" methodname="AlignmentCatalog_KeepsKnownLegProblemPartsInGxAuditReviewQueue" classname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" runstate="Runnable" seed="448569272" result="Passed" start-time="2026-05-02 05:31:58Z" end-time="2026-05-02 05:31:58Z" duration="0.003597" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1120" name="AlignmentCatalog_PromotesHumanoidDirectionOnlyWeaponsToCanonicalRigProfiles" fullname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests.AlignmentCatalog_PromotesHumanoidDirectionOnlyWeaponsToCanonicalRigProfiles" methodname="AlignmentCatalog_PromotesHumanoidDirectionOnlyWeaponsToCanonicalRigProfiles" classname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" runstate="Runnable" seed="1514925710" result="Passed" start-time="2026-05-02 05:31:58Z" end-time="2026-05-02 05:31:58Z" duration="0.000880" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1121" name="AlignmentCatalog_PromotesThunderboltManualCanonicalHumanoidRigOffset" fullname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests.AlignmentCatalog_PromotesThunderboltManualCanonicalHumanoidRigOffset" methodname="AlignmentCatalog_PromotesThunderboltManualCanonicalHumanoidRigOffset" classname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" runstate="Runnable" seed="485873164" result="Passed" start-time="2026-05-02 05:31:58Z" end-time="2026-05-02 05:31:58Z" duration="0.000360" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\nova-assembly-profile-thunderbolt-offset-retune-tests-20260502.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

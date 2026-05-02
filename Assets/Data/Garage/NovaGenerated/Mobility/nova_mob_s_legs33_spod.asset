@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -16,7 +16,9 @@ MonoBehaviour:
   displayName: "\uC2A4\uD30C\uC774\uB354S"
   icon: {fileID: 0}
   mobilitySurface: 1
-  moveSpeed: 3.75
+  legacyHpBonus: 0
+  moveSpeed: 3.95
   moveRange: 3.45
+  legacyAnchorRange: 0
   description: datan\common\s_legs33_spod.gx
   previewPrefab: {fileID: 5617296553609966065, guid: 2b1af7c0c9cd4bc4baf3719848049a70, type: 3}

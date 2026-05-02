@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Failed(Child)" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-02 03:53:04Z" end-time="2026-05-02 03:53:04Z" duration="0.0351362">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="149" result="Failed" site="Child" start-time="2026-05-02 03:53:04Z" end-time="2026-05-02 03:53:04Z" duration="0.035136" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1182" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="149" result="Failed" site="Child" start-time="2026-05-02 03:53:04Z" end-time="2026-05-02 03:53:04Z" duration="0.027013" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32204" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1185" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="143" result="Failed" site="Child" start-time="2026-05-02 03:53:04Z" end-time="2026-05-02 03:53:04Z" duration="0.025883" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1186" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="143" result="Failed" site="Child" start-time="2026-05-02 03:53:04Z" end-time="2026-05-02 03:53:04Z" duration="0.024996" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestFixture" id="1084" name="GarageUnitPreviewAssemblyFrameTopDirectTests" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" testcasecount="11" result="Failed" site="Child" start-time="2026-05-02 03:53:04Z" end-time="2026-05-02 03:53:04Z" duration="0.024033" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1086" name="TryCreatePreviewRoot_UsesVisualBoundsWhenPrefabPivotsAreOffset" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesVisualBoundsWhenPrefabPivotsAreOffset" methodname="TryCreatePreviewRoot_UsesVisualBoundsWhenPrefabPivotsAreOffset" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1064302266" result="Failed" start-time="2026-05-02 03:53:04Z" end-time="2026-05-02 03:53:04Z" duration="0.012975" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[  Expected: True
+  But was:  False
+]]></message>
+                <stack-trace><![CDATA[at Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesVisualBoundsWhenPrefabPivotsAreOffset () [0x0022e] in C:\Users\SOL\Documents\JG\Assets\Editor\DirectTests\GarageUnitPreviewAssemblyFrameTopDirectTests.cs:134
+]]></stack-trace>
+              </failure>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-canonical-humanoid-rig-visualbounds-debug-20260502.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="12" result="Passed" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.4431699">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="152" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.443170" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1185" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="152" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.430082" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32204" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1188" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="146" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.428248" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1189" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="146" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.426657" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1072" name="GarageUnitPreviewAssemblyDirectTests" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.425032" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1073" name="CatalogFactory_DoesNotTreatGeneratedMobilityAssemblyPrefabsAsSocketPivots" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.CatalogFactory_DoesNotTreatGeneratedMobilityAssemblyPrefabsAsSocketPivots" methodname="CatalogFactory_DoesNotTreatGeneratedMobilityAssemblyPrefabsAsSocketPivots" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="1763777993" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.383411" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1074" name="CatalogFactory_ProvidesAssemblyPrefabAndSocketsForEveryGeneratedMobilityPart" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.CatalogFactory_ProvidesAssemblyPrefabAndSocketsForEveryGeneratedMobilityPart" methodname="CatalogFactory_ProvidesAssemblyPrefabAndSocketsForEveryGeneratedMobilityPart" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="464175773" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.002654" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1075" name="HasPreviewAssemblyData_AllowsGeneratedTowerDirectionOnlyWhenProfileAnchorExists" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.HasPreviewAssemblyData_AllowsGeneratedTowerDirectionOnlyWhenProfileAnchorExists" methodname="HasPreviewAssemblyData_AllowsGeneratedTowerDirectionOnlyWhenProfileAnchorExists" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="390261859" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.005231" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1083" name="HasPreviewAssemblyData_RejectsMobilityVisualBoundsOnlySocket" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.HasPreviewAssemblyData_RejectsMobilityVisualBoundsOnlySocket" methodname="HasPreviewAssemblyData_RejectsMobilityVisualBoundsOnlySocket" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="703183424" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.000424" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1082" name="HasPreviewAssemblyData_RequiresFrameTopSocket" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.HasPreviewAssemblyData_RequiresFrameTopSocket" methodname="HasPreviewAssemblyData_RequiresFrameTopSocket" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="21952546" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.000281" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1084" name="TryCreatePreviewRoot_DoesNotUseImplicitPoseWhenAssemblyDataIsMissing" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_DoesNotUseImplicitPoseWhenAssemblyDataIsMissing" methodname="TryCreatePreviewRoot_DoesNotUseImplicitPoseWhenAssemblyDataIsMissing" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="1984351440" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.000967" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1077" name="TryCreatePreviewRoot_FallsBackToMobilityGxTreeSocketWhenXfiAttachSocketIsAbsent" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_FallsBackToMobilityGxTreeSocketWhenXfiAttachSocketIsAbsent" methodname="TryCreatePreviewRoot_FallsBackToMobilityGxTreeSocketWhenXfiAttachSocketIsAbsent" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="1044170090" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.002974" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1078" name="TryCreatePreviewRoot_FallsBackToMobilitySocketOffsetWhenGxTreeSocketIsAbsent" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_FallsBackToMobilitySocketOffsetWhenGxTreeSocketIsAbsent" methodname="TryCreatePreviewRoot_FallsBackToMobilitySocketOffsetWhenGxTreeSocketIsAbsent" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="283113420" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.000565" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1076" name="TryCreatePreviewRoot_PrefersMobilityGxTreeSocketForAssemblyPrefab" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_PrefersMobilityGxTreeSocketForAssemblyPrefab" methodname="TryCreatePreviewRoot_PrefersMobilityGxTreeSocketForAssemblyPrefab" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="1891320136" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.000616" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1080" name="TryCreatePreviewRoot_UsesProfileAnchorForRoadRunnerKomodoNemesisDirectionOnlyTowerLoadout" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_UsesProfileAnchorForRoadRunnerKomodoNemesisDirectionOnlyTowerLoadout" methodname="TryCreatePreviewRoot_UsesProfileAnchorForRoadRunnerKomodoNemesisDirectionOnlyTowerLoadout" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="152522690" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.001515" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1081" name="TryCreatePreviewRoot_UsesPromotedGxTreeSocketForEveryGeneratedMobilityPart" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_UsesPromotedGxTreeSocketForEveryGeneratedMobilityPart" methodname="TryCreatePreviewRoot_UsesPromotedGxTreeSocketForEveryGeneratedMobilityPart" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="1631671158" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.005803" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1079" name="TryCreatePreviewRoot_UsesPromotedSpiderGxTreeSocket" fullname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests.TryCreatePreviewRoot_UsesPromotedSpiderGxTreeSocket" methodname="TryCreatePreviewRoot_UsesPromotedSpiderGxTreeSocket" classname="Tests.Editor.GarageUnitPreviewAssemblyDirectTests" runstate="Runnable" seed="1925780514" result="Passed" start-time="2026-05-02 04:42:03Z" end-time="2026-05-02 04:42:03Z" duration="0.001202" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-explicit-anchor-preview-direct-tests-20260502.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -23,6 +23,8 @@ namespace ProjectSD.EditorTools
         public static void CaptureHumanoidWeaponAssemblySamples()
         {
             Directory.CreateDirectory(OutputRoot);
+            foreach (var staleImagePath in Directory.GetFiles(OutputRoot, "*.png"))
+                File.Delete(staleImagePath);
 
             var moduleCatalog = AssetDatabase.LoadAssetAtPath<ModuleCatalog>(ModuleCatalogPath);
             var visualCatalog = AssetDatabase.LoadAssetAtPath<NovaPartVisualCatalog>(VisualCatalogPath);
@@ -36,6 +38,7 @@ namespace ProjectSD.EditorTools
                 new CaptureSample("hammershock-starship-squadron", "nova_mob_legs24_sts", "nova_frame_body10_skdr", "nova_fire_arm39_hmsk"),
                 new CaptureSample("spitfire-cassowary-kingpin", "nova_mob_legs21_ksor", "nova_frame_body26_kp", "nova_fire_arm32_sppoo"),
                 new CaptureSample("bazooka-cassowary-kingpin", "nova_mob_legs21_ksor", "nova_frame_body26_kp", "nova_fire_arm24_bzk"),
+                new CaptureSample("thunderbolt-hover-squadron", "nova_mob_legs7_hb", "nova_frame_body10_skdr", "nova_fire_arm29_sdbt"),
                 new CaptureSample("thunderbolt-cassowary-kingpin", "nova_mob_legs21_ksor", "nova_frame_body26_kp", "nova_fire_arm29_sdbt"),
                 new CaptureSample("bazooka-s-cassowary-kingpin", "nova_mob_legs21_ksor", "nova_frame_body26_kp", "nova_fire_s_arm52_bzk")
             };

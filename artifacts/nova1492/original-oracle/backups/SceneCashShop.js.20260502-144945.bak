@@ -1,0 +1,353 @@
+//message("test");
+
+var sellItems = {};
+
+// 버튼 추가 함수
+function addButton(host, img, x, y, width, height, offsets, onclick) {
+    var btn = new Button;
+    btn.resize(x, y, width, height);
+    var imgset = new PieceSet(img);
+    btn.drawable = imgset;
+    btn.onclick = onclick;
+
+    btn.resetImages = function () {
+        var count = offsets.length / 2;
+        for (var i = 0; i < count; i++) {
+            var ox = offsets[i * 2];
+            var oy = offsets[i * 2 + 1];
+            if (ox == -1) {
+                imgset.setPieceRect(i, 0, 0, 0, 0);
+                continue;
+            }
+            imgset.setPieceRect(i, ox, oy, width, height);
+        }
+    };
+    btn.resetImages();
+    host.attach(btn);
+    return btn;
+};
+
+// 탭 추가 함수
+function addTab(host, img, x, y, width, height, offsets, type) {
+    var tab = addButton(host, img, x, y, width, height, offsets);
+    var imgset = tab.drawable;
+    var scroll = new ScrollBar();
+    var list = new Component; // new ListBox;
+    var haveItems = [];
+
+    list.resize(60, 150, ITEM_WIDTH * 2 + 10, 600);
+    list.scroll = scroll;
+
+    scroll.resize(995, 219, 21, 366);
+    scroll.itemHeight = ITEM_HEIGHT;
+    scroll.barDrawable = res.scrollBar;
+    scroll.upDrawable = res.cursorUp;
+    scroll.downDrawable = res.cursorDown;
+
+    tab.disableTab = function () {
+        tab.list.remove();
+        tab.listScroll.remove();
+        tab.resetImages();
+    };
+    tab.onlbuttondown = function () {
+        if (enableTab != null)
+        {
+            if (enableTab == this)
+                return;
+            enableTab.disableTab();
+        }
+        for (var i = 0; i < 3; i++)
+            imgset.setPieceRect(i, offsets[6], offsets[7], width, height);
+        scene.insertBefore(tab.list, fg);
+        scene.attach(scroll);
+        enableTab = this;
+    };
+
+    var items = [];
+
+    tab.addItem = function (modelno) {
+        if (/^[0-9]*$/.test(modelno))
+            modelno = parseInt(modelno);
+        var item = new Component;
+        item.drawable = res.item;
+        var modelview = new ModelViewer();
+        modelview.scene = new GxModel(modelno);
+        modelview.camera.fovY = 0.5;
+        modelview.camera.far = 1000;
+		if (typeof(modelno) == "number") {
+	        switch((modelno / 1000) | 0)
+	        {
+	            case 3: // 무기 부품
+	                modelview.camera.target.y -= 0.5;
+	                break;
+	            case 1: // 다리 부품
+	                modelview.camera.target.y -= 0.5;
+	                break;
+	            case 2: // 몸통 부품
+	                modelview.camera.target.y -= 1;
+	                break;
+	            case 6: // 악세사리
+	                modelview.camera.target.y -= 0.3;
+	                break;
+	            case 8:
+	                modelview.camera.far = 100;
+	                modelview.camera.target.y += 1;
+	                modelview.camera.position.z -= 20;
+	                break;
+	            default:
+	              //  alert(modelno);
+	        }
+		}
+		else {
+		    modelview.camera.target.y -= 0.5;
+		    modelview.camera.position.z += 1;
+		}
+
+        modelview.matrix = itemMatrix;
+        modelview.resize(20, 19, 128, 128);
+        item.attach(modelview);
+        item.ondraw = function () {
+        };
+        item.setIndex = function (n) {
+            var x = 0;
+            if (n % 2 == 0) {
+                x = 5;
+            }
+            else {
+                x = ITEM_WIDTH + 10;
+            }
+            this.index = n
+            var y = ((n / 2) | 0) * ITEM_GAP_HEIGHT;
+            this.resize(x, y, ITEM_WIDTH, ITEM_HEIGHT);
+        };
+        item.setIndex(items.length);
+        items.push(item);
+        tab.list.attach(item);
+        tab.resetScrollRange();
+        return item;
+    };
+    tab.addSellItem = function (iteminfo) {
+        var item = this.addItem(iteminfo.model);
+        item.ondraw = function () {
+            ctx.__novaFont.font = 2;
+            ctx.color = 0xffeeeeee;
+            ctx.__novaFont.fill(iteminfo.name, 170, 33);
+            if (iteminfo.cost != 0) {
+                ctx.color = 0xffffff00;
+                ctx.__novaFont.fill(iteminfo.cost + " CASH", 170, 67);
+            }
+            else {
+                ctx.color = 0xffff0000;
+                ctx.__novaFont.fill("준비중", 170, 67);
+            }
+            ctx.color = 0xffeeeeee;
+            ctx.__novaFont.font = 0;
+            ctx.__novaFont.widthLimit = 190;
+            ctx.__novaFont.lineWidth = 20;
+            ctx.__novaFont.fill(iteminfo.info, 167, 104);
+            ctx.color = 0xffffffff;
+        };
+        addButton(item, res.sheet1, 365, 83, 70, 70, [-1, -1, -1, -1, 365, 185], function () {
+            scene.buyRequest(iteminfo.code);
+        });
+    };
+    tab.resetScrollRange = function () {
+        scroll.range = (((items.length + 1) / 2) | 0) * ITEM_GAP_HEIGHT + 60;
+    };
+    tab.removeHaveItem = function (slot) {
+        var haveitem = haveItems[slot];
+        if (haveitem == null)
+            return null;
+        haveItems[slot] = null;
+        for (var i = slot + 1; i < haveItems.length; i++)
+            haveItems[i].slot--;
+        haveItems.splice(slot, 1);
+        for (var i = haveitem.index + 1; i < items.length; i++) {
+            var item = items[i];
+            item.setIndex(item.index - 1);
+        }
+        items.splice(haveitem.index, 1);
+
+        items.length;
+        haveitem.remove();
+        return haveitem.info.code;
+    };
+
+    tab.addHaveItem = function (slot, iteminfo) {
+        var item = this.addItem(iteminfo.model);
+        item.slot = slot;
+        haveItems[item.slot] = item;
+        item.info = iteminfo;
+        item.ondraw = function () {
+            ctx.__novaFont.font = 2;
+            ctx.color = 0xffeeeeee;
+            ctx.__novaFont.fill(iteminfo.name, 170, 33);
+            ctx.color = 0xffeeeeee;
+            ctx.__novaFont.font = 0;
+            ctx.__novaFont.widthLimit = 190;
+            ctx.__novaFont.lineWidth = 20;
+            ctx.__novaFont.fill(iteminfo.info, 167, 104);
+            ctx.color = 0xffffffff;
+        };
+        addButton(item, res.sheet1, 365, 10, 70, 70, [365, 357, 365, 357, 438, 185], function () {
+            scene.cancelRequest(item.info.code, item.slot);
+        });
+        addButton(item, res.sheet1, 365, 83, 70, 70, [365, 431, 365, 431, 438, 256], function () {
+            scene.useRequest(item.info.code, item.slot);
+        });
+    }
+
+    tab.listScroll = scroll;
+    tab.list = list;
+
+    return tab;
+}
+
+var enableTab = null;
+
+var ITEM_WIDTH = 448;
+var ITEM_HEIGHT = 166;
+var ITEM_GAP_HEIGHT = ITEM_HEIGHT + 5;
+
+// 배경 변경
+loadBackground("cashshop-bg.png");
+
+// 이미지 리소스
+res.fg = new Image("cashshop-fg.png");
+res.sheet1 = new Texture("cashshop-1.png");
+res.sheet2 = new Texture("cashshop-2.png");
+res.item = new Piece(res.sheet1, 0, 0, ITEM_WIDTH, ITEM_HEIGHT);
+res.cursor = new Piece("mouseCursor.bmp", 0, 0, 32, 32);
+res.scrollBar = new DrawScrollBar;
+res.cursorUp = new PieceSet(res.sheet2);
+res.cursorUp.setPieceRect(1, 396, 331, 21, 16);
+res.cursorUp.setPieceRect(2, 419, 331, 21, 16);
+res.cursorDown = new PieceSet(res.sheet2);
+res.cursorDown.setPieceRect(1, 373, 311, 21, 16);
+res.cursorDown.setPieceRect(2, 352, 311, 21, 16);
+
+// 전경, 리스트보다 앞에 있다.
+var fg = new Component;
+fg.resize(0, 0, 1024, 768);
+fg.drawable = res.fg;
+fg.onhittest = function () { return false; };
+scene.attach(fg);
+
+var itemMatrix = new Matrix;
+
+// 스크롤 Up 2
+var btn = addButton(scene, res.sheet2, 995, 198, 21, 16, [-1, -1, 396, 311, 419, 311], function () {
+    enableTab.listScroll.moveScroll(0);
+});
+
+// 스크롤 Down 2
+addButton(scene, res.sheet2, 995, 584, 21, 16, [-1, -1, 373, 331, 352, 331], function () { enableTab.listScroll.moveScroll(enableTab.listScroll.range); });
+
+// 탭들
+var tab = {};
+tab.main = addTab(scene, res.sheet2, 94, 71, 115, 57, [-1, -1, 1, 1, 1, 59, 1, 118]); // 메인
+tab.skin = addTab(scene, res.sheet2, 200, 71, 117, 57, [-1, -1, 236, 1, 236, 59, 236, 118]); // 스킨
+tab.booster = addTab(scene, res.sheet2, 307, 71, 118, 57, [-1, -1, 117, 1, 117, 59, 117, 118]); // 부스터
+tab.etc = addTab(scene, res.sheet2, 416, 71, 117, 57, [-1, -1, 354, 1, 354, 59, 354, 118]); // 기타
+tab.have = addTab(scene, res.sheet2, 658, 71, 116, 57, [-1, -1, 1, 311, 118, 311, 234, 311]); // 보유
+tab.main.onlbuttondown();
+
+function clone(obj) {
+    var newObject = {};
+    for (var p in obj)
+        newObject[p] = obj[p];
+    return newObject;
+}
+
+// 보유 아이템 수신
+scene.onitem = function (slot, code) {
+    var iteminfo = sellItems[code];
+    if (!iteminfo) {
+        iteminfo = clone(sellItems.NULL);
+        iteminfo.code = code;
+        iteminfo.name = code;
+
+        // 여기서 하면 됨.
+        if (iteminfo.code.substr(0, 5) == "GOLD_")
+        {
+            
+        }
+        else if(iteminfo.code.substr(0, 5) == "LUCK_")
+        {
+
+        }
+        else if (iteminfo.code.substr(0, 5) == "ITEM_")
+        {
+
+        }
+
+        sellItems[code] = iteminfo;
+    }
+    tab.have.addHaveItem(slot, iteminfo);
+    tab.have.onlbuttondown();
+};
+
+// 아이템 삭제
+scene.onitemremove = function (slot) {
+    return tab.have.removeHaveItem(slot);
+};
+
+// 판매 아이템 수신
+scene.onsellitem = function (type, main, sell, model, code, name, cost, info) {
+    var iteminfo = sellItems[code] = {
+        "type": type,
+        "main": main,
+        "sell": sell,
+        "model": model,
+        "code": code,
+        "name": name,
+        "cost": cost,
+        "info": info
+    };
+    if (sell)
+    {
+        if (main) {
+            tab.main.addSellItem(iteminfo);
+        }
+        switch (type) {
+            case 0: // Skin
+                tab.skin.addSellItem(iteminfo);
+                break;
+            case 1: //Booster
+                tab.booster.addSellItem(iteminfo);
+                break;
+            case 2: // Etc
+                tab.etc.addSellItem(iteminfo);
+                break;
+        }
+    }
+};
+
+scene.onkeydown = function (key) {
+    if (key == 13)
+        return true;
+    if (key == 27) {
+        moveScene("exit");
+        return true;
+    }
+    if (key == 116)
+        reload();
+}
+
+// 충전하기
+addButton(scene, res.sheet2, 794, 73, 230, 87, [-1, -1, 1, 377, 232, 377], function () {
+    scene.openCashCharge();
+});
+
+// Exit
+addButton(scene, res.sheet1, 0, 681, 175, 87, [-1, -1, 1, 168, 177, 168], function () { moveScene("exit"); });
+
+// 렙
+//addButton(scene, res.sheet2, 726, 709, 115, 59, [372, 184, 1, 175, 1, 235], function(){ moveScene("lab"); });
+
+// 샵
+//addButton(scene, res.sheet2, 843, 709, 115, 59, [372, 244, 117, 175, 117, 235], function(){ moveScene("shop"); });
+
+scene.ondraw = function () {
+    itemMatrix.rotateY(0.01);
+};

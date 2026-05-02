@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -18,6 +18,8 @@ MonoBehaviour:
   assemblyForm: 1
   baseHp: 600
   defense: 5
+  legacyBaseMoveRange: 0
+  legacyBaseAttackSpeed: 0
   passiveTrait: {fileID: 0}
   unitPrefab: {fileID: 0}
   previewPrefab: {fileID: 3172215266509119063, guid: 4f59d7d911781ab4cbe0479bdafecc3e, type: 3}

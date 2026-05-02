@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="2" result="Passed" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-02 04:34:18Z" end-time="2026-05-02 04:34:18Z" duration="0.0157176">
+  <test-suite type="TestSuite" id="1198" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="152" result="Passed" start-time="2026-05-02 04:34:18Z" end-time="2026-05-02 04:34:18Z" duration="0.015718" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1185" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="152" result="Passed" start-time="2026-05-02 04:34:18Z" end-time="2026-05-02 04:34:18Z" duration="0.013621" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32204" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1188" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="146" result="Passed" start-time="2026-05-02 04:34:18Z" end-time="2026-05-02 04:34:18Z" duration="0.012123" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1189" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="146" result="Passed" start-time="2026-05-02 04:34:18Z" end-time="2026-05-02 04:34:18Z" duration="0.010402" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1120" name="NovaAssemblyProfileCatalogDirectTests" fullname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" classname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-05-02 04:34:18Z" end-time="2026-05-02 04:34:18Z" duration="0.009976" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1122" name="AlignmentCatalog_KeepsKnownLegProblemPartsInGxAuditReviewQueue" fullname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests.AlignmentCatalog_KeepsKnownLegProblemPartsInGxAuditReviewQueue" methodname="AlignmentCatalog_KeepsKnownLegProblemPartsInGxAuditReviewQueue" classname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" runstate="Runnable" seed="1114427473" result="Passed" start-time="2026-05-02 04:34:18Z" end-time="2026-05-02 04:34:18Z" duration="0.007337" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1121" name="AlignmentCatalog_PromotesHumanoidDirectionOnlyWeaponsToCanonicalRigProfiles" fullname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests.AlignmentCatalog_PromotesHumanoidDirectionOnlyWeaponsToCanonicalRigProfiles" methodname="AlignmentCatalog_PromotesHumanoidDirectionOnlyWeaponsToCanonicalRigProfiles" classname="Tests.Editor.NovaAssemblyProfileCatalogDirectTests" runstate="Runnable" seed="1523228944" result="Passed" start-time="2026-05-02 04:34:18Z" end-time="2026-05-02 04:34:18Z" duration="0.000936" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\nova-assembly-profile-canonical-rig-tests-20260502-r3.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

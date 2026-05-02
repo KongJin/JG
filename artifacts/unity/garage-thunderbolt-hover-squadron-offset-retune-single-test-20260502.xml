@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-02 05:31:50Z" end-time="2026-05-02 05:31:50Z" duration="0.3539925">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="151" result="Passed" start-time="2026-05-02 05:31:50Z" end-time="2026-05-02 05:31:50Z" duration="0.353993" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1185" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="151" result="Passed" start-time="2026-05-02 05:31:50Z" end-time="2026-05-02 05:31:50Z" duration="0.341358" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32204" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1188" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="145" result="Passed" start-time="2026-05-02 05:31:50Z" end-time="2026-05-02 05:31:50Z" duration="0.340331" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1189" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="145" result="Passed" start-time="2026-05-02 05:31:50Z" end-time="2026-05-02 05:31:50Z" duration="0.339438" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1084" name="GarageUnitPreviewAssemblyFrameTopDirectTests" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-05-02 05:31:50Z" end-time="2026-05-02 05:31:50Z" duration="0.338410" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1095" name="TryCreatePreviewRoot_UsesApprovedThunderboltCanonicalHumanoidRigForHoverSquadron" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesApprovedThunderboltCanonicalHumanoidRigForHoverSquadron" methodname="TryCreatePreviewRoot_UsesApprovedThunderboltCanonicalHumanoidRigForHoverSquadron" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="2002013163" result="Passed" start-time="2026-05-02 05:31:50Z" end-time="2026-05-02 05:31:50Z" duration="0.326147" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-thunderbolt-hover-squadron-offset-retune-single-test-20260502.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

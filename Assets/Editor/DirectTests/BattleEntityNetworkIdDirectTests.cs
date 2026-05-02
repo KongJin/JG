@@ -1,4 +1,3 @@
-using System.Reflection;
 using Features.Unit.Infrastructure;
 using NUnit.Framework;
 using Photon.Pun;
@@ -10,15 +9,12 @@ namespace Tests.Editor
 {
     public sealed class BattleEntityNetworkIdDirectTests
     {
-        private static readonly FieldInfo PhotonViewIdField =
-            typeof(PhotonView).GetField("viewIdField", BindingFlags.Instance | BindingFlags.NonPublic);
-
         [Test]
         public void TryBuild_UsesPhotonViewId_WhenAllocated()
         {
             var go = new GameObject("BattleEntityNetworkIdTest");
             var view = go.AddComponent<PhotonView>();
-            PhotonViewIdField.SetValue(view, 1234);
+            view.ViewID = 1234;
             var unit = CreateUnit("unit-1");
 
             var result = BattleEntityNetworkId.TryBuild(unit, view, out var battleEntityId);

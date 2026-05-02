@@ -1,4 +1,3 @@
-using System.Reflection;
 using Features.Garage.Presentation;
 using NUnit.Framework;
 using UnityEditor;
@@ -69,7 +68,7 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void Render_FallsBackToSelectedSinglePartWhenSelectedSlotIsIncomplete()
+        public void Render_ShowsSelectedSinglePartWhenSelectedSlotIsIncomplete()
         {
             var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(UxmlPath);
             var documentObject = new GameObject("GarageSetBUitkRuntimeAdapterTest");
@@ -147,8 +146,8 @@ namespace Tests.Editor
                 Assert.IsTrue(unitRenderer.Render(CreateCompletePreviewSlot(framePrefab, firepowerPrefab, mobilityPrefab)));
                 Assert.IsTrue(partRenderer.RenderPart(CreatePartListWithSinglePartPreview(selectedPartPrefab)));
 
-                var unitRoot = GetCurrentPreviewRoot(unitRenderer);
-                var partRoot = GetCurrentPreviewRoot(partRenderer);
+                var unitRoot = unitRenderer.CurrentPreviewRoot;
+                var partRoot = partRenderer.CurrentPreviewRoot;
 
                 Assert.NotNull(unitRoot);
                 Assert.NotNull(partRoot);
@@ -279,15 +278,6 @@ namespace Tests.Editor
                 GxTreeSocketName = gxTreeSocketName,
                 QualityFlag = "auto_ok"
             };
-        }
-
-        private static GameObject GetCurrentPreviewRoot(GarageSetBUitkPreviewRenderer renderer)
-        {
-            var field = typeof(GarageSetBUitkPreviewRenderer).GetField(
-                "_currentPreviewRoot",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.NotNull(field);
-            return field.GetValue(renderer) as GameObject;
         }
 
         private static void AssertAllChildrenUseLayer(Transform root, int layer)

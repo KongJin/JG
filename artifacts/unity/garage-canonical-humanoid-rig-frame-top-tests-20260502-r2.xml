@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="11" result="Failed(Child)" total="11" passed="10" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-02 03:50:11Z" end-time="2026-05-02 03:50:14Z" duration="2.8011403">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="148" result="Failed" site="Child" start-time="2026-05-02 03:50:11Z" end-time="2026-05-02 03:50:14Z" duration="2.801140" total="11" passed="10" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1181" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="148" result="Failed" site="Child" start-time="2026-05-02 03:50:11Z" end-time="2026-05-02 03:50:14Z" duration="2.791573" total="11" passed="10" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="32204" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1184" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="142" result="Failed" site="Child" start-time="2026-05-02 03:50:11Z" end-time="2026-05-02 03:50:14Z" duration="2.790395" total="11" passed="10" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1185" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="142" result="Failed" site="Child" start-time="2026-05-02 03:50:11Z" end-time="2026-05-02 03:50:14Z" duration="2.789304" total="11" passed="10" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestFixture" id="1083" name="GarageUnitPreviewAssemblyFrameTopDirectTests" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" testcasecount="11" result="Failed" site="Child" start-time="2026-05-02 03:50:11Z" end-time="2026-05-02 03:50:14Z" duration="2.788447" total="11" passed="10" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-case id="1092" name="TryCreatePreviewRoot_RejectsDirectionOnlyFirepowerOutsideCanonicalHumanoidRig" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_RejectsDirectionOnlyFirepowerOutsideCanonicalHumanoidRig" methodname="TryCreatePreviewRoot_RejectsDirectionOnlyFirepowerOutsideCanonicalHumanoidRig" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="957717631" result="Passed" start-time="2026-05-02 03:50:11Z" end-time="2026-05-02 03:50:11Z" duration="0.013411" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1093" name="TryCreatePreviewRoot_SeatsCenturionProlixOnVisibleFirepowerBottom" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_SeatsCenturionProlixOnVisibleFirepowerBottom" methodname="TryCreatePreviewRoot_SeatsCenturionProlixOnVisibleFirepowerBottom" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="128808684" result="Failed" start-time="2026-05-02 03:50:11Z" end-time="2026-05-02 03:50:14Z" duration="2.734807" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <failure>
+                <message><![CDATA[  Expected: True
+  But was:  False
+]]></message>
+                <stack-trace><![CDATA[at Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_SeatsCenturionProlixOnVisibleFirepowerBottom () [0x0012b] in C:\Users\SOL\Documents\JG\Assets\Editor\DirectTests\GarageUnitPreviewAssemblyFrameTopDirectTests.cs:504
+]]></stack-trace>
+              </failure>
+            </test-case>
+            <test-case id="1086" name="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForDirectionOnlyFirepower" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesCanonicalHumanoidRigForDirectionOnlyFirepower" methodname="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForDirectionOnlyFirepower" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1309759931" result="Passed" start-time="2026-05-02 03:50:14Z" end-time="2026-05-02 03:50:14Z" duration="0.009965" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1087" name="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKingpinSpitfire" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKingpinSpitfire" methodname="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKingpinSpitfire" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1092182772" result="Passed" start-time="2026-05-02 03:50:14Z" end-time="2026-05-02 03:50:14Z" duration="0.003385" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1091" name="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKnownProtrudingFirepower" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKnownProtrudingFirepower" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-05-02 03:50:14Z" end-time="2026-05-02 03:50:14Z" duration="0.005485" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1088" name="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKnownProtrudingFirepower(&quot;nova_fire_arm24_bzk&quot;)" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKnownProtrudingFirepower(&quot;nova_fire_arm24_bzk&quot;)" methodname="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKnownProtrudingFirepower" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1355040533" result="Passed" start-time="2026-05-02 03:50:14Z" end-time="2026-05-02 03:50:14Z" duration="0.001499" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1089" name="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKnownProtrudingFirepower(&quot;nova_fire_arm29_sdbt&quot;)" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKnownProtrudingFirepower(&quot;nova_fire_arm29_sdbt&quot;)" methodname="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKnownProtrudingFirepower" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1472181342" result="Passed" start-time="2026-05-02 03:50:14Z" end-time="2026-05-02 03:50:14Z" duration="0.000868" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1090" name="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKnownProtrudingFirepower(&quot;nova_fire_s_arm52_bzk&quot;)" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKnownProtrudingFirepower(&quot;nova_fire_s_arm52_bzk&quot;)" methodname="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKnownProtrudingFirepower" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1765420123" result="Passed" start-time="2026-05-02 03:50:14Z" end-time="2026-05-02 03:50:14Z" duration="0.000841" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1094" name="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForRegimentHandcannon" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesCanonicalHumanoidRigForRegimentHandcannon" methodname="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForRegimentHandcannon" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="804809542" result="Passed" start-time="2026-05-02 03:50:14Z" end-time="2026-05-02 03:50:14Z" duration="0.001184" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1095" name="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForSquadronHammerShock" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesCanonicalHumanoidRigForSquadronHammerShock" methodname="TryCreatePreviewRoot_UsesCanonicalHumanoidRigForSquadronHammerShock" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1649487329" result="Passed" start-time="2026-05-02 03:50:14Z" end-time="2026-05-02 03:50:14Z" duration="0.001253" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1084" name="TryCreatePreviewRoot_UsesFrameSocketOffsetWhenFrameTopSocketIsZero" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesFrameSocketOffsetWhenFrameTopSocketIsZero" methodname="TryCreatePreviewRoot_UsesFrameSocketOffsetWhenFrameTopSocketIsZero" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="243075251" result="Passed" start-time="2026-05-02 03:50:14Z" end-time="2026-05-02 03:50:14Z" duration="0.001057" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1085" name="TryCreatePreviewRoot_UsesVisualBoundsWhenPrefabPivotsAreOffset" fullname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests.TryCreatePreviewRoot_UsesVisualBoundsWhenPrefabPivotsAreOffset" methodname="TryCreatePreviewRoot_UsesVisualBoundsWhenPrefabPivotsAreOffset" classname="Tests.Editor.GarageUnitPreviewAssemblyFrameTopDirectTests" runstate="Runnable" seed="1679011882" result="Passed" start-time="2026-05-02 03:50:14Z" end-time="2026-05-02 03:50:14Z" duration="0.001433" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-canonical-humanoid-rig-frame-top-tests-20260502-r2.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

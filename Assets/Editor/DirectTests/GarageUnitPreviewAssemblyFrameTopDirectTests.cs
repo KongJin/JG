@@ -51,6 +51,7 @@ namespace Tests.Editor
                         gxTreeSocketName: "legs"),
                     mobilityUsesAssemblyPivot: false);
 
+                Assert.IsTrue(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
                 Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
                     viewModel,
                     cameraObject.GetComponent<Camera>(),
@@ -118,12 +119,16 @@ namespace Tests.Editor
                         assemblyAnchorMode: "FrameTopSocket"),
                     mobilityAlignment: AutoOkAlignment(
                         socketOffset: Vector3.zero,
+                        hasGxTreeSocket: true,
+                        gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
+                        gxTreeSocketName: "legs",
                         hasVisualBounds: true,
                         visualBoundsCenter: new Vector3(5f, 0f, 0f),
                         visualBoundsMin: new Vector3(4.5f, -0.5f, -0.5f),
                         visualBoundsMax: new Vector3(5.5f, 0.5f, 0.5f)),
                     mobilityUsesAssemblyPivot: false);
 
+                Assert.IsTrue(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
                 Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
                     viewModel,
                     cameraObject.GetComponent<Camera>(),
@@ -138,13 +143,9 @@ namespace Tests.Editor
 
                 var frameBounds = CalculateLocalRendererBounds(previewRoot.transform, frame);
                 var firepowerBounds = CalculateLocalRendererBounds(previewRoot.transform, firepower);
-                var mobilityBounds = CalculateLocalRendererBounds(previewRoot.transform, mobility);
-
                 Assert.That(frameBounds.center.x, Is.EqualTo(0f).Within(0.0001f));
                 Assert.That(firepowerBounds.min.y, Is.EqualTo(frameBounds.max.y).Within(0.0001f));
                 Assert.That(firepowerBounds.center.x, Is.EqualTo(frameBounds.center.x).Within(0.0001f));
-                Assert.That(mobilityBounds.max.y, Is.EqualTo(frameBounds.min.y).Within(0.0001f));
-                Assert.That(mobilityBounds.center.x, Is.EqualTo(frameBounds.center.x).Within(0.0001f));
             }
             finally
             {
@@ -159,7 +160,7 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void TryCreatePreviewRoot_UsesCanonicalHumanoidRigForDirectionOnlyFirepower()
+        public void TryCreatePreviewRoot_RejectsLegacyHumanoidHandRigAdapterForDirectionOnlyFirepower()
         {
             var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
             var framePrefab = CreateBoxPrefab("FramePrefab", Vector3.zero, Vector3.one);
@@ -184,6 +185,7 @@ namespace Tests.Editor
                     frameAlignment: AutoOkAlignment(
                         socketOffset: Vector3.zero,
                         hasFrameTopSocket: true,
+                        assemblyAnchorMode: "Disabled",
                         hasVisualBounds: true,
                         visualBoundsCenter: Vector3.zero,
                         visualBoundsMin: new Vector3(-0.5f, -0.5f, -0.5f),
@@ -195,7 +197,8 @@ namespace Tests.Editor
                         visualBoundsCenter: new Vector3(0f, 0f, 1.5f),
                         visualBoundsMin: new Vector3(-0.25f, -0.25f, 0f),
                         visualBoundsMax: new Vector3(0.25f, 0.25f, 3f),
-                        assemblyAnchorMode: "HumanoidShellRearToFrameFront"),
+                        assemblyAnchorMode: "ObsoleteHumanoidHandRig",
+                        assemblyReviewResult: "match"),
                     mobilityAlignment: AutoOkAlignment(
                         socketOffset: Vector3.zero,
                         hasGxTreeSocket: true,
@@ -205,24 +208,15 @@ namespace Tests.Editor
                     frameAssemblyForm: AssemblyForm.Humanoid,
                     firepowerAssemblyForm: AssemblyForm.Humanoid);
 
-                Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
+                Assert.IsFalse(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
+                Assert.IsFalse(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
                     viewModel,
                     cameraObject.GetComponent<Camera>(),
                     framePrefab,
                     firepowerPrefab,
                     mobilityPrefab,
                     out previewRoot));
-
-                var frame = previewRoot.transform.Find("FramePrefab(Clone)");
-                var firepower = previewRoot.transform.Find("FirepowerPrefab(Clone)");
-
-                Assert.NotNull(frame);
-                Assert.NotNull(firepower);
-
-                var frameBounds = CalculateLocalRendererBounds(previewRoot.transform, frame);
-                var firepowerBounds = CalculateLocalRendererBounds(previewRoot.transform, firepower);
-
-                AssertCanonicalHumanoidRigPlacement(frameBounds, firepowerBounds);
+                Assert.IsNull(previewRoot);
             }
             finally
             {
@@ -237,27 +231,95 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKingpinSpitfire()
+        public void TryCreatePreviewRoot_RejectsDisabledHumanoidDirectionOnlyFirepower()
         {
-            var moduleCatalog = AssetDatabase.LoadAssetAtPath<ModuleCatalog>(ModuleCatalogPath);
-            var visualCatalog = AssetDatabase.LoadAssetAtPath<NovaPartVisualCatalog>(VisualCatalogPath);
-            var alignmentCatalog = AssetDatabase.LoadAssetAtPath<NovaPartAlignmentCatalog>(AlignmentCatalogPath);
+            var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
+            var framePrefab = CreateBoxPrefab("FramePrefab", Vector3.zero, Vector3.one);
+            var firepowerPrefab = CreateBoxPrefab("FirepowerPrefab", new Vector3(0f, 0f, 1.5f), new Vector3(0.5f, 0.5f, 3f));
+            var mobilityPrefab = CreateBoxPrefab("MobilityPrefab", Vector3.zero, Vector3.one);
+            GameObject previewRoot = null;
+
+            try
+            {
+                var viewModel = new GarageSlotViewModel(
+                    "A-01",
+                    "A-01",
+                    "test",
+                    "test",
+                    hasCommittedLoadout: true,
+                    hasDraftChanges: false,
+                    isEmpty: false,
+                    isSelected: true,
+                    frameId: "frame",
+                    firepowerId: "firepower",
+                    mobilityId: "mobility",
+                    frameAlignment: AutoOkAlignment(
+                        socketOffset: Vector3.zero,
+                        hasFrameTopSocket: true,
+                        assemblyAnchorMode: "Disabled",
+                        hasVisualBounds: true,
+                        visualBoundsCenter: Vector3.zero,
+                        visualBoundsMin: new Vector3(-0.5f, -0.5f, -0.5f),
+                        visualBoundsMax: new Vector3(0.5f, 0.5f, 0.5f)),
+                    firepowerAlignment: AutoOkAlignment(
+                        socketOffset: Vector3.zero,
+                        xfiSocketQuality: "xfi_weapon_direction_only",
+                        hasVisualBounds: true,
+                        visualBoundsCenter: new Vector3(0f, 0f, 1.5f),
+                        visualBoundsMin: new Vector3(-0.25f, -0.25f, 0f),
+                        visualBoundsMax: new Vector3(0.25f, 0.25f, 3f),
+                        assemblyAnchorMode: "Disabled",
+                        assemblyReviewResult: "pending"),
+                    mobilityAlignment: AutoOkAlignment(
+                        socketOffset: Vector3.zero,
+                        hasGxTreeSocket: true,
+                        gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
+                        gxTreeSocketName: "legs"),
+                    mobilityUsesAssemblyPivot: false,
+                    frameAssemblyForm: AssemblyForm.Humanoid,
+                    firepowerAssemblyForm: AssemblyForm.Humanoid);
+
+                Assert.IsFalse(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
+                Assert.IsFalse(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
+                    viewModel,
+                    cameraObject.GetComponent<Camera>(),
+                    framePrefab,
+                    firepowerPrefab,
+                    mobilityPrefab,
+                    out previewRoot));
+                Assert.IsNull(previewRoot);
+            }
+            finally
+            {
+                if (previewRoot != null)
+                    Object.DestroyImmediate(previewRoot);
+
+                Object.DestroyImmediate(cameraObject);
+                Object.DestroyImmediate(framePrefab);
+                Object.DestroyImmediate(firepowerPrefab);
+                Object.DestroyImmediate(mobilityPrefab);
+            }
+        }
+
+        [TestCase("nova_frame_body26_kp", "nova_fire_arm32_sppoo", "nova_mob_legs21_ksor")]
+        [TestCase("nova_frame_body26_kp", "nova_fire_arm24_bzk", "nova_mob_legs21_ksor")]
+        [TestCase("nova_frame_body26_kp", "nova_fire_s_arm52_bzk", "nova_mob_legs21_ksor")]
+        [TestCase("nova_frame_body17_rzmt", "nova_fire_arm15_hdkn", "nova_mob_legs16_sprt")]
+        [TestCase("nova_frame_body10_skdr", "nova_fire_arm39_hmsk", "nova_mob_legs24_sts")]
+        public void TryCreatePreviewRoot_RejectsDisabledHumanoidDirectionOnlyCatalogSamples(
+            string frameId,
+            string firepowerId,
+            string mobilityId)
+        {
             var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
             GameObject previewRoot = null;
 
             try
             {
-                Assert.NotNull(moduleCatalog);
-                Assert.NotNull(visualCatalog);
-                Assert.NotNull(alignmentCatalog);
-
-                var catalog = new GaragePanelCatalogFactory().Build(
-                    moduleCatalog,
-                    visualCatalog,
-                    alignmentCatalog);
-                var frame = catalog.FindFrame("nova_frame_body26_kp");
-                var firepower = catalog.FindFirepower("nova_fire_arm32_sppoo");
-                var mobility = catalog.FindMobility("nova_mob_legs21_ksor");
+                var catalog = BuildCatalog();
+                var frame = catalog.FindFrame(frameId);
+                var firepower = catalog.FindFirepower(firepowerId);
+                var mobility = catalog.FindMobility(mobilityId);
 
                 Assert.NotNull(frame);
                 Assert.NotNull(firepower);
@@ -265,10 +327,11 @@ namespace Tests.Editor
                 Assert.NotNull(frame.AssemblyPrefab);
                 Assert.NotNull(firepower.AssemblyPrefab);
                 Assert.NotNull(mobility.AssemblyPrefab);
-                Assert.AreEqual(AssemblyForm.Humanoid, frame.AssemblyForm);
-                Assert.AreEqual(AssemblyForm.Humanoid, firepower.AssemblyForm);
-                Assert.That(frame.Alignment.SocketOffset.y, Is.GreaterThan(0.0001f));
-                Assert.That(frame.Alignment.FrameTopSocketOffset.sqrMagnitude, Is.LessThan(0.000001f));
+                Assert.That(frame.AssemblyForm, Is.EqualTo(AssemblyForm.Humanoid));
+                Assert.That(firepower.AssemblyForm, Is.EqualTo(AssemblyForm.Humanoid));
+                Assert.That(firepower.Alignment.XfiSocketQuality, Is.EqualTo("xfi_weapon_direction_only"));
+                Assert.That(firepower.Alignment.AssemblyAnchorMode, Is.EqualTo("Disabled"));
+                Assert.That(firepower.Alignment.AssemblyReviewResult, Is.EqualTo("pending"));
 
                 var viewModel = new GarageSlotViewModel(
                     "A-01",
@@ -289,29 +352,15 @@ namespace Tests.Editor
                     frameAssemblyForm: frame.AssemblyForm,
                     firepowerAssemblyForm: firepower.AssemblyForm);
 
-                Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
+                Assert.IsFalse(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
+                Assert.IsFalse(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
                     viewModel,
                     cameraObject.GetComponent<Camera>(),
                     frame.AssemblyPrefab,
                     firepower.AssemblyPrefab,
                     mobility.AssemblyPrefab,
                     out previewRoot));
-
-                var firepowerObject = FindDirectChild(previewRoot.transform, firepower.Id);
-                var frameObject = FindDirectChild(previewRoot.transform, frame.Id);
-                var mobilityObject = FindDirectChild(previewRoot.transform, mobility.Id);
-
-                Assert.NotNull(firepowerObject);
-                Assert.NotNull(frameObject);
-                Assert.NotNull(mobilityObject);
-
-                var firepowerBounds = CalculateLocalRendererBounds(previewRoot.transform, firepowerObject);
-                var frameBounds = CalculateLocalRendererBounds(previewRoot.transform, frameObject);
-                var mobilityBounds = CalculateLocalRendererBounds(previewRoot.transform, mobilityObject);
-
-                Assert.That(firepower.Alignment.XfiSocketQuality, Is.EqualTo("xfi_weapon_direction_only"));
-                AssertCanonicalHumanoidRigPlacement(frameBounds, firepowerBounds);
-                Assert.That(mobilityBounds.max.y, Is.GreaterThan(frameBounds.min.y));
+                Assert.IsNull(previewRoot);
             }
             finally
             {
@@ -322,31 +371,34 @@ namespace Tests.Editor
             }
         }
 
-        [TestCase("nova_fire_arm24_bzk")]
-        [TestCase("nova_fire_arm29_sdbt")]
-        [TestCase("nova_fire_s_arm52_bzk")]
-        public void TryCreatePreviewRoot_UsesCanonicalHumanoidRigForKnownProtrudingFirepower(string firepowerId)
+        [TestCase("nova_frame_body10_skdr", "nova_fire_arm29_sdbt", "nova_mob_legs7_hb", "mismatch")]
+        public void TryCreatePreviewRoot_RejectsHumanoidFrameWeaponMobilityProfileUntilOriginalUnitModelEvidenceExists(
+            string frameId,
+            string firepowerId,
+            string mobilityId,
+            string reviewResult)
         {
-            var moduleCatalog = AssetDatabase.LoadAssetAtPath<ModuleCatalog>(ModuleCatalogPath);
-            var visualCatalog = AssetDatabase.LoadAssetAtPath<NovaPartVisualCatalog>(VisualCatalogPath);
-            var alignmentCatalog = AssetDatabase.LoadAssetAtPath<NovaPartAlignmentCatalog>(AlignmentCatalogPath);
             var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
             GameObject previewRoot = null;
 
             try
             {
-                var catalog = new GaragePanelCatalogFactory().Build(
-                    moduleCatalog,
-                    visualCatalog,
-                    alignmentCatalog);
-                var frame = catalog.FindFrame("nova_frame_body26_kp");
+                var catalog = BuildCatalog();
+                var frame = catalog.FindFrame(frameId);
                 var firepower = catalog.FindFirepower(firepowerId);
-                var mobility = catalog.FindMobility("nova_mob_legs21_ksor");
+                var mobility = catalog.FindMobility(mobilityId);
 
                 Assert.NotNull(frame);
                 Assert.NotNull(firepower);
                 Assert.NotNull(mobility);
-                Assert.That(firepower.Alignment.XfiSocketQuality, Is.EqualTo("xfi_weapon_direction_only"));
+                Assert.NotNull(frame.AssemblyPrefab);
+                Assert.NotNull(firepower.AssemblyPrefab);
+                Assert.NotNull(mobility.AssemblyPrefab);
+                Assert.That(frame.AssemblyForm, Is.EqualTo(AssemblyForm.Humanoid));
+                Assert.That(firepower.AssemblyForm, Is.EqualTo(AssemblyForm.Humanoid));
+                Assert.That(firepower.Alignment.AssemblyAnchorMode, Is.EqualTo("Disabled"));
+                Assert.That(firepower.Alignment.AssemblyReviewResult, Is.EqualTo(reviewResult));
+                Assert.That(firepower.Alignment.AssemblyLocalOffset.sqrMagnitude, Is.EqualTo(0f).Within(0.000001f));
 
                 var viewModel = new GarageSlotViewModel(
                     "A-01",
@@ -367,24 +419,15 @@ namespace Tests.Editor
                     frameAssemblyForm: frame.AssemblyForm,
                     firepowerAssemblyForm: firepower.AssemblyForm);
 
-                Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
+                Assert.IsFalse(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
+                Assert.IsFalse(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
                     viewModel,
                     cameraObject.GetComponent<Camera>(),
                     frame.AssemblyPrefab,
                     firepower.AssemblyPrefab,
                     mobility.AssemblyPrefab,
                     out previewRoot));
-
-                var frameObject = FindDirectChild(previewRoot.transform, frame.Id);
-                var firepowerObject = FindDirectChild(previewRoot.transform, firepower.Id);
-
-                Assert.NotNull(frameObject);
-                Assert.NotNull(firepowerObject);
-
-                var frameBounds = CalculateLocalRendererBounds(previewRoot.transform, frameObject);
-                var firepowerBounds = CalculateLocalRendererBounds(previewRoot.transform, firepowerObject);
-
-                AssertCanonicalHumanoidRigPlacement(frameBounds, firepowerBounds, zTolerance: 0.02f);
+                Assert.IsNull(previewRoot);
             }
             finally
             {
@@ -396,7 +439,7 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void TryCreatePreviewRoot_RejectsDirectionOnlyFirepowerOutsideCanonicalHumanoidRig()
+        public void TryCreatePreviewRoot_RejectsDirectionOnlyFirepowerWithoutExplicitAssemblyAnchor()
         {
             var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
             var framePrefab = new GameObject("FramePrefab");
@@ -455,24 +498,83 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void TryCreatePreviewRoot_SeatsCenturionProlixOnVisibleFirepowerBottom()
+        public void TryCreatePreviewRoot_RejectsHumanoidDirectionOnlyFirepowerWithoutApprovedOriginalProfile()
         {
-            var moduleCatalog = AssetDatabase.LoadAssetAtPath<ModuleCatalog>(ModuleCatalogPath);
-            var visualCatalog = AssetDatabase.LoadAssetAtPath<NovaPartVisualCatalog>(VisualCatalogPath);
-            var alignmentCatalog = AssetDatabase.LoadAssetAtPath<NovaPartAlignmentCatalog>(AlignmentCatalogPath);
+            var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
+            var framePrefab = CreateBoxPrefab("FramePrefab", Vector3.zero, Vector3.one);
+            var firepowerPrefab = CreateBoxPrefab("FirepowerPrefab", Vector3.zero, Vector3.one);
+            var mobilityPrefab = new GameObject("MobilityPrefab");
+            GameObject previewRoot = null;
+
+            try
+            {
+                var viewModel = new GarageSlotViewModel(
+                    "A-01",
+                    "A-01",
+                    "test",
+                    "test",
+                    hasCommittedLoadout: true,
+                    hasDraftChanges: false,
+                    isEmpty: false,
+                    isSelected: true,
+                    frameId: "frame",
+                    firepowerId: "firepower",
+                    mobilityId: "mobility",
+                    frameAlignment: AutoOkAlignment(
+                        socketOffset: Vector3.zero,
+                        hasFrameTopSocket: true,
+                        hasVisualBounds: true,
+                        visualBoundsCenter: Vector3.zero,
+                        visualBoundsMin: new Vector3(-0.5f, -0.5f, -0.5f),
+                        visualBoundsMax: new Vector3(0.5f, 0.5f, 0.5f)),
+                    firepowerAlignment: AutoOkAlignment(
+                        socketOffset: Vector3.zero,
+                        xfiSocketQuality: "xfi_weapon_direction_only",
+                        hasVisualBounds: true,
+                        visualBoundsCenter: Vector3.zero,
+                        visualBoundsMin: new Vector3(-0.5f, -0.5f, -0.5f),
+                        visualBoundsMax: new Vector3(0.5f, 0.5f, 0.5f)),
+                    mobilityAlignment: AutoOkAlignment(
+                        socketOffset: Vector3.zero,
+                        hasGxTreeSocket: true,
+                        gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
+                        gxTreeSocketName: "legs"),
+                    mobilityUsesAssemblyPivot: false,
+                    frameAssemblyForm: AssemblyForm.Humanoid,
+                    firepowerAssemblyForm: AssemblyForm.Humanoid);
+
+                Assert.IsFalse(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
+                Assert.IsFalse(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
+                    viewModel,
+                    cameraObject.GetComponent<Camera>(),
+                    framePrefab,
+                    firepowerPrefab,
+                    mobilityPrefab,
+                    out previewRoot));
+
+                Assert.IsNull(previewRoot);
+            }
+            finally
+            {
+                if (previewRoot != null)
+                    Object.DestroyImmediate(previewRoot);
+
+                Object.DestroyImmediate(cameraObject);
+                Object.DestroyImmediate(framePrefab);
+                Object.DestroyImmediate(firepowerPrefab);
+                Object.DestroyImmediate(mobilityPrefab);
+            }
+        }
+
+        [Test]
+        public void TryCreatePreviewRoot_UsesProfileAnchorForCenturionProlixDirectionOnlyShoulderLoadout()
+        {
             var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
             GameObject previewRoot = null;
 
             try
             {
-                Assert.NotNull(moduleCatalog);
-                Assert.NotNull(visualCatalog);
-                Assert.NotNull(alignmentCatalog);
-
-                var catalog = new GaragePanelCatalogFactory().Build(
-                    moduleCatalog,
-                    visualCatalog,
-                    alignmentCatalog);
+                var catalog = BuildCatalog();
                 var frame = catalog.FindFrame("nova_frame_body13_scro");
                 var firepower = catalog.FindFirepower("nova_fire_arm17_prrs");
                 var mobility = catalog.FindMobility("nova_mob_legs10_prg");
@@ -499,75 +601,15 @@ namespace Tests.Editor
                     frameAlignment: frame.Alignment,
                     firepowerAlignment: firepower.Alignment,
                     mobilityAlignment: mobility.Alignment,
-                    mobilityUsesAssemblyPivot: mobility.UseAssemblyPivot);
-
-                Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
-                    viewModel,
-                    cameraObject.GetComponent<Camera>(),
-                    frame.AssemblyPrefab,
-                    firepower.AssemblyPrefab,
-                    mobility.AssemblyPrefab,
-                    out previewRoot));
-
-                var firepowerObject = FindDirectChild(previewRoot.transform, firepower.Id);
-
-                Assert.NotNull(firepowerObject);
-                var firepowerBounds = CalculateLocalRendererBounds(previewRoot.transform, firepowerObject);
-                Assert.That(
-                    firepowerBounds.min.y,
-                    Is.EqualTo(ResolveEffectiveFrameTopY(frame)).Within(0.02f));
-            }
-            finally
-            {
-                if (previewRoot != null)
-                    Object.DestroyImmediate(previewRoot);
-
-                Object.DestroyImmediate(cameraObject);
-            }
-        }
-
-        [Test]
-        public void TryCreatePreviewRoot_UsesCanonicalHumanoidRigForRegimentHandcannon()
-        {
-            var moduleCatalog = AssetDatabase.LoadAssetAtPath<ModuleCatalog>(ModuleCatalogPath);
-            var visualCatalog = AssetDatabase.LoadAssetAtPath<NovaPartVisualCatalog>(VisualCatalogPath);
-            var alignmentCatalog = AssetDatabase.LoadAssetAtPath<NovaPartAlignmentCatalog>(AlignmentCatalogPath);
-            var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
-            GameObject previewRoot = null;
-
-            try
-            {
-                var catalog = new GaragePanelCatalogFactory().Build(
-                    moduleCatalog,
-                    visualCatalog,
-                    alignmentCatalog);
-                var frame = catalog.FindFrame("nova_frame_body17_rzmt");
-                var firepower = catalog.FindFirepower("nova_fire_arm15_hdkn");
-                var mobility = catalog.FindMobility("nova_mob_legs16_sprt");
-
-                Assert.NotNull(frame);
-                Assert.NotNull(firepower);
-                Assert.NotNull(mobility);
-
-                var viewModel = new GarageSlotViewModel(
-                    "A-01",
-                    "A-01",
-                    "test",
-                    "test",
-                    hasCommittedLoadout: true,
-                    hasDraftChanges: false,
-                    isEmpty: false,
-                    isSelected: true,
-                    frameId: frame.Id,
-                    firepowerId: firepower.Id,
-                    mobilityId: mobility.Id,
-                    frameAlignment: frame.Alignment,
-                    firepowerAlignment: firepower.Alignment,
-                    mobilityAlignment: mobility.Alignment,
                     mobilityUsesAssemblyPivot: mobility.UseAssemblyPivot,
                     frameAssemblyForm: frame.AssemblyForm,
                     firepowerAssemblyForm: firepower.AssemblyForm);
 
+                Assert.That(frame.AssemblyForm, Is.EqualTo(AssemblyForm.Shoulder));
+                Assert.That(firepower.AssemblyForm, Is.EqualTo(AssemblyForm.Shoulder));
+                Assert.That(firepower.Alignment.XfiSocketQuality, Is.EqualTo("xfi_weapon_direction_only"));
+                Assert.That(frame.Alignment.AssemblyAnchorMode, Is.EqualTo("ShoulderPair"));
+                Assert.That(firepower.Alignment.AssemblyAnchorMode, Is.EqualTo("ShoulderPair"));
                 Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
                     viewModel,
                     cameraObject.GetComponent<Camera>(),
@@ -575,90 +617,7 @@ namespace Tests.Editor
                     firepower.AssemblyPrefab,
                     mobility.AssemblyPrefab,
                     out previewRoot));
-
-                var frameObject = FindDirectChild(previewRoot.transform, frame.Id);
-                var firepowerObject = FindDirectChild(previewRoot.transform, firepower.Id);
-
-                Assert.NotNull(frameObject);
-                Assert.NotNull(firepowerObject);
-
-                var frameBounds = CalculateLocalRendererBounds(previewRoot.transform, frameObject);
-                var firepowerBounds = CalculateLocalRendererBounds(previewRoot.transform, firepowerObject);
-                Assert.That(firepower.Alignment.XfiSocketQuality, Is.EqualTo("xfi_weapon_direction_only"));
-                AssertCanonicalHumanoidRigPlacement(frameBounds, firepowerBounds);
-            }
-            finally
-            {
-                if (previewRoot != null)
-                    Object.DestroyImmediate(previewRoot);
-
-                Object.DestroyImmediate(cameraObject);
-            }
-        }
-
-        [Test]
-        public void TryCreatePreviewRoot_UsesCanonicalHumanoidRigForSquadronHammerShock()
-        {
-            var moduleCatalog = AssetDatabase.LoadAssetAtPath<ModuleCatalog>(ModuleCatalogPath);
-            var visualCatalog = AssetDatabase.LoadAssetAtPath<NovaPartVisualCatalog>(VisualCatalogPath);
-            var alignmentCatalog = AssetDatabase.LoadAssetAtPath<NovaPartAlignmentCatalog>(AlignmentCatalogPath);
-            var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
-            GameObject previewRoot = null;
-
-            try
-            {
-                var catalog = new GaragePanelCatalogFactory().Build(
-                    moduleCatalog,
-                    visualCatalog,
-                    alignmentCatalog);
-                var frame = catalog.FindFrame("nova_frame_body10_skdr");
-                var firepower = catalog.FindFirepower("nova_fire_arm39_hmsk");
-                var mobility = catalog.FindMobility("nova_mob_legs24_sts");
-
-                Assert.NotNull(frame);
-                Assert.NotNull(firepower);
-                Assert.NotNull(mobility);
-                Assert.AreEqual(AssemblyForm.Humanoid, frame.AssemblyForm);
-                Assert.AreEqual(AssemblyForm.Humanoid, firepower.AssemblyForm);
-
-                var viewModel = new GarageSlotViewModel(
-                    "A-01",
-                    "A-01",
-                    "test",
-                    "test",
-                    hasCommittedLoadout: true,
-                    hasDraftChanges: false,
-                    isEmpty: false,
-                    isSelected: true,
-                    frameId: frame.Id,
-                    firepowerId: firepower.Id,
-                    mobilityId: mobility.Id,
-                    frameAlignment: frame.Alignment,
-                    firepowerAlignment: firepower.Alignment,
-                    mobilityAlignment: mobility.Alignment,
-                    mobilityUsesAssemblyPivot: mobility.UseAssemblyPivot,
-                    frameAssemblyForm: frame.AssemblyForm,
-                    firepowerAssemblyForm: firepower.AssemblyForm);
-
-                Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
-                    viewModel,
-                    cameraObject.GetComponent<Camera>(),
-                    frame.AssemblyPrefab,
-                    firepower.AssemblyPrefab,
-                    mobility.AssemblyPrefab,
-                    out previewRoot));
-
-                var frameObject = FindDirectChild(previewRoot.transform, frame.Id);
-                var firepowerObject = FindDirectChild(previewRoot.transform, firepower.Id);
-
-                Assert.NotNull(frameObject);
-                Assert.NotNull(firepowerObject);
-
-                var frameBounds = CalculateLocalRendererBounds(previewRoot.transform, frameObject);
-                var firepowerBounds = CalculateLocalRendererBounds(previewRoot.transform, firepowerObject);
-
-                Assert.That(firepower.Alignment.XfiSocketQuality, Is.EqualTo("xfi_weapon_direction_only"));
-                AssertCanonicalHumanoidRigPlacement(frameBounds, firepowerBounds);
+                Assert.NotNull(previewRoot);
             }
             finally
             {
@@ -682,7 +641,8 @@ namespace Tests.Editor
             Vector3 visualBoundsCenter = default,
             Vector3 visualBoundsMin = default,
             Vector3 visualBoundsMax = default,
-            string assemblyAnchorMode = null)
+            string assemblyAnchorMode = null,
+            string assemblyReviewResult = null)
         {
             return new GaragePanelCatalog.PartAlignment
             {
@@ -699,8 +659,25 @@ namespace Tests.Editor
                 GxTreeSocketName = gxTreeSocketName,
                 XfiSocketQuality = xfiSocketQuality,
                 AssemblyAnchorMode = assemblyAnchorMode,
+                AssemblyReviewResult = assemblyReviewResult,
                 QualityFlag = "auto_ok"
             };
+        }
+
+        private static GaragePanelCatalog BuildCatalog()
+        {
+            var moduleCatalog = AssetDatabase.LoadAssetAtPath<ModuleCatalog>(ModuleCatalogPath);
+            var visualCatalog = AssetDatabase.LoadAssetAtPath<NovaPartVisualCatalog>(VisualCatalogPath);
+            var alignmentCatalog = AssetDatabase.LoadAssetAtPath<NovaPartAlignmentCatalog>(AlignmentCatalogPath);
+
+            Assert.NotNull(moduleCatalog);
+            Assert.NotNull(visualCatalog);
+            Assert.NotNull(alignmentCatalog);
+
+            return new GaragePanelCatalogFactory().Build(
+                moduleCatalog,
+                visualCatalog,
+                alignmentCatalog);
         }
 
         private static GameObject CreateOffsetCubePrefab(string name, Vector3 localCenter)
@@ -732,21 +709,6 @@ namespace Tests.Editor
             cube.transform.SetParent(root.transform, false);
             cube.transform.localPosition = new Vector3(0f, 0.5f, 0f);
             return root;
-        }
-
-        private static void AssertCanonicalHumanoidRigPlacement(
-            Bounds frameBounds,
-            Bounds firepowerBounds,
-            float zTolerance = 0.0001f)
-        {
-            Assert.That(
-                firepowerBounds.min.x,
-                Is.GreaterThan(frameBounds.max.x + frameBounds.size.x * 0.2f));
-            Assert.That(
-                firepowerBounds.min.z,
-                Is.EqualTo(frameBounds.max.z + frameBounds.size.z * 0.12f).Within(zTolerance));
-            Assert.That(firepowerBounds.max.y, Is.GreaterThan(frameBounds.min.y));
-            Assert.That(firepowerBounds.min.y, Is.LessThan(frameBounds.max.y));
         }
 
         private static Transform FindDirectChild(Transform parent, string nameFragment)
@@ -803,15 +765,5 @@ namespace Tests.Editor
             return bounds;
         }
 
-        private static float ResolveEffectiveFrameTopY(GaragePanelCatalog.FrameOption frame)
-        {
-            var framePositionY = frame.Alignment.HasVisualBounds
-                ? frame.Alignment.PivotOffset.y - frame.Alignment.VisualBoundsCenter.y
-                : frame.Alignment.PivotOffset.y;
-            var top = frame.Alignment.FrameTopSocketOffset.sqrMagnitude > 0.000001f
-                ? frame.Alignment.FrameTopSocketOffset
-                : frame.Alignment.SocketOffset;
-            return framePositionY + top.y;
-        }
     }
 }

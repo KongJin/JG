@@ -131,6 +131,7 @@ scene/prefab wiring, asset catalog/profile, network payload, UI token, visual pr
 - 새 feature나 bugfix가 test-first에 맞으면 한 번에 하나의 behavior만 `RED -> GREEN -> refactor`로 진행한다.
 - 계획된 테스트를 먼저 전부 쓰고 나중에 구현을 몰아서 붙이지 않는다. 각 cycle에서 배운 내용을 다음 behavior와 test seam에 반영한다.
 - GREEN 전에는 refactor를 섞지 않는다. 모든 관련 check가 통과한 뒤에만 duplication 제거, module deepening, 이름 정리 같은 refactor를 분리한다.
+- 같은 fixture, setup, assertion 구조의 테스트가 2개를 넘으면 closeout 전에 parameterized test나 helper로 접는다. 서로 다른 failure owner를 검증하는 경우만 예외로 둔다.
 - 정확한 regression seam이 없으면 얕은 false-confidence test를 만들지 말고 `blocked` 또는 testability residual로 보고한다.
 
 ## Validation First

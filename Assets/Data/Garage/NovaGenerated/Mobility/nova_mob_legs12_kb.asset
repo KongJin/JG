@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -16,7 +16,9 @@ MonoBehaviour:
   displayName: "\uCF54\uBCB3"
   icon: {fileID: 0}
   mobilitySurface: 2
+  legacyHpBonus: 0
   moveSpeed: 4.74
   moveRange: 5.65
+  legacyAnchorRange: 0
   description: datan\common\legs12_kb.gx
   previewPrefab: {fileID: 6490447463444801575, guid: 6883747b02d11f24d8c93fb0be14e167, type: 3}

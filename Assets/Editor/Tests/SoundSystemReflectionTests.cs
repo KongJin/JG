@@ -1,38 +1,23 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using NUnit.Framework;
 using Shared.EventBus;
 using Shared.Math;
 using Shared.Runtime.Sound;
 using Shared.Sound;
+using UnityEditor;
 using UnityEngine;
 
 namespace Tests.Editor
 {
     public sealed class SoundSystemReflectionTests
     {
-        private static readonly FieldInfo CatalogEntriesField =
-            typeof(SoundCatalog).GetField("entries", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        private static readonly FieldInfo LastPlayTimeField =
-            typeof(SoundPlayer).GetField("_lastPlayTime", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        private static readonly FieldInfo SoundPlayerCatalogField =
-            typeof(SoundPlayer).GetField("catalog", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        private static readonly FieldInfo SoundPlayerBgmSourceField =
-            typeof(SoundPlayer).GetField("bgmAudioSource", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        private static readonly FieldInfo SoundPlayerSfxSourcesField =
-            typeof(SoundPlayer).GetField("sfxAudioSources", BindingFlags.Instance | BindingFlags.NonPublic);
-
         [Test]
         public void SoundCatalog_ReportsDuplicateKeys()
         {
             var catalog = ScriptableObject.CreateInstance<SoundCatalog>();
             var clip = AudioClip.Create("test", 441, 1, 44100, false);
-            CatalogEntriesField.SetValue(catalog, new[]
+            ConfigureSoundCatalog(catalog, new[]
             {
                 new SoundEntry("ui_click", clip),
                 new SoundEntry("ui_click", clip),
@@ -123,7 +108,7 @@ namespace Tests.Editor
         {
             var catalog = ScriptableObject.CreateInstance<SoundCatalog>();
             var clip = AudioClip.Create("click", 441, 1, 44100, false);
-            CatalogEntriesField.SetValue(catalog, new[]
+            ConfigureSoundCatalog(catalog, new[]
             {
                 new SoundEntry("ui_click", clip, cooldown: 1f),
             });
@@ -144,12 +129,34 @@ namespace Tests.Editor
             eventBus.Publish(request);
             eventBus.Publish(request);
 
-            var lastPlayTime = (Dictionary<string, float>)LastPlayTimeField.GetValue(player);
-            Assert.That(lastPlayTime, Has.Count.EqualTo(1));
+            Assert.That(player.RecentSfxPlaybackKeyCount, Is.EqualTo(1));
 
             Object.DestroyImmediate(go);
             Object.DestroyImmediate(catalog);
             Object.DestroyImmediate(clip);
+        }
+
+        private static void ConfigureSoundCatalog(
+            SoundCatalog catalog,
+            IReadOnlyList<SoundEntry> entries)
+        {
+            var serialized = new SerializedObject(catalog);
+            var array = serialized.FindProperty("entries");
+            array.arraySize = entries.Count;
+            for (var i = 0; i < entries.Count; i++)
+            {
+                var entry = entries[i];
+                var element = array.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("key").stringValue = entry.Key;
+                element.FindPropertyRelative("clip").objectReferenceValue = entry.Clip;
+                element.FindPropertyRelative("volume").floatValue = entry.Volume;
+                element.FindPropertyRelative("spatialBlend").floatValue = entry.SpatialBlend;
+                element.FindPropertyRelative("cooldown").floatValue = entry.Cooldown;
+                element.FindPropertyRelative("channel").enumValueIndex = (int)entry.Channel;
+                element.FindPropertyRelative("loop").boolValue = entry.Loop;
+            }
+
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static void ConfigureSoundPlayer(
@@ -158,9 +165,14 @@ namespace Tests.Editor
             AudioSource bgmAudioSource,
             params AudioSource[] sfxAudioSources)
         {
-            SoundPlayerCatalogField.SetValue(player, catalog);
-            SoundPlayerBgmSourceField.SetValue(player, bgmAudioSource);
-            SoundPlayerSfxSourcesField.SetValue(player, sfxAudioSources);
+            var serialized = new SerializedObject(player);
+            serialized.FindProperty("catalog").objectReferenceValue = catalog;
+            serialized.FindProperty("bgmAudioSource").objectReferenceValue = bgmAudioSource;
+            var array = serialized.FindProperty("sfxAudioSources");
+            array.arraySize = sfxAudioSources.Length;
+            for (var i = 0; i < sfxAudioSources.Length; i++)
+                array.GetArrayElementAtIndex(i).objectReferenceValue = sfxAudioSources[i];
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
     }
 }

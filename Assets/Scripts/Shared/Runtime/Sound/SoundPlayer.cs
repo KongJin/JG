@@ -37,6 +37,7 @@ namespace Shared.Runtime.Sound
         private readonly List<AudioSource> _sfxSources = new List<AudioSource>();
 
         public bool HasRuntimeDependencies => catalog != null && bgmAudioSource != null && HasConfiguredSfxSources;
+        public int RecentSfxPlaybackKeyCount => _lastPlayTime.Count;
 
         public static bool TryGetActive(out SoundPlayer soundPlayer)
         {
