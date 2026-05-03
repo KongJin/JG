@@ -20,35 +20,78 @@
 
         <ui:ScrollView name="WorkspaceScroll" class="workspace-scroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
             <ui:VisualElement name="SlotStrip" class="slot-strip">
-                <ui:Button name="SlotCard01" class="slot-card slot-card--active">
-                    <ui:VisualElement class="slot-active-line" />
-                    <ui:Label name="SlotCode01Label" text="A-01" class="slot-code slot-code--active" />
-                    <ui:VisualElement name="SlotIcon01" class="slot-icon slot-icon--active">
-                        <ui:VisualElement name="SlotIcon01Glyph" class="uitk-icon uitk-icon--smart-toy uitk-icon--blue slot-icon-glyph slot-icon-glyph--active" />
-                    </ui:VisualElement>
-                    <ui:Label name="SlotName01Label" text="전선 유지" class="slot-name slot-name--active" />
-                </ui:Button>
-                <ui:Button name="SlotCard02" class="slot-card">
-                    <ui:Label name="SlotCode02Label" text="A-02" class="slot-code" />
-                    <ui:VisualElement name="SlotIcon02" class="slot-icon">
-                        <ui:VisualElement name="SlotIcon02Glyph" class="uitk-icon uitk-icon--security uitk-icon--muted slot-icon-glyph" />
-                    </ui:VisualElement>
-                    <ui:Label name="SlotName02Label" text="방어" class="slot-name" />
-                </ui:Button>
-                <ui:Button name="SlotCard03" class="slot-card">
-                    <ui:Label name="SlotCode03Label" text="A-03" class="slot-code" />
-                    <ui:VisualElement name="SlotIcon03" class="slot-icon">
-                        <ui:VisualElement name="SlotIcon03Glyph" class="uitk-icon uitk-icon--precision-manufacturing uitk-icon--muted slot-icon-glyph" />
-                    </ui:VisualElement>
-                    <ui:Label name="SlotName03Label" text="지원" class="slot-name" />
-                </ui:Button>
-                <ui:Button name="SlotCard04" class="slot-card slot-card--empty">
-                    <ui:Label name="SlotCode04Label" text="A-04" class="slot-code slot-code--empty" />
-                    <ui:VisualElement name="SlotIcon04" class="slot-icon slot-icon--empty">
-                        <ui:VisualElement name="SlotIcon04Glyph" class="uitk-icon uitk-icon--add uitk-icon--muted slot-icon-glyph slot-icon-glyph--empty" />
-                    </ui:VisualElement>
-                    <ui:Label name="SlotName04Label" text="빈 슬롯" class="slot-name slot-name--empty" />
-                </ui:Button>
+                <ui:VisualElement name="SlotCard01Cell" class="slot-cell">
+                    <ui:Button name="SlotCard01" class="slot-card slot-card--active">
+                        <ui:Label name="SlotCode01Label" text="A-01" class="slot-code slot-code--active" />
+                        <ui:VisualElement name="SlotIcon01" class="slot-icon slot-icon--active">
+                            <ui:VisualElement name="SlotIcon01Glyph" class="uitk-icon uitk-icon--smart-toy uitk-icon--blue slot-icon-glyph slot-icon-glyph--active" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Label name="SlotName01Label" text="" class="slot-name slot-name--active" />
+                </ui:VisualElement>
+                <ui:VisualElement name="SlotCard02Cell" class="slot-cell">
+                    <ui:Button name="SlotCard02" class="slot-card">
+                        <ui:Label name="SlotCode02Label" text="A-02" class="slot-code" />
+                        <ui:VisualElement name="SlotIcon02" class="slot-icon">
+                            <ui:VisualElement name="SlotIcon02Glyph" class="uitk-icon uitk-icon--security uitk-icon--muted slot-icon-glyph" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Label name="SlotName02Label" text="" class="slot-name" />
+                </ui:VisualElement>
+                <ui:VisualElement name="SlotCard03Cell" class="slot-cell">
+                    <ui:Button name="SlotCard03" class="slot-card">
+                        <ui:Label name="SlotCode03Label" text="A-03" class="slot-code" />
+                        <ui:VisualElement name="SlotIcon03" class="slot-icon">
+                            <ui:VisualElement name="SlotIcon03Glyph" class="uitk-icon uitk-icon--precision-manufacturing uitk-icon--muted slot-icon-glyph" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Label name="SlotName03Label" text="" class="slot-name" />
+                </ui:VisualElement>
+                <ui:VisualElement name="SlotCard04Cell" class="slot-cell">
+                    <ui:Button name="SlotCard04" class="slot-card slot-card--empty">
+                        <ui:Label name="SlotCode04Label" text="A-04" class="slot-code slot-code--empty" />
+                        <ui:VisualElement name="SlotIcon04" class="slot-icon slot-icon--empty">
+                            <ui:VisualElement name="SlotIcon04Glyph" class="uitk-icon uitk-icon--add uitk-icon--muted slot-icon-glyph slot-icon-glyph--empty" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Label name="SlotName04Label" text="" class="slot-name slot-name--empty" />
+                </ui:VisualElement>
+                <ui:VisualElement name="SlotCard05Cell" class="slot-cell">
+                    <ui:Button name="SlotCard05" class="slot-card slot-card--empty">
+                        <ui:Label name="SlotCode05Label" text="A-05" class="slot-code slot-code--empty" />
+                        <ui:VisualElement name="SlotIcon05" class="slot-icon slot-icon--empty">
+                            <ui:VisualElement name="SlotIcon05Glyph" class="uitk-icon uitk-icon--add uitk-icon--muted slot-icon-glyph slot-icon-glyph--empty" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Label name="SlotName05Label" text="" class="slot-name slot-name--empty" />
+                </ui:VisualElement>
+                <ui:VisualElement name="SlotCard06Cell" class="slot-cell">
+                    <ui:Button name="SlotCard06" class="slot-card slot-card--empty">
+                        <ui:Label name="SlotCode06Label" text="A-06" class="slot-code slot-code--empty" />
+                        <ui:VisualElement name="SlotIcon06" class="slot-icon slot-icon--empty">
+                            <ui:VisualElement name="SlotIcon06Glyph" class="uitk-icon uitk-icon--add uitk-icon--muted slot-icon-glyph slot-icon-glyph--empty" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Label name="SlotName06Label" text="" class="slot-name slot-name--empty" />
+                </ui:VisualElement>
+                <ui:VisualElement name="SlotCard07Cell" class="slot-cell">
+                    <ui:Button name="SlotCard07" class="slot-card slot-card--empty">
+                        <ui:Label name="SlotCode07Label" text="A-07" class="slot-code slot-code--empty" />
+                        <ui:VisualElement name="SlotIcon07" class="slot-icon slot-icon--empty">
+                            <ui:VisualElement name="SlotIcon07Glyph" class="uitk-icon uitk-icon--add uitk-icon--muted slot-icon-glyph slot-icon-glyph--empty" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Label name="SlotName07Label" text="" class="slot-name slot-name--empty" />
+                </ui:VisualElement>
+                <ui:VisualElement name="SlotCard08Cell" class="slot-cell">
+                    <ui:Button name="SlotCard08" class="slot-card slot-card--empty">
+                        <ui:Label name="SlotCode08Label" text="A-08" class="slot-code slot-code--empty" />
+                        <ui:VisualElement name="SlotIcon08" class="slot-icon slot-icon--empty">
+                            <ui:VisualElement name="SlotIcon08Glyph" class="uitk-icon uitk-icon--add uitk-icon--muted slot-icon-glyph slot-icon-glyph--empty" />
+                        </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Label name="SlotName08Label" text="" class="slot-name slot-name--empty" />
+                </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement name="PartFocusBar" class="part-focus-bar">
@@ -69,6 +112,44 @@
             <ui:VisualElement name="PartSelectionPane" class="part-selection-pane">
                 <!-- Part preview moved to the compact dock below the list. -->
 
+                <ui:VisualElement name="SelectedPartPreviewCard" class="selected-part-compact-card">
+                    <ui:VisualElement name="SelectedPartPreviewHost" class="selected-part-preview-host">
+                        <ui:VisualElement class="reticle-corner reticle-corner--tl" />
+                        <ui:VisualElement class="reticle-corner reticle-corner--tr" />
+                        <ui:VisualElement class="reticle-corner reticle-corner--bl" />
+                        <ui:VisualElement class="reticle-corner reticle-corner--br" />
+                        <ui:Label name="SelectedPartPreviewLabel" text="기동" class="selected-part-preview-label" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="SelectedPartStatsPanel" class="selected-part-stats-panel">
+                        <ui:Label name="SelectedPartPreviewKickerLabel" class="part-preview-kicker" text="선택 부품" />
+                        <ui:Label name="SelectedPartPreviewTitleLabel" text="기동 선택" class="part-preview-title" />
+                        <ui:Label name="SelectedPartEnergyLabel" text="EN 0" class="part-preview-energy" />
+                        <ui:Label name="SelectedPartPreviewMetaLabel" text="HP+ 0 | MOV 0.0" class="part-preview-meta" />
+                        <ui:VisualElement name="SelectedPartStatBars" class="selected-part-stat-bars">
+                            <ui:VisualElement name="SelectedPartStatRow01" class="selected-part-stat-row">
+                                <ui:Label name="SelectedPartStat01Value" text="0" class="selected-part-stat-value" />
+                                <ui:VisualElement class="selected-part-stat-track">
+                                    <ui:VisualElement name="SelectedPartStat01Fill" class="selected-part-stat-fill" />
+                                </ui:VisualElement>
+                                <ui:Label name="SelectedPartStat01Label" text="MOV" class="selected-part-stat-label" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="SelectedPartStatRow02" class="selected-part-stat-row">
+                                <ui:Label name="SelectedPartStat02Value" text="0" class="selected-part-stat-value" />
+                                <ui:VisualElement class="selected-part-stat-track">
+                                    <ui:VisualElement name="SelectedPartStat02Fill" class="selected-part-stat-fill" />
+                                </ui:VisualElement>
+                                <ui:Label name="SelectedPartStat02Label" text="HP" class="selected-part-stat-label" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="SelectedPartStatRow03" class="selected-part-stat-row">
+                                <ui:Label name="SelectedPartStat03Value" text="0" class="selected-part-stat-value" />
+                                <ui:VisualElement class="selected-part-stat-track">
+                                    <ui:VisualElement name="SelectedPartStat03Fill" class="selected-part-stat-fill" />
+                                </ui:VisualElement>
+                                <ui:Label name="SelectedPartStat03Label" text="ASPD" class="selected-part-stat-label" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
 
                 <ui:VisualElement name="PartListCard" class="part-list-card">
                     <ui:VisualElement class="part-list-head">
@@ -80,75 +161,60 @@
                         <ui:Button name="PartRow01" class="part-row part-row--selected">
                             <ui:VisualElement class="part-row-main">
                                 <ui:Label name="PartRow01NameLabel" text="Roadrunner" class="part-row-name" />
-                                <ui:Label name="PartRow01MetaLabel" text="HP+ 120 | MOV 3.5 | T1" class="part-row-meta" />
+                                <ui:Label name="PartRow01MetaLabel" text="HP+ 120 | MOV 3.5" class="part-row-meta" />
                             </ui:VisualElement>
                             <ui:Label name="PartRow01BadgeLabel" text="장착중" class="part-row-badge part-row-badge--selected" />
                         </ui:Button>
                         <ui:Button name="PartRow02" class="part-row">
                             <ui:VisualElement class="part-row-main">
                                 <ui:Label name="PartRow02NameLabel" text="Crawler" class="part-row-name" />
-                                <ui:Label name="PartRow02MetaLabel" text="HP+ 180 | MOV 2.8 | T2" class="part-row-meta" />
+                                <ui:Label name="PartRow02MetaLabel" text="HP+ 180 | MOV 2.8" class="part-row-meta" />
                             </ui:VisualElement>
-                            <ui:Label name="PartRow02BadgeLabel" text="T2" class="part-row-badge" />
+                            <ui:Label name="PartRow02BadgeLabel" text="" class="part-row-badge" />
                         </ui:Button>
                         <ui:Button name="PartRow03" class="part-row">
                             <ui:VisualElement class="part-row-main">
                                 <ui:Label name="PartRow03NameLabel" text="Offroader" class="part-row-name" />
-                                <ui:Label name="PartRow03MetaLabel" text="HP+ 160 | MOV 3.2 | T2" class="part-row-meta" />
+                                <ui:Label name="PartRow03MetaLabel" text="HP+ 160 | MOV 3.2" class="part-row-meta" />
                             </ui:VisualElement>
-                            <ui:Label name="PartRow03BadgeLabel" text="T2" class="part-row-badge" />
+                            <ui:Label name="PartRow03BadgeLabel" text="" class="part-row-badge" />
                         </ui:Button>
                         <ui:Button name="PartRow04" class="part-row">
                             <ui:VisualElement class="part-row-main">
                                 <ui:Label name="PartRow04NameLabel" text="Tank" class="part-row-name" />
-                                <ui:Label name="PartRow04MetaLabel" text="HP+ 220 | MOV 2.4 | T3" class="part-row-meta" />
+                                <ui:Label name="PartRow04MetaLabel" text="HP+ 220 | MOV 2.4" class="part-row-meta" />
                             </ui:VisualElement>
                             <ui:Label name="PartRow04BadgeLabel" text="검토" class="part-row-badge part-row-badge--review" />
                         </ui:Button>
                         <ui:Button name="PartRow05" class="part-row">
                             <ui:VisualElement class="part-row-main">
                                 <ui:Label name="PartRow05NameLabel" text="Galloper" class="part-row-name" />
-                                <ui:Label name="PartRow05MetaLabel" text="HP+ 150 | MOV 3.4 | T1" class="part-row-meta" />
+                                <ui:Label name="PartRow05MetaLabel" text="HP+ 150 | MOV 3.4" class="part-row-meta" />
                             </ui:VisualElement>
-                            <ui:Label name="PartRow05BadgeLabel" text="T1" class="part-row-badge" />
+                            <ui:Label name="PartRow05BadgeLabel" text="" class="part-row-badge" />
                         </ui:Button>
                         <ui:Button name="PartRow06" class="part-row">
                             <ui:VisualElement class="part-row-main">
                                 <ui:Label name="PartRow06NameLabel" text="Strider" class="part-row-name" />
-                                <ui:Label name="PartRow06MetaLabel" text="HP+ 135 | MOV 3.7 | T1" class="part-row-meta" />
+                                <ui:Label name="PartRow06MetaLabel" text="HP+ 135 | MOV 3.7" class="part-row-meta" />
                             </ui:VisualElement>
-                            <ui:Label name="PartRow06BadgeLabel" text="T1" class="part-row-badge" />
+                            <ui:Label name="PartRow06BadgeLabel" text="" class="part-row-badge" />
                         </ui:Button>
                         <ui:Button name="PartRow07" class="part-row">
                             <ui:VisualElement class="part-row-main">
                                 <ui:Label name="PartRow07NameLabel" text="Hover" class="part-row-name" />
-                                <ui:Label name="PartRow07MetaLabel" text="HP+ 110 | MOV 4.1 | T1" class="part-row-meta" />
+                                <ui:Label name="PartRow07MetaLabel" text="HP+ 110 | MOV 4.1" class="part-row-meta" />
                             </ui:VisualElement>
-                            <ui:Label name="PartRow07BadgeLabel" text="T1" class="part-row-badge" />
+                            <ui:Label name="PartRow07BadgeLabel" text="" class="part-row-badge" />
                         </ui:Button>
                         <ui:Button name="PartRow08" class="part-row">
                             <ui:VisualElement class="part-row-main">
                                 <ui:Label name="PartRow08NameLabel" text="Cruiser" class="part-row-name" />
-                                <ui:Label name="PartRow08MetaLabel" text="HP+ 190 | MOV 2.9 | T2" class="part-row-meta" />
+                                <ui:Label name="PartRow08MetaLabel" text="HP+ 190 | MOV 2.9" class="part-row-meta" />
                             </ui:VisualElement>
-                            <ui:Label name="PartRow08BadgeLabel" text="T2" class="part-row-badge" />
+                            <ui:Label name="PartRow08BadgeLabel" text="" class="part-row-badge" />
                         </ui:Button>
                     </ui:ScrollView>
-                </ui:VisualElement>
-            </ui:VisualElement>
-
-            <ui:VisualElement name="SelectedPartPreviewCard" class="selected-part-compact-card">
-                <ui:VisualElement name="SelectedPartPreviewHost" class="selected-part-preview-host">
-                    <ui:VisualElement class="reticle-corner reticle-corner--tl" />
-                    <ui:VisualElement class="reticle-corner reticle-corner--tr" />
-                    <ui:VisualElement class="reticle-corner reticle-corner--bl" />
-                    <ui:VisualElement class="reticle-corner reticle-corner--br" />
-                    <ui:Label name="SelectedPartPreviewLabel" text="기동" class="selected-part-preview-label" />
-                </ui:VisualElement>
-                <ui:VisualElement name="SelectedPartStatsPanel" class="selected-part-stats-panel">
-                    <ui:Label text="선택 부품" class="part-preview-kicker" />
-                    <ui:Label name="SelectedPartPreviewTitleLabel" text="기동 선택" class="part-preview-title" />
-                    <ui:Label name="SelectedPartPreviewMetaLabel" text="HP+ 0 | MOV 0.0 | T1" class="part-preview-meta" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
@@ -186,6 +252,7 @@
             </ui:VisualElement>
 
             <ui:VisualElement name="SaveDock" class="save-dock">
+                <ui:Label name="SaveValidationLabel" class="save-validation" text="" />
                 <ui:Button name="SaveButton" text="저장 및 배치" class="save-button" />
             </ui:VisualElement>
         </ui:ScrollView>

@@ -5,7 +5,8 @@
   "required": [
     "summary",
     "batches",
-    "blocked"
+    "blocked",
+    "actionItems"
   ],
   "properties": {
     "summary": {
@@ -25,6 +26,7 @@
           "expectedFindingsResolved",
           "status",
           "ownerDocs",
+          "cleanupKind",
           "operations"
         ],
         "properties": {
@@ -72,6 +74,14 @@
               "type": "string"
             }
           },
+          "cleanupKind": {
+            "type": "string",
+            "enum": [
+              "",
+              "delete_unused",
+              "simplify_inline"
+            ]
+          },
           "operations": {
             "type": "array",
             "items": {
@@ -80,13 +90,15 @@
               "required": [
                 "type",
                 "targetPath",
-                "content"
+                "content",
+                "referenceTokens"
               ],
               "properties": {
                 "type": {
                   "type": "string",
                   "enum": [
-                    "write_file"
+                    "write_file",
+                    "delete_file"
                   ]
                 },
                 "targetPath": {
@@ -94,8 +106,48 @@
                 },
                 "content": {
                   "type": "string"
+                },
+                "referenceTokens": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    "actionItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "severity",
+          "summary",
+          "details",
+          "relatedPaths"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          },
+          "relatedPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
             }
           }
         }

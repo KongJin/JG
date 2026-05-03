@@ -17,12 +17,39 @@ namespace Features.Garage.Presentation
         [SerializeField] private int _textureSize = 512;
         [SerializeField] private float _autoRotationSpeed = 20f;
         [SerializeField] private int _previewLayer = -1;
+        [SerializeField] private float _assemblyFitScale = 1f;
+        [SerializeField] private bool _transparentBackground;
 
         private GameObject _currentPreviewRoot;
 
         internal Texture PreviewTexture => _renderTexture;
         internal bool HasPreview { get; private set; }
         internal GameObject CurrentPreviewRoot => _currentPreviewRoot;
+
+        internal void ClearPreview()
+        {
+            DestroyCurrentPreview();
+            HasPreview = false;
+        }
+
+        internal void ConfigurePreviewLayer(int previewLayer)
+        {
+            _previewLayer = Mathf.Clamp(previewLayer, 0, 30);
+            EnsureCamera();
+            if (_currentPreviewRoot != null)
+                AssignPreviewLayer(_currentPreviewRoot);
+        }
+
+        internal void ConfigureAssemblyFitScale(float scale)
+        {
+            _assemblyFitScale = Mathf.Max(0.1f, scale);
+        }
+
+        internal void ConfigureTransparentBackground(bool isTransparent)
+        {
+            _transparentBackground = isTransparent;
+            EnsureCamera();
+        }
 
         internal bool Render(GarageSlotViewModel viewModel)
         {
@@ -48,7 +75,7 @@ namespace Features.Garage.Presentation
                 return false;
 
             AssignPreviewLayer(_currentPreviewRoot);
-            FitAssemblyToPreviewRoot(_currentPreviewRoot);
+            FitAssemblyToPreviewRoot(_currentPreviewRoot, _assemblyFitScale);
             HasPreview = true;
             RenderPreviewFrame();
             return true;
@@ -144,12 +171,12 @@ namespace Features.Garage.Presentation
             float maxExtent = Mathf.Max(bounds.extents.x, bounds.extents.y, bounds.extents.z);
             if (maxExtent > 0.0001f)
             {
-                float scale = Mathf.Clamp(0.82f / maxExtent, 0.35f, 2.6f);
+                float scale = Mathf.Clamp(1.12f / maxExtent, 0.45f, 3.4f);
                 partObj.transform.localScale *= scale;
             }
         }
 
-        private static void FitAssemblyToPreviewRoot(GameObject previewRoot)
+        private static void FitAssemblyToPreviewRoot(GameObject previewRoot, float scaleMultiplier)
         {
             if (previewRoot == null)
                 return;
@@ -167,7 +194,7 @@ namespace Features.Garage.Presentation
             float maxExtent = Mathf.Max(bounds.extents.x, bounds.extents.y, bounds.extents.z);
             if (maxExtent > 0.0001f)
             {
-                float scale = Mathf.Clamp(1.32f / maxExtent, 0.55f, 3.1f);
+                float scale = Mathf.Clamp((1.32f * Mathf.Max(0.1f, scaleMultiplier)) / maxExtent, 0.55f, 5.8f);
                 previewRoot.transform.localScale *= scale;
             }
         }
@@ -201,7 +228,9 @@ namespace Features.Garage.Presentation
 
             var mask = 1 << ResolvePreviewLayer();
             _previewCamera.cullingMask = mask;
-            _previewCamera.backgroundColor = ThemeColors.PreviewBackground;
+            _previewCamera.backgroundColor = _transparentBackground
+                ? new Color(0f, 0f, 0f, 0f)
+                : ThemeColors.PreviewBackground;
             _previewCamera.clearFlags = CameraClearFlags.SolidColor;
             _previewKeyLight = GaragePreviewAssembler.EnsurePreviewLighting(_previewCamera, _previewKeyLight);
             if (_previewKeyLight != null)
@@ -247,7 +276,7 @@ namespace Features.Garage.Presentation
             var size = Mathf.Max(128, _textureSize);
             if (_renderTexture == null)
             {
-                _renderTexture = new RenderTexture(size, size, 16)
+                _renderTexture = new RenderTexture(size, size, 16, RenderTextureFormat.ARGB32)
                 {
                     antiAliasing = 2,
                     filterMode = FilterMode.Bilinear,
@@ -265,7 +294,7 @@ namespace Features.Garage.Presentation
             if (_currentPreviewRoot == null)
                 return;
 
-            Destroy(_currentPreviewRoot);
+            DisposeUnityObject(_currentPreviewRoot);
             _currentPreviewRoot = null;
         }
 
@@ -275,8 +304,19 @@ namespace Features.Garage.Presentation
             if (_renderTexture != null)
             {
                 _renderTexture.Release();
-                Destroy(_renderTexture);
+                DisposeUnityObject(_renderTexture);
             }
+        }
+
+        private static void DisposeUnityObject(UnityEngine.Object target)
+        {
+            if (target == null)
+                return;
+
+            if (UnityEngine.Application.isPlaying)
+                Destroy(target);
+            else
+                DestroyImmediate(target);
         }
     }
 }

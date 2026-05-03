@@ -14,6 +14,9 @@ namespace Features.Garage.Presentation
         [SerializeField] private GarageEditorFocus _focusedPart = GarageEditorFocus.Mobility;
         [SerializeField] private string _partSearchText = string.Empty;
         [SerializeField] private bool _isSettingsOpen;
+        [SerializeField] private bool _hasDraftChanges;
+        [SerializeField] private bool _canSave;
+        [SerializeField] private string _validationText = string.Empty;
 
         private bool _isSubscribed;
 
@@ -173,6 +176,9 @@ namespace Features.Garage.Presentation
             _focusedPart = snapshot.FocusedPart;
             _partSearchText = snapshot.PartSearchText ?? string.Empty;
             _isSettingsOpen = snapshot.IsSettingsOpen;
+            _hasDraftChanges = snapshot.HasDraftChanges;
+            _canSave = snapshot.CanSave;
+            _validationText = snapshot.ValidationText ?? string.Empty;
         }
     }
 }

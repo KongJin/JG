@@ -1,27 +1,10 @@
+using Features.Unit.Domain;
 using UnityEngine;
 using UnityEngine.Serialization;
 using System;
 
 namespace Features.Unit.Infrastructure
 {
-    public enum AssemblyForm
-    {
-        Unspecified,
-        Tower,
-        Shoulder,
-        Humanoid
-    }
-
-    public static class UnitPartCompatibility
-    {
-        public static bool AreAssemblyFormsCompatible(AssemblyForm frameForm, AssemblyForm firepowerForm)
-        {
-            return frameForm == AssemblyForm.Unspecified ||
-                   firepowerForm == AssemblyForm.Unspecified ||
-                   frameForm == firepowerForm;
-        }
-    }
-
     /// <summary>
     /// 유닛 프레임 데이터 (ScriptableObject).
     /// 프레임의 기본 스탯 + 고유 특성 + 프리팹 참조.

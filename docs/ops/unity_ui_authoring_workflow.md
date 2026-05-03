@@ -48,6 +48,31 @@
 - runtime scene/prefab은 실제 교체 pass에서만 건드리고, pilot 성공을 runtime acceptance로 보고하지 않는다
 - scene registry 같은 runtime wiring dependency는 scene/prefab contract로만 유지하고, 숨은 runtime lookup/add-component fallback은 재도입하지 않는다
 
+## Stitch / UITK Translation Caveats
+
+Stitch source를 Unity UI Toolkit 후보 surface로 옮길 때는 semantic hierarchy와 source-derived presentation을 분리한다.
+세부 실행 명령은 `tools/stitch-unity/README.md`와 `tools/unity-mcp/README.md`가 담당하지만, authoring 판단은 이 문서가 소유한다.
+
+- Stitch/Tailwind/CSS를 USS로 그대로 복사하지 않는다.
+- UI Toolkit이 지원하지 않거나 현재 workflow에서 검증하지 않는 `display: grid`, gradient, `box-shadow`, `calc()`, pseudo-element, `z-index`류 패턴에 기대지 않는다.
+- source의 first-read order, block direction, emphasis posture, preview/summary completion, primary CTA persistence를 후보 surface에서 다시 확인한다.
+- `screen manifest`는 semantic meaning, `unity-map`은 binding, `presentation-contract`는 source-derived presentation만 맡는다.
+- `extractionStatus != resolved`이거나 `unresolvedDerivedFields`가 남아 있으면 translation-ready success로 보고하지 않는다.
+- semantic contract와 map이 맞아도 skeleton처럼 보이면 presentation extraction이 아직 닫히지 않은 것으로 보고 pass를 열어 둔다.
+- pilot/candidate evidence는 runtime replacement acceptance가 아니다. runtime target, binding, fresh runtime capture/smoke가 잠기기 전에는 `pilot success` 이상으로 보고하지 않는다.
+
+## Unity Execution Checkpoints
+
+Unity UI authoring 변경은 실행 전에 scene/prefab/runtime contract를 확인하고, 실행 후에는 현재 evidence를 다시 읽는다.
+
+- script edit가 재컴파일을 필요로 하면 Play Mode를 먼저 멈추고 compile/reload 안정화를 기다린다.
+- scene/prefab authoring은 변경 전 target hierarchy와 component type을 확인하고, 변경 후 같은 node/component를 다시 읽는다.
+- 새 wrapper/helper visual을 추가할 때 input을 가리거나 intended node를 숨기지 않는지 확인한다.
+- console/log 판단은 timestamp나 최신 run 기준으로 stale error와 current failure를 분리한다.
+- generated `.csproj`가 의심되면 Unity/Bee compile truth와 Unity Test Runner inclusion을 먼저 확인하고 generated project file을 직접 patch하지 않는다.
+- 구조/static/direct EditMode 검증을 먼저 쓰고, wiring/runtime smoke는 값싼 검증이 통과한 뒤에 둔다.
+- runtime smoke나 capture는 active contract 또는 translation pipeline이 존재한 뒤에 acceptance evidence로 취급한다.
+
 ## Route별 필수 증거
 
 ### `GameScene`

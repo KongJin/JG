@@ -108,19 +108,32 @@
 
 .slot-strip {
     flex-direction: row;
+    flex-wrap: wrap;
     margin-bottom: 12px;
 }
 
-.slot-card {
-    flex-grow: 1;
-    width: 24%;
+.slot-cell {
+    flex-grow: 0;
+    width: 22%;
     min-width: 0;
-    height: 86px;
-    margin-right: 6px;
+    margin-right: 5px;
+    margin-bottom: 8px;
+    align-items: stretch;
+    overflow: visible;
+}
+
+.slot-card {
+    flex-grow: 0;
+    width: 100%;
+    min-width: 0;
+    height: 72px;
+    min-height: 72px;
+    max-height: 72px;
+    margin-right: 0;
     padding-left: 4px;
     padding-right: 4px;
-    padding-top: 7px;
-    padding-bottom: 6px;
+    padding-top: 4px;
+    padding-bottom: 4px;
     border-radius: 4px;
     border-width: 1px;
     border-color: var(--zinc-800);
@@ -140,7 +153,13 @@
     background-color: rgba(20, 20, 24, 0.6);
 }
 
+.slot-card--empty.slot-card--active {
+    border-color: rgba(94, 182, 255, 0.55);
+    background-color: rgba(20, 76, 120, 0.22);
+}
+
 .slot-active-line {
+    display: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -154,6 +173,7 @@
     font-size: 10px;
     -unity-font-style: bold;
     margin-bottom: 5px;
+    display: none;
 }
 
 .slot-code--active {
@@ -165,23 +185,28 @@
 }
 
 .slot-icon {
-    width: 38px;
-    height: 38px;
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
     border-radius: 3px;
-    background-color: var(--zinc-950);
-    border-width: 1px;
-    border-color: var(--zinc-800);
+    background-color: transparent;
+    border-width: 0;
     align-items: center;
     justify-content: center;
-    margin-bottom: 5px;
+    margin-bottom: 0;
+    overflow: hidden;
 }
 
 .slot-icon--active {
-    border-color: rgba(94, 182, 255, 0.35);
+    border-width: 0;
 }
 
 .slot-icon--empty {
-    background-color: rgba(9, 9, 11, 0.65);
+    background-color: transparent;
+}
+
+.slot-icon--empty.slot-icon--active {
+    background-color: transparent;
 }
 
 .slot-icon-glyph {
@@ -198,9 +223,14 @@
 
 .slot-name {
     color: var(--zinc-500);
-    font-size: 9px;
+    font-size: 8px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
+    margin-top: 3px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .slot-name--active {
@@ -261,7 +291,8 @@
 }
 
 .part-selection-pane {
-    flex-direction: row;
+    flex-direction: column;
+    width: 100%;
     margin-bottom: 8px;
 }
 .selected-part-compact-card {
@@ -860,4 +891,390 @@
     font-size: 14px;
     -unity-font-style: bold;
 }
+
+.save-validation {
+    color: var(--amber-500);
+    font-size: 10px;
+    margin-bottom: 6px;
+    -unity-text-align: upper-left;
+}
+
+.selected-part-compact-card {
+    width: 100%;
+    height: 72px;
+    min-height: 72px;
+    max-height: 72px;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 12px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-width: 1px;
+    border-color: rgba(94, 182, 255, 0.24);
+    border-radius: 6px;
+    background-color: rgba(24, 24, 28, 0.92);
+}
+
+.selected-part-preview-host {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+    margin-right: 12px;
+    border-width: 1px;
+    border-color: rgba(94, 182, 255, 0.72);
+    border-radius: 3px;
+    background-color: rgba(7, 18, 29, 0.92);
+    overflow: hidden;
+}
+
+.selected-part-preview-host .reticle-corner {
+    display: none;
+}
+
+.selected-part-preview-label {
+    font-size: 8px;
+    color: rgba(94, 182, 255, 0.72);
+    -unity-font-style: bold;
+}
+
+.selected-part-stats-panel {
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.part-preview-kicker {
+    color: var(--zinc-500);
+    font-size: 8px;
+    -unity-font-style: bold;
+    margin-bottom: 3px;
+}
+
+.part-preview-title {
+    color: var(--zinc-100);
+    font-size: 15px;
+    -unity-font-style: bold;
+    margin-bottom: 4px;
+}
+
+.part-preview-energy {
+    width: 100%;
+    color: var(--blue-500);
+    font-size: 9px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 5px;
+}
+
+.part-preview-meta {
+    color: var(--blue-500);
+    font-size: 9px;
+    -unity-font-style: bold;
+}
+
+.part-list-card {
+    flex-grow: 1;
+    width: 100%;
+    min-height: 0;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 12px;
+    padding-bottom: 10px;
+    border-width: 1px;
+    border-color: rgba(94, 182, 255, 0.55);
+    border-radius: 5px;
+    background-color: rgba(8, 12, 18, 0.96);
+}
+
+.part-list-head {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.part-list-title {
+    flex-grow: 1;
+    color: var(--zinc-100);
+    font-size: 15px;
+    -unity-font-style: bold;
+}
+
+.part-list-count {
+    color: var(--amber-500);
+    font-size: 10px;
+    -unity-font-style: bold;
+}
+
+.part-search-field {
+    height: 32px;
+    margin-bottom: 8px;
+    border-width: 1px;
+    border-color: rgba(94, 182, 255, 0.8);
+    border-radius: 3px;
+    background-color: rgba(4, 10, 16, 0.94);
+}
+
+.part-list-rows {
+    border-width: 1px;
+    border-color: rgba(63, 78, 98, 0.78);
+    border-radius: 4px;
+    background-color: rgba(5, 7, 11, 0.82);
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.part-row {
+    height: 52px;
+    min-height: 52px;
+    max-height: 52px;
+    margin-bottom: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-width: 1px;
+    border-color: rgba(63, 78, 98, 0.72);
+    border-radius: 4px;
+    background-color: rgba(11, 13, 18, 0.98);
+    flex-direction: row;
+    align-items: center;
+}
+
+.part-row--selected {
+    border-color: rgba(94, 182, 255, 0.82);
+    background-color: rgba(10, 23, 35, 0.98);
+}
+
+.part-row-main {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.part-row-name {
+    color: var(--zinc-100);
+    font-size: 13px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.part-row-meta {
+    color: var(--zinc-500);
+    font-size: 9px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-top: 3px;
+}
+
+.part-row-badge {
+    width: 38px;
+    height: 18px;
+    border-width: 1px;
+    border-color: rgba(116, 116, 128, 0.75);
+    border-radius: 4px;
+    color: var(--zinc-300);
+    font-size: 8px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    background-color: rgba(42, 42, 48, 0.86);
+}
 /*                                                                                                                      */
+
+/* Garage part picker: two-column selected preview + list layout. */
+.part-selection-pane {
+    flex-direction: row;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 8px;
+}
+
+.selected-part-compact-card {
+    width: 118px;
+    min-width: 118px;
+    max-width: 118px;
+    height: auto;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    margin-right: 8px;
+    margin-bottom: 0;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-width: 0;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+.selected-part-preview-host {
+    width: 88px;
+    height: 88px;
+    min-width: 88px;
+    min-height: 88px;
+    margin-right: 0;
+    margin-bottom: 6px;
+    border-width: 0;
+    border-radius: 0;
+    background-color: transparent;
+    overflow: hidden;
+}
+
+.selected-part-stats-panel {
+    flex-grow: 1;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.part-preview-kicker {
+    color: var(--zinc-500);
+    font-size: 8px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 3px;
+}
+
+.part-preview-title {
+    width: 100%;
+    color: var(--zinc-100);
+    font-size: 12px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-bottom: 4px;
+}
+
+.part-preview-meta {
+    width: 100%;
+    color: var(--blue-500);
+    font-size: 8px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-bottom: 5px;
+    display: none;
+}
+
+.selected-part-stat-bars {
+    width: 100%;
+    height: 50px;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.selected-part-stat-row {
+    width: 30px;
+    height: 50px;
+    min-height: 50px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 0;
+}
+
+.selected-part-stat-label {
+    width: 100%;
+    color: var(--zinc-500);
+    font-size: 7px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-top: 2px;
+}
+
+.selected-part-stat-track {
+    width: 12px;
+    height: 30px;
+    border-radius: 3px;
+    background-color: rgba(63, 78, 98, 0.6);
+    overflow: hidden;
+    position: relative;
+}
+
+.selected-part-stat-fill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 12px;
+    height: 50%;
+    border-radius: 3px;
+    background-color: var(--blue-500);
+}
+
+.selected-part-stat-value {
+    width: 100%;
+    color: var(--zinc-300);
+    font-size: 7px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 2px;
+}
+
+.part-list-card {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    width: auto;
+    margin-bottom: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-width: 1px;
+    border-color: rgba(94, 182, 255, 0.62);
+    border-radius: 7px;
+    background-color: rgba(6, 11, 18, 0.98);
+}
+
+.part-list-head {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.part-list-title {
+    flex-grow: 1;
+    color: var(--zinc-100);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.part-list-count {
+    color: var(--amber-500);
+    font-size: 9px;
+    -unity-font-style: bold;
+}
+
+.part-search-field {
+    height: 30px;
+    min-height: 30px;
+    margin-bottom: 8px;
+    border-width: 1px;
+    border-color: rgba(94, 182, 255, 0.78);
+    border-radius: 3px;
+    background-color: rgba(2, 8, 14, 0.95);
+}
+
+.part-list-rows {
+    border-width: 1px;
+    border-color: rgba(63, 78, 98, 0.78);
+    border-radius: 4px;
+    background-color: rgba(4, 7, 12, 0.88);
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}

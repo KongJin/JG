@@ -49,11 +49,11 @@ namespace Features.Garage.Presentation
             return option.Slot switch
             {
                 GarageNovaPartPanelSlot.Firepower when catalog.FindFirepower(option.Id) is { } part =>
-                    $"EN {part.EnergyCost} | T{part.Tier}",
+                    $"EN {part.EnergyCost} | ATK {part.AttackDamage:0} | RNG {part.Range:0.0}",
                 GarageNovaPartPanelSlot.Mobility when catalog.FindMobility(option.Id) is { } part =>
-                    $"EN {part.EnergyCost} | T{part.Tier}",
+                    $"EN {part.EnergyCost} | MOV {part.MoveRange:0.0} | HP+ {part.HpBonus:0}",
                 _ when catalog.FindFrame(option.Id) is { } part =>
-                    $"EN {part.EnergyCost} | T{part.Tier}",
+                    $"EN {part.EnergyCost} | HP {part.BaseHp:0} | DEF {part.Defense:0}",
                 _ => option.DetailText ?? string.Empty,
             };
         }

@@ -33,6 +33,7 @@ skill 이름과 route 등록은 `ops.skill-routing-registry`가 소유한다.
 | T15 | "meta GUID", "scene serialization", "Unity API", "batchmode build", "compile diagnostics fallback" | `rule-unity` | `jg-unity-workflow` only when JG owner workflow, scene/prefab authoring, or UI policy is in scope | Do not let generic Unity mechanics own JG acceptance. |
 | T16 | "fallback으로 덮지 마", "silent fail", "runtime repair", "hidden lookup", "contract 누락", "pending/review인데 성공 처리", "조용히 정상처럼 보임" | `jg-no-silent-fallback` | `jg-coding-guardrails` for implementation; `jg-coupling-review` for owner boundary; `jg-issue-investigation` for verified root cause | Do not let missing contracts become normal preview, gameplay, data promotion, or acceptance success. |
 | T17 | "UXML", "USS", "UI Toolkit/UITK", "VisualElement", "ScrollView", "UIDocument", "PanelSettings", "navigationBar까지 스크롤 영역" | `unity-uitoolkit`, `jg-unity-workflow` | `jg-coding-guardrails` for script edits; `rule-unity` only for generic Unity mechanics | Do not solve UI Toolkit layout/style requests first through runtime adapter math when UXML/USS/flex ownership is the real surface. |
+| T18 | "앞으로는", "다음부터", "같은 실수 새 세션도 안 하게", "문서나 skill에 규칙화", "skill trigger에 넣어줘" | `jg-forward-rule-capture`, `jg-doc-lifecycle`, `rule-operations` | `jg-coding-guardrails` when the correction changes implementation behavior; relevant owner skill/doc for the durable rule | Do not leave a correction as a conversational promise; route it to durable Markdown or ask one concrete clarification if the rule is ambiguous. |
 
 ## Maintenance Rule
 

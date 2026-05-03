@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-02",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "rule harness Codex CLI subscription agent runner",
+  "observedMutationClass": "Rule harness agentRunner subscription-auth route was implicit in config/runtime checks, making it easy to confuse with legacy API-key LLM diagnose.",
+  "acceptanceEvidenceClass": "Codex CLI login status and rules lint; no gameplay, Unity runtime, or WebGL product acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "The README described the Codex CLI route as canonical but the executable agentRunner path did not require ChatGPT subscription login before invoking Codex, while legacy API-key environment variables were documented elsewhere for combined harness LLM diagnose.",
+  "prevention": "Require an explicit ChatGPT subscription login preflight before Codex CLI agent work, keep API-key variables scoped to legacy LLM diagnose/API-key experiments, keep aggressive cleanup auto-apply limited to high-confidence delete_unused and simplify_inline batches, and preserve existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "Ran cmd /c codex login status and observed Logged in using ChatGPT; ran tools/rule-harness/tests/Run-RuleHarnessTests.ps1; ran run-harness-pipeline.ps1 -DryRun; ran npm run --silent rules:lint.",
+  "blockedReason": "",
+  "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-codex-subscription-agent-runner-20260502.json",
+    "tools/rule-harness/README.md",
+    "tools/rule-harness/config.json",
+    "tools/rule-harness/RuleHarness.psm1",
+    "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+    "tools/workflow/Find-SimplificationCandidates.ps1"
+  ]
+}

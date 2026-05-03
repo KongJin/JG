@@ -2,6 +2,7 @@ using System.Collections;
 using Features.Garage;
 using Features.Garage.Domain;
 using Features.Garage.Infrastructure;
+using Features.Unit.Domain;
 using Features.Unit.Infrastructure;
 using Shared.Runtime;
 using UnityEngine;

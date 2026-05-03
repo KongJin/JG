@@ -293,6 +293,7 @@ export async function lintRepository(repoRoot, options = {}) {
     errors.push(...validateActivePlanArtifactOwnerCollisions(documents));
     errors.push(...validateProgressEvidenceOverload(documents));
     errors.push(...(await validateRuleHarnessAdvisoryMemory(repoRoot, documents)));
+    errors.push(...(await validateRulesArtifactMarkdownReferences(repoRoot)));
     errors.push(...(await validateDocsMetaArtifacts(repoRoot)));
     errors.push(...(await validateGlobalRuleSkillMarkdownLinks(options)));
   }
@@ -2067,6 +2068,65 @@ async function validateRuleHarnessAdvisoryMemory(repoRoot, documents) {
   });
 
   return errors;
+}
+
+async function validateRulesArtifactMarkdownReferences(repoRoot) {
+  const artifactRulesRoot = path.join(repoRoot, "artifacts", "rules");
+  if (!(await pathExists(artifactRulesRoot))) {
+    return [];
+  }
+
+  const markdownFiles = await walkMarkdownFiles(artifactRulesRoot, repoRoot);
+  const errors = [];
+
+  for (const absolutePath of markdownFiles) {
+    const repoRelativePath = toRepoRelative(repoRoot, absolutePath);
+    const content = stripFencedCodeBlocks(await fs.readFile(absolutePath, "utf8"));
+    const lines = content.split(/\r?\n/u);
+
+    lines.forEach((line, index) => {
+      const references = [
+        ...extractInlineCodeTokens(line),
+        ...extractRelativeMarkdownTargets(line),
+      ];
+
+      for (const reference of references) {
+        const normalizedReference = normalizeRepoRelativePath(reference.replace(/^\.\//u, ""));
+        if (!isPathLikeAdvisoryMemoryReference(normalizedReference)) {
+          continue;
+        }
+
+        const staleReason = getStaleArtifactRuleReferenceReason(repoRoot, normalizedReference);
+        if (!staleReason) {
+          continue;
+        }
+
+        errors.push(
+          createError(
+            "stale-rules-artifact-reference",
+            repoRelativePath,
+            `Rules artifact references stale ${staleReason}: \`${reference}\`. Reroute it to the current owner path or mark it as historical prose instead of an active repo path.`,
+            index + 1,
+          ),
+        );
+      }
+    });
+  }
+
+  return errors;
+}
+
+function getStaleArtifactRuleReferenceReason(repoRoot, value) {
+  const normalized = normalizeRepoRelativePath(value);
+  if (!isPathLikeAdvisoryMemoryReference(normalized)) {
+    return null;
+  }
+
+  if (isUnsafeRepoRelativeReference(normalized)) {
+    return "path";
+  }
+
+  return fsSyncPathExists(path.join(repoRoot, normalized)) ? null : "path";
 }
 
 function getStaleAdvisoryMemoryReferenceReason(repoRoot, knownDocIds, value) {

@@ -40,26 +40,16 @@ namespace Features.Player
             }
 
             var units = computePlayerUnitSpecsUseCase.Execute(loadouts, playerId);
-            return new GameSceneGarageBootstrapResult(
-                restoreGarageRosterUseCase,
-                computePlayerUnitSpecsUseCase,
-                units);
+            return new GameSceneGarageBootstrapResult(units);
         }
     }
 
     internal readonly struct GameSceneGarageBootstrapResult
     {
-        public RestoreGarageRosterUseCase RestoreGarageRosterUseCase { get; }
-        public ComputePlayerUnitSpecsUseCase ComputePlayerUnitSpecsUseCase { get; }
         public Unit.Domain.Unit[] PlayerUnits { get; }
 
-        public GameSceneGarageBootstrapResult(
-            RestoreGarageRosterUseCase restoreGarageRosterUseCase,
-            ComputePlayerUnitSpecsUseCase computePlayerUnitSpecsUseCase,
-            Unit.Domain.Unit[] playerUnits)
+        public GameSceneGarageBootstrapResult(Unit.Domain.Unit[] playerUnits)
         {
-            RestoreGarageRosterUseCase = restoreGarageRosterUseCase;
-            ComputePlayerUnitSpecsUseCase = computePlayerUnitSpecsUseCase;
             PlayerUnits = playerUnits;
         }
     }

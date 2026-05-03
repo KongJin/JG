@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using Shared.Ui;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Features.Garage.Presentation
 {
     internal sealed class GarageSetBSlotSurface
     {
-        private const int SlotCount = 4;
+        private const int SlotCount = 8;
 
         private readonly SlotBinding[] _slots = new SlotBinding[SlotCount];
 
@@ -22,6 +23,7 @@ namespace Features.Garage.Presentation
                     UitkElementUtility.Required<VisualElement>(root, $"SlotIcon{slotNumber:00}"),
                     UitkElementUtility.Required<VisualElement>(root, $"SlotIcon{slotNumber:00}Glyph"),
                     UitkElementUtility.Required<Label>(root, $"SlotName{slotNumber:00}Label"));
+                _slots[i].IconHost.Insert(0, _slots[i].PreviewImage);
             }
 
             BindCallbacks();
@@ -31,10 +33,18 @@ namespace Features.Garage.Presentation
 
         public void Render(IReadOnlyList<GarageSlotViewModel> slots)
         {
+            Render(slots, null);
+        }
+
+        public void Render(IReadOnlyList<GarageSlotViewModel> slots, IReadOnlyList<Texture> slotPreviewTextures)
+        {
             for (int i = 0; i < _slots.Length; i++)
             {
                 var slot = slots != null && i < slots.Count ? slots[i] : null;
-                RenderSlot(_slots[i], slot, i);
+                var previewTexture = slotPreviewTextures != null && i < slotPreviewTextures.Count
+                    ? slotPreviewTextures[i]
+                    : null;
+                RenderSlot(_slots[i], slot, previewTexture, i);
             }
         }
 
@@ -47,14 +57,20 @@ namespace Features.Garage.Presentation
             }
         }
 
-        private static void RenderSlot(SlotBinding binding, GarageSlotViewModel slot, int slotIndex)
+        private static void RenderSlot(SlotBinding binding, GarageSlotViewModel slot, Texture previewTexture, int slotIndex)
         {
             bool isEmpty = slot == null || slot.IsEmpty;
             bool isSelected = slot != null && slot.IsSelected;
+            bool hasPreview = !isEmpty && previewTexture != null;
 
             binding.CodeLabel.text = slot?.SlotLabel ?? $"UNIT_{slotIndex + 1:00}";
+            binding.CodeLabel.style.display = DisplayStyle.None;
             UitkIconRegistry.Apply(binding.IconGlyph, BuildSlotIconId(slot));
-            binding.NameLabel.text = BuildSlotName(slot);
+            binding.NameLabel.text = BuildSlotName(slot, slotIndex);
+            binding.NameLabel.style.display = DisplayStyle.Flex;
+            binding.PreviewImage.image = hasPreview ? previewTexture : null;
+            binding.PreviewImage.style.display = hasPreview ? DisplayStyle.Flex : DisplayStyle.None;
+            binding.IconGlyph.style.display = hasPreview ? DisplayStyle.None : DisplayStyle.Flex;
 
             UitkElementUtility.SetClass(binding.Card, "slot-card--active", isSelected);
             UitkElementUtility.SetClass(binding.Card, "slot-card--empty", isEmpty);
@@ -87,17 +103,22 @@ namespace Features.Garage.Presentation
             return "smart_toy";
         }
 
-        private static string BuildSlotName(GarageSlotViewModel slot)
+        private static string BuildSlotName(GarageSlotViewModel slot, int slotIndex)
         {
-            if (slot == null || slot.IsEmpty)
-                return "EMPTY";
+            if (slot == null || slot.IsEmpty || string.IsNullOrWhiteSpace(slot.FirepowerId))
+                return slot?.SlotLabel ?? $"A-{slotIndex + 1:00}";
 
-            if (!string.IsNullOrWhiteSpace(slot.RoleLabel))
-                return slot.RoleLabel;
+            string summary = slot.Summary ?? string.Empty;
+            int roleSeparatorIndex = summary.LastIndexOf('|');
+            if (roleSeparatorIndex >= 0 && roleSeparatorIndex + 1 < summary.Length)
+                summary = summary.Substring(roleSeparatorIndex + 1);
 
-            return !string.IsNullOrWhiteSpace(slot.StatusBadgeText)
-                ? slot.StatusBadgeText
-                : "UNIT";
+            int separatorIndex = summary.IndexOf('/');
+            string weaponName = separatorIndex >= 0
+                ? summary.Substring(0, separatorIndex)
+                : summary;
+
+            return weaponName.Trim();
         }
 
         private readonly struct SlotBinding
@@ -113,6 +134,8 @@ namespace Features.Garage.Presentation
                 CodeLabel = codeLabel;
                 IconHost = iconHost;
                 IconGlyph = iconGlyph;
+                PreviewImage = UitkElementUtility.CreateAbsoluteImage($"Slot{card.name.Substring("SlotCard".Length)}PreviewImage");
+                PreviewImage.scaleMode = ScaleMode.ScaleAndCrop;
                 NameLabel = nameLabel;
             }
 
@@ -120,6 +143,7 @@ namespace Features.Garage.Presentation
             public Label CodeLabel { get; }
             public VisualElement IconHost { get; }
             public VisualElement IconGlyph { get; }
+            public Image PreviewImage { get; }
             public Label NameLabel { get; }
         }
     }

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-02",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "repo-local skill trigger and correction capture",
+  "observedMutationClass": "User correction phrased as 앞으로는 could remain a conversational promise instead of becoming durable Markdown guidance.",
+  "acceptanceEvidenceClass": "repo-local skill registration, trigger matrix update, and rules lint; no gameplay, Unity runtime, or WebGL product acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "The repo had Clarification Loop policy in codex coding guardrails, but no dedicated skill route that triggers on 앞으로는/다음부터 style correction language and forces durable owner routing. The first skill draft also carried too much policy body for a skill-entry.",
+  "prevention": "Added Forward Rule Capture to ops.codex-coding-guardrails as the SSOT behavior rule, kept jg-forward-rule-capture as a thin trigger/router, registered it in skill routing, added trigger fixture T18, and preserved existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "Passed npm run --silent rules:lint and npm run --silent workflow:artifact-scope after moving the policy body into ops.codex-coding-guardrails and slimming the skill entry.",
+  "blockedReason": "",
+  "changedPaths": [
+    ".codex/skills/jg-forward-rule-capture/SKILL.md",
+    "artifacts/rules/issue-recurrence-closeout.d/local-forward-rule-capture-skill-20260502.json",
+    "docs/ops/codex_coding_guardrails.md",
+    "docs/ops/skill_routing_registry.md",
+    "docs/ops/skill_trigger_matrix.md"
+  ]
+}

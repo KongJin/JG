@@ -14,6 +14,7 @@ namespace Features.Garage.Presentation
             bool hasCatalogData,
             bool hasCompleteDraft,
             bool hasDraftChanges,
+            bool hasSelectedDraftChanges,
             bool matchesCommittedSelection,
             bool wasComposeEvaluated,
             Result<ComposedUnit> composeResult,
@@ -23,6 +24,7 @@ namespace Features.Garage.Presentation
             HasCatalogData = hasCatalogData;
             HasCompleteDraft = hasCompleteDraft;
             HasDraftChanges = hasDraftChanges;
+            HasSelectedDraftChanges = hasSelectedDraftChanges;
             MatchesCommittedSelection = matchesCommittedSelection;
             WasComposeEvaluated = wasComposeEvaluated;
             ComposeResult = composeResult;
@@ -33,6 +35,7 @@ namespace Features.Garage.Presentation
         public bool HasCatalogData { get; }
         public bool HasCompleteDraft { get; }
         public bool HasDraftChanges { get; }
+        public bool HasSelectedDraftChanges { get; }
         public bool MatchesCommittedSelection { get; }
         public bool WasComposeEvaluated { get; }
         public Result<ComposedUnit> ComposeResult { get; }
@@ -40,7 +43,7 @@ namespace Features.Garage.Presentation
         public Result RosterValidationResult { get; }
         public bool HasComposedUnit => WasComposeEvaluated && ComposeResult.IsSuccess;
         public string ComposeError => WasComposeEvaluated ? ComposeResult.Error : "Garage catalog is unavailable.";
-        public bool CanSave => HasDraftChanges && RosterValidationResult.IsSuccess;
+        public bool CanSave => HasSelectedDraftChanges && RosterValidationResult.IsSuccess;
         public string RosterValidationError => RosterValidationResult.Error;
         public string SaveBlockedMessage => !string.IsNullOrWhiteSpace(RosterValidationError)
             ? RosterValidationError
@@ -61,6 +64,7 @@ namespace Features.Garage.Presentation
                 hasCatalogData,
                 hasCompleteDraft,
                 state != null && state.HasDraftChanges(),
+                state != null && state.SelectedSlotHasDraftChanges(),
                 state != null && state.DraftMatchesCommittedSelection(),
                 hasCatalogData && hasCompleteDraft,
                 composeResult,
@@ -118,9 +122,9 @@ namespace Features.Garage.Presentation
             }
 
             Result rosterValidation = Result.Success();
-            if (state != null && state.HasDraftChanges())
+            if (state != null && state.SelectedSlotHasDraftChanges())
             {
-                rosterValidation = validateRoster.Execute(state.DraftRoster, out string validationError);
+                rosterValidation = validateRoster.ExecuteDraftSave(state.BuildSelectedSlotCommitRoster(), out string validationError);
                 if (rosterValidation.IsFailure &&
                     string.IsNullOrWhiteSpace(rosterValidation.Error) &&
                     !string.IsNullOrWhiteSpace(validationError))

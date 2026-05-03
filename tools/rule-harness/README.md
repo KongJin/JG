@@ -73,10 +73,19 @@ latest pointer는 `Temp/RuleHarnessRoles/latest-pipeline.txt`, `latest-tech-debt
 - `run-recurrence-plan.ps1`: 리뷰/작업 report, `history.json`, `advisory-memory.json`를 읽어 `preventionItems`를 만든다.
 - `run-recurrence-work.ps1`: 재발 방지 계획 JSON의 `recommendedBatches`만 기존 mutation guard로 적용한다.
 
+Aggressive cleanup:
+
+- `tech-debt-review`는 삭제/간소화/이동 후보를 `cleanupCandidates`로 함께 남긴다.
+- `delete_unused`, `simplify_inline` 후보는 config의 `cleanup.autoApplyKinds`와 `cleanup.maxAutoApplyBatchesPerRun` 안에서만 review-work batch로 변환된다.
+- `delete_file` operation은 batch snapshot rollback 대상이며, 삭제 직전 type token과 Unity `.meta` GUID stale reference를 다시 검색한다.
+- `move_owner` 후보는 scene/prefab serialized reference 위험 때문에 자동 이동하지 않고 `manual-cleanup-review` action item으로만 남긴다.
+
 Coding agent route:
 
 - 이 repo에는 별도 `codingplan` harness mode를 두지 않는다.
 - 자동 coding-agent 검토는 `agentRunner` 설정을 사용하는 Codex CLI route가 canonical이다.
+- 로컬 예약 role harness의 `agentRunner`는 Codex CLI의 ChatGPT 구독 로그인 세션을 우선 운용 기준으로 둔다. `cmd /c codex login status`가 `Logged in using ChatGPT`를 반환하면 API key 없이 agent task를 실행할 수 있다.
+- 기존 `RULE_HARNESS_API_KEY` / `OPENAI_API_KEY` / `GLM_API_KEY` 경로는 legacy combined harness의 LLM diagnose 또는 명시적 API-key 실험용이다.
 - legacy LLM diagnose의 quota/network/timeout failure는 product code debt가 아니라 harness 운영 debt로 보고, recurrence plan은 static-only report와 `blockedReason`을 남긴다.
 - advisory memory에서 `scopeType=harness-ops` 또는 `status=blocked-operational`인 항목은 product prevention item으로 재큐잉하지 않는다.
 - `advisory-memory.json`은 SSOT가 아니며, stale `scopePath`, `promotionTarget`, path-like `validationHints`, 또는 doc_id가 남으면 `rules:lint`에서 정리 대상으로 잡는다.

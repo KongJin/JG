@@ -4873,6 +4873,7 @@ function Get-RuleHarnessBatchRiskAssessment {
         $score = if ($isBrokenRefBatch) { [int]$scores.brokenReferenceDocFix } else { [int]$scores.featureReadmeContract }
     }
     elseif ($Batch.kind -eq 'code_fix') {
+        $cleanupKind = if ($Batch.PSObject.Properties.Name -contains 'cleanupKind') { [string]$Batch.cleanupKind } else { '' }
         $allTargetsMissing = @($Batch.targetFiles | Where-Object { Test-Path -LiteralPath (Join-Path $RepoRoot $_) }).Count -eq 0
         $isScaffoldBatch = $allTargetsMissing -and @($Batch.targetFiles | Where-Object { $_ -match '(Setup|Bootstrap)\.cs$' }).Count -eq @($Batch.targetFiles).Count
         $isPlaceholderCleanupBatch = -not $allTargetsMissing -and
@@ -4880,7 +4881,13 @@ function Get-RuleHarnessBatchRiskAssessment {
             @($Batch.targetFiles | Where-Object { $_ -match '(Setup|Bootstrap)\.cs$' }).Count -eq @($Batch.targetFiles).Count -and
             @($Batch.sourceFindingTypes | Where-Object { $_ -ne 'tech_debt' }).Count -eq 0 -and
             [string]$Batch.reason -match 'placeholder'
-        if ($isScaffoldBatch) {
+        if ($cleanupKind -eq 'delete_unused' -and $scores.PSObject.Properties.Name -contains 'cleanupDeleteUnused') {
+            $score = [int]$scores.cleanupDeleteUnused
+        }
+        elseif ($cleanupKind -eq 'simplify_inline' -and $scores.PSObject.Properties.Name -contains 'cleanupSimplifyInline') {
+            $score = [int]$scores.cleanupSimplifyInline
+        }
+        elseif ($isScaffoldBatch) {
             $score = [int]$scores.featureRootScaffold
         }
         elseif ($isPlaceholderCleanupBatch -and $scores.PSObject.Properties.Name -contains 'featureRootPlaceholderCleanup') {
@@ -6815,6 +6822,113 @@ function Restore-RuleHarnessFileSnapshots {
     }
 }
 
+function Get-RuleHarnessDeleteReferenceMatches {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string[]]$ReferenceTokens,
+        [Parameter(Mandatory)]
+        [string[]]$ExcludedPaths
+    )
+
+    $excluded = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($path in @($ExcludedPaths)) {
+        if (-not [string]::IsNullOrWhiteSpace([string]$path)) {
+            [void]$excluded.Add(([string]$path).Replace('\', '/'))
+        }
+    }
+
+    $referenceMatches = [System.Collections.Generic.List[object]]::new()
+    $rg = Get-Command rg -ErrorAction SilentlyContinue
+    if ($null -ne $rg) {
+        Push-Location $RepoRoot
+        try {
+            foreach ($token in @($ReferenceTokens | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Sort-Object -Unique)) {
+                $output = @(& $rg.Source --fixed-strings --line-number --glob '!Library/**' --glob '!Temp/**' --glob '!obj/**' --glob '!bin/**' --glob '!Build/**' --glob '!Builds/**' --glob '!Logs/**' --glob '!UserSettings/**' --glob '!.git/**' --glob '!node_modules/**' -- ([string]$token) . 2>$null)
+                foreach ($line in $output) {
+                    if ([string]$line -notmatch '^\./?(?<path>.*?):(?<line>\d+):') {
+                        continue
+                    }
+
+                    $relativePath = ([string]$Matches['path']).TrimStart('.', '/', '\').Replace('\', '/')
+                    if ($excluded.Contains($relativePath)) {
+                        continue
+                    }
+
+                    [void]$referenceMatches.Add([pscustomobject]@{
+                        token = [string]$token
+                        path = $relativePath
+                        line = [int]$Matches['line']
+                    })
+                }
+            }
+        }
+        finally {
+            Pop-Location
+        }
+
+        return @($referenceMatches)
+    }
+
+    $root = (Resolve-Path -LiteralPath $RepoRoot).Path.TrimEnd('\', '/')
+    $scanFiles = @(
+        Get-ChildItem -LiteralPath $root -Recurse -File -ErrorAction SilentlyContinue |
+            Where-Object {
+                $relative = $_.FullName.Substring($root.Length + 1).Replace('\', '/')
+                $relative -notmatch '(^|/)(Library|Temp|obj|bin|Build|Builds|Logs|UserSettings|\.git|node_modules)/' -and
+                -not $excluded.Contains($relative)
+            }
+    )
+
+    foreach ($token in @($ReferenceTokens | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Sort-Object -Unique)) {
+        foreach ($file in $scanFiles) {
+            $relativePath = $file.FullName.Substring($root.Length + 1).Replace('\', '/')
+            $hit = Select-String -LiteralPath $file.FullName -SimpleMatch -Pattern ([string]$token) -List -ErrorAction SilentlyContinue
+            if ($null -ne $hit) {
+                [void]$referenceMatches.Add([pscustomobject]@{
+                    token = [string]$token
+                    path = $relativePath
+                    line = [int]$hit.LineNumber
+                })
+            }
+        }
+    }
+
+    @($referenceMatches)
+}
+
+function Assert-RuleHarnessDeleteFileOperationSafe {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Batch,
+        [Parameter(Mandatory)]
+        [object]$Operation,
+        [Parameter(Mandatory)]
+        [string]$RepoRoot
+    )
+
+    $targetPath = ([string]$Operation.targetPath).Replace('\', '/')
+    if (-not (Test-RuleHarnessSafeRelativePath -Path $targetPath)) {
+        throw "Unsafe delete_file targetPath '$targetPath'."
+    }
+
+    $tokens = @()
+    if ($Operation.PSObject.Properties.Name -contains 'referenceTokens') {
+        $tokens = @($Operation.referenceTokens)
+    }
+    if ($tokens.Count -eq 0) {
+        return
+    }
+
+    $excludedPaths = @($Batch.targetFiles | ForEach-Object { ([string]$_).Replace('\', '/') })
+    $matches = @(Get-RuleHarnessDeleteReferenceMatches -RepoRoot $RepoRoot -ReferenceTokens $tokens -ExcludedPaths $excludedPaths)
+    if ($matches.Count -gt 0) {
+        $preview = @($matches | Select-Object -First 5 | ForEach-Object { "{0}:{1} token={2}" -f [string]$_.path, [int]$_.line, [string]$_.token }) -join '; '
+        throw "delete_file reference guard found stale references for '$targetPath': $preview"
+    }
+}
+
 function Invoke-RuleHarnessBatchOperations {
     param(
         [Parameter(Mandatory)]
@@ -6856,6 +6970,19 @@ function Invoke-RuleHarnessBatchOperations {
 
                 Set-Content -Path $fullPath -Value ([string]$operation.content) -Encoding UTF8
                 [void]$touchedPaths.Add($targetPath)
+            }
+            'delete_file' {
+                Assert-RuleHarnessDeleteFileOperationSafe -Batch $Batch -Operation $operation -RepoRoot $RepoRoot
+                if ($DryRun) {
+                    continue
+                }
+
+                $targetPath = ([string]$operation.targetPath).Replace('\', '/')
+                $fullPath = Join-Path $RepoRoot $targetPath
+                if (Test-Path -LiteralPath $fullPath) {
+                    Remove-Item -LiteralPath $fullPath -Force
+                    [void]$touchedPaths.Add($targetPath)
+                }
             }
             default {
                 throw "Unsupported batch operation type: $($operation.type)"
@@ -6985,8 +7112,16 @@ function Invoke-RuleHarnessBatchValidation {
 
     if ($Batch.kind -ne 'rule_fix') {
         $checkNotes = [System.Collections.Generic.List[string]]::new()
+        $deleteTargets = @(
+            $Batch.operations |
+                Where-Object { [string]$_.type -eq 'delete_file' } |
+                ForEach-Object { ([string]$_.targetPath).Replace('\', '/') } |
+                Sort-Object -Unique
+        )
         $missingTargets = @($Batch.targetFiles | Where-Object {
-            -not (Test-Path -LiteralPath (Join-Path $RepoRoot ([string]$_)))
+            $normalizedTarget = ([string]$_).Replace('\', '/')
+            -not (Test-Path -LiteralPath (Join-Path $RepoRoot $normalizedTarget)) -and
+            $normalizedTarget -notin $deleteTargets
         })
         if ($missingTargets.Count -gt 0) {
             $details = "Missing target files after apply: $($missingTargets -join ', ')"
@@ -7007,6 +7142,31 @@ function Invoke-RuleHarnessBatchValidation {
             }
         }
         [void]$checkNotes.Add('target_files_exist')
+
+        $stillExistingDeleteTargets = @($deleteTargets | Where-Object {
+            Test-Path -LiteralPath (Join-Path $RepoRoot ([string]$_))
+        })
+        if ($stillExistingDeleteTargets.Count -gt 0) {
+            $details = "Deleted target files still exist after apply: $($stillExistingDeleteTargets -join ', ')"
+            [void]$results.Add([pscustomobject]@{
+                batchId    = $Batch.id
+                validation = 'inferred_validation'
+                status     = 'failed'
+                source     = 'inferred'
+                details    = $details
+            })
+            return [pscustomobject]@{
+                passed         = $false
+                findingsAfter  = $BaselineStaticFindings
+                results        = @($results)
+                failureReason  = 'inferred-check-failed'
+                failureMessage = $details
+                failureSource  = 'inferred'
+            }
+        }
+        if ($deleteTargets.Count -gt 0) {
+            [void]$checkNotes.Add('delete_targets_absent')
+        }
 
         $featureNames = @(Get-RuleHarnessBatchFeatureNames -Batch $Batch)
         $featureRootContracts = Test-RuleHarnessFeatureRootContracts -RepoRoot $RepoRoot -FeatureNames $featureNames
@@ -7773,7 +7933,10 @@ function Invoke-RuleHarnessMutationPlanCore {
             continue
         }
 
-        if ((-not $RelaxScopeGuards) -and $batch.kind -ne 'rule_fix' -and [string]$discoveredPlan.confidence -eq 'low') {
+        $cleanupKind = if ($batch.PSObject.Properties.Name -contains 'cleanupKind') { [string]$batch.cleanupKind } else { '' }
+        $autoCleanupKinds = if ($Config.PSObject.Properties.Name -contains 'cleanup' -and $Config.cleanup.PSObject.Properties.Name -contains 'autoApplyKinds') { @($Config.cleanup.autoApplyKinds | ForEach-Object { [string]$_ }) } else { @() }
+        $isAutoCleanupBatch = -not [string]::IsNullOrWhiteSpace($cleanupKind) -and $cleanupKind -in $autoCleanupKinds
+        if ((-not $RelaxScopeGuards) -and (-not $isAutoCleanupBatch) -and $batch.kind -ne 'rule_fix' -and [string]$discoveredPlan.confidence -eq 'low') {
             $historyEntry = Set-RuleHarnessHistoryEntry -HistoryState $historyState -Branch $branch -CommitSha $commitSha -Fingerprint $fingerprint -Status 'skipped' -Reason 'manual-validation-required'
             $skippedBatch = [pscustomobject]@{
                 id           = $batch.id
@@ -8867,6 +9030,7 @@ function Get-RuleHarnessAgentRunnerSettings {
         reasoningEffort = if ($null -ne $settings -and $settings.PSObject.Properties.Name -contains 'reasoningEffort') { [string]$settings.reasoningEffort } else { 'low' }
         timeoutSec     = if ($null -ne $settings -and $settings.PSObject.Properties.Name -contains 'timeoutSec') { [int]$settings.timeoutSec } else { 180 }
         maxTasksPerRun = if ($null -ne $settings -and $settings.PSObject.Properties.Name -contains 'maxTasksPerRun') { [int]$settings.maxTasksPerRun } else { 1 }
+        requireChatGptLogin = if ($null -ne $settings -and $settings.PSObject.Properties.Name -contains 'requireChatGptLogin') { [bool]$settings.requireChatGptLogin } else { $false }
     }
 }
 
@@ -8963,6 +9127,36 @@ function Resolve-RuleHarnessCodexCommand {
     [string]$command.Source
 }
 
+function Get-RuleHarnessCodexProcessInvocation {
+    param(
+        [Parameter(Mandatory)][string]$CodexPath,
+        [Parameter(Mandatory)][AllowEmptyCollection()][string[]]$Arguments
+    )
+
+    $fileName = $CodexPath
+    $resolvedArguments = @()
+    if ($CodexPath -like '*.cmd' -or $CodexPath -like '*.bat') {
+        $fileName = 'cmd.exe'
+        $resolvedArguments += @('/d', '/c', $CodexPath)
+    }
+    elseif ($CodexPath -like '*.ps1') {
+        $codexBaseDir = Split-Path -Parent $CodexPath
+        $nodePath = Join-Path $codexBaseDir 'node.exe'
+        if (-not (Test-Path -LiteralPath $nodePath)) {
+            $nodePath = 'node.exe'
+        }
+        $codexJsPath = Join-Path $codexBaseDir 'node_modules/@openai/codex/bin/codex.js'
+        $fileName = $nodePath
+        $resolvedArguments += @($codexJsPath)
+    }
+    $resolvedArguments += @($Arguments)
+
+    [pscustomobject]@{
+        fileName = $fileName
+        arguments = @($resolvedArguments)
+    }
+}
+
 function ConvertTo-RuleHarnessProcessArgument {
     param([string]$Value)
 
@@ -9019,6 +9213,44 @@ function Invoke-RuleHarnessProcess {
     }
 }
 
+function Test-RuleHarnessCodexChatGptLogin {
+    param(
+        [Parameter(Mandatory)][string]$CodexPath,
+        [Parameter(Mandatory)][string]$RepoRoot,
+        [int]$TimeoutSec = 30
+    )
+
+    $invocation = Get-RuleHarnessCodexProcessInvocation -CodexPath $CodexPath -Arguments @('login', 'status')
+    $result = Invoke-RuleHarnessProcess `
+        -FileName ([string]$invocation.fileName) `
+        -Arguments @($invocation.arguments) `
+        -WorkingDirectory $RepoRoot `
+        -TimeoutSec ([Math]::Max(1, [Math]::Min(30, $TimeoutSec)))
+
+    $combined = ("{0}`n{1}" -f [string]$result.stdout, [string]$result.stderr).Trim()
+    $passed = (-not [bool]$result.timedOut) -and ([int]$result.exitCode -eq 0) -and ($combined -match 'Logged in using ChatGPT')
+    $summary = if ($passed) {
+        'Codex CLI is logged in using ChatGPT.'
+    }
+    elseif ([bool]$result.timedOut) {
+        'Codex CLI login status timed out before ChatGPT subscription login could be verified.'
+    }
+    elseif ([int]$result.exitCode -ne 0) {
+        "Codex CLI login status exited with code $($result.exitCode); ChatGPT subscription login is required."
+    }
+    else {
+        'Codex CLI login status did not report Logged in using ChatGPT; ChatGPT subscription login is required.'
+    }
+
+    [pscustomobject]@{
+        passed = $passed
+        summary = $summary
+        output = $combined
+        exitCode = [int]$result.exitCode
+        timedOut = [bool]$result.timedOut
+    }
+}
+
 function New-RuleHarnessAgentBatchPrompt {
     param(
         [Parameter(Mandatory)][string]$RepoRoot,
@@ -9028,6 +9260,42 @@ function New-RuleHarnessAgentBatchPrompt {
     )
 
     $taskJson = $Task | ConvertTo-Json -Depth 40
+    $taskKind = if ($Task.PSObject.Properties.Name -contains 'taskKind') { [string]$Task.taskKind } else { 'batch_synth' }
+    if ($taskKind -eq 'cleanup_scout') {
+@"
+You are the rule harness broad cleanup scout.
+
+Return only JSON that matches the supplied output schema. Do not edit files directly.
+You are running under a read-only sandbox on purpose. You may run read-only shell commands and inspect repo files with tools such as rg, git diff, and Get-Content. Do not write, move, delete, or commit files.
+
+Role: $RoleName
+
+Goal:
+- Broadly inspect the repo for cleanup opportunities that static heuristics may miss.
+- Find delete_unused, simplify_inline, and move_owner candidates.
+- Propose guarded mutation batches only for cleanupPolicy.autoApplyKinds.
+- Report move_owner only as actionItems with kind `manual-cleanup-review`; do not propose move batches.
+
+Hard constraints:
+- Return at most two batches.
+- Use only repo-relative paths.
+- Never use absolute paths or '..' path traversal.
+- candidateFiles are hints only for cleanup_scout. You may target any safe repo-relative file that you inspected and can justify.
+- Proposed batches must keep kind `code_fix`, status `proposed`, and validation `["rule_harness_tests"]`.
+- Every batch must include cleanupKind. Use `delete_unused`, `simplify_inline`, or empty string.
+- Every operation must include type, targetPath, content, and referenceTokens. For delete_file operations set content to empty string. For write_file operations set referenceTokens to [] unless the operation also needs stale-reference checks.
+- For delete_unused batches, set cleanupKind to `delete_unused`, include delete_file operations for the file and its Unity .meta file when present, and include referenceTokens such as class name, basename, GUID, Resources path, or doc_id tokens that should have zero remaining references outside deleted targets.
+- For simplify_inline batches, set cleanupKind to `simplify_inline`, include one full write_file operation for the caller and delete_file operations for the removed helper and .meta file when present. Only propose this when the helper has one production use and the full replacement content is exact.
+- Do not propose scene, prefab, asset move, namespace move, broad folder move, generated project file edit, or risky serialized-reference changes.
+- If evidence is useful but not auto-safe, add an actionItem instead of a batch.
+- Always include blocked and actionItems arrays; use [] when empty.
+
+Task JSON:
+$taskJson
+"@
+        return
+    }
+
     $snapshotLines = [System.Collections.Generic.List[string]]::new()
     foreach ($candidate in @($Task.candidateFiles | Select-Object -First 4)) {
         $relativePath = ([string]$candidate).Replace('\', '/')
@@ -9084,12 +9352,15 @@ Hard constraints:
 - Never use absolute paths or '..' path traversal.
 - Target files must be within the task candidateFiles list. If candidateFiles is empty or insufficient, return no batches and add a blocked item.
 - Use operation type 'write_file' with full replacement file content.
+- Include cleanupKind on every batch; use an empty string for ordinary non-cleanup fixes.
+- Every operation must include type, targetPath, content, and referenceTokens. For ordinary write_file operations use referenceTokens [].
 - Set batch status to 'proposed'.
 - Use validation ['rule_harness_tests'] unless this is a rule_fix with a clearer existing validation.
 - If you cannot make a small, safe, exact patch, return no batches and explain the blocker.
 - `truncated: False` means the full file content is present. Only block for truncation when a snapshot explicitly says `truncated: True` or a required candidate file has no snapshot.
 - The runner intentionally executes you in a read-only sandbox. That sandbox is normal and must not be reported as `read_only_sandbox` when the candidate snapshots are complete.
 - Never call `apply_patch`, shell commands, file-writing tools, or additional file readers. Doing so is an agent-runner contract violation; synthesize the full replacement content directly in JSON instead.
+- Always include blocked and actionItems arrays; use [] when empty.
 $strictContractText
 
 Task JSON:
@@ -9105,6 +9376,11 @@ function Test-RuleHarnessAgentTaskSnapshotsComplete {
         [Parameter(Mandatory)][string]$RepoRoot,
         [Parameter(Mandatory)][object]$Task
     )
+
+    $taskKind = if ($Task.PSObject.Properties.Name -contains 'taskKind') { [string]$Task.taskKind } else { 'batch_synth' }
+    if ($taskKind -eq 'cleanup_scout') {
+        return $false
+    }
 
     $candidates = @($Task.candidateFiles | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
     if ($candidates.Count -eq 0 -or $candidates.Count -gt 4) {
@@ -9146,13 +9422,16 @@ function Test-RuleHarnessAgentBatchTargets {
         }
     }
 
+    $taskKind = if ($Task.PSObject.Properties.Name -contains 'taskKind') { [string]$Task.taskKind } else { 'batch_synth' }
+    $allowBroadTargets = $taskKind -eq 'cleanup_scout'
+
     foreach ($target in @($Batch.targetFiles)) {
         $normalized = ([string]$target).Replace('\', '/')
         if (-not (Test-RuleHarnessSafeRelativePath -Path $normalized)) {
             [void]$errors.Add("Unsafe target path '$target'.")
             continue
         }
-        if (-not $allowed.Contains($normalized)) {
+        if ((-not $allowBroadTargets) -and -not $allowed.Contains($normalized)) {
             [void]$errors.Add("Target path '$target' is outside task candidateFiles.")
         }
     }
@@ -9163,7 +9442,7 @@ function Test-RuleHarnessAgentBatchTargets {
             [void]$errors.Add("Unsafe operation targetPath '$targetPath'.")
             continue
         }
-        if (-not $allowed.Contains($targetPath)) {
+        if ((-not $allowBroadTargets) -and -not $allowed.Contains($targetPath)) {
             [void]$errors.Add("Operation targetPath '$targetPath' is outside task candidateFiles.")
         }
     }
@@ -9182,8 +9461,9 @@ function Invoke-RuleHarnessAgentBatchRunner {
 
     $reports = [System.Collections.Generic.List[object]]::new()
     $plannedBatches = [System.Collections.Generic.List[object]]::new()
+    $agentActionItems = [System.Collections.Generic.List[object]]::new()
     if ($AgentWorkQueue.Count -eq 0) {
-        return [pscustomobject]@{ plannedBatches = @(); agentWorkReports = @() }
+        return [pscustomobject]@{ plannedBatches = @(); agentWorkReports = @(); agentActionItems = @() }
     }
 
     $config = Get-RuleHarnessConfig -ConfigPath $ConfigPath
@@ -9192,7 +9472,7 @@ function Invoke-RuleHarnessAgentBatchRunner {
         foreach ($task in @($AgentWorkQueue)) {
             [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-disabled' -Summary 'Coding agent runner is disabled in rule-harness config.'))
         }
-        return [pscustomobject]@{ plannedBatches = @(); agentWorkReports = @($reports) }
+        return [pscustomobject]@{ plannedBatches = @(); agentWorkReports = @($reports); agentActionItems = @() }
     }
 
     $codexPath = Resolve-RuleHarnessCodexCommand -ConfiguredPath ([string]$settings.commandPath)
@@ -9200,7 +9480,21 @@ function Invoke-RuleHarnessAgentBatchRunner {
         foreach ($task in @($AgentWorkQueue)) {
             [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'blocked' -BlockedReason 'agent-runner-unavailable' -Summary 'Codex CLI was not found on PATH and no agentRunner.commandPath was configured.'))
         }
-        return [pscustomobject]@{ plannedBatches = @(); agentWorkReports = @($reports) }
+        return [pscustomobject]@{ plannedBatches = @(); agentWorkReports = @($reports); agentActionItems = @() }
+    }
+
+    if ([bool]$settings.requireChatGptLogin) {
+        $loginStatus = Test-RuleHarnessCodexChatGptLogin -CodexPath $codexPath -RepoRoot $RepoRoot -TimeoutSec ([int]$settings.timeoutSec)
+        if (-not [bool]$loginStatus.passed) {
+            foreach ($task in @($AgentWorkQueue)) {
+                [void]$reports.Add((New-RuleHarnessAgentWorkReport `
+                    -Task $task `
+                    -Status 'blocked' `
+                    -BlockedReason 'agent-runner-chatgpt-login-required' `
+                    -Summary ([string]$loginStatus.summary)))
+            }
+            return [pscustomobject]@{ plannedBatches = @(); agentWorkReports = @($reports); agentActionItems = @() }
+        }
     }
 
     $runnerDir = Join-Path $OutputDir 'agent-runner'
@@ -9244,27 +9538,14 @@ function Invoke-RuleHarnessAgentBatchRunner {
             else {
                 $promptFullPath
             }
-            $arguments = @()
-            $fileName = $codexPath
-            if ($codexPath -like '*.cmd' -or $codexPath -like '*.bat') {
-                $fileName = 'cmd.exe'
-                $arguments += @('/d', '/c', $codexPath)
-            }
-            elseif ($codexPath -like '*.ps1') {
-                $codexBaseDir = Split-Path -Parent $codexPath
-                $nodePath = Join-Path $codexBaseDir 'node.exe'
-                if (-not (Test-Path -LiteralPath $nodePath)) {
-                    $nodePath = 'node.exe'
-                }
-                $codexJsPath = Join-Path $codexBaseDir 'node_modules/@openai/codex/bin/codex.js'
-                $fileName = $nodePath
-                $arguments += @($codexJsPath)
-            }
-            $arguments += @('exec', '-C', $RepoRoot, '--sandbox', 'read-only', '-c', "approval_policy='never'", '-c', ("model_reasoning_effort='{0}'" -f [string]$settings.reasoningEffort), '--output-schema', $schemaPath, '-o', $outputPath)
+            $arguments = @('exec', '-C', $RepoRoot, '--sandbox', 'read-only', '-c', "approval_policy='never'", '-c', ("model_reasoning_effort='{0}'" -f [string]$settings.reasoningEffort), '--output-schema', $schemaPath, '-o', $outputPath)
             if (-not [string]::IsNullOrWhiteSpace([string]$settings.model)) {
                 $arguments += @('--model', [string]$settings.model)
             }
             $arguments += @("Read and follow the full batch synthesis instructions in '$promptRelativePath'. Return only JSON matching the provided output schema.")
+            $invocation = Get-RuleHarnessCodexProcessInvocation -CodexPath $codexPath -Arguments $arguments
+            $fileName = [string]$invocation.fileName
+            $arguments = @($invocation.arguments)
 
             $commandName = Split-Path -Leaf $fileName
             Add-Content -Path $tracePath -Value ("Command: {0} task={1} attempt={2} model={3} output={4}" -f $commandName, $taskId, $attempt, [string]$settings.model, $outputPath) -Encoding UTF8
@@ -9312,6 +9593,26 @@ function Invoke-RuleHarnessAgentBatchRunner {
             }
 
             $blockedEntries = @($agentOutput.blocked)
+            $taskActionItemCount = 0
+            $outputActionItems = if ($agentOutput.PSObject.Properties.Name -contains 'actionItems') { @($agentOutput.actionItems) } else { @() }
+            foreach ($item in @($outputActionItems)) {
+                $kind = if ($item.PSObject.Properties.Name -contains 'kind') { [string]$item.kind } else { '' }
+                $severity = if ($item.PSObject.Properties.Name -contains 'severity') { [string]$item.severity } else { 'medium' }
+                $summary = if ($item.PSObject.Properties.Name -contains 'summary') { [string]$item.summary } else { '' }
+                $details = if ($item.PSObject.Properties.Name -contains 'details') { [string]$item.details } else { $summary }
+                $relatedPaths = if ($item.PSObject.Properties.Name -contains 'relatedPaths') { @($item.relatedPaths | ForEach-Object { ([string]$_).Replace('\', '/') }) } else { @() }
+                if ([string]::IsNullOrWhiteSpace($kind) -or [string]::IsNullOrWhiteSpace($summary)) {
+                    continue
+                }
+                $taskActionItemCount++
+                [void]$agentActionItems.Add([pscustomobject]@{
+                    kind = $kind
+                    severity = $severity
+                    summary = $summary
+                    details = $details
+                    relatedPaths = @($relatedPaths | Where-Object { Test-RuleHarnessSafeRelativePath -Path ([string]$_) } | Sort-Object -Unique)
+                })
+            }
             $blockedReason = if ($blockedEntries.Count -gt 0) { [string]$blockedEntries[0].reasonCode } else { '' }
             if (@($agentOutput.batches).Count -eq 0 -and $snapshotsComplete -and $blockedReason -eq 'read_only_sandbox') {
                 if ($attempt -eq 0) {
@@ -9364,9 +9665,13 @@ function Invoke-RuleHarnessAgentBatchRunner {
                 [void]$plannedBatches.Add($batch)
             }
 
+            $taskKind = if ($task.PSObject.Properties.Name -contains 'taskKind') { [string]$task.taskKind } else { 'batch_synth' }
             if ($acceptedTargets.Count -gt 0) {
                 [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'proposed' -Summary "Codex agent runner proposed $(@($agentOutput.batches).Count) batch(es)." -ChangedFiles @($acceptedTargets | Sort-Object -Unique) -OutputPath $outputPath -LogPath $logPath))
                 $successfulTaskCount++
+            }
+            elseif ($taskKind -eq 'cleanup_scout' -and $taskActionItemCount -gt 0) {
+                [void]$reports.Add((New-RuleHarnessAgentWorkReport -Task $task -Status 'reported' -Summary "Codex agent runner returned $taskActionItemCount report-only action item(s) and no auto-applicable batch." -OutputPath $outputPath -LogPath $logPath))
             }
             elseif (@($agentOutput.blocked).Count -gt 0) {
                 $blockedSummary = (@($agentOutput.blocked) | ForEach-Object { [string]$_.summary }) -join ' '
@@ -9384,6 +9689,7 @@ function Invoke-RuleHarnessAgentBatchRunner {
     [pscustomobject]@{
         plannedBatches = @($plannedBatches)
         agentWorkReports = @($reports)
+        agentActionItems = @($agentActionItems)
     }
 }
 
@@ -9423,6 +9729,16 @@ function Test-RuleHarnessRoleInput {
             foreach ($target in @($batch.targetFiles)) {
                 if (-not (Test-RuleHarnessSafeRelativePath -Path ([string]$target))) {
                     [void]$errors.Add("Batch '$([string]$batch.id)' contains unsafe target path '$target'.")
+                }
+            }
+
+            foreach ($operation in @($batch.operations)) {
+                if ($operation.PSObject.Properties.Name -notcontains 'targetPath') {
+                    continue
+                }
+
+                if (-not (Test-RuleHarnessSafeRelativePath -Path ([string]$operation.targetPath))) {
+                    [void]$errors.Add("Batch '$([string]$batch.id)' contains unsafe operation target path '$([string]$operation.targetPath)'.")
                 }
             }
         }

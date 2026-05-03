@@ -11,8 +11,9 @@
     "rules:sync-closeout": "node ./tools/docs-lint/sync-recurrence-closeout.mjs",
     "stitch:policy:lint": "node ./tools/stitch-unity/lint-stitch-driven-policy.mjs",
     "feature:presentation:lint": "node ./tools/workflow/test-garage-presentation-structure.mjs",
+    "runtime:hotspots:lint": "node ./tools/workflow/test-runtime-hotspot-structure.mjs",
     "garage:presentation:lint": "npm run --silent feature:presentation:lint",
-    "policy:lint": "node ./tools/docs-lint/policy-lint.mjs && npm run --silent stitch:policy:lint && npm run --silent feature:presentation:lint",
+    "policy:lint": "node ./tools/docs-lint/policy-lint.mjs && npm run --silent stitch:policy:lint && npm run --silent feature:presentation:lint && npm run --silent runtime:hotspots:lint",
     "rules:lint": "npm run --silent docs:lint && npm run --silent policy:lint",
     "unity:asset-hygiene": "powershell -ExecutionPolicy Bypass -File .\\tools\\check-unity-asset-hygiene.ps1",
     "workflow:agent-review": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\workflow\\Invoke-AgentPassReview.ps1",
@@ -32,7 +33,8 @@
     "stitch:bootstrap:jg": "node ./tools/stitch/stitch-inspect.mjs bootstrap-jg",
     "stitch:list:screens": "node ./tools/stitch/stitch-inspect.mjs list-screens",
     "stitch:fetch:screen": "node ./tools/stitch/stitch-inspect.mjs fetch-screen",
-    "stitch:mcp:proxy": "node ./tools/stitch/stitch-mcp-proxy.mjs"
+    "stitch:mcp:proxy": "node ./tools/stitch/stitch-mcp-proxy.mjs",
+    "serena:mcp:proxy": "node ./tools/serena-shared-proxy/serena-shared-proxy.mjs"
   },
   "keywords": [],
   "author": "",

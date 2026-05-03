@@ -1,4 +1,5 @@
 using System.IO;
+using Features.Garage.Application;
 using Features.Garage.Application.Ports;
 using Features.Garage.Domain;
 using UnityEngine;
@@ -67,6 +68,43 @@ namespace Features.Garage.Infrastructure
         private class GarageRosterWrapper
         {
             public GarageRoster roster;
+        }
+    }
+
+    public sealed class GarageRosterLegacyIdMigrator : InitializeGarageUseCase.IRosterMigrationPort
+    {
+        public GarageRoster Migrate(GarageRoster roster)
+        {
+            if (roster == null)
+                return new GarageRoster();
+
+            roster.Normalize();
+            bool hasChanges = false;
+            for (int i = 0; i < GarageRoster.MaxSlots; i++)
+            {
+                var slot = roster.GetSlot(i);
+                if (slot == null)
+                    continue;
+
+                hasChanges |= slot.frameId != GarageLegacyPartIdMap.ResolveCurrentPartId(slot.frameId);
+                hasChanges |= slot.firepowerModuleId != GarageLegacyPartIdMap.ResolveCurrentPartId(slot.firepowerModuleId);
+                hasChanges |= slot.mobilityModuleId != GarageLegacyPartIdMap.ResolveCurrentPartId(slot.mobilityModuleId);
+            }
+
+            if (!hasChanges)
+                return roster;
+
+            var migrated = roster.Clone();
+            for (int i = 0; i < GarageRoster.MaxSlots; i++)
+            {
+                var slot = migrated.GetSlot(i);
+                migrated.SetSlot(i, new GarageRoster.UnitLoadout(
+                    GarageLegacyPartIdMap.ResolveCurrentPartId(slot.frameId),
+                    GarageLegacyPartIdMap.ResolveCurrentPartId(slot.firepowerModuleId),
+                    GarageLegacyPartIdMap.ResolveCurrentPartId(slot.mobilityModuleId)));
+            }
+
+            return migrated;
         }
     }
 }

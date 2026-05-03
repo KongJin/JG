@@ -9,21 +9,21 @@
 > artifacts: `artifacts/unity/game-flow/actual-flow/`
 
 이 문서는 GameScene/BattleScene actual flow의 직접 실행 기준만 소유한다. 세부 구현 규칙은 관련 feature code와 runtime validation checklist를 따른다.
-Phase 5/9 2-client multiplayer sync acceptance는 별도 active plan 없이 `plans.progress` residual이 소유한다. 수동 검증 항목은 [`runtime_validation_checklist.md`](../playtest/runtime_validation_checklist.md)를 따른다.
+Phase 5/9 2-client multiplayer sync acceptance는 별도 active plan 없이 [`runtime_validation_checklist.md`](../playtest/runtime_validation_checklist.md)가 소유한다.
 
 ## Current State
 
 - Single-client actual UI path baseline은 pass 상태다: Lobby room create -> ready/start -> BattleScene, placement center confirm, natural victory/defeat/result overlay까지 `newErrorCount: 0` evidence가 있다.
 - Summon rollback, enemy priority, drag/drop direct tests는 2026-04-30 in-editor MCP test route로 실행됐고 16/16 pass다: `artifacts/unity/game-flow/actual-flow/direct-editmode-tests.xml`.
 - Victory overlay mismatch는 `WaveEndView` visible overlay/CTA toggle 수정으로 닫았다.
-- Phase 5 multiplayer acceptance는 `plans.progress` residual로 분리했다. 이 문서는 single-client flow와 direct execution blocker만 닫는다.
+- Phase 5 multiplayer acceptance는 runtime validation checklist로 분리했다. 이 문서는 single-client flow와 direct execution blocker만 닫는다.
 - 남은 closeout blocker는 result HUD actual player-flow checklist이며, direct/EditMode pass만으로 이 blocker를 success 처리하지 않는다.
 
 ## Findings
 
 | ID | 상태 | Owner | Closeout |
 |---|---|---|---|
-| F1 Lobby room start UI | single-client pass | Lobby UX | 2-client room flow는 `plans.progress` multiplayer residual에서 확인 |
+| F1 Lobby room start UI | single-client pass | Lobby UX | 2-client room flow는 runtime validation checklist에서 확인 |
 | F2 GameEnd stats/result HUD | single-client pass / checklist residual | Wave/GameEnd runtime | actual player-flow checklist 갱신 필요 |
 | F3 Summon rollback | direct EditMode pass | Summon/Energy runtime | `SummonUnitUseCaseDirectTests` pass |
 | F4 Enemy priority | direct EditMode pass | Battle runtime | `GameSceneRuntimeSystemsDirectTests` pass |
@@ -45,7 +45,7 @@ owner impact:
 
 - primary: `plans.game-scene-flow-validation-closeout`
 - secondary: `plans.progress`
-- split scope: Phase 5/9 2-client multiplayer sync는 별도 multiplayer active plan 없이 `plans.progress` residual로 추적한다
+- split scope: Phase 5/9 2-client multiplayer sync는 별도 multiplayer active plan 없이 runtime validation checklist로 추적한다
 
 doc lifecycle checked:
 

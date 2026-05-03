@@ -9,7 +9,7 @@
 > artifacts: `artifacts/webgl/audio/`
 
 이 문서는 WebGL 오디오 product smoke의 active owner다.
-Account/Garage account acceptance, Firebase Auth/Firestore, Google linking은 현재 별도 active plan이 아니라 `plans.progress` WebGL account residual과 WebGL smoke checklist에서 추적한다.
+Account/Garage account acceptance, Firebase Auth/Firestore, Google linking은 현재 별도 active plan이 아니라 WebGL smoke checklist에서 추적한다.
 `SoundPlayer` runtime host/template residual은 scene-owned BGM/SFX AudioSource contract로 전환됐으며, WebGL product smoke 성공의 대체 증거로 쓰지 않는다.
 
 ## Current Judgment

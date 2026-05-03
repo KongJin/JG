@@ -13,7 +13,7 @@
 
 ## Closeout
 
-- Account/Sync와 Connection/Reconnect는 source candidate, UI Toolkit candidate, Lobby runtime shell visibility까지 확보했다. WebGL/account/cloud acceptance는 `plans.progress` WebGL account residual과 WebGL smoke checklist에서 확인한다.
+- Account/Sync와 Connection/Reconnect는 source candidate, UI Toolkit candidate, Lobby runtime shell visibility까지 확보했다. WebGL/account/cloud acceptance는 WebGL smoke checklist에서 확인한다.
 - `SetA/SetC/SetD/SetE` prefabs/captures는 historical Stitch-derived evidence로만 본다.
 - Runtime feedback prefabs under `Assets/Prefabs/RuntimeFeedback/`는 screen UI replacement 대상이 아니라 world-space feedback compatibility surface다.
 
@@ -21,7 +21,7 @@
 
 | Surface | Residual | Owner |
 |---|---|---|
-| Account/Sync | WebGL/account/cloud product acceptance | `plans.progress` WebGL account residual and WebGL smoke checklist |
+| Account/Sync | WebGL/account/cloud product acceptance | WebGL smoke checklist |
 | Connection/Reconnect | reconnect/cloud product acceptance | new reconnect/cloud product owner when opened |
 | Battle HUD / Skill selection | accepted source freeze and candidate handoff not started | new BattleScene UI/runtime owner routed through `ops.stitch-data-workflow` and `ops.unity-ui-authoring-workflow` |
 | Player/Enemy health, damage number | visual consistency only if needed | runtime feedback owner if visual consistency work opens |
@@ -44,5 +44,5 @@ owner impact:
 
 doc lifecycle checked:
 
-- reference 압축 보존. 이 문서는 현재 실행 owner가 아니며, 남은 residual은 `plans.progress`, WebGL smoke checklist, 또는 새 UI/runtime owner로 다시 열린다.
+- reference 압축 보존. 이 문서는 현재 실행 owner가 아니며, 남은 residual은 WebGL smoke checklist 또는 새 UI/runtime owner로 다시 열린다.
 - plan rereview: clean - reference compression, source/candidate handoff closeout, and residual routing checked

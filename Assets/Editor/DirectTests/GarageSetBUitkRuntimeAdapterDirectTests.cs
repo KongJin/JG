@@ -42,9 +42,21 @@ namespace Tests.Editor
                 Assert.IsTrue(Button(root, "FirepowerTabButton").ClassListContains("focus-tab--active"));
                 Assert.AreEqual("무장 선택", Label(root, "PartListTitleLabel").text);
                 Assert.AreEqual("부품 2개", Label(root, "PartListCountLabel").text);
+                Assert.AreEqual("현재 장착", Label(root, "SelectedPartPreviewKickerLabel").text);
                 Assert.AreEqual("레일건", Label(root, "SelectedPartPreviewTitleLabel").text);
-                Assert.AreEqual("ATK 840 | RNG 12.5 | T3", Label(root, "SelectedPartPreviewMetaLabel").text);
-                Assert.IsTrue(Button(root, "PartRow01").ClassListContains("part-row--selected"));
+                Assert.AreEqual("EN 24", Label(root, "SelectedPartEnergyLabel").text);
+                Assert.AreEqual("EN 24 | ATK 840 | RNG 12.5", Label(root, "SelectedPartPreviewMetaLabel").text);
+                Assert.AreEqual("ATK", Label(root, "SelectedPartStat01Label").text);
+                Assert.AreEqual("840", Label(root, "SelectedPartStat01Value").text);
+                Assert.AreEqual("RNG", Label(root, "SelectedPartStat02Label").text);
+                Assert.AreEqual("12.5", Label(root, "SelectedPartStat02Value").text);
+                Assert.AreEqual(100f, root.Q<VisualElement>("SelectedPartStat01Fill").style.width.value.value);
+                Assert.Greater(root.Q<VisualElement>("SelectedPartStat01Fill").style.height.value.value, 0f);
+                Assert.IsTrue(root.Q<VisualElement>("PartRow01").ClassListContains("part-row--selected"));
+                Assert.AreEqual(
+                    "저장 시 선택 슬롯과 전체 편성이 동시에 갱신됩니다.",
+                    Label(root, "SaveValidationLabel").text);
+                Assert.AreEqual(DisplayStyle.Flex, Label(root, "SaveValidationLabel").style.display.value);
                 Assert.AreEqual("출격 편성 저장", Button(root, "SaveButton").text);
                 Assert.IsTrue(Button(root, "SaveButton").enabledSelf);
             }
@@ -65,6 +77,30 @@ namespace Tests.Editor
             CollectionAssert.AreEqual(
                 new[] { "MobilityTabButton", "FrameTabButton", "FirepowerTabButton" },
                 names);
+        }
+
+        [Test]
+        public void SlotSurface_RendersSlotCardsAndClassesFromViewModels()
+        {
+            var root = LoadRoot();
+            var surface = new GarageSetBSlotSurface(root);
+
+            var slots = CreateSavedSlots();
+            surface.Render(slots);
+
+            Assert.AreEqual("A-01", Label(root, "SlotCode01Label").text);
+            Assert.AreEqual("전선 고정", Label(root, "SlotName01Label").text);
+            Assert.AreEqual("현역", Label(root, "SlotCode02Label").text);
+            Assert.AreEqual("강습", Label(root, "SlotName02Label").text);
+            Assert.IsTrue(Button(root, "SlotCard01").ClassListContains("slot-card--active"));
+            Assert.IsFalse(Button(root, "SlotCard04").ClassListContains("slot-card--active"));
+            Assert.IsTrue(Button(root, "SlotCard04").ClassListContains("slot-card--empty"));
+
+            surface.Render(CreateSlots());
+            Assert.AreEqual("A-01", Label(root, "SlotCode01Label").text);
+            Assert.AreEqual("A-02", Label(root, "SlotCode02Label").text);
+            Assert.IsTrue(root.Q<VisualElement>("SlotIcon01Glyph").ClassListContains("uitk-icon--security"));
+            Assert.IsTrue(root.Q<VisualElement>("SlotIcon02Glyph").ClassListContains("uitk-icon--smart-toy"));
         }
 
         [Test]
@@ -93,17 +129,40 @@ namespace Tests.Editor
                 Assert.AreSame(pane, listCard.parent);
                 Assert.IsNull(root.Q<VisualElement>("PartInspectorColumn"));
                 Assert.IsNull(root.Q<VisualElement>("EditorCard"));
-                Assert.AreEqual(128f, unitPreview.style.height.value.value);
-                Assert.AreEqual(76f, unitPreviewHost.style.width.value.value);
+                Assert.AreEqual(156f, unitPreview.style.height.value.value);
+                Assert.AreEqual(108f, unitPreviewHost.style.width.value.value);
+                Assert.AreEqual(108f, unitPreviewHost.style.height.value.value);
+                Assert.AreEqual(24f, unitPreviewHost.style.marginLeft.value.value);
+                Assert.AreEqual(22f, unitPreviewHost.style.marginTop.value.value);
+                Assert.AreEqual(DisplayStyle.None, root.Q<Label>("PreviewTitleLabel").style.display.value);
+                Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>("PreviewTagRow").style.display.value);
+                Assert.AreEqual(108f, root.Q<VisualElement>("StatRadarGraph").style.width.value.value);
+                Assert.AreEqual(108f, root.Q<VisualElement>("StatRadarGraph").style.height.value.value);
+                Assert.AreEqual(24f, root.Q<VisualElement>("StatRadarGraph").style.top.value.value);
+                Assert.AreEqual(86f, Button(root, "SlotCard01").style.height.value.value);
+                Assert.AreEqual(86f, Button(root, "SlotCard01").style.minHeight.value.value);
+                Assert.AreEqual(86f, Button(root, "SlotCard01").style.maxHeight.value.value);
+                Assert.AreEqual(0f, Button(root, "SlotCard01").style.flexShrink.value);
                 Assert.AreEqual(StyleKeyword.Auto, rows.style.height.keyword);
                 Assert.AreEqual(0f, rows.style.flexGrow.value);
-                Assert.AreEqual(78f, workspace.style.paddingBottom.value.value);
+                Assert.AreEqual(0f, rows.mouseWheelScrollSize);
+                Assert.AreEqual(ScrollView.TouchScrollBehavior.Clamped, rows.touchScrollBehavior);
+                Assert.AreEqual(ScrollView.NestedInteractionKind.StopScrolling, rows.nestedInteractionKind);
+                Assert.AreEqual(Vector2.zero, rows.scrollOffset);
+                Assert.IsFalse(root.Q<VisualElement>("PartRow01") is Button);
+                Assert.AreEqual(50f, root.Q<VisualElement>("PartRow01").style.height.value.value);
+                Assert.AreEqual(50f, root.Q<VisualElement>("PartRow01").style.minHeight.value.value);
+                Assert.AreEqual(50f, root.Q<VisualElement>("PartRow01").style.maxHeight.value.value);
+                Assert.AreEqual(0f, root.Q<VisualElement>("PartRow01").style.flexShrink.value);
+                Assert.AreEqual(16f, workspace.style.paddingBottom.value.value);
                 Assert.AreEqual(0f, workspace.style.marginBottom.value.value);
                 Assert.AreEqual(62f, root.style.marginBottom.value.value);
-                Assert.AreSame(root.Q<VisualElement>("GarageSetBScreen"), saveDock.parent);
-                Assert.AreEqual(Position.Absolute, saveDock.style.position.value);
-                Assert.AreEqual(0f, saveDock.style.bottom.value.value);
+                Assert.AreSame(listCard, saveDock.parent);
+                Assert.AreEqual(Position.Relative, saveDock.style.position.value);
+                Assert.AreEqual(StyleKeyword.Auto, saveDock.style.bottom.keyword);
+                Assert.AreEqual(6f, saveDock.style.marginTop.value.value);
                 Assert.AreEqual(0f, saveDock.style.marginBottom.value.value);
+                Assert.AreEqual(0f, saveDock.style.flexShrink.value);
             }
             finally
             {
@@ -115,18 +174,24 @@ namespace Tests.Editor
         public void Uxml_PartListUsesHiddenScrollerChromeAndSearchField()
         {
             var root = LoadRoot();
+            var listCard = root.Q<VisualElement>("PartListCard");
             var rows = root.Q<ScrollView>("PartListRows");
             var search = root.Q<TextField>("PartSearchField");
+            var saveDock = root.Q<VisualElement>("SaveDock");
 
+            Assert.NotNull(listCard);
             Assert.NotNull(rows);
             Assert.NotNull(search);
+            Assert.NotNull(saveDock);
+            Assert.AreSame(listCard, saveDock.parent);
+            Assert.Less(IndexOfChild(listCard, rows), IndexOfChild(listCard, saveDock));
             Assert.AreEqual(ScrollerVisibility.Hidden, rows.horizontalScrollerVisibility);
             Assert.AreEqual(ScrollerVisibility.Hidden, rows.verticalScrollerVisibility);
             Assert.AreEqual("부품 검색", search.label);
         }
 
         [Test]
-        public void Render_KeepsSaveDockVisibleWhenResultCannotSave()
+        public void Render_HidesSaveDockWhenCleanReady()
         {
             var fixture = CreateRuntimeAdapterFixture();
             try
@@ -149,8 +214,10 @@ namespace Tests.Editor
                 var root = fixture.Host;
                 Assert.AreEqual("현역 편성", Button(root, "SaveButton").text);
                 Assert.IsFalse(Button(root, "SaveButton").enabledSelf);
-                Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>("SaveDock").style.display.value);
-                Assert.AreEqual(78f, root.Q<VisualElement>("WorkspaceScroll").style.paddingBottom.value.value);
+                Assert.AreEqual("저장본이 최신입니다.", Label(root, "SaveValidationLabel").text);
+                Assert.AreEqual(DisplayStyle.None, Label(root, "SaveValidationLabel").style.display.value);
+                Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>("SaveDock").style.display.value);
+                Assert.AreEqual(16f, root.Q<VisualElement>("WorkspaceScroll").style.paddingBottom.value.value);
                 Assert.IsTrue(Button(root, "FrameTabButton").ClassListContains("focus-tab--active"));
                 Assert.AreEqual("프레임 선택", Label(root, "PartListTitleLabel").text);
             }
@@ -183,7 +250,7 @@ namespace Tests.Editor
 
                 var root = fixture.Host;
                 Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>("SaveDock").style.display.value);
-                Assert.AreEqual(78f, root.Q<VisualElement>("WorkspaceScroll").style.paddingBottom.value.value);
+                Assert.AreEqual(16f, root.Q<VisualElement>("WorkspaceScroll").style.paddingBottom.value.value);
                 Assert.AreEqual("출격 편성 저장", Button(root, "SaveButton").text);
                 Assert.IsTrue(Button(root, "SaveButton").enabledSelf);
             }
@@ -506,6 +573,41 @@ namespace Tests.Editor
             };
         }
 
+        private static GarageSlotViewModel[] CreateSavedSlots()
+        {
+            return new[]
+            {
+                new GarageSlotViewModel(
+                    "A-01",
+                    "A-01 가디언",
+                    "레일건 / 중장갑",
+                    "현역",
+                    hasCommittedLoadout: true,
+                    hasDraftChanges: false,
+                    isEmpty: false,
+                    isSelected: true,
+                    callsign: "A-01",
+                    roleLabel: "전선 고정",
+                    frameId: "frame-a",
+                    firepowerId: "fire-a",
+                    mobilityId: "mob-a"),
+                new GarageSlotViewModel(
+                    "A-02",
+                    "A-02 스트라이커",
+                    "발칸 / 고기동",
+                    "현역",
+                    hasCommittedLoadout: true,
+                    hasDraftChanges: false,
+                    isEmpty: false,
+                    isSelected: false,
+                    callsign: "A-02",
+                    roleLabel: "강습",
+                    frameId: "frame-b",
+                    firepowerId: "fire-b",
+                    mobilityId: "mob-b"),
+            };
+        }
+
         private static GarageEditorViewModel CreateEditor()
         {
             return new GarageEditorViewModel(
@@ -528,7 +630,7 @@ namespace Tests.Editor
                 searchText: string.Empty,
                 countText: "부품 2개",
                 selectedNameText: "레일건",
-                selectedDetailText: "ATK 840 | RNG 12.5 | T3",
+                selectedDetailText: "EN 24 | ATK 840 | RNG 12.5 | T3",
                 selectedPreviewPrefab: null,
                 selectedAlignment: null,
                 new[]
@@ -537,7 +639,7 @@ namespace Tests.Editor
                         slot,
                         "railgun",
                         "레일건",
-                        "ATK 840 | RNG 12.5 | T3",
+                        "EN 24 | ATK 840 | RNG 12.5 | T3",
                         "Assets/Parts/Railgun.prefab",
                         isSelected: true,
                         needsNameReview: false),

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-02",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "repo-local skill entry cohesion cleanup",
+  "observedMutationClass": "Repo-local skill entries had grown into policy bodies and duplicated owner document responsibilities.",
+  "acceptanceEvidenceClass": "repo-local skill body slimming plus rules lint and artifact scope validation; no gameplay, Unity runtime, or WebGL product acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "The repo allowed skill-entry files to carry detailed flow/checklist/policy content even though ops.document-management-workflow defines skill-entry as an execution entrypoint that should not restate owner body.",
+  "prevention": "Slimmed JG repo-local skills into trigger/read-order/router entries, restored common Plan Mode inspection/reference mutation guards, and routed policy body back to existing owner docs such as ops.codex-coding-guardrails, ops.document-management-workflow, ops.cohesion-coupling-policy, ops.acceptance-reporting-guardrails, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract, ops.unity-ui-authoring-workflow, and design owner docs. Moved coupling review procedure and Unity/Stitch execution caveats into owner docs instead of leaving them only in skill bodies. Preserved existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "Passed npm run --silent rules:lint and npm run --silent workflow:artifact-scope after restoring safety clauses and owner-doc procedure coverage.",
+  "blockedReason": "",
+  "changedPaths": [
+    ".codex/skills/jg-coding-guardrails/SKILL.md",
+    ".codex/skills/jg-coupling-review/SKILL.md",
+    ".codex/skills/jg-doc-lifecycle/SKILL.md",
+    ".codex/skills/jg-forward-rule-capture/SKILL.md",
+    ".codex/skills/jg-game-design/SKILL.md",
+    ".codex/skills/jg-issue-investigation/SKILL.md",
+    ".codex/skills/jg-no-silent-fallback/SKILL.md",
+    ".codex/skills/jg-stitch-workflow/SKILL.md",
+    ".codex/skills/jg-stitch-unity-import/SKILL.md",
+    ".codex/skills/jg-unity-workflow/SKILL.md",
+    "artifacts/rules/issue-recurrence-closeout.d/local-skill-entry-cohesion-20260502.json",
+    "docs/ops/cohesion_coupling_policy.md",
+    "docs/ops/unity_ui_authoring_workflow.md"
+  ]
+}

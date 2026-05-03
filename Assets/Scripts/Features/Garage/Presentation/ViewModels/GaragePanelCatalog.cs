@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Features.Unit.Infrastructure;
+using Features.Unit.Domain;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
@@ -113,7 +113,6 @@ namespace Features.Garage.Presentation
                         MoveRange = value;
                 }
             }
-            public MobilitySurface MobilitySurface { get; set; }
             public GameObject PreviewPrefab { get; set; }
             public GameObject AssemblyPrefab { get; set; }
             public bool UseAssemblyPivot { get; set; }

@@ -231,6 +231,70 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void RuntimeOrchestrationHotspots_StayWithinResponsibilityBudget()
+        {
+            var budgets = new[]
+            {
+                (Path: "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkRuntimeAdapter.cs", MaxLines: 380),
+                (Path: "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyUitkRuntimeAdapter.cs", MaxLines: 460),
+                (Path: "Assets/Scripts/Features/Player/GameSceneRoot.cs", MaxLines: 300),
+            };
+
+            var offenders = budgets
+                .Select(entry => new
+                {
+                    entry.Path,
+                    entry.MaxLines,
+                    Lines = File.ReadAllLines(Path.Combine(GetRepoRoot(), entry.Path)).Length,
+                })
+                .Where(entry => entry.Lines > entry.MaxLines)
+                .Select(entry => $"{entry.Path}: lines={entry.Lines} budget={entry.MaxLines}")
+                .OrderBy(line => line)
+                .ToArray();
+
+            Assert.That(
+                offenders,
+                Is.Empty,
+                BuildFailureMessage("Runtime orchestration hotspots must stay small enough that layout/render/init flows remain owned by extracted collaborators.", offenders));
+        }
+
+        [Test]
+        public void RuntimeOrchestrationHotspots_DoNotReabsorbExtractedResponsibilities()
+        {
+            var checks = new[]
+            {
+                new ResponsibilityCheck(
+                    "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkRuntimeAdapter.cs",
+                    "Garage adapter must not reabsorb layout geometry or pointer-scroll handling.",
+                    "GeometryChangedEvent",
+                    "PointerMoveEvent",
+                    "worldBound"),
+                new ResponsibilityCheck(
+                    "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyUitkRuntimeAdapter.cs",
+                    "Lobby adapter must not reabsorb operation-memory rendering details.",
+                    "RenderLatestOperation",
+                    "memory-stat-grid",
+                    "memory-sitrep"),
+                new ResponsibilityCheck(
+                    "Assets/Scripts/Features/Player/GameSceneRoot.cs",
+                    "GameSceneRoot must not reabsorb local-player battle initialization details.",
+                    "InitialEnergyValidator",
+                    "InitializeBattleEntity(",
+                    "EnergyAdapterInstance.GetCurrentEnergy"),
+            };
+
+            var offenders = checks
+                .SelectMany(check => check.FindOffenders())
+                .OrderBy(line => line)
+                .ToArray();
+
+            Assert.That(
+                offenders,
+                Is.Empty,
+                BuildFailureMessage("Extracted responsibilities must stay behind their dedicated collaborators.", offenders));
+        }
+
+        [Test]
         public void McpSmokeEntrypoints_AreEditorOrDevelopmentBuildOnly()
         {
             var offenders = EnumerateScriptFiles()
@@ -418,6 +482,31 @@ namespace Tests.Editor
             }
 
             return false;
+        }
+
+        private readonly struct ResponsibilityCheck
+        {
+            private readonly string _relativePath;
+            private readonly string _message;
+            private readonly string[] _blockedFragments;
+
+            public ResponsibilityCheck(string relativePath, string message, params string[] blockedFragments)
+            {
+                _relativePath = relativePath;
+                _message = message;
+                _blockedFragments = blockedFragments;
+            }
+
+            public IEnumerable<string> FindOffenders()
+            {
+                string absolutePath = Path.Combine(GetRepoRoot(), _relativePath);
+                string text = File.ReadAllText(absolutePath);
+                foreach (string fragment in _blockedFragments)
+                {
+                    if (text.Contains(fragment, StringComparison.Ordinal))
+                        yield return $"{_relativePath}: {_message} Fragment={fragment}";
+                }
+            }
         }
     }
 }

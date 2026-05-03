@@ -1,6 +1,6 @@
 # Codex Coding Guardrails
 
-> 마지막 업데이트: 2026-05-02
+> 마지막 업데이트: 2026-05-03
 > 상태: active
 > doc_id: ops.codex-coding-guardrails
 > role: ssot
@@ -60,6 +60,16 @@
 - 여러 해석이 모두 유효하고 결과가 달라지면 해석 후보와 추천안을 짧게 드러낸다.
 - 가설은 검증 전까지 원인이나 성공 근거로 쓰지 않는다.
 
+## Answer Reasoning Summary
+
+답변이나 실행 전에 사용자가 판단 근거를 요구했거나, 요청이 모호하거나 되돌리기 어려운 변경으로 이어질 수 있으면 내부 추론을 그대로 노출하지 말고 실행 가능한 판단 단계 요약을 먼저 공유한다.
+
+- 요청의 핵심 이해, 현재 알 수 있는 사실, 모르는 정보, 위험한 가정, 다음 행동을 짧은 단계로 나눈다.
+- 사용자가 "사고과정", "판단 단계", "왜 그렇게 생각했는지"를 요구하면 raw chain-of-thought 대신 위의 판단 단계 요약으로 답한다.
+- 필요한 정보가 탐색으로 확인 가능하면 먼저 확인하고, 확인 불가능하거나 선택에 따라 결과가 달라지면 질문한다.
+- 사용자가 질문을 요구했거나 범위/원복/삭제/owner 변경처럼 실수 비용이 큰 요청이면, 실행 전에 알아야 할 정보와 질문 하나를 먼저 제시한다.
+- 단순 질의응답이나 낮은 위험의 명확한 요청에는 불필요하게 긴 판단 단계를 붙이지 않는다.
+
 ## Clarification Loop
 
 구현 전에 plan, design, request, acceptance가 흐리면 먼저 shared understanding을 만든다.
@@ -80,6 +90,21 @@
    - 반복해서 쓰일 domain language는 관련 `design/*` owner에 둔다.
    - 되돌리기 어렵고 나중에 다시 제안될 가능성이 있는 trade-off는 새 문서보다 기존 ops/design/plan owner에 짧게 남길 수 있는지 먼저 판단한다.
    - `CONTEXT.md`, `docs/adr/`, `docs/agents/`를 JG의 새 기본 구조로 만들지 않는다.
+
+## Forward Rule Capture
+
+사용자가 `앞으로는`, `다음부터`, `같은 실수`, `새 세션도`, `규칙화`, `skill로 남겨`처럼 반복 방지를 요구하는 교정 문구를 쓰면, 단순 사과나 대화상 약속으로 닫지 않는다.
+그 교정이 앞으로의 구현/문서/운영 판단을 바꾸는 규칙인지 먼저 판정하고, durable rule이면 owner 문서나 repo-local skill route에 남긴다.
+
+- 교정 문구 뒤의 내용을 사과문이 아니라 행동 규칙 후보로 추출한다.
+- 여러 durable behavior로 해석될 수 있고 결과가 달라지면, 편집 전에 Clarification Loop로 질문 하나를 먼저 한다.
+- 이미 사용자가 trigger, owner, 기대 동작을 충분히 지정했으면 묻지 않고 mutation gate에 따라 적용한다.
+- assistant가 사용자 교정 뒤 직접 "앞으로는 ..." 약속을 쓰려는 경우도 같은 trigger로 취급한다. 쓰기 전에 durable rule 후보인지 판정하고, repo 규칙으로 남길 일이 아니면 promise language보다 현재 작업의 즉시 보정과 세션 한정 주의로 답한다.
+- 구현/모호성/질문 방식 같은 Codex 행동 규칙은 이 문서가 primary owner다.
+- 문서 lifecycle 절차는 `ops.document-management-workflow`를 따른다.
+- skill trigger 표면은 `.codex/skills/jg-*/SKILL.md`, `ops.skill-routing-registry`, `ops.skill-trigger-matrix`에만 얇게 남긴다.
+- 같은 내용을 skill-entry와 owner 문서에 장문으로 중복하지 않는다. skill-entry는 trigger와 read order를 맡고, 정책 본문은 owner 문서가 맡는다.
+- mutation이 금지된 모드라면 적용 계획과 필요한 owner만 보고하고, "앞으로는 ..." 같은 약속만 남기지 않는다.
 
 ## Ambiguous Product Scope Gate
 

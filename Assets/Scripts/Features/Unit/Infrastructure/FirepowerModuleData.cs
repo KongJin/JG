@@ -1,3 +1,4 @@
+using Features.Unit.Domain;
 using UnityEngine;
 
 namespace Features.Unit.Infrastructure

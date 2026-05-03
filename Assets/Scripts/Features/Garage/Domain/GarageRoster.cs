@@ -4,14 +4,71 @@ using System.Linq;
 
 namespace Features.Garage.Domain
 {
+    public static class GarageLegacyPartIdMap
+    {
+        private static readonly Dictionary<string, string> LegacyToCurrent = new()
+        {
+            ["frame_bastion"] = "nova_frame_body25_bosro",
+            ["frame_striker"] = "nova_frame_body1_sz",
+            ["frame_relay"] = "nova_frame_body11_kn",
+            ["fire_scatter"] = "nova_fire_arm1_sz",
+            ["fire_pulse"] = "nova_fire_arm1_sz",
+            ["fire_rail"] = "nova_fire_arm13_prs",
+            ["mob_burst"] = "nova_mob_legs10_prg",
+            ["mob_vector"] = "nova_mob_legs1_rdrn",
+            ["mob_treads"] = "nova_mob_legs23_tk",
+        };
+
+        private static readonly Dictionary<string, string> StaleToCurrent = new()
+        {
+            ["nova_mob_g_legs35_prg"] = "nova_mob_legs10_prg",
+            ["nova_mob_legs19_tower"] = "nova_mob_legs23_tk",
+            ["nova_fire_arm10_broz"] = "nova_fire_arm1_sz",
+        };
+
+        private static readonly Dictionary<string, string> CurrentToLegacy = BuildReverseMap();
+
+        public static string ResolveCurrentPartId(string partId)
+        {
+            if (string.IsNullOrWhiteSpace(partId))
+                return partId;
+
+            if (LegacyToCurrent.TryGetValue(partId, out var currentPartId))
+                return currentPartId;
+
+            return StaleToCurrent.TryGetValue(partId, out var correctedPartId)
+                ? correctedPartId
+                : partId;
+        }
+
+        public static string ResolveLegacySamplePartId(string currentPartId)
+        {
+            if (string.IsNullOrWhiteSpace(currentPartId))
+                return null;
+
+            return CurrentToLegacy.TryGetValue(currentPartId, out var legacyPartId)
+                ? legacyPartId
+                : null;
+        }
+
+        private static Dictionary<string, string> BuildReverseMap()
+        {
+            var reverse = new Dictionary<string, string>();
+            foreach (var pair in LegacyToCurrent)
+                reverse[pair.Value] = pair.Key;
+
+            return reverse;
+        }
+    }
+
     /// <summary>
-    /// 플레이어의 차고 편성. 3~6기 유닛 + 각각의 모듈 조합 저장.
+    /// 플레이어의 차고 편성. 3~8기 유닛 + 각각의 모듈 조합 저장.
     /// 네트워크 직렬화(JSON) 지원 — 순수 C#.
     /// </summary>
     [Serializable]
     public sealed class GarageRoster
     {
-        public const int MaxSlots = 6;
+        public const int MaxSlots = 8;
 
         /// <summary>
         /// 편성된 유닛 한 기의 데이터.
@@ -48,7 +105,7 @@ namespace Features.Garage.Domain
         public List<UnitLoadout> loadout = new List<UnitLoadout>();
 
         /// <summary>
-        /// 편성이 유효한가 (3~6기).
+        /// 편성이 유효한가 (3~8기).
         /// </summary>
         public bool IsValid => Count >= 3 && Count <= MaxSlots;
 

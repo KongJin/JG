@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-02",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "rules artifact stale reference validation",
+  "observedMutationClass": "Rules artifact markdown inventories could keep stale repo paths outside managed docs lint while rules:lint still reported success for owner docs.",
+  "acceptanceEvidenceClass": "docs-lint tests, rules lint, and artifact scope validation; no gameplay, Unity runtime, or WebGL product acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "artifacts/rules/*.md files were not managed docs and had no stale repo path validation, so historical inventory files could keep removed docs/plans and ops paths as active-looking inline code references.",
+  "prevention": "Added stale-rules-artifact-reference lint for rules artifact markdown inline repo paths and markdown targets, rerouted stale inventory paths to current owners, and preserved existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "Passed node --test tools/docs-lint/tests/docs-lint.test.mjs, npm run --silent rules:lint, and npm run --silent workflow:artifact-scope after adding rules artifact stale reference lint.",
+  "blockedReason": "",
+  "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-rules-artifact-reference-lint-20260502.json",
+    "artifacts/rules/skill-trigger-inventory.md",
+    "artifacts/rules/rule-revision-trace-inventory.md",
+    "tools/docs-lint/lib.mjs",
+    "tools/docs-lint/tests/docs-lint.test.mjs"
+  ]
+}

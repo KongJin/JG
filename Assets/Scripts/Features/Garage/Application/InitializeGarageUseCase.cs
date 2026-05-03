@@ -14,18 +14,26 @@ namespace Features.Garage.Application
             System.Threading.Tasks.Task<GarageRoster> LoadGarageAsync();
         }
 
+        public interface IRosterMigrationPort
+        {
+            GarageRoster Migrate(GarageRoster roster);
+        }
+
         private readonly ICloudGarageLoadPort _cloudPort;
         private readonly IGaragePersistencePort _persistence;
         private readonly IGarageNetworkPort _networkPort;
+        private readonly IRosterMigrationPort _rosterMigration;
 
         public InitializeGarageUseCase(
             IGaragePersistencePort persistence,
             IGarageNetworkPort networkPort,
-            ICloudGarageLoadPort cloudPort)
+            ICloudGarageLoadPort cloudPort,
+            IRosterMigrationPort rosterMigration = null)
         {
             _persistence = persistence;
             _networkPort = networkPort;
             _cloudPort = cloudPort;
+            _rosterMigration = rosterMigration;
         }
 
         /// <summary>
@@ -35,6 +43,7 @@ namespace Features.Garage.Application
         public async System.Threading.Tasks.Task<GarageRoster> Execute()
         {
             GarageRoster roster = null;
+            bool loadedFromCloud = false;
 
             if (_cloudPort != null)
             {
@@ -44,7 +53,7 @@ namespace Features.Garage.Application
                     if (roster != null)
                     {
                         roster.Normalize();
-                        _persistence?.Save(roster);
+                        loadedFromCloud = true;
                     }
                 }
                 catch
@@ -56,7 +65,12 @@ namespace Features.Garage.Application
             if (roster == null)
                 roster = _persistence?.Load() ?? new GarageRoster();
 
+            var loadedRoster = roster;
+            roster = _rosterMigration?.Migrate(roster) ?? roster;
             roster.Normalize();
+            if (loadedFromCloud || !ReferenceEquals(roster, loadedRoster))
+                _persistence?.Save(roster);
+
             _networkPort?.SyncRoster(roster);
             _networkPort?.SyncReady(roster.IsValid);
             return roster;

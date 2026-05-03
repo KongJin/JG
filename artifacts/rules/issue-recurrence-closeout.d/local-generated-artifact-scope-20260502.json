@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-02",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "generated artifact scope tooling cleanup",
+  "observedMutationClass": "workflow generated artifact scope checker support for rules closeout changedPaths and current dirty artifact filtering",
+  "acceptanceEvidenceClass": "workflow scope check and full rules lint; no gameplay, Unity runtime, or WebGL product acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "Test-GeneratedArtifactScope.ps1 only scanned JSON fields named changedFiles, while rules-only recurrence closeout artifacts use changedPaths by owner contract. The tool also included the default legacy aggregate closeout artifact even when it was not part of the current dirty set, so the generated artifact scope report could show no-change-scope noise unrelated to the current pass.",
+  "prevention": "Read both changedFiles and changedPaths as artifact scope fields, only include default artifact paths in non-explicit mode when they are part of the current changed file set, and preserve existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\workflow\\Test-GeneratedArtifactScope.ps1; npm run --silent rules:lint",
+  "blockedReason": "",
+  "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-generated-artifact-scope-20260502.json",
+    "tools/workflow/Test-GeneratedArtifactScope.ps1"
+  ]
+}

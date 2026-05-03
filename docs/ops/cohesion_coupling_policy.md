@@ -57,6 +57,41 @@ shared/global skill 문서는 배경 설명으로만 참고하고, 현재 owner 
 - provider 구현 세부는 consumer owner까지 번지지 않게 port, adapter, contract seam에서 끊는다.
 - 문서는 동일 결정의 장문 재서술을 만들지 않고 owner 문서로 위임한다.
 
+## Review Procedure
+
+응집도/결합도 리뷰는 줄 수나 파일 수보다 `reason-to-change`, caller impact, failure owner를 먼저 본다.
+리뷰 skill은 이 절차로 라우팅만 하고, 판단 기준 본문은 이 문서가 소유한다.
+
+1. 변경 이유를 한 문장으로 잠근다.
+   - 한 문장 안에 서로 다른 이유가 섞이면 split-owner 후보로 본다.
+2. 익숙하지 않은 영역은 먼저 지도를 만든다.
+   - public entrypoint, direct caller, downstream consumer, provider/adapter, scene/prefab/tool contract, test/smoke surface를 확인한다.
+   - 현재 caller와 likely failure owner를 말할 수 없으면 split/seam 결론 대신 `blocked` 또는 추가 탐색으로 둔다.
+3. owner와 reference direction을 분리한다.
+   - 문서는 `docs/index.md`와 stable `doc_id`로 찾는다.
+   - 코드는 feature/layer/class/setup/root/presentation/adapter/contract 중 어디가 실패를 고칠 owner인지 본다.
+   - Unity는 serialized scene/prefab contract와 runtime code를 분리한다.
+4. ripple을 추적한다.
+   - 함께 바뀌는 docs/files/scenes/prefabs/scripts/artifacts가 같은 이유로 바뀌는지 확인한다.
+   - 다른 owner의 세부가 새는 바람에 따라 바뀌는 항목은 coupling으로 표시한다.
+5. seam을 점검한다.
+   - code seam: interface, port, adapter, event, DTO, contract
+   - Unity seam: serialized reference, scene/prefab contract, explicit bootstrap registration, scene-local registrar
+   - document seam: registry, owner doc, stable `doc_id`, reference link
+   - seam이 없으면 direct coupling으로 본다.
+6. interface depth와 test surface를 본다.
+   - interface는 type shape, ordering, invariants, error modes, config, performance expectation까지 포함한다.
+   - deep module은 작은 public surface 뒤에 의미 있는 규칙이나 integration complexity를 숨긴다.
+   - shallow module은 provider vocabulary, config knob, call order만 caller에게 전달한다.
+   - 삭제 테스트를 적용한다: 없애면 pass-through가 사라지는지, 아니면 규칙이 caller로 퍼지는지 본다.
+   - 테스트는 caller가 쓰는 interface를 우선 검증한다. 내부 collaborator mock이나 call-order 검증이 많으면 seam 또는 owner shape를 재검토한다.
+   - mock은 network, filesystem, time, randomness, Unity runtime, third-party SDK 같은 hard external boundary에 우선 둔다.
+7. verdict를 분리한다.
+   - `keep together`: 같은 reason-to-change와 같은 failure owner
+   - `split owner`: reason, success criteria, rhythm, failure owner가 다름
+   - `add seam`: direct coupling은 실제지만 contract/adapter/registry로 ripple을 줄일 수 있음
+   - `blocked`: local evidence가 부족함
+
 ## 허용 예외
 
 - `AGENTS.md`, `docs/index.md` 같은 entry/registry 문서

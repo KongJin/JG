@@ -49,7 +49,7 @@
 | Stitch JSON handoff contract 구조 확인 | [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) |
 | Stitch surface 실행 명령과 review capture 루프 확인 | [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md) |
 | GameScene 검증/closeout owner 확인 | [`plans/progress.md`](./plans/progress.md) |
-| Account/Garage WebGL acceptance 확인 | [`plans/progress.md`](./plans/progress.md)와 [`playtest/webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) |
+| Account/Garage WebGL acceptance 확인 | [`playtest/webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) |
 | Unity MCP 실행 루틴 확인 | [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) |
 | WebGL 실기 절차 확인 | [`playtest/webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) |
 | Firebase 배포 절차 확인 | [`ops/firebase_hosting.md`](./ops/firebase_hosting.md) |
@@ -81,8 +81,8 @@
 
 ### `playtest/`
 
-- `reference`: [`runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) - 런타임 수동 검증 체크리스트
-- `reference`: [`webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) - WebGL 실기 체크리스트
+- `active`: [`runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) - 런타임 수동 검증 체크리스트와 GameScene multiplayer residual closeout checklist
+- `active`: [`webgl_smoke_checklist.md`](./playtest/webgl_smoke_checklist.md) - WebGL 실기 체크리스트와 Account/Garage product smoke residual closeout checklist
 
 ### `ops/`
 

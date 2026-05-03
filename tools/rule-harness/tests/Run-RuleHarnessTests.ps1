@@ -1640,12 +1640,27 @@ namespace Features.RoleE
 }
 "@ -Encoding UTF8
 Set-Content -Path (Join-Path $roleRepo 'Tests/RoleE/RoleESetupValidation.txt') -Value 'fixture validation asset for RoleE review-work derivation' -Encoding UTF8
-Invoke-RuleHarnessTestGit -RepoPath $roleRepo -Arguments @('add', 'Assets/Scripts/Features/RoleE/RoleESetup.cs', 'Tests/RoleE/RoleESetupValidation.txt') | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $roleRepo 'Assets/Scripts/Features/RoleF/Application') -Force | Out-Null
+Set-Content -Path (Join-Path $roleRepo 'Assets/Scripts/Features/RoleF/RoleFSetup.cs') -Value 'namespace Features.RoleF { public sealed class RoleFSetup { } }' -Encoding UTF8
+Set-Content -Path (Join-Path $roleRepo 'Assets/Scripts/Features/RoleF/Application/RoleFProduct.cs') -Value 'namespace Features.RoleF.Application { public sealed class RoleFProduct { } }' -Encoding UTF8
+Set-Content -Path (Join-Path $roleRepo 'Assets/Scripts/Features/RoleF/Application/RoleFHelper.cs') -Value 'namespace Features.RoleF.Application { public static class RoleFHelper { public static RoleFProduct Create() { return new RoleFProduct(); } } }' -Encoding UTF8
+Set-Content -Path (Join-Path $roleRepo 'Assets/Scripts/Features/RoleF/Application/RoleFService.cs') -Value 'namespace Features.RoleF.Application { public sealed class RoleFService { public RoleFProduct Build() { return RoleFHelper.Create(); } } }' -Encoding UTF8
+New-Item -ItemType Directory -Path (Join-Path $roleRepo 'Assets/Scripts/Features/RoleG/Application') -Force | Out-Null
+Set-Content -Path (Join-Path $roleRepo 'Assets/Scripts/Features/RoleG/RoleGSetup.cs') -Value 'namespace Features.RoleG { public sealed class RoleGSetup { } }' -Encoding UTF8
+Set-Content -Path (Join-Path $roleRepo 'Assets/Scripts/Features/RoleG/Application/RoleGUnusedHelper.cs') -Value 'namespace Features.RoleG.Application { public static class RoleGUnusedHelper { public static object Create() { return new object(); } } }' -Encoding UTF8
+Set-Content -Path (Join-Path $roleRepo 'Assets/Scripts/Features/RoleG/Application/RoleGUnusedHelper.cs.meta') -Value @'
+fileFormatVersion: 2
+guid: 11111111111111111111111111111111
+'@ -Encoding UTF8
+New-Item -ItemType Directory -Path (Join-Path $roleRepo 'Assets/Scripts/Features/RoleH') -Force | Out-Null
+Set-Content -Path (Join-Path $roleRepo 'Assets/Scripts/Features/RoleH/RoleHVisualSetup.cs') -Value 'using UnityEngine; namespace Features.RoleH { public sealed class RoleHVisualSetup { public object Build() { return new GameObject("RoleHPreview"); } } }' -Encoding UTF8
+Invoke-RuleHarnessTestGit -RepoPath $roleRepo -Arguments @('add', 'Assets/Scripts/Features/RoleE/RoleESetup.cs', 'Tests/RoleE/RoleESetupValidation.txt', 'Assets/Scripts/Features/RoleF/RoleFSetup.cs', 'Assets/Scripts/Features/RoleF/Application/RoleFProduct.cs', 'Assets/Scripts/Features/RoleF/Application/RoleFHelper.cs', 'Assets/Scripts/Features/RoleF/Application/RoleFService.cs', 'Assets/Scripts/Features/RoleG/RoleGSetup.cs', 'Assets/Scripts/Features/RoleG/Application/RoleGUnusedHelper.cs', 'Assets/Scripts/Features/RoleG/Application/RoleGUnusedHelper.cs.meta', 'Assets/Scripts/Features/RoleH/RoleHVisualSetup.cs') | Out-Null
 Invoke-RuleHarnessTestGit -RepoPath $roleRepo -Arguments @('commit', '-m', 'add placeholder setup fixture') | Out-Null
 $roleConfigPath = Join-Path $roleRepo 'tools/rule-harness/config.json'
 $roleConfig = Get-Content -Path $roleConfigPath -Raw | ConvertFrom-Json
 $roleConfig.scan.maxScopesPerRun = 1
 $roleConfig.agentRunner.enabled = $false
+$roleConfig.agentRunner.requireChatGptLogin = $false
 $roleConfig | ConvertTo-Json -Depth 50 | Set-Content -Path $roleConfigPath -Encoding UTF8
 $roleReviewDir = Join-Path $roleRepo 'Temp/RoleReview'
 & (Join-Path $roleRepo 'tools/rule-harness/run-tech-debt-review.ps1') `
@@ -1656,11 +1671,20 @@ $roleReviewDir = Join-Path $roleRepo 'Temp/RoleReview'
 $roleReviewPath = Join-Path $roleReviewDir 'report.json'
 $roleReview = Get-Content -Path $roleReviewPath -Raw | ConvertFrom-Json
 Assert-RuleHarness `
-    -Condition (@($roleReview.scannedScopes).Count -eq 5 -and [int]$roleReview.severityScore -ge 0 -and [int]$roleReview.severityScore -le 100 -and $roleReview.PSObject.Properties.Name -contains 'scoreBreakdown' -and $roleReview.PSObject.Properties.Name -contains 'refactorTargets') `
+    -Condition (@($roleReview.scannedScopes).Count -eq [int]$roleReview.totalScopeCount -and [int]$roleReview.totalScopeCount -ge 8 -and [int]$roleReview.severityScore -ge 0 -and [int]$roleReview.severityScore -le 100 -and $roleReview.PSObject.Properties.Name -contains 'scoreBreakdown' -and $roleReview.PSObject.Properties.Name -contains 'refactorTargets') `
     -Message 'Expected tech debt role review to scan all scopes and emit severity/refactor artifacts.'
 Assert-RuleHarness `
     -Condition ([int]$roleReview.severityScore -gt 0 -and [int]$roleReview.scoreBreakdown.heuristicFindingCount -ge 1 -and @($roleReview.reviewItems | Where-Object title -eq 'Runtime Resources.Load dependency').Count -ge 1 -and @($roleReview.refactorTargets | Where-Object path -eq 'Assets/Scripts/Features/RoleB/Application/RoleBService.cs').Count -eq 1) `
     -Message 'Expected tech debt role review to score heuristic debt signals and surface them as review/refactor artifacts.'
+Assert-RuleHarness `
+    -Condition (@($roleReview.cleanupCandidates | Where-Object { $_.kind -eq 'delete_unused' -and $_.path -eq 'Assets/Scripts/Features/RoleG/Application/RoleGUnusedHelper.cs' -and [bool]$_.autoApply }).Count -eq 1) `
+    -Message 'Expected tech debt role review to surface unused helper plus .meta as an auto-apply delete cleanup candidate.'
+Assert-RuleHarness `
+    -Condition (@($roleReview.cleanupCandidates | Where-Object { $_.kind -eq 'simplify_inline' -and $_.path -eq 'Assets/Scripts/Features/RoleF/Application/RoleFHelper.cs' -and $_.callerPath -eq 'Assets/Scripts/Features/RoleF/Application/RoleFService.cs' -and [bool]$_.autoApply }).Count -eq 1) `
+    -Message 'Expected tech debt role review to surface one-use no-arg helper as an auto-apply inline cleanup candidate.'
+Assert-RuleHarness `
+    -Condition (@($roleReview.cleanupCandidates | Where-Object { $_.kind -eq 'move_owner' -and $_.path -eq 'Assets/Scripts/Features/RoleH/RoleHVisualSetup.cs' -and -not [bool]$_.autoApply }).Count -eq 1) `
+    -Message 'Expected tech debt role review to surface feature-root visual code as report-only move cleanup candidate.'
 Assert-RuleHarness `
     -Condition (@($roleReview.reviewItems | Where-Object { $_.PSObject.Properties.Name -contains 'remediationKind' -or $_.PSObject.Properties.Name -contains 'source' }).Count -eq 0) `
     -Message 'Expected tech debt role review items to stay observational and omit remediation/source directives.'
@@ -1678,6 +1702,12 @@ $derivedReviewWork = Get-Content -Path (Join-Path $roleRepo 'Temp/DerivedReviewW
 Assert-RuleHarness `
     -Condition ((@($derivedReviewWork.decisionTrace | Where-Object { [string]$_ -like '*Batch batch-001 capability discovery*' }).Count -ge 1) -and @($derivedReviewWork.skippedBatches | Where-Object { [string]$_.id -eq 'batch-001' -and [string]$_.reasonCode -eq 'manual-validation-required' }).Count -eq 0) `
     -Message 'Expected review work role to derive a mutation batch from observational review items instead of relying on review remediation directives.'
+Assert-RuleHarness `
+    -Condition (@($derivedReviewWork.skippedBatches | Where-Object { [string]$_.id -like 'cleanup-*' -and [string]$_.reasonCode -eq 'dry-run' }).Count -eq 2) `
+    -Message 'Expected review work role to derive two dry-run cleanup batches for delete_unused and simplify_inline candidates.'
+Assert-RuleHarness `
+    -Condition (@($derivedReviewWork.actionItems | Where-Object { [string]$_.kind -eq 'manual-cleanup-review' -and [string]$_.summary -match 'RoleHVisualSetup' }).Count -eq 1) `
+    -Message 'Expected review work role to keep move_owner cleanup candidates as manual action items.'
 Assert-RuleHarness `
     -Condition (@($derivedReviewWork.agentWorkQueue | Where-Object { @($_.observations | Where-Object title -eq 'Runtime Resources.Load dependency').Count -ge 1 }).Count -ge 1) `
     -Message 'Expected review work role to turn non-recipe review observations into coding-agent work queue entries.'
@@ -1731,6 +1761,7 @@ $roleConfig.agentRunner.enabled = $true
 $roleConfig.agentRunner.commandPath = $fakeValidAgent
 $roleConfig.agentRunner.maxTasksPerRun = 1
 $roleConfig.agentRunner.timeoutSec = 30
+$roleConfig.agentRunner.requireChatGptLogin = $false
 $roleConfig | ConvertTo-Json -Depth 50 | Set-Content -Path $roleConfigPath -Encoding UTF8
 & (Join-Path $roleRepo 'tools/rule-harness/run-review-work.ps1') `
     -RepoRoot $roleRepo `
@@ -1742,6 +1773,60 @@ $fakeValidAgentWork = Get-Content -Path (Join-Path $roleRepo 'Temp/FakeValidAgen
 Assert-RuleHarness `
     -Condition (@($fakeValidAgentWork.agentWorkReports | Where-Object { $_.status -eq 'proposed' -and @($_.changedFiles | Where-Object { $_ -eq 'Assets/Scripts/Features/RoleB/Application/RoleBService.cs' }).Count -eq 1 }).Count -eq 1) `
     -Message 'Expected enabled fake agent runner to convert valid JSON batches into proposed agent work.'
+
+$cleanupScoutReview = Join-Path $roleRepo 'Temp/cleanup-scout-review.json'
+[pscustomobject]@{
+    baseCommitSha = [string]$roleReview.baseCommitSha
+    reviewItems = @()
+    cleanupCandidates = @()
+    recommendedBatches = @()
+    actionItems = @()
+} | ConvertTo-Json -Depth 20 | Set-Content -Path $cleanupScoutReview -Encoding UTF8
+
+$fakeCleanupScoutAgent = Join-Path $roleRepo 'Temp/fake-cleanup-scout-agent.cmd'
+Set-Content -Path $fakeCleanupScoutAgent -Value @'
+@echo off
+set "OUTPUT="
+:args
+if "%~1"=="" goto write
+if "%~1"=="-o" goto found_output
+shift
+goto args
+:found_output
+shift
+set "OUTPUT=%~1"
+shift
+goto args
+:write
+if "%OUTPUT%"=="" exit /b 2
+> "%OUTPUT%" echo {"summary":"fixture cleanup scout","batches":[{"id":"scout-delete","kind":"code_fix","cleanupKind":"delete_unused","targetFiles":["Assets/Scripts/Features/RoleG/Application/RoleGUnusedHelper.cs","Assets/Scripts/Features/RoleG/Application/RoleGUnusedHelper.cs.meta"],"reason":"fixture broad scout delete outside candidateFiles","validation":["rule_harness_tests"],"expectedFindingsResolved":["cleanup_scout|RoleGUnusedHelper"],"status":"proposed","ownerDocs":["AGENTS.md"],"operations":[{"type":"delete_file","targetPath":"Assets/Scripts/Features/RoleG/Application/RoleGUnusedHelper.cs","referenceTokens":["RoleGUnusedHelper","11111111111111111111111111111111"]},{"type":"delete_file","targetPath":"Assets/Scripts/Features/RoleG/Application/RoleGUnusedHelper.cs.meta","referenceTokens":["RoleGUnusedHelper","11111111111111111111111111111111"]}]}],"blocked":[],"actionItems":[{"kind":"manual-cleanup-review","severity":"medium","summary":"Move owner candidate found by fixture scout","details":"RoleHVisualSetup should remain report-only because Unity serialized references need manual validation.","relatedPaths":["Assets/Scripts/Features/RoleH/RoleHVisualSetup.cs"]}]}
+exit /b 0
+'@ -Encoding ASCII
+$roleConfig.agentRunner.commandPath = $fakeCleanupScoutAgent
+$roleConfig.agentRunner.maxTasksPerRun = 1
+$roleConfig.cleanup.llmScout.enabled = $true
+$roleConfig | ConvertTo-Json -Depth 50 | Set-Content -Path $roleConfigPath -Encoding UTF8
+$cleanupScoutWorkDir = Join-Path $roleRepo 'Temp/FakeCleanupScoutReviewWork'
+& (Join-Path $roleRepo 'tools/rule-harness/run-review-work.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -ReviewPath $cleanupScoutReview `
+    -OutputDir $cleanupScoutWorkDir `
+    -DryRun | Out-Null
+$cleanupScoutWork = Get-Content -Path (Join-Path $cleanupScoutWorkDir 'report.json') -Raw | ConvertFrom-Json
+$cleanupScoutPrompt = Get-Content -Path (Join-Path $cleanupScoutWorkDir 'agent-runner/cleanup-scout-001.prompt.md') -Raw
+Assert-RuleHarness `
+    -Condition (@($cleanupScoutWork.agentWorkQueue | Where-Object { [string]$_.taskKind -eq 'cleanup_scout' }).Count -eq 1) `
+    -Message 'Expected review work role to queue a broad cleanup_scout task when no high/medium static review work exists.'
+Assert-RuleHarness `
+    -Condition ($cleanupScoutPrompt.Contains('You may run read-only shell commands') -and $cleanupScoutPrompt.Contains('candidateFiles are hints only for cleanup_scout')) `
+    -Message 'Expected cleanup_scout prompt to allow broad read-only repo inspection instead of snapshot-only synthesis.'
+Assert-RuleHarness `
+    -Condition (@($cleanupScoutWork.agentWorkReports | Where-Object { $_.status -eq 'proposed' -and @($_.changedFiles | Where-Object { $_ -eq 'Assets/Scripts/Features/RoleG/Application/RoleGUnusedHelper.cs' }).Count -eq 1 }).Count -eq 1) `
+    -Message 'Expected cleanup_scout agent batch to allow safe targets outside candidateFiles.'
+Assert-RuleHarness `
+    -Condition (@($cleanupScoutWork.actionItems | Where-Object { [string]$_.kind -eq 'manual-cleanup-review' -and [string]$_.summary -match 'Move owner candidate' }).Count -eq 1) `
+    -Message 'Expected cleanup_scout move_owner findings to surface as report-only manual cleanup action items.'
 
 $successBudgetReview = Join-Path $roleRepo 'Temp/success-budget-review.json'
 [pscustomobject]@{
@@ -1899,6 +1984,34 @@ $contractPlan = Get-Content -Path (Join-Path $contractPlanDir 'report.json') -Ra
 Assert-RuleHarness `
     -Condition (@($contractPlan.preventionItems | Where-Object { @($_.relatedPaths | Where-Object { $_ -eq 'Assets/Scripts/Features/RoleB/Application/RoleBService.cs' }).Count -gt 0 }).Count -eq 0) `
     -Message 'Expected agent-runner-contract-violation to avoid re-queuing candidate product files as recurrence prevention targets.'
+
+$fakeNoChatGptAgent = Join-Path $roleRepo 'Temp/fake-no-chatgpt-agent.cmd'
+Set-Content -Path $fakeNoChatGptAgent -Value @'
+@echo off
+if "%~1"=="login" (
+  if "%~2"=="status" (
+    echo Not logged in
+    exit /b 0
+  )
+)
+exit /b 9
+'@ -Encoding ASCII
+$roleConfig.agentRunner.commandPath = $fakeNoChatGptAgent
+$roleConfig.agentRunner.requireChatGptLogin = $true
+$roleConfig | ConvertTo-Json -Depth 50 | Set-Content -Path $roleConfigPath -Encoding UTF8
+$chatGptLoginRequiredWorkDir = Join-Path $roleRepo 'Temp/FakeChatGptLoginRequiredReviewWork'
+& (Join-Path $roleRepo 'tools/rule-harness/run-review-work.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -ReviewPath $agentOnlyReview `
+    -OutputDir $chatGptLoginRequiredWorkDir `
+    -DryRun | Out-Null
+$chatGptLoginRequiredWork = Get-Content -Path (Join-Path $chatGptLoginRequiredWorkDir 'report.json') -Raw | ConvertFrom-Json
+Assert-RuleHarness `
+    -Condition ([bool]$chatGptLoginRequiredWork.failed -and @($chatGptLoginRequiredWork.agentWorkReports | Where-Object { $_.status -eq 'blocked' -and $_.blockedReason -eq 'agent-runner-chatgpt-login-required' }).Count -eq 1) `
+    -Message 'Expected agent runner to block when requireChatGptLogin is enabled and codex login status is not ChatGPT subscription auth.'
+$roleConfig.agentRunner.requireChatGptLogin = $false
+$roleConfig | ConvertTo-Json -Depth 50 | Set-Content -Path $roleConfigPath -Encoding UTF8
 
 $insufficientSnapshotReportPath = Join-Path $roleRepo 'Temp/insufficient-snapshot-work-report.json'
 [pscustomobject]@{

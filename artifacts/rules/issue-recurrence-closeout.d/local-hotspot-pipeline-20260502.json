@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-02",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "runtime hotspot recurrence prevention and rules lint pipeline hardening",
+  "observedMutationClass": "static runtime hotspot lint, policy lint wiring, closeout pack rules lint routing, GitHub workflow path coverage, Garage adapter slot-preview cache extraction to restore hotspot budget, and recurrence closeout update",
+  "acceptanceEvidenceClass": "static lint, rules lint, compile check, targeted Unity MCP EditMode direct test evidence, Unity MCP EditMode guardrail test evidence, and Unity UI policy evidence; no gameplay or WebGL product acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "The first recurrence guard for Garage/Lobby/GameScene hotspot reabsorption was implemented as Unity EditMode reflection tests. That catches the problem when Unity tests run, but the repo's always-on rules pipeline did not yet include an editor-independent static check for the same hotspot budgets and extracted responsibility markers. Closeout pack routing also did not force rules lint for these hotspot files unless docs or generated JSON artifacts were present, and the GitHub rules workflow path filter did not include Player/GameScene root files. The current runtime:hotspots:lint failure showed GarageSetBUitkRuntimeAdapter at 388 lines over its 380-line budget after slot-preview texture caching stayed inside the adapter.",
+  "prevention": "Add tools/workflow/test-runtime-hotspot-structure.mjs as an editor-independent static guard for the three hotspot budgets, required extracted owner files, required responsibility markers, Unity .meta presence, and forbidden reabsorption fragments. Wire it into package.json policy:lint so npm run rules:lint, pre-commit, and the GitHub rules workflow all run it. Update tools/workflow/Invoke-CloseoutPack.ps1 so hotspot script/code/package changes plan rules:lint, update .github/workflows/docs-lint.yml so Player/GameScene hotspot changes trigger the rules workflow, and keep slot-preview texture caching outside GarageSetBUitkRuntimeAdapter so the adapter stays below the hard budget. Preserve the existing recurrence hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "npm run --silent runtime:hotspots:lint; npm run --silent feature:presentation:lint; npm run --silent rules:lint; powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\check-compile-errors.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\unity-mcp\\Invoke-UnityMcpEditModeTests.ps1 -TestName Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests -OutputPath artifacts/unity/garage-setb-uitk-runtime-adapter-direct-tests.xml -TimeoutMs 180000; Unity MCP EditMode hotspot guardrail tests wrote artifacts/unity/architecture-guardrail-hotspots-20260502.xml; Unity UI workflow policy wrote artifacts/unity/unity-ui-authoring-workflow-policy-hotspot-refactor-20260502.json",
+  "blockedReason": "",
+  "changedPaths": [
+    ".github/workflows/docs-lint.yml",
+    "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkRuntimeAdapter.cs",
+    "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBSlotPreviewTextureCache.cs",
+    "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBSlotPreviewTextureCache.cs.meta",
+    "artifacts/rules/issue-recurrence-closeout.d/local-hotspot-pipeline-20260502.json",
+    "package.json",
+    "tools/workflow/Invoke-CloseoutPack.ps1",
+    "tools/workflow/test-runtime-hotspot-structure.mjs"
+  ]
+}

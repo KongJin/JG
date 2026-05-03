@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Features.Unit.Infrastructure;
+using Features.Unit.Domain;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
@@ -200,7 +200,7 @@ namespace Features.Garage.Presentation
                             slot,
                             part.Id,
                             part.DisplayName,
-                            $"HP {part.BaseHp:0} | ASPD {part.BaseAttackSpeed:0.00} | T{part.Tier}",
+                            $"HP {part.BaseHp:0} | ASPD {part.BaseAttackSpeed:0.00}",
                             part.SourcePath,
                             part.NeedsNameReview,
                             part.PreviewPrefab,
@@ -218,7 +218,7 @@ namespace Features.Garage.Presentation
                             slot,
                             part.Id,
                             part.DisplayName,
-                            $"ATK {part.AttackDamage:0} | RNG {part.Range:0.0} | T{part.Tier}",
+                            $"ATK {part.AttackDamage:0} | RNG {part.Range:0.0}",
                             part.SourcePath,
                             part.NeedsNameReview,
                             part.PreviewPrefab,
@@ -233,7 +233,7 @@ namespace Features.Garage.Presentation
                             slot,
                             part.Id,
                             part.DisplayName,
-                            $"HP+ {part.HpBonus:0} | MOV {part.MoveRange:0.0} | T{part.Tier}",
+                            $"HP+ {part.HpBonus:0} | MOV {part.MoveRange:0.0}",
                             part.SourcePath,
                             part.NeedsNameReview,
                             part.PreviewPrefab,

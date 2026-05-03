@@ -11,7 +11,7 @@ $ErrorActionPreference = "Stop"
 
 . "$PSScriptRoot\WorkflowHelpers.ps1"
 
-function Get-ChangedFilesFromJson {
+function Get-ChangedScopeFilesFromJson {
     param([object]$Node)
 
     $files = New-Object System.Collections.Generic.List[string]
@@ -32,7 +32,7 @@ function Get-ChangedFilesFromJson {
 
         if ($Value -is [pscustomobject]) {
             foreach ($property in $Value.PSObject.Properties) {
-                if ($property.Name -eq "changedFiles" -and $property.Value -is [System.Array]) {
+                if (($property.Name -eq "changedFiles" -or $property.Name -eq "changedPaths") -and $property.Value -is [System.Array]) {
                     foreach ($item in $property.Value) {
                         if (-not [string]::IsNullOrWhiteSpace([string]$item)) {
                             $files.Add(([string]$item -replace "\\", "/"))
@@ -69,7 +69,7 @@ $artifactPathsToCheck = if ($ExplicitArtifactPathOnly) {
 }
 else {
     @(
-        @($normalizedArtifactPaths) +
+        @($normalizedArtifactPaths | Where-Object { $currentChangedFiles -contains $_ }) +
         @(Get-WorkflowPathsMatching -Paths $currentChangedFiles -Patterns @("^artifacts/(unity|rules)/.*\.json$")) |
             Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
             Sort-Object -Unique
@@ -106,7 +106,7 @@ foreach ($artifact in @($artifactPathsToCheck)) {
     }
 
     $json = Get-Content -LiteralPath $absolutePath -Raw | ConvertFrom-Json
-    $artifactChangedFiles = @(Get-ChangedFilesFromJson -Node $json)
+    $artifactChangedFiles = @(Get-ChangedScopeFilesFromJson -Node $json)
     $patterns = @($normalizedExpectedPatterns)
 
     if ($patterns.Count -eq 0) {
@@ -126,7 +126,7 @@ foreach ($artifact in @($artifactPathsToCheck)) {
 
     $offScope = @($offScope)
     $verdict = if ($artifactChangedFiles.Count -eq 0) {
-        "no-changed-files-field"
+        "no-change-scope-field"
     }
     elseif ($offScope.Count -gt 0) {
         "broad-dirty-worktree"
@@ -135,7 +135,7 @@ foreach ($artifact in @($artifactPathsToCheck)) {
         "scoped"
     }
 
-    if ($verdict -ne "scoped" -and $verdict -ne "no-changed-files-field") {
+    if ($verdict -ne "scoped" -and $verdict -ne "no-change-scope-field") {
         $hasIssue = $true
     }
 
@@ -150,7 +150,7 @@ foreach ($artifact in @($artifactPathsToCheck)) {
 
 Write-WorkflowSection "Generated Artifact Scope"
 foreach ($result in $results) {
-    Write-Host ("{0}: {1} changedFiles={2}" -f $result.Artifact, $result.Verdict, $result.ChangedFiles)
+    Write-Host ("{0}: {1} changedScopeFiles={2}" -f $result.Artifact, $result.Verdict, $result.ChangedFiles)
     $offScopeFiles = @($result.OffScopeFiles)
     foreach ($path in @($offScopeFiles | Select-Object -First 20)) {
         Write-Host ("  off-scope: {0}" -f $path) -ForegroundColor Yellow

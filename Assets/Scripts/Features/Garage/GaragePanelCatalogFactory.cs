@@ -1,5 +1,6 @@
 using Features.Garage.Infrastructure;
 using Features.Garage.Presentation;
+using Features.Garage.Domain;
 using Features.Unit.Domain;
 using Features.Unit.Infrastructure;
 
@@ -93,7 +94,6 @@ namespace Features.Garage
                     MoveSpeed = module.MoveSpeed,
                     MoveRange = module.MoveRange,
                     EnergyCost = energyCost,
-                    MobilitySurface = module.MobilitySurface,
                     PreviewPrefab = ResolvePreviewPrefab(module.PreviewPrefab, metadata),
                     AssemblyPrefab = ResolveAssemblyPrefab(metadata),
                     // Generated assembly prefabs keep the source model pivot; catalog alignment owns the body socket.
@@ -139,7 +139,7 @@ namespace Features.Garage
                     continue;
 
                 byPartId[entry.PartId] = entry;
-                var legacyPartId = ResolveLegacySamplePartId(entry.PartId);
+                var legacyPartId = GarageLegacyPartIdMap.ResolveLegacySamplePartId(entry.PartId);
                 if (!string.IsNullOrWhiteSpace(legacyPartId))
                     byPartId[legacyPartId] = entry;
             }
@@ -184,29 +184,12 @@ namespace Features.Garage
                     continue;
 
                 byPartId[entry.PartId] = entry;
-                var legacyPartId = ResolveLegacySamplePartId(entry.PartId);
+                var legacyPartId = GarageLegacyPartIdMap.ResolveLegacySamplePartId(entry.PartId);
                 if (!string.IsNullOrWhiteSpace(legacyPartId))
                     byPartId[legacyPartId] = entry;
             }
 
             return byPartId;
-        }
-
-        private static string ResolveLegacySamplePartId(string novaPartId)
-        {
-            return novaPartId switch
-            {
-                "nova_frame_body25_bosro" => "frame_bastion",
-                "nova_frame_body1_sz" => "frame_striker",
-                "nova_frame_body11_kn" => "frame_relay",
-                "nova_fire_arm10_broz" => "fire_scatter",
-                "nova_fire_arm1_sz" => "fire_pulse",
-                "nova_fire_arm13_prs" => "fire_rail",
-                "nova_mob_g_legs35_prg" => "mob_burst",
-                "nova_mob_legs1_rdrn" => "mob_vector",
-                "nova_mob_legs19_tower" => "mob_treads",
-                _ => null
-            };
         }
 
         private static GaragePanelCatalog.PartAlignment CreateAlignment(NovaPartAlignmentCatalog.Entry entry)

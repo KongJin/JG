@@ -39,10 +39,18 @@ $hasDocs = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^docs/"
 $hasUnityAssets = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^Assets/.*\.(meta|prefab|unity|asset|mat|controller|anim)$")).Count -gt 0
 $hasUnityUiSurface = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^Assets/UI/", "^Assets/Scripts/Shared/Ui/", "^Assets/Prefabs/")).Count -gt 0
 $hasGeneratedArtifact = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @("^artifacts/(unity|rules)/.*\.json$")).Count -gt 0
+$hasRuntimeHotspotSurface = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @(
+    "^Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitk(RuntimeAdapter|LayoutController)\.cs$",
+    "^Assets/Scripts/Features/Lobby/Presentation/Uitk/Lobby(UitkRuntimeAdapter|OperationMemoryRenderer)\.cs$",
+    "^Assets/Scripts/Features/Player/GameScene(Root|LocalPlayerInitializationFlow)\.cs$",
+    "^Assets/Editor/Tests/ArchitectureGuardrailReflectionTests\.cs$",
+    "^tools/workflow/test-runtime-hotspot-structure\.mjs$",
+    "^package\.json$"
+)).Count -gt 0
 
 $planned = New-Object System.Collections.Generic.List[string]
 if ($hasCs -and -not $SkipCompile) { $planned.Add("compile") }
-if (($hasDocs -or $hasGeneratedArtifact) -and -not $SkipRulesLint) { $planned.Add("rules:lint") }
+if (($hasDocs -or $hasGeneratedArtifact -or $hasRuntimeHotspotSurface) -and -not $SkipRulesLint) { $planned.Add("rules:lint") }
 if ($hasUnityAssets -and -not $SkipAssetHygiene) { $planned.Add("unity:asset-hygiene") }
 if ($hasUnityUiSurface -and -not $SkipUnityUiPolicy) { $planned.Add("unity-ui-policy") }
 if ($hasGeneratedArtifact -and -not $SkipArtifactScope) { $planned.Add("generated-artifact-scope") }

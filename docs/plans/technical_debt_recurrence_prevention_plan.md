@@ -152,8 +152,8 @@ Closeout check:
 
 ## Residual
 
-- GameScene direct EditMode execution은 GameScene actual-flow active owner가 소유하고, Phase 5 2-client smoke는 `plans.progress` multiplayer residual이 소유한다.
-- Account/Garage/WebGL product acceptance는 `plans.progress` WebGL account residual과 WebGL smoke checklist 기준으로 추적한다.
+- GameScene direct EditMode execution은 GameScene actual-flow active owner가 소유하고, Phase 5 2-client smoke는 runtime validation checklist가 소유한다.
+- Account/Garage/WebGL product acceptance는 WebGL smoke checklist 기준으로 추적한다.
 - `SoundPlayer` AudioSource/template residual은 scene-owned AudioSource contract로 전환했고, legacy `initialPoolSize` serialized contract는 제거했다. WebGL 오디오 product smoke는 별도 acceptance evidence가 필요하다.
 - `WaveSetup.TryGetFirstEnemyData`와 `SummonPhotonAdapter`의 `fallbackInstanceId` production fallback residual은 제거됐다. 새 fallback은 guardrail allowlist 없이 실패해야 한다.
 - `fallback|Fallback` 검색 결과는 review gate다. guardrail allowlist에 없는 production fallback은 다음 cleanup 후보로 승격한다.

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-02",
+  "issueDetected": true,
+  "scope": "rules-only",
+  "declaredLane": "rule harness aggressive cleanup automation",
+  "observedMutationClass": "Rule harness did not continuously surface broad cleanup candidates or auto-queue verified low-risk delete/simplify cleanup work.",
+  "acceptanceEvidenceClass": "rule harness fixture tests and pipeline dry-run; no gameplay, Unity runtime, or WebGL product acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "The 4-role harness only converted existing rule/static findings into batches. Simplification candidates lived in a separate workflow script, delete_file was not a first-class mutation operation, and move/delete/simplify candidates were not represented in role reports.",
+  "prevention": "Tech-debt review now emits cleanupCandidates, review-work converts configured delete_unused and simplify_inline candidates into guarded batches, move_owner stays report-only, delete_file has rollback snapshots plus stale token/GUID reference guards, and fixture tests cover delete/simplify/move classification. The existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload remains preserved.",
+  "verification": "Ran powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\rule-harness\\tests\\Run-RuleHarnessTests.ps1; ran powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\rule-harness\\run-harness-pipeline.ps1 -RepoRoot (Get-Location).Path -ConfigPath .\\tools\\rule-harness\\config.json -OutputRoot .\\Temp\\RuleHarnessRoles -DryRun.",
+  "blockedReason": "",
+  "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-aggressive-cleanup-harness-20260502.json",
+    "tools/rule-harness/README.md",
+    "tools/rule-harness/RuleHarness.psm1",
+    "tools/rule-harness/config.json",
+    "tools/rule-harness/roles/TechDebtReviewHarness.psm1",
+    "tools/rule-harness/roles/ReviewWorkHarness.psm1",
+    "tools/rule-harness/schemas/agent-batch.schema.json",
+    "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+    "tools/workflow/Find-SimplificationCandidates.ps1"
+  ]
+}

@@ -21,6 +21,7 @@ function Get-TechDebtReviewSummaryLines {
     [void]$lines.Add("- Scanned scopes: $(@($Report.scannedScopes).Count)/$($Report.totalScopeCount)")
     [void]$lines.Add("- Review items: $(@($Report.reviewItems).Count)")
     [void]$lines.Add("- Refactor targets: $(@($Report.refactorTargets).Count)")
+    [void]$lines.Add("- Cleanup candidates: $(@($Report.cleanupCandidates).Count)")
     [void]$lines.Add("- Recommended batches: $(@($Report.recommendedBatches).Count)")
     [void]$lines.Add('')
     [void]$lines.Add('## Score Breakdown')
@@ -31,6 +32,14 @@ function Get-TechDebtReviewSummaryLines {
     [void]$lines.Add('## Top Refactor Targets')
     foreach ($target in @($Report.refactorTargets | Select-Object -First 10)) {
         [void]$lines.Add("- $($target.path) findings=$($target.findingCount) severity=$($target.highestSeverity)")
+    }
+    [void]$lines.Add('')
+    [void]$lines.Add('## Top Cleanup Candidates')
+    foreach ($candidate in @($Report.cleanupCandidates | Select-Object -First 10)) {
+        [void]$lines.Add("- [$($candidate.kind)] $($candidate.path) autoApply=$($candidate.autoApply) reason=$($candidate.reason)")
+    }
+    if (@($Report.cleanupCandidates).Count -eq 0) {
+        [void]$lines.Add('- none')
     }
     [void]$lines.Add('')
     [void]$lines.Add('## Blockers')
@@ -230,6 +239,331 @@ function Get-TechDebtHeuristicFindings {
     )
 }
 
+function Get-TechDebtTypeNames {
+    param([Parameter(Mandatory)][string]$Text)
+
+    @(
+        [regex]::Matches($Text, '\b(?:class|struct|interface|enum)\s+([A-Za-z_][A-Za-z0-9_]*)') |
+            ForEach-Object { [string]$_.Groups[1].Value } |
+            Sort-Object -Unique
+    )
+}
+
+function Get-TechDebtMetaGuid {
+    param([Parameter(Mandatory)][string]$FilePath)
+
+    $metaPath = "$FilePath.meta"
+    if (-not (Test-Path -LiteralPath $metaPath)) {
+        return ''
+    }
+
+    $match = Select-String -LiteralPath $metaPath -Pattern '^guid:\s*([a-fA-F0-9]+)\s*$' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($null -eq $match) {
+        return ''
+    }
+
+    [string]$match.Matches[0].Groups[1].Value
+}
+
+function Get-TechDebtExternalReferenceMatches {
+    param(
+        [Parameter(Mandatory)][string]$RepoRoot,
+        [Parameter(Mandatory)][string[]]$Tokens,
+        [Parameter(Mandatory)][string[]]$ExcludedPaths
+    )
+
+    $excluded = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($path in @($ExcludedPaths)) {
+        if (-not [string]::IsNullOrWhiteSpace([string]$path)) {
+            [void]$excluded.Add(([string]$path).Replace('\', '/'))
+        }
+    }
+
+    $referenceMatches = [System.Collections.Generic.List[object]]::new()
+    $rg = Get-Command rg -ErrorAction SilentlyContinue
+    if ($null -ne $rg) {
+        Push-Location $RepoRoot
+        try {
+            foreach ($token in @($Tokens | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Sort-Object -Unique)) {
+                $output = @(& $rg.Source --fixed-strings --line-number --glob '!Library/**' --glob '!Temp/**' --glob '!obj/**' --glob '!bin/**' --glob '!Build/**' --glob '!Builds/**' --glob '!Logs/**' --glob '!UserSettings/**' --glob '!.git/**' --glob '!node_modules/**' -- ([string]$token) . 2>$null)
+                foreach ($line in $output) {
+                    if ([string]$line -notmatch '^\./?(?<path>.*?):(?<line>\d+):') {
+                        continue
+                    }
+
+                    $relativePath = ([string]$Matches['path']).TrimStart('.', '/', '\').Replace('\', '/')
+                    if ($excluded.Contains($relativePath)) {
+                        continue
+                    }
+
+                    [void]$referenceMatches.Add([pscustomobject]@{
+                        token = [string]$token
+                        path = $relativePath
+                        line = [int]$Matches['line']
+                    })
+                }
+            }
+        }
+        finally {
+            Pop-Location
+        }
+
+        return @($referenceMatches)
+    }
+
+    $root = (Resolve-Path -LiteralPath $RepoRoot).Path.TrimEnd('\', '/')
+    $files = @(
+        Get-ChildItem -LiteralPath $root -Recurse -File -ErrorAction SilentlyContinue |
+            Where-Object {
+                $relative = $_.FullName.Substring($root.Length + 1).Replace('\', '/')
+                $relative -notmatch '(^|/)(Library|Temp|obj|bin|Build|Builds|Logs|UserSettings|\.git|node_modules)/' -and
+                -not $excluded.Contains($relative)
+            }
+    )
+
+    foreach ($token in @($Tokens | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Sort-Object -Unique)) {
+        foreach ($file in $files) {
+            $hit = Select-String -LiteralPath $file.FullName -SimpleMatch -Pattern ([string]$token) -List -ErrorAction SilentlyContinue
+            if ($null -eq $hit) {
+                continue
+            }
+
+            [void]$referenceMatches.Add([pscustomobject]@{
+                token = [string]$token
+                path = $file.FullName.Substring($root.Length + 1).Replace('\', '/')
+                line = [int]$hit.LineNumber
+            })
+        }
+    }
+
+    @($referenceMatches)
+}
+
+function Get-TechDebtSimplificationSnapshot {
+    param([Parameter(Mandatory)][string]$RepoRoot)
+
+    $scriptPath = Join-Path $RepoRoot 'tools/workflow/Find-SimplificationCandidates.ps1'
+    if (-not (Test-Path -LiteralPath $scriptPath)) {
+        return $null
+    }
+
+    try {
+        $json = & powershell -NoProfile -ExecutionPolicy Bypass -File $scriptPath -RepoRoot $RepoRoot -AsJson 2>$null
+        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace(($json -join "`n"))) {
+            return $null
+        }
+
+        return (($json -join "`n") | ConvertFrom-Json)
+    }
+    catch {
+        return $null
+    }
+}
+
+function Get-TechDebtDeleteUnusedCandidates {
+    param([Parameter(Mandatory)][string]$RepoRoot)
+
+    $scriptsRoot = Join-Path $RepoRoot 'Assets/Scripts'
+    if (-not (Test-Path -LiteralPath $scriptsRoot)) {
+        return @()
+    }
+
+    $candidates = [System.Collections.Generic.List[object]]::new()
+    $files = @(Get-ChildItem -LiteralPath $scriptsRoot -Recurse -File -Filter '*.cs' -ErrorAction SilentlyContinue)
+    foreach ($file in $files) {
+        $relativePath = ConvertTo-TechDebtRelativePath -RepoRoot $RepoRoot -Path $file.FullName
+        $normalizedPath = $relativePath.Replace('\', '/')
+        $content = Get-Content -LiteralPath $file.FullName -Raw
+        if ($content -match '\b(MonoBehaviour|ScriptableObject|EditorWindow)\b') {
+            continue
+        }
+
+        $typeNames = @(Get-TechDebtTypeNames -Text $content)
+        if ($typeNames.Count -eq 0) {
+            continue
+        }
+
+        $primaryName = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
+        $suffixMatch = $primaryName -match '(Helper|Factory|Config|Resolver|Applier|Writer|Evaluator)$'
+        $allTypesMatchFile = @($typeNames | Where-Object { $_ -ne $primaryName }).Count -eq 0
+        if (-not ($suffixMatch -and $allTypesMatchFile)) {
+            continue
+        }
+
+        $metaRelativePath = "$normalizedPath.meta"
+        $targetFiles = @($normalizedPath)
+        $metaPath = "$($file.FullName).meta"
+        if (Test-Path -LiteralPath $metaPath) {
+            $targetFiles += $metaRelativePath
+        }
+
+        $guid = Get-TechDebtMetaGuid -FilePath $file.FullName
+        $tokens = @($typeNames)
+        if (-not [string]::IsNullOrWhiteSpace($guid)) {
+            $tokens += $guid
+        }
+
+        $externalMatches = @(Get-TechDebtExternalReferenceMatches -RepoRoot $RepoRoot -Tokens $tokens -ExcludedPaths $targetFiles)
+        if ($externalMatches.Count -gt 0) {
+            continue
+        }
+
+        [void]$candidates.Add([pscustomobject]@{
+            kind = 'delete_unused'
+            path = $normalizedPath
+            targetFiles = @($targetFiles)
+            referenceTokens = @($tokens | Sort-Object -Unique)
+            autoApply = $true
+            confidence = 'high'
+            reason = 'No external type or Unity GUID references were found.'
+            evidence = @([pscustomobject]@{ path = $normalizedPath; line = $null; snippet = ($typeNames -join ', ') })
+        })
+    }
+
+    @($candidates)
+}
+
+function Get-TechDebtSimplifyInlineCandidates {
+    param([Parameter(Mandatory)][string]$RepoRoot)
+
+    $scriptsRoot = Join-Path $RepoRoot 'Assets/Scripts'
+    if (-not (Test-Path -LiteralPath $scriptsRoot)) {
+        return @()
+    }
+
+    $candidates = [System.Collections.Generic.List[object]]::new()
+    $files = @(Get-ChildItem -LiteralPath $scriptsRoot -Recurse -File -Filter '*.cs' -ErrorAction SilentlyContinue)
+    foreach ($file in $files) {
+        $relativePath = (ConvertTo-TechDebtRelativePath -RepoRoot $RepoRoot -Path $file.FullName).Replace('\', '/')
+        $content = Get-Content -LiteralPath $file.FullName -Raw
+        if ($content -match '\b(MonoBehaviour|ScriptableObject|EditorWindow)\b') {
+            continue
+        }
+
+        $typeNames = @(Get-TechDebtTypeNames -Text $content)
+        if ($typeNames.Count -ne 1) {
+            continue
+        }
+
+        $className = [string]$typeNames[0]
+        if ($className -notmatch '(Factory|Helper)$') {
+            continue
+        }
+
+        $methodMatch = [regex]::Match($content, '(?s)\bpublic\s+static\s+(?<return>[A-Za-z0-9_<>,.\s]+)\s+(?<method>[A-Za-z_][A-Za-z0-9_]*)\s*\(\s*\)\s*\{\s*return\s+(?<expr>[^;]+);\s*\}')
+        if (-not $methodMatch.Success) {
+            continue
+        }
+
+        $inlineExpression = [string]$methodMatch.Groups['expr'].Value.Trim()
+        if ($inlineExpression -match '^[A-Za-z_][A-Za-z0-9_]*\s*\(') {
+            continue
+        }
+
+        $callToken = "$className.$($methodMatch.Groups['method'].Value)()"
+        $matches = @(Get-TechDebtExternalReferenceMatches -RepoRoot $RepoRoot -Tokens @($callToken) -ExcludedPaths @($relativePath, "$relativePath.meta"))
+        if ($matches.Count -ne 1) {
+            continue
+        }
+
+        [void]$candidates.Add([pscustomobject]@{
+            kind = 'simplify_inline'
+            path = $relativePath
+            callerPath = [string]$matches[0].path
+            targetFiles = @($relativePath, "$relativePath.meta", [string]$matches[0].path)
+            referenceTokens = @($className, $callToken, (Get-TechDebtMetaGuid -FilePath $file.FullName) | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+            className = $className
+            methodName = [string]$methodMatch.Groups['method'].Value
+            callToken = $callToken
+            inlineExpression = $inlineExpression
+            autoApply = $true
+            confidence = 'high'
+            reason = 'Single no-arg static factory/helper call can be inlined into its only caller.'
+            evidence = @([pscustomobject]@{ path = $relativePath; line = $null; snippet = $callToken })
+        })
+    }
+
+    @($candidates)
+}
+
+function Get-TechDebtMoveOwnerCandidates {
+    param(
+        [Parameter(Mandatory)][string]$RepoRoot,
+        [object]$SimplificationSnapshot
+    )
+
+    $candidates = [System.Collections.Generic.List[object]]::new()
+    if ($null -ne $SimplificationSnapshot) {
+        foreach ($item in @($SimplificationSnapshot.rootRuntimeVisualHelpers)) {
+            [void]$candidates.Add([pscustomobject]@{
+                kind = 'move_owner'
+                path = [string]$item.File
+                targetFiles = @([string]$item.File)
+                autoApply = $false
+                confidence = 'medium'
+                reason = 'Feature-root runtime visual code should move behind a presentation/owner seam.'
+                evidence = @([pscustomobject]@{ path = [string]$item.File; line = $null; snippet = [string]$item.Signal })
+            })
+        }
+    }
+
+    $featureRootFiles = @(
+        Get-ChildItem -LiteralPath (Join-Path $RepoRoot 'Assets/Scripts/Features') -Recurse -File -Filter '*.cs' -ErrorAction SilentlyContinue |
+            Where-Object {
+                $relative = (ConvertTo-TechDebtRelativePath -RepoRoot $RepoRoot -Path $_.FullName).Replace('\', '/')
+                $relative -match '^Assets/Scripts/Features/[^/]+/[^/]+\.cs$'
+            }
+    )
+    foreach ($file in $featureRootFiles) {
+        $relativePath = (ConvertTo-TechDebtRelativePath -RepoRoot $RepoRoot -Path $file.FullName).Replace('\', '/')
+        $content = Get-Content -LiteralPath $file.FullName -Raw
+        if ($content -match '\b(LineRenderer|Canvas|RectTransform|Material|Shader\.Find|new\s+GameObject|View|Preview)\b') {
+            [void]$candidates.Add([pscustomobject]@{
+                kind = 'move_owner'
+                path = $relativePath
+                targetFiles = @($relativePath)
+                autoApply = $false
+                confidence = 'medium'
+                reason = 'Feature-root runtime visual code should move behind a presentation/owner seam.'
+                evidence = @([pscustomobject]@{ path = $relativePath; line = $null; snippet = 'feature-root runtime visual code' })
+            })
+        }
+    }
+
+    $presentationFiles = @(
+        Get-ChildItem -LiteralPath (Join-Path $RepoRoot 'Assets/Scripts/Features') -Recurse -File -Filter '*.cs' -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName.Replace('\', '/') -match '/Presentation/' }
+    )
+    foreach ($file in $presentationFiles) {
+        $relativePath = (ConvertTo-TechDebtRelativePath -RepoRoot $RepoRoot -Path $file.FullName).Replace('\', '/')
+        $content = Get-Content -LiteralPath $file.FullName -Raw
+        if ($content -match '\b(Register.*Input|Scroll|Renderer|Cache|PreviewTexture|Pointer|Drag)\b' -and $relativePath -match '(Adapter|Controller)\.cs$') {
+            [void]$candidates.Add([pscustomobject]@{
+                kind = 'move_owner'
+                path = $relativePath
+                targetFiles = @($relativePath)
+                autoApply = $false
+                confidence = 'medium'
+                reason = 'Presentation adapter/controller appears to own separable input, render, or cache responsibility.'
+                evidence = @([pscustomobject]@{ path = $relativePath; line = $null; snippet = 'input/render/cache responsibility signal' })
+            })
+        }
+    }
+
+    @($candidates | Sort-Object kind, path -Unique)
+}
+
+function Get-TechDebtAggressiveCleanupCandidates {
+    param([Parameter(Mandatory)][string]$RepoRoot)
+
+    $snapshot = Get-TechDebtSimplificationSnapshot -RepoRoot $RepoRoot
+    @(
+        @(Get-TechDebtDeleteUnusedCandidates -RepoRoot $RepoRoot) +
+        @(Get-TechDebtSimplifyInlineCandidates -RepoRoot $RepoRoot) +
+        @(Get-TechDebtMoveOwnerCandidates -RepoRoot $RepoRoot -SimplificationSnapshot $snapshot)
+    )
+}
+
 function Invoke-TechDebtReviewHarness {
     param(
         [Parameter(Mandatory)][string]$RepoRoot,
@@ -244,6 +578,7 @@ function Invoke-TechDebtReviewHarness {
     $snapshot = Get-RuleHarnessProjectReviewSnapshot -RepoRoot $RepoRoot -ConfigPath $ConfigPath -AllScopes -ReadOnly
     $reviewedFindings = @(ConvertTo-RuleHarnessReviewedFindings -Findings @($snapshot.findings + $snapshot.featureDependencyGate.findings))
     $heuristicFindings = @(Get-TechDebtHeuristicFindings -RepoRoot $RepoRoot)
+    $cleanupCandidates = @(Get-TechDebtAggressiveCleanupCandidates -RepoRoot $RepoRoot)
     $allReviewFindings = @($reviewedFindings + $heuristicFindings)
     $highCount = @($reviewedFindings | Where-Object severity -eq 'high').Count
     $mediumCount = @($reviewedFindings | Where-Object severity -eq 'medium').Count
@@ -353,6 +688,7 @@ function Invoke-TechDebtReviewHarness {
             findings = [int]$findingScore
             heuristicDebt = [int]$heuristicScore
             heuristicFindingCount = [int]@($heuristicFindings).Count
+            cleanupCandidateCount = [int]@($cleanupCandidates).Count
             featureDependency = [int]$dependencyScore
             compileGate = [int]$compileScore
             automationRisk = [int]$automationScore
@@ -364,8 +700,20 @@ function Invoke-TechDebtReviewHarness {
         totalScopeCount = [int]$snapshot.totalScopeCount
         reviewItems = @($reviewItems)
         refactorTargets = @($refactorTargets)
+        cleanupCandidates = @($cleanupCandidates)
         recommendedBatches = @($recommendedBatches)
-        actionItems = @($actionItems)
+        actionItems = @(
+            @($actionItems) +
+            @($cleanupCandidates | Where-Object { -not [bool]$_.autoApply } | ForEach-Object {
+                [pscustomobject]@{
+                    kind = 'manual-cleanup-review'
+                    severity = 'medium'
+                    summary = "Review cleanup move candidate: $([string]$_.path)"
+                    details = [string]$_.reason
+                    relatedPaths = @($_.targetFiles)
+                }
+            })
+        )
     }
 
     $reportPath = Join-Path $OutputDir 'report.json'

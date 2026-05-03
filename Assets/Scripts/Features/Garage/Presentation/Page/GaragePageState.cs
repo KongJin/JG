@@ -1,5 +1,5 @@
 using Features.Garage.Domain;
-using Features.Unit.Infrastructure;
+using Features.Unit.Domain;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
@@ -159,7 +159,25 @@ namespace Features.Garage.Presentation
             return slot.IsComplete &&
                    slot.frameId == draft.frameId &&
                    slot.firepowerModuleId == draft.firepowerModuleId &&
-                   slot.mobilityModuleId == draft.mobilityModuleId;
+                slot.mobilityModuleId == draft.mobilityModuleId;
+        }
+
+        public GarageRoster BuildSelectedSlotCommitRoster()
+        {
+            var commitRoster = CommittedRoster.Clone();
+            commitRoster.SetSlot(SelectedSlotIndex, GetSelectedDraftSlot());
+            return commitRoster;
+        }
+
+        public void CommitSelectedSlotDraft()
+        {
+            var selectedDraft = GetSelectedDraftSlot();
+            CommittedRoster = CommittedRoster.Clone();
+            CommittedRoster.SetSlot(SelectedSlotIndex, selectedDraft);
+            CommittedRoster.Normalize();
+            DraftRoster = CommittedRoster.Clone();
+            DraftRoster.Normalize();
+            ValidationOverride = null;
         }
 
         public int DraftUnitCount => DraftRoster.Count;

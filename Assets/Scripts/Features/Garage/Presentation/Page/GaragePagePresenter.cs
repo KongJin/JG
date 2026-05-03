@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Features.Unit.Infrastructure;
+using Features.Unit.Domain;
 using Shared.Gameplay;
 
 namespace Features.Garage.Presentation
@@ -223,6 +223,9 @@ namespace Features.Garage.Presentation
                     ? "저장본이 최신입니다. 룸 패널에서 바로 준비할 수 있습니다."
                     : "최소 3기 이상 저장하면 준비 가능합니다.";
             }
+
+            if (!evaluation.HasSelectedDraftChanges)
+                return "선택 슬롯의 변경사항이 없습니다.";
 
             if (!evaluation.HasCompleteDraft)
                 return "세 파츠를 모두 선택";

@@ -195,7 +195,7 @@ namespace Features.Garage.Presentation
                 return;
 
             var result = await _saveFlow.SaveAsync(
-                _state.DraftRoster,
+                _state.BuildSelectedSlotCommitRoster(),
                 EvaluateDraft(),
                 _saveRoster,
                 _ => Render(),
@@ -204,7 +204,7 @@ namespace Features.Garage.Presentation
             switch (result.Kind)
             {
                 case GarageSaveFlowResultKind.Saved:
-                    _state.CommitDraft();
+                    _state.CommitSelectedSlotDraft();
                     break;
                 case GarageSaveFlowResultKind.Blocked:
                 case GarageSaveFlowResultKind.Failed:
@@ -242,7 +242,10 @@ namespace Features.Garage.Presentation
                 _state.SelectedSlotIndex,
                 _focusedPart,
                 _partSearchText,
-                _isSettingsOpen);
+                _isSettingsOpen,
+                evaluation.HasDraftChanges,
+                resultViewModel.CanSave,
+                resultViewModel.ValidationText);
             Rendered?.Invoke(_lastSnapshot);
             PublishDraftState();
         }

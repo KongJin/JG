@@ -86,6 +86,8 @@ namespace ProjectSD.LayerValidation
                 return "Bootstrap";
             if (Contains(path, "/Infrastructure/"))
                 return "Infrastructure";
+            if (Contains(path, "/Presentation/"))
+                return "Presentation";
             if (Contains(path, "/Application/"))
                 return "Application";
             if (Contains(path, "/Domain/"))
@@ -93,7 +95,7 @@ namespace ProjectSD.LayerValidation
             return null;
         }
 
-        private static string Check(string ns, string layer)
+        private static string Check(string ns, string layer, string relativePath)
         {
             switch (layer)
             {
@@ -132,6 +134,23 @@ namespace ProjectSD.LayerValidation
                         return "Infrastructure → Bootstrap 참조 금지";
                     break;
 
+                case "Presentation":
+                    if (relativePath != null && relativePath.IndexOf("/Presentation/Diagnostics/", StringComparison.OrdinalIgnoreCase) >= 0)
+                        break;
+                    if (ns.StartsWith("Photon", StringComparison.Ordinal))
+                        return "Presentation → Photon 금지";
+                    if (ns.StartsWith("Firebase", StringComparison.Ordinal))
+                        return "Presentation → Firebase 금지";
+                    if (ns.StartsWith("System.IO", StringComparison.Ordinal))
+                        return "Presentation → System.IO 금지";
+                    if (ns.StartsWith("UnityEditor", StringComparison.Ordinal))
+                        return "Presentation → UnityEditor 금지";
+                    if (CheckForbiddenLayer(ns, "Infrastructure"))
+                        return "Presentation → Infrastructure 참조 금지";
+                    if (CheckForbiddenLayer(ns, "Bootstrap"))
+                        return "Presentation → Bootstrap 참조 금지";
+                    break;
+
                 case "Shared":
                     if (ns.StartsWith("Features.", StringComparison.Ordinal))
                         return "Shared → Features 참조 금지";
@@ -168,7 +187,7 @@ namespace ProjectSD.LayerValidation
                     continue;
 
                 var ns = match.Groups[1].Value;
-                var violation = Check(ns, layer);
+                var violation = Check(ns, layer, relativePath);
                 if (violation == null)
                     continue;
 

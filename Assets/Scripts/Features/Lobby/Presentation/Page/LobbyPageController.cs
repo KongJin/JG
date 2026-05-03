@@ -89,7 +89,6 @@ namespace Features.Lobby.Presentation
             var viewModel = _presenter.BuildRoomDetail(e.Room, _localMemberId);
             _localIsReady = viewModel.LocalIsReady;
             _uitk?.RenderRoomDetail(viewModel);
-            _uitk?.ShowLobbyPage();
         }
 
         public void OpenGaragePage()

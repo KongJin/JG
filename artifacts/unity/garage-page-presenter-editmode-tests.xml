@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="15" result="Passed" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.0581956">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="176" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.058196" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1214" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="176" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.051052" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="19932" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1217" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="167" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.049916" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1218" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="167" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.048947" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1035" name="GaragePagePresenterDirectTests" fullname="Tests.Editor.GaragePagePresenterDirectTests" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" testcasecount="15" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.047688" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1044" name="CommitDraft_RestoresReadyState" fullname="Tests.Editor.GaragePagePresenterDirectTests.CommitDraft_RestoresReadyState" methodname="CommitDraft_RestoresReadyState" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="1162721540" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.011889" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1037" name="DraftChanges_BlockReady_AndSwitchPrimaryActionToSave" fullname="Tests.Editor.GaragePagePresenterDirectTests.DraftChanges_BlockReady_AndSwitchPrimaryActionToSave" methodname="DraftChanges_BlockReady_AndSwitchPrimaryActionToSave" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="399847173" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.002494" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1043" name="InitializeGarage_MigratesLocalRosterBeforeSyncAndPersistence" fullname="Tests.Editor.GaragePagePresenterDirectTests.InitializeGarage_MigratesLocalRosterBeforeSyncAndPersistence" methodname="InitializeGarage_MigratesLocalRosterBeforeSyncAndPersistence" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="779544139" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.003935" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1040" name="MigratedLegacySavedRoster_AllowsSavingNewNovaSelectedSlot" fullname="Tests.Editor.GaragePagePresenterDirectTests.MigratedLegacySavedRoster_AllowsSavingNewNovaSelectedSlot" methodname="MigratedLegacySavedRoster_AllowsSavingNewNovaSelectedSlot" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="931731632" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.005540" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1047" name="OperationRecordServiceTagMapper_MapsPrimaryRosterUnitsToLoadoutTags" fullname="Tests.Editor.GaragePagePresenterDirectTests.OperationRecordServiceTagMapper_MapsPrimaryRosterUnitsToLoadoutTags" methodname="OperationRecordServiceTagMapper_MapsPrimaryRosterUnitsToLoadoutTags" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="265447486" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.004627" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1036" name="ReadyUnlocked_WhenCommittedRosterIsValidAndDraftIsClean" fullname="Tests.Editor.GaragePagePresenterDirectTests.ReadyUnlocked_WhenCommittedRosterIsValidAndDraftIsClean" methodname="ReadyUnlocked_WhenCommittedRosterIsValidAndDraftIsClean" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="1599382552" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.000211" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1050" name="ResultViewModel_FallsBackWhenNoOperationRecordExists" fullname="Tests.Editor.GaragePagePresenterDirectTests.ResultViewModel_FallsBackWhenNoOperationRecordExists" methodname="ResultViewModel_FallsBackWhenNoOperationRecordExists" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="1352378266" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.000219" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1049" name="ResultViewModel_ShowsLatestOperationSummaryWhenNoDraftStats" fullname="Tests.Editor.GaragePagePresenterDirectTests.ResultViewModel_ShowsLatestOperationSummaryWhenNoDraftStats" methodname="ResultViewModel_ShowsLatestOperationSummaryWhenNoDraftStats" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="582418562" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.000585" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1042" name="RosterMigrator_MapsKnownLegacyRosterIdsToNovaIds" fullname="Tests.Editor.GaragePagePresenterDirectTests.RosterMigrator_MapsKnownLegacyRosterIdsToNovaIds" methodname="RosterMigrator_MapsKnownLegacyRosterIdsToNovaIds" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="436576875" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.000361" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1039" name="SelectedCompleteDraft_CanSaveWhenAnotherSlotHasIncompleteDraft" fullname="Tests.Editor.GaragePagePresenterDirectTests.SelectedCompleteDraft_CanSaveWhenAnotherSlotHasIncompleteDraft" methodname="SelectedCompleteDraft_CanSaveWhenAnotherSlotHasIncompleteDraft" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="853423681" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.000364" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1038" name="SingleCompleteDraft_CanSaveWithoutUnlockingReady" fullname="Tests.Editor.GaragePagePresenterDirectTests.SingleCompleteDraft_CanSaveWithoutUnlockingReady" methodname="SingleCompleteDraft_CanSaveWithoutUnlockingReady" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="128893836" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.000368" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1048" name="SlotViewModel_UsesAssemblyPrefabsForCompletePreviewWhenAvailable" fullname="Tests.Editor.GaragePagePresenterDirectTests.SlotViewModel_UsesAssemblyPrefabsForCompletePreviewWhenAvailable" methodname="SlotViewModel_UsesAssemblyPrefabsForCompletePreviewWhenAvailable" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="868798148" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.000705" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1045" name="SlotViewModel_UsesDeterministicCallsignAndIdentityCopy" fullname="Tests.Editor.GaragePagePresenterDirectTests.SlotViewModel_UsesDeterministicCallsignAndIdentityCopy" methodname="SlotViewModel_UsesDeterministicCallsignAndIdentityCopy" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="2016430120" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.000627" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1046" name="SlotViewModel_UsesServiceTagByLoadoutKeyWhenProvided" fullname="Tests.Editor.GaragePagePresenterDirectTests.SlotViewModel_UsesServiceTagByLoadoutKeyWhenProvided" methodname="SlotViewModel_UsesServiceTagByLoadoutKeyWhenProvided" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="894583166" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.000390" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1041" name="UnknownSavedRosterId_RemainsBlockedAndShowsValidationReason" fullname="Tests.Editor.GaragePagePresenterDirectTests.UnknownSavedRosterId_RemainsBlockedAndShowsValidationReason" methodname="UnknownSavedRosterId_RemainsBlockedAndShowsValidationReason" classname="Tests.Editor.GaragePagePresenterDirectTests" runstate="Runnable" seed="1868748568" result="Passed" start-time="2026-05-02 11:56:44Z" end-time="2026-05-02 11:56:44Z" duration="0.000476" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-page-presenter-editmode-tests.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -356,6 +356,118 @@ test("reports Unity meta artifacts under docs", async () => {
   assert.ok(result.errors.some((error) => error.code === "docs-meta-artifact"));
 });
 
+test("reports stale repo paths in rules artifact markdown inventories", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-rules-artifact-stale-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "artifacts/rules/inventory.md",
+      "# Inventory\n\nStale owner: `docs/ops/missing_owner.md`\n",
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(
+      result.errors.some((error) => error.code === "stale-rules-artifact-reference"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("accepts existing repo paths and glob examples in rules artifact markdown inventories", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-rules-artifact-valid-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/ops/current_owner.md",
+      `# Current Owner
+
+> 마지막 업데이트: 2026-05-01
+> 상태: active
+> doc_id: ops.current-owner
+> role: ssot
+> owner_scope: fixture owner
+> upstream: docs.index
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "artifacts/rules/inventory.md",
+      "# Inventory\n\nCurrent owner: `docs/ops/current_owner.md`; example glob: `docs/plans/*.md`\n",
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(
+      !result.errors.some((error) => error.code === "stale-rules-artifact-reference"),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
 test("reports owner-only policy body headings in entry documents", async () => {
   const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-entry-policy-"));
   try {

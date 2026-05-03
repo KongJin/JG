@@ -1,7 +1,8 @@
 param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path,
     [int]$LargeFileLineThreshold = 320,
-    [int]$MaxItemsPerSection = 30
+    [int]$MaxItemsPerSection = 30,
+    [switch]$AsJson
 )
 
 Set-StrictMode -Version Latest
@@ -32,6 +33,33 @@ function Get-ClassNames {
     )
 }
 
+function Get-CodeReferenceCount {
+    param(
+        [Parameter(Mandatory)][string]$Root,
+        [Parameter(Mandatory)][string]$Token
+    )
+
+    $assetsScripts = Join-Path $Root "Assets\Scripts"
+    if (-not (Test-Path -LiteralPath $assetsScripts)) {
+        return 0
+    }
+
+    $rg = Get-Command rg -ErrorAction SilentlyContinue
+    if ($null -ne $rg) {
+        return @(& $rg.Source --fixed-strings --glob "*.cs" $Token $assetsScripts 2>$null).Count
+    }
+
+    $count = 0
+    foreach ($file in @(Get-ChildItem -LiteralPath $assetsScripts -Recurse -File -Filter "*.cs" -ErrorAction SilentlyContinue)) {
+        $matches = @(Select-String -LiteralPath $file.FullName -SimpleMatch -Pattern $Token -AllMatches -ErrorAction SilentlyContinue)
+        foreach ($match in $matches) {
+            $count += @($match.Matches).Count
+        }
+    }
+
+    $count
+}
+
 $csFiles = @(Get-CsFiles -Root $RepoRoot)
 $largeFiles = New-Object System.Collections.Generic.List[object]
 $helperTypes = New-Object System.Collections.Generic.List[object]
@@ -51,12 +79,12 @@ foreach ($file in $csFiles) {
     $text = ($lines -join "`n")
     foreach ($className in @(Get-ClassNames -Text $text)) {
         if ($className -match "(Helper|Applier|Writer|Controller|Evaluator|Resolver|Factory)$") {
-            $matches = @(& rg --fixed-strings --glob "*.cs" $className (Join-Path $RepoRoot "Assets\Scripts") 2>$null)
+            $referenceCount = Get-CodeReferenceCount -Root $RepoRoot -Token $className
             $helperTypes.Add([PSCustomObject]@{
                 Type = $className
                 File = $relativePath
-                ReferenceLines = $matches.Count
-                OneUseCandidate = ($matches.Count -le 3)
+                ReferenceLines = $referenceCount
+                OneUseCandidate = ($referenceCount -le 3)
             })
         }
     }
@@ -81,6 +109,21 @@ foreach ($file in $csFiles) {
             Signal = "feature-root runtime visual code"
         })
     }
+}
+
+$result = [PSCustomObject]@{
+    generatedAtUtc = [DateTimeOffset]::UtcNow.ToString("o")
+    repoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
+    largeFileLineThreshold = $LargeFileLineThreshold
+    largeFiles = @($largeFiles.ToArray())
+    helperTypes = @($helperTypes.ToArray())
+    nestedTernary = @($nestedTernary.ToArray())
+    rootRuntimeVisualHelpers = @($rootRuntimeVisualHelpers.ToArray())
+}
+
+if ($AsJson) {
+    $result | ConvertTo-Json -Depth 20
+    return
 }
 
 Write-WorkflowSection "Large C# Files"
