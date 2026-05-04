@@ -12,7 +12,7 @@
   "verification": "dotnet build Assembly-CSharp.csproj --no-restore -v:minimal; dotnet build Assembly-CSharp-Editor.csproj --no-restore -v:minimal; npm run --silent feature:presentation:lint; npm run --silent rules:lint",
   "blockedReason": "",
   "changedPaths": [
-    "Assets/Scripts/Features/Garage/Presentation/Page/GaragePagePresenter.cs",
+    "Assets/Scripts/Features/Garage/Presentation/Page/GaragePageViewModelBuilders.cs",
     "Assets/Scripts/Features/Garage/Presentation/Preview/GarageSetBUitkPreviewRenderer.cs",
     "Assets/Scripts/Features/Garage/Presentation/Preview/GarageUnitPreviewAssembly.cs",
     "Assets/Scripts/Features/Garage/Presentation/ViewModels/GaragePanelCatalog.cs",

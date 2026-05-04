@@ -19,7 +19,7 @@ namespace Features.Garage.Presentation
         public bool Validate(
             GarageSetBUitkRuntimeAdapter adapter,
             GaragePageState state,
-            GaragePagePresenter presenter,
+            GarageSetBUitkPageRenderContextFactory renderContextFactory,
             GaragePanelCatalog catalog,
             ComposeUnitUseCase composeUnit,
             ValidateRosterUseCase validateRoster,
@@ -40,9 +40,9 @@ namespace Features.Garage.Presentation
                 return false;
             }
 
-            if (presenter == null)
+            if (renderContextFactory == null)
             {
-                MissingDependency = nameof(GaragePagePresenter);
+                MissingDependency = nameof(GarageSetBUitkPageRenderContextFactory);
                 return false;
             }
 

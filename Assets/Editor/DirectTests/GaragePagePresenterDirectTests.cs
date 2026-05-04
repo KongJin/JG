@@ -21,10 +21,10 @@ namespace Tests.Editor
         public void ReadyUnlocked_WhenCommittedRosterIsValidAndDraftIsClean()
         {
             var state = CreateInitializedState(3);
-            var presenter = new GaragePagePresenter(null);
+            var builders = new GaragePageViewModelBuilders(null);
             var evaluation = CreateEvaluation(state, resultSuccess: true);
 
-            var viewModel = presenter.BuildResultViewModel(state, evaluation);
+            var viewModel = builders.BuildResultViewModel(state, evaluation);
 
             Assert.IsTrue(viewModel.IsReady);
             Assert.IsFalse(viewModel.IsDirty);
@@ -38,10 +38,10 @@ namespace Tests.Editor
             var state = CreateInitializedState(3);
             state.SetEditingFrameId("frame-updated");
 
-            var presenter = new GaragePagePresenter(null);
+            var builders = new GaragePageViewModelBuilders(null);
             var evaluation = CreateEvaluation(state, resultSuccess: true);
 
-            var viewModel = presenter.BuildResultViewModel(state, evaluation);
+            var viewModel = builders.BuildResultViewModel(state, evaluation);
 
             Assert.IsFalse(viewModel.IsReady);
             Assert.IsTrue(viewModel.IsDirty);
@@ -64,9 +64,9 @@ namespace Tests.Editor
                 catalog,
                 new ComposeUnitUseCase(new ValidUnitCompositionPort()),
                 new ValidateRosterUseCase(new AlwaysValidRosterValidationProvider()));
-            var presenter = new GaragePagePresenter(catalog);
+            var builders = new GaragePageViewModelBuilders(catalog);
 
-            var viewModel = presenter.BuildResultViewModel(state, evaluation);
+            var viewModel = builders.BuildResultViewModel(state, evaluation);
 
             Assert.IsTrue(evaluation.HasDraftChanges);
             Assert.IsTrue(evaluation.HasCompleteDraft);
@@ -93,9 +93,9 @@ namespace Tests.Editor
                 catalog,
                 new ComposeUnitUseCase(new ValidUnitCompositionPort()),
                 new ValidateRosterUseCase(new AlwaysValidRosterValidationProvider()));
-            var presenter = new GaragePagePresenter(catalog);
+            var builders = new GaragePageViewModelBuilders(catalog);
 
-            var viewModel = presenter.BuildResultViewModel(state, evaluation);
+            var viewModel = builders.BuildResultViewModel(state, evaluation);
 
             Assert.IsTrue(state.GetSelectedDraftSlot().IsComplete);
             Assert.IsTrue(evaluation.CanSave);
@@ -120,7 +120,7 @@ namespace Tests.Editor
                 catalog,
                 new ComposeUnitUseCase(new ValidUnitCompositionPort()),
                 new ValidateRosterUseCase(new KnownNovaRosterValidationProvider()));
-            var viewModel = new GaragePagePresenter(catalog).BuildResultViewModel(state, evaluation);
+            var viewModel = new GaragePageViewModelBuilders(catalog).BuildResultViewModel(state, evaluation);
 
             Assert.IsTrue(evaluation.CanSave);
             Assert.IsTrue(viewModel.CanSave);
@@ -148,7 +148,7 @@ namespace Tests.Editor
                 catalog,
                 new ComposeUnitUseCase(new ValidUnitCompositionPort()),
                 new ValidateRosterUseCase(new KnownNovaRosterValidationProvider()));
-            var viewModel = new GaragePagePresenter(catalog).BuildResultViewModel(state, evaluation);
+            var viewModel = new GaragePageViewModelBuilders(catalog).BuildResultViewModel(state, evaluation);
 
             Assert.IsFalse(evaluation.CanSave);
             Assert.IsFalse(viewModel.CanSave);
@@ -208,10 +208,10 @@ namespace Tests.Editor
             state.SetEditingFrameId("frame-updated");
             state.CommitDraft();
 
-            var presenter = new GaragePagePresenter(null);
+            var builders = new GaragePageViewModelBuilders(null);
             var evaluation = CreateEvaluation(state, resultSuccess: true);
 
-            var viewModel = presenter.BuildResultViewModel(state, evaluation);
+            var viewModel = builders.BuildResultViewModel(state, evaluation);
 
             Assert.IsTrue(viewModel.IsReady);
             Assert.IsFalse(viewModel.IsDirty);
@@ -223,9 +223,9 @@ namespace Tests.Editor
         public void SlotViewModel_UsesDeterministicCallsignAndIdentityCopy()
         {
             var state = CreateInitializedState(3);
-            var presenter = new GaragePagePresenter(CreateCatalog());
+            var builders = new GaragePageViewModelBuilders(CreateCatalog());
 
-            var viewModels = presenter.BuildSlotViewModels(state);
+            var viewModels = builders.BuildSlotViewModels(state);
 
             Assert.AreEqual("A-01", viewModels[0].SlotLabel);
             Assert.AreEqual("A-01 가디언", viewModels[0].Title);
@@ -239,13 +239,13 @@ namespace Tests.Editor
         public void SlotViewModel_UsesServiceTagByLoadoutKeyWhenProvided()
         {
             var state = CreateInitializedState(3);
-            var presenter = new GaragePagePresenter(CreateCatalog());
+            var builders = new GaragePageViewModelBuilders(CreateCatalog());
             var serviceTags = new Dictionary<string, GarageUnitServiceTag>
             {
                 ["frame0|fire0|mob0"] = GarageUnitServiceTag.CoreNearBlocks(31),
             };
 
-            var viewModels = presenter.BuildSlotViewModels(state, serviceTags);
+            var viewModels = builders.BuildSlotViewModels(state, serviceTags);
 
             Assert.AreEqual("코어 근접 차단 31회", viewModels[0].ServiceTagText);
         }
@@ -254,11 +254,11 @@ namespace Tests.Editor
         public void OperationRecordServiceTagMapper_MapsPrimaryRosterUnitsToLoadoutTags()
         {
             var state = CreateInitializedState(3);
-            var presenter = new GaragePagePresenter(CreateCatalog());
+            var builders = new GaragePageViewModelBuilders(CreateCatalog());
             var records = CreateRecentOperations("frame0|fire0|mob0");
             var serviceTags = GarageOperationRecordServiceTagMapper.BuildByLoadoutKey(records);
 
-            var viewModels = presenter.BuildSlotViewModels(state, serviceTags);
+            var viewModels = builders.BuildSlotViewModels(state, serviceTags);
 
             Assert.AreEqual("최근 주요 기여 기체", viewModels[0].ServiceTagText);
             Assert.AreEqual("전적 기록 대기중", viewModels[1].ServiceTagText);
@@ -308,9 +308,9 @@ namespace Tests.Editor
                             AssemblyPrefab = mobilityAssembly
                         },
                     });
-                var presenter = new GaragePagePresenter(catalog);
+                var builders = new GaragePageViewModelBuilders(catalog);
 
-                var viewModels = presenter.BuildSlotViewModels(state);
+                var viewModels = builders.BuildSlotViewModels(state);
 
                 Assert.AreSame(frameAssembly, viewModels[0].FramePreviewPrefab);
                 Assert.AreSame(firepowerAssembly, viewModels[0].FirepowerPreviewPrefab);
@@ -331,12 +331,12 @@ namespace Tests.Editor
         public void ResultViewModel_ShowsLatestOperationSummaryWhenNoDraftStats()
         {
             var state = CreateInitializedState(0);
-            var presenter = new GaragePagePresenter(null);
+            var builders = new GaragePageViewModelBuilders(null);
             var evaluation = CreateEvaluation(state, resultSuccess: true);
             var records = CreateRecentOperations();
             var operationSummary = GarageOperationRecordSummaryFormatter.BuildSummary(records);
 
-            var viewModel = presenter.BuildResultViewModel(state, evaluation, operationSummary);
+            var viewModel = builders.BuildResultViewModel(state, evaluation, operationSummary);
 
             StringAssert.Contains("작전 1/5: 버텨냄", viewModel.StatsText);
             StringAssert.Contains("공세3", viewModel.StatsText);
@@ -347,10 +347,10 @@ namespace Tests.Editor
         public void ResultViewModel_FallsBackWhenNoOperationRecordExists()
         {
             var state = CreateInitializedState(0);
-            var presenter = new GaragePagePresenter(null);
+            var builders = new GaragePageViewModelBuilders(null);
             var evaluation = CreateEvaluation(state, resultSuccess: true);
 
-            var viewModel = presenter.BuildResultViewModel(state, evaluation);
+            var viewModel = builders.BuildResultViewModel(state, evaluation);
 
             Assert.AreEqual("최근 작전 기록 없음", viewModel.StatsText);
         }

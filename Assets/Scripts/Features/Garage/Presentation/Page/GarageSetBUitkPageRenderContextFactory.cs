@@ -11,18 +11,17 @@ namespace Features.Garage.Presentation
     /// </summary>
     internal sealed class GarageSetBUitkPageRenderContextFactory
     {
-        private readonly GaragePagePresenter _presenter;
+        private readonly GaragePageViewModelBuilders _viewModelBuilders;
         private readonly GaragePanelCatalog _catalog;
         private readonly ComposeUnitUseCase _composeUnit;
         private readonly ValidateRosterUseCase _validateRoster;
 
         public GarageSetBUitkPageRenderContextFactory(
-            GaragePagePresenter presenter,
             GaragePanelCatalog catalog,
             ComposeUnitUseCase composeUnit,
             ValidateRosterUseCase validateRoster)
         {
-            _presenter = presenter;
+            _viewModelBuilders = new GaragePageViewModelBuilders(catalog);
             _catalog = catalog;
             _composeUnit = composeUnit;
             _validateRoster = validateRoster;
@@ -46,13 +45,13 @@ namespace Features.Garage.Presentation
             var evaluation = EvaluateDraft(state);
             var operationSummary = GarageOperationRecordSummaryFormatter.BuildSummary(recentOperations);
             var serviceTags = GarageOperationRecordServiceTagMapper.BuildByLoadoutKey(recentOperations);
-            IReadOnlyList<GarageSlotViewModel> slotViewModels = _presenter.BuildSlotViewModels(state, serviceTags);
+            IReadOnlyList<GarageSlotViewModel> slotViewModels = _viewModelBuilders.BuildSlotViewModels(state, serviceTags);
             var partListViewModel = BuildPartListViewModel(
                 state,
-                GarageNovaPartsPanelViewModelFactory.ToPanelSlot(focusedPart),
+                GarageEditorFocusMapping.ToPanelSlot(focusedPart),
                 partSearchText);
-            var editorViewModel = _presenter.BuildEditorViewModel(state);
-            var resultViewModel = _presenter.BuildResultViewModel(state, evaluation, operationSummary);
+            var editorViewModel = _viewModelBuilders.BuildEditorViewModel(state);
+            var resultViewModel = _viewModelBuilders.BuildResultViewModel(state, evaluation, operationSummary);
 
             if (isLoading)
             {

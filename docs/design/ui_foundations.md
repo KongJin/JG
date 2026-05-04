@@ -337,7 +337,7 @@ Figma에서 Unity로 옮길 때 아래 규칙을 따른다.
 
 - `GarageSetBUitkPageController`: state orchestration, save/selection command routing
 - `GarageSetBUitkRuntimeAdapter`: UIDocument/host binding, named UI Toolkit element rendering, UI events, and preview texture bridge
-- `GaragePagePresenter` / `GaragePageState`: presentation view model and draft state
+- `GaragePageViewModelBuilders` / `GaragePageState`: presentation view model assembly and draft state
 - `LobbyPageController`: lobby event subscription, UseCase command routing, and Presenter-driven page rendering orchestration
 - `LobbyPagePresenter` / `LobbyPageViewModels`: room/account/operation domain and application state formatting for Lobby UI
 - `LobbyUitkRuntimeAdapter`: Lobby UIDocument/UXML binding, view model rendering, navigation events, page router registration, and Garage host bridge

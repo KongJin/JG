@@ -18,7 +18,7 @@
 
 ### 1. Feature Envy / Anemic Presenter
 
-**위치**: `GaragePagePresenter.cs`
+**위치**: `GaragePageViewModelBuilders.cs`
 
 ```csharp
 // 문제: Domain 로직이 Presenter에 포함됨
@@ -480,7 +480,7 @@ public sealed class SkillSpec : Shared.Kernel.ValueObject
 | Anemic Domain Model | HIGH | `Unit.cs`, `StatusEffect.cs` |
 | Primitive Obsession | MEDIUM | 전반적 |
 | Data Clumps / God Object | HIGH | `GarageSlotViewModel.cs`, `PartAlignment.cs` |
-| Feature Envy | MEDIUM | `GaragePagePresenter.cs`, `StatusContainer.cs` |
+| Feature Envy | MEDIUM | `GaragePageViewModelBuilders.cs`, `StatusContainer.cs` |
 | Mutable Value Objects | HIGH | `StatusEffect.cs` |
 | Lack of Invariants | HIGH | `Unit.cs`, `GarageRoster.cs` |
 | Large Constructor | MEDIUM | `GarageSlotViewModel.cs` |

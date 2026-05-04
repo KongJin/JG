@@ -10,7 +10,7 @@ sequenceDiagram
     participant Surface as Presentation.Surface<br/>(GarageSetBSlotSurface)
     participant Adapter as Presentation.Adapter<br/>(GarageSetBUitkRuntimeAdapter)
     participant Controller as Presentation.Controller<br/>(GarageSetBUitkPageController)
-    participant Presenter as Presentation.Presenter<br/>(GaragePagePresenter)
+    participant Presenter as Presentation.ViewModelBuilders<br/>(GaragePageViewModelBuilders)
     participant UseCase as Application.UseCase<br/>(InitializeGarageUseCase,<br/>SaveRosterUseCase)
     participant Port as Application.Port<br/>(IGaragePersistencePort,<br/>IGarageNetworkPort)
     participant Domain as Domain<br/>(GarageRoster,<br/>UnitLoadout)

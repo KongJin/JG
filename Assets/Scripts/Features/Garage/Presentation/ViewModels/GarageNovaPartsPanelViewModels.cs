@@ -158,7 +158,7 @@ namespace Features.Garage.Presentation
             GarageEditorFocus currentFocus,
             string searchText)
         {
-            return Build(catalog, draftSelection, ToPanelSlot(currentFocus), searchText);
+            return Build(catalog, draftSelection, GarageEditorFocusMapping.ToPanelSlot(currentFocus), searchText);
         }
 
         public static GarageNovaPartsPanelViewModel Build(
@@ -201,24 +201,10 @@ namespace Features.Garage.Presentation
         }
 
         public static GarageNovaPartPanelSlot ToPanelSlot(GarageEditorFocus focus)
-        {
-            return focus switch
-            {
-                GarageEditorFocus.Firepower => GarageNovaPartPanelSlot.Firepower,
-                GarageEditorFocus.Mobility => GarageNovaPartPanelSlot.Mobility,
-                _ => GarageNovaPartPanelSlot.Frame,
-            };
-        }
+            => GarageEditorFocusMapping.ToPanelSlot(focus);
 
         public static GarageEditorFocus ToEditorFocus(GarageNovaPartPanelSlot slot)
-        {
-            return slot switch
-            {
-                GarageNovaPartPanelSlot.Firepower => GarageEditorFocus.Firepower,
-                GarageNovaPartPanelSlot.Mobility => GarageEditorFocus.Mobility,
-                _ => GarageEditorFocus.Frame,
-            };
-        }
+            => GarageEditorFocusMapping.ToEditorFocus(slot);
 
         private static string GetSelectedId(GarageNovaPartsDraftSelection draftSelection, GarageNovaPartPanelSlot slot)
         {

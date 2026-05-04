@@ -9,7 +9,7 @@ namespace Tests.Editor
         private static readonly Type GarageRosterType = Type.GetType("Features.Garage.Domain.GarageRoster, Assembly-CSharp");
         private static readonly Type UnitLoadoutType = Type.GetType("Features.Garage.Domain.GarageRoster+UnitLoadout, Assembly-CSharp");
         private static readonly Type GaragePageStateType = Type.GetType("Features.Garage.Presentation.GaragePageState, Assembly-CSharp");
-        private static readonly Type GaragePagePresenterType = Type.GetType("Features.Garage.Presentation.GaragePagePresenter, Assembly-CSharp");
+        private static readonly Type GaragePageViewModelBuildersType = Type.GetType("Features.Garage.Presentation.GaragePageViewModelBuilders, Assembly-CSharp");
         private static readonly Type GarageDraftEvaluationType = Type.GetType("Features.Garage.Presentation.GarageDraftEvaluation, Assembly-CSharp");
         private static readonly Type ValidateRosterUseCaseType = Type.GetType("Features.Garage.Application.ValidateRosterUseCase, Assembly-CSharp");
         private static readonly Type UnitType = Type.GetType("Features.Unit.Domain.Unit, Assembly-CSharp");
@@ -22,7 +22,7 @@ namespace Tests.Editor
             Assert.NotNull(GarageRosterType);
             Assert.NotNull(UnitLoadoutType);
             Assert.NotNull(GaragePageStateType);
-            Assert.NotNull(GaragePagePresenterType);
+            Assert.NotNull(GaragePageViewModelBuildersType);
             Assert.NotNull(GarageDraftEvaluationType);
             Assert.NotNull(ValidateRosterUseCaseType);
             Assert.NotNull(ResultType);
@@ -32,7 +32,7 @@ namespace Tests.Editor
         [Test]
         public void GarageWorkflow_PublicMethods_AreAvailable()
         {
-            Assert.NotNull(GaragePagePresenterType.GetMethod(
+            Assert.NotNull(GaragePageViewModelBuildersType.GetMethod(
                 "BuildResultViewModel",
                 BindingFlags.Instance | BindingFlags.Public,
                 null,

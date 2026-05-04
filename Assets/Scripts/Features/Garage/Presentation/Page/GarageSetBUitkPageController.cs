@@ -26,7 +26,6 @@ namespace Features.Garage.Presentation
         private GaragePanelCatalog _catalog;
         private RecentOperationRecords _recentOperations;
         private GaragePageState _state;
-        private GaragePagePresenter _presenter;
         private GarageSetBUitkPageRenderContextFactory _renderContextFactory;
         private readonly PublishGarageDraftStateUseCase _draftStatePublisher = new();
         private readonly GarageSaveFlow _saveFlow = new();
@@ -90,9 +89,7 @@ namespace Features.Garage.Presentation
             _eventPublisher = eventPublisher;
             _catalog = catalog;
             _recentOperations = recentOperations;
-            _presenter = new GaragePagePresenter(_catalog);
             _renderContextFactory = new GarageSetBUitkPageRenderContextFactory(
-                _presenter,
                 _catalog,
                 _composeUnit,
                 _validateRoster);
@@ -171,7 +168,7 @@ namespace Features.Garage.Presentation
             if (!CanRender())
                 return false;
 
-            _focusedPart = GarageNovaPartsPanelViewModelFactory.ToEditorFocus(slot);
+            _focusedPart = GarageEditorFocusMapping.ToEditorFocus(slot);
             var viewModel = _renderContextFactory.BuildPartListViewModel(_state, slot, _partSearchText);
             if (viewModel.Options == null || viewModel.Options.Count == 0)
             {
@@ -237,7 +234,7 @@ namespace Features.Garage.Presentation
             if (!CanRender())
                 return;
 
-            _focusedPart = GarageNovaPartsPanelViewModelFactory.ToEditorFocus(selection.Slot);
+            _focusedPart = GarageEditorFocusMapping.ToEditorFocus(selection.Slot);
             switch (selection.Slot)
             {
                 case GarageNovaPartPanelSlot.Frame:
@@ -367,7 +364,7 @@ namespace Features.Garage.Presentation
             return _initGuard.Validate(
                 _adapter,
                 _state,
-                _presenter,
+                _renderContextFactory,
                 _catalog,
                 _composeUnit,
                 _validateRoster,

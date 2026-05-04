@@ -22,7 +22,7 @@ namespace Features.Garage.Presentation
         [SerializeField] private NovaPartAlignmentCatalog _novaPartAlignmentCatalog;
 
         private GaragePageState _state;
-        private GaragePagePresenter _presenter;
+        private GaragePageViewModelBuilders _viewModelBuilders;
         private GaragePanelCatalog _catalog;
         private Coroutine _renderCoroutine;
         private GarageEditorFocus _focusedPart = GarageEditorFocus.Mobility;
@@ -94,7 +94,7 @@ namespace Features.Garage.Presentation
                 _state.Initialize(roster);
             }
 
-            _presenter ??= new GaragePagePresenter(_catalog);
+            _viewModelBuilders ??= new GaragePageViewModelBuilders(_catalog);
             Render();
             return true;
         }
@@ -146,7 +146,7 @@ namespace Features.Garage.Presentation
             if (_state == null)
                 return;
 
-            _focusedPart = GarageNovaPartsPanelViewModelFactory.ToEditorFocus(selection.Slot);
+            _focusedPart = GarageEditorFocusMapping.ToEditorFocus(selection.Slot);
             switch (selection.Slot)
             {
                 case GarageNovaPartPanelSlot.Frame:
@@ -203,11 +203,11 @@ namespace Features.Garage.Presentation
 
         private void Render()
         {
-            if (_adapter == null || _state == null || _presenter == null || _catalog == null)
+            if (_adapter == null || _state == null || _viewModelBuilders == null || _catalog == null)
                 return;
 
             _adapter.Render(
-                _presenter.BuildSlotViewModels(_state),
+                _viewModelBuilders.BuildSlotViewModels(_state),
                 GarageNovaPartsPanelViewModelFactory.Build(
                     _catalog,
                     new GarageNovaPartsDraftSelection(
@@ -216,7 +216,7 @@ namespace Features.Garage.Presentation
                         _state.EditingMobilityId),
                     _focusedPart,
                     _partSearchText),
-                _presenter.BuildEditorViewModel(_state),
+                _viewModelBuilders.BuildEditorViewModel(_state),
                 new GarageResultViewModel(
                     "UITK PREVIEW: 실제 Garage catalog 샘플",
                     "Preview scene driver에서 실제 ModuleCatalog 조합을 선택할 수 있습니다.",
@@ -231,7 +231,7 @@ namespace Features.Garage.Presentation
 
         private void EnsurePreviewReady()
         {
-            if (_state == null || _presenter == null || _catalog == null)
+            if (_state == null || _viewModelBuilders == null || _catalog == null)
                 RenderPreviewLoadout();
         }
 

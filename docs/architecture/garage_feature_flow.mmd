@@ -15,7 +15,7 @@ flowchart TB
         InfraLoad -->|GarageRoster| PortLoad
         PortLoad -->|GarageRoster| UseCaseInit
         UseCaseInit -->|GarageRoster| InitState[GaragePageState.<br/>Initialize()]
-        InitState --> BuildVM1[GaragePagePresenter.<br/>BuildSlotViewModels()]
+        InitState --> BuildVM1[GaragePageViewModelBuilders.<br/>BuildSlotViewModels()]
         BuildVM1 --> RenderInit[Render()]
         RenderInit --> UIInit[UI 업데이트]
     end

@@ -2,13 +2,16 @@ using System.Collections.Generic;
 
 namespace Features.Garage.Presentation
 {
-    public sealed class GaragePagePresenter
+    /// <summary>
+    /// SetB 차고 페이지용 슬롯·에디터·결과 ViewModel 조립. 빌더 타입만 묶는 얇은 소유자.
+    /// </summary>
+    public sealed class GaragePageViewModelBuilders
     {
         private readonly GarageSlotViewModelBuilder _slotBuilder;
         private readonly GarageEditorViewModelBuilder _editorBuilder;
         private readonly GarageResultViewModelBuilder _resultBuilder;
 
-        public GaragePagePresenter(GaragePanelCatalog catalog)
+        public GaragePageViewModelBuilders(GaragePanelCatalog catalog)
         {
             _slotBuilder = new GarageSlotViewModelBuilder(catalog);
             _editorBuilder = new GarageEditorViewModelBuilder(catalog);
