@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using Features.Account.Application;
 using Features.Account.Domain;
 using Features.Garage.Presentation;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
 using Features.Lobby.Domain;
+using Features.Lobby.Application.Ports;
 using Features.Player.Application.Ports;
 using Features.Player.Domain;
 using Shared.EventBus;
@@ -48,7 +50,11 @@ namespace Features.Lobby.Presentation
         private DisposableScope _disposables = new();
         private DomainEntityId _currentRoomId;
         private DomainEntityId _localMemberId;
+        private DomainEntityId _selectedRoomId;
         private bool _localIsReady;
+        private bool _hasNetworkRoomList;
+        private IReadOnlyList<RoomSnapshot> _latestLobbyRooms = Array.Empty<RoomSnapshot>();
+        private IReadOnlyList<RoomListItem> _latestNetworkRooms = Array.Empty<RoomListItem>();
 
         private void Awake()
         {
@@ -82,20 +88,28 @@ namespace Features.Lobby.Presentation
 
         public void RenderLobby(LobbySnapshot lobby)
         {
-            _uitk?.RenderRooms(_presenter.BuildRooms(lobby.Rooms));
+            _latestLobbyRooms = lobby.Rooms ?? Array.Empty<RoomSnapshot>();
+            ClearRoomContextIfMissing();
+            RenderLobbyHomeState();
         }
 
         public void RenderRoomList(RoomListReceivedEvent e)
         {
-            _uitk?.RenderRooms(_presenter.BuildRooms(e.Rooms));
+            _hasNetworkRoomList = true;
+            _latestNetworkRooms = e.Rooms ?? Array.Empty<RoomListItem>();
+            ClearRoomContextIfMissing();
+            RenderLobbyHomeState();
         }
 
         public void RenderRoom(RoomUpdatedEvent e)
         {
             _currentRoomId = e.Room.Id;
             _localMemberId = e.LocalMemberId;
+            _selectedRoomId = e.Room.Id;
             var viewModel = _presenter.BuildRoomDetail(e.Room, _localMemberId);
             _localIsReady = viewModel.LocalIsReady;
+            _uitk?.RenderRooms(BuildRoomsViewModel(_currentRoomId));
+            _uitk?.RenderRoomSelection(LobbyRoomSelectionViewModel.Empty);
             _uitk?.RenderRoomDetail(viewModel);
         }
 
@@ -127,6 +141,7 @@ namespace Features.Lobby.Presentation
         public void RenderAccountState(AccountProfile profile, AccountData accountData)
         {
             BindAdapterSurface();
+            _uitk?.RenderGarageSummary(_presenter.BuildGarageSummary(accountData));
             _uitk?.RenderAccountState(
                 _presenter.BuildAccount(
                     profile,
@@ -180,7 +195,8 @@ namespace Features.Lobby.Presentation
         private void BindAdapterEvents(LobbyUitkRuntimeAdapter adapter)
         {
             adapter.CreateRoomRequested += CreateRoom;
-            adapter.RoomSelected += JoinRoom;
+            adapter.RoomSelected += PreviewRoom;
+            adapter.JoinSelectedRoomRequested += JoinSelectedRoom;
             adapter.LeaveRoomRequested += LeaveRoom;
             adapter.TeamChangeRequested += ChangeTeam;
             adapter.ReadyToggled += ToggleReady;
@@ -206,6 +222,23 @@ namespace Features.Lobby.Presentation
         private void JoinRoom(DomainEntityId roomId)
         {
             _inputHandler?.JoinRoom(roomId, _uitk?.DisplayNameText ?? string.Empty);
+        }
+
+        private void PreviewRoom(DomainEntityId roomId)
+        {
+            _selectedRoomId = roomId;
+            _uitk?.RenderRooms(BuildRoomsViewModel(_selectedRoomId));
+            _uitk?.RenderRoomSelection(BuildRoomSelectionViewModel(_selectedRoomId));
+            if (!HasRoomMemberContext())
+                _uitk?.RenderRoomDetail(LobbyRoomDetailViewModel.Empty);
+        }
+
+        private void JoinSelectedRoom()
+        {
+            if (string.IsNullOrWhiteSpace(_selectedRoomId.Value))
+                return;
+
+            JoinRoom(_selectedRoomId);
         }
 
         private void LeaveRoom()
@@ -242,6 +275,7 @@ namespace Features.Lobby.Presentation
         {
             BindAdapterSurface();
             _uitk?.ShowLobbyPage();
+            RenderLobbyHomeState();
         }
 
         private void ShowGaragePage()
@@ -275,6 +309,87 @@ namespace Features.Lobby.Presentation
         {
             BindAdapterSurface();
             _uitk?.ShowConnectionPage();
+        }
+
+        private void RenderLobbyHomeState()
+        {
+            if (_uitk == null)
+                return;
+
+            var highlightedRoomId = HasRoomMemberContext() ? _currentRoomId : _selectedRoomId;
+            _uitk.RenderRooms(BuildRoomsViewModel(highlightedRoomId));
+
+            if (HasRoomMemberContext())
+                return;
+
+            _uitk.RenderRoomDetail(LobbyRoomDetailViewModel.Empty);
+            _uitk.RenderRoomSelection(BuildRoomSelectionViewModel(_selectedRoomId));
+        }
+
+        private LobbyRoomListViewModel BuildRoomsViewModel(DomainEntityId highlightedRoomId)
+        {
+            if (_hasNetworkRoomList)
+                return _presenter.BuildRooms(_latestNetworkRooms, highlightedRoomId);
+
+            return _presenter.BuildRooms(_latestLobbyRooms, highlightedRoomId);
+        }
+
+        private LobbyRoomSelectionViewModel BuildRoomSelectionViewModel(DomainEntityId selectedRoomId)
+        {
+            if (string.IsNullOrWhiteSpace(selectedRoomId.Value))
+                return LobbyRoomSelectionViewModel.Empty;
+
+            if (_hasNetworkRoomList)
+                return _presenter.BuildRoomSelection(_latestNetworkRooms, selectedRoomId);
+
+            return _presenter.BuildRoomSelection(_latestLobbyRooms, selectedRoomId);
+        }
+
+        private void ClearRoomContextIfMissing()
+        {
+            if (!string.IsNullOrWhiteSpace(_selectedRoomId.Value) &&
+                !RoomExists(_selectedRoomId))
+            {
+                _selectedRoomId = default;
+            }
+
+            if (string.IsNullOrWhiteSpace(_currentRoomId.Value))
+                return;
+
+            if (RoomExists(_currentRoomId))
+                return;
+
+            _currentRoomId = default;
+            _localMemberId = default;
+            _localIsReady = false;
+        }
+
+        private bool RoomExists(DomainEntityId roomId)
+        {
+            if (string.IsNullOrWhiteSpace(roomId.Value))
+                return false;
+
+            if (_hasNetworkRoomList)
+            {
+                for (var i = 0; i < _latestNetworkRooms.Count; i++)
+                {
+                    if (_latestNetworkRooms[i].RoomId == roomId)
+                        return true;
+                }
+
+                return false;
+            }
+
+            if (_latestLobbyRooms == null)
+                return false;
+
+            for (var i = 0; i < _latestLobbyRooms.Count; i++)
+            {
+                if (_latestLobbyRooms[i].Id == roomId)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

@@ -2,43 +2,42 @@
     "success":  true,
     "terminalVerdict":  "",
     "blockedReason":  "",
-    "generatedAt":  "2026-05-04 18:41:17+09:00",
+    "generatedAt":  "2026-05-04 21:51:55+09:00",
     "agent":  "",
     "route":  "lobby-ui",
     "changedFiles":  [
-                         "artifacts/unity/garage-current-draft-unit-preview-test.xml",
-                         "artifacts/unity/garage-draft-selection-badge-render-test.xml",
-                         "artifacts/unity/garage-draft-selection-equipped-badge-test.xml",
-                         "artifacts/unity/garage-part-preview-stats-layout-test.xml",
-                         "artifacts/unity/garage-slot-clear-button-direct-test.xml",
-                         "artifacts/unity/garage-slot-clear-domain-test.xml",
+                         ".stitch/DESIGN.md",
+                         ".stitch/designs/set-a-create-operation-modal-overlay-v2.html",
+                         ".stitch/designs/set-a-create-operation-modal-overlay-v2.png",
+                         ".stitch/designs/set-a-matchmaking-lobby-empty-state-v2.html",
+                         ".stitch/designs/set-a-matchmaking-lobby-empty-state-v2.png",
+                         ".stitch/designs/set-a-matchmaking-lobby-populated-v2.html",
+                         ".stitch/designs/set-a-matchmaking-lobby-populated-v2.png",
+                         ".stitch/designs/set-a-room-detail-panel-selected-v2.html",
+                         ".stitch/designs/set-a-room-detail-panel-selected-v2.png",
+                         ".stitch/prompt-briefs/set-a-lobby-matchmaking-flow-refresh.md",
+                         "artifacts/stitch/lobby-ui-design-review.json",
+                         "artifacts/stitch/lobby-ui-design-review.md",
+                         "artifacts/unity/lobby-page-presenter-direct-tests.xml",
+                         "artifacts/unity/lobby-uitk-runtime-adapter-direct-tests.xml",
                          "artifacts/unity/unity-ui-authoring-workflow-policy.json",
-                         "Assets/Editor/DirectTests/GarageSetBUitkRuntimeAdapterDirectTests.cs",
-                         "Assets/Editor/DirectTests/GarageSetBUitkRuntimeAdapterSidePreviewDirectTests.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Page/Builders/GarageSlotViewModelBuilder.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Page/GarageSetBUitkPageController.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Page/GarageSetBUitkPageRenderContextFactory.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Preview/GarageSetBUitkPreviewRenderer.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Preview/GarageUnitPreviewAssembly.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBPartListSurface.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBSlotSurface.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkAdapterCore.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkRuntimeAdapter.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageUitkConstants.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/IGarageSetBUitkAdapter.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/ViewModels/GarageNovaPartsPanelOptionBuilder.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/ViewModels/GarageNovaPartsPanelViewModels.cs",
-                         "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
-                         "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml"
+                         "Assets/Editor/DirectTests/LobbyPagePresenterDirectTests.cs",
+                         "Assets/Editor/DirectTests/LobbyUitkRuntimeAdapterDirectTests.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/Page/LobbyPageController.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/Page/LobbyPagePresenter.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyUitkRuntimeAdapter.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/ViewModels/LobbyPageViewModels.cs",
+                         "Assets/UI/UIToolkit/Lobby/LobbyShell.uss",
+                         "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml"
                      ],
-    "allDirtyFileCount":  24,
+    "allDirtyFileCount":  23,
     "unityUiRelevantFiles":  [
-                                 "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
-                                 "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml"
+                                 "Assets/UI/UIToolkit/Lobby/LobbyShell.uss",
+                                 "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml"
                              ],
     "uitkCandidateFiles":  [
-                               "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
-                               "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml"
+                               "Assets/UI/UIToolkit/Lobby/LobbyShell.uss",
+                               "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml"
                            ],
     "uitkCandidateEvidenceFiles":  [
                                        "artifacts/unity/unity-ui-authoring-workflow-policy.json"
@@ -101,13 +100,13 @@
     "unityResourceLock":  {
                               "owner":  "workflow",
                               "path":  "Temp/UnityMcp/unity-resource.lock",
-                              "token":  "39b0a3bee4294fb8863cf0746467531b"
+                              "token":  "95c9000358184cb5a01a401491642197"
                           },
     "capabilityExpansionGuard":  {
                                      "allowCapabilityExpansion":  false,
                                      "surfaceOnboardingFiles":  [
-                                                                    "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
-                                                                    "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml"
+                                                                    "Assets/UI/UIToolkit/Lobby/LobbyShell.uss",
+                                                                    "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml"
                                                                 ],
                                      "capabilityExpansionFiles":  [
 

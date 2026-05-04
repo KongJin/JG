@@ -25,8 +25,10 @@ namespace Tests.Editor
             Assert.AreEqual("열린 방 1개", viewModel.CountText);
             Assert.AreEqual(1, viewModel.Rows.Count);
             Assert.AreEqual(new DomainEntityId("room-1"), viewModel.Rows[0].RoomId);
-            Assert.AreEqual("Alpha  1/4  Normal", viewModel.Rows[0].Text);
-            Assert.IsTrue(viewModel.Rows[0].IsEnabled);
+            Assert.AreEqual("Alpha", viewModel.Rows[0].TitleText);
+            Assert.AreEqual("1/4 | Normal", viewModel.Rows[0].MetaText);
+            Assert.AreEqual("참가 가능", viewModel.Rows[0].StatusText);
+            Assert.IsTrue(viewModel.Rows[0].CanJoin);
         }
 
         [Test]
@@ -45,7 +47,34 @@ namespace Tests.Editor
             });
 
             Assert.AreEqual("열린 방 1개", viewModel.CountText);
-            Assert.IsFalse(viewModel.Rows[0].IsEnabled);
+            Assert.AreEqual("Closed", viewModel.Rows[0].TitleText);
+            Assert.AreEqual("정원 마감", viewModel.Rows[0].StatusText);
+            Assert.IsFalse(viewModel.Rows[0].CanJoin);
+        }
+
+        [Test]
+        public void BuildRoomSelection_MapsSelectedNetworkRoom()
+        {
+            var presenter = new LobbyPagePresenter();
+
+            var viewModel = presenter.BuildRoomSelection(
+                new[]
+                {
+                    new RoomListItem(
+                        new DomainEntityId("room-1"),
+                        "Alpha",
+                        playerCount: 2,
+                        maxPlayers: 4,
+                        isOpen: true)
+                },
+                new DomainEntityId("room-1"));
+
+            Assert.IsTrue(viewModel.IsVisible);
+            Assert.AreEqual("Alpha", viewModel.TitleText);
+            Assert.AreEqual("2/4 | Normal", viewModel.MetaText);
+            Assert.AreEqual("참가 가능", viewModel.StatusText);
+            Assert.IsTrue(viewModel.CanJoin);
+            Assert.AreEqual("작전 참여", viewModel.JoinButtonText);
         }
 
         [Test]
@@ -100,6 +129,28 @@ namespace Tests.Editor
             Assert.AreEqual("35%", viewModel.BgmValueText);
             Assert.AreEqual("60%", viewModel.SfxValueText);
             Assert.AreEqual("READY", viewModel.CloudModeText);
+        }
+
+        [Test]
+        public void BuildGarageSummary_MapsReadyRosterState()
+        {
+            var presenter = new LobbyPagePresenter();
+            var accountData = new AccountData
+            {
+                GarageRoster = new GarageRoster(new List<GarageRoster.UnitLoadout>
+                {
+                    new("frame-a", "fire-a", "move-a"),
+                    new("frame-b", "fire-b", "move-b"),
+                    new("frame-c", "fire-c", "move-c")
+                })
+            };
+
+            var viewModel = presenter.BuildGarageSummary(accountData);
+
+            Assert.AreEqual("출격 가능", viewModel.StatusText);
+            Assert.AreEqual("현역 3/8", viewModel.SummaryText);
+            Assert.AreEqual("저장된 편성이 최소 출격 기준을 충족합니다.", viewModel.DetailText);
+            Assert.IsTrue(viewModel.IsReady);
         }
 
         [Test]

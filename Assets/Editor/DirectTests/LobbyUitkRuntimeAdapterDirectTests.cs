@@ -94,16 +94,101 @@ namespace Tests.Editor
                     {
                         new LobbyRoomRowViewModel(
                             new DomainEntityId("room-1"),
-                            "Alpha  1/4  Normal",
-                            isEnabled: true)
+                            "Alpha",
+                            "1/4 | Normal",
+                            "참가 가능",
+                            canJoin: true,
+                            isSelected: true,
+                            filledSlots: 1,
+                            totalSlots: 4)
                     }));
 
                 var roomList = fixture.Document.rootVisualElement.Q<VisualElement>("RoomList");
                 Assert.AreEqual(1, roomList.childCount);
                 var row = roomList[0] as Button;
                 Assert.NotNull(row);
-                StringAssert.Contains("Alpha", row.text);
-                StringAssert.Contains("1/4", row.text);
+                Assert.IsTrue(row.ClassListContains("lobby-room-row--selected"));
+                Assert.AreEqual("Alpha", row.Q<Label>(className: "lobby-room-row__title").text);
+                Assert.AreEqual("1/4 | Normal", row.Q<Label>(className: "lobby-room-row__meta").text);
+                Assert.AreEqual("참가 가능", row.Q<Label>(className: "lobby-status-chip").text);
+                Assert.AreEqual("1/4", row.Q<Label>(className: "lobby-slot-text").text);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void RenderRooms_EmptyShowsEmptyStateCard()
+        {
+            var fixture = CreateFixture();
+            try
+            {
+                fixture.Adapter.RenderRooms(LobbyRoomListViewModel.Empty);
+
+                var root = fixture.Document.rootVisualElement;
+                Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>("RoomListEmptyStateCard").style.display.value);
+                Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>("RoomList").style.display.value);
+                Assert.AreEqual("열린 방이 없습니다.", root.Q<Label>("RoomListEmptyStateBodyLabel").text);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void RenderGarageSummary_MapsStatusSummaryWithoutCta()
+        {
+            var fixture = CreateFixture();
+            try
+            {
+                fixture.Adapter.RenderGarageSummary(new LobbyGarageSummaryViewModel(
+                    "출격 가능",
+                    "현역 3/8",
+                    "저장된 편성이 최소 출격 기준을 충족합니다.",
+                    filledSlots: 3,
+                    totalSlots: 8,
+                    isReady: true));
+
+                var root = fixture.Document.rootVisualElement;
+                Assert.AreEqual("출격 가능", root.Q<Label>("GarageSummaryStatusLabel").text);
+                Assert.AreEqual("현역 3/8", root.Q<Label>("GarageSummaryTitleLabel").text);
+                Assert.AreEqual("저장된 편성이 최소 출격 기준을 충족합니다.", root.Q<Label>("GarageSummaryBodyLabel").text);
+                Assert.IsTrue(root.Q<Label>("GarageSummaryStatusLabel").ClassListContains("lobby-status-chip--ready"));
+                Assert.AreEqual(9, root.Q<VisualElement>("GarageSummarySlotRow").childCount);
+                Assert.IsNull(root.Q<Button>("OpenGarageButton"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void RenderRoomSelection_MapsViewModelToOverlayState()
+        {
+            var fixture = CreateFixture();
+            try
+            {
+                fixture.Adapter.RenderRoomSelection(new LobbyRoomSelectionViewModel(
+                    new DomainEntityId("room-1"),
+                    "Alpha",
+                    "2/4 | Normal",
+                    "참가 가능",
+                    "현재 열린 작전입니다.",
+                    filledSlots: 2,
+                    totalSlots: 4,
+                    canJoin: true));
+
+                var root = fixture.Document.rootVisualElement;
+                Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>("RoomSelectionOverlay").style.display.value);
+                Assert.AreEqual("Alpha", root.Q<Label>("RoomSelectionTitleLabel").text);
+                Assert.AreEqual("2/4 | Normal", root.Q<Label>("RoomSelectionMetaLabel").text);
+                Assert.AreEqual("참가 가능", root.Q<Label>("RoomSelectionStatusLabel").text);
+                Assert.AreEqual(5, root.Q<VisualElement>("RoomSelectionSlotRow").childCount);
+                Assert.IsTrue(root.Q<Button>("JoinSelectedRoomButton").enabledSelf);
             }
             finally
             {
@@ -129,6 +214,54 @@ namespace Tests.Editor
                 Assert.AreEqual("Cancel", root.Q<Button>("ReadyButton").text);
                 Assert.IsTrue(root.Q<Button>("StartButton").enabledSelf);
                 Assert.AreEqual(1, root.Q<VisualElement>("MemberList").childCount);
+                Assert.AreEqual(DisplayStyle.Flex,
+                    root.Q<VisualElement>("RoomDetailCard").style.display.value);
+                Assert.AreEqual(DisplayStyle.Flex,
+                    root.Q<VisualElement>("RoomActionRow").style.display.value);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void RenderRoomDetail_EmptyHidesActionRow()
+        {
+            var fixture = CreateFixture();
+            try
+            {
+                fixture.Adapter.RenderRoomDetail(LobbyRoomDetailViewModel.Empty);
+
+                var root = fixture.Document.rootVisualElement;
+                Assert.AreEqual(DisplayStyle.None,
+                    root.Q<VisualElement>("RoomDetailCard").style.display.value);
+                Assert.AreEqual(DisplayStyle.None,
+                    root.Q<VisualElement>("RoomActionRow").style.display.value);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void RenderRoomDetail_WithMembersShowsActionRow()
+        {
+            var fixture = CreateFixture();
+            try
+            {
+                fixture.Adapter.RenderRoomDetail(new LobbyRoomDetailViewModel(
+                    "Alpha",
+                    "1/4 | Normal",
+                    new[] { "Pilot | Red | READY" },
+                    localIsReady: false,
+                    readyButtonText: "Ready",
+                    canStartGame: false));
+
+                var root = fixture.Document.rootVisualElement;
+                Assert.AreEqual(DisplayStyle.Flex,
+                    root.Q<VisualElement>("RoomActionRow").style.display.value);
             }
             finally
             {

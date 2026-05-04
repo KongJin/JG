@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&amp;family=IBM+Plex+Sans:wght@400;600&amp;family=Public+Sans:wght@700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            orange: "#F59E0B",
+                            blue: "#5EB6FF",
+                            zinc: {
+                                800: "#27272a",
+                                900: "#18181b",
+                                950: "#09090b"
+                            }
+                        }
+                    },
+                    fontFamily: {
+                        headline: ["Space Grotesk", "sans-serif"],
+                        display: ["Space Grotesk", "sans-serif"],
+                        body: ["IBM Plex Sans", "sans-serif"],
+                        label: ["Public Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .industrial-frame {
+            border: 2px solid #3f3f46;
+            background: linear-gradient(145deg, #111827, #09090b);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .industrial-frame::before {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px solid rgba(255,255,255,0.05);
+            pointer-events: none;
+        }
+        .bolt {
+            width: 4px;
+            height: 4px;
+            background: #52525b;
+            border-radius: 1px;
+            position: absolute;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#111827] text-zinc-300 font-body antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-14 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 shadow-2xl shadow-amber-900/10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-amber-500">menu</span>
+<h1 class="text-amber-500 font-mono font-bold uppercase tracking-tighter text-lg">COMMAND_CENTER</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-mono text-blue-400 font-bold leading-none tracking-widest">LOCAL PRIMARY</span>
+<span class="text-[8px] font-mono text-zinc-500 uppercase tracking-widest">Signal Stable</span>
+</div>
+<div class="w-8 h-8 rounded-full border border-zinc-700 overflow-hidden bg-zinc-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-zinc-500 text-sm">person</span>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="pt-20 pb-24 px-4 space-y-6 max-w-md mx-auto">
+<!-- Operation Zone Section -->
+<section class="space-y-3">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-4 bg-amber-500"></span>
+<h2 class="font-headline font-bold text-sm tracking-widest uppercase">작전 구역</h2>
+</div>
+<span class="font-mono text-[10px] text-zinc-500 tracking-tighter">SEC_404_VOID</span>
+</div>
+<!-- Empty State Card -->
+<div class="industrial-frame rounded-lg p-8 flex flex-col items-center justify-center text-center space-y-6">
+<!-- Bolted Corners -->
+<div class="bolt top-1 left-1"></div>
+<div class="bolt top-1 right-1"></div>
+<div class="bolt bottom-1 left-1"></div>
+<div class="bolt bottom-1 right-1"></div>
+<div class="relative">
+<div class="w-20 h-20 rounded-full border-2 border-dashed border-zinc-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-zinc-600 text-4xl" style="font-variation-settings: 'FILL' 0;">radar</span>
+</div>
+<div class="absolute -top-1 -right-1 flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-20"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500/40"></span>
+</div>
+</div>
+<div class="space-y-2">
+<h3 class="font-headline text-lg font-bold text-zinc-100">진행 중인 작전 없음</h3>
+<p class="text-xs text-zinc-500 max-w-[220px] mx-auto leading-relaxed">
+                        현재 지역에서 활성화된 신호를 찾을 수 없습니다. 새로운 작전을 시작하십시오.
+                    </p>
+</div>
+<button class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold font-headline text-sm rounded shadow-[0_4px_0_rgb(180,83,9)] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-base">add_box</span>
+                    신규 노드 개설
+                </button>
+</div>
+</section>
+<!-- Secondary Action: Create Operation -->
+<div class="industrial-frame rounded p-4 flex items-center justify-between group cursor-pointer transition-all active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-zinc-900 border border-zinc-800 rounded">
+<span class="material-symbols-outlined text-blue-400">terminal</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline font-bold text-sm text-zinc-200">작전 생성</span>
+<span class="text-[10px] text-zinc-500 font-mono">UTILITY_ACCESS_V3</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-zinc-600 group-hover:text-blue-400 transition-colors">arrow_forward_ios</span>
+</div>
+<!-- Garage Summary Card -->
+<section class="industrial-frame rounded-lg p-4 bg-gradient-to-br from-zinc-900 to-black border-zinc-800 border-l-4 border-l-blue-500">
+<div class="flex justify-between items-start mb-4">
+<div class="flex flex-col">
+<h2 class="font-headline font-bold text-xs text-zinc-100 uppercase tracking-widest">차고 요약</h2>
+<span class="text-[10px] font-mono text-blue-400">READY FOR DEPLOYMENT</span>
+</div>
+<button class="px-3 py-1 bg-zinc-800 border border-zinc-700 text-[10px] font-bold text-zinc-300 rounded hover:bg-zinc-700 transition-colors">
+                    차고 열기
+                </button>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-zinc-950/50 p-2 rounded border border-zinc-800/50 flex flex-col items-center">
+<span class="text-[8px] text-zinc-500 uppercase mb-1">Units</span>
+<span class="text-sm font-headline font-bold text-zinc-100">12/15</span>
+</div>
+<div class="bg-zinc-950/50 p-2 rounded border border-zinc-800/50 flex flex-col items-center">
+<span class="text-[8px] text-zinc-500 uppercase mb-1">Status</span>
+<span class="text-sm font-headline font-bold text-blue-400">A1</span>
+</div>
+<div class="bg-zinc-950/50 p-2 rounded border border-zinc-800/50 flex flex-col items-center">
+<span class="text-[8px] text-zinc-500 uppercase mb-1">Energy</span>
+<span class="text-sm font-headline font-bold text-amber-500">98%</span>
+</div>
+</div>
+</section>
+<!-- Aesthetic Background Elements -->
+<div class="absolute top-0 right-0 w-full h-[500px] -z-10 opacity-30 pointer-events-none">
+<div class="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-transparent to-transparent"></div>
+<img class="w-full h-full object-cover mix-blend-overlay grayscale contrast-125" data-alt="A close-up interior view of a futuristic military hangar with thick steel beams, hexagonal floor plates, and dramatic top-down blue and amber industrial lighting. The atmosphere is dense with a slight haze of atmospheric steam. The architectural style is utilitarian and brutalist, featuring bolted metal panels and dark matte surfaces. This creates a moody, high-tech tactical environment consistent with a sci-fi command center." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAww93q5jp9-I36A6Lp3JXrqh26YNIJ-UN8TAYBaDtPV8xXViXV-EWXiSadCRS74G_AdKpuoX8LNRJin2x-DUxbdwtj9ojApGM94jYRPEA-Y7gmns1Br8aeX1r3qG1cjRAwXUwbIgpLEuuOV-wB-hSX3iJVERMQu3E5tEfnV3LeydknNGAyoUwhRPalQ89T7AxcPZAo4vTJ5Eznp0rcv-rEYiBOyDYAQFDqCCG0Tn_z6VIGyL4kWCc121fnTX8_HhC6UaXXO_KnJS_e"/>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-1 h-16 pb-safe bg-zinc-950/95 border-t border-zinc-800 shadow-[0_-4px_12px_rgba(0,0,0,0.5)]">
+<!-- HANGAR -> 차고 -->
+<a class="flex flex-col items-center justify-center text-zinc-500 py-1 transition-colors hover:text-blue-400" href="#">
+<span class="material-symbols-outlined text-2xl">settings_input_component</span>
+<span class="font-mono text-[10px] font-bold tracking-tight">차고</span>
+</a>
+<!-- STRIKE -> 로비 (ACTIVE) -->
+<a class="flex flex-col items-center justify-center text-amber-500 bg-amber-500/5 py-1 px-4 rounded-md transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">target</span>
+<span class="font-mono text-[10px] font-bold tracking-tight">로비</span>
+</a>
+<!-- DATABASE -> 기록 -->
+<a class="flex flex-col items-center justify-center text-zinc-500 py-1 transition-colors hover:text-blue-400" href="#">
+<span class="material-symbols-outlined text-2xl">terminal</span>
+<span class="font-mono text-[10px] font-bold tracking-tight">기록</span>
+</a>
+<!-- UPGRADE -> 강화 -->
+<a class="flex flex-col items-center justify-center text-zinc-500 py-1 transition-colors hover:text-blue-400" href="#">
+<span class="material-symbols-outlined text-2xl">construction</span>
+<span class="font-mono text-[10px] font-bold tracking-tight">강화</span>
+</a>
+<!-- STORE -> 상점 -->
+<a class="flex flex-col items-center justify-center text-zinc-500 py-1 transition-colors hover:text-blue-400" href="#">
+<span class="material-symbols-outlined text-2xl">shopping_cart</span>
+<span class="font-mono text-[10px] font-bold tracking-tight">상점</span>
+</a>
+</nav>
+</body></html>

@@ -26,22 +26,20 @@ namespace Features.Lobby.Presentation
         private VisualElement _recordsPage;
         private VisualElement _accountPage;
         private VisualElement _connectionPage;
-        private VisualElement _roomList;
-        private VisualElement _memberList;
+        private VisualElement _createRoomOverlay;
         private Label _shellTitle;
         private Label _shellState;
-        private Label _roomCountLabel;
-        private Label _roomDetailTitle;
-        private Label _roomDetailMeta;
         private TextField _roomNameInput;
         private TextField _displayNameInput;
         private IntegerField _capacityInput;
         private IntegerField _difficultyInput;
-        private Button _readyButton;
-        private Button _startButton;
         private Button _lobbyNav;
         private Button _garageNav;
         private Button _recordsNav;
+        private LobbyRoomListSurface _roomListSurface;
+        private LobbyGarageSummarySurface _garageSummarySurface;
+        private LobbyRoomSelectionOverlay _roomSelectionOverlay;
+        private LobbyRoomDetailSurface _roomDetailSurface;
         private LobbyShellPageRouter _pageRouter;
         private readonly LobbyUitkClickScope _clickScope = new();
         private bool _isBound;
@@ -72,6 +70,7 @@ namespace Features.Lobby.Presentation
 
         public event Action CreateRoomRequested;
         public event Action<DomainEntityId> RoomSelected;
+        public event Action JoinSelectedRoomRequested;
         public event Action LeaveRoomRequested;
         public event Action<TeamType> TeamChangeRequested;
         public event Action ReadyToggled;
@@ -148,28 +147,24 @@ namespace Features.Lobby.Presentation
             if (!Bind())
                 return;
 
-            viewModel ??= LobbyRoomListViewModel.Empty;
-            _roomList?.Clear();
-            if (_roomCountLabel != null)
-                _roomCountLabel.text = viewModel.CountText;
+            _roomListSurface?.Render(viewModel);
+        }
 
-            if (viewModel.Rows == null || viewModel.Rows.Count == 0)
-            {
-                _roomList?.Add(CreateLabel(viewModel.EmptyText, "uitk-body lobby-room-empty"));
+        public void RenderGarageSummary(LobbyGarageSummaryViewModel viewModel)
+        {
+            if (!Bind())
                 return;
-            }
 
-            for (var i = 0; i < viewModel.Rows.Count; i++)
-            {
-                var room = viewModel.Rows[i];
-                var row = new Button(() => RoomSelected?.Invoke(room.RoomId))
-                {
-                    text = room.Text
-                };
-                row.AddToClassList("uitk-list-row");
-                row.SetEnabled(room.IsEnabled);
-                _roomList.Add(row);
-            }
+            _garageSummarySurface?.Render(viewModel);
+        }
+
+        public void RenderRoomSelection(LobbyRoomSelectionViewModel viewModel)
+        {
+            if (!Bind())
+                return;
+
+            if (_roomSelectionOverlay != null && _roomSelectionOverlay.Render(viewModel))
+                SetCreateRoomOverlayVisible(false);
         }
 
         public void RenderRoomDetail(LobbyRoomDetailViewModel viewModel)
@@ -177,51 +172,22 @@ namespace Features.Lobby.Presentation
             if (!Bind())
                 return;
 
-            viewModel ??= LobbyRoomDetailViewModel.Empty;
-
-            if (_roomDetailTitle != null)
-                _roomDetailTitle.text = viewModel.TitleText;
-            if (_roomDetailMeta != null)
-                _roomDetailMeta.text = viewModel.MetaText;
-
-            _memberList?.Clear();
-            for (var i = 0; i < viewModel.MemberRows.Count; i++)
+            if (_roomDetailSurface != null && _roomDetailSurface.Render(viewModel))
             {
-                _memberList?.Add(CreateLabel(
-                    viewModel.MemberRows[i],
-                    "uitk-list-row-label"));
+                SetCreateRoomOverlayVisible(false);
+                SetRoomSelectionOverlayVisible(false);
             }
-
-            if (_readyButton != null)
-                _readyButton.text = viewModel.ReadyButtonText;
-            if (_startButton != null)
-                _startButton.SetEnabled(viewModel.CanStartGame);
         }
 
-        public void ShowLobbyPage()
-        {
-            ShowPage(LobbyShellPageId.Lobby);
-        }
+        public void ShowLobbyPage() => ShowPage(LobbyShellPageId.Lobby);
 
-        public void ShowGaragePage()
-        {
-            ShowPage(LobbyShellPageId.Garage);
-        }
+        public void ShowGaragePage() => ShowPage(LobbyShellPageId.Garage);
 
-        public void ShowRecordsPage()
-        {
-            ShowPage(LobbyShellPageId.Records);
-        }
+        public void ShowRecordsPage() => ShowPage(LobbyShellPageId.Records);
 
-        public void ShowAccountPage()
-        {
-            ShowPage(LobbyShellPageId.Account);
-        }
+        public void ShowAccountPage() => ShowPage(LobbyShellPageId.Account);
 
-        public void ShowConnectionPage()
-        {
-            ShowPage(LobbyShellPageId.Connection);
-        }
+        public void ShowConnectionPage() => ShowPage(LobbyShellPageId.Connection);
 
         private void ShowPage(LobbyShellPageId pageId)
         {
@@ -229,6 +195,8 @@ namespace Features.Lobby.Presentation
                 return;
 
             _pageRouter?.Show(pageId);
+            SetCreateRoomOverlayVisible(false);
+            SetRoomSelectionOverlayVisible(false);
             SetGarageDocumentVisible(false);
         }
 
@@ -238,23 +206,7 @@ namespace Features.Lobby.Presentation
                 return;
 
             EnsureAccountSurface();
-            viewModel ??= LobbyAccountViewModel.Empty;
-
-            UitkElementUtility.SetText(_accountPage, "PilotIdLabel", viewModel.PilotIdText);
-            UitkElementUtility.SetText(_accountPage, "GoogleLinkStatusLabel", viewModel.GoogleLinkStatusText);
-            UitkElementUtility.SetText(_accountPage, "UidStatusLabel", viewModel.UidStatusText);
-            UitkElementUtility.SetText(_accountPage, "GarageSyncStateLabel", viewModel.GarageSyncStateText);
-            UitkElementUtility.SetText(_accountPage, "OperationSyncStateLabel", viewModel.OperationSyncStateText);
-            UitkElementUtility.SetText(_accountPage, "CloudSyncStateLabel", viewModel.CloudSyncStateText);
-            UitkElementUtility.SetText(_accountPage, "BlockedReasonBodyLabel", viewModel.BlockedReasonBodyText);
-            UitkElementUtility.SetText(_accountPage, "GarageSummaryLabel", viewModel.GarageSummaryText);
-            UitkElementUtility.SetText(_accountPage, "OperationBufferLabel", viewModel.OperationBufferText);
-            UitkElementUtility.SetText(_accountPage, "ConflictStateLabel", viewModel.ConflictStateText);
-            UitkElementUtility.SetText(_accountPage, "LoadingStateLabel", viewModel.LoadingStateText);
-            UitkElementUtility.SetText(_accountPage, "BgmValueLabel", viewModel.BgmValueText);
-            UitkElementUtility.SetText(_accountPage, "SfxValueLabel", viewModel.SfxValueText);
-            UitkElementUtility.SetText(_accountPage, "SaveModeLabel", viewModel.SaveModeText);
-            UitkElementUtility.SetText(_accountPage, "CloudModeLabel", viewModel.CloudModeText);
+            LobbyAccountStateRenderer.Render(_accountPage, viewModel);
         }
 
         public void RenderOperationMemory(LobbyOperationMemoryViewModel viewModel)
@@ -276,22 +228,51 @@ namespace Features.Lobby.Presentation
             _recordsPage = Required<VisualElement>("RecordsUitkHost");
             _accountPage = Required<VisualElement>("AccountUitkHost");
             _connectionPage = Required<VisualElement>("ConnectionUitkHost");
-            _roomList = Required<VisualElement>("RoomList");
-            _memberList = Required<VisualElement>("MemberList");
+            _createRoomOverlay = Required<VisualElement>("CreateRoomOverlay");
             _shellTitle = Required<Label>("ShellTitleLabel");
             _shellState = Required<Label>("ShellStateLabel");
-            _roomCountLabel = Required<Label>("RoomCountLabel");
-            _roomDetailTitle = Required<Label>("RoomDetailTitleLabel");
-            _roomDetailMeta = Required<Label>("RoomDetailMetaLabel");
             _roomNameInput = Required<TextField>("RoomNameInput");
             _displayNameInput = Required<TextField>("DisplayNameInput");
             _capacityInput = Required<IntegerField>("CapacityInput");
             _difficultyInput = Required<IntegerField>("DifficultyInput");
-            _readyButton = Required<Button>("ReadyButton");
-            _startButton = Required<Button>("StartButton");
             _lobbyNav = Required<Button>("LobbyNavButton");
             _garageNav = Required<Button>("GarageNavButton");
             _recordsNav = Required<Button>("RecordsNavButton");
+
+            _roomListSurface = new LobbyRoomListSurface(
+                Required<VisualElement>("RoomList"),
+                Required<VisualElement>("RoomListEmptyStateCard"),
+                Required<Label>("RoomCountLabel"),
+                Required<Label>("RoomListEmptyStateBodyLabel"),
+                roomId => RoomSelected?.Invoke(roomId));
+            _garageSummarySurface = new LobbyGarageSummarySurface(
+                Required<VisualElement>("GarageSummarySlotRow"),
+                Required<Label>("GarageSummaryStatusLabel"),
+                Required<Label>("GarageSummaryTitleLabel"),
+                Required<Label>("GarageSummaryBodyLabel"));
+            _roomSelectionOverlay = new LobbyRoomSelectionOverlay(
+                Required<VisualElement>("RoomSelectionOverlay"),
+                Required<VisualElement>("RoomSelectionSlotRow"),
+                Required<Label>("RoomSelectionTitleLabel"),
+                Required<Label>("RoomSelectionMetaLabel"),
+                Required<Label>("RoomSelectionStatusLabel"),
+                Required<Label>("RoomSelectionBodyLabel"),
+                Required<Button>("JoinSelectedRoomButton"));
+            _roomDetailSurface = new LobbyRoomDetailSurface(
+                Required<VisualElement>("RoomDetailCard"),
+                Required<VisualElement>("RoomActionRow"),
+                Required<VisualElement>("MemberList"),
+                Required<Label>("RoomDetailTitleLabel"),
+                Required<Label>("RoomDetailMetaLabel"),
+                Required<Button>("ReadyButton"),
+                Required<Button>("StartButton"));
+
+            _roomDetailSurface.Hide();
+            _roomListSurface.HideEmptyState();
+            SetCreateRoomOverlayVisible(false);
+            SetRoomSelectionOverlayVisible(false);
+            _garageSummarySurface.Render(LobbyGarageSummaryViewModel.Empty);
+
             _pageRouter = new LobbyShellPageRouter(
                 new[]
                 {
@@ -335,8 +316,12 @@ namespace Features.Lobby.Presentation
 
             RegisterClick("ShellMenuButton", () => ConnectionPageRequested?.Invoke());
             RegisterClick("ShellSettingsButton", () => AccountPageRequested?.Invoke());
+            RegisterClick("CreateRoomOpenButton", () => SetCreateRoomOverlayVisible(true));
+            RegisterClick("EmptyStateCreateButton", () => SetCreateRoomOverlayVisible(true));
+            RegisterClick("CreateRoomCancelButton", () => SetCreateRoomOverlayVisible(false));
             RegisterClick("CreateRoomButton", () => CreateRoomRequested?.Invoke());
-            RegisterClick("GarageSummaryButton", () => GaragePageRequested?.Invoke());
+            RegisterClick("RoomSelectionDismissButton", () => SetRoomSelectionOverlayVisible(false));
+            RegisterClick("JoinSelectedRoomButton", () => JoinSelectedRoomRequested?.Invoke());
             RegisterClick("RedTeamButton", () => TeamChangeRequested?.Invoke(TeamType.Red));
             RegisterClick("BlueTeamButton", () => TeamChangeRequested?.Invoke(TeamType.Blue));
             RegisterClick("ReadyButton", () => ReadyToggled?.Invoke());
@@ -347,6 +332,16 @@ namespace Features.Lobby.Presentation
             RegisterClick("RecordsNavButton", () => RecordsPageRequested?.Invoke());
 
             EnsureGarageSurface();
+        }
+
+        private void SetCreateRoomOverlayVisible(bool visible)
+        {
+            UitkElementUtility.SetDisplay(_createRoomOverlay, visible);
+        }
+
+        private void SetRoomSelectionOverlayVisible(bool visible)
+        {
+            _roomSelectionOverlay?.SetVisible(visible);
         }
 
         private bool SetGarageDocumentVisible(bool isVisible)
@@ -440,13 +435,6 @@ namespace Features.Lobby.Presentation
         private static T Required<T>(VisualElement root, string name) where T : VisualElement
         {
             return UitkElementUtility.Required<T>(root, name, "Lobby UITK");
-        }
-
-        private static Label CreateLabel(string text, string className)
-        {
-            var label = UitkElementUtility.CreateLabel(text, className);
-            label.style.color = UiThemeColors.TextPrimary;
-            return label;
         }
 
     }

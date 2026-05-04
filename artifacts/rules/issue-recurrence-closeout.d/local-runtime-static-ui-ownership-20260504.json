@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-04",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "presentation static-ui ownership guard and runtime adapter lint enforcement",
+  "observedMutationClass": "presentation owner rule update, runtime static-ui ownership lint script, package script wiring, and recurrence closeout update",
+  "acceptanceEvidenceClass": "standalone runtime static-ui ownership lint plus docs lint; repo-wide policy/rules lint still depends on unrelated Lobby runtime hotspot cleanup",
+  "escalationRequired": false,
+  "rootCause": "The repo had runtime adapter boundary guidance, but it did not explicitly forbid RuntimeAdapter-level writes to authored geometry such as padding, margin, width, height, or positional offsets. That left room for future runtime repair of static UI gaps and shell spacing instead of pushing those contracts back into UXML/USS.",
+  "prevention": "Add a Presentation SSOT rule that static authored geometry belongs to UXML/USS, then hard-fail any `*RuntimeAdapter.cs` under `Features/**/Presentation/**` that writes static geometry style properties. Wire that lint into `policy:lint` so new runtime layout repair code is rejected before closeout. Preserve the existing hard-fail checks for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "npm run --silent runtime:static-ui-ownership:lint; npm run --silent docs:lint; repo-wide npm run --silent policy:lint currently fails on unrelated runtime hotspot budget `Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyUitkRuntimeAdapter.cs` lines=628 budget=460",
+  "blockedReason": "",
+  "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-runtime-static-ui-ownership-20260504.json",
+    "docs/ops/presentation_layer_guardrails.md"
+  ]
+}

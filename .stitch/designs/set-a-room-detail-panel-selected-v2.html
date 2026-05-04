@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&amp;family=Public+Sans:wght@300..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        'cmd-blue': '#5EB6FF',
+                        'signal-orange': '#F59E0B',
+                        'hangar-bg': '#111827',
+                        'zinc-950': '#09090b',
+                    },
+                    fontFamily: {
+                        headline: ["Space Grotesk", "IBM Plex Sans KR"],
+                        display: ["Space Grotesk", "IBM Plex Sans KR"],
+                        body: ["IBM Plex Sans KR"],
+                        label: ["Public Sans", "IBM Plex Sans KR"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .tactical-grid {
+            background-image: radial-gradient(circle, #1e293b 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(94, 182, 255, 0.1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-hangar-bg text-zinc-100 font-body antialiased selection:bg-cmd-blue/30 overflow-hidden">
+<!-- Background Layer: Dimmed Room List -->
+<div class="fixed inset-0 z-0 tactical-grid opacity-20"></div>
+<div class="relative z-10 flex flex-col h-screen max-w-[390px] mx-auto overflow-hidden border-x border-zinc-800 bg-zinc-950">
+<!-- TopAppBar (From JSON) -->
+<header class="bg-zinc-950/90 backdrop-blur-md flex justify-between items-center w-full px-4 h-16 border-b border-zinc-800 z-50">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-zinc-800 rounded-sm border border-zinc-700 flex items-center justify-center overflow-hidden">
+<img alt="Pilot Profile" class="w-full h-full object-cover" data-alt="A low-resolution 8-bit pixel art avatar of a futuristic fighter pilot wearing a sleek black flight helmet with a glowing orange visor. The background is a simple tactical grey. The style is reminiscent of 90s military simulation interface portraits, consistent with a dark industrial hangar aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbvAxhYOUx_XeHxJHpUuFYszpiVQG3TEyALf-2bGcoOVMf_k34FLzR8DFY8EnOC4oQx92gMKPhYTdJZAal063VC8RswDrT9OJb9fFhtJ6AdrQg6aRAZkzMHKqMumztSMyAm0vl3vNpmiciwA6gCktrtidcKMUvvzDcPcOIbgcw60dCMdloXn1UqmRS5rFsAXFFdlhMwMhmbG0Db5_l2qCAd0a2JT1Z79ATY1VpMrudmmt6RQoG5yUSyeCCPeyChMAFzBeeTiz0vqRG"/>
+</div>
+<h1 class="font-sans font-bold tracking-tighter uppercase text-lg text-orange-500">작전 통제실</h1>
+</div>
+<button class="text-zinc-400 hover:bg-zinc-900 active:scale-95 transition-transform p-2">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</header>
+<!-- Main Canvas: Dimmed Lobby Background -->
+<main class="flex-1 overflow-y-auto px-4 py-4 space-y-3 opacity-30 grayscale pointer-events-none">
+<!-- Simulated Room Rows -->
+<div class="p-3 bg-zinc-900 border border-zinc-800 flex justify-between items-center">
+<span class="text-xs font-bold text-zinc-500">OP_BRAVO_04</span>
+<span class="text-xs text-zinc-600 tracking-widest uppercase">PENDING</span>
+</div>
+<!-- Highlighted Room Representation (Visual only, behind detail) -->
+<div class="p-3 bg-zinc-900 border-2 border-cmd-blue shadow-[0_0_15px_rgba(94,182,255,0.2)] flex justify-between items-center">
+<div class="flex flex-col">
+<span class="text-xs font-bold text-cmd-blue">OP_ALPHA_01</span>
+<span class="text-sm font-bold text-white">알파 작전</span>
+</div>
+<div class="text-right">
+<span class="text-xs text-cmd-blue font-bold tracking-tighter uppercase">READY FOR DEPLOY</span>
+</div>
+</div>
+<div class="p-3 bg-zinc-900 border border-zinc-800 flex justify-between items-center">
+<span class="text-xs font-bold text-zinc-500">OP_CHARLIE_92</span>
+<span class="text-xs text-zinc-600 tracking-widest uppercase">LOCKED</span>
+</div>
+<div class="p-3 bg-zinc-900 border border-zinc-800 flex justify-between items-center">
+<span class="text-xs font-bold text-zinc-500">OP_DELTA_11</span>
+<span class="text-xs text-zinc-600 tracking-widest uppercase">SYNCING</span>
+</div>
+</main>
+<!-- Detail Panel Overlay (Dossier) -->
+<div class="fixed inset-0 z-[60] flex items-center justify-center px-4 bg-zinc-950/60 backdrop-blur-sm">
+<section class="w-full max-w-sm bg-zinc-900 border-2 border-zinc-700 shadow-2xl relative overflow-hidden">
+<!-- Mechanical Header -->
+<div class="bg-zinc-800 border-b border-zinc-700 px-4 py-3 flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-cmd-blue animate-pulse"></span>
+<h2 class="text-xs font-black tracking-widest text-cmd-blue uppercase">작전 상세 정보</h2>
+</div>
+<span class="text-[10px] font-mono text-zinc-500">ID: 4492-AX</span>
+</div>
+<!-- Tactical Content -->
+<div class="p-5 space-y-6">
+<!-- Top Data Grid -->
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">작전명</label>
+<div class="text-base font-bold text-white">알파 작전</div>
+</div>
+<div class="space-y-1 text-right">
+<label class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">난이도</label>
+<div>
+<span class="bg-red-500/10 border border-red-500/30 text-red-500 text-[10px] font-black px-2 py-0.5 rounded-sm">어려움</span>
+</div>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">분대 현황</label>
+<div class="text-lg font-headline font-bold text-cmd-blue">2 <span class="text-zinc-600">/ 4</span></div>
+</div>
+<div class="space-y-1 text-right">
+<label class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">네트워크</label>
+<div class="text-[11px] font-mono text-cmd-blue">42ms / 안정적</div>
+</div>
+</div>
+<!-- Squad Slots -->
+<div class="space-y-3">
+<label class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-[12px]" data-icon="group">group</span>
+                            분대원 프로필
+                        </label>
+<div class="flex gap-3">
+<!-- Filled Slots -->
+<div class="w-12 h-12 bg-zinc-800 border border-cmd-blue p-0.5 relative group">
+<img alt="Pilot A" class="w-full h-full object-cover opacity-80" data-alt="A pixel-art character portrait of a futuristic tactical soldier. The character has a dark visor and blue highlights on their tactical gear. The background is a solid dark navy, creating a stark, high-contrast look suitable for a military interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7R3DnSSQnVAHd5ydH_9c9hyZ1pVVPuuzZFSpPdgz6YnYc-2pR1GKIRYarjGSdMTkgu30IqUlBuCzdOXWDCrH8vCrjGuu1-YSsqdUjwExgyK3XUL5Lbrrf_1mhtQm_s6V5EA0lRVwHdKluFeY6aIATavJVgMDSGeqDYpYeGihSHwDHfpouygr4-zSFOfV1yNvHxzRLsJPAjLQ6tAOoVoFiQ9YCrlRpVvcMsHU5w0JIJjMU-mU3yUgMmaLRaH_zPd5gF6RlXmfH1PqT"/>
+<div class="absolute -bottom-1 -right-1 bg-cmd-blue w-3 h-3 flex items-center justify-center">
+<span class="material-symbols-outlined text-[8px] text-zinc-950 font-bold" data-icon="check" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+<div class="w-12 h-12 bg-zinc-800 border border-cmd-blue p-0.5 relative">
+<img alt="Pilot B" class="w-full h-full object-cover opacity-80" data-alt="A pixel-art character portrait of a pilot with a communications headset and tactical eyewear. The art style uses a restricted palette of greys, blues, and blacks. The lighting is harsh and directional, emphasizing the gritty, industrial military setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCf-b9VyMPm_Fm2kctv4P0K3B3-M7FftIegjC8NpW5GOwbVbi0Do1LC_rnbqGZNxTLEQSydw3c4UO7N5rEnBNZrsEerhNCiMpY2u1f8gMBmn86c_SPAlhJr4egWbK7a11xmZ33JS54akoX9T8vGt6hrixDRQtVmRxEgr0CTeIJQw8Nu9VaJ2-gCCa1QXzjY5OCM9-Loax1fZe1yCoYmPERBwYIH80lMMucwl3ZQMMYBM5F2sK8jOBPaEA5Kf6oJX-EtZeX8jCF9HJh"/>
+<div class="absolute -bottom-1 -right-1 bg-cmd-blue w-3 h-3 flex items-center justify-center">
+<span class="material-symbols-outlined text-[8px] text-zinc-950 font-bold" data-icon="check" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+<!-- Empty Slots -->
+<div class="w-12 h-12 bg-zinc-950 border border-zinc-800 border-dashed flex items-center justify-center text-zinc-700">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+</div>
+<div class="w-12 h-12 bg-zinc-950 border border-zinc-800 border-dashed flex items-center justify-center text-zinc-700">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+</div>
+</div>
+<div class="text-[10px] text-zinc-400 font-mono italic">지휘관: Pilot_Ghost_Lead</div>
+</div>
+<!-- Briefing Section -->
+<div class="p-3 bg-zinc-950 border-l-2 border-cmd-blue space-y-1">
+<label class="text-[10px] text-cmd-blue font-bold uppercase tracking-widest">미션 브리핑</label>
+<p class="text-xs leading-relaxed text-zinc-300 font-medium">
+                            '동쪽 구역 방어선 강화 필요. 탄약 지원 요청됨.'
+                        </p>
+</div>
+<!-- Actions -->
+<div class="space-y-3 pt-2">
+<button class="w-full bg-signal-orange text-zinc-950 font-black text-sm py-4 uppercase tracking-[0.2em] active:brightness-125 transition-all shadow-[0_4px_0_0_#92400e]">
+                            작전 참여
+                        </button>
+<button class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs py-3 border border-zinc-700 transition-colors uppercase tracking-widest">
+                            취소
+                        </button>
+</div>
+</div>
+<!-- Industrial Decals -->
+<div class="absolute bottom-1 right-1 opacity-20 pointer-events-none">
+<span class="text-[40px] font-black text-white leading-none">ALPHA</span>
+</div>
+</section>
+</div>
+<!-- BottomNavBar (From JSON) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-zinc-950/95 border-t border-zinc-800 shadow-2xl shadow-orange-500/5">
+<div class="flex flex-col items-center justify-center text-orange-500 bg-orange-500/5 py-1 px-3 rounded-lg">
+<span class="material-symbols-outlined" data-icon="deployed_code" style="font-variation-settings: 'FILL' 1;">deployed_code</span>
+<span class="text-[10px] font-bold tracking-widest">작전 목록</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-500 opacity-60">
+<span class="material-symbols-outlined" data-icon="shield">shield</span>
+<span class="text-[10px] font-bold tracking-widest">무기고</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-500 opacity-60">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="text-[10px] font-bold tracking-widest">분대 편성</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-500 opacity-60">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+<span class="text-[10px] font-bold tracking-widest">통신망</span>
+</div>
+</nav>
+</div>
+</body></html>

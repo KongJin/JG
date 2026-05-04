@@ -66,6 +66,7 @@ Stitch source를 Unity UI Toolkit 후보 surface로 옮길 때는 semantic hiera
 Unity UI authoring 변경은 실행 전에 scene/prefab/runtime contract를 확인하고, 실행 후에는 현재 evidence를 다시 읽는다.
 
 - script edit가 재컴파일을 필요로 하면 Play Mode를 먼저 멈추고 compile/reload 안정화를 기다린다.
+- Unity Editor가 이미 열려 있고 사용자가 scene/prefab/UI를 보고 있을 가능성이 있으면, auxiliary EditMode 검증은 기본적으로 Play Mode를 보존하거나 `blocked`로 보고한다. open-scene dirty prompt 가능성이 있는 자동 Play Mode stop은 explicit lane ownership 또는 사용자 의도 없이 실행하지 않는다.
 - scene/prefab authoring은 변경 전 target hierarchy와 component type을 확인하고, 변경 후 같은 node/component를 다시 읽는다.
 - 새 wrapper/helper visual을 추가할 때 input을 가리거나 intended node를 숨기지 않는지 확인한다.
 - console/log 판단은 timestamp나 최신 run 기준으로 stale error와 current failure를 분리한다.

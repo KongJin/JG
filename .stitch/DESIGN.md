@@ -52,6 +52,34 @@ Rules:
 - Garage summary is visible but quieter than room actions
 - Empty room state must look like a complete tactical panel, not a blank container
 
+### Lobby Accepted Source Freeze - 2026-05-04
+
+Use the following Stitch screens as the current accepted Lobby flow baseline inside project `11729197788183873077`.
+Treat each state as its own source freeze and do not mix visual decisions across unrelated candidates.
+
+1. Populated matchmaking lobby
+   - Screen: `Matchmaking Lobby`
+   - Screen ID: `d64845cd097a4a30b8fb2e1fb4435347`
+   - Local export: `.stitch/designs/set-a-matchmaking-lobby-populated-v2.{html,png}`
+2. Empty room list baseline
+   - Screen: `Matchmaking Lobby (Empty State)`
+   - Screen ID: `0e5a4d83630e479eb81eb1d7463dfac5`
+   - Local export: `.stitch/designs/set-a-matchmaking-lobby-empty-state-v2.{html,png}`
+3. Create room overlay
+   - Screen: `Create Operation Modal Overlay`
+   - Screen ID: `d308a69f1e684a1189b3681671bac049`
+   - Local export: `.stitch/designs/set-a-create-operation-modal-overlay-v2.{html,png}`
+4. Selected room detail state
+   - Screen: `Room Detail Panel - Selected State`
+   - Screen ID: `f716ca6e17f84ba7bd9338838cf43752`
+   - Local export: `.stitch/designs/set-a-room-detail-panel-selected-v2.{html,png}`
+
+Current design judgment:
+
+- Main home baseline favors the empty-state lobby over the older sparse list layout.
+- Room selection should escalate into the selected-room detail panel before join.
+- Room creation should stay an overlay flow, not a peer full-screen page.
+
 ### Garage
 
 The first read must be:

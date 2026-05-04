@@ -27,16 +27,83 @@ namespace Features.Lobby.Presentation
 
     internal readonly struct LobbyRoomRowViewModel
     {
-        public LobbyRoomRowViewModel(DomainEntityId roomId, string text, bool isEnabled)
+        public LobbyRoomRowViewModel(
+            DomainEntityId roomId,
+            string titleText,
+            string metaText,
+            string statusText,
+            bool canJoin,
+            bool isSelected,
+            int filledSlots,
+            int totalSlots)
         {
             RoomId = roomId;
-            Text = text ?? string.Empty;
-            IsEnabled = isEnabled;
+            TitleText = titleText ?? string.Empty;
+            MetaText = metaText ?? string.Empty;
+            StatusText = statusText ?? string.Empty;
+            CanJoin = canJoin;
+            IsSelected = isSelected;
+            FilledSlots = filledSlots < 0 ? 0 : filledSlots;
+            TotalSlots = totalSlots < 0 ? 0 : totalSlots;
         }
 
         public DomainEntityId RoomId { get; }
-        public string Text { get; }
-        public bool IsEnabled { get; }
+        public string TitleText { get; }
+        public string MetaText { get; }
+        public string StatusText { get; }
+        public bool CanJoin { get; }
+        public bool IsSelected { get; }
+        public int FilledSlots { get; }
+        public int TotalSlots { get; }
+        public string Text => string.IsNullOrWhiteSpace(MetaText)
+            ? TitleText
+            : $"{TitleText}  {MetaText}";
+    }
+
+    internal sealed class LobbyRoomSelectionViewModel
+    {
+        public static readonly LobbyRoomSelectionViewModel Empty = new(
+            default,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            filledSlots: 0,
+            totalSlots: 0,
+            canJoin: false);
+
+        public LobbyRoomSelectionViewModel(
+            DomainEntityId roomId,
+            string titleText,
+            string metaText,
+            string statusText,
+            string bodyText,
+            int filledSlots,
+            int totalSlots,
+            bool canJoin,
+            string joinButtonText = "작전 참여")
+        {
+            RoomId = roomId;
+            TitleText = titleText ?? string.Empty;
+            MetaText = metaText ?? string.Empty;
+            StatusText = statusText ?? string.Empty;
+            BodyText = bodyText ?? string.Empty;
+            FilledSlots = filledSlots < 0 ? 0 : filledSlots;
+            TotalSlots = totalSlots < 0 ? 0 : totalSlots;
+            CanJoin = canJoin;
+            JoinButtonText = string.IsNullOrWhiteSpace(joinButtonText) ? "작전 참여" : joinButtonText;
+        }
+
+        public DomainEntityId RoomId { get; }
+        public string TitleText { get; }
+        public string MetaText { get; }
+        public string StatusText { get; }
+        public string BodyText { get; }
+        public int FilledSlots { get; }
+        public int TotalSlots { get; }
+        public bool CanJoin { get; }
+        public string JoinButtonText { get; }
+        public bool IsVisible => !string.IsNullOrWhiteSpace(RoomId.Value);
     }
 
     internal sealed class LobbyRoomDetailViewModel
@@ -71,6 +138,40 @@ namespace Features.Lobby.Presentation
         public bool LocalIsReady { get; }
         public string ReadyButtonText { get; }
         public bool CanStartGame { get; }
+    }
+
+    internal sealed class LobbyGarageSummaryViewModel
+    {
+        public static readonly LobbyGarageSummaryViewModel Empty = new(
+            "편성 대기",
+            "현역 0/8",
+            $"최소 {Features.Garage.Domain.GarageRoster.MinReadySlots}기 이상 저장하면 출격 가능합니다.",
+            filledSlots: 0,
+            totalSlots: Features.Garage.Domain.GarageRoster.MaxSlots,
+            isReady: false);
+
+        public LobbyGarageSummaryViewModel(
+            string statusText,
+            string summaryText,
+            string detailText,
+            int filledSlots,
+            int totalSlots,
+            bool isReady)
+        {
+            StatusText = statusText ?? string.Empty;
+            SummaryText = summaryText ?? string.Empty;
+            DetailText = detailText ?? string.Empty;
+            FilledSlots = filledSlots < 0 ? 0 : filledSlots;
+            TotalSlots = totalSlots < 0 ? 0 : totalSlots;
+            IsReady = isReady;
+        }
+
+        public string StatusText { get; }
+        public string SummaryText { get; }
+        public string DetailText { get; }
+        public int FilledSlots { get; }
+        public int TotalSlots { get; }
+        public bool IsReady { get; }
     }
 
     internal sealed class LobbyAccountViewModel

@@ -182,7 +182,7 @@ When Unity is already open and you need targeted EditMode tests, use:
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityMcpEditModeTests.ps1 -TestName Tests.Editor.ArchitectureGuardrailReflectionTests -OutputPath artifacts/unity/architecture-guardrail-reflection-tests.xml
 ```
 
-The wrapper owns the Unity resource lock, stops an existing Play Mode session before running EditMode tests, and waits for compile to settle. Pass `-PreservePlayMode` only when the current Play Mode session must not be interrupted; in that case the test run blocks instead of stopping the editor.
+The wrapper owns the Unity resource lock and waits for compile to settle. If Unity is already in Play Mode, the default behavior is now to preserve the current editor session and block the test run instead of stopping Play Mode automatically. Pass `-AllowPlayModeStop` only when the current lane intentionally owns that interruption. `-PreservePlayMode` remains an explicit way to demand the same blocked behavior.
 
 ## Workflow Policy Check
 

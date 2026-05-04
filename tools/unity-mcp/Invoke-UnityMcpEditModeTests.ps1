@@ -8,6 +8,7 @@ param(
     [string]$BaseUrl = "",
     [string]$Owner = "unity-mcp-editmode-tests",
     [int]$LockTimeoutSec = 0,
+    [switch]$AllowPlayModeStop,
     [switch]$PreservePlayMode
 )
 
@@ -32,8 +33,8 @@ try {
     $compile = $null
 
     if ($health.State.isPlaying -or (Get-McpPlayModeChanging -State $health.State)) {
-        if ($PreservePlayMode) {
-            throw "Unity is in or entering Play Mode. EditMode tests require Edit Mode; rerun without -PreservePlayMode to stop Play Mode automatically."
+        if ($PreservePlayMode -or -not $AllowPlayModeStop) {
+            throw "Unity is in or entering Play Mode. EditMode tests default to preserving the current editor session. Rerun with -AllowPlayModeStop only when interrupting Play Mode is intentional."
         }
 
         Write-Host "Unity is in Play Mode; stopping before EditMode tests." -ForegroundColor Yellow

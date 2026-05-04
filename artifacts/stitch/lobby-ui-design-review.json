@@ -1,0 +1,260 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifactKind": "stitch-design-review",
+  "surfaceId": "lobby-core-screen",
+  "source": {
+    "screenshotPath": "c:\\Users\\SOL\\Desktop\\스크린샷 2026-05-04 205400.png",
+    "reviewDate": "2026-05-04",
+    "reviewer": "claude-opus"
+  },
+  "designEvaluation": {
+    "overall": "Functional but needs visual enhancement",
+    "strengths": [
+      "Clear navigation structure with 4 main tabs",
+      "Consistent blue color theme",
+      "Functional list-detail pattern",
+      "All necessary information visible at once"
+    ],
+    "weaknesses": [
+      "Low visual hierarchy - header blends with content",
+      "Preview area too small and lacks visual impact",
+      "Information density is high - can feel cluttered",
+      "Selected state feedback is subtle",
+      "Limited contrast between UI elements and background",
+      "Missing interactive visual feedback (hover, transition)"
+    ]
+  },
+  "uiElements": {
+    "header": {
+      "title": "NOVA1492",
+      "subtitle": "당신만의 로봇을 커스터마이즈하세요",
+      "issues": [
+        "Header lacks visual separation from content area",
+        "No utility actions visible (search, settings, notifications)"
+      ],
+      "suggestions": [
+        "Add background color/gradient to create section separation",
+        "Add search and settings icons in top right",
+        "Consider adding user profile or currency display"
+      ]
+    },
+    "navigation": {
+      "tabs": ["GARAGE", "LOBBY", "BATTLE", "MYPAGE"],
+      "activeTab": "LOBBY",
+      "issues": [
+        "Tab design is standard but lacks visual personality",
+        "Active state feedback could be stronger"
+      ],
+      "suggestions": [
+        "Add icons to each tab for better recognition",
+        "Consider bottom navigation with larger touch targets",
+        "Add active tab underline or background highlight"
+      ]
+    },
+    "contentArea": {
+      "layout": "List on left, Detail on right, Preview in center",
+      "issues": [
+        "Three-column layout on mobile would be problematic",
+        "Preview area is too small and gets lost",
+        "List and detail panels compete for attention"
+      ],
+      "suggestions": [
+        "Consider responsive: List -> Detail -> Preview pattern",
+        "Or: Preview (large) with overlay detail panel",
+        "Add tab or toggle to switch between list/detail views"
+      ]
+    },
+    "previewArea": {
+      "current": "Small 3D preview in center",
+      "issues": [
+        "Too small to appreciate the model",
+        "No rotation or interaction indication",
+        "Blends with background"
+      ],
+      "suggestions": [
+        "Make preview larger and more prominent",
+        "Add 360° rotation support with gesture indication",
+        "Add background effects (gradient, lighting, particles)",
+        "Consider fullscreen preview mode"
+      ]
+    },
+    "listItems": {
+      "pattern": "Name, Level, Stats",
+      "items": ["CORE-01", "CORE-02", "CORE-03", "CORE-04"],
+      "issues": [
+        "All items look identical when not selected",
+        "Stats are hard to compare at a glance",
+        "No indication of which items are owned/locked"
+      ],
+      "suggestions": [
+        "Add progress bars or visual indicators for stats",
+        "Add rarity/color coding for different item tiers",
+        "Add lock icon for unowned items",
+        "Show comparison arrows for stat differences"
+      ]
+    },
+    "detailPanel": {
+      "current": "Shows selected item stats",
+      "issues": [
+        "Lacks visual hierarchy - all stats same weight",
+        "No action buttons visible in screenshot",
+        "Could benefit from more visual organization"
+      ],
+      "suggestions": [
+        "Group related stats (offense, defense, utility)",
+        "Add action buttons: [Equip], [Compare], [Details]",
+        "Use visual scale/bars for stats",
+        "Add upgrade path or max level indicator"
+      ]
+    }
+  },
+  "improvementProposals": [
+    {
+      "priority": "High",
+      "title": "Enhance Preview Area",
+      "description": "Make the 3D preview the hero element of the screen",
+      "changes": [
+        "Increase preview size to 40-50% of screen",
+        "Add interactive rotation with gesture hint",
+        "Add background gradient and lighting effects",
+        "Consider fullscreen mode option"
+      ]
+    },
+    {
+      "priority": "High",
+      "title": "Improve Visual Hierarchy",
+      "description": "Create clear separation between UI sections",
+      "changes": [
+        "Add distinct background colors for header vs content",
+        "Strengthen active tab visual feedback",
+        "Add subtle shadows/borders to panels",
+        "Use typography scale for importance"
+      ]
+    },
+    {
+      "priority": "Medium",
+      "title": "Add Visual Stat Representation",
+      "description": "Make stats easier to understand at a glance",
+      "changes": [
+        "Replace text stats with progress bars/gauges",
+        "Color-code stat types (Energy=blue, Armor=orange, etc.)",
+        "Add comparison indicators when selecting items",
+        "Show stat deltas relative to equipped item"
+      ]
+    },
+    {
+      "priority": "Medium",
+      "title": "Add Interactive Feedback",
+      "description": "Improve perceived responsiveness",
+      "changes": [
+        "Add hover states for all interactive elements",
+        "Add transition animations for state changes",
+        "Add equip/unequip animations",
+        "Add ripple or scale effects on tap"
+      ]
+    },
+    {
+      "priority": "Low",
+      "title": "Enhance Navigation",
+      "description": "Add personality to tab navigation",
+      "changes": [
+        "Add icons to each tab",
+        "Consider badge notifications",
+        "Add haptic feedback on tab switch"
+      ]
+    }
+  ],
+  "layoutAlternatives": {
+    "current": "Three-column (List | Preview | Detail)",
+    "alternative1": {
+      "name": "Preview-First",
+      "description": "Large preview with overlay controls",
+      "layout": "Preview (70%) + List/Detail overlay (30%)"
+    },
+    "alternative2": {
+      "name": "Tabbed Detail",
+      "description": "List view with detail in separate tab",
+      "layout": "List (100%) → [tap item] → Detail (100%)"
+    },
+    "alternative3": {
+      "name": "Card Grid",
+      "description": "Grid of cards with expandable detail",
+      "layout": "2-column grid → expand for detail"
+    }
+  },
+  "colorPalette": {
+    "current": "Blue monochromatic",
+    "suggested": {
+      "primary": "#2196F3",
+      "secondary": "#1976D2",
+      "accent": "#FFC107",
+      "background": "#0D1B2A",
+      "surface": "#1B263B",
+      "text": {
+        "primary": "#FFFFFF",
+        "secondary": "#B0BEC5",
+        "disabled": "#607D8B"
+      },
+      "stats": {
+        "energy": "#4FC3F7",
+        "armor": "#FFB74D",
+        "attack": "#EF5350",
+        "speed": "#66BB6A"
+      }
+    }
+  },
+  "uiToolkitSuggestions": {
+    "documentStructure": [
+      "LobbyRoot (VisualElement)",
+      "  - HeaderContainer",
+      "    - TitleLabel",
+      "    - SubtitleLabel",
+      "    - UtilityButtonsContainer",
+      "  - ContentContainer",
+      "    - PreviewContainer (3D render target)",
+      "      - RenderTextureElement",
+      "      - RotationHintLabel",
+      "    - DetailContainer",
+      "      - StatBarsContainer",
+      "      - ActionButtonsContainer",
+      "    - ListContainer (ScrollView)",
+      "      - CoreItem (repeated)",
+      "  - NavigationContainer",
+      "    - TabButtons (repeated)"
+    ],
+    "usSuggestions": [
+      "Use .preview-container with background-gradient for visual depth",
+      "Use .stat-bar with width transition for smooth stat changes",
+      "Use .tab-button:hover and :active states for feedback",
+      "Use .selected-item with border-left and background highlight",
+      "Use .action-button with scale transform on :active",
+      "Use flexbox for responsive layout",
+      "Use uss-transition for smooth state changes"
+    ],
+    "componentOpportunities": [
+      "CoreListItem: Reusable list item with name, level, stats",
+      "StatBar: Visual bar with value and percentage",
+      "TabButton: Tab with icon, label, and active state",
+      "ActionButton: Primary/secondary button styles",
+      "PreviewContainer: 3D render with rotation controls"
+    ]
+  },
+  "acceptanceCriteria": [
+    "Preview area is prominent (at least 30% of screen)",
+    "Selected item has clear visual distinction (border, background, or glow)",
+    "Stats are visually represented (bars, not just text)",
+    "All interactive elements have hover/active states",
+    "Navigation clearly indicates current tab",
+    "Responsive layout works on target aspect ratios",
+    "Color contrast meets accessibility standards",
+    "Transitions feel smooth (100-200ms duration)"
+  ],
+  "nextSteps": [
+    "Create UI Toolkit UXML structure based on suggestions",
+    "Define USS style variables for color palette",
+    "Implement responsive layout using Flexbox",
+    "Add stat bar component with animations",
+    "Integrate 3D preview render target",
+    "Test on target resolutions and devices"
+  ]
+}

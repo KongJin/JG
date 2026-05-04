@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>COMMAND_CENTER - Tactical Lobby</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&amp;family=IBM+Plex+Sans:wght@400;600&amp;family=Public+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#F59E0B", // Signal Orange
+                        "secondary": "#5EB6FF", // Command Blue
+                        "slate": {
+                            900: "#111827",
+                            950: "#020617"
+                        }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk", "sans-serif"],
+                        "body": ["IBM Plex Sans", "sans-serif"],
+                        "label": ["Public Sans", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .panel-inset {
+            background: linear-gradient(180deg, rgba(2, 6, 23, 1) 0%, rgba(15, 23, 42, 1) 100%);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+        }
+        .mechanical-bg {
+            background-color: #0f172a;
+            background-image: 
+                linear-gradient(rgba(30, 41, 59, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(30, 41, 59, 0.5) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-slate-950 text-slate-200 font-body selection:bg-orange-500/30 overflow-x-hidden">
+<!-- TopAppBar (Shared Component) -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-4 h-12 backdrop-blur-md bg-slate-950/80 border-b-2 border-slate-800">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-500" style="font-size: 18px;">sync</span>
+<span class="font-mono uppercase tracking-widest text-xs text-orange-500">동기화 완료</span>
+</div>
+<h1 class="text-orange-500 font-black tracking-tighter text-sm font-headline">COMMAND_CENTER</h1>
+<div class="w-6"></div> <!-- Balance spacer -->
+</header>
+<main class="pt-16 pb-24 px-4 mechanical-bg min-h-screen">
+<!-- Header Section: Open Rooms -->
+<section class="mb-6">
+<div class="flex items-center justify-between mb-3 px-1 border-l-4 border-secondary">
+<h2 class="font-headline font-bold text-lg text-secondary pl-3">열린 방</h2>
+<span class="text-[10px] font-mono text-slate-500">ACTIVE_SESSIONS: 12</span>
+</div>
+<div class="space-y-2">
+<!-- Room Card 1 -->
+<div class="bg-slate-900 border border-slate-700 flex items-center justify-between p-3 rounded-sm shadow-sm">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-xs font-bold font-headline text-white">알파 작전</span>
+<span class="bg-orange-950/40 text-orange-500 text-[10px] px-1 border border-orange-900/50">어려움</span>
+</div>
+<div class="flex gap-3 text-[10px] text-slate-400 font-mono">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">group</span> 2/4</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">sensors</span> 42ms</span>
+</div>
+</div>
+<button class="bg-slate-800 hover:bg-secondary/20 hover:text-secondary text-slate-400 border border-slate-600 px-4 py-1.5 text-xs font-bold transition-colors uppercase">
+                        Join
+                    </button>
+</div>
+<!-- Room Card 2 -->
+<div class="bg-slate-900 border border-slate-700 flex items-center justify-between p-3 rounded-sm shadow-sm">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-xs font-bold font-headline text-white">폐허 수색</span>
+<span class="bg-blue-950/40 text-secondary text-[10px] px-1 border border-blue-900/50">보통</span>
+</div>
+<div class="flex gap-3 text-[10px] text-slate-400 font-mono">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">group</span> 1/4</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">sensors</span> 18ms</span>
+</div>
+</div>
+<button class="bg-slate-800 hover:bg-secondary/20 hover:text-secondary text-slate-400 border border-slate-600 px-4 py-1.5 text-xs font-bold transition-colors uppercase">
+                        Join
+                    </button>
+</div>
+<!-- Room Card 3 -->
+<div class="bg-slate-900 border border-slate-700 flex items-center justify-between p-3 rounded-sm shadow-sm">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-xs font-bold font-headline text-white">데이터 탈취</span>
+<span class="bg-red-950/40 text-red-500 text-[10px] px-1 border border-red-900/50">최악</span>
+</div>
+<div class="flex gap-3 text-[10px] text-slate-400 font-mono">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">group</span> 3/4</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">sensors</span> 65ms</span>
+</div>
+</div>
+<button class="bg-slate-800 hover:bg-secondary/20 hover:text-secondary text-slate-400 border border-slate-600 px-4 py-1.5 text-xs font-bold transition-colors uppercase">
+                        Join
+                    </button>
+</div>
+</div>
+</section>
+<!-- Secondary Section: Create Room -->
+<section class="mb-6">
+<div class="border-2 border-slate-700 p-4 bg-slate-900/50 relative overflow-hidden">
+<!-- Bolted Corner Effects -->
+<div class="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-slate-500"></div>
+<div class="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-slate-500"></div>
+<div class="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-slate-500"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-slate-500"></div>
+<h3 class="font-headline font-bold text-xs uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">add_box</span> 방 만들기
+                </h3>
+<div class="grid grid-cols-2 gap-3 mb-4">
+<div class="col-span-2">
+<label class="block text-[10px] text-slate-500 uppercase font-mono mb-1">작전명 (Room Name)</label>
+<input class="w-full bg-slate-950 border border-slate-800 text-xs py-2 px-3 text-secondary focus:ring-0 focus:border-secondary transition-all" placeholder="STRAT_OPS_001" type="text"/>
+</div>
+<div>
+<label class="block text-[10px] text-slate-500 uppercase font-mono mb-1">인원 제한</label>
+<select class="w-full bg-slate-950 border border-slate-800 text-xs py-2 px-3 text-slate-300 focus:ring-0">
+<option>4인</option>
+<option>2인</option>
+</select>
+</div>
+<div>
+<label class="block text-[10px] text-slate-500 uppercase font-mono mb-1">공개 여부</label>
+<select class="w-full bg-slate-950 border border-slate-800 text-xs py-2 px-3 text-slate-300 focus:ring-0">
+<option>공개</option>
+<option>비공개</option>
+</select>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-orange-600 text-slate-950 font-black py-3 rounded-sm shadow-[0_4px_0_0_#B45309] active:shadow-none active:translate-y-1 transition-all flex items-center justify-center gap-2 uppercase tracking-tighter">
+<span class="material-symbols-outlined font-variation-settings-fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                    작전 개시
+                </button>
+</div>
+</section>
+<!-- Tertiary Section: Garage Summary -->
+<section>
+<div class="panel-inset border border-slate-800 p-3 flex items-center gap-4">
+<div class="w-16 h-16 bg-slate-900 border border-slate-700 relative flex-shrink-0">
+<img class="w-full h-full object-cover opacity-80" data-alt="A highly detailed 3D render of a futuristic mechanical combat unit named Vindicator Mk4, standing in a dimly lit industrial hangar. The mech is constructed from heavy matte-charcoal plating with subtle orange warning labels and hydraulic pistons. Soft blue lights glow from its ocular sensors and core components. The style is gritty and functional, mimicking advanced tactical military hardware in a dark, atmospheric sci-fi setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa8G14By-vNG8NXS-CSbPicq_nMIESyS1Zn5D_jyZwBbLsit51Z_-vxohL4ZEqBhFjHJ5stY3KZWew2BV8NQCQ7ymmSK0iyBsFa_aG1H3w6DsBgcAVJVUt2lh8HjnPjRjmBMgWzstpRgRwiVCJ1AUURv9u6v23Esish9MUgYHaI-pmOgOQ09F6uNbHfkn537JHhn2BeJNlWs6GqE789ng3SDJvEcYx2G1UxLlYQLfadjhayODWtLvSXfyO20nTmDhZQIGU80fVJb7a"/>
+<div class="absolute bottom-0 right-0 bg-secondary text-[8px] text-slate-950 px-1 font-bold">LV.42</div>
+</div>
+<div class="flex-1 overflow-hidden">
+<div class="text-[10px] font-mono text-slate-500 flex items-center justify-between mb-1">
+<span>UNIT_MODEL</span>
+<span class="text-secondary flex items-center gap-1"><span class="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse"></span> 준비 완료</span>
+</div>
+<div class="text-sm font-bold font-headline text-white truncate">VINDICATOR-MK4</div>
+<div class="mt-1 h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-3/4"></div>
+</div>
+</div>
+<button class="text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined">settings_suggest</span>
+</button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Shared Component) -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-stretch h-16 bg-slate-950 border-t-4 border-slate-900 shadow-[0_-4px_10px_rgba(0,0,0,0.5)]">
+<!-- 로비 (Active) -->
+<a class="flex flex-col items-center justify-center text-blue-400 bg-blue-950/30 border-t-2 border-blue-500 pt-1 pb-2 flex-1 active:scale-95 duration-75" href="#">
+<span class="material-symbols-outlined mb-0.5" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="font-sans font-bold text-[11px]">로비</span>
+</a>
+<!-- 차고 -->
+<a class="flex flex-col items-center justify-center text-slate-500 pt-1 pb-2 flex-1 hover:text-blue-300 active:scale-95 duration-75" href="#">
+<span class="material-symbols-outlined mb-0.5">precision_manufacturing</span>
+<span class="font-sans font-bold text-[11px]">차고</span>
+</a>
+<!-- 기록 -->
+<a class="flex flex-col items-center justify-center text-slate-500 pt-1 pb-2 flex-1 hover:text-blue-300 active:scale-95 duration-75" href="#">
+<span class="material-symbols-outlined mb-0.5">database</span>
+<span class="font-sans font-bold text-[11px]">기록</span>
+</a>
+</nav>
+</body></html>

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-04",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "Unity MCP editor-session safety, forward rule capture, and UI authoring verification guard",
+  "observedMutationClass": "codex guardrail owner update, Unity UI authoring checkpoint update, Unity MCP editmode helper safe default, workflow/reference alignment, and recurrence closeout update",
+  "acceptanceEvidenceClass": "PowerShell syntax check for the Unity MCP helper plus rules:sync-closeout and docs lint; repo-wide rules lint still depends on unrelated runtime hotspot cleanup",
+  "escalationRequired": false,
+  "rootCause": "The Unity MCP EditMode helper auto-stopped Play Mode by default. In an open editor session, especially when queued scene changes or user-owned scene inspection are present, that auxiliary verification path can surface an unexpected scene dirty/save prompt. The repo guardrails also did not explicitly require preserve-play-mode/block-by-default behavior or forbid parallel Unity shared-resource helpers for this case.",
+  "prevention": "Default `Invoke-UnityMcpEditModeTests.ps1` to preserve the current editor session unless `-AllowPlayModeStop` is explicit, record the no-parallel Unity shared-resource rule in ops.codex-coding-guardrails, and add the same preserve-play-mode expectation to the Unity UI authoring and Unity MCP execution references. Preserve the existing hard-fail checks for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "powershell -NoProfile -Command \"[void][scriptblock]::Create((Get-Content -Raw '.\\\\tools\\\\unity-mcp\\\\Invoke-UnityMcpEditModeTests.ps1')); 'syntax-ok'\"; npm run --silent rules:sync-closeout -- --artifact artifacts/rules/issue-recurrence-closeout.d/local-unity-playmode-session-guard-20260504.json; npm run --silent docs:lint; repo-wide npm run --silent rules:lint currently fails on unrelated runtime hotspot budget `Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyUitkRuntimeAdapter.cs` lines=628 budget=460",
+  "blockedReason": "",
+  "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-unity-playmode-session-guard-20260504.json",
+    "docs/ops/codex_coding_guardrails.md",
+    "docs/ops/unity-ui-authoring-workflow.md"
+  ]
+}

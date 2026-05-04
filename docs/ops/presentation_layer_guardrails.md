@@ -160,6 +160,18 @@ public sealed class RuntimeAdapter : MonoBehaviour
 - 기존 public compatibility 메서드는 남기더라도 document host로 얇게 위임하고 새 로직을 추가하지 않는다.
 - 다른 feature shell이 Garage/Lobby 같은 concrete Presentation 타입을 직접 조작해야 하면 host seam을 먼저 둔다.
 
+## Static UI Ownership
+
+**규칙**: 정적인 authored UI geometry는 `UXML/USS`가 owner이고, runtime code는 이를 보정하거나 덮어쓰지 않는다.
+
+- `RuntimeAdapter`는 `display`, enabled state, class toggle, text, image source처럼 상태 표현만 바꾼다.
+- `margin`, `padding`, `top/right/bottom/left`, `width/height`, `min/max`, `position`, `flex-basis/grow/shrink` 같은 정적 geometry는 authored `UXML/USS`에서만 조정한다.
+- navigation shell gap, panel spacing, card height, fixed graph frame 같은 "항상 같은 레이아웃" 문제를 runtime style write로 수리하지 않는다.
+- dynamic fill bar, preview visibility, selected highlight처럼 상태에 따라 달라지는 표현은 dedicated surface/render owner에서 다루되, `RuntimeAdapter`가 authored shell geometry owner로 다시 커지지 않게 유지한다.
+- `worldBound`, `resolvedStyle`, geometry callback을 써서 authored layout을 runtime repair하는 경로는 마지막 수단이 아니라 안티패턴 후보로 본다.
+
+**정적 lint**: [`tools/workflow/test-runtime-static-ui-ownership.mjs`](../../tools/workflow/test-runtime-static-ui-ownership.mjs) (`npm run runtime:static-ui-ownership:lint`, `policy:lint`, `rules:lint`)가 `Assets/Scripts/Features/**/Presentation/**/*RuntimeAdapter.cs`를 검사해 static geometry style write를 hard-fail한다.
+
 ## Async Operation State
 
 **규칙**: Presentation 비동기 작업은 UI 상태와 취소/late result 처리를 함께 가진다.

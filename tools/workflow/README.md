@@ -37,7 +37,7 @@ Do not use the shared `unity-ui-authoring-workflow-policy.json` as closeout evid
 
 Do not call `Unity.exe -batchmode -runTests` directly while this repo is open in Unity Editor.
 Use `Invoke-UnityEditModeTests.ps1`; it first checks `Library/EditorInstance.json` and blocks with `open-editor-owns-project` when the active editor already owns the project.
-If the editor is open and MCP is available, prefer `tools\unity-mcp\Invoke-UnityMcpEditModeTests.ps1` for targeted EditMode tests; it stops stale Play Mode before the run instead of requiring a manual stop/retry loop.
+If the editor is open and MCP is available, prefer `tools\unity-mcp\Invoke-UnityMcpEditModeTests.ps1` for targeted EditMode tests. Its safe default is now to preserve the current Play Mode session and block instead of stopping the editor. Pass `-AllowPlayModeStop` only when the current verification lane intentionally owns that interruption.
 
 Unity Editor, Play Mode, MCP UI policy, screenshots, and CLI EditMode tests are treated as one shared Unity resource.
 `Invoke-UnityEditModeTests.ps1`, `Invoke-UnityMcpEditModeTests.ps1`, `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`, and MCP runtime smoke helpers acquire `Temp/UnityMcp/unity-resource.lock` before using that resource.

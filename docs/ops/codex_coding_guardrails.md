@@ -198,6 +198,15 @@ scene/prefab wiring, asset catalog/profile, network payload, UI token, visual pr
 - 테스트가 비현실적이면 이유와 대체 검증을 남긴다.
 - mechanical pass를 actual acceptance success처럼 보고하지 않는다.
 
+## Unity Editor Session Safety
+
+Unity Editor가 이미 열려 있고 사용자가 scene/prefab/UI를 보고 있거나 만질 가능성이 있으면, auxiliary verification이 그 세션을 끊거나 dirty 상태를 유발하지 않도록 보수적으로 다룬다.
+
+- `Invoke-UnityMcpEditModeTests.ps1`, `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`, runtime smoke, capture처럼 Unity shared resource를 잡는 helper는 병렬로 실행하지 않는다.
+- EditMode 검증이 Play Mode 중단, queued scene change flush, open-scene dirty prompt를 유발할 수 있으면 기본값은 `preserve-play-mode` 또는 `blocked`다. ordinary UI/code iteration에서 자동으로 Play Mode를 멈추지 않는다.
+- 열린 Unity 세션을 끊어야만 하는 검증이면, 그 interruption 사실과 이유를 먼저 짧게 알리고 explicit user intent 또는 그 lane의 명시적 소유를 확인한 뒤 진행한다.
+- 씬 dirty popup 가능성이 있는 helper를 이미 실행했다면, 추가 mutation이나 검증을 계속 밀어붙이지 말고 현재 상태와 안전한 선택지(`Save`, `Don't Save`, `Cancel`)를 바로 설명한다.
+
 ## Recurrence Carryover Lite
 
 버그 수정, 회귀 수정, 기술부채 cleanup, 규칙/파이프라인 수정은 closeout 전에 `ops.acceptance-reporting-guardrails`의 Recurrence Check를 적용한다.

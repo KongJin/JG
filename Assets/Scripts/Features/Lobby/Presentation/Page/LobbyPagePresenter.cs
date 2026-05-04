@@ -13,7 +13,9 @@ namespace Features.Lobby.Presentation
 {
     internal sealed class LobbyPagePresenter
     {
-        public LobbyRoomListViewModel BuildRooms(IReadOnlyList<RoomSnapshot> rooms)
+        public LobbyRoomListViewModel BuildRooms(
+            IReadOnlyList<RoomSnapshot> rooms,
+            DomainEntityId selectedRoomId = default)
         {
             var count = rooms?.Count ?? 0;
             var rows = new List<LobbyRoomRowViewModel>(count);
@@ -25,15 +27,22 @@ namespace Features.Lobby.Presentation
                     var memberCount = room.Members?.Count ?? 0;
                     rows.Add(new LobbyRoomRowViewModel(
                         room.Id,
-                        $"{room.Name}  {memberCount}/{room.Capacity}  {DifficultyPreset.ToShortLabel(room.DifficultyPresetId)}",
-                        memberCount < room.Capacity));
+                        room.Name,
+                        BuildRoomMeta(memberCount, room.Capacity, room.DifficultyPresetId),
+                        BuildRoomStatus(memberCount < room.Capacity),
+                        memberCount < room.Capacity,
+                        room.Id == selectedRoomId,
+                        memberCount,
+                        room.Capacity));
                 }
             }
 
             return new LobbyRoomListViewModel(FormatRoomCount(count), rows);
         }
 
-        public LobbyRoomListViewModel BuildRooms(IReadOnlyList<RoomListItem> rooms)
+        public LobbyRoomListViewModel BuildRooms(
+            IReadOnlyList<RoomListItem> rooms,
+            DomainEntityId selectedRoomId = default)
         {
             var count = rooms?.Count ?? 0;
             var rows = new List<LobbyRoomRowViewModel>(count);
@@ -42,14 +51,81 @@ namespace Features.Lobby.Presentation
                 for (var i = 0; i < rooms.Count; i++)
                 {
                     var room = rooms[i];
+                    var canJoin = room.IsOpen && room.PlayerCount < room.MaxPlayers;
                     rows.Add(new LobbyRoomRowViewModel(
                         room.RoomId,
-                        $"{room.RoomName}  {room.PlayerCount}/{room.MaxPlayers}  {DifficultyPreset.ToShortLabel(room.DifficultyPresetId)}",
-                        room.IsOpen && room.PlayerCount < room.MaxPlayers));
+                        room.RoomName,
+                        BuildRoomMeta(room.PlayerCount, room.MaxPlayers, room.DifficultyPresetId),
+                        BuildRoomStatus(canJoin),
+                        canJoin,
+                        room.RoomId == selectedRoomId,
+                        room.PlayerCount,
+                        room.MaxPlayers));
                 }
             }
 
             return new LobbyRoomListViewModel(FormatRoomCount(count), rows);
+        }
+
+        public LobbyRoomSelectionViewModel BuildRoomSelection(
+            IReadOnlyList<RoomSnapshot> rooms,
+            DomainEntityId selectedRoomId)
+        {
+            if (rooms == null || string.IsNullOrWhiteSpace(selectedRoomId.Value))
+                return LobbyRoomSelectionViewModel.Empty;
+
+            for (var i = 0; i < rooms.Count; i++)
+            {
+                var room = rooms[i];
+                if (room.Id != selectedRoomId)
+                    continue;
+
+                var memberCount = room.Members?.Count ?? 0;
+                var canJoin = memberCount < room.Capacity;
+                return new LobbyRoomSelectionViewModel(
+                    room.Id,
+                    room.Name,
+                    BuildRoomMeta(memberCount, room.Capacity, room.DifficultyPresetId),
+                    BuildRoomStatus(canJoin),
+                    canJoin
+                        ? "작전 세부를 확인한 뒤 참여할 수 있습니다."
+                        : "현재 분대 정원이 가득 차 대기 중입니다.",
+                    memberCount,
+                    room.Capacity,
+                    canJoin);
+            }
+
+            return LobbyRoomSelectionViewModel.Empty;
+        }
+
+        public LobbyRoomSelectionViewModel BuildRoomSelection(
+            IReadOnlyList<RoomListItem> rooms,
+            DomainEntityId selectedRoomId)
+        {
+            if (rooms == null || string.IsNullOrWhiteSpace(selectedRoomId.Value))
+                return LobbyRoomSelectionViewModel.Empty;
+
+            for (var i = 0; i < rooms.Count; i++)
+            {
+                var room = rooms[i];
+                if (room.RoomId != selectedRoomId)
+                    continue;
+
+                var canJoin = room.IsOpen && room.PlayerCount < room.MaxPlayers;
+                return new LobbyRoomSelectionViewModel(
+                    room.RoomId,
+                    room.RoomName,
+                    BuildRoomMeta(room.PlayerCount, room.MaxPlayers, room.DifficultyPresetId),
+                    BuildRoomStatus(canJoin),
+                    canJoin
+                        ? "현재 열린 작전입니다. 참여 전에 분대 현황을 확인하세요."
+                        : "현재 참여할 수 없는 작전입니다. 다른 열린 방을 선택하세요.",
+                    room.PlayerCount,
+                    room.MaxPlayers,
+                    canJoin);
+            }
+
+            return LobbyRoomSelectionViewModel.Empty;
         }
 
         public LobbyRoomDetailViewModel BuildRoomDetail(RoomSnapshot room, DomainEntityId localMemberId)
@@ -111,6 +187,34 @@ namespace Features.Lobby.Presentation
                 authType == "GOOGLE" ? "READY" : "WAIT");
         }
 
+        public LobbyGarageSummaryViewModel BuildGarageSummary(AccountData accountData)
+        {
+            var roster = accountData?.GarageRoster;
+            var activeCount = roster?.Count ?? 0;
+            var isReady = roster != null && roster.IsValid;
+            if (isReady)
+            {
+                return new LobbyGarageSummaryViewModel(
+                    "출격 가능",
+                    $"현역 {activeCount}/{Features.Garage.Domain.GarageRoster.MaxSlots}",
+                    "저장된 편성이 최소 출격 기준을 충족합니다.",
+                    activeCount,
+                    Features.Garage.Domain.GarageRoster.MaxSlots,
+                    isReady: true);
+            }
+
+            var missingCount = Mathf.Max(0, Features.Garage.Domain.GarageRoster.MinReadySlots - activeCount);
+            return new LobbyGarageSummaryViewModel(
+                activeCount > 0 ? "편성 보강 필요" : "편성 대기",
+                $"현역 {activeCount}/{Features.Garage.Domain.GarageRoster.MaxSlots}",
+                missingCount > 0
+                    ? $"최소 {Features.Garage.Domain.GarageRoster.MinReadySlots}기까지 {missingCount}기 부족합니다."
+                    : "저장된 편성을 확인하세요.",
+                activeCount,
+                Features.Garage.Domain.GarageRoster.MaxSlots,
+                isReady: false);
+        }
+
         public LobbyOperationMemoryViewModel BuildOperationMemory(RecentOperationRecords records)
         {
             records ??= new RecentOperationRecords();
@@ -169,6 +273,16 @@ namespace Features.Lobby.Presentation
         private static string FormatRoomCount(int count)
         {
             return $"열린 방 {count}개";
+        }
+
+        private static string BuildRoomMeta(int playerCount, int capacity, int difficultyPresetId)
+        {
+            return $"{playerCount}/{capacity} | {DifficultyPreset.ToShortLabel(difficultyPresetId)}";
+        }
+
+        private static string BuildRoomStatus(bool canJoin)
+        {
+            return canJoin ? "참가 가능" : "정원 마감";
         }
 
         private static string Shorten(string value)
