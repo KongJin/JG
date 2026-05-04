@@ -53,6 +53,19 @@ namespace Features.Garage.Presentation
                 viewModel.FirepowerAssemblyForm);
         }
 
+        public static bool HasCurrentSelectionPreviewData(GarageSlotPreviewData preview)
+        {
+            if (preview == null)
+                return false;
+
+            if (preview.HasCompleteLoadout)
+                return HasPreviewAssemblyData(preview);
+
+            return preview.FramePreviewPrefab != null ||
+                   preview.FirepowerPreviewPrefab != null ||
+                   preview.MobilityPreviewPrefab != null;
+        }
+
         /// <summary>
         /// PreviewData를 사용하는 개선된 버전 - ViewModel 의존성 제거
         /// </summary>
@@ -129,6 +142,105 @@ namespace Features.Garage.Presentation
                 firepowerPrefab,
                 mobilityPrefab,
                 out previewRoot);
+        }
+
+        public static bool TryCreateCurrentSelectionPreviewRoot(
+            GarageSlotPreviewData preview,
+            Camera previewCamera,
+            out GameObject previewRoot)
+        {
+            previewRoot = null;
+            if (previewCamera == null || !HasCurrentSelectionPreviewData(preview))
+                return false;
+
+            if (HasPreviewAssemblyData(preview))
+            {
+                return TryCreatePreviewRoot(
+                    preview,
+                    previewCamera,
+                    preview.FramePreviewPrefab,
+                    preview.FirepowerPreviewPrefab,
+                    preview.MobilityPreviewPrefab,
+                    out previewRoot);
+            }
+
+            if (preview.HasCompleteLoadout)
+                return false;
+
+            previewRoot = new GameObject("PreviewRoot");
+            GaragePreviewAssembler.Attach(
+                previewRoot,
+                previewCamera.transform,
+                new Vector3(0f, -0.04f, 6f),
+                Vector3.zero);
+
+            int standaloneCount = CountStandaloneParts(preview);
+            int standaloneIndex = 0;
+            bool canUseFrameAsAnchor = preview.FramePreviewPrefab != null && CanApply(preview.FrameAlignment);
+
+            if (preview.FramePreviewPrefab != null)
+            {
+                var frameObj = Object.Instantiate(preview.FramePreviewPrefab);
+                frameObj.SetActive(true);
+                GaragePreviewAssembler.Attach(
+                    frameObj,
+                    previewRoot.transform,
+                    canUseFrameAsAnchor
+                        ? ResolveFramePosition(preview.FrameAlignment)
+                        : ResolveStandalonePartPosition(standaloneCount, standaloneIndex++),
+                    Vector3.zero);
+            }
+
+            if (preview.FirepowerPreviewPrefab != null)
+            {
+                var firepowerObj = Object.Instantiate(preview.FirepowerPreviewPrefab);
+                firepowerObj.SetActive(true);
+                bool canAttachFirepower =
+                    canUseFrameAsAnchor &&
+                    CanApply(preview.FirepowerAlignment) &&
+                    HasFrameFirepowerAnchorData(
+                        preview.FrameAlignment,
+                        preview.FirepowerAlignment,
+                        preview.FrameAssemblyForm,
+                        preview.FirepowerAssemblyForm);
+                var firepowerEuler = CanApply(preview.FirepowerAlignment)
+                    ? ResolveFirepowerEuler(preview.FirepowerAlignment)
+                    : FirepowerEulerCorrection;
+                GaragePreviewAssembler.Attach(
+                    firepowerObj,
+                    previewRoot.transform,
+                    canAttachFirepower
+                        ? ResolveAttachedPartPosition(
+                            preview.FrameAlignment,
+                            preview.FirepowerAlignment,
+                            firepowerEuler)
+                        : ResolveStandalonePartPosition(standaloneCount, standaloneIndex++),
+                    firepowerEuler);
+            }
+
+            if (preview.MobilityPreviewPrefab != null)
+            {
+                var mobilityObj = Object.Instantiate(preview.MobilityPreviewPrefab);
+                mobilityObj.SetActive(true);
+                bool canAttachMobility =
+                    canUseFrameAsAnchor &&
+                    CanApply(preview.MobilityAlignment) &&
+                    HasMobilitySocket(preview.MobilityAlignment, preview.MobilityUsesAssemblyPivot);
+                GaragePreviewAssembler.Attach(
+                    mobilityObj,
+                    previewRoot.transform,
+                    canAttachMobility
+                        ? ResolveMobilityPosition(
+                            preview.FrameAlignment,
+                            preview.MobilityAlignment,
+                            preview.MobilityUsesAssemblyPivot)
+                        : ResolveStandalonePartPosition(standaloneCount, standaloneIndex++),
+                    CanApply(preview.MobilityAlignment)
+                        ? preview.MobilityAlignment.Socket.Euler
+                        : Vector3.zero);
+            }
+
+            return previewRoot.transform.childCount > 0;
         }
 
         public static void SetYaw(GameObject root, float yawDegrees)
@@ -220,6 +332,32 @@ namespace Features.Garage.Presentation
         private static Vector3 ResolveFirepowerEuler(GaragePanelCatalog.PartAlignment firepowerAlignment)
         {
             return firepowerAlignment.Socket.Euler + FirepowerEulerCorrection;
+        }
+
+        private static int CountStandaloneParts(GarageSlotPreviewData preview)
+        {
+            if (preview == null)
+                return 0;
+
+            int count = 0;
+            if (preview.FramePreviewPrefab != null)
+                count++;
+            if (preview.FirepowerPreviewPrefab != null)
+                count++;
+            if (preview.MobilityPreviewPrefab != null)
+                count++;
+
+            return count;
+        }
+
+        private static Vector3 ResolveStandalonePartPosition(int partCount, int partIndex)
+        {
+            if (partCount <= 1)
+                return Vector3.zero;
+
+            const float spacing = 0.72f;
+            float centerOffset = (partCount - 1) * 0.5f;
+            return new Vector3((partIndex - centerOffset) * spacing, 0f, 0f);
         }
 
         private static bool HasFrameFirepowerAnchorData(

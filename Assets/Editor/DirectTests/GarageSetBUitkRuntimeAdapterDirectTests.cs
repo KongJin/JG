@@ -137,6 +137,22 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void SlotSurface_ShowsClearButtonOnlyForSelectedNonEmptySlot()
+        {
+            var root = LoadRoot();
+            var surface = new GarageSetBSlotSurface(root);
+
+            surface.Render(CreateSlots());
+
+            Assert.AreSame(root.Q<VisualElement>("SlotCard01Cell"), Button(root, "SlotClear01Button").parent);
+            Assert.AreEqual(DisplayStyle.Flex, Button(root, "SlotClear01Button").style.display.value);
+            Assert.IsTrue(Button(root, "SlotClear01Button").enabledSelf);
+            Assert.IsTrue(Button(root, "SlotClear01Button").ClassListContains("slot-clear-button--visible"));
+            Assert.AreEqual(DisplayStyle.None, Button(root, "SlotClear02Button").style.display.value);
+            Assert.IsFalse(Button(root, "SlotClear02Button").enabledSelf);
+        }
+
+        [Test]
         public void UxmlAndUss_OwnStableAssemblyPreviewAndPartPickerLayout()
         {
             var root = LoadRoot();
@@ -440,6 +456,81 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void ViewModelFactory_DoesNotMarkDraftSelectionAsEquippedBeforeSave()
+        {
+            var catalog = new GaragePanelCatalog(
+                frames: System.Array.Empty<GaragePanelCatalog.FrameOption>(),
+                firepower: new[]
+                {
+                    new GaragePanelCatalog.FirepowerOption
+                    {
+                        Id = "railgun",
+                        DisplayName = "Rail Slug",
+                        AttackDamage = 920,
+                        Range = 15,
+                        Tier = 3,
+                    },
+                    new GaragePanelCatalog.FirepowerOption
+                    {
+                        Id = "vulcan",
+                        DisplayName = "Vulcan Cannon",
+                        AttackDamage = 840,
+                        Range = 12.5f,
+                        Tier = 3,
+                    },
+                },
+                mobility: System.Array.Empty<GaragePanelCatalog.MobilityOption>());
+
+            var viewModel = GarageNovaPartsPanelViewModelFactory.Build(
+                catalog,
+                new GarageNovaPartsDraftSelection(null, "vulcan", null),
+                new GarageNovaPartsEquippedSelection(null, "railgun", null),
+                GarageEditorFocus.Firepower,
+                string.Empty);
+
+            Assert.AreEqual("vulcan", viewModel.SelectedPartId);
+            Assert.IsFalse(viewModel.SelectedPartIsEquipped);
+            Assert.IsTrue(viewModel.Options[1].IsSelected);
+            Assert.IsFalse(viewModel.Options[1].IsEquipped);
+            Assert.IsFalse(viewModel.Options[0].IsSelected);
+            Assert.IsTrue(viewModel.Options[0].IsEquipped);
+        }
+
+        [Test]
+        public void Render_DoesNotShowEquippedBadgeForUnsavedDraftSelection()
+        {
+            var fixture = CreateRuntimeAdapterFixture();
+            try
+            {
+                fixture.Adapter.Render(
+                    CreateSlots(),
+                    CreateDraftOnlyPartList(),
+                    CreateEditor(),
+                    new GarageResultViewModel(
+                        "편성 중",
+                        string.Empty,
+                        "ATK 840",
+                        isReady: false,
+                        isDirty: true,
+                        canSave: true,
+                        primaryActionLabel: "임시 편성"),
+                    GarageEditorFocus.Firepower,
+                    isSaving: false);
+
+                var root = fixture.Host;
+                Assert.AreEqual("선택 후보", Label(root, "SelectedPartPreviewKickerLabel").text);
+                Assert.IsTrue(root.Q<VisualElement>("PartRow01").ClassListContains("part-row--selected"));
+                Assert.AreEqual(DisplayStyle.None, Label(root, "PartRow01BadgeLabel").style.display.value);
+                Assert.AreEqual("장착중", Label(root, "PartRow02BadgeLabel").text);
+                Assert.AreEqual(DisplayStyle.Flex, Label(root, "PartRow02BadgeLabel").style.display.value);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
         public void ViewModelFactory_ReturnsAllFilteredOptionsForScrollableList()
         {
             var firepower = new System.Collections.Generic.List<GaragePanelCatalog.FirepowerOption>();
@@ -725,7 +816,8 @@ namespace Tests.Editor
                         {
                             new GarageNovaPartStatViewModel("ATK", "840", 100f),
                             new GarageNovaPartStatViewModel("RNG", "12.5", 78f),
-                        }),
+                        },
+                        isEquipped: true),
                     new GarageNovaPartOptionViewModel(
                         slot,
                         "vulcan",
@@ -742,7 +834,43 @@ namespace Tests.Editor
                 {
                     new GarageNovaPartStatViewModel("ATK", "840", 100f),
                     new GarageNovaPartStatViewModel("RNG", "12.5", 78f),
-                });
+                },
+                selectedPartIsEquipped: true);
+        }
+
+        private static GarageNovaPartsPanelViewModel CreateDraftOnlyPartList()
+        {
+            return new GarageNovaPartsPanelViewModel(
+                GarageNovaPartPanelSlot.Firepower,
+                searchText: string.Empty,
+                countText: "부품 2개",
+                selectedNameText: "발칸",
+                selectedDetailText: "ATK 520 | RNG 8.0",
+                selectedPreviewPrefab: null,
+                selectedAlignment: null,
+                new[]
+                {
+                    new GarageNovaPartOptionViewModel(
+                        GarageNovaPartPanelSlot.Firepower,
+                        "vulcan",
+                        "발칸",
+                        "ATK 520 | RNG 8.0",
+                        "Assets/Parts/Vulcan.prefab",
+                        isSelected: true,
+                        needsNameReview: false),
+                    new GarageNovaPartOptionViewModel(
+                        GarageNovaPartPanelSlot.Firepower,
+                        "railgun",
+                        "레일건",
+                        "ATK 840 | RNG 12.5",
+                        "Assets/Parts/Railgun.prefab",
+                        isSelected: false,
+                        needsNameReview: false,
+                        isEquipped: true),
+                },
+                selectedPartId: "vulcan",
+                selectedMetaText: "ATK 520 | RNG 8.0",
+                selectedPartIsEquipped: false);
         }
 
         private static GarageNovaPartsPanelViewModel CreatePartListWithOptionCount(int count)

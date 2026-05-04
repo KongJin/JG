@@ -122,6 +122,54 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void Render_ShowsCurrentDraftSelectionInUnitPreviewWhenSlotIsIncomplete()
+        {
+            var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(UxmlPath);
+            var documentObject = new GameObject("GarageSetBUitkRuntimeAdapterTest");
+            var rendererObject = new GameObject("UnitPreviewRenderer", typeof(Camera), typeof(GarageSetBUitkPreviewRenderer));
+            var mobilityPrefab = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+
+            try
+            {
+                Assert.NotNull(asset, $"UXML not found: {UxmlPath}");
+
+                var document = documentObject.AddComponent<UIDocument>();
+                document.visualTreeAsset = asset;
+                var adapter = documentObject.AddComponent<GarageSetBUitkRuntimeAdapter>();
+                var unitPreviewRenderer = rendererObject.GetComponent<GarageSetBUitkPreviewRenderer>();
+
+                SetObjectReference(adapter, "_document", document);
+                SetObjectReference(adapter, "_previewRenderer", unitPreviewRenderer);
+
+                var host = new VisualElement { name = "GarageUitkHost" };
+                Assert.IsTrue(adapter.BindToHost(host));
+
+                adapter.Render(
+                    new[] { CreateMobilityOnlyPreviewSlot(mobilityPrefab) },
+                    CreatePartListWithoutSinglePartPreview(),
+                    CreateEditor(),
+                    new GarageResultViewModel(
+                        "편성 중",
+                        "세 파츠를 모두 선택",
+                        "MOV 5.1",
+                        isReady: false,
+                        isDirty: true,
+                        canSave: false,
+                        primaryActionLabel: "임시 편성"),
+                    GarageEditorFocus.Mobility,
+                    isSaving: false);
+
+                Assert.IsTrue(unitPreviewRenderer.HasPreview);
+            }
+            finally
+            {
+                Object.DestroyImmediate(mobilityPrefab);
+                Object.DestroyImmediate(rendererObject);
+                Object.DestroyImmediate(documentObject);
+            }
+        }
+
+        [Test]
         public void Renderers_UseSeparatePreviewLayersForUnitAndSelectedPart()
         {
             var unitRendererObject = new GameObject(
@@ -233,6 +281,34 @@ namespace Tests.Editor
                     framePreviewPrefab: null,
                     firepowerPreviewPrefab: null,
                     mobilityPreviewPrefab: null,
+                    frameAlignment: null,
+                    firepowerAlignment: null,
+                    mobilityAlignment: null,
+                    mobilityUsesAssemblyPivot: false,
+                    frameAssemblyForm: AssemblyForm.Unspecified,
+                    firepowerAssemblyForm: AssemblyForm.Unspecified));
+        }
+
+        private static GarageSlotViewModel CreateMobilityOnlyPreviewSlot(GameObject mobilityPrefab)
+        {
+            return new GarageSlotViewModel(
+                new GarageSlotDisplayData(
+                    "기체 02",
+                    "조립 중",
+                    "조립 중",
+                    "조립중",
+                    hasCommittedLoadout: false,
+                    hasDraftChanges: true,
+                    isEmpty: false,
+                    isSelected: true),
+                new GarageSlotPreviewData(
+                    loadoutKey: null,
+                    frameId: null,
+                    firepowerId: null,
+                    mobilityId: "mobility",
+                    framePreviewPrefab: null,
+                    firepowerPreviewPrefab: null,
+                    mobilityPreviewPrefab: mobilityPrefab,
                     frameAlignment: null,
                     firepowerAlignment: null,
                     mobilityAlignment: null,

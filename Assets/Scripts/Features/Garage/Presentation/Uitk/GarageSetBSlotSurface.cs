@@ -10,6 +10,7 @@ namespace Features.Garage.Presentation
     {
         private readonly SlotBinding[] _slots = new SlotBinding[GarageUitkConstants.Slots.MaxCount];
         private readonly Action[] _slotClicked = new Action[GarageUitkConstants.Slots.MaxCount];
+        private readonly Action[] _slotClearClicked = new Action[GarageUitkConstants.Slots.MaxCount];
 
         public GarageSetBSlotSurface(VisualElement root)
             : base(root)
@@ -22,6 +23,7 @@ namespace Features.Garage.Presentation
                     UitkElementUtility.Required<Label>(root, GarageUitkConstants.Slots.BuildCodeLabelName(slotNumber)),
                     UitkElementUtility.Required<VisualElement>(root, GarageUitkConstants.Slots.BuildIconName(slotNumber)),
                     UitkElementUtility.Required<VisualElement>(root, GarageUitkConstants.Slots.BuildIconGlyphName(slotNumber)),
+                    UitkElementUtility.Required<Button>(root, GarageUitkConstants.Slots.BuildClearButtonName(slotNumber)),
                     UitkElementUtility.Required<Label>(root, GarageUitkConstants.Slots.BuildNameLabelName(slotNumber)));
                 _slots[i].IconHost.Insert(0, _slots[i].PreviewImage);
             }
@@ -30,6 +32,7 @@ namespace Features.Garage.Presentation
         }
 
         public event Action<int> SlotSelected;
+        public event Action<int> SlotClearRequested;
 
         public void Render(IReadOnlyList<GarageSlotViewModel> slots)
         {
@@ -57,7 +60,9 @@ namespace Features.Garage.Presentation
             {
                 int slotIndex = i;
                 _slotClicked[i] ??= () => SlotSelected?.Invoke(slotIndex);
+                _slotClearClicked[i] ??= () => SlotClearRequested?.Invoke(slotIndex);
                 _slots[i].Card.clicked += _slotClicked[i];
+                _slots[i].ClearButton.clicked += _slotClearClicked[i];
             }
         }
 
@@ -67,6 +72,9 @@ namespace Features.Garage.Presentation
             {
                 if (_slotClicked[i] != null)
                     _slots[i].Card.clicked -= _slotClicked[i];
+
+                if (_slotClearClicked[i] != null)
+                    _slots[i].ClearButton.clicked -= _slotClearClicked[i];
             }
         }
 
@@ -84,9 +92,15 @@ namespace Features.Garage.Presentation
             binding.PreviewImage.image = hasPreview ? previewTexture : null;
             binding.PreviewImage.style.display = hasPreview ? DisplayStyle.Flex : DisplayStyle.None;
             binding.IconGlyph.style.display = hasPreview ? DisplayStyle.None : DisplayStyle.Flex;
+            binding.ClearButton.style.display = isSelected && !isEmpty ? DisplayStyle.Flex : DisplayStyle.None;
+            binding.ClearButton.SetEnabled(isSelected && !isEmpty);
 
             UitkElementUtility.SetClass(binding.Card, GarageUitkConstants.Classes.Slot.CardActive, isSelected);
             UitkElementUtility.SetClass(binding.Card, GarageUitkConstants.Classes.Slot.CardEmpty, isEmpty);
+            UitkElementUtility.SetClass(
+                binding.ClearButton,
+                GarageUitkConstants.Classes.Slot.ClearButtonVisible,
+                isSelected && !isEmpty);
             UitkElementUtility.SetClass(binding.CodeLabel, GarageUitkConstants.Classes.Slot.CodeActive, isSelected);
             UitkElementUtility.SetClass(binding.CodeLabel, GarageUitkConstants.Classes.Slot.CodeEmpty, isEmpty);
             UitkElementUtility.SetClass(binding.IconHost, GarageUitkConstants.Classes.Slot.IconActive, isSelected);
@@ -141,12 +155,14 @@ namespace Features.Garage.Presentation
                 Label codeLabel,
                 VisualElement iconHost,
                 VisualElement iconGlyph,
+                Button clearButton,
                 Label nameLabel)
             {
                 Card = card;
                 CodeLabel = codeLabel;
                 IconHost = iconHost;
                 IconGlyph = iconGlyph;
+                ClearButton = clearButton;
                 PreviewImage = UitkElementUtility.CreateAbsoluteImage($"Slot{card.name.Substring("SlotCard".Length)}PreviewImage");
                 PreviewImage.scaleMode = ScaleMode.ScaleAndCrop;
                 NameLabel = nameLabel;
@@ -156,6 +172,7 @@ namespace Features.Garage.Presentation
             public Label CodeLabel { get; }
             public VisualElement IconHost { get; }
             public VisualElement IconGlyph { get; }
+            public Button ClearButton { get; }
             public Image PreviewImage { get; }
             public Label NameLabel { get; }
         }

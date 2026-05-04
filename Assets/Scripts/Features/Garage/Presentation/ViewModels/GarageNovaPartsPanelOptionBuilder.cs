@@ -10,16 +10,20 @@ namespace Features.Garage.Presentation
         public static List<GarageNovaPartOptionViewModel> BuildOptions(
             GaragePanelCatalog catalog,
             GarageNovaPartPanelSlot slot,
-            GarageNovaPartsDraftSelection draftSelection)
+            GarageNovaPartsDraftSelection draftSelection,
+            GarageNovaPartsEquippedSelection equippedSelection)
         {
             var candidates = BuildCandidates(catalog, slot, draftSelection);
             var options = new List<GarageNovaPartOptionViewModel>(candidates.Count);
             string selectedId = GetSelectedId(draftSelection, slot);
+            string equippedId = GetEquippedId(equippedSelection, slot);
 
             for (int i = 0; i < candidates.Count; i++)
             {
                 var candidate = candidates[i];
-                options.Add(candidate.ToViewModel(candidate.Id == selectedId));
+                options.Add(candidate.ToViewModel(
+                    candidate.Id == selectedId,
+                    candidate.Id == equippedId));
             }
 
             return options;
@@ -131,6 +135,16 @@ namespace Features.Garage.Presentation
                 GarageNovaPartPanelSlot.Frame => draftSelection.FrameId,
                 GarageNovaPartPanelSlot.Firepower => draftSelection.FirepowerId,
                 _ => draftSelection.MobilityId,
+            };
+        }
+
+        private static string GetEquippedId(GarageNovaPartsEquippedSelection equippedSelection, GarageNovaPartPanelSlot slot)
+        {
+            return slot switch
+            {
+                GarageNovaPartPanelSlot.Frame => equippedSelection.FrameId,
+                GarageNovaPartPanelSlot.Firepower => equippedSelection.FirepowerId,
+                _ => equippedSelection.MobilityId,
             };
         }
 
@@ -247,7 +261,7 @@ namespace Features.Garage.Presentation
             private string EnergyText { get; }
             private IReadOnlyList<GarageNovaPartStatViewModel> Stats { get; }
 
-            public GarageNovaPartOptionViewModel ToViewModel(bool isSelected)
+            public GarageNovaPartOptionViewModel ToViewModel(bool isSelected, bool isEquipped)
             {
                 return new GarageNovaPartOptionViewModel(
                     Slot,
@@ -261,7 +275,8 @@ namespace Features.Garage.Presentation
                     Alignment,
                     MetaText,
                     EnergyText,
-                    Stats);
+                    Stats,
+                    isEquipped);
             }
         }
     }

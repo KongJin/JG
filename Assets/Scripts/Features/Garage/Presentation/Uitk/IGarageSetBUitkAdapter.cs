@@ -11,6 +11,7 @@ namespace Features.Garage.Presentation
     public interface IGarageSetBUitkAdapter : System.IDisposable
     {
         event Action<int> SlotSelected;
+        event Action<int> SlotClearRequested;
         event Action<GarageEditorFocus> PartFocusSelected;
         event Action<string> PartSearchChanged;
         event Action<GarageNovaPartSelection> PartOptionSelected;

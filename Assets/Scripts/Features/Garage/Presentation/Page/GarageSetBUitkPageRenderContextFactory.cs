@@ -99,6 +99,10 @@ namespace Features.Garage.Presentation
                     state.EditingFrameId,
                     state.EditingFirepowerId,
                     state.EditingMobilityId),
+                new GarageNovaPartsEquippedSelection(
+                    state.GetSelectedCommittedSlot().frameId,
+                    state.GetSelectedCommittedSlot().firepowerModuleId,
+                    state.GetSelectedCommittedSlot().mobilityModuleId),
                 slot,
                 partSearchText);
         }

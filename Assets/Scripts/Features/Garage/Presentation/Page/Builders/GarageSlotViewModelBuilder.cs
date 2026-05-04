@@ -30,6 +30,7 @@ namespace Features.Garage.Presentation
                     committed.firepowerModuleId != draft.firepowerModuleId ||
                     committed.mobilityModuleId != draft.mobilityModuleId;
                 bool isEmpty = !draft.HasAnySelection;
+                bool hasDraftSelection = draft.HasAnySelection;
                 string loadoutKey = hasDraftLoadout
                     ? LoadoutKey.Build(
                         draft.frameId,
@@ -45,6 +46,9 @@ namespace Features.Garage.Presentation
                 var frame = hasDraftLoadout ? _catalog?.FindFrame(draft.frameId) : null;
                 var firepower = hasDraftLoadout ? _catalog?.FindFirepower(draft.firepowerModuleId) : null;
                 var mobility = hasDraftLoadout ? _catalog?.FindMobility(draft.mobilityModuleId) : null;
+                var previewFrame = hasDraftSelection ? _catalog?.FindFrame(draft.frameId) : null;
+                var previewFirepower = hasDraftSelection ? _catalog?.FindFirepower(draft.firepowerModuleId) : null;
+                var previewMobility = hasDraftSelection ? _catalog?.FindMobility(draft.mobilityModuleId) : null;
 
                 if (hasDraftLoadout)
                 {
@@ -100,18 +104,18 @@ namespace Features.Garage.Presentation
                             : null),
                     new GarageSlotPreviewData(
                         loadoutKey,
-                        hasDraftLoadout ? draft.frameId : null,
-                        hasDraftLoadout ? draft.firepowerModuleId : null,
-                        hasDraftLoadout ? draft.mobilityModuleId : null,
-                        frame?.AssemblyPrefab ?? frame?.PreviewPrefab,
-                        firepower?.AssemblyPrefab ?? firepower?.PreviewPrefab,
-                        mobility?.AssemblyPrefab ?? mobility?.PreviewPrefab,
-                        frame?.Alignment,
-                        firepower?.Alignment,
-                        mobility?.Alignment,
-                        mobility?.UseAssemblyPivot ?? false,
-                        frame?.AssemblyForm ?? AssemblyForm.Unspecified,
-                        firepower?.AssemblyForm ?? AssemblyForm.Unspecified)));
+                        previewFrame != null ? draft.frameId : null,
+                        previewFirepower != null ? draft.firepowerModuleId : null,
+                        previewMobility != null ? draft.mobilityModuleId : null,
+                        previewFrame?.AssemblyPrefab ?? previewFrame?.PreviewPrefab,
+                        previewFirepower?.AssemblyPrefab ?? previewFirepower?.PreviewPrefab,
+                        previewMobility?.AssemblyPrefab ?? previewMobility?.PreviewPrefab,
+                        previewFrame?.Alignment,
+                        previewFirepower?.Alignment,
+                        previewMobility?.Alignment,
+                        previewMobility?.UseAssemblyPivot ?? false,
+                        previewFrame?.AssemblyForm ?? AssemblyForm.Unspecified,
+                        previewFirepower?.AssemblyForm ?? AssemblyForm.Unspecified)));
             }
 
             return slotViewModels;

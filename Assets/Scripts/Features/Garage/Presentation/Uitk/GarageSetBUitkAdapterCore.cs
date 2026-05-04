@@ -21,6 +21,7 @@ namespace Features.Garage.Presentation
         private bool _isDisposed;
 
         private readonly Action<int> _slotSelected;
+        private readonly Action<int> _slotClearRequested;
         private readonly Action<GarageEditorFocus> _partFocusSelected;
         private readonly Action<string> _partSearchChanged;
         private readonly Action<GarageNovaPartSelection> _partOptionSelected;
@@ -28,6 +29,7 @@ namespace Features.Garage.Presentation
         private readonly Action _settingsRequested;
 
         public event Action<int> SlotSelected;
+        public event Action<int> SlotClearRequested;
         public event Action<GarageEditorFocus> PartFocusSelected;
         public event Action<string> PartSearchChanged;
         public event Action<GarageNovaPartSelection> PartOptionSelected;
@@ -67,6 +69,7 @@ namespace Features.Garage.Presentation
                 _statRadar);
 
             _slotSelected = slotIndex => SlotSelected?.Invoke(slotIndex);
+            _slotClearRequested = slotIndex => SlotClearRequested?.Invoke(slotIndex);
             _partFocusSelected = focus => PartFocusSelected?.Invoke(focus);
             _partSearchChanged = value => PartSearchChanged?.Invoke(value);
             _partOptionSelected = selection => PartOptionSelected?.Invoke(selection);
@@ -112,7 +115,10 @@ namespace Features.Garage.Presentation
         private void BindCallbacks()
         {
             if (_slotSurface != null)
+            {
                 _slotSurface.SlotSelected += _slotSelected;
+                _slotSurface.SlotClearRequested += _slotClearRequested;
+            }
 
             if (_partListSurface != null)
             {
@@ -131,7 +137,10 @@ namespace Features.Garage.Presentation
         private void UnbindCallbacks()
         {
             if (_slotSurface != null)
+            {
                 _slotSurface.SlotSelected -= _slotSelected;
+                _slotSurface.SlotClearRequested -= _slotClearRequested;
+            }
 
             if (_partListSurface != null)
             {

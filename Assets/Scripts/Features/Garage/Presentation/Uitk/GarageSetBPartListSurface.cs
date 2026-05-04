@@ -260,8 +260,8 @@ namespace Features.Garage.Presentation
                 ? DisplayStyle.None
                 : DisplayStyle.Flex;
             UitkElementUtility.SetClass(binding.Row, GarageUitkConstants.Classes.Part.RowSelected, option.IsSelected);
-            UitkElementUtility.SetClass(binding.BadgeLabel, GarageUitkConstants.Classes.Part.BadgeSelected, option.IsSelected);
-            UitkElementUtility.SetClass(binding.BadgeLabel, GarageUitkConstants.Classes.Part.BadgeReview, option.NeedsNameReview && !option.IsSelected);
+            UitkElementUtility.SetClass(binding.BadgeLabel, GarageUitkConstants.Classes.Part.BadgeSelected, option.IsEquipped);
+            UitkElementUtility.SetClass(binding.BadgeLabel, GarageUitkConstants.Classes.Part.BadgeReview, option.NeedsNameReview && !option.IsEquipped);
         }
 
         private void RenderFocusTabs(GarageEditorFocus focusedPart)
@@ -283,7 +283,7 @@ namespace Features.Garage.Presentation
 
         private static string BuildPartBadgeText(GarageNovaPartOptionViewModel option)
         {
-            if (option.IsSelected)
+            if (option.IsEquipped)
                 return "장착중";
 
             if (option.NeedsNameReview)
@@ -294,16 +294,10 @@ namespace Features.Garage.Presentation
 
         private static string BuildSelectedPartKicker(GarageNovaPartsPanelViewModel partList)
         {
-            if (partList?.Options == null)
+            if (partList == null)
                 return "현재 선택";
 
-            for (int i = 0; i < partList.Options.Count; i++)
-            {
-                if (partList.Options[i].IsSelected)
-                    return "현재 장착";
-            }
-
-            return "선택 후보";
+            return partList.SelectedPartIsEquipped ? "현재 장착" : "선택 후보";
         }
 
         private static string BuildPartPreviewMeta(GarageNovaPartPanelSlot slot, string selectedDetailText)

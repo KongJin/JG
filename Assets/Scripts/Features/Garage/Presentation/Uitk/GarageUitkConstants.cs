@@ -16,6 +16,7 @@ namespace Features.Garage.Presentation
             public const string CodeLabelPrefix = "SlotCode";
             public const string IconPrefix = "SlotIcon";
             public const string NameLabelPrefix = "SlotName";
+            public const string ClearButtonPrefix = "SlotClear";
             public const string ImageSuffix = "PreviewImage";
 
             public static string BuildCardName(int index) => $"{CardNamePrefix}{index:00}";
@@ -23,6 +24,7 @@ namespace Features.Garage.Presentation
             public static string BuildIconName(int index) => $"{IconPrefix}{index:00}";
             public static string BuildIconGlyphName(int index) => $"{IconPrefix}{index:00}Glyph";
             public static string BuildNameLabelName(int index) => $"{NameLabelPrefix}{index:00}Label";
+            public static string BuildClearButtonName(int index) => $"{ClearButtonPrefix}{index:00}Button";
         }
 
         /// <summary>
@@ -126,6 +128,7 @@ namespace Features.Garage.Presentation
                 public const string Name = "slot-name";
                 public const string NameActive = "slot-name--active";
                 public const string NameEmpty = "slot-name--empty";
+                public const string ClearButtonVisible = "slot-clear-button--visible";
             }
 
             public static class Part

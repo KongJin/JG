@@ -38,6 +38,20 @@ namespace Features.Garage.Presentation
         public string MobilityId { get; }
     }
 
+    public readonly struct GarageNovaPartsEquippedSelection
+    {
+        public GarageNovaPartsEquippedSelection(string frameId, string firepowerId, string mobilityId)
+        {
+            FrameId = frameId;
+            FirepowerId = firepowerId;
+            MobilityId = mobilityId;
+        }
+
+        public string FrameId { get; }
+        public string FirepowerId { get; }
+        public string MobilityId { get; }
+    }
+
     public readonly struct GarageNovaPartStatViewModel
     {
         public GarageNovaPartStatViewModel(string label, string valueText, float percent)
@@ -66,7 +80,8 @@ namespace Features.Garage.Presentation
             GaragePanelCatalog.PartAlignment alignment = null,
             string metaText = null,
             string energyText = null,
-            IReadOnlyList<GarageNovaPartStatViewModel> stats = null)
+            IReadOnlyList<GarageNovaPartStatViewModel> stats = null,
+            bool isEquipped = false)
         {
             Slot = slot;
             Id = id;
@@ -74,6 +89,7 @@ namespace Features.Garage.Presentation
             DetailText = detailText;
             SourcePath = sourcePath;
             IsSelected = isSelected;
+            IsEquipped = isEquipped;
             NeedsNameReview = needsNameReview;
             PreviewPrefab = previewPrefab;
             Alignment = alignment;
@@ -88,6 +104,7 @@ namespace Features.Garage.Presentation
         public string DetailText { get; }
         public string SourcePath { get; }
         public bool IsSelected { get; }
+        public bool IsEquipped { get; }
         public bool NeedsNameReview { get; }
         public GameObject PreviewPrefab { get; }
         public GaragePanelCatalog.PartAlignment Alignment { get; }
@@ -110,7 +127,8 @@ namespace Features.Garage.Presentation
             string selectedPartId = null,
             string selectedEnergyText = null,
             string selectedMetaText = null,
-            IReadOnlyList<GarageNovaPartStatViewModel> selectedStats = null)
+            IReadOnlyList<GarageNovaPartStatViewModel> selectedStats = null,
+            bool selectedPartIsEquipped = false)
         {
             ActiveSlot = activeSlot;
             SearchText = searchText;
@@ -124,6 +142,7 @@ namespace Features.Garage.Presentation
             SelectedEnergyText = selectedEnergyText ?? string.Empty;
             SelectedMetaText = selectedMetaText ?? string.Empty;
             SelectedStats = selectedStats ?? Array.Empty<GarageNovaPartStatViewModel>();
+            SelectedPartIsEquipped = selectedPartIsEquipped;
         }
 
         public GarageNovaPartPanelSlot ActiveSlot { get; }
@@ -138,6 +157,7 @@ namespace Features.Garage.Presentation
         public string SelectedEnergyText { get; }
         public string SelectedMetaText { get; }
         public IReadOnlyList<GarageNovaPartStatViewModel> SelectedStats { get; }
+        public bool SelectedPartIsEquipped { get; }
 
         public static GarageNovaPartsPanelViewModel Empty => new(
             GarageNovaPartPanelSlot.Mobility,
@@ -158,7 +178,27 @@ namespace Features.Garage.Presentation
             GarageEditorFocus currentFocus,
             string searchText)
         {
-            return Build(catalog, draftSelection, GarageEditorFocusMapping.ToPanelSlot(currentFocus), searchText);
+            return Build(
+                catalog,
+                draftSelection,
+                ToEquippedSelection(draftSelection),
+                GarageEditorFocusMapping.ToPanelSlot(currentFocus),
+                searchText);
+        }
+
+        public static GarageNovaPartsPanelViewModel Build(
+            GaragePanelCatalog catalog,
+            GarageNovaPartsDraftSelection draftSelection,
+            GarageNovaPartsEquippedSelection equippedSelection,
+            GarageEditorFocus currentFocus,
+            string searchText)
+        {
+            return Build(
+                catalog,
+                draftSelection,
+                equippedSelection,
+                GarageEditorFocusMapping.ToPanelSlot(currentFocus),
+                searchText);
         }
 
         public static GarageNovaPartsPanelViewModel Build(
@@ -167,8 +207,27 @@ namespace Features.Garage.Presentation
             GarageNovaPartPanelSlot activeSlot,
             string searchText)
         {
+            return Build(
+                catalog,
+                draftSelection,
+                ToEquippedSelection(draftSelection),
+                activeSlot,
+                searchText);
+        }
+
+        public static GarageNovaPartsPanelViewModel Build(
+            GaragePanelCatalog catalog,
+            GarageNovaPartsDraftSelection draftSelection,
+            GarageNovaPartsEquippedSelection equippedSelection,
+            GarageNovaPartPanelSlot activeSlot,
+            string searchText)
+        {
             var normalizedSearch = searchText ?? string.Empty;
-            var allOptions = GarageNovaPartsPanelOptionBuilder.BuildOptions(catalog, activeSlot, draftSelection);
+            var allOptions = GarageNovaPartsPanelOptionBuilder.BuildOptions(
+                catalog,
+                activeSlot,
+                draftSelection,
+                equippedSelection);
             var filteredOptions = GarageNovaPartsPanelOptionBuilder.FilterOptions(allOptions, normalizedSearch);
             string selectedId = GetSelectedId(draftSelection, activeSlot);
             var visibleOptions = new List<GarageNovaPartOptionViewModel>(filteredOptions.Count);
@@ -197,7 +256,8 @@ namespace Features.Garage.Presentation
                 selected?.Id,
                 selected?.EnergyText,
                 selected?.MetaText,
-                selected?.Stats);
+                selected?.Stats,
+                selected?.IsEquipped ?? false);
         }
 
         public static GarageNovaPartPanelSlot ToPanelSlot(GarageEditorFocus focus)
@@ -214,6 +274,15 @@ namespace Features.Garage.Presentation
                 GarageNovaPartPanelSlot.Firepower => draftSelection.FirepowerId,
                 _ => draftSelection.MobilityId,
             };
+        }
+
+        private static GarageNovaPartsEquippedSelection ToEquippedSelection(
+            GarageNovaPartsDraftSelection draftSelection)
+        {
+            return new GarageNovaPartsEquippedSelection(
+                draftSelection.FrameId,
+                draftSelection.FirepowerId,
+                draftSelection.MobilityId);
         }
 
         private static GarageNovaPartOptionViewModel FindFirstSelected(

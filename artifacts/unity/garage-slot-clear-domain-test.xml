@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-04 09:28:13Z" end-time="2026-05-04 09:28:13Z" duration="0.0049595">
+  <test-suite type="TestSuite" id="1240" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="185" result="Passed" start-time="2026-05-04 09:28:13Z" end-time="2026-05-04 09:28:13Z" duration="0.004960" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1224" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="185" result="Passed" start-time="2026-05-04 09:28:13Z" end-time="2026-05-04 09:28:13Z" duration="0.003850" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="13128" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1227" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="176" result="Passed" start-time="2026-05-04 09:28:13Z" end-time="2026-05-04 09:28:13Z" duration="0.002898" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1228" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="176" result="Passed" start-time="2026-05-04 09:28:13Z" end-time="2026-05-04 09:28:13Z" duration="0.001967" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1051" name="GarageRosterDirectTests" fullname="Tests.Editor.GarageRosterDirectTests" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-05-04 09:28:13Z" end-time="2026-05-04 09:28:13Z" duration="0.001658" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1055" name="ClearSlot_RemovesOnlySelectedSlot" fullname="Tests.Editor.GarageRosterDirectTests.ClearSlot_RemovesOnlySelectedSlot" methodname="ClearSlot_RemovesOnlySelectedSlot" classname="Tests.Editor.GarageRosterDirectTests" runstate="Runnable" seed="485570656" result="Passed" start-time="2026-05-04 09:28:13Z" end-time="2026-05-04 09:28:13Z" duration="0.000722" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-slot-clear-domain-test.xml
+Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-slot-clear-domain-test.xml
+Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-slot-clear-domain-test.xml
+Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-slot-clear-domain-test.xml
+Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-slot-clear-domain-test.xml
+Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-slot-clear-domain-test.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

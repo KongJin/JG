@@ -61,10 +61,7 @@ namespace Features.Garage.Presentation
             EnsureRenderTexture();
 
             if (_previewCamera == null ||
-                !GarageUnitPreviewAssembly.HasPreviewAssemblyData(previewData) ||
-                previewData.FramePreviewPrefab == null ||
-                previewData.FirepowerPreviewPrefab == null ||
-                previewData.MobilityPreviewPrefab == null)
+                !GarageUnitPreviewAssembly.HasCurrentSelectionPreviewData(previewData))
             {
                 ClearPreview();
                 return false;
@@ -84,12 +81,9 @@ namespace Features.Garage.Presentation
             _currentPreviewKey = null;
             HasPreview = false;
 
-            if (!GarageUnitPreviewAssembly.TryCreatePreviewRoot(
+            if (!GarageUnitPreviewAssembly.TryCreateCurrentSelectionPreviewRoot(
                     previewData,
                     _previewCamera,
-                    previewData.FramePreviewPrefab,
-                    previewData.FirepowerPreviewPrefab,
-                    previewData.MobilityPreviewPrefab,
                     out _currentPreviewRoot))
                 return false;
 

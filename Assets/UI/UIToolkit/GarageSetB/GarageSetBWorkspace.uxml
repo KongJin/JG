@@ -27,6 +27,9 @@
                             <ui:VisualElement name="SlotIcon01Glyph" class="uitk-icon uitk-icon--smart-toy uitk-icon--blue slot-icon-glyph slot-icon-glyph--active" />
                         </ui:VisualElement>
                     </ui:Button>
+                    <ui:Button name="SlotClear01Button" class="slot-clear-button" tooltip="조립 해제">
+                        <ui:VisualElement name="SlotClear01Icon" class="uitk-icon uitk-icon--inventory-2 uitk-icon--small slot-clear-icon" />
+                    </ui:Button>
                     <ui:Label name="SlotName01Label" text="" class="slot-name slot-name--active" />
                 </ui:VisualElement>
                 <ui:VisualElement name="SlotCard02Cell" class="slot-cell">
@@ -35,6 +38,9 @@
                         <ui:VisualElement name="SlotIcon02" class="slot-icon">
                             <ui:VisualElement name="SlotIcon02Glyph" class="uitk-icon uitk-icon--security uitk-icon--muted slot-icon-glyph" />
                         </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Button name="SlotClear02Button" class="slot-clear-button" tooltip="조립 해제">
+                        <ui:VisualElement name="SlotClear02Icon" class="uitk-icon uitk-icon--inventory-2 uitk-icon--small slot-clear-icon" />
                     </ui:Button>
                     <ui:Label name="SlotName02Label" text="" class="slot-name" />
                 </ui:VisualElement>
@@ -45,6 +51,9 @@
                             <ui:VisualElement name="SlotIcon03Glyph" class="uitk-icon uitk-icon--precision-manufacturing uitk-icon--muted slot-icon-glyph" />
                         </ui:VisualElement>
                     </ui:Button>
+                    <ui:Button name="SlotClear03Button" class="slot-clear-button" tooltip="조립 해제">
+                        <ui:VisualElement name="SlotClear03Icon" class="uitk-icon uitk-icon--inventory-2 uitk-icon--small slot-clear-icon" />
+                    </ui:Button>
                     <ui:Label name="SlotName03Label" text="" class="slot-name" />
                 </ui:VisualElement>
                 <ui:VisualElement name="SlotCard04Cell" class="slot-cell">
@@ -53,6 +62,9 @@
                         <ui:VisualElement name="SlotIcon04" class="slot-icon slot-icon--empty">
                             <ui:VisualElement name="SlotIcon04Glyph" class="uitk-icon uitk-icon--add uitk-icon--muted slot-icon-glyph slot-icon-glyph--empty" />
                         </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Button name="SlotClear04Button" class="slot-clear-button" tooltip="조립 해제">
+                        <ui:VisualElement name="SlotClear04Icon" class="uitk-icon uitk-icon--inventory-2 uitk-icon--small slot-clear-icon" />
                     </ui:Button>
                     <ui:Label name="SlotName04Label" text="" class="slot-name slot-name--empty" />
                 </ui:VisualElement>
@@ -63,6 +75,9 @@
                             <ui:VisualElement name="SlotIcon05Glyph" class="uitk-icon uitk-icon--add uitk-icon--muted slot-icon-glyph slot-icon-glyph--empty" />
                         </ui:VisualElement>
                     </ui:Button>
+                    <ui:Button name="SlotClear05Button" class="slot-clear-button" tooltip="조립 해제">
+                        <ui:VisualElement name="SlotClear05Icon" class="uitk-icon uitk-icon--inventory-2 uitk-icon--small slot-clear-icon" />
+                    </ui:Button>
                     <ui:Label name="SlotName05Label" text="" class="slot-name slot-name--empty" />
                 </ui:VisualElement>
                 <ui:VisualElement name="SlotCard06Cell" class="slot-cell">
@@ -71,6 +86,9 @@
                         <ui:VisualElement name="SlotIcon06" class="slot-icon slot-icon--empty">
                             <ui:VisualElement name="SlotIcon06Glyph" class="uitk-icon uitk-icon--add uitk-icon--muted slot-icon-glyph slot-icon-glyph--empty" />
                         </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Button name="SlotClear06Button" class="slot-clear-button" tooltip="조립 해제">
+                        <ui:VisualElement name="SlotClear06Icon" class="uitk-icon uitk-icon--inventory-2 uitk-icon--small slot-clear-icon" />
                     </ui:Button>
                     <ui:Label name="SlotName06Label" text="" class="slot-name slot-name--empty" />
                 </ui:VisualElement>
@@ -81,6 +99,9 @@
                             <ui:VisualElement name="SlotIcon07Glyph" class="uitk-icon uitk-icon--add uitk-icon--muted slot-icon-glyph slot-icon-glyph--empty" />
                         </ui:VisualElement>
                     </ui:Button>
+                    <ui:Button name="SlotClear07Button" class="slot-clear-button" tooltip="조립 해제">
+                        <ui:VisualElement name="SlotClear07Icon" class="uitk-icon uitk-icon--inventory-2 uitk-icon--small slot-clear-icon" />
+                    </ui:Button>
                     <ui:Label name="SlotName07Label" text="" class="slot-name slot-name--empty" />
                 </ui:VisualElement>
                 <ui:VisualElement name="SlotCard08Cell" class="slot-cell">
@@ -89,6 +110,9 @@
                         <ui:VisualElement name="SlotIcon08" class="slot-icon slot-icon--empty">
                             <ui:VisualElement name="SlotIcon08Glyph" class="uitk-icon uitk-icon--add uitk-icon--muted slot-icon-glyph slot-icon-glyph--empty" />
                         </ui:VisualElement>
+                    </ui:Button>
+                    <ui:Button name="SlotClear08Button" class="slot-clear-button" tooltip="조립 해제">
+                        <ui:VisualElement name="SlotClear08Icon" class="uitk-icon uitk-icon--inventory-2 uitk-icon--small slot-clear-icon" />
                     </ui:Button>
                     <ui:Label name="SlotName08Label" text="" class="slot-name slot-name--empty" />
                 </ui:VisualElement>
