@@ -79,37 +79,39 @@ namespace Features.Garage.Presentation
                 }
 
                 slotViewModels.Add(new GarageSlotViewModel(
-                    GarageUnitIdentityFormatter.BuildSlotLabel(i, hasDraftLoadout),
-                    title,
-                    summary,
-                    statusBadgeText,
-                    hasCommittedLoadout,
-                    hasDraftChanges,
-                    isEmpty,
-                    i == state.SelectedSlotIndex,
-                    showArrow: i == state.SelectedSlotIndex,
-                    callsign: hasDraftLoadout ? GarageUnitIdentityFormatter.BuildCallsign(i) : null,
-                    roleLabel: hasDraftLoadout
-                        ? GarageUnitIdentityFormatter.BuildRoleLabel(
-                            firepower,
-                            mobility)
-                        : null,
-                    serviceTagText: hasDraftLoadout
-                        ? GarageUnitIdentityFormatter.BuildServiceTagText(serviceTag)
-                        : null,
-                    loadoutKey: loadoutKey,
-                    frameId: hasDraftLoadout ? draft.frameId : null,
-                    firepowerId: hasDraftLoadout ? draft.firepowerModuleId : null,
-                    mobilityId: hasDraftLoadout ? draft.mobilityModuleId : null,
-                    framePreviewPrefab: frame?.AssemblyPrefab ?? frame?.PreviewPrefab,
-                    firepowerPreviewPrefab: firepower?.AssemblyPrefab ?? firepower?.PreviewPrefab,
-                    mobilityPreviewPrefab: mobility?.AssemblyPrefab ?? mobility?.PreviewPrefab,
-                    frameAlignment: frame?.Alignment,
-                    firepowerAlignment: firepower?.Alignment,
-                    mobilityAlignment: mobility?.Alignment,
-                    mobilityUsesAssemblyPivot: mobility?.UseAssemblyPivot ?? false,
-                    frameAssemblyForm: frame?.AssemblyForm ?? AssemblyForm.Unspecified,
-                    firepowerAssemblyForm: firepower?.AssemblyForm ?? AssemblyForm.Unspecified));
+                    new GarageSlotDisplayData(
+                        GarageUnitIdentityFormatter.BuildSlotLabel(i, hasDraftLoadout),
+                        title,
+                        summary,
+                        statusBadgeText,
+                        hasCommittedLoadout,
+                        hasDraftChanges,
+                        isEmpty,
+                        i == state.SelectedSlotIndex,
+                        showArrow: i == state.SelectedSlotIndex,
+                        callsign: hasDraftLoadout ? GarageUnitIdentityFormatter.BuildCallsign(i) : null,
+                        roleLabel: hasDraftLoadout
+                            ? GarageUnitIdentityFormatter.BuildRoleLabel(
+                                firepower,
+                                mobility)
+                            : null,
+                        serviceTagText: hasDraftLoadout
+                            ? GarageUnitIdentityFormatter.BuildServiceTagText(serviceTag)
+                            : null),
+                    new GarageSlotPreviewData(
+                        loadoutKey,
+                        hasDraftLoadout ? draft.frameId : null,
+                        hasDraftLoadout ? draft.firepowerModuleId : null,
+                        hasDraftLoadout ? draft.mobilityModuleId : null,
+                        frame?.AssemblyPrefab ?? frame?.PreviewPrefab,
+                        firepower?.AssemblyPrefab ?? firepower?.PreviewPrefab,
+                        mobility?.AssemblyPrefab ?? mobility?.PreviewPrefab,
+                        frame?.Alignment,
+                        firepower?.Alignment,
+                        mobility?.Alignment,
+                        mobility?.UseAssemblyPivot ?? false,
+                        frame?.AssemblyForm ?? AssemblyForm.Unspecified,
+                        firepower?.AssemblyForm ?? AssemblyForm.Unspecified)));
             }
 
             return slotViewModels;
@@ -192,7 +194,9 @@ namespace Features.Garage.Presentation
             GarageDraftEvaluation evaluation,
             string operationSummary = null)
         {
-            int missingUnits = state.CommittedRoster.Count >= 3 ? 0 : 3 - state.CommittedRoster.Count;
+            int missingUnits = state.CommittedRoster.Count >= Domain.GarageRoster.MinReadySlots
+                ? 0
+                : Domain.GarageRoster.MinReadySlots - state.CommittedRoster.Count;
             bool readyEligible = state.CommittedRoster.IsValid && !evaluation.HasDraftChanges;
             string rosterStatusText = GarageUnitIdentityFormatter.BuildRosterStatusText(
                 state.CommittedRoster.Count,
@@ -209,7 +213,7 @@ namespace Features.Garage.Presentation
                 isDirty: evaluation.HasDraftChanges,
                 canSave: evaluation.CanSave,
                 primaryActionLabel: GarageUnitIdentityFormatter.BuildPrimaryActionLabel(evaluation),
-                radar: BuildRadarViewModel(evaluation));
+                radar: GarageStatRadarViewModelFactory.Build(evaluation, Catalog?.RadarScale));
         }
 
         private static string BuildValidationText(GaragePageState state, GarageDraftEvaluation evaluation)
@@ -268,7 +272,13 @@ namespace Features.Garage.Presentation
                 operationSummary;
         }
 
-        private GarageStatRadarViewModel BuildRadarViewModel(GarageDraftEvaluation evaluation)
+    }
+
+    internal static class GarageStatRadarViewModelFactory
+    {
+        public static GarageStatRadarViewModel Build(
+            GarageDraftEvaluation evaluation,
+            GaragePanelCatalog.StatRadarScale scale)
         {
             if (evaluation == null || !evaluation.HasComposedUnit)
                 return null;
@@ -276,17 +286,17 @@ namespace Features.Garage.Presentation
             var current = evaluation.ComposeResult.Value;
             float[] previousValues = null;
             if (evaluation.HasDraftChanges && evaluation.CommittedComposeResult.IsSuccess)
-                previousValues = BuildRadarValues(evaluation.CommittedComposeResult.Value);
+                previousValues = BuildRadarValues(evaluation.CommittedComposeResult.Value, scale);
 
             return new GarageStatRadarViewModel(
-                BuildRadarValues(current),
+                BuildRadarValues(current, scale),
                 previousValues,
                 current.SummonCost);
         }
 
-        private float[] BuildRadarValues(Features.Unit.Domain.Unit unit)
+        private static float[] BuildRadarValues(Features.Unit.Domain.Unit unit, GaragePanelCatalog.StatRadarScale scale)
         {
-            var scale = Catalog?.RadarScale ?? new GaragePanelCatalog.StatRadarScale();
+            scale ??= new GaragePanelCatalog.StatRadarScale();
             return new[]
             {
                 Normalize(unit.FinalAttackDamage, scale.AttackDamageMax),

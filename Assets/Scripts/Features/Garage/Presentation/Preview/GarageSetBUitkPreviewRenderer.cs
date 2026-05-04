@@ -199,7 +199,7 @@ namespace Features.Garage.Presentation
             GaragePanelCatalog.PartAlignment alignment)
         {
             var euler = alignment != null && alignment.CanApply
-                ? alignment.SocketEuler
+                ? alignment.Socket.Euler
                 : Vector3.zero;
 
             return slot == GarageNovaPartPanelSlot.Firepower
@@ -353,12 +353,12 @@ namespace Features.Garage.Presentation
 
             return string.Join(
                 ",",
-                alignment.QualityFlag ?? string.Empty,
-                alignment.SocketOffset.ToString("F3"),
-                alignment.SocketEuler.ToString("F3"),
-                alignment.AssemblyLocalOffset.ToString("F3"),
-                alignment.AssemblyLocalEuler.ToString("F3"),
-                alignment.AssemblyLocalScale.ToString("F3"));
+                alignment.Assembly.QualityFlag ?? string.Empty,
+                alignment.Socket.Offset.ToString("F3"),
+                alignment.Socket.Euler.ToString("F3"),
+                alignment.Assembly.LocalOffset.ToString("F3"),
+                alignment.Assembly.LocalEuler.ToString("F3"),
+                alignment.Assembly.LocalScale.ToString("F3"));
         }
 
         private void AssignPreviewLayer(GameObject root)

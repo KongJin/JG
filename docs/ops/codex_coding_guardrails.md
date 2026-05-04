@@ -208,6 +208,14 @@ scene/prefab wiring, asset catalog/profile, network payload, UI token, visual pr
 
 Presentation Layer 규칙은 [`presentation_layer_guardrails.md`](presentation_layer_guardrails.md)를 참조한다.
 
+Domain Layer 구현 시 다음 기준을 기본값으로 둔다.
+
+- Entity는 불변식과 행동을 함께 가진다. 새 domain entity/aggregate를 만들 때 생성자 null/음수 검증, 식별자 정규화, 핵심 판단 메서드를 같은 owner에 둔다.
+- Value Object는 mutation 메서드 대신 `With*`/새 인스턴스 반환 패턴을 우선한다. tick, refresh처럼 시간에 따라 달라지는 상태는 새 값을 반환하게 만들고 container가 교체한다.
+- 관련 primitive stat이 4개 이상 함께 이동하면 `*Stats`, `*Cost`, `*Ids` 같은 값 객체로 묶는다. 기존 legacy property는 compatibility proxy로만 남기고 새 production path는 grouped value를 사용한다.
+- Domain service/container가 static rule class를 직접 반복 호출하면 rule set 인터페이스 또는 injected rule owner로 경계를 둔다.
+- 내부 정밀도, rounding, threshold는 public API로 노출하지 말고 owner 내부 상수와 named helper로 감싼다.
+
 ## Reporting
 
 - `success`: 기준과 실제 결과를 비교했고 맞다.

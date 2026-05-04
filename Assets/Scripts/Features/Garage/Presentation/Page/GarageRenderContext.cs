@@ -67,12 +67,12 @@ namespace Features.Garage.Presentation
         /// <summary>
         /// 선택된 슬롯 인덱스
         /// </summary>
-        public int SelectedSlotIndex => Snapshot?.SelectedSlotIndex ?? 0;
+        public int SelectedSlotIndex => Snapshot.SelectedSlotIndex;
 
         /// <summary>
         /// 현재 포커스된 부품
         /// </summary>
-        public GarageEditorFocus FocusedPart => Snapshot?.FocusedPart ?? GarageEditorFocus.Mobility;
+        public GarageEditorFocus FocusedPart => Snapshot.FocusedPart;
 
         /// <summary>
         /// 저장 중인지 여부

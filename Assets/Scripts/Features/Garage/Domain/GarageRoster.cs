@@ -69,6 +69,7 @@ namespace Features.Garage.Domain
     public sealed class GarageRoster
     {
         public const int MaxSlots = 8;
+        public const int MinReadySlots = 3;
 
         /// <summary>
         /// 편성된 유닛 한 기의 데이터.
@@ -107,7 +108,7 @@ namespace Features.Garage.Domain
         /// <summary>
         /// 편성이 유효한가 (3~8기).
         /// </summary>
-        public bool IsValid => Count >= 3 && Count <= MaxSlots;
+        public bool IsValid => Count >= MinReadySlots && Count <= MaxSlots;
 
         public int Count
         {
@@ -137,7 +138,7 @@ namespace Features.Garage.Domain
         }
 
         /// <summary>
-        /// 직렬화 호환을 위해 슬롯 개수를 6칸으로 정규화한다.
+        /// 직렬화 호환을 위해 슬롯 개수를 MaxSlots로 정규화한다.
         /// </summary>
         public void Normalize()
         {

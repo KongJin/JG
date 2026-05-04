@@ -43,28 +43,28 @@ namespace Features.Garage.Presentation
         public void SetEditingFrameId(string frameId)
         {
             var slot = GetSelectedDraftSlot();
-            DraftRoster.SetSlot(SelectedSlotIndex, new GarageRoster.UnitLoadout(
+            SetSelectedDraftSlot(
                 frameId,
                 slot.firepowerModuleId,
-                slot.mobilityModuleId));
+                slot.mobilityModuleId);
         }
 
         public void SetEditingFirepowerId(string firepowerId)
         {
             var slot = GetSelectedDraftSlot();
-            DraftRoster.SetSlot(SelectedSlotIndex, new GarageRoster.UnitLoadout(
+            SetSelectedDraftSlot(
                 slot.frameId,
                 firepowerId,
-                slot.mobilityModuleId));
+                slot.mobilityModuleId);
         }
 
         public void SetEditingMobilityId(string mobilityId)
         {
             var slot = GetSelectedDraftSlot();
-            DraftRoster.SetSlot(SelectedSlotIndex, new GarageRoster.UnitLoadout(
+            SetSelectedDraftSlot(
                 slot.frameId,
                 slot.firepowerModuleId,
-                mobilityId));
+                mobilityId);
         }
 
         public void SetCommittedRoster(GarageRoster roster)
@@ -166,6 +166,14 @@ namespace Features.Garage.Presentation
         }
 
         public int DraftUnitCount => DraftRoster.Count;
+
+        private void SetSelectedDraftSlot(string frameId, string firepowerModuleId, string mobilityModuleId)
+        {
+            DraftRoster.SetSlot(SelectedSlotIndex, new GarageRoster.UnitLoadout(
+                frameId,
+                firepowerModuleId,
+                mobilityModuleId));
+        }
 
         private static bool SlotsEqual(GarageRoster.UnitLoadout left, GarageRoster.UnitLoadout right)
         {

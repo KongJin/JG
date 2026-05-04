@@ -64,12 +64,7 @@ namespace Features.Unit.Domain
 
         public bool IsWithinAnchorRadius(Float3 position)
         {
-            var anchorRange = UnitSpec.FinalAnchorRange;
-            if (anchorRange <= 0f)
-                return true;
-
-            var distance = (position - AnchorPosition).Magnitude;
-            return distance <= anchorRange;
+            return UnitSpec.IsWithinAnchorRange(AnchorPosition, position);
         }
 
         public void Die()

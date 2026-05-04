@@ -45,10 +45,11 @@ namespace Features.Status.Application
             _expiringTypes.Clear();
             for (var i = 0; i < effects.Count; i++)
             {
-                var effect = effects[i];
-                effect.Tick(deltaTime);
+                var effect = container.AdvanceEffect(i, deltaTime, out bool tickReady);
+                if (effect == null)
+                    continue;
 
-                if (_isMaster && effect.ConsumeTickIfReady())
+                if (_isMaster && tickReady)
                 {
                     var damage = StatusRule.CalculateBurnDamage(effect.Magnitude);
                     _network.SendTickDamage(targetId, damage, effect.SourceId);

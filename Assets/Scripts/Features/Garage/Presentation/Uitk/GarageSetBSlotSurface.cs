@@ -6,12 +6,13 @@ using UnityEngine.UIElements;
 
 namespace Features.Garage.Presentation
 {
-    internal sealed class GarageSetBSlotSurface : GarageSetBUitkSurface
+    internal sealed class GarageSetBSlotSurface : BaseSurface<VisualElement>
     {
         private readonly SlotBinding[] _slots = new SlotBinding[GarageUitkConstants.Slots.MaxCount];
         private readonly Action[] _slotClicked = new Action[GarageUitkConstants.Slots.MaxCount];
 
         public GarageSetBSlotSurface(VisualElement root)
+            : base(root)
         {
             for (int i = 0; i < GarageUitkConstants.Slots.MaxCount; i++)
             {

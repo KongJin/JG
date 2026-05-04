@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-04",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "Presentation and Domain anti-pattern cleanup with recurrence prevention",
+  "observedMutationClass": "presentation ViewModel data shape, catalog alignment grouping, presenter helper extraction, domain value object grouping, domain invariants, injected status rules, and guardrail documentation",
+  "acceptanceEvidenceClass": "C# compile, feature presentation lint, and rules lint",
+  "escalationRequired": false,
+  "rootCause": "Garage presentation code allowed large flat ViewModel/catalog data shapes and long compatibility constructors to remain on production paths, while domain entities accepted primitive stat sets without a grouped invariant owner. Status container policy lookup also depended directly on the static rule class, which made rule ownership hard to substitute.",
+  "prevention": "Production presentation paths now use structured display/preview and alignment group objects instead of flat data clumps. Domain Unit construction now groups part ids, combat stats, and energy costs with validation, and StatusContainer accepts a rule set boundary. Guardrails now require grouped value objects for large data shapes, structured ViewModel constructors for new production code, presenter boundary checks for domain calculations, immutable value-object style updates, constructor invariants, and injected rule owners. This change preserves the existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "dotnet build Assembly-CSharp.csproj --no-restore -v:minimal; dotnet build Assembly-CSharp-Editor.csproj --no-restore -v:minimal; npm run --silent feature:presentation:lint; npm run --silent rules:lint",
+  "blockedReason": "",
+  "changedPaths": [
+    "Assets/Scripts/Features/Garage/Presentation/Page/GaragePagePresenter.cs",
+    "Assets/Scripts/Features/Garage/Presentation/Preview/GarageSetBUitkPreviewRenderer.cs",
+    "Assets/Scripts/Features/Garage/Presentation/Preview/GarageUnitPreviewAssembly.cs",
+    "Assets/Scripts/Features/Garage/Presentation/ViewModels/GaragePanelCatalog.cs",
+    "Assets/Scripts/Features/Garage/Presentation/Formatting/GarageUnitIdentityFormatter.cs",
+    "Assets/Scripts/Features/Garage/Domain/GarageRoster.cs",
+    "Assets/Scripts/Features/Skill/Domain/SkillSpec.cs",
+    "Assets/Scripts/Features/Status/Domain/StatusContainer.cs",
+    "Assets/Scripts/Features/Status/Domain/StatusRule.cs",
+    "Assets/Scripts/Features/Unit/Domain/Unit.cs",
+    "Assets/Scripts/Features/Unit/Domain/UnitComposition.cs",
+    "artifacts/rules/issue-recurrence-closeout.d/local-presentation-domain-anti-pattern-20260504.json",
+    "docs/architecture/anti_pattern_analysis.md",
+    "docs/index.md",
+    "docs/ops/codex_coding_guardrails.md",
+    "docs/ops/presentation_layer_guardrails.md"
+  ]
+}

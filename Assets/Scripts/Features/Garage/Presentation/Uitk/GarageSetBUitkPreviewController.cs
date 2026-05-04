@@ -60,7 +60,7 @@ namespace Features.Garage.Presentation
         {
             EnsureSlotPreviewRenderers();
 
-            for (int i = 0; i < SlotPreviewRendererCount; i++)
+            for (int i = 0; i < GarageUitkConstants.Rendering.SlotPreviewRendererCount; i++)
             {
                 var renderer = _slotPreviewRenderers[i];
                 var slot = slots != null && i < slots.Count ? slots[i] : null;
@@ -151,9 +151,9 @@ namespace Features.Garage.Presentation
             if (_slotPreviewRenderers != null && _slotPreviewTextures != null)
                 return;
 
-            _slotPreviewRenderers = new GarageSetBUitkPreviewRenderer[SlotPreviewRendererCount];
-            _slotPreviewTextures = new Texture[SlotPreviewRendererCount];
-            for (int i = 0; i < SlotPreviewRendererCount; i++)
+            _slotPreviewRenderers = new GarageSetBUitkPreviewRenderer[GarageUitkConstants.Rendering.SlotPreviewRendererCount];
+            _slotPreviewTextures = new Texture[GarageUitkConstants.Rendering.SlotPreviewRendererCount];
+            for (int i = 0; i < GarageUitkConstants.Rendering.SlotPreviewRendererCount; i++)
                 _slotPreviewRenderers[i] = CreateSlotPreviewRenderer(i);
         }
 
@@ -165,7 +165,7 @@ namespace Features.Garage.Presentation
                 typeof(GarageSetBUitkPreviewRenderer));
             rendererObject.transform.SetParent(_rendererParent, false);
             rendererObject.transform.localPosition = new Vector3(
-                SlotPreviewRendererSpacing * (index + 1),
+                GarageUitkConstants.Rendering.SlotPreviewRendererSpacing * (index + 1),
                 0f,
                 0f);
 

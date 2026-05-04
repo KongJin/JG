@@ -4,7 +4,7 @@ namespace Features.Skill.Domain
 {
     public sealed class SkillSpec : Shared.Kernel.ValueObject
     {
-        private const int Precision = 4;
+        private const int ValuePrecision = 4;
 
         public SkillSpec(
             float damage,
@@ -15,10 +15,19 @@ namespace Features.Skill.Domain
             StatusPayload statusPayload = default,
             SkillGameplayTags gameplayTags = SkillGameplayTags.None)
         {
-            Damage = (float)System.Math.Round(damage, Precision);
-            ManaCost = (float)System.Math.Round(manaCost, Precision);
-            Range = (float)System.Math.Round(range, Precision);
-            Duration = (float)System.Math.Round(duration, Precision);
+            if (damage < 0f)
+                throw new System.ArgumentOutOfRangeException(nameof(damage), damage, "Skill damage cannot be negative.");
+            if (manaCost < 0f)
+                throw new System.ArgumentOutOfRangeException(nameof(manaCost), manaCost, "Skill mana cost cannot be negative.");
+            if (range < 0f)
+                throw new System.ArgumentOutOfRangeException(nameof(range), range, "Skill range cannot be negative.");
+            if (duration < 0f)
+                throw new System.ArgumentOutOfRangeException(nameof(duration), duration, "Skill duration cannot be negative.");
+
+            Damage = RoundValue(damage);
+            ManaCost = RoundValue(manaCost);
+            Range = RoundValue(range);
+            Duration = RoundValue(duration);
             ProjectileCount = projectileCount < 1 ? 1 : projectileCount;
             StatusPayload = statusPayload;
             GameplayTags = gameplayTags;
@@ -31,6 +40,11 @@ namespace Features.Skill.Domain
         public int ProjectileCount { get; }
         public StatusPayload StatusPayload { get; }
         public SkillGameplayTags GameplayTags { get; }
+
+        private static float RoundValue(float value)
+        {
+            return (float)System.Math.Round(value, ValuePrecision);
+        }
 
         public override bool Equals(object obj)
         {

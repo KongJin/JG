@@ -47,6 +47,7 @@
 | ops.skill-routing-registry | ops/skill_routing_registry.md | active |
 | ops.skill-trigger-matrix | ops/skill_trigger_matrix.md | active |
 | ops.acceptance-reporting-guardrails | ops/acceptance_reporting_guardrails.md | active |
+| architecture.anti-pattern-analysis | architecture/anti_pattern_analysis.md | reference |
 | design.game-design | design/game_design.md | active |
 | design.world-design | design/world_design.md | active |
 | design.ui-foundations | design/ui_foundations.md | active |
@@ -100,6 +101,10 @@
 - `active`: [`ui_reference_workflow.md`](./design/ui_reference_workflow.md) - Stitch 기반 UI 시안 활용 기준
 - `active`: [`unit_module_design.md`](./design/unit_module_design.md) - 유닛/모듈 설계 기준
 - `active`: [`module_data_structure.md`](./design/module_data_structure.md) - 실제 구현 데이터 구조 기준
+
+### `architecture/`
+
+- `reference`: [`anti_pattern_analysis.md`](./architecture/anti_pattern_analysis.md) - Presentation/Domain anti-pattern 조사 기록과 후속 재발방지 참고
 
 ### `plans/`
 

@@ -114,24 +114,24 @@ namespace Features.Unit.Domain
             /// </summary>
             public UnitSpec ToUnit(DomainEntityId id) => new(
                 id,
-                FrameId,
+                new UnitPartIds(FrameId, FirepowerModuleId, MobilityModuleId),
                 FrameId,  // displayName — FrameId를 기본값으로 사용 (추후 매핑 테이블로 교체)
-                FirepowerModuleId,
-                MobilityModuleId,
                 string.Empty,  // passiveTraitId - 프레임에서 조회
                 PassiveTraitCostBonus,
-                Hp,
-                Defense,
-                AttackDamage,
-                AttackSpeed,
-                Range,
-                MoveSpeed,
-                MoveRange,
-                AnchorRange,
-                FrameEnergyCost,
-                FirepowerEnergyCost,
-                MobilityEnergyCost,
-                SummonCost);
+                new UnitCombatStats(
+                    Hp,
+                    Defense,
+                    AttackDamage,
+                    AttackSpeed,
+                    Range,
+                    MoveSpeed,
+                    MoveRange,
+                    AnchorRange),
+                new UnitEnergyCost(
+                    FrameEnergyCost,
+                    FirepowerEnergyCost,
+                    MobilityEnergyCost,
+                    SummonCost));
         }
 
         /// <summary>

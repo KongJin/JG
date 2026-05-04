@@ -31,6 +31,10 @@ namespace Features.Garage.Presentation
 
     public static class GarageUnitIdentityFormatter
     {
+        private const float FrontlineHoldMoveRangeMax = 3.1f;
+        private const float LongRangeFirepowerMinRange = 6f;
+        private const float InfiltrationMoveRangeMin = 6f;
+
         public const string EmptyCallsign = "기체 대기";
         public const string PendingServiceTag = "전적 기록 대기중";
 
@@ -68,15 +72,15 @@ namespace Features.Garage.Presentation
             if (mobility == null)
                 return "역할 산출 대기";
 
-            if (mobility.MoveRange <= 3.1f)
+            if (mobility.MoveRange <= FrontlineHoldMoveRangeMax)
             {
-                if (firepower != null && firepower.Range >= 6f)
+                if (firepower != null && firepower.Range >= LongRangeFirepowerMinRange)
                     return "고정 화력";
 
                 return "전선 고정";
             }
 
-            if (mobility.MoveRange >= 6f)
+            if (mobility.MoveRange >= InfiltrationMoveRangeMin)
                 return "침투 추적";
 
             return "균형 지원";
@@ -117,7 +121,7 @@ namespace Features.Garage.Presentation
         public static string BuildRosterStatusText(int activeCount, int missingCount, bool readyEligible, bool hasDraftChanges, bool canSave)
         {
             if (readyEligible)
-                return $"출격 편성 동기화 | 현역 {activeCount}/6";
+                return $"출격 편성 동기화 | 현역 {activeCount}/{Domain.GarageRoster.MaxSlots}";
 
             if (hasDraftChanges)
             {
@@ -126,7 +130,7 @@ namespace Features.Garage.Presentation
                     : "기체 편성 임시안 | 저장 보류";
             }
 
-            return $"현역 {activeCount}/6 | 기체 +{missingCount} 필요";
+            return $"현역 {activeCount}/{Domain.GarageRoster.MinReadySlots} | 기체 +{missingCount} 필요";
         }
 
         public static string BuildPrimaryActionLabel(GarageDraftEvaluation evaluation)

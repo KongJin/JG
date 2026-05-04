@@ -6,9 +6,8 @@ using UnityEngine.UIElements;
 
 namespace Features.Garage.Presentation
 {
-    internal sealed class GarageSetBPartListSurface : GarageSetBUitkSurface
+    internal sealed class GarageSetBPartListSurface : BaseSurface<VisualElement>
     {
-
         private readonly Button _frameTabButton;
         private readonly Button _firepowerTabButton;
         private readonly Button _mobilityTabButton;
@@ -34,6 +33,7 @@ namespace Features.Garage.Presentation
         private EventCallback<ChangeEvent<string>> _searchCallback;
 
         public GarageSetBPartListSurface(VisualElement root)
+            : base(root)
         {
             _frameTabButton = UitkElementUtility.Required<Button>(root, "FrameTabButton");
             _firepowerTabButton = UitkElementUtility.Required<Button>(root, "FirepowerTabButton");
@@ -68,7 +68,7 @@ namespace Features.Garage.Presentation
                     UitkElementUtility.Required<Label>(root, "SelectedPartStat03Value")),
             };
             _partListRows = UitkElementUtility.Required<ScrollView>(root, "PartListRows").contentContainer;
-            for (int i = 0; i < InitialPartRowCount; i++)
+            for (int i = 0; i < GarageUitkConstants.Parts.InitialRowCount; i++)
             {
                 int rowNumber = i + 1;
                 _partRows.Add(new PartRowBinding(

@@ -1,0 +1,80 @@
+```mermaid
+graph TB
+    %% ========================================
+    %% Layer Architecture Overview
+    %% Clean Architecture / Hexagonal Style
+    %% ========================================
+
+    subgraph Presentation["Presentation Layer (외부)"]
+        direction TB
+        UI[UI Toolkit<br/>UIDocument / VisualElement]
+        Surface[Surface<br/>BaseSurface&lt;T&gt;]
+        Adapter[RuntimeAdapter<br/>IGarageSetBUitkAdapter]
+        Controller[PageController<br/>GarageSetBUitkPageController]
+        Presenter[Presenter<br/>GaragePagePresenter]
+        ViewModel[ViewModels<br/>GarageSlotViewModel<br/>GarageEditorViewModel]
+
+        UI --> Surface
+        Surface --> Adapter
+        Adapter --> Controller
+        Controller --> Presenter
+        Controller --> ViewModel
+        Presenter --> ViewModel
+    end
+
+    subgraph Application["Application Layer (내부)"]
+        direction TB
+        UseCase[Use Cases<br/>InitializeGarageUseCase<br/>SaveRosterUseCase<br/>ValidateRosterUseCase]
+        PortIn[Input Ports<br/>(Interfaces)<br/>IGaragePersistencePort<br/>IGarageNetworkPort]
+        PortOut[Output Ports<br/>IEventPublisher]
+        Event[Events<br/>GarageDraftStateChangedEvent<br/>LobbyUpdatedEvent]
+        State[State<br/>GaragePageState<br/>GarageDraftEvaluation]
+
+        UseCase --> PortIn
+        UseCase --> PortOut
+        UseCase --> Event
+        UseCase --> State
+    end
+
+    subgraph Domain["Domain Layer (핵심)"]
+        direction TB
+        Entity[Entities<br/>GarageRoster<br/>Unit<br/>Skill<br/>StatusEffect]
+        ValueObject[Value Objects<br/>UnitLoadout<br/>ProjectileSpec<br/>TrajectoryInput]
+        DomainService[Domain Services<br/>DamageCalculator<br/>RangeCalculator]
+        DomainRule[Domain Rules<br/>RelationshipRule<br/>GrowthRule]
+
+        Entity --> ValueObject
+        DomainService --> Entity
+        DomainRule --> Entity
+    end
+
+    subgraph Infrastructure["Infrastructure Layer (외부)"]
+        direction TB
+        Persistence[Persistence<br/>GarageJsonPersistence<br/>LobbyRepository]
+        Network[Network<br/>GarageNetworkAdapter<br/>PhotonAdapter]
+        Data[Data Catalogs<br/>SkillCatalog<br/>WaveTableData<br/>UnitCompositionProvider]
+        External[External Services<br/>Firebase<br/>Photon]
+    end
+
+    %% Dependency Flow (Clean Architecture: inward dependencies only)
+    Presentation --> Application
+    Presentation -.-> Infrastructure
+    Application --> Domain
+    Application -.-> Infrastructure
+    Infrastructure --> Domain
+
+    %% Port Implementation
+    Persistence -.->|implements| PortIn
+    Network -.->|implements| PortIn
+
+    %% Styling
+    classDef presentation fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef application fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef domain fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef infrastructure fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+
+    class UI,Surface,Adapter,Controller,Presenter,ViewModel presentation
+    class UseCase,PortIn,PortOut,Event,State application
+    class Entity,ValueObject,DomainService,DomainRule domain
+    class Persistence,Network,Data,External infrastructure
+```

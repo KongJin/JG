@@ -108,7 +108,7 @@ namespace Features.Garage.Presentation
                     preview.FrameAlignment,
                     preview.MobilityAlignment,
                     preview.MobilityUsesAssemblyPivot),
-                preview.MobilityAlignment.SocketEuler);
+                preview.MobilityAlignment.Socket.Euler);
 
             return true;
         }
@@ -141,9 +141,10 @@ namespace Features.Garage.Presentation
 
         private static Vector3 ResolveFramePosition(GaragePanelCatalog.PartAlignment frameAlignment)
         {
-            return frameAlignment.HasVisualBounds
-                ? frameAlignment.PivotOffset - frameAlignment.VisualBoundsCenter
-                : frameAlignment.PivotOffset;
+            var visualBounds = frameAlignment.VisualBounds;
+            return visualBounds.HasBounds
+                ? visualBounds.PivotOffset - visualBounds.Center
+                : visualBounds.PivotOffset;
         }
 
         private static Vector3 ResolveAttachedPartPosition(
@@ -160,25 +161,29 @@ namespace Features.Garage.Presentation
 
         private static Vector3 ResolveAttachedPartSocketOffset(GaragePanelCatalog.PartAlignment partAlignment)
         {
-            if ((partAlignment.AssemblyAnchorMode == FrameTopSocketAnchorMode ||
-                 partAlignment.AssemblyAnchorMode == ShoulderPairAnchorMode) &&
-                partAlignment.HasVisualBounds)
+            var assembly = partAlignment.Assembly;
+            var visualBounds = partAlignment.VisualBounds;
+
+            if ((assembly.AnchorMode == FrameTopSocketAnchorMode ||
+                 assembly.AnchorMode == ShoulderPairAnchorMode) &&
+                visualBounds.HasBounds)
             {
                 return new Vector3(
-                    partAlignment.VisualBoundsCenter.x,
-                    partAlignment.VisualBoundsMin.y,
-                    partAlignment.VisualBoundsCenter.z);
+                    visualBounds.Center.x,
+                    visualBounds.Min.y,
+                    visualBounds.Center.z);
             }
 
-            return partAlignment.SocketOffset;
+            return partAlignment.Socket.Offset;
         }
 
         private static Vector3 ResolveFrameTopSocketOffset(GaragePanelCatalog.PartAlignment frameAlignment)
         {
-            if (frameAlignment.FrameTopSocketOffset.sqrMagnitude > MinVectorSqrMagnitude)
-                return frameAlignment.FrameTopSocketOffset;
+            var socket = frameAlignment.Socket;
+            if (socket.FrameTopSocketOffset.sqrMagnitude > MinVectorSqrMagnitude)
+                return socket.FrameTopSocketOffset;
 
-            return frameAlignment.SocketOffset;
+            return socket.Offset;
         }
 
         private static Vector3 ResolveMobilityPosition(
@@ -187,7 +192,7 @@ namespace Features.Garage.Presentation
             bool useAssemblyPivot)
         {
             var framePosition = ResolveFramePosition(frameAlignment);
-            var rotatedSocketOffset = Quaternion.Euler(mobilityAlignment.SocketEuler) *
+            var rotatedSocketOffset = Quaternion.Euler(mobilityAlignment.Socket.Euler) *
                                       ResolveMobilitySocketOffset(mobilityAlignment, useAssemblyPivot);
             return framePosition - rotatedSocketOffset;
         }
@@ -199,20 +204,22 @@ namespace Features.Garage.Presentation
             if (useAssemblyPivot)
                 return Vector3.zero;
 
-            if (mobilityAlignment.HasGxTreeSocket)
-                return mobilityAlignment.GxTreeSocketOffset;
+            var socket = mobilityAlignment.Socket;
+            if (socket.HasGxTreeSocket)
+                return socket.GxTreeSocketOffset;
 
-            if (mobilityAlignment.SocketOffset.sqrMagnitude > MinVectorSqrMagnitude)
-                return mobilityAlignment.SocketOffset;
+            if (socket.Offset.sqrMagnitude > MinVectorSqrMagnitude)
+                return socket.Offset;
 
-            return mobilityAlignment.HasXfiAttachSocket
-                ? mobilityAlignment.XfiAttachSocketOffset
+            var xfi = mobilityAlignment.Xfi;
+            return xfi.HasAttachSocket
+                ? xfi.AttachSocketOffset
                 : Vector3.zero;
         }
 
         private static Vector3 ResolveFirepowerEuler(GaragePanelCatalog.PartAlignment firepowerAlignment)
         {
-            return firepowerAlignment.SocketEuler + FirepowerEulerCorrection;
+            return firepowerAlignment.Socket.Euler + FirepowerEulerCorrection;
         }
 
         private static bool HasFrameFirepowerAnchorData(
@@ -221,17 +228,20 @@ namespace Features.Garage.Presentation
             AssemblyForm frameAssemblyForm,
             AssemblyForm firepowerAssemblyForm)
         {
-            if (firepowerAlignment.AssemblyAnchorMode == FrameTopSocketAnchorMode)
-                return frameAlignment.HasFrameTopSocket;
+            var firepowerAssembly = firepowerAlignment.Assembly;
+            var frameSocket = frameAlignment.Socket;
 
-            if (firepowerAlignment.AssemblyAnchorMode == ShoulderPairAnchorMode)
-                return frameAlignment.HasFrameTopSocket;
+            if (firepowerAssembly.AnchorMode == FrameTopSocketAnchorMode)
+                return frameSocket.HasFrameTopSocket;
+
+            if (firepowerAssembly.AnchorMode == ShoulderPairAnchorMode)
+                return frameSocket.HasFrameTopSocket;
 
             if (IsDirectionOnlyWeapon(firepowerAlignment))
                 return false;
 
-            return frameAlignment.HasFrameTopSocket &&
-                   string.IsNullOrWhiteSpace(firepowerAlignment.AssemblyAnchorMode);
+            return frameSocket.HasFrameTopSocket &&
+                   string.IsNullOrWhiteSpace(firepowerAssembly.AnchorMode);
         }
 
         private static bool CanApply(GaragePanelCatalog.PartAlignment alignment)
@@ -241,17 +251,19 @@ namespace Features.Garage.Presentation
 
         private static bool IsDirectionOnlyWeapon(GaragePanelCatalog.PartAlignment alignment)
         {
-            return alignment != null && alignment.XfiSocketQuality == XfiWeaponDirectionOnly;
+            return alignment != null && alignment.Xfi.SocketQuality == XfiWeaponDirectionOnly;
         }
 
         private static bool HasMobilitySocket(
             GaragePanelCatalog.PartAlignment mobilityAlignment,
             bool useAssemblyPivot)
         {
+            var socket = mobilityAlignment.Socket;
+            var xfi = mobilityAlignment.Xfi;
             return useAssemblyPivot ||
-                   mobilityAlignment.HasGxTreeSocket ||
-                   mobilityAlignment.SocketOffset.sqrMagnitude > MinVectorSqrMagnitude ||
-                   mobilityAlignment.HasXfiAttachSocket;
+                   socket.HasGxTreeSocket ||
+                   socket.Offset.sqrMagnitude > MinVectorSqrMagnitude ||
+                   xfi.HasAttachSocket;
         }
     }
 }

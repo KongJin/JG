@@ -87,11 +87,30 @@ public sealed class PreviewSceneDriver : MonoBehaviour
 - 클래스 필드 수가 15개를 넘으면 책임 분리를 고려한다.
 - UI Element 바인딩, 렌더링 조율, 상태 관리는 별도 클래스로 분리한다.
 - `RuntimeAdapter`는 Unity 생명주기 연결만 담당하고, 실제 로직은 Core 클래스에 위임한다.
+- ViewModel 또는 catalog item이 15개 이상의 관련 값을 평면 프로퍼티로 노출하면 `Display`, `Preview`, `Socket`, `VisualBounds`, `Assembly`처럼 변경 이유가 같은 값 단위로 먼저 묶는다.
+- 기존 호환 proxy 프로퍼티는 caller 마이그레이션용으로만 두고, 새 production 코드는 그룹 타입을 직접 읽는다.
 
 **권장 구조**:
 ```
 RuntimeAdapter (MonoBehaviour) → AdapterCore (POCO) → RenderCoordinator, ElementBindings
 ```
+
+## ViewModel Data Shape
+
+**규칙**: ViewModel 생성자는 의미 단위 DTO를 받도록 유지한다.
+
+- production path에서 10개 이상의 생성자 파라미터를 넘기지 않는다.
+- `GarageSlotViewModel`처럼 레거시 long constructor가 남아 있더라도 새 조립 코드는 `GarageSlotDisplayData`, `GarageSlotPreviewData` 같은 구조화된 입력을 사용한다.
+- bool/string 옵션이 섞인 생성자 호출이 생기면 named argument보다 먼저 데이터 shape 분리를 검토한다.
+- 테스트 fixture는 호환 생성자를 임시로 사용할 수 있지만, 새 behavior test는 구조화 생성자를 우선한다.
+
+## Presenter Boundary
+
+**규칙**: Presenter는 화면 조립자이며 domain 계산 owner가 아니다.
+
+- stat normalization, role/readiness 판정, catalog alignment key 계산처럼 반복되는 계산은 domain/value object, formatter, 또는 `*ViewModelFactory` helper로 이동한다.
+- Presenter 안의 private static helper가 3개 이상의 domain 필드를 함께 읽으면 feature envy 후보로 본다.
+- 화면 텍스트만 만드는 helper는 Presentation formatter에 둘 수 있지만, 전투/소환/로스터 무결성 판단은 Domain 또는 Application owner에 둔다.
 
 ## MonoBehaviour Coupling Reduction
 

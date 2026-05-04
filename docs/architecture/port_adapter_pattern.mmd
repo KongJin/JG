@@ -1,0 +1,77 @@
+```mermaid
+graph LR
+    %% ========================================
+    %% Port & Adapter Pattern
+    %% Hexagonal Architecture
+    %% ========================================
+
+    %% Core Application
+    subgraph Core["Application Core (내부)"]
+        direction TB
+
+        UseCase[UseCase<br/>SaveRosterUseCase]
+
+        subgraph Ports["Ports (인터페이스)"]
+            direction LR
+            PrimaryPort[Primary Ports<br/>- UseCase.Execute()<br/>- UseCase.Input]
+            SecondaryPort[Secondary Ports<br/>IGaragePersistencePort<br/>IGarageNetworkPort<br/>ICombatTargetPort]
+        end
+
+        Domain[Domain<br/>GarageRoster<br/>Unit<br/>Skill]
+
+        PrimaryPort --> UseCase
+        UseCase --> SecondaryPort
+        UseCase --> Domain
+    end
+
+    %% Adapters
+    subgraph Adapters["Adapters (외부)"]
+        direction TB
+
+        subgraph Driving["Driving Adapters (입력)"]
+            Presenter[Presenter<br/>GaragePagePresenter]
+            Controller[Controller<br/>GarageSetBUitkPageController]
+            EventHandler[EventHandler<br/>CombatReplicationEventHandler<br/>WaveEventHandler]
+        end
+
+        subgraph Driven["Driven Adapters (출력)"]
+            Persistence[Persistence<br/>GarageJsonPersistence]
+            Network[Network<br/>GarageNetworkAdapter<br/>PhotonAdapter]
+            Query[Query<br/>ICombatTargetProvider<br/>IPlayerLookupPort]
+        end
+    end
+
+    %% External Systems
+    subgraph External["External Systems"]
+        FileSystem[File System<br/>JSON 파일]
+        NetworkSvc[Network<br/>Photon / Firebase]
+        Unity[Unity Engine<br/>Physics, GameObject]
+    end
+
+    %% Dependencies
+    Controller -->|calls| UseCase
+    Presenter -->|provides data| Controller
+    EventHandler -->|subscribes| UseCase
+
+    UseCase -.->|depends on| SecondaryPort
+    Persistence -.->|implements| SecondaryPort
+    Network -.->|implements| SecondaryPort
+    Query -.->|implements| SecondaryPort
+
+    Persistence -->|reads/writes| FileSystem
+    Network -->|communicates| NetworkSvc
+    Query -->|queries| Unity
+
+    %% Styling
+    classDef core fill:#fff9c4,stroke:#f57f17,stroke-width:3px
+    classDef ports fill:#ffe0b2,stroke:#e65100,stroke-width:2px
+    classDef driving fill:#b3e5fc,stroke:#0277bd,stroke-width:2px
+    classDef driven fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    classDef external fill:#e0e0e0,stroke:#616161,stroke-width:2px
+
+    class UseCase,Domain core
+    class PrimaryPort,SecondaryPort ports
+    class Presenter,Controller,EventHandler driving
+    class Persistence,Network,Query driven
+    class FileSystem,NetworkSvc,Unity external
+```

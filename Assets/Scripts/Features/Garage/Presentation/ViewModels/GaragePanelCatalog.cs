@@ -19,46 +19,105 @@ namespace Features.Garage.Presentation
 
         public sealed class PartAlignment
         {
+            public PartVisualBounds VisualBounds { get; } = new();
+            public PartSocketAlignment Socket { get; } = new();
+            public PartXfiMetadata Xfi { get; } = new();
+            public PartAssemblyAlignment Assembly { get; } = new();
+
+            public float NormalizedScale { get => VisualBounds.NormalizedScale; set => VisualBounds.NormalizedScale = value; }
+            public Vector3 PivotOffset { get => VisualBounds.PivotOffset; set => VisualBounds.PivotOffset = value; }
+            public bool HasVisualBounds { get => VisualBounds.HasBounds; set => VisualBounds.HasBounds = value; }
+            public Vector3 VisualBoundsCenter { get => VisualBounds.Center; set => VisualBounds.Center = value; }
+            public Vector3 VisualBoundsMin { get => VisualBounds.Min; set => VisualBounds.Min = value; }
+            public Vector3 VisualBoundsMax { get => VisualBounds.Max; set => VisualBounds.Max = value; }
+            public Vector3 SocketOffset { get => Socket.Offset; set => Socket.Offset = value; }
+            public Vector3 SocketEuler { get => Socket.Euler; set => Socket.Euler = value; }
+            public bool HasGxTreeSocket { get => Socket.HasGxTreeSocket; set => Socket.HasGxTreeSocket = value; }
+            public Vector3 GxTreeSocketOffset { get => Socket.GxTreeSocketOffset; set => Socket.GxTreeSocketOffset = value; }
+            public string GxTreeSocketName { get => Socket.GxTreeSocketName; set => Socket.GxTreeSocketName = value; }
+            public bool HasXfiMetadata { get => Xfi.HasMetadata; set => Xfi.HasMetadata = value; }
+            public string XfiPath { get => Xfi.Path; set => Xfi.Path = value; }
+            public string XfiHeader { get => Xfi.Header; set => Xfi.Header = value; }
+            public string XfiHeaderKind { get => Xfi.HeaderKind; set => Xfi.HeaderKind = value; }
+            public string XfiAttachSlot { get => Xfi.AttachSlot; set => Xfi.AttachSlot = value; }
+            public string XfiAttachVariant { get => Xfi.AttachVariant; set => Xfi.AttachVariant = value; }
+            public int XfiTransformCount { get => Xfi.TransformCount; set => Xfi.TransformCount = value; }
+            public string XfiTransformTranslations { get => Xfi.TransformTranslations; set => Xfi.TransformTranslations = value; }
+            public int XfiDirectionRangeCount { get => Xfi.DirectionRangeCount; set => Xfi.DirectionRangeCount = value; }
+            public string XfiDirectionRanges { get => Xfi.DirectionRanges; set => Xfi.DirectionRanges = value; }
+            public bool HasXfiAttachSocket { get => Xfi.HasAttachSocket; set => Xfi.HasAttachSocket = value; }
+            public Vector3 XfiAttachSocketOffset { get => Xfi.AttachSocketOffset; set => Xfi.AttachSocketOffset = value; }
+            public bool HasFrameTopSocket { get => Socket.HasFrameTopSocket; set => Socket.HasFrameTopSocket = value; }
+            public Vector3 FrameTopSocketOffset { get => Socket.FrameTopSocketOffset; set => Socket.FrameTopSocketOffset = value; }
+            public string XfiSocketQuality { get => Xfi.SocketQuality; set => Xfi.SocketQuality = value; }
+            public string XfiSocketName { get => Xfi.SocketName; set => Xfi.SocketName = value; }
+            public string QualityFlag { get => Assembly.QualityFlag; set => Assembly.QualityFlag = value; }
+            public string ReviewReason { get => Assembly.ReviewReason; set => Assembly.ReviewReason = value; }
+            public string AssemblySourceSlotCode { get => Assembly.SourceSlotCode; set => Assembly.SourceSlotCode = value; }
+            public string AssemblySlotMode { get => Assembly.SlotMode; set => Assembly.SlotMode = value; }
+            public string AssemblyAnchorMode { get => Assembly.AnchorMode; set => Assembly.AnchorMode = value; }
+            public Vector3 AssemblyLocalOffset { get => Assembly.LocalOffset; set => Assembly.LocalOffset = value; }
+            public Vector3 AssemblyLocalEuler { get => Assembly.LocalEuler; set => Assembly.LocalEuler = value; }
+            public Vector3 AssemblyLocalScale { get => Assembly.LocalScale; set => Assembly.LocalScale = value; }
+            public string AssemblyConfidence { get => Assembly.Confidence; set => Assembly.Confidence = value; }
+            public string AssemblyEvidencePath { get => Assembly.EvidencePath; set => Assembly.EvidencePath = value; }
+            public string AssemblyReviewResult { get => Assembly.ReviewResult; set => Assembly.ReviewResult = value; }
+
+            public bool CanApply => QualityFlag == "auto_ok";
+        }
+
+        public sealed class PartVisualBounds
+        {
             public float NormalizedScale { get; set; }
             public Vector3 PivotOffset { get; set; }
-            public bool HasVisualBounds { get; set; }
-            public Vector3 VisualBoundsCenter { get; set; }
-            public Vector3 VisualBoundsMin { get; set; }
-            public Vector3 VisualBoundsMax { get; set; }
-            public Vector3 SocketOffset { get; set; }
-            public Vector3 SocketEuler { get; set; }
+            public bool HasBounds { get; set; }
+            public Vector3 Center { get; set; }
+            public Vector3 Min { get; set; }
+            public Vector3 Max { get; set; }
+        }
+
+        public sealed class PartSocketAlignment
+        {
+            public Vector3 Offset { get; set; }
+            public Vector3 Euler { get; set; }
             public bool HasGxTreeSocket { get; set; }
             public Vector3 GxTreeSocketOffset { get; set; }
             public string GxTreeSocketName { get; set; }
-            public bool HasXfiMetadata { get; set; }
-            public string XfiPath { get; set; }
-            public string XfiHeader { get; set; }
-            public string XfiHeaderKind { get; set; }
-            public string XfiAttachSlot { get; set; }
-            public string XfiAttachVariant { get; set; }
-            public int XfiTransformCount { get; set; }
-            public string XfiTransformTranslations { get; set; }
-            public int XfiDirectionRangeCount { get; set; }
-            public string XfiDirectionRanges { get; set; }
-            public bool HasXfiAttachSocket { get; set; }
-            public Vector3 XfiAttachSocketOffset { get; set; }
             public bool HasFrameTopSocket { get; set; }
             public Vector3 FrameTopSocketOffset { get; set; }
-            public string XfiSocketQuality { get; set; }
-            public string XfiSocketName { get; set; }
+        }
+
+        public sealed class PartXfiMetadata
+        {
+            public bool HasMetadata { get; set; }
+            public string Path { get; set; }
+            public string Header { get; set; }
+            public string HeaderKind { get; set; }
+            public string AttachSlot { get; set; }
+            public string AttachVariant { get; set; }
+            public int TransformCount { get; set; }
+            public string TransformTranslations { get; set; }
+            public int DirectionRangeCount { get; set; }
+            public string DirectionRanges { get; set; }
+            public bool HasAttachSocket { get; set; }
+            public Vector3 AttachSocketOffset { get; set; }
+            public string SocketQuality { get; set; }
+            public string SocketName { get; set; }
+        }
+
+        public sealed class PartAssemblyAlignment
+        {
             public string QualityFlag { get; set; }
             public string ReviewReason { get; set; }
-            public string AssemblySourceSlotCode { get; set; }
-            public string AssemblySlotMode { get; set; }
-            public string AssemblyAnchorMode { get; set; }
-            public Vector3 AssemblyLocalOffset { get; set; }
-            public Vector3 AssemblyLocalEuler { get; set; }
-            public Vector3 AssemblyLocalScale { get; set; }
-            public string AssemblyConfidence { get; set; }
-            public string AssemblyEvidencePath { get; set; }
-            public string AssemblyReviewResult { get; set; }
-
-            public bool CanApply => QualityFlag == "auto_ok";
+            public string SourceSlotCode { get; set; }
+            public string SlotMode { get; set; }
+            public string AnchorMode { get; set; }
+            public Vector3 LocalOffset { get; set; }
+            public Vector3 LocalEuler { get; set; }
+            public Vector3 LocalScale { get; set; }
+            public string Confidence { get; set; }
+            public string EvidencePath { get; set; }
+            public string ReviewResult { get; set; }
         }
 
         public sealed class FrameOption

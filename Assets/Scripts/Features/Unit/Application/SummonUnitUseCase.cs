@@ -41,8 +41,27 @@ namespace Features.Unit.Application
         /// <returns>소환 성공 여부</returns>
         public bool Execute(DomainEntityId playerId, UnitSpec unitSpec, Float3 spawnPosition)
         {
+            if (unitSpec == null)
+            {
+                _eventBus.Publish(new UnitSummonFailedEvent(
+                    playerId,
+                    unitSpec,
+                    "Unit spec is missing."));
+                return false;
+            }
+
             // 1. Energy 차감 시도
             var cost = unitSpec.SummonCost;
+            var currentEnergy = _energyPort.GetCurrentEnergy(playerId);
+            if (!unitSpec.CanBeSummonedWith(currentEnergy))
+            {
+                _eventBus.Publish(new UnitSummonFailedEvent(
+                    playerId,
+                    unitSpec,
+                    $"Not enough energy. Required: {cost}, Current: {currentEnergy}"));
+                return false;
+            }
+
             if (!_energyPort.TrySpendEnergy(playerId, cost))
             {
                 _eventBus.Publish(new UnitSummonFailedEvent(
