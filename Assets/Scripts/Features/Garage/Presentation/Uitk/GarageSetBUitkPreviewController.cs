@@ -7,8 +7,6 @@ namespace Features.Garage.Presentation
 {
     internal sealed class GarageSetBUitkPreviewController
     {
-        private const int SlotPreviewRendererCount = 8;
-        private const float SlotPreviewRendererSpacing = 1000f;
 
         private readonly Transform _rendererParent;
         private readonly GarageSetBUitkPreviewRenderer _previewRenderer;
@@ -41,6 +39,8 @@ namespace Features.Garage.Presentation
             _unitPreviewLabel = unitPreviewLabel;
             _unitPreviewImage = UitkElementUtility.CreateAbsoluteImage();
             unitPreviewHost?.Insert(0, _unitPreviewImage);
+            _previewRenderer?.ConfigureTransparentBackground(true);
+            _previewRenderer?.ConfigureAssemblyFitScale(1.35f);
             _partPreviewRenderer?.ConfigureTransparentBackground(true);
 
             SetPreviewTexture(null, false);

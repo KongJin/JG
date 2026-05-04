@@ -1,9 +1,11 @@
 using Features.Lobby.Presentation;
 using NUnit.Framework;
 using Shared.Kernel;
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace Tests.Editor
 {
@@ -131,6 +133,59 @@ namespace Tests.Editor
             finally
             {
                 Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void Bind_MissingRequiredShellElementThrows()
+        {
+            var documentObject = new GameObject("LobbyUitkMissingRequiredTest");
+            try
+            {
+                var document = documentObject.AddComponent<UIDocument>();
+                document.rootVisualElement.Add(new VisualElement { name = "LobbyShellScreen" });
+                var adapter = new LobbyUitkRuntimeAdapter(
+                    document,
+                    garageDocument: null,
+                    garageAdapter: null,
+                    lobbyShellTree: null,
+                    operationMemoryTree: null,
+                    accountSyncTree: null,
+                    connectionReconnectTree: null,
+                    documentObject);
+
+                var exception = Assert.Throws<InvalidOperationException>(() => adapter.Bind());
+                StringAssert.Contains("Lobby UITK element not found", exception.Message);
+
+                var secondException = Assert.Throws<InvalidOperationException>(() => adapter.Bind());
+                StringAssert.Contains("Lobby UITK element not found", secondException.Message);
+            }
+            finally
+            {
+                Object.DestroyImmediate(documentObject);
+            }
+        }
+
+        [Test]
+        public void PageController_RequiresOperationRecordStoreAtInitialize()
+        {
+            var controllerObject = new GameObject("LobbyPageControllerMissingStoreTest");
+            try
+            {
+                var controller = controllerObject.AddComponent<LobbyPageController>();
+
+                var exception = Assert.Throws<ArgumentNullException>(() =>
+                    controller.Initialize(
+                        eventBus: null,
+                        eventPublisher: null,
+                        useCases: null,
+                        operationRecordStore: null));
+
+                Assert.AreEqual("operationRecordStore", exception.ParamName);
+            }
+            finally
+            {
+                Object.DestroyImmediate(controllerObject);
             }
         }
 

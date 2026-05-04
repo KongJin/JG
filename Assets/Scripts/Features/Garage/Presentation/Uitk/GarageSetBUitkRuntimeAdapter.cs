@@ -1,55 +1,31 @@
 using System;
 using System.Collections.Generic;
 using Shared.Runtime;
-using Shared.Ui;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Features.Garage.Presentation
 {
+    /// <summary>
+    /// Garage Set B UI Runtime Adapter.
+    /// Unity 생명주기 연결만 담당하며, 실제 UI 로직은 Core에 위임.
+    /// 테스트 가능성을 위해 인터페이스를 구현.
+    /// </summary>
     public sealed class GarageSetBUitkRuntimeAdapter : MonoBehaviour
     {
-        [SerializeField]
-        private UIDocument _document;
+        [SerializeField] private UIDocument _document;
+        [SerializeField] private GarageSetBUitkPreviewRenderer _previewRenderer;
+        [SerializeField] private GarageSetBUitkPreviewRenderer _partPreviewRenderer;
 
-        [SerializeField]
-        private GarageSetBUitkPreviewRenderer _previewRenderer;
-
-        [SerializeField]
-        private GarageSetBUitkPreviewRenderer _partPreviewRenderer;
-
-        private VisualElement _surfaceRoot;
-        private VisualElement _screenRoot;
-        private VisualElement _hostScreenRoot;
-        private VisualElement _workspaceScroll;
-        private VisualElement _slotStrip;
-        private VisualElement _partFocusBar;
-        private VisualElement _partSelectionPane;
-        private VisualElement _partListCard;
-        private VisualElement _previewCard;
-        private VisualElement _selectedPartPreviewCard;
-        private VisualElement _selectedPartPreviewHost;
-        private ScrollView _partListRowsScroll;
-        private Label _commandStatusLabel;
-        private Button _settingsButton;
-        private GarageSetBSlotSurface _slotSurface;
-        private GarageSetBPartListSurface _partListSurface;
-        private VisualElement _unitPreviewHost;
-        private VisualElement _previewPowerBar;
-        private VisualElement _previewPowerFill;
-        private Label _previewPowerLabel;
-        private GarageStatRadarElement _statRadar;
-        private Button _saveButton;
-        private Label _saveValidationLabel;
-        private GarageSetBUitkLayoutController _layoutController;
-        private GarageSetBUitkPreviewController _previewController;
-        private bool _isHostBound;
-        private IReadOnlyList<GarageSlotViewModel> _lastSlots;
-        private GarageNovaPartsPanelViewModel _lastPartList;
-        private GarageResultViewModel _lastResult;
-        private GarageEditorFocus _lastFocusedPart;
-        private bool _lastIsSaving;
-        private bool _hasLastRender;
+        private IGarageSetBUitkAdapter _core;
+        private VisualElement _boundRoot;
+        private GarageSetBUitkDocumentHost _documentHost;
+        private Action<int> _coreSlotSelected;
+        private Action<GarageEditorFocus> _corePartFocusSelected;
+        private Action<string> _corePartSearchChanged;
+        private Action<GarageNovaPartSelection> _corePartOptionSelected;
+        private Action _coreSaveRequested;
+        private Action _coreSettingsRequested;
 
         public event Action<int> SlotSelected;
         public event Action<GarageEditorFocus> PartFocusSelected;
@@ -60,172 +36,24 @@ namespace Features.Garage.Presentation
 
         public bool Bind()
         {
-            if (_surfaceRoot != null && _slotSurface != null && _partListSurface != null)
+            if (_core != null)
                 return true;
 
             if (_document == null)
                 return false;
 
             var root = _document.rootVisualElement;
-            if (root == null)
-                return false;
-
-            _isHostBound = false;
-            _hostScreenRoot = null;
-            return Bind(root);
+            return root != null && Bind(root);
         }
 
         public bool BindToHost(VisualElement host)
         {
-            if (host == null)
-                return false;
-
-            if (host.Q<VisualElement>("GarageSetBScreen") == null)
-            {
-                var source = _document != null ? _document.visualTreeAsset : null;
-                if (source == null)
-                    return false;
-
-                host.Clear();
-                source.CloneTree(host);
-            }
-
-            var screenRoot = host.Q<VisualElement>("GarageSetBScreen");
-            if (screenRoot == null)
-                return false;
-
-            _isHostBound = true;
-            _hostScreenRoot = screenRoot;
-            _hostScreenRoot.style.display = DisplayStyle.Flex;
-            HideStandaloneDocumentRoot();
-            return Bind(host);
+            return DocumentHost.BindToHost(host);
         }
 
         public bool SetDocumentRootVisible(bool isVisible)
         {
-            if (_isHostBound)
-            {
-                HideStandaloneDocumentRoot();
-                if (_hostScreenRoot != null)
-                    _hostScreenRoot.style.display = DisplayStyle.Flex;
-                return true;
-            }
-
-            if (_document == null)
-                return false;
-
-            if (!_document.gameObject.activeSelf)
-                _document.gameObject.SetActive(true);
-
-            _document.sortingOrder = 10;
-            var root = _document.rootVisualElement;
-            if (root != null)
-                root.style.display = isVisible ? DisplayStyle.Flex : DisplayStyle.None;
-
-            return true;
-        }
-
-        private void HideStandaloneDocumentRoot()
-        {
-            if (_document == null)
-                return;
-
-            if (!_document.gameObject.activeSelf)
-                _document.gameObject.SetActive(true);
-
-            _document.sortingOrder = 10;
-            var root = _document.rootVisualElement;
-            if (root != null)
-                root.style.display = DisplayStyle.None;
-        }
-
-        private bool Bind(VisualElement root)
-        {
-            if (root == null)
-                return false;
-
-            if (_surfaceRoot == root && _slotSurface != null && _partListSurface != null)
-            {
-                _layoutController?.Apply();
-                return true;
-            }
-
-            _screenRoot = root.Q<VisualElement>("GarageSetBScreen") ?? root;
-            _workspaceScroll = UitkElementUtility.Required<VisualElement>(root, "WorkspaceScroll");
-            _slotStrip = UitkElementUtility.Required<VisualElement>(root, "SlotStrip");
-            _partFocusBar = UitkElementUtility.Required<VisualElement>(root, "PartFocusBar");
-            _partSelectionPane = UitkElementUtility.Required<VisualElement>(
-                root,
-                "PartSelectionPane"
-            );
-            _partListCard = UitkElementUtility.Required<VisualElement>(root, "PartListCard");
-            _previewCard = UitkElementUtility.Required<VisualElement>(root, "PreviewCard");
-            _selectedPartPreviewCard = UitkElementUtility.Required<VisualElement>(
-                root,
-                "SelectedPartPreviewCard"
-            );
-            _selectedPartPreviewHost = UitkElementUtility.Required<VisualElement>(
-                root,
-                "SelectedPartPreviewHost"
-            );
-            _partListRowsScroll = UitkElementUtility.Required<ScrollView>(root, "PartListRows");
-            _commandStatusLabel = UitkElementUtility.Required<Label>(root, "CommandStatusLabel");
-            _settingsButton = UitkElementUtility.Required<Button>(root, "SettingsButton");
-            _slotSurface = new GarageSetBSlotSurface(root);
-            _partListSurface = new GarageSetBPartListSurface(root);
-            var previewTitleLabel = UitkElementUtility.Required<Label>(root, "PreviewTitleLabel");
-            var previewTagRow = root.Q<VisualElement>("PreviewTagRow");
-            _unitPreviewHost = UitkElementUtility.Required<VisualElement>(root, "UnitPreviewHost");
-            var unitPreviewLabel = UitkElementUtility.Required<Label>(root, "UnitPreviewLabel");
-            _previewPowerBar = UitkElementUtility.Required<VisualElement>(root, "PreviewPowerBar");
-            _previewPowerFill = UitkElementUtility.Required<VisualElement>(
-                root,
-                "PreviewPowerFill"
-            );
-            _previewPowerLabel = UitkElementUtility.Required<Label>(root, "PreviewPowerLabel");
-            _statRadar = new GarageStatRadarElement { name = "StatRadarGraph" };
-            _statRadar.AddToClassList("stat-radar-graph");
-            _previewCard.Add(_statRadar);
-            var saveDock = UitkElementUtility.Required<VisualElement>(root, "SaveDock");
-            _saveValidationLabel = UitkElementUtility.Required<Label>(root, "SaveValidationLabel");
-            _saveButton = UitkElementUtility.Required<Button>(root, "SaveButton");
-            _surfaceRoot = root;
-            _previewController?.Dispose();
-            _previewController = new GarageSetBUitkPreviewController(
-                transform,
-                _previewRenderer,
-                _partPreviewRenderer,
-                _partListSurface,
-                previewTitleLabel,
-                previewTagRow,
-                _unitPreviewHost,
-                unitPreviewLabel);
-            _layoutController = new GarageSetBUitkLayoutController(
-                _surfaceRoot,
-                _screenRoot,
-                _workspaceScroll,
-                _slotStrip,
-                _partFocusBar,
-                _partSelectionPane,
-                _partListCard,
-                _previewCard,
-                _unitPreviewHost,
-                _selectedPartPreviewCard,
-                _selectedPartPreviewHost,
-                _partListRowsScroll,
-                _statRadar,
-                saveDock,
-                _isHostBound,
-                deltaRows => _partListSurface?.ScrollVisibleOptions(deltaRows) == true
-            );
-
-            _layoutController.Apply();
-            BindCallbacks();
-
-            if (_hasLastRender)
-                RenderToSurface();
-
-            return true;
+            return DocumentHost.SetDocumentRootVisible(isVisible);
         }
 
         public void Render(
@@ -234,20 +62,12 @@ namespace Features.Garage.Presentation
             GarageEditorViewModel editor,
             GarageResultViewModel result,
             GarageEditorFocus focusedPart,
-            bool isSaving
-        )
+            bool isSaving)
         {
-            _lastSlots = slots;
-            _lastPartList = partList;
-            _lastResult = result;
-            _lastFocusedPart = focusedPart;
-            _lastIsSaving = isSaving;
-            _hasLastRender = true;
-
             if (!Bind())
                 return;
 
-            RenderToSurface();
+            _core?.Render(slots, partList, editor, result, focusedPart, isSaving);
         }
 
         private void OnEnable()
@@ -261,66 +81,110 @@ namespace Features.Garage.Presentation
                 _document = ComponentAccess.Get<UIDocument>(gameObject);
         }
 
-        private void RenderToSurface()
-        {
-            if (_slotSurface == null || _partListSurface == null)
-                return;
-
-            _partListSurface.Render(_lastPartList, _lastFocusedPart);
-            RenderResult(_lastResult, _lastIsSaving);
-            _previewController?.Render(_lastSlots, _lastPartList);
-            _slotSurface.Render(_lastSlots, _previewController?.RenderSlotPreviews(_lastSlots));
-        }
-
-        private void BindCallbacks()
-        {
-            _slotSurface.SlotSelected += slotIndex => SlotSelected?.Invoke(slotIndex);
-            _partListSurface.FocusSelected += focus => PartFocusSelected?.Invoke(focus);
-            _partListSurface.SearchChanged += value => PartSearchChanged?.Invoke(value);
-            _partListSurface.OptionSelected += selection => PartOptionSelected?.Invoke(selection);
-            _saveButton.clicked += () => SaveRequested?.Invoke();
-            _settingsButton.clicked += () => SettingsRequested?.Invoke();
-        }
-
         private void OnDestroy()
         {
-            _previewController?.Dispose();
-            _previewController = null;
+            DisposeCore();
         }
 
-        private void RenderResult(GarageResultViewModel result, bool isSaving)
+        internal bool BindRoot(VisualElement root)
         {
-            _commandStatusLabel.text = result?.RosterStatusText ?? "편성 상태 대기";
-            string validationText = result?.ValidationText ?? string.Empty;
-            _saveValidationLabel.text = validationText;
-            _saveValidationLabel.style.display = string.IsNullOrWhiteSpace(validationText)
-                ? DisplayStyle.None
-                : DisplayStyle.Flex;
-            _saveButton.text = isSaving
-                ? "저장 중..."
-                : result?.PrimaryActionLabel ?? "저장 및 배치";
-            _saveButton.SetEnabled(!isSaving && result?.CanSave == true);
-            bool showSaveDock =
-                result != null && (isSaving || result.CanSave || result.IsDirty || !result.IsReady);
-            _layoutController?.SetSaveDockVisible(showSaveDock);
-            _statRadar?.Render(result?.Radar);
-            bool showValidation =
-                result != null
-                && (result.IsDirty || result.CanSave)
-                && !string.IsNullOrWhiteSpace(validationText);
-            _saveValidationLabel.style.display = showValidation
-                ? DisplayStyle.Flex
-                : DisplayStyle.None;
+            if (root == null)
+                return false;
 
-            bool hasPower = result?.Radar != null;
-            if (_previewPowerBar != null)
-                _previewPowerBar.style.display = hasPower ? DisplayStyle.Flex : DisplayStyle.None;
-            if (_previewPowerLabel != null)
-                _previewPowerLabel.text = hasPower ? $"EN {result.Radar.SummonCost}" : string.Empty;
-            if (_previewPowerFill != null)
-                _previewPowerFill.style.width = Length.Percent(
-                    hasPower ? Mathf.Clamp(result.Radar.SummonCost, 0, 100) : 0
-                );
+            if (_core != null)
+            {
+                if (ReferenceEquals(_boundRoot, root))
+                    return true;
+
+                DisposeCore();
+            }
+
+            var bindings = new GarageSetBUitkElementBindings();
+            if (!bindings.TryBind(root))
+                return false;
+
+            _core = new GarageSetBUitkAdapterCore(
+                bindings,
+                transform,
+                _previewRenderer,
+                _partPreviewRenderer);
+            _boundRoot = root;
+            ForwardCoreEvents();
+            return true;
+        }
+
+        private GarageSetBUitkDocumentHost DocumentHost
+        {
+            get
+            {
+                _documentHost ??= new GarageSetBUitkDocumentHost(_document, this);
+                return _documentHost;
+            }
+        }
+
+        private bool Bind(VisualElement root)
+        {
+            return BindRoot(root);
+        }
+
+        private void ForwardCoreEvents()
+        {
+            if (_core == null)
+                return;
+
+            _coreSlotSelected = slotIndex => SlotSelected?.Invoke(slotIndex);
+            _corePartFocusSelected = focus => PartFocusSelected?.Invoke(focus);
+            _corePartSearchChanged = value => PartSearchChanged?.Invoke(value);
+            _corePartOptionSelected = selection => PartOptionSelected?.Invoke(selection);
+            _coreSaveRequested = () => SaveRequested?.Invoke();
+            _coreSettingsRequested = () => SettingsRequested?.Invoke();
+
+            _core.SlotSelected += _coreSlotSelected;
+            _core.PartFocusSelected += _corePartFocusSelected;
+            _core.PartSearchChanged += _corePartSearchChanged;
+            _core.PartOptionSelected += _corePartOptionSelected;
+            _core.SaveRequested += _coreSaveRequested;
+            _core.SettingsRequested += _coreSettingsRequested;
+        }
+
+        private void DisposeCore()
+        {
+            if (_core == null)
+            {
+                _boundRoot = null;
+                return;
+            }
+
+            UnforwardCoreEvents();
+            _core.Dispose();
+            _core = null;
+            _boundRoot = null;
+        }
+
+        private void UnforwardCoreEvents()
+        {
+            if (_core == null)
+                return;
+
+            if (_coreSlotSelected != null)
+                _core.SlotSelected -= _coreSlotSelected;
+            if (_corePartFocusSelected != null)
+                _core.PartFocusSelected -= _corePartFocusSelected;
+            if (_corePartSearchChanged != null)
+                _core.PartSearchChanged -= _corePartSearchChanged;
+            if (_corePartOptionSelected != null)
+                _core.PartOptionSelected -= _corePartOptionSelected;
+            if (_coreSaveRequested != null)
+                _core.SaveRequested -= _coreSaveRequested;
+            if (_coreSettingsRequested != null)
+                _core.SettingsRequested -= _coreSettingsRequested;
+
+            _coreSlotSelected = null;
+            _corePartFocusSelected = null;
+            _corePartSearchChanged = null;
+            _corePartOptionSelected = null;
+            _coreSaveRequested = null;
+            _coreSettingsRequested = null;
         }
     }
 }

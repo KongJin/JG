@@ -20,7 +20,7 @@
 
 ## Residual Owner
 
-- Nova1492 content release gate, rights/naming 판단, 모델 후보 handoff는 [`nova1492_content_residual_plan.md`](./nova1492_content_residual_plan.md)가 맡는다.
+- Nova1492 content release gate, rights/naming 판단, 모델 후보 handoff는 [`nova1492-content-residual-plan.md`](./nova1492-content-residual-plan.md)가 맡는다.
 - 새 조립 형태를 다시 제품 범위로 열려면 기존 preview 보정 기록을 재사용하지 말고 `plans.progress`에서 새 owner를 먼저 연다.
 
 ## Evidence

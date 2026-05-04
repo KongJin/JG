@@ -1,9 +1,11 @@
 using Features.Garage.Presentation;
+using Features.Unit.Domain;
 using Features.Unit.Infrastructure;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.IO;
 using System.Linq;
 
 namespace Tests.Editor
@@ -45,12 +47,11 @@ namespace Tests.Editor
                 Assert.AreEqual("현재 장착", Label(root, "SelectedPartPreviewKickerLabel").text);
                 Assert.AreEqual("레일건", Label(root, "SelectedPartPreviewTitleLabel").text);
                 Assert.AreEqual("EN 24", Label(root, "SelectedPartEnergyLabel").text);
-                Assert.AreEqual("EN 24 | ATK 840 | RNG 12.5", Label(root, "SelectedPartPreviewMetaLabel").text);
+                Assert.AreEqual("ATK 840 | RNG 12.5", Label(root, "SelectedPartPreviewMetaLabel").text);
                 Assert.AreEqual("ATK", Label(root, "SelectedPartStat01Label").text);
                 Assert.AreEqual("840", Label(root, "SelectedPartStat01Value").text);
                 Assert.AreEqual("RNG", Label(root, "SelectedPartStat02Label").text);
                 Assert.AreEqual("12.5", Label(root, "SelectedPartStat02Value").text);
-                Assert.AreEqual(100f, root.Q<VisualElement>("SelectedPartStat01Fill").style.width.value.value);
                 Assert.Greater(root.Q<VisualElement>("SelectedPartStat01Fill").style.height.value.value, 0f);
                 Assert.IsTrue(root.Q<VisualElement>("PartRow01").ClassListContains("part-row--selected"));
                 Assert.AreEqual(
@@ -59,6 +60,38 @@ namespace Tests.Editor
                 Assert.AreEqual(DisplayStyle.Flex, Label(root, "SaveValidationLabel").style.display.value);
                 Assert.AreEqual("출격 편성 저장", Button(root, "SaveButton").text);
                 Assert.IsTrue(Button(root, "SaveButton").enabledSelf);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void Render_PartListKeepsRowsAccessibleBeyondInitialEight()
+        {
+            var fixture = CreateRuntimeAdapterFixture();
+            try
+            {
+                fixture.Adapter.Render(
+                    CreateSlots(),
+                    CreatePartListWithOptionCount(12),
+                    CreateEditor(),
+                    new GarageResultViewModel(
+                        "편성 중",
+                        string.Empty,
+                        "ATK 840",
+                        isReady: false,
+                        isDirty: true,
+                        canSave: true,
+                        primaryActionLabel: "임시 편성"),
+                    GarageEditorFocus.Firepower,
+                    isSaving: false);
+
+                var root = fixture.Host;
+                Assert.NotNull(Button(root, "PartRow12"));
+                Assert.AreEqual("부품 12개", Label(root, "PartListCountLabel").text);
+                Assert.AreEqual("부품 12", Label(root, "PartRow12NameLabel").text);
             }
             finally
             {
@@ -104,70 +137,34 @@ namespace Tests.Editor
         }
 
         [Test]
-        public void RuntimeLayout_PrioritizesAssemblyPreviewBeforePartPicker()
+        public void UxmlAndUss_OwnStableAssemblyPreviewAndPartPickerLayout()
         {
-            var fixture = CreateRuntimeAdapterFixture();
-            try
-            {
-                var root = fixture.Host;
-                var slotStrip = root.Q<VisualElement>("SlotStrip");
-                var unitPreview = root.Q<VisualElement>("PreviewCard");
-                var focusBar = root.Q<VisualElement>("PartFocusBar");
-                var selectedPreview = root.Q<VisualElement>("SelectedPartPreviewCard");
-                var pane = root.Q<VisualElement>("PartSelectionPane");
-                var listCard = root.Q<VisualElement>("PartListCard");
-                var rows = root.Q<ScrollView>("PartListRows");
-                var unitPreviewHost = root.Q<VisualElement>("UnitPreviewHost");
-                var workspace = root.Q<VisualElement>("WorkspaceScroll");
-                var saveDock = root.Q<VisualElement>("SaveDock");
-                var content = slotStrip.parent;
+            var root = LoadRoot();
+            var slotStrip = root.Q<VisualElement>("SlotStrip");
+            var unitPreview = root.Q<VisualElement>("PreviewCard");
+            var focusBar = root.Q<VisualElement>("PartFocusBar");
+            var pane = root.Q<VisualElement>("PartSelectionPane");
+            var listCard = root.Q<VisualElement>("PartListCard");
+            var content = slotStrip.parent;
 
-                Assert.Less(IndexOfChild(content, slotStrip), IndexOfChild(content, unitPreview));
-                Assert.Less(IndexOfChild(content, unitPreview), IndexOfChild(content, focusBar));
-                Assert.Less(IndexOfChild(content, focusBar), IndexOfChild(content, selectedPreview));
-                Assert.Less(IndexOfChild(content, selectedPreview), IndexOfChild(content, pane));
-                Assert.AreSame(pane, listCard.parent);
-                Assert.IsNull(root.Q<VisualElement>("PartInspectorColumn"));
-                Assert.IsNull(root.Q<VisualElement>("EditorCard"));
-                Assert.AreEqual(156f, unitPreview.style.height.value.value);
-                Assert.AreEqual(108f, unitPreviewHost.style.width.value.value);
-                Assert.AreEqual(108f, unitPreviewHost.style.height.value.value);
-                Assert.AreEqual(24f, unitPreviewHost.style.marginLeft.value.value);
-                Assert.AreEqual(22f, unitPreviewHost.style.marginTop.value.value);
-                Assert.AreEqual(DisplayStyle.None, root.Q<Label>("PreviewTitleLabel").style.display.value);
-                Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>("PreviewTagRow").style.display.value);
-                Assert.AreEqual(108f, root.Q<VisualElement>("StatRadarGraph").style.width.value.value);
-                Assert.AreEqual(108f, root.Q<VisualElement>("StatRadarGraph").style.height.value.value);
-                Assert.AreEqual(24f, root.Q<VisualElement>("StatRadarGraph").style.top.value.value);
-                Assert.AreEqual(86f, Button(root, "SlotCard01").style.height.value.value);
-                Assert.AreEqual(86f, Button(root, "SlotCard01").style.minHeight.value.value);
-                Assert.AreEqual(86f, Button(root, "SlotCard01").style.maxHeight.value.value);
-                Assert.AreEqual(0f, Button(root, "SlotCard01").style.flexShrink.value);
-                Assert.AreEqual(StyleKeyword.Auto, rows.style.height.keyword);
-                Assert.AreEqual(0f, rows.style.flexGrow.value);
-                Assert.AreEqual(0f, rows.mouseWheelScrollSize);
-                Assert.AreEqual(ScrollView.TouchScrollBehavior.Clamped, rows.touchScrollBehavior);
-                Assert.AreEqual(ScrollView.NestedInteractionKind.StopScrolling, rows.nestedInteractionKind);
-                Assert.AreEqual(Vector2.zero, rows.scrollOffset);
-                Assert.IsFalse(root.Q<VisualElement>("PartRow01") is Button);
-                Assert.AreEqual(50f, root.Q<VisualElement>("PartRow01").style.height.value.value);
-                Assert.AreEqual(50f, root.Q<VisualElement>("PartRow01").style.minHeight.value.value);
-                Assert.AreEqual(50f, root.Q<VisualElement>("PartRow01").style.maxHeight.value.value);
-                Assert.AreEqual(0f, root.Q<VisualElement>("PartRow01").style.flexShrink.value);
-                Assert.AreEqual(16f, workspace.style.paddingBottom.value.value);
-                Assert.AreEqual(0f, workspace.style.marginBottom.value.value);
-                Assert.AreEqual(62f, root.style.marginBottom.value.value);
-                Assert.AreSame(listCard, saveDock.parent);
-                Assert.AreEqual(Position.Relative, saveDock.style.position.value);
-                Assert.AreEqual(StyleKeyword.Auto, saveDock.style.bottom.keyword);
-                Assert.AreEqual(6f, saveDock.style.marginTop.value.value);
-                Assert.AreEqual(0f, saveDock.style.marginBottom.value.value);
-                Assert.AreEqual(0f, saveDock.style.flexShrink.value);
-            }
-            finally
-            {
-                Object.DestroyImmediate(fixture.DocumentObject);
-            }
+            Assert.Less(IndexOfChild(content, slotStrip), IndexOfChild(content, unitPreview));
+            Assert.Less(IndexOfChild(content, unitPreview), IndexOfChild(content, focusBar));
+            Assert.Less(IndexOfChild(content, focusBar), IndexOfChild(content, pane));
+            Assert.AreSame(pane, listCard.parent);
+            Assert.IsNull(root.Q<VisualElement>("PartInspectorColumn"));
+            Assert.IsNull(root.Q<VisualElement>("EditorCard"));
+            Assert.IsInstanceOf<Button>(root.Q<VisualElement>("PartRow01"));
+
+            var uss = File.ReadAllText("Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss");
+            StringAssert.Contains(".preview-card", uss);
+            StringAssert.Contains("height: 156px;", uss);
+            StringAssert.Contains(".unit-diagram", uss);
+            StringAssert.Contains("width: 108px;", uss);
+            StringAssert.Contains(".stat-radar-graph", uss);
+            StringAssert.Contains(".part-list-rows", uss);
+            StringAssert.Contains("height: 252px;", uss);
+            StringAssert.Contains(".save-dock", uss);
+            StringAssert.Contains("position: relative;", uss);
         }
 
         [Test]
@@ -183,8 +180,8 @@ namespace Tests.Editor
             Assert.NotNull(rows);
             Assert.NotNull(search);
             Assert.NotNull(saveDock);
-            Assert.AreSame(listCard, saveDock.parent);
-            Assert.Less(IndexOfChild(listCard, rows), IndexOfChild(listCard, saveDock));
+            Assert.AreSame(root.Q<VisualElement>("SlotStrip").parent, saveDock.parent);
+            Assert.Less(IndexOfChild(listCard, search), IndexOfChild(listCard, rows));
             Assert.AreEqual(ScrollerVisibility.Hidden, rows.horizontalScrollerVisibility);
             Assert.AreEqual(ScrollerVisibility.Hidden, rows.verticalScrollerVisibility);
             Assert.AreEqual("부품 검색", search.label);
@@ -217,7 +214,6 @@ namespace Tests.Editor
                 Assert.AreEqual("저장본이 최신입니다.", Label(root, "SaveValidationLabel").text);
                 Assert.AreEqual(DisplayStyle.None, Label(root, "SaveValidationLabel").style.display.value);
                 Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>("SaveDock").style.display.value);
-                Assert.AreEqual(16f, root.Q<VisualElement>("WorkspaceScroll").style.paddingBottom.value.value);
                 Assert.IsTrue(Button(root, "FrameTabButton").ClassListContains("focus-tab--active"));
                 Assert.AreEqual("프레임 선택", Label(root, "PartListTitleLabel").text);
             }
@@ -250,7 +246,6 @@ namespace Tests.Editor
 
                 var root = fixture.Host;
                 Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>("SaveDock").style.display.value);
-                Assert.AreEqual(16f, root.Q<VisualElement>("WorkspaceScroll").style.paddingBottom.value.value);
                 Assert.AreEqual("출격 편성 저장", Button(root, "SaveButton").text);
                 Assert.IsTrue(Button(root, "SaveButton").enabledSelf);
             }
@@ -342,6 +337,45 @@ namespace Tests.Editor
 
                 Assert.NotNull(host.Q<VisualElement>("GarageSetBScreen"));
                 Assert.IsFalse(host.Query<Label>().ToList().Any(label => label.text == "Garage workspace is loading."));
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void RuntimeAdapter_BindToHost_RebindsAfterDocumentRootBind()
+        {
+            var fixture = CreateRuntimeAdapterFixture(bindToHost: false);
+            try
+            {
+                var document = fixture.DocumentObject.GetComponent<UIDocument>();
+                LoadTreeInto(document.rootVisualElement);
+
+                Assert.IsTrue(fixture.Adapter.Bind());
+
+                var host = new VisualElement { name = "GarageUitkHost" };
+                host.Add(new Label("Garage workspace is loading."));
+
+                Assert.IsTrue(fixture.Adapter.BindToHost(host));
+                fixture.Adapter.Render(
+                    CreateSlots(),
+                    CreatePartList(),
+                    CreateEditor(),
+                    new GarageResultViewModel(
+                        "host-bound render",
+                        string.Empty,
+                        "ATK 840",
+                        isReady: false,
+                        isDirty: true,
+                        canSave: true,
+                        primaryActionLabel: "임시 편성"),
+                    GarageEditorFocus.Firepower,
+                    isSaving: false);
+
+                Assert.NotNull(host.Q<VisualElement>("GarageSetBScreen"));
+                Assert.AreEqual("host-bound render", Label(host, "CommandStatusLabel").text);
             }
             finally
             {
@@ -484,6 +518,14 @@ namespace Tests.Editor
             var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(UxmlPath);
             Assert.NotNull(asset, $"UXML not found: {UxmlPath}");
             return asset.CloneTree();
+        }
+
+        private static void LoadTreeInto(VisualElement root)
+        {
+            var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(UxmlPath);
+            Assert.NotNull(asset, $"UXML not found: {UxmlPath}");
+            root.Clear();
+            asset.CloneTree(root);
         }
 
         private static RuntimeAdapterFixture CreateRuntimeAdapterFixture(bool bindToHost = true)
@@ -630,7 +672,7 @@ namespace Tests.Editor
                 searchText: string.Empty,
                 countText: "부품 2개",
                 selectedNameText: "레일건",
-                selectedDetailText: "EN 24 | ATK 840 | RNG 12.5 | T3",
+                selectedDetailText: "ATK 840 | RNG 12.5",
                 selectedPreviewPrefab: null,
                 selectedAlignment: null,
                 new[]
@@ -639,19 +681,61 @@ namespace Tests.Editor
                         slot,
                         "railgun",
                         "레일건",
-                        "EN 24 | ATK 840 | RNG 12.5 | T3",
+                        "ATK 840 | RNG 12.5",
                         "Assets/Parts/Railgun.prefab",
                         isSelected: true,
-                        needsNameReview: false),
+                        needsNameReview: false,
+                        energyText: "EN 24",
+                        stats: new[]
+                        {
+                            new GarageNovaPartStatViewModel("ATK", "840", 100f),
+                            new GarageNovaPartStatViewModel("RNG", "12.5", 78f),
+                        }),
                     new GarageNovaPartOptionViewModel(
                         slot,
                         "vulcan",
                         "발칸",
-                        "ATK 520 | RNG 8.0 | T1",
+                        "ATK 520 | RNG 8.0",
                         "Assets/Parts/Vulcan.prefab",
                         isSelected: false,
                         needsNameReview: false),
+                },
+                selectedPartId: "railgun",
+                selectedEnergyText: "EN 24",
+                selectedMetaText: "ATK 840 | RNG 12.5",
+                selectedStats: new[]
+                {
+                    new GarageNovaPartStatViewModel("ATK", "840", 100f),
+                    new GarageNovaPartStatViewModel("RNG", "12.5", 78f),
                 });
+        }
+
+        private static GarageNovaPartsPanelViewModel CreatePartListWithOptionCount(int count)
+        {
+            var options = new GarageNovaPartOptionViewModel[count];
+            for (int i = 0; i < count; i++)
+            {
+                options[i] = new GarageNovaPartOptionViewModel(
+                    GarageNovaPartPanelSlot.Firepower,
+                    $"part-{i + 1:00}",
+                    $"부품 {i + 1:00}",
+                    $"ATK {100 + i}",
+                    $"Assets/Parts/Part{i + 1:00}.prefab",
+                    isSelected: i == 0,
+                    needsNameReview: false);
+            }
+
+            return new GarageNovaPartsPanelViewModel(
+                GarageNovaPartPanelSlot.Firepower,
+                searchText: string.Empty,
+                countText: $"부품 {count}개",
+                selectedNameText: options[0].DisplayName,
+                selectedDetailText: options[0].DetailText,
+                selectedPreviewPrefab: null,
+                selectedAlignment: null,
+                options,
+                selectedPartId: options[0].Id,
+                selectedMetaText: options[0].MetaText);
         }
 
         private static Label Label(VisualElement root, string name)

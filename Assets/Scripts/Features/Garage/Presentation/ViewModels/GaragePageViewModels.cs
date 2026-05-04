@@ -5,6 +5,43 @@ namespace Features.Garage.Presentation
 {
     public sealed class GarageSlotViewModel
     {
+        /// <summary>
+        /// UI 표시용 데이터
+        /// </summary>
+        public GarageSlotDisplayData Display { get; }
+
+        /// <summary>
+        /// Preview 렌더링용 데이터
+        /// </summary>
+        public GarageSlotPreviewData Preview { get; }
+
+        // 하위 호환성을 위한 프로퍼티 (Display/Preview 위임)
+        public string SlotLabel => Display.SlotLabel;
+        public string Title => Display.Title;
+        public string Summary => Display.Summary;
+        public string StatusBadgeText => Display.StatusBadgeText;
+        public bool HasCommittedLoadout => Display.HasCommittedLoadout;
+        public bool HasDraftChanges => Display.HasDraftChanges;
+        public bool IsEmpty => Display.IsEmpty;
+        public bool IsSelected => Display.IsSelected;
+        public bool ShowArrow => Display.ShowArrow;
+        public string Callsign => Display.Callsign;
+        public string RoleLabel => Display.RoleLabel;
+        public string ServiceTagText => Display.ServiceTagText;
+        public string LoadoutKey => Preview.LoadoutKey;
+        public string FrameId => Preview.FrameId;
+        public string FirepowerId => Preview.FirepowerId;
+        public string MobilityId => Preview.MobilityId;
+        public GameObject FramePreviewPrefab => Preview.FramePreviewPrefab;
+        public GameObject FirepowerPreviewPrefab => Preview.FirepowerPreviewPrefab;
+        public GameObject MobilityPreviewPrefab => Preview.MobilityPreviewPrefab;
+        public GaragePanelCatalog.PartAlignment FrameAlignment => Preview.FrameAlignment;
+        public GaragePanelCatalog.PartAlignment FirepowerAlignment => Preview.FirepowerAlignment;
+        public GaragePanelCatalog.PartAlignment MobilityAlignment => Preview.MobilityAlignment;
+        public bool MobilityUsesAssemblyPivot => Preview.MobilityUsesAssemblyPivot;
+        public AssemblyForm FrameAssemblyForm => Preview.FrameAssemblyForm;
+        public AssemblyForm FirepowerAssemblyForm => Preview.FirepowerAssemblyForm;
+
         public GarageSlotViewModel(
             string slotLabel,
             string title,
@@ -32,58 +69,44 @@ namespace Features.Garage.Presentation
             AssemblyForm frameAssemblyForm = AssemblyForm.Unspecified,
             AssemblyForm firepowerAssemblyForm = AssemblyForm.Unspecified)
         {
-            SlotLabel = slotLabel;
-            Title = title;
-            Summary = summary;
-            StatusBadgeText = statusBadgeText;
-            HasCommittedLoadout = hasCommittedLoadout;
-            HasDraftChanges = hasDraftChanges;
-            IsEmpty = isEmpty;
-            IsSelected = isSelected;
-            ShowArrow = showArrow;
-            Callsign = callsign;
-            RoleLabel = roleLabel;
-            ServiceTagText = serviceTagText;
-            LoadoutKey = loadoutKey;
-            FrameId = frameId;
-            FirepowerId = firepowerId;
-            MobilityId = mobilityId;
-            FramePreviewPrefab = framePreviewPrefab;
-            FirepowerPreviewPrefab = firepowerPreviewPrefab;
-            MobilityPreviewPrefab = mobilityPreviewPrefab;
-            FrameAlignment = frameAlignment;
-            FirepowerAlignment = firepowerAlignment;
-            MobilityAlignment = mobilityAlignment;
-            MobilityUsesAssemblyPivot = mobilityUsesAssemblyPivot;
-            FrameAssemblyForm = frameAssemblyForm;
-            FirepowerAssemblyForm = firepowerAssemblyForm;
+            Display = new GarageSlotDisplayData(
+                slotLabel,
+                title,
+                summary,
+                statusBadgeText,
+                hasCommittedLoadout,
+                hasDraftChanges,
+                isEmpty,
+                isSelected,
+                showArrow,
+                callsign,
+                roleLabel,
+                serviceTagText);
+
+            Preview = new GarageSlotPreviewData(
+                loadoutKey,
+                frameId,
+                firepowerId,
+                mobilityId,
+                framePreviewPrefab,
+                firepowerPreviewPrefab,
+                mobilityPreviewPrefab,
+                frameAlignment,
+                firepowerAlignment,
+                mobilityAlignment,
+                mobilityUsesAssemblyPivot,
+                frameAssemblyForm,
+                firepowerAssemblyForm);
         }
 
-        public string SlotLabel { get; }
-        public string Title { get; }
-        public string Summary { get; }
-        public string StatusBadgeText { get; }
-        public bool HasCommittedLoadout { get; }
-        public bool HasDraftChanges { get; }
-        public bool IsEmpty { get; }
-        public bool IsSelected { get; }
-        public bool ShowArrow { get; }
-        public string Callsign { get; }
-        public string RoleLabel { get; }
-        public string ServiceTagText { get; }
-        public string LoadoutKey { get; }
-        public string FrameId { get; }
-        public string FirepowerId { get; }
-        public string MobilityId { get; }
-        public GameObject FramePreviewPrefab { get; }
-        public GameObject FirepowerPreviewPrefab { get; }
-        public GameObject MobilityPreviewPrefab { get; }
-        public GaragePanelCatalog.PartAlignment FrameAlignment { get; }
-        public GaragePanelCatalog.PartAlignment FirepowerAlignment { get; }
-        public GaragePanelCatalog.PartAlignment MobilityAlignment { get; }
-        public bool MobilityUsesAssemblyPivot { get; }
-        public AssemblyForm FrameAssemblyForm { get; }
-        public AssemblyForm FirepowerAssemblyForm { get; }
+        /// <summary>
+        /// 구조화된 데이터로부터 ViewModel 생성
+        /// </summary>
+        public GarageSlotViewModel(GarageSlotDisplayData display, GarageSlotPreviewData preview)
+        {
+            Display = display ?? GarageSlotDisplayData.Empty;
+            Preview = preview ?? GarageSlotPreviewData.Empty;
+        }
     }
 
     public sealed class GarageEditorViewModel

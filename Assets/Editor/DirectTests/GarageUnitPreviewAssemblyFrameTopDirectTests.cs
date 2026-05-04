@@ -1,6 +1,7 @@
 using Features.Garage;
 using Features.Garage.Infrastructure;
 using Features.Garage.Presentation;
+using Features.Unit.Domain;
 using Features.Unit.Infrastructure;
 using NUnit.Framework;
 using UnityEditor;

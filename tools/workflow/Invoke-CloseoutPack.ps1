@@ -88,7 +88,15 @@ foreach ($step in $planned) {
             $results.Add((Invoke-WorkflowCommand -RepoRoot $RepoRoot -Label "unity:asset-hygiene" -FileName "npm" -Arguments @("run", "--silent", "unity:asset-hygiene")))
         }
         "unity-ui-policy" {
-            $policyArguments = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", (Join-Path $RepoRoot "tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1"), "-ChangedFile") + $changedFiles
+            $policyArguments = @(
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                (Join-Path $RepoRoot "tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1"),
+                "-ChangedFile",
+                ($changedFiles -join ",")
+            )
             if (-not [string]::IsNullOrWhiteSpace($Agent)) {
                 $policyArguments += @("-Agent", $Agent)
             }

@@ -8,6 +8,7 @@
   "scripts": {
     "docs:lint": "node ./tools/docs-lint/docs-lint.mjs",
     "docs:health": "node ./tools/docs-lint/docs-health.mjs",
+    "docs:sync-progress": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\docs-lint\\sync-progress.ps1",
     "rules:sync-closeout": "node ./tools/docs-lint/sync-recurrence-closeout.mjs",
     "stitch:policy:lint": "node ./tools/stitch-unity/lint-stitch-driven-policy.mjs",
     "feature:presentation:lint": "node ./tools/workflow/test-garage-presentation-structure.mjs",

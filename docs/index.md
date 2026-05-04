@@ -15,11 +15,11 @@
 
 ## Quick Start
 
-- Unity UI / prefab / scene 작업: [`plans/progress.md`](./plans/progress.md) -> current owner/residual route -> [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant contract/prefab
+- Unity UI / prefab / scene 작업: [`plans/progress.md`](./plans/progress.md) -> current owner/residual route -> [`ops/unity-ui-authoring-workflow.md`](./ops/unity-ui-authoring-workflow.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md) -> relevant contract/prefab
 - Stitch / handoff 작업: [`design/ui_reference_workflow.md`](./design/ui_reference_workflow.md) -> [`ops/stitch_data_workflow.md`](./ops/stitch_data_workflow.md) -> [`ops/stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) -> [`../tools/stitch-unity/README.md`](../tools/stitch-unity/README.md)
 - 코딩 구현 / 버그 수정 / 리팩터 / 테스트 보강: [`ops/codex_coding_guardrails.md`](./ops/codex_coding_guardrails.md) -> relevant lane owner doc -> concrete code/tests
 - GameScene 검증 작업: [`plans/progress.md`](./plans/progress.md) -> current owner/residual route -> [`playtest/runtime_validation_checklist.md`](./playtest/runtime_validation_checklist.md) -> relevant smoke/test code
-- 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) -> relevant owner doc
+- 문서 / workflow 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/cohesion-coupling-policy.md`](./ops/cohesion-coupling-policy.md) -> relevant owner doc
 - Skill route / trigger 정리: [`ops/document_management_workflow.md`](./ops/document_management_workflow.md) -> [`ops/skill_routing_registry.md`](./ops/skill_routing_registry.md) -> [`ops/skill_trigger_matrix.md`](./ops/skill_trigger_matrix.md) -> relevant skill entry
 
 ## 상태 규칙
@@ -30,17 +30,52 @@
 - `historical`: 당시 판단 기록은 남기되 현재 구현 기준으로 쓰지 않는 문서
 - `reference`: 절차나 운영 방법처럼 필요할 때 다시 보는 문서
 
+## Doc ID Registry
+
+| doc_id | 파일명 | 상태 |
+|---|---|---|
+| docs.index | index.md | active |
+| plans.progress | plans/progress.md | active |
+| ops.cohesion-coupling-policy | ops/cohesion-coupling-policy.md | active |
+| ops.unity-ui-authoring-workflow | ops/unity-ui-authoring-workflow.md | active |
+| ops.codex-coding-guardrails | ops/codex_coding_guardrails.md | active |
+| ops.presentation-layer-guardrails | ops/presentation_layer_guardrails.md | active |
+| ops.stitch-data-workflow | ops/stitch_data_workflow.md | active |
+| ops.stitch-structured-handoff-contract | ops/stitch_structured_handoff_contract.md | active |
+| ops.document-management-workflow | ops/document_management_workflow.md | active |
+| ops.plan-authoring-review-workflow | ops/plan_authoring_review_workflow.md | active |
+| ops.skill-routing-registry | ops/skill_routing_registry.md | active |
+| ops.skill-trigger-matrix | ops/skill_trigger_matrix.md | active |
+| ops.acceptance-reporting-guardrails | ops/acceptance_reporting_guardrails.md | active |
+| design.game-design | design/game_design.md | active |
+| design.world-design | design/world_design.md | active |
+| design.ui-foundations | design/ui_foundations.md | active |
+| design.ui-reference-workflow | design/ui_reference_workflow.md | active |
+| design.unit-module-design | design/unit_module_design.md | active |
+| design.module-data-structure | design/module_data_structure.md | active |
+| plans.game-scene-flow-validation-closeout | plans/game_scene_flow_validation_closeout_plan.md | active |
+| plans.webgl-audio-closeout | plans/webgl-audio-closeout.md | active |
+| plans.audio-sfx-mcp-pipeline | plans/audio_sfx_mcp_pipeline_plan.md | active |
+| plans.nova1492-content-residual | plans/nova1492-content-residual-plan.md | active |
+| plans.uitk-page-routing-refactor | plans/uitk-page-routing-refactor.md | reference |
+| plans.agent-workflow-skill-adoption | plans/agent_workflow_skill_adoption_plan.md | reference |
+| plans.technical-debt-recurrence-prevention | plans/technical_debt_recurrence_prevention_plan.md | reference |
+| plans.nova1492-assembly-profile-recovery | plans/nova1492_assembly_profile_recovery_plan.md | historical |
+| ops.firebase-hosting | ops/firebase_hosting.md | reference |
+| playtest.runtime-validation-checklist | playtest/runtime_validation_checklist.md | active |
+| playtest.webgl-smoke-checklist | playtest/webgl_smoke_checklist.md | active |
+
 ## 먼저 볼 곳
 
 | 상황 | 먼저 볼 문서 |
 |---|---|
 | 지금 뭐가 진행 중인지 확인 | [`plans/progress.md`](./plans/progress.md) |
-| 응집도/결합도 상위 기준 확인 | [`ops/cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) |
+| 응집도/결합도 상위 기준 확인 | [`ops/cohesion-coupling-policy.md`](./ops/cohesion-coupling-policy.md) |
 | Plan Mode / Codex 운영 규칙 확인 | `rule-operations` route와 repo owner 문서 (`docs/index.md`로 current path를 해석한 뒤 읽기) |
 | Skill route / 전역 skill 이름 확인 | [`ops/skill_routing_registry.md`](./ops/skill_routing_registry.md) |
 | Skill trigger 기대값 확인 | [`ops/skill_trigger_matrix.md`](./ops/skill_trigger_matrix.md) |
 | Codex 코딩 가드레일 확인 | [`ops/codex_coding_guardrails.md`](./ops/codex_coding_guardrails.md) |
-| Unity UI/UX 작업 시작 규칙 확인 | [`ops/unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) |
+| Unity UI/UX 작업 시작 규칙 확인 | [`ops/unity-ui-authoring-workflow.md`](./ops/unity-ui-authoring-workflow.md) |
 | 게임 방향과 MVP 기준 확인 | [`design/game_design.md`](./design/game_design.md) |
 | 세계관 / Nova1492 원전 기반 정서 기준 확인 | [`design/world_design.md`](./design/world_design.md) |
 | Garage UI 레이아웃/토큰/Unity handoff 기준 확인 | [`design/ui_foundations.md`](./design/ui_foundations.md) |
@@ -70,14 +105,14 @@
 
 - `active`: [`progress.md`](./plans/progress.md) - 공식 진행률 SSOT
 - `active`: [`game_scene_flow_validation_closeout_plan.md`](./plans/game_scene_flow_validation_closeout_plan.md) - GameScene/BattleScene single-client flow closeout owner
-- `active`: [`webgl_audio_closeout_plan.md`](./plans/webgl_audio_closeout_plan.md) - WebGL audio smoke owner
+- `active`: [`webgl-audio-closeout.md`](./plans/webgl-audio-closeout.md) - WebGL audio smoke owner
 - `active`: [`audio_sfx_mcp_pipeline_plan.md`](./plans/audio_sfx_mcp_pipeline_plan.md) - direct Suno MCP SFX generation and Unity SoundCatalog pipeline owner
-- `active`: [`nova1492_content_residual_plan.md`](./plans/nova1492_content_residual_plan.md) - Nova1492 content handoff owner
+- `active`: [`nova1492-content-residual-plan.md`](./plans/nova1492-content-residual-plan.md) - Nova1492 content handoff owner
 - `historical`: [`nova1492_assembly_profile_recovery_plan.md`](./plans/nova1492_assembly_profile_recovery_plan.md) - Nova1492 original slot/assembly profile reconstruction attempt record
 - `reference`: [`non_stitch_ui_stitch_reimport_plan.md`](./plans/non_stitch_ui_stitch_reimport_plan.md) - Non-Stitch UI source/candidate handoff closeout and residual route
 - `reference`: [`agent_workflow_skill_adoption_plan.md`](./plans/agent_workflow_skill_adoption_plan.md) - Matt Pocock skills audit and JG owner adoption route
 - `reference`: [`technical_debt_recurrence_prevention_plan.md`](./plans/technical_debt_recurrence_prevention_plan.md) - runtime repair and dead-code retention recurrence reference
-- `reference`: [`uitk_page_routing_refactor_plan.md`](./plans/uitk_page_routing_refactor_plan.md) - Lobby/Garage UITK Shell/Layout-style explicit page routing refactor closeout reference
+- `reference`: [`uitk-page-routing-refactor.md`](./plans/uitk-page-routing-refactor.md) - Lobby/Garage UITK Shell/Layout-style explicit page routing refactor closeout reference
 
 ### `playtest/`
 
@@ -86,9 +121,10 @@
 
 ### `ops/`
 
-- `active`: [`cohesion_coupling_policy.md`](./ops/cohesion_coupling_policy.md) - 문서/코드/씬/프리팹/자동화 공통 응집도/결합도 상위 기준
+- `active`: [`cohesion-coupling-policy.md`](./ops/cohesion-coupling-policy.md) - 문서/코드/씬/프리팹/자동화 공통 응집도/결합도 상위 기준
 - `active`: [`codex_coding_guardrails.md`](./ops/codex_coding_guardrails.md) - Codex 구현/리팩터/버그 수정/검증 작업의 일반 코딩 가드레일
-- `active`: [`unity_ui_authoring_workflow.md`](./ops/unity_ui_authoring_workflow.md) - Unity UI/UX 작업 진입 SSOT
+- `active`: [`presentation_layer_guardrails.md`](./ops/presentation_layer_guardrails.md) - Presentation Layer 코딩 규칙과 안티패턴 방지 기준
+- `active`: [`unity-ui-authoring-workflow.md`](./ops/unity-ui-authoring-workflow.md) - Unity UI/UX 작업 진입 SSOT
 - `active`: [`stitch_data_workflow.md`](./ops/stitch_data_workflow.md) - Stitch working data와 Unity handoff 운영 기준
 - `active`: [`stitch_structured_handoff_contract.md`](./ops/stitch_structured_handoff_contract.md) - Stitch 산출물을 JSON 번역 계약으로 고정하는 구조 SSOT
 - `active`: [`document_management_workflow.md`](./ops/document_management_workflow.md) - 문서 운영 상위 원칙과 역할/참조/삭제 관리 기준

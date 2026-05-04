@@ -1,5 +1,6 @@
 using Features.Garage.Domain;
 using Features.Garage.Infrastructure;
+using Features.Unit.Domain;
 using Features.Unit.Infrastructure;
 using NUnit.Framework;
 using System.Collections.Generic;

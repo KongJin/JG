@@ -1,10 +1,12 @@
+using System;
 using Features.Account.Application;
 using Features.Account.Domain;
 using Features.Garage.Presentation;
 using Features.Lobby.Application;
 using Features.Lobby.Application.Events;
 using Features.Lobby.Domain;
-using Features.Player.Infrastructure;
+using Features.Player.Application.Ports;
+using Features.Player.Domain;
 using Shared.EventBus;
 using Shared.Kernel;
 using Shared.Lifecycle;
@@ -42,6 +44,7 @@ namespace Features.Lobby.Presentation
         private LobbyUitkRuntimeAdapter _uitk;
         private readonly LobbyPagePresenter _presenter = new();
         private IEventSubscriber _eventBus;
+        private IOperationRecordStore _operationRecordStore;
         private DisposableScope _disposables = new();
         private DomainEntityId _currentRoomId;
         private DomainEntityId _localMemberId;
@@ -56,9 +59,14 @@ namespace Features.Lobby.Presentation
         public void Initialize(
             IEventSubscriber eventBus,
             IEventPublisher eventPublisher,
-            LobbyUseCases useCases)
+            LobbyUseCases useCases,
+            IOperationRecordStore operationRecordStore)
         {
+            if (operationRecordStore == null)
+                throw new ArgumentNullException(nameof(operationRecordStore));
+
             _eventBus = eventBus;
+            _operationRecordStore = operationRecordStore;
             _inputHandler = new LobbyRoomInputHandler(useCases, eventPublisher);
             BindAdapterSurface();
 
@@ -123,11 +131,12 @@ namespace Features.Lobby.Presentation
                 _presenter.BuildAccount(
                     profile,
                     accountData,
-                    new OperationRecordJsonStore().Load().Count));
+                    LoadOperationRecords().Count));
         }
 
         private void OnDestroy()
         {
+            _uitk?.Dispose();
             _disposables.Dispose();
         }
 
@@ -164,7 +173,8 @@ namespace Features.Lobby.Presentation
             if (_uitk == null || !_uitk.Bind())
                 return;
 
-            _uitk.RenderOperationMemory(_presenter.BuildOperationMemory(new OperationRecordJsonStore().Load()));
+            if (_operationRecordStore != null)
+                _uitk.RenderOperationMemory(_presenter.BuildOperationMemory(LoadOperationRecords()));
         }
 
         private void BindAdapterEvents(LobbyUitkRuntimeAdapter adapter)
@@ -243,8 +253,16 @@ namespace Features.Lobby.Presentation
         private void ShowRecordsPage()
         {
             BindAdapterSurface();
-            _uitk?.RenderOperationMemory(_presenter.BuildOperationMemory(new OperationRecordJsonStore().Load()));
+            _uitk?.RenderOperationMemory(_presenter.BuildOperationMemory(LoadOperationRecords()));
             _uitk?.ShowRecordsPage();
+        }
+
+        private RecentOperationRecords LoadOperationRecords()
+        {
+            if (_operationRecordStore == null)
+                throw new InvalidOperationException("Lobby operation record store is not initialized.");
+
+            return _operationRecordStore.Load();
         }
 
         private void ShowAccountPage()

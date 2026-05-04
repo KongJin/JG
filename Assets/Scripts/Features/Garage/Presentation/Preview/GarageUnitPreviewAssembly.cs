@@ -14,10 +14,27 @@ namespace Features.Garage.Presentation
 
         private static bool HasCompleteLoadout(GarageSlotViewModel viewModel)
         {
-            return viewModel != null &&
-                   !string.IsNullOrWhiteSpace(viewModel.FrameId) &&
-                   !string.IsNullOrWhiteSpace(viewModel.FirepowerId) &&
-                   !string.IsNullOrWhiteSpace(viewModel.MobilityId);
+            return viewModel?.Preview?.HasCompleteLoadout ?? false;
+        }
+
+        /// <summary>
+        /// PreviewData를 사용하는 개선된 버전 - ViewModel 의존성 제거
+        /// </summary>
+        public static bool HasPreviewAssemblyData(GarageSlotPreviewData preview)
+        {
+            if (preview == null || !preview.HasCompleteLoadout)
+                return false;
+
+            return !CanApply(preview.FrameAlignment) ||
+                   !CanApply(preview.FirepowerAlignment) ||
+                   !CanApply(preview.MobilityAlignment) ||
+                   !HasMobilitySocket(preview.MobilityAlignment, preview.MobilityUsesAssemblyPivot)
+                ? false
+                : HasFrameFirepowerAnchorData(
+                    preview.FrameAlignment,
+                    preview.FirepowerAlignment,
+                    preview.FrameAssemblyForm,
+                    preview.FirepowerAssemblyForm);
         }
 
         public static bool HasPreviewAssemblyData(GarageSlotViewModel viewModel)
@@ -36,8 +53,11 @@ namespace Features.Garage.Presentation
                 viewModel.FirepowerAssemblyForm);
         }
 
+        /// <summary>
+        /// PreviewData를 사용하는 개선된 버전 - ViewModel 의존성 제거
+        /// </summary>
         public static bool TryCreatePreviewRoot(
-            GarageSlotViewModel viewModel,
+            GarageSlotPreviewData preview,
             Camera previewCamera,
             GameObject framePrefab,
             GameObject firepowerPrefab,
@@ -45,7 +65,7 @@ namespace Features.Garage.Presentation
             out GameObject previewRoot)
         {
             previewRoot = null;
-            if (!HasPreviewAssemblyData(viewModel) ||
+            if (!HasPreviewAssemblyData(preview) ||
                 previewCamera == null ||
                 framePrefab == null ||
                 firepowerPrefab == null ||
@@ -64,18 +84,18 @@ namespace Features.Garage.Presentation
             GaragePreviewAssembler.Attach(
                 frameObj,
                 previewRoot.transform,
-                ResolveFramePosition(viewModel.FrameAlignment),
+                ResolveFramePosition(preview.FrameAlignment),
                 Vector3.zero);
 
             var weaponObj = Object.Instantiate(firepowerPrefab);
             weaponObj.SetActive(true);
-            var firepowerEuler = ResolveFirepowerEuler(viewModel.FirepowerAlignment);
+            var firepowerEuler = ResolveFirepowerEuler(preview.FirepowerAlignment);
             GaragePreviewAssembler.Attach(
                 weaponObj,
                 previewRoot.transform,
                 ResolveAttachedPartPosition(
-                    viewModel.FrameAlignment,
-                    viewModel.FirepowerAlignment,
+                    preview.FrameAlignment,
+                    preview.FirepowerAlignment,
                     firepowerEuler),
                 firepowerEuler);
 
@@ -85,12 +105,30 @@ namespace Features.Garage.Presentation
                 mobilityObj,
                 previewRoot.transform,
                 ResolveMobilityPosition(
-                    viewModel.FrameAlignment,
-                    viewModel.MobilityAlignment,
-                    viewModel.MobilityUsesAssemblyPivot),
-                viewModel.MobilityAlignment.SocketEuler);
+                    preview.FrameAlignment,
+                    preview.MobilityAlignment,
+                    preview.MobilityUsesAssemblyPivot),
+                preview.MobilityAlignment.SocketEuler);
 
             return true;
+        }
+
+        public static bool TryCreatePreviewRoot(
+            GarageSlotViewModel viewModel,
+            Camera previewCamera,
+            GameObject framePrefab,
+            GameObject firepowerPrefab,
+            GameObject mobilityPrefab,
+            out GameObject previewRoot)
+        {
+            // 하위 호환성을 위한 위임
+            return TryCreatePreviewRoot(
+                viewModel?.Preview,
+                previewCamera,
+                framePrefab,
+                firepowerPrefab,
+                mobilityPrefab,
+                out previewRoot);
         }
 
         public static void SetYaw(GameObject root, float yawDegrees)
@@ -183,15 +221,11 @@ namespace Features.Garage.Presentation
             AssemblyForm frameAssemblyForm,
             AssemblyForm firepowerAssemblyForm)
         {
-            if (!UnitPartCompatibility.AreAssemblyFormsCompatible(frameAssemblyForm, firepowerAssemblyForm))
-                return false;
-
             if (firepowerAlignment.AssemblyAnchorMode == FrameTopSocketAnchorMode)
                 return frameAlignment.HasFrameTopSocket;
 
             if (firepowerAlignment.AssemblyAnchorMode == ShoulderPairAnchorMode)
-                return frameAlignment.HasFrameTopSocket &&
-                       frameAlignment.AssemblyAnchorMode == ShoulderPairAnchorMode;
+                return frameAlignment.HasFrameTopSocket;
 
             if (IsDirectionOnlyWeapon(firepowerAlignment))
                 return false;

@@ -95,7 +95,7 @@
 .embedded-page-host .memory-scroll,
 .embedded-page-host .account-scroll,
 .embedded-page-host .connection-scroll {
-    padding-bottom: 112px;
+    padding-bottom: 72px;
 }
 
 .garage-shell-host .garage-setb-screen,

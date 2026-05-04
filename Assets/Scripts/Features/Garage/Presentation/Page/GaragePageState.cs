@@ -1,5 +1,4 @@
 using Features.Garage.Domain;
-using Features.Unit.Domain;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
@@ -48,20 +47,6 @@ namespace Features.Garage.Presentation
                 frameId,
                 slot.firepowerModuleId,
                 slot.mobilityModuleId));
-        }
-
-        public void ClearIncompatibleFirepower(GaragePanelCatalog catalog)
-        {
-            var frame = catalog?.FindFrame(EditingFrameId);
-            var firepower = catalog?.FindFirepower(EditingFirepowerId);
-            if (frame == null ||
-                firepower == null ||
-                UnitPartCompatibility.AreAssemblyFormsCompatible(frame.AssemblyForm, firepower.AssemblyForm))
-            {
-                return;
-            }
-
-            SetEditingFirepowerId(null);
         }
 
         public void SetEditingFirepowerId(string firepowerId)

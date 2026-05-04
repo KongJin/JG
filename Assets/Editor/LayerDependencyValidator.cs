@@ -22,6 +22,9 @@ namespace ProjectSD.LayerValidation
         private static readonly Regex FeatureReferenceRegex = new Regex(
             @"\b(Features\.(\w+)(?:\.[A-Za-z_]\w*)+)"
         );
+        private static readonly Regex LayerReferenceRegex = new Regex(
+            @"\b((?:Features\.\w+\.(?:Infrastructure|Bootstrap)(?:\.[A-Za-z_]\w*)*)|Photon(?:\.[A-Za-z_]\w*)*|Firebase(?:\.[A-Za-z_]\w*)*|System\.IO(?:\.[A-Za-z_]\w*)*|UnityEditor(?:\.[A-Za-z_]\w*)*)\b"
+        );
 
         public const string DependencyReportRelativePath = "Temp/LayerDependencyValidator/feature-dependencies.json";
 
@@ -65,7 +68,7 @@ namespace ProjectSD.LayerValidation
 
                 if (layer != null)
                 {
-                    CollectLayerViolations(relativePath, layer, rawLines, layerViolations);
+                    CollectLayerViolations(relativePath, layer, rawLines, sanitizedLines, layerViolations);
                 }
 
                 CollectFeatureDependencies(relativePath, normalizedPath, layer, rawLines, sanitizedLines, features, edgeMap);
@@ -178,27 +181,63 @@ namespace ProjectSD.LayerValidation
             string relativePath,
             string layer,
             string[] lines,
+            string[] sanitizedLines,
             List<LayerViolation> layerViolations)
         {
+            var seen = new HashSet<string>(StringComparer.Ordinal);
             for (var i = 0; i < lines.Length; i++)
             {
                 var match = UsingRegex.Match(lines[i]);
-                if (!match.Success)
-                    continue;
-
-                var ns = match.Groups[1].Value;
-                var violation = Check(ns, layer, relativePath);
-                if (violation == null)
-                    continue;
-
-                layerViolations.Add(new LayerViolation
+                if (match.Success)
                 {
-                    path = relativePath,
-                    line = i + 1,
-                    message = violation,
-                    usingNamespace = ns
-                });
+                    AddLayerViolation(
+                        relativePath,
+                        layer,
+                        i + 1,
+                        match.Groups[1].Value,
+                        layerViolations,
+                        seen);
+                }
+
+                if (sanitizedLines == null || i >= sanitizedLines.Length)
+                    continue;
+
+                foreach (Match referenceMatch in LayerReferenceRegex.Matches(sanitizedLines[i]))
+                {
+                    AddLayerViolation(
+                        relativePath,
+                        layer,
+                        i + 1,
+                        referenceMatch.Groups[1].Value,
+                        layerViolations,
+                        seen);
+                }
             }
+        }
+
+        private static void AddLayerViolation(
+            string relativePath,
+            string layer,
+            int line,
+            string ns,
+            List<LayerViolation> layerViolations,
+            HashSet<string> seen)
+        {
+            var violation = Check(ns, layer, relativePath);
+            if (violation == null)
+                return;
+
+            var key = $"{line}:{ns}:{violation}";
+            if (!seen.Add(key))
+                return;
+
+            layerViolations.Add(new LayerViolation
+            {
+                path = relativePath,
+                line = line,
+                message = violation,
+                usingNamespace = ns
+            });
         }
 
         private static void CollectFeatureDependencies(

@@ -6,6 +6,7 @@ using Features.Lobby.Application.Ports;
 using Features.Lobby.Infrastructure.Persistence;
 using Features.Lobby.Infrastructure.Photon;
 using Features.Lobby.Presentation;
+using Features.Player.Infrastructure;
 using Features.Unit;
 using Shared.EventBus;
 using Shared.Runtime.Sound;
@@ -31,13 +32,14 @@ internal sealed class LobbySceneInitializationFlow
         var clock = new ClockAdapter();
         var syncHandler = new LobbyNetworkEventHandler(repository, eventBus, photonAdapter);
         var useCases = new LobbyUseCases(repository, photonAdapter, clock);
+        var operationRecordStore = new OperationRecordJsonStore();
         var sceneLoadHandler = new GameStartedSceneLoadEventHandler(eventBus, sceneLoader, gameSceneName);
 
         soundPlayer.Initialize(eventBus, SoundPlayer.LobbyOwnerId);
         applyLoadedAccountSettings?.Invoke();
         soundPlayer.PlayBgm("bgm_lobby", 0.25f);
 
-        view.Initialize(eventBus, eventBus, useCases);
+        view.Initialize(eventBus, eventBus, useCases, operationRecordStore);
         eventBus.Publish(new LobbyUpdatedEvent(repository.LoadLobby() ?? new DomainLobby()));
 
         if (unitSetup != null)

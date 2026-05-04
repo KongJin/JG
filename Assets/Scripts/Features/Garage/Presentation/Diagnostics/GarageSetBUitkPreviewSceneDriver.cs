@@ -9,6 +9,11 @@ using UnityEngine;
 
 namespace Features.Garage.Presentation
 {
+    /// <summary>
+    /// 프리뷰 씬에서 Garage UI를 테스트하기 위한 드라이버입니다.
+    /// NOTE: 디버깅/프리뷰 전용으로 Infrastructure 계층에 직접 의존합니다.
+    /// 프로덕션 코드에서는 이 패턴을 따르지 마세요.
+    /// </summary>
     public sealed class GarageSetBUitkPreviewSceneDriver : MonoBehaviour
     {
         [SerializeField] private GarageSetBUitkRuntimeAdapter _adapter;
@@ -146,7 +151,6 @@ namespace Features.Garage.Presentation
             {
                 case GarageNovaPartPanelSlot.Frame:
                     _state.SetEditingFrameId(selection.PartId);
-                    _state.ClearIncompatibleFirepower(_catalog);
                     break;
                 case GarageNovaPartPanelSlot.Firepower:
                     _state.SetEditingFirepowerId(selection.PartId);
@@ -204,16 +208,14 @@ namespace Features.Garage.Presentation
 
             _adapter.Render(
                 _presenter.BuildSlotViewModels(_state),
-                GarageNovaPartsEnergyDetails.Apply(
+                GarageNovaPartsPanelViewModelFactory.Build(
                     _catalog,
-                    GarageNovaPartsPanelViewModelFactory.Build(
-                        _catalog,
-                        new GarageNovaPartsDraftSelection(
-                            _state.EditingFrameId,
-                            _state.EditingFirepowerId,
-                            _state.EditingMobilityId),
-                        _focusedPart,
-                        _partSearchText)),
+                    new GarageNovaPartsDraftSelection(
+                        _state.EditingFrameId,
+                        _state.EditingFirepowerId,
+                        _state.EditingMobilityId),
+                    _focusedPart,
+                    _partSearchText),
                 _presenter.BuildEditorViewModel(_state),
                 new GarageResultViewModel(
                     "UITK PREVIEW: 실제 Garage catalog 샘플",

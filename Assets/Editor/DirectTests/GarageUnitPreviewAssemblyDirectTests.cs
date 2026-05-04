@@ -1,6 +1,7 @@
 using Features.Garage;
 using Features.Garage.Presentation;
 using Features.Garage.Infrastructure;
+using Features.Unit.Domain;
 using Features.Unit.Infrastructure;
 using NUnit.Framework;
 using UnityEditor;
@@ -342,6 +343,58 @@ namespace Tests.Editor
                 mobilityUsesAssemblyPivot: false);
 
             Assert.IsFalse(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
+        }
+
+        [Test]
+        public void TryCreatePreviewRoot_AllowsMismatchedAssemblyFormsForPreviewOnly()
+        {
+            var cameraObject = new GameObject("GaragePreviewCameraTest", typeof(Camera));
+            var framePrefab = new GameObject("FramePrefab");
+            var firepowerPrefab = new GameObject("FirepowerPrefab");
+            var mobilityPrefab = new GameObject("MobilityPrefab");
+            GameObject previewRoot = null;
+
+            try
+            {
+                var viewModel = new GarageSlotViewModel(
+                    "A-01",
+                    "A-01",
+                    "test",
+                    "test",
+                    hasCommittedLoadout: true,
+                    hasDraftChanges: false,
+                    isEmpty: false,
+                    isSelected: true,
+                    frameId: "frame",
+                    firepowerId: "fire",
+                    mobilityId: "mobility",
+                    frameAlignment: AutoOkAlignment(Vector3.zero, hasFrameTopSocket: true),
+                    firepowerAlignment: AutoOkAlignment(Vector3.zero),
+                    mobilityAlignment: AutoOkAlignment(new Vector3(0f, 0.34f, 0f)),
+                    mobilityUsesAssemblyPivot: false,
+                    frameAssemblyForm: AssemblyForm.Tower,
+                    firepowerAssemblyForm: AssemblyForm.Shoulder);
+
+                Assert.IsTrue(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
+                Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
+                    viewModel,
+                    cameraObject.GetComponent<Camera>(),
+                    framePrefab,
+                    firepowerPrefab,
+                    mobilityPrefab,
+                    out previewRoot));
+                Assert.NotNull(previewRoot);
+            }
+            finally
+            {
+                if (previewRoot != null)
+                    Object.DestroyImmediate(previewRoot);
+
+                Object.DestroyImmediate(cameraObject);
+                Object.DestroyImmediate(framePrefab);
+                Object.DestroyImmediate(firepowerPrefab);
+                Object.DestroyImmediate(mobilityPrefab);
+            }
         }
 
         [Test]

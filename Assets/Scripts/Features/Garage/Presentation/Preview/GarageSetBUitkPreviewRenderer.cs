@@ -8,19 +8,19 @@ namespace Features.Garage.Presentation
 {
     public sealed class GarageSetBUitkPreviewRenderer : MonoBehaviour
     {
-        private const int AssemblyPreviewLayer = 29;
-        private const int PartPreviewLayer = 30;
-
         [SerializeField] private Camera _previewCamera;
         [SerializeField] private Light _previewKeyLight;
         [SerializeField] private RenderTexture _renderTexture;
-        [SerializeField] private int _textureSize = 512;
+        [SerializeField] private int _textureSize = GarageUitkConstants.Preview.TextureSize;
         [SerializeField] private float _autoRotationSpeed = 20f;
         [SerializeField] private int _previewLayer = -1;
         [SerializeField] private float _assemblyFitScale = 1f;
         [SerializeField] private bool _transparentBackground;
 
         private GameObject _currentPreviewRoot;
+        private string _currentPreviewKey;
+        private float _lastRenderedYaw;
+        private bool _needsRender;
 
         internal Texture PreviewTexture => _renderTexture;
         internal bool HasPreview { get; private set; }
@@ -29,6 +29,7 @@ namespace Features.Garage.Presentation
         internal void ClearPreview()
         {
             DestroyCurrentPreview();
+            _currentPreviewKey = null;
             HasPreview = false;
         }
 
@@ -51,29 +52,48 @@ namespace Features.Garage.Presentation
             EnsureCamera();
         }
 
-        internal bool Render(GarageSlotViewModel viewModel)
+        /// <summary>
+        /// PreviewData를 사용하는 개선된 버전 - ViewModel 의존성 제거
+        /// </summary>
+        internal bool Render(GarageSlotPreviewData previewData, string loadoutKey)
         {
             EnsureCamera();
             EnsureRenderTexture();
-            DestroyCurrentPreview();
-            HasPreview = false;
 
             if (_previewCamera == null ||
-                !GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel) ||
-                viewModel.FramePreviewPrefab == null ||
-                viewModel.FirepowerPreviewPrefab == null ||
-                viewModel.MobilityPreviewPrefab == null)
+                !GarageUnitPreviewAssembly.HasPreviewAssemblyData(previewData) ||
+                previewData.FramePreviewPrefab == null ||
+                previewData.FirepowerPreviewPrefab == null ||
+                previewData.MobilityPreviewPrefab == null)
+            {
+                ClearPreview();
                 return false;
+            }
+
+            var previewKey = BuildAssemblyPreviewKey(previewData, loadoutKey);
+            if (_currentPreviewRoot != null && string.Equals(_currentPreviewKey, previewKey, StringComparison.Ordinal))
+            {
+                HasPreview = true;
+                // 회전 초기화 후 한 번만 렌더링 (LateUpdate에서 회전으로 변경됨)
+                _lastRenderedYaw = Time.unscaledTime * _autoRotationSpeed;
+                RenderPreviewFrame();
+                return true;
+            }
+
+            DestroyCurrentPreview();
+            _currentPreviewKey = null;
+            HasPreview = false;
 
             if (!GarageUnitPreviewAssembly.TryCreatePreviewRoot(
-                    viewModel,
+                    previewData,
                     _previewCamera,
-                    viewModel.FramePreviewPrefab,
-                    viewModel.FirepowerPreviewPrefab,
-                    viewModel.MobilityPreviewPrefab,
+                    previewData.FramePreviewPrefab,
+                    previewData.FirepowerPreviewPrefab,
+                    previewData.MobilityPreviewPrefab,
                     out _currentPreviewRoot))
                 return false;
 
+            _currentPreviewKey = previewKey;
             AssignPreviewLayer(_currentPreviewRoot);
             FitAssemblyToPreviewRoot(_currentPreviewRoot, _assemblyFitScale);
             HasPreview = true;
@@ -81,17 +101,38 @@ namespace Features.Garage.Presentation
             return true;
         }
 
+        internal bool Render(GarageSlotViewModel viewModel)
+        {
+            // 하위 호환성을 위한 위임
+            return Render(viewModel?.Preview, viewModel?.LoadoutKey);
+        }
+
         internal bool RenderPart(GarageNovaPartsPanelViewModel viewModel)
         {
             EnsureCamera();
             EnsureRenderTexture();
-            DestroyCurrentPreview();
-            HasPreview = false;
 
             if (_previewCamera == null ||
                 viewModel == null ||
                 viewModel.SelectedPreviewPrefab == null)
+            {
+                ClearPreview();
                 return false;
+            }
+
+            var previewKey = BuildPartPreviewKey(viewModel);
+            if (_currentPreviewRoot != null && string.Equals(_currentPreviewKey, previewKey, StringComparison.Ordinal))
+            {
+                HasPreview = true;
+                // 회전 초기화 후 한 번만 렌더링 (LateUpdate에서 회전으로 변경됨)
+                _lastRenderedYaw = Time.unscaledTime * _autoRotationSpeed;
+                RenderPreviewFrame();
+                return true;
+            }
+
+            DestroyCurrentPreview();
+            _currentPreviewKey = null;
+            HasPreview = false;
 
             _currentPreviewRoot = new GameObject("PartPreviewRoot");
             GaragePreviewAssembler.Attach(
@@ -110,6 +151,7 @@ namespace Features.Garage.Presentation
 
             AssignPreviewLayer(_currentPreviewRoot);
             FitPartToPreviewRoot(_currentPreviewRoot, partObj);
+            _currentPreviewKey = previewKey;
             HasPreview = true;
             RenderPreviewFrame();
             return true;
@@ -131,8 +173,16 @@ namespace Features.Garage.Presentation
             if (_currentPreviewRoot == null)
                 return;
 
-            GarageUnitPreviewAssembly.SetYaw(_currentPreviewRoot, Time.unscaledTime * _autoRotationSpeed);
-            RenderPreviewFrame();
+            float currentYaw = Time.unscaledTime * _autoRotationSpeed;
+            GarageUnitPreviewAssembly.SetYaw(_currentPreviewRoot, currentYaw);
+
+            // 회전 각도가 유의미하게 변경된 경우에만 렌더링
+            float yawDelta = Mathf.Abs(Mathf.DeltaAngle(_lastRenderedYaw, currentYaw));
+            if (yawDelta > GarageUitkConstants.Rendering.RotationThreshold)
+            {
+                _lastRenderedYaw = currentYaw;
+                RenderPreviewFrame();
+            }
         }
 
         private void RenderPreviewFrame()
@@ -239,13 +289,76 @@ namespace Features.Garage.Presentation
 
         private int ResolvePreviewLayer()
         {
-            if (_previewLayer >= 0 && _previewLayer <= 30)
+            if (_previewLayer >= GarageUitkConstants.Layers.MinLayer && _previewLayer <= GarageUitkConstants.Layers.MaxLayer)
                 return _previewLayer;
 
             return gameObject != null &&
                    gameObject.name.IndexOf("Part", StringComparison.OrdinalIgnoreCase) >= 0
-                ? PartPreviewLayer
-                : AssemblyPreviewLayer;
+                ? GarageUitkConstants.Layers.PartPreview
+                : GarageUitkConstants.Layers.AssemblyPreview;
+        }
+
+        private static string BuildAssemblyPreviewKey(GarageSlotPreviewData previewData, string loadoutKey)
+        {
+            if (previewData == null)
+                return "assembly:null";
+
+            return string.Join(
+                "|",
+                "assembly",
+                loadoutKey ?? string.Empty,
+                previewData.FrameId ?? string.Empty,
+                previewData.FirepowerId ?? string.Empty,
+                previewData.MobilityId ?? string.Empty,
+                GetObjectKey(previewData.FramePreviewPrefab),
+                GetObjectKey(previewData.FirepowerPreviewPrefab),
+                GetObjectKey(previewData.MobilityPreviewPrefab),
+                previewData.MobilityUsesAssemblyPivot ? "pivot" : "no-pivot",
+                previewData.FrameAssemblyForm.ToString(),
+                previewData.FirepowerAssemblyForm.ToString(),
+                GetAlignmentKey(previewData.FrameAlignment),
+                GetAlignmentKey(previewData.FirepowerAlignment),
+                GetAlignmentKey(previewData.MobilityAlignment));
+        }
+
+        private static string BuildAssemblyPreviewKey(GarageSlotViewModel viewModel)
+        {
+            // 하위 호환성을 위한 위임
+            return BuildAssemblyPreviewKey(viewModel?.Preview, viewModel?.LoadoutKey);
+        }
+
+        private static string BuildPartPreviewKey(GarageNovaPartsPanelViewModel viewModel)
+        {
+            if (viewModel == null)
+                return "part:null";
+
+            return string.Join(
+                "|",
+                "part",
+                viewModel.ActiveSlot.ToString(),
+                viewModel.SelectedPartId ?? string.Empty,
+                GetObjectKey(viewModel.SelectedPreviewPrefab),
+                GetAlignmentKey(viewModel.SelectedAlignment));
+        }
+
+        private static string GetObjectKey(UnityEngine.Object target)
+        {
+            return target == null ? "0" : target.GetInstanceID().ToString();
+        }
+
+        private static string GetAlignmentKey(GaragePanelCatalog.PartAlignment alignment)
+        {
+            if (alignment == null)
+                return string.Empty;
+
+            return string.Join(
+                ",",
+                alignment.QualityFlag ?? string.Empty,
+                alignment.SocketOffset.ToString("F3"),
+                alignment.SocketEuler.ToString("F3"),
+                alignment.AssemblyLocalOffset.ToString("F3"),
+                alignment.AssemblyLocalEuler.ToString("F3"),
+                alignment.AssemblyLocalScale.ToString("F3"));
         }
 
         private void AssignPreviewLayer(GameObject root)
@@ -273,12 +386,12 @@ namespace Features.Garage.Presentation
             if (_previewCamera == null)
                 return;
 
-            var size = Mathf.Max(128, _textureSize);
+            var size = Mathf.Max(GarageUitkConstants.Preview.TextureMinSize, _textureSize);
             if (_renderTexture == null)
             {
                 _renderTexture = new RenderTexture(size, size, 16, RenderTextureFormat.ARGB32)
                 {
-                    antiAliasing = 2,
+                    antiAliasing = GarageUitkConstants.Preview.TextureAntiAliasing,
                     filterMode = FilterMode.Bilinear,
                     wrapMode = TextureWrapMode.Clamp
                 };

@@ -24,7 +24,7 @@
 | 코딩 규칙, 아키텍처 | [`/docs/ops/skill_routing_registry.md`](docs/ops/skill_routing_registry.md)에서 repo owner fallback과 rule skill route 확인 |
 | 게임 컨셉, 디자인 | [`/docs/design/game_design.md`](docs/design/game_design.md) |
 | 진행 상황 | [`/docs/plans/progress.md`](docs/plans/progress.md) |
-| Unity UI/UX authoring workflow SSOT | [`/docs/ops/unity_ui_authoring_workflow.md`](docs/ops/unity_ui_authoring_workflow.md) |
+| Unity UI/UX authoring workflow SSOT | [`/docs/ops/unity-ui-authoring-workflow.md`](docs/ops/unity-ui-authoring-workflow.md) |
 | Unity MCP 실행 reference | [`/tools/unity-mcp/README.md`](tools/unity-mcp/README.md) |
 | Stitch surface 실행 reference | [`/tools/stitch-unity/README.md`](tools/stitch-unity/README.md) |
 
@@ -32,7 +32,7 @@
 
 ## 현재 기준 메모
 
-- Lobby/Garage의 새 UI 작업 route 본문은 [`/docs/ops/unity_ui_authoring_workflow.md`](docs/ops/unity_ui_authoring_workflow.md)와 Stitch owner 문서를 따른다.
+- Lobby/Garage의 새 UI 작업 route 본문은 [`/docs/ops/unity-ui-authoring-workflow.md`](docs/ops/unity-ui-authoring-workflow.md)와 Stitch owner 문서를 따른다.
 - 현재 상태, 우선순위, 검증 기본선은 [`/docs/plans/progress.md`](docs/plans/progress.md)를 우선으로 본다.
 - 구현, 버그 수정, 리팩터, 테스트/검증 작업은 [`/docs/ops/codex_coding_guardrails.md`](docs/ops/codex_coding_guardrails.md)를 먼저 확인한 뒤 관련 owner 문서를 따른다.
 - Plan Mode 또는 규칙/운영/Codex 절차 작업은 [`/docs/index.md`](docs/index.md)에서 current owner path를 확인한 뒤 `rule-operations` route와 repo owner 문서로 라우팅하고, 그 lane에서는 mutation을 금지한다.

@@ -6,11 +6,8 @@ using UnityEngine.UIElements;
 
 namespace Features.Garage.Presentation
 {
-    internal sealed class GarageSetBPartListSurface
+    internal sealed class GarageSetBPartListSurface : GarageSetBUitkSurface
     {
-        private const int InitialPartRowCount = 8;
-        private const float PartRowHeight = 52f;
-        private const float PartStatFillWidth = 12f;
 
         private readonly Button _frameTabButton;
         private readonly Button _firepowerTabButton;
@@ -31,6 +28,10 @@ namespace Features.Garage.Presentation
         private GarageNovaPartPanelSlot _lastSlot;
         private string _lastSearchText = string.Empty;
         private int _visibleStartIndex;
+        private readonly Action _frameTabClicked;
+        private readonly Action _firepowerTabClicked;
+        private readonly Action _mobilityTabClicked;
+        private EventCallback<ChangeEvent<string>> _searchCallback;
 
         public GarageSetBPartListSurface(VisualElement root)
         {
@@ -71,12 +72,15 @@ namespace Features.Garage.Presentation
             {
                 int rowNumber = i + 1;
                 _partRows.Add(new PartRowBinding(
-                    UitkElementUtility.Required<VisualElement>(root, $"PartRow{rowNumber:00}"),
+                    UitkElementUtility.Required<Button>(root, $"PartRow{rowNumber:00}"),
                     UitkElementUtility.Required<Label>(root, $"PartRow{rowNumber:00}NameLabel"),
                     UitkElementUtility.Required<Label>(root, $"PartRow{rowNumber:00}MetaLabel"),
                     UitkElementUtility.Required<Label>(root, $"PartRow{rowNumber:00}BadgeLabel")));
             }
 
+            _frameTabClicked = SelectFrameFocus;
+            _firepowerTabClicked = SelectFirepowerFocus;
+            _mobilityTabClicked = SelectMobilityFocus;
             BindCallbacks();
             SetPreviewTexture(null, false);
         }
@@ -119,10 +123,16 @@ namespace Features.Garage.Presentation
 
         private void BindCallbacks()
         {
-            _frameTabButton.clicked += () => FocusSelected?.Invoke(GarageEditorFocus.Frame);
-            _firepowerTabButton.clicked += () => FocusSelected?.Invoke(GarageEditorFocus.Firepower);
-            _mobilityTabButton.clicked += () => FocusSelected?.Invoke(GarageEditorFocus.Mobility);
-            _partSearchField.RegisterValueChangedCallback(evt => SearchChanged?.Invoke(evt.newValue ?? string.Empty));
+            if (IsDisposed)
+                return;
+
+            _frameTabButton.clicked += _frameTabClicked;
+            _firepowerTabButton.clicked += _firepowerTabClicked;
+            _mobilityTabButton.clicked += _mobilityTabClicked;
+
+            _searchCallback = evt => SearchChanged?.Invoke(evt.newValue ?? string.Empty);
+            _partSearchField.RegisterValueChangedCallback(_searchCallback);
+
             for (int i = 0; i < _partRows.Count; i++)
                 BindPartRow(_partRows[i]);
         }
@@ -134,7 +144,7 @@ namespace Features.Garage.Presentation
             _partListTitleLabel.text = BuildPartListTitle(partList?.ActiveSlot ?? GarageNovaPartPanelSlot.Frame);
             _partListCountLabel.text = partList?.CountText ?? "부품 0개";
             _partSearchField.SetValueWithoutNotify(partList?.SearchText ?? string.Empty);
-            EnsurePartRowCapacity(Math.Min(InitialPartRowCount, partList?.Options?.Count ?? 0));
+            EnsurePartRowCapacity(partList?.Options?.Count ?? 0);
             RenderVisiblePartRows(partList);
         }
 
@@ -169,10 +179,10 @@ namespace Features.Garage.Presentation
             _partPreviewTitleLabel.text = string.IsNullOrWhiteSpace(partList?.SelectedNameText)
                 ? BuildPartListTitle(slot)
                 : partList.SelectedNameText;
-            _partPreviewMetaLabel.text = BuildPartPreviewMeta(slot, partList?.SelectedDetailText);
+            _partPreviewMetaLabel.text = BuildPartPreviewMeta(slot, partList?.SelectedMetaText);
             _partPreviewLabel.text = BuildPartPreviewPlaceholderText(slot);
-            RenderPartEnergy(partList?.SelectedDetailText);
-            RenderPartPreviewStats(partList?.SelectedDetailText);
+            RenderPartEnergy(partList?.SelectedEnergyText);
+            RenderPartPreviewStats(partList?.SelectedStats);
         }
 
         private void EnsurePartRowCapacity(int requiredCount)
@@ -180,19 +190,19 @@ namespace Features.Garage.Presentation
             while (_partRows.Count < requiredCount)
             {
                 int rowNumber = _partRows.Count + 1;
-                var row = new VisualElement { name = $"PartRow{rowNumber:00}" };
+                var row = new Button { name = GarageUitkConstants.Parts.BuildRowName(rowNumber) };
                 row.AddToClassList("part-row");
 
                 var main = new VisualElement();
                 main.AddToClassList("part-row-main");
 
-                var nameLabel = new Label { name = $"PartRow{rowNumber:00}NameLabel" };
+                var nameLabel = new Label { name = GarageUitkConstants.Parts.BuildRowNameLabelName(rowNumber) };
                 nameLabel.AddToClassList("part-row-name");
 
-                var metaLabel = new Label { name = $"PartRow{rowNumber:00}MetaLabel" };
+                var metaLabel = new Label { name = GarageUitkConstants.Parts.BuildRowMetaLabelName(rowNumber) };
                 metaLabel.AddToClassList("part-row-meta");
 
-                var badgeLabel = new Label { name = $"PartRow{rowNumber:00}BadgeLabel" };
+                var badgeLabel = new Label { name = GarageUitkConstants.Parts.BuildRowBadgeLabelName(rowNumber) };
                 badgeLabel.AddToClassList("part-row-badge");
 
                 main.Add(nameLabel);
@@ -209,9 +219,24 @@ namespace Features.Garage.Presentation
 
         private void BindPartRow(PartRowBinding binding)
         {
-            ConfigurePartRowLayout(binding.Row);
-            binding.Row.AddManipulator(new Clickable(() => SelectPartRow(binding)));
-            binding.Row.RegisterCallback<ClickEvent>(_ => SelectPartRow(binding));
+            binding.Row.focusable = false;
+            binding.Clicked ??= () => SelectPartRow(binding);
+            binding.Row.clicked += binding.Clicked;
+        }
+
+        private void SelectFrameFocus()
+        {
+            FocusSelected?.Invoke(GarageEditorFocus.Frame);
+        }
+
+        private void SelectFirepowerFocus()
+        {
+            FocusSelected?.Invoke(GarageEditorFocus.Firepower);
+        }
+
+        private void SelectMobilityFocus()
+        {
+            FocusSelected?.Invoke(GarageEditorFocus.Mobility);
         }
 
         private void SelectPartRow(PartRowBinding binding)
@@ -219,25 +244,6 @@ namespace Features.Garage.Presentation
             var option = binding.Option;
             if (option != null)
                 OptionSelected?.Invoke(new GarageNovaPartSelection(option.Slot, option.Id));
-        }
-
-        private static void ConfigurePartRowLayout(VisualElement row)
-        {
-            row.style.height = PartRowHeight;
-            row.style.minHeight = PartRowHeight;
-            row.style.maxHeight = PartRowHeight;
-            row.style.flexShrink = 0f;
-            row.style.overflow = Overflow.Hidden;
-            row.style.marginBottom = 6f;
-            row.style.borderTopWidth = 1f;
-            row.style.borderRightWidth = 1f;
-            row.style.borderBottomWidth = 1f;
-            row.style.borderLeftWidth = 1f;
-            row.style.borderTopLeftRadius = 4f;
-            row.style.borderTopRightRadius = 4f;
-            row.style.borderBottomLeftRadius = 4f;
-            row.style.borderBottomRightRadius = 4f;
-            row.focusable = false;
         }
 
         private static void RenderPartRow(PartRowBinding binding, GarageNovaPartOptionViewModel option)
@@ -248,14 +254,14 @@ namespace Features.Garage.Presentation
                 return;
 
             binding.NameLabel.text = string.IsNullOrWhiteSpace(option.DisplayName) ? option.Id : option.DisplayName;
-            binding.MetaLabel.text = StripTierText(option.DetailText);
+            binding.MetaLabel.text = option.MetaText ?? string.Empty;
             binding.BadgeLabel.text = BuildPartBadgeText(option);
             binding.BadgeLabel.style.display = string.IsNullOrWhiteSpace(binding.BadgeLabel.text)
                 ? DisplayStyle.None
                 : DisplayStyle.Flex;
-            UitkElementUtility.SetClass(binding.Row, "part-row--selected", option.IsSelected);
-            UitkElementUtility.SetClass(binding.BadgeLabel, "part-row-badge--selected", option.IsSelected);
-            UitkElementUtility.SetClass(binding.BadgeLabel, "part-row-badge--review", option.NeedsNameReview && !option.IsSelected);
+            UitkElementUtility.SetClass(binding.Row, GarageUitkConstants.Classes.Part.RowSelected, option.IsSelected);
+            UitkElementUtility.SetClass(binding.BadgeLabel, GarageUitkConstants.Classes.Part.BadgeSelected, option.IsSelected);
+            UitkElementUtility.SetClass(binding.BadgeLabel, GarageUitkConstants.Classes.Part.BadgeReview, option.NeedsNameReview && !option.IsSelected);
         }
 
         private void RenderFocusTabs(GarageEditorFocus focusedPart)
@@ -310,12 +316,11 @@ namespace Features.Garage.Presentation
             return StripTierText(firstLine);
         }
 
-        private void RenderPartPreviewStats(string selectedDetailText)
+        private void RenderPartPreviewStats(IReadOnlyList<GarageNovaPartStatViewModel> stats)
         {
-            var stats = BuildStats(selectedDetailText);
             for (int i = 0; i < _partStatBars.Length; i++)
             {
-                bool hasStat = i < stats.Count;
+                bool hasStat = stats != null && i < stats.Count;
                 var bar = _partStatBars[i];
                 bar.Row.style.display = hasStat ? DisplayStyle.Flex : DisplayStyle.None;
                 if (!hasStat)
@@ -324,135 +329,18 @@ namespace Features.Garage.Presentation
                 var stat = stats[i];
                 bar.Label.text = stat.Label;
                 bar.Value.text = stat.ValueText;
-                bar.Fill.style.width = PartStatFillWidth;
                 bar.Fill.style.height = Length.Percent(stat.Percent);
             }
         }
 
-        private void RenderPartEnergy(string selectedDetailText)
+        private void RenderPartEnergy(string energyText)
         {
             if (_partEnergyLabel == null)
                 return;
 
-            bool hasEnergy = TryFindEnergy(selectedDetailText, out var energyText);
-            _partEnergyLabel.text = hasEnergy ? energyText : string.Empty;
+            bool hasEnergy = !string.IsNullOrWhiteSpace(energyText);
+            _partEnergyLabel.text = hasEnergy ? energyText.Trim() : string.Empty;
             _partEnergyLabel.style.display = hasEnergy ? DisplayStyle.Flex : DisplayStyle.None;
-        }
-
-        private static List<PartStatViewModel> BuildStats(string detailText)
-        {
-            var stats = new List<PartStatViewModel>(3);
-            var firstLine = StripSourceLine(detailText);
-            if (string.IsNullOrWhiteSpace(firstLine))
-                return stats;
-
-            var tokens = firstLine.Split('|');
-            for (int i = 0; i < tokens.Length && stats.Count < 3; i++)
-            {
-                if (TryBuildStat(tokens[i], out var stat))
-                    stats.Add(stat);
-            }
-
-            return stats;
-        }
-
-        private static bool TryBuildStat(string token, out PartStatViewModel stat)
-        {
-            stat = default;
-            token = StripTierText(token);
-            if (string.IsNullOrWhiteSpace(token))
-                return false;
-
-            token = token.Trim();
-            int valueStart = IndexOfNumber(token);
-            if (valueStart < 0)
-                return false;
-
-            string label = NormalizeStatLabel(token.Substring(0, valueStart));
-            string valueText = token.Substring(valueStart).Trim();
-            if (string.Equals(label, "EN", StringComparison.Ordinal))
-                return false;
-
-            if (string.IsNullOrWhiteSpace(label) || !float.TryParse(valueText, out var value))
-                return false;
-
-            if (Mathf.Approximately(value, 0f))
-                return false;
-
-            stat = new PartStatViewModel(label, valueText, Mathf.Clamp(value / GetStatMax(label) * 100f, 4f, 100f));
-            return true;
-        }
-
-        private static int IndexOfNumber(string text)
-        {
-            for (int i = 0; i < text.Length; i++)
-            {
-                if (char.IsDigit(text[i]) || text[i] == '-' || text[i] == '.')
-                    return i;
-            }
-
-            return -1;
-        }
-
-        private static string NormalizeStatLabel(string label)
-        {
-            label = (label ?? string.Empty).Trim().TrimEnd('+').Trim();
-            return label.Length == 0 ? string.Empty : label.ToUpperInvariant();
-        }
-
-        private static float GetStatMax(string label)
-        {
-            return label switch
-            {
-                "ATK" => 1000f,
-                "RNG" => 16f,
-                "MOV" => 6f,
-                "HP" => 900f,
-                "DEF" => 10f,
-                "ASPD" => 2f,
-                _ => 100f,
-            };
-        }
-
-        private static bool TryFindEnergy(string detailText, out string energyText)
-        {
-            energyText = string.Empty;
-            var firstLine = StripSourceLine(detailText);
-            if (string.IsNullOrWhiteSpace(firstLine))
-                return false;
-
-            var tokens = firstLine.Split('|');
-            for (int i = 0; i < tokens.Length; i++)
-            {
-                var token = StripTierText(tokens[i]).Trim();
-                if (string.IsNullOrWhiteSpace(token))
-                    continue;
-
-                int valueStart = IndexOfNumber(token);
-                if (valueStart < 0)
-                    continue;
-
-                string label = NormalizeStatLabel(token.Substring(0, valueStart));
-                string valueText = token.Substring(valueStart).Trim();
-                if (!string.Equals(label, "EN", StringComparison.Ordinal) ||
-                    !float.TryParse(valueText, out var value) ||
-                    Mathf.Approximately(value, 0f))
-                    continue;
-
-                energyText = $"EN {valueText}";
-                return true;
-            }
-
-            return false;
-        }
-
-        private static string StripSourceLine(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return string.Empty;
-
-            int lineBreak = text.IndexOf('\n');
-            return lineBreak >= 0 ? text.Substring(0, lineBreak) : text;
         }
 
         private static string StripTierText(string text)
@@ -465,7 +353,7 @@ namespace Features.Garage.Presentation
             for (int i = 0; i < tokens.Length; i++)
             {
                 var token = tokens[i].Trim();
-                if (IsTierToken(token) || IsZeroNonEnergyStatToken(token))
+                if (IsTierToken(token))
                     continue;
 
                 visible.Add(token);
@@ -482,22 +370,6 @@ namespace Features.Garage.Presentation
                 || string.Equals(token, "T4", StringComparison.Ordinal);
         }
 
-        private static bool IsZeroNonEnergyStatToken(string token)
-        {
-            if (string.IsNullOrWhiteSpace(token))
-                return false;
-
-            int valueStart = IndexOfNumber(token);
-            if (valueStart < 0)
-                return false;
-
-            string label = NormalizeStatLabel(token.Substring(0, valueStart));
-            string valueText = token.Substring(valueStart).Trim();
-            return !string.Equals(label, "EN", StringComparison.Ordinal)
-                && float.TryParse(valueText, out var value)
-                && Mathf.Approximately(value, 0f);
-        }
-
         private static string BuildPartPreviewPlaceholderText(GarageNovaPartPanelSlot slot)
         {
             return slot switch
@@ -508,10 +380,36 @@ namespace Features.Garage.Presentation
             };
         }
 
+        protected override void DisposeSurface()
+        {
+            if (_frameTabButton != null)
+                _frameTabButton.clicked -= _frameTabClicked;
+
+            if (_firepowerTabButton != null)
+                _firepowerTabButton.clicked -= _firepowerTabClicked;
+
+            if (_mobilityTabButton != null)
+                _mobilityTabButton.clicked -= _mobilityTabClicked;
+
+            if (_partSearchField != null && _searchCallback != null)
+                _partSearchField.UnregisterValueChangedCallback(_searchCallback);
+
+            for (int i = 0; i < _partRows.Count; i++)
+                UnbindPartRow(_partRows[i]);
+
+            _searchCallback = null;
+        }
+
+        private void UnbindPartRow(PartRowBinding binding)
+        {
+            if (binding.Row != null && binding.Clicked != null)
+                binding.Row.clicked -= binding.Clicked;
+        }
+
         private sealed class PartRowBinding
         {
             public PartRowBinding(
-                VisualElement row,
+                Button row,
                 Label nameLabel,
                 Label metaLabel,
                 Label badgeLabel)
@@ -522,25 +420,12 @@ namespace Features.Garage.Presentation
                 BadgeLabel = badgeLabel;
             }
 
-            public VisualElement Row { get; }
+            public Button Row { get; }
             public Label NameLabel { get; }
             public Label MetaLabel { get; }
             public Label BadgeLabel { get; }
             public GarageNovaPartOptionViewModel Option { get; set; }
-        }
-
-        private readonly struct PartStatViewModel
-        {
-            public PartStatViewModel(string label, string valueText, float percent)
-            {
-                Label = label;
-                ValueText = valueText;
-                Percent = percent;
-            }
-
-            public string Label { get; }
-            public string ValueText { get; }
-            public float Percent { get; }
+            public Action Clicked { get; set; }
         }
 
         private readonly struct PartStatBarBinding

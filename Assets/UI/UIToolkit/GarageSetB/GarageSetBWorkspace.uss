@@ -780,13 +780,14 @@
     width: 98px;
     height: 98px;
     margin-top: 10px;
-    border-radius: 49px;
-    border-width: 1px;
-    border-color: rgba(94, 182, 255, 0.45);
+    border-radius: 0;
+    border-width: 0;
+    border-color: transparent;
     align-items: center;
     justify-content: center;
     position: relative;
-    background-color: rgba(9, 9, 11, 0.36);
+    background-color: transparent;
+    overflow: visible;
 }
 
 .unit-core-label {
@@ -1133,6 +1134,7 @@
     padding-right: 0;
     padding-top: 0;
     padding-bottom: 0;
+    overflow: hidden;
 }
 
 .part-preview-kicker {
@@ -1145,7 +1147,7 @@
 
 .part-preview-title {
     width: 100%;
-    color: var(--zinc-100);
+    color: var(--zinc-200);
     font-size: 12px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
@@ -1161,7 +1163,7 @@
     -unity-text-align: middle-center;
     white-space: normal;
     margin-bottom: 5px;
-    display: none;
+    display: flex;
 }
 
 .selected-part-stat-bars {
@@ -1277,4 +1279,176 @@
     padding-right: 5px;
     padding-top: 5px;
     padding-bottom: 5px;
+}
+
+/* Stable authored layout previously owned by GarageSetBUitkLayoutController. */
+.garage-setb-screen {
+    flex-direction: column;
+    min-height: 0;
+}
+
+.workspace-scroll {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    margin-bottom: 0;
+    padding-bottom: 16px;
+}
+
+.workspace-scroll .unity-scroll-view__content-container {
+    height: auto;
+    padding-bottom: 16px;
+}
+
+.slot-cell {
+    height: 94px;
+    min-height: 94px;
+    max-height: 94px;
+    flex-shrink: 0;
+}
+
+.preview-card {
+    height: 156px;
+    min-height: 156px;
+    max-height: 156px;
+}
+
+.unit-diagram {
+    align-self: flex-start;
+    width: 108px;
+    height: 108px;
+    margin-left: 24px;
+    margin-top: 22px;
+}
+
+.stat-radar-graph {
+    position: absolute;
+    right: 14px;
+    top: 24px;
+    width: 108px;
+    height: 108px;
+    background-color: rgba(9, 9, 11, 0.34);
+    border-width: 1px;
+    border-color: rgba(94, 182, 255, 0.24);
+    border-radius: 6px;
+}
+
+.part-selection-pane {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    margin-bottom: 0;
+}
+
+.selected-part-compact-card {
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
+    height: auto;
+    min-height: 0;
+    flex-shrink: 0;
+    align-self: stretch;
+    margin-right: 12px;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.selected-part-preview-host {
+    width: 76px;
+    height: 76px;
+    min-width: 76px;
+    min-height: 76px;
+}
+
+.selected-part-preview-label,
+.part-preview-title,
+.part-preview-energy,
+.part-preview-meta {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: normal;
+}
+
+.part-preview-kicker {
+    display: none;
+}
+
+.selected-part-stat-bars {
+    height: 54px;
+    min-height: 54px;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.selected-part-stat-row {
+    height: 54px;
+    min-height: 54px;
+    width: 28px;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+.selected-part-stat-track {
+    height: 32px;
+    width: 10px;
+    background-color: rgba(63, 78, 98, 0.86);
+}
+
+.selected-part-stat-fill {
+    width: 10px;
+    background-color: #5eb6ff;
+}
+
+.selected-part-stat-value {
+    color: var(--zinc-200);
+    font-size: 8px;
+}
+
+.selected-part-stat-label {
+    color: var(--zinc-400);
+    font-size: 7px;
+}
+
+.part-list-card {
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: auto;
+    min-width: 0;
+    min-height: 0;
+    margin-bottom: 0;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 12px;
+    padding-bottom: 10px;
+    border-width: 1px;
+    border-color: rgba(94, 182, 255, 0.55);
+}
+
+.part-list-rows {
+    height: 252px;
+    min-height: 104px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.part-list-rows .unity-scroll-view__horizontal-scroller,
+.part-list-rows .unity-scroll-view__vertical-scroller {
+    display: none;
+}
+
+.part-row {
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.save-dock {
+    position: relative;
+    left: 0;
+    right: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 6px;
+    margin-bottom: 0;
+    flex-shrink: 0;
 }

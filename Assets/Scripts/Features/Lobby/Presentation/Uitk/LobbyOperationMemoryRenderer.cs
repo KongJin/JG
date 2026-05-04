@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Shared.Ui;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Features.Lobby.Presentation
@@ -124,7 +123,7 @@ namespace Features.Lobby.Presentation
         private static Label CreateLabel(string text, string className)
         {
             var label = UitkElementUtility.CreateLabel(text, className);
-            label.style.color = new Color(0.86f, 0.91f, 0.96f, 1f);
+            label.style.color = UiThemeColors.TextPrimary;
             return label;
         }
     }

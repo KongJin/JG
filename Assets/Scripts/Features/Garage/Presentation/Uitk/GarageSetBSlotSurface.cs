@@ -6,23 +6,22 @@ using UnityEngine.UIElements;
 
 namespace Features.Garage.Presentation
 {
-    internal sealed class GarageSetBSlotSurface
+    internal sealed class GarageSetBSlotSurface : GarageSetBUitkSurface
     {
-        private const int SlotCount = 8;
-
-        private readonly SlotBinding[] _slots = new SlotBinding[SlotCount];
+        private readonly SlotBinding[] _slots = new SlotBinding[GarageUitkConstants.Slots.MaxCount];
+        private readonly Action[] _slotClicked = new Action[GarageUitkConstants.Slots.MaxCount];
 
         public GarageSetBSlotSurface(VisualElement root)
         {
-            for (int i = 0; i < SlotCount; i++)
+            for (int i = 0; i < GarageUitkConstants.Slots.MaxCount; i++)
             {
                 int slotNumber = i + 1;
                 _slots[i] = new SlotBinding(
-                    UitkElementUtility.Required<Button>(root, $"SlotCard{slotNumber:00}"),
-                    UitkElementUtility.Required<Label>(root, $"SlotCode{slotNumber:00}Label"),
-                    UitkElementUtility.Required<VisualElement>(root, $"SlotIcon{slotNumber:00}"),
-                    UitkElementUtility.Required<VisualElement>(root, $"SlotIcon{slotNumber:00}Glyph"),
-                    UitkElementUtility.Required<Label>(root, $"SlotName{slotNumber:00}Label"));
+                    UitkElementUtility.Required<Button>(root, GarageUitkConstants.Slots.BuildCardName(slotNumber)),
+                    UitkElementUtility.Required<Label>(root, GarageUitkConstants.Slots.BuildCodeLabelName(slotNumber)),
+                    UitkElementUtility.Required<VisualElement>(root, GarageUitkConstants.Slots.BuildIconName(slotNumber)),
+                    UitkElementUtility.Required<VisualElement>(root, GarageUitkConstants.Slots.BuildIconGlyphName(slotNumber)),
+                    UitkElementUtility.Required<Label>(root, GarageUitkConstants.Slots.BuildNameLabelName(slotNumber)));
                 _slots[i].IconHost.Insert(0, _slots[i].PreviewImage);
             }
 
@@ -50,10 +49,23 @@ namespace Features.Garage.Presentation
 
         private void BindCallbacks()
         {
+            if (IsDisposed)
+                return;
+
             for (int i = 0; i < _slots.Length; i++)
             {
                 int slotIndex = i;
-                _slots[i].Card.clicked += () => SlotSelected?.Invoke(slotIndex);
+                _slotClicked[i] ??= () => SlotSelected?.Invoke(slotIndex);
+                _slots[i].Card.clicked += _slotClicked[i];
+            }
+        }
+
+        protected override void DisposeSurface()
+        {
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                if (_slotClicked[i] != null)
+                    _slots[i].Card.clicked -= _slotClicked[i];
             }
         }
 
@@ -72,22 +84,22 @@ namespace Features.Garage.Presentation
             binding.PreviewImage.style.display = hasPreview ? DisplayStyle.Flex : DisplayStyle.None;
             binding.IconGlyph.style.display = hasPreview ? DisplayStyle.None : DisplayStyle.Flex;
 
-            UitkElementUtility.SetClass(binding.Card, "slot-card--active", isSelected);
-            UitkElementUtility.SetClass(binding.Card, "slot-card--empty", isEmpty);
-            UitkElementUtility.SetClass(binding.CodeLabel, "slot-code--active", isSelected);
-            UitkElementUtility.SetClass(binding.CodeLabel, "slot-code--empty", isEmpty);
-            UitkElementUtility.SetClass(binding.IconHost, "slot-icon--active", isSelected);
-            UitkElementUtility.SetClass(binding.IconHost, "slot-icon--empty", isEmpty);
-            UitkElementUtility.SetClass(binding.IconGlyph, "slot-icon-glyph--active", isSelected);
-            UitkElementUtility.SetClass(binding.IconGlyph, "slot-icon-glyph--empty", isEmpty);
-            UitkElementUtility.SetClass(binding.NameLabel, "slot-name--active", isSelected);
-            UitkElementUtility.SetClass(binding.NameLabel, "slot-name--empty", isEmpty);
+            UitkElementUtility.SetClass(binding.Card, GarageUitkConstants.Classes.Slot.CardActive, isSelected);
+            UitkElementUtility.SetClass(binding.Card, GarageUitkConstants.Classes.Slot.CardEmpty, isEmpty);
+            UitkElementUtility.SetClass(binding.CodeLabel, GarageUitkConstants.Classes.Slot.CodeActive, isSelected);
+            UitkElementUtility.SetClass(binding.CodeLabel, GarageUitkConstants.Classes.Slot.CodeEmpty, isEmpty);
+            UitkElementUtility.SetClass(binding.IconHost, GarageUitkConstants.Classes.Slot.IconActive, isSelected);
+            UitkElementUtility.SetClass(binding.IconHost, GarageUitkConstants.Classes.Slot.IconEmpty, isEmpty);
+            UitkElementUtility.SetClass(binding.IconGlyph, GarageUitkConstants.Classes.Slot.IconGlyphActive, isSelected);
+            UitkElementUtility.SetClass(binding.IconGlyph, GarageUitkConstants.Classes.Slot.IconGlyphEmpty, isEmpty);
+            UitkElementUtility.SetClass(binding.NameLabel, GarageUitkConstants.Classes.Slot.NameActive, isSelected);
+            UitkElementUtility.SetClass(binding.NameLabel, GarageUitkConstants.Classes.Slot.NameEmpty, isEmpty);
         }
 
         private static string BuildSlotIconId(GarageSlotViewModel slot)
         {
             if (slot == null || slot.IsEmpty)
-                return "add";
+                return GarageUitkConstants.Icons.Add;
 
             var role = (slot.RoleLabel ?? string.Empty).ToLowerInvariant();
             var status = (slot.StatusBadgeText ?? string.Empty).ToLowerInvariant();
@@ -95,12 +107,12 @@ namespace Features.Garage.Presentation
             var combined = string.Concat(role, " ", status, " ", display);
 
             if (combined.Contains("방어") || combined.Contains("defense") || combined.Contains("guard") || combined.Contains("고정"))
-                return "security";
+                return GarageUitkConstants.Icons.Security;
 
             if (combined.Contains("지원") || combined.Contains("support") || combined.Contains("정비"))
-                return "precision_manufacturing";
+                return GarageUitkConstants.Icons.PrecisionManufacturing;
 
-            return "smart_toy";
+            return GarageUitkConstants.Icons.SmartToy;
         }
 
         private static string BuildSlotName(GarageSlotViewModel slot, int slotIndex)

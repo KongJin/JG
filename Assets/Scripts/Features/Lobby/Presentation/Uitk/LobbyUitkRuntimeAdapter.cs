@@ -8,11 +8,12 @@ using UnityEngine.UIElements;
 
 namespace Features.Lobby.Presentation
 {
-    internal sealed class LobbyUitkRuntimeAdapter
+    internal sealed class LobbyUitkRuntimeAdapter : IDisposable
     {
         private readonly UIDocument _document;
         private readonly UIDocument _garageDocument;
         private readonly GarageSetBUitkRuntimeAdapter _garageAdapter;
+        private readonly GarageSetBUitkDocumentHost _garageDocumentHost;
         private readonly VisualTreeAsset _lobbyShellTree;
         private readonly VisualTreeAsset _operationMemoryTree;
         private readonly VisualTreeAsset _accountSyncTree;
@@ -42,6 +43,9 @@ namespace Features.Lobby.Presentation
         private Button _garageNav;
         private Button _recordsNav;
         private LobbyShellPageRouter _pageRouter;
+        private readonly LobbyUitkClickScope _clickScope = new();
+        private bool _isBound;
+        private bool _isDisposed;
 
         public LobbyUitkRuntimeAdapter(
             UIDocument document,
@@ -56,6 +60,9 @@ namespace Features.Lobby.Presentation
             _document = document;
             _garageDocument = garageDocument;
             _garageAdapter = garageAdapter;
+            _garageDocumentHost = garageAdapter != null
+                ? new GarageSetBUitkDocumentHost(garageDocument, garageAdapter)
+                : null;
             _lobbyShellTree = lobbyShellTree;
             _operationMemoryTree = operationMemoryTree;
             _accountSyncTree = accountSyncTree;
@@ -84,9 +91,18 @@ namespace Features.Lobby.Presentation
             DisplayNameText,
             Mathf.Max(0, _difficultyInput?.value ?? 0));
 
+        public void Dispose()
+        {
+            if (_isDisposed)
+                return;
+
+            _isDisposed = true;
+            _clickScope.Dispose();
+        }
+
         public bool Bind()
         {
-            if (_root != null)
+            if (_isBound)
                 return true;
 
             if (_document == null)
@@ -111,7 +127,19 @@ namespace Features.Lobby.Presentation
                 return false;
             }
 
-            BindAuthoredTree();
+            try
+            {
+                BindAuthoredTree();
+                _isBound = true;
+            }
+            catch
+            {
+                _isBound = false;
+                _root = null;
+                _pageRouter = null;
+                throw;
+            }
+
             return true;
         }
 
@@ -243,27 +271,27 @@ namespace Features.Lobby.Presentation
 
         private void BindAuthoredTree()
         {
-            _lobbyPage = _root.Q<VisualElement>("LobbyUitkPage");
-            _garagePage = _root.Q<VisualElement>("GarageUitkHost");
-            _recordsPage = _root.Q<VisualElement>("RecordsUitkHost");
-            _accountPage = _root.Q<VisualElement>("AccountUitkHost");
-            _connectionPage = _root.Q<VisualElement>("ConnectionUitkHost");
-            _roomList = _root.Q<VisualElement>("RoomList");
-            _memberList = _root.Q<VisualElement>("MemberList");
-            _shellTitle = _root.Q<Label>("ShellTitleLabel");
-            _shellState = _root.Q<Label>("ShellStateLabel");
-            _roomCountLabel = _root.Q<Label>("RoomCountLabel");
-            _roomDetailTitle = _root.Q<Label>("RoomDetailTitleLabel");
-            _roomDetailMeta = _root.Q<Label>("RoomDetailMetaLabel");
-            _roomNameInput = _root.Q<TextField>("RoomNameInput");
-            _displayNameInput = _root.Q<TextField>("DisplayNameInput");
-            _capacityInput = _root.Q<IntegerField>("CapacityInput");
-            _difficultyInput = _root.Q<IntegerField>("DifficultyInput");
-            _readyButton = _root.Q<Button>("ReadyButton");
-            _startButton = _root.Q<Button>("StartButton");
-            _lobbyNav = _root.Q<Button>("LobbyNavButton");
-            _garageNav = _root.Q<Button>("GarageNavButton");
-            _recordsNav = _root.Q<Button>("RecordsNavButton");
+            _lobbyPage = Required<VisualElement>("LobbyUitkPage");
+            _garagePage = Required<VisualElement>("GarageUitkHost");
+            _recordsPage = Required<VisualElement>("RecordsUitkHost");
+            _accountPage = Required<VisualElement>("AccountUitkHost");
+            _connectionPage = Required<VisualElement>("ConnectionUitkHost");
+            _roomList = Required<VisualElement>("RoomList");
+            _memberList = Required<VisualElement>("MemberList");
+            _shellTitle = Required<Label>("ShellTitleLabel");
+            _shellState = Required<Label>("ShellStateLabel");
+            _roomCountLabel = Required<Label>("RoomCountLabel");
+            _roomDetailTitle = Required<Label>("RoomDetailTitleLabel");
+            _roomDetailMeta = Required<Label>("RoomDetailMetaLabel");
+            _roomNameInput = Required<TextField>("RoomNameInput");
+            _displayNameInput = Required<TextField>("DisplayNameInput");
+            _capacityInput = Required<IntegerField>("CapacityInput");
+            _difficultyInput = Required<IntegerField>("DifficultyInput");
+            _readyButton = Required<Button>("ReadyButton");
+            _startButton = Required<Button>("StartButton");
+            _lobbyNav = Required<Button>("LobbyNavButton");
+            _garageNav = Required<Button>("GarageNavButton");
+            _recordsNav = Required<Button>("RecordsNavButton");
             _pageRouter = new LobbyShellPageRouter(
                 new[]
                 {
@@ -325,7 +353,7 @@ namespace Features.Lobby.Presentation
         {
             if (_garageDocument != null)
             {
-                if (_garageAdapter != null && _garageAdapter.SetDocumentRootVisible(isVisible))
+                if (_garageDocumentHost != null && _garageDocumentHost.SetDocumentRootVisible(isVisible))
                     return isVisible;
 
                 if (!_garageDocument.gameObject.activeSelf)
@@ -345,15 +373,20 @@ namespace Features.Lobby.Presentation
             if (_garagePage == null || _garageAdapter == null)
                 return;
 
-            _garageAdapter.BindToHost(_garagePage);
-            _garageAdapter.SetDocumentRootVisible(false);
+            _garageDocumentHost?.BindToHost(_garagePage);
+            _garageDocumentHost?.SetDocumentRootVisible(false);
         }
 
         private void RegisterClick(string buttonName, Action callback)
         {
-            var button = _root?.Q<Button>(buttonName);
-            if (button != null && callback != null)
-                button.clicked += callback;
+            RegisterClick(_root, buttonName, callback);
+        }
+
+        private void RegisterClick(VisualElement root, string buttonName, Action callback)
+        {
+            var button = Required<Button>(root, buttonName);
+            if (callback != null)
+                _clickScope.Register(button, callback);
         }
 
         private void EnsureRecordsSurface()
@@ -362,10 +395,12 @@ namespace Features.Lobby.Presentation
                 return;
 
             if (_operationMemoryTree != null)
+            {
                 _operationMemoryTree.CloneTree(_recordsPage);
 
-            _recordsPage.Q<Button>("BackButton")?.RegisterCallback<ClickEvent>(_ => LobbyPageRequested?.Invoke());
-            _recordsPage.Q<Button>("GarageButton")?.RegisterCallback<ClickEvent>(_ => GaragePageRequested?.Invoke());
+                RegisterClick(_recordsPage, "BackButton", () => LobbyPageRequested?.Invoke());
+                RegisterClick(_recordsPage, "GarageButton", () => GaragePageRequested?.Invoke());
+            }
         }
 
         private void EnsureAccountSurface()
@@ -374,10 +409,12 @@ namespace Features.Lobby.Presentation
                 return;
 
             if (_accountSyncTree != null)
+            {
                 _accountSyncTree.CloneTree(_accountPage);
 
-            _accountPage.Q<Button>("ManualSyncRetryButton")?.RegisterCallback<ClickEvent>(_ => AccountRefreshRequested?.Invoke());
-            _accountPage.Q<Button>("LinkAccountButton")?.RegisterCallback<ClickEvent>(_ => ConnectionPageRequested?.Invoke());
+                RegisterClick(_accountPage, "ManualSyncRetryButton", () => AccountRefreshRequested?.Invoke());
+                RegisterClick(_accountPage, "LinkAccountButton", () => ConnectionPageRequested?.Invoke());
+            }
         }
 
         private void EnsureConnectionSurface()
@@ -386,39 +423,31 @@ namespace Features.Lobby.Presentation
                 return;
 
             if (_connectionReconnectTree != null)
+            {
                 _connectionReconnectTree.CloneTree(_connectionPage);
 
-            _connectionPage.Q<Button>("BackButton")?.RegisterCallback<ClickEvent>(_ => LobbyPageRequested?.Invoke());
-            _connectionPage.Q<Button>("ReturnLobbyButton")?.RegisterCallback<ClickEvent>(_ => LobbyPageRequested?.Invoke());
-            _connectionPage.Q<Button>("ManualRetryButton")?.RegisterCallback<ClickEvent>(_ => LobbyPageRequested?.Invoke());
+                RegisterClick(_connectionPage, "BackButton", () => LobbyPageRequested?.Invoke());
+                RegisterClick(_connectionPage, "ReturnLobbyButton", () => LobbyPageRequested?.Invoke());
+                RegisterClick(_connectionPage, "ManualRetryButton", () => LobbyPageRequested?.Invoke());
+            }
+        }
+
+        private T Required<T>(string name) where T : VisualElement
+        {
+            return Required<T>(_root, name);
+        }
+
+        private static T Required<T>(VisualElement root, string name) where T : VisualElement
+        {
+            return UitkElementUtility.Required<T>(root, name, "Lobby UITK");
         }
 
         private static Label CreateLabel(string text, string className)
         {
             var label = UitkElementUtility.CreateLabel(text, className);
-            label.style.color = new Color(0.86f, 0.91f, 0.96f, 1f);
+            label.style.color = UiThemeColors.TextPrimary;
             return label;
         }
 
-    }
-
-    internal readonly struct LobbyCreateRoomInput
-    {
-        public LobbyCreateRoomInput(
-            string roomName,
-            int capacity,
-            string displayName,
-            int difficultyPresetId)
-        {
-            RoomName = roomName;
-            Capacity = capacity;
-            DisplayName = displayName;
-            DifficultyPresetId = difficultyPresetId;
-        }
-
-        public string RoomName { get; }
-        public int Capacity { get; }
-        public string DisplayName { get; }
-        public int DifficultyPresetId { get; }
     }
 }

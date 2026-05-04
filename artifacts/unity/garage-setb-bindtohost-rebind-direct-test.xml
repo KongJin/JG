@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-04 01:51:03Z" end-time="2026-05-04 01:51:04Z" duration="0.0916616">
+  <test-suite type="TestSuite" id="1233" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="183" result="Passed" start-time="2026-05-04 01:51:03Z" end-time="2026-05-04 01:51:04Z" duration="0.091662" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1221" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="183" result="Passed" start-time="2026-05-04 01:51:03Z" end-time="2026-05-04 01:51:04Z" duration="0.089381" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="4824" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1224" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="174" result="Passed" start-time="2026-05-04 01:51:03Z" end-time="2026-05-04 01:51:04Z" duration="0.087378" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1225" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="174" result="Passed" start-time="2026-05-04 01:51:03Z" end-time="2026-05-04 01:51:04Z" duration="0.085277" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1060" name="GarageSetBUitkRuntimeAdapterDirectTests" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" testcasecount="16" result="Passed" start-time="2026-05-04 01:51:03Z" end-time="2026-05-04 01:51:04Z" duration="0.084545" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1072" name="RuntimeAdapter_BindToHost_RebindsAfterDocumentRootBind" fullname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests.RuntimeAdapter_BindToHost_RebindsAfterDocumentRootBind" methodname="RuntimeAdapter_BindToHost_RebindsAfterDocumentRootBind" classname="Tests.Editor.GarageSetBUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="743513080" result="Passed" start-time="2026-05-04 01:51:03Z" end-time="2026-05-04 01:51:04Z" duration="0.082648" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\garage-setb-bindtohost-rebind-direct-test.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

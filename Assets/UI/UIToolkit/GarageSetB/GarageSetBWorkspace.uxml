@@ -94,6 +94,39 @@
                 </ui:VisualElement>
             </ui:VisualElement>
 
+            <ui:VisualElement name="PreviewCard" class="preview-card">
+                <ui:VisualElement class="blueprint-grid">
+                    <ui:VisualElement class="grid-line grid-line--v grid-line--v1" />
+                    <ui:VisualElement class="grid-line grid-line--v grid-line--v2" />
+                    <ui:VisualElement class="grid-line grid-line--v grid-line--v3" />
+                    <ui:VisualElement class="grid-line grid-line--h grid-line--h1" />
+                    <ui:VisualElement class="grid-line grid-line--h grid-line--h2" />
+                    <ui:VisualElement class="grid-line grid-line--h grid-line--h3" />
+                </ui:VisualElement>
+                <ui:VisualElement class="preview-content">
+                    <ui:VisualElement class="preview-head">
+                        <ui:Label name="PreviewTitleLabel" text="설계도 확인" class="preview-title" />
+                        <ui:VisualElement name="PreviewTagRow" class="tag-row">
+                            <ui:Label name="PreviewTag01Label" text="대장갑" class="mini-tag" />
+                            <ui:Label name="PreviewTag02Label" text="장거리" class="mini-tag" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="UnitPreviewHost" class="unit-diagram">
+                        <ui:VisualElement class="reticle-corner reticle-corner--tl" />
+                        <ui:VisualElement class="reticle-corner reticle-corner--tr" />
+                        <ui:VisualElement class="reticle-corner reticle-corner--bl" />
+                        <ui:VisualElement class="reticle-corner reticle-corner--br" />
+                        <ui:Label name="UnitPreviewLabel" text="기체 A-01" class="unit-core-label" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="PreviewPowerBar" class="power-bar">
+                        <ui:VisualElement class="power-track">
+                            <ui:VisualElement name="PreviewPowerFill" class="power-fill" />
+                        </ui:VisualElement>
+                        <ui:Label name="PreviewPowerLabel" text="전력 70%" class="power-label" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
             <ui:VisualElement name="PartFocusBar" class="part-focus-bar">
                 <ui:Button name="MobilityTabButton" class="focus-tab focus-tab--active">
                     <ui:VisualElement name="MobilityTabIcon" class="uitk-icon uitk-icon--speed uitk-icon--small uitk-icon--blue focus-tab-icon focus-tab-icon--active" />
@@ -215,39 +248,6 @@
                             <ui:Label name="PartRow08BadgeLabel" text="" class="part-row-badge" />
                         </ui:Button>
                     </ui:ScrollView>
-                </ui:VisualElement>
-            </ui:VisualElement>
-
-            <!--                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                --><ui:VisualElement name="PreviewCard" class="preview-card">
-                <ui:VisualElement class="blueprint-grid">
-                    <ui:VisualElement class="grid-line grid-line--v grid-line--v1" />
-                    <ui:VisualElement class="grid-line grid-line--v grid-line--v2" />
-                    <ui:VisualElement class="grid-line grid-line--v grid-line--v3" />
-                    <ui:VisualElement class="grid-line grid-line--h grid-line--h1" />
-                    <ui:VisualElement class="grid-line grid-line--h grid-line--h2" />
-                    <ui:VisualElement class="grid-line grid-line--h grid-line--h3" />
-                </ui:VisualElement>
-                <ui:VisualElement class="preview-content">
-                    <ui:VisualElement class="preview-head">
-                        <ui:Label name="PreviewTitleLabel" text="설계도 확인" class="preview-title" />
-                        <ui:VisualElement name="PreviewTagRow" class="tag-row">
-                            <ui:Label name="PreviewTag01Label" text="대장갑" class="mini-tag" />
-                            <ui:Label name="PreviewTag02Label" text="장거리" class="mini-tag" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                    <ui:VisualElement name="UnitPreviewHost" class="unit-diagram">
-                        <ui:VisualElement class="reticle-corner reticle-corner--tl" />
-                        <ui:VisualElement class="reticle-corner reticle-corner--tr" />
-                        <ui:VisualElement class="reticle-corner reticle-corner--bl" />
-                        <ui:VisualElement class="reticle-corner reticle-corner--br" />
-                        <ui:Label name="UnitPreviewLabel" text="기체 A-01" class="unit-core-label" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="PreviewPowerBar" class="power-bar">
-                        <ui:VisualElement class="power-track">
-                            <ui:VisualElement name="PreviewPowerFill" class="power-fill" />
-                        </ui:VisualElement>
-                        <ui:Label name="PreviewPowerLabel" text="전력 70%" class="power-label" />
-                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
 

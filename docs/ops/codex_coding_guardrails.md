@@ -204,6 +204,10 @@ scene/prefab wiring, asset catalog/profile, network payload, UI token, visual pr
 체크는 세 문항으로 충분하다: 증상을 재현했는가, 원인을 증거로 확인했는가, 재발방지를 어디에 남길 것인가.
 저장 위치는 `ops.document-management-workflow`의 Recurrence Carryover를 따르고, 모든 문제를 새 문서나 새 hard-fail로 만들지 않는다.
 
+## Domain-Specific Guardrails
+
+Presentation Layer 규칙은 [`presentation_layer_guardrails.md`](presentation_layer_guardrails.md)를 참조한다.
+
 ## Reporting
 
 - `success`: 기준과 실제 결과를 비교했고 맞다.

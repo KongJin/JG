@@ -28,7 +28,7 @@
 - `plan`: 현재 실행 상태와 순서만 맡는다.
 - `reference`: 필요할 때 보는 배경, 예시, 절차다.
 - `historical`: 현재 판단 근거가 아니다.
-- `skill-entry`: 실행 진입점이며, owner 본문을 재서술하지 않는다.
+- `skill-entry`: 실행 진입점이며, owner 본문을 재서술하지 않는다. 새 skill 생성, skill description/trigger 변경은 `ops.skill-routing-registry`와 `ops.skill-trigger-matrix`를 먼저 보고, 변경이면 `skill trigger checked`를 남긴다.
 
 ### Artifacts
 

@@ -9,7 +9,7 @@
 > artifacts: `artifacts/audio/sfx/`
 
 이 문서는 JG UITK/Unity 효과음 제작 파이프라인의 active owner다.
-오디오 product smoke acceptance는 [`webgl_audio_closeout_plan.md`](./webgl_audio_closeout_plan.md)가 계속 소유하고, 이 문서는 효과음 생성/import/catalog-sync와 UITK event wiring 전 manual audition decision만 소유한다.
+오디오 product smoke acceptance는 [`webgl-audio-closeout.md`](./webgl-audio-closeout.md)가 계속 소유하고, 이 문서는 효과음 생성/import/catalog-sync와 UITK event wiring 전 manual audition decision만 소유한다.
 
 ## Current Judgment
 

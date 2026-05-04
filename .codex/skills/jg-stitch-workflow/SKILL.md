@@ -24,7 +24,7 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 3. Read `docs/ops/stitch_data_workflow.md`.
 4. Read `docs/ops/stitch_structured_handoff_contract.md` when the task writes, reviews, or translates contracts.
 5. Read `docs/design/ui_reference_workflow.md` when the task needs Stitch visual principles or reference usage.
-6. Read `docs/ops/unity_ui_authoring_workflow.md` before Unity handoff execution.
+6. Read `docs/ops/unity-ui-authoring-workflow.md` before Unity handoff execution.
 7. Read `docs/ops/acceptance_reporting_guardrails.md` before using acceptance, blocked, mismatch, or closeout language.
 8. Read `docs/ops/plan_authoring_review_workflow.md` when creating or substantially rewriting plan docs.
 
