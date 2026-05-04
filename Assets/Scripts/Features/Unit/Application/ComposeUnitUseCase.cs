@@ -46,7 +46,7 @@ namespace Features.Unit.Application
 
             // CompositionInput 구성
             var input = new UnitComposition.CompositionInput(
-                baseHp: frameBase.HpBonus,
+                baseHp: frameBase.FrameBaseHp,
                 baseDefense: frameBase.Defense,
                 firepowerDamage: firepower.AttackDamage,
                 firepowerAttackSpeed: firepower.AttackSpeed,

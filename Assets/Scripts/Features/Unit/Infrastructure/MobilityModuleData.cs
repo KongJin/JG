@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Serialization;
-using System;
 
 namespace Features.Unit.Infrastructure
 {
@@ -46,10 +45,6 @@ namespace Features.Unit.Infrastructure
         public MobilitySurface MobilitySurface => mobilitySurface;
         public float MoveSpeed => moveSpeed;
         public float MoveRange => moveRange;
-        [Obsolete("Mobility no longer owns HP; use UnitFrameData.BaseHp.")]
-        public float HpBonus => 0f;
-        [Obsolete("Anchor range is now the same value as MoveRange.")]
-        public float AnchorRange => moveRange;
         public string Description => description;
         public GameObject PreviewPrefab => previewPrefab;
     }

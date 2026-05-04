@@ -66,43 +66,43 @@ namespace Tests.Unit.Domain
         [Test]
         public void Compose_스탯계산_올바른값()
         {
+            // BaseHp는 프레임 기본 HP 등 상위 조합 단계에서 이미 확정된 값이다(기동 HP 별도 슬롯 없음).
             var input = new UnitComposition.CompositionInput(
-                baseHp: 300f,
-                baseAttackSpeed: 1.0f,
+                baseHp: 800f,
+                baseDefense: 5f,
                 firepowerDamage: 30f,
                 firepowerAttackSpeed: 1.0f,
                 firepowerRange: 4f,
-                mobilityHpBonus: 500f,
+                mobilityMoveSpeed: 3.5f,
                 mobilityMoveRange: 3f,
-                mobilityAnchorRange: 2.5f,
-                passiveTraitCostBonus: 5
-            );
+                passiveTraitCostBonus: 5);
 
             var stats = UnitComposition.Compose("frame1", "fire1", "mob1", input);
 
-            Assert.AreEqual(800f, stats.Hp);        // 300 + 500
+            Assert.AreEqual(800f, stats.Hp);
+            Assert.AreEqual(5f, stats.Defense);
             Assert.AreEqual(30f, stats.AttackDamage);
-            Assert.AreEqual(1.0f, stats.AttackSpeed); // 1.0 * 1.0
+            Assert.AreEqual(1.0f, stats.AttackSpeed);
             Assert.AreEqual(4f, stats.Range);
+            Assert.AreEqual(3.5f, stats.MoveSpeed);
             Assert.AreEqual(3f, stats.MoveRange);
-            Assert.AreEqual(2.5f, stats.AnchorRange);
+            Assert.AreEqual(3f, stats.AnchorRange); // AnchorRange == MoveRange
             Assert.AreEqual(5, stats.PassiveTraitCostBonus);
         }
 
         [Test]
         public void Compose_역할분류_탱커()
         {
+            // ClassifyRole: moveRange<=4, range<=3, hp>=800 → Tanker
             var input = new UnitComposition.CompositionInput(
                 baseHp: 1000f,
-                baseAttackSpeed: 1.0f,
+                baseDefense: 0f,
                 firepowerDamage: 20f,
                 firepowerAttackSpeed: 0.8f,
                 firepowerRange: 3f,
-                mobilityHpBonus: 500f,
+                mobilityMoveSpeed: 4f,
                 mobilityMoveRange: 3f,
-                mobilityAnchorRange: 2f,
-                passiveTraitCostBonus: 5
-            );
+                passiveTraitCostBonus: 5);
 
             var stats = UnitComposition.Compose("frame1", "fire1", "mob1", input);
             Assert.AreEqual(UnitRole.Tanker, stats.Role);

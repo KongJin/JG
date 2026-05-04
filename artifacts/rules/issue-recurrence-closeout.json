@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-05-01",
+  "updatedAt": "2026-05-04",
   "scope": "rules-only",
   "issueDetected": true,
   "declaredLane": "documentation lifecycle, plan cleanup/progress slim policy, recurrence closeout false-green prevention, managed prompt coverage, stale-trace hard-fail lint, core cohesion/coupling lint, issue investigation hypothesis verification guardrail, and skill route registry coverage",
@@ -12,12 +12,6 @@
   "verification": "node --test tools/docs-lint/tests/docs-lint.test.mjs tools/docs-lint/tests/sync-recurrence-closeout.test.mjs; npm run --silent rules:sync-closeout; npm run --silent rules:lint",
   "blockedReason": "",
   "changedPaths": [
-    ".codex/skills/jg-doc-lifecycle/SKILL.md",
-    "artifacts/rules/issue-recurrence-closeout.json",
-    "docs/index.md",
-    "docs/ops/document_management_workflow.md",
-    "docs/ops/skill_routing_registry.md",
-    "tools/docs-lint/lib.mjs",
-    "tools/docs-lint/tests/docs-lint.test.mjs"
+    "artifacts/rules/issue-recurrence-closeout.json"
   ]
 }

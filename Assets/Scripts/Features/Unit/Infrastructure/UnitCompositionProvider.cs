@@ -22,7 +22,7 @@ namespace Features.Unit.Infrastructure
             if (frame == null) return default;
 
             return new ModuleStats(
-                hpBonus: frame.BaseHp,
+                frameBaseHp: frame.BaseHp,
                 defense: frame.Defense);
         }
 

@@ -42,63 +42,6 @@ namespace Features.Garage.Presentation
         public AssemblyForm FrameAssemblyForm => Preview.FrameAssemblyForm;
         public AssemblyForm FirepowerAssemblyForm => Preview.FirepowerAssemblyForm;
 
-        public GarageSlotViewModel(
-            string slotLabel,
-            string title,
-            string summary,
-            string statusBadgeText,
-            bool hasCommittedLoadout,
-            bool hasDraftChanges,
-            bool isEmpty,
-            bool isSelected,
-            bool showArrow = false,
-            string callsign = null,
-            string roleLabel = null,
-            string serviceTagText = null,
-            string loadoutKey = null,
-            string frameId = null,
-            string firepowerId = null,
-            string mobilityId = null,
-            GameObject framePreviewPrefab = null,
-            GameObject firepowerPreviewPrefab = null,
-            GameObject mobilityPreviewPrefab = null,
-            GaragePanelCatalog.PartAlignment frameAlignment = null,
-            GaragePanelCatalog.PartAlignment firepowerAlignment = null,
-            GaragePanelCatalog.PartAlignment mobilityAlignment = null,
-            bool mobilityUsesAssemblyPivot = false,
-            AssemblyForm frameAssemblyForm = AssemblyForm.Unspecified,
-            AssemblyForm firepowerAssemblyForm = AssemblyForm.Unspecified)
-        {
-            Display = new GarageSlotDisplayData(
-                slotLabel,
-                title,
-                summary,
-                statusBadgeText,
-                hasCommittedLoadout,
-                hasDraftChanges,
-                isEmpty,
-                isSelected,
-                showArrow,
-                callsign,
-                roleLabel,
-                serviceTagText);
-
-            Preview = new GarageSlotPreviewData(
-                loadoutKey,
-                frameId,
-                firepowerId,
-                mobilityId,
-                framePreviewPrefab,
-                firepowerPreviewPrefab,
-                mobilityPreviewPrefab,
-                frameAlignment,
-                firepowerAlignment,
-                mobilityAlignment,
-                mobilityUsesAssemblyPivot,
-                frameAssemblyForm,
-                firepowerAssemblyForm);
-        }
-
         /// <summary>
         /// 구조화된 데이터로부터 ViewModel 생성
         /// </summary>

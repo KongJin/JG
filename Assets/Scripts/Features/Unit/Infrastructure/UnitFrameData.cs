@@ -1,7 +1,6 @@
 using Features.Unit.Domain;
 using UnityEngine;
 using UnityEngine.Serialization;
-using System;
 
 namespace Features.Unit.Infrastructure
 {
@@ -41,10 +40,6 @@ namespace Features.Unit.Infrastructure
         public AssemblyForm AssemblyForm => assemblyForm;
         public float BaseHp => baseHp;
         public float Defense => defense;
-        [Obsolete("Frame no longer owns attack speed; use FirepowerModuleData.AttackSpeed.")]
-        public float BaseAttackSpeed => 1f;
-        [Obsolete("Frame no longer owns move range; use MobilityModuleData.MoveRange.")]
-        public float BaseMoveRange => 0f;
         public PassiveTraitData PassiveTrait => passiveTrait;
         public GameObject UnitPrefab => unitPrefab;
         public GameObject PreviewPrefab => previewPrefab;

@@ -563,7 +563,7 @@ namespace Tests.Editor
         {
             public ModuleStats GetFrameBaseStats(string frameId)
             {
-                return new ModuleStats(hpBonus: 600f, defense: 5f);
+                return new ModuleStats(frameBaseHp: 600f, defense: 5f);
             }
 
             public ModuleStats GetFirepowerStats(string moduleId)

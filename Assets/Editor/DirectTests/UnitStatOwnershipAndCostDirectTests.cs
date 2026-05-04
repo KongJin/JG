@@ -112,7 +112,7 @@ namespace Tests.Editor
         private sealed class FakeCompositionPort : IUnitCompositionPort
         {
             public ModuleStats GetFrameBaseStats(string frameId) => new(
-                hpBonus: 240f,
+                frameBaseHp: 240f,
                 defense: 5f);
 
             public ModuleStats GetFirepowerStats(string moduleId) => new(

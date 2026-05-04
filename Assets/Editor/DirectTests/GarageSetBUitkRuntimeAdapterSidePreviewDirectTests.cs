@@ -1,4 +1,5 @@
 using Features.Garage.Presentation;
+using Features.Unit.Domain;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -183,41 +184,61 @@ namespace Tests.Editor
             GameObject mobilityPrefab)
         {
             return new GarageSlotViewModel(
-                "A-01",
-                "A-01 가디언",
-                "레일건 / 중장갑",
-                "임시",
-                hasCommittedLoadout: true,
-                hasDraftChanges: true,
-                isEmpty: false,
-                isSelected: true,
-                frameId: "frame",
-                firepowerId: "fire",
-                mobilityId: "mobility",
-                framePreviewPrefab: framePrefab,
-                firepowerPreviewPrefab: firepowerPrefab,
-                mobilityPreviewPrefab: mobilityPrefab,
-                frameAlignment: AutoOkAlignment(Vector3.zero, hasFrameTopSocket: true),
-                firepowerAlignment: AutoOkAlignment(Vector3.zero),
-                mobilityAlignment: AutoOkAlignment(
-                    Vector3.zero,
-                    hasGxTreeSocket: true,
-                    gxTreeSocketOffset: new Vector3(0f, 0.3f, 0f),
-                    gxTreeSocketName: "legs"));
+                new GarageSlotDisplayData(
+                    "A-01",
+                    "A-01 가디언",
+                    "레일건 / 중장갑",
+                    "임시",
+                    hasCommittedLoadout: true,
+                    hasDraftChanges: true,
+                    isEmpty: false,
+                    isSelected: true),
+                new GarageSlotPreviewData(
+                    loadoutKey: null,
+                    frameId: "frame",
+                    firepowerId: "fire",
+                    mobilityId: "mobility",
+                    framePreviewPrefab: framePrefab,
+                    firepowerPreviewPrefab: firepowerPrefab,
+                    mobilityPreviewPrefab: mobilityPrefab,
+                    frameAlignment: AutoOkAlignment(Vector3.zero, hasFrameTopSocket: true),
+                    firepowerAlignment: AutoOkAlignment(Vector3.zero),
+                    mobilityAlignment: AutoOkAlignment(
+                        Vector3.zero,
+                        hasGxTreeSocket: true,
+                        gxTreeSocketOffset: new Vector3(0f, 0.3f, 0f),
+                        gxTreeSocketName: "legs"),
+                    mobilityUsesAssemblyPivot: false,
+                    frameAssemblyForm: AssemblyForm.Unspecified,
+                    firepowerAssemblyForm: AssemblyForm.Unspecified));
         }
 
         private static GarageSlotViewModel CreateIncompletePreviewSlot()
         {
             return new GarageSlotViewModel(
-                "A-01",
-                "조립 중",
-                "조립 중",
-                "임시",
-                hasCommittedLoadout: false,
-                hasDraftChanges: true,
-                isEmpty: false,
-                isSelected: true,
-                frameId: "frame");
+                new GarageSlotDisplayData(
+                    "A-01",
+                    "조립 중",
+                    "조립 중",
+                    "임시",
+                    hasCommittedLoadout: false,
+                    hasDraftChanges: true,
+                    isEmpty: false,
+                    isSelected: true),
+                new GarageSlotPreviewData(
+                    loadoutKey: null,
+                    frameId: "frame",
+                    firepowerId: null,
+                    mobilityId: null,
+                    framePreviewPrefab: null,
+                    firepowerPreviewPrefab: null,
+                    mobilityPreviewPrefab: null,
+                    frameAlignment: null,
+                    firepowerAlignment: null,
+                    mobilityAlignment: null,
+                    mobilityUsesAssemblyPivot: false,
+                    frameAssemblyForm: AssemblyForm.Unspecified,
+                    firepowerAssemblyForm: AssemblyForm.Unspecified));
         }
 
         private static GarageNovaPartsPanelViewModel CreatePartListWithoutSinglePartPreview()

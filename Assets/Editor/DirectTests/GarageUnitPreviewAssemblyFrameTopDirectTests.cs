@@ -27,30 +27,38 @@ namespace Tests.Editor
             try
             {
                 var viewModel = new GarageSlotViewModel(
-                    "A-01",
-                    "A-01",
-                    "test",
-                    "test",
-                    hasCommittedLoadout: true,
-                    hasDraftChanges: false,
-                    isEmpty: false,
-                    isSelected: true,
-                    frameId: "frame",
-                    firepowerId: "firepower",
-                    mobilityId: "mobility",
-                    frameAlignment: AutoOkAlignment(
-                        socketOffset: new Vector3(0f, 0.25f, 0f),
-                        hasFrameTopSocket: true,
-                        frameTopSocketOffset: Vector3.zero),
-                    firepowerAlignment: AutoOkAlignment(
-                        socketOffset: new Vector3(0f, -0.1f, 0f),
-                        socketEuler: new Vector3(0f, 0f, 90f)),
-                    mobilityAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        hasGxTreeSocket: true,
-                        gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
-                        gxTreeSocketName: "legs"),
-                    mobilityUsesAssemblyPivot: false);
+                    new GarageSlotDisplayData(
+                        "A-01",
+                        "A-01",
+                        "test",
+                        "test",
+                        hasCommittedLoadout: true,
+                        hasDraftChanges: false,
+                        isEmpty: false,
+                        isSelected: true),
+                    new GarageSlotPreviewData(
+                        loadoutKey: null,
+                        frameId: "frame",
+                        firepowerId: "firepower",
+                        mobilityId: "mobility",
+                        framePreviewPrefab: null,
+                        firepowerPreviewPrefab: null,
+                        mobilityPreviewPrefab: null,
+                        frameAlignment: AutoOkAlignment(
+                            socketOffset: new Vector3(0f, 0.25f, 0f),
+                            hasFrameTopSocket: true,
+                            frameTopSocketOffset: Vector3.zero),
+                        firepowerAlignment: AutoOkAlignment(
+                            socketOffset: new Vector3(0f, -0.1f, 0f),
+                            socketEuler: new Vector3(0f, 0f, 90f)),
+                        mobilityAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            hasGxTreeSocket: true,
+                            gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
+                            gxTreeSocketName: "legs"),
+                        mobilityUsesAssemblyPivot: false,
+                        frameAssemblyForm: AssemblyForm.Unspecified,
+                        firepowerAssemblyForm: AssemblyForm.Unspecified));
 
                 Assert.IsTrue(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
                 Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
@@ -90,44 +98,52 @@ namespace Tests.Editor
             try
             {
                 var viewModel = new GarageSlotViewModel(
-                    "A-01",
-                    "A-01",
-                    "test",
-                    "test",
-                    hasCommittedLoadout: true,
-                    hasDraftChanges: false,
-                    isEmpty: false,
-                    isSelected: true,
-                    frameId: "frame",
-                    firepowerId: "firepower",
-                    mobilityId: "mobility",
-                    frameAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        socketEuler: Vector3.zero,
-                        hasFrameTopSocket: true,
-                        frameTopSocketOffset: new Vector3(2f, 0.5f, 0f),
-                        hasVisualBounds: true,
-                        visualBoundsCenter: new Vector3(2f, 0f, 0f),
-                        visualBoundsMin: new Vector3(1.5f, -0.5f, -0.5f),
-                        visualBoundsMax: new Vector3(2.5f, 0.5f, 0.5f)),
-                    firepowerAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        socketEuler: new Vector3(0f, 0f, 90f),
-                        hasVisualBounds: true,
-                        visualBoundsCenter: new Vector3(-3f, 0f, 0f),
-                        visualBoundsMin: new Vector3(-3.5f, -0.5f, -0.5f),
-                        visualBoundsMax: new Vector3(-2.5f, 0.5f, 0.5f),
-                        assemblyAnchorMode: "FrameTopSocket"),
-                    mobilityAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        hasGxTreeSocket: true,
-                        gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
-                        gxTreeSocketName: "legs",
-                        hasVisualBounds: true,
-                        visualBoundsCenter: new Vector3(5f, 0f, 0f),
-                        visualBoundsMin: new Vector3(4.5f, -0.5f, -0.5f),
-                        visualBoundsMax: new Vector3(5.5f, 0.5f, 0.5f)),
-                    mobilityUsesAssemblyPivot: false);
+                    new GarageSlotDisplayData(
+                        "A-01",
+                        "A-01",
+                        "test",
+                        "test",
+                        hasCommittedLoadout: true,
+                        hasDraftChanges: false,
+                        isEmpty: false,
+                        isSelected: true),
+                    new GarageSlotPreviewData(
+                        loadoutKey: null,
+                        frameId: "frame",
+                        firepowerId: "firepower",
+                        mobilityId: "mobility",
+                        framePreviewPrefab: null,
+                        firepowerPreviewPrefab: null,
+                        mobilityPreviewPrefab: null,
+                        frameAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            socketEuler: Vector3.zero,
+                            hasFrameTopSocket: true,
+                            frameTopSocketOffset: new Vector3(2f, 0.5f, 0f),
+                            hasVisualBounds: true,
+                            visualBoundsCenter: new Vector3(2f, 0f, 0f),
+                            visualBoundsMin: new Vector3(1.5f, -0.5f, -0.5f),
+                            visualBoundsMax: new Vector3(2.5f, 0.5f, 0.5f)),
+                        firepowerAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            socketEuler: new Vector3(0f, 0f, 90f),
+                            hasVisualBounds: true,
+                            visualBoundsCenter: new Vector3(-3f, 0f, 0f),
+                            visualBoundsMin: new Vector3(-3.5f, -0.5f, -0.5f),
+                            visualBoundsMax: new Vector3(-2.5f, 0.5f, 0.5f),
+                            assemblyAnchorMode: "FrameTopSocket"),
+                        mobilityAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            hasGxTreeSocket: true,
+                            gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
+                            gxTreeSocketName: "legs",
+                            hasVisualBounds: true,
+                            visualBoundsCenter: new Vector3(5f, 0f, 0f),
+                            visualBoundsMin: new Vector3(4.5f, -0.5f, -0.5f),
+                            visualBoundsMax: new Vector3(5.5f, 0.5f, 0.5f)),
+                        mobilityUsesAssemblyPivot: false,
+                        frameAssemblyForm: AssemblyForm.Unspecified,
+                        firepowerAssemblyForm: AssemblyForm.Unspecified));
 
                 Assert.IsTrue(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
                 Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
@@ -172,42 +188,48 @@ namespace Tests.Editor
             try
             {
                 var viewModel = new GarageSlotViewModel(
-                    "A-01",
-                    "A-01",
-                    "test",
-                    "test",
-                    hasCommittedLoadout: true,
-                    hasDraftChanges: false,
-                    isEmpty: false,
-                    isSelected: true,
-                    frameId: "frame",
-                    firepowerId: "firepower",
-                    mobilityId: "mobility",
-                    frameAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        hasFrameTopSocket: true,
-                        assemblyAnchorMode: "Disabled",
-                        hasVisualBounds: true,
-                        visualBoundsCenter: Vector3.zero,
-                        visualBoundsMin: new Vector3(-0.5f, -0.5f, -0.5f),
-                        visualBoundsMax: new Vector3(0.5f, 0.5f, 0.5f)),
-                    firepowerAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        xfiSocketQuality: "xfi_weapon_direction_only",
-                        hasVisualBounds: true,
-                        visualBoundsCenter: new Vector3(0f, 0f, 1.5f),
-                        visualBoundsMin: new Vector3(-0.25f, -0.25f, 0f),
-                        visualBoundsMax: new Vector3(0.25f, 0.25f, 3f),
-                        assemblyAnchorMode: "ObsoleteHumanoidHandRig",
-                        assemblyReviewResult: "match"),
-                    mobilityAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        hasGxTreeSocket: true,
-                        gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
-                        gxTreeSocketName: "legs"),
-                    mobilityUsesAssemblyPivot: false,
-                    frameAssemblyForm: AssemblyForm.Humanoid,
-                    firepowerAssemblyForm: AssemblyForm.Humanoid);
+                    new GarageSlotDisplayData(
+                        "A-01",
+                        "A-01",
+                        "test",
+                        "test",
+                        hasCommittedLoadout: true,
+                        hasDraftChanges: false,
+                        isEmpty: false,
+                        isSelected: true),
+                    new GarageSlotPreviewData(
+                        loadoutKey: null,
+                        frameId: "frame",
+                        firepowerId: "firepower",
+                        mobilityId: "mobility",
+                        framePreviewPrefab: null,
+                        firepowerPreviewPrefab: null,
+                        mobilityPreviewPrefab: null,
+                        frameAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            hasFrameTopSocket: true,
+                            assemblyAnchorMode: "Disabled",
+                            hasVisualBounds: true,
+                            visualBoundsCenter: Vector3.zero,
+                            visualBoundsMin: new Vector3(-0.5f, -0.5f, -0.5f),
+                            visualBoundsMax: new Vector3(0.5f, 0.5f, 0.5f)),
+                        firepowerAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            xfiSocketQuality: "xfi_weapon_direction_only",
+                            hasVisualBounds: true,
+                            visualBoundsCenter: new Vector3(0f, 0f, 1.5f),
+                            visualBoundsMin: new Vector3(-0.25f, -0.25f, 0f),
+                            visualBoundsMax: new Vector3(0.25f, 0.25f, 3f),
+                            assemblyAnchorMode: "ObsoleteHumanoidHandRig",
+                            assemblyReviewResult: "match"),
+                        mobilityAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            hasGxTreeSocket: true,
+                            gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
+                            gxTreeSocketName: "legs"),
+                        mobilityUsesAssemblyPivot: false,
+                        frameAssemblyForm: AssemblyForm.Humanoid,
+                        firepowerAssemblyForm: AssemblyForm.Humanoid));
 
                 Assert.IsFalse(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
                 Assert.IsFalse(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
@@ -243,42 +265,48 @@ namespace Tests.Editor
             try
             {
                 var viewModel = new GarageSlotViewModel(
-                    "A-01",
-                    "A-01",
-                    "test",
-                    "test",
-                    hasCommittedLoadout: true,
-                    hasDraftChanges: false,
-                    isEmpty: false,
-                    isSelected: true,
-                    frameId: "frame",
-                    firepowerId: "firepower",
-                    mobilityId: "mobility",
-                    frameAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        hasFrameTopSocket: true,
-                        assemblyAnchorMode: "Disabled",
-                        hasVisualBounds: true,
-                        visualBoundsCenter: Vector3.zero,
-                        visualBoundsMin: new Vector3(-0.5f, -0.5f, -0.5f),
-                        visualBoundsMax: new Vector3(0.5f, 0.5f, 0.5f)),
-                    firepowerAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        xfiSocketQuality: "xfi_weapon_direction_only",
-                        hasVisualBounds: true,
-                        visualBoundsCenter: new Vector3(0f, 0f, 1.5f),
-                        visualBoundsMin: new Vector3(-0.25f, -0.25f, 0f),
-                        visualBoundsMax: new Vector3(0.25f, 0.25f, 3f),
-                        assemblyAnchorMode: "Disabled",
-                        assemblyReviewResult: "pending"),
-                    mobilityAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        hasGxTreeSocket: true,
-                        gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
-                        gxTreeSocketName: "legs"),
-                    mobilityUsesAssemblyPivot: false,
-                    frameAssemblyForm: AssemblyForm.Humanoid,
-                    firepowerAssemblyForm: AssemblyForm.Humanoid);
+                    new GarageSlotDisplayData(
+                        "A-01",
+                        "A-01",
+                        "test",
+                        "test",
+                        hasCommittedLoadout: true,
+                        hasDraftChanges: false,
+                        isEmpty: false,
+                        isSelected: true),
+                    new GarageSlotPreviewData(
+                        loadoutKey: null,
+                        frameId: "frame",
+                        firepowerId: "firepower",
+                        mobilityId: "mobility",
+                        framePreviewPrefab: null,
+                        firepowerPreviewPrefab: null,
+                        mobilityPreviewPrefab: null,
+                        frameAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            hasFrameTopSocket: true,
+                            assemblyAnchorMode: "Disabled",
+                            hasVisualBounds: true,
+                            visualBoundsCenter: Vector3.zero,
+                            visualBoundsMin: new Vector3(-0.5f, -0.5f, -0.5f),
+                            visualBoundsMax: new Vector3(0.5f, 0.5f, 0.5f)),
+                        firepowerAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            xfiSocketQuality: "xfi_weapon_direction_only",
+                            hasVisualBounds: true,
+                            visualBoundsCenter: new Vector3(0f, 0f, 1.5f),
+                            visualBoundsMin: new Vector3(-0.25f, -0.25f, 0f),
+                            visualBoundsMax: new Vector3(0.25f, 0.25f, 3f),
+                            assemblyAnchorMode: "Disabled",
+                            assemblyReviewResult: "pending"),
+                        mobilityAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            hasGxTreeSocket: true,
+                            gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
+                            gxTreeSocketName: "legs"),
+                        mobilityUsesAssemblyPivot: false,
+                        frameAssemblyForm: AssemblyForm.Humanoid,
+                        firepowerAssemblyForm: AssemblyForm.Humanoid));
 
                 Assert.IsFalse(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
                 Assert.IsFalse(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
@@ -331,30 +359,38 @@ namespace Tests.Editor
             try
             {
                 var viewModel = new GarageSlotViewModel(
-                    "A-01",
-                    "A-01",
-                    "test",
-                    "test",
-                    hasCommittedLoadout: true,
-                    hasDraftChanges: false,
-                    isEmpty: false,
-                    isSelected: true,
-                    frameId: "frame",
-                    firepowerId: "firepower",
-                    mobilityId: "mobility",
-                    frameAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        hasFrameTopSocket: true),
-                    firepowerAlignment: AutoOkAlignment(
-                        socketOffset: new Vector3(0f, -0.2f, 0f),
-                        socketEuler: new Vector3(0f, 0f, 90f),
-                        xfiSocketQuality: "xfi_weapon_direction_only"),
-                    mobilityAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        hasGxTreeSocket: true,
-                        gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
-                        gxTreeSocketName: "legs"),
-                    mobilityUsesAssemblyPivot: false);
+                    new GarageSlotDisplayData(
+                        "A-01",
+                        "A-01",
+                        "test",
+                        "test",
+                        hasCommittedLoadout: true,
+                        hasDraftChanges: false,
+                        isEmpty: false,
+                        isSelected: true),
+                    new GarageSlotPreviewData(
+                        loadoutKey: null,
+                        frameId: "frame",
+                        firepowerId: "firepower",
+                        mobilityId: "mobility",
+                        framePreviewPrefab: null,
+                        firepowerPreviewPrefab: null,
+                        mobilityPreviewPrefab: null,
+                        frameAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            hasFrameTopSocket: true),
+                        firepowerAlignment: AutoOkAlignment(
+                            socketOffset: new Vector3(0f, -0.2f, 0f),
+                            socketEuler: new Vector3(0f, 0f, 90f),
+                            xfiSocketQuality: "xfi_weapon_direction_only"),
+                        mobilityAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            hasGxTreeSocket: true,
+                            gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
+                            gxTreeSocketName: "legs"),
+                        mobilityUsesAssemblyPivot: false,
+                        frameAssemblyForm: AssemblyForm.Unspecified,
+                        firepowerAssemblyForm: AssemblyForm.Unspecified));
 
                 Assert.IsFalse(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
                     viewModel,
@@ -390,39 +426,45 @@ namespace Tests.Editor
             try
             {
                 var viewModel = new GarageSlotViewModel(
-                    "A-01",
-                    "A-01",
-                    "test",
-                    "test",
-                    hasCommittedLoadout: true,
-                    hasDraftChanges: false,
-                    isEmpty: false,
-                    isSelected: true,
-                    frameId: "frame",
-                    firepowerId: "firepower",
-                    mobilityId: "mobility",
-                    frameAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        hasFrameTopSocket: true,
-                        hasVisualBounds: true,
-                        visualBoundsCenter: Vector3.zero,
-                        visualBoundsMin: new Vector3(-0.5f, -0.5f, -0.5f),
-                        visualBoundsMax: new Vector3(0.5f, 0.5f, 0.5f)),
-                    firepowerAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        xfiSocketQuality: "xfi_weapon_direction_only",
-                        hasVisualBounds: true,
-                        visualBoundsCenter: Vector3.zero,
-                        visualBoundsMin: new Vector3(-0.5f, -0.5f, -0.5f),
-                        visualBoundsMax: new Vector3(0.5f, 0.5f, 0.5f)),
-                    mobilityAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        hasGxTreeSocket: true,
-                        gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
-                        gxTreeSocketName: "legs"),
-                    mobilityUsesAssemblyPivot: false,
-                    frameAssemblyForm: AssemblyForm.Humanoid,
-                    firepowerAssemblyForm: AssemblyForm.Humanoid);
+                    new GarageSlotDisplayData(
+                        "A-01",
+                        "A-01",
+                        "test",
+                        "test",
+                        hasCommittedLoadout: true,
+                        hasDraftChanges: false,
+                        isEmpty: false,
+                        isSelected: true),
+                    new GarageSlotPreviewData(
+                        loadoutKey: null,
+                        frameId: "frame",
+                        firepowerId: "firepower",
+                        mobilityId: "mobility",
+                        framePreviewPrefab: null,
+                        firepowerPreviewPrefab: null,
+                        mobilityPreviewPrefab: null,
+                        frameAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            hasFrameTopSocket: true,
+                            hasVisualBounds: true,
+                            visualBoundsCenter: Vector3.zero,
+                            visualBoundsMin: new Vector3(-0.5f, -0.5f, -0.5f),
+                            visualBoundsMax: new Vector3(0.5f, 0.5f, 0.5f)),
+                        firepowerAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            xfiSocketQuality: "xfi_weapon_direction_only",
+                            hasVisualBounds: true,
+                            visualBoundsCenter: Vector3.zero,
+                            visualBoundsMin: new Vector3(-0.5f, -0.5f, -0.5f),
+                            visualBoundsMax: new Vector3(0.5f, 0.5f, 0.5f)),
+                        mobilityAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            hasGxTreeSocket: true,
+                            gxTreeSocketOffset: new Vector3(0f, 0.5f, 0f),
+                            gxTreeSocketName: "legs"),
+                        mobilityUsesAssemblyPivot: false,
+                        frameAssemblyForm: AssemblyForm.Humanoid,
+                        firepowerAssemblyForm: AssemblyForm.Humanoid));
 
                 Assert.IsFalse(GarageUnitPreviewAssembly.HasPreviewAssemblyData(viewModel));
                 Assert.IsFalse(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
@@ -468,23 +510,29 @@ namespace Tests.Editor
                 Assert.NotNull(mobility.AssemblyPrefab);
 
                 var viewModel = new GarageSlotViewModel(
-                    "A-01",
-                    "A-01",
-                    "test",
-                    "test",
-                    hasCommittedLoadout: true,
-                    hasDraftChanges: false,
-                    isEmpty: false,
-                    isSelected: true,
-                    frameId: frame.Id,
-                    firepowerId: firepower.Id,
-                    mobilityId: mobility.Id,
-                    frameAlignment: frame.Alignment,
-                    firepowerAlignment: firepower.Alignment,
-                    mobilityAlignment: mobility.Alignment,
-                    mobilityUsesAssemblyPivot: mobility.UseAssemblyPivot,
-                    frameAssemblyForm: frame.AssemblyForm,
-                    firepowerAssemblyForm: firepower.AssemblyForm);
+                    new GarageSlotDisplayData(
+                        "A-01",
+                        "A-01",
+                        "test",
+                        "test",
+                        hasCommittedLoadout: true,
+                        hasDraftChanges: false,
+                        isEmpty: false,
+                        isSelected: true),
+                    new GarageSlotPreviewData(
+                        loadoutKey: null,
+                        frameId: frame.Id,
+                        firepowerId: firepower.Id,
+                        mobilityId: mobility.Id,
+                        framePreviewPrefab: null,
+                        firepowerPreviewPrefab: null,
+                        mobilityPreviewPrefab: null,
+                        frameAlignment: frame.Alignment,
+                        firepowerAlignment: firepower.Alignment,
+                        mobilityAlignment: mobility.Alignment,
+                        mobilityUsesAssemblyPivot: mobility.UseAssemblyPivot,
+                        frameAssemblyForm: frame.AssemblyForm,
+                        firepowerAssemblyForm: firepower.AssemblyForm));
 
                 Assert.That(frame.AssemblyForm, Is.EqualTo(AssemblyForm.Shoulder));
                 Assert.That(firepower.AssemblyForm, Is.EqualTo(AssemblyForm.Shoulder));
@@ -521,41 +569,47 @@ namespace Tests.Editor
             try
             {
                 var viewModel = new GarageSlotViewModel(
-                    "A-01",
-                    "A-01",
-                    "test",
-                    "test",
-                    hasCommittedLoadout: true,
-                    hasDraftChanges: false,
-                    isEmpty: false,
-                    isSelected: true,
-                    frameId: "frame",
-                    firepowerId: "firepower",
-                    mobilityId: "mobility",
-                    frameAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        hasFrameTopSocket: true,
-                        frameTopSocketOffset: new Vector3(0f, 0.2f, 0f),
-                        hasVisualBounds: true,
-                        visualBoundsCenter: new Vector3(0f, 0.1f, 0f),
-                        visualBoundsMin: new Vector3(-0.2f, 0f, -0.2f),
-                        visualBoundsMax: new Vector3(0.2f, 0.2f, 0.2f),
-                        assemblyAnchorMode: "ShoulderPair"),
-                    firepowerAlignment: AutoOkAlignment(
-                        socketOffset: new Vector3(0f, -0.1f, 0f),
-                        socketEuler: new Vector3(0f, 0f, 90f),
-                        hasVisualBounds: true,
-                        visualBoundsCenter: new Vector3(0f, 0.15f, 0f),
-                        visualBoundsMin: new Vector3(-0.2f, 0f, -0.2f),
-                        visualBoundsMax: new Vector3(0.2f, 0.3f, 0.2f),
-                        assemblyAnchorMode: "ShoulderPair"),
-                    mobilityAlignment: AutoOkAlignment(
-                        socketOffset: Vector3.zero,
-                        hasGxTreeSocket: true,
-                        gxTreeSocketOffset: Vector3.zero),
-                    mobilityUsesAssemblyPivot: true,
-                    frameAssemblyForm: AssemblyForm.Shoulder,
-                    firepowerAssemblyForm: AssemblyForm.Shoulder);
+                    new GarageSlotDisplayData(
+                        "A-01",
+                        "A-01",
+                        "test",
+                        "test",
+                        hasCommittedLoadout: true,
+                        hasDraftChanges: false,
+                        isEmpty: false,
+                        isSelected: true),
+                    new GarageSlotPreviewData(
+                        loadoutKey: null,
+                        frameId: "frame",
+                        firepowerId: "firepower",
+                        mobilityId: "mobility",
+                        framePreviewPrefab: null,
+                        firepowerPreviewPrefab: null,
+                        mobilityPreviewPrefab: null,
+                        frameAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            hasFrameTopSocket: true,
+                            frameTopSocketOffset: new Vector3(0f, 0.2f, 0f),
+                            hasVisualBounds: true,
+                            visualBoundsCenter: new Vector3(0f, 0.1f, 0f),
+                            visualBoundsMin: new Vector3(-0.2f, 0f, -0.2f),
+                            visualBoundsMax: new Vector3(0.2f, 0.2f, 0.2f),
+                            assemblyAnchorMode: "ShoulderPair"),
+                        firepowerAlignment: AutoOkAlignment(
+                            socketOffset: new Vector3(0f, -0.1f, 0f),
+                            socketEuler: new Vector3(0f, 0f, 90f),
+                            hasVisualBounds: true,
+                            visualBoundsCenter: new Vector3(0f, 0.15f, 0f),
+                            visualBoundsMin: new Vector3(-0.2f, 0f, -0.2f),
+                            visualBoundsMax: new Vector3(0.2f, 0.3f, 0.2f),
+                            assemblyAnchorMode: "ShoulderPair"),
+                        mobilityAlignment: AutoOkAlignment(
+                            socketOffset: Vector3.zero,
+                            hasGxTreeSocket: true,
+                            gxTreeSocketOffset: Vector3.zero),
+                        mobilityUsesAssemblyPivot: true,
+                        frameAssemblyForm: AssemblyForm.Shoulder,
+                        firepowerAssemblyForm: AssemblyForm.Shoulder));
 
                 Assert.IsTrue(GarageUnitPreviewAssembly.TryCreatePreviewRoot(
                     viewModel,

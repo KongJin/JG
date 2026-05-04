@@ -4,6 +4,7 @@ using System.IO;
 using Features.Garage;
 using Features.Garage.Infrastructure;
 using Features.Garage.Presentation;
+using Features.Unit.Domain;
 using Features.Unit.Infrastructure;
 using UnityEditor;
 using UnityEngine;
@@ -111,23 +112,29 @@ namespace ProjectSD.EditorTools
                 report.frameTopSocketY = ResolveFrameTopY(frame);
 
                 var viewModel = new GarageSlotViewModel(
-                    "A-01",
-                    sample.SampleId,
-                    "capture",
-                    "capture",
-                    hasCommittedLoadout: true,
-                    hasDraftChanges: false,
-                    isEmpty: false,
-                    isSelected: true,
-                    frameId: frame.Id,
-                    firepowerId: firepower.Id,
-                    mobilityId: mobility.Id,
-                    frameAlignment: frame.Alignment,
-                    firepowerAlignment: firepower.Alignment,
-                    mobilityAlignment: mobility.Alignment,
-                    mobilityUsesAssemblyPivot: mobility.UseAssemblyPivot,
-                    frameAssemblyForm: frame.AssemblyForm,
-                    firepowerAssemblyForm: firepower.AssemblyForm);
+                    new GarageSlotDisplayData(
+                        "A-01",
+                        sample.SampleId,
+                        "capture",
+                        "capture",
+                        hasCommittedLoadout: true,
+                        hasDraftChanges: false,
+                        isEmpty: false,
+                        isSelected: true),
+                    new GarageSlotPreviewData(
+                        loadoutKey: null,
+                        frameId: frame.Id,
+                        firepowerId: firepower.Id,
+                        mobilityId: mobility.Id,
+                        framePreviewPrefab: null,
+                        firepowerPreviewPrefab: null,
+                        mobilityPreviewPrefab: null,
+                        frameAlignment: frame.Alignment,
+                        firepowerAlignment: firepower.Alignment,
+                        mobilityAlignment: mobility.Alignment,
+                        mobilityUsesAssemblyPivot: mobility.UseAssemblyPivot,
+                        frameAssemblyForm: frame.AssemblyForm,
+                        firepowerAssemblyForm: firepower.AssemblyForm));
 
                 if (!GarageUnitPreviewAssembly.TryCreatePreviewRoot(
                         viewModel,

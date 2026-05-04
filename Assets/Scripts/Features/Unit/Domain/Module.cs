@@ -29,10 +29,12 @@ namespace Features.Unit.Domain
 
     /// <summary>
     /// 모듈 스탯 정의. 모든 모듈이 공통으로 가지는 수치.
+    /// 프레임 기본 스탯만 조회할 때는 <see cref="FrameBaseHp"/>에 프레임의 기본 HP를 넣고,
+    /// 화력·기동 슬라이스에서는 0으로 둔다.
     /// </summary>
     public readonly struct ModuleStats
     {
-        public float HpBonus { get; }
+        public float FrameBaseHp { get; }
         public float Defense { get; }
         public float AttackDamage { get; }
         public float AttackSpeed { get; }
@@ -42,7 +44,7 @@ namespace Features.Unit.Domain
         public int CostBonus { get; }
 
         public ModuleStats(
-            float hpBonus = 0f,
+            float frameBaseHp = 0f,
             float defense = 0f,
             float attackDamage = 0f,
             float attackSpeed = 0f,
@@ -51,7 +53,7 @@ namespace Features.Unit.Domain
             float moveRange = 0f,
             int costBonus = 0)
         {
-            HpBonus = hpBonus;
+            FrameBaseHp = frameBaseHp;
             Defense = defense;
             AttackDamage = attackDamage;
             AttackSpeed = attackSpeed;
