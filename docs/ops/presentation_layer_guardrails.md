@@ -80,6 +80,12 @@ internal sealed class SampleSurface
 public sealed class PreviewSceneDriver : MonoBehaviour
 ```
 
+**정적 lint**: [`tools/workflow/test-feature-layer-dependencies.mjs`](../../tools/workflow/test-feature-layer-dependencies.mjs) (`npm run feature:layer:lint`, `rules:lint` 묶음에 포함)이 `Assets/Scripts/Features/<Feature>/(Domain|Application|Presentation|Infrastructure)/**/*.cs`의 `using` 선언을 검사한다.
+
+- 허용 방향: `Presentation → Application → Domain`, `Infrastructure → {Application, Domain}`. 그 외 inner-feature 레이어 import는 hard-fail.
+- 자동 예외: 피처 루트 직속 파일(`Assets/Scripts/Features/<Feature>/<file>.cs` — `*Setup.cs`, `*SceneRoot.cs`, `*Bootstrap*.cs` 등 컴포지션 루트)과 `Presentation/Diagnostics/**`.
+- 새 진단/프리뷰 owner는 `Presentation/Diagnostics/`에 두거나 컴포지션 루트로 옮긴다. lint allowlist에 파일 단위 예외는 두지 않는다.
+
 ## God Object Prevention
 
 **규칙**: 하나의 클래스는 하나의 명확한 책임만 가져야 한다.

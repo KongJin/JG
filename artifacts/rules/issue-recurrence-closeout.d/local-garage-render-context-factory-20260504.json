@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-04",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "Garage SetB page controller slimming via render context factory",
+  "observedMutationClass": "GarageSetBUitkPageRenderContextFactory owns GarageRenderContext assembly and part-list VM build; controller keeps lifecycle, async, adapter",
+  "acceptanceEvidenceClass": "feature presentation lint, rules lint, Unity EditMode Garage flows",
+  "escalationRequired": false,
+  "rootCause": "GarageSetBUitkPageController mixed MonoBehaviour orchestration with full render-context data assembly, growing god-object risk.",
+  "prevention": "Add new render-only types under Presentation/Page alongside controller; keep EvaluateDraft single entry via factory when touching compose/validate paths. Run feature:presentation:lint after new Presentation scripts. This change preserves the existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "npm run --silent feature:presentation:lint; npm run --silent rules:lint",
+  "blockedReason": "",
+  "changedPaths": [
+    "Assets/Scripts/Features/Garage/Presentation/Page/GarageSetBUitkPageController.cs",
+    "Assets/Scripts/Features/Garage/Presentation/Page/GarageSetBUitkPageRenderContextFactory.cs",
+    "Assets/Scripts/Features/Garage/Presentation/Page/GarageSetBUitkPageRenderContextFactory.cs.meta",
+    "Assembly-CSharp.csproj",
+    "artifacts/rules/issue-recurrence-closeout.d/local-garage-render-context-factory-20260504.json"
+  ]
+}

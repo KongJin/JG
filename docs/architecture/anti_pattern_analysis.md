@@ -441,24 +441,13 @@ public static class GarageLegacyPartIdMap
 **위치**: `GarageDraftEvaluation.cs`
 
 ```csharp
-// 문제: Evaluation, Factory, Formatter 역할이 섞여 있음
+// 문제: Evaluation, Factory, Formatter 역할이 한 타입에 섞일 수 있음 (지속 관찰)
 public sealed class GarageDraftEvaluation
 {
-    // Evaluation 역할
     public bool CanSave => HasSelectedDraftChanges && RosterValidationResult.IsSuccess;
-    public string SaveBlockedMessage => /* ... */;
-
-    // Formatter 역할
     public static GarageDraftEvaluation Create(/* ... */);
-}
-
-// 내부 static class로 또다른 책임
-internal static class GarageDraftEvaluator
-{
-    public static GarageDraftEvaluation Evaluate(/* ... */)
-    {
-        // 복잡한 로직이 포함됨
-    }
+    // 평가 절차: 별도 Evaluator 클래스 대신 Evaluate(...) 단일 진입점으로 유지
+    public static GarageDraftEvaluation Evaluate(/* state, catalog, use cases */);
 }
 ```
 

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-04",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "Feature inner-layer dependency lint and recurrence prevention",
+  "observedMutationClass": "static lint script under tools/workflow that scans Features/<Feature>/(Domain|Application|Presentation|Infrastructure)/**/*.cs using-declarations against an inward-only matrix; package.json policy chain wiring; presentation guardrail doc updated with lint entrypoint and folder-convention exemptions",
+  "acceptanceEvidenceClass": "feature layer dependency check, full rules lint chain, and a manual fail-message sanity check via a temporary violation that was reverted",
+  "escalationRequired": false,
+  "rootCause": "JG repo has no asmdef boundaries, so Clean Architecture single-direction (Presentation -> Application -> Domain; Infrastructure -> {Application, Domain}) was only described in docs and not enforced in CI. Composition roots and diagnostic drivers blurred the boundary, making accidental inward-only violations plausible during refactors.",
+  "prevention": "Add tools/workflow/test-feature-layer-dependencies.mjs that hard-fails on inner-feature using-declarations that violate the inward-only matrix. Auto-exempt feature-root files (Assets/Scripts/Features/<Feature>/<file>.cs) for composition roots and Presentation/Diagnostics/** for editor-only drivers. Wire feature:layer:lint into npm policy:lint and rules:lint chain so the gate runs in pre-commit and CI. Do not introduce per-file allowlists; new diagnostic owners must live under Presentation/Diagnostics/ or be promoted to a composition-root file. This change preserves the existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "node tools/workflow/test-feature-layer-dependencies.mjs; npm run --silent rules:lint; manual fail-message sanity check via a temporary using Features.Garage.Presentation in Assets/Scripts/Features/Garage/Application/InitializeGarageUseCase.cs (reverted)",
+  "blockedReason": "",
+  "changedPaths": [
+    "tools/workflow/test-feature-layer-dependencies.mjs",
+    "package.json",
+    "docs/ops/presentation_layer_guardrails.md",
+    "artifacts/rules/issue-recurrence-closeout.d/local-feature-layer-dependency-lint-20260504.json"
+  ]
+}

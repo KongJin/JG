@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-04",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "Garage draft evaluation cohesion and MinReadySlots single source",
+  "observedMutationClass": "GarageDraftEvaluation.Evaluate consolidation, radar VM build colocated with result builder, PublishGarageDraftStateUseCase MinReadySlots alignment, presentation compose guard helpers on GarageDraftEvaluation",
+  "acceptanceEvidenceClass": "C# compile, feature presentation lint, rules lint, EditMode PublishGarageDraftStateDirectTests and GaragePagePresenterDirectTests",
+  "escalationRequired": false,
+  "rootCause": "Draft evaluation lived in a separate static Evaluator while GarageDraftEvaluation already owned the DTO surface, and radar VM lived in a standalone factory only referenced from the result builder. PublishGarageDraftStateUseCase used a hardcoded minimum slot count that could drift from GarageRoster.MinReadySlots used by the UI roster summary.",
+  "prevention": "Keep draft orchestration on GarageDraftEvaluation.Evaluate only; do not reintroduce GarageDraftEvaluator. Keep radar construction next to GarageResultViewModelBuilder or a single result-panel owner. When changing MinReadySlots, update PublishGarageDraftStateUseCase via GarageRoster.MinReadySlots only and extend PublishGarageDraftStateDirectTests if messaging changes. Prefer GarageDraftEvaluation.TryGetComposeUnavailableMessageWhenDraftComplete / TryGetComposedUnitForStatsBlock for duplicate compose guard chains. This change preserves the existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "dotnet build Assembly-CSharp.csproj --no-restore -v:minimal; dotnet build Assembly-CSharp-Editor.csproj --no-restore -v:minimal; npm run --silent feature:presentation:lint; npm run --silent rules:lint; Unity EditMode: PublishGarageDraftStateDirectTests, GaragePagePresenterDirectTests",
+  "blockedReason": "",
+  "changedPaths": [
+    "Assets/Scripts/Features/Garage/Presentation/Page/GarageDraftEvaluation.cs",
+    "Assets/Scripts/Features/Garage/Presentation/Page/GarageSetBUitkPageController.cs",
+    "Assets/Scripts/Features/Garage/Presentation/Page/Builders/GarageResultViewModelBuilder.cs",
+    "Assets/Scripts/Features/Garage/Application/PublishGarageDraftStateUseCase.cs",
+    "Assets/Editor/DirectTests/GaragePagePresenterDirectTests.cs",
+    "Assets/Editor/DirectTests/PublishGarageDraftStateDirectTests.cs",
+    "Assets/Editor/DirectTests/PublishGarageDraftStateDirectTests.cs.meta",
+    "docs/architecture/anti_pattern_analysis.md",
+    "artifacts/rules/issue-recurrence-closeout.d/local-garage-evaluation-cohesion-20260504.json"
+  ]
+}

@@ -59,7 +59,7 @@ namespace Tests.Editor
             state.SetEditingFirepowerId("fire0");
             state.SetEditingMobilityId("mob0");
 
-            var evaluation = GarageDraftEvaluator.Evaluate(
+            var evaluation = GarageDraftEvaluation.Evaluate(
                 state,
                 catalog,
                 new ComposeUnitUseCase(new ValidUnitCompositionPort()),
@@ -88,7 +88,7 @@ namespace Tests.Editor
             state.SetEditingFirepowerId("fire0");
             state.SetEditingMobilityId("mob0");
 
-            var evaluation = GarageDraftEvaluator.Evaluate(
+            var evaluation = GarageDraftEvaluation.Evaluate(
                 state,
                 catalog,
                 new ComposeUnitUseCase(new ValidUnitCompositionPort()),
@@ -115,7 +115,7 @@ namespace Tests.Editor
             state.SetEditingFirepowerId("nova_fire_arm33_hkoo");
             state.SetEditingMobilityId("nova_mob_g_legs58_pps");
 
-            var evaluation = GarageDraftEvaluator.Evaluate(
+            var evaluation = GarageDraftEvaluation.Evaluate(
                 state,
                 catalog,
                 new ComposeUnitUseCase(new ValidUnitCompositionPort()),
@@ -143,7 +143,7 @@ namespace Tests.Editor
             state.SetEditingFirepowerId("nova_fire_arm33_hkoo");
             state.SetEditingMobilityId("nova_mob_g_legs58_pps");
 
-            var evaluation = GarageDraftEvaluator.Evaluate(
+            var evaluation = GarageDraftEvaluation.Evaluate(
                 state,
                 catalog,
                 new ComposeUnitUseCase(new ValidUnitCompositionPort()),

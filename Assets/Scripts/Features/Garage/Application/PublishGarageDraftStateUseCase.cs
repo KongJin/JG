@@ -12,7 +12,7 @@ namespace Features.Garage.Application
             if (committedRoster == null || !committedRoster.IsValid)
             {
                 int savedUnitCount = committedRoster?.Count ?? 0;
-                int missingUnits = System.Math.Max(0, 3 - savedUnitCount);
+                int missingUnits = System.Math.Max(0, GarageRoster.MinReadySlots - savedUnitCount);
                 return new GarageDraftStateSnapshot(
                     false,
                     false,

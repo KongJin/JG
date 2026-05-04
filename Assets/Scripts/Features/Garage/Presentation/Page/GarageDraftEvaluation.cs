@@ -1,3 +1,5 @@
+using Features.Garage.Application;
+using Features.Unit.Application;
 using Shared.Kernel;
 using ComposedUnit = Features.Unit.Domain.Unit;
 
@@ -48,6 +50,95 @@ namespace Features.Garage.Presentation
             : HasDraftChanges
                 ? DraftNotReadyMessage
                 : NoUnsavedChangesMessage;
+
+        /// <summary>
+        /// 초안이 완성된 뒤 스탯/에너지 블록에 쓸 조합 유닛.
+        /// 실패 시 <paramref name="composeErrorForDisplay"/>에 표시용 오류(또는 null)가 설정된다.
+        /// </summary>
+        public bool TryGetComposedUnitForStatsBlock(out ComposedUnit unit, out string composeErrorForDisplay)
+        {
+            unit = null;
+            composeErrorForDisplay = null;
+            if (!HasCompleteDraft)
+                return false;
+
+            if (!HasCatalogData || !HasComposedUnit)
+            {
+                composeErrorForDisplay = ComposeError;
+                return false;
+            }
+
+            unit = ComposeResult.Value;
+            return true;
+        }
+
+        /// <summary>
+        /// 초안 완성 후 카탈로그/조합 불가 시 검증 문구에 쓸 메시지.
+        /// </summary>
+        public bool TryGetComposeUnavailableMessageWhenDraftComplete(out string message)
+        {
+            message = null;
+            if (!HasCompleteDraft)
+                return false;
+
+            if (!HasCatalogData || !HasComposedUnit)
+            {
+                message = ComposeError;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 드래프트 조합·편성 검증을 수행해 평가 결과를 만든다.
+        /// </summary>
+        public static GarageDraftEvaluation Evaluate(
+            GaragePageState state,
+            GaragePanelCatalog catalog,
+            ComposeUnitUseCase composeUnit,
+            ValidateRosterUseCase validateRoster)
+        {
+            bool hasCatalogData = catalog != null &&
+                                  catalog.Frames.Count > 0 &&
+                                  catalog.Firepower.Count > 0 &&
+                                  catalog.Mobility.Count > 0;
+
+            Result<ComposedUnit> composeResult = Result<ComposedUnit>.Failure("Draft composition was not evaluated.");
+            Result<ComposedUnit> committedComposeResult = Result<ComposedUnit>.Failure("Committed composition was not evaluated.");
+            if (hasCatalogData && state != null && state.HasCompleteDraft())
+            {
+                composeResult = composeUnit.Execute(
+                    DomainEntityId.New(),
+                    state.EditingFrameId,
+                    state.EditingFirepowerId,
+                    state.EditingMobilityId);
+            }
+
+            var committed = state?.GetSelectedCommittedSlot();
+            if (hasCatalogData && committed != null && committed.IsComplete)
+            {
+                committedComposeResult = composeUnit.Execute(
+                    DomainEntityId.New(),
+                    committed.frameId,
+                    committed.firepowerModuleId,
+                    committed.mobilityModuleId);
+            }
+
+            Result rosterValidation = Result.Success();
+            if (state != null && state.SelectedSlotHasDraftChanges())
+            {
+                rosterValidation = validateRoster.ExecuteDraftSave(state.BuildSelectedSlotCommitRoster(), out string validationError);
+                if (rosterValidation.IsFailure &&
+                    string.IsNullOrWhiteSpace(rosterValidation.Error) &&
+                    !string.IsNullOrWhiteSpace(validationError))
+                {
+                    rosterValidation = Result.Failure(validationError);
+                }
+            }
+
+            return Create(state, hasCatalogData, composeResult, committedComposeResult, rosterValidation);
+        }
 
         public static GarageDraftEvaluation Create(
             GaragePageState state,

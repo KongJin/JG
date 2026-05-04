@@ -12,8 +12,11 @@
   "verification": "node --test tools/docs-lint/tests/docs-lint.test.mjs tools/docs-lint/tests/sync-recurrence-closeout.test.mjs; npm run --silent rules:sync-closeout; npm run --silent rules:lint",
   "blockedReason": "",
   "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-caac799838.json",
+    "artifacts/rules/issue-recurrence-closeout.d/local-feature-layer-dependency-lint-20260504.json",
     "artifacts/rules/issue-recurrence-closeout.d/local-garage-evaluation-cohesion-20260504.json",
     "artifacts/rules/issue-recurrence-closeout.d/local-garage-render-context-factory-20260504.json",
-    "artifacts/rules/issue-recurrence-closeout.json"
+    "artifacts/rules/issue-recurrence-closeout.json",
+    "docs/ops/presentation_layer_guardrails.md"
   ]
 }

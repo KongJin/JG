@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using Features.Garage.Application;
 using Features.Garage.Domain;
@@ -28,6 +27,7 @@ namespace Features.Garage.Presentation
         private RecentOperationRecords _recentOperations;
         private GaragePageState _state;
         private GaragePagePresenter _presenter;
+        private GarageSetBUitkPageRenderContextFactory _renderContextFactory;
         private readonly PublishGarageDraftStateUseCase _draftStatePublisher = new();
         private readonly GarageSaveFlow _saveFlow = new();
         private bool _callbacksHooked;
@@ -91,6 +91,11 @@ namespace Features.Garage.Presentation
             _catalog = catalog;
             _recentOperations = recentOperations;
             _presenter = new GaragePagePresenter(_catalog);
+            _renderContextFactory = new GarageSetBUitkPageRenderContextFactory(
+                _presenter,
+                _catalog,
+                _composeUnit,
+                _validateRoster);
             _state ??= new GaragePageState();
             _initGuard.Reset();
             if (!CanRender())
@@ -167,7 +172,7 @@ namespace Features.Garage.Presentation
                 return false;
 
             _focusedPart = GarageNovaPartsPanelViewModelFactory.ToEditorFocus(slot);
-            var viewModel = BuildPartListViewModel(slot);
+            var viewModel = _renderContextFactory.BuildPartListViewModel(_state, slot, _partSearchText);
             if (viewModel.Options == null || viewModel.Options.Count == 0)
             {
                 Render();
@@ -337,69 +342,20 @@ namespace Features.Garage.Presentation
         /// </summary>
         private GarageRenderContext BuildRenderContext()
         {
-            var evaluation = EvaluateDraft();
-            var operationSummary = GarageOperationRecordSummaryFormatter.BuildSummary(_recentOperations);
-            var serviceTags = GarageOperationRecordServiceTagMapper.BuildByLoadoutKey(_recentOperations);
-            IReadOnlyList<GarageSlotViewModel> slotViewModels = _presenter.BuildSlotViewModels(_state, serviceTags);
-            var partListViewModel = BuildPartListViewModel();
-            var editorViewModel = _presenter.BuildEditorViewModel(_state);
-            var resultViewModel = _presenter.BuildResultViewModel(_state, evaluation, operationSummary);
-            if (IsLoading)
-            {
-                resultViewModel = new GarageResultViewModel(
-                    resultViewModel.RosterStatusText,
-                    CurrentOperationName,
-                    resultViewModel.StatsText,
-                    resultViewModel.IsReady,
-                    resultViewModel.IsDirty,
-                    canSave: false,
-                    primaryActionLabel: "초기화 중...",
-                    resultViewModel.Radar);
-            }
-
-            var snapshot = new GarageSetBUitkPageSnapshot(
-                BuildRenderStatus(slotViewModels),
-                _state.SelectedSlotIndex,
+            return _renderContextFactory.Build(
+                _state,
+                _recentOperations,
                 _focusedPart,
                 _partSearchText,
                 _isSettingsOpen,
-                evaluation.HasDraftChanges,
-                resultViewModel.CanSave,
-                resultViewModel.ValidationText,
                 IsLoading,
                 IsSaving,
                 CurrentOperationName);
-
-            return new GarageRenderContext(
-                slotViewModels,
-                partListViewModel,
-                editorViewModel,
-                resultViewModel,
-                snapshot,
-                evaluation);
         }
 
         private GarageDraftEvaluation EvaluateDraft()
         {
-            return GarageDraftEvaluator.Evaluate(_state, _catalog, _composeUnit, _validateRoster);
-        }
-
-        private GarageNovaPartsPanelViewModel BuildPartListViewModel()
-        {
-            return BuildPartListViewModel(GarageNovaPartsPanelViewModelFactory.ToPanelSlot(_focusedPart));
-        }
-
-        private GarageNovaPartsPanelViewModel BuildPartListViewModel(GarageNovaPartPanelSlot slot)
-        {
-            var viewModel = GarageNovaPartsPanelViewModelFactory.Build(
-                _catalog,
-                new GarageNovaPartsDraftSelection(
-                    _state.EditingFrameId,
-                    _state.EditingFirepowerId,
-                    _state.EditingMobilityId),
-                slot,
-                _partSearchText);
-            return viewModel;
+            return _renderContextFactory.EvaluateDraft(_state);
         }
 
         private bool CanRender()
@@ -433,26 +389,6 @@ namespace Features.Garage.Presentation
                 draftState.HasUnsavedChanges,
                 draftState.ReadyEligible,
                 draftState.BlockReason));
-        }
-
-        private static string BuildRenderStatus(IReadOnlyList<GarageSlotViewModel> slots)
-        {
-            if (slots == null || slots.Count == 0)
-                return "rendered:empty";
-
-            var selected = slots[0];
-            for (int i = 0; i < slots.Count; i++)
-            {
-                if (slots[i].IsSelected)
-                {
-                    selected = slots[i];
-                    break;
-                }
-            }
-
-            return selected.IsEmpty
-                ? "rendered:selected-empty"
-                : $"rendered:{selected.FrameId}/{selected.FirepowerId}/{selected.MobilityId}";
         }
 
         private void OnDestroy()
