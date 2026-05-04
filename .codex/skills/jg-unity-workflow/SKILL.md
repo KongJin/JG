@@ -5,7 +5,7 @@ description: "JG Unity owner workflow. Triggers: JG scene/prefab authoring, UITK
 
 # JG Unity Workflow
 
-> 마지막 업데이트: 2026-05-02
+> 마지막 업데이트: 2026-05-04
 > 상태: active
 > doc_id: skill.jg-unity-workflow
 > role: skill-entry
@@ -36,6 +36,22 @@ If the current collaboration mode is `Plan Mode`, use this skill for inspection/
 4. Code-only implementation still uses `jg-coding-guardrails`; root-cause work uses `jg-issue-investigation`; hidden fallback uses `jg-no-silent-fallback`.
 5. Scene/prefab work prefers MCP and serialized contract inspection over direct YAML edits.
 6. If Unity already has a scene open, follow `tools/unity-mcp/README.md` open-scene disk-write guardrails.
+
+## Architecture Guardrails
+
+This is a routing checklist only; detailed policy remains in the owner docs.
+
+- `*Setup` and `*Root` classes are wiring-only entry points.
+- `async void` is forbidden in production flow code unless Unity's event API requires that exact signature.
+- `Resources.Load`, `transform.Find`, and runtime child traversal are not scene/prefab contract repair paths.
+- `FindFirstObjectByType<*SceneRegistry>` is forbidden for scene registry recovery.
+- `AddComponent<*SceneRegistry>` is forbidden for scene registry recovery.
+
+## Refactor Checklist
+
+1. Keep scene/prefab serialized contracts separate from runtime code changes.
+2. Verify the narrowest direct EditMode or workflow check that covers the changed contract.
+3. Report mechanical pass and runtime acceptance separately.
 
 ## Boundary
 

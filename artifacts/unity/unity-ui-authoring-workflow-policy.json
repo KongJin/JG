@@ -2,101 +2,32 @@
     "success":  true,
     "terminalVerdict":  "",
     "blockedReason":  "",
-    "generatedAt":  "2026-05-04 10:51:15+09:00",
+    "generatedAt":  "2026-05-04 17:44:32+09:00",
     "agent":  "",
     "route":  "lobby-ui",
     "changedFiles":  [
-                         ".claude/skills/README.md",
-                         "artifacts/rules/issue-recurrence-closeout.d/local-20428fa55a.json",
-                         "artifacts/rules/skill-trigger-inventory.md",
-                         "artifacts/unity/garage-setb-bindtohost-rebind-direct-test.xml",
-                         "artifacts/unity/garage-setb-uitk-runtime-adapter-direct-tests.xml",
-                         "artifacts/unity/lobby-uitk-runtime-adapter-direct-tests.xml",
-                         "artifacts/unity/unity-ui-authoring-workflow-policy.22480.c7a2f12c92e64705b3feb42aad108517.22480.28d73afc04a242558df8227f541f6281.json",
-                         "artifacts/unity/unity-ui-authoring-workflow-policy.22480.c7a2f12c92e64705b3feb42aad108517.json",
+                         "artifacts/unity/lobby-hierarchy-architecture-guardrail-tests.xml",
+                         "artifacts/unity/lobby-hierarchy-soundplayer-root-tests.xml",
+                         "artifacts/unity/lobby-hierarchy-uitk-adapter-tests.xml",
                          "artifacts/unity/unity-ui-authoring-workflow-policy.json",
-                         "Assets/Editor/AssetTools/Nova1492PlayablePartGenerationTool.cs",
-                         "Assets/Editor/DirectTests/GarageRosterDirectTests.cs",
-                         "Assets/Editor/DirectTests/GarageSetBUitkRuntimeAdapterDirectTests.cs",
-                         "Assets/Editor/DirectTests/GarageUnitPreviewAssemblyDirectTests.cs",
-                         "Assets/Editor/DirectTests/GarageUnitPreviewAssemblyFrameTopDirectTests.cs",
-                         "Assets/Editor/DirectTests/LayerDependencyAnalyzerDirectTests.cs",
-                         "Assets/Editor/DirectTests/LobbyUitkRuntimeAdapterDirectTests.cs",
-                         "Assets/Editor/LayerDependencyValidator.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Diagnostics/GarageSetBUitkPreviewSceneDriver.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Formatting/GarageNovaPartsEnergyDetails.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Formatting/GarageNovaPartsEnergyDetails.cs.meta",
-                         "Assets/Scripts/Features/Garage/Presentation/Page/GaragePageState.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Page/GarageSetBUitkPageController.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Preview/GarageSetBUitkPreviewRenderer.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Preview/GarageUnitPreviewAssembly.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBPartListSurface.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBSlotSurface.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkAdapterCore.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkAdapterCore.cs.meta",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkElementBindings.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkElementBindings.cs.meta",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkLayoutController.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkLayoutController.cs.meta",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkPreviewController.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkRenderCoordinator.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkRenderCoordinator.cs.meta",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkRuntimeAdapter.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/IGarageSetBUitkAdapter.cs",
-                         "Assets/Scripts/Features/Garage/Presentation/Uitk/IGarageSetBUitkAdapter.cs.meta",
-                         "Assets/Scripts/Features/Garage/Presentation/ViewModels/GarageNovaPartsPanelViewModels.cs",
-                         "Assets/Scripts/Features/Lobby/LobbySceneInitializationFlow.cs",
-                         "Assets/Scripts/Features/Lobby/Presentation/Page/LobbyPageController.cs",
-                         "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyCreateRoomInput.cs",
-                         "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyCreateRoomInput.cs.meta",
-                         "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyUitkClickScope.cs",
-                         "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyUitkClickScope.cs.meta",
-                         "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyUitkRuntimeAdapter.cs",
-                         "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
-                         "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml",
-                         "Assets/UI/UIToolkit/Lobby/LobbyShell.uss",
-                         "CLAUDE.md",
-                         "docs/index.md",
-                         "docs/ops/codex_coding_guardrails.md",
-                         "docs/ops/cohesion-coupling-policy.md",
-                         "docs/ops/document_management_workflow.md",
-                         "docs/ops/presentation_layer_guardrails.md",
-                         "docs/ops/unity-ui-authoring-workflow.md",
-                         "docs/plans/nova1492-content-residual-plan.md",
-                         "docs/plans/progress.md",
-                         "docs/plans/uitk-page-routing-refactor.md",
-                         "docs/plans/webgl-audio-closeout.md",
-                         "docs/playtest/runtime_validation_checklist.md",
-                         "MEMORY.md",
-                         "package.json",
-                         "ProjectSettings/UnityMcpPort.txt",
-                         "tools/docs-lint/anti-pattern-check.ps1",
-                         "tools/docs-lint/sync-progress.ps1",
-                         "tools/workflow/Invoke-CloseoutPack.ps1",
-                         "tools/workflow/test-runtime-hotspot-structure.mjs"
+                         "Assets/Editor/SceneTools/LobbySceneHierarchyOrganizer.cs",
+                         "Assets/Editor/SceneTools/LobbySceneHierarchyOrganizer.cs.meta",
+                         "Assets/Scenes/LobbyScene.unity"
                      ],
-    "allDirtyFileCount":  68,
+    "allDirtyFileCount":  7,
     "unityUiRelevantFiles":  [
-                                 "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
-                                 "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml",
-                                 "Assets/UI/UIToolkit/Lobby/LobbyShell.uss"
+                                 "Assets/Scenes/LobbyScene.unity"
                              ],
     "uitkCandidateFiles":  [
-                               "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
-                               "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml",
-                               "Assets/UI/UIToolkit/Lobby/LobbyShell.uss"
+
                            ],
     "uitkCandidateEvidenceFiles":  [
-                                       "artifacts/unity/unity-ui-authoring-workflow-policy.22480.c7a2f12c92e64705b3feb42aad108517.22480.28d73afc04a242558df8227f541f6281.json",
-                                       "artifacts/unity/unity-ui-authoring-workflow-policy.22480.c7a2f12c92e64705b3feb42aad108517.json",
                                        "artifacts/unity/unity-ui-authoring-workflow-policy.json"
                                    ],
     "uitkCandidatePreviewEvidenceFiles":  [
 
                                           ],
     "uitkCandidateReportEvidenceFiles":  [
-                                             "artifacts/unity/unity-ui-authoring-workflow-policy.22480.c7a2f12c92e64705b3feb42aad108517.22480.28d73afc04a242558df8227f541f6281.json",
-                                             "artifacts/unity/unity-ui-authoring-workflow-policy.22480.c7a2f12c92e64705b3feb42aad108517.json",
                                              "artifacts/unity/unity-ui-authoring-workflow-policy.json"
                                          ],
     "requiredEvidence":  [
@@ -133,7 +64,7 @@
                     "healthAfterWait":  {
                                             "ok":  true,
                                             "bridgeRunning":  true,
-                                            "port":  52675,
+                                            "port":  52676,
                                             "isPlaying":  false,
                                             "isPlayingOrWillChange":  false,
                                             "isPlayModeChanging":  false,
@@ -151,14 +82,12 @@
     "unityResourceLock":  {
                               "owner":  "workflow",
                               "path":  "Temp/UnityMcp/unity-resource.lock",
-                              "token":  "9df404a42a5845ad94fc018686fec1f5"
+                              "token":  "723d61edfc1f46e2bdfb7d29b8806614"
                           },
     "capabilityExpansionGuard":  {
                                      "allowCapabilityExpansion":  false,
                                      "surfaceOnboardingFiles":  [
-                                                                    "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
-                                                                    "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml",
-                                                                    "Assets/UI/UIToolkit/Lobby/LobbyShell.uss"
+
                                                                 ],
                                      "capabilityExpansionFiles":  [
 

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-04 08:44:20Z" end-time="2026-05-04 08:44:20Z" duration="0.0394288">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="185" result="Passed" start-time="2026-05-04 08:44:20Z" end-time="2026-05-04 08:44:20Z" duration="0.039429" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1224" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="185" result="Passed" start-time="2026-05-04 08:44:20Z" end-time="2026-05-04 08:44:20Z" duration="0.032371" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="13128" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1227" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="176" result="Passed" start-time="2026-05-04 08:44:20Z" end-time="2026-05-04 08:44:20Z" duration="0.031094" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1228" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="176" result="Passed" start-time="2026-05-04 08:44:20Z" end-time="2026-05-04 08:44:20Z" duration="0.030019" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1188" name="ArchitectureGuardrailReflectionTests" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" testcasecount="16" result="Passed" start-time="2026-05-04 08:44:20Z" end-time="2026-05-04 08:44:20Z" duration="0.028948" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1193" name="SceneSoundPlayerHosts_AreRootObjects" fullname="Tests.Editor.ArchitectureGuardrailReflectionTests.SceneSoundPlayerHosts_AreRootObjects" methodname="SceneSoundPlayerHosts_AreRootObjects" classname="Tests.Editor.ArchitectureGuardrailReflectionTests" runstate="Runnable" seed="1327201139" result="Passed" start-time="2026-05-04 08:44:20Z" end-time="2026-05-04 08:44:20Z" duration="0.017131" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\lobby-hierarchy-soundplayer-root-tests.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
