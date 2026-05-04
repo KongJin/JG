@@ -11,14 +11,14 @@ namespace Features.Status.Application
     {
         private readonly StatusContainerRegistry _registry;
         private readonly IEventPublisher _eventBus;
-        private readonly IStatusNetworkCommandPort _network;
+        private readonly IStatusNetworkPort _network;
         private readonly bool _isMaster;
         private readonly List<StatusType> _expiringTypes = new List<StatusType>();
 
         public StatusTickUseCase(
             StatusContainerRegistry registry,
             IEventPublisher eventBus,
-            IStatusNetworkCommandPort network,
+            IStatusNetworkPort network,
             bool isMaster)
         {
             _registry = registry;

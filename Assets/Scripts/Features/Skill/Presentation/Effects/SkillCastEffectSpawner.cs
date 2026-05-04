@@ -20,18 +20,18 @@ namespace Features.Skill.Presentation
 
         private IEventSubscriber _eventBus;
         private IEventPublisher _publisher;
-        private ISkillEffectPort _effectPort;
+        private ISkillPresentationAssetPort _assetPort;
         private DisposableScope _disposables = new DisposableScope();
         private readonly Dictionary<GameObject, GameObjectPool> _pools = new Dictionary<GameObject, GameObjectPool>();
 
         public void Initialize(
             IEventSubscriber eventBus,
             IEventPublisher publisher,
-            ISkillEffectPort effectPort = null)
+            ISkillPresentationAssetPort assetPort = null)
         {
             _eventBus = eventBus;
             _publisher = publisher;
-            _effectPort = effectPort;
+            _assetPort = assetPort;
             _disposables.Dispose();
             _disposables = new DisposableScope();
             _disposables.Add(EventBusSubscription.ForOwner(_eventBus, this));
@@ -84,10 +84,10 @@ namespace Features.Skill.Presentation
 
         private GameObject ResolveEffectPrefab(string skillId, GameObject defaultPrefab)
         {
-            if (_effectPort == null)
+            if (_assetPort == null)
                 return defaultPrefab;
 
-            var prefab = _effectPort.GetEffectPrefab(skillId);
+            var prefab = _assetPort.GetEffectPrefab(skillId);
             return prefab != null ? prefab : defaultPrefab;
         }
 

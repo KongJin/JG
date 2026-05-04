@@ -12,21 +12,21 @@ namespace Features.Skill.Application
     public sealed class CastSkillUseCase
     {
         private readonly IManaPort _manaPort;
-        private readonly ISkillNetworkCommandPort _network;
+        private readonly ISkillNetworkPort _network;
         private readonly IStatusQueryPort _statusQuery;
-        private readonly ISkillUpgradeQueryPort _upgradeQuery;
+        private readonly ISkillUpgradePort _upgradePort;
 
         public CastSkillUseCase(
             IManaPort manaPort,
-            ISkillNetworkCommandPort network,
+            ISkillNetworkPort network,
             IStatusQueryPort statusQuery = null,
-            ISkillUpgradeQueryPort upgradeQuery = null
+            ISkillUpgradePort upgradePort = null
         )
         {
             _manaPort = manaPort;
             _network = network;
             _statusQuery = statusQuery;
-            _upgradeQuery = upgradeQuery;
+            _upgradePort = upgradePort;
         }
 
         public Result Execute(
@@ -88,17 +88,17 @@ namespace Features.Skill.Application
             var duration = skill.Spec.Duration;
             var allyDamageScale = 1f;
             var skillIdValue = skill.Id.Value;
-            if (_upgradeQuery != null)
+            if (_upgradePort != null)
             {
-                range *= _upgradeQuery.GetAxisMultiplier(skillIdValue, GrowthAxis.Range);
-                radius *= _upgradeQuery.GetAxisMultiplier(skillIdValue, GrowthAxis.Range);
-                duration *= _upgradeQuery.GetAxisMultiplier(skillIdValue, GrowthAxis.Duration);
+                range *= _upgradePort.GetAxisMultiplier(skillIdValue, GrowthAxis.Range);
+                radius *= _upgradePort.GetAxisMultiplier(skillIdValue, GrowthAxis.Range);
+                duration *= _upgradePort.GetAxisMultiplier(skillIdValue, GrowthAxis.Duration);
 
-                var countUpgrade = _upgradeQuery.GetAxisMultiplier(skillIdValue, GrowthAxis.Count);
+                var countUpgrade = _upgradePort.GetAxisMultiplier(skillIdValue, GrowthAxis.Count);
                 if (countUpgrade > 1f)
                     projectileCount += (int)(countUpgrade - 1f);
 
-                allyDamageScale = _upgradeQuery.GetAllyDamageScale(skillIdValue);
+                allyDamageScale = _upgradePort.GetAllyDamageScale(skillIdValue);
             }
 
             _network.SendSkillCasted(

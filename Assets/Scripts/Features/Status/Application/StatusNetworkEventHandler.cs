@@ -10,16 +10,16 @@ namespace Features.Status.Application
 
         public StatusNetworkEventHandler(
             StatusUseCases useCases,
-            IStatusNetworkCallbackPort callbacks)
+            IStatusNetworkPort networkPort)
         {
             _useCases = useCases;
-            WireCallbackPort(callbacks);
+            WireNetworkPort(networkPort);
         }
 
-        public void WireCallbackPort(IStatusNetworkCallbackPort callbacks)
+        public void WireNetworkPort(IStatusNetworkPort networkPort)
         {
-            callbacks.OnRemoteStatusApplied = HandleRemoteStatusApplied;
-            callbacks.OnRemoteTickDamage = HandleRemoteTickDamage;
+            networkPort.OnRemoteStatusApplied = HandleRemoteStatusApplied;
+            networkPort.OnRemoteTickDamage = HandleRemoteTickDamage;
         }
 
         private void HandleRemoteStatusApplied(

@@ -8,16 +8,15 @@ namespace Features.Wave.Application
 {
     public sealed class WaveNetworkEventHandler
     {
-        private readonly IWaveNetworkCommandPort _commandPort;
+        private readonly IWaveNetworkPort _networkPort;
         private readonly WaveLoopUseCase _waveLoop;
 
         public WaveNetworkEventHandler(
             IEventSubscriber subscriber,
-            IWaveNetworkCommandPort commandPort,
-            IWaveNetworkCallbackPort callbackPort,
+            IWaveNetworkPort networkPort,
             WaveLoopUseCase waveLoop)
         {
-            _commandPort = commandPort;
+            _networkPort = networkPort;
             _waveLoop = waveLoop;
 
             subscriber.Subscribe(this, new Action<WaveCountdownStartedEvent>(OnCountdownStarted));
@@ -25,28 +24,28 @@ namespace Features.Wave.Application
             subscriber.Subscribe(this, new Action<WaveVictoryEvent>(OnVictory));
             subscriber.Subscribe(this, new Action<WaveDefeatEvent>(OnDefeat));
 
-            callbackPort.OnWaveStateSynced = OnWaveStateSynced;
+            networkPort.OnWaveStateSynced = OnWaveStateSynced;
         }
 
         private void OnCountdownStarted(WaveCountdownStartedEvent e)
         {
-            var countdownEndMs = _commandPort.ServerTimestampMs + (int)(e.Duration * 1000f);
-            _commandPort.SyncWaveState(e.WaveIndex, (int)WaveState.Countdown, countdownEndMs);
+            var countdownEndMs = _networkPort.ServerTimestampMs + (int)(e.Duration * 1000f);
+            _networkPort.SyncWaveState(e.WaveIndex, (int)WaveState.Countdown, countdownEndMs);
         }
 
         private void OnWaveStarted(WaveStartedEvent e)
         {
-            _commandPort.SyncWaveState(e.WaveIndex, (int)WaveState.Active, 0);
+            _networkPort.SyncWaveState(e.WaveIndex, (int)WaveState.Active, 0);
         }
 
         private void OnVictory(WaveVictoryEvent e)
         {
-            _commandPort.SyncWaveState(_waveLoop.CurrentWaveIndex, (int)WaveState.Victory, 0);
+            _networkPort.SyncWaveState(_waveLoop.CurrentWaveIndex, (int)WaveState.Victory, 0);
         }
 
         private void OnDefeat(WaveDefeatEvent e)
         {
-            _commandPort.SyncWaveState(_waveLoop.CurrentWaveIndex, (int)WaveState.Defeat, 0);
+            _networkPort.SyncWaveState(_waveLoop.CurrentWaveIndex, (int)WaveState.Defeat, 0);
         }
 
         private void OnWaveStateSynced(int waveIndex, int waveStateInt, int countdownEndMs)
@@ -56,7 +55,7 @@ namespace Features.Wave.Application
 
             if (state == WaveState.Countdown && countdownEndMs > 0)
             {
-                var remainingMs = countdownEndMs - _commandPort.ServerTimestampMs;
+                var remainingMs = countdownEndMs - _networkPort.ServerTimestampMs;
                 countdownRemaining = remainingMs > 0 ? remainingMs / 1000f : 0f;
             }
 

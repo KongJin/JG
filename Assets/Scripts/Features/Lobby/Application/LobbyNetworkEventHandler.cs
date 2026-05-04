@@ -18,21 +18,21 @@ namespace Features.Lobby.Application
         public LobbyNetworkEventHandler(
             ILobbyRepository repository,
             IEventPublisher publisher,
-            ILobbyNetworkCallbackPort networkCallbacks
+            ILobbyNetworkPort networkPort
         )
         {
             _repository = repository;
             _publisher = publisher;
 
-            networkCallbacks.OnErrorOccurred = HandleError;
-            networkCallbacks.OnCreateRoomSucceeded = HandleCreateRoomSucceeded;
-            networkCallbacks.OnJoinRoomSucceeded = HandleJoinRoomSucceeded;
-            networkCallbacks.OnLeaveRoomSucceeded = HandleLeaveRoomSucceeded;
-            networkCallbacks.OnRemotePlayerEntered = HandleRemotePlayerEntered;
-            networkCallbacks.OnRemotePlayerLeft = HandleRemotePlayerLeft;
-            networkCallbacks.OnPlayerPropertiesChanged = HandlePlayerPropertiesChanged;
-            networkCallbacks.OnGameStarted = HandleGameStarted;
-            networkCallbacks.OnRoomListUpdated = HandleRoomListUpdated;
+            networkPort.OnErrorOccurred = HandleError;
+            networkPort.OnCreateRoomSucceeded = HandleCreateRoomSucceeded;
+            networkPort.OnJoinRoomSucceeded = HandleJoinRoomSucceeded;
+            networkPort.OnLeaveRoomSucceeded = HandleLeaveRoomSucceeded;
+            networkPort.OnRemotePlayerEntered = HandleRemotePlayerEntered;
+            networkPort.OnRemotePlayerLeft = HandleRemotePlayerLeft;
+            networkPort.OnPlayerPropertiesChanged = HandlePlayerPropertiesChanged;
+            networkPort.OnGameStarted = HandleGameStarted;
+            networkPort.OnRoomListUpdated = HandleRoomListUpdated;
         }
 
         private void HandleError(string message)

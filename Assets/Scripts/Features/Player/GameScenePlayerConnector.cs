@@ -37,7 +37,7 @@ namespace Features.Player
 
             if (!setup.NetworkAdapter.IsMine)
             {
-                statusSetup.RegisterRemoteCallbackPort(setup.StatusNetworkAdapter);
+                statusSetup.RegisterRemoteNetworkPort(setup.StatusNetworkAdapter);
                 setup.NetworkAdapter.HydrateFromProperties();
             }
 

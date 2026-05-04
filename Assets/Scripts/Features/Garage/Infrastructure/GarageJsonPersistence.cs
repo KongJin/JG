@@ -1,5 +1,4 @@
 using System.IO;
-using Features.Garage.Application;
 using Features.Garage.Application.Ports;
 using Features.Garage.Domain;
 using UnityEngine;
@@ -71,7 +70,7 @@ namespace Features.Garage.Infrastructure
         }
     }
 
-    public sealed class GarageRosterLegacyIdMigrator : InitializeGarageUseCase.IRosterMigrationPort
+    public sealed class GarageRosterLegacyIdMigrator : IRosterMigrationPort
     {
         public GarageRoster Migrate(GarageRoster roster)
         {

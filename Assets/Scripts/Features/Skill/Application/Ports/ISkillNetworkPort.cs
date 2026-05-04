@@ -60,8 +60,20 @@ namespace Features.Skill.Application.Ports
         }
     }
 
-    public interface ISkillNetworkCommandPort
+    /// <summary>
+    /// 스킬 네트워크 포트 - 송신/수신 통합.
+    /// Command/Callback 분리보다 feature 단위 통합이 ownership 명확성을 유지함.
+    /// </summary>
+    public interface ISkillNetworkPort
     {
+        /// <summary>
+        /// 스킬 캐스팅 데이터를 네트워크로 송신 (Command).
+        /// </summary>
         void SendSkillCasted(SkillCastNetworkData data);
+
+        /// <summary>
+        /// 네트워크에서 스킬 캐스팅 데이터 수신 시 호출될 콜백 (Callback).
+        /// </summary>
+        System.Action<SkillCastNetworkData> OnSkillCasted { set; }
     }
 }

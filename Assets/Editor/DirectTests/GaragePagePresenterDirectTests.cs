@@ -445,7 +445,7 @@ namespace Tests.Editor
             return records;
         }
 
-        private sealed class AlwaysValidRosterValidationProvider : ValidateRosterUseCase.IRosterValidationProvider
+        private sealed class AlwaysValidRosterValidationProvider : IRosterValidationProvider
         {
             public bool TryValidateComposition(
                 string frameId,
@@ -458,7 +458,7 @@ namespace Tests.Editor
             }
         }
 
-        private sealed class KnownNovaRosterValidationProvider : ValidateRosterUseCase.IRosterValidationProvider
+        private sealed class KnownNovaRosterValidationProvider : IRosterValidationProvider
         {
             private readonly HashSet<string> _frameIds = new()
             {

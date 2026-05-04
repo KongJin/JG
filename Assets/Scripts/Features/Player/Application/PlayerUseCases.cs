@@ -11,7 +11,7 @@ namespace Features.Player.Application
     public sealed class PlayerUseCases
     {
         private readonly IPlayerMotorPort _motor;
-        private readonly IPlayerNetworkCommandPort _network;
+        private readonly IPlayerNetworkPort _network;
         private readonly IEventPublisher _eventBus;
         private readonly IClockPort _clock;
 
@@ -19,7 +19,7 @@ namespace Features.Player.Application
 
         public PlayerUseCases(
             IPlayerMotorPort motor,
-            IPlayerNetworkCommandPort network,
+            IPlayerNetworkPort network,
             IEventPublisher eventBus,
             IClockPort clock
         )

@@ -19,7 +19,7 @@ namespace Features.Skill.Application
 
         public SkillNetworkEventHandler(
             IEventPublisher publisher,
-            ISkillNetworkCallbackPort networkCallbacks
+            ISkillNetworkPort networkCallbacks
         )
         {
             _publisher = publisher;

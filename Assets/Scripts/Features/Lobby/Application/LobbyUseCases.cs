@@ -8,12 +8,12 @@ namespace Features.Lobby.Application
     public sealed class LobbyUseCases
     {
         private readonly ILobbyRepository _repository;
-        private readonly ILobbyNetworkCommandPort _network;
+        private readonly ILobbyNetworkPort _network;
         private readonly IClockPort _clock;
 
         public LobbyUseCases(
             ILobbyRepository repository,
-            ILobbyNetworkCommandPort network,
+            ILobbyNetworkPort network,
             IClockPort clock
         )
         {

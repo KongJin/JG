@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Features.Skill
 {
-    public sealed class SkillIconAdapter : ISkillIconPort
+    public sealed class SkillPresentationAssetAdapter : ISkillPresentationAssetPort
     {
         private readonly SkillCatalog _catalog;
 
-        public SkillIconAdapter(SkillCatalog catalog)
+        public SkillPresentationAssetAdapter(SkillCatalog catalog)
         {
             _catalog = catalog;
         }
@@ -17,6 +17,12 @@ namespace Features.Skill
         {
             var pres = _catalog.GetPresentationData(skillId);
             return pres != null ? pres.Icon : null;
+        }
+
+        public GameObject GetEffectPrefab(string skillId)
+        {
+            var pres = _catalog.GetPresentationData(skillId);
+            return pres != null ? pres.CastEffectPrefab : null;
         }
     }
 }

@@ -37,7 +37,6 @@ namespace Features.Player
             context.StatusSetup.Initialize(
                 context.EventBus,
                 localPlayerSetup.StatusNetworkAdapter,
-                localPlayerSetup.StatusNetworkAdapter,
                 PhotonNetwork.IsMasterClient);
 
             localPlayerSetup.InitializeLocal(

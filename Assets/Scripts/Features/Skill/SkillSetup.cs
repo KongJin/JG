@@ -40,7 +40,7 @@ namespace Features.Skill
         private SkillBar _skillBar;
         private Deck _deck;
         private DisposableScope _disposables;
-        private SkillIconAdapter _skillIconAdapter;
+        private SkillPresentationAssetAdapter _presentationAssetAdapter;
         private SkillUpgradeAdapter _skillUpgradeAdapter;
 
         // 단계 간 공유 상태
@@ -51,9 +51,8 @@ namespace Features.Skill
         private IStatusQueryPort _statusQuery;
         private List<InitializeDeckUseCase.SkillEntry> _entries;
 
-        public ISkillIconPort SkillIcon => _skillIconAdapter;
-        public ISkillUpgradeQueryPort SkillUpgradeQuery => _skillUpgradeAdapter;
-        public ISkillUpgradeCommandPort SkillUpgradeCommand => _skillUpgradeAdapter;
+        public ISkillPresentationAssetPort SkillAssets => _presentationAssetAdapter;
+        public ISkillUpgradePort SkillUpgrade => _skillUpgradeAdapter;
 
         public void InitializePreSelection(
             EventBus eventBus, Transform playerTransform, Camera camera,
@@ -77,10 +76,10 @@ namespace Features.Skill
             _disposables = new DisposableScope();
 
             _catalog = new SkillCatalog(_catalogData);
-            _skillIconAdapter = new SkillIconAdapter(_catalog);
+            _presentationAssetAdapter = new SkillPresentationAssetAdapter(_catalog);
 
-            _barView.Initialize(eventBus, _skillIconAdapter, casterId);
-            _skillCastEffectSpawner.Initialize(eventBus, eventBus, new SkillEffectAdapter(_catalog));
+            _barView.Initialize(eventBus, _presentationAssetAdapter, casterId);
+            _skillCastEffectSpawner.Initialize(eventBus, eventBus, _presentationAssetAdapter);
             new SkillNetworkEventHandler(_eventBus, _networkAdapter);
 
             // 카탈로그에서 후보 목록 + 엔트리 생성
@@ -102,7 +101,7 @@ namespace Features.Skill
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, selectionHandler));
 
             // 선택 UI 초기화 + 이벤트 발행
-            _startSkillSelectionView.Initialize(eventBus, eventBus, _skillIconAdapter);
+            _startSkillSelectionView.Initialize(eventBus, eventBus, _presentationAssetAdapter);
             eventBus.Publish(new StartSkillSelectionRequestedEvent(candidates, SkillBar.SlotCount));
         }
 

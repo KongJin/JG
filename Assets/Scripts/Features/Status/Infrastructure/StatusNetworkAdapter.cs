@@ -7,9 +7,8 @@ using Shared.Kernel;
 namespace Features.Status.Infrastructure
 {
     public sealed class StatusNetworkAdapter : MonoBehaviourPun,
-        IStatusNetworkCommandPort, IStatusNetworkCallbackPort
+        IStatusNetworkPort
     {
-        // IStatusNetworkCallbackPort
         public Action<DomainEntityId, StatusType, float, float, DomainEntityId, float> OnRemoteStatusApplied
         {
             get; set;
@@ -17,7 +16,6 @@ namespace Features.Status.Infrastructure
 
         public Action<DomainEntityId, float, DomainEntityId> OnRemoteTickDamage { get; set; }
 
-        // IStatusNetworkCommandPort
         public void SendApplyStatus(
             DomainEntityId targetId,
             StatusType type,

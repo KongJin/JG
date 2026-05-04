@@ -18,9 +18,8 @@ namespace Features.Lobby.Infrastructure.Photon
 {
     public sealed class LobbyPhotonAdapter
         : MonoBehaviourPunCallbacks,
-            ILobbyNetworkCommandPort,
-            IOnEventCallback,
-            ILobbyNetworkCallbackPort
+            ILobbyNetworkPort,
+            IOnEventCallback
     {
         [Required, SerializeField]
         private string DefaultGameSceneName = "BattleScene";
@@ -30,7 +29,6 @@ namespace Features.Lobby.Infrastructure.Photon
         private readonly LobbyPhotonPendingState _pendingState = new();
         private readonly LobbyPhotonCallbackTranslator _callbackTranslator = new();
 
-        // ILobbyNetworkCallbackPort callbacks
         public System.Action<DomainRoom> OnCreateRoomSucceeded { get; set; }
         public System.Action<string> OnErrorOccurred { get; set; }
         public System.Action<JoinRoomData> OnJoinRoomSucceeded { get; set; }
@@ -45,8 +43,6 @@ namespace Features.Lobby.Infrastructure.Photon
         {
             EnsureConnected();
         }
-
-        // ===== ILobbyNetworkCommandPort =====
 
         public Result CreateRoom(DomainRoom room)
         {

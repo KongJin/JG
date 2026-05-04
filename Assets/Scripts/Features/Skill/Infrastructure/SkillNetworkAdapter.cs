@@ -15,7 +15,7 @@ using UnityEngine;
 namespace Features.Skill.Infrastructure
 {
     public sealed class SkillNetworkAdapter : MonoBehaviourPun,
-        ISkillNetworkCommandPort, ISkillNetworkCallbackPort
+        ISkillNetworkPort
     {
         private const string Tag = nameof(SkillNetworkAdapter);
 

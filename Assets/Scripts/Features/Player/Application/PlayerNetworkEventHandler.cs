@@ -14,18 +14,18 @@ namespace Features.Player.Application
 
         public PlayerNetworkEventHandler(
             IEventPublisher publisher,
-            IPlayerNetworkCallbackPort networkCallbacks,
+            IPlayerNetworkPort networkPort,
             IPlayerLookupPort playerLookup = null
         )
         {
             _publisher = publisher;
             _playerLookup = playerLookup;
 
-            networkCallbacks.OnRemoteDamaged = HandleRemoteDamaged;
-            networkCallbacks.OnRemoteRespawned = HandleRemoteRespawned;
-            networkCallbacks.OnHealthSynced = HandleHealthSynced;
-            networkCallbacks.OnEnergySynced = HandleEnergySynced;
-            networkCallbacks.OnLifeStateSynced = HandleLifeStateSynced;
+            networkPort.OnRemoteDamaged = HandleRemoteDamaged;
+            networkPort.OnRemoteRespawned = HandleRemoteRespawned;
+            networkPort.OnHealthSynced = HandleHealthSynced;
+            networkPort.OnEnergySynced = HandleEnergySynced;
+            networkPort.OnLifeStateSynced = HandleLifeStateSynced;
         }
 
         private void HandleRemoteDamaged(DomainEntityId targetId, float damage,

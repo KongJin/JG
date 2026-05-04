@@ -6,7 +6,7 @@ using Features.Skill.Domain;
 
 namespace Features.Skill.Application
 {
-    public sealed class SkillUpgradeAdapter : ISkillUpgradeQueryPort, ISkillUpgradeCommandPort
+    public sealed class SkillUpgradeAdapter : ISkillUpgradePort
     {
         private readonly SkillUpgradeLevel _upgrades;
         private readonly Func<string, IReadOnlyCollection<GrowthAxis>> _getEnabledAxes;

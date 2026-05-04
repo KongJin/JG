@@ -14,16 +14,16 @@ namespace Features.Skill.Presentation
         private static readonly string[] SlotLabels = { "RMB", "Q" };
 
         private IEventSubscriber _eventBus;
-        private ISkillIconPort _iconPort;
+        private ISkillPresentationAssetPort _assetPort;
         private DisposableScope _disposables = new();
 
         public Sprite NextDrawPreviewIcon { get; private set; }
         public string NextDrawHintLabel { get; private set; } = string.Empty;
 
-        public void Initialize(IEventSubscriber eventBus, ISkillIconPort iconPort, DomainEntityId localCasterId)
+        public void Initialize(IEventSubscriber eventBus, ISkillPresentationAssetPort assetPort, DomainEntityId localCasterId)
         {
             _eventBus = eventBus;
-            _iconPort = iconPort;
+            _assetPort = assetPort;
             _disposables.Dispose();
             _disposables = new DisposableScope();
 
@@ -52,7 +52,7 @@ namespace Features.Skill.Presentation
             if (e.SlotIndex < 0 || e.SlotIndex >= slotViews.Length)
                 return;
 
-            var icon = _iconPort?.GetIcon(e.SkillId.Value);
+            var icon = _assetPort?.GetIcon(e.SkillId.Value);
             slotViews[e.SlotIndex]?.SetSkill(icon);
         }
 
@@ -65,7 +65,7 @@ namespace Features.Skill.Presentation
         {
             NextDrawPreviewIcon = string.IsNullOrEmpty(nextSkillIdOrNull)
                 ? null
-                : _iconPort?.GetIcon(nextSkillIdOrNull);
+                : _assetPort?.GetIcon(nextSkillIdOrNull);
             NextDrawHintLabel = string.IsNullOrEmpty(nextSkillIdOrNull) ? string.Empty : "다음";
         }
     }

@@ -25,8 +25,7 @@ namespace Features.Status
 
         public void Initialize(
             EventBus eventBus,
-            IStatusNetworkCommandPort commandPort,
-            IStatusNetworkCallbackPort callbackPort,
+            IStatusNetworkPort networkPort,
             bool isMaster)
         {
             _disposables?.Dispose();
@@ -34,23 +33,23 @@ namespace Features.Status
 
             _registry = new StatusContainerRegistry();
 
-            _useCases = new StatusUseCases(_registry, eventBus, commandPort);
+            _useCases = new StatusUseCases(_registry, eventBus, networkPort);
 
             var statusHandler = new StatusEventHandler(eventBus, _useCases);
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, statusHandler));
 
-            _networkEventHandler = new StatusNetworkEventHandler(_useCases, callbackPort);
+            _networkEventHandler = new StatusNetworkEventHandler(_useCases, networkPort);
 
-            _tickDriver.Initialize(new StatusTickUseCase(_registry, eventBus, commandPort, isMaster));
+            _tickDriver.Initialize(new StatusTickUseCase(_registry, eventBus, networkPort, isMaster));
 
             SpeedModifier = new SpeedModifierAdapter(_registry);
             var queryAdapter = new StatusQueryAdapter(_registry);
             StatusQuery = queryAdapter;
         }
 
-        public void RegisterRemoteCallbackPort(IStatusNetworkCallbackPort callbackPort)
+        public void RegisterRemoteNetworkPort(IStatusNetworkPort networkPort)
         {
-            _networkEventHandler?.WireCallbackPort(callbackPort);
+            _networkEventHandler?.WireNetworkPort(networkPort);
         }
 
         private void OnDestroy()

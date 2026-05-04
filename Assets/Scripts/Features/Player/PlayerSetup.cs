@@ -51,7 +51,7 @@ namespace Features.Player
         public PlayerNetworkAdapter NetworkAdapter => _networkAdapter;
         public StatusNetworkAdapter StatusNetworkAdapter => _statusNetworkAdapter;
         public PlayerUseCases UseCases => _useCases;
-        public IEnergyPort EnergyPort { get; private set; }
+        public IEnergyManagementPort EnergyPort { get; private set; }
         public EnergyAdapter EnergyAdapterInstance { get; private set; }
         public Domain.Player DomainPlayer { get; private set; }
 

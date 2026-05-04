@@ -8,10 +8,10 @@ namespace Features.Player.Application
     /// <summary>
     /// Energy 리소스 어댑터. 유닛 소환 전용 자원의 차감/재생/네트워크 동기화를 담당.
     /// </summary>
-    public sealed class EnergyAdapter : IEnergyPort, IEnergyRegenPort
+    public sealed class EnergyAdapter : IEnergyManagementPort
     {
         private readonly Domain.Player _player;
-        private readonly IPlayerNetworkCommandPort _network;
+        private readonly IPlayerNetworkPort _network;
         private readonly IEventPublisher _publisher;
         private readonly EnergyRegenCurve _regenCurve;
         private readonly float _gameStartTime;
@@ -21,7 +21,7 @@ namespace Features.Player.Application
 
         public EnergyAdapter(
             Domain.Player player,
-            IPlayerNetworkCommandPort network,
+            IPlayerNetworkPort network,
             IEventPublisher publisher,
             EnergyRegenCurve regenCurve)
             : this(player, network, publisher, regenCurve, 0f)
@@ -30,7 +30,7 @@ namespace Features.Player.Application
 
         public EnergyAdapter(
             Domain.Player player,
-            IPlayerNetworkCommandPort network,
+            IPlayerNetworkPort network,
             IEventPublisher publisher,
             EnergyRegenCurve regenCurve,
             float gameStartTime)

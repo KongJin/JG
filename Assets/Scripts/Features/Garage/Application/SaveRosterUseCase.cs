@@ -10,14 +10,6 @@ namespace Features.Garage.Application
     /// </summary>
     public sealed class SaveRosterUseCase
     {
-        /// <summary>
-        /// 클라우드 저장 포트. 없으면 Photon 동기화만 수행.
-        /// </summary>
-        public interface ICloudGaragePort
-        {
-            System.Threading.Tasks.Task SaveGarageAsync(GarageRoster roster);
-        }
-
         private readonly ICloudGaragePort _cloudPort;
         private readonly IGaragePersistencePort _persistence;
         private readonly IGarageNetworkPort _network;

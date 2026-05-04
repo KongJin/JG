@@ -5,9 +5,6 @@ using Shared.Kernel;
 
 namespace Features.Lobby.Application.Ports
 {
-    /// <summary>
-    /// Photon 방 참가 성공 콜백에서 전달되는 데이터 묶음.
-    /// </summary>
     public sealed class JoinRoomData
     {
         public DomainEntityId RoomId { get; }
@@ -37,9 +34,6 @@ namespace Features.Lobby.Application.Ports
         }
     }
 
-    /// <summary>
-    /// Photon 플레이어 속성 변경 콜백에서 전달되는 데이터 묶음.
-    /// </summary>
     public sealed class PlayerPropertiesData
     {
         public DomainEntityId RoomId { get; }
@@ -56,9 +50,6 @@ namespace Features.Lobby.Application.Ports
         }
     }
 
-    /// <summary>
-    /// Photon 로비 방 목록에서 전달되는 개별 방 정보.
-    /// </summary>
     public sealed class RoomListItem
     {
         public DomainEntityId RoomId { get; }
@@ -85,8 +76,15 @@ namespace Features.Lobby.Application.Ports
         }
     }
 
-    public interface ILobbyNetworkCallbackPort
+    public interface ILobbyNetworkPort
     {
+        Result CreateRoom(Room room);
+        Result JoinRoom(DomainEntityId roomId, RoomMember localMember);
+        Result LeaveRoom(DomainEntityId roomId, DomainEntityId memberId);
+        Result ChangeTeam(DomainEntityId memberId, TeamType team);
+        Result SetReady(DomainEntityId memberId, bool isReady);
+        Result StartGame(DomainEntityId roomId);
+
         Action<Room> OnCreateRoomSucceeded { set; }
         Action<string> OnErrorOccurred { set; }
         Action<JoinRoomData> OnJoinRoomSucceeded { set; }

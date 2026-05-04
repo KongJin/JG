@@ -123,7 +123,6 @@ namespace Features.Wave
             var networkHandler = new WaveNetworkEventHandler(
                 eventBus,
                 _networkAdapter,
-                _networkAdapter,
                 waveLoop
             );
             _disposables.Add(EventBusSubscription.ForOwner(eventBus, networkHandler));

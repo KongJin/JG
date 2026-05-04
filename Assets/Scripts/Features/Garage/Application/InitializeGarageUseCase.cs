@@ -9,16 +9,6 @@ namespace Features.Garage.Application
     /// </summary>
     public sealed class InitializeGarageUseCase
     {
-        public interface ICloudGarageLoadPort
-        {
-            System.Threading.Tasks.Task<GarageRoster> LoadGarageAsync();
-        }
-
-        public interface IRosterMigrationPort
-        {
-            GarageRoster Migrate(GarageRoster roster);
-        }
-
         private readonly ICloudGarageLoadPort _cloudPort;
         private readonly IGaragePersistencePort _persistence;
         private readonly IGarageNetworkPort _networkPort;

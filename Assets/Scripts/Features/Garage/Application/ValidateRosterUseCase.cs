@@ -1,4 +1,5 @@
 using Features.Garage.Domain;
+using Features.Garage.Application.Ports;
 using Shared.Kernel;
 
 namespace Features.Garage.Application
@@ -9,18 +10,6 @@ namespace Features.Garage.Application
     /// </summary>
     public sealed class ValidateRosterUseCase
     {
-        /// <summary>
-        /// 편성 검증용 조합 데이터 조회 포트.
-        /// </summary>
-        public interface IRosterValidationProvider
-        {
-            bool TryValidateComposition(
-                string frameId,
-                string firepowerModuleId,
-                string mobilityModuleId,
-                out string errorMessage);
-        }
-
         private readonly IRosterValidationProvider _validationProvider;
 
         public ValidateRosterUseCase(IRosterValidationProvider validationProvider)

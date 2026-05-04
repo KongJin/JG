@@ -6,9 +6,9 @@ namespace Features.Player.Infrastructure
 {
     public sealed class PlayerCombatNetworkPortAdapter : ICombatNetworkCommandPort
     {
-        private readonly IPlayerNetworkCommandPort _playerNetwork;
+        private readonly IPlayerNetworkPort _playerNetwork;
 
-        public PlayerCombatNetworkPortAdapter(IPlayerNetworkCommandPort playerNetwork)
+        public PlayerCombatNetworkPortAdapter(IPlayerNetworkPort playerNetwork)
         {
             _playerNetwork = playerNetwork;
         }

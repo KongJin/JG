@@ -11,7 +11,7 @@ namespace Features.Skill.Presentation
 
         private IEventPublisher _publisher;
         private IEventSubscriber _subscriber;
-        private ISkillIconPort _iconPort;
+        private ISkillPresentationAssetPort _assetPort;
         private StartSkillCandidate[] _candidates;
         private int _pickCount;
         private int _selectedCount;
@@ -20,11 +20,11 @@ namespace Features.Skill.Presentation
         public bool CanConfirm => _selectedCount == _pickCount;
         public string InstructionText { get; private set; } = string.Empty;
 
-        public void Initialize(IEventPublisher publisher, IEventSubscriber subscriber, ISkillIconPort iconPort)
+        public void Initialize(IEventPublisher publisher, IEventSubscriber subscriber, ISkillPresentationAssetPort assetPort)
         {
             _publisher = publisher;
             _subscriber = subscriber;
-            _iconPort = iconPort;
+            _assetPort = assetPort;
             IsPanelVisible = false;
             _subscriber.Subscribe(this, new Action<StartSkillSelectionRequestedEvent>(OnSelectionRequested));
         }
@@ -39,7 +39,7 @@ namespace Features.Skill.Presentation
             {
                 if (i < _candidates.Length)
                 {
-                    var icon = _iconPort?.GetIcon(_candidates[i].SkillId);
+                    var icon = _assetPort?.GetIcon(_candidates[i].SkillId);
                     skillButtons[i].Setup(_candidates[i].DisplayName, icon);
                 }
                 else

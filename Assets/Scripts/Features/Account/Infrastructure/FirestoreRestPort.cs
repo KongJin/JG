@@ -1,6 +1,6 @@
 using Features.Account.Application.Ports;
 using Features.Account.Domain;
-using Features.Garage.Application;
+using Features.Garage.Application.Ports;
 using Features.Garage.Domain;
 using Features.Player.Application.Ports;
 using Features.Player.Domain;
@@ -15,8 +15,8 @@ namespace Features.Account.Infrastructure
     /// </summary>
     public sealed class FirestoreRestPort :
         IAccountDataPort,
-        SaveRosterUseCase.ICloudGaragePort,
-        InitializeGarageUseCase.ICloudGarageLoadPort,
+        ICloudGaragePort,
+        ICloudGarageLoadPort,
         IOperationRecordCloudPort
     {
         private readonly FirestoreDocumentClient _documentClient;

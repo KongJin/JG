@@ -10,7 +10,7 @@ namespace Features.Player.Presentation
     {
         private IEventSubscriber _eventBus;
         private DomainEntityId _playerId;
-        private IEnergyRegenPort _energyRegenPort;
+        private IEnergyManagementPort _energyPort;
 
         public float CurrentEnergy { get; private set; }
         public float MaxEnergy { get; private set; }
@@ -20,11 +20,11 @@ namespace Features.Player.Presentation
             IEventSubscriber eventBus,
             DomainEntityId playerId,
             float maxEnergy,
-            IEnergyRegenPort energyRegenPort)
+            IEnergyManagementPort energyPort)
         {
             _eventBus = eventBus;
             _playerId = playerId;
-            _energyRegenPort = energyRegenPort;
+            _energyPort = energyPort;
             MaxEnergy = maxEnergy;
             UpdateDisplay(maxEnergy, maxEnergy);
 
@@ -38,7 +38,7 @@ namespace Features.Player.Presentation
 
         private void Update()
         {
-            _energyRegenPort?.TickRegen(Time.deltaTime, Time.time);
+            _energyPort?.TickRegen(Time.deltaTime, Time.time);
         }
 
         private void OnEnergyChanged(PlayerEnergyChangedEvent e)

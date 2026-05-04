@@ -6,7 +6,7 @@ using Photon.Pun;
 namespace Features.Wave.Infrastructure
 {
     public sealed class WaveNetworkAdapter : MonoBehaviourPunCallbacks,
-        IWaveNetworkCommandPort, IWaveNetworkCallbackPort
+        IWaveNetworkPort
     {
         private const string WaveIndexKey = "waveIndex";
         private const string WaveStateKey = "waveState";

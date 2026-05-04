@@ -1,4 +1,4 @@
-using Features.Garage.Application;
+using Features.Garage.Application.Ports;
 using Features.Unit.Domain;
 using Features.Unit.Infrastructure;
 
@@ -8,7 +8,7 @@ namespace Features.Garage.Infrastructure
     /// ScriptableObject 카탈로그를 기반으로 조합 유효성 검증 제공.
     /// ValidateRosterUseCase의 의존성 구현.
     /// </summary>
-    public sealed class RosterValidationProvider : ValidateRosterUseCase.IRosterValidationProvider
+    public sealed class RosterValidationProvider : IRosterValidationProvider
     {
         private readonly ModuleCatalog _catalog;
 

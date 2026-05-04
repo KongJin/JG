@@ -9,7 +9,7 @@ namespace Features.Player.Infrastructure
 {
     [RequireComponent(typeof(PhotonView))]
     public sealed class PlayerNetworkAdapter : MonoBehaviourPunCallbacks, IPunObservable,
-        IPlayerNetworkCommandPort, IPlayerNetworkCallbackPort
+        IPlayerNetworkPort
     {
         [SerializeField]
         private float _lerpSpeed = 15f;
@@ -20,7 +20,6 @@ namespace Features.Player.Infrastructure
         public bool IsMine => photonView.IsMine;
         public DomainEntityId StablePlayerId => new DomainEntityId(GetStablePlayerIdValue());
 
-        // IPlayerNetworkCallbackPort
         public System.Action<DomainEntityId, float, DamageType, DomainEntityId> OnRemoteDamaged { set; private get; }
         public System.Action<DomainEntityId> OnRemoteRespawned { get; set; }
         public System.Action<DomainEntityId, float, float> OnHealthSynced { get; set; }

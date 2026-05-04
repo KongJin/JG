@@ -10,12 +10,12 @@ namespace Features.Status.Application
     {
         private readonly StatusContainerRegistry _registry;
         private readonly IEventPublisher _eventBus;
-        private readonly IStatusNetworkCommandPort _network;
+        private readonly IStatusNetworkPort _network;
 
         public StatusUseCases(
             StatusContainerRegistry registry,
             IEventPublisher eventBus,
-            IStatusNetworkCommandPort network)
+            IStatusNetworkPort network)
         {
             _registry = registry;
             _eventBus = eventBus;
