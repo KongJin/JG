@@ -12,6 +12,9 @@
   "verification": "node --test tools/docs-lint/tests/docs-lint.test.mjs tools/docs-lint/tests/sync-recurrence-closeout.test.mjs; npm run --silent rules:sync-closeout; npm run --silent rules:lint",
   "blockedReason": "",
   "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-1d49250aeb.json",
+    "artifacts/rules/issue-recurrence-closeout.d/local-c6d884e37b.json",
+    "artifacts/rules/issue-recurrence-closeout.d/local-doc-tree-migration-20260505.json",
     "artifacts/rules/issue-recurrence-closeout.json",
     "docs/owners/operations/document_management_workflow.md"
   ]

@@ -1,6 +1,6 @@
 # Runtime Validation Checklist
 
-> 마지막 업데이트: 2026-05-02
+> 마지막 업데이트: 2026-05-05
 > 상태: active
 > doc_id: playtest.runtime-validation-checklist
 > role: reference
@@ -12,6 +12,12 @@
 GameScene 2-client multiplayer residual은 별도 active plan을 만들기 전까지 이 checklist가 current owner로 맡는다. 실제 실행 evidence나 artifact 전용 소유자가 열리면 그 plan 또는 artifact로 넘긴다.
 
 씬 구조, Inspector wiring, Bootstrap 순서의 SSOT는 `*Setup.cs`, `*Bootstrap.cs`, 실제 scene/prefab serialized contract, MCP contract verification route가 소유한다. 이 문서는 hierarchy path가 아니라 "행동/결과" 기준으로만 적는다.
+
+## Active Owner Boundary
+
+- 이 문서는 현재 `GameScene / Multiplayer Sync` residual의 checklist owner다.
+- 2-client runner 구현, long-lived evidence directory, 또는 여러 세션의 fix plan이 열리면 새 active plan으로 넘기고 이 문서는 reference checklist로 유지한다.
+- runner가 없으면 `blocked: two-client runner unavailable`을 유지하되, 실제 blocker owner와 다음 확보 방법만 짧게 남긴다.
 
 ---
 

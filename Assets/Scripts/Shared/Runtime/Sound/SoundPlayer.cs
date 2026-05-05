@@ -35,6 +35,7 @@ namespace Shared.Runtime.Sound
         private readonly Dictionary<string, float> _lastPlayTime = new Dictionary<string, float>();
         private readonly Queue<AudioSource> _availableSfxSources = new Queue<AudioSource>();
         private readonly List<AudioSource> _sfxSources = new List<AudioSource>();
+        private readonly HashSet<string> _reportedUnavailableSoundKeys = new HashSet<string>();
 
         public bool HasRuntimeDependencies => catalog != null && bgmAudioSource != null && HasConfiguredSfxSources;
         public int RecentSfxPlaybackKeyCount => _lastPlayTime.Count;
@@ -195,6 +196,7 @@ namespace Shared.Runtime.Sound
             _availableSfxSources.Clear();
             _sfxSources.Clear();
             _lastPlayTime.Clear();
+            _reportedUnavailableSoundKeys.Clear();
             _loggedSfxPoolExhausted = false;
             _currentBgmKey = null;
             _bgmSource = bgmAudioSource;
@@ -219,8 +221,17 @@ namespace Shared.Runtime.Sound
                 return;
 
             var entry = catalog != null ? catalog.Get(req.SoundKey) : null;
-            if (entry == null || entry.Clip == null)
+            if (entry == null)
+            {
+                LogUnavailableSoundKeyOnce(req.SoundKey, "not registered in SoundCatalog");
                 return;
+            }
+
+            if (entry.Clip == null)
+            {
+                LogUnavailableSoundKeyOnce(req.SoundKey, "registered without an AudioClip");
+                return;
+            }
 
             if (entry.Channel == SoundChannel.Bgm)
             {
@@ -234,6 +245,16 @@ namespace Shared.Runtime.Sound
                 return;
 
             PlaySfx(req.SoundKey, entry, req.Position);
+        }
+
+        private void LogUnavailableSoundKeyOnce(string soundKey, string reason)
+        {
+            var safeKey = string.IsNullOrEmpty(soundKey) ? "<empty>" : soundKey;
+            var reportKey = $"{safeKey}:{reason}";
+            if (!_reportedUnavailableSoundKeys.Add(reportKey))
+                return;
+
+            Debug.LogWarning($"[SoundPlayer] Sound '{safeKey}' is unavailable: {reason}.", this);
         }
 
         private bool ShouldPlay(PlaybackPolicy policy, string ownerId)

@@ -7,6 +7,7 @@ using Shared.Runtime.Sound;
 using Shared.Sound;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Tests.Editor
 {
@@ -134,6 +135,35 @@ namespace Tests.Editor
             Object.DestroyImmediate(go);
             Object.DestroyImmediate(catalog);
             Object.DestroyImmediate(clip);
+        }
+
+        [Test]
+        public void SoundPlayer_WarnsOnceWhenRequestedSoundKeyIsMissing()
+        {
+            var catalog = ScriptableObject.CreateInstance<SoundCatalog>();
+            ConfigureSoundCatalog(catalog, System.Array.Empty<SoundEntry>());
+
+            var go = new GameObject("SoundPlayerTest");
+            var player = go.AddComponent<SoundPlayer>();
+            ConfigureSoundPlayer(player, catalog, go.AddComponent<AudioSource>(), go.AddComponent<AudioSource>());
+
+            var eventBus = new EventBus();
+            player.Initialize(eventBus, "local");
+
+            var request = new SoundRequestEvent(new SoundRequest(
+                "missing_key",
+                Float3.Zero,
+                PlaybackPolicy.LocalOnly,
+                "local"));
+
+            LogAssert.Expect(LogType.Warning, "[SoundPlayer] Sound 'missing_key' is unavailable: not registered in SoundCatalog.");
+
+            eventBus.Publish(request);
+            eventBus.Publish(request);
+            LogAssert.NoUnexpectedReceived();
+
+            Object.DestroyImmediate(go);
+            Object.DestroyImmediate(catalog);
         }
 
         private static void ConfigureSoundCatalog(

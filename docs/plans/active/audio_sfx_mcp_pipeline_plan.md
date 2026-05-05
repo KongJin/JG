@@ -1,6 +1,6 @@
 # Audio SFX MCP Pipeline Plan
 
-> 마지막 업데이트: 2026-05-01
+> 마지막 업데이트: 2026-05-05
 > 상태: active
 > doc_id: plans.audio-sfx-mcp-pipeline
 > role: plan
@@ -20,6 +20,12 @@
 - Suno credential, browser session, cookies는 repo에 남기지 않는다.
 - 12개 UITK SFX batch keys는 direct Suno Sounds UI/CDP route로 생성, 다운로드, trim, Unity import, `SoundCatalog` sync까지 기계 검증을 통과했다.
 - 남은 active gate는 Unity manual audition으로 실제 음질/길이/볼륨을 확인하고, replacement 또는 volume tweak 여부를 결정하는 것이다.
+
+## HITL Gate
+
+- Decision owner: Unity에서 SFX를 실제로 들어볼 수 있는 사람의 manual audition verdict.
+- Next action: 12개 soundKey를 Unity에서 재생하고 `keep`, `replace`, `volume-tweak`, `blocked` 중 하나를 기록한다.
+- Stale handling: manual audition을 이번 audio pass에서 진행하지 않기로 결정하면, catalog-sync mechanical success는 reference로 압축하고 audition residual은 `plans.progress` 또는 새 audio/product owner에 한 줄로 이관한다.
 
 ## Acceptance
 

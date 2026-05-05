@@ -1,6 +1,6 @@
 # Presentation & Domain Layer Anti-Pattern Analysis
 
-> 마지막 업데이트: 2026-05-04
+> 마지막 업데이트: 2026-05-05
 > 상태: reference
 > doc_id: architecture.anti-pattern-analysis
 > role: reference
@@ -11,6 +11,8 @@
 이 문서는 2026-05-04 기준 조사 기록이다. 현재 구현 기준은 owner 문서인
 [`../operations/codex_coding_guardrails.md`](../operations/codex_coding_guardrails.md)와
 [`../operations/presentation_layer_guardrails.md`](../operations/presentation_layer_guardrails.md)를 따른다.
+
+Diagram lifecycle note: 이전 `.mmd` architecture diagrams는 현재 owner 문서나 reference plan에서 직접 참조하지 않는 superseded supporting material이라 삭제했다. 새 architecture diagram이 필요하면 이 reference 문서에 과거 diagram TODO를 되살리지 말고, 현재 owner 판단과 concrete code path 기준으로 새 scope를 연다.
 
 ---
 

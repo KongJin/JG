@@ -1,6 +1,6 @@
 # Document Management Workflow
 
-> 마지막 업데이트: 2026-05-02
+> 마지막 업데이트: 2026-05-05
 > 상태: active
 > doc_id: ops.document-management-workflow
 > role: ssot
@@ -62,6 +62,7 @@
 - 규칙, repo-local skill, docs-lint, rule-harness, closeout artifact처럼 governance surface가 바뀐 경우에만 recurrence closeout shard를 함께 사용한다.
 - 같은 예방 정보를 final, plan, ops 문서에 장문으로 중복하지 않는다.
 - 새 문서가 필요할 때도 먼저 `plans.progress` 한 줄, 기존 owner 문서의 짧은 섹션, reference plan 압축 보존으로 충분한지 확인한다.
+- 과밀, 중복, stale 정리의 성공 기준은 정보량이나 파일 수 감소다. 새 문서나 새 artifact 추가는 기본값이 아니며, 기존 owner 경로로 해결할 수 없고 다음 세션 판단을 실제로 바꿀 때만 허용한다. 정리 작업에서 안내문을 새로 만드는 것이 과밀을 줄이지 못하면 실패 또는 residual로 본다.
 
 ### Instruction Fit
 
@@ -162,6 +163,7 @@
 dated implementation log, 긴 evidence 목록, 완료된 pass의 세부 기록은 해당 owner plan/reference로 넘긴다.
 현재 포커스가 오래된 active plan 목록에 묻히면, 진행률 본문을 늘리기보다 plan lifecycle을 먼저 재검토한다.
 `progress.md`를 제외한 active plan budget은 5개이며, 초과하면 먼저 완료/blocked/residual-only plan을 reference 압축 또는 삭제 후보로 판정한다.
+새 active plan을 열기 전에도 HITL, 외부 판단, 수동 smoke 때문에 오래 열린 active plan이 있으면 active 유지, blocked residual 이관, reference 압축, 삭제 후보 중 하나로 먼저 판정한다.
 active execution 판단은 `plans.progress`와 active owner plan이 맡고, 세부 acceptance는 해당 active owner plan에 둔다.
 완료 증거와 닫힌 blocker 설명은 reference plan이나 closeout artifact에 남기며, `plans.progress`에는 현재 판단을 바꾸는 residual만 짧게 남긴다.
 reference로 닫힌 lane은 `plans.progress`에서 상세 evidence를 반복하지 않고 남은 residual owner 또는 다음 active owner만 한 줄로 남긴다.
@@ -256,3 +258,4 @@ reference로 보존할 때는 `Closeout`, `Residual owner`, `Evidence links` 수
 6. 큰 문서 작업이면 `owner impact`(여러 owner 영향)와 `doc lifecycle checked`(상태/삭제 후보 확인)를 남겼는가?
 7. active plan을 새로 만들거나 phase를 분리했다면 기존 active parent가 여전히 직접 실행 owner인지 확인했는가?
 8. `plan rereview: clean`을 남긴다면 실제 확인한 scope를 한 줄에 붙였는가?
+9. 정리/감축 작업이면 새 문서나 새 artifact 추가가 목표와 반대 효과를 내지 않는가?

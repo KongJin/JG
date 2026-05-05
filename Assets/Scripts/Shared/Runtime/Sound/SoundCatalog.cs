@@ -16,6 +16,9 @@ namespace Shared.Runtime.Sound
 
         public SoundEntry Get(string key)
         {
+            if (string.IsNullOrEmpty(key))
+                return null;
+
             if (_lookup == null)
                 BuildLookup();
 

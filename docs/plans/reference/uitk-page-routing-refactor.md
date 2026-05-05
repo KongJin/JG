@@ -1,6 +1,6 @@
 # UITK Page Routing Refactor Plan
 
-> 마지막 업데이트: 2026-05-01
+> 마지막 업데이트: 2026-05-05
 > 상태: reference
 > doc_id: plans.uitk-page-routing-refactor
 > role: plan
@@ -203,6 +203,11 @@ Evidence:
 - Unity EditMode artifact: `artifacts/unity/uitk-page-routing-refactor/lobby-page-routing-editmode-tests.xml`
 - Unity UI authoring policy artifact: `artifacts/unity/uitk-page-routing-refactor/unity-ui-authoring-workflow-policy.json`
 - `npm run --silent rules:lint`
+
+Historical artifact path note:
+
+- The Unity UI authoring policy artifact is preserved as 2026-05-01 execution evidence and may contain pre-migration doc paths in `changedFiles`.
+- Current owner lookup for that historical run should use `docs/index.md`; UI foundations, skill routing, skill trigger, non-Stitch handoff, progress, and this plan now live under the current owner tree.
 
 Residual:
 

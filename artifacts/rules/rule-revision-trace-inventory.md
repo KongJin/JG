@@ -38,7 +38,7 @@ Search terms:
 | `docs/owners/operations/plan_authoring_review_workflow.md` conflict/over-scope closeout check | active-current | Keep. This is related instruction-fit policy, not stale. |
 | Historical rule revision trace cleanup plan body | historical/reference | Closed; current owner is `docs/owners/operations/document_management_workflow.md`. |
 | Historical rule trigger skill extraction plan Phase 3 note about conflict/over-scope instruction fit | historical/reference | Closed; current trigger owners are `docs/owners/operations/skill_trigger_matrix.md` and `docs/owners/operations/skill_routing_registry.md`. |
-| `docs/index.md` registry entry for this plan | active-current | Update to `reference` when this plan is completed. |
+| `docs/index.md` registry entry for this plan | historical/reference | Closed. No current `docs/index.md` registry entry exists for this superseded trace inventory. |
 | `rule-operations` skill trigger for old trace/stale rule | active-current | Keep. This is the routing trigger required by Phase 0. |
 | `rule-plan-authoring` skill references to existing-rule conflict and historical/reference preservation | active-current | Keep. This routes plan work and does not conflict with cleanup policy. |
 

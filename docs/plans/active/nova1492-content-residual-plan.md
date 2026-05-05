@@ -1,6 +1,6 @@
 # Nova1492 Content Residual Plan
 
-> 마지막 업데이트: 2026-05-01
+> 마지막 업데이트: 2026-05-05
 > 상태: active
 > doc_id: plans.nova1492-content-residual
 > role: plan
@@ -41,6 +41,12 @@
 | Manual visual audit | blocked | arm/body/leg comparison record against source-derived expectations |
 | Balance handoff | blocked | balance owner accepts candidate IDs and stat review scope |
 | UI/model handoff | blocked | UI/runtime owner accepts replacement candidate scope |
+
+## HITL Gate
+
+- Decision owner: rights/naming은 repo 밖 release/legal 판단 또는 explicit rename policy가 필요하다.
+- Next action: rights/naming verdict를 먼저 확정하고, 그 결과에 따라 balance/UI/model 후보를 각 owner가 받을지 정한다.
+- Stale handling: release/legal 판단을 이번 pass에서 진행하지 않기로 하면 이 plan을 계속 active TODO로 늘리지 말고, `blocked: rights-or-naming-unresolved` residual만 `plans.progress` 또는 `design.world-design`에 짧게 이관한 뒤 reference 압축 후보로 본다.
 
 ## Residual
 
