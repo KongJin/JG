@@ -5,6 +5,11 @@
       "command": "node",
       "args": ["tools/unity-mcp/server.js"]
     },
+    "serena": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["tools/serena-shared-proxy/serena-shared-proxy.mjs"]
+    },
     "suno": {
       "type": "stdio",
       "command": ".codex-local/suno-multi-mcp/.venv/Scripts/python.exe",

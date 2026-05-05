@@ -192,7 +192,7 @@ namespace ProjectSD.EditorTools.UnityMcp
 
                 // interactive 체크
                 var typeName = type.Name;
-                if (typeName == "Button" || typeName == "TMP_InputField" || typeName == "Toggle" || typeName == "Slider" || typeName == "Dropdown")
+                if (typeName == "Button" || typeName == "InputField" || typeName == "Toggle" || typeName == "Slider" || typeName == "Dropdown")
                 {
                     isInteractive = true;
                 }
@@ -236,9 +236,9 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             if (type == null) return false;
             var ns = type.Namespace ?? "";
-            // UnityEngine, UnityEngine.UI, TMPro의 기본 컴포넌트는 built-in으로 간주
+            // UnityEngine and UnityEngine.UI built-in components are not project views.
             // 단, MonoBehaviour를 상속한 프로젝트 스크립트는 제외
-            if (ns.StartsWith("UnityEngine") || ns.StartsWith("TMPro"))
+            if (ns.StartsWith("UnityEngine"))
             {
                 // MonoBehaviour를 상속한 커스텀 스크립트는 built-in 아님
                 return !typeof(MonoBehaviour).IsAssignableFrom(type);

@@ -6,7 +6,7 @@
 > role: reference
 > owner_scope: Stitch source fact extraction and UI Toolkit handoff reference
 > upstream: repo.agents, docs.index, ops.stitch-data-workflow, ops.stitch-structured-handoff-contract, ops.unity-ui-authoring-workflow
-> artifacts: `tools/stitch-unity/`, `artifacts/stitch/`, `artifacts/unity/`
+> artifacts: `tools/stitch-unity/`, `artifacts/stitch/`, `artifacts/unity/current/`, `artifacts/unity/current-index.json`
 
 이 폴더는 Stitch source를 Unity UI Toolkit 후보 구현으로 넘기기 전에 source facts를 확인하는 실행 스크립트를 둔다.
 
@@ -43,7 +43,7 @@ The following scripts are kept only as compatibility entrypoints for callers tha
 ## Outputs
 
 - source facts: stdout 또는 `-OutputPath`
-- UI candidate evidence: `Assets/UI/UIToolkit/`, preview scene, `artifacts/unity/*.png|*.json`
+- UI candidate evidence: `Assets/UI/UIToolkit/`, preview scene, `artifacts/unity/current/*.png|*.json`
 
 ## Notes
 

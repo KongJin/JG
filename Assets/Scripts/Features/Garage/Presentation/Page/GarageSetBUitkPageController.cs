@@ -169,6 +169,19 @@ namespace Features.Garage.Presentation
             Render();
         }
 
+        public void RequestMoveSlot(int sourceSlotIndex, int targetSlotIndex)
+        {
+            if (!CanRender())
+                return;
+
+            if (!_state.SwapDraftSlots(sourceSlotIndex, targetSlotIndex))
+                return;
+
+            _focusedPart = GarageEditorFocus.Mobility;
+            _partSearchText = string.Empty;
+            Render();
+        }
+
         public bool TrySelectVisiblePart(
             GarageNovaPartPanelSlot slot,
             int visibleIndex,
@@ -235,6 +248,7 @@ namespace Features.Garage.Presentation
             _adapter.Bind();
             _adapter.SlotSelected += SelectSlot;
             _adapter.SlotClearRequested += RequestClearSlot;
+            _adapter.SlotMoveRequested += RequestMoveSlot;
             _adapter.PartFocusSelected += SetFocusedPart;
             _adapter.PartSearchChanged += SetPartSearchText;
             _adapter.PartOptionSelected += SelectPartOption;
@@ -416,6 +430,7 @@ namespace Features.Garage.Presentation
 
             _adapter.SlotSelected -= SelectSlot;
             _adapter.SlotClearRequested -= RequestClearSlot;
+            _adapter.SlotMoveRequested -= RequestMoveSlot;
             _adapter.PartFocusSelected -= SetFocusedPart;
             _adapter.PartSearchChanged -= SetPartSearchText;
             _adapter.PartOptionSelected -= SelectPartOption;

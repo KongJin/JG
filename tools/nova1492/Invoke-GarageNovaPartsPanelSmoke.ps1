@@ -5,8 +5,8 @@ param(
     [string]$FrameSearchText = "body23",
     [string]$FirepowerSearchText = "arm43",
     [string]$MobilitySearchText = "legs24",
-    [string]$ScreenshotPath = "artifacts/unity/garage-nova-parts-panel-smoke.png",
-    [string]$OutputPath = "artifacts/unity/garage-nova-parts-panel-smoke.json"
+    [string]$ScreenshotPath = "artifacts/unity/current/garage-nova-parts-panel-smoke.png",
+    [string]$OutputPath = "artifacts/unity/current/garage-nova-parts-panel-smoke.json"
 )
 
 Set-StrictMode -Version Latest

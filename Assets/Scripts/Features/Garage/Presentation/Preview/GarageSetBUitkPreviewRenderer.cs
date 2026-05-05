@@ -15,6 +15,7 @@ namespace Features.Garage.Presentation
         [SerializeField] private float _autoRotationSpeed = 20f;
         [SerializeField] private int _previewLayer = -1;
         [SerializeField] private float _assemblyFitScale = 1f;
+        [SerializeField] private float _assemblyHorizontalOffset;
         [SerializeField] private bool _transparentBackground;
 
         private GameObject _currentPreviewRoot;
@@ -44,6 +45,13 @@ namespace Features.Garage.Presentation
         internal void ConfigureAssemblyFitScale(float scale)
         {
             _assemblyFitScale = Mathf.Max(0.1f, scale);
+        }
+
+        internal void ConfigureAssemblyHorizontalOffset(float offset)
+        {
+            _assemblyHorizontalOffset = offset;
+            if (_currentPreviewRoot != null)
+                ApplyAssemblyHorizontalOffset(_currentPreviewRoot);
         }
 
         internal void ConfigureTransparentBackground(bool isTransparent)
@@ -90,6 +98,7 @@ namespace Features.Garage.Presentation
             _currentPreviewKey = previewKey;
             AssignPreviewLayer(_currentPreviewRoot);
             FitAssemblyToPreviewRoot(_currentPreviewRoot, _assemblyFitScale);
+            ApplyAssemblyHorizontalOffset(_currentPreviewRoot);
             HasPreview = true;
             RenderPreviewFrame();
             return true;
@@ -241,6 +250,16 @@ namespace Features.Garage.Presentation
                 float scale = Mathf.Clamp((1.32f * Mathf.Max(0.1f, scaleMultiplier)) / maxExtent, 0.55f, 5.8f);
                 previewRoot.transform.localScale *= scale;
             }
+        }
+
+        private void ApplyAssemblyHorizontalOffset(GameObject previewRoot)
+        {
+            if (previewRoot == null)
+                return;
+
+            var localPosition = previewRoot.transform.localPosition;
+            localPosition.x = _assemblyHorizontalOffset;
+            previewRoot.transform.localPosition = localPosition;
         }
 
         private static bool TryGetBounds(GameObject root, out Bounds bounds)

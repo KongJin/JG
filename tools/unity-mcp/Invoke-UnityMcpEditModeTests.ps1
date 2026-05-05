@@ -3,7 +3,7 @@ param(
     [string[]]$TestName = @(),
     [string[]]$AssemblyName = @(),
     [string[]]$CategoryName = @(),
-    [string]$OutputPath = "artifacts/unity/editmode-direct-tests.xml",
+    [string]$OutputPath = "artifacts/unity/current/editmode-direct-tests.xml",
     [int]$TimeoutMs = 120000,
     [string]$BaseUrl = "",
     [string]$Owner = "unity-mcp-editmode-tests",

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Shared.Ui;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -7,6 +7,8 @@ namespace Features.Garage.Presentation
 {
     internal sealed class GarageSetBUitkPreviewController
     {
+        private const float UnitPreviewAssemblyFitScale = 1.12f;
+        private const float UnitPreviewAssemblyHorizontalOffset = -0.26f;
 
         private readonly Transform _rendererParent;
         private readonly GarageSetBUitkPreviewRenderer _previewRenderer;
@@ -40,7 +42,8 @@ namespace Features.Garage.Presentation
             _unitPreviewImage = UitkElementUtility.CreateAbsoluteImage();
             unitPreviewHost?.Insert(0, _unitPreviewImage);
             _previewRenderer?.ConfigureTransparentBackground(true);
-            _previewRenderer?.ConfigureAssemblyFitScale(1.35f);
+            _previewRenderer?.ConfigureAssemblyFitScale(UnitPreviewAssemblyFitScale);
+            _previewRenderer?.ConfigureAssemblyHorizontalOffset(UnitPreviewAssemblyHorizontalOffset);
             _partPreviewRenderer?.ConfigureTransparentBackground(true);
 
             SetPreviewTexture(null, false);
@@ -205,3 +208,4 @@ namespace Features.Garage.Presentation
         }
     }
 }
+

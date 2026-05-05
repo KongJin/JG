@@ -227,7 +227,7 @@ namespace ProjectSD.LayerValidation
             if (violation == null)
                 return;
 
-            var key = $"{line}:{ns}:{violation}";
+            var key = string.Concat(line, ":", ns, ":", violation);
             if (!seen.Add(key))
                 return;
 

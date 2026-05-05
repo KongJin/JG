@@ -308,8 +308,7 @@ namespace ProjectSD.EditorTools.SceneTools
                     fullName == "UnityEngine.CanvasGroup" ||
                     fullName == "UnityEngine.CanvasRenderer" ||
                     fullName.StartsWith("UnityEngine.UI.", StringComparison.Ordinal) ||
-                    fullName.StartsWith("UnityEngine.EventSystems.", StringComparison.Ordinal) ||
-                    fullName.StartsWith("TMPro.", StringComparison.Ordinal))
+                    fullName.StartsWith("UnityEngine.EventSystems.", StringComparison.Ordinal))
                 {
                     return true;
                 }

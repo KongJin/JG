@@ -3,7 +3,7 @@ param(
     [ValidateSet("None", "Defeat", "Victory", "NaturalVictory")]
     [string]$ResultMode = "Defeat",
     [string]$Owner = "GameSceneUIUX",
-    [string]$OutputPath = "artifacts/unity/game-scene-placement-smoke.json",
+    [string]$OutputPath = "artifacts/unity/current/game-scene-placement-smoke.json",
     [string]$LockPath = "Temp/UnityMcp/runtime-smoke.lock",
     [int]$LockTimeoutSec = 0,
     [int]$TimeoutSec = 120,

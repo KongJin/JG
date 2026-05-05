@@ -5,6 +5,32 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../../..')).Path
 Import-Module (Join-Path $repoRoot 'tools/rule-harness/RuleHarness.psm1') -Force
 $config = Get-RuleHarnessConfig -ConfigPath (Join-Path $repoRoot 'tools/rule-harness/config.json')
 $scratchRoot = Join-Path $repoRoot 'Temp/RuleHarnessFixtureTests'
+$keepFixtureTests = [string]$env:RULE_HARNESS_KEEP_FIXTURE_TESTS -eq '1'
+
+function Clear-RuleHarnessFixtureScratchRoot {
+    if ($script:keepFixtureTests) {
+        return
+    }
+
+    if ([string]::IsNullOrWhiteSpace($script:scratchRoot) -or -not (Test-Path -LiteralPath $script:scratchRoot)) {
+        return
+    }
+
+    $repoFullPath = [System.IO.Path]::GetFullPath($script:repoRoot).TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
+    $scratchFullPath = [System.IO.Path]::GetFullPath($script:scratchRoot).TrimEnd('\', '/')
+    if (-not $scratchFullPath.StartsWith($repoFullPath, [System.StringComparison]::OrdinalIgnoreCase) -or
+        $scratchFullPath -notlike '*\Temp\RuleHarnessFixtureTests') {
+        Write-Warning "Refusing to clean unexpected rule harness fixture path: $scratchFullPath"
+        return
+    }
+
+    Remove-Item -LiteralPath $script:scratchRoot -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+trap {
+    Clear-RuleHarnessFixtureScratchRoot
+    break
+}
 
 if (Test-Path -LiteralPath $scratchRoot) {
     Remove-Item -LiteralPath $scratchRoot -Recurse -Force -ErrorAction SilentlyContinue
@@ -2125,7 +2151,10 @@ $roleWorkReportPath = Join-Path $roleRepo 'Temp/work-report.json'
     skippedBatches = @([pscustomobject]@{ id = 'skip-1'; reasonCode = 'dirty-target-files'; targets = @('AGENTS.md') })
     rollback = [pscustomobject]@{ performed = $true; failedBatches = @('batch-001') }
     retryAttempts = 1
-    memoryUpdates = @([pscustomobject]@{ scopePath = 'tools/rule-harness/README.md'; hitCount = 2 })
+    memoryUpdates = @(
+        [pscustomobject]@{ scopePath = 'tools/rule-harness/README.md'; hitCount = 2 },
+        [pscustomobject]@{ scopePath = 'AGENTS.md'; hitCount = 1 }
+    )
 } | ConvertTo-Json -Depth 20 | Set-Content -Path $roleWorkReportPath -Encoding UTF8
 & (Join-Path $roleRepo 'tools/rule-harness/run-recurrence-plan.ps1') `
     -RepoRoot $roleRepo `
@@ -2137,6 +2166,9 @@ $rolePlan = Get-Content -Path (Join-Path $roleRepo 'Temp/RecurrencePlan/report.j
 Assert-RuleHarness `
     -Condition (@($rolePlan.preventionItems | Where-Object kind -in @('skipped-batch', 'rollback', 'retry', 'memory-update')).Count -ge 4 -and [bool]$rolePlan.manualValidationRequired) `
     -Message 'Expected recurrence plan role to convert work report failure signals into prevention items.'
+Assert-RuleHarness `
+    -Condition (@($rolePlan.preventionItems | Where-Object { $_.kind -eq 'memory-update' -and @($_.relatedPaths | Where-Object { $_ -eq 'AGENTS.md' }).Count -gt 0 }).Count -eq 0) `
+    -Message 'Expected one-off memory updates to stay out of recurrence prevention work.'
 
 $roleMemoryDir = Join-Path $roleRepo 'tools/rule-harness/memory'
 New-Item -ItemType Directory -Path $roleMemoryDir -Force | Out-Null
@@ -2247,4 +2279,5 @@ Assert-RuleHarness `
     -Condition ($pipelineRecurrenceWork.PSObject.Properties.Name -contains 'agentWorkQueue') `
     -Message 'Expected role harness pipeline to invoke recurrence work role even when the plan has no deterministic recommended batches.'
 
+Clear-RuleHarnessFixtureScratchRoot
 Write-Host 'Rule harness fixture tests passed.'

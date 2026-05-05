@@ -8,6 +8,9 @@ $ErrorActionPreference = "Stop"
 
 $assetsRoot = Join-Path $RepoRoot "Assets"
 $issues = New-Object System.Collections.Generic.List[string]
+$excludedAssetPathPrefixes = @(
+    "Assets/FromStore/"
+)
 
 function ConvertTo-RepoPath {
     param([string]$Path)
@@ -25,12 +28,28 @@ function ConvertTo-RepoPath {
     return $relative -replace "\\", "/"
 }
 
+function Test-IsExcludedAssetPath {
+    param([string]$Path)
+
+    $repoPath = (ConvertTo-RepoPath $Path).Replace("\", "/")
+    foreach ($prefix in @($excludedAssetPathPrefixes)) {
+        if ($repoPath.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
 if (-not (Test-Path -LiteralPath $assetsRoot)) {
     throw "Assets folder not found: $assetsRoot"
 }
 
 $guidToPaths = @{}
-$metaFiles = Get-ChildItem -LiteralPath $assetsRoot -Recurse -File -Filter "*.meta"
+$metaFiles = @(
+    Get-ChildItem -LiteralPath $assetsRoot -Recurse -File -Filter "*.meta" |
+        Where-Object { -not (Test-IsExcludedAssetPath -Path $_.FullName) }
+)
 
 foreach ($metaFile in $metaFiles) {
     $text = Get-Content -LiteralPath $metaFile.FullName -Raw
@@ -56,8 +75,10 @@ foreach ($entry in $guidToPaths.GetEnumerator()) {
     }
 }
 
-$assetFiles = Get-ChildItem -LiteralPath $assetsRoot -Recurse -File |
-    Where-Object { $_.Name -notlike "*.meta" }
+$assetFiles = @(
+    Get-ChildItem -LiteralPath $assetsRoot -Recurse -File |
+        Where-Object { $_.Name -notlike "*.meta" -and -not (Test-IsExcludedAssetPath -Path $_.FullName) }
+)
 
 foreach ($assetFile in $assetFiles) {
     $metaPath = "$($assetFile.FullName).meta"
@@ -66,7 +87,10 @@ foreach ($assetFile in $assetFiles) {
     }
 }
 
-$assetDirectories = Get-ChildItem -LiteralPath $assetsRoot -Recurse -Directory
+$assetDirectories = @(
+    Get-ChildItem -LiteralPath $assetsRoot -Recurse -Directory |
+        Where-Object { -not (Test-IsExcludedAssetPath -Path $_.FullName) }
+)
 foreach ($assetDirectory in $assetDirectories) {
     $metaPath = "$($assetDirectory.FullName).meta"
     if (-not (Test-Path -LiteralPath $metaPath)) {

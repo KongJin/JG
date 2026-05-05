@@ -116,6 +116,8 @@ namespace Features.Garage.Presentation
                 public const string Card = "slot-card";
                 public const string CardActive = "slot-card--active";
                 public const string CardEmpty = "slot-card--empty";
+                public const string CardDragging = "slot-card--dragging";
+                public const string CardDropTarget = "slot-card--drop-target";
                 public const string Code = "slot-code";
                 public const string CodeActive = "slot-code--active";
                 public const string CodeEmpty = "slot-code--empty";

@@ -1,8 +1,8 @@
 param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path,
-    [string]$InventoryJsonPath = "artifacts/unity/prefab-management-inventory.json",
-    [string]$InventoryMarkdownPath = "artifacts/unity/prefab-management-inventory.md",
-    [string]$ApprovalManifestPath = "artifacts/unity/prefab-management-approved-new-prefabs.json"
+    [string]$InventoryJsonPath = "artifacts/unity/current/prefab-management-inventory.json",
+    [string]$InventoryMarkdownPath = "artifacts/unity/current/prefab-management-inventory.md",
+    [string]$ApprovalManifestPath = "artifacts/unity/current/prefab-management-approved-new-prefabs.json"
 )
 
 Set-StrictMode -Version Latest

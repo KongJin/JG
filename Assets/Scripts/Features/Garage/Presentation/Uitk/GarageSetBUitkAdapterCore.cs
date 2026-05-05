@@ -22,6 +22,7 @@ namespace Features.Garage.Presentation
 
         private readonly Action<int> _slotSelected;
         private readonly Action<int> _slotClearRequested;
+        private readonly Action<int, int> _slotMoveRequested;
         private readonly Action<GarageEditorFocus> _partFocusSelected;
         private readonly Action<string> _partSearchChanged;
         private readonly Action<GarageNovaPartSelection> _partOptionSelected;
@@ -30,6 +31,7 @@ namespace Features.Garage.Presentation
 
         public event Action<int> SlotSelected;
         public event Action<int> SlotClearRequested;
+        public event Action<int, int> SlotMoveRequested;
         public event Action<GarageEditorFocus> PartFocusSelected;
         public event Action<string> PartSearchChanged;
         public event Action<GarageNovaPartSelection> PartOptionSelected;
@@ -70,6 +72,7 @@ namespace Features.Garage.Presentation
 
             _slotSelected = slotIndex => SlotSelected?.Invoke(slotIndex);
             _slotClearRequested = slotIndex => SlotClearRequested?.Invoke(slotIndex);
+            _slotMoveRequested = (sourceSlotIndex, targetSlotIndex) => SlotMoveRequested?.Invoke(sourceSlotIndex, targetSlotIndex);
             _partFocusSelected = focus => PartFocusSelected?.Invoke(focus);
             _partSearchChanged = value => PartSearchChanged?.Invoke(value);
             _partOptionSelected = selection => PartOptionSelected?.Invoke(selection);
@@ -118,6 +121,7 @@ namespace Features.Garage.Presentation
             {
                 _slotSurface.SlotSelected += _slotSelected;
                 _slotSurface.SlotClearRequested += _slotClearRequested;
+                _slotSurface.SlotMoveRequested += _slotMoveRequested;
             }
 
             if (_partListSurface != null)
@@ -140,6 +144,7 @@ namespace Features.Garage.Presentation
             {
                 _slotSurface.SlotSelected -= _slotSelected;
                 _slotSurface.SlotClearRequested -= _slotClearRequested;
+                _slotSurface.SlotMoveRequested -= _slotMoveRequested;
             }
 
             if (_partListSurface != null)

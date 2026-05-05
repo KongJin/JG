@@ -2,6 +2,7 @@ using Features.Lobby.Presentation;
 using NUnit.Framework;
 using Shared.Kernel;
 using System;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,6 +13,7 @@ namespace Tests.Editor
     public sealed class LobbyUitkRuntimeAdapterDirectTests
     {
         private const string LobbyShellPath = "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml";
+        private const string LobbyShellUssPath = "Assets/UI/UIToolkit/Lobby/LobbyShell.uss";
         private const string OperationMemoryPath = "Assets/UI/UIToolkit/OperationMemory/OperationMemoryWorkspace.uxml";
         private const string AccountSyncPath = "Assets/UI/UIToolkit/AccountSync/AccountSyncConsole.uxml";
         private const string ConnectionPath = "Assets/UI/UIToolkit/ConnectionReconnect/ConnectionReconnectControl.uxml";
@@ -80,6 +82,21 @@ namespace Tests.Editor
             {
                 Object.DestroyImmediate(fixture.DocumentObject);
             }
+        }
+
+        [Test]
+        public void Uss_NavigationBarHasNoBlackPaddingBand()
+        {
+            var uss = File.ReadAllText(LobbyShellUssPath);
+
+            StringAssert.Contains(".lobby-shell-screen", uss);
+            StringAssert.Contains("padding-bottom: 0;", uss);
+            StringAssert.Contains(".shared-workspace", uss);
+            StringAssert.Contains("margin-bottom: 0;", uss);
+            StringAssert.Contains(".shared-navigation-bar", uss);
+            StringAssert.Contains("padding-left: 0;", uss);
+            StringAssert.Contains("padding-right: 0;", uss);
+            StringAssert.Contains("padding-top: 0;", uss);
         }
 
         [Test]

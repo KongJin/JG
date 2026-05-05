@@ -10,6 +10,7 @@ namespace Features.Garage.Presentation
 
         public int SelectedSlotIndex { get; private set; }
         public string ValidationOverride { get; private set; }
+        private bool _commitEntireDraftOnNextSave;
 
         public void Initialize(GarageRoster roster)
         {
@@ -17,6 +18,7 @@ namespace Features.Garage.Presentation
             CommittedRoster.Normalize();
             DraftRoster = CommittedRoster.Clone();
             DraftRoster.Normalize();
+            _commitEntireDraftOnNextSave = false;
             SelectSlot(FindInitialSelectedSlot());
         }
 
@@ -73,6 +75,7 @@ namespace Features.Garage.Presentation
             CommittedRoster.Normalize();
             DraftRoster = CommittedRoster.Clone();
             DraftRoster.Normalize();
+            _commitEntireDraftOnNextSave = false;
             SelectSlot(FindInitialSelectedSlot());
         }
 
@@ -82,6 +85,21 @@ namespace Features.Garage.Presentation
             ValidationOverride = null;
         }
 
+        public bool SwapDraftSlots(int sourceSlotIndex, int targetSlotIndex)
+        {
+            if (sourceSlotIndex < 0 ||
+                sourceSlotIndex >= GarageRoster.MaxSlots ||
+                targetSlotIndex < 0 ||
+                targetSlotIndex >= GarageRoster.MaxSlots ||
+                sourceSlotIndex == targetSlotIndex)
+                return false;
+
+            DraftRoster.SwapSlots(sourceSlotIndex, targetSlotIndex);
+            _commitEntireDraftOnNextSave = true;
+            SelectSlot(targetSlotIndex);
+            return true;
+        }
+
         public void CommitDraft()
         {
             CommittedRoster = DraftRoster.Clone();
@@ -89,6 +107,7 @@ namespace Features.Garage.Presentation
             DraftRoster = CommittedRoster.Clone();
             DraftRoster.Normalize();
             ValidationOverride = null;
+            _commitEntireDraftOnNextSave = false;
         }
 
         public void SetValidationOverride(string message)
@@ -149,6 +168,9 @@ namespace Features.Garage.Presentation
 
         public GarageRoster BuildSelectedSlotCommitRoster()
         {
+            if (_commitEntireDraftOnNextSave)
+                return DraftRoster.Clone();
+
             var commitRoster = CommittedRoster.Clone();
             commitRoster.SetSlot(SelectedSlotIndex, GetSelectedDraftSlot());
             return commitRoster;
@@ -156,6 +178,12 @@ namespace Features.Garage.Presentation
 
         public void CommitSelectedSlotDraft()
         {
+            if (_commitEntireDraftOnNextSave)
+            {
+                CommitDraft();
+                return;
+            }
+
             var selectedDraft = GetSelectedDraftSlot();
             CommittedRoster = CommittedRoster.Clone();
             CommittedRoster.SetSlot(SelectedSlotIndex, selectedDraft);

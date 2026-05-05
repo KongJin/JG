@@ -12,6 +12,7 @@ namespace Features.Garage.Presentation
     {
         event Action<int> SlotSelected;
         event Action<int> SlotClearRequested;
+        event Action<int, int> SlotMoveRequested;
         event Action<GarageEditorFocus> PartFocusSelected;
         event Action<string> PartSearchChanged;
         event Action<GarageNovaPartSelection> PartOptionSelected;

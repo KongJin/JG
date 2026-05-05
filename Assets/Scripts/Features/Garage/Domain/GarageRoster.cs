@@ -191,6 +191,21 @@ namespace Features.Garage.Domain
         }
 
         /// <summary>
+        /// 두 슬롯의 편성 위치를 교환한다.
+        /// </summary>
+        public void SwapSlots(int leftIndex, int rightIndex)
+        {
+            Normalize();
+            if (leftIndex < 0 || leftIndex >= MaxSlots || rightIndex < 0 || rightIndex >= MaxSlots)
+                return;
+
+            if (leftIndex == rightIndex)
+                return;
+
+            (loadout[leftIndex], loadout[rightIndex]) = (loadout[rightIndex], loadout[leftIndex]);
+        }
+
+        /// <summary>
         /// 편성 초기화.
         /// </summary>
         public void Clear()

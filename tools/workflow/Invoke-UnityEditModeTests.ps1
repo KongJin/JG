@@ -22,7 +22,7 @@ try {
     }
     else {
         $unityExe = Resolve-WorkflowUnityExe -RepoRoot $RepoRoot -UnityPath $UnityPath
-        $artifactRoot = Join-Path $RepoRoot "artifacts\unity"
+        $artifactRoot = Join-Path $RepoRoot "artifacts\unity\current"
         if (-not (Test-Path -LiteralPath $artifactRoot)) {
             New-Item -ItemType Directory -Path $artifactRoot -Force | Out-Null
         }

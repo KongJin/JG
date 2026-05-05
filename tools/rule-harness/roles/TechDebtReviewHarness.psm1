@@ -76,6 +76,10 @@ function Test-TechDebtScanFileIncluded {
     )
 
     $normalized = $RelativePath.Replace('\', '/')
+    if ($normalized.StartsWith('Assets/FromStore/', [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $false
+    }
+
     if ($normalized -match '(^|/)(Library|Temp|obj|bin|Build|Builds|Logs|UserSettings|\.git|node_modules)/') {
         return $false
     }
@@ -285,7 +289,7 @@ function Get-TechDebtExternalReferenceMatches {
         Push-Location $RepoRoot
         try {
             foreach ($token in @($Tokens | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Sort-Object -Unique)) {
-                $output = @(& $rg.Source --fixed-strings --line-number --glob '!Library/**' --glob '!Temp/**' --glob '!obj/**' --glob '!bin/**' --glob '!Build/**' --glob '!Builds/**' --glob '!Logs/**' --glob '!UserSettings/**' --glob '!.git/**' --glob '!node_modules/**' -- ([string]$token) . 2>$null)
+                $output = @(& $rg.Source --fixed-strings --line-number --glob '!Assets/FromStore/**' --glob '!Library/**' --glob '!Temp/**' --glob '!obj/**' --glob '!bin/**' --glob '!Build/**' --glob '!Builds/**' --glob '!Logs/**' --glob '!UserSettings/**' --glob '!.git/**' --glob '!node_modules/**' -- ([string]$token) . 2>$null)
                 foreach ($line in $output) {
                     if ([string]$line -notmatch '^\./?(?<path>.*?):(?<line>\d+):') {
                         continue
@@ -316,7 +320,7 @@ function Get-TechDebtExternalReferenceMatches {
         Get-ChildItem -LiteralPath $root -Recurse -File -ErrorAction SilentlyContinue |
             Where-Object {
                 $relative = $_.FullName.Substring($root.Length + 1).Replace('\', '/')
-                $relative -notmatch '(^|/)(Library|Temp|obj|bin|Build|Builds|Logs|UserSettings|\.git|node_modules)/' -and
+                $relative -notmatch '(^|/)(Assets/FromStore|Library|Temp|obj|bin|Build|Builds|Logs|UserSettings|\.git|node_modules)/' -and
                 -not $excluded.Contains($relative)
             }
     )

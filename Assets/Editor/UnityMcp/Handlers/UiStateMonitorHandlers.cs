@@ -298,18 +298,10 @@ namespace ProjectSD.EditorTools.UnityMcp
 
                     string currentText = null;
 
-                    var tmpText = go.GetComponent<TMPro.TMP_Text>();
-                    if (tmpText != null)
+                    var legacyText = go.GetComponent<UnityEngine.UI.Text>();
+                    if (legacyText != null)
                     {
-                        currentText = tmpText.text;
-                    }
-                    else
-                    {
-                        var legacyText = go.GetComponent<UnityEngine.UI.Text>();
-                        if (legacyText != null)
-                        {
-                            currentText = legacyText.text;
-                        }
+                        currentText = legacyText.text;
                     }
 
                     if (currentText == null) return false;
@@ -445,9 +437,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 var path = McpSharedHelpers.GetTransformPath(child);
                 var hasUiComponent = child.GetComponent<UnityEngine.UI.Graphic>() != null ||
                                        child.GetComponent<UnityEngine.UI.Image>() != null ||
-                                       child.GetComponent<UnityEngine.UI.Button>() != null ||
-                                       child.GetComponent<TMPro.TMP_Text>() != null ||
-                                       child.GetComponent<TMPro.TextMeshProUGUI>() != null;
+                                       child.GetComponent<UnityEngine.UI.Button>() != null;
 
                 if (hasUiComponent)
                 {
@@ -473,11 +463,8 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             if (go.GetComponent<Graphic>() != null) types.Add("Graphic");
             if (go.GetComponent<Button>() != null) types.Add("Button");
-            if (go.GetComponent<TMPro.TMP_Text>() != null) types.Add("TMP_Text");
-            if (go.GetComponent<TMPro.TextMeshProUGUI>() != null) types.Add("TMP_Text");
-            if (go.GetComponent<TMPro.TextMeshPro>() != null) types.Add("TMP");
+            if (go.GetComponent<Text>() != null) types.Add("Text");
             if (go.GetComponent<InputField>() != null) types.Add("InputField");
-            if (go.GetComponent<TMPro.TMP_InputField>() != null) types.Add("InputField");
             if (go.GetComponent<Toggle>() != null) types.Add("Toggle");
             if (go.GetComponent<Slider>() != null) types.Add("Slider");
             if (go.GetComponent<ScrollRect>() != null) types.Add("ScrollRect");

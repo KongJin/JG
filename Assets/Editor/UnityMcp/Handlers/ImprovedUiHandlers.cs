@@ -37,7 +37,7 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             // 기존 엔드포인트 호환성 유지
             "POST".Register("/ui/button/invoke", "Invoke a Unity UI Button.onClick (legacy)", async (req, res) => await HandleUiButtonInvokeAsync(req, res));
-            "POST".Register("/ui/create-button", "Create a UI Button with TMP text", async (req, res) => await HandleUiCreateButtonAsync(req, res));
+            "POST".Register("/ui/create-button", "Create a UI Button with text", async (req, res) => await HandleUiCreateButtonAsync(req, res));
             "POST".Register("/ui/create-panel", "Create a UI Panel (Image)", async (req, res) => await HandleUiCreatePanelAsync(req, res));
             "POST".Register("/ui/create-raw-image", "Create a UI RawImage", async (req, res) => await HandleUiCreateRawImageAsync(req, res));
             "POST".Register("/ui/set-rect", "Modify RectTransform properties", async (req, res) => await HandleUiSetRectAsync(req, res));
@@ -183,23 +183,21 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             var path = McpSharedHelpers.GetTransformPath(go.transform);
 
-            // InputField 확인
-            var inputField = go.GetComponent<TMPro.TMP_InputField>();
+            var inputField = go.GetComponent<InputField>();
             if (inputField != null)
             {
-                inputField.onSubmit?.Invoke(inputField.text);
+                inputField.onEndEdit?.Invoke(inputField.text);
                 return new UiInvokeResponse
                 {
                     success = true,
-                    message = "Invoked InputField.onSubmit",
+                    message = "Invoked InputField.onEndEdit",
                     path = path,
-                    invokedMethod = "TMPro.TMP_InputField.onSubmit",
+                    invokedMethod = "InputField.onEndEdit",
                     durationMs = stopwatch.ElapsedMilliseconds
                 };
             }
 
-            // 일반 OnSubmit 메서드 찾기
-            var result = FindAndInvokeMethod(go, "OnSubmit", inputField?.text);
+            var result = FindAndInvokeMethod(go, "OnSubmit");
             return new UiInvokeResponse
             {
                 success = true,
@@ -322,8 +320,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 state["persistentListenerCount"] = button.onClick.GetPersistentEventCount();
             }
 
-            // InputField 상태
-            var inputField = gameObject.GetComponent<TMPro.TMP_InputField>();
+            var inputField = gameObject.GetComponent<InputField>();
             if (inputField != null)
             {
                 state["type"] = "InputField";
@@ -351,8 +348,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 state["maxValue"] = slider.maxValue;
             }
 
-            // Text 상태
-            var text = gameObject.GetComponent<TMPro.TMP_Text>();
+            var text = gameObject.GetComponent<Text>();
             if (text != null)
             {
                 state["type"] = "Text";
@@ -390,8 +386,7 @@ namespace ProjectSD.EditorTools.UnityMcp
 
             var path = McpSharedHelpers.GetTransformPath(gameObject.transform);
 
-            // InputField 설정
-            var inputField = gameObject.GetComponent<TMPro.TMP_InputField>();
+            var inputField = gameObject.GetComponent<InputField>();
             if (inputField != null)
             {
                 inputField.text = req.value ?? string.Empty;
@@ -414,8 +409,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 return new { success = true, message = $"Set Slider.value to {slider.value}", path = path };
             }
 
-            // Text 설정
-            var text = gameObject.GetComponent<TMPro.TMP_Text>();
+            var text = gameObject.GetComponent<Text>();
             if (text != null)
             {
                 text.text = req.value ?? string.Empty;
@@ -895,21 +889,18 @@ namespace ProjectSD.EditorTools.UnityMcp
                     image.color = new Color(0.2f, 0.4f, 0.9f, 1f);
                     image.type = Image.Type.Sliced;
                     go.AddComponent<Button>();
-                    var textGo = new GameObject("Text (TMP)");
+                    var textGo = new GameObject("Text");
                     textGo.transform.SetParent(go.transform, false);
                     var textRect = textGo.AddComponent<RectTransform>();
                     textRect.anchorMin = Vector2.zero;
                     textRect.anchorMax = Vector2.one;
                     textRect.sizeDelta = Vector2.zero;
-                    var tmpType = UnityMcpBridge.ResolveTypeByFullName("TMPro.TextMeshProUGUI");
-                    if (tmpType != null && typeof(TMPro.TMP_Text).IsAssignableFrom(tmpType))
-                    {
-                        var tmpText = (TMPro.TMP_Text)textGo.AddComponent(tmpType);
-                        tmpText.text = string.IsNullOrEmpty(req.buttonText) ? "Button" : req.buttonText;
-                        tmpText.fontSize = 14;
-                        tmpText.alignment = TMPro.TextAlignmentOptions.Center;
-                        tmpText.color = Color.white;
-                    }
+                    var label = textGo.AddComponent<Text>();
+                    label.text = string.IsNullOrEmpty(req.buttonText) ? "Button" : req.buttonText;
+                    label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf") ?? Resources.GetBuiltinResource<Font>("Arial.ttf");
+                    label.fontSize = 14;
+                    label.alignment = TextAnchor.MiddleCenter;
+                    label.color = Color.white;
                     Undo.RegisterCreatedObjectUndo(go, "MCP Create UI Button");
                     EditorSceneManager.MarkSceneDirty(go.scene);
                     createdPath = McpSharedHelpers.GetTransformPath(go.transform);

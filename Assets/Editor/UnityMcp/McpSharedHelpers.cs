@@ -154,21 +154,6 @@ namespace ProjectSD.EditorTools.UnityMcp
             if (KnownComponentTypes.TryGetValue(typeName, out var knownType))
                 return Undo.AddComponent(go, knownType);
 
-            // TMP types
-            if (typeName.Equals("TextMeshProUGUI", StringComparison.OrdinalIgnoreCase)
-                || typeName.Equals("TMP_Text", StringComparison.OrdinalIgnoreCase))
-            {
-                var tmpType = UnityMcpBridge.ResolveTypeByFullName("TMPro.TextMeshProUGUI");
-                if (tmpType != null) return Undo.AddComponent(go, tmpType);
-                throw new Exception("TextMeshPro not found.");
-            }
-            if (typeName.Equals("TMP_InputField", StringComparison.OrdinalIgnoreCase))
-            {
-                var tmpType = UnityMcpBridge.ResolveTypeByFullName("TMPro.TMP_InputField");
-                if (tmpType != null) return Undo.AddComponent(go, tmpType);
-                throw new Exception("TextMeshPro not found.");
-            }
-
             var foundType = UnityMcpBridge.ResolveTypeByFullName(typeName);
             if (foundType != null && typeof(Component).IsAssignableFrom(foundType))
                 return Undo.AddComponent(go, foundType);

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-05",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "rule harness fixture reliability, fixture temp cleanup, recurrence-plan noise reduction, and third-party scan hygiene",
+  "observedMutationClass": "LayerDependencyAnalyzer Add-Type compatibility, recurrence memory update filtering, fixture scratch cleanup, and FromStore tech-debt scan exclusion",
+  "acceptanceEvidenceClass": "rule harness fixture tests, fixture temp cleanup check, FromStore rg exclusion check, asset hygiene check, feature dependency report refresh, rules lint",
+  "escalationRequired": false,
+  "rootCause": "The feature dependency report script compiles LayerDependencyAnalyzer through PowerShell Add-Type, but the analyzer body still used C# string interpolation that the local Add-Type compiler rejected in fixture runs. Recurrence planning also promoted one-off advisory memory updates into prevention work, which could queue low-signal AGENTS.md edits and trip rules-only closeout gates. Fixture tests copied full rule harness directories under Temp/RuleHarnessFixtureTests and left duplicate RuleHarness.psm1 copies behind after passing, inflating recursive scans. Third-party Assets/FromStore code was excluded in the main harness config but not in repo-default rg searches or every PowerShell-backed tech-debt reference scan, so Photon/DOTween vendor code could still pollute analysis context.",
+  "prevention": "Keep LayerDependencyAnalyzer code used by Add-Type compatible with the local PowerShell compiler subset. Only promote work-report memory updates into recurrence prevention items after at least two hits, while preserving recurring advisory memory handling for repeated non-operational failures. Clean RuleHarnessFixtureTests at test closeout by default, with RULE_HARNESS_KEEP_FIXTURE_TESTS=1 as an explicit debug opt-out. Exclude Assets/FromStore from repo-default rg searches and tech-debt external reference scans so third-party store imports stay out of project-authored debt analysis. This change preserves existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, and progress evidence overload.",
+  "verification": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\rule-harness\\tests\\Run-RuleHarnessTests.ps1; Test-Path .\\Temp\\RuleHarnessFixtureTests returned False; rg -n \"DOTweenTMPAnimator|DOTweenAnimationInspector|TextMeshPro\" Assets returned no matches; powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\check-unity-asset-hygiene.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\rule-harness\\write-feature-dependency-report.ps1; npm run --silent rules:lint; dotnet build Assembly-CSharp-Editor.csproj --no-restore -v:minimal",
+  "blockedReason": "",
+  "changedPaths": [
+    "Assets/Editor/LayerDependencyValidator.cs",
+    "tools/rule-harness/roles/RecurrencePlanHarness.psm1",
+    "tools/rule-harness/roles/TechDebtReviewHarness.psm1",
+    "tools/rule-harness/tests/Run-RuleHarnessTests.ps1",
+    "artifacts/rules/issue-recurrence-closeout.d/local-rule-harness-addtype-memory-filter-20260505.json"
+  ]
+}

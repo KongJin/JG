@@ -22,6 +22,7 @@ namespace Features.Garage.Presentation
         private GarageSetBUitkDocumentHost _documentHost;
         private Action<int> _coreSlotSelected;
         private Action<int> _coreSlotClearRequested;
+        private Action<int, int> _coreSlotMoveRequested;
         private Action<GarageEditorFocus> _corePartFocusSelected;
         private Action<string> _corePartSearchChanged;
         private Action<GarageNovaPartSelection> _corePartOptionSelected;
@@ -30,6 +31,7 @@ namespace Features.Garage.Presentation
 
         public event Action<int> SlotSelected;
         public event Action<int> SlotClearRequested;
+        public event Action<int, int> SlotMoveRequested;
         public event Action<GarageEditorFocus> PartFocusSelected;
         public event Action<string> PartSearchChanged;
         public event Action<GarageNovaPartSelection> PartOptionSelected;
@@ -136,6 +138,7 @@ namespace Features.Garage.Presentation
 
             _coreSlotSelected = slotIndex => SlotSelected?.Invoke(slotIndex);
             _coreSlotClearRequested = slotIndex => SlotClearRequested?.Invoke(slotIndex);
+            _coreSlotMoveRequested = (sourceSlotIndex, targetSlotIndex) => SlotMoveRequested?.Invoke(sourceSlotIndex, targetSlotIndex);
             _corePartFocusSelected = focus => PartFocusSelected?.Invoke(focus);
             _corePartSearchChanged = value => PartSearchChanged?.Invoke(value);
             _corePartOptionSelected = selection => PartOptionSelected?.Invoke(selection);
@@ -144,6 +147,7 @@ namespace Features.Garage.Presentation
 
             _core.SlotSelected += _coreSlotSelected;
             _core.SlotClearRequested += _coreSlotClearRequested;
+            _core.SlotMoveRequested += _coreSlotMoveRequested;
             _core.PartFocusSelected += _corePartFocusSelected;
             _core.PartSearchChanged += _corePartSearchChanged;
             _core.PartOptionSelected += _corePartOptionSelected;
@@ -174,6 +178,8 @@ namespace Features.Garage.Presentation
                 _core.SlotSelected -= _coreSlotSelected;
             if (_coreSlotClearRequested != null)
                 _core.SlotClearRequested -= _coreSlotClearRequested;
+            if (_coreSlotMoveRequested != null)
+                _core.SlotMoveRequested -= _coreSlotMoveRequested;
             if (_corePartFocusSelected != null)
                 _core.PartFocusSelected -= _corePartFocusSelected;
             if (_corePartSearchChanged != null)
@@ -187,6 +193,7 @@ namespace Features.Garage.Presentation
 
             _coreSlotSelected = null;
             _coreSlotClearRequested = null;
+            _coreSlotMoveRequested = null;
             _corePartFocusSelected = null;
             _corePartSearchChanged = null;
             _corePartOptionSelected = null;

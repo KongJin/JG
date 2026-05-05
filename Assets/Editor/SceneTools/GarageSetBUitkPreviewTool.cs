@@ -13,7 +13,7 @@ namespace ProjectSD.EditorTools.SceneTools
         private const string UxmlPath = "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml";
         private const string PanelSettingsPath = "Assets/Settings/UI/GarageSetBPanelSettings.asset";
         private const string ScenePath = "Assets/Scenes/GarageSetBUitkPreview.unity";
-        private const string ReportPath = "artifacts/unity/garage-setb-uitoolkit-port-report.md";
+        private const string ReportPath = "artifacts/unity/current/garage-setb-uitoolkit-port-report.md";
 
         [MenuItem("Tools/UIToolkit/Create Garage SetB Preview Scene")]
         public static void CreatePreviewScene()

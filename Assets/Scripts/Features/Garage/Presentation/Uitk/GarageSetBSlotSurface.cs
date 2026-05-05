@@ -8,9 +8,20 @@ namespace Features.Garage.Presentation
 {
     internal sealed class GarageSetBSlotSurface : BaseSurface<VisualElement>
     {
+        private const float SlotDragThreshold = 16f;
+
         private readonly SlotBinding[] _slots = new SlotBinding[GarageUitkConstants.Slots.MaxCount];
         private readonly Action[] _slotClicked = new Action[GarageUitkConstants.Slots.MaxCount];
         private readonly Action[] _slotClearClicked = new Action[GarageUitkConstants.Slots.MaxCount];
+        private readonly EventCallback<PointerDownEvent>[] _slotPointerDown = new EventCallback<PointerDownEvent>[GarageUitkConstants.Slots.MaxCount];
+        private readonly EventCallback<PointerMoveEvent>[] _slotPointerMove = new EventCallback<PointerMoveEvent>[GarageUitkConstants.Slots.MaxCount];
+        private readonly EventCallback<PointerUpEvent>[] _slotPointerUp = new EventCallback<PointerUpEvent>[GarageUitkConstants.Slots.MaxCount];
+        private readonly EventCallback<PointerCancelEvent>[] _slotPointerCancel = new EventCallback<PointerCancelEvent>[GarageUitkConstants.Slots.MaxCount];
+        private int _activeDragSlot = -1;
+        private int _activeDragPointerId = -1;
+        private int _suppressedClickSlot = -1;
+        private Vector2 _dragStartPosition;
+        private bool _isSlotDragActive;
 
         public GarageSetBSlotSurface(VisualElement root)
             : base(root)
@@ -33,6 +44,7 @@ namespace Features.Garage.Presentation
 
         public event Action<int> SlotSelected;
         public event Action<int> SlotClearRequested;
+        public event Action<int, int> SlotMoveRequested;
 
         public void Render(IReadOnlyList<GarageSlotViewModel> slots)
         {
@@ -59,10 +71,18 @@ namespace Features.Garage.Presentation
             for (int i = 0; i < _slots.Length; i++)
             {
                 int slotIndex = i;
-                _slotClicked[i] ??= () => SlotSelected?.Invoke(slotIndex);
+                _slotClicked[i] ??= () => SelectSlotFromClick(slotIndex);
                 _slotClearClicked[i] ??= () => SlotClearRequested?.Invoke(slotIndex);
+                _slotPointerDown[i] ??= evt => BeginSlotDrag(slotIndex, evt);
+                _slotPointerMove[i] ??= evt => UpdateSlotDrag(slotIndex, evt);
+                _slotPointerUp[i] ??= evt => EndSlotDrag(slotIndex, evt);
+                _slotPointerCancel[i] ??= evt => CancelSlotDrag(slotIndex, evt);
                 _slots[i].Card.clicked += _slotClicked[i];
                 _slots[i].ClearButton.clicked += _slotClearClicked[i];
+                _slots[i].Card.RegisterCallback(_slotPointerDown[i]);
+                _slots[i].Card.RegisterCallback(_slotPointerMove[i]);
+                _slots[i].Card.RegisterCallback(_slotPointerUp[i]);
+                _slots[i].Card.RegisterCallback(_slotPointerCancel[i]);
             }
         }
 
@@ -75,7 +95,180 @@ namespace Features.Garage.Presentation
 
                 if (_slotClearClicked[i] != null)
                     _slots[i].ClearButton.clicked -= _slotClearClicked[i];
+
+                if (_slotPointerDown[i] != null)
+                    _slots[i].Card.UnregisterCallback(_slotPointerDown[i]);
+
+                if (_slotPointerMove[i] != null)
+                    _slots[i].Card.UnregisterCallback(_slotPointerMove[i]);
+
+                if (_slotPointerUp[i] != null)
+                    _slots[i].Card.UnregisterCallback(_slotPointerUp[i]);
+
+                if (_slotPointerCancel[i] != null)
+                    _slots[i].Card.UnregisterCallback(_slotPointerCancel[i]);
             }
+        }
+
+        private void SelectSlotFromClick(int slotIndex)
+        {
+            if (_suppressedClickSlot == slotIndex)
+            {
+                _suppressedClickSlot = -1;
+                return;
+            }
+
+            SlotSelected?.Invoke(slotIndex);
+        }
+
+        private void BeginSlotDrag(int slotIndex, PointerDownEvent evt)
+        {
+            if (_activeDragPointerId >= 0 ||
+                evt == null ||
+                IsInsideElement(evt.target as VisualElement, _slots[slotIndex].ClearButton))
+                return;
+
+            _activeDragSlot = slotIndex;
+            _activeDragPointerId = evt.pointerId;
+            _dragStartPosition = ToVector2(evt.position);
+            _isSlotDragActive = false;
+            _slots[slotIndex].Card.CapturePointer(evt.pointerId);
+        }
+
+        private void UpdateSlotDrag(int slotIndex, PointerMoveEvent evt)
+        {
+            if (evt == null || !IsActivePointer(slotIndex, evt.pointerId))
+                return;
+
+            var position = ToVector2(evt.position);
+            if (!_isSlotDragActive &&
+                (position - _dragStartPosition).sqrMagnitude >= SlotDragThreshold * SlotDragThreshold)
+                _isSlotDragActive = true;
+
+            if (!_isSlotDragActive)
+                return;
+
+            SetSlotDragClasses(FindSlotAtPanelPosition(position));
+            evt.StopPropagation();
+        }
+
+        private void EndSlotDrag(int slotIndex, PointerUpEvent evt)
+        {
+            if (evt == null || !IsActivePointer(slotIndex, evt.pointerId))
+                return;
+
+            int sourceSlot = _activeDragSlot;
+            int targetSlot = _isSlotDragActive ? FindSlotAtPanelPosition(ToVector2(evt.position)) : -1;
+            ReleasePointer(slotIndex, evt.pointerId);
+            bool wasDragging = _isSlotDragActive;
+            ClearSlotDragClasses();
+            ResetSlotDrag();
+
+            if (!wasDragging)
+                return;
+
+            SuppressNextSlotClick(sourceSlot);
+            evt.StopImmediatePropagation();
+
+            if (targetSlot >= 0 && targetSlot != sourceSlot)
+                SlotMoveRequested?.Invoke(sourceSlot, targetSlot);
+        }
+
+        private void CancelSlotDrag(int slotIndex, PointerCancelEvent evt)
+        {
+            if (evt == null || !IsActivePointer(slotIndex, evt.pointerId))
+                return;
+
+            ReleasePointer(slotIndex, evt.pointerId);
+            if (_isSlotDragActive)
+                SuppressNextSlotClick(_activeDragSlot);
+            ClearSlotDragClasses();
+            ResetSlotDrag();
+        }
+
+        private bool IsActivePointer(int slotIndex, int pointerId)
+        {
+            return _activeDragSlot == slotIndex && _activeDragPointerId == pointerId;
+        }
+
+        private void ReleasePointer(int slotIndex, int pointerId)
+        {
+            if (_slots[slotIndex].Card.HasPointerCapture(pointerId))
+                _slots[slotIndex].Card.ReleasePointer(pointerId);
+        }
+
+        private void ResetSlotDrag()
+        {
+            _activeDragSlot = -1;
+            _activeDragPointerId = -1;
+            _dragStartPosition = Vector2.zero;
+            _isSlotDragActive = false;
+        }
+
+        private void SetSlotDragClasses(int dropTargetSlot)
+        {
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                UitkElementUtility.SetClass(
+                    _slots[i].Card,
+                    GarageUitkConstants.Classes.Slot.CardDragging,
+                    i == _activeDragSlot);
+                UitkElementUtility.SetClass(
+                    _slots[i].Card,
+                    GarageUitkConstants.Classes.Slot.CardDropTarget,
+                    i == dropTargetSlot && i != _activeDragSlot);
+            }
+        }
+
+        private void ClearSlotDragClasses()
+        {
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                UitkElementUtility.SetClass(_slots[i].Card, GarageUitkConstants.Classes.Slot.CardDragging, false);
+                UitkElementUtility.SetClass(_slots[i].Card, GarageUitkConstants.Classes.Slot.CardDropTarget, false);
+            }
+        }
+
+        private int FindSlotAtPanelPosition(Vector2 panelPosition)
+        {
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                if (_slots[i].Card.worldBound.Contains(panelPosition))
+                    return i;
+            }
+
+            return -1;
+        }
+
+        private void SuppressNextSlotClick(int slotIndex)
+        {
+            if (slotIndex < 0 || slotIndex >= _slots.Length)
+                return;
+
+            _suppressedClickSlot = slotIndex;
+            _slots[slotIndex].Card.schedule.Execute(() =>
+            {
+                if (_suppressedClickSlot == slotIndex)
+                    _suppressedClickSlot = -1;
+            }).ExecuteLater(0);
+        }
+
+        private static bool IsInsideElement(VisualElement target, VisualElement ancestor)
+        {
+            while (target != null)
+            {
+                if (ReferenceEquals(target, ancestor))
+                    return true;
+
+                target = target.parent;
+            }
+
+            return false;
+        }
+
+        private static Vector2 ToVector2(Vector3 position)
+        {
+            return new Vector2(position.x, position.y);
         }
 
         private static void RenderSlot(SlotBinding binding, GarageSlotViewModel slot, Texture previewTexture, int slotIndex)

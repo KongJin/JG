@@ -37,7 +37,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         internal const int MaxStoredLogs = 500;
         internal const int MaxLogMessageLength = 2000;
         internal const int MaxStackTraceLength = 6000;
-        internal const string DefaultScreenshotDirectoryRelativePath = "Temp/UnityMcp/Screenshots";
+        internal const string DefaultScreenshotDirectoryRelativePath = "artifacts/unity/current/screenshots";
         internal const int ScreenshotWriteTimeoutMs = 5000;
         internal const int ScreenshotPollDelayMs = 100;
 

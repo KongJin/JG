@@ -220,6 +220,29 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void SwapDraftSlots_SelectedSaveCommitsBothSwappedSlots()
+        {
+            var roster = new GarageRoster();
+            roster.SetSlot(0, new GarageRoster.UnitLoadout("frame-a", "fire-a", "mob-a"));
+            roster.SetSlot(1, new GarageRoster.UnitLoadout("frame-b", "fire-b", "mob-b"));
+            var state = new GaragePageState();
+            state.Initialize(roster);
+
+            Assert.IsTrue(state.SwapDraftSlots(0, 1));
+
+            var commitRoster = state.BuildSelectedSlotCommitRoster();
+            Assert.AreEqual(1, state.SelectedSlotIndex);
+            Assert.AreEqual("frame-b", commitRoster.GetSlot(0).frameId);
+            Assert.AreEqual("frame-a", commitRoster.GetSlot(1).frameId);
+
+            state.CommitSelectedSlotDraft();
+
+            Assert.AreEqual("frame-b", state.CommittedRoster.GetSlot(0).frameId);
+            Assert.AreEqual("frame-a", state.CommittedRoster.GetSlot(1).frameId);
+            Assert.IsFalse(state.HasDraftChanges());
+        }
+
+        [Test]
         public void SlotViewModel_UsesDeterministicCallsignAndIdentityCopy()
         {
             var state = CreateInitializedState(3);

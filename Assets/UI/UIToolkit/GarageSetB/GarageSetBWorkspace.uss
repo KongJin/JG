@@ -159,6 +159,16 @@
     background-color: rgba(20, 76, 120, 0.22);
 }
 
+.slot-card--dragging {
+    border-color: rgba(94, 182, 255, 0.9);
+    background-color: rgba(20, 76, 120, 0.32);
+}
+
+.slot-card--drop-target {
+    border-color: rgba(255, 160, 20, 0.82);
+    background-color: rgba(255, 160, 20, 0.12);
+}
+
 .slot-clear-button {
     display: none;
     position: absolute;
@@ -1361,6 +1371,14 @@
     border-width: 1px;
     border-color: rgba(94, 182, 255, 0.24);
     border-radius: 6px;
+    overflow: hidden;
+}
+
+.stat-radar-label {
+    color: rgba(198, 222, 238, 0.88);
+    font-size: 8px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
 }
 
 .part-selection-pane {

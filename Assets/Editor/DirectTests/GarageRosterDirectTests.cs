@@ -69,6 +69,23 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void SwapSlots_ExchangesLoadoutPositions()
+        {
+            var roster = new GarageRoster();
+            roster.SetSlot(0, new GarageRoster.UnitLoadout("frame1", "fire1", "mob1"));
+            roster.SetSlot(2, new GarageRoster.UnitLoadout("frame3", "fire3", "mob3"));
+
+            roster.SwapSlots(0, 2);
+
+            Assert.AreEqual("frame3", roster.GetSlot(0).frameId);
+            Assert.AreEqual("fire3", roster.GetSlot(0).firepowerModuleId);
+            Assert.AreEqual("mob3", roster.GetSlot(0).mobilityModuleId);
+            Assert.AreEqual("frame1", roster.GetSlot(2).frameId);
+            Assert.AreEqual("fire1", roster.GetSlot(2).firepowerModuleId);
+            Assert.AreEqual("mob1", roster.GetSlot(2).mobilityModuleId);
+        }
+
+        [Test]
         public void Clone_CreatesIndependentRoster()
         {
             var original = new GarageRoster();

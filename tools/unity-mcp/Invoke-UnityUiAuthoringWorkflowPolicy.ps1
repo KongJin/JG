@@ -1,6 +1,6 @@
 param(
     [string]$UnityBridgeUrl,
-    [string]$ResultPath = "artifacts/unity/unity-ui-authoring-workflow-policy.json",
+    [string]$ResultPath = "artifacts/unity/current/unity-ui-authoring-workflow-policy.json",
     [ValidateSet("", "A", "B", "C", "Phase5", "Any")]
     [string]$Agent = "",
     [string[]]$ChangedFile = @(),
@@ -119,8 +119,8 @@ function Get-PrefabManagementSummary {
         [string]$RepoRoot
     )
 
-    $inventoryPath = Join-Path $RepoRoot "artifacts\unity\prefab-management-inventory.json"
-    $approvalPath = Join-Path $RepoRoot "artifacts\unity\prefab-management-approved-new-prefabs.json"
+    $inventoryPath = Join-Path $RepoRoot "artifacts\unity\current\prefab-management-inventory.json"
+    $approvalPath = Join-Path $RepoRoot "artifacts\unity\current\prefab-management-approved-new-prefabs.json"
     $inventory = $null
     $approval = $null
 
@@ -128,7 +128,7 @@ function Get-PrefabManagementSummary {
         try {
             $json = Get-Content -LiteralPath $inventoryPath -Raw | ConvertFrom-Json
             $inventory = [PSCustomObject]@{
-                path = "artifacts/unity/prefab-management-inventory.json"
+                path = "artifacts/unity/current/prefab-management-inventory.json"
                 generatedAt = [string]$json.generatedAt
                 totalPrefabs = [int]$json.summary.totalPrefabs
                 generatedPreviewPrefabs = [int]$json.summary.generatedPreviewPrefabs
@@ -139,7 +139,7 @@ function Get-PrefabManagementSummary {
         }
         catch {
             $inventory = [PSCustomObject]@{
-                path = "artifacts/unity/prefab-management-inventory.json"
+                path = "artifacts/unity/current/prefab-management-inventory.json"
                 error = $_.Exception.Message
             }
         }
@@ -149,7 +149,7 @@ function Get-PrefabManagementSummary {
         try {
             $json = Get-Content -LiteralPath $approvalPath -Raw | ConvertFrom-Json
             $approval = [PSCustomObject]@{
-                path = "artifacts/unity/prefab-management-approved-new-prefabs.json"
+                path = "artifacts/unity/current/prefab-management-approved-new-prefabs.json"
                 generatedAt = [string]$json.generatedAt
                 prefabCount = @($json.prefabs).Count
                 prefabPaths = @($json.prefabs | ForEach-Object { [string]$_.assetPath })
@@ -157,7 +157,7 @@ function Get-PrefabManagementSummary {
         }
         catch {
             $approval = [PSCustomObject]@{
-                path = "artifacts/unity/prefab-management-approved-new-prefabs.json"
+                path = "artifacts/unity/current/prefab-management-approved-new-prefabs.json"
                 error = $_.Exception.Message
             }
         }
@@ -230,9 +230,9 @@ function Test-EvidenceFreshness {
 }
 
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
-$defaultResultPath = "artifacts/unity/unity-ui-authoring-workflow-policy.json"
+$defaultResultPath = "artifacts/unity/current/unity-ui-authoring-workflow-policy.json"
 if (-not [string]::IsNullOrWhiteSpace($Agent) -and $Agent -ne "Any" -and $ResultPath -eq $defaultResultPath) {
-    $ResultPath = "artifacts/unity/unity-ui-authoring-workflow-policy-$($Agent.ToLowerInvariant()).json"
+    $ResultPath = "artifacts/unity/current/unity-ui-authoring-workflow-policy-$($Agent.ToLowerInvariant()).json"
 }
 
 $resultAbsolutePath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $ResultPath))
@@ -289,21 +289,21 @@ $uitkCandidatePatterns = @(
     '^Assets/UI/UIToolkit/.+\.(uxml|uss|asset)$'
 )
 $uitkCandidateEvidencePatterns = @(
-    '^artifacts/unity/.+\.(md|json|png)$'
+    '^artifacts/unity/current/.+\.(md|json|png)$'
 )
 $uitkCandidatePreviewEvidencePatterns = @(
-    '^artifacts/unity/.+\.png$'
+    '^artifacts/unity/current/.+\.png$'
 )
 $uitkCandidateReportEvidencePatterns = @(
-    '^artifacts/unity/.+\.(md|json)$'
+    '^artifacts/unity/current/.+\.(md|json)$'
 )
 $stitchSurfaceOnboardingEvidencePatterns = @(
-    '^artifacts/unity/set-[a-e]-.+\.(json|png)$',
-    '^artifacts/unity/(garage|lobby|account|common|battle|result)-.+\.(json|png)$',
+    '^artifacts/unity/current/set-[a-e]-.+\.(json|png)$',
+    '^artifacts/unity/current/(garage|lobby|account|common|battle|result)-.+\.(json|png)$',
     '^Assets/UI/UIToolkit/.+\.(uxml|uss|asset)$'
 )
 $stitchSurfaceOnboardingExclusionPatterns = @(
-    '^artifacts/unity/prefab-management-'
+    '^artifacts/unity/current/prefab-management-'
 )
 $stitchCapabilityExpansionPatterns = @(
     '^tools/stitch-unity/',
@@ -453,14 +453,14 @@ if ($route -ne "no-unity-ui-workflow") {
         if (@($uitkCandidatePreviewEvidenceFiles).Count -eq 0) {
             $missingEvidence += New-EvidenceRecord `
                 -Name "preview-capture" `
-                -Path "artifacts/unity/*.png" `
+                -Path "artifacts/unity/current/*.png" `
                 -Message "No preview capture PNG was included with the UI Toolkit surface change. Leave the pass blocked or add a fresh preview capture before claiming pilot success."
         }
 
         if (@($uitkCandidateReportEvidenceFiles).Count -eq 0) {
             $missingEvidence += New-EvidenceRecord `
                 -Name "preview-capture-report" `
-                -Path "artifacts/unity/*.md|*.json" `
+                -Path "artifacts/unity/current/*.md|*.json" `
                 -Message "No preview report or summary artifact was included with the UI Toolkit surface change. Leave the pass blocked or add a fresh report before claiming pilot success."
         }
     }

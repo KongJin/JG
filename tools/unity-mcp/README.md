@@ -6,7 +6,7 @@
 > role: reference
 > owner_scope: Unity MCP 실행 reference, helper route, verification command guide
 > upstream: repo.agents, docs.index, ops.unity-ui-authoring-workflow
-> artifacts: `tools/unity-mcp/`, `Assets/Editor/UnityMcp/`, `artifacts/unity/`
+> artifacts: `tools/unity-mcp/`, `Assets/Editor/UnityMcp/`, `artifacts/unity/current/`, `artifacts/unity/current-index.json`
 
 Unity MCP in this repo is a `diagnostic + manual automation` bridge.
 While the repo is rebuilding UI from scratch, default to `UI Toolkit candidate surface`:
@@ -68,7 +68,7 @@ Use lane-specific evidence paths, for example:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameScenePlacementSmoke.ps1 -Owner GameSceneUIUX -OutputPath artifacts/unity/game-scene-placement-smoke.json
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameScenePlacementSmoke.ps1 -Owner GameSceneUIUX -OutputPath artifacts/unity/current/game-scene-placement-smoke.json
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameSceneMobileHudFramingSmoke.ps1 -Owner GameSceneMobileHudFraming -OutputPath artifacts/unity/game-flow/game-scene-mobile-hud-framing-smoke.json -PlacementOutputPath artifacts/unity/game-flow/game-scene-mobile-hud-placement-source.json -ScreenshotPath artifacts/unity/game-flow/game-scene-mobile-hud-framing.png -LeavePlayMode
 ```
 
@@ -80,6 +80,7 @@ If the lock holder process no longer exists, helpers may clear that stale lock a
 Nested helpers must run under the parent helper's lock and record that fact in their artifact instead of competing for the same lock.
 The old placement and mobile HUD smoke path contracts are not accepted evidence anymore; build replacement checks against UIDocument/VisualElement selectors.
 Mobile HUD framing snapshots should use bounded `/uitk/get-state` requests so a stuck UI query does not hold the runtime smoke lock indefinitely.
+For generic Unity evidence, write to `artifacts/unity/current/`; historical flat evidence lives under `artifacts/unity/archive/` and should not be scanned for current acceptance.
 
 ## Recommended Workflow
 
@@ -179,7 +180,7 @@ This uses the current editor instance through MCP and performs:
 When Unity is already open and you need targeted EditMode tests, use:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityMcpEditModeTests.ps1 -TestName Tests.Editor.ArchitectureGuardrailReflectionTests -OutputPath artifacts/unity/architecture-guardrail-reflection-tests.xml
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityMcpEditModeTests.ps1 -TestName Tests.Editor.ArchitectureGuardrailReflectionTests -OutputPath artifacts/unity/current/architecture-guardrail-reflection-tests.xml
 ```
 
 The wrapper owns the Unity resource lock and waits for compile to settle. If Unity is already in Play Mode, the default behavior is now to preserve the current editor session and block the test run instead of stopping Play Mode automatically. Pass `-AllowPlayModeStop` only when the current lane intentionally owns that interruption. `-PreservePlayMode` remains an explicit way to demand the same blocked behavior.
@@ -198,14 +199,14 @@ For a scoped UI Toolkit candidate pass, pass the changed paths as a PowerShell a
 $changed = @(
   'Assets/UI/UIToolkit/OperationMemory/OperationMemoryWorkspace.uxml',
   'Assets/UI/UIToolkit/OperationMemory/OperationMemoryWorkspace.uss',
-  'artifacts/unity/operation-memory-shared-shell-uitk-candidate-report.md'
+  'artifacts/unity/current/operation-memory-shared-shell-uitk-candidate-report.md'
 )
 .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1 -ChangedFile $changed
 ```
 
 Outputs:
 
-- `artifacts/unity/unity-ui-authoring-workflow-policy.json`
+- `artifacts/unity/current/unity-ui-authoring-workflow-policy.json`
 
 The policy check reads the current changed files from git and enforces:
 

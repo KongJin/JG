@@ -104,7 +104,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         private static string NormalizeOutputPath(string outputPath)
         {
             var relativePath = string.IsNullOrWhiteSpace(outputPath)
-                ? "artifacts/unity/editmode-direct-tests.xml"
+                ? "artifacts/unity/current/editmode-direct-tests.xml"
                 : outputPath.Replace('\\', '/');
 
             if (Path.IsPathRooted(relativePath))

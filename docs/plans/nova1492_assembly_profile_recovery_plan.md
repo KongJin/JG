@@ -27,4 +27,4 @@
 
 - Generated profile: `artifacts/nova1492/assembly-profile/nova_assembly_profile.csv`
 - Promotion report: `artifacts/nova1492/assembly-profile/nova_assembly_profile_unity_promotion_report.md`
-- EditMode evidence: `artifacts/unity/editmode-humanoid-parts-removed-20260502.xml`
+- EditMode evidence: archived in `artifacts/unity/archive/flat-legacy-20260505.zip`; see `artifacts/unity/archive/flat-legacy-20260505.manifest.json` entry `editmode-humanoid-parts-removed-20260502.xml`.

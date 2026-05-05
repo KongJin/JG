@@ -149,6 +149,10 @@ function Invoke-RecurrencePlanHarness {
         })
     }
     foreach ($entry in @($workReport.memoryUpdates)) {
+        if ([int]$entry.hitCount -lt 2) {
+            continue
+        }
+
         $relatedPaths = @(Get-RecurrencePlanExistingFilePaths -RepoRoot $RepoRoot -Paths @([string]$entry.scopePath))
         if (@($relatedPaths).Count -eq 0) {
             continue

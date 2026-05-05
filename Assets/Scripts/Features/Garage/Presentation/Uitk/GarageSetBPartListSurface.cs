@@ -8,9 +8,19 @@ namespace Features.Garage.Presentation
 {
     internal sealed class GarageSetBPartListSurface : BaseSurface<VisualElement>
     {
+        private const float FocusSwipeThreshold = 42f;
+        private const float FocusSwipeAxisBias = 1.25f;
+        private static readonly GarageEditorFocus[] FocusOrder =
+        {
+            GarageEditorFocus.Mobility,
+            GarageEditorFocus.Frame,
+            GarageEditorFocus.Firepower
+        };
+
         private readonly Button _frameTabButton;
         private readonly Button _firepowerTabButton;
         private readonly Button _mobilityTabButton;
+        private readonly VisualElement _swipeHost;
         private readonly Label _partListTitleLabel;
         private readonly Label _partListCountLabel;
         private readonly TextField _partSearchField;
@@ -25,12 +35,21 @@ namespace Features.Garage.Presentation
         private readonly List<PartRowBinding> _partRows = new();
         private GarageNovaPartsPanelViewModel _lastPartList;
         private GarageNovaPartPanelSlot _lastSlot;
+        private GarageEditorFocus _lastFocusedPart = GarageEditorFocus.Mobility;
         private string _lastSearchText = string.Empty;
         private int _visibleStartIndex;
+        private int _swipePointerId = -1;
+        private Vector2 _swipeStartPosition;
+        private bool _isSwipeActive;
+        private bool _suppressNextPartRowClick;
         private readonly Action _frameTabClicked;
         private readonly Action _firepowerTabClicked;
         private readonly Action _mobilityTabClicked;
         private EventCallback<ChangeEvent<string>> _searchCallback;
+        private EventCallback<PointerDownEvent> _swipePointerDown;
+        private EventCallback<PointerMoveEvent> _swipePointerMove;
+        private EventCallback<PointerUpEvent> _swipePointerUp;
+        private EventCallback<PointerCancelEvent> _swipePointerCancel;
 
         public GarageSetBPartListSurface(VisualElement root)
             : base(root)
@@ -38,6 +57,7 @@ namespace Features.Garage.Presentation
             _frameTabButton = UitkElementUtility.Required<Button>(root, "FrameTabButton");
             _firepowerTabButton = UitkElementUtility.Required<Button>(root, "FirepowerTabButton");
             _mobilityTabButton = UitkElementUtility.Required<Button>(root, "MobilityTabButton");
+            _swipeHost = UitkElementUtility.Required<VisualElement>(root, "PartSelectionPane");
             _partListTitleLabel = UitkElementUtility.Required<Label>(root, "PartListTitleLabel");
             _partListCountLabel = UitkElementUtility.Required<Label>(root, "PartListCountLabel");
             _partSearchField = UitkElementUtility.Required<TextField>(root, "PartSearchField");
@@ -132,6 +152,15 @@ namespace Features.Garage.Presentation
 
             _searchCallback = evt => SearchChanged?.Invoke(evt.newValue ?? string.Empty);
             _partSearchField.RegisterValueChangedCallback(_searchCallback);
+
+            _swipePointerDown = BeginFocusSwipe;
+            _swipePointerMove = UpdateFocusSwipe;
+            _swipePointerUp = EndFocusSwipe;
+            _swipePointerCancel = CancelFocusSwipe;
+            _swipeHost.RegisterCallback(_swipePointerDown);
+            _swipeHost.RegisterCallback(_swipePointerMove);
+            _swipeHost.RegisterCallback(_swipePointerUp);
+            _swipeHost.RegisterCallback(_swipePointerCancel);
 
             for (int i = 0; i < _partRows.Count; i++)
                 BindPartRow(_partRows[i]);
@@ -241,6 +270,12 @@ namespace Features.Garage.Presentation
 
         private void SelectPartRow(PartRowBinding binding)
         {
+            if (_suppressNextPartRowClick)
+            {
+                _suppressNextPartRowClick = false;
+                return;
+            }
+
             var option = binding.Option;
             if (option != null)
                 OptionSelected?.Invoke(new GarageNovaPartSelection(option.Slot, option.Id));
@@ -266,9 +301,142 @@ namespace Features.Garage.Presentation
 
         private void RenderFocusTabs(GarageEditorFocus focusedPart)
         {
+            _lastFocusedPart = focusedPart;
             UitkElementUtility.SetClass(_frameTabButton, "focus-tab--active", focusedPart == GarageEditorFocus.Frame);
             UitkElementUtility.SetClass(_firepowerTabButton, "focus-tab--active", focusedPart == GarageEditorFocus.Firepower);
             UitkElementUtility.SetClass(_mobilityTabButton, "focus-tab--active", focusedPart == GarageEditorFocus.Mobility);
+        }
+
+        internal bool TrySelectFocusFromHorizontalDrag(Vector2 dragDelta)
+        {
+            float absoluteX = Mathf.Abs(dragDelta.x);
+            float absoluteY = Mathf.Abs(dragDelta.y);
+            if (absoluteX < FocusSwipeThreshold || absoluteX < absoluteY * FocusSwipeAxisBias)
+                return false;
+
+            int direction = dragDelta.x < 0f ? 1 : -1;
+            if (!TryResolveAdjacentFocus(_lastFocusedPart, direction, out var nextFocus))
+                return false;
+
+            FocusSelected?.Invoke(nextFocus);
+            return true;
+        }
+
+        private void BeginFocusSwipe(PointerDownEvent evt)
+        {
+            if (evt == null ||
+                _swipePointerId >= 0 ||
+                IsInsideElement(evt.target as VisualElement, _partSearchField))
+                return;
+
+            _swipePointerId = evt.pointerId;
+            _swipeStartPosition = ToVector2(evt.position);
+            _isSwipeActive = false;
+            _swipeHost.CapturePointer(evt.pointerId);
+        }
+
+        private void UpdateFocusSwipe(PointerMoveEvent evt)
+        {
+            if (evt == null || evt.pointerId != _swipePointerId)
+                return;
+
+            var delta = ToVector2(evt.position) - _swipeStartPosition;
+            if (!_isSwipeActive &&
+                Mathf.Abs(delta.x) >= FocusSwipeThreshold &&
+                Mathf.Abs(delta.x) >= Mathf.Abs(delta.y) * FocusSwipeAxisBias)
+            {
+                _isSwipeActive = true;
+                SuppressNextPartRowClick();
+            }
+
+            if (_isSwipeActive)
+                evt.StopPropagation();
+        }
+
+        private void EndFocusSwipe(PointerUpEvent evt)
+        {
+            if (evt == null || evt.pointerId != _swipePointerId)
+                return;
+
+            var delta = ToVector2(evt.position) - _swipeStartPosition;
+            ReleaseSwipePointer(evt.pointerId);
+            ResetFocusSwipe();
+
+            if (!TrySelectFocusFromHorizontalDrag(delta))
+                return;
+
+            SuppressNextPartRowClick();
+            evt.StopImmediatePropagation();
+        }
+
+        private void CancelFocusSwipe(PointerCancelEvent evt)
+        {
+            if (evt == null || evt.pointerId != _swipePointerId)
+                return;
+
+            ReleaseSwipePointer(evt.pointerId);
+            ResetFocusSwipe();
+        }
+
+        private void ReleaseSwipePointer(int pointerId)
+        {
+            if (_swipeHost.HasPointerCapture(pointerId))
+                _swipeHost.ReleasePointer(pointerId);
+        }
+
+        private void ResetFocusSwipe()
+        {
+            _swipePointerId = -1;
+            _swipeStartPosition = Vector2.zero;
+            _isSwipeActive = false;
+        }
+
+        private void SuppressNextPartRowClick()
+        {
+            _suppressNextPartRowClick = true;
+            _swipeHost.schedule.Execute(() => _suppressNextPartRowClick = false).ExecuteLater(0);
+        }
+
+        private static bool TryResolveAdjacentFocus(
+            GarageEditorFocus currentFocus,
+            int direction,
+            out GarageEditorFocus nextFocus)
+        {
+            nextFocus = currentFocus;
+            int currentIndex = 0;
+            for (int i = 0; i < FocusOrder.Length; i++)
+            {
+                if (FocusOrder[i] == currentFocus)
+                {
+                    currentIndex = i;
+                    break;
+                }
+            }
+
+            int nextIndex = currentIndex + direction;
+            if (nextIndex < 0 || nextIndex >= FocusOrder.Length)
+                return false;
+
+            nextFocus = FocusOrder[nextIndex];
+            return true;
+        }
+
+        private static bool IsInsideElement(VisualElement target, VisualElement ancestor)
+        {
+            while (target != null)
+            {
+                if (ReferenceEquals(target, ancestor))
+                    return true;
+
+                target = target.parent;
+            }
+
+            return false;
+        }
+
+        private static Vector2 ToVector2(Vector3 position)
+        {
+            return new Vector2(position.x, position.y);
         }
 
         private static string BuildPartListTitle(GarageNovaPartPanelSlot slot)
@@ -388,10 +556,26 @@ namespace Features.Garage.Presentation
             if (_partSearchField != null && _searchCallback != null)
                 _partSearchField.UnregisterValueChangedCallback(_searchCallback);
 
+            if (_swipeHost != null && _swipePointerDown != null)
+                _swipeHost.UnregisterCallback(_swipePointerDown);
+
+            if (_swipeHost != null && _swipePointerMove != null)
+                _swipeHost.UnregisterCallback(_swipePointerMove);
+
+            if (_swipeHost != null && _swipePointerUp != null)
+                _swipeHost.UnregisterCallback(_swipePointerUp);
+
+            if (_swipeHost != null && _swipePointerCancel != null)
+                _swipeHost.UnregisterCallback(_swipePointerCancel);
+
             for (int i = 0; i < _partRows.Count; i++)
                 UnbindPartRow(_partRows[i]);
 
             _searchCallback = null;
+            _swipePointerDown = null;
+            _swipePointerMove = null;
+            _swipePointerUp = null;
+            _swipePointerCancel = null;
         }
 
         private void UnbindPartRow(PartRowBinding binding)

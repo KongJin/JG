@@ -1,0 +1,142 @@
+﻿{
+    "success":  true,
+    "terminalVerdict":  "",
+    "blockedReason":  "",
+    "generatedAt":  "2026-05-05 10:15:09+09:00",
+    "agent":  "",
+    "route":  "mixed",
+    "changedFiles":  [
+                         "artifacts/unity/current/garage-page-presenter-slot-swap-tests.xml",
+                         "artifacts/unity/current/garage-roster-direct-tests-slot-swap.xml",
+                         "artifacts/unity/current/garage-uitk-runtime-adapter-drag-radar-swipe-tests.xml",
+                         "artifacts/unity/current/garage-uitk-side-preview-offset-tests.xml",
+                         "artifacts/unity/current/lobby-nav-padding-direct-tests-20260505.xml",
+                         "artifacts/unity/current/unity-ui-authoring-workflow-policy-garage-slot-drag-radar-swipe-20260505.json",
+                         "Assets/Editor/DirectTests/GaragePagePresenterDirectTests.cs",
+                         "Assets/Editor/DirectTests/GarageRosterDirectTests.cs",
+                         "Assets/Editor/DirectTests/GarageSetBUitkRuntimeAdapterDirectTests.cs",
+                         "Assets/Editor/DirectTests/GarageSetBUitkRuntimeAdapterSidePreviewDirectTests.cs",
+                         "Assets/Editor/DirectTests/LobbyUitkRuntimeAdapterDirectTests.cs",
+                         "Assets/Scripts/Features/Garage/Domain/GarageRoster.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Page/GaragePageState.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Page/GarageSetBUitkPageController.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Preview/GarageSetBUitkPreviewRenderer.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBPartListSurface.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBSlotSurface.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkAdapterCore.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkPreviewController.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkRuntimeAdapter.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageStatRadarElement.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageUitkConstants.cs",
+                         "Assets/Scripts/Features/Garage/Presentation/Uitk/IGarageSetBUitkAdapter.cs",
+                         "Assets/Scripts/Features/Wave/CoreObjectiveSetup.cs",
+                         "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
+                         "Assets/UI/UIToolkit/Lobby/LobbyShell.uss",
+                         "tools/rule-harness/memory/advisory-memory.json"
+                     ],
+    "allDirtyFileCount":  27,
+    "unityUiRelevantFiles":  [
+                                 "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
+                                 "Assets/UI/UIToolkit/Lobby/LobbyShell.uss"
+                             ],
+    "uitkCandidateFiles":  [
+                               "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
+                               "Assets/UI/UIToolkit/Lobby/LobbyShell.uss"
+                           ],
+    "uitkCandidateEvidenceFiles":  [
+                                       "artifacts/unity/current/unity-ui-authoring-workflow-policy-garage-slot-drag-radar-swipe-20260505.json"
+                                   ],
+    "uitkCandidatePreviewEvidenceFiles":  [
+
+                                          ],
+    "uitkCandidateReportEvidenceFiles":  [
+                                             "artifacts/unity/current/unity-ui-authoring-workflow-policy-garage-slot-drag-radar-swipe-20260505.json"
+                                         ],
+    "requiredEvidence":  [
+                             {
+                                 "name":  "compile-reload",
+                                 "path":  null,
+                                 "message":  "Compile and script reload must settle before Unity UI workflow evidence is trusted."
+                             }
+                         ],
+    "missingEvidence":  [
+
+                        ],
+    "staleEvidence":  [
+
+                      ],
+    "policyViolations":  [
+
+                         ],
+    "compile":  {
+                    "success":  true,
+                    "request":  {
+                                    "ok":  true,
+                                    "cleanBuildCacheRequested":  false,
+                                    "isCompiling":  false,
+                                    "message":  "Asset refresh triggered."
+                                },
+                    "wait":  {
+                                 "ok":  true,
+                                 "timedOut":  false,
+                                 "requestedCompilation":  false,
+                                 "waitedMs":  180000,
+                                 "isCompiling":  false
+                             },
+                    "healthAfterWait":  {
+                                            "ok":  true,
+                                            "bridgeRunning":  true,
+                                            "port":  52676,
+                                            "isPlaying":  false,
+                                            "isPlayingOrWillChange":  false,
+                                            "isPlayModeChanging":  false,
+                                            "rawIsPlayingOrWillChange":  false,
+                                            "isCompiling":  false,
+                                            "isWaitingForPlayMode":  false,
+                                            "projectKey":  "0d8ea703",
+                                            "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                            "activeScene":  "LobbyScene",
+                                            "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                            "pendingPlayAction":  "",
+                                            "pendingPlayAgeMs":  0
+                                        }
+                },
+    "unityResourceLock":  {
+                              "owner":  "workflow",
+                              "path":  "Temp/UnityMcp/unity-resource.lock",
+                              "token":  "8461a9d454a448bfb640f82846580dcc"
+                          },
+    "capabilityExpansionGuard":  {
+                                     "allowCapabilityExpansion":  false,
+                                     "surfaceOnboardingFiles":  [
+                                                                    "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss",
+                                                                    "Assets/UI/UIToolkit/Lobby/LobbyShell.uss"
+                                                                ],
+                                     "capabilityExpansionFiles":  [
+
+                                                                  ]
+                                 },
+    "prefabManagement":  {
+                             "inventory":  {
+                                               "path":  "artifacts/unity/current/prefab-management-inventory.json",
+                                               "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                               "totalPrefabs":  9,
+                                               "generatedPreviewPrefabs":  0,
+                                               "resourcesPrefabs":  9,
+                                               "duplicateCandidateGroups":  0,
+                                               "approvedNewPrefabTargets":  0
+                                           },
+                             "approvalManifest":  {
+                                                      "path":  "artifacts/unity/current/prefab-management-approved-new-prefabs.json",
+                                                      "generatedAt":  "2026-04-27 21:52:17+09:00",
+                                                      "prefabCount":  0,
+                                                      "prefabPaths":  [
+
+                                                                      ]
+                                                  }
+                         },
+    "declaredNewPrefabTargets":  [
+
+                                 ],
+    "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\unity-ui-authoring-workflow-policy-lobby-nav-padding-20260505.json"
+}

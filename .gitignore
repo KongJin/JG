@@ -104,8 +104,20 @@ InitTestScene*.unity*
 
 # Local agent / IDE session cache (do not commit)
 .codex-local/
+.codex/auth*.json*
+.codex/cache/
+.codex/logs_*.sqlite*
+.codex/models_cache.json
+.codex/sessions/
+.codex/state_*.sqlite*
+.codex/tmp/
 node_modules/
 artifacts/audio/inbox/
+
+# UITK-only project: keep imported TMP essential resources out of repo
+/[Aa]ssets/TextMesh Pro/
+/[Aa]ssets/Fonts/NotoSansKR-VF.ttf
+/[Aa]ssets/Fonts/NotoSansKR-VF.ttf.meta
 
 # Cloned external AI skills source (skills themselves are tracked in .qwen/skills/)
 .qwen/anthropic-skills/

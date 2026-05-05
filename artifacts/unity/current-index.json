@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-05",
+  "currentRoot": "artifacts/unity/current/",
+  "guidance": "Use currentRoot and ownerScopedEvidence for current decisions. Do not scan archive entries unless historical evidence is explicitly requested.",
+  "summary": {
+    "currentFlatFileCount": 7,
+    "currentFlatBytes": 72527,
+    "archivedFlatFileCount": 741,
+    "archiveBytes": 20387061
+  },
+  "currentFlatEvidence": [
+    {
+      "path": "artifacts/unity/current/garage-page-presenter-slot-swap-tests.xml",
+      "kind": "editmode-test",
+      "bytes": 13765
+    },
+    {
+      "path": "artifacts/unity/current/garage-roster-direct-tests-slot-swap.xml",
+      "kind": "editmode-test",
+      "bytes": 8408
+    },
+    {
+      "path": "artifacts/unity/current/garage-uitk-runtime-adapter-drag-radar-swipe-tests.xml",
+      "kind": "editmode-test",
+      "bytes": 17522
+    },
+    {
+      "path": "artifacts/unity/current/garage-uitk-side-preview-offset-tests.xml",
+      "kind": "editmode-test",
+      "bytes": 5765
+    },
+    {
+      "path": "artifacts/unity/current/lobby-nav-padding-direct-tests-20260505.xml",
+      "kind": "editmode-test",
+      "bytes": 10032
+    },
+    {
+      "path": "artifacts/unity/current/unity-ui-authoring-workflow-policy-garage-slot-drag-radar-swipe-20260505.json",
+      "kind": "workflow-policy",
+      "bytes": 8183
+    },
+    {
+      "path": "artifacts/unity/current/unity-ui-authoring-workflow-policy-lobby-nav-padding-20260505.json",
+      "kind": "workflow-policy",
+      "bytes": 8852
+    }
+  ],
+  "ownerScopedEvidence": [
+    {
+      "path": "artifacts/unity/game-flow/",
+      "note": "GameScene flow evidence owned by the game scene flow validation plan."
+    },
+    {
+      "path": "artifacts/unity/uitk-page-routing-refactor/",
+      "note": "UITK page routing refactor evidence."
+    },
+    {
+      "path": "artifacts/unity/set-b-stepwise/",
+      "note": "Set B stepwise capture evidence."
+    },
+    {
+      "path": "artifacts/unity/garage-humanoid-weapon-current/",
+      "note": "Nova assembly profile review evidence; check owning review artifact before treating as current product acceptance."
+    }
+  ],
+  "archive": {
+    "path": "artifacts/unity/archive/flat-legacy-20260505.zip",
+    "manifest": "artifacts/unity/archive/flat-legacy-20260505.manifest.json",
+    "fileCount": 741,
+    "reason": "Previous top-level flat evidence was archived to reduce token-heavy current evidence scans."
+  }
+}

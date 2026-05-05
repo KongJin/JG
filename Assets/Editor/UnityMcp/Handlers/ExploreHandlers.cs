@@ -101,10 +101,9 @@ namespace ProjectSD.EditorTools.UnityMcp
                         isInteractive = true;
                         displayType = "Button";
                         break;
-                    case "TMP_InputField":
                     case "InputField":
                         isInteractive = true;
-                        displayType = typeName == "TMP_InputField" ? "TMP_InputField" : "InputField";
+                        displayType = "InputField";
                         break;
                     case "Toggle":
                         isInteractive = true;
@@ -115,9 +114,8 @@ namespace ProjectSD.EditorTools.UnityMcp
                         displayType = "Slider";
                         break;
                     case "Dropdown":
-                    case "TMP_Dropdown":
                         isInteractive = true;
-                        displayType = typeName;
+                        displayType = "Dropdown";
                         break;
                 }
 
@@ -164,15 +162,6 @@ namespace ProjectSD.EditorTools.UnityMcp
 
         private static string GetButtonText(GameObject go)
         {
-            // Button의 자식에서 TextMeshProUGUI 찾기
-            var tmpTexts = go.GetComponentsInChildren<TMPro.TextMeshProUGUI>(true);
-            foreach (var tmp in tmpTexts)
-            {
-                if (tmp != null && !string.IsNullOrEmpty(tmp.text) && tmp.text != "Text (TMP)")
-                    return tmp.text;
-            }
-
-            // Unity UI Text도 시도
             var texts = go.GetComponentsInChildren<Text>(true);
             foreach (var t in texts)
             {
@@ -187,12 +176,12 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             if (toggle.graphic != null && !string.IsNullOrEmpty(toggle.graphic.name))
                 return toggle.graphic.name;
-            // Toggle의 자식에서 텍스트 찾기
-            var tmpTexts = toggle.GetComponentsInChildren<TMPro.TextMeshProUGUI>(true);
-            foreach (var tmp in tmpTexts)
+
+            var texts = toggle.GetComponentsInChildren<Text>(true);
+            foreach (var text in texts)
             {
-                if (tmp != null && !string.IsNullOrEmpty(tmp.text))
-                    return tmp.text;
+                if (text != null && !string.IsNullOrEmpty(text.text))
+                    return text.text;
             }
             return null;
         }

@@ -342,7 +342,7 @@ const tools = [
         },
         componentType: {
           type: "string",
-          description: "Component type name (e.g. 'Image', 'Button', 'TextMeshProUGUI', 'VerticalLayoutGroup')."
+          description: "Component type name (e.g. 'Image', 'Button', 'Text', 'VerticalLayoutGroup')."
         }
       },
       required: ["gameObjectPath", "componentType"],
@@ -523,7 +523,7 @@ const tools = [
       properties: {
         outputPath: {
           type: "string",
-          description: "Project-relative output path. Defaults to artifacts/unity/screenshots/<timestamp>.png."
+          description: "Project-relative output path. Defaults to artifacts/unity/current/screenshots/<timestamp>.png."
         },
         superSize: {
           type: "integer",

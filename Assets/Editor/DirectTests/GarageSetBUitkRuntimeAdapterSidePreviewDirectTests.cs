@@ -160,6 +160,7 @@ namespace Tests.Editor
                     isSaving: false);
 
                 Assert.IsTrue(unitPreviewRenderer.HasPreview);
+                Assert.Less(unitPreviewRenderer.CurrentPreviewRoot.transform.localPosition.x, -0.2f);
             }
             finally
             {

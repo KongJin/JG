@@ -38,7 +38,7 @@ namespace Tests.Editor
                 var root = fixture.Host;
                 Assert.AreEqual("기체 편성 갱신 대기", Label(root, "CommandStatusLabel").text);
                 Assert.AreEqual("A-01", Label(root, "SlotCode01Label").text);
-                Assert.AreEqual("전선 고정", Label(root, "SlotName01Label").text);
+                Assert.AreEqual("A-01", Label(root, "SlotName01Label").text);
                 Assert.IsTrue(Button(root, "SlotCard01").ClassListContains("slot-card--active"));
                 Assert.IsTrue(root.Q<VisualElement>("SlotIcon01Glyph").ClassListContains("uitk-icon--security"));
                 Assert.IsTrue(Button(root, "FirepowerTabButton").ClassListContains("focus-tab--active"));
@@ -100,6 +100,43 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void Render_AddsCompactRadarAxisLabels()
+        {
+            var fixture = CreateRuntimeAdapterFixture();
+            try
+            {
+                fixture.Adapter.Render(
+                    CreateSlots(),
+                    CreatePartList(),
+                    CreateEditor(),
+                    new GarageResultViewModel(
+                        "편성 중",
+                        "저장 대기",
+                        "ATK 840",
+                        isReady: false,
+                        isDirty: true,
+                        canSave: true,
+                        primaryActionLabel: "임시 편성",
+                        radar: new GarageStatRadarViewModel(
+                            new[] { 0.8f, 0.6f, 0.7f, 0.5f, 0.4f, 0.9f, 0.65f },
+                            null,
+                            70)),
+                    GarageEditorFocus.Firepower,
+                    isSaving: false);
+
+                var radar = fixture.Host.Q<VisualElement>("StatRadarGraph");
+                Assert.NotNull(radar);
+                CollectionAssert.AreEqual(
+                    new[] { "ATK", "ASPD", "RNG", "HP", "DEF", "SPD", "MOV" },
+                    radar.Query<Label>(className: "stat-radar-label").ToList().Select(label => label.text).ToArray());
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
         public void Uxml_OrdersPartTabsAsMobilityFrameFirepower()
         {
             var root = LoadRoot();
@@ -113,6 +150,28 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void PartListSurface_HorizontalDragSelectsAdjacentTabInVisualOrder()
+        {
+            var root = LoadRoot();
+            var surface = new GarageSetBPartListSurface(root);
+            GarageEditorFocus selectedFocus = GarageEditorFocus.Mobility;
+            surface.FocusSelected += focus => selectedFocus = focus;
+
+            surface.Render(CreatePartList(GarageNovaPartPanelSlot.Mobility), GarageEditorFocus.Mobility);
+
+            Assert.IsTrue(surface.TrySelectFocusFromHorizontalDrag(new Vector2(-64f, 3f)));
+            Assert.AreEqual(GarageEditorFocus.Frame, selectedFocus);
+
+            surface.Render(CreatePartList(GarageNovaPartPanelSlot.Frame), GarageEditorFocus.Frame);
+            Assert.IsTrue(surface.TrySelectFocusFromHorizontalDrag(new Vector2(-64f, 3f)));
+            Assert.AreEqual(GarageEditorFocus.Firepower, selectedFocus);
+
+            surface.Render(CreatePartList(GarageNovaPartPanelSlot.Firepower), GarageEditorFocus.Firepower);
+            Assert.IsTrue(surface.TrySelectFocusFromHorizontalDrag(new Vector2(64f, 3f)));
+            Assert.AreEqual(GarageEditorFocus.Frame, selectedFocus);
+        }
+
+        [Test]
         public void SlotSurface_RendersSlotCardsAndClassesFromViewModels()
         {
             var root = LoadRoot();
@@ -122,18 +181,18 @@ namespace Tests.Editor
             surface.Render(slots);
 
             Assert.AreEqual("A-01", Label(root, "SlotCode01Label").text);
-            Assert.AreEqual("전선 고정", Label(root, "SlotName01Label").text);
-            Assert.AreEqual("현역", Label(root, "SlotCode02Label").text);
-            Assert.AreEqual("강습", Label(root, "SlotName02Label").text);
+            Assert.AreEqual("레일건", Label(root, "SlotName01Label").text);
+            Assert.AreEqual("A-02", Label(root, "SlotCode02Label").text);
+            Assert.AreEqual("발칸", Label(root, "SlotName02Label").text);
             Assert.IsTrue(Button(root, "SlotCard01").ClassListContains("slot-card--active"));
             Assert.IsFalse(Button(root, "SlotCard04").ClassListContains("slot-card--active"));
             Assert.IsTrue(Button(root, "SlotCard04").ClassListContains("slot-card--empty"));
 
             surface.Render(CreateSlots());
             Assert.AreEqual("A-01", Label(root, "SlotCode01Label").text);
-            Assert.AreEqual("A-02", Label(root, "SlotCode02Label").text);
+            Assert.AreEqual("B-02", Label(root, "SlotCode02Label").text);
             Assert.IsTrue(root.Q<VisualElement>("SlotIcon01Glyph").ClassListContains("uitk-icon--security"));
-            Assert.IsTrue(root.Q<VisualElement>("SlotIcon02Glyph").ClassListContains("uitk-icon--smart-toy"));
+            Assert.IsTrue(root.Q<VisualElement>("SlotIcon02Glyph").ClassListContains("uitk-icon--add"));
         }
 
         [Test]
@@ -177,6 +236,8 @@ namespace Tests.Editor
             StringAssert.Contains(".unit-diagram", uss);
             StringAssert.Contains("width: 108px;", uss);
             StringAssert.Contains(".stat-radar-graph", uss);
+            StringAssert.Contains(".stat-radar-label", uss);
+            StringAssert.Contains(".slot-card--dragging", uss);
             StringAssert.Contains(".part-list-rows", uss);
             StringAssert.Contains("height: 252px;", uss);
             StringAssert.Contains(".save-dock", uss);
