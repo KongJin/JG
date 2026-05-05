@@ -54,7 +54,7 @@ npm run stitch:list:projects
 Create a project:
 
 ```bash
-npm run stitch:create:project -- --title "JG UI Refresh - Lobby Garage GameScene"
+npm run stitch:create:project -- --title "JG UI Refresh - Lobby Garage BattleScene"
 ```
 
 Create a design system in an existing project:

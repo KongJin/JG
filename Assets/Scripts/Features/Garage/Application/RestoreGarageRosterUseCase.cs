@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Features.Garage.Application
 {
     /// <summary>
-    /// GameScene 진입 시 Room CustomProperties에서 GarageRoster를 복원하는 UseCase.
+    /// BattleScene 진입 시 Room CustomProperties에서 GarageRoster를 복원하는 UseCase.
     /// </summary>
     public sealed class RestoreGarageRosterUseCase
     {

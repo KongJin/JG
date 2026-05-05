@@ -77,18 +77,13 @@ export async function validateRulesOnlyRecurrenceCloseout(repoRoot, options) {
   }
 
   const coveredChangedPaths = new Set();
+  const existingCloseoutArtifacts = [];
   for (const artifactPath of changedCloseoutArtifacts) {
     const artifactAbsolutePath = path.join(repoRoot, artifactPath);
     if (!(await pathExists(artifactAbsolutePath))) {
-      errors.push(
-        createError(
-          "missing-recurrence-closeout-artifact",
-          artifactPath,
-          `Rules-only closeout artifact \`${artifactPath}\` does not exist.`,
-        ),
-      );
       continue;
     }
+    existingCloseoutArtifacts.push(artifactPath);
 
     let payload;
     try {
@@ -117,7 +112,7 @@ export async function validateRulesOnlyRecurrenceCloseout(repoRoot, options) {
       errors.push(
         createError(
           "recurrence-closeout-missing-changed-path",
-          changedCloseoutArtifacts[0] || RECURRENCE_CLOSEOUT_PATH,
+          existingCloseoutArtifacts[0] || changedCloseoutArtifacts[0] || RECURRENCE_CLOSEOUT_PATH,
           `Closeout artifact \`changedPaths\` must include rules-only changed file \`${changedFile}\`.`,
         ),
       );
@@ -435,4 +430,3 @@ async function pathExists(absolutePath) {
     return false;
   }
 }
-

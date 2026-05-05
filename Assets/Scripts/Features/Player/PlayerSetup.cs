@@ -61,7 +61,7 @@ namespace Features.Player
 
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
         {
-            GameSceneRuntimeSpawnRegistrar.NotifyPlayerArrived(this);
+            BattleSceneRuntimeSpawnRegistrar.NotifyPlayerArrived(this);
         }
 
         /// <summary>

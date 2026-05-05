@@ -175,7 +175,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 {
                     code = "NOT_FOUND",
                     message = "path is required (use path as scene name)",
-                    detail = "Expected: { path: \"GameScene\", timeoutMs: 10000 }"
+                    detail = "Expected: { path: \"BattleScene\", timeoutMs: 10000 }"
                 });
                 return;
             }

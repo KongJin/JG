@@ -16,6 +16,7 @@ function Get-TechDebtReviewSummaryLines {
     [void]$lines.Add('# Tech Debt Review Harness')
     [void]$lines.Add('')
     [void]$lines.Add("- Commit SHA: $($Report.baseCommitSha)")
+    [void]$lines.Add("- Mode: $($Report.mode)")
     [void]$lines.Add("- Severity: $($Report.severityScore)/100 ($($Report.severityBand))")
     [void]$lines.Add("- Review confidence: $($Report.reviewConfidence)")
     [void]$lines.Add("- Scanned scopes: $(@($Report.scannedScopes).Count)/$($Report.totalScopeCount)")
@@ -23,6 +24,21 @@ function Get-TechDebtReviewSummaryLines {
     [void]$lines.Add("- Refactor targets: $(@($Report.refactorTargets).Count)")
     [void]$lines.Add("- Cleanup candidates: $(@($Report.cleanupCandidates).Count)")
     [void]$lines.Add("- Recommended batches: $(@($Report.recommendedBatches).Count)")
+    [void]$lines.Add('')
+    [void]$lines.Add('## Coverage')
+    $coverage = $Report.coverage
+    if ($null -ne $coverage) {
+        [void]$lines.Add("- Feature scopes: $($coverage.featureScopes)")
+        [void]$lines.Add("- Project surfaces: $($coverage.projectSurfaces)")
+        [void]$lines.Add("- Runtime scene/prefab: $($coverage.runtimeScenePrefab)")
+        [void]$lines.Add("- Manual architectural review: $($coverage.manualArchitecturalReview)")
+        if (@($coverage.scannedRoots).Count -gt 0) {
+            [void]$lines.Add("- Scanned roots: $(@($coverage.scannedRoots) -join ', ')")
+        }
+    }
+    else {
+        [void]$lines.Add('- unavailable')
+    }
     [void]$lines.Add('')
     [void]$lines.Add('## Score Breakdown')
     foreach ($property in $Report.scoreBreakdown.PSObject.Properties) {
@@ -94,6 +110,80 @@ function Test-TechDebtScanFileIncluded {
     $extension -in @('.cs', '.asmdef', '.uxml', '.uss', '.json', '.ps1', '.md')
 }
 
+function Get-TechDebtScanRoots {
+    param(
+        [ValidateSet('FeatureScope', 'ProjectSurface', 'Deep')]
+        [string]$Mode = 'FeatureScope'
+    )
+
+    switch ($Mode) {
+        'FeatureScope' {
+            return @(
+                'Assets/Scripts/Features',
+                'docs/plans/current'
+            )
+        }
+        'ProjectSurface' {
+            return @(
+                'Assets/Scripts',
+                'Assets/Editor',
+                'Assets/UI',
+                'tools',
+                'docs',
+                'ProjectSettings',
+                'Packages',
+                '.github/workflows'
+            )
+        }
+        'Deep' {
+            return @(
+                'Assets/Scripts',
+                'Assets/Editor',
+                'Assets/UI',
+                'Assets/Data',
+                'Assets/Resources',
+                'Assets/Settings',
+                'tools',
+                'docs',
+                'ProjectSettings',
+                'Packages',
+                '.github'
+            )
+        }
+    }
+}
+
+function Get-TechDebtCoverage {
+    param(
+        [ValidateSet('FeatureScope', 'ProjectSurface', 'Deep')]
+        [string]$Mode = 'FeatureScope',
+        [Parameter(Mandatory)][object]$Snapshot,
+        [Parameter(Mandatory)][string[]]$ScannedRoots
+    )
+
+    $featureScopes = "{0}/{1}" -f @($Snapshot.scannedScopes).Count, [int]$Snapshot.totalScopeCount
+    $projectSurfaces = switch ($Mode) {
+        'FeatureScope' { 'partial' }
+        'ProjectSurface' { 'full' }
+        'Deep' { 'full' }
+    }
+    $notes = switch ($Mode) {
+        'FeatureScope' { 'Fast scheduled review. Feature code plus current progress markers only.' }
+        'ProjectSurface' { 'Static scan of configured project surfaces. Scenes and prefabs are not parsed.' }
+        'Deep' { 'Expanded static scan of configured project surfaces and asset metadata roots. Scenes and prefabs are not parsed.' }
+    }
+
+    [pscustomobject]@{
+        mode = $Mode
+        featureScopes = $featureScopes
+        projectSurfaces = $projectSurfaces
+        runtimeScenePrefab = 'not inspected'
+        manualArchitecturalReview = 'not included'
+        scannedRoots = @($ScannedRoots)
+        notes = $notes
+    }
+}
+
 function Get-TechDebtHeuristicPatterns {
     @(
         [pscustomobject]@{
@@ -161,16 +251,35 @@ function Get-TechDebtHeuristicPatterns {
             include = @('docs/plans/current/')
             pathRegex = '^docs/plans/current/progress\.md$'
             message = 'Active progress tracking still describes residual work or placeholders that need owner follow-up.'
+        },
+        [pscustomobject]@{
+            id = 'project-doc-residual'
+            title = 'Project document residual marker'
+            severity = 'low'
+            regex = '(?i)\b(TODO|FIXME|HACK|placeholder|residual)\b'
+            include = @('docs/')
+            excludePathRegex = '^docs/plans/current/progress\.md$'
+            message = 'Project documentation still carries residual or placeholder markers that may need owner follow-up.'
+        },
+        [pscustomobject]@{
+            id = 'tooling-placeholder'
+            title = 'Tooling placeholder marker'
+            severity = 'medium'
+            regex = '(?i)\b(TODO|FIXME|HACK|temporary stub)\b'
+            include = @('tools/', '.github/')
+            message = 'Tooling or workflow automation still contains placeholder implementation text.'
         }
     )
 }
 
 function Get-TechDebtHeuristicFindings {
     param(
-        [Parameter(Mandatory)][string]$RepoRoot
+        [Parameter(Mandatory)][string]$RepoRoot,
+        [ValidateSet('FeatureScope', 'ProjectSurface', 'Deep')]
+        [string]$Mode = 'FeatureScope'
     )
 
-    $scanRoots = @('Assets/Scripts', 'Assets/Editor', 'tools', 'docs/plans/current', 'docs/plans/active')
+    $scanRoots = @(Get-TechDebtScanRoots -Mode $Mode)
     $patterns = @(Get-TechDebtHeuristicPatterns)
     $findings = [System.Collections.Generic.List[object]]::new()
     $seen = @{}
@@ -206,6 +315,11 @@ function Get-TechDebtHeuristicFindings {
 
                     if ($pattern.PSObject.Properties.Name -contains 'pathRegex') {
                         if ($normalizedPath -notmatch [string]$pattern.pathRegex) {
+                            continue
+                        }
+                    }
+                    if ($pattern.PSObject.Properties.Name -contains 'excludePathRegex') {
+                        if ($normalizedPath -match [string]$pattern.excludePathRegex) {
                             continue
                         }
                     }
@@ -572,7 +686,9 @@ function Invoke-TechDebtReviewHarness {
     param(
         [Parameter(Mandatory)][string]$RepoRoot,
         [Parameter(Mandatory)][string]$ConfigPath,
-        [Parameter(Mandatory)][string]$OutputDir
+        [Parameter(Mandatory)][string]$OutputDir,
+        [ValidateSet('FeatureScope', 'ProjectSurface', 'Deep')]
+        [string]$Mode = 'FeatureScope'
     )
 
     if (-not (Test-Path -LiteralPath $OutputDir)) {
@@ -581,7 +697,9 @@ function Invoke-TechDebtReviewHarness {
 
     $snapshot = Get-RuleHarnessProjectReviewSnapshot -RepoRoot $RepoRoot -ConfigPath $ConfigPath -AllScopes -ReadOnly
     $reviewedFindings = @(ConvertTo-RuleHarnessReviewedFindings -Findings @($snapshot.findings + $snapshot.featureDependencyGate.findings))
-    $heuristicFindings = @(Get-TechDebtHeuristicFindings -RepoRoot $RepoRoot)
+    $scanRoots = @(Get-TechDebtScanRoots -Mode $Mode)
+    $coverage = Get-TechDebtCoverage -Mode $Mode -Snapshot $snapshot -ScannedRoots $scanRoots
+    $heuristicFindings = @(Get-TechDebtHeuristicFindings -RepoRoot $RepoRoot -Mode $Mode)
     $cleanupCandidates = @(Get-TechDebtAggressiveCleanupCandidates -RepoRoot $RepoRoot)
     $allReviewFindings = @($reviewedFindings + $heuristicFindings)
     $highCount = @($reviewedFindings | Where-Object severity -eq 'high').Count
@@ -686,6 +804,8 @@ function Invoke-TechDebtReviewHarness {
         runId = [string]$snapshot.runId
         baseCommitSha = [string]$snapshot.baseCommitSha
         generatedAtUtc = [string]$snapshot.generatedAtUtc
+        mode = $Mode
+        coverage = $coverage
         severityScore = [int]$severityScore
         severityBand = Get-TechDebtSeverityBand -Score ([int]$severityScore)
         scoreBreakdown = [pscustomobject]@{

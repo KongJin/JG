@@ -36,7 +36,7 @@ namespace Features.Enemy
         void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
         {
             EnemyNetworkKey = ResolveNetworkKeyFromInstantiation();
-            GameSceneRuntimeSpawnRegistrar.NotifyEnemyArrived(this);
+            BattleSceneRuntimeSpawnRegistrar.NotifyEnemyArrived(this);
         }
 
         public void Initialize(

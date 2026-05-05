@@ -48,10 +48,6 @@
   ],
   "ownerScopedEvidence": [
     {
-      "path": "artifacts/unity/game-flow/",
-      "note": "GameScene flow evidence owned by the game scene flow validation plan."
-    },
-    {
       "path": "artifacts/unity/uitk-page-routing-refactor/",
       "note": "UITK page routing refactor evidence."
     },

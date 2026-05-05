@@ -16,9 +16,9 @@ const hotspotBudgets = [
     owner: "Lobby runtime adapter",
   },
   {
-    path: "Assets/Scripts/Features/Player/GameSceneRoot.cs",
+    path: "Assets/Scripts/Features/Player/BattleSceneRoot.cs",
     maxLines: 300,
-    owner: "GameSceneRoot",
+    owner: "BattleSceneRoot",
   },
 ];
 
@@ -28,7 +28,7 @@ const extractedOwners = [
     requiredFragments: ["RenderLatestOperation", "memory-stat-grid", "memory-sitrep"],
   },
   {
-    path: "Assets/Scripts/Features/Player/GameSceneLocalPlayerInitializationFlow.cs",
+    path: "Assets/Scripts/Features/Player/BattleSceneLocalPlayerInitializationFlow.cs",
     requiredFragments: [
       "InitialEnergyValidator",
       "InitializeBattleEntity(",
@@ -80,8 +80,8 @@ const reabsorptionChecks = [
     blockedFragments: ["RenderLatestOperation", "memory-stat-grid", "memory-sitrep"],
   },
   {
-    path: "Assets/Scripts/Features/Player/GameSceneRoot.cs",
-    message: "GameSceneRoot must not reabsorb local-player battle initialization details.",
+    path: "Assets/Scripts/Features/Player/BattleSceneRoot.cs",
+    message: "BattleSceneRoot must not reabsorb local-player battle initialization details.",
     blockedFragments: [
       "InitialEnergyValidator",
       "InitializeBattleEntity(",

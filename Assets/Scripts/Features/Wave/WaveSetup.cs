@@ -76,7 +76,7 @@ namespace Features.Wave
         public IPlayerPositionQuery HostilePositionQuery => _hostilePositionQuery;
 
         /// <summary>
-        /// Unit 위치 등록용. GameSceneRoot에서 BattleEntity Transform을 등록한다.
+        /// Unit 위치 등록용. BattleSceneRoot에서 BattleEntity Transform을 등록한다.
         /// </summary>
         public UnitPositionQueryAdapter UnitPositionQuery => _unitPositionQuery;
 

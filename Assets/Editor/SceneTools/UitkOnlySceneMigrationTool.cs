@@ -122,7 +122,7 @@ namespace ProjectSD.EditorTools.SceneTools
             AssignObjectReference(slotsContainer, "_errorView", placementError);
             AssignObjectReference(slotsContainer, "_commandController", summonCommand);
 
-            var root = UnityEngine.Object.FindFirstObjectByType<GameSceneRoot>(FindObjectsInactive.Include);
+            var root = UnityEngine.Object.FindFirstObjectByType<BattleSceneRoot>(FindObjectsInactive.Include);
             if (root != null)
             {
                 AssignObjectReference(root, "_sceneErrorPresenter", sceneErrorPresenter);

@@ -237,7 +237,7 @@ namespace Tests.Editor
             {
                 (Path: "Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitkRuntimeAdapter.cs", MaxLines: 380),
                 (Path: "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyUitkRuntimeAdapter.cs", MaxLines: 460),
-                (Path: "Assets/Scripts/Features/Player/GameSceneRoot.cs", MaxLines: 300),
+                (Path: "Assets/Scripts/Features/Player/BattleSceneRoot.cs", MaxLines: 300),
             };
 
             var offenders = budgets
@@ -276,8 +276,8 @@ namespace Tests.Editor
                     "memory-stat-grid",
                     "memory-sitrep"),
                 new ResponsibilityCheck(
-                    "Assets/Scripts/Features/Player/GameSceneRoot.cs",
-                    "GameSceneRoot must not reabsorb local-player battle initialization details.",
+                    "Assets/Scripts/Features/Player/BattleSceneRoot.cs",
+                    "BattleSceneRoot must not reabsorb local-player battle initialization details.",
                     "InitialEnergyValidator",
                     "InitializeBattleEntity(",
                     "EnergyAdapterInstance.GetCurrentEnergy"),

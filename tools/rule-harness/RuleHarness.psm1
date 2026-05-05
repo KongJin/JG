@@ -5463,9 +5463,9 @@ function Get-RuleHarnessHardcodedMcpUiSmokeFindings {
     )
     $sceneLiteralPatterns = @(
         'Assets/Scenes/LobbyScene\.unity',
-        'Assets/Scenes/GameScene\.unity',
+        'Assets/Scenes/BattleScene\.unity',
         '(?<![A-Za-z0-9_])LobbyScene(?![A-Za-z0-9_])',
-        '(?<![A-Za-z0-9_])GameScene(?![A-Za-z0-9_])',
+        '(?<![A-Za-z0-9_])BattleScene(?![A-Za-z0-9_])',
         '/UIRoot',
         '/Canvas/.+Button'
     )

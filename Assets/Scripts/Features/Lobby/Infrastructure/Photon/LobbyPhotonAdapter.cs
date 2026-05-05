@@ -22,7 +22,7 @@ namespace Features.Lobby.Infrastructure.Photon
             IOnEventCallback
     {
         [Required, SerializeField]
-        private string DefaultGameSceneName = "BattleScene";
+        private string DefaultBattleSceneName = "BattleScene";
 
         private readonly PhotonPlayerPropertyManager _propertyManager = new();
 
@@ -206,7 +206,7 @@ namespace Features.Lobby.Infrastructure.Photon
             if (!raised)
                 return Result.Failure("Failed to raise game started event.");
 
-            PhotonNetwork.LoadLevel(DefaultGameSceneName);
+            PhotonNetwork.LoadLevel(DefaultBattleSceneName);
             return Result.Success();
         }
 

@@ -1697,7 +1697,7 @@ $roleReviewDir = Join-Path $roleRepo 'Temp/RoleReview'
 $roleReviewPath = Join-Path $roleReviewDir 'report.json'
 $roleReview = Get-Content -Path $roleReviewPath -Raw | ConvertFrom-Json
 Assert-RuleHarness `
-    -Condition (@($roleReview.scannedScopes).Count -eq [int]$roleReview.totalScopeCount -and [int]$roleReview.totalScopeCount -ge 8 -and [int]$roleReview.severityScore -ge 0 -and [int]$roleReview.severityScore -le 100 -and $roleReview.PSObject.Properties.Name -contains 'scoreBreakdown' -and $roleReview.PSObject.Properties.Name -contains 'refactorTargets') `
+    -Condition (@($roleReview.scannedScopes).Count -eq [int]$roleReview.totalScopeCount -and [int]$roleReview.totalScopeCount -ge 8 -and [int]$roleReview.severityScore -ge 0 -and [int]$roleReview.severityScore -le 100 -and $roleReview.PSObject.Properties.Name -contains 'scoreBreakdown' -and $roleReview.PSObject.Properties.Name -contains 'refactorTargets' -and [string]$roleReview.mode -eq 'FeatureScope' -and [string]$roleReview.coverage.projectSurfaces -eq 'partial' -and [string]$roleReview.coverage.runtimeScenePrefab -eq 'not inspected' -and [string]$roleReview.coverage.manualArchitecturalReview -eq 'not included') `
     -Message 'Expected tech debt role review to scan all scopes and emit severity/refactor artifacts.'
 Assert-RuleHarness `
     -Condition ([int]$roleReview.severityScore -gt 0 -and [int]$roleReview.scoreBreakdown.heuristicFindingCount -ge 1 -and @($roleReview.reviewItems | Where-Object title -eq 'Runtime Resources.Load dependency').Count -ge 1 -and @($roleReview.refactorTargets | Where-Object path -eq 'Assets/Scripts/Features/RoleB/Application/RoleBService.cs').Count -eq 1) `
@@ -1717,6 +1717,19 @@ Assert-RuleHarness `
 Assert-RuleHarness `
     -Condition (-not (Test-Path -LiteralPath (Join-Path $roleRepo 'Temp/RuleHarnessState/feature-scan-state.json')) -and -not (Test-Path -LiteralPath (Join-Path $roleRepo 'Temp/RuleHarnessState/doc-proposals.json'))) `
     -Message 'Expected tech debt role review to leave feature scan state and doc proposal backlog untouched.'
+
+$projectSurfaceReviewDir = Join-Path $roleRepo 'Temp/ProjectSurfaceReview'
+& (Join-Path $roleRepo 'tools/rule-harness/run-tech-debt-review.ps1') `
+    -RepoRoot $roleRepo `
+    -ConfigPath $roleConfigPath `
+    -OutputRoot (Join-Path $roleRepo 'Temp/RuleHarnessRoles') `
+    -OutputDir $projectSurfaceReviewDir `
+    -Mode ProjectSurface | Out-Null
+$projectSurfaceReview = Get-Content -Path (Join-Path $projectSurfaceReviewDir 'report.json') -Raw | ConvertFrom-Json
+$projectSurfaceSummary = Get-Content -Path (Join-Path $projectSurfaceReviewDir 'summary.md') -Raw
+Assert-RuleHarness `
+    -Condition ([string]$projectSurfaceReview.mode -eq 'ProjectSurface' -and [string]$projectSurfaceReview.coverage.projectSurfaces -eq 'full' -and @($projectSurfaceReview.coverage.scannedRoots | Where-Object { $_ -eq 'Assets/Editor' }).Count -eq 1 -and $projectSurfaceSummary.Contains('## Coverage') -and $projectSurfaceSummary.Contains('Manual architectural review: not included')) `
+    -Message 'Expected ProjectSurface tech debt review mode to report broader static coverage explicitly.'
 
 & (Join-Path $roleRepo 'tools/rule-harness/run-review-work.ps1') `
     -RepoRoot $roleRepo `

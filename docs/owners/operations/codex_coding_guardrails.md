@@ -63,11 +63,8 @@
 ## Repository Lookup Tools
 
 - 단순 파일/텍스트 탐색은 `rg`와 직접 파일 읽기를 우선한다.
-- 복잡한 C# symbol, reference, caller/callee, 리팩터 영향 범위 조사는 Serena shared proxy MCP를 우선 사용한다.
-- Serena는 `mcp_servers.serena`의 shared proxy 경로로만 사용한다. 직접 Serena MCP 등록으로 agent/session마다 Serena나 OmniSharp를 중복 기동하지 않는다.
-- `find_symbol`, `find_referencing_symbols`, `get_symbols_overview`, `search_for_pattern`, `serena_shared_proxy_status` 같은 read-heavy 도구를 기본 사용 범위로 둔다.
-- Serena write/edit 도구는 기본 편집 경로가 아니다. source mutation은 repo editing flow와 검증 기준을 따른다.
-- Serena tool namespace가 현재 세션에 노출되지 않았거나 backend가 준비되지 않았으면 그 사실을 짧게 보고하고 `rg`/파일 읽기로 degradation한다. 사용자가 요청하지 않은 proxy/config mutation으로 작업 scope를 키우지 않는다.
+- 복잡한 C# symbol, reference, caller/callee, 리팩터 영향 범위 조사는 먼저 `rg`, 파일 읽기, 기존 정적 lint/test, Unity compile diagnostics로 확인한다.
+- 현재 repo는 별도 symbolic lookup proxy를 기본 도구로 유지하지 않는다. 도구 추가가 필요하면 작업 scope를 별도로 선언하고 owner 문서와 package script를 함께 갱신한다.
 
 ## Answer Reasoning Summary
 
@@ -130,7 +127,8 @@
 사용자가 `A를 제거`, `A를 빼`, `A 없애`라고 지시한 뒤 범위가 잠겼다면 기본 결과는 "A가 제거됐다는 설명이 보이는 상태"가 아니라 "대상 표면에서 A가 있었는지 모르는 상태"다.
 
 - 제품 UI, 선택 목록, generated catalog, 사용자-facing report, 테스트 이름, 문서의 현재 기준 문장에 `removed A`, `A excluded`, `A blocked` 같은 tombstone 표현을 남기지 않는다.
-- 제거 사실을 남겨야 할 때는 사용자-facing 표면이 아니라 closeout, changelog, historical/reference artifact, migration note처럼 추적 전용 owner에만 둔다.
+- 사용자가 단순히 `제거해줘`라고 하면 repo-maintained evidence, log, artifact, index도 대상 표면에 포함한다. 즉 과거 증거 기록이 제거 대상을 current result나 searchable owner로 계속 드러내지 않게 같이 삭제하거나 reference/historical 밖으로 격리한다.
+- 제거 사실을 남겨야 할 때는 사용자-facing 표면이 아니라 closeout, changelog, historical/reference artifact, migration note처럼 추적 전용 owner에만 둔다. 사용자가 `증거기록도 제거` 또는 `다 제거`를 말했으면 법적 고지, 저장 데이터 migration, 감사/배포 추적처럼 보존 이유가 있는 경우에만 예외를 보고하고 남긴다.
 - 회귀 테스트는 "A가 제거됐다는 문구가 보인다"가 아니라 "A가 조회/선택/생성/표시되지 않는다"를 검증한다.
 - 생성 파이프라인은 제거 대상 asset을 계속 재생성하거나 catalog/report에 다시 노출하지 않아야 한다.
 - 예외는 법적 고지, 저장 데이터 migration, 호환성 오류 메시지처럼 사용자가 알아야 안전한 경우뿐이며, 그 경우에도 owner와 제거 조건을 명시한다.

@@ -27,6 +27,19 @@
 powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-tech-debt-review.ps1
 ```
 
+리뷰 범위 선택:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-tech-debt-review.ps1 -Mode FeatureScope
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-tech-debt-review.ps1 -Mode ProjectSurface
+powershell -ExecutionPolicy Bypass -File .\tools\rule-harness\run-tech-debt-review.ps1 -Mode Deep
+```
+
+`FeatureScope`는 기본값이며 빠른 정기 점검용이다. feature code와 current progress marker를 중심으로 본다.
+`ProjectSurface`는 `Assets/Scripts`, `Assets/Editor`, `Assets/UI`, `tools`, `docs`, `ProjectSettings`, `Packages`, workflow surface를 정적으로 훑는다.
+`Deep`은 `ProjectSurface`에 asset data/settings/resources와 `.github`까지 더한 확장 정적 점검이다.
+세 모드 모두 scene/prefab runtime state와 수동 architecture review를 대체하지 않는다. 각 report summary의 `Coverage` 섹션이 `Feature scopes`, `Project surfaces`, `Runtime scene/prefab`, `Manual architectural review` 상태를 명시한다.
+
 리뷰 기록 기반 작업:
 
 ```powershell

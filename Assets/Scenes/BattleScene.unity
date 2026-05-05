@@ -720,7 +720,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5f79c0c787362e4aafbaff30b9b0a5f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Player.GameSceneRuntimeSpawnRegistrar
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Player.BattleSceneRuntimeSpawnRegistrar
   _playerSceneRegistry: {fileID: 258941333}
   _enemySceneRegistry: {fileID: 258941332}
 --- !u!114 &258941332
@@ -758,7 +758,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0126bb925e76cdb42b79b6f29055ddba, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Features.Player.GameSceneRoot
+  m_EditorClassIdentifier: Assembly-CSharp::Features.Player.BattleSceneRoot
   _playerPrefabName: PlayerCharacter
   _spawnRadius: 3
   _camera: {fileID: 1357863258}

@@ -584,7 +584,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 528d66d32bb973049bd4634fba557d59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Features.Lobby.Infrastructure.Photon.LobbyPhotonAdapter
-  DefaultGameSceneName: BattleScene
+  DefaultBattleSceneName: BattleScene
 --- !u!1 &666940185
 GameObject:
   m_ObjectHideFlags: 0

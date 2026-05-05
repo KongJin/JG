@@ -5,7 +5,7 @@ namespace Features.Wave.Infrastructure
 {
     /// <summary>
     /// Tracks BattleEntity transforms for enemy AI targeting queries.
-    /// Registered by GameSceneRoot when BattleEntities are spawned.
+    /// Registered by BattleSceneRoot when BattleEntities are spawned.
     /// </summary>
     public sealed class UnitPositionQueryAdapter : MonoBehaviour
     {

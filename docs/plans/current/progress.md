@@ -14,8 +14,8 @@
 
 | Lane | Current owner | 현재 verdict | 다음 blocker |
 |---|---|---|---|
-| `GameScene / Actual Flow` | [`game_scene_flow_validation_closeout_plan.md`](../active/game_scene_flow_validation_closeout_plan.md) | single-client baseline과 targeted direct EditMode tests는 통과 | result HUD actual player-flow checklist |
-| `GameScene / Multiplayer Sync` | [`runtime_validation_checklist.md`](../../owners/validation/runtime_validation_checklist.md) | Phase 5/9 code path는 있으나 2-client acceptance는 `blocked: two-client runner unavailable` | 수동 2-client session 또는 runner 구현으로 late-join, BattleEntity, Energy, Wave sync 확인 |
+| `BattleScene / Actual Flow` | [`battle_scene_flow_validation_closeout_plan.md`](../active/battle_scene_flow_validation_closeout_plan.md) | single-client baseline과 targeted direct EditMode tests는 통과 | result HUD actual player-flow checklist |
+| `BattleScene / Multiplayer Sync` | [`runtime_validation_checklist.md`](../../owners/validation/runtime_validation_checklist.md) | Phase 5/9 code path는 있으나 2-client acceptance는 `blocked: two-client runner unavailable` | 수동 2-client session 또는 runner 구현으로 late-join, BattleEntity, Energy, Wave sync 확인 |
 | `WebGL Account/Garage / Product Smoke` | [`webgl_smoke_checklist.md`](../../owners/validation/webgl_smoke_checklist.md) | Firestore/Garage 핵심 경로와 Google linking code path는 있으나 WebGL product smoke 전 | Garage save/load, account delete, Google linking, settings/accessibility WebGL smoke |
 | `WebGL Audio / Product Smoke` | [`webgl-audio-closeout.md`](../active/webgl-audio-closeout.md) | SoundPlayer runtime contract는 scene-owned AudioSource host로 전환, WebGL audio product smoke 전 | 사운드 설정 UI 저장 확장, WebGL 오디오 로드/재생 smoke |
 | `Audio SFX / MCP Pipeline` | [`audio_sfx_mcp_pipeline_plan.md`](../active/audio_sfx_mcp_pipeline_plan.md) | mechanical generation/import/catalog-sync evidence is reference-compressed; manual audition decision remains active | manual audition for all 12 SFX, then decide replacements/volume tweaks before UITK event wiring |
@@ -31,7 +31,7 @@
 
 ## 다음 작업
 
-- Primary lane은 GameScene actual-flow와 WebGL audio acceptance다. 각각의 active owner에서 success/blocked/mismatch로 분리해 닫고, multiplayer/WebGL account residual은 관련 playtest checklist 기준으로 추적한다.
+- Primary lane은 BattleScene actual-flow와 WebGL audio acceptance다. 각각의 active owner에서 success/blocked/mismatch로 분리해 닫고, multiplayer/WebGL account residual은 관련 playtest checklist 기준으로 추적한다.
 - UI 변경은 Unity UI authoring workflow와 Stitch owner route를 먼저 확인하고, product acceptance와 candidate evidence를 분리한다.
 - Audio SFX pipeline은 generation/import/catalog-sync mechanical evidence를 reference로 압축했고, active plan은 12개 SFX Unity manual audition verdict만 소유한다. WebGL/browser audio product acceptance는 WebGL audio owner에서만 닫는다.
 - 새 active plan을 열기 전에는 Audio SFX manual audition, WebGL audio smoke, Nova1492 rights/naming처럼 HITL gate로 막힌 active plan을 먼저 `active 유지`, `blocked residual 이관`, 또는 `reference 압축` 후보로 판정한다.

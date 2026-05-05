@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-05",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "rule-harness technical debt review coverage",
+  "observedMutationClass": "rule-harness script and test update; active plan artifact owner shape drift; active plan concrete artifact owner collision; progress evidence overload",
+  "acceptanceEvidenceClass": "harness fixture tests and scoped review runs",
+  "escalationRequired": false,
+  "rootCause": "The tech-debt review command reported severity and scanned feature scopes without naming that the default scheduled review was feature-scope coverage rather than a whole-project debt audit.",
+  "prevention": "Added explicit FeatureScope, ProjectSurface, and Deep modes plus Coverage reporting for feature scopes, project surfaces, runtime scene/prefab inspection, manual architecture review, and scanned roots.",
+  "verification": "Ran tools/rule-harness/tests/Run-RuleHarnessTests.ps1 successfully; ran run-tech-debt-review.ps1 in default FeatureScope and ProjectSurface modes and confirmed summary/report coverage fields.",
+  "blockedReason": "",
+  "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-tech-debt-review-coverage-20260505.json",
+    ".codex/skills/IMPORT_MANIFEST.md",
+    "docs/index.md",
+    "docs/owners/operations/skill_trigger_matrix.md",
+    "docs/owners/operations/document_management_workflow.md",
+    "docs/owners/operations/codex_coding_guardrails.md",
+    "docs/owners/ui-workflow/unity-ui-authoring-workflow.md",
+    "tools/docs-lint/lib.mjs",
+    "tools/docs-lint/sync-progress.ps1",
+    "tools/rule-harness/README.md",
+    "tools/rule-harness/RuleHarness.psm1",
+    "tools/rule-harness/run-harness-pipeline.ps1",
+    "tools/rule-harness/run-tech-debt-review.ps1",
+    "tools/rule-harness/roles/TechDebtReviewHarness.psm1",
+    "tools/rule-harness/tests/Run-RuleHarnessTests.ps1"
+  ]
+}

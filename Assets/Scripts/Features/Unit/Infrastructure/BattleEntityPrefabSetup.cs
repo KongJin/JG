@@ -42,7 +42,7 @@ namespace Features.Unit.Infrastructure
                 var ownerIdStr = (string)data[1];
                 var initialHp = data.Length >= 3 ? (float)data[2] : 100f;
 
-                // GameSceneRoot 또는 UnitSetup를 통해 의존성 주입받아야 함
+                // BattleSceneRoot 또는 UnitSetup를 통해 의존성 주입받아야 함
                 // 현재는 정적 이벤트로 전달 (Composition Root가 Subscribe)
                 _pendingUnitId = unitIdStr;
                 _pendingOwnerId = new DomainEntityId(ownerIdStr);

@@ -24,7 +24,7 @@ internal sealed class LobbySceneInitializationFlow
         UnitSetup unitSetup,
         GarageSetup garageSetup,
         ISceneLoaderPort sceneLoader,
-        string gameSceneName,
+        string battleSceneName,
         IAccountDataPort accountDataPort,
         System.Action applyLoadedAccountSettings)
     {
@@ -33,7 +33,7 @@ internal sealed class LobbySceneInitializationFlow
         var syncHandler = new LobbyNetworkEventHandler(repository, eventBus, photonAdapter);
         var useCases = new LobbyUseCases(repository, photonAdapter, clock);
         var operationRecordStore = new OperationRecordJsonStore();
-        var sceneLoadHandler = new GameStartedSceneLoadEventHandler(eventBus, sceneLoader, gameSceneName);
+        var sceneLoadHandler = new GameStartedSceneLoadEventHandler(eventBus, sceneLoader, battleSceneName);
 
         soundPlayer.Initialize(eventBus, SoundPlayer.LobbyOwnerId);
         applyLoadedAccountSettings?.Invoke();

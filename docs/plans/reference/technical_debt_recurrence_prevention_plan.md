@@ -27,7 +27,7 @@
 | Setup/Root drift | reference guard | 새 runtime object repair는 serialized reference 또는 owner setup으로 고정 |
 | Runtime lookup containment | reference guard | feature code raw lookup은 `ComponentAccess`, registry, serialized reference 등 드러난 seam만 허용 |
 | Prefab/scene contract | reference guard | Resources fallback을 dependency repair로 확장하지 않음 |
-| Actual acceptance split | reference guard | GameScene, Account/Garage, UI Toolkit candidate evidence를 서로 다른 success로 묶지 않음 |
+| Actual acceptance split | reference guard | BattleScene, Account/Garage, UI Toolkit candidate evidence를 서로 다른 success로 묶지 않음 |
 | Locked source padding cleanup | reference guard | file lock 때문에 같은 바이트 길이로 제거한 코드는 임시 padding residual로만 남기고, `ArchitectureGuardrailReflectionTests.SourcePaddingMarkers_AreLimitedToKnownLockedResiduals`가 새 padding marker를 막는다 |
 | Fallback ownership containment | reference guard | fallback/default는 production controller나 setup에 직접 흩뿌리지 않고 domain default, adapter/helper, serialized contract 중 한 owner로 고정하며, `ArchitectureGuardrailReflectionTests.ProductionFallbackReferences_AreExplicitlyReviewed`가 새 production fallback marker를 리뷰 대상으로 만든다 |
 | Dead-code cleanup closeout | reference guard | 삭제 후보는 code grep만으로 닫지 않고 type/name refs, `.meta` GUID refs, scene/prefab refs, test-only reflection, registered tool entrypoints, generated project include를 함께 확인한다 |
@@ -152,7 +152,7 @@ Closeout check:
 
 ## Residual
 
-- GameScene direct EditMode execution은 GameScene actual-flow active owner가 소유하고, Phase 5 2-client smoke는 runtime validation checklist가 소유한다.
+- BattleScene direct EditMode execution은 BattleScene actual-flow active owner가 소유하고, Phase 5 2-client smoke는 runtime validation checklist가 소유한다.
 - Account/Garage/WebGL product acceptance는 WebGL smoke checklist 기준으로 추적한다.
 - `SoundPlayer` AudioSource/template residual은 scene-owned AudioSource contract로 전환했고, legacy `initialPoolSize` serialized contract는 제거했다. WebGL 오디오 product smoke는 별도 acceptance evidence가 필요하다.
 - `WaveSetup.TryGetFirstEnemyData`와 `SummonPhotonAdapter`의 `fallbackInstanceId` production fallback residual은 제거됐다. 새 fallback은 guardrail allowlist 없이 실패해야 한다.

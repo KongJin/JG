@@ -2,11 +2,14 @@
 
 > 마지막 업데이트: 2026-05-05
 > 상태: active
+> age: 1 day
 > doc_id: plans.audio-sfx-mcp-pipeline
 > role: plan
 > owner_scope: 12개 UITK SFX manual audition verdict와 replacement/volume tweak decision
 > upstream: docs.index, ops.codex-coding-guardrails, ops.acceptance-reporting-guardrails
 > artifacts: none
+> blocked owner: Unity manual audition verdict owner
+> next decision: 12개 SFX를 Unity에서 재생하고 keep/replace/volume-tweak 중 하나를 기록
 
 이 문서는 JG UITK/Unity 효과음 제작 파이프라인의 남은 active HITL gate만 소유한다.
 Suno/CDP generation, download, trim, Unity import, `SoundCatalog` sync의 mechanical closeout evidence는 [`audio_sfx_mcp_pipeline_mechanical_closeout.md`](../reference/audio_sfx_mcp_pipeline_mechanical_closeout.md)로 압축 보존한다.

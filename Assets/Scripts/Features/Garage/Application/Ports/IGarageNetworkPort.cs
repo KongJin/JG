@@ -38,7 +38,7 @@ namespace Features.Garage.Application.Ports
 
         /// <summary>
         /// 로컬 플레이어의 편성 데이터 조회.
-        /// GameScene 진입 시 CustomProperties에서 복원된 데이터 사용.
+        /// BattleScene 진입 시 CustomProperties에서 복원된 데이터 사용.
         /// </summary>
         GarageRoster GetLocalPlayerRoster();
     }

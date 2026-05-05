@@ -284,7 +284,13 @@ export async function lintRepository(repoRoot, options = {}) {
     errors.push(...validateUniqueDocIds(documents));
     errors.push(...validateKnownDocIdReferences(documents));
     errors.push(...validateRepoImportedSkillRegistry(documents));
-    errors.push(...validateSkillTriggerMatrix(documents));
+    const skillTriggerMatrixResult = validateSkillTriggerMatrix(documents);
+    if (Array.isArray(skillTriggerMatrixResult)) {
+      errors.push(...skillTriggerMatrixResult);
+    } else {
+      errors.push(...(skillTriggerMatrixResult.errors ?? []));
+      warnings.push(...(skillTriggerMatrixResult.warnings ?? []));
+    }
     errors.push(...validateIndexCoverage(documents, repoRoot));
     errors.push(...validateIndexStatusLabels(documents, repoRoot));
     errors.push(...validateIndexRegistryConsistency(documents, repoRoot));
@@ -1347,6 +1353,7 @@ function validateSkillTriggerMatrix(documents) {
   );
   const matrixSkillNames = new Set(extractSkillRouteNames(matrixDocument.content));
   const errors = [];
+  const warnings = [];
 
   const lines = stripFencedCodeBlocks(matrixDocument.content).split(/\r?\n/);
   for (let index = 0; index < lines.length; index += 1) {
@@ -1401,7 +1408,34 @@ function validateSkillTriggerMatrix(documents) {
     );
   }
 
-  return errors;
+  // Advisory: skill description length check (target ~25 words)
+  const descriptionLines = stripFencedCodeBlocks(matrixDocument.content).split(/\r?\n/);
+  for (let index = 0; index < descriptionLines.length; index += 1) {
+    const line = descriptionLines[index];
+    if (!line.match(/^\|.*\|/)) {
+      continue; // skip non-table lines
+    }
+    const cells = line.split('|').map((cell) => cell.trim());
+    if (cells.length < 4) {
+      continue;
+    }
+    // Expected skill trigger matrix table format: | ID | User prompt signal | Expected skill routes | ... |
+    // Extract description from expected skill routes column if it contains skill name + description
+    const routeCell = cells[2]; // Expected skill routes column
+    const words = routeCell.split(/\s+/).filter((w) => w.length > 0);
+    if (words.length > 25) {
+      warnings.push(
+        createWarning(
+          "skill-description-length-advisory",
+          matrixDocument.repoRelativePath,
+          `Skill trigger description exceeds target ~25 words (found ${words.length}). Consider shortening to keep descriptions as concise trigger indexes.`,
+          index + 1,
+        ),
+      );
+    }
+  }
+
+  return { errors, warnings };
 }
 
 function validateActivePlanBudget(documents) {

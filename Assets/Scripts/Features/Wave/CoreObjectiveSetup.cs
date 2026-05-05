@@ -67,9 +67,6 @@ namespace Features.Wave
                 Debug.LogWarning("[CoreObjectiveSetup] Core position not available for PlacementArea initialization.");
             }
 
-            // 시각화 초기화
-            if (_placementAreaView == null) return; // Inspector에서 연결 필요
-
             var validMat = PlacementAreaMaterialFactory.CreateValidMaterial();
             _placementAreaView.Initialize(_placementArea, validMat);
         }

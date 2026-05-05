@@ -21,7 +21,7 @@
 - Unity UI / prefab / scene 작업: progress -> [`owners/ui-workflow/unity-ui-authoring-workflow.md`](./owners/ui-workflow/unity-ui-authoring-workflow.md) -> [`../tools/unity-mcp/README.md`](../tools/unity-mcp/README.md)
 - Stitch / handoff 작업: [`owners/design/ui_reference_workflow.md`](./owners/design/ui_reference_workflow.md) -> [`owners/ui-workflow/stitch_data_workflow.md`](./owners/ui-workflow/stitch_data_workflow.md) -> [`owners/ui-workflow/stitch_structured_handoff_contract.md`](./owners/ui-workflow/stitch_structured_handoff_contract.md)
 - 코딩 구현 / 버그 수정 / 리팩터 / 테스트 보강: [`owners/operations/codex_coding_guardrails.md`](./owners/operations/codex_coding_guardrails.md) -> relevant owner doc -> concrete code/tests
-- GameScene / WebGL 검증: progress -> [`owners/validation/runtime_validation_checklist.md`](./owners/validation/runtime_validation_checklist.md) or [`owners/validation/webgl_smoke_checklist.md`](./owners/validation/webgl_smoke_checklist.md)
+- BattleScene / WebGL 검증: progress -> [`owners/validation/runtime_validation_checklist.md`](./owners/validation/runtime_validation_checklist.md) or [`owners/validation/webgl_smoke_checklist.md`](./owners/validation/webgl_smoke_checklist.md)
 - 문서 / workflow 정리: [`owners/operations/document_management_workflow.md`](./owners/operations/document_management_workflow.md) -> [`owners/operations/cohesion-coupling-policy.md`](./owners/operations/cohesion-coupling-policy.md)
 - Skill route / trigger 정리: [`owners/operations/skill_routing_registry.md`](./owners/operations/skill_routing_registry.md) -> [`owners/operations/skill_trigger_matrix.md`](./owners/operations/skill_trigger_matrix.md)
 
@@ -32,6 +32,17 @@
 - `paused`: 이유가 있어 실행을 멈춘 계획 문서
 - `historical`: 당시 판단 기록은 남기되 현재 구현 기준으로 쓰지 않는 문서
 - `reference`: 절차나 운영 방법처럼 필요할 때 다시 보는 문서
+
+### 예시
+
+**`reference` 예시** (현재 판단 기준이 아니지만 배경/절차로 유용한 문서):
+- `ops.firebase-hosting`: Firebase 배포 설정 절차
+- `architecture.anti-pattern-analysis`: 과거 구조 분석 기록
+- `plans.audio-sfx-mcp-pipeline-mechanical-closeout`: 기계적 생성 evidence 기록
+
+**`historical` 예시** (당시 판단 기록만 남기고 현재 구현 기준이 아닌 문서):
+- `plans.nova1492-assembly-profile-recovery`: 어셈블 프로필 복구 기록
+- 완료된 plan이 residual 이관이 안 된 채로 방치된 경우 historical로 격리
 
 ## Owner Tree
 
@@ -92,7 +103,7 @@ docs/
 | design.module-data-structure | owners/design/module_data_structure.md | active |
 | playtest.runtime-validation-checklist | owners/validation/runtime_validation_checklist.md | active |
 | playtest.webgl-smoke-checklist | owners/validation/webgl_smoke_checklist.md | active |
-| plans.game-scene-flow-validation-closeout | plans/active/game_scene_flow_validation_closeout_plan.md | active |
+| plans.battle-scene-flow-validation-closeout | plans/active/battle_scene_flow_validation_closeout_plan.md | active |
 | plans.webgl-audio-closeout | plans/active/webgl-audio-closeout.md | active |
 | plans.audio-sfx-mcp-pipeline | plans/active/audio_sfx_mcp_pipeline_plan.md | active |
 | plans.audio-sfx-mcp-pipeline-mechanical-closeout | plans/reference/audio_sfx_mcp_pipeline_mechanical_closeout.md | reference |
@@ -127,7 +138,7 @@ docs/
 - `active`: [`module_data_structure.md`](./owners/design/module_data_structure.md) - module data structure
 - `active`: [`runtime_validation_checklist.md`](./owners/validation/runtime_validation_checklist.md) - runtime validation checklist
 - `active`: [`webgl_smoke_checklist.md`](./owners/validation/webgl_smoke_checklist.md) - WebGL smoke checklist
-- `active`: [`game_scene_flow_validation_closeout_plan.md`](./plans/active/game_scene_flow_validation_closeout_plan.md) - GameScene flow closeout
+- `active`: [`battle_scene_flow_validation_closeout_plan.md`](./plans/active/battle_scene_flow_validation_closeout_plan.md) - BattleScene flow closeout
 - `active`: [`webgl-audio-closeout.md`](./plans/active/webgl-audio-closeout.md) - WebGL audio closeout
 - `active`: [`audio_sfx_mcp_pipeline_plan.md`](./plans/active/audio_sfx_mcp_pipeline_plan.md) - audio SFX MCP pipeline
 - `active`: [`nova1492-content-residual-plan.md`](./plans/active/nova1492-content-residual-plan.md) - Nova1492 content residual

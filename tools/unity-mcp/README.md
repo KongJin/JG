@@ -68,11 +68,11 @@ Use lane-specific evidence paths, for example:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-UnityUiAuthoringWorkflowPolicy.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameScenePlacementSmoke.ps1 -Owner GameSceneUIUX -OutputPath artifacts/unity/current/game-scene-placement-smoke.json
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-GameSceneMobileHudFramingSmoke.ps1 -Owner GameSceneMobileHudFraming -OutputPath artifacts/unity/game-flow/game-scene-mobile-hud-framing-smoke.json -PlacementOutputPath artifacts/unity/game-flow/game-scene-mobile-hud-placement-source.json -ScreenshotPath artifacts/unity/game-flow/game-scene-mobile-hud-framing.png -LeavePlayMode
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-BattleScenePlacementSmoke.ps1 -Owner BattleSceneUIUX -OutputPath artifacts/unity/current/battle-scene-placement-smoke.json
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\unity-mcp\Invoke-BattleSceneMobileHudFramingSmoke.ps1 -Owner BattleSceneMobileHudFraming -OutputPath artifacts/unity/game-flow/battle-scene-mobile-hud-framing-smoke.json -PlacementOutputPath artifacts/unity/game-flow/battle-scene-mobile-hud-placement-source.json -ScreenshotPath artifacts/unity/game-flow/battle-scene-mobile-hud-framing.png -LeavePlayMode
 ```
 
-`Invoke-GameScenePlacementSmoke.ps1` and `Invoke-GameSceneMobileHudFramingSmoke.ps1` are now fail-closed legacy artifacts.
+`Invoke-BattleScenePlacementSmoke.ps1` and `Invoke-BattleSceneMobileHudFramingSmoke.ps1` are now fail-closed legacy artifacts.
 They still document the old `/LobbyCanvas` and `/BattleHudCanvas` contract, but return `blockedReason = ugui-smoke-contract-disabled` until a UI Toolkit runtime smoke replaces them.
 
 If a helper reports that `Temp/UnityMcp/unity-resource.lock` or `Temp/UnityMcp/runtime-smoke.lock` is held, treat the smoke as `blocked` for this lane instead of stopping the other lane's Play Mode session.
@@ -210,7 +210,7 @@ Outputs:
 
 The policy check reads the current changed files from git and enforces:
 
-- route classification for `scene/prefab authoring`, `mixed`, `lobby-ui`, `game-scene-ui`
+- route classification for `scene/prefab authoring`, `mixed`, `lobby-ui`, `battle-scene-ui`
 - route classification for `uitk-candidate` when `Assets/UI/UIToolkit/**` UXML/USS/asset files change
 - no new UI prefab creation by default
 - UI Toolkit candidate evidence for fresh source changes; policy pass is not runtime acceptance

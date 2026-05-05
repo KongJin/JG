@@ -42,7 +42,7 @@ $hasGeneratedArtifact = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patter
 $hasRuntimeHotspotSurface = @(Get-WorkflowPathsMatching -Paths $changedFiles -Patterns @(
     "^Assets/Scripts/Features/Garage/Presentation/Uitk/GarageSetBUitk(RuntimeAdapter|LayoutController)\.cs$",
     "^Assets/Scripts/Features/Lobby/Presentation/Uitk/Lobby(UitkRuntimeAdapter|OperationMemoryRenderer)\.cs$",
-    "^Assets/Scripts/Features/Player/GameScene(Root|LocalPlayerInitializationFlow)\.cs$",
+    "^Assets/Scripts/Features/Player/BattleScene(Root|LocalPlayerInitializationFlow)\.cs$",
     "^Assets/Editor/Tests/ArchitectureGuardrailReflectionTests\.cs$",
     "^tools/workflow/test-runtime-hotspot-structure\.mjs$",
     "^package\.json$"

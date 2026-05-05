@@ -64,8 +64,8 @@ if (Test-Path $progressFile) {
     $referencedInProgress = @()
 
     # 현재 포커스 테이블에서 owner doc 링크 추출
-    if ($progressContent -match 'game_scene_flow_validation_closeout_plan\.md') {
-        $referencedInProgress += "game_scene_flow_validation_closeout_plan.md"
+    if ($progressContent -match 'battle_scene_flow_validation_closeout_plan\.md') {
+        $referencedInProgress += "battle_scene_flow_validation_closeout_plan.md"
     }
     if ($progressContent -match 'audio_sfx_mcp_pipeline_plan\.md') {
         $referencedInProgress += "audio_sfx_mcp_pipeline_plan.md"

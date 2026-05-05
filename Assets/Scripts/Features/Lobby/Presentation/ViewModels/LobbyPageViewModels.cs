@@ -199,7 +199,7 @@ namespace Features.Lobby.Presentation
         public bool CanStartGame { get; }
         public bool IsVisible { get; }
         public string ReadyButtonText => LocalIsReady ? "준비 취소" : GameText.Get("common.ready");
-        public string PrimaryButtonText => LocalIsOwner && LocalIsReady ? "게임 시작" : ReadyButtonText;
+        public string PrimaryButtonText => ReadyButtonText;
     }
 
     internal readonly struct LobbyRoomParticipantViewModel

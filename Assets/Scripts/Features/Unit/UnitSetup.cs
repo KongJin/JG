@@ -65,12 +65,12 @@ namespace Features.Unit
 
             // BattleEntity Setup
             _battleEntitySetup = new BattleEntitySetup();
-            // energyPort는 GameSceneRoot에서 주입 (Player Feature에서 제공)
+            // energyPort는 BattleSceneRoot에서 주입 (Player Feature에서 제공)
         }
 
         /// <summary>
         /// BattleEntity Feature 초기화 (Energy 포트 + Combat + UnitPosition 주입).
-        /// GameSceneRoot에서 호출.
+        /// BattleSceneRoot에서 호출.
         /// </summary>
         public void InitializeBattleEntity(
             EventBus eventBus,

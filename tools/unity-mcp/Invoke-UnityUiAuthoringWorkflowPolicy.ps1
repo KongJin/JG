@@ -275,7 +275,7 @@ $lobbyPatterns = @(
     '^Assets/Scripts/Features/Garage/',
     '^Assets/Scripts/Features/Lobby/'
 )
-$gameScenePatterns = @(
+$battleScenePatterns = @(
     '^Assets/Scenes/BattleScene\.unity$',
     '^Assets/Resources/BattleEntity\.prefab$',
     '^Assets/Scripts/Features/(Player|Summon|Wave|Core|Battle|Combat|Placement)/'
@@ -314,7 +314,7 @@ $stitchCapabilityExpansionPatterns = @(
 
 $scenePrefabFiles = Get-PathsMatching -Paths $changedFiles -Patterns $scenePrefabPatterns
 $lobbyFiles = Get-PathsMatching -Paths $changedFiles -Patterns $lobbyPatterns
-$gameSceneFiles = Get-PathsMatching -Paths $changedFiles -Patterns $gameScenePatterns
+$battleSceneFiles = Get-PathsMatching -Paths $changedFiles -Patterns $battleScenePatterns
 $unityUiRelevantFiles = Get-PathsMatching -Paths $changedFiles -Patterns $unityUiRelevantPatterns
 $uitkCandidateFiles = Get-PathsMatching -Paths $changedFiles -Patterns $uitkCandidatePatterns
 $uitkCandidateEvidenceFiles = Get-PathsMatching -Paths $changedFiles -Patterns $uitkCandidateEvidencePatterns
@@ -333,18 +333,18 @@ $prefabManagementSummary = Get-PrefabManagementSummary -RepoRoot $repoRoot
 
 $hasScenePrefab = @($scenePrefabFiles).Count -gt 0
 $hasLobby = @($lobbyFiles).Count -gt 0
-$hasGameScene = @($gameSceneFiles).Count -gt 0
+$hasBattleScene = @($battleSceneFiles).Count -gt 0
 $hasUitkCandidate = @($uitkCandidateFiles).Count -gt 0
 
 $route = "no-unity-ui-workflow"
-if ($hasLobby -and $hasGameScene) {
+if ($hasLobby -and $hasBattleScene) {
     $route = "mixed"
 }
 elseif ($hasLobby) {
     $route = if ($lobbySceneExists) { "lobby-ui" } else { "uitk-candidate" }
 }
-elseif ($hasGameScene) {
-    $route = "game-scene-ui"
+elseif ($hasBattleScene) {
+    $route = "battle-scene-ui"
 }
 elseif ($hasScenePrefab) {
     $route = "scene/prefab authoring"

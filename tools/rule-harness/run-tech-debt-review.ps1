@@ -2,7 +2,9 @@ param(
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path,
     [string]$ConfigPath = (Join-Path $PSScriptRoot 'config.json'),
     [string]$OutputRoot = (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path 'Temp/RuleHarnessRoles'),
-    [string]$OutputDir
+    [string]$OutputDir,
+    [ValidateSet('FeatureScope', 'ProjectSurface', 'Deep')]
+    [string]$Mode = 'FeatureScope'
 )
 
 Set-StrictMode -Version Latest
@@ -20,7 +22,7 @@ if (-not (Test-Path -LiteralPath $OutputDir)) {
 $logPath = Join-Path $OutputDir 'log.txt'
 Start-Transcript -Path $logPath -Force | Out-Null
 try {
-    $report = Invoke-TechDebtReviewHarness -RepoRoot $RepoRoot -ConfigPath $ConfigPath -OutputDir $OutputDir
+    $report = Invoke-TechDebtReviewHarness -RepoRoot $RepoRoot -ConfigPath $ConfigPath -OutputDir $OutputDir -Mode $Mode
     $latestPath = Join-Path $OutputRoot 'latest-tech-debt-review.txt'
     if (-not (Test-Path -LiteralPath $OutputRoot)) {
         New-Item -ItemType Directory -Path $OutputRoot -Force | Out-Null

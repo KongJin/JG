@@ -300,7 +300,7 @@ GarageRoster (ID 조합)
 | 단계 | 데이터 | 위치 |
 |---|---|---|
 | Garage 편성 | `UnitLoadout` (ID 조합) | `garageRoster` CustomProperties |
-| 게임 시작 | `Unit[] specs` (계산된 스펙) | GameScene 초기화 시 한 번 계산 |
+| 게임 시작 | `Unit[] specs` (계산된 스펙) | BattleScene 초기화 시 한 번 계산 |
 | 소환 | `BattleEntity` (상태 인스턴스) | 전투 중 생성/파괴 반복 |
 
 Unit 스펙은 **Garage가 조합하고, 전투 Feature들이 소비**하는 공유 템플릿이다.

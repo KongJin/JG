@@ -24,7 +24,7 @@ namespace Shared.Localization
             ["lobby.create_room_body"] = "인원과 난이도를 정하고 친구를 기다릴 수 있습니다.",
             ["lobby.deck_check"] = "덱 확인",
             ["lobby.deck_waiting"] = "덱 준비 필요",
-            ["lobby.deck_ready"] = "게임 준비 완료",
+            ["lobby.deck_ready"] = "덱 준비 완료",
             ["lobby.deck_saved_ready"] = "저장된 덱이 시작 조건을 만족합니다.",
             ["lobby.deck_need_more"] = "덱 보강 필요",
             ["lobby.open_room_body"] = "현재 열린 방입니다. 참가 전에 멤버를 확인하세요.",

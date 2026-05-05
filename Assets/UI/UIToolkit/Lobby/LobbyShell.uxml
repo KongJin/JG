@@ -118,18 +118,17 @@
                             <ui:Button name="RoomRedTeamButton" text="RED" class="lobby-team-toggle" />
                             <ui:Button name="RoomBlueTeamButton" text="BLUE" class="lobby-team-toggle" />
                         </ui:VisualElement>
+                        <ui:VisualElement name="RoomWaitingActionDock" class="lobby-waiting-action-dock lobby-waiting-action-dock--inline">
+                            <ui:Button name="RoomReadyButton" text="준비 완료" class="lobby-waiting-primary-button" />
+                            <ui:Button name="RoomStartButton" text="게임 시작" class="lobby-waiting-primary-button" />
+                            <ui:Button name="RoomLeaveButton" text="나가기" class="lobby-waiting-secondary-button" />
+                        </ui:VisualElement>
                         <ui:Label name="RoomWaitingDeckStatusLabel" text="덱 확인" class="lobby-status-chip lobby-status-chip--ready" />
                         <ui:Label name="RoomWaitingDeckTitleLabel" text="저장된 유닛 4/8" class="lobby-summary-title" />
                         <ui:Label name="RoomWaitingDeckBodyLabel" text="게임 시작 조건 충족" class="lobby-card-body" />
                         <ui:VisualElement name="RoomWaitingDeckSlotRow" class="lobby-slot-row" />
                     </ui:VisualElement>
                 </ui:ScrollView>
-
-                <ui:VisualElement name="RoomWaitingActionDock" class="lobby-waiting-action-dock">
-                    <ui:Button name="RoomReadyButton" text="준비 완료" class="lobby-waiting-primary-button" />
-                    <ui:Button name="RoomStartButton" text="게임 시작" class="lobby-waiting-primary-button" />
-                    <ui:Button name="RoomLeaveButton" text="나가기" class="lobby-waiting-secondary-button" />
-                </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement name="GarageUitkHost" class="uitk-page garage-shell-host">
@@ -155,7 +154,7 @@
                     <ui:TextField name="RoomNameInput" label="방 이름" value="Room" />
                     <ui:IntegerField name="CapacityInput" label="인원" value="4" />
                     <ui:IntegerField name="DifficultyInput" label="난이도" value="0" />
-                    <ui:Button name="CreateRoomButton" text="게임 시작" class="uitk-primary-button" />
+                    <ui:Button name="CreateRoomButton" text="방 만들기" class="uitk-primary-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
 

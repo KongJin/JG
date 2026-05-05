@@ -16,7 +16,7 @@ skill 이름과 route 등록은 `ops.skill-routing-registry`가 소유한다.
 
 | ID | User prompt signal | Expected skill routes | Companion / handoff | Boundary |
 |---|---|---|---|---|
-| T01 | "구현해줘", "버그 고쳐줘", "리팩터 시작", "빼자/제외/비활성/삭제/되돌려", "제거한 흔적도 없게", "TDD/테스트 우선으로" | `jg-coding-guardrails` | `jg-issue-investigation` when cause is uncertain; lane owner docs after guardrails | Do not skip repo evidence, validation criteria, scope clarification for product/data/pipeline ambiguity, or absence semantics for removals. |
+| T01 | "구현해줘", "버그 고쳐줘", "리팩터 시작", "빼자/제외/비활성/삭제/되돌려", "제거한 흔적도 없게", "증거기록도 제거", "TDD/테스트 우선으로" | `jg-coding-guardrails` | `jg-issue-investigation` when cause is uncertain; lane owner docs after guardrails | Do not skip repo evidence, validation criteria, scope clarification for product/data/pipeline ambiguity, or absence semantics for removals. |
 | T02 | "문서/skills 관리방법 기술부채", "stale owner 정리", "docs/plans 정리" | `jg-doc-lifecycle`, `rule-operations` | `jg-coupling-review` when owner boundary judgment is needed | Do not treat skill-entry text as policy body. |
 | T03 | "응집도/결합도 봐줘", "interface design", "mocking", "deep module", "owner boundary" | `jg-coupling-review` | `jg-doc-lifecycle` if the output becomes document lifecycle execution | Do not create a generalized score or hard-fail from meaning judgment. |
 | T04 | "왜 실패했어", "원인 파악", "가설 검증", "예전 캡쳐를 보고 판단", "visual mismatch", "아마/추정/가능성" | `jg-issue-investigation` | `jg-coding-guardrails` when a verified fix starts; `jg-unity-workflow` when Unity capture evidence is involved | Do not report unverified hypotheses or stale visual evidence as current root cause. |
@@ -44,3 +44,20 @@ skill 이름과 route 등록은 `ops.skill-routing-registry`가 소유한다.
 - Keep skill descriptions as concise trigger indexes, not policy bodies. Target roughly 25 words or less unless a longer description is explicitly justified.
 - When shortening a description, preserve at least one recognizable prompt signal for each expected route row that depends on that skill.
 - If a fixture starts implying a different owner body, update the owner document or split the route instead of stretching the skill description.
+
+## Static vs Actual Routing Validation
+
+This matrix is a **static coverage** document. It validates that:
+
+- Every registered skill has at least one prompt-signal fixture
+- Skill descriptions do not exceed the trigger index budget
+- Unknown skill routes are not referenced
+
+**Static validation scope**: `npm run --silent docs:lint` and `npm run --silent rules:lint` verify the above. These lints are hard gates for missing coverage or unknown routes.
+
+**Actual routing validation** is not handled by this matrix or by lint. LLM routing has inherent non-determinism, so actual skill selection is verified through:
+
+1. **Advisory drift detection**: When prompt fixtures are exercised, log which skill the agent reported using. Compare against expected routes from this matrix as an advisory signal only, not a hard gate.
+2. **Manual rereview**: If routing consistently deviates from expected routes, update the fixture expectations or the skill description, not the actual agent behavior.
+
+This separation keeps static lint gates deterministic while acknowledging that actual LLM routing requires drift monitoring rather than hard-fail validation.

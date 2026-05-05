@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 
 import { StitchToolClient, stitch } from "@google/stitch-sdk";
 
-const DEFAULT_PROJECT_TITLE = "JG UI Refresh - Lobby Garage GameScene";
+const DEFAULT_PROJECT_TITLE = "JG UI Refresh - Lobby Garage BattleScene";
 
 const DEFAULT_DESIGN_SYSTEM = {
   displayName: "JG Tactical UI",
@@ -90,7 +90,7 @@ Style:
 - no generic SaaS/admin layout`,
   },
   {
-    name: "GameScene HUD",
+    name: "BattleScene HUD",
     prompt: `Create a mobile-first tactical sci-fi battle HUD for a co-op defense game.
 
 Purpose:

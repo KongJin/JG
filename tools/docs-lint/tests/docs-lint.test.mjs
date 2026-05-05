@@ -2080,6 +2080,19 @@ Plan Mode / Codex 운영 규칙은 docs/index.md에서 current path 확인 후 r
   }
 });
 
+test("does not report deleted recurrence closeout shards as missing artifacts", async () => {
+  const result = await lintRepository(getFixturePath("valid-recurrence-closeout"), {
+    includeGeneralChecks: false,
+    includePolicyChecks: true,
+    changedFiles: [
+      "docs/index.md",
+      "artifacts/rules/issue-recurrence-closeout.json",
+      "artifacts/rules/issue-recurrence-closeout.d/deleted-shard.json",
+    ],
+  });
+  assert.equal(result.errors.length, 0, JSON.stringify(result.errors, null, 2));
+});
+
 test("reports missing required recurrence closeout fields when issueDetected is true", async () => {
   const result = await lintRepository(getFixturePath("invalid-recurrence-closeout"), {
     includeGeneralChecks: false,

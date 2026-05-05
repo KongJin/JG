@@ -56,3 +56,11 @@ The repo copy is the JG-facing working copy for repo behavior; do not edit the u
 - Treat large bundled references as imported reference material, not JG owner policy.
 - Re-import only with an explicit skill lifecycle task, then update this manifest, `ops.skill-routing-registry`, and `ops.skill-trigger-matrix` if the repo-facing route or trigger surface changes.
 - Leave `.system` skills outside repo import; system skills stay environment-managed.
+
+## Environment Cache Scope
+
+- `.codex/.tmp/**` is environment cache, not JG repo-facing skill inventory.
+- `.codex/.tmp/plugins/` contains upstream plugin bundles installed by the user Codex environment.
+- JG repo behavior depends only on `.codex/skills/` (repo-imported copy) and repo-local `jg-*` skills.
+- Do not lint, validate, or reference `.codex/.tmp/**` as JG owner policy.
+- If a plugin skill becomes JG repo-facing, import it to `.codex/skills/` and register it here.

@@ -73,7 +73,7 @@ namespace Features.Lobby.Presentation
         {
             viewModel ??= LobbyRoomWaitingViewModel.Empty;
             UitkElementUtility.SetDisplay(_page, viewModel.IsVisible);
-            PrimaryStartsGame = viewModel.LocalIsOwner && viewModel.LocalIsReady;
+            PrimaryStartsGame = false;
 
             _title.text = viewModel.TitleText;
             _meta.text = viewModel.MetaText;
@@ -84,7 +84,7 @@ namespace Features.Lobby.Presentation
             _deckTitle.text = viewModel.DeckSummary.SummaryText;
             _deckBody.text = viewModel.DeckSummary.DetailText;
             _readyButton.text = viewModel.PrimaryButtonText;
-            _readyButton.SetEnabled(!PrimaryStartsGame || viewModel.CanStartGame);
+            _readyButton.SetEnabled(viewModel.IsVisible);
 
             UitkElementUtility.SetDisplay(_startButton, false);
             UitkElementUtility.SetClass(_redTeamButton, SelectedTeamClass, viewModel.LocalTeam == TeamType.Red);
