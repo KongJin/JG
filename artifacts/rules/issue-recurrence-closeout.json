@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-05-04",
+  "updatedAt": "2026-05-05",
   "scope": "rules-only",
   "issueDetected": true,
   "declaredLane": "documentation lifecycle, plan cleanup/progress slim policy, recurrence closeout false-green prevention, managed prompt coverage, stale-trace hard-fail lint, core cohesion/coupling lint, issue investigation hypothesis verification guardrail, and skill route registry coverage",

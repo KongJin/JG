@@ -523,7 +523,7 @@ const tools = [
       properties: {
         outputPath: {
           type: "string",
-          description: "Project-relative output path. Defaults to artifacts/unity/current/screenshots/<timestamp>.png."
+          description: "Project-relative output path. Defaults to artifacts/unity/current/screenshots/latest.png and overwrites that fixed file."
         },
         superSize: {
           type: "integer",

@@ -30,6 +30,7 @@ npm run --silent garage:presentation:lint
 .\tools\workflow\Get-NextWorkSuggestion.ps1
 .\tools\workflow\Test-UnityCliRunTestsPreflight.ps1
 .\tools\workflow\Invoke-UnityEditModeTests.ps1 -TestFilter Tests.Editor.PlacementAreaViewDirectTests -ResultName placement-area-view-direct-tests
+.\tools\workflow\Limit-PngArtifacts.ps1 -WhatIf
 ```
 
 Use `Invoke-CloseoutPack.ps1 -PlanOnly` before a mixed runtime/presentation closeout to see which checks would run.
@@ -42,3 +43,5 @@ If the editor is open and MCP is available, prefer `tools\unity-mcp\Invoke-Unity
 Unity Editor, Play Mode, MCP UI policy, screenshots, and CLI EditMode tests are treated as one shared Unity resource.
 `Invoke-UnityEditModeTests.ps1`, `Invoke-UnityMcpEditModeTests.ps1`, `Invoke-UnityUiAuthoringWorkflowPolicy.ps1`, and MCP runtime smoke helpers acquire `Temp/UnityMcp/unity-resource.lock` before using that resource.
 If another live process owns the lock, treat the workflow as `blocked: unity-resource-lock-held` instead of running a competing Unity operation.
+
+PNG evidence helpers should prefer fixed output paths that overwrite previous evidence. Use `Limit-PngArtifacts.ps1` only as a manual cleanup guard for capture directories.

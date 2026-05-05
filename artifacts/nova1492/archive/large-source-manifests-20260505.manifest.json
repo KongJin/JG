@@ -1,0 +1,114 @@
+﻿{
+    "generatedAt":  "2026-05-05T12:01:22.2596870+09:00",
+    "archive":  "artifacts/nova1492/archive/large-source-manifests-20260505.zip",
+    "reason":  "Historical Nova1492 source inventory and staging evidence moved out of the active artifact root to reduce agent scan/token noise.",
+    "fileCount":  21,
+    "totalBytes":  3162293,
+    "entries":  [
+                    {
+                        "originalPath":  "artifacts/nova1492/resource_inventory.csv",
+                        "bytes":  1031824,
+                        "sha256":  "108b94fc5509e38365264c583be216138784449051eb5ca14f2469298243567d"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/resource_inventory_extensions.csv",
+                        "bytes":  353,
+                        "sha256":  "52bc75e7d85628d0efe5c6971a4d86cb47beb9d39afae0cbb2ad4ce38c65ef7f"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/resource_inventory_summary.md",
+                        "bytes":  1464,
+                        "sha256":  "0b61a60e5b0672fcdd5a8facc54e4577cd3359ee803002cf595598c27192166c"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/raw_source_full_manifest.csv",
+                        "bytes":  451384,
+                        "sha256":  "9962d7f4ba07c2286f6980e33be64dececa9c79722786f3f753a1ca678c28f87"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/raw_source_extension_counts.csv",
+                        "bytes":  358,
+                        "sha256":  "90c3da6d8bfa2fbf085f955e63b6a90ed625e41f925877aaba4da49b37cfa2ff"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/raw_source_full_mirror_report.md",
+                        "bytes":  2401,
+                        "sha256":  "685e09e6f4803d31e80ab0539cc06b7fb35bfb3df11f4e5167ce5cf115ec39d8"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/all_3d_model_staging_manifest.csv",
+                        "bytes":  232099,
+                        "sha256":  "39d741da6be7a899793f49646e41594a7ed0492ad5ed4f799bb3b8361a7ec9a3"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/model_staging_manifest.md",
+                        "bytes":  1673,
+                        "sha256":  "3995ae3daac0080aa93ca538118ec7dd553231498087578e0cd6fc41964245cf"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/all_audio_staging_manifest.csv",
+                        "bytes":  62678,
+                        "sha256":  "3469ff2e2b8412a0f5a0fa7462392319c9eadf3dac3fbd8e02c4d1e203acf071"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/all_audio_staging_report.md",
+                        "bytes":  878,
+                        "sha256":  "cfac13b8f5ebd79beac1babb2d89880a6d3caaa109599d738221b50fe0cbe7a0"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/audio_staging_manifest.csv",
+                        "bytes":  2310,
+                        "sha256":  "48a7a699d0bbb5ee289d094f9c0c8aa815891db439c85c76b849435c5ad5eda1"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/audio_staging_manifest.md",
+                        "bytes":  1682,
+                        "sha256":  "66bde5c2d235247b8472011c1f0387bd5d9896f90967b954f4a31c2e09d25aa7"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/staging_copy_manifest.csv",
+                        "bytes":  6824,
+                        "sha256":  "3ff28ce315c3476d912af8950571f58a8232846a88dd40ef7c869a3767637157"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/staging_copy_manifest.md",
+                        "bytes":  5788,
+                        "sha256":  "ac88b84d25237d2cc278cd5cb58569ef3e75bc0e7341b37eba973405a35fe890"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/garage_candidate_assets.csv",
+                        "bytes":  6249,
+                        "sha256":  "d5d2f518fa0a2d9965a45c4213f635d36ec9ebf3f09672e9c78ce0e9faf7f656"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/garage_candidate_assets.md",
+                        "bytes":  20906,
+                        "sha256":  "735cc6a18e220619a23d08cc780edc97158f28237d9ec6b02ed4f8ebc999d844"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/garage_candidate_contact_sheet.png",
+                        "bytes":  676419,
+                        "sha256":  "f1cf6bb205ed0b292d834c6dfb6dbd6a087f47f3cc6480620b1447e64fb205bc"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/unit_effect_candidate_assets.csv",
+                        "bytes":  6170,
+                        "sha256":  "1028d508ae242dccfab506991715a4ae3a012d762c73a45b2537a6854388afb6"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/unit_effect_candidate_assets.md",
+                        "bytes":  20623,
+                        "sha256":  "61383dbd98a15bb1ccd61436a92e76c289fb1ac2c894e5740b6489fc733d0a3d"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/unit_effect_candidate_contact_sheet.png",
+                        "bytes":  628230,
+                        "sha256":  "a542b86a16fcb677cc2be1fcaf50b1929fee4bee5a8b87cd64cafe1b6ed3c8a3"
+                    },
+                    {
+                        "originalPath":  "artifacts/nova1492/garage_first_application_selection.md",
+                        "bytes":  1980,
+                        "sha256":  "624fd96277515467d2aa66b3934a17e99c81b286724cce75e69babf4901c52e3"
+                    }
+                ]
+}

@@ -5,6 +5,8 @@
 
 Use `current-index.json` first when looking for current Unity evidence.
 
+Current PNG evidence uses fixed output paths and is overwritten by default where the tool owns the path. Use `tools/workflow/Limit-PngArtifacts.ps1` only for manual capture cleanup.
+
 ## Current
 
 - `current/` contains the latest flat Unity evidence files.
@@ -13,7 +15,7 @@ Use `current-index.json` first when looking for current Unity evidence.
 ## Archive
 
 - `archive/flat-legacy-20260505.zip` contains the previous top-level flat evidence files.
-- `archive/flat-legacy-20260505.manifest.json` lists each archived file.
+- `archive/flat-legacy-20260505.manifest.json` is a compact summary. Use the zip entry list only when a historical artifact is explicitly requested.
 - Do not scan or summarize archive contents for current decisions unless a historical artifact is explicitly requested.
 
 New generic Unity evidence should be written under `artifacts/unity/current/` or a narrow owner-scoped subdirectory.

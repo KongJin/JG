@@ -1,0 +1,62 @@
+{
+  "generatedAt": "2026-05-05T12:05:00+09:00",
+  "artifactRoot": "artifacts/nova1492",
+  "planOwner": "docs/plans/nova1492-content-residual-plan.md",
+  "purpose": "Current Nova1492 generated content handoff evidence and pipeline inputs.",
+  "scanGuidance": {
+    "startHere": [
+      "artifacts/nova1492/README.md",
+      "artifacts/nova1492/current-index.json",
+      "docs/plans/nova1492-content-residual-plan.md"
+    ],
+    "avoidByDefault": [
+      "artifacts/nova1492/archive/"
+    ],
+    "reason": "Archive files are historical source inventory/staging evidence and should not be treated as current acceptance evidence."
+  },
+  "currentPipelineInputs": [
+    "artifacts/nova1492/gx_asset_classification.csv",
+    "artifacts/nova1492/gx_conversion_manifest.csv",
+    "artifacts/nova1492/gx_pipeline_state.csv",
+    "artifacts/nova1492/nova_unitpart_xfi_manifest.csv",
+    "artifacts/nova1492/nova_xfi_alignment_proposal.csv",
+    "artifacts/nova1492/nova_part_catalog.csv",
+    "artifacts/nova1492/nova_part_alignment.csv"
+  ],
+  "currentReviewEvidence": [
+    "artifacts/nova1492/gx_arm_audit_manifest.csv",
+    "artifacts/nova1492/gx_arm_audit_hierarchy.csv",
+    "artifacts/nova1492/gx_arm_manual_review.csv",
+    "artifacts/nova1492/gx_body_audit_manifest.csv",
+    "artifacts/nova1492/gx_body_audit_hierarchy.csv",
+    "artifacts/nova1492/gx_body_manual_review.csv",
+    "artifacts/nova1492/gx_leg_audit_manifest.csv",
+    "artifacts/nova1492/gx_leg_audit_hierarchy.csv",
+    "artifacts/nova1492/gx_leg_manual_review.csv",
+    "artifacts/nova1492/arm-captures/",
+    "artifacts/nova1492/body-captures/",
+    "artifacts/nova1492/leg-captures/"
+  ],
+  "currentReports": [
+    "artifacts/nova1492/gx_asset_classification_summary.md",
+    "artifacts/nova1492/gx_conversion_summary.md",
+    "artifacts/nova1492/gx_hierarchy_diagnostics.md",
+    "artifacts/nova1492/nova_part_catalog_summary.md",
+    "artifacts/nova1492/nova_unitpart_xfi_report.md",
+    "artifacts/nova1492/nova_xfi_alignment_proposal_report.md",
+    "artifacts/nova1492/nova_xfi_unity_promotion_report.md",
+    "artifacts/nova1492/nova_part_preview_prefab_report.md",
+    "artifacts/nova1492/nova_part_assembly_prefab_report.md",
+    "artifacts/nova1492/unity_import_settings_report.md"
+  ],
+  "historicalArchives": [
+    {
+      "archive": "artifacts/nova1492/archive/large-source-manifests-20260505.zip",
+      "manifest": "artifacts/nova1492/archive/large-source-manifests-20260505.manifest.json",
+      "fileCount": 21,
+      "totalBytes": 3162293,
+      "contents": "Historical source inventory, raw source manifests, staging manifests, candidate selection reports, and contact sheets."
+    }
+  ],
+  "acceptanceNote": "Generated asset presence and prefab preview evidence are mechanical evidence only. Rights/naming, balance, UI handoff, and model handoff remain owned by the active plan and related design/runtime owners."
+}

@@ -28,7 +28,7 @@
 
 ## Evidence Links
 
-- Historical flat Unity evidence is archived in `artifacts/unity/archive/flat-legacy-20260505.zip`; see `artifacts/unity/archive/flat-legacy-20260505.manifest.json` for the original file list.
+- Historical flat Unity evidence is archived in `artifacts/unity/archive/flat-legacy-20260505.zip`; use the zip entry list only when a historical artifact is explicitly requested.
 - Original evidence paths included `account-sync-uitk-preview-gameview.png`, `connection-reconnect-uitk-preview-gameview.png`, `account-sync-runtime-lobby-shell.png`, `connection-reconnect-runtime-lobby-shell.png`, `account-connection-uitk-candidate-report.md`, `account-connection-uitk-workflow-policy.json`, and `account-connection-runtime-replacement-policy.json`.
 
 owner impact:

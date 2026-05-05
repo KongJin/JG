@@ -401,6 +401,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         public int superSize;
         public int width;
         public int height;
+        public bool overwriteExisting;
     }
 
     [Serializable]

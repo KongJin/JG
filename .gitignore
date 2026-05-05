@@ -113,6 +113,8 @@ InitTestScene*.unity*
 .codex/tmp/
 node_modules/
 artifacts/audio/inbox/
+/%TEMP%install-qwen.bat
+/-o
 
 # UITK-only project: keep imported TMP essential resources out of repo
 /[Aa]ssets/TextMesh Pro/

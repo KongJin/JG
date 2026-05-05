@@ -430,7 +430,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             {
                 if (File.Exists(capturePlan.absolutePath))
                 {
-                    if (!(req?.overwrite ?? false))
+                    if (!capturePlan.overwriteExisting)
                     {
                         throw new InvalidOperationException(
                             "Screenshot target already exists. Set overwrite=true or choose a different outputPath: "
@@ -537,7 +537,7 @@ namespace ProjectSD.EditorTools.UnityMcp
             {
                 if (File.Exists(capturePlan.absolutePath))
                 {
-                    if (!(req?.overwrite ?? false))
+                    if (!capturePlan.overwriteExisting)
                     {
                         throw new InvalidOperationException(
                             "SceneView capture target already exists. Set overwrite=true or choose a different outputPath: "
@@ -668,7 +668,8 @@ namespace ProjectSD.EditorTools.UnityMcp
                 req = new ScreenshotCaptureRequest();
             }
 
-            var relativePath = !string.IsNullOrWhiteSpace(req.outputPath)
+            var usesDefaultPath = string.IsNullOrWhiteSpace(req.outputPath);
+            var relativePath = !usesDefaultPath
                 ? req.outputPath.Replace('\\', '/')
                 : BuildDefaultScreenshotRelativePath();
 
@@ -701,6 +702,7 @@ namespace ProjectSD.EditorTools.UnityMcp
                 superSize = superSize,
                 width = req.width > 0 ? req.width : 0,
                 height = req.height > 0 ? req.height : 0,
+                overwriteExisting = req.overwrite || usesDefaultPath,
             };
         }
 
@@ -737,8 +739,7 @@ namespace ProjectSD.EditorTools.UnityMcp
         {
             return UnityMcpBridge.DefaultScreenshotDirectoryRelativePath
                 + "/"
-                + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss-fff")
-                + ".png";
+                + "latest.png";
         }
 
         private static SceneView ResolveSceneViewWindow()

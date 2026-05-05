@@ -161,11 +161,10 @@ namespace ProjectSD.EditorTools
                     FitAssemblyToPreviewRoot(previewRoot);
                     report.fittedAssembly = MeasureRoot(previewRoot.transform);
 
-                    var imagePaths = new List<string>();
-                    CaptureView(previewRoot, camera, renderTexture, sample.SampleId, "front", 0f, imagePaths);
-                    CaptureView(previewRoot, camera, renderTexture, sample.SampleId, "iso", 35f, imagePaths);
-                    CaptureView(previewRoot, camera, renderTexture, sample.SampleId, "side", 90f, imagePaths);
-                    report.imagePaths = imagePaths.ToArray();
+                    report.imagePaths = new[]
+                    {
+                        CaptureSampleViews(previewRoot, camera, renderTexture, sample.SampleId)
+                    };
                     report.success = true;
                 }
                 finally
@@ -219,31 +218,69 @@ namespace ProjectSD.EditorTools
             return renderTexture;
         }
 
-        private static void CaptureView(
+        private static string CaptureSampleViews(
             GameObject previewRoot,
             Camera camera,
             RenderTexture renderTexture,
-            string sampleId,
-            string viewName,
-            float yaw,
-            ICollection<string> imagePaths)
+            string sampleId)
+        {
+            var textures = new[]
+            {
+                CaptureView(previewRoot, camera, renderTexture, 0f),
+                CaptureView(previewRoot, camera, renderTexture, 35f),
+                CaptureView(previewRoot, camera, renderTexture, 90f)
+            };
+
+            Texture2D strip = null;
+            try
+            {
+                strip = new Texture2D(CaptureSize * textures.Length, CaptureSize, TextureFormat.RGBA32, false);
+                for (var index = 0; index < textures.Length; index++)
+                {
+                    strip.SetPixels(index * CaptureSize, 0, CaptureSize, CaptureSize, textures[index].GetPixels());
+                }
+
+                strip.Apply();
+                var relativePath = Path.Combine(OutputRoot, sampleId + ".png");
+                File.WriteAllBytes(relativePath, strip.EncodeToPNG());
+                return relativePath.Replace('\\', '/');
+            }
+            finally
+            {
+                if (strip != null)
+                    Object.DestroyImmediate(strip);
+
+                foreach (var texture in textures)
+                    Object.DestroyImmediate(texture);
+            }
+        }
+
+        private static Texture2D CaptureView(
+            GameObject previewRoot,
+            Camera camera,
+            RenderTexture renderTexture,
+            float yaw)
         {
             GarageUnitPreviewAssembly.SetYaw(previewRoot, yaw);
             camera.Render();
-            RenderTexture.active = renderTexture;
 
+            var previousActive = RenderTexture.active;
+            RenderTexture.active = renderTexture;
             var texture = new Texture2D(CaptureSize, CaptureSize, TextureFormat.RGBA32, false);
             try
             {
                 texture.ReadPixels(new Rect(0, 0, CaptureSize, CaptureSize), 0, 0);
                 texture.Apply();
-                var relativePath = Path.Combine(OutputRoot, sampleId + "-" + viewName + ".png");
-                File.WriteAllBytes(relativePath, texture.EncodeToPNG());
-                imagePaths.Add(relativePath.Replace('\\', '/'));
+                return texture;
+            }
+            catch
+            {
+                Object.DestroyImmediate(texture);
+                throw;
             }
             finally
             {
-                Object.DestroyImmediate(texture);
+                RenderTexture.active = previousActive;
             }
         }
 

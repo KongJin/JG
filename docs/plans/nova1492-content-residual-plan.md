@@ -28,6 +28,7 @@
 
 ## Execution Rule
 
+- Use `artifacts/nova1492/current-index.json` as the current evidence entrypoint. Historical bulk source inventory and staging reports live under `artifacts/nova1492/archive/` and are not current acceptance evidence unless explicitly reopened.
 - Generated asset presence, prefab creation, preview screenshot은 mechanical evidence일 뿐 product/content acceptance가 아니다.
 - 권리 또는 이름 판단이 불명확하면 `blocked: rights-or-naming-unresolved`로 남긴다.
 - Balance, UI decoration, model replacement 실행은 해당 owner로 넘기고, 이 문서에서는 handoff 상태만 남긴다.

@@ -70,7 +70,7 @@ namespace ProjectSD.EditorTools
                     var perView = new List<Texture2D>();
                     foreach (var view in CaptureView.Views)
                     {
-                        var capture = CaptureRow(context, row, view, failures, config);
+                        var capture = CaptureRow(context, row, view, failures);
                         if (capture != null)
                         {
                             perView.Add(capture);
@@ -95,7 +95,7 @@ namespace ProjectSD.EditorTools
             Debug.Log("[Nova1492] " + config.Title + " audit captures complete. rows=" + rows.Count + " failures=" + failures.Count + " root=" + config.CaptureRootPath);
         }
 
-        private static Texture2D CaptureRow(RenderContext context, AuditRow row, CaptureView view, List<string> failures, AuditCaptureConfig config)
+        private static Texture2D CaptureRow(RenderContext context, AuditRow row, CaptureView view, List<string> failures)
         {
             var model = AssetDatabase.LoadAssetAtPath<GameObject>(row.ObjPath);
             if (model == null)
@@ -129,8 +129,6 @@ namespace ProjectSD.EditorTools
                 texture.Apply();
                 RenderTexture.active = null;
 
-                var path = Path.Combine(config.CaptureRootPath, row.PartId + "-" + view.Name + ".png");
-                File.WriteAllBytes(path, texture.EncodeToPNG());
                 return texture;
             }
             finally
@@ -334,6 +332,7 @@ namespace ProjectSD.EditorTools
             writer.WriteLine($"- audit rows: {rows.Count}");
             writer.WriteLine($"- capture failures: {failures.Count}");
             writer.WriteLine($"- contact sheet: `{Path.Combine(config.CaptureRootPath, config.ContactSheetFileName).Replace('\\', '/')}`");
+            writer.WriteLine("- individual png captures: not emitted; the contact sheet overwrites a fixed path");
             writer.WriteLine($"- manual review: `{config.ManualReviewPath}`");
             if (failures.Count == 0)
             {
