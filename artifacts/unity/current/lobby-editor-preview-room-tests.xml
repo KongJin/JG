@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="18" result="Passed" total="18" passed="18" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-05-05 08:27:09Z" end-time="2026-05-05 08:27:11Z" duration="1.5815288">
+  <test-suite type="TestSuite" id="1000" name="MakeSD" fullname="MakeSD" runstate="Runnable" testcasecount="210" result="Passed" start-time="2026-05-05 08:27:09Z" end-time="2026-05-05 08:27:11Z" duration="1.581529" total="18" passed="18" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1249" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/SOL/Documents/JG/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="210" result="Passed" start-time="2026-05-05 08:27:09Z" end-time="2026-05-05 08:27:11Z" duration="1.572452" total="18" passed="18" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="10708" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1252" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="201" result="Passed" start-time="2026-05-05 08:27:09Z" end-time="2026-05-05 08:27:11Z" duration="1.572008" total="18" passed="18" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1253" name="Editor" fullname="Tests.Editor" runstate="Runnable" testcasecount="201" result="Passed" start-time="2026-05-05 08:27:09Z" end-time="2026-05-05 08:27:11Z" duration="1.571795" total="18" passed="18" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1140" name="LobbyUitkRuntimeAdapterDirectTests" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" testcasecount="18" result="Passed" start-time="2026-05-05 08:27:09Z" end-time="2026-05-05 08:27:11Z" duration="1.570187" total="18" passed="18" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1155" name="AuxiliaryCommandButtons_PublishSemanticClickSounds" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.AuxiliaryCommandButtons_PublishSemanticClickSounds" methodname="AuxiliaryCommandButtons_PublishSemanticClickSounds" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="174877973" result="Passed" start-time="2026-05-05 08:27:09Z" end-time="2026-05-05 08:27:11Z" duration="1.447779" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1141" name="Bind_ClonesShellAndAuxiliarySurfaces" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.Bind_ClonesShellAndAuxiliarySurfaces" methodname="Bind_ClonesShellAndAuxiliarySurfaces" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="454069499" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.011833" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1145" name="Bind_HidesCreateRoomCardBeforeRoomStateArrives" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.Bind_HidesCreateRoomCardBeforeRoomStateArrives" methodname="Bind_HidesCreateRoomCardBeforeRoomStateArrives" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1901487567" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.005987" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1157" name="Bind_MissingRequiredShellElementThrows" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.Bind_MissingRequiredShellElementThrows" methodname="Bind_MissingRequiredShellElementThrows" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="422048113" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.003438" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1154" name="CommandButtons_PublishSemanticClickSoundsOnce" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.CommandButtons_PublishSemanticClickSoundsOnce" methodname="CommandButtons_PublishSemanticClickSoundsOnce" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1265075901" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.006290" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1156" name="LobbyRoomInputHandler_DoesNotPublishCommandClickSounds" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.LobbyRoomInputHandler_DoesNotPublishCommandClickSounds" methodname="LobbyRoomInputHandler_DoesNotPublishCommandClickSounds" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1824845275" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.001475" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1158" name="PageController_RequiresOperationRecordStoreAtInitialize" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.PageController_RequiresOperationRecordStoreAtInitialize" methodname="PageController_RequiresOperationRecordStoreAtInitialize" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="57848121" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.001297" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1149" name="RenderGarageSummary_MapsStatusSummaryWithoutCta" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.RenderGarageSummary_MapsStatusSummaryWithoutCta" methodname="RenderGarageSummary_MapsStatusSummaryWithoutCta" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="935977080" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.006596" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1152" name="RenderRoomDetail_EmptyHidesActionRow" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.RenderRoomDetail_EmptyHidesActionRow" methodname="RenderRoomDetail_EmptyHidesActionRow" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1823314400" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.006166" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1151" name="RenderRoomDetail_MapsViewModelToActionState" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.RenderRoomDetail_MapsViewModelToActionState" methodname="RenderRoomDetail_MapsViewModelToActionState" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="122809811" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.006453" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1153" name="RenderRoomDetail_WithMembersShowsActionRow" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.RenderRoomDetail_WithMembersShowsActionRow" methodname="RenderRoomDetail_WithMembersShowsActionRow" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="627126527" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.004897" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1147" name="RenderRooms_EmptyShowsEmptyStateCard" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.RenderRooms_EmptyShowsEmptyStateCard" methodname="RenderRooms_EmptyShowsEmptyStateCard" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="258260232" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.006389" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1146" name="RenderRooms_MapsViewModelToRows" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.RenderRooms_MapsViewModelToRows" methodname="RenderRooms_MapsViewModelToRows" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="925318448" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.006345" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1150" name="RenderRoomSelection_MapsViewModelToOverlayState" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.RenderRoomSelection_MapsViewModelToOverlayState" methodname="RenderRoomSelection_MapsViewModelToOverlayState" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1279473688" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.006125" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1143" name="ShellTopButtons_RequestLobbyWhenCurrentAuxiliaryPage" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.ShellTopButtons_RequestLobbyWhenCurrentAuxiliaryPage" methodname="ShellTopButtons_RequestLobbyWhenCurrentAuxiliaryPage" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="607670298" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.008993" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1142" name="ShowPages_UpdatesVisibleHostNavShellAndClonesRouteSurfaceOnce" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.ShowPages_UpdatesVisibleHostNavShellAndClonesRouteSurfaceOnce" methodname="ShowPages_UpdatesVisibleHostNavShellAndClonesRouteSurfaceOnce" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="1102749642" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.009930" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1144" name="Uss_NavigationBarHasNoBlackPaddingBand" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.Uss_NavigationBarHasNoBlackPaddingBand" methodname="Uss_NavigationBarHasNoBlackPaddingBand" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="173162708" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.001073" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1148" name="Uxml_LobbyHomeStartsWithRoomListAndHasNoCallsignHero" fullname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests.Uxml_LobbyHomeStartsWithRoomListAndHasNoCallsignHero" methodname="Uxml_LobbyHomeStartsWithRoomListAndHasNoCallsignHero" classname="Tests.Editor.LobbyUitkRuntimeAdapterDirectTests" runstate="Runnable" seed="2087071794" result="Passed" start-time="2026-05-05 08:27:11Z" end-time="2026-05-05 08:27:11Z" duration="0.004213" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:\Users\SOL\Documents\JG\artifacts\unity\current\lobby-editor-preview-room-tests.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -5,7 +5,10 @@ using Features.Garage.Domain;
 using Features.Player.Domain;
 using Features.Unit.Application;
 using Shared.EventBus;
+using Shared.Math;
 using Shared.Runtime;
+using Shared.Runtime.Sound;
+using Shared.Sound;
 using UnityEngine;
 
 namespace Features.Garage.Presentation
@@ -247,13 +250,44 @@ namespace Features.Garage.Presentation
             _callbacksHooked = true;
             _adapter.Bind();
             _adapter.SlotSelected += SelectSlot;
-            _adapter.SlotClearRequested += RequestClearSlot;
+            _adapter.SlotClearRequested += HandleSlotClearRequested;
             _adapter.SlotMoveRequested += RequestMoveSlot;
             _adapter.PartFocusSelected += SetFocusedPart;
             _adapter.PartSearchChanged += SetPartSearchText;
             _adapter.PartOptionSelected += SelectPartOption;
-            _adapter.SaveRequested += RequestSave;
-            _adapter.SettingsRequested += ToggleSettings;
+            _adapter.SaveRequested += HandleSaveRequested;
+            _adapter.SettingsRequested += HandleSettingsRequested;
+        }
+
+        private void HandleSlotClearRequested(int slotIndex)
+        {
+            PublishCommandSound("ui_back");
+            RequestClearSlot(slotIndex);
+        }
+
+        private void HandleSaveRequested()
+        {
+            PublishCommandSound("garage_save");
+            RequestSave();
+        }
+
+        private void HandleSettingsRequested()
+        {
+            PublishCommandSound("ui_click");
+            ToggleSettings();
+        }
+
+        private void PublishCommandSound(string soundKey)
+        {
+            if (_eventPublisher == null || string.IsNullOrWhiteSpace(soundKey))
+                return;
+
+            _eventPublisher.Publish(new SoundRequestEvent(new SoundRequest(
+                soundKey,
+                Float3.Zero,
+                PlaybackPolicy.LocalOnly,
+                SoundPlayer.LobbyOwnerId,
+                0.05f)));
         }
 
         private void SelectPartOption(GarageNovaPartSelection selection)
@@ -429,13 +463,13 @@ namespace Features.Garage.Presentation
                 return;
 
             _adapter.SlotSelected -= SelectSlot;
-            _adapter.SlotClearRequested -= RequestClearSlot;
+            _adapter.SlotClearRequested -= HandleSlotClearRequested;
             _adapter.SlotMoveRequested -= RequestMoveSlot;
             _adapter.PartFocusSelected -= SetFocusedPart;
             _adapter.PartSearchChanged -= SetPartSearchText;
             _adapter.PartOptionSelected -= SelectPartOption;
-            _adapter.SaveRequested -= RequestSave;
-            _adapter.SettingsRequested -= ToggleSettings;
+            _adapter.SaveRequested -= HandleSaveRequested;
+            _adapter.SettingsRequested -= HandleSettingsRequested;
             _callbacksHooked = false;
         }
     }

@@ -1,7 +1,11 @@
 using Features.Lobby.Presentation;
 using NUnit.Framework;
+using ProjectSD.EditorTools.UnityMcp;
+using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Sound;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -85,6 +89,45 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void ShellTopButtons_RequestLobbyWhenCurrentAuxiliaryPage()
+        {
+            var fixture = CreateFixture();
+            try
+            {
+                var lobbyRequests = 0;
+                var accountRequests = 0;
+                var connectionRequests = 0;
+                fixture.Adapter.LobbyPageRequested += () => lobbyRequests++;
+                fixture.Adapter.AccountPageRequested += () => accountRequests++;
+                fixture.Adapter.ConnectionPageRequested += () => connectionRequests++;
+
+                fixture.Adapter.ShowConnectionPage();
+                var root = fixture.Document.rootVisualElement;
+                ClickButton(Button(root, "ShellMenuButton"));
+
+                Assert.AreEqual(1, lobbyRequests);
+                Assert.AreEqual(0, connectionRequests);
+
+                fixture.Adapter.ShowAccountPage();
+                ClickButton(Button(root, "ShellSettingsButton"));
+
+                Assert.AreEqual(2, lobbyRequests);
+                Assert.AreEqual(0, accountRequests);
+
+                fixture.Adapter.ShowLobbyPage();
+                ClickButton(Button(root, "ShellSettingsButton"));
+                ClickButton(Button(root, "ShellMenuButton"));
+
+                Assert.AreEqual(1, accountRequests);
+                Assert.AreEqual(1, connectionRequests);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
         public void Uss_NavigationBarHasNoBlackPaddingBand()
         {
             var uss = File.ReadAllText(LobbyShellUssPath);
@@ -97,6 +140,62 @@ namespace Tests.Editor
             StringAssert.Contains("padding-left: 0;", uss);
             StringAssert.Contains("padding-right: 0;", uss);
             StringAssert.Contains("padding-top: 0;", uss);
+            StringAssert.Contains("#RoomListScroll", uss);
+            StringAssert.Contains("max-height: 600px;", uss);
+        }
+
+        [Test]
+        public void Bind_HidesCreateRoomCardBeforeRoomStateArrives()
+        {
+            var fixture = CreateFixture();
+            try
+            {
+                Assert.IsTrue(fixture.Adapter.Bind());
+
+                var root = fixture.Document.rootVisualElement;
+                Assert.AreEqual(DisplayStyle.None, root.Q<ScrollView>("RoomListScroll").style.display.value);
+                Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>("RoomListEmptyStateCard").style.display.value);
+                Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>("CreateRoomCard").style.display.value);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void LobbyPageController_OpenLobbyPageRendersEditorPreviewRoom()
+        {
+            var documentObject = new GameObject("LobbyPageControllerPreviewRoomTest");
+            try
+            {
+                var document = documentObject.AddComponent<UIDocument>();
+                var controller = documentObject.AddComponent<LobbyPageController>();
+                var serialized = new SerializedObject(controller);
+                serialized.FindProperty("_document").objectReferenceValue = document;
+                serialized.FindProperty("_lobbyShellTree").objectReferenceValue = LoadTree(LobbyShellPath);
+                serialized.FindProperty("_showEditorPreviewRoom").boolValue = true;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+
+                controller.OpenLobbyPage();
+
+                var root = document.rootVisualElement;
+                Assert.AreEqual("열린 방 20개", root.Q<Label>("RoomCountLabel").text);
+                Assert.AreEqual(DisplayStyle.Flex, root.Q<ScrollView>("RoomListScroll").style.display.value);
+                Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>("RoomListEmptyStateCard").style.display.value);
+                Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>("CreateRoomCard").style.display.value);
+                Assert.AreEqual(20, root.Q<VisualElement>("RoomList").childCount);
+                Assert.AreEqual(
+                    "UI 점검용 샘플 방 01",
+                    root.Q<VisualElement>("RoomList")[0].Q<Label>(className: "lobby-room-row__title").text);
+                Assert.AreEqual(
+                    "UI 점검용 샘플 방 20",
+                    root.Q<VisualElement>("RoomList")[19].Q<Label>(className: "lobby-room-row__title").text);
+            }
+            finally
+            {
+                Object.DestroyImmediate(documentObject);
+            }
         }
 
         [Test]
@@ -120,7 +219,8 @@ namespace Tests.Editor
                             totalSlots: 4)
                     }));
 
-                var roomList = fixture.Document.rootVisualElement.Q<VisualElement>("RoomList");
+                var root = fixture.Document.rootVisualElement;
+                var roomList = root.Q<VisualElement>("RoomList");
                 Assert.AreEqual(1, roomList.childCount);
                 var row = roomList[0] as Button;
                 Assert.NotNull(row);
@@ -129,6 +229,9 @@ namespace Tests.Editor
                 Assert.AreEqual("1/4 | Normal", row.Q<Label>(className: "lobby-room-row__meta").text);
                 Assert.AreEqual("참가 가능", row.Q<Label>(className: "lobby-status-chip").text);
                 Assert.AreEqual("1/4", row.Q<Label>(className: "lobby-slot-text").text);
+                Assert.AreEqual(DisplayStyle.Flex, root.Q<ScrollView>("RoomListScroll").style.display.value);
+                Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>("RoomListEmptyStateCard").style.display.value);
+                Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>("CreateRoomCard").style.display.value);
             }
             finally
             {
@@ -146,13 +249,34 @@ namespace Tests.Editor
 
                 var root = fixture.Document.rootVisualElement;
                 Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>("RoomListEmptyStateCard").style.display.value);
+                Assert.AreEqual(DisplayStyle.None, root.Q<ScrollView>("RoomListScroll").style.display.value);
                 Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>("RoomList").style.display.value);
                 Assert.AreEqual("열린 방이 없습니다.", root.Q<Label>("RoomListEmptyStateBodyLabel").text);
+                Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>("CreateRoomCard").style.display.value);
+                Assert.AreEqual("작전 개설", root.Q<Button>("EmptyStateCreateButton").Q<Label>(className: "lobby-button-label").text);
             }
             finally
             {
                 Object.DestroyImmediate(fixture.DocumentObject);
             }
+        }
+
+        [Test]
+        public void Uxml_LobbyHomeStartsWithRoomListAndHasNoCallsignHero()
+        {
+            var root = LoadLobbyShellRoot();
+
+            Assert.IsNull(root.Q<VisualElement>("LobbyHeaderCard"));
+            Assert.IsNull(root.Q<TextField>("DisplayNameInput"));
+            Assert.NotNull(root.Q<ScrollView>("RoomListScroll"));
+            AssertNoLabelText(root, "실시간 매칭과 편성 진입");
+            AssertNoLabelText(root, "콜사인");
+            Assert.AreEqual("열린 방",
+                root.Q<VisualElement>("RoomsSectionCard").Q<Label>(className: "uitk-section-title").text);
+            Assert.AreEqual("작전 개설",
+                root.Q<Button>("CreateRoomOpenButton").Q<Label>(className: "lobby-button-label").text);
+            Assert.AreEqual("작전 개설",
+                root.Q<Button>("EmptyStateCreateButton").Q<Label>(className: "lobby-button-label").text);
         }
 
         [Test]
@@ -287,6 +411,78 @@ namespace Tests.Editor
         }
 
         [Test]
+        public void CommandButtons_PublishSemanticClickSoundsOnce()
+        {
+            var fixture = CreateFixture();
+            try
+            {
+                var eventBus = new EventBus();
+                var soundKeys = new List<string>();
+                eventBus.Subscribe<SoundRequestEvent>(this, e => soundKeys.Add(e.Request.SoundKey));
+                fixture.Adapter.SetClickSoundPublisher(eventBus);
+                Assert.IsTrue(fixture.Adapter.Bind());
+
+                var root = fixture.Document.rootVisualElement;
+                ClickButton(Button(root, "CreateRoomButton"));
+                ClickButton(Button(root, "GarageNavButton"));
+                ClickButton(Button(root, "CreateRoomCancelButton"));
+
+                CollectionAssert.AreEqual(
+                    new[] { "ui_confirm", "ui_select", "ui_back" },
+                    soundKeys);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void AuxiliaryCommandButtons_PublishSemanticClickSounds()
+        {
+            var fixture = CreateFixture();
+            try
+            {
+                var eventBus = new EventBus();
+                var soundKeys = new List<string>();
+                eventBus.Subscribe<SoundRequestEvent>(this, e => soundKeys.Add(e.Request.SoundKey));
+                fixture.Adapter.SetClickSoundPublisher(eventBus);
+
+                fixture.Adapter.ShowAccountPage();
+                fixture.Adapter.ShowConnectionPage();
+
+                var root = fixture.Document.rootVisualElement;
+                ClickButton(Button(root, "ManualSyncRetryButton"));
+                ClickButton(Button(root, "LinkAccountButton"));
+                ClickButton(Button(root, "ManualRetryButton"));
+
+                CollectionAssert.AreEqual(
+                    new[] { "ui_retry", "ui_click", "ui_retry" },
+                    soundKeys);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void LobbyRoomInputHandler_DoesNotPublishCommandClickSounds()
+        {
+            var source = File.ReadAllText(Path.Combine(
+                Application.dataPath,
+                "Scripts",
+                "Features",
+                "Lobby",
+                "Presentation",
+                "Input",
+                "LobbyRoomInputHandler.cs"));
+
+            StringAssert.DoesNotContain("SoundRequestEvent", source);
+            StringAssert.DoesNotContain("PublishSound", source);
+        }
+
+        [Test]
         public void Bind_MissingRequiredShellElementThrows()
         {
             var documentObject = new GameObject("LobbyUitkMissingRequiredTest");
@@ -363,6 +559,13 @@ namespace Tests.Editor
             return asset;
         }
 
+        private static VisualElement LoadLobbyShellRoot()
+        {
+            var root = new VisualElement();
+            LoadTree(LobbyShellPath).CloneTree(root);
+            return root;
+        }
+
         private static void AssertPageVisible(VisualElement root, string pageName)
         {
             Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>(pageName).style.display.value);
@@ -371,6 +574,25 @@ namespace Tests.Editor
         private static void AssertPageHidden(VisualElement root, string pageName)
         {
             Assert.AreEqual(DisplayStyle.None, root.Q<VisualElement>(pageName).style.display.value);
+        }
+
+        private static Button Button(VisualElement root, string name)
+        {
+            var button = root.Q<Button>(name);
+            Assert.NotNull(button, name);
+            return button;
+        }
+
+        private static void ClickButton(Button button)
+        {
+            Assert.AreEqual("Button.clicked", UitkHandlers.InvokeElementForTest(button, "click"));
+        }
+
+        private static void AssertNoLabelText(VisualElement root, string text)
+        {
+            var labels = root.Query<Label>().ToList();
+            for (var i = 0; i < labels.Count; i++)
+                Assert.AreNotEqual(text, labels[i].text);
         }
 
         private readonly struct AdapterFixture

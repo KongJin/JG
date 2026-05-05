@@ -84,7 +84,7 @@ MonoBehaviour:
     channel: 0
     loop: 0
   - key: bgm_lobby
-    clip: {fileID: 8300000, guid: cce6d2f8083246d9935e8b74e5bc9d77, type: 3}
+    clip: {fileID: 8300000, guid: a9b781d8d68e51e498d4421ee166c255, type: 3}
     volume: 0.45
     spatialBlend: 0
     cooldown: 0

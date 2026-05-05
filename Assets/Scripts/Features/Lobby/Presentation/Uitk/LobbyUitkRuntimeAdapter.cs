@@ -1,7 +1,11 @@
 using System;
 using Features.Garage.Presentation;
 using Features.Lobby.Domain;
+using Shared.EventBus;
 using Shared.Kernel;
+using Shared.Math;
+using Shared.Runtime.Sound;
+using Shared.Sound;
 using Shared.Ui;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -41,7 +45,9 @@ namespace Features.Lobby.Presentation
         private LobbyRoomSelectionOverlay _roomSelectionOverlay;
         private LobbyRoomDetailSurface _roomDetailSurface;
         private LobbyShellPageRouter _pageRouter;
+        private LobbyAuxiliarySurfaceBinder _auxiliarySurfaces;
         private readonly LobbyUitkClickScope _clickScope = new();
+        private IEventPublisher _clickSoundPublisher;
         private bool _isBound;
         private bool _isDisposed;
 
@@ -89,6 +95,11 @@ namespace Features.Lobby.Presentation
             Mathf.Max(1, _capacityInput?.value ?? 4),
             DisplayNameText,
             Mathf.Max(0, _difficultyInput?.value ?? 0));
+
+        public void SetClickSoundPublisher(IEventPublisher publisher)
+        {
+            _clickSoundPublisher = publisher;
+        }
 
         public void Dispose()
         {
@@ -205,7 +216,7 @@ namespace Features.Lobby.Presentation
             if (!Bind())
                 return;
 
-            EnsureAccountSurface();
+            _auxiliarySurfaces?.EnsureAccount();
             LobbyAccountStateRenderer.Render(_accountPage, viewModel);
         }
 
@@ -214,7 +225,7 @@ namespace Features.Lobby.Presentation
             if (!Bind())
                 return;
 
-            EnsureRecordsSurface();
+            _auxiliarySurfaces?.EnsureRecords();
             if (_recordsPage == null)
                 return;
 
@@ -232,7 +243,7 @@ namespace Features.Lobby.Presentation
             _shellTitle = Required<Label>("ShellTitleLabel");
             _shellState = Required<Label>("ShellStateLabel");
             _roomNameInput = Required<TextField>("RoomNameInput");
-            _displayNameInput = Required<TextField>("DisplayNameInput");
+            _displayNameInput = _root.Q<TextField>("DisplayNameInput");
             _capacityInput = Required<IntegerField>("CapacityInput");
             _difficultyInput = Required<IntegerField>("DifficultyInput");
             _lobbyNav = Required<Button>("LobbyNavButton");
@@ -240,8 +251,10 @@ namespace Features.Lobby.Presentation
             _recordsNav = Required<Button>("RecordsNavButton");
 
             _roomListSurface = new LobbyRoomListSurface(
+                Required<ScrollView>("RoomListScroll"),
                 Required<VisualElement>("RoomList"),
                 Required<VisualElement>("RoomListEmptyStateCard"),
+                Required<VisualElement>("CreateRoomCard"),
                 Required<Label>("RoomCountLabel"),
                 Required<Label>("RoomListEmptyStateBodyLabel"),
                 roomId => RoomSelected?.Invoke(roomId));
@@ -272,6 +285,18 @@ namespace Features.Lobby.Presentation
             SetCreateRoomOverlayVisible(false);
             SetRoomSelectionOverlayVisible(false);
             _garageSummarySurface.Render(LobbyGarageSummaryViewModel.Empty);
+            _auxiliarySurfaces = new LobbyAuxiliarySurfaceBinder(
+                _recordsPage,
+                _accountPage,
+                _connectionPage,
+                _operationMemoryTree,
+                _accountSyncTree,
+                _connectionReconnectTree,
+                RegisterClick,
+                () => LobbyPageRequested?.Invoke(),
+                () => GaragePageRequested?.Invoke(),
+                () => AccountRefreshRequested?.Invoke(),
+                () => ConnectionPageRequested?.Invoke());
 
             _pageRouter = new LobbyShellPageRouter(
                 new[]
@@ -295,41 +320,41 @@ namespace Features.Lobby.Presentation
                         _recordsNav,
                         "기록",
                         "LOCAL LOG / SYNC PENDING",
-                        EnsureRecordsSurface),
+                        () => _auxiliarySurfaces?.EnsureRecords()),
                     new LobbyShellPageRoute(
                         LobbyShellPageId.Account,
                         _accountPage,
                         null,
                         "계정",
                         "NOVA_SYS / CFG.17",
-                        EnsureAccountSurface),
+                        () => _auxiliarySurfaces?.EnsureAccount()),
                     new LobbyShellPageRoute(
                         LobbyShellPageId.Connection,
                         _connectionPage,
                         null,
                         "연결",
                         "SESSION CHECK",
-                        EnsureConnectionSurface)
+                        () => _auxiliarySurfaces?.EnsureConnection())
                 },
                 _shellTitle,
                 _shellState);
 
-            RegisterClick("ShellMenuButton", () => ConnectionPageRequested?.Invoke());
-            RegisterClick("ShellSettingsButton", () => AccountPageRequested?.Invoke());
-            RegisterClick("CreateRoomOpenButton", () => SetCreateRoomOverlayVisible(true));
-            RegisterClick("EmptyStateCreateButton", () => SetCreateRoomOverlayVisible(true));
-            RegisterClick("CreateRoomCancelButton", () => SetCreateRoomOverlayVisible(false));
-            RegisterClick("CreateRoomButton", () => CreateRoomRequested?.Invoke());
-            RegisterClick("RoomSelectionDismissButton", () => SetRoomSelectionOverlayVisible(false));
-            RegisterClick("JoinSelectedRoomButton", () => JoinSelectedRoomRequested?.Invoke());
-            RegisterClick("RedTeamButton", () => TeamChangeRequested?.Invoke(TeamType.Red));
-            RegisterClick("BlueTeamButton", () => TeamChangeRequested?.Invoke(TeamType.Blue));
-            RegisterClick("ReadyButton", () => ReadyToggled?.Invoke());
-            RegisterClick("StartButton", () => GameStartRequested?.Invoke());
-            RegisterClick("LeaveRoomButton", () => LeaveRoomRequested?.Invoke());
-            RegisterClick("LobbyNavButton", () => LobbyPageRequested?.Invoke());
-            RegisterClick("GarageNavButton", () => GaragePageRequested?.Invoke());
-            RegisterClick("RecordsNavButton", () => RecordsPageRequested?.Invoke());
+            RegisterClick("ShellMenuButton", "ui_click", () => RequestTopPage(LobbyShellPageId.Connection, ConnectionPageRequested));
+            RegisterClick("ShellSettingsButton", "ui_click", () => RequestTopPage(LobbyShellPageId.Account, AccountPageRequested));
+            RegisterClick("CreateRoomOpenButton", "ui_click", () => SetCreateRoomOverlayVisible(true));
+            RegisterClick("EmptyStateCreateButton", "ui_click", () => SetCreateRoomOverlayVisible(true));
+            RegisterClick("CreateRoomCancelButton", "ui_back", () => SetCreateRoomOverlayVisible(false));
+            RegisterClick("CreateRoomButton", "ui_confirm", () => CreateRoomRequested?.Invoke());
+            RegisterClick("RoomSelectionDismissButton", "ui_back", () => SetRoomSelectionOverlayVisible(false));
+            RegisterClick("JoinSelectedRoomButton", "ui_select", () => JoinSelectedRoomRequested?.Invoke());
+            RegisterClick("RedTeamButton", "ui_select", () => TeamChangeRequested?.Invoke(TeamType.Red));
+            RegisterClick("BlueTeamButton", "ui_select", () => TeamChangeRequested?.Invoke(TeamType.Blue));
+            RegisterClick("ReadyButton", "ui_confirm", () => ReadyToggled?.Invoke());
+            RegisterClick("StartButton", "ui_confirm", () => GameStartRequested?.Invoke());
+            RegisterClick("LeaveRoomButton", "ui_back", () => LeaveRoomRequested?.Invoke());
+            RegisterClick("LobbyNavButton", "ui_select", () => LobbyPageRequested?.Invoke());
+            RegisterClick("GarageNavButton", "ui_select", () => GaragePageRequested?.Invoke());
+            RegisterClick("RecordsNavButton", "ui_select", () => RecordsPageRequested?.Invoke());
 
             EnsureGarageSurface();
         }
@@ -377,54 +402,46 @@ namespace Features.Lobby.Presentation
             RegisterClick(_root, buttonName, callback);
         }
 
+        private void RequestTopPage(LobbyShellPageId pageId, Action requestPage)
+        {
+            if (_pageRouter?.CurrentPageId == pageId)
+                LobbyPageRequested?.Invoke();
+            else
+                requestPage?.Invoke();
+        }
+
+        private void RegisterClick(string buttonName, string soundKey, Action callback)
+        {
+            RegisterClick(_root, buttonName, soundKey, callback);
+        }
+
         private void RegisterClick(VisualElement root, string buttonName, Action callback)
+        {
+            RegisterClick(root, buttonName, null, callback);
+        }
+
+        private void RegisterClick(VisualElement root, string buttonName, string soundKey, Action callback)
         {
             var button = Required<Button>(root, buttonName);
             if (callback != null)
-                _clickScope.Register(button, callback);
+                _clickScope.Register(button, () =>
+                {
+                    PublishClickSound(soundKey);
+                    callback();
+                });
         }
 
-        private void EnsureRecordsSurface()
+        private void PublishClickSound(string soundKey)
         {
-            if (_recordsPage == null || _recordsPage.childCount > 0)
+            if (_clickSoundPublisher == null || string.IsNullOrWhiteSpace(soundKey))
                 return;
 
-            if (_operationMemoryTree != null)
-            {
-                _operationMemoryTree.CloneTree(_recordsPage);
-
-                RegisterClick(_recordsPage, "BackButton", () => LobbyPageRequested?.Invoke());
-                RegisterClick(_recordsPage, "GarageButton", () => GaragePageRequested?.Invoke());
-            }
-        }
-
-        private void EnsureAccountSurface()
-        {
-            if (_accountPage == null || _accountPage.childCount > 0)
-                return;
-
-            if (_accountSyncTree != null)
-            {
-                _accountSyncTree.CloneTree(_accountPage);
-
-                RegisterClick(_accountPage, "ManualSyncRetryButton", () => AccountRefreshRequested?.Invoke());
-                RegisterClick(_accountPage, "LinkAccountButton", () => ConnectionPageRequested?.Invoke());
-            }
-        }
-
-        private void EnsureConnectionSurface()
-        {
-            if (_connectionPage == null || _connectionPage.childCount > 0)
-                return;
-
-            if (_connectionReconnectTree != null)
-            {
-                _connectionReconnectTree.CloneTree(_connectionPage);
-
-                RegisterClick(_connectionPage, "BackButton", () => LobbyPageRequested?.Invoke());
-                RegisterClick(_connectionPage, "ReturnLobbyButton", () => LobbyPageRequested?.Invoke());
-                RegisterClick(_connectionPage, "ManualRetryButton", () => LobbyPageRequested?.Invoke());
-            }
+            _clickSoundPublisher.Publish(new SoundRequestEvent(new SoundRequest(
+                soundKey,
+                Float3.Zero,
+                PlaybackPolicy.LocalOnly,
+                SoundPlayer.LobbyOwnerId,
+                0.05f)));
         }
 
         private T Required<T>(string name) where T : VisualElement

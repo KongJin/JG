@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-05",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "document rule compression and routing clarity guidance",
+  "observedMutationClass": "document-management owner policy body update and skill trigger matrix route fixture update",
+  "acceptanceEvidenceClass": "scoped docs lint; no gameplay, Unity runtime, or product acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "The repo had strong owner/lifecycle rules but no compact rule for deciding whether new guidance should be absorbed, split, rejected, or routed by concrete user-facing trigger terms. The missing rule left no owner-owned closeout vocabulary for rule compression or routing clarity.",
+  "prevention": "ops.document-management-workflow now requires new rules to pass through existing owner sentence, existing section, skill trigger, then new document in that order. It also compresses rule body into Decision, Default, Exception, or Evidence, and asks closeouts to report rule compression and routing clarity when route or rule text changes. ops.skill-trigger-matrix now includes rule compression, routing clarity, and missing trigger prompt signals in the document lifecycle route. This rule-only update does not change existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, or progress evidence overload.",
+  "verification": "npm run --silent docs:health -- --json reported zero blocking issues and zero warnings after restoring required recurrence closeout artifacts; scoped stale-path rg over global rule-operations skill, repo skills, docs, and AGENTS found no docs/ops, docs/plans/progress, cohesion_coupling, or old trace matches; scoped docs:lint passed.",
+  "blockedReason": "",
+  "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-rule-compression-routing-20260505.json",
+    "docs/owners/operations/document_management_workflow.md",
+    "docs/owners/operations/skill_trigger_matrix.md"
+  ]
+}

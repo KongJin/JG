@@ -20,7 +20,7 @@
 - hard-fail lint와 review 판단의 경계를 고정한다.
 
 repo-local owner 문서가 이 레포의 최종 기준이다.
-shared/global skill 문서는 배경 설명으로만 참고하고, 현재 owner 판단은 `docs/index.md`와 이 문서를 우선한다.
+general-purpose skill 문서는 배경 설명으로만 참고하고, 현재 owner 판단은 `docs/index.md`와 이 문서를 우선한다.
 
 ## 핵심 기준
 

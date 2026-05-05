@@ -1,18 +1,30 @@
+using Features.Garage.Application;
+using Features.Garage.Application.Ports;
+using Features.Garage.Domain;
 using Features.Garage.Presentation;
+using Features.Unit.Application;
 using Features.Unit.Domain;
 using Features.Unit.Infrastructure;
 using NUnit.Framework;
+using ProjectSD.EditorTools.UnityMcp;
+using Shared.EventBus;
+using Shared.Kernel;
+using Shared.Sound;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Tests.Editor
 {
     public sealed class GarageSetBUitkRuntimeAdapterDirectTests
     {
         private const string UxmlPath = "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uxml";
+        private const string UssPath = "Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss";
+        private const string UitkSourceDirectory = "Assets/Scripts/Features/Garage/Presentation/Uitk";
 
         [Test]
         public void Render_MapsPresenterViewModelsToNamedElements()
@@ -230,7 +242,7 @@ namespace Tests.Editor
             Assert.IsNull(root.Q<VisualElement>("EditorCard"));
             Assert.IsInstanceOf<Button>(root.Q<VisualElement>("PartRow01"));
 
-            var uss = File.ReadAllText("Assets/UI/UIToolkit/GarageSetB/GarageSetBWorkspace.uss");
+            var uss = File.ReadAllText(UssPath);
             StringAssert.Contains(".preview-card", uss);
             StringAssert.Contains("height: 156px;", uss);
             StringAssert.Contains(".unit-diagram", uss);
@@ -242,6 +254,44 @@ namespace Tests.Editor
             StringAssert.Contains("height: 252px;", uss);
             StringAssert.Contains(".save-dock", uss);
             StringAssert.Contains("position: relative;", uss);
+        }
+
+        [Test]
+        public void StaticLayout_IsOwnedByUxmlAndUssNotRuntimeStyleRepair()
+        {
+            Assert.IsFalse(
+                File.Exists(Path.Combine(UitkSourceDirectory, "GarageSetBUitkLayoutController.cs")),
+                "Garage Set B static layout must not be repaired by a runtime layout controller.");
+
+            var uss = File.ReadAllText(UssPath);
+            StringAssert.Contains("Garage Set B authored static layout.", uss);
+            StringAssert.DoesNotContain("previously owned by GarageSetBUitkLayoutController", uss);
+
+            var forbiddenLayoutWrite = new Regex(
+                @"\.style\.(?:height|width|minHeight|maxHeight|minWidth|maxWidth|left|right|top|bottom|margin[A-Za-z]*|padding[A-Za-z]*|position|flexGrow|flexShrink|flexDirection|alignSelf)\s*=");
+            var violations = new List<string>();
+
+            foreach (var path in Directory.GetFiles(UitkSourceDirectory, "*.cs"))
+            {
+                var fileName = Path.GetFileName(path);
+                if (fileName == "GarageStatRadarElement.cs")
+                    continue;
+
+                var lines = File.ReadAllLines(path);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    var line = lines[i].Trim();
+                    if (!forbiddenLayoutWrite.IsMatch(line))
+                        continue;
+
+                    if (IsAllowedGarageUitkDataStyleWrite(fileName, line))
+                        continue;
+
+                    violations.Add($"{fileName}:{i + 1}: {line}");
+                }
+            }
+
+            CollectionAssert.IsEmpty(violations);
         }
 
         [Test]
@@ -325,6 +375,47 @@ namespace Tests.Editor
                 Assert.AreEqual(DisplayStyle.Flex, root.Q<VisualElement>("SaveDock").style.display.value);
                 Assert.AreEqual("출격 편성 저장", Button(root, "SaveButton").text);
                 Assert.IsTrue(Button(root, "SaveButton").enabledSelf);
+            }
+            finally
+            {
+                Object.DestroyImmediate(fixture.DocumentObject);
+            }
+        }
+
+        [Test]
+        public void PageController_CommandButtonsPublishSemanticClickSounds()
+        {
+            var fixture = CreateRuntimeAdapterFixture();
+            try
+            {
+                var controller = fixture.DocumentObject.AddComponent<GarageSetBUitkPageController>();
+                SetObjectReference(controller, "_adapter", fixture.Adapter);
+
+                var eventBus = new EventBus();
+                var soundKeys = new List<string>();
+                eventBus.Subscribe<SoundRequestEvent>(this, e => soundKeys.Add(e.Request.SoundKey));
+
+                controller.Initialize(
+                    new InitializeGarageUseCase(new FakeGaragePersistence(), new FakeGarageNetwork(), cloudPort: null),
+                    new ComposeUnitUseCase(new ValidUnitCompositionPort()),
+                    new ValidateRosterUseCase(new AlwaysValidRosterValidationProvider()),
+                    new SaveRosterUseCase(cloudPort: null, new FakeGaragePersistence(), new FakeGarageNetwork()),
+                    eventBus,
+                    CreateControllerCatalog());
+
+                ClickButton(Button(fixture.Host, "SettingsButton"));
+                CollectionAssert.AreEqual(new[] { "ui_click" }, soundKeys);
+
+                SelectCompleteDraft(controller);
+                soundKeys.Clear();
+                ClickButton(Button(fixture.Host, "SlotClear01Button"));
+                CollectionAssert.AreEqual(new[] { "ui_back" }, soundKeys);
+
+                SelectCompleteDraft(controller);
+                soundKeys.Clear();
+                Assert.IsTrue(Button(fixture.Host, "SaveButton").enabledSelf);
+                ClickButton(Button(fixture.Host, "SaveButton"));
+                CollectionAssert.AreEqual(new[] { "garage_save" }, soundKeys);
             }
             finally
             {
@@ -962,6 +1053,47 @@ namespace Tests.Editor
                 selectedMetaText: options[0].MetaText);
         }
 
+        private static void SelectCompleteDraft(GarageSetBUitkPageController controller)
+        {
+            Assert.IsTrue(controller.TrySelectVisiblePart(
+                GarageNovaPartPanelSlot.Frame,
+                0,
+                out _,
+                out var hasFrameOptions));
+            Assert.IsTrue(hasFrameOptions);
+
+            Assert.IsTrue(controller.TrySelectVisiblePart(
+                GarageNovaPartPanelSlot.Firepower,
+                0,
+                out _,
+                out var hasFirepowerOptions));
+            Assert.IsTrue(hasFirepowerOptions);
+
+            Assert.IsTrue(controller.TrySelectVisiblePart(
+                GarageNovaPartPanelSlot.Mobility,
+                0,
+                out _,
+                out var hasMobilityOptions));
+            Assert.IsTrue(hasMobilityOptions);
+        }
+
+        private static GaragePanelCatalog CreateControllerCatalog()
+        {
+            return new GaragePanelCatalog(
+                new[]
+                {
+                    new GaragePanelCatalog.FrameOption { Id = "frame0", DisplayName = "가디언" },
+                },
+                new[]
+                {
+                    new GaragePanelCatalog.FirepowerOption { Id = "fire0", DisplayName = "단일탄", Range = 4f },
+                },
+                new[]
+                {
+                    new GaragePanelCatalog.MobilityOption { Id = "mob0", DisplayName = "중장갑", MoveRange = 3f },
+                });
+        }
+
         private static Label Label(VisualElement root, string name)
         {
             var element = root.Q<Label>(name);
@@ -992,6 +1124,121 @@ namespace Tests.Editor
 
             Assert.Fail($"Child {child.name} was not under {parent.name}.");
             return -1;
+        }
+
+        private static bool IsAllowedGarageUitkDataStyleWrite(string fileName, string line)
+        {
+            if (fileName == "GarageSetBUitkRenderCoordinator.cs" &&
+                line.Contains("PreviewPowerFill.style.width"))
+            {
+                return true;
+            }
+
+            if (fileName == "GarageSetBPartPreviewSurface.cs" &&
+                line.Contains("bar.Fill.style.height"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static void ClickButton(Button button)
+        {
+            Assert.AreEqual("Button.clicked", UitkHandlers.InvokeElementForTest(button, "click"));
+        }
+
+        private sealed class FakeGaragePersistence : IGaragePersistencePort
+        {
+            public void Save(GarageRoster roster)
+            {
+            }
+
+            public GarageRoster Load()
+            {
+                return new GarageRoster();
+            }
+
+            public void Delete()
+            {
+            }
+        }
+
+        private sealed class FakeGarageNetwork : IGarageNetworkPort
+        {
+            public void SyncRoster(GarageRoster roster)
+            {
+            }
+
+            public void SyncReady(bool isReady)
+            {
+            }
+
+            public GarageRoster GetPlayerRoster(object playerId)
+            {
+                return null;
+            }
+
+            public bool IsPlayerReady(object playerId)
+            {
+                return false;
+            }
+
+            public Dictionary<object, GarageRoster> GetAllPlayersRosters()
+            {
+                return new Dictionary<object, GarageRoster>();
+            }
+
+            public GarageRoster GetLocalPlayerRoster()
+            {
+                return null;
+            }
+        }
+
+        private sealed class AlwaysValidRosterValidationProvider : IRosterValidationProvider
+        {
+            public bool TryValidateComposition(
+                string frameId,
+                string firepowerModuleId,
+                string mobilityModuleId,
+                out string errorMessage)
+            {
+                errorMessage = null;
+                return true;
+            }
+        }
+
+        private sealed class ValidUnitCompositionPort : IUnitCompositionPort
+        {
+            public ModuleStats GetFrameBaseStats(string frameId)
+            {
+                return new ModuleStats(frameBaseHp: 600f, defense: 5f);
+            }
+
+            public ModuleStats GetFirepowerStats(string moduleId)
+            {
+                return new ModuleStats(attackDamage: 30f, attackSpeed: 1f, range: 4f);
+            }
+
+            public ModuleStats GetMobilityStats(string moduleId)
+            {
+                return new ModuleStats(moveSpeed: 3f, moveRange: 3f);
+            }
+
+            public CostCalculator.StatCostTuning GetCostTuning()
+            {
+                return CostCalculator.StatCostTuning.Default;
+            }
+
+            public string GetPassiveTraitId(string frameId)
+            {
+                return string.Empty;
+            }
+
+            public int GetPassiveTraitCostBonus(string frameId)
+            {
+                return 0;
+            }
         }
     }
 }

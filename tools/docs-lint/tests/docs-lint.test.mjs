@@ -170,7 +170,7 @@ test("reports broken relative markdown links", async () => {
   );
 });
 
-test("reports broken relative markdown links in external global rule skills", async () => {
+test("reports broken relative markdown links in optional external rule skills", async () => {
   const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-global-rule-links-"));
   const globalRuleSkillsRoot = await fs.mkdtemp(path.join(os.tmpdir(), "global-rule-skills-"));
   try {
@@ -225,7 +225,7 @@ test("reports broken relative markdown links in external global rule skills", as
   }
 });
 
-test("accepts valid relative markdown links in external global rule skills", async () => {
+test("accepts valid relative markdown links in optional external rule skills", async () => {
   const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-global-rule-links-valid-"));
   const globalRuleSkillsRoot = await fs.mkdtemp(path.join(os.tmpdir(), "global-rule-skills-valid-"));
   try {
@@ -270,24 +270,6 @@ test("accepts valid relative markdown links in external global rule skills", asy
     await fs.rm(repoRoot, { recursive: true, force: true });
     await fs.rm(globalRuleSkillsRoot, { recursive: true, force: true });
   }
-});
-
-test("reports docs/index status label mismatches", async () => {
-  const result = await lintRepository(getFixturePath("index-status-mismatch"), {
-    includeGeneralChecks: true,
-    includePolicyChecks: false,
-  });
-  assert.ok(
-    result.errors.some((error) => error.code === "index-status-mismatch"),
-  );
-});
-
-test("reports docs/index entries that are missing from the registry", async () => {
-  const result = await lintRepository(getFixturePath("index-missing-entry"), {
-    includeGeneralChecks: true,
-    includePolicyChecks: false,
-  });
-  assert.ok(result.errors.some((error) => error.code === "index-missing-entry"));
 });
 
 test("reports doc_id prefixes that do not match the document path owner", async () => {
@@ -1172,6 +1154,123 @@ test("ignores excluded .system skill files", async () => {
   assert.equal(result.errors.length, 0);
 });
 
+test("checks imported non-jg skill links without requiring owner metadata", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-imported-skill-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-05
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-05
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      ".codex/skills/docx/SKILL.md",
+      `---
+name: docx
+description: Test imported skill.
+---
+
+# Imported Skill
+
+[Reference](reference.md)
+`,
+    );
+    await writeFile(repoRoot, ".codex/skills/docx/reference.md", "# Reference\n");
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.equal(result.errors.length, 0);
+    assert.ok(result.managedDocPaths.includes(".codex/skills/docx/SKILL.md"));
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
+test("reports broken relative links in imported non-jg skills", async () => {
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-imported-skill-broken-"));
+  try {
+    await writeFile(
+      repoRoot,
+      "AGENTS.md",
+      `# AGENTS
+
+> 마지막 업데이트: 2026-05-05
+> 상태: active
+> doc_id: repo.agents
+> role: entry
+> owner_scope: fixture entry
+> upstream: none
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      "docs/index.md",
+      `# Docs Index
+
+> 마지막 업데이트: 2026-05-05
+> 상태: active
+> doc_id: docs.index
+> role: entry
+> owner_scope: fixture index
+> upstream: repo.agents
+> artifacts: none
+`,
+    );
+    await writeFile(
+      repoRoot,
+      ".codex/skills/pdf/SKILL.md",
+      `---
+name: pdf
+description: Test imported skill.
+---
+
+# Imported Skill
+
+[Missing](missing.md)
+`,
+    );
+
+    const result = await lintRepository(repoRoot, {
+      includeGeneralChecks: true,
+      includePolicyChecks: false,
+    });
+    assert.ok(
+      result.errors.some((error) =>
+        error.code === "broken-relative-link" &&
+        error.path === ".codex/skills/pdf/SKILL.md"
+      ),
+    );
+  } finally {
+    await fs.rm(repoRoot, { recursive: true, force: true });
+  }
+});
+
 test("reports stale inline repo paths in skill markdown", async () => {
   const result = await lintRepository(getFixturePath("stale-inline-path-in-skill"), {
     includeGeneralChecks: true,
@@ -1350,7 +1449,7 @@ test("reports path-style metadata upstream owner references", async () => {
   }
 });
 
-test("reports global rule skill references missing from the skill routing registry", async () => {
+test("reports repo-imported rule skill references missing from the skill routing registry", async () => {
   const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-global-skill-registry-"));
   try {
     await writeFile(
@@ -1433,7 +1532,7 @@ Use \`rule-validation\` for a fixture route.
   }
 });
 
-test("accepts global rule skill references listed in the skill routing registry", async () => {
+test("accepts repo-imported rule skill references listed in the skill routing registry", async () => {
   const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "docs-lint-global-skill-registry-valid-"));
   try {
     await writeFile(

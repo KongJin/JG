@@ -14,7 +14,6 @@
   "changedPaths": [
     "artifacts/rules/issue-recurrence-closeout.d/local-rules-artifact-reference-lint-20260502.json",
     "artifacts/rules/skill-trigger-inventory.md",
-    "artifacts/rules/rule-revision-trace-inventory.md",
     "tools/docs-lint/lib.mjs",
     "tools/docs-lint/tests/docs-lint.test.mjs"
   ]

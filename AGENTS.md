@@ -1,6 +1,6 @@
 # AGENTS.md
 
-> 마지막 업데이트: 2026-05-02
+> 마지막 업데이트: 2026-05-05
 > 상태: active
 > doc_id: repo.agents
 > role: entry
@@ -26,6 +26,7 @@
 | 진행 상황 | [`/docs/plans/current/progress.md`](docs/plans/current/progress.md) |
 | Unity UI/UX authoring workflow SSOT | [`/docs/owners/ui-workflow/unity-ui-authoring-workflow.md`](docs/owners/ui-workflow/unity-ui-authoring-workflow.md) |
 | Unity MCP 실행 reference | [`/tools/unity-mcp/README.md`](tools/unity-mcp/README.md) |
+| Serena symbolic lookup reference | [`/tools/serena-shared-proxy/README.md`](tools/serena-shared-proxy/README.md) |
 | Stitch surface 실행 reference | [`/tools/stitch-unity/README.md`](tools/stitch-unity/README.md) |
 
 ---
@@ -35,6 +36,7 @@
 - Lobby/Garage의 새 UI 작업 route 본문은 [`/docs/owners/ui-workflow/unity-ui-authoring-workflow.md`](docs/owners/ui-workflow/unity-ui-authoring-workflow.md)와 Stitch owner 문서를 따른다.
 - 현재 상태, 우선순위, 검증 기본선은 [`/docs/plans/current/progress.md`](docs/plans/current/progress.md)를 우선으로 본다.
 - 구현, 버그 수정, 리팩터, 테스트/검증 작업은 [`/docs/owners/operations/codex_coding_guardrails.md`](docs/owners/operations/codex_coding_guardrails.md)를 먼저 확인한 뒤 관련 owner 문서를 따른다.
+- C# symbol/reference lookup 도구 선택 기준은 [`/docs/owners/operations/codex_coding_guardrails.md`](docs/owners/operations/codex_coding_guardrails.md)의 Repository Lookup Tools와 Serena shared proxy reference를 따른다.
 - Plan Mode 또는 규칙/운영/Codex 절차 작업은 [`/docs/index.md`](docs/index.md)에서 current owner path를 확인한 뒤 `rule-operations` route와 repo owner 문서로 라우팅하고, 그 lane에서는 mutation을 금지한다.
 - 운영 규칙 본문과 current route는 [`/docs/index.md`](docs/index.md)에서 owner 문서를 찾아 확인한다. `AGENTS.md`는 경로 안내와 현재 lane 메모만 유지한다.
 

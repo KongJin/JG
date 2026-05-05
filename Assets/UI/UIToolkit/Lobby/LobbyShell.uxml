@@ -20,18 +20,6 @@
 
         <ui:VisualElement name="SharedWorkspace" class="shared-workspace">
             <ui:ScrollView name="LobbyUitkPage" class="uitk-page lobby-home-scroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
-                <ui:VisualElement name="LobbyHeaderCard" class="uitk-card lobby-card lobby-hero-card">
-                    <ui:VisualElement class="lobby-hero-copy">
-                        <ui:Label text="대기 작전 구역" class="uitk-kicker" />
-                        <ui:Label text="실시간 매칭과 편성 진입" class="lobby-hero-title" />
-                        <ui:Label text="콜사인을 확인한 뒤 열린 방을 선택하세요." class="lobby-hero-body" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="lobby-call-sign-card">
-                        <ui:Label text="현재 콜사인" class="lobby-field-label" />
-                        <ui:TextField name="DisplayNameInput" value="Pilot" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-
                 <ui:VisualElement name="RoomsSectionCard" class="uitk-card lobby-card lobby-card--primary">
                     <ui:VisualElement class="lobby-section-head">
                         <ui:VisualElement class="lobby-section-title-stack">
@@ -46,14 +34,16 @@
                             <ui:VisualElement class="uitk-icon uitk-icon--radar uitk-icon--large uitk-icon--blue" />
                         </ui:VisualElement>
                         <ui:Label text="열린 방이 없습니다." class="lobby-empty-title" />
-                        <ui:Label name="RoomListEmptyStateBodyLabel" text="새 작전 노드를 개설하면 분대원을 받을 수 있습니다." class="lobby-empty-body" />
+                        <ui:Label name="RoomListEmptyStateBodyLabel" text="새 작전을 개설하면 분대원을 받을 수 있습니다." class="lobby-empty-body" />
                         <ui:Button name="EmptyStateCreateButton" class="lobby-command-button lobby-command-button--primary">
                             <ui:VisualElement class="uitk-icon uitk-icon--add uitk-icon--text" />
-                            <ui:Label text="신규 노드 개설" class="lobby-button-label" />
+                            <ui:Label text="작전 개설" class="lobby-button-label" />
                         </ui:Button>
                     </ui:VisualElement>
 
-                    <ui:VisualElement name="RoomList" class="lobby-room-list" />
+                    <ui:ScrollView name="RoomListScroll" class="lobby-room-list-scroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto">
+                        <ui:VisualElement name="RoomList" class="lobby-room-list" />
+                    </ui:ScrollView>
                 </ui:VisualElement>
 
                 <ui:VisualElement name="CreateRoomCard" class="uitk-card lobby-card lobby-card--secondary">
@@ -64,7 +54,7 @@
                     <ui:Label text="인원과 난이도를 지정한 뒤 분대 참여를 받을 수 있습니다." class="lobby-card-body" />
                     <ui:Button name="CreateRoomOpenButton" class="lobby-command-button lobby-command-button--primary">
                         <ui:VisualElement class="uitk-icon uitk-icon--add uitk-icon--text" />
-                        <ui:Label text="방 만들기" class="lobby-button-label" />
+                        <ui:Label text="작전 개설" class="lobby-button-label" />
                     </ui:Button>
                 </ui:VisualElement>
 

@@ -85,7 +85,7 @@ async function runProxy() {
   log(`proxy start repo=${repoRoot} daemon=${host}:${port}`);
   await ensureDaemon();
 
-  const parser = new FramedJsonParser(process.stdin, async (message) => {
+  const parser = new JsonLineParser(process.stdin, async (message) => {
     try {
       await handleProxyMessage(message);
     } catch (error) {
@@ -435,7 +435,7 @@ class SerenaBackend {
       }
       this.pending.clear();
     });
-    this.parser = new FramedJsonParser(this.process.stdout, (message) => this.handleBackendMessage(message));
+    this.parser = new JsonLineParser(this.process.stdout, (message) => this.handleBackendMessage(message));
     this.parser.start();
   }
 
@@ -499,51 +499,41 @@ class SerenaBackend {
     if (!this.process || !this.process.stdin.writable) {
       throw new Error("Serena backend stdin is not writable.");
     }
-    const body = Buffer.from(JSON.stringify(message), "utf8");
-    this.process.stdin.write(`Content-Length: ${body.length}\r\n\r\n`);
-    this.process.stdin.write(body);
+    this.process.stdin.write(`${JSON.stringify(message)}\n`);
   }
 }
 
-class FramedJsonParser {
+class JsonLineParser {
   constructor(stream, onMessage) {
     this.stream = stream;
     this.onMessage = onMessage;
-    this.buffer = Buffer.alloc(0);
+    this.buffer = "";
   }
 
   start() {
+    this.stream.setEncoding("utf8");
     this.stream.on("data", (chunk) => {
-      this.buffer = Buffer.concat([this.buffer, chunk]);
+      this.buffer += chunk;
       this.process();
     });
   }
 
   process() {
     while (true) {
-      const headerEnd = this.buffer.indexOf("\r\n\r\n");
-      if (headerEnd === -1) {
+      const newline = this.buffer.indexOf("\n");
+      if (newline === -1) {
         return;
       }
-      const headerText = this.buffer.slice(0, headerEnd).toString("utf8");
-      const length = extractContentLength(headerText);
-      if (length === null) {
-        log(`invalid MCP frame header: ${headerText}`);
-        this.buffer = Buffer.alloc(0);
-        return;
+      const line = this.buffer.slice(0, newline).trim();
+      this.buffer = this.buffer.slice(newline + 1);
+      if (line.length === 0) {
+        continue;
       }
-      const bodyStart = headerEnd + 4;
-      const bodyEnd = bodyStart + length;
-      if (this.buffer.length < bodyEnd) {
-        return;
-      }
-      const body = this.buffer.slice(bodyStart, bodyEnd);
-      this.buffer = this.buffer.slice(bodyEnd);
       try {
-        const message = JSON.parse(body.toString("utf8"));
+        const message = JSON.parse(line);
         Promise.resolve(this.onMessage(message)).catch((error) => log("message handler failed", error));
       } catch (error) {
-        log("invalid MCP JSON body", error);
+        log("invalid MCP JSON line", error);
       }
     }
   }
@@ -602,27 +592,11 @@ function sendMcpError(id, code, message, data) {
 }
 
 function sendMcpMessage(message) {
-  const body = Buffer.from(JSON.stringify(message), "utf8");
-  process.stdout.write(`Content-Length: ${body.length}\r\n\r\n`);
-  process.stdout.write(body);
+  process.stdout.write(`${JSON.stringify(message)}\n`);
 }
 
 function writeLine(socket, payload) {
   socket.write(`${JSON.stringify(payload)}\n`);
-}
-
-function extractContentLength(headerText) {
-  for (const line of headerText.split("\r\n")) {
-    const separator = line.indexOf(":");
-    if (separator <= 0) {
-      continue;
-    }
-    if (line.slice(0, separator).trim().toLowerCase() === "content-length") {
-      const parsed = Number.parseInt(line.slice(separator + 1).trim(), 10);
-      return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
-    }
-  }
-  return null;
 }
 
 function selectProtocolVersion(params) {

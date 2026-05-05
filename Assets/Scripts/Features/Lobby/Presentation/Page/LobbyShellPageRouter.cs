@@ -36,6 +36,7 @@ namespace Features.Lobby.Presentation
         {
             var selectedRoute = FindRoute(pageId);
             selectedRoute.OnEnter?.Invoke();
+            CurrentPageId = pageId;
 
             for (var i = 0; i < _routes.Count; i++)
             {
@@ -50,6 +51,8 @@ namespace Features.Lobby.Presentation
             if (_shellState != null)
                 _shellState.text = selectedRoute.State;
         }
+
+        public LobbyShellPageId? CurrentPageId { get; private set; }
 
         private LobbyShellPageRoute FindRoute(LobbyShellPageId pageId)
         {

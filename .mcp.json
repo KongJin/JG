@@ -8,7 +8,11 @@
     "serena": {
       "type": "stdio",
       "command": "node",
-      "args": ["tools/serena-shared-proxy/serena-shared-proxy.mjs"]
+      "args": [
+        "tools/serena-shared-proxy/serena-shared-proxy.mjs",
+        "--repo-root",
+        "C:/Users/SOL/Documents/JG"
+      ]
     },
     "suno": {
       "type": "stdio",

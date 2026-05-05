@@ -1,6 +1,6 @@
 # Codex Coding Guardrails
 
-> 마지막 업데이트: 2026-05-03
+> 마지막 업데이트: 2026-05-05
 > 상태: active
 > doc_id: ops.codex-coding-guardrails
 > role: ssot
@@ -60,6 +60,15 @@
 - 여러 해석이 모두 유효하고 결과가 달라지면 해석 후보와 추천안을 짧게 드러낸다.
 - 가설은 검증 전까지 원인이나 성공 근거로 쓰지 않는다.
 
+## Repository Lookup Tools
+
+- 단순 파일/텍스트 탐색은 `rg`와 직접 파일 읽기를 우선한다.
+- 복잡한 C# symbol, reference, caller/callee, 리팩터 영향 범위 조사는 Serena shared proxy MCP를 우선 사용한다.
+- Serena는 `mcp_servers.serena`의 shared proxy 경로로만 사용한다. 직접 Serena MCP 등록으로 agent/session마다 Serena나 OmniSharp를 중복 기동하지 않는다.
+- `find_symbol`, `find_referencing_symbols`, `get_symbols_overview`, `search_for_pattern`, `serena_shared_proxy_status` 같은 read-heavy 도구를 기본 사용 범위로 둔다.
+- Serena write/edit 도구는 기본 편집 경로가 아니다. source mutation은 repo editing flow와 검증 기준을 따른다.
+- Serena tool namespace가 현재 세션에 노출되지 않았거나 backend가 준비되지 않았으면 그 사실을 짧게 보고하고 `rg`/파일 읽기로 degradation한다. 사용자가 요청하지 않은 proxy/config mutation으로 작업 scope를 키우지 않는다.
+
 ## Answer Reasoning Summary
 
 답변이나 실행 전에 사용자가 판단 근거를 요구했거나, 요청이 모호하거나 되돌리기 어려운 변경으로 이어질 수 있으면 내부 추론을 그대로 노출하지 말고 실행 가능한 판단 단계 요약을 먼저 공유한다.
@@ -102,7 +111,7 @@
 - assistant가 사용자 교정 뒤 직접 "앞으로는 ..." 약속을 쓰려는 경우도 같은 trigger로 취급한다. 쓰기 전에 durable rule 후보인지 판정하고, repo 규칙으로 남길 일이 아니면 promise language보다 현재 작업의 즉시 보정과 세션 한정 주의로 답한다.
 - 구현/모호성/질문 방식 같은 Codex 행동 규칙은 이 문서가 primary owner다.
 - 문서 lifecycle 절차는 `ops.document-management-workflow`를 따른다.
-- skill trigger 표면은 `.codex/skills/jg-*/SKILL.md`, `ops.skill-routing-registry`, `ops.skill-trigger-matrix`에만 얇게 남긴다.
+- skill trigger 표면은 `.codex/skills/*/SKILL.md`, `ops.skill-routing-registry`, `ops.skill-trigger-matrix`에만 얇게 남긴다.
 - 같은 내용을 skill-entry와 owner 문서에 장문으로 중복하지 않는다. skill-entry는 trigger와 read order를 맡고, 정책 본문은 owner 문서가 맡는다.
 - mutation이 금지된 모드라면 적용 계획과 필요한 owner만 보고하고, "앞으로는 ..." 같은 약속만 남기지 않는다.
 
@@ -145,6 +154,15 @@ scene/prefab wiring, asset catalog/profile, network payload, UI token, visual pr
 - production controller, setup, page controller는 contract 누락 보정 owner가 아니다. truth owner는 serialized contract, asset/profile data, adapter/helper, 또는 domain rule이어야 한다.
 - UI/preview 경로에서는 깨진 결과를 그럴듯하게 배치하지 않는다. 승인되지 않은 data/profile은 placeholder, disabled state, review-required state처럼 사용자가 실패를 볼 수 있는 상태로 렌더한다.
 - 새 code change가 fallback, hidden lookup, runtime repair, `auto_ok` promotion, review/pending success path를 건드리면 `jg-no-silent-fallback` route를 적용하고 fail-closed regression check를 우선한다.
+
+## Branch Strategy Boundary
+
+`if`/`switch` 분기가 4개 이상이면 control-flow 확장이 아니라 factory pattern과 strategy pattern으로 구조를 분리한다.
+
+- 서로 다른 동작, 계산, 렌더링, validation, command 처리 중 하나라도 branch별로 달라지면 `*Strategy` 인터페이스와 `*StrategyFactory` 또는 registry를 둔다.
+- caller는 key/type/enum을 factory에 넘기고, 선택된 strategy의 public method만 호출한다. caller 안에 4개 이상의 분기 본문을 남기지 않는다.
+- 단순 값 매핑도 4개 이상이면 `Dictionary`, table, ScriptableObject/catalog 같은 data owner로 옮기고, production code의 긴 `if`/`switch` 체인으로 유지하지 않는다.
+- 외부 API, serialization, Unity callback처럼 inline 분기를 피하기 어려운 예외는 코드 근처에 owner와 이유를 남기고, 안티패턴 리뷰에서 residual 또는 허용 예외로 분리한다.
 
 ## Refactor Slice Lite
 
@@ -198,6 +216,16 @@ scene/prefab wiring, asset catalog/profile, network payload, UI token, visual pr
 - 테스트가 비현실적이면 이유와 대체 검증을 남긴다.
 - mechanical pass를 actual acceptance success처럼 보고하지 않는다.
 
+## Anti-Pattern Review After Code Changes
+
+코드 구현, 버그 수정, 리팩터, UI wiring 변경 뒤에는 closeout 전에 안티패턴 리뷰를 한 번 수행한다.
+이 리뷰는 compile/test와 별개이며, mechanical pass를 대신하지 않는다.
+
+- 최근 변경 파일에서 owner boundary, 응집도/결합도, hidden fallback/default, dummy data의 production 유입, magic constant, 4개 이상 branch의 strategy/factory 분리 여부, 테스트 이름과 검증 범위 불일치, hotspot line budget 우회를 확인한다.
+- 이번 변경이 새로 만든 high/medium anti-pattern이고 작고 안전하게 고칠 수 있으면 final 전에 고친다.
+- 즉시 고치면 범위가 커지거나 제품 판단이 필요한 항목은 residual로 남기고, file/line, 위험, 권장 owner 이동을 짧게 보고한다.
+- 안티패턴 리뷰 결과는 mechanical validation과 actual acceptance와 분리해 closeout에 남긴다.
+
 ## Unity Editor Session Safety
 
 Unity Editor가 이미 열려 있고 사용자가 scene/prefab/UI를 보고 있거나 만질 가능성이 있으면, auxiliary verification이 그 세션을 끊거나 dirty 상태를 유발하지 않도록 보수적으로 다룬다.
@@ -231,4 +259,5 @@ Domain Layer 구현 시 다음 기준을 기본값으로 둔다.
 - `blocked`: 핵심 acceptance를 아직 판정할 수 없다.
 - `mismatch`: 비교가 끝났고 기준과 다르다.
 - closeout에서는 변경 범위, 검증 결과, 남은 리스크를 분리한다.
+- 코드 변경 closeout에서는 안티패턴 리뷰 수행 여부와 남은 high/medium residual을 분리해 남긴다.
 - 규칙, owner, skill trigger를 바꾼 작업은 `doc lifecycle checked`와 `skill trigger checked` 필요 여부를 확인하고, skill route/trigger 변경이면 `ops.skill-routing-registry`와 `ops.skill-trigger-matrix`를 대조한다.

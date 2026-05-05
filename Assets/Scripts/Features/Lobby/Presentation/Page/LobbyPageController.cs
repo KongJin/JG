@@ -42,6 +42,12 @@ namespace Features.Lobby.Presentation
         [SerializeField]
         private VisualTreeAsset _connectionReconnectTree;
 
+#if UNITY_EDITOR
+        [Header("Editor Preview")]
+        [SerializeField]
+        private bool _showEditorPreviewRoom = true;
+#endif
+
         private LobbyRoomInputHandler _inputHandler;
         private LobbyUitkRuntimeAdapter _uitk;
         private readonly LobbyPagePresenter _presenter = new();
@@ -55,6 +61,11 @@ namespace Features.Lobby.Presentation
         private bool _hasNetworkRoomList;
         private IReadOnlyList<RoomSnapshot> _latestLobbyRooms = Array.Empty<RoomSnapshot>();
         private IReadOnlyList<RoomListItem> _latestNetworkRooms = Array.Empty<RoomListItem>();
+
+#if UNITY_EDITOR
+        private const string EditorPreviewRoomIdPrefix = "ui-preview-room-";
+        private static readonly IReadOnlyList<RoomListItem> EditorPreviewRooms = BuildEditorPreviewRooms();
+#endif
 
         private void Awake()
         {
@@ -75,6 +86,7 @@ namespace Features.Lobby.Presentation
             _operationRecordStore = operationRecordStore;
             _inputHandler = new LobbyRoomInputHandler(useCases, eventPublisher);
             BindAdapterSurface();
+            _uitk?.SetClickSoundPublisher(eventPublisher);
 
             _disposables.Dispose();
             _disposables = new DisposableScope();
@@ -238,6 +250,11 @@ namespace Features.Lobby.Presentation
             if (string.IsNullOrWhiteSpace(_selectedRoomId.Value))
                 return;
 
+#if UNITY_EDITOR
+            if (IsEditorPreviewRoom(_selectedRoomId))
+                return;
+#endif
+
             JoinRoom(_selectedRoomId);
         }
 
@@ -329,7 +346,12 @@ namespace Features.Lobby.Presentation
         private LobbyRoomListViewModel BuildRoomsViewModel(DomainEntityId highlightedRoomId)
         {
             if (_hasNetworkRoomList)
-                return _presenter.BuildRooms(_latestNetworkRooms, highlightedRoomId);
+                return _presenter.BuildRooms(ChooseEditorPreviewRooms(_latestNetworkRooms), highlightedRoomId);
+
+#if UNITY_EDITOR
+            if ((_latestLobbyRooms?.Count ?? 0) == 0 && ShouldShowEditorPreviewRoom())
+                return _presenter.BuildRooms(EditorPreviewRooms, highlightedRoomId);
+#endif
 
             return _presenter.BuildRooms(_latestLobbyRooms, highlightedRoomId);
         }
@@ -340,7 +362,12 @@ namespace Features.Lobby.Presentation
                 return LobbyRoomSelectionViewModel.Empty;
 
             if (_hasNetworkRoomList)
-                return _presenter.BuildRoomSelection(_latestNetworkRooms, selectedRoomId);
+                return _presenter.BuildRoomSelection(ChooseEditorPreviewRooms(_latestNetworkRooms), selectedRoomId);
+
+#if UNITY_EDITOR
+            if (IsEditorPreviewRoom(selectedRoomId))
+                return _presenter.BuildRoomSelection(EditorPreviewRooms, selectedRoomId);
+#endif
 
             return _presenter.BuildRoomSelection(_latestLobbyRooms, selectedRoomId);
         }
@@ -369,6 +396,13 @@ namespace Features.Lobby.Presentation
             if (string.IsNullOrWhiteSpace(roomId.Value))
                 return false;
 
+#if UNITY_EDITOR
+            if (IsEditorPreviewRoom(roomId))
+                return ShouldShowEditorPreviewRoom() &&
+                       ((_hasNetworkRoomList && (_latestNetworkRooms?.Count ?? 0) == 0) ||
+                        (!_hasNetworkRoomList && (_latestLobbyRooms?.Count ?? 0) == 0));
+#endif
+
             if (_hasNetworkRoomList)
             {
                 for (var i = 0; i < _latestNetworkRooms.Count; i++)
@@ -391,5 +425,54 @@ namespace Features.Lobby.Presentation
 
             return false;
         }
+
+        private bool ShouldShowEditorPreviewRoom()
+        {
+#if UNITY_EDITOR
+            return _showEditorPreviewRoom;
+#else
+            return false;
+#endif
+        }
+
+        private IReadOnlyList<RoomListItem> ChooseEditorPreviewRooms(IReadOnlyList<RoomListItem> rooms)
+        {
+#if UNITY_EDITOR
+            if ((rooms?.Count ?? 0) == 0 && ShouldShowEditorPreviewRoom())
+                return EditorPreviewRooms;
+#endif
+
+            return rooms;
+        }
+
+        private bool IsEditorPreviewRoom(DomainEntityId roomId)
+        {
+#if UNITY_EDITOR
+            return roomId.Value != null &&
+                   roomId.Value.StartsWith(EditorPreviewRoomIdPrefix, StringComparison.Ordinal);
+#else
+            return false;
+#endif
+        }
+
+#if UNITY_EDITOR
+        private static IReadOnlyList<RoomListItem> BuildEditorPreviewRooms()
+        {
+            var rooms = new RoomListItem[20];
+            for (var i = 0; i < rooms.Length; i++)
+            {
+                var roomNumber = i + 1;
+                rooms[i] = new RoomListItem(
+                    new DomainEntityId($"{EditorPreviewRoomIdPrefix}{roomNumber:00}"),
+                    $"UI 점검용 샘플 방 {roomNumber:00}",
+                    playerCount: 1 + i % 3,
+                    maxPlayers: 4,
+                    isOpen: true,
+                    difficultyPresetId: i % 3);
+            }
+
+            return rooms;
+        }
+#endif
     }
 }

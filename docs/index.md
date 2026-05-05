@@ -95,6 +95,7 @@ docs/
 | plans.game-scene-flow-validation-closeout | plans/active/game_scene_flow_validation_closeout_plan.md | active |
 | plans.webgl-audio-closeout | plans/active/webgl-audio-closeout.md | active |
 | plans.audio-sfx-mcp-pipeline | plans/active/audio_sfx_mcp_pipeline_plan.md | active |
+| plans.audio-sfx-mcp-pipeline-mechanical-closeout | plans/reference/audio_sfx_mcp_pipeline_mechanical_closeout.md | reference |
 | plans.nova1492-content-residual | plans/active/nova1492-content-residual-plan.md | active |
 | plans.non-stitch-ui-stitch-reimport | plans/reference/non_stitch_ui_stitch_reimport_plan.md | reference |
 | plans.uitk-page-routing-refactor | plans/reference/uitk-page-routing-refactor.md | reference |
@@ -130,6 +131,7 @@ docs/
 - `active`: [`webgl-audio-closeout.md`](./plans/active/webgl-audio-closeout.md) - WebGL audio closeout
 - `active`: [`audio_sfx_mcp_pipeline_plan.md`](./plans/active/audio_sfx_mcp_pipeline_plan.md) - audio SFX MCP pipeline
 - `active`: [`nova1492-content-residual-plan.md`](./plans/active/nova1492-content-residual-plan.md) - Nova1492 content residual
+- `reference`: [`audio_sfx_mcp_pipeline_mechanical_closeout.md`](./plans/reference/audio_sfx_mcp_pipeline_mechanical_closeout.md) - Audio SFX mechanical closeout evidence
 - `reference`: [`uitk-page-routing-refactor.md`](./plans/reference/uitk-page-routing-refactor.md) - UITK page routing refactor
 - `reference`: [`agent_workflow_skill_adoption_plan.md`](./plans/reference/agent_workflow_skill_adoption_plan.md) - agent workflow skill adoption
 - `reference`: [`technical_debt_recurrence_prevention_plan.md`](./plans/reference/technical_debt_recurrence_prevention_plan.md) - technical debt recurrence prevention

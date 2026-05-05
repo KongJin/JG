@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-05",
+  "scope": "rules-only",
+  "issueDetected": false,
+  "declaredLane": "coding guardrail recurrence prevention",
+  "observedMutationClass": "owner documentation rule update",
+  "acceptanceEvidenceClass": "owner doc review and scoped rules lint attempt",
+  "escalationRequired": false,
+  "rootCause": "The coding guardrails did not previously define a durable threshold for replacing long if/switch branch chains with factory and strategy boundaries.",
+  "prevention": "Added the Branch Strategy Boundary rule to docs/owners/operations/codex_coding_guardrails.md and connected the same check to the anti-pattern review checklist.",
+  "verification": "Reviewed docs/owners/operations/codex_coding_guardrails.md diff; attempted node import of tools/docs-lint/sync-recurrence-closeout.mjs but current dirty tools/docs-lint/lib.mjs has a duplicate identifier syntax error.",
+  "blockedReason": "",
+  "changedPaths": [
+    "artifacts/rules/issue-recurrence-closeout.d/local-c8960527e0.json",
+    "docs/owners/operations/codex_coding_guardrails.md"
+  ]
+}

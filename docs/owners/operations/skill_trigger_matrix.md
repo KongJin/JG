@@ -1,14 +1,14 @@
 # Skill Trigger Matrix
 
-> 마지막 업데이트: 2026-05-02
+> 마지막 업데이트: 2026-05-05
 > 상태: active
 > doc_id: ops.skill-trigger-matrix
 > role: reference
-> owner_scope: prompt-signal fixtures for repo-local and repo-facing external skill route coverage
+> owner_scope: prompt-signal fixtures for repo-local and repo-imported skill route coverage
 > upstream: docs.index, ops.skill-routing-registry, ops.document-management-workflow
 > artifacts: none
 
-이 문서는 repo-local skill과 repo-facing external/global skill route의 trigger 기대값을 fixture처럼 관리한다.
+이 문서는 repo-local skill과 repo-imported skill route의 trigger 기대값을 fixture처럼 관리한다.
 실제 LLM skill selection을 실행 검증하는 문서가 아니라, skill description을 바꿀 때 과소/과잉 trigger를 사람이 재리뷰할 최소 prompt-signal set이다.
 skill 이름과 route 등록은 `ops.skill-routing-registry`가 소유한다.
 
@@ -24,7 +24,7 @@ skill 이름과 route 등록은 `ops.skill-routing-registry`가 소유한다.
 | T06 | ".stitch", "prompt brief", "source freeze", "contract/map/presentation JSON" | `jg-stitch-workflow` | `jg-stitch-unity-import` for Unity candidate import | Do not make Stitch router own Unity implementation closeout. |
 | T07 | "Stitch 화면 Unity로 가져와", "reimport", "UI Toolkit candidate", "visual fidelity" | `jg-stitch-unity-import`, `jg-unity-workflow` | `jg-coupling-review` if screen/runtime owner boundary is unclear | Do not call pilot render accepted runtime replacement. |
 | T08 | "JG scene/prefab authoring", "UITK/UI policy", "MCP evidence/runtime smoke", "새 캡쳐 기준", "fresh evidence pending", "Stitch handoff Unity owner" | `jg-unity-workflow` | `rule-unity` only for generic Unity mechanics; `jg-coding-guardrails` for script edits; `rule-validation` when evidence gates decide closeout | Do not mutate Unity surfaces in Plan Mode or judge visual state before fresh capture evidence exists. |
-| T09 | "Plan Mode", "SSOT", "closeout", "규칙 충돌", "old trace/stale rule" | `rule-operations`, `jg-doc-lifecycle` | `rule-plan-authoring` when persistent plan docs change | Do not mutate in Plan Mode. |
+| T09 | "Plan Mode", "SSOT", "closeout", "규칙 충돌", "stale path/rule", "규칙 압축", "라우팅 선명화", "rule compression", "routing clarity", "missing trigger" | `rule-operations`, `jg-doc-lifecycle` | `rule-plan-authoring` when persistent plan docs change | Do not mutate in Plan Mode or add owner body to skill-entry. |
 | T10 | "계획 문서 작성", "docs/plans", "Acceptance/TODO", "과한점/부족한점 재리뷰" | `rule-plan-authoring` | `jg-doc-lifecycle` when status/lifecycle, owner movement, deletion, compression, or stale traces are part of the plan change; `jg-coding-guardrails` only when implementation starts | Do not create a plan doc when a session checklist is enough. |
 | T11 | "레이어", "의존 방향", "포트", "Bootstrap", "폴더 구조", "아키텍처 위반" | `rule-architecture`, `jg-coupling-review` | `jg-coding-guardrails` when implementation starts | Do not let global architecture notes override repo owner boundaries. |
 | T12 | "금지 패턴", "이벤트 순환", "예외 처리", "ErrorCode", "로그 정책" | `rule-patterns` | `jg-coding-guardrails` for code changes; `jg-coupling-review` for boundary judgment | Do not turn pattern advice into a new repo SSOT. |
@@ -38,8 +38,8 @@ skill 이름과 route 등록은 `ops.skill-routing-registry`가 소유한다.
 ## Maintenance Rule
 
 - Every repo-local `jg-*` skill should appear in at least one fixture row.
-- Every registered external/global `rule-*` skill from `ops.skill-routing-registry` should appear in at least one fixture row.
-- Every registered external/global Unity skill from `ops.skill-routing-registry` should appear in at least one fixture row when repo prompts depend on that skill.
+- Every registered imported `rule-*` skill from `ops.skill-routing-registry` should appear in at least one fixture row.
+- Every registered imported Unity skill from `ops.skill-routing-registry` should appear in at least one fixture row when repo prompts depend on that skill.
 - If a skill description changes, compare it against this matrix and leave `skill trigger checked` when the trigger surface changed.
 - Keep skill descriptions as concise trigger indexes, not policy bodies. Target roughly 25 words or less unless a longer description is explicitly justified.
 - When shortening a description, preserve at least one recognizable prompt signal for each expected route row that depends on that skill.

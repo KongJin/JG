@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-05",
+  "scope": "rules-only",
+  "issueDetected": true,
+  "declaredLane": "Serena shared proxy lookup rule capture",
+  "observedMutationClass": "AGENTS entry reference and Codex coding guardrail lookup tool selection rule",
+  "acceptanceEvidenceClass": "scoped docs lint and recurrence closeout sync; no gameplay, Unity runtime, or product acceptance evidence",
+  "escalationRequired": false,
+  "rootCause": "New sessions could load the Serena MCP registration but had no repo-owned rule for when to prefer Serena shared proxy over rg, when to avoid direct Serena registration, or how to degrade if Serena tools are unavailable.",
+  "prevention": "AGENTS.md now links the Serena shared proxy reference, and ops.codex-coding-guardrails now records that simple text/file lookup uses rg while complex C# symbol/reference/impact lookup uses the Serena shared proxy MCP read-heavy tools. The same rule keeps Serena write/edit tools out of the default edit path and requires fallback to rg/file reads instead of unrequested proxy/config mutation when Serena is unavailable. This rule-only update does not change existing hard-fail coverage for active plan artifact owner shape drift, active plan concrete artifact owner collision, or progress evidence overload.",
+  "verification": "RULES_LINT_CHANGED_FILES=AGENTS.md + docs/owners/operations/codex_coding_guardrails.md npm run --silent rules:lint: docs lint passed, policy lint reached unrelated pre-existing LobbyUitkRuntimeAdapter responsibility-budget failure; RULES_LINT_CHANGED_FILES=AGENTS.md + docs/owners/operations/codex_coding_guardrails.md npm run --silent rules:sync-closeout synced this shard.",
+  "blockedReason": "",
+  "changedPaths": [
+    "AGENTS.md",
+    "artifacts/rules/issue-recurrence-closeout.d/local-38e244f8da.json",
+    "docs/owners/operations/codex_coding_guardrails.md"
+  ]
+}

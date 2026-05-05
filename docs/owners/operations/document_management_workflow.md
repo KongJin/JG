@@ -28,7 +28,7 @@
 - `plan`: 현재 실행 상태와 순서만 맡는다.
 - `reference`: 필요할 때 보는 배경, 예시, 절차다.
 - `historical`: 현재 판단 근거가 아니다.
-- `skill-entry`: 실행 진입점이며, owner 본문을 재서술하지 않는다. 새 skill 생성, skill description/trigger 변경은 `ops.skill-routing-registry`와 `ops.skill-trigger-matrix`를 먼저 보고, 변경이면 `skill trigger checked`를 남긴다.
+- `skill-entry`: 실행 진입점이며, owner 본문을 재서술하지 않는다. 새 skill 생성, skill import, skill description/trigger 변경은 `ops.skill-routing-registry`와 `ops.skill-trigger-matrix`를 먼저 보고, 변경이면 `skill trigger checked`를 남긴다.
 
 ### Artifacts
 
@@ -49,7 +49,7 @@
 - 작업 범위가 여러 owner를 건드렸다면 closeout에 `owner impact`를 남겨 primary, secondary, out-of-scope를 구분한다.
 - 큰 문서 작업이면 closeout에 `doc lifecycle checked`를 남겨 active/reference/historical/delete 후보를 확인했다는 사실을 드러낸다.
 - 작업 중 기준/도구/policy를 바꿔 blocked lane을 success로 만들지 않는다.
-- 규칙을 개정했으면 active/current 기준에 남은 old trace를 수정, 제거, 또는 historical/reference로 격리하기 전에는 success로 닫지 않는다.
+- 규칙을 개정했으면 active/current 기준에 남은 stale trace를 수정, 제거, 또는 historical/reference로 격리하기 전에는 success로 닫지 않는다.
 - 문서/skill/script 문제를 발견했으면 원인, 예방, 검증을 함께 남긴다.
 
 ### Recurrence Carryover
@@ -79,16 +79,28 @@
 - 링크와 경로 탐색은 `AGENTS.md`와 `docs/index.md`에 모은다.
 - fallback, hidden lookup, runtime repair를 정답처럼 문서화하지 않는다.
 
+### Rule Compression And Routing
+
+- 새 규칙은 먼저 기존 owner 문서의 한 문장 보강, 기존 섹션 흡수, skill trigger 보정, 새 문서 생성 순서로 판단한다.
+- 규칙 본문은 `Decision`, `Default`, `Exception`, `Evidence` 중 하나로 압축한다. 이 넷에 들어가지 않는 설명은 reference, historical, closeout, 또는 최종 응답으로 보낸다.
+- 라우팅 문구는 사용자가 실제로 말하는 기술 표면을 기준으로 둔다. 예: `UXML/USS/UI Toolkit`, `C# symbol/reference`, `fallback/hidden lookup`, `owner 이동/stale path`.
+- 문서가 길어졌다는 이유만으로 하위 subtree를 만들지 않는다. 같은 owner 안의 다른 판단 이유면 sibling 문서로 나누고, 같은 판단 이유면 기존 섹션에 흡수한다.
+- 문서/skill route를 바꾼 closeout은 필요할 때 `rule compression: absorbed/split/rejected`와 `routing clarity: direct/ambiguous/missing trigger`를 짧게 남긴다.
+
 ## 적용 범위
 
 관리 대상:
 
 - `docs/**`
 - `AGENTS.md`
-- `.codex/skills/jg-*/SKILL.md`
-- `.codex/skills/jg-*/agents/*.yaml`
-- `.codex/skills/jg-*/evals/*.json`
-- `.codex/skills/jg-*/references/*.md`
+- `.codex/skills/*/SKILL.md`
+- `.codex/skills/*/agents/*.yaml`
+- `.codex/skills/*/evals/*.json`
+- `.codex/skills/*/references/*.md`
+- `.codex/skills/*/scripts/**`
+- `.codex/skills/*/assets/**`
+- `.codex/skills/*/templates/**`
+- `.codex/skills/IMPORT_MANIFEST.md`
 - `tools/*/README.md`
 - 사람이 직접 읽는 repo-maintained prompt/reference 문서
 
@@ -113,13 +125,14 @@
 - 새 문서를 만든다.
 - 문서 3개 이상을 같은 이유로 수정한다.
 - active/reference/historical/draft 상태를 바꾼다.
-- owner 문서, repo-local skill, 전역 skill trigger/body를 바꾼다.
+- owner 문서, repo-local skill, repo-imported skill trigger/body를 바꾼다.
 - 문서를 삭제, 리네임, 이동한다.
 
 작은 문서 작업은 기본 lint와 짧은 변경 요약으로 충분하다.
 큰 문서 작업은 시작 시 변경 이유, primary/secondary owner, 제외 범위를 드러내고 closeout에 `owner impact`와 `doc lifecycle checked`를 남긴다.
-전역 skill trigger나 body를 바꾼 경우 repo lint가 직접 보장하지 않으므로, `ops.skill-routing-registry`의 repo-facing route 이름과 `ops.skill-trigger-matrix`의 prompt-signal fixture, description budget을 확인하고 실제 파일 변경 여부를 별도로 확인한 뒤 closeout에 `skill trigger checked`를 남긴다.
-전역 skill 파일은 repo 밖 사용자 Codex home에 있으므로 repo closeout artifact의 `changedPaths`에 포함되지 않는다. 수정했다면 absolute path, 변경 이유, repo owner 우선순위 유지 여부, 검증 한계를 closeout에 별도 residual/evidence로 적는다.
+Repo-imported skill trigger나 body를 바꾼 경우 `ops.skill-routing-registry`의 repo-facing route 이름과 `ops.skill-trigger-matrix`의 prompt-signal fixture, description budget을 확인하고 closeout에 `skill trigger checked`를 남긴다.
+Repo-imported skill inventory, source provenance, excluded scope, and bundle retention live in `.codex/skills/IMPORT_MANIFEST.md`; large imported references are skill bundle material, not JG owner policy.
+사용자 Codex home의 skill 파일을 직접 수정하지 않는다. repo에 필요한 변경은 `.codex/skills/*`의 repo-imported copy에 적용한다.
 
 ## Owner 해석
 
@@ -232,18 +245,20 @@ reference로 보존할 때는 `Closeout`, `Residual owner`, `Evidence links` 수
 ## 자동 검증
 
 - 문서 관리 변경 후 기본 검증은 `npm run --silent rules:lint`다.
-- `rules:lint`는 metadata, relative links, `doc_id`, index registry, status mismatch, owner reference, Plan Mode routing, repo-local skill routing, external/global `rule-*` skill registry, global `rule-*` markdown link integrity, skill trigger matrix coverage, recurrence closeout, presentation/stitch policy lint를 함께 본다.
+- `rules:lint`는 metadata, relative links, `doc_id`, index registry, status mismatch, owner reference, Plan Mode routing, repo-local skill routing, imported `rule-*` skill registry, skill trigger matrix coverage, recurrence closeout, presentation/stitch policy lint를 함께 본다.
 - `rules:lint`의 hard-fail은 broken link, stale owner path, `doc_id` 문제, active plan budget 초과, entry 문서의 owner policy body (`entry-policy-body`), recurrence closeout 누락처럼 SSOT나 자동 판정을 깨는 항목에 둔다.
 - `rules:lint` advisory는 오래된 active 문서 (`stale-active-plan`, `stale-active-doc`), 긴 active plan/progress/entry, skill-entry policy density 후보 (`*-size-advisory`)처럼 즉시 실패는 아니지만 lifecycle 재검토가 필요한 항목에 둔다.
 - advisory가 있어도 lint exit code는 실패가 아니며, closeout에서는 필요한 경우 남은 문서 lifecycle risk로 분리해 보고한다.
 - `npm run --silent docs:health`는 blocking issue와 advisory를 text 또는 `-- --json` 출력으로 보여주는 비차단 리포트이며, 정리 후보를 보는 용도이지 acceptance gate가 아니다.
 - 단순 docs-only plan 작성, playtest/checklist/design/reference 보정, 상태 한두 줄 갱신은 `rules:lint`와 authoring review로 충분하다.
-- recurrence closeout artifact는 recurrence-tracked rule/tooling scope에만 요구한다: `AGENTS.md`, `docs/index.md`, `docs/owners/operations/*, docs/owners/ui-workflow/*`, `.codex/skills/jg-*`, `tools/docs-lint/*`, `tools/rule-harness/*`, `.githooks/*`, `.github/workflows/docs-lint.yml`, `artifacts/rules/issue-recurrence-closeout.json`, `artifacts/rules/issue-recurrence-closeout.d/*.json`.
+- recurrence closeout artifact는 recurrence-tracked rule/tooling scope에만 요구한다: `AGENTS.md`, `docs/index.md`, `docs/owners/operations/*, docs/owners/ui-workflow/*`, `.codex/skills/*`, `tools/docs-lint/*`, `tools/rule-harness/*`, `.githooks/*`, `.github/workflows/docs-lint.yml`, `artifacts/rules/issue-recurrence-closeout.json`, `artifacts/rules/issue-recurrence-closeout.d/*.json`.
 - feature tool implementation, 일반 `tools/*/README.md`, `docs/plans/*`, `docs/owners/validation/*`, `docs/owners/design/*` 변경은 그 변경 자체가 rule/tooling recurrence 예방을 건드리지 않는 한 closeout artifact를 요구하지 않는다.
 - closeout artifact는 declared lane, mutation class, acceptance evidence class, escalation 필요 여부를 함께 남겨 silent lane escalation을 기계적으로 점검할 수 있어야 한다.
 - closeout artifact 동기화는 `npm run --silent rules:sync-closeout`를 사용한다. 기본값은 현재 changed rules-only set 기반 shard를 만들거나 갱신한다. legacy aggregate를 직접 갱신해야 하면 `npm run --silent rules:sync-closeout -- --primary`를 쓴다.
+- 같은 작업에서 changed rules-only set이 변해 새 hash shard가 생기면 기존 dirty shard를 방치하지 않는다. 선택한 shard를 `npm run --silent rules:sync-closeout -- --artifact artifacts/rules/issue-recurrence-closeout.d/<name>.json`로 재동기화하거나, 새 shard 하나만 남기고 중복 shard는 삭제한다.
+- Closeout shard는 current 작업 증거와 historical recurrence 기록을 분리한다. 이미 main에 들어간 historical shard는 수정하지 않고, 현재 작업에는 하나의 current shard만 둔다.
 - `rules:lint`와 `rules:sync-closeout`는 `RULES_LINT_CHANGED_FILES`가 없으면 unstaged, staged, untracked 변경 목록을 git에서 직접 계산한다. plain `npm run --silent rules:lint`가 closeout artifact 누락을 잡아야 한다.
-- Repo 밖 external/global skill 파일 변경은 git changed list와 closeout shard에 자동 포함되지 않는다. `rules:lint`는 현재 설치된 global `rule-*` markdown 링크 무결성만 검사한다. 해당 파일을 수정했다면 repo lint 결과와 별도로 파일 path와 검증 한계를 보고한다.
+- Repo-imported skill 파일 변경은 git changed list와 closeout shard에 포함된다. 사용자 Codex home의 upstream skill copy와 다른 경우, repo copy가 JG 작업 기준임을 closeout에 분리해 보고한다.
 - closeout artifact가 이미 다른 작업의 dirty state라면 덮어쓰지 않는다. 병렬 작업이면 별도 shard로 분리하고, 이번 작업의 변경 목록으로 분리해 동기화할 수 없으면 residual 또는 blocked로 남긴다.
 
 ## 빠른 체크
@@ -259,3 +274,6 @@ reference로 보존할 때는 `Closeout`, `Residual owner`, `Evidence links` 수
 7. active plan을 새로 만들거나 phase를 분리했다면 기존 active parent가 여전히 직접 실행 owner인지 확인했는가?
 8. `plan rereview: clean`을 남긴다면 실제 확인한 scope를 한 줄에 붙였는가?
 9. 정리/감축 작업이면 새 문서나 새 artifact 추가가 목표와 반대 효과를 내지 않는가?
+10. 새 규칙은 `Decision`, `Default`, `Exception`, `Evidence` 중 하나로 압축됐는가?
+11. 새 route/trigger는 사용자가 실제로 말하는 기술 표면으로 찾을 수 있는가?
+12. Imported skill 변경이면 `.codex/skills/IMPORT_MANIFEST.md`의 provenance와 retention 정보가 여전히 맞는가?

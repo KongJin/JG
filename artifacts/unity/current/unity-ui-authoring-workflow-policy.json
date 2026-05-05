@@ -1,0 +1,108 @@
+{
+    "success":  true,
+    "terminalVerdict":  "",
+    "blockedReason":  "",
+    "generatedAt":  "2026-05-05 17:46:32+09:00",
+    "agent":  "",
+    "route":  "lobby-ui",
+    "changedFiles":  [
+                         "Assets/Editor/DirectTests/LobbyUitkRuntimeAdapterDirectTests.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/Page/LobbyPageController.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/Page/LobbyShellPageRouter.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyRoomListSurface.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyUitkClickScope.cs",
+                         "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyUitkRuntimeAdapter.cs",
+                         "Assets/UI/UIToolkit/Lobby/LobbyShell.uss",
+                         "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml"
+                     ],
+    "allDirtyFileCount":  720,
+    "unityUiRelevantFiles":  [
+                                 "Assets/UI/UIToolkit/Lobby/LobbyShell.uss",
+                                 "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml"
+                             ],
+    "uitkCandidateFiles":  [
+                               "Assets/UI/UIToolkit/Lobby/LobbyShell.uss",
+                               "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml"
+                           ],
+    "uitkCandidateEvidenceFiles":  [
+
+                                   ],
+    "uitkCandidatePreviewEvidenceFiles":  [
+
+                                          ],
+    "uitkCandidateReportEvidenceFiles":  [
+
+                                         ],
+    "requiredEvidence":  [
+                             {
+                                 "name":  "compile-reload",
+                                 "path":  null,
+                                 "message":  "Compile and script reload must settle before Unity UI workflow evidence is trusted."
+                             }
+                         ],
+    "missingEvidence":  [
+
+                        ],
+    "staleEvidence":  [
+
+                      ],
+    "policyViolations":  [
+
+                         ],
+    "compile":  {
+                    "success":  true,
+                    "request":  {
+                                    "ok":  true,
+                                    "cleanBuildCacheRequested":  false,
+                                    "isCompiling":  false,
+                                    "message":  "Asset refresh triggered."
+                                },
+                    "wait":  {
+                                 "ok":  true,
+                                 "timedOut":  false,
+                                 "requestedCompilation":  false,
+                                 "waitedMs":  120000,
+                                 "isCompiling":  false
+                             },
+                    "healthAfterWait":  {
+                                            "ok":  true,
+                                            "bridgeRunning":  true,
+                                            "port":  52676,
+                                            "isPlaying":  false,
+                                            "isPlayingOrWillChange":  false,
+                                            "isPlayModeChanging":  false,
+                                            "rawIsPlayingOrWillChange":  false,
+                                            "isCompiling":  false,
+                                            "isWaitingForPlayMode":  false,
+                                            "projectKey":  "0d8ea703",
+                                            "projectRootPath":  "C:\\Users\\SOL\\Documents\\JG",
+                                            "activeScene":  "LobbyScene",
+                                            "activeScenePath":  "Assets/Scenes/LobbyScene.unity",
+                                            "pendingPlayAction":  "",
+                                            "pendingPlayAgeMs":  0
+                                        }
+                },
+    "unityResourceLock":  {
+                              "owner":  "workflow",
+                              "path":  "Temp/UnityMcp/unity-resource.lock",
+                              "token":  "38bd784636b5487896287cb0872f51d0"
+                          },
+    "capabilityExpansionGuard":  {
+                                     "allowCapabilityExpansion":  false,
+                                     "surfaceOnboardingFiles":  [
+                                                                    "Assets/UI/UIToolkit/Lobby/LobbyShell.uss",
+                                                                    "Assets/UI/UIToolkit/Lobby/LobbyShell.uxml"
+                                                                ],
+                                     "capabilityExpansionFiles":  [
+
+                                                                  ]
+                                 },
+    "prefabManagement":  {
+                             "inventory":  null,
+                             "approvalManifest":  null
+                         },
+    "declaredNewPrefabTargets":  [
+
+                                 ],
+    "resultPath":  "C:\\Users\\SOL\\Documents\\JG\\artifacts\\unity\\current\\unity-ui-authoring-workflow-policy.json"
+}

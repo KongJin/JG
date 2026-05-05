@@ -11,21 +11,27 @@ namespace Features.Lobby.Presentation
         private const string ClosedRoomClass = "lobby-room-row--closed";
         private const string StatusClosedClass = "lobby-status-chip--closed";
 
+        private readonly VisualElement _roomListViewport;
         private readonly VisualElement _roomList;
         private readonly VisualElement _emptyStateCard;
+        private readonly VisualElement _createRoomCard;
         private readonly Label _countLabel;
         private readonly Label _emptyBody;
         private readonly Action<DomainEntityId> _roomSelected;
 
         public LobbyRoomListSurface(
+            VisualElement roomListViewport,
             VisualElement roomList,
             VisualElement emptyStateCard,
+            VisualElement createRoomCard,
             Label countLabel,
             Label emptyBody,
             Action<DomainEntityId> roomSelected)
         {
+            _roomListViewport = roomListViewport;
             _roomList = roomList;
             _emptyStateCard = emptyStateCard;
+            _createRoomCard = createRoomCard;
             _countLabel = countLabel;
             _emptyBody = emptyBody;
             _roomSelected = roomSelected;
@@ -33,7 +39,10 @@ namespace Features.Lobby.Presentation
 
         public void HideEmptyState()
         {
+            UitkElementUtility.SetDisplay(_roomListViewport, false);
+            UitkElementUtility.SetDisplay(_roomList, false);
             UitkElementUtility.SetDisplay(_emptyStateCard, false);
+            UitkElementUtility.SetDisplay(_createRoomCard, false);
         }
 
         public void Render(LobbyRoomListViewModel viewModel)
@@ -46,8 +55,10 @@ namespace Features.Lobby.Presentation
 
             _roomList?.Clear();
             var hasRooms = viewModel.Rows != null && viewModel.Rows.Count > 0;
+            UitkElementUtility.SetDisplay(_roomListViewport, hasRooms);
             UitkElementUtility.SetDisplay(_roomList, hasRooms);
             UitkElementUtility.SetDisplay(_emptyStateCard, !hasRooms);
+            UitkElementUtility.SetDisplay(_createRoomCard, hasRooms);
 
             if (!hasRooms)
                 return;

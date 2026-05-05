@@ -4254,7 +4254,9 @@ function Test-RuleHarnessRulesOnlyPath {
 
     return $normalized -eq 'AGENTS.md' -or
         $normalized -like 'docs/*' -or
-        $normalized -like '.codex/skills/jg-*/*' -or
+        $normalized -eq '.codex/skills/IMPORT_MANIFEST.md' -or
+        $normalized -eq '.codex/skills/README.md' -or
+        ($normalized -like '.codex/skills/*/*' -and $normalized -notlike '.codex/skills/.system/*') -or
         $normalized -like '.githooks/*' -or
         $normalized -like 'tools/docs-lint/*' -or
         $normalized -like 'tools/rule-harness/*'

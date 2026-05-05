@@ -1,12 +1,21 @@
 import fs from "node:fs/promises";
 import { accessSync } from "node:fs";
-import os from "node:os";
 import path from "node:path";
-import process from "node:process";
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
 
-const execFileAsync = promisify(execFile);
+import {
+  validateIndexCoverage,
+  validateIndexRegistryConsistency,
+  validateIndexStatusLabels,
+} from "./lib/index-registry.mjs";
+import { validateRulesOnlyRecurrenceCloseout } from "./lib/recurrence-closeout.mjs";
+export {
+  RECURRENCE_CHANGED_FILES_ENV,
+  RECURRENCE_CLOSEOUT_DIR,
+  RECURRENCE_CLOSEOUT_PATH,
+  getRecurrenceChangedFiles,
+  isRecurrenceCloseoutArtifactPath,
+  isRulesOnlyRecurrenceTarget,
+} from "./lib/recurrence-closeout.mjs";
 
 export const REQUIRED_METADATA_FIELDS = [
   "상태",
@@ -34,8 +43,6 @@ export const VALID_ROLE_VALUES = new Set([
   "historical",
 ]);
 
-const INDEX_STATUS_LINE_PATTERN =
-  /^-\s+`(active|draft|reference|historical|paused)`:\s+\[[^\]]+\]\(([^)]+)\)/;
 const MARKDOWN_LINK_PATTERN = /!?\[[^\]]*]\(([^)]+)\)/g;
 const INLINE_CODE_PATTERN = /`([^`\n]+)`/g;
 const REPO_PATH_PREFIXES = [
@@ -81,7 +88,7 @@ const SKILL_ROUTING_REGISTRY_PATH = "docs/owners/operations/skill_routing_regist
 const SKILL_TRIGGER_MATRIX_PATH = "docs/owners/operations/skill_trigger_matrix.md";
 const COHESION_COUPLING_OWNER_PATTERNS = [/\bops\.cohesion-coupling-policy\b/u];
 const ACCEPTANCE_GUARDRAILS_OWNER_PATTERNS = [/\bops\.acceptance-reporting-guardrails\b/u];
-const GLOBAL_RULE_SKILL_NAMES = new Set([
+const REPO_IMPORTED_RULE_SKILL_NAMES = new Set([
   "rule-architecture",
   "rule-context",
   "rule-operations",
@@ -114,23 +121,6 @@ const FRESH_EVIDENCE_SKILL_ROUTE_REQUIREMENTS = [
   },
   { patterns: [/Fresh Evidence Discipline/u], label: "`Fresh Evidence Discipline` route" },
 ];
-const UNCERTAIN_ROOT_CAUSE_PATTERN = /(?:아마|추정|가능성|보임|보인다|보여|듯|것 같|\bmaybe\b|\bprobably\b|\blikely\b|\bappears\b|\bseems\b)/iu;
-const RECURRENCE_CLOSEOUT_COVERAGE_PATTERNS = [
-  {
-    pattern: /\bactive plan artifact owner shape drift\b/iu,
-    label: "`active plan artifact owner shape drift`",
-  },
-  {
-    pattern: /\bactive plan concrete artifact owner collisions?\b/iu,
-    label: "`active plan concrete artifact owner collision`",
-  },
-  {
-    pattern: /\bprogress evidence (?:artifact )?overload\b/iu,
-    label: "`progress evidence overload`",
-  },
-];
-const RECURRENCE_VERIFICATION_EVIDENCE_PATTERN =
-  /(?:\bnode --test\b|\bnpm run\b|\brules:lint\b|\brules:sync-closeout\b|\brg\b|\bgit\b|\bpwsh\b|\bpowershell\b|\bUnity\b|\bartifacts?\/|\bdocs\/|\btools\/)/iu;
 const MUTATION_FORBIDDEN_PATTERNS = [
   /mutation\s*금지/u,
   /mutation을\s*금지/u,
@@ -171,9 +161,6 @@ const MODULE_DATA_STRUCTURE_UNIT_SECTION_START = "## ScriptableObject 데이터 
 const MODULE_DATA_STRUCTURE_UNIT_SECTION_END = "## 편성 데이터 (Garage Roster)";
 const RULE_HARNESS_ADVISORY_MEMORY_PATH = "tools/rule-harness/memory/advisory-memory.json";
 const PROGRESS_DOC_PATH = "docs/plans/current/progress.md";
-export const RECURRENCE_CLOSEOUT_PATH = "artifacts/rules/issue-recurrence-closeout.json";
-export const RECURRENCE_CLOSEOUT_DIR = "artifacts/rules/issue-recurrence-closeout.d";
-export const RECURRENCE_CHANGED_FILES_ENV = "RULES_LINT_CHANGED_FILES";
 
 function isProgressDocPath(repoRelativePath) {
   return repoRelativePath === PROGRESS_DOC_PATH;
@@ -296,10 +283,11 @@ export async function lintRepository(repoRoot, options = {}) {
   if (includeGeneralChecks) {
     errors.push(...validateUniqueDocIds(documents));
     errors.push(...validateKnownDocIdReferences(documents));
-    errors.push(...validateGlobalSkillRegistry(documents));
+    errors.push(...validateRepoImportedSkillRegistry(documents));
     errors.push(...validateSkillTriggerMatrix(documents));
     errors.push(...validateIndexCoverage(documents, repoRoot));
     errors.push(...validateIndexStatusLabels(documents, repoRoot));
+    errors.push(...validateIndexRegistryConsistency(documents, repoRoot));
     errors.push(...validateActivePlanBudget(documents));
     errors.push(...validateActivePlanMutualReferences(documents, repoRoot));
     errors.push(...validateActivePlanArtifactShapes(documents));
@@ -441,14 +429,16 @@ async function discoverManagedDocs(repoRoot) {
 
   const skillsDir = path.join(repoRoot, ".codex", "skills");
   if (await pathExists(skillsDir)) {
+    await addIfExists(discovered, path.join(skillsDir, "README.md"));
+    await addIfExists(discovered, path.join(skillsDir, "IMPORT_MANIFEST.md"));
+
     const entries = await fs.readdir(skillsDir, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.isDirectory() && entry.name.startsWith("jg-")) {
+      if (entry.isDirectory() && entry.name !== ".system") {
         const skillRoot = path.join(skillsDir, entry.name);
         await addIfExists(discovered, path.join(skillRoot, "SKILL.md"));
 
-        const referencesDir = path.join(skillRoot, "references");
-        for (const markdownFile of await walkMarkdownFiles(referencesDir, repoRoot)) {
+        for (const markdownFile of await walkMarkdownFiles(skillRoot, repoRoot)) {
           discovered.add(markdownFile);
         }
       }
@@ -574,7 +564,8 @@ function parseMetadata(content) {
 
 function validateMetadata(document) {
   const errors = [];
-  if (getDocumentKind(document.repoRelativePath) === "system-skill") {
+  const documentKind = getDocumentKind(document.repoRelativePath);
+  if (documentKind === "system-skill" || documentKind === "imported-skill") {
     return errors;
   }
 
@@ -650,8 +641,7 @@ async function validateLinks(document) {
 }
 
 async function validateGlobalRuleSkillMarkdownLinks(options = {}) {
-  const globalRuleSkillsRoot =
-    options.globalRuleSkillsRoot ?? getDefaultGlobalRuleSkillsRoot();
+  const globalRuleSkillsRoot = options.globalRuleSkillsRoot;
   if (!(await pathExists(globalRuleSkillsRoot))) {
     return [];
   }
@@ -680,7 +670,7 @@ async function validateGlobalRuleSkillMarkdownLinks(options = {}) {
             createError(
               "global-rule-broken-relative-link",
               toGlobalRuleSkillReportPath(globalRuleSkillsRoot, markdownFile),
-              `Global rule skill relative link target \`${target}\` does not exist. Repo lint cannot track external file diffs, but it can guard link integrity here.`,
+              `External rule skill relative link target \`${target}\` does not exist. Repo lint cannot track external file diffs, but it can guard link integrity here.`,
               index + 1,
             ),
           );
@@ -1211,354 +1201,6 @@ function validatePlanModeRouting(document) {
   return [];
 }
 
-async function validateRulesOnlyRecurrenceCloseout(repoRoot, options) {
-  const changedFiles = await getRecurrenceChangedFiles({
-    repoRoot,
-    changedFiles: options.changedFiles,
-  });
-  const relevantChangedFiles = [];
-  for (const filePath of changedFiles) {
-    const normalizedPath = normalizeRepoRelativePath(filePath);
-    if (
-      !isRulesOnlyRecurrenceTarget(normalizedPath) ||
-      isRecurrenceCloseoutArtifactPath(normalizedPath)
-    ) {
-      continue;
-    }
-
-    if (!(await pathExists(path.join(repoRoot, normalizedPath)))) {
-      continue;
-    }
-
-    relevantChangedFiles.push(normalizedPath);
-  }
-
-  if (relevantChangedFiles.length === 0) {
-    return [];
-  }
-
-  const errors = [];
-  const changedCloseoutArtifacts = changedFiles
-    .map((entry) => normalizeRepoRelativePath(entry))
-    .filter((entry) => isRecurrenceCloseoutArtifactPath(entry));
-
-  if (changedCloseoutArtifacts.length === 0) {
-    const legacyArtifactExists = await pathExists(path.join(repoRoot, RECURRENCE_CLOSEOUT_PATH));
-    const errorCode = legacyArtifactExists
-      ? "missing-recurrence-closeout-update"
-      : "missing-recurrence-closeout-artifact";
-    const message = legacyArtifactExists
-      ? `Rules-only changed files must update a closeout artifact in the same change: \`${RECURRENCE_CLOSEOUT_PATH}\` or \`${RECURRENCE_CLOSEOUT_DIR}/*.json\`.`
-      : `Rules-only changed files require a tracked closeout artifact: \`${RECURRENCE_CLOSEOUT_PATH}\` or \`${RECURRENCE_CLOSEOUT_DIR}/*.json\`.`;
-    return [
-      createError(
-        errorCode,
-        RECURRENCE_CLOSEOUT_PATH,
-        message,
-      ),
-    ];
-  }
-
-  const coveredChangedPaths = new Set();
-  for (const artifactPath of changedCloseoutArtifacts) {
-    const artifactAbsolutePath = path.join(repoRoot, artifactPath);
-    if (!(await pathExists(artifactAbsolutePath))) {
-      errors.push(
-        createError(
-          "missing-recurrence-closeout-artifact",
-          artifactPath,
-          `Rules-only closeout artifact \`${artifactPath}\` does not exist.`,
-        ),
-      );
-      continue;
-    }
-
-    let payload;
-    try {
-      payload = JSON.parse(await fs.readFile(artifactAbsolutePath, "utf8"));
-    } catch (error) {
-      errors.push(
-        createError(
-          "invalid-recurrence-closeout-json",
-          artifactPath,
-          `Failed to parse recurrence closeout artifact JSON. ${error.message}`,
-        ),
-      );
-      continue;
-    }
-
-    errors.push(...validateRecurrenceCloseoutPayload(payload, artifactPath));
-    if (Array.isArray(payload.changedPaths)) {
-      for (const changedPath of payload.changedPaths) {
-        coveredChangedPaths.add(normalizeRepoRelativePath(changedPath));
-      }
-    }
-  }
-
-  for (const changedFile of relevantChangedFiles) {
-    if (!coveredChangedPaths.has(changedFile)) {
-      errors.push(
-        createError(
-          "recurrence-closeout-missing-changed-path",
-          changedCloseoutArtifacts[0] || RECURRENCE_CLOSEOUT_PATH,
-          `Closeout artifact \`changedPaths\` must include rules-only changed file \`${changedFile}\`.`,
-        ),
-      );
-    }
-  }
-
-  return errors;
-}
-
-function validateRecurrenceCloseoutPayload(payload, artifactPath = RECURRENCE_CLOSEOUT_PATH) {
-  const errors = [];
-
-  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-    return [
-      createError(
-        "invalid-recurrence-closeout-field",
-        artifactPath,
-        "Recurrence closeout artifact must be a JSON object.",
-      ),
-    ];
-  }
-
-  if (!Number.isInteger(payload.schemaVersion) || payload.schemaVersion < 1) {
-    errors.push(
-      createError(
-        "invalid-recurrence-closeout-field",
-        artifactPath,
-        "`schemaVersion` must be an integer >= 1.",
-      ),
-    );
-  }
-
-  if (payload.scope !== "rules-only") {
-    errors.push(
-      createError(
-        "invalid-recurrence-closeout-field",
-        artifactPath,
-        "`scope` must be `rules-only`.",
-      ),
-    );
-  }
-
-  if (typeof payload.issueDetected !== "boolean") {
-    errors.push(
-      createError(
-        "invalid-recurrence-closeout-field",
-        artifactPath,
-        "`issueDetected` must be a boolean.",
-      ),
-    );
-  }
-
-  const stringFields = [
-    "updatedAt",
-    "declaredLane",
-    "observedMutationClass",
-    "acceptanceEvidenceClass",
-    "rootCause",
-    "prevention",
-    "verification",
-    "blockedReason",
-  ];
-  for (const field of stringFields) {
-    if (typeof payload[field] !== "string") {
-      errors.push(
-        createError(
-          "invalid-recurrence-closeout-field",
-          artifactPath,
-          `\`${field}\` must be a string.`,
-        ),
-      );
-    }
-  }
-
-  if (typeof payload.escalationRequired !== "boolean") {
-    errors.push(
-      createError(
-        "invalid-recurrence-closeout-field",
-        artifactPath,
-        "`escalationRequired` must be a boolean.",
-      ),
-    );
-  }
-
-  if (!Array.isArray(payload.changedPaths) || payload.changedPaths.some((value) => typeof value !== "string")) {
-    errors.push(
-      createError(
-        "invalid-recurrence-closeout-field",
-        artifactPath,
-        "`changedPaths` must be an array of strings.",
-      ),
-    );
-  }
-
-  if (typeof payload.verification === "string" && payload.verification.trim() === "") {
-    errors.push(
-      createError(
-        "invalid-recurrence-closeout-field",
-        artifactPath,
-        "`verification` must not be empty for rules-only closeout artifacts.",
-      ),
-    );
-  }
-
-  if (payload.issueDetected === true) {
-    for (const field of [
-      "declaredLane",
-      "observedMutationClass",
-      "acceptanceEvidenceClass",
-      "rootCause",
-      "prevention",
-      "verification",
-    ]) {
-      if (typeof payload[field] === "string" && payload[field].trim() === "") {
-        errors.push(
-          createError(
-            "missing-recurrence-closeout-field",
-            artifactPath,
-            `\`${field}\` must not be empty when \`issueDetected = true\`.`,
-          ),
-        );
-      }
-    }
-  }
-
-  if (payload.escalationRequired === true && typeof payload.blockedReason === "string" && payload.blockedReason.trim() === "") {
-    errors.push(
-      createError(
-        "missing-recurrence-closeout-field",
-        artifactPath,
-        "`blockedReason` must not be empty when `escalationRequired = true`.",
-      ),
-    );
-  }
-
-  if (
-    typeof payload.rootCause === "string" &&
-    UNCERTAIN_ROOT_CAUSE_PATTERN.test(payload.rootCause) &&
-    typeof payload.blockedReason === "string" &&
-    payload.blockedReason.trim() === ""
-  ) {
-    errors.push(
-      createError(
-        "uncertain-root-cause-without-blocked-reason",
-        artifactPath,
-        "`rootCause` must not contain uncertain hypothesis wording unless `blockedReason` explains the missing verification.",
-      ),
-    );
-  }
-
-  if (
-    payload.issueDetected === true &&
-    typeof payload.rootCause === "string" &&
-    payload.rootCause.trim() !== "" &&
-    typeof payload.verification === "string" &&
-    payload.verification.trim() !== "" &&
-    !RECURRENCE_VERIFICATION_EVIDENCE_PATTERN.test(payload.verification)
-  ) {
-    errors.push(
-      createError(
-        "missing-recurrence-closeout-verification-evidence",
-        artifactPath,
-        "`verification` must name a concrete command, artifact path, owner path, or evidence anchor when `rootCause` is populated.",
-      ),
-    );
-  }
-
-  if (payload.issueDetected === true) {
-    const coverageText = [
-      payload.observedMutationClass,
-      payload.rootCause,
-      payload.prevention,
-    ]
-      .filter((value) => typeof value === "string")
-      .join("\n");
-
-    for (const { pattern, label } of RECURRENCE_CLOSEOUT_COVERAGE_PATTERNS) {
-      if (pattern.test(coverageText)) {
-        continue;
-      }
-
-      errors.push(
-        createError(
-          "missing-recurrence-closeout-coverage",
-          artifactPath,
-          `Recurrence closeout artifact must mention hard-fail coverage ${label} in observedMutationClass, rootCause, or prevention.`,
-        ),
-      );
-    }
-  }
-
-  const artifactChangedPaths = Array.isArray(payload.changedPaths)
-    ? new Set(payload.changedPaths.map((entry) => normalizeRepoRelativePath(entry)))
-    : new Set();
-
-  if (!artifactChangedPaths.has(normalizeRepoRelativePath(artifactPath))) {
-    errors.push(
-      createError(
-        "recurrence-closeout-missing-changed-path",
-        artifactPath,
-        `\`changedPaths\` must include closeout artifact \`${artifactPath}\`.`,
-      ),
-    );
-  }
-
-  return errors;
-}
-
-export async function getRecurrenceChangedFiles({
-  repoRoot,
-  changedFiles = null,
-} = {}) {
-  if (Array.isArray(changedFiles)) {
-    return changedFiles
-      .map((entry) => normalizeRepoRelativePath(entry))
-      .filter(Boolean);
-  }
-
-  const raw = process.env[RECURRENCE_CHANGED_FILES_ENV];
-  if (raw) {
-    return raw
-      .split(/\r?\n/u)
-      .map((entry) => normalizeRepoRelativePath(entry))
-      .filter(Boolean);
-  }
-
-  return readChangedFilesFromGit(repoRoot);
-}
-
-async function readChangedFilesFromGit(repoRoot) {
-  if (!repoRoot || !(await pathExists(path.join(repoRoot, ".git")))) {
-    return [];
-  }
-
-  const commands = [
-    ["diff", "--name-only", "--diff-filter=ACMRD"],
-    ["diff", "--cached", "--name-only", "--diff-filter=ACMRD"],
-    ["ls-files", "--others", "--exclude-standard"],
-  ];
-  const changedFiles = [];
-
-  for (const args of commands) {
-    try {
-      const { stdout } = await execFileAsync("git", args, { cwd: repoRoot });
-      changedFiles.push(...stdout.split(/\r?\n/u));
-    } catch {
-      return [];
-    }
-  }
-
-  return [...new Set(
-    changedFiles
-      .map((entry) => normalizeRepoRelativePath(entry))
-      .filter(Boolean),
-  )].sort((left, right) => left.localeCompare(right));
-}
-
-
 function validateUniqueDocIds(documents) {
   const docIdMap = new Map();
   const errors = [];
@@ -1647,7 +1289,7 @@ function validateKnownDocIdReferences(documents) {
   return errors;
 }
 
-function validateGlobalSkillRegistry(documents) {
+function validateRepoImportedSkillRegistry(documents) {
   const registryDocument = documents.find(
     (document) => document.repoRelativePath === SKILL_ROUTING_REGISTRY_PATH,
   );
@@ -1656,7 +1298,7 @@ function validateGlobalSkillRegistry(documents) {
   }
 
   const registeredSkillNames = new Set(
-    extractGlobalRuleSkillNames(registryDocument.content),
+    extractRepoImportedRuleSkillNames(registryDocument.content),
   );
   const errors = [];
 
@@ -1669,7 +1311,7 @@ function validateGlobalSkillRegistry(documents) {
     for (let index = 0; index < lines.length; index += 1) {
       const line = lines[index];
       for (const token of extractInlineCodeTokens(line)) {
-        if (!isGlobalRuleSkillToken(token) || registeredSkillNames.has(token)) {
+        if (!isRepoImportedRuleSkillToken(token) || registeredSkillNames.has(token)) {
           continue;
         }
 
@@ -1677,7 +1319,7 @@ function validateGlobalSkillRegistry(documents) {
           createError(
             "missing-global-skill-registry-entry",
             document.repoRelativePath,
-            `Global rule skill reference \`${token}\` must be registered in \`${SKILL_ROUTING_REGISTRY_PATH}\` before repo docs or skills route to it.`,
+            `Repo-imported rule skill reference \`${token}\` must be registered in \`${SKILL_ROUTING_REGISTRY_PATH}\` before repo docs or skills route to it.`,
             index + 1,
           ),
         );
@@ -1700,8 +1342,8 @@ function validateSkillTriggerMatrix(documents) {
   const registryDocument = documents.find(
     (document) => document.repoRelativePath === SKILL_ROUTING_REGISTRY_PATH,
   );
-  const registeredGlobalSkillNames = new Set(
-    registryDocument ? extractGlobalRuleSkillNames(registryDocument.content) : [],
+  const registeredRepoImportedSkillNames = new Set(
+    registryDocument ? extractRepoImportedRuleSkillNames(registryDocument.content) : [],
   );
   const matrixSkillNames = new Set(extractSkillRouteNames(matrixDocument.content));
   const errors = [];
@@ -1715,8 +1357,8 @@ function validateSkillTriggerMatrix(documents) {
       }
 
       const knownRepoLocalSkill = token.startsWith("jg-") && repoLocalSkillNames.has(token);
-      const knownGlobalSkill = token.startsWith("rule-") && registeredGlobalSkillNames.has(token);
-      if (knownRepoLocalSkill || knownGlobalSkill) {
+      const knownRepoImportedSkill = token.startsWith("rule-") && registeredRepoImportedSkillNames.has(token);
+      if (knownRepoLocalSkill || knownRepoImportedSkill) {
         continue;
       }
 
@@ -1745,7 +1387,7 @@ function validateSkillTriggerMatrix(documents) {
     );
   }
 
-  for (const skillName of [...registeredGlobalSkillNames].sort((left, right) => left.localeCompare(right))) {
+  for (const skillName of [...registeredRepoImportedSkillNames].sort((left, right) => left.localeCompare(right))) {
     if (matrixSkillNames.has(skillName)) {
       continue;
     }
@@ -1754,108 +1396,9 @@ function validateSkillTriggerMatrix(documents) {
       createError(
         "missing-skill-trigger-fixture",
         matrixDocument.repoRelativePath,
-        `Skill trigger matrix must include at least one fixture for registered global skill \`${skillName}\`.`,
+        `Skill trigger matrix must include at least one fixture for registered repo-imported skill \`${skillName}\`.`,
       ),
     );
-  }
-
-  return errors;
-}
-
-function validateIndexCoverage(documents, repoRoot) {
-  const indexDocument = documents.find(
-    (document) => document.repoRelativePath === "docs/index.md",
-  );
-  if (!indexDocument) {
-    return [];
-  }
-
-  const indexedDocPaths = new Set();
-  const lines = indexDocument.content.split(/\r?\n/);
-  for (const line of lines) {
-    const match = line.match(INDEX_STATUS_LINE_PATTERN);
-    if (!match) {
-      continue;
-    }
-
-    const target = normalizeMarkdownTarget(match[2]);
-    if (!target || !isRelativeTarget(target)) {
-      continue;
-    }
-
-    const resolvedPath = path.resolve(path.dirname(indexDocument.absolutePath), target);
-    indexedDocPaths.add(toRepoRelative(repoRoot, resolvedPath));
-  }
-
-  const errors = [];
-  for (const document of documents) {
-    if (
-      !document.repoRelativePath.startsWith("docs/") ||
-      document.repoRelativePath === "docs/index.md"
-    ) {
-      continue;
-    }
-
-    if (indexedDocPaths.has(document.repoRelativePath)) {
-      continue;
-    }
-
-    errors.push(
-      createError(
-        "index-missing-entry",
-        "docs/index.md",
-        `docs/index.md must register \`${document.repoRelativePath}\` with a status label entry.`,
-      ),
-    );
-  }
-
-  return errors;
-}
-
-function validateIndexStatusLabels(documents, repoRoot) {
-  const indexDocument = documents.find(
-    (document) => document.repoRelativePath === "docs/index.md",
-  );
-  if (!indexDocument) {
-    return [];
-  }
-
-  const metadataByAbsolutePath = new Map(
-    documents.map((document) => [document.absolutePath, document.metadata]),
-  );
-  const errors = [];
-  const lines = indexDocument.content.split(/\r?\n/);
-
-  for (let index = 0; index < lines.length; index += 1) {
-    const line = lines[index];
-    const match = line.match(INDEX_STATUS_LINE_PATTERN);
-    if (!match) {
-      continue;
-    }
-
-    const expectedStatus = match[1];
-    const target = normalizeMarkdownTarget(match[2]);
-    if (!target || !isRelativeTarget(target)) {
-      continue;
-    }
-
-    const resolvedPath = path.resolve(path.dirname(indexDocument.absolutePath), target);
-    const targetMetadata = metadataByAbsolutePath.get(resolvedPath);
-    if (!targetMetadata) {
-      continue;
-    }
-
-    const actualStatus = targetMetadata.get("상태");
-    if (actualStatus !== expectedStatus) {
-      errors.push(
-        createError(
-          "index-status-mismatch",
-          indexDocument.repoRelativePath,
-          `Index status label \`${expectedStatus}\` for \`${toRepoRelative(repoRoot, resolvedPath)}\` does not match document 상태 \`${actualStatus || "missing"}\`.`,
-          index + 1,
-        ),
-      );
-    }
   }
 
   return errors;
@@ -2404,13 +1947,13 @@ function stripFencedCodeBlocks(content) {
   return stripped.join("\n");
 }
 
-function extractGlobalRuleSkillNames(content) {
+function extractRepoImportedRuleSkillNames(content) {
   const names = new Set();
   const lines = stripFencedCodeBlocks(content).split(/\r?\n/);
 
   for (const line of lines) {
     for (const token of extractInlineCodeTokens(line)) {
-      if (isGlobalRuleSkillToken(token)) {
+      if (isRepoImportedRuleSkillToken(token)) {
         names.add(token);
       }
     }
@@ -2445,7 +1988,7 @@ function extractSkillRouteNames(content) {
 }
 
 function isSkillRouteToken(token) {
-  return /^jg-[a-z0-9-]+$/u.test(token) || isGlobalRuleSkillToken(token);
+  return /^jg-[a-z0-9-]+$/u.test(token) || isRepoImportedRuleSkillToken(token);
 }
 
 function isRelativeTarget(target) {
@@ -2460,8 +2003,8 @@ function isRepoLocalSkillEntry(repoRelativePath) {
   return /^\.codex\/skills\/jg-[^/]+\/SKILL\.md$/.test(repoRelativePath);
 }
 
-function isGlobalRuleSkillToken(token) {
-  return GLOBAL_RULE_SKILL_NAMES.has(token);
+function isRepoImportedRuleSkillToken(token) {
+  return REPO_IMPORTED_RULE_SKILL_NAMES.has(token);
 }
 
 function isConcreteContractArtifactPath(target) {
@@ -2480,6 +2023,10 @@ function getDocumentKind(repoRelativePath) {
 
   if (/^\.codex\/skills\/\.system\/[^/]+\/SKILL\.md$/.test(repoRelativePath)) {
     return "system-skill";
+  }
+
+  if (/^\.codex\/skills\/(?!\.system\/)[^/]+\/.+\.md$/.test(repoRelativePath)) {
+    return "imported-skill";
   }
 
   return "managed-doc";
@@ -2750,11 +2297,6 @@ function toRepoRelative(repoRoot, absolutePath) {
   return toPosixPath(path.relative(repoRoot, absolutePath));
 }
 
-function getDefaultGlobalRuleSkillsRoot() {
-  const codexHome = process.env.CODEX_HOME || path.join(os.homedir(), ".codex");
-  return path.join(codexHome, "skills");
-}
-
 function toGlobalRuleSkillReportPath(globalRuleSkillsRoot, absolutePath) {
   const relativePath = toPosixPath(path.relative(globalRuleSkillsRoot, absolutePath));
   if (relativePath && !relativePath.startsWith("..")) {
@@ -2774,37 +2316,4 @@ export function normalizeRepoRelativePath(repoRelativePath) {
   }
 
   return repoRelativePath.replace(/\\/g, "/").trim();
-}
-
-export function isRulesOnlyRecurrenceTarget(repoRelativePath) {
-  const normalized = normalizeRepoRelativePath(repoRelativePath);
-  if (!normalized) {
-    return false;
-  }
-
-  if (
-    normalized === "AGENTS.md" ||
-    normalized === "docs/index.md" ||
-    normalized.startsWith("docs/owners/operations/") ||
-    normalized.startsWith("docs/owners/ui-workflow/") ||
-    /^\.codex\/skills\/jg-[^/]+\//u.test(normalized) ||
-    normalized.startsWith(".githooks/") ||
-    normalized.startsWith("tools/docs-lint/") ||
-    normalized.startsWith("tools/rule-harness/") ||
-    normalized === ".github/workflows/docs-lint.yml" ||
-    isRecurrenceCloseoutArtifactPath(normalized)
-  ) {
-    return true;
-  }
-
-  return false;
-}
-
-export function isRecurrenceCloseoutArtifactPath(repoRelativePath) {
-  const normalized = normalizeRepoRelativePath(repoRelativePath);
-  return normalized === RECURRENCE_CLOSEOUT_PATH
-    || (
-      normalized.startsWith(`${RECURRENCE_CLOSEOUT_DIR}/`) &&
-      /^[a-z0-9][a-z0-9._-]*\.json$/u.test(normalized.slice(RECURRENCE_CLOSEOUT_DIR.length + 1))
-    );
 }
