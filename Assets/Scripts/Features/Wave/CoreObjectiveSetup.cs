@@ -1,4 +1,4 @@
-using Features.Combat;
+﻿using Features.Combat;
 using Features.Enemy.Application.Ports;
 using Features.Unit.Presentation;
 using Features.Wave.Application;
@@ -68,14 +68,6 @@ namespace Features.Wave
             }
 
             // 시각화 초기화
-            InitializePlacementAreaView();
-        }
-
-        private void InitializePlacementAreaView()
-        {
-// csharp-guardrails: allow-null-defense
-            if (_placementArea == null) return;
-// csharp-guardrails: allow-null-defense
             if (_placementAreaView == null) return; // Inspector에서 연결 필요
 
             var validMat = PlacementAreaMaterialFactory.CreateValidMaterial();
