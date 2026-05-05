@@ -4,6 +4,7 @@ using Features.Account.Application;
 using Features.Account.Domain;
 using Features.Lobby.Application.Events;
 using Features.Lobby.Application.Ports;
+using Features.Lobby.Domain;
 using Features.Player.Domain;
 using Shared.Gameplay;
 using Shared.Kernel;
@@ -158,6 +159,73 @@ namespace Features.Lobby.Presentation
                 room.OwnerId.Equals(localMemberId));
         }
 
+        public LobbyRoomWaitingViewModel BuildRoomWaiting(
+            RoomSnapshot room,
+            DomainEntityId localMemberId,
+            LobbyGarageSummaryViewModel deckSummary)
+        {
+            deckSummary ??= LobbyGarageSummaryViewModel.Empty;
+// csharp-guardrails: allow-null-defense
+            var members = room.Members ?? Array.Empty<RoomMemberSnapshot>();
+            var totalSlots = Mathf.Max(room.Capacity, members.Count);
+            var participants = new List<LobbyRoomParticipantViewModel>(totalSlots);
+            var localIsReady = false;
+            var localIsOwner = room.OwnerId.Equals(localMemberId);
+            var localTeam = TeamType.None;
+            var allReady = members.Count > 0;
+            var hostName = "호스트 대기";
+
+            for (var i = 0; i < members.Count; i++)
+            {
+                var member = members[i];
+                if (!member.IsReady)
+                    allReady = false;
+
+                var isLocal = member.Id.Equals(localMemberId);
+                if (isLocal)
+                {
+                    localIsReady = member.IsReady;
+                    localTeam = member.Team;
+                }
+
+                if (member.Id.Equals(room.OwnerId))
+                    hostName = DisplayNameOrWaiting(member.DisplayName);
+
+                participants.Add(new LobbyRoomParticipantViewModel(
+                    DisplayNameOrWaiting(member.DisplayName),
+                    TeamLabel(member.Team),
+                    member.IsReady ? GameText.Get("common.ready") : GameText.Get("common.waiting"),
+                    member.IsReady,
+                    isLocal,
+                    isEmpty: false));
+            }
+
+            for (var i = members.Count; i < totalSlots; i++)
+            {
+                participants.Add(new LobbyRoomParticipantViewModel(
+                    "참가 대기",
+                    "빈 슬롯",
+                    GameText.Get("common.waiting"),
+                    isReady: false,
+                    isLocal: false,
+                    isEmpty: true));
+            }
+
+            return new LobbyRoomWaitingViewModel(
+                room.Name,
+                BuildRoomMeta(members.Count, room.Capacity, room.DifficultyPresetId),
+                allReady ? "모두 준비 완료" : "참가자 대기 중",
+                $"호스트 {hostName}",
+                "연결 안정",
+                participants,
+                deckSummary,
+                localTeam,
+                localIsOwner,
+                localIsReady,
+                canStartGame: localIsOwner && allReady,
+                isVisible: true);
+        }
+
         public LobbyAccountViewModel BuildAccount(
             AccountProfile profile,
             AccountData accountData,
@@ -292,6 +360,21 @@ namespace Features.Lobby.Presentation
         private static string BuildRoomStatus(bool canJoin)
         {
             return canJoin ? "참가 가능" : "정원 마감";
+        }
+
+        private static string DisplayNameOrWaiting(string displayName)
+        {
+            return string.IsNullOrWhiteSpace(displayName) ? GameText.Get("common.waiting") : displayName.Trim();
+        }
+
+        private static string TeamLabel(TeamType team)
+        {
+            return team switch
+            {
+                TeamType.Red => "RED",
+                TeamType.Blue => "BLUE",
+                _ => "팀 미정"
+            };
         }
 
         private static string Shorten(string value)

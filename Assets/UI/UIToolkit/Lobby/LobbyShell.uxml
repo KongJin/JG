@@ -77,12 +77,60 @@
                     <ui:VisualElement name="RoomActionRow" class="uitk-action-row">
                         <ui:Button name="RedTeamButton" text="RED" />
                         <ui:Button name="BlueTeamButton" text="BLUE" />
-                        <ui:Button name="ReadyButton" text="Ready" />
-                        <ui:Button name="StartButton" text="Start" />
-                        <ui:Button name="LeaveRoomButton" text="Leave" />
+                        <ui:Button name="ReadyButton" text="준비 완료" />
+                        <ui:Button name="StartButton" text="게임 시작" />
+                        <ui:Button name="LeaveRoomButton" text="나가기" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:ScrollView>
+
+            <ui:VisualElement name="RoomWaitingPage" class="uitk-page lobby-waiting-page">
+                <ui:ScrollView name="RoomWaitingScroll" class="lobby-waiting-scroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto">
+                    <ui:VisualElement class="lobby-waiting-hero">
+                        <ui:VisualElement class="lobby-waiting-hero__top">
+                            <ui:VisualElement>
+                                <ui:Label text="방 대기실" class="uitk-kicker" />
+                                <ui:Label name="RoomWaitingTitleLabel" text="친구와 한 판" class="lobby-waiting-title" />
+                            </ui:VisualElement>
+                            <ui:Label name="RoomWaitingStateLabel" text="참가자 대기 중" class="lobby-status-chip" />
+                        </ui:VisualElement>
+                        <ui:Label name="RoomWaitingMetaLabel" text="2/4 | 보통" class="lobby-waiting-meta" />
+                        <ui:VisualElement class="lobby-waiting-info-row">
+                            <ui:Label name="RoomWaitingHostLabel" text="호스트 SOL" class="lobby-waiting-info-chip" />
+                            <ui:Label name="RoomWaitingConnectionLabel" text="연결 안정" class="lobby-waiting-info-chip lobby-waiting-info-chip--blue" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="uitk-card lobby-waiting-card">
+                        <ui:VisualElement class="lobby-card-title-row">
+                            <ui:VisualElement class="uitk-icon uitk-icon--team uitk-icon--blue" />
+                            <ui:Label text="참가자" class="uitk-section-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="RoomWaitingParticipantList" class="lobby-waiting-participant-list" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="uitk-card lobby-waiting-card">
+                        <ui:VisualElement class="lobby-card-title-row">
+                            <ui:VisualElement class="uitk-icon uitk-icon--garage uitk-icon--orange" />
+                            <ui:Label text="내 준비 상태" class="uitk-section-title" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="lobby-team-toggle-row">
+                            <ui:Button name="RoomRedTeamButton" text="RED" class="lobby-team-toggle" />
+                            <ui:Button name="RoomBlueTeamButton" text="BLUE" class="lobby-team-toggle" />
+                        </ui:VisualElement>
+                        <ui:Label name="RoomWaitingDeckStatusLabel" text="덱 확인" class="lobby-status-chip lobby-status-chip--ready" />
+                        <ui:Label name="RoomWaitingDeckTitleLabel" text="저장된 유닛 4/8" class="lobby-summary-title" />
+                        <ui:Label name="RoomWaitingDeckBodyLabel" text="게임 시작 조건 충족" class="lobby-card-body" />
+                        <ui:VisualElement name="RoomWaitingDeckSlotRow" class="lobby-slot-row" />
+                    </ui:VisualElement>
+                </ui:ScrollView>
+
+                <ui:VisualElement name="RoomWaitingActionDock" class="lobby-waiting-action-dock">
+                    <ui:Button name="RoomReadyButton" text="준비 완료" class="lobby-waiting-primary-button" />
+                    <ui:Button name="RoomStartButton" text="게임 시작" class="lobby-waiting-primary-button" />
+                    <ui:Button name="RoomLeaveButton" text="나가기" class="lobby-waiting-secondary-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
 
             <ui:VisualElement name="GarageUitkHost" class="uitk-page garage-shell-host">
                 <ui:Label text="GARAGE" class="uitk-section-title" />

@@ -80,6 +80,18 @@ Current design judgment:
 - Room selection should escalate into the selected-room detail panel before join.
 - Room creation should stay an overlay flow, not a peer full-screen page.
 
+### Lobby Candidate Draft - 2026-05-05
+
+Room entry currently needs a clearer post-join waiting state than the existing inline `RoomDetailCard`.
+Use the following Stitch screen as a candidate only until it is reviewed and accepted as a source freeze.
+
+- Screen: `Room Waiting Lobby`
+- Screen ID: `71d64d61018b4a619c32894de0aed849`
+- Local export: `.stitch/designs/set-a-room-waiting-lobby-v1.{html,png}`
+- Intended role: full-screen room waiting state after create/join
+- First read: room identity -> participant slots -> ready/team/deck controls -> bottom action dock
+- Copy direction: use normal game terms such as 방, 참가자, 덱, 유닛, 준비 완료, 게임 시작, 나가기
+
 ### Garage
 
 The first read must be:

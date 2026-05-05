@@ -112,6 +112,214 @@
     padding-bottom: 72px;
 }
 
+#RoomWaitingPage {
+    display: none;
+}
+
+.lobby-waiting-page {
+    flex-grow: 1;
+    min-height: 0;
+    background-color: var(--lobby-bg);
+}
+
+.lobby-waiting-scroll {
+    flex-grow: 1;
+    min-height: 0;
+    padding-bottom: 12px;
+}
+
+.lobby-waiting-hero {
+    margin-bottom: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    background-color: #0f1923;
+    border-width: 1px;
+    border-color: rgba(107, 180, 255, 0.5);
+}
+
+.lobby-waiting-hero__top,
+.lobby-waiting-info-row,
+.lobby-team-toggle-row,
+.lobby-waiting-participant-main,
+.lobby-waiting-participant-meta,
+.lobby-waiting-action-dock {
+    flex-direction: row;
+}
+
+.lobby-waiting-hero__top {
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.lobby-waiting-title {
+    margin-bottom: 4px;
+    color: #f7fbff;
+    font-size: 20px;
+    -unity-font-style: bold;
+}
+
+.lobby-waiting-meta {
+    margin-top: 4px;
+    margin-bottom: 10px;
+    color: var(--lobby-muted);
+    font-size: 12px;
+}
+
+.lobby-waiting-info-row {
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.lobby-waiting-info-chip {
+    margin-right: 6px;
+    margin-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-width: 1px;
+    border-color: rgba(245, 158, 11, 0.34);
+    background-color: rgba(245, 158, 11, 0.12);
+    color: #ffd7aa;
+    font-size: 10px;
+}
+
+.lobby-waiting-info-chip--blue {
+    border-color: rgba(95, 179, 255, 0.34);
+    background-color: rgba(33, 77, 114, 0.55);
+    color: #dff0ff;
+}
+
+.lobby-waiting-card {
+    background-color: #0c141d;
+}
+
+.lobby-waiting-participant-list {
+    margin-top: 4px;
+}
+
+.lobby-waiting-participant-row {
+    min-height: 58px;
+    margin-bottom: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    border-width: 1px;
+    border-color: rgba(95, 179, 255, 0.2);
+    background-color: rgba(9, 15, 22, 0.72);
+}
+
+.lobby-waiting-participant-row--local {
+    border-color: var(--lobby-line-strong);
+    background-color: #10263b;
+}
+
+.lobby-waiting-participant-row--empty {
+    border-color: rgba(143, 177, 201, 0.18);
+    background-color: rgba(8, 13, 18, 0.58);
+    opacity: 0.82;
+}
+
+.lobby-waiting-participant-main {
+    align-items: center;
+    justify-content: space-between;
+}
+
+.lobby-waiting-participant-name {
+    flex-grow: 1;
+    margin-right: 10px;
+    color: #f7fbff;
+    font-size: 13px;
+    -unity-font-style: bold;
+}
+
+.lobby-waiting-participant-status {
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-width: 1px;
+    border-color: rgba(245, 158, 11, 0.45);
+    background-color: rgba(245, 158, 11, 0.14);
+    color: #ffd7aa;
+    font-size: 9px;
+    -unity-font-style: bold;
+}
+
+.lobby-waiting-participant-status--ready {
+    border-color: rgba(52, 211, 153, 0.55);
+    background-color: rgba(16, 185, 129, 0.14);
+    color: #baf7dd;
+}
+
+.lobby-waiting-participant-meta {
+    margin-top: 6px;
+    align-items: center;
+}
+
+.lobby-waiting-participant-team,
+.lobby-waiting-participant-local {
+    margin-right: 8px;
+    color: var(--lobby-muted);
+    font-size: 10px;
+}
+
+.lobby-waiting-participant-local {
+    color: #75c8ef;
+    -unity-font-style: bold;
+}
+
+.lobby-team-toggle-row {
+    margin-bottom: 10px;
+}
+
+.lobby-team-toggle {
+    flex-grow: 1;
+    height: 38px;
+    margin-right: 6px;
+    background-color: #132537;
+}
+
+.lobby-team-toggle--selected {
+    background-color: #204059;
+    border-color: var(--lobby-line-strong);
+    color: #ffffff;
+}
+
+.lobby-waiting-action-dock {
+    flex-shrink: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: #0d141c;
+    border-top-width: 1px;
+    border-top-color: var(--lobby-line);
+}
+
+.lobby-waiting-primary-button {
+    flex-grow: 1;
+    height: 46px;
+    min-height: 46px;
+    margin-right: 8px;
+    background-color: var(--lobby-orange);
+    border-color: rgba(245, 158, 11, 0.9);
+    color: #f9fbff;
+    font-size: 13px;
+}
+
+.lobby-waiting-secondary-button {
+    width: 92px;
+    min-width: 92px;
+    height: 46px;
+    min-height: 46px;
+    background-color: #132537;
+    color: var(--lobby-text);
+}
+
 .uitk-card {
     margin-bottom: 10px;
     padding-left: 14px;

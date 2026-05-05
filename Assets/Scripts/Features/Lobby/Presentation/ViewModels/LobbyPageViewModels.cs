@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Features.Lobby.Domain;
 using Shared.Kernel;
 using Shared.Localization;
 
@@ -139,6 +140,92 @@ namespace Features.Lobby.Presentation
         public bool LocalIsReady { get; }
         public string ReadyButtonText { get; }
         public bool CanStartGame { get; }
+    }
+
+    internal sealed class LobbyRoomWaitingViewModel
+    {
+        public static readonly LobbyRoomWaitingViewModel Empty = new(
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            Array.Empty<LobbyRoomParticipantViewModel>(),
+            LobbyGarageSummaryViewModel.Empty,
+            TeamType.None,
+            localIsOwner: false,
+            localIsReady: false,
+            canStartGame: false,
+            isVisible: false);
+
+        public LobbyRoomWaitingViewModel(
+            string titleText,
+            string metaText,
+            string stateText,
+            string hostText,
+            string connectionText,
+            IReadOnlyList<LobbyRoomParticipantViewModel> participants,
+            LobbyGarageSummaryViewModel deckSummary,
+            TeamType localTeam,
+            bool localIsOwner,
+            bool localIsReady,
+            bool canStartGame,
+            bool isVisible)
+        {
+            TitleText = titleText ?? string.Empty;
+            MetaText = metaText ?? string.Empty;
+            StateText = stateText ?? string.Empty;
+            HostText = hostText ?? string.Empty;
+            ConnectionText = connectionText ?? string.Empty;
+            Participants = participants ?? Array.Empty<LobbyRoomParticipantViewModel>();
+            DeckSummary = deckSummary ?? LobbyGarageSummaryViewModel.Empty;
+            LocalTeam = localTeam;
+            LocalIsOwner = localIsOwner;
+            LocalIsReady = localIsReady;
+            CanStartGame = canStartGame;
+            IsVisible = isVisible;
+        }
+
+        public string TitleText { get; }
+        public string MetaText { get; }
+        public string StateText { get; }
+        public string HostText { get; }
+        public string ConnectionText { get; }
+        public IReadOnlyList<LobbyRoomParticipantViewModel> Participants { get; }
+        public LobbyGarageSummaryViewModel DeckSummary { get; }
+        public TeamType LocalTeam { get; }
+        public bool LocalIsOwner { get; }
+        public bool LocalIsReady { get; }
+        public bool CanStartGame { get; }
+        public bool IsVisible { get; }
+        public string ReadyButtonText => LocalIsReady ? "준비 취소" : GameText.Get("common.ready");
+        public string PrimaryButtonText => LocalIsOwner && LocalIsReady ? "게임 시작" : ReadyButtonText;
+    }
+
+    internal readonly struct LobbyRoomParticipantViewModel
+    {
+        public LobbyRoomParticipantViewModel(
+            string displayNameText,
+            string teamText,
+            string statusText,
+            bool isReady,
+            bool isLocal,
+            bool isEmpty)
+        {
+            DisplayNameText = displayNameText ?? string.Empty;
+            TeamText = teamText ?? string.Empty;
+            StatusText = statusText ?? string.Empty;
+            IsReady = isReady;
+            IsLocal = isLocal;
+            IsEmpty = isEmpty;
+        }
+
+        public string DisplayNameText { get; }
+        public string TeamText { get; }
+        public string StatusText { get; }
+        public bool IsReady { get; }
+        public bool IsLocal { get; }
+        public bool IsEmpty { get; }
     }
 
     internal sealed class LobbyGarageSummaryViewModel

@@ -64,7 +64,11 @@ namespace Features.Lobby.Presentation
         private DomainEntityId _currentRoomId;
         private DomainEntityId _localMemberId;
         private DomainEntityId _selectedRoomId;
+        private RoomSnapshot _currentRoomSnapshot;
+        private LobbyGarageSummaryViewModel _latestGarageSummary = LobbyGarageSummaryViewModel.Empty;
         private bool _localIsReady;
+        private DomainEntityId _autoStartRequestedRoomId;
+        private bool _hasCurrentRoomSnapshot;
         private bool _hasNetworkRoomList;
         private IReadOnlyList<RoomSnapshot> _latestLobbyRooms = Array.Empty<RoomSnapshot>();
         private IReadOnlyList<RoomListItem> _latestNetworkRooms = Array.Empty<RoomListItem>();
@@ -127,17 +131,30 @@ namespace Features.Lobby.Presentation
 
         public void RenderRoom(RoomUpdatedEvent e)
         {
+            RenderRoom(e, allowAutoStart: true);
+        }
+
+        private void RenderRoom(RoomUpdatedEvent e, bool allowAutoStart)
+        {
+            if (_currentRoomId != e.Room.Id)
+                _autoStartRequestedRoomId = default;
+
             _currentRoomId = e.Room.Id;
             _localMemberId = e.LocalMemberId;
             _selectedRoomId = e.Room.Id;
-            var viewModel = _presenter.BuildRoomDetail(e.Room, _localMemberId);
+            _currentRoomSnapshot = e.Room;
+            _hasCurrentRoomSnapshot = true;
+            var viewModel = BuildRoomWaitingViewModel();
             _localIsReady = viewModel.LocalIsReady;
 // csharp-guardrails: allow-null-defense
             _uitk?.RenderRooms(BuildRoomsViewModel(_currentRoomId));
 // csharp-guardrails: allow-null-defense
             _uitk?.RenderRoomSelection(LobbyRoomSelectionViewModel.Empty);
 // csharp-guardrails: allow-null-defense
-            _uitk?.RenderRoomDetail(viewModel);
+            _uitk?.RenderRoomWaiting(viewModel);
+
+            if (allowAutoStart)
+                TryAutoStartGame(viewModel);
         }
 
         public void OpenGaragePage()
@@ -168,14 +185,21 @@ namespace Features.Lobby.Presentation
         public void RenderAccountState(AccountProfile profile, AccountData accountData)
         {
             BindAdapterSurface();
+            _latestGarageSummary = _presenter.BuildGarageSummary(accountData);
 // csharp-guardrails: allow-null-defense
-            _uitk?.RenderGarageSummary(_presenter.BuildGarageSummary(accountData));
+            _uitk?.RenderGarageSummary(_latestGarageSummary);
 // csharp-guardrails: allow-null-defense
             _uitk?.RenderAccountState(
                 _presenter.BuildAccount(
                     profile,
                     accountData,
                     LoadOperationRecords().Count));
+
+            if (HasRoomMemberContext() && _hasCurrentRoomSnapshot)
+            {
+// csharp-guardrails: allow-null-defense
+                _uitk?.RenderRoomWaiting(BuildRoomWaitingViewModel());
+            }
         }
 
         private void OnDestroy()
@@ -248,6 +272,14 @@ namespace Features.Lobby.Presentation
         {
 // csharp-guardrails: allow-null-defense
             var input = _uitk?.CreateRoomInput ?? new LobbyCreateRoomInput("Room", 4, string.Empty, 0);
+#if UNITY_EDITOR
+// csharp-guardrails: allow-null-defense
+            if (_inputHandler == null)
+            {
+                RenderEditorPreviewCreatedRoom(input);
+                return;
+            }
+#endif
 // csharp-guardrails: allow-null-defense
             _inputHandler?.CreateRoom(
                 input.RoomName,
@@ -281,7 +313,10 @@ namespace Features.Lobby.Presentation
 
 #if UNITY_EDITOR
             if (IsEditorPreviewRoom(_selectedRoomId))
+            {
+                RenderEditorPreviewSelectedRoom(_selectedRoomId);
                 return;
+            }
 #endif
 
             JoinRoom(_selectedRoomId);
@@ -296,23 +331,73 @@ namespace Features.Lobby.Presentation
 
         private void ChangeTeam(TeamType team)
         {
+#if UNITY_EDITOR
+            if (HasRoomMemberContext() && ShouldUseEditorPreviewRoomControls())
+            {
+                UpdateEditorPreviewCurrentRoom(room => room.ChangeTeam(_localMemberId, team));
+                return;
+            }
+#endif
+
             if (HasRoomMemberContext())
+            {
 // csharp-guardrails: allow-null-defense
-                _inputHandler?.ChangeTeam(_currentRoomId, _localMemberId, team);
+                Result? result = _inputHandler?.ChangeTeam(_currentRoomId, _localMemberId, team);
+                if (result.HasValue && result.Value.IsSuccess)
+                    UpdateCurrentRoomSnapshot(room => room.ChangeTeam(_localMemberId, team));
+            }
         }
 
         private void ToggleReady()
         {
+#if UNITY_EDITOR
+            if (HasRoomMemberContext() && ShouldUseEditorPreviewRoomControls())
+            {
+                UpdateEditorPreviewCurrentRoom(room => room.SetReady(_localMemberId, !_localIsReady));
+                return;
+            }
+#endif
+
             if (HasRoomMemberContext())
+            {
 // csharp-guardrails: allow-null-defense
-                _inputHandler?.SetReady(_currentRoomId, _localMemberId, !_localIsReady);
+                Result? result = _inputHandler?.SetReady(_currentRoomId, _localMemberId, !_localIsReady);
+                if (result.HasValue && result.Value.IsSuccess)
+                    UpdateCurrentRoomSnapshot(room => room.SetReady(_localMemberId, !_localIsReady));
+            }
         }
 
         private void StartGame()
         {
+#if UNITY_EDITOR
+            if (HasRoomMemberContext() && ShouldUseEditorPreviewRoomControls())
+            {
+                RenderLobbyHomeState();
+                return;
+            }
+#endif
+
             if (!string.IsNullOrWhiteSpace(_currentRoomId.Value))
+                RequestStartGame();
+        }
+
+        private void TryAutoStartGame(LobbyRoomWaitingViewModel viewModel)
+        {
+            if (!viewModel.CanStartGame || _autoStartRequestedRoomId == _currentRoomId)
+                return;
+
+            if (RequestStartGame())
+                _autoStartRequestedRoomId = _currentRoomId;
+        }
+
+        private bool RequestStartGame()
+        {
+            if (string.IsNullOrWhiteSpace(_currentRoomId.Value))
+                return false;
+
 // csharp-guardrails: allow-null-defense
-                _inputHandler?.StartGame(_currentRoomId);
+            var result = _inputHandler?.StartGame(_currentRoomId);
+            return result.HasValue && result.Value.IsSuccess;
         }
 
         private bool HasRoomMemberContext()
@@ -378,10 +463,24 @@ namespace Features.Lobby.Presentation
             _uitk.RenderRooms(BuildRoomsViewModel(highlightedRoomId));
 
             if (HasRoomMemberContext())
-                return;
+            {
+                if (_hasCurrentRoomSnapshot)
+                    _uitk.RenderRoomWaiting(BuildRoomWaitingViewModel());
 
+                return;
+            }
+
+            _uitk.HideRoomWaiting();
             _uitk.RenderRoomDetail(LobbyRoomDetailViewModel.Empty);
             _uitk.RenderRoomSelection(BuildRoomSelectionViewModel(_selectedRoomId));
+        }
+
+        private LobbyRoomWaitingViewModel BuildRoomWaitingViewModel()
+        {
+            return _presenter.BuildRoomWaiting(
+                _currentRoomSnapshot,
+                _localMemberId,
+                _latestGarageSummary);
         }
 
         private LobbyRoomListViewModel BuildRoomsViewModel(DomainEntityId highlightedRoomId)
@@ -425,12 +524,100 @@ namespace Features.Lobby.Presentation
             if (string.IsNullOrWhiteSpace(_currentRoomId.Value))
                 return;
 
+            if (HasValidCurrentRoomSnapshot())
+                return;
+
             if (RoomExists(_currentRoomId))
                 return;
 
             _currentRoomId = default;
             _localMemberId = default;
             _localIsReady = false;
+            _autoStartRequestedRoomId = default;
+            _currentRoomSnapshot = default;
+            _hasCurrentRoomSnapshot = false;
+        }
+
+        private bool HasValidCurrentRoomSnapshot()
+        {
+            if (!_hasCurrentRoomSnapshot || _currentRoomSnapshot.Id != _currentRoomId)
+                return false;
+
+// csharp-guardrails: allow-null-defense
+            var members = _currentRoomSnapshot.Members ?? Array.Empty<RoomMemberSnapshot>();
+            for (var i = 0; i < members.Count; i++)
+            {
+                if (members[i].Id == _localMemberId)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private void UpdateCurrentRoomSnapshot(Action<Room> updateRoom)
+        {
+            if (updateRoom == null)
+                throw new ArgumentNullException(nameof(updateRoom));
+
+            var room = BuildRoomFromCurrentSnapshot();
+// csharp-guardrails: allow-null-defense
+            if (room == null)
+                return;
+
+            updateRoom(room);
+            RenderRoom(new RoomUpdatedEvent(room, _localMemberId), allowAutoStart: false);
+        }
+
+        private Room BuildRoomFromCurrentSnapshot()
+        {
+            if (!_hasCurrentRoomSnapshot)
+                return null;
+
+// csharp-guardrails: allow-null-defense
+            var members = _currentRoomSnapshot.Members ?? Array.Empty<RoomMemberSnapshot>();
+            if (members.Count == 0)
+                return null;
+
+            var ownerIndex = 0;
+            for (var i = 0; i < members.Count; i++)
+            {
+                if (members[i].Id == _currentRoomSnapshot.OwnerId)
+                {
+                    ownerIndex = i;
+                    break;
+                }
+            }
+
+            var ownerSnapshot = members[ownerIndex];
+            var owner = new RoomMember(
+                ownerSnapshot.Id,
+                ownerSnapshot.DisplayName,
+                ownerSnapshot.Team,
+                ownerSnapshot.IsReady);
+            var roomResult = Room.Create(
+                _currentRoomSnapshot.Id,
+                _currentRoomSnapshot.Name,
+                _currentRoomSnapshot.Capacity,
+                owner,
+                _currentRoomSnapshot.DifficultyPresetId);
+            if (roomResult.IsFailure)
+                return null;
+
+            var room = roomResult.Value;
+            for (var i = 0; i < members.Count; i++)
+            {
+                if (i == ownerIndex)
+                    continue;
+
+                var member = members[i];
+                room.AddMember(new RoomMember(
+                    member.Id,
+                    member.DisplayName,
+                    member.Team,
+                    member.IsReady));
+            }
+
+            return room;
         }
 
         private bool RoomExists(DomainEntityId roomId)
@@ -503,6 +690,73 @@ namespace Features.Lobby.Presentation
         }
 
 #if UNITY_EDITOR
+        private bool ShouldUseEditorPreviewRoomControls()
+        {
+// csharp-guardrails: allow-null-defense
+            return _inputHandler == null || IsEditorPreviewRoom(_currentRoomId);
+        }
+
+        private void UpdateEditorPreviewCurrentRoom(Action<Room> updateRoom)
+        {
+            UpdateCurrentRoomSnapshot(updateRoom);
+        }
+
+        private void RenderEditorPreviewCreatedRoom(LobbyCreateRoomInput input)
+        {
+            var localMemberId = new DomainEntityId($"{EditorPreviewRoomIdPrefix}local");
+            var owner = new RoomMember(localMemberId, "SOL", TeamType.Blue, isReady: false);
+            var roomResult = Room.Create(
+                new DomainEntityId($"{EditorPreviewRoomIdPrefix}created"),
+                string.IsNullOrWhiteSpace(input.RoomName) ? "친구와 한 판" : input.RoomName,
+                Math.Max(1, input.Capacity),
+                owner,
+                input.DifficultyPresetId);
+            if (roomResult.IsFailure)
+                return;
+
+            RenderRoom(new RoomUpdatedEvent(roomResult.Value, localMemberId));
+        }
+
+        private void RenderEditorPreviewSelectedRoom(DomainEntityId roomId)
+        {
+            for (var i = 0; i < EditorPreviewRooms.Count; i++)
+            {
+                var item = EditorPreviewRooms[i];
+                if (item.RoomId != roomId)
+                    continue;
+
+                RenderEditorPreviewRoom(item);
+                return;
+            }
+        }
+
+        private void RenderEditorPreviewRoom(RoomListItem item)
+        {
+            var localMemberId = new DomainEntityId($"{item.RoomId.Value}-local");
+            var owner = new RoomMember(localMemberId, "SOL", TeamType.Blue, isReady: false);
+            var roomResult = Room.Create(
+                item.RoomId,
+                item.RoomName,
+                item.MaxPlayers,
+                owner,
+                item.DifficultyPresetId);
+            if (roomResult.IsFailure)
+                return;
+
+            var room = roomResult.Value;
+            var filledCount = Math.Min(item.PlayerCount, item.MaxPlayers);
+            for (var i = 1; i < filledCount; i++)
+            {
+                room.AddMember(new RoomMember(
+                    new DomainEntityId($"{item.RoomId.Value}-member-{i}"),
+                    $"JUN {i}",
+                    i % 2 == 0 ? TeamType.Blue : TeamType.Red,
+                    isReady: false));
+            }
+
+            RenderRoom(new RoomUpdatedEvent(room, localMemberId));
+        }
+
         private static IReadOnlyList<RoomListItem> BuildEditorPreviewRooms()
         {
             var rooms = new RoomListItem[20];

@@ -31,6 +31,7 @@ namespace Features.Lobby.Presentation
         private VisualElement _recordsPage;
         private VisualElement _accountPage;
         private VisualElement _connectionPage;
+        private VisualElement _roomWaitingPage;
         private VisualElement _createRoomOverlay;
         private Label _shellTitle;
         private Label _shellState;
@@ -45,10 +46,12 @@ namespace Features.Lobby.Presentation
         private LobbyGarageSummarySurface _garageSummarySurface;
         private LobbyRoomSelectionOverlay _roomSelectionOverlay;
         private LobbyRoomDetailSurface _roomDetailSurface;
+        private LobbyRoomWaitingSurface _roomWaitingSurface;
         private LobbyShellPageRouter _pageRouter;
         private LobbyAuxiliarySurfaceBinder _auxiliarySurfaces;
         private readonly LobbyUitkClickScope _clickScope = new();
         private IEventPublisher _clickSoundPublisher;
+        private bool _roomWaitingPrimaryStartsGame;
         private bool _isBound;
         private bool _isDisposed;
 
@@ -202,6 +205,39 @@ namespace Features.Lobby.Presentation
             }
         }
 
+        public void RenderRoomWaiting(LobbyRoomWaitingViewModel viewModel)
+        {
+            if (!Bind())
+                return;
+
+// csharp-guardrails: allow-null-defense
+            _pageRouter?.Show(LobbyShellPageId.Lobby);
+            UitkElementUtility.SetDisplay(_lobbyPage, false);
+            SetCreateRoomOverlayVisible(false);
+            SetRoomSelectionOverlayVisible(false);
+// csharp-guardrails: allow-null-defense
+            _roomDetailSurface?.Hide();
+// csharp-guardrails: allow-null-defense
+            if (_shellTitle != null)
+                _shellTitle.text = "방 대기실";
+// csharp-guardrails: allow-null-defense
+            if (_shellState != null)
+                _shellState.text = "참가자 대기 중";
+
+// csharp-guardrails: allow-null-defense
+            if (_roomWaitingSurface != null && _roomWaitingSurface.Render(viewModel))
+                _roomWaitingPrimaryStartsGame = _roomWaitingSurface.PrimaryStartsGame;
+        }
+
+        public void HideRoomWaiting()
+        {
+            if (!Bind())
+                return;
+
+            HideRoomWaitingCore();
+            UitkElementUtility.SetDisplay(_lobbyPage, true);
+        }
+
         public void ShowLobbyPage() => ShowPage(LobbyShellPageId.Lobby);
 
         public void ShowGaragePage() => ShowPage(LobbyShellPageId.Garage);
@@ -219,6 +255,7 @@ namespace Features.Lobby.Presentation
 
 // csharp-guardrails: allow-null-defense
             _pageRouter?.Show(pageId);
+            HideRoomWaitingCore();
             SetCreateRoomOverlayVisible(false);
             SetRoomSelectionOverlayVisible(false);
             SetGarageDocumentVisible(false);
@@ -255,6 +292,7 @@ namespace Features.Lobby.Presentation
             _recordsPage = Required<VisualElement>("RecordsUitkHost");
             _accountPage = Required<VisualElement>("AccountUitkHost");
             _connectionPage = Required<VisualElement>("ConnectionUitkHost");
+            _roomWaitingPage = Required<VisualElement>("RoomWaitingPage");
             _createRoomOverlay = Required<VisualElement>("CreateRoomOverlay");
             _shellTitle = Required<Label>("ShellTitleLabel");
             _shellState = Required<Label>("ShellStateLabel");
@@ -295,8 +333,25 @@ namespace Features.Lobby.Presentation
                 Required<Label>("RoomDetailMetaLabel"),
                 Required<Button>("ReadyButton"),
                 Required<Button>("StartButton"));
+            _roomWaitingSurface = new LobbyRoomWaitingSurface(
+                _roomWaitingPage,
+                Required<VisualElement>("RoomWaitingParticipantList"),
+                Required<VisualElement>("RoomWaitingDeckSlotRow"),
+                Required<Label>("RoomWaitingTitleLabel"),
+                Required<Label>("RoomWaitingMetaLabel"),
+                Required<Label>("RoomWaitingStateLabel"),
+                Required<Label>("RoomWaitingHostLabel"),
+                Required<Label>("RoomWaitingConnectionLabel"),
+                Required<Label>("RoomWaitingDeckStatusLabel"),
+                Required<Label>("RoomWaitingDeckTitleLabel"),
+                Required<Label>("RoomWaitingDeckBodyLabel"),
+                Required<Button>("RoomRedTeamButton"),
+                Required<Button>("RoomBlueTeamButton"),
+                Required<Button>("RoomReadyButton"),
+                Required<Button>("RoomStartButton"));
 
             _roomDetailSurface.Hide();
+            _roomWaitingSurface.Hide();
             _roomListSurface.HideEmptyState();
             SetCreateRoomOverlayVisible(false);
             SetRoomSelectionOverlayVisible(false);
@@ -371,11 +426,30 @@ namespace Features.Lobby.Presentation
             RegisterClick("ReadyButton", "ui_confirm", () => ReadyToggled?.Invoke());
             RegisterClick("StartButton", "ui_confirm", () => GameStartRequested?.Invoke());
             RegisterClick("LeaveRoomButton", "ui_back", () => LeaveRoomRequested?.Invoke());
+            RegisterClick("RoomRedTeamButton", "ui_select", () => TeamChangeRequested?.Invoke(TeamType.Red));
+            RegisterClick("RoomBlueTeamButton", "ui_select", () => TeamChangeRequested?.Invoke(TeamType.Blue));
+            RegisterClick("RoomReadyButton", "ui_confirm", HandleRoomPrimaryAction);
+            RegisterClick("RoomLeaveButton", "ui_back", () => LeaveRoomRequested?.Invoke());
             RegisterClick("LobbyNavButton", "ui_select", () => LobbyPageRequested?.Invoke());
             RegisterClick("GarageNavButton", "ui_select", () => GaragePageRequested?.Invoke());
             RegisterClick("RecordsNavButton", "ui_select", () => RecordsPageRequested?.Invoke());
 
             EnsureGarageSurface();
+        }
+
+        private void HandleRoomPrimaryAction()
+        {
+            if (_roomWaitingPrimaryStartsGame)
+                GameStartRequested?.Invoke();
+            else
+                ReadyToggled?.Invoke();
+        }
+
+        private void HideRoomWaitingCore()
+        {
+// csharp-guardrails: allow-null-defense
+            _roomWaitingSurface?.Hide();
+            _roomWaitingPrimaryStartsGame = false;
         }
 
         private void SetCreateRoomOverlayVisible(bool visible)

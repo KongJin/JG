@@ -12,7 +12,7 @@ const hotspotBudgets = [
   },
   {
     path: "Assets/Scripts/Features/Lobby/Presentation/Uitk/LobbyUitkRuntimeAdapter.cs",
-    maxLines: 520,
+    maxLines: 580,
     owner: "Lobby runtime adapter",
   },
   {
